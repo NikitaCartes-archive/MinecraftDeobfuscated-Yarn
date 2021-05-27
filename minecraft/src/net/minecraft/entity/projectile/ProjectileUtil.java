@@ -76,11 +76,16 @@ public final class ProjectileUtil {
 
 	@Nullable
 	public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate) {
+		return method_37226(world, entity, vec3d, vec3d2, box, predicate, 0.3F);
+	}
+
+	@Nullable
+	public static EntityHitResult method_37226(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, float f) {
 		double d = Double.MAX_VALUE;
 		Entity entity2 = null;
 
 		for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
-			Box box2 = entity3.getBoundingBox().expand(0.3F);
+			Box box2 = entity3.getBoundingBox().expand((double)f);
 			Optional<Vec3d> optional = box2.raycast(vec3d, vec3d2);
 			if (optional.isPresent()) {
 				double e = vec3d.squaredDistanceTo((Vec3d)optional.get());
@@ -97,7 +102,7 @@ public final class ProjectileUtil {
 	public static void method_7484(Entity entity, float f) {
 		Vec3d vec3d = entity.getVelocity();
 		if (vec3d.lengthSquared() != 0.0) {
-			double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
+			double d = vec3d.method_37267();
 			entity.setYaw((float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) + 90.0F);
 			entity.setPitch((float)(MathHelper.atan2(d, vec3d.y) * 180.0F / (float)Math.PI) - 90.0F);
 

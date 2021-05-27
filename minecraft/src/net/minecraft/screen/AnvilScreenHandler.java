@@ -79,6 +79,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 				if (blockState2 == null) {
 					world.removeBlock(blockPos, false);
 					world.syncWorldEvent(WorldEvents.ANVIL_DESTROYED, blockPos, 0);
+					player.getInventory().offerOrDrop(stack);
 				} else {
 					world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
 					world.syncWorldEvent(WorldEvents.ANVIL_USED, blockPos, 0);

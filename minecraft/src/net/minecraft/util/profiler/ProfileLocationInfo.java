@@ -11,6 +11,8 @@ public interface ProfileLocationInfo {
 	 */
 	long getTotalTime();
 
+	long method_37169();
+
 	/**
 	 * Returns the number of times the profiler location has been visited.
 	 */

@@ -14,15 +14,80 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of a {@linkplain BeeEntity}.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value #BONE}</td><td>Root part</td><td>{@link #bone}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>{@value #BONE}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #STINGER}</td><td>{@value EntityModelPartNames#BODY}</td><td>{@link #stinger}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LEFT_ANTENNA}</td><td>{@value EntityModelPartNames#BODY}</td><td>{@link #leftAntenna}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIGHT_ANTENNA}</td><td>{@value EntityModelPartNames#BODY}</td><td>{@link #rightAntenna}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_WING}</td><td>{@value #BONE}</td><td>{@link #rightWing}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_WING}</td><td>{@value #BONE}</td><td>{@link #leftWing}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #FRONT_LEGS}</td><td>{@value #BONE}</td><td>{@link #frontLegs}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #MIDDLE_LEGS}</td><td>{@value #BONE}</td><td>{@link #middleLegs}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #BACK_LEGS}</td><td>{@value #BONE}</td><td>{@link #backLegs}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 	private static final float BONE_BASE_Y_PIVOT = 19.0F;
+	/**
+	 * The key of the bone model part, whose value is {@value}.
+	 * 
+	 * <p>The bone is an invisible model part which is used to globally control the model.
+	 */
 	private static final String BONE = "bone";
+	/**
+	 * The key of the stinger model part, whose value is {@value}.
+	 */
 	private static final String STINGER = "stinger";
+	/**
+	 * The key of the left antenna model part, whose value is {@value}.
+	 */
 	private static final String LEFT_ANTENNA = "left_antenna";
+	/**
+	 * The key of the right antenna model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_ANTENNA = "right_antenna";
+	/**
+	 * The key of the front legs model part, whose value is {@value}.
+	 */
 	private static final String FRONT_LEGS = "front_legs";
+	/**
+	 * The key of the middle legs model part, whose value is {@value}.
+	 */
 	private static final String MIDDLE_LEGS = "middle_legs";
+	/**
+	 * The key of the back legs model part, whose value is {@value}.
+	 */
 	private static final String BACK_LEGS = "back_legs";
 	private final ModelPart bone;
 	private final ModelPart rightWing;

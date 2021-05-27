@@ -3,6 +3,7 @@ package net.minecraft.entity.projectile;
 import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
@@ -174,22 +175,24 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	@Override
 	protected void onHit(LivingEntity target) {
 		super.onHit(target);
+		Entity entity = this.method_37225();
 
 		for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
-			target.addStatusEffect(
+			target.method_37222(
 				new StatusEffectInstance(
 					statusEffectInstance.getEffectType(),
 					Math.max(statusEffectInstance.getDuration() / 8, 1),
 					statusEffectInstance.getAmplifier(),
 					statusEffectInstance.isAmbient(),
 					statusEffectInstance.shouldShowParticles()
-				)
+				),
+				entity
 			);
 		}
 
 		if (!this.effects.isEmpty()) {
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				target.addStatusEffect(statusEffectInstance);
+				target.method_37222(statusEffectInstance, entity);
 			}
 		}
 	}

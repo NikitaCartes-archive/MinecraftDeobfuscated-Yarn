@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
@@ -100,8 +101,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 								structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
 								if (bl2) {
 									structureWorldAccess.getBlockTickScheduler().schedule(blockPos2, CAVE_AIR.getBlock(), 0);
-									BlockPos blockPos3 = blockPos2.up();
-									this.method_37001(structureWorldAccess, blockPos3, structureWorldAccess.getBlockState(blockPos3));
+									this.method_37256(structureWorldAccess, blockPos2);
 								}
 							}
 						}
@@ -141,11 +141,13 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 											|| u < 7 && bls[(s * 16 + txxx) * 8 + u + 1]
 											|| u > 0 && bls[(s * 16 + txxx) * 8 + (u - 1)]
 									);
-								if (bl2 && (u < 4 || random.nextInt(2) != 0) && structureWorldAccess.getBlockState(blockPos.add(s, u, txxx)).getMaterial().isSolid()) {
-									BlockPos blockPos3 = blockPos.add(s, u, txxx);
-									structureWorldAccess.setBlockState(blockPos3, blockSource.get(blockPos3), Block.NOTIFY_LISTENERS);
-									BlockPos blockPos4 = blockPos3.up();
-									this.method_37001(structureWorldAccess, blockPos4, structureWorldAccess.getBlockState(blockPos4));
+								if (bl2 && (u < 4 || random.nextInt(2) != 0)) {
+									BlockState blockState = structureWorldAccess.getBlockState(blockPos.add(s, u, txxx));
+									if (blockState.getMaterial().isSolid() && !blockState.isIn(BlockTags.LAVA_POOL_STONE_REPLACEABLES)) {
+										BlockPos blockPos3 = blockPos.add(s, u, txxx);
+										structureWorldAccess.setBlockState(blockPos3, blockSource.get(blockPos3), Block.NOTIFY_LISTENERS);
+										this.method_37256(structureWorldAccess, blockPos3);
+									}
 								}
 							}
 						}
@@ -166,12 +168,6 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 
 				return true;
 			}
-		}
-	}
-
-	private void method_37001(StructureWorldAccess structureWorldAccess, BlockPos blockPos, BlockState blockState) {
-		if (!blockState.isAir()) {
-			structureWorldAccess.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 0);
 		}
 	}
 }

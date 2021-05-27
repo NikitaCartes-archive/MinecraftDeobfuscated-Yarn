@@ -12,15 +12,75 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of a {@linkplain BoatEntity}.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value #BOTTOM}</td><td>Root part</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #BACK}</td><td>Root part</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #FRONT}</td><td>Root part</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIGHT}</td><td>Root part</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LEFT}</td><td>Root part</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LEFT_PADDLE}</td><td>Root part</td><td>{@link #leftPaddle}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIGHT_PADDLE}</td><td>Root part</td><td>{@link #rightPaddle}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #WATER_PATCH}</td><td>Root part</td><td>{@link #waterPatch}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
+	/**
+	 * The key of the left paddle model part, whose value is {@value}.
+	 */
 	private static final String LEFT_PADDLE = "left_paddle";
+	/**
+	 * The key of the right paddle model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_PADDLE = "right_paddle";
+	/**
+	 * The key of the water patch model part, whose value is {@value}.
+	 */
 	private static final String WATER_PATCH = "water_patch";
+	/**
+	 * The key of the bottom model part, whose value is {@value}.
+	 */
 	private static final String BOTTOM = "bottom";
+	/**
+	 * The key of the back model part, whose value is {@value}.
+	 */
 	private static final String BACK = "back";
+	/**
+	 * The key of the front model part, whose value is {@value}.
+	 */
 	private static final String FRONT = "front";
+	/**
+	 * The key of the right model part, whose value is {@value}.
+	 */
 	private static final String RIGHT = "right";
+	/**
+	 * The key of the left model part, whose value is {@value}.
+	 */
 	private static final String LEFT = "left";
 	private final ModelPart leftPaddle;
 	private final ModelPart rightPaddle;
@@ -102,8 +162,8 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 
 	private static void setPaddleAngle(BoatEntity entity, int sigma, ModelPart part, float angle) {
 		float f = entity.interpolatePaddlePhase(sigma, angle);
-		part.pitch = (float)MathHelper.clampedLerp((float) (-Math.PI / 3), (float) (-Math.PI / 12), (double)((MathHelper.sin(-f) + 1.0F) / 2.0F));
-		part.yaw = (float)MathHelper.clampedLerp((float) (-Math.PI / 4), (float) (Math.PI / 4), (double)((MathHelper.sin(-f + 1.0F) + 1.0F) / 2.0F));
+		part.pitch = MathHelper.method_37166((float) (-Math.PI / 3), (float) (-Math.PI / 12), (MathHelper.sin(-f) + 1.0F) / 2.0F);
+		part.yaw = MathHelper.method_37166((float) (-Math.PI / 4), (float) (Math.PI / 4), (MathHelper.sin(-f + 1.0F) + 1.0F) / 2.0F);
 		if (sigma == 1) {
 			part.yaw = (float) Math.PI - part.yaw;
 		}

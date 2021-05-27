@@ -2,7 +2,6 @@ package net.minecraft.client.sound;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -50,8 +49,8 @@ public class MovingMinecartSoundInstance extends MovingSoundInstance {
 			this.x = (double)((float)this.minecart.getX());
 			this.y = (double)((float)this.minecart.getY());
 			this.z = (double)((float)this.minecart.getZ());
-			float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.minecart.getVelocity()));
-			if ((double)f >= 0.01) {
+			float f = (float)this.minecart.getVelocity().method_37267();
+			if (f >= 0.01F) {
 				this.distance = MathHelper.clamp(this.distance + 0.0025F, 0.0F, 1.0F);
 				this.volume = MathHelper.lerp(MathHelper.clamp(f, 0.0F, 0.5F), 0.0F, 0.7F);
 			} else {

@@ -33,7 +33,7 @@ public class StructurePool {
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("name").forGetter(StructurePool::getId),
 					Identifier.CODEC.fieldOf("fallback").forGetter(StructurePool::getTerminatorsId),
-					Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.INT.fieldOf("weight"))
+					Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.intRange(1, 150).fieldOf("weight"))
 						.codec()
 						.listOf()
 						.fieldOf("elements")

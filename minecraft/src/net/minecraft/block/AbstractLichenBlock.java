@@ -181,20 +181,20 @@ public class AbstractLichenBlock extends Block {
 	public boolean trySpreadRandomly(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		List<Direction> list = Lists.<Direction>newArrayList(DIRECTIONS);
 		Collections.shuffle(list);
-		return list.stream().filter(from -> hasDirection(state, from)).anyMatch(to -> this.trySpreadRandomly(state, world, pos, to, random));
+		return list.stream().filter(from -> hasDirection(state, from)).anyMatch(to -> this.trySpreadRandomly(state, world, pos, to, random, false));
 	}
 
-	public boolean trySpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random) {
+	public boolean trySpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random, boolean bl) {
 		List<Direction> list = Arrays.asList(DIRECTIONS);
 		Collections.shuffle(list, random);
-		return list.stream().anyMatch(to -> this.trySpreadTo(state, world, pos, from, to));
+		return list.stream().anyMatch(direction2 -> this.trySpreadTo(state, world, pos, from, direction2, bl));
 	}
 
-	public boolean trySpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to) {
+	public boolean trySpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to, boolean bl) {
 		Optional<Pair<BlockPos, Direction>> optional = this.getSpreadLocation(state, world, pos, from, to);
 		if (optional.isPresent()) {
 			Pair<BlockPos, Direction> pair = (Pair<BlockPos, Direction>)optional.get();
-			return this.addDirection(world, pair.getFirst(), pair.getSecond());
+			return this.addDirection(world, pair.getFirst(), pair.getSecond(), bl);
 		} else {
 			return false;
 		}
@@ -231,10 +231,18 @@ public class AbstractLichenBlock extends Block {
 		}
 	}
 
-	private boolean addDirection(WorldAccess world, BlockPos pos, Direction direction) {
+	private boolean addDirection(WorldAccess world, BlockPos pos, Direction direction, boolean bl) {
 		BlockState blockState = world.getBlockState(pos);
 		BlockState blockState2 = this.withDirection(blockState, world, pos, direction);
-		return blockState2 != null ? world.setBlockState(pos, blockState2, Block.NOTIFY_LISTENERS) : false;
+		if (blockState2 != null) {
+			if (bl) {
+				world.getChunk(pos).markBlockForPostProcessing(pos);
+			}
+
+			return world.setBlockState(pos, blockState2, Block.NOTIFY_LISTENERS);
+		} else {
+			return false;
+		}
 	}
 
 	private boolean canGrowIn(BlockState state) {

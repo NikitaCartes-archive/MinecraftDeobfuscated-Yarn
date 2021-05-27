@@ -13,21 +13,23 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
+import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 
-public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> {
-	public NetherFossilFeature(Codec<DefaultFeatureConfig> codec) {
+public class NetherFossilFeature extends StructureFeature<RangeDecoratorConfig> {
+	public NetherFossilFeature(Codec<RangeDecoratorConfig> codec) {
 		super(codec);
 	}
 
 	@Override
-	public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
+	public StructureFeature.StructureStartFactory<RangeDecoratorConfig> getStructureStartFactory() {
 		return NetherFossilFeature.Start::new;
 	}
 
-	public static class Start extends MarginedStructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
+	public static class Start extends MarginedStructureStart<RangeDecoratorConfig> {
+		public Start(StructureFeature<RangeDecoratorConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
 			super(structureFeature, chunkPos, i, l);
 		}
 
@@ -37,13 +39,24 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 			StructureManager structureManager,
 			ChunkPos chunkPos,
 			Biome biome,
-			DefaultFeatureConfig defaultFeatureConfig,
+			RangeDecoratorConfig rangeDecoratorConfig,
 			HeightLimitView heightLimitView
 		) {
 			int i = chunkPos.getStartX() + this.random.nextInt(16);
 			int j = chunkPos.getStartZ() + this.random.nextInt(16);
 			int k = chunkGenerator.getSeaLevel();
-			int l = k + this.random.nextInt(chunkGenerator.getWorldHeight() - 2 - k);
+			HeightContext heightContext = new HeightContext() {
+				@Override
+				public int getMinY() {
+					return heightLimitView.getBottomY();
+				}
+
+				@Override
+				public int getMaxY() {
+					return heightLimitView.getHeight();
+				}
+			};
+			int l = rangeDecoratorConfig.heightProvider.get(this.random, heightContext);
 			VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(i, j, heightLimitView);
 
 			for (BlockPos.Mutable mutable = new BlockPos.Mutable(i, l, j); l > k; l--) {

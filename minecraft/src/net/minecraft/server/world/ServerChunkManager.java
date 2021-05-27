@@ -301,14 +301,7 @@ public class ServerChunkManager extends ChunkManager {
 		}
 	}
 
-	@Override
-	public boolean shouldTickChunk(ChunkPos pos) {
-		return this.isFutureReady(pos.toLong(), ChunkHolder::getEntityTickingFuture);
-	}
-
-	@Override
-	public boolean shouldTickBlock(BlockPos pos) {
-		long l = ChunkPos.toLong(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
+	public boolean method_37114(long l) {
 		return this.isFutureReady(l, ChunkHolder::getTickingFuture);
 	}
 
@@ -370,20 +363,17 @@ public class ServerChunkManager extends ChunkManager {
 				Optional<WorldChunk> optional = ((Either)chunkHolder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
 				if (optional.isPresent()) {
 					this.world.getProfiler().push("broadcast");
-					chunkHolder.flushUpdates((WorldChunk)optional.get());
+					WorldChunk worldChunk = (WorldChunk)optional.get();
+					chunkHolder.flushUpdates(worldChunk);
 					this.world.getProfiler().pop();
-					Optional<WorldChunk> optional2 = ((Either)chunkHolder.getEntityTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
-					if (optional2.isPresent()) {
-						WorldChunk worldChunk = (WorldChunk)optional2.get();
-						ChunkPos chunkPos = chunkHolder.getPos();
-						if (!this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
-							worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
-							if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(worldChunk.getPos())) {
-								SpawnHelper.spawn(this.world, worldChunk, info, this.spawnAnimals, this.spawnMonsters, bl3);
-							}
-
-							this.world.tickChunk(worldChunk, i);
+					ChunkPos chunkPos = worldChunk.getPos();
+					if (this.world.method_37115(chunkPos) && !this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
+						worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
+						if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(chunkPos)) {
+							SpawnHelper.spawn(this.world, worldChunk, info, this.spawnAnimals, this.spawnMonsters, bl3);
 						}
+
+						this.world.tickChunk(worldChunk, i);
 					}
 				}
 			});

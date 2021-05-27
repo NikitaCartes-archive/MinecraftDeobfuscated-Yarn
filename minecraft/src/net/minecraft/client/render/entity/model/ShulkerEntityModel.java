@@ -15,7 +15,13 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntityModel<T> {
+	/**
+	 * The key of the lid model part, whose value is {@value}.
+	 */
 	private static final String LID = "lid";
+	/**
+	 * The key of the base model part, whose value is {@value}.
+	 */
 	private static final String BASE = "base";
 	private final ModelPart base;
 	private final ModelPart lid;

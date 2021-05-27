@@ -14,7 +14,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -284,8 +284,8 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
-		return mappedIndex == 0 ? new CommandItemSlot() {
+	public StackReference getStackReference(int mappedIndex) {
+		return mappedIndex == 0 ? new StackReference() {
 			@Override
 			public ItemStack get() {
 				return ItemFrameEntity.this.getHeldItemStack();
@@ -296,7 +296,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 				ItemFrameEntity.this.setHeldItemStack(stack);
 				return true;
 			}
-		} : super.getCommandItemSlot(mappedIndex);
+		} : super.getStackReference(mappedIndex);
 	}
 
 	@Override

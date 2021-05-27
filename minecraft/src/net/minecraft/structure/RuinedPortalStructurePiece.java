@@ -22,11 +22,13 @@ import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor
 import net.minecraft.structure.processor.BlockAgeStructureProcessor;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.LavaSubmergedBlockStructureProcessor;
+import net.minecraft.structure.processor.ProtectedBlocksStructureProcessor;
 import net.minecraft.structure.processor.RuleStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorRule;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;
 import net.minecraft.structure.rule.BlockMatchRuleTest;
 import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -132,6 +134,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			.addProcessor(blockIgnoreStructureProcessor)
 			.addProcessor(new RuleStructureProcessor(list))
 			.addProcessor(new BlockAgeStructureProcessor(properties.mossiness))
+			.addProcessor(new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE.getId()))
 			.addProcessor(new LavaSubmergedBlockStructureProcessor());
 		if (properties.replaceWithBlackstone) {
 			structurePlacementData.addProcessor(BlackstoneReplacementStructureProcessor.INSTANCE);
@@ -272,7 +275,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		BlockState blockState = world.getBlockState(pos);
 		return !blockState.isOf(Blocks.AIR)
 			&& !blockState.isOf(Blocks.OBSIDIAN)
-			&& !blockState.isOf(Blocks.CHEST)
+			&& !blockState.isIn(BlockTags.FEATURES_CANNOT_REPLACE)
 			&& (this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER || !blockState.isOf(Blocks.LAVA));
 	}
 

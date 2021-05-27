@@ -42,7 +42,7 @@ public class SpectralArrowEntity extends PersistentProjectileEntity {
 	protected void onHit(LivingEntity target) {
 		super.onHit(target);
 		StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.GLOWING, this.duration, 0);
-		target.addStatusEffect(statusEffectInstance);
+		target.method_37222(statusEffectInstance, this.method_37225());
 	}
 
 	@Override

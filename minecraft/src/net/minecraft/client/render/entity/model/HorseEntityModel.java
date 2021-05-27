@@ -19,17 +19,53 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 	private static final float field_32489 = (float) (Math.PI / 4);
 	private static final float field_32490 = (float) (Math.PI / 6);
 	private static final float field_32491 = (float) (Math.PI / 12);
+	/**
+	 * The key of the model part containing the head model parts, whose value is {@value}.
+	 */
 	protected static final String HEAD_PARTS = "head_parts";
+	/**
+	 * The key of the left hind baby leg model part, whose value is {@value}.
+	 */
 	private static final String LEFT_HIND_BABY_LEG = "left_hind_baby_leg";
+	/**
+	 * The key of the right hind baby leg model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_HIND_BABY_LEG = "right_hind_baby_leg";
+	/**
+	 * The key of the left front baby leg model part, whose value is {@value}.
+	 */
 	private static final String LEFT_FRONT_BABY_LEG = "left_front_baby_leg";
+	/**
+	 * The key of the right front baby leg model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_FRONT_BABY_LEG = "right_front_baby_leg";
+	/**
+	 * The key of the saddle mane model part, whose value is {@value}.
+	 */
 	private static final String SADDLE = "saddle";
+	/**
+	 * The key of the left saddle mouth model part, whose value is {@value}.
+	 */
 	private static final String LEFT_SADDLE_MOUTH = "left_saddle_mouth";
+	/**
+	 * The key of the left saddle line model part, whose value is {@value}.
+	 */
 	private static final String LEFT_SADDLE_LINE = "left_saddle_line";
+	/**
+	 * The key of the right saddle mouth model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_SADDLE_MOUTH = "right_saddle_mouth";
+	/**
+	 * The key of the right saddle line model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_SADDLE_LINE = "right_saddle_line";
+	/**
+	 * The key of the head saddle model part, whose value is {@value}.
+	 */
 	private static final String HEAD_SADDLE = "head_saddle";
+	/**
+	 * The key of the mouth saddle wrap mane model part, whose value is {@value}.
+	 */
 	private static final String MOUTH_SADDLE_WRAP = "mouth_saddle_wrap";
 	protected final ModelPart body;
 	protected final ModelPart head;

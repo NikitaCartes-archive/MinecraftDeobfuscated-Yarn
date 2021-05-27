@@ -97,10 +97,9 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 					if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
 					} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
-						GameProfile var17 = new GameProfile(null, nbtCompound.getString("SkullOwner"));
-						gameProfile = SkullBlockEntity.loadProperties(var17);
+						gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
 						nbtCompound.remove("SkullOwner");
-						nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
+						SkullBlockEntity.loadProperties(gameProfile, gameProfilex -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfilex)));
 					}
 				}
 

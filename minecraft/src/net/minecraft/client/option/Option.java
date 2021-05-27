@@ -122,7 +122,7 @@ public abstract class Option {
 		1.0,
 		0.0F,
 		gameOptions -> Math.pow((double)gameOptions.fovEffectScale, 2.0),
-		(gameOptions, fovEffectScale) -> gameOptions.fovEffectScale = MathHelper.sqrt(fovEffectScale),
+		(gameOptions, fovEffectScale) -> gameOptions.fovEffectScale = (float)Math.sqrt(fovEffectScale),
 		(gameOptions, option) -> {
 			double d = option.getRatio(option.get(gameOptions));
 			return d == 0.0 ? option.getGenericLabel(ScreenTexts.OFF) : option.getPercentLabel(d);

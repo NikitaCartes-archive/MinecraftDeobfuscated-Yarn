@@ -1,5 +1,6 @@
 package net.minecraft.client;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Queues;
 import com.google.common.hash.Hashing;
@@ -23,11 +24,13 @@ import com.mojang.serialization.Lifecycle;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -49,6 +52,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6396;
+import net.minecraft.class_6397;
+import net.minecraft.class_6412;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -170,6 +176,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -210,6 +217,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -220,7 +228,6 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -251,6 +258,7 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
@@ -1268,17 +1276,116 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		System.gc();
 	}
 
-	void toggleDebugProfiler(Runnable startAction, Consumer<Path> completeAction) {
+	public boolean toggleDebugProfiler(Consumer<TranslatableText> consumer) {
 		if (this.debugRecorder.isActive()) {
-			this.debugRecorder.sample();
+			this.method_37286();
+			return false;
 		} else {
-			Runnable runnable = () -> this.debugRecorder = DummyRecorder.INSTANCE;
-			this.debugRecorder = DebugRecorder.create(Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new ProfilerDumper(), runnable, completeAction);
-			startAction.run();
+			Consumer<ProfileResult> consumer2 = profileResult -> {
+				int i = profileResult.getTickSpan();
+				double d = (double)profileResult.getTimeSpan() / (double)Durations.field_33868;
+				this.execute(
+					() -> consumer.accept(
+							new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))
+						)
+				);
+			};
+			Consumer<Path> consumer3 = path -> {
+				Text text = new LiteralText(path.toString())
+					.formatted(Formatting.UNDERLINE)
+					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
+				this.execute(() -> consumer.accept(new TranslatableText("debug.profiling.stop", text)));
+			};
+			class_6396 lv = method_37274(new class_6396(), this, this.languageManager, this.gameVersion, this.options);
+			Consumer<List<Path>> consumer4 = list -> {
+				Path path = this.method_37275(lv, list);
+				consumer3.accept(path);
+			};
+			Consumer<Path> consumer5;
+			if (this.server == null) {
+				consumer5 = path -> consumer4.accept(ImmutableList.of(path));
+			} else {
+				this.server.method_37324(lv);
+				CompletableFuture<Path> completableFuture = new CompletableFuture();
+				CompletableFuture<Path> completableFuture2 = new CompletableFuture();
+				CompletableFuture.allOf(completableFuture, completableFuture2)
+					.thenRunAsync(() -> consumer4.accept(ImmutableList.of((Path)completableFuture.join(), (Path)completableFuture2.join())), Util.getIoWorkerExecutor());
+				this.server.method_37320(profileResult -> {
+				}, completableFuture2::complete);
+				consumer5 = completableFuture::complete;
+			}
+
+			this.debugRecorder = DebugRecorder.method_37191(
+				new class_6412(Util.nanoTimeSupplier, this.worldRenderer),
+				Util.nanoTimeSupplier,
+				Util.getIoWorkerExecutor(),
+				new ProfilerDumper("client"),
+				profileResult -> {
+					this.debugRecorder = DummyRecorder.INSTANCE;
+					consumer2.accept(profileResult);
+				},
+				consumer5
+			);
+			return true;
 		}
 	}
 
-	void handleProfilerKeyPress(int digit) {
+	private void method_37286() {
+		this.debugRecorder.sample();
+		if (this.server != null) {
+			this.server.method_37323();
+		}
+	}
+
+	private Path method_37275(class_6396 arg, List<Path> list) {
+		String string;
+		if (this.isInSingleplayer()) {
+			string = this.getServer().getSaveProperties().getLevelName();
+		} else {
+			string = this.getCurrentServerEntry().name;
+		}
+
+		Path path;
+		try {
+			String string2 = String.format("%s-%s-%s", new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()), string, SharedConstants.getGameVersion().getId());
+			String string3 = FileNameUtil.getNextUniqueName(ProfilerDumper.DEBUG_PROFILING_DIRECTORY, string2, ".zip");
+			path = ProfilerDumper.DEBUG_PROFILING_DIRECTORY.resolve(string3);
+		} catch (IOException var21) {
+			throw new UncheckedIOException(var21);
+		}
+
+		try {
+			class_6397 lv = new class_6397(path);
+
+			try {
+				lv.method_37163(Paths.get("system.txt"), arg.method_37120());
+				lv.method_37163(Paths.get("client").resolve(this.options.method_37294().getName()), this.options.method_37295());
+				list.forEach(lv::method_37161);
+			} catch (Throwable var20) {
+				try {
+					lv.close();
+				} catch (Throwable var19) {
+					var20.addSuppressed(var19);
+				}
+
+				throw var20;
+			}
+
+			lv.close();
+		} finally {
+			for (Path path3 : list) {
+				try {
+					FileUtils.forceDelete(path3.toFile());
+				} catch (IOException var18) {
+					LOGGER.warn("Failed to delete temporary profiling result {}", path3, var18);
+				}
+			}
+		}
+
+		return path;
+	}
+
+	public void handleProfilerKeyPress(int digit) {
 		if (this.tickProfilerResult != null) {
 			List<ProfilerTiming> list = this.tickProfilerResult.getTimings(this.openProfilerSection);
 			if (!list.isEmpty()) {
@@ -1898,6 +2005,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
 				GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
 				UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
+				userCache.method_37157(this);
 				SkullBlockEntity.setUserCache(userCache);
 				SkullBlockEntity.setSessionService(minecraftSessionService);
 				UserCache.setUseRemote(false);
@@ -2062,6 +2170,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
 			GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
 			UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
+			userCache.method_37157(this);
 			SkullBlockEntity.setUserCache(userCache);
 			SkullBlockEntity.setSessionService(minecraftSessionService);
 			UserCache.setUseRemote(false);
@@ -2269,13 +2378,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public CrashReport addDetailsToCrashReport(CrashReport report) {
-		addSystemDetailsToCrashReport(this, this.languageManager, this.gameVersion, this.options, report);
+		class_6396 lv = report.getSystemDetailsSection();
+		method_37274(lv, this, this.languageManager, this.gameVersion, this.options);
 		if (this.world != null) {
 			this.world.addDetailsToCrashReport(report);
 		}
 
 		if (this.server != null) {
-			this.server.populateCrashReport(report.addElement("Integrated server"));
+			this.server.method_37324(lv);
 		}
 
 		this.resourceReloadLogger.addReloadSection(report);
@@ -2285,20 +2395,26 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static void addSystemDetailsToCrashReport(
 		@Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report
 	) {
-		CrashReportSection crashReportSection = report.getSystemDetailsSection();
-		crashReportSection.add("Launched Version", (CrashCallable<String>)(() -> version));
-		crashReportSection.add("Backend library", RenderSystem::getBackendDescription);
-		crashReportSection.add("Backend API", RenderSystem::getApiDescription);
-		crashReportSection.add(
+		class_6396 lv = report.getSystemDetailsSection();
+		method_37274(lv, client, languageManager, version, options);
+	}
+
+	private static class_6396 method_37274(
+		class_6396 arg, @Nullable MinecraftClient minecraftClient, @Nullable LanguageManager languageManager, String string, GameOptions gameOptions
+	) {
+		arg.method_37123("Launched Version", () -> string);
+		arg.method_37123("Backend library", RenderSystem::getBackendDescription);
+		arg.method_37123("Backend API", RenderSystem::getApiDescription);
+		arg.method_37123(
 			"Window size",
-			(CrashCallable<String>)(() -> client != null ? client.window.getFramebufferWidth() + "x" + client.window.getFramebufferHeight() : "<not initialized>")
+			() -> minecraftClient != null ? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight() : "<not initialized>"
 		);
-		crashReportSection.add("GL Caps", RenderSystem::getCapsString);
-		crashReportSection.add("GL debug messages", (CrashCallable<String>)(() -> GlDebug.method_36479() ? String.join("\n", GlDebug.method_36478()) : "<disabled>"));
-		crashReportSection.add("Using VBOs", (CrashCallable<String>)(() -> "Yes"));
-		crashReportSection.add(
+		arg.method_37123("GL Caps", RenderSystem::getCapsString);
+		arg.method_37123("GL debug messages", () -> GlDebug.method_36479() ? String.join("\n", GlDebug.method_36478()) : "<disabled>");
+		arg.method_37123("Using VBOs", () -> "Yes");
+		arg.method_37123(
 			"Is Modded",
-			(CrashCallable<String>)(() -> {
+			() -> {
 				String stringx = ClientBrandRetriever.getClientModName();
 				if (!"vanilla".equals(stringx)) {
 					return "Definitely; Client brand changed to '" + stringx + "'";
@@ -2307,41 +2423,42 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 						? "Very likely; Jar signature invalidated"
 						: "Probably not. Jar signature remains and client brand is untouched.";
 				}
-			})
+			}
 		);
-		crashReportSection.add("Type", "Client (map_client.txt)");
-		if (options != null) {
+		arg.method_37122("Type", "Client (map_client.txt)");
+		if (gameOptions != null) {
 			if (instance != null) {
-				String string = instance.getVideoWarningManager().getWarningsAsString();
-				if (string != null) {
-					crashReportSection.add("GPU Warnings", string);
+				String string2 = instance.getVideoWarningManager().getWarningsAsString();
+				if (string2 != null) {
+					arg.method_37122("GPU Warnings", string2);
 				}
 			}
 
-			crashReportSection.add("Graphics mode", options.graphicsMode);
-			crashReportSection.add("Resource Packs", (CrashCallable<String>)(() -> {
+			arg.method_37122("Graphics mode", gameOptions.graphicsMode.toString());
+			arg.method_37123("Resource Packs", () -> {
 				StringBuilder stringBuilder = new StringBuilder();
 
-				for (String stringx : options.resourcePacks) {
+				for (String stringx : gameOptions.resourcePacks) {
 					if (stringBuilder.length() > 0) {
 						stringBuilder.append(", ");
 					}
 
 					stringBuilder.append(stringx);
-					if (options.incompatibleResourcePacks.contains(stringx)) {
+					if (gameOptions.incompatibleResourcePacks.contains(stringx)) {
 						stringBuilder.append(" (incompatible)");
 					}
 				}
 
 				return stringBuilder.toString();
-			}));
+			});
 		}
 
 		if (languageManager != null) {
-			crashReportSection.add("Current Language", (CrashCallable<String>)(() -> languageManager.getLanguage().toString()));
+			arg.method_37123("Current Language", () -> languageManager.getLanguage().toString());
 		}
 
-		crashReportSection.add("CPU", GlDebugInfo::getCpuInfo);
+		arg.method_37123("CPU", GlDebugInfo::getCpuInfo);
+		return arg;
 	}
 
 	public static MinecraftClient getInstance() {
@@ -2587,10 +2704,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public <T> SearchableContainer<T> getSearchableContainer(SearchManager.Key<T> key) {
 		return this.searchManager.get(key);
-	}
-
-	public static int getCurrentFps() {
-		return currentFps;
 	}
 
 	public MetricsData getMetricsData() {

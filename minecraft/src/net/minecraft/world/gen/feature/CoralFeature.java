@@ -47,7 +47,11 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 				if (random.nextFloat() < 0.2F) {
 					BlockPos blockPos2 = pos.offset(direction);
 					if (world.getBlockState(blockPos2).isOf(Blocks.WATER)) {
-						BlockState blockState2 = BlockTags.WALL_CORALS.getRandom(random).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
+						BlockState blockState2 = BlockTags.WALL_CORALS.getRandom(random).getDefaultState();
+						if (blockState2.contains(DeadCoralWallFanBlock.FACING)) {
+							blockState2 = blockState2.with(DeadCoralWallFanBlock.FACING, direction);
+						}
+
 						world.setBlockState(blockPos2, blockState2, Block.NOTIFY_LISTENERS);
 					}
 				}

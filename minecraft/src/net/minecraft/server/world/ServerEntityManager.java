@@ -350,6 +350,18 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		return this.lookup;
 	}
 
+	public boolean method_37254(BlockPos blockPos) {
+		return this.trackingStatuses.get(ChunkPos.method_37232(blockPos)).shouldTick();
+	}
+
+	public boolean method_37253(ChunkPos chunkPos) {
+		return this.trackingStatuses.get(chunkPos.toLong()).shouldTick();
+	}
+
+	public boolean method_37252(long l) {
+		return this.managedStatuses.get(l) == ServerEntityManager.Status.LOADED;
+	}
+
 	public void dump(Writer writer) throws IOException {
 		CsvWriter csvWriter = CsvWriter.makeHeader()
 			.addColumn("x")

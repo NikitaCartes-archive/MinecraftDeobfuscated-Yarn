@@ -253,7 +253,7 @@ public class AreaEffectCloudEntity extends Entity {
 										if (statusEffectInstance2.getEffectType().isInstant()) {
 											statusEffectInstance2.getEffectType().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance2.getAmplifier(), 0.5);
 										} else {
-											livingEntity.addStatusEffect(new StatusEffectInstance(statusEffectInstance2));
+											livingEntity.method_37222(new StatusEffectInstance(statusEffectInstance2), this);
 										}
 									}
 

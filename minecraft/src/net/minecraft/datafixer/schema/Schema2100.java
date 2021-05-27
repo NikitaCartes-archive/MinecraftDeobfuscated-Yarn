@@ -30,9 +30,7 @@ public class Schema2100 extends IdentifierNormalizingSchema {
 		schema.register(
 			map,
 			"minecraft:beehive",
-			(Supplier<TypeTemplate>)(() -> DSL.optionalFields(
-					"Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "Bees", DSL.list(DSL.optionalFields("EntityData", TypeReferences.ENTITY_TREE.in(schema)))
-				))
+			(Supplier<TypeTemplate>)(() -> DSL.optionalFields("Bees", DSL.list(DSL.optionalFields("EntityData", TypeReferences.ENTITY_TREE.in(schema)))))
 		);
 		return map;
 	}

@@ -14,56 +14,74 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
 public class RequiredTagListRegistry {
-	private static final Set<RegistryKey<?>> REGISTRY_KEYS = Sets.<RegistryKey<?>>newHashSet();
-	private static final List<RequiredTagList<?>> REQUIRED_TAG_LISTS = Lists.<RequiredTagList<?>>newArrayList();
+	private static final Set<RegistryKey<?>> REQUIRED_LIST_KEYS = Sets.<RegistryKey<?>>newHashSet();
+	private static final List<RequiredTagList<?>> ALL = Lists.<RequiredTagList<?>>newArrayList();
 
+	/**
+	 * Creates and registers a required tag list.
+	 * 
+	 * <p>The registered tag must be in the set returned by {@link #getBuiltinTags()},
+	 * or the registry will fail {@linkplain #validate() validation}.
+	 * 
+	 * @return the created and registered list
+	 * @throws IllegalStateException if there is a list with a duplicate {@code registryKey}
+	 * 
+	 * @param registryKey the key representing the element type of the tags
+	 * @param dataType the data type, or ID's path prefix, for the tag JSONs in the data pack
+	 */
 	public static <T> RequiredTagList<T> register(RegistryKey<? extends Registry<T>> registryKey, String dataType) {
-		if (!REGISTRY_KEYS.add(registryKey)) {
+		if (!REQUIRED_LIST_KEYS.add(registryKey)) {
 			throw new IllegalStateException("Duplicate entry for static tag collection: " + registryKey);
 		} else {
 			RequiredTagList<T> requiredTagList = new RequiredTagList<>(registryKey, dataType);
-			REQUIRED_TAG_LISTS.add(requiredTagList);
+			ALL.add(requiredTagList);
 			return requiredTagList;
 		}
 	}
 
 	public static void updateTagManager(TagManager tagManager) {
-		REQUIRED_TAG_LISTS.forEach(list -> list.updateTagManager(tagManager));
+		ALL.forEach(list -> list.updateTagManager(tagManager));
 	}
 
 	public static void clearAllTags() {
-		REQUIRED_TAG_LISTS.forEach(RequiredTagList::clearAllTags);
+		ALL.forEach(RequiredTagList::clearAllTags);
 	}
 
 	public static Multimap<RegistryKey<? extends Registry<?>>, Identifier> getMissingTags(TagManager tagManager) {
 		Multimap<RegistryKey<? extends Registry<?>>, Identifier> multimap = HashMultimap.create();
-		REQUIRED_TAG_LISTS.forEach(requiredTagList -> multimap.putAll(requiredTagList.getRegistryKey(), requiredTagList.getMissingTags(tagManager)));
+		ALL.forEach(list -> multimap.putAll(list.getRegistryKey(), list.getMissingTags(tagManager)));
 		return multimap;
 	}
 
 	public static void validateRegistrations() {
-		method_33154();
+		validate();
 	}
 
-	private static Set<RequiredTagList<?>> getRequiredTags() {
+	private static Set<RequiredTagList<?>> getBuiltinTags() {
 		return ImmutableSet.of(BlockTags.REQUIRED_TAGS, ItemTags.REQUIRED_TAGS, FluidTags.REQUIRED_TAGS, EntityTypeTags.REQUIRED_TAGS, GameEventTags.REQUIRED_TAGS);
 	}
 
-	private static void method_33154() {
-		Set<RegistryKey<?>> set = (Set<RegistryKey<?>>)getRequiredTags().stream().map(RequiredTagList::getRegistryKey).collect(Collectors.toSet());
-		if (!Sets.difference(REGISTRY_KEYS, set).isEmpty()) {
+	/**
+	 * Ensures that each key in {@link #REQUIRED_LIST_KEYS} have a corresponding list
+	 * in the return value of {@link #getBuiltinTags()}.
+	 * 
+	 * @throws IllegalStateException when the validation fails
+	 */
+	private static void validate() {
+		Set<RegistryKey<?>> set = (Set<RegistryKey<?>>)getBuiltinTags().stream().map(RequiredTagList::getRegistryKey).collect(Collectors.toSet());
+		if (!Sets.difference(REQUIRED_LIST_KEYS, set).isEmpty()) {
 			throw new IllegalStateException("Missing helper registrations");
 		}
 	}
 
 	public static void forEach(Consumer<RequiredTagList<?>> consumer) {
-		REQUIRED_TAG_LISTS.forEach(consumer);
+		ALL.forEach(consumer);
 	}
 
-	public static TagManager method_33152() {
+	public static TagManager createBuiltinTagManager() {
 		TagManager.Builder builder = new TagManager.Builder();
-		method_33154();
-		REQUIRED_TAG_LISTS.forEach(requiredTagList -> requiredTagList.addToManager(builder));
+		validate();
+		ALL.forEach(list -> list.addToManager(builder));
 		return builder.build();
 	}
 }

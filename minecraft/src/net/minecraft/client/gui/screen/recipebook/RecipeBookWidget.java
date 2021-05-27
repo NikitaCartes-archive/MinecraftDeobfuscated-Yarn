@@ -512,7 +512,11 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	@Override
 	public void appendNarrations(NarrationMessageBuilder builder) {
 		List<Selectable> list = Lists.<Selectable>newArrayList();
-		this.recipesArea.method_37083(list::add);
+		this.recipesArea.method_37083(clickableWidget -> {
+			if (clickableWidget.method_37303()) {
+				list.add(clickableWidget);
+			}
+		});
 		list.add(this.searchField);
 		list.add(this.toggleCraftableButton);
 		list.addAll(this.tabButtons);

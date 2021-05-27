@@ -325,7 +325,7 @@ public class HeldItemRenderer {
 		} else if (isChargedCrossbow(itemStack)) {
 			return HeldItemRenderer.HandRenderType.RENDER_MAIN_HAND_ONLY;
 		} else if (isChargedCrossbow(itemStack2)) {
-			return itemStack.isEmpty() ? HeldItemRenderer.HandRenderType.RENDER_OFF_HAND_ONLY : HeldItemRenderer.HandRenderType.RENDER_BOTH_HANDS;
+			return itemStack.isEmpty() ? HeldItemRenderer.HandRenderType.RENDER_OFF_HAND_ONLY : HeldItemRenderer.HandRenderType.RENDER_MAIN_HAND_ONLY;
 		} else {
 			return HeldItemRenderer.HandRenderType.RENDER_BOTH_HANDS;
 		}
@@ -406,7 +406,7 @@ public class HeldItemRenderer {
 					matrices.translate((double)((float)i * fx), (double)gx, (double)h);
 					this.applyEquipOffset(matrices, arm, equipProgress);
 					this.applySwingOffset(matrices, arm, swingProgress);
-					if (bl2 && swingProgress < 0.001F && bl) {
+					if (bl2 && swingProgress < 0.001F) {
 						matrices.translate((double)((float)i * -0.641864F), 0.0, 0.0);
 						matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)i * 10.0F));
 					}

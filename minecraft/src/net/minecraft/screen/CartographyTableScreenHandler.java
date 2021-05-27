@@ -201,9 +201,9 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public void close(PlayerEntity player) {
-		super.close(player);
+	public void close(PlayerEntity playerEntity) {
+		super.close(playerEntity);
 		this.resultInventory.removeStack(2);
-		this.context.run((world, blockPos) -> this.dropInventory(player, this.inventory));
+		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.inventory));
 	}
 }

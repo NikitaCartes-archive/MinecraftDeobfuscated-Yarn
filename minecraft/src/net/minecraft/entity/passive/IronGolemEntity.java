@@ -128,7 +128,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			this.lookingAtVillagerTicksLeft--;
 		}
 
-		if (squaredHorizontalLength(this.getVelocity()) > 2.5000003E-7F && this.random.nextInt(5) == 0) {
+		if (this.getVelocity().method_37268() > 2.5000003E-7F && this.random.nextInt(5) == 0) {
 			int i = MathHelper.floor(this.getX());
 			int j = MathHelper.floor(this.getY() - 0.2F);
 			int k = MathHelper.floor(this.getZ());
@@ -297,7 +297,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
+	protected void playStepSound(BlockPos pos, BlockState blockState) {
 		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0F, 1.0F);
 	}
 

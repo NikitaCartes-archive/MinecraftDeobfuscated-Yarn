@@ -39,6 +39,7 @@ import net.minecraft.util.math.Vec3f;
 public class TextRenderer {
 	private static final float field_32166 = 0.01F;
 	private static final Vec3f FORWARD_SHIFT = new Vec3f(0.0F, 0.0F, 0.03F);
+	private static final Vec3f field_33941 = new Vec3f(0.0F, 0.0F, 0.0025F);
 	/**
 	 * The font height of the text that is rendered by the text renderer.
 	 */
@@ -204,6 +205,34 @@ public class TextRenderer {
 		int light
 	) {
 		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
+	}
+
+	public void method_37296(OrderedText orderedText, float f, float g, int i, int j, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, int k) {
+		int l = tweakTransparency(j);
+		TextRenderer.Drawer drawer = new TextRenderer.Drawer(vertexConsumerProvider, 0.0F, 0.0F, l, false, matrix4f, false, k);
+
+		for (int m = -1; m <= 1; m++) {
+			for (int n = -1; n <= 1; n++) {
+				if (m != 0 || n != 0) {
+					float[] fs = new float[]{f};
+					int o = m;
+					int p = n;
+					orderedText.accept((lx, style, mx) -> {
+						boolean bl = style.isBold();
+						FontStorage fontStorage = this.getFontStorage(style.getFont());
+						Glyph glyph = fontStorage.getGlyph(mx);
+						drawer.x = fs[0] + (float)o * glyph.getShadowOffset();
+						drawer.y = g + (float)p * glyph.getShadowOffset();
+						fs[0] += glyph.getAdvance(bl);
+						return drawer.accept(lx, style.withColor(l), mx);
+					});
+				}
+			}
+		}
+
+		Matrix4f matrix4f2 = matrix4f.copy();
+		matrix4f2.addToLastColumn(field_33941);
+		this.drawLayer(orderedText, f, g, tweakTransparency(i), false, matrix4f2, vertexConsumerProvider, false, 0, k);
 	}
 
 	private static int tweakTransparency(int argb) {
@@ -424,8 +453,8 @@ public class TextRenderer {
 		private final Matrix4f matrix;
 		private final boolean seeThrough;
 		private final int light;
-		private float x;
-		private final float y;
+		float x;
+		float y;
 		@Nullable
 		private List<GlyphRenderer.Rectangle> rectangles;
 

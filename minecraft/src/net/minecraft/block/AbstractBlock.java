@@ -209,6 +209,10 @@ public abstract class AbstractBlock {
 		return 0.25F;
 	}
 
+	public float method_37247() {
+		return 0.2F;
+	}
+
 	/**
 	 * Applies a block rotation to a block state.
 	 * 
@@ -593,7 +597,7 @@ public abstract class AbstractBlock {
 				long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
 				float f = block.getMaxModelOffset();
 				double d = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-				double e = offsetType == AbstractBlock.OffsetType.XYZ ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0;
+				double e = offsetType == AbstractBlock.OffsetType.XYZ ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * (double)block.method_37247() : 0.0;
 				double g = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
 				return new Vec3d(d, e, g);
 			}

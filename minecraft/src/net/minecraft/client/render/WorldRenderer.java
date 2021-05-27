@@ -299,9 +299,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 								int y = this.ticks + p * p * 3121 + p * 45238971 + o * o * 418711 + o * 13761 & 31;
 								float z = -((float)y + f) / 32.0F * (3.0F + random.nextFloat());
-								double aa = (double)((float)p + 0.5F) - d;
-								double ab = (double)((float)o + 0.5F) - g;
-								float ac = MathHelper.sqrt(aa * aa + ab * ab) / (float)l;
+								double aa = (double)p + 0.5 - d;
+								double ab = (double)o + 0.5 - g;
+								float ac = (float)Math.sqrt(aa * aa + ab * ab) / (float)l;
 								float ad = ((1.0F - ac * ac) * 0.5F + 0.5F) * h;
 								mutable.set(p, w, o);
 								int ae = getLightmapCoordinates(world, mutable);
@@ -339,9 +339,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 								float af = -((float)(this.ticks & 511) + f) / 512.0F;
 								float z = (float)(random.nextDouble() + (double)n * 0.01 * (double)((float)random.nextGaussian()));
 								float ag = (float)(random.nextDouble() + (double)(n * (float)random.nextGaussian()) * 0.001);
-								double ah = (double)((float)p + 0.5F) - d;
-								double ai = (double)((float)o + 0.5F) - g;
-								float ad = MathHelper.sqrt(ah * ah + ai * ai) / (float)l;
+								double ah = (double)p + 0.5 - d;
+								double ai = (double)o + 0.5 - g;
+								float ad = (float)Math.sqrt(ah * ah + ai * ai) / (float)l;
 								float aj = ((1.0F - ad * ad) * 0.3F + 0.5F) * h;
 								mutable.set(p, w, o);
 								int ak = getLightmapCoordinates(world, mutable);

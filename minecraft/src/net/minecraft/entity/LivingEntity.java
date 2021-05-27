@@ -59,7 +59,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
@@ -142,6 +142,7 @@ public abstract class LivingEntity extends Entity {
 	private static final int field_30080 = 10;
 	private static final int field_30081 = 2;
 	public static final int field_30063 = 4;
+	private static final double field_33908 = 128.0;
 	protected static final int USING_ITEM_FLAG = 1;
 	protected static final int OFF_HAND_ACTIVE_FLAG = 2;
 	protected static final int USING_RIPTIDE_FLAG = 4;
@@ -781,13 +782,13 @@ public abstract class LivingEntity extends Entity {
 			while (iterator.hasNext()) {
 				StatusEffect statusEffect = (StatusEffect)iterator.next();
 				StatusEffectInstance statusEffectInstance = (StatusEffectInstance)this.activeStatusEffects.get(statusEffect);
-				if (!statusEffectInstance.update(this, () -> this.onStatusEffectUpgraded(statusEffectInstance, true))) {
+				if (!statusEffectInstance.update(this, () -> this.onStatusEffectUpgraded(statusEffectInstance, true, null))) {
 					if (!this.world.isClient) {
 						iterator.remove();
 						this.onStatusEffectRemoved(statusEffectInstance);
 					}
 				} else if (statusEffectInstance.getDuration() % 600 == 0) {
-					this.onStatusEffectUpgraded(statusEffectInstance, false);
+					this.onStatusEffectUpgraded(statusEffectInstance, false, null);
 				}
 			}
 		} catch (ConcurrentModificationException var11) {
@@ -940,16 +941,20 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public boolean addStatusEffect(StatusEffectInstance effect) {
-		if (!this.canHaveStatusEffect(effect)) {
+		return this.method_37222(effect, null);
+	}
+
+	public boolean method_37222(StatusEffectInstance statusEffectInstance, @Nullable Entity entity) {
+		if (!this.canHaveStatusEffect(statusEffectInstance)) {
 			return false;
 		} else {
-			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)this.activeStatusEffects.get(effect.getEffectType());
-			if (statusEffectInstance == null) {
-				this.activeStatusEffects.put(effect.getEffectType(), effect);
-				this.onStatusEffectApplied(effect);
+			StatusEffectInstance statusEffectInstance2 = (StatusEffectInstance)this.activeStatusEffects.get(statusEffectInstance.getEffectType());
+			if (statusEffectInstance2 == null) {
+				this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
+				this.onStatusEffectApplied(statusEffectInstance, entity);
 				return true;
-			} else if (statusEffectInstance.upgrade(effect)) {
-				this.onStatusEffectUpgraded(statusEffectInstance, true);
+			} else if (statusEffectInstance2.upgrade(statusEffectInstance)) {
+				this.onStatusEffectUpgraded(statusEffectInstance2, true, entity);
 				return true;
 			} else {
 				return false;
@@ -968,13 +973,13 @@ public abstract class LivingEntity extends Entity {
 		return true;
 	}
 
-	public void applyStatusEffect(StatusEffectInstance effect) {
+	public void applyStatusEffect(StatusEffectInstance effect, @Nullable Entity entity) {
 		if (this.canHaveStatusEffect(effect)) {
 			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)this.activeStatusEffects.put(effect.getEffectType(), effect);
 			if (statusEffectInstance == null) {
-				this.onStatusEffectApplied(effect);
+				this.onStatusEffectApplied(effect, entity);
 			} else {
-				this.onStatusEffectUpgraded(effect, true);
+				this.onStatusEffectUpgraded(effect, true, entity);
 			}
 		}
 	}
@@ -1012,14 +1017,14 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	protected void onStatusEffectApplied(StatusEffectInstance effect) {
+	protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity entity) {
 		this.effectsChanged = true;
 		if (!this.world.isClient) {
 			effect.getEffectType().onApplied(this, this.getAttributes(), effect.getAmplifier());
 		}
 	}
 
-	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect) {
+	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect, @Nullable Entity entity) {
 		this.effectsChanged = true;
 		if (reapplyEffect && !this.world.isClient) {
 			StatusEffect statusEffect = effect.getEffectType();
@@ -2122,7 +2127,7 @@ public abstract class LivingEntity extends Entity {
 				Vec3d vec3d5 = this.getRotationVector();
 				float fx = this.getPitch() * (float) (Math.PI / 180.0);
 				double i = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
-				double j = Math.sqrt(squaredHorizontalLength(vec3d4));
+				double j = vec3d4.method_37267();
 				double k = vec3d5.length();
 				float l = MathHelper.cos(fx);
 				l = (float)((double)l * (double)l * Math.min(1.0, k / 0.4));
@@ -2144,7 +2149,7 @@ public abstract class LivingEntity extends Entity {
 				this.setVelocity(vec3d4.multiply(0.99F, 0.98F, 0.99F));
 				this.move(MovementType.SELF, this.getVelocity());
 				if (this.horizontalCollision && !this.world.isClient) {
-					double m = Math.sqrt(squaredHorizontalLength(this.getVelocity()));
+					double m = this.getVelocity().method_37267();
 					double n = j - m;
 					float o = (float)(n * 10.0 - 3.0);
 					if (o > 0.0F) {
@@ -2191,7 +2196,7 @@ public abstract class LivingEntity extends Entity {
 		double d = entity.getX() - entity.prevX;
 		double e = flutter ? entity.getY() - entity.prevY : 0.0;
 		double f = entity.getZ() - entity.prevZ;
-		float g = MathHelper.sqrt(d * d + e * e + f * f) * 4.0F;
+		float g = (float)Math.sqrt(d * d + e * e + f * f) * 4.0F;
 		if (g > 1.0F) {
 			g = 1.0F;
 		}
@@ -2781,10 +2786,16 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public boolean canSee(Entity entity) {
-		Vec3d vec3d = new Vec3d(this.getX(), this.getEyeY(), this.getZ());
-		Vec3d vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ());
-		return this.world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)).getType()
-			== HitResult.Type.MISS;
+		if (entity.world != this.world) {
+			return false;
+		} else {
+			Vec3d vec3d = new Vec3d(this.getX(), this.getEyeY(), this.getZ());
+			Vec3d vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ());
+			return vec3d2.distanceTo(vec3d) > 128.0
+				? false
+				: this.world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)).getType()
+					== HitResult.Type.MISS;
+		}
 	}
 
 	@Override
@@ -2880,17 +2891,21 @@ public abstract class LivingEntity extends Entity {
 		if (this.isUsingItem()) {
 			if (ItemStack.areItemsEqual(this.getStackInHand(this.getActiveHand()), this.activeItemStack)) {
 				this.activeItemStack = this.getStackInHand(this.getActiveHand());
-				this.activeItemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
-				if (this.shouldSpawnConsumptionEffects()) {
-					this.spawnConsumptionEffects(this.activeItemStack, 5);
-				}
-
-				if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !this.activeItemStack.isUsedOnRelease()) {
-					this.consumeItem();
-				}
+				this.method_37119(this.activeItemStack);
 			} else {
 				this.clearActiveItem();
 			}
+		}
+	}
+
+	protected void method_37119(ItemStack itemStack) {
+		itemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
+		if (this.shouldSpawnConsumptionEffects()) {
+			this.spawnConsumptionEffects(itemStack, 5);
+		}
+
+		if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !itemStack.isUsedOnRelease()) {
+			this.consumeItem();
 		}
 	}
 
@@ -3329,10 +3344,10 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	private static CommandItemSlot getCommandItemSlot(LivingEntity entity, EquipmentSlot slot) {
+	private static StackReference getStackReference(LivingEntity entity, EquipmentSlot slot) {
 		return slot != EquipmentSlot.HEAD && slot != EquipmentSlot.MAINHAND && slot != EquipmentSlot.OFFHAND
-			? CommandItemSlot.of(entity, slot, stack -> stack.isEmpty() || MobEntity.getPreferredEquipmentSlot(stack) == slot)
-			: CommandItemSlot.of(entity, slot);
+			? StackReference.of(entity, slot, stack -> stack.isEmpty() || MobEntity.getPreferredEquipmentSlot(stack) == slot)
+			: StackReference.of(entity, slot);
 	}
 
 	@Nullable
@@ -3353,9 +3368,9 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+	public StackReference getStackReference(int mappedIndex) {
 		EquipmentSlot equipmentSlot = getEquipmentSlot(mappedIndex);
-		return equipmentSlot != null ? getCommandItemSlot(this, equipmentSlot) : super.getCommandItemSlot(mappedIndex);
+		return equipmentSlot != null ? getStackReference(this, equipmentSlot) : super.getStackReference(mappedIndex);
 	}
 
 	@Override

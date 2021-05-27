@@ -146,6 +146,8 @@ public class RenderLayers {
 		hashMap.put(Blocks.POTTED_BROWN_MUSHROOM, renderLayer3);
 		hashMap.put(Blocks.POTTED_DEAD_BUSH, renderLayer3);
 		hashMap.put(Blocks.POTTED_CACTUS, renderLayer3);
+		hashMap.put(Blocks.POTTED_AZALEA_BUSH, renderLayer3);
+		hashMap.put(Blocks.POTTED_FLOWERING_AZALEA_BUSH, renderLayer3);
 		hashMap.put(Blocks.CARROTS, renderLayer3);
 		hashMap.put(Blocks.POTATOES, renderLayer3);
 		hashMap.put(Blocks.COMPARATOR, renderLayer3);

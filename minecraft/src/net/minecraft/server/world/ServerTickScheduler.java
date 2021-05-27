@@ -53,7 +53,6 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 				i = 65536;
 			}
 
-			ServerChunkManager serverChunkManager = this.world.getChunkManager();
 			Iterator<ScheduledTick<T>> iterator = this.scheduledTickActionsInOrder.iterator();
 			this.world.getProfiler().push("cleaning");
 
@@ -63,7 +62,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 					break;
 				}
 
-				if (serverChunkManager.shouldTickBlock(scheduledTick.pos)) {
+				if (this.world.method_37117(scheduledTick.pos)) {
 					iterator.remove();
 					this.scheduledTickActions.remove(scheduledTick);
 					this.currentTickActions.add(scheduledTick);
@@ -75,12 +74,12 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 
 			ScheduledTick<T> scheduledTickx;
 			while ((scheduledTickx = (ScheduledTick<T>)this.currentTickActions.poll()) != null) {
-				if (serverChunkManager.shouldTickBlock(scheduledTickx.pos)) {
+				if (this.world.method_37117(scheduledTickx.pos)) {
 					try {
 						this.consumedTickActions.add(scheduledTickx);
 						this.tickConsumer.accept(scheduledTickx);
-					} catch (Throwable var8) {
-						CrashReport crashReport = CrashReport.create(var8, "Exception while ticking");
+					} catch (Throwable var7) {
+						CrashReport crashReport = CrashReport.create(var7, "Exception while ticking");
 						CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
 						CrashReportSection.addBlockInfo(crashReportSection, this.world, scheduledTickx.pos, null);
 						throw new CrashException(crashReport);

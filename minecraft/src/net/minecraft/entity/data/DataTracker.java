@@ -222,15 +222,18 @@ public class DataTracker {
 	public void writeUpdatedEntries(List<DataTracker.Entry<?>> list) {
 		this.lock.writeLock().lock();
 
-		for (DataTracker.Entry<?> entry : list) {
-			DataTracker.Entry<?> entry2 = this.entries.get(entry.getData().getId());
-			if (entry2 != null) {
-				this.copyToFrom(entry2, entry);
-				this.trackedEntity.onTrackedDataSet(entry.getData());
+		try {
+			for (DataTracker.Entry<?> entry : list) {
+				DataTracker.Entry<?> entry2 = this.entries.get(entry.getData().getId());
+				if (entry2 != null) {
+					this.copyToFrom(entry2, entry);
+					this.trackedEntity.onTrackedDataSet(entry.getData());
+				}
 			}
+		} finally {
+			this.lock.writeLock().unlock();
 		}
 
-		this.lock.writeLock().unlock();
 		this.dirty = true;
 	}
 

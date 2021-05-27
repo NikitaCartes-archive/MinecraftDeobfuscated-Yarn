@@ -181,4 +181,17 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static boolean isExposedToAir(Function<BlockPos, BlockState> posToState, BlockPos pos) {
 		return testAdjacentStates(posToState, pos, AbstractBlock.AbstractBlockState::isAir);
 	}
+
+	protected void method_37256(StructureWorldAccess structureWorldAccess, BlockPos blockPos) {
+		BlockPos.Mutable mutable = blockPos.mutableCopy();
+
+		for (int i = 0; i < 2; i++) {
+			mutable.move(Direction.UP);
+			if (structureWorldAccess.getBlockState(mutable).isAir()) {
+				return;
+			}
+
+			structureWorldAccess.getChunk(mutable).markBlockForPostProcessing(mutable);
+		}
+	}
 }

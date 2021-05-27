@@ -7,14 +7,18 @@ import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMaps;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.client.util.profiler.SamplingChannel;
 import net.minecraft.util.Util;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,10 +37,11 @@ public class ProfilerSystem implements ReadableProfiler {
 	@Nullable
 	private ProfilerSystem.LocatedInfo currentInfo;
 	private final boolean checkTimeout;
+	private final Set<Pair<String, SamplingChannel>> field_33873 = new ObjectArraySet<>();
 
-	public ProfilerSystem(LongSupplier timeGetter, IntSupplier tickGetter, boolean checkTimeout) {
-		this.startTime = timeGetter.getAsLong();
-		this.timeGetter = timeGetter;
+	public ProfilerSystem(LongSupplier longSupplier, IntSupplier tickGetter, boolean checkTimeout) {
+		this.startTime = longSupplier.getAsLong();
+		this.timeGetter = longSupplier;
 		this.startTick = tickGetter.getAsInt();
 		this.endTickGetter = tickGetter;
 		this.checkTimeout = checkTimeout;
@@ -91,6 +96,11 @@ public class ProfilerSystem implements ReadableProfiler {
 	}
 
 	@Override
+	public void method_37167(SamplingChannel samplingChannel) {
+		this.field_33873.add(Pair.of(this.location, samplingChannel));
+	}
+
+	@Override
 	public void pop() {
 		if (!this.tickStarted) {
 			LOGGER.error("Cannot pop from profiler if profiler tick hasn't started - missing startTick()?");
@@ -104,6 +114,8 @@ public class ProfilerSystem implements ReadableProfiler {
 			ProfilerSystem.LocatedInfo locatedInfo = this.getCurrentInfo();
 			locatedInfo.time += n;
 			locatedInfo.visits++;
+			locatedInfo.field_33874 = Math.max(locatedInfo.field_33874, n);
+			locatedInfo.field_33875 = Math.min(locatedInfo.field_33875, n);
 			if (this.checkTimeout && n > TIMEOUT_NANOSECONDS) {
 				LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.getHumanReadableName(this.location), () -> (double)n / 1000000.0);
 			}
@@ -154,7 +166,14 @@ public class ProfilerSystem implements ReadableProfiler {
 		return (ProfilerSystem.LocatedInfo)this.locationInfos.get(name);
 	}
 
+	@Override
+	public Set<Pair<String, SamplingChannel>> method_37168() {
+		return this.field_33873;
+	}
+
 	public static class LocatedInfo implements ProfileLocationInfo {
+		long field_33874 = Long.MIN_VALUE;
+		long field_33875 = Long.MAX_VALUE;
 		long time;
 		long visits;
 		final Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap<>();
@@ -162,6 +181,11 @@ public class ProfilerSystem implements ReadableProfiler {
 		@Override
 		public long getTotalTime() {
 			return this.time;
+		}
+
+		@Override
+		public long method_37169() {
+			return this.field_33874;
 		}
 
 		@Override

@@ -1,5 +1,6 @@
 package net.minecraft.advancement.criterion;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -89,7 +90,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 			for (int i = 0; i < items.length; i++) {
 				itemPredicates[i] = new ItemPredicate(
 					null,
-					items[i].asItem(),
+					ImmutableSet.of(items[i].asItem()),
 					NumberRange.IntRange.ANY,
 					NumberRange.IntRange.ANY,
 					EnchantmentPredicate.ARRAY_OF_ANY,

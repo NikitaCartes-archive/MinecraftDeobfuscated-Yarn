@@ -84,7 +84,7 @@ public class Slot {
 		return true;
 	}
 
-	public boolean doDrawHoveringEffect() {
+	public boolean isEnabled() {
 		return true;
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -580,21 +581,25 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 	}
 
-	private void addScreenNarrations(NarrationMessageBuilder builder) {
+	protected void addScreenNarrations(NarrationMessageBuilder builder) {
 		builder.put(NarrationPart.TITLE, this.getNarratedTitle());
 		builder.put(NarrationPart.USAGE, SCREEN_USAGE_TEXT);
 		this.addElementNarrations(builder);
 	}
 
 	protected void addElementNarrations(NarrationMessageBuilder builder) {
-		Screen.SelectedElementNarrationData selectedElementNarrationData = findSelectedElementData(this.selectables, this.selected);
+		ImmutableList<Selectable> immutableList = (ImmutableList<Selectable>)this.selectables
+			.stream()
+			.filter(Selectable::method_37303)
+			.collect(ImmutableList.toImmutableList());
+		Screen.SelectedElementNarrationData selectedElementNarrationData = findSelectedElementData(immutableList, this.selected);
 		if (selectedElementNarrationData != null) {
 			if (selectedElementNarrationData.selectType.isFocused()) {
 				this.selected = selectedElementNarrationData.selectable;
 			}
 
-			if (this.selectables.size() > 1) {
-				builder.put(NarrationPart.POSITION, new TranslatableText("narrator.position.screen", selectedElementNarrationData.index + 1, this.selectables.size()));
+			if (immutableList.size() > 1) {
+				builder.put(NarrationPart.POSITION, new TranslatableText("narrator.position.screen", selectedElementNarrationData.index + 1, immutableList.size()));
 				if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
 					builder.put(NarrationPart.USAGE, new TranslatableText("narration.component_list.usage"));
 				}

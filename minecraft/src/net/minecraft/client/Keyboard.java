@@ -1,10 +1,8 @@
 package net.minecraft.client;
 
 import com.google.common.base.MoreObjects;
-import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Locale;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -31,6 +29,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -95,40 +94,29 @@ public class Keyboard {
 		}
 	}
 
-	private void debugWarn(String key, Object... args) {
+	private void method_37273(Formatting formatting, Text text) {
 		this.client
 			.inGameHud
 			.getChatHud()
 			.addMessage(
-				new LiteralText("")
-					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.YELLOW, Formatting.BOLD}))
-					.append(" ")
-					.append(new TranslatableText(key, args))
+				new LiteralText("").append(new TranslatableText("debug.prefix").formatted(new Formatting[]{formatting, Formatting.BOLD})).append(" ").append(text)
 			);
+	}
+
+	private void method_37272(Text text) {
+		this.method_37273(Formatting.YELLOW, text);
+	}
+
+	private void debugWarn(String key, Object... args) {
+		this.method_37272(new TranslatableText(key, args));
 	}
 
 	private void debugError(String key, Object... args) {
-		this.client
-			.inGameHud
-			.getChatHud()
-			.addMessage(
-				new LiteralText("")
-					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.RED, Formatting.BOLD}))
-					.append(" ")
-					.append(new TranslatableText(key, args))
-			);
+		this.method_37273(Formatting.RED, new TranslatableText(key, args));
 	}
 
 	private void method_35697(String key, Object... args) {
-		this.client
-			.inGameHud
-			.getChatHud()
-			.addMessage(
-				new LiteralText("")
-					.append(new TranslatableText("debug.prefix").formatted(new Formatting[]{Formatting.YELLOW, Formatting.BOLD}))
-					.append(" ")
-					.append(MessageFormat.format(key, args))
-			);
+		this.method_37272(new LiteralText(MessageFormat.format(key, args)));
 	}
 
 	private boolean processF3(int key) {
@@ -201,9 +189,10 @@ public class Keyboard {
 
 					return true;
 				case 76:
-					Runnable runnable = () -> this.debugWarn("debug.profiling.start", 10);
-					Consumer<Path> consumer = path -> this.debugWarn("debug.profiling.stop", path.toAbsolutePath());
-					this.client.toggleDebugProfiler(runnable, consumer);
+					if (this.client.toggleDebugProfiler(this::method_37272)) {
+						this.debugWarn("debug.profiling.start", 10);
+					}
+
 					return true;
 				case 78:
 					if (!this.client.player.hasPermissionLevel(2)) {
@@ -478,8 +467,8 @@ public class Keyboard {
 	public void setup(long window) {
 		InputUtil.setKeyboardCallbacks(
 			window,
-			(windowx, key, i, j, modifiers) -> this.client.execute(() -> this.onKey(windowx, key, i, j, modifiers)),
-			(windowx, i, modifiers) -> this.client.execute(() -> this.onChar(windowx, i, modifiers))
+			(windowx, i, modifiers, j, k) -> this.client.execute(() -> this.onKey(windowx, i, modifiers, j, k)),
+			(windowx, key, i) -> this.client.execute(() -> this.onChar(windowx, key, i))
 		);
 	}
 

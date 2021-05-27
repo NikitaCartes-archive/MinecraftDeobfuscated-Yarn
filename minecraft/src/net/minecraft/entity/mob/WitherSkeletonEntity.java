@@ -97,7 +97,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 			return false;
 		} else {
 			if (target instanceof LivingEntity) {
-				((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200));
+				((LivingEntity)target).method_37222(new StatusEffectInstance(StatusEffects.WITHER, 200), this);
 			}
 
 			return true;

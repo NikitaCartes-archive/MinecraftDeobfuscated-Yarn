@@ -221,6 +221,11 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		return this.focused;
 	}
 
+	@Override
+	public boolean method_37303() {
+		return this.visible && this.active;
+	}
+
 	protected void setFocused(boolean focused) {
 		this.focused = focused;
 	}

@@ -88,7 +88,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 		double e = 0.001;
 		super.moveOnRail(pos, state);
 		Vec3d vec3d = this.getVelocity();
-		double f = squaredHorizontalLength(vec3d);
+		double f = vec3d.method_37268();
 		double g = this.pushX * this.pushX + this.pushZ * this.pushZ;
 		if (g > 1.0E-4 && f > 0.001) {
 			double h = Math.sqrt(f);

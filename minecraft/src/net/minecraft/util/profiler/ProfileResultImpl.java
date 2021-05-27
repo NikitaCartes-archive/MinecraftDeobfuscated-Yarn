@@ -32,6 +32,11 @@ public class ProfileResultImpl implements ProfileResult {
 		}
 
 		@Override
+		public long method_37169() {
+			return 0L;
+		}
+
+		@Override
 		public long getVisitCount() {
 			return 0L;
 		}

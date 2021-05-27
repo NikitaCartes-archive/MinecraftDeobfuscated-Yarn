@@ -1,6 +1,9 @@
 package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -24,11 +27,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.Resource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class CreditsScreen extends Screen {
@@ -36,33 +42,59 @@ public class CreditsScreen extends Screen {
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-	private static final String CENTERED_LINE_PREFIX = "[C]";
+	private static final StringVisitable field_33955 = new LiteralText("============").formatted(Formatting.WHITE);
+	private static final String CENTERED_LINE_PREFIX = "           ";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
+	private static final int field_33956 = 274;
+	private static final float field_33957 = 5.0F;
 	private final boolean endCredits;
 	private final Runnable finishAction;
 	private float time;
 	private List<OrderedText> credits;
 	private IntSet centeredLines;
 	private int creditsHeight;
-	private float speed = 0.5F;
+	private float speed;
+	private final float field_33954;
 
 	public CreditsScreen(boolean endCredits, Runnable finishAction) {
 		super(NarratorManager.EMPTY);
 		this.endCredits = endCredits;
 		this.finishAction = finishAction;
 		if (!endCredits) {
-			this.speed = 0.75F;
+			this.field_33954 = 0.75F;
+		} else {
+			this.field_33954 = 0.5F;
 		}
+
+		this.speed = this.field_33954;
 	}
 
 	@Override
 	public void tick() {
 		this.client.getMusicTracker().tick();
 		this.client.getSoundManager().tick(false);
-		float f = (float)(this.creditsHeight + this.height + this.height + 24) / this.speed;
+		float f = (float)(this.creditsHeight + this.height + this.height + 24);
 		if (this.time > f) {
 			this.close();
 		}
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == GLFW.GLFW_KEY_SPACE) {
+			this.speed = this.field_33954 * 5.0F;
+		}
+
+		return super.keyPressed(keyCode, scanCode, modifiers);
+	}
+
+	@Override
+	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == GLFW.GLFW_KEY_SPACE) {
+			this.speed = this.field_33954;
+		}
+
+		return super.keyReleased(keyCode, scanCode, modifiers);
 	}
 
 	@Override
@@ -83,7 +115,6 @@ public class CreditsScreen extends Screen {
 			Resource resource = null;
 
 			try {
-				int i = 274;
 				if (this.endCredits) {
 					resource = this.client.getResourceManager().getResource(new Identifier("texts/end.txt"));
 					InputStream inputStream = resource.getInputStream();
@@ -94,131 +125,154 @@ public class CreditsScreen extends Screen {
 					while ((string = bufferedReader.readLine()) != null) {
 						string = string.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
 
-						int j;
-						while ((j = string.indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
-							String string2 = string.substring(0, j);
-							String string3 = string.substring(j + OBFUSCATION_PLACEHOLDER.length());
+						int i;
+						while ((i = string.indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
+							String string2 = string.substring(0, i);
+							String string3 = string.substring(i + OBFUSCATION_PLACEHOLDER.length());
 							string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
 						}
 
-						this.credits.addAll(this.client.textRenderer.wrapLines(new LiteralText(string), 274));
-						this.credits.add(OrderedText.EMPTY);
+						this.method_37305(string, false);
+						this.method_37306();
 					}
 
 					inputStream.close();
 
-					for (int j = 0; j < 8; j++) {
-						this.credits.add(OrderedText.EMPTY);
+					for (int i = 0; i < 8; i++) {
+						this.method_37306();
 					}
 				}
 
-				InputStream inputStream = this.client.getResourceManager().getResource(new Identifier("texts/credits.txt")).getInputStream();
-				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+				resource = this.client.getResourceManager().getResource(new Identifier("texts/credits.json"));
+				JsonArray jsonArray = JsonHelper.method_37165(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
 
-				String string4;
-				while ((string4 = bufferedReader.readLine()) != null) {
-					string4 = string4.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
-					string4 = string4.replaceAll("\t", "    ");
-					boolean bl;
-					if (string4.startsWith("[C]")) {
-						string4 = string4.substring(3);
-						bl = true;
-					} else {
-						bl = false;
-					}
+				for (JsonElement jsonElement : jsonArray.getAsJsonArray()) {
+					JsonObject jsonObject = jsonElement.getAsJsonObject();
+					String string2 = jsonObject.get("section").getAsString();
+					this.method_37304(field_33955, true);
+					this.method_37306();
+					this.method_37304(new LiteralText(string2).formatted(Formatting.YELLOW), true);
+					this.method_37306();
+					this.method_37304(field_33955, true);
+					this.method_37306();
+					this.method_37306();
+					this.method_37306();
 
-					for (OrderedText orderedText : this.client.textRenderer.wrapLines(new LiteralText(string4), 274)) {
-						if (bl) {
-							this.centeredLines.add(this.credits.size());
+					for (JsonElement jsonElement2 : jsonObject.getAsJsonArray("titles")) {
+						JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
+						String string4 = jsonObject2.get("title").getAsString();
+						JsonArray jsonArray4 = jsonObject2.getAsJsonArray("names");
+						this.method_37304(new LiteralText(string4).formatted(Formatting.GRAY), false);
+						this.method_37306();
+
+						for (JsonElement jsonElement3 : jsonArray4) {
+							String string5 = jsonElement3.getAsString();
+							this.method_37304(new LiteralText("           ").append(new LiteralText(string5)).formatted(Formatting.WHITE), false);
+							this.method_37306();
 						}
 
-						this.credits.add(orderedText);
+						this.method_37306();
+						this.method_37306();
 					}
-
-					this.credits.add(OrderedText.EMPTY);
 				}
 
-				inputStream.close();
 				this.creditsHeight = this.credits.size() * 12;
-			} catch (Exception var13) {
-				LOGGER.error("Couldn't load credits", (Throwable)var13);
+			} catch (Exception var20) {
+				LOGGER.error("Couldn't load credits", (Throwable)var20);
 			} finally {
 				IOUtils.closeQuietly(resource);
 			}
 		}
 	}
 
-	private void renderBackground(int mouseX, int mouseY, float tickDelta) {
+	private void method_37306() {
+		this.credits.add(OrderedText.EMPTY);
+	}
+
+	private void method_37305(String string, boolean bl) {
+		this.method_37304(new LiteralText(string), bl);
+	}
+
+	private void method_37304(StringVisitable stringVisitable, boolean bl) {
+		for (OrderedText orderedText : this.client.textRenderer.wrapLines(stringVisitable, 274)) {
+			if (bl) {
+				this.centeredLines.add(this.credits.size());
+			}
+
+			this.credits.add(orderedText);
+		}
+	}
+
+	private void renderBackground() {
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 		RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 		int i = this.width;
-		float f = -this.time * 0.5F * this.speed;
-		float g = (float)this.height - this.time * 0.5F * this.speed;
+		float f = -this.time * 0.5F;
+		float g = (float)this.height - 0.5F * this.time;
 		float h = 0.015625F;
-		float j = this.time * 0.02F;
-		float k = (float)(this.creditsHeight + this.height + this.height + 24) / this.speed;
-		float l = (k - 20.0F - this.time) * 0.005F;
-		if (l < j) {
-			j = l;
+		float j = this.time / this.field_33954;
+		float k = j * 0.02F;
+		float l = (float)(this.creditsHeight + this.height + this.height + 24) / this.field_33954;
+		float m = (l - 20.0F - j) * 0.005F;
+		if (m < k) {
+			k = m;
 		}
 
-		if (j > 1.0F) {
-			j = 1.0F;
+		if (k > 1.0F) {
+			k = 1.0F;
 		}
 
-		j *= j;
-		j = j * 96.0F / 255.0F;
+		k *= k;
+		k = k * 96.0F / 255.0F;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.height, (double)this.getZOffset()).texture(0.0F, f * 0.015625F).color(j, j, j, 1.0F).next();
-		bufferBuilder.vertex((double)i, (double)this.height, (double)this.getZOffset()).texture((float)i * 0.015625F, f * 0.015625F).color(j, j, j, 1.0F).next();
-		bufferBuilder.vertex((double)i, 0.0, (double)this.getZOffset()).texture((float)i * 0.015625F, g * 0.015625F).color(j, j, j, 1.0F).next();
-		bufferBuilder.vertex(0.0, 0.0, (double)this.getZOffset()).texture(0.0F, g * 0.015625F).color(j, j, j, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)this.height, (double)this.getZOffset()).texture(0.0F, f * 0.015625F).color(k, k, k, 1.0F).next();
+		bufferBuilder.vertex((double)i, (double)this.height, (double)this.getZOffset()).texture((float)i * 0.015625F, f * 0.015625F).color(k, k, k, 1.0F).next();
+		bufferBuilder.vertex((double)i, 0.0, (double)this.getZOffset()).texture((float)i * 0.015625F, g * 0.015625F).color(k, k, k, 1.0F).next();
+		bufferBuilder.vertex(0.0, 0.0, (double)this.getZOffset()).texture(0.0F, g * 0.015625F).color(k, k, k, 1.0F).next();
 		tessellator.draw();
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(mouseX, mouseY, delta);
-		int i = 274;
-		int j = this.width / 2 - 137;
-		int k = this.height + 50;
-		this.time += delta;
-		float f = -this.time * this.speed;
+		this.time = this.time + delta * this.speed;
+		this.renderBackground();
+		int i = this.width / 2 - 137;
+		int j = this.height + 50;
+		float f = -this.time;
 		matrices.push();
 		matrices.translate(0.0, (double)f, 0.0);
 		RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
-		this.drawWithOutline(j, k, (integer, integer2) -> {
+		this.drawWithOutline(i, j, (integer, integer2) -> {
 			this.drawTexture(matrices, integer + 0, integer2, 0, 0, 155, 44);
 			this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
 		});
 		RenderSystem.disableBlend();
 		RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);
-		drawTexture(matrices, j + 88, k + 37, 0.0F, 0.0F, 98, 14, 128, 16);
-		int l = k + 100;
+		drawTexture(matrices, i + 88, j + 37, 0.0F, 0.0F, 98, 14, 128, 16);
+		int k = j + 100;
 
-		for (int m = 0; m < this.credits.size(); m++) {
-			if (m == this.credits.size() - 1) {
-				float g = (float)l + f - (float)(this.height / 2 - 6);
+		for (int l = 0; l < this.credits.size(); l++) {
+			if (l == this.credits.size() - 1) {
+				float g = (float)k + f - (float)(this.height / 2 - 6);
 				if (g < 0.0F) {
 					matrices.translate(0.0, (double)(-g), 0.0);
 				}
 			}
 
-			if ((float)l + f + 12.0F + 8.0F > 0.0F && (float)l + f < (float)this.height) {
-				OrderedText orderedText = (OrderedText)this.credits.get(m);
-				if (this.centeredLines.contains(m)) {
-					this.textRenderer.drawWithShadow(matrices, orderedText, (float)(j + (274 - this.textRenderer.getWidth(orderedText)) / 2), (float)l, 16777215);
+			if ((float)k + f + 12.0F + 8.0F > 0.0F && (float)k + f < (float)this.height) {
+				OrderedText orderedText = (OrderedText)this.credits.get(l);
+				if (this.centeredLines.contains(l)) {
+					this.textRenderer.drawWithShadow(matrices, orderedText, (float)(i + (274 - this.textRenderer.getWidth(orderedText)) / 2), (float)k, 16777215);
 				} else {
-					this.textRenderer.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0F));
-					this.textRenderer.drawWithShadow(matrices, orderedText, (float)j, (float)l, 16777215);
+					this.textRenderer.drawWithShadow(matrices, orderedText, (float)i, (float)k, 16777215);
 				}
 			}
 
-			l += 12;
+			k += 12;
 		}
 
 		matrices.pop();
@@ -226,14 +280,14 @@ public class CreditsScreen extends Screen {
 		RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-		int m = this.width;
-		int n = this.height;
+		int l = this.width;
+		int m = this.height;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)n, (double)this.getZOffset()).texture(0.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)m, (double)n, (double)this.getZOffset()).texture(1.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)m, 0.0, (double)this.getZOffset()).texture(1.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)m, (double)this.getZOffset()).texture(0.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)l, (double)m, (double)this.getZOffset()).texture(1.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)l, 0.0, (double)this.getZOffset()).texture(1.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		bufferBuilder.vertex(0.0, 0.0, (double)this.getZOffset()).texture(0.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		tessellator.draw();
 		RenderSystem.disableBlend();

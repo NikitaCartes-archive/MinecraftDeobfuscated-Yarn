@@ -54,7 +54,7 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 
 			for (Criterion.ConditionsContainer<T> conditionsContainer : set) {
 				T abstractCriterionConditions = conditionsContainer.getConditions();
-				if (abstractCriterionConditions.getPlayerPredicate().test(lootContext) && tester.test(abstractCriterionConditions)) {
+				if (tester.test(abstractCriterionConditions) && abstractCriterionConditions.getPlayerPredicate().test(lootContext)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<T>>newArrayList();
 					}

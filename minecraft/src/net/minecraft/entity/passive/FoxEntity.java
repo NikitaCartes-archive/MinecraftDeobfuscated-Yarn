@@ -1149,7 +1149,7 @@ public class FoxEntity extends AnimalEntity {
 				if (vec3d.y * vec3d.y < 0.03F && FoxEntity.this.getPitch() != 0.0F) {
 					FoxEntity.this.setPitch(MathHelper.lerpAngle(FoxEntity.this.getPitch(), 0.0F, 0.2F));
 				} else {
-					double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
+					double d = vec3d.method_37267();
 					double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 180.0F / (float)Math.PI;
 					FoxEntity.this.setPitch((float)e);
 				}

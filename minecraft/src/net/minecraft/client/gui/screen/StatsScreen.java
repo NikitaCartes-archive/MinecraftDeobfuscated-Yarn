@@ -288,8 +288,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		protected final List<StatType<Item>> itemStatTypes;
 		private final int[] HEADER_ICON_SPRITE_INDICES = new int[]{3, 4, 1, 2, 5, 6};
 		protected int selectedHeaderColumn = -1;
-		protected final List<Item> items;
-		protected final Comparator<Item> comparator = new StatsScreen.ItemStatsListWidget.ItemComparator();
+		protected final Comparator<StatsScreen.ItemStatsListWidget.Entry> comparator = new StatsScreen.ItemStatsListWidget.ItemComparator();
 		@Nullable
 		protected StatType<?> selectedStatType;
 		protected int field_18760;
@@ -331,9 +330,8 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			set.remove(Items.AIR);
-			this.items = Lists.<Item>newArrayList(set);
 
-			for (Item item : this.items) {
+			for (Item item : set) {
 				this.addEntry(new StatsScreen.ItemStatsListWidget.Entry(item));
 			}
 		}
@@ -419,7 +417,7 @@ public class StatsScreen extends Screen implements StatsListener {
 						return;
 					}
 
-					Item item = (Item)this.items.get(this.children().indexOf(entry));
+					Item item = entry.method_37307();
 					this.render(matrices, this.getText(item), mouseX, mouseY);
 				} else {
 					Text text = null;
@@ -466,7 +464,7 @@ public class StatsScreen extends Screen implements StatsListener {
 				this.field_18760 = 0;
 			}
 
-			this.items.sort(this.comparator);
+			this.children().sort(this.comparator);
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -475,6 +473,10 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			Entry(Item item) {
 				this.field_33830 = item;
+			}
+
+			public Item method_37307() {
+				return this.field_33830;
 			}
 
 			@Override
@@ -517,8 +519,10 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Environment(EnvType.CLIENT)
-		class ItemComparator implements Comparator<Item> {
-			public int compare(Item item, Item item2) {
+		class ItemComparator implements Comparator<StatsScreen.ItemStatsListWidget.Entry> {
+			public int compare(StatsScreen.ItemStatsListWidget.Entry entry, StatsScreen.ItemStatsListWidget.Entry entry2) {
+				Item item = entry.method_37307();
+				Item item2 = entry2.method_37307();
 				int i;
 				int j;
 				if (ItemStatsListWidget.this.selectedStatType == null) {

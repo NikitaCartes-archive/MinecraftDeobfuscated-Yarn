@@ -12,8 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletionException;
-import java.util.stream.Collectors;
-import net.minecraft.SharedConstants;
+import net.minecraft.class_6396;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -24,47 +23,15 @@ public class CrashReport {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final String message;
 	private final Throwable cause;
-	private final CrashReportSection systemDetailsSection = new CrashReportSection(this, "System Details");
 	private final List<CrashReportSection> otherSections = Lists.<CrashReportSection>newArrayList();
 	private File file;
 	private boolean hasStackTrace = true;
 	private StackTraceElement[] stackTrace = new StackTraceElement[0];
+	private final class_6396 systemDetailsSection = new class_6396();
 
 	public CrashReport(String message, Throwable cause) {
 		this.message = message;
 		this.cause = cause;
-		this.fillSystemDetails();
-	}
-
-	private void fillSystemDetails() {
-		this.systemDetailsSection.add("Minecraft Version", (CrashCallable<String>)(() -> SharedConstants.getGameVersion().getName()));
-		this.systemDetailsSection.add("Minecraft Version ID", (CrashCallable<String>)(() -> SharedConstants.getGameVersion().getId()));
-		this.systemDetailsSection
-			.add(
-				"Operating System",
-				(CrashCallable<String>)(() -> System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"))
-			);
-		this.systemDetailsSection.add("Java Version", (CrashCallable<String>)(() -> System.getProperty("java.version") + ", " + System.getProperty("java.vendor")));
-		this.systemDetailsSection
-			.add(
-				"Java VM Version",
-				(CrashCallable<String>)(() -> System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor"))
-			);
-		this.systemDetailsSection.add("Memory", (CrashCallable<String>)(() -> {
-			Runtime runtime = Runtime.getRuntime();
-			long l = runtime.maxMemory();
-			long m = runtime.totalMemory();
-			long n = runtime.freeMemory();
-			long o = l / 1024L / 1024L;
-			long p = m / 1024L / 1024L;
-			long q = n / 1024L / 1024L;
-			return n + " bytes (" + q + " MB) / " + m + " bytes (" + p + " MB) up to " + l + " bytes (" + o + " MB)";
-		}));
-		this.systemDetailsSection.add("CPUs", Runtime.getRuntime().availableProcessors());
-		this.systemDetailsSection.add("JVM Flags", (CrashCallable<String>)(() -> {
-			List<String> list = (List<String>)Util.getJVMFlags().collect(Collectors.toList());
-			return String.format("%d total; %s", list.size(), list.stream().collect(Collectors.joining(" ")));
-		}));
 	}
 
 	public String getMessage() {
@@ -104,7 +71,7 @@ public class CrashReport {
 			crashReportBuilder.append("\n\n");
 		}
 
-		this.systemDetailsSection.addStackTrace(crashReportBuilder);
+		this.systemDetailsSection.method_37124(crashReportBuilder);
 	}
 
 	public String getCauseAsString() {
@@ -192,7 +159,7 @@ public class CrashReport {
 		}
 	}
 
-	public CrashReportSection getSystemDetailsSection() {
+	public class_6396 getSystemDetailsSection() {
 		return this.systemDetailsSection;
 	}
 
@@ -201,7 +168,7 @@ public class CrashReport {
 	}
 
 	public CrashReportSection addElement(String name, int ignoredStackTraceCallCount) {
-		CrashReportSection crashReportSection = new CrashReportSection(this, name);
+		CrashReportSection crashReportSection = new CrashReportSection(name);
 		if (this.hasStackTrace) {
 			int i = crashReportSection.initStackTrace(ignoredStackTraceCallCount);
 			StackTraceElement[] stackTraceElements = this.cause.getStackTrace();

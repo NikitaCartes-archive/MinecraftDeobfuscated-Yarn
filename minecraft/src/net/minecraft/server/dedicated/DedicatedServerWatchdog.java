@@ -59,7 +59,7 @@ public class DedicatedServerWatchdog implements Runnable {
 				}
 
 				CrashReport crashReport = new CrashReport("Watching Server", error);
-				this.server.populateCrashReport(crashReport.getSystemDetailsSection());
+				this.server.method_37324(crashReport.getSystemDetailsSection());
 				CrashReportSection crashReportSection = crashReport.addElement("Thread Dump");
 				crashReportSection.add("Threads", stringBuilder);
 				CrashReportSection crashReportSection2 = crashReport.addElement("Performance stats");

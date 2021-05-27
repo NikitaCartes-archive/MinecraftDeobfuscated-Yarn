@@ -240,7 +240,9 @@ public class Schema705 extends IdentifierNormalizingSchema {
 							"CanDestroy",
 							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
 							"CanPlaceOn",
-							DSL.list(TypeReferences.BLOCK_NAME.in(schema))
+							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
+							"Items",
+							DSL.list(TypeReferences.ITEM_STACK.in(schema))
 						)
 					),
 					field_5746,

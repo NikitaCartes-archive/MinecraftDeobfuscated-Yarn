@@ -9,6 +9,9 @@ import net.minecraft.item.CrossbowItem;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Utility class to help posing when a crossbow is involved.
+ */
 @Environment(EnvType.CLIENT)
 public class CrossbowPosing {
 	public static void hold(ModelPart holdingArm, ModelPart otherArm, ModelPart head, boolean rightArmed) {

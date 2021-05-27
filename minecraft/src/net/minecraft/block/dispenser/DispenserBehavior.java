@@ -240,7 +240,7 @@ public interface DispenserBehavior {
 				for (HorseBaseEntity horseBaseEntity : pointer.getWorld()
 					.getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntityx -> horseBaseEntityx.isAlive() && horseBaseEntityx.hasArmorSlot())) {
 					if (horseBaseEntity.isHorseArmor(stack) && !horseBaseEntity.hasArmorInSlot() && horseBaseEntity.isTame()) {
-						horseBaseEntity.getCommandItemSlot(401).set(stack.split(1));
+						horseBaseEntity.getStackReference(401).set(stack.split(1));
 						this.setSuccess(true);
 						return stack;
 					}
@@ -280,7 +280,7 @@ public interface DispenserBehavior {
 						.getEntitiesByClass(
 							AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntityx -> abstractDonkeyEntityx.isAlive() && !abstractDonkeyEntityx.hasChest()
 						)) {
-						if (abstractDonkeyEntity.isTame() && abstractDonkeyEntity.getCommandItemSlot(499).set(stack)) {
+						if (abstractDonkeyEntity.isTame() && abstractDonkeyEntity.getStackReference(499).set(stack)) {
 							stack.decrement(1);
 							this.setSuccess(true);
 							return stack;

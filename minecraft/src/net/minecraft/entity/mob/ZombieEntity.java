@@ -359,7 +359,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
+	protected void playStepSound(BlockPos pos, BlockState blockState) {
 		this.playSound(this.getStepSound(), 0.15F, 1.0F);
 	}
 

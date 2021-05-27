@@ -157,7 +157,7 @@ public class SquidEntity extends WaterCreatureEntity {
 			}
 
 			Vec3d vec3d = this.getVelocity();
-			double d = Math.sqrt(squaredHorizontalLength(vec3d));
+			double d = vec3d.method_37267();
 			this.bodyYaw = this.bodyYaw + (-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI) - this.bodyYaw) * 0.1F;
 			this.setYaw(this.bodyYaw);
 			this.rollAngle = (float)((double)this.rollAngle + Math.PI * (double)this.turningSpeed * 1.5);

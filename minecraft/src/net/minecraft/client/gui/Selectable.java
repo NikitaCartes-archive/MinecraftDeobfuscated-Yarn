@@ -7,6 +7,10 @@ import net.fabricmc.api.Environment;
 public interface Selectable extends Narratable {
 	Selectable.SelectionType getType();
 
+	default boolean method_37303() {
+		return true;
+	}
+
 	@Environment(EnvType.CLIENT)
 	public static enum SelectionType {
 		NONE,

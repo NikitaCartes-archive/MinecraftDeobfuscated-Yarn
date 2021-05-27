@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6413;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.ArgumentTypes;
@@ -125,6 +126,7 @@ public class CommandManager {
 			OpCommand.register(this.dispatcher);
 			PardonCommand.register(this.dispatcher);
 			PardonIpCommand.register(this.dispatcher);
+			class_6413.method_37331(this.dispatcher);
 			SaveAllCommand.register(this.dispatcher);
 			SaveOffCommand.register(this.dispatcher);
 			SaveOnCommand.register(this.dispatcher);

@@ -15,6 +15,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ParrotEntityModel extends SinglePartEntityModel<ParrotEntity> {
+	/**
+	 * The key of the feather model part, whose value is {@value}.
+	 */
 	private static final String FEATHER = "feather";
 	private final ModelPart root;
 	private final ModelPart body;

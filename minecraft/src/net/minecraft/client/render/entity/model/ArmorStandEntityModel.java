@@ -16,6 +16,9 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of an {@linkplain ArmorStandEntity}.
+ */
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	private static final String RIGHT_BODY_STICK = "right_body_stick";

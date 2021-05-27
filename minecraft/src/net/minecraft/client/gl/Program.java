@@ -10,13 +10,16 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Program {
+	private static final Logger field_33940 = LogManager.getLogger();
 	private static final int field_32037 = 32768;
 	private final Program.Type shaderType;
 	private final String name;
-	private final int shaderRef;
+	private int shaderRef;
 
 	protected Program(Program.Type shaderType, int shaderRef, String name) {
 		this.shaderType = shaderType;
@@ -30,9 +33,14 @@ public class Program {
 	}
 
 	public void release() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		GlStateManager.glDeleteShader(this.shaderRef);
-		this.shaderType.getProgramCache().remove(this.name);
+		if (this.shaderRef == -1) {
+			field_33940.warn("Double closing {} program: {}", this.shaderType, this.name);
+		} else {
+			RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+			GlStateManager.glDeleteShader(this.shaderRef);
+			this.shaderRef = -1;
+			this.shaderType.getProgramCache().remove(this.name);
+		}
 	}
 
 	public String getName() {

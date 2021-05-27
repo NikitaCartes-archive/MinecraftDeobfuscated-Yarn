@@ -734,8 +734,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public void setThunderGradient(float thunderGradient) {
-		this.thunderGradientPrev = thunderGradient;
-		this.thunderGradient = thunderGradient;
+		float f = MathHelper.clamp(thunderGradient, 0.0F, 1.0F);
+		this.thunderGradientPrev = f;
+		this.thunderGradient = f;
 	}
 
 	public float getRainGradient(float delta) {
@@ -743,8 +744,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public void setRainGradient(float rainGradient) {
-		this.rainGradientPrev = rainGradient;
-		this.rainGradient = rainGradient;
+		float f = MathHelper.clamp(rainGradient, 0.0F, 1.0F);
+		this.rainGradientPrev = f;
+		this.rainGradient = f;
 	}
 
 	public boolean isThundering() {

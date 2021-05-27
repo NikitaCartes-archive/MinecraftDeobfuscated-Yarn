@@ -1287,9 +1287,9 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerSmallDripleaf() {
+		this.excludeFromSimpleItemModelGeneration(Blocks.SMALL_DRIPLEAF);
 		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SMALL_DRIPLEAF, "_top");
 		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.SMALL_DRIPLEAF, "_bottom");
-		this.registerParentedItemModel(Blocks.SMALL_DRIPLEAF, identifier);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.SMALL_DRIPLEAF)
@@ -1731,6 +1731,11 @@ public class BlockStateModelGenerator {
 
 	private void registerAzalea(Block block) {
 		Identifier identifier = Models.TEMPLATE_AZALEA.upload(block, Texture.sideAndTop(block), this.modelCollector);
+		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
+	}
+
+	private void method_37317(Block block) {
+		Identifier identifier = Models.TEMPLATE_POTTED_AZALEA_BUSH.upload(block, Texture.sideAndTop(block), this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
 
@@ -3469,6 +3474,8 @@ public class BlockStateModelGenerator {
 		this.registerSimpleState(Blocks.SPORE_BLOSSOM);
 		this.registerAzalea(Blocks.AZALEA);
 		this.registerAzalea(Blocks.FLOWERING_AZALEA);
+		this.method_37317(Blocks.POTTED_AZALEA_BUSH);
+		this.method_37317(Blocks.POTTED_FLOWERING_AZALEA_BUSH);
 		this.registerCaveVines();
 		this.registerCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
 		this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
@@ -4029,21 +4036,28 @@ public class BlockStateModelGenerator {
 	private void registerCandle(Block candle, Block cake) {
 		this.registerItemModel(candle.asItem());
 		Texture texture = Texture.all(Texture.getId(candle));
+		Texture texture2 = Texture.all(Texture.getSubId(candle, "_lit"));
+		Identifier identifier = Models.TEMPLATE_CANDLE.upload(candle, "_one_candle", texture, this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_TWO_CANDLES.upload(candle, "_two_candles", texture, this.modelCollector);
+		Identifier identifier3 = Models.TEMPLATE_THREE_CANDLES.upload(candle, "_three_candles", texture, this.modelCollector);
+		Identifier identifier4 = Models.TEMPLATE_FOUR_CANDLES.upload(candle, "_four_candles", texture, this.modelCollector);
+		Identifier identifier5 = Models.TEMPLATE_CANDLE.upload(candle, "_one_candle_lit", texture2, this.modelCollector);
+		Identifier identifier6 = Models.TEMPLATE_TWO_CANDLES.upload(candle, "_two_candles_lit", texture2, this.modelCollector);
+		Identifier identifier7 = Models.TEMPLATE_THREE_CANDLES.upload(candle, "_three_candles_lit", texture2, this.modelCollector);
+		Identifier identifier8 = Models.TEMPLATE_FOUR_CANDLES.upload(candle, "_four_candles_lit", texture2, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(candle)
 					.coordinate(
-						BlockStateVariantMap.create(Properties.CANDLES)
-							.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_CANDLE.upload(candle, "_one_candle", texture, this.modelCollector)))
-							.register(
-								2, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_TWO_CANDLES.upload(candle, "_two_candles", texture, this.modelCollector))
-							)
-							.register(
-								3, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_THREE_CANDLES.upload(candle, "_three_candles", texture, this.modelCollector))
-							)
-							.register(
-								4, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_FOUR_CANDLES.upload(candle, "_four_candles", texture, this.modelCollector))
-							)
+						BlockStateVariantMap.create(Properties.CANDLES, Properties.LIT)
+							.register(1, false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
+							.register(2, false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier2))
+							.register(3, false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier3))
+							.register(4, false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier4))
+							.register(1, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier5))
+							.register(2, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier6))
+							.register(3, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier7))
+							.register(4, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier8))
 					)
 			);
 		this.blockStateCollector

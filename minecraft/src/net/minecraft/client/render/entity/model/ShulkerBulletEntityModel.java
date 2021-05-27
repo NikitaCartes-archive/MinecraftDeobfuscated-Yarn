@@ -10,8 +10,26 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.Entity;
 
+/**
+ * Represents the model of shulker-bullet-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value #MAIN}</td><td>{@linkplain #root Root part}</td><td>{@link #bullet}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class ShulkerBulletEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	/**
+	 * The key of the main model part, whose value is {@value}.
+	 */
 	private static final String MAIN = "main";
 	private final ModelPart root;
 	private final ModelPart bullet;

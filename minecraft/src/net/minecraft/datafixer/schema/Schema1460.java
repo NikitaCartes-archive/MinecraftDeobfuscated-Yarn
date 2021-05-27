@@ -301,7 +301,9 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 							"CanDestroy",
 							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
 							"CanPlaceOn",
-							DSL.list(TypeReferences.BLOCK_NAME.in(schema))
+							DSL.list(TypeReferences.BLOCK_NAME.in(schema)),
+							"Items",
+							DSL.list(TypeReferences.ITEM_STACK.in(schema))
 						)
 					),
 					Schema705.field_5746,

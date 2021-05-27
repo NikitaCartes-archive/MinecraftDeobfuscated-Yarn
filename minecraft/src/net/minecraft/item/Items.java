@@ -165,8 +165,6 @@ public class Items {
 	public static final Item SANDSTONE = register(Blocks.SANDSTONE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHISELED_SANDSTONE = register(Blocks.CHISELED_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CUT_SANDSTONE = register(Blocks.CUT_SANDSTONE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item POWERED_RAIL = register(Blocks.POWERED_RAIL, ItemGroup.TRANSPORTATION);
-	public static final Item DETECTOR_RAIL = register(Blocks.DETECTOR_RAIL, ItemGroup.TRANSPORTATION);
 	public static final Item COBWEB = register(Blocks.COBWEB, ItemGroup.DECORATIONS);
 	public static final Item GRASS = register(Blocks.GRASS, ItemGroup.DECORATIONS);
 	public static final Item FERN = register(Blocks.FERN, ItemGroup.DECORATIONS);
@@ -268,7 +266,6 @@ public class Items {
 	public static final Item FARMLAND = register(Blocks.FARMLAND, ItemGroup.DECORATIONS);
 	public static final Item FURNACE = register(Blocks.FURNACE, ItemGroup.DECORATIONS);
 	public static final Item LADDER = register(Blocks.LADDER, ItemGroup.DECORATIONS);
-	public static final Item RAIL = register(Blocks.RAIL, ItemGroup.TRANSPORTATION);
 	public static final Item COBBLESTONE_STAIRS = register(Blocks.COBBLESTONE_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SNOW = register(Blocks.SNOW, ItemGroup.DECORATIONS);
 	public static final Item ICE = register(Blocks.ICE, ItemGroup.BUILDING_BLOCKS);
@@ -375,7 +372,6 @@ public class Items {
 	public static final Item QUARTZ_BRICKS = register(Blocks.QUARTZ_BRICKS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item QUARTZ_PILLAR = register(Blocks.QUARTZ_PILLAR, ItemGroup.BUILDING_BLOCKS);
 	public static final Item QUARTZ_STAIRS = register(Blocks.QUARTZ_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item ACTIVATOR_RAIL = register(Blocks.ACTIVATOR_RAIL, ItemGroup.TRANSPORTATION);
 	public static final Item WHITE_TERRACOTTA = register(Blocks.WHITE_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
 	public static final Item ORANGE_TERRACOTTA = register(Blocks.ORANGE_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
 	public static final Item MAGENTA_TERRACOTTA = register(Blocks.MAGENTA_TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
@@ -707,6 +703,51 @@ public class Items {
 	public static final Item DARK_OAK_FENCE_GATE = register(Blocks.DARK_OAK_FENCE_GATE, ItemGroup.REDSTONE);
 	public static final Item CRIMSON_FENCE_GATE = register(Blocks.CRIMSON_FENCE_GATE, ItemGroup.REDSTONE);
 	public static final Item WARPED_FENCE_GATE = register(Blocks.WARPED_FENCE_GATE, ItemGroup.REDSTONE);
+	public static final Item POWERED_RAIL = register(Blocks.POWERED_RAIL, ItemGroup.TRANSPORTATION);
+	public static final Item DETECTOR_RAIL = register(Blocks.DETECTOR_RAIL, ItemGroup.TRANSPORTATION);
+	public static final Item RAIL = register(Blocks.RAIL, ItemGroup.TRANSPORTATION);
+	public static final Item ACTIVATOR_RAIL = register(Blocks.ACTIVATOR_RAIL, ItemGroup.TRANSPORTATION);
+	public static final Item SADDLE = register("saddle", new SaddleItem(new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION)));
+	public static final Item MINECART = register(
+		"minecart", new MinecartItem(AbstractMinecartEntity.Type.RIDEABLE, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
+	public static final Item CHEST_MINECART = register(
+		"chest_minecart", new MinecartItem(AbstractMinecartEntity.Type.CHEST, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
+	public static final Item FURNACE_MINECART = register(
+		"furnace_minecart", new MinecartItem(AbstractMinecartEntity.Type.FURNACE, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
+	public static final Item TNT_MINECART = register(
+		"tnt_minecart", new MinecartItem(AbstractMinecartEntity.Type.TNT, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
+	public static final Item HOPPER_MINECART = register(
+		"hopper_minecart", new MinecartItem(AbstractMinecartEntity.Type.HOPPER, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
+	public static final Item CARROT_ON_A_STICK = register(
+		"carrot_on_a_stick", new OnAStickItem<>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.PIG, 7)
+	);
+	public static final Item WARPED_FUNGUS_ON_A_STICK = register(
+		"warped_fungus_on_a_stick", new OnAStickItem<>(new Item.Settings().maxDamage(100).group(ItemGroup.TRANSPORTATION), EntityType.STRIDER, 1)
+	);
+	public static final Item ELYTRA = register(
+		"elytra", new ElytraItem(new Item.Settings().maxDamage(432).group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON))
+	);
+	public static final Item OAK_BOAT = register("oak_boat", new BoatItem(BoatEntity.Type.OAK, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION)));
+	public static final Item SPRUCE_BOAT = register(
+		"spruce_boat", new BoatItem(BoatEntity.Type.SPRUCE, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
+	public static final Item BIRCH_BOAT = register(
+		"birch_boat", new BoatItem(BoatEntity.Type.BIRCH, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
+	public static final Item JUNGLE_BOAT = register(
+		"jungle_boat", new BoatItem(BoatEntity.Type.JUNGLE, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
+	public static final Item ACACIA_BOAT = register(
+		"acacia_boat", new BoatItem(BoatEntity.Type.ACACIA, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
+	public static final Item DARK_OAK_BOAT = register(
+		"dark_oak_boat", new BoatItem(BoatEntity.Type.DARK_OAK, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	);
 	public static final Item STRUCTURE_BLOCK = register(new CommandBlockItem(Blocks.STRUCTURE_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item JIGSAW = register(new CommandBlockItem(Blocks.JIGSAW, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item TURTLE_HELMET = register(
@@ -903,12 +944,11 @@ public class Items {
 	public static final Item LAVA_BUCKET = register(
 		"lava_bucket", new BucketItem(Fluids.LAVA, new Item.Settings().recipeRemainder(BUCKET).maxCount(1).group(ItemGroup.MISC))
 	);
-	public static final Item MINECART = register(
-		"minecart", new MinecartItem(AbstractMinecartEntity.Type.RIDEABLE, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
+	public static final Item POWDER_SNOW_BUCKET = register(
+		"powder_snow_bucket",
+		new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
-	public static final Item SADDLE = register("saddle", new SaddleItem(new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION)));
 	public static final Item SNOWBALL = register("snowball", new SnowballItem(new Item.Settings().maxCount(16).group(ItemGroup.MISC)));
-	public static final Item OAK_BOAT = register("oak_boat", new BoatItem(BoatEntity.Type.OAK, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION)));
 	public static final Item LEATHER = register("leather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item MILK_BUCKET = register(
 		"milk_bucket", new MilkBucketItem(new Item.Settings().recipeRemainder(BUCKET).maxCount(1).group(ItemGroup.MISC))
@@ -938,12 +978,6 @@ public class Items {
 	public static final Item PAPER = register("paper", new Item(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item BOOK = register("book", new BookItem(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item SLIME_BALL = register("slime_ball", new Item(new Item.Settings().group(ItemGroup.MISC)));
-	public static final Item CHEST_MINECART = register(
-		"chest_minecart", new MinecartItem(AbstractMinecartEntity.Type.CHEST, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
-	);
-	public static final Item FURNACE_MINECART = register(
-		"furnace_minecart", new MinecartItem(AbstractMinecartEntity.Type.FURNACE, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
-	);
 	public static final Item EGG = register("egg", new EggItem(new Item.Settings().maxCount(16).group(ItemGroup.MATERIALS)));
 	public static final Item COMPASS = register("compass", new CompassItem(new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item BUNDLE = register(
@@ -1269,24 +1303,12 @@ public class Items {
 	public static final Item DRAGON_HEAD = register(
 		new WallStandingBlockItem(Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD, new Item.Settings().group(ItemGroup.DECORATIONS).rarity(Rarity.UNCOMMON))
 	);
-	public static final Item CARROT_ON_A_STICK = register(
-		"carrot_on_a_stick", new OnAStickItem<>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.PIG, 7)
-	);
-	public static final Item WARPED_FUNGUS_ON_A_STICK = register(
-		"warped_fungus_on_a_stick", new OnAStickItem<>(new Item.Settings().maxDamage(100).group(ItemGroup.TRANSPORTATION), EntityType.STRIDER, 1)
-	);
 	public static final Item NETHER_STAR = register("nether_star", new NetherStarItem(new Item.Settings().group(ItemGroup.MATERIALS).rarity(Rarity.UNCOMMON)));
 	public static final Item PUMPKIN_PIE = register("pumpkin_pie", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.PUMPKIN_PIE)));
 	public static final Item FIREWORK_ROCKET = register("firework_rocket", new FireworkItem(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item FIREWORK_STAR = register("firework_star", new FireworkChargeItem(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item ENCHANTED_BOOK = register("enchanted_book", new EnchantedBookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)));
 	public static final Item NETHER_BRICK = register("nether_brick", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item TNT_MINECART = register(
-		"tnt_minecart", new MinecartItem(AbstractMinecartEntity.Type.TNT, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
-	);
-	public static final Item HOPPER_MINECART = register(
-		"hopper_minecart", new MinecartItem(AbstractMinecartEntity.Type.HOPPER, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
-	);
 	public static final Item PRISMARINE_SHARD = register("prismarine_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item PRISMARINE_CRYSTALS = register("prismarine_crystals", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item RABBIT = register("rabbit", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.RABBIT)));
@@ -1380,24 +1402,6 @@ public class Items {
 	public static final Item TIPPED_ARROW = register("tipped_arrow", new TippedArrowItem(new Item.Settings().group(ItemGroup.COMBAT)));
 	public static final Item LINGERING_POTION = register("lingering_potion", new LingeringPotionItem(new Item.Settings().maxCount(1).group(ItemGroup.BREWING)));
 	public static final Item SHIELD = register("shield", new ShieldItem(new Item.Settings().maxDamage(336).group(ItemGroup.COMBAT)));
-	public static final Item ELYTRA = register(
-		"elytra", new ElytraItem(new Item.Settings().maxDamage(432).group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON))
-	);
-	public static final Item SPRUCE_BOAT = register(
-		"spruce_boat", new BoatItem(BoatEntity.Type.SPRUCE, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
-	);
-	public static final Item BIRCH_BOAT = register(
-		"birch_boat", new BoatItem(BoatEntity.Type.BIRCH, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
-	);
-	public static final Item JUNGLE_BOAT = register(
-		"jungle_boat", new BoatItem(BoatEntity.Type.JUNGLE, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
-	);
-	public static final Item ACACIA_BOAT = register(
-		"acacia_boat", new BoatItem(BoatEntity.Type.ACACIA, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
-	);
-	public static final Item DARK_OAK_BOAT = register(
-		"dark_oak_boat", new BoatItem(BoatEntity.Type.DARK_OAK, new Item.Settings().maxCount(1).group(ItemGroup.TRANSPORTATION))
-	);
 	public static final Item TOTEM_OF_UNDYING = register(
 		"totem_of_undying", new Item(new Item.Settings().maxCount(1).group(ItemGroup.COMBAT).rarity(Rarity.UNCOMMON))
 	);
@@ -1514,31 +1518,27 @@ public class Items {
 	public static final Item POLISHED_BLACKSTONE_BRICK_STAIRS = register(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CRACKED_POLISHED_BLACKSTONE_BRICKS = register(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item RESPAWN_ANCHOR = register(Blocks.RESPAWN_ANCHOR, ItemGroup.DECORATIONS);
-	public static final Item CANDLE = register(Blocks.CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item WHITE_CANDLE = register(Blocks.WHITE_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item ORANGE_CANDLE = register(Blocks.ORANGE_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item MAGENTA_CANDLE = register(Blocks.MAGENTA_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item LIGHT_BLUE_CANDLE = register(Blocks.LIGHT_BLUE_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item YELLOW_CANDLE = register(Blocks.YELLOW_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item LIME_CANDLE = register(Blocks.LIME_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item PINK_CANDLE = register(Blocks.PINK_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item GRAY_CANDLE = register(Blocks.GRAY_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item LIGHT_GRAY_CANDLE = register(Blocks.LIGHT_GRAY_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item CYAN_CANDLE = register(Blocks.CYAN_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item PURPLE_CANDLE = register(Blocks.PURPLE_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item BLUE_CANDLE = register(Blocks.BLUE_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item BROWN_CANDLE = register(Blocks.BROWN_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item GREEN_CANDLE = register(Blocks.GREEN_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item RED_CANDLE = register(Blocks.RED_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
-	public static final Item BLACK_CANDLE = register(Blocks.BLACK_CANDLE, createEmptyOptional(ItemGroup.DECORATIONS));
+	public static final Item CANDLE = register(Blocks.CANDLE, ItemGroup.DECORATIONS);
+	public static final Item WHITE_CANDLE = register(Blocks.WHITE_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item ORANGE_CANDLE = register(Blocks.ORANGE_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item MAGENTA_CANDLE = register(Blocks.MAGENTA_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item LIGHT_BLUE_CANDLE = register(Blocks.LIGHT_BLUE_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item YELLOW_CANDLE = register(Blocks.YELLOW_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item LIME_CANDLE = register(Blocks.LIME_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item PINK_CANDLE = register(Blocks.PINK_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item GRAY_CANDLE = register(Blocks.GRAY_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item LIGHT_GRAY_CANDLE = register(Blocks.LIGHT_GRAY_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item CYAN_CANDLE = register(Blocks.CYAN_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item PURPLE_CANDLE = register(Blocks.PURPLE_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item BLUE_CANDLE = register(Blocks.BLUE_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item BROWN_CANDLE = register(Blocks.BROWN_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item GREEN_CANDLE = register(Blocks.GREEN_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item RED_CANDLE = register(Blocks.RED_CANDLE, ItemGroup.DECORATIONS);
+	public static final Item BLACK_CANDLE = register(Blocks.BLACK_CANDLE, ItemGroup.DECORATIONS);
 	public static final Item SMALL_AMETHYST_BUD = register(Blocks.SMALL_AMETHYST_BUD, ItemGroup.DECORATIONS);
 	public static final Item MEDIUM_AMETHYST_BUD = register(Blocks.MEDIUM_AMETHYST_BUD, ItemGroup.DECORATIONS);
 	public static final Item LARGE_AMETHYST_BUD = register(Blocks.LARGE_AMETHYST_BUD, ItemGroup.DECORATIONS);
 	public static final Item AMETHYST_CLUSTER = register(Blocks.AMETHYST_CLUSTER, ItemGroup.DECORATIONS);
-	public static final Item POWDER_SNOW_BUCKET = register(
-		"powder_snow_bucket",
-		new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
-	);
 	public static final Item POINTED_DRIPSTONE = register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
 
 	private static <T> Optional<T> createEmptyOptional(T of) {

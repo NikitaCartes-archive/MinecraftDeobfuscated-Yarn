@@ -219,9 +219,9 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public void close(PlayerEntity player) {
-		super.close(player);
+	public void close(PlayerEntity playerEntity) {
+		super.close(playerEntity);
 		this.output.removeStack(1);
-		this.context.run((world, blockPos) -> this.dropInventory(player, this.input));
+		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.input));
 	}
 }

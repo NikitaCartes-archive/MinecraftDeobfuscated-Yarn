@@ -21,7 +21,6 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -205,8 +204,8 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 
 			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
 			Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
-			double d = Entity.squaredHorizontalLength(vec3d2);
-			double e = Entity.squaredHorizontalLength(vec3d);
+			double d = vec3d2.method_37268();
+			double e = vec3d.method_37268();
 			if (d > 0.0 && e > 0.0) {
 				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
 				double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;

@@ -1,9 +1,12 @@
 package net.minecraft.predicate;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -22,13 +25,13 @@ public class BlockPredicate {
 	@Nullable
 	private final Tag<Block> tag;
 	@Nullable
-	private final Block block;
+	private final Set<Block> block;
 	private final StatePredicate state;
 	private final NbtPredicate nbt;
 
-	public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Block block, StatePredicate state, NbtPredicate nbt) {
+	public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Set<Block> set, StatePredicate state, NbtPredicate nbt) {
 		this.tag = tag;
-		this.block = block;
+		this.block = set;
 		this.state = state;
 		this.nbt = nbt;
 	}
@@ -42,7 +45,7 @@ public class BlockPredicate {
 			BlockState blockState = world.getBlockState(pos);
 			if (this.tag != null && !blockState.isIn(this.tag)) {
 				return false;
-			} else if (this.block != null && !blockState.isOf(this.block)) {
+			} else if (this.block != null && !this.block.contains(blockState.getBlock())) {
 				return false;
 			} else if (!this.state.test(blockState)) {
 				return false;
@@ -63,20 +66,28 @@ public class BlockPredicate {
 		if (json != null && !json.isJsonNull()) {
 			JsonObject jsonObject = JsonHelper.asObject(json, "block");
 			NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
-			Block block = null;
-			if (jsonObject.has("block")) {
-				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-				block = Registry.BLOCK.get(identifier);
+			Set<Block> set = null;
+			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "blocks", null);
+			if (jsonArray != null) {
+				ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
+
+				for (JsonElement jsonElement : jsonArray) {
+					Identifier identifier = new Identifier(JsonHelper.asString(jsonElement, "block"));
+					builder.add((Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block id '" + identifier + "'")));
+				}
+
+				set = builder.build();
 			}
 
 			Tag<Block> tag = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tag = ServerTagManagerHolder.getTagManager().getTag(Registry.BLOCK_KEY, identifier2, id -> new JsonSyntaxException("Unknown block tag '" + id + "'"));
+				tag = ServerTagManagerHolder.getTagManager()
+					.getTag(Registry.BLOCK_KEY, identifier2, identifierx -> new JsonSyntaxException("Unknown block tag '" + identifierx + "'"));
 			}
 
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
-			return new BlockPredicate(tag, block, statePredicate, nbtPredicate);
+			return new BlockPredicate(tag, set, statePredicate, nbtPredicate);
 		} else {
 			return ANY;
 		}
@@ -88,7 +99,13 @@ public class BlockPredicate {
 		} else {
 			JsonObject jsonObject = new JsonObject();
 			if (this.block != null) {
-				jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
+				JsonArray jsonArray = new JsonArray();
+
+				for (Block block : this.block) {
+					jsonArray.add(Registry.BLOCK.getId(block).toString());
+				}
+
+				jsonObject.add("blocks", jsonArray);
 			}
 
 			if (this.tag != null) {
@@ -105,7 +122,7 @@ public class BlockPredicate {
 
 	public static class Builder {
 		@Nullable
-		private Block block;
+		private Set<Block> block;
 		@Nullable
 		private Tag<Block> tag;
 		private StatePredicate state = StatePredicate.ANY;
@@ -118,8 +135,13 @@ public class BlockPredicate {
 			return new BlockPredicate.Builder();
 		}
 
-		public BlockPredicate.Builder block(Block block) {
-			this.block = block;
+		public BlockPredicate.Builder block(Block... blocks) {
+			this.block = ImmutableSet.copyOf(blocks);
+			return this;
+		}
+
+		public BlockPredicate.Builder method_37214(Iterable<Block> iterable) {
+			this.block = ImmutableSet.copyOf(iterable);
 			return this;
 		}
 

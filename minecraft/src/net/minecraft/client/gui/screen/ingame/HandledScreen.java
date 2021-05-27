@@ -40,7 +40,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	protected int playerInventoryTitleX;
 	protected int playerInventoryTitleY;
 	protected final T handler;
-	protected final Text displayName;
+	protected final Text playerInventoryTitle;
 	@Nullable
 	protected Slot focusedSlot;
 	@Nullable
@@ -74,7 +74,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	public HandledScreen(T handler, PlayerInventory inventory, Text title) {
 		super(title);
 		this.handler = handler;
-		this.displayName = inventory.getDisplayName();
+		this.playerInventoryTitle = inventory.getDisplayName();
 		this.cancelNextRelease = true;
 		this.titleX = 8;
 		this.titleY = 6;
@@ -106,12 +106,12 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 		for (int k = 0; k < this.handler.slots.size(); k++) {
 			Slot slot = this.handler.slots.get(k);
-			if (slot.doDrawHoveringEffect()) {
+			if (slot.isEnabled()) {
 				RenderSystem.setShader(GameRenderer::getPositionTexShader);
 				this.drawSlot(matrices, slot);
 			}
 
-			if (this.isPointOverSlot(slot, (double)mouseX, (double)mouseY) && slot.doDrawHoveringEffect()) {
+			if (this.isPointOverSlot(slot, (double)mouseX, (double)mouseY) && slot.isEnabled()) {
 				this.focusedSlot = slot;
 				int l = slot.x;
 				int m = slot.y;
@@ -186,7 +186,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 4210752);
-		this.textRenderer.draw(matrices, this.displayName, (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 4210752);
+		this.textRenderer.draw(matrices, this.playerInventoryTitle, (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 4210752);
 	}
 
 	protected abstract void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY);
@@ -224,7 +224,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 		this.setZOffset(100);
 		this.itemRenderer.zOffset = 100.0F;
-		if (itemStack.isEmpty() && slot.doDrawHoveringEffect()) {
+		if (itemStack.isEmpty() && slot.isEnabled()) {
 			Pair<Identifier, Identifier> pair = slot.getBackgroundSprite();
 			if (pair != null) {
 				Sprite sprite = (Sprite)this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
@@ -276,7 +276,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	private Slot getSlotAt(double x, double y) {
 		for (int i = 0; i < this.handler.slots.size(); i++) {
 			Slot slot = this.handler.slots.get(i);
-			if (this.isPointOverSlot(slot, x, y) && slot.doDrawHoveringEffect()) {
+			if (this.isPointOverSlot(slot, x, y) && slot.isEnabled()) {
 				return slot;
 			}
 		}

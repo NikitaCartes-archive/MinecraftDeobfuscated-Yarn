@@ -9,6 +9,9 @@ import net.minecraft.structure.SnowyVillageData;
 import net.minecraft.structure.TaigaVillageData;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.gen.ProbabilityConfig;
+import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class ConfiguredStructureFeatures {
 	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> PILLAGER_OUTPOST = register(
@@ -56,8 +59,8 @@ public class ConfiguredStructureFeatures {
 	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> FORTRESS = register(
 		"fortress", StructureFeature.FORTRESS.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> NETHER_FOSSIL = register(
-		"nether_fossil", StructureFeature.NETHER_FOSSIL.configure(DefaultFeatureConfig.INSTANCE)
+	public static final ConfiguredStructureFeature<RangeDecoratorConfig, ? extends StructureFeature<RangeDecoratorConfig>> NETHER_FOSSIL = register(
+		"nether_fossil", StructureFeature.NETHER_FOSSIL.configure(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.fixed(32), YOffset.belowTop(2))))
 	);
 	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> END_CITY = register(
 		"end_city", StructureFeature.END_CITY.configure(DefaultFeatureConfig.INSTANCE)

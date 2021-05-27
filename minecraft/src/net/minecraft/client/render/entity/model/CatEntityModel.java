@@ -6,6 +6,11 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelUtil;
 import net.minecraft.entity.passive.CatEntity;
 
+/**
+ * Represents the model of a {@linkplain CatEntity}.
+ * 
+ * <p>Inherits the {@link OcelotEntityModel}.
+ */
 @Environment(EnvType.CLIENT)
 public class CatEntityModel<T extends CatEntity> extends OcelotEntityModel<T> {
 	private float sleepAnimation;

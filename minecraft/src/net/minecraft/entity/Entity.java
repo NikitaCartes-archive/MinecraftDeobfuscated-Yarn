@@ -38,7 +38,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -491,10 +491,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setOnFireFromLava() {
 		if (!this.isFireImmune()) {
-			if (!this.isWet() && !this.inPowderSnow) {
-				this.setOnFireFor(15);
-			}
-
+			this.setOnFireFor(15);
 			if (this.damage(DamageSource.LAVA, 4.0F)) {
 				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 			}
@@ -582,7 +579,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			this.fall(vec3d.y, this.onGround, blockState, blockPos);
-			if (!this.isRemoved()) {
+			if (this.isRemoved()) {
+				this.world.getProfiler().pop();
+			} else {
 				Vec3d vec3d2 = this.getVelocity();
 				if (movement.x != vec3d.x) {
 					this.setVelocity(0.0, vec3d2.y, vec3d2.z);
@@ -611,8 +610,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 						e = 0.0;
 					}
 
-					this.horizontalSpeed = this.horizontalSpeed + MathHelper.sqrt(squaredHorizontalLength(vec3d)) * 0.6F;
-					this.distanceTraveled = this.distanceTraveled + MathHelper.sqrt(d * d + e * e + f * f) * 0.6F;
+					this.horizontalSpeed = this.horizontalSpeed + (float)vec3d.method_37267() * 0.6F;
+					this.distanceTraveled = this.distanceTraveled + (float)Math.sqrt(d * d + e * e + f * f) * 0.6F;
 					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
 						this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
 						if (this.isTouchingWater()) {
@@ -620,11 +619,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 								Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
 								float g = entity == this ? 0.35F : 0.4F;
 								Vec3d vec3d3 = entity.getVelocity();
-								float h = MathHelper.sqrt(vec3d3.x * vec3d3.x * 0.2F + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * 0.2F) * g;
-								if (h > 1.0F) {
-									h = 1.0F;
-								}
-
+								float h = Math.min(1.0F, (float)Math.sqrt(vec3d3.x * vec3d3.x * 0.2F + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * 0.2F) * g);
 								this.playSwimSound(h);
 							}
 
@@ -633,6 +628,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 							}
 						} else {
 							if (moveEffect.playsSounds()) {
+								this.method_37215(blockState);
 								this.playStepSound(blockPos, blockState);
 							}
 
@@ -648,16 +644,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.tryCheckBlockCollision();
 				float i = this.getVelocityMultiplier();
 				this.setVelocity(this.getVelocity().multiply((double)i, 1.0, (double)i));
-				if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))
-					&& this.fireTicks <= 0) {
-					this.setFireTicks(-this.getBurningDuration());
-				}
-
-				if (this.isOnFire() && (this.isWet() || this.inPowderSnow)) {
-					if (this.wasOnFire) {
-						this.playExtinguishSound();
+				if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))) {
+					if (this.fireTicks <= 0) {
+						this.setFireTicks(-this.getBurningDuration());
 					}
 
+					if (this.wasOnFire && (this.inPowderSnow || this.isWet())) {
+						this.playExtinguishSound();
+					}
+				}
+
+				if (this.isOnFire() && (this.inPowderSnow || this.isWet())) {
 					this.setFireTicks(-this.getBurningDuration());
 				}
 
@@ -697,7 +694,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	protected BlockPos getLandingPos() {
+	public BlockPos getLandingPos() {
 		int i = MathHelper.floor(this.pos.x);
 		int j = MathHelper.floor(this.pos.y - 0.2F);
 		int k = MathHelper.floor(this.pos.z);
@@ -792,12 +789,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			if (vec3d3.y < (double)this.stepHeight) {
 				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, shapeContext, reusableStream)
 					.add(vec3d3);
-				if (squaredHorizontalLength(vec3d4) > squaredHorizontalLength(vec3d2)) {
+				if (vec3d4.method_37268() > vec3d2.method_37268()) {
 					vec3d2 = vec3d4;
 				}
 			}
 
-			if (squaredHorizontalLength(vec3d2) > squaredHorizontalLength(vec3d)) {
+			if (vec3d2.method_37268() > vec3d.method_37268()) {
 				return vec3d2.add(
 					adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.world, shapeContext, reusableStream)
 				);
@@ -805,10 +802,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 
 		return vec3d;
-	}
-
-	public static double squaredHorizontalLength(Vec3d vector) {
-		return vector.x * vector.x + vector.z * vector.z;
 	}
 
 	public static Vec3d adjustMovementForCollisions(
@@ -958,20 +951,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.emitGameEvent(event, this.blockPos);
 	}
 
-	protected void playStepSound(BlockPos pos, BlockState state) {
-		if (!state.getMaterial().isLiquid()) {
-			if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.prevAge + 20) {
-				this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997F, (double)(this.age - this.prevAge)));
-				this.field_26997 = Math.min(1.0F, this.field_26997 + 0.07F);
-				float f = 0.5F + this.field_26997 * this.random.nextFloat() * 1.2F;
-				float g = 0.1F + this.field_26997 * 1.2F;
-				this.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, g, f);
-				this.prevAge = this.age;
-			}
-
-			BlockState blockState = this.world.getBlockState(pos.up());
-			BlockSoundGroup blockSoundGroup = blockState.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
+	protected void playStepSound(BlockPos pos, BlockState blockState) {
+		if (!blockState.getMaterial().isLiquid()) {
+			BlockState blockState2 = this.world.getBlockState(pos.up());
+			BlockSoundGroup blockSoundGroup = blockState2.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState2.getSoundGroup() : blockState.getSoundGroup();
 			this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
+		}
+	}
+
+	private void method_37215(BlockState blockState) {
+		if (blockState.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.prevAge + 20) {
+			this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997F, (double)(this.age - this.prevAge)));
+			this.field_26997 = Math.min(1.0F, this.field_26997 + 0.07F);
+			float f = 0.5F + this.field_26997 * this.random.nextFloat() * 1.2F;
+			float g = 0.1F + this.field_26997 * 1.2F;
+			this.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, g, f);
+			this.prevAge = this.age;
 		}
 	}
 
@@ -1167,12 +1162,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
 		float f = entity == this ? 0.2F : 0.9F;
 		Vec3d vec3d = entity.getVelocity();
-		float g = MathHelper.sqrt(vec3d.x * vec3d.x * 0.2F + vec3d.y * vec3d.y + vec3d.z * vec3d.z * 0.2F) * f;
-		if (g > 1.0F) {
-			g = 1.0F;
-		}
-
-		if ((double)g < 0.25) {
+		float g = Math.min(1.0F, (float)Math.sqrt(vec3d.x * vec3d.x * 0.2F + vec3d.y * vec3d.y + vec3d.z * vec3d.z * 0.2F) * f);
+		if (g < 0.25F) {
 			this.playSound(this.getSplashSound(), g, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 		} else {
 			this.playSound(this.getHighSpeedSplashSound(), g, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
@@ -1804,6 +1795,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			this.setPose(EntityPose.STANDING);
 			this.vehicle = entity;
 			this.vehicle.addPassenger(this);
+			entity.streamIntoPassengers()
+				.filter(entityx -> entityx instanceof ServerPlayerEntity)
+				.forEach(entityx -> Criteria.STARTED_RIDING.test((ServerPlayerEntity)entityx));
 			return true;
 		} else {
 			return false;
@@ -2581,7 +2575,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			double e = (double)Math.max(0.0F, entityDimensions2.height - entityDimensions.height) + 1.0E-6;
 			VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, d, e, d));
 			this.world
-				.method_33594(this, voxelShape, vec3d, (double)entityDimensions2.width, (double)entityDimensions2.height, (double)entityDimensions2.width)
+				.findClosestCollision(this, voxelShape, vec3d, (double)entityDimensions2.width, (double)entityDimensions2.height, (double)entityDimensions2.width)
 				.ifPresent(vec3dx -> this.setPosition(vec3dx.add(0.0, (double)(-entityDimensions2.height) / 2.0, 0.0)));
 		}
 	}
@@ -2640,15 +2634,15 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * Obtains an item slot for command modification purpose. Used by commands
-	 * like {@code /loot} or {@code /replaceitem}.
+	 * Obtains a stack reference to be modified. Used by commands like
+	 * {@code /loot} or {@code /item}.
 	 * 
 	 * @see net.minecraft.command.argument.ItemSlotArgumentType
 	 * 
 	 * @param mappedIndex the mapped index as given by the item slot argument
 	 */
-	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
-		return CommandItemSlot.EMPTY;
+	public StackReference getStackReference(int mappedIndex) {
+		return StackReference.EMPTY;
 	}
 
 	@Override

@@ -40,15 +40,12 @@ public class SkullItem extends WallStandingBlockItem {
 	}
 
 	@Override
-	public boolean postProcessNbt(NbtCompound nbt) {
+	public void postProcessNbt(NbtCompound nbt) {
 		super.postProcessNbt(nbt);
 		if (nbt.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbt.getString("SkullOwner"))) {
 			GameProfile gameProfile = new GameProfile(null, nbt.getString("SkullOwner"));
-			gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-			nbt.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
-			return true;
-		} else {
-			return false;
+			nbt.remove("SkullOwner");
+			SkullBlockEntity.loadProperties(gameProfile, gameProfilex -> nbt.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfilex)));
 		}
 	}
 }

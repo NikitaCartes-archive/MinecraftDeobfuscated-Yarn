@@ -3254,6 +3254,12 @@ public class Blocks {
 	public static final Block RAW_GOLD_BLOCK = register(
 		"raw_gold_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.GOLD).requiresTool().strength(5.0F, 6.0F))
 	);
+	public static final Block POTTED_AZALEA_BUSH = register(
+		"potted_azalea_bush", new FlowerPotBlock(AZALEA, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque())
+	);
+	public static final Block POTTED_FLOWERING_AZALEA_BUSH = register(
+		"potted_flowering_azalea_bush", new FlowerPotBlock(FLOWERING_AZALEA, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque())
+	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;

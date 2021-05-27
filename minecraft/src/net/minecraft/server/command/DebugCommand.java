@@ -1,27 +1,22 @@
 package net.minecraft.server.command;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.spi.FileSystemProvider;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
-import javax.annotation.Nullable;
-import net.minecraft.SharedConstants;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
+import net.minecraft.entity.ai.Durations;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
@@ -29,7 +24,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.ProfileResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,12 +34,6 @@ public class DebugCommand {
 	private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.debug.alreadyRunning")
 	);
-	@Nullable
-	private static final FileSystemProvider FILE_SYSTEM_PROVIDER = (FileSystemProvider)FileSystemProvider.installedProviders()
-		.stream()
-		.filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar"))
-		.findFirst()
-		.orElse(null);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -53,9 +41,9 @@ public class DebugCommand {
 				.requires(source -> source.hasPermissionLevel(3))
 				.then(CommandManager.literal("start").executes(context -> executeStart(context.getSource())))
 				.then(CommandManager.literal("stop").executes(context -> executeStop(context.getSource())))
-				.then(CommandManager.literal("report").executes(context -> createDebugReport(context.getSource())))
 				.then(
 					CommandManager.literal("function")
+						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 						.then(
 							CommandManager.argument("name", CommandFunctionArgumentType.commandFunction())
 								.suggests(FunctionCommand.SUGGESTION_PROVIDER)
@@ -71,7 +59,7 @@ public class DebugCommand {
 			throw ALREADY_RUNNING_EXCEPTION.create();
 		} else {
 			minecraftServer.enableProfiler();
-			source.sendFeedback(new TranslatableText("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
+			source.sendFeedback(new TranslatableText("commands.debug.started"), true);
 			return 0;
 		}
 	}
@@ -82,56 +70,12 @@ public class DebugCommand {
 			throw NOT_RUNNING_EXCEPTION.create();
 		} else {
 			ProfileResult profileResult = minecraftServer.stopDebug();
-			File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
-			profileResult.save(file.toPath());
-			float f = (float)profileResult.getTimeSpan() / 1.0E9F;
-			float g = (float)profileResult.getTickSpan() / f;
+			double d = (double)profileResult.getTimeSpan() / (double)Durations.field_33868;
+			double e = (double)profileResult.getTickSpan() / d;
 			source.sendFeedback(
-				new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", f), profileResult.getTickSpan(), String.format("%.2f", g)), true
+				new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format("%.2f", e)), true
 			);
-			return MathHelper.floor(g);
-		}
-	}
-
-	private static int createDebugReport(ServerCommandSource source) {
-		MinecraftServer minecraftServer = source.getMinecraftServer();
-		String string = "debug-report-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
-
-		try {
-			Path path = minecraftServer.getFile("debug").toPath();
-			Files.createDirectories(path);
-			if (!SharedConstants.isDevelopment && FILE_SYSTEM_PROVIDER != null) {
-				Path path2 = path.resolve(string + ".zip");
-				FileSystem fileSystem = FILE_SYSTEM_PROVIDER.newFileSystem(path2, ImmutableMap.of("create", "true"));
-
-				try {
-					minecraftServer.dump(fileSystem.getPath("/"));
-				} catch (Throwable var9) {
-					if (fileSystem != null) {
-						try {
-							fileSystem.close();
-						} catch (Throwable var8) {
-							var9.addSuppressed(var8);
-						}
-					}
-
-					throw var9;
-				}
-
-				if (fileSystem != null) {
-					fileSystem.close();
-				}
-			} else {
-				Path path2 = path.resolve(string);
-				minecraftServer.dump(path2);
-			}
-
-			source.sendFeedback(new TranslatableText("commands.debug.reportSaved", string), false);
-			return 1;
-		} catch (IOException var10) {
-			LOGGER.error("Failed to save debug dump", (Throwable)var10);
-			source.sendError(new TranslatableText("commands.debug.reportFailed"));
-			return 0;
+			return (int)e;
 		}
 	}
 

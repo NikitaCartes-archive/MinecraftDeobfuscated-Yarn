@@ -1,5 +1,6 @@
 package net.minecraft.entity.projectile;
 
+import com.google.common.base.MoreObjects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -49,6 +50,10 @@ public abstract class ProjectileEntity extends Entity {
 		} else {
 			return null;
 		}
+	}
+
+	public Entity method_37225() {
+		return MoreObjects.firstNonNull(this.getOwner(), this);
 	}
 
 	@Override
@@ -116,7 +121,7 @@ public abstract class ProjectileEntity extends Entity {
 			)
 			.multiply((double)speed);
 		this.setVelocity(vec3d);
-		double d = Math.sqrt(squaredHorizontalLength(vec3d));
+		double d = vec3d.method_37267();
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
 		this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 180.0F / (float)Math.PI));
 		this.prevYaw = this.getYaw();
@@ -177,7 +182,7 @@ public abstract class ProjectileEntity extends Entity {
 
 	protected void updateRotation() {
 		Vec3d vec3d = this.getVelocity();
-		double d = Math.sqrt(squaredHorizontalLength(vec3d));
+		double d = vec3d.method_37267();
 		this.setPitch(updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, d) * 180.0F / (float)Math.PI)));
 		this.setYaw(updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI)));
 	}

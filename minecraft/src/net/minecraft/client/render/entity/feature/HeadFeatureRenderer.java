@@ -83,8 +83,10 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 					} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE)) {
 						String string = nbtCompound.getString("SkullOwner");
 						if (!StringUtils.isBlank(string)) {
-							gameProfile = SkullBlockEntity.loadProperties(new GameProfile(null, string));
-							nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
+							nbtCompound.remove("SkullOwner");
+							SkullBlockEntity.loadProperties(
+								new GameProfile(null, string), gameProfilex -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfilex))
+							);
 						}
 					}
 				}

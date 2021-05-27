@@ -145,12 +145,12 @@ public final class Matrix4f {
 	}
 
 	/**
-	 * Reads a matrix from the buffer in row-major order.
+	 * Reads a matrix from the buffer in column-major order.
 	 * 
-	 * @see #readColumnFirst(FloatBuffer)
+	 * @see #readRowMajor(FloatBuffer)
 	 * @see #read(FloatBuffer, boolean)
 	 */
-	public void readRowFirst(FloatBuffer buf) {
+	public void readColumnMajor(FloatBuffer buf) {
 		this.a00 = buf.get(pack(0, 0));
 		this.a01 = buf.get(pack(0, 1));
 		this.a02 = buf.get(pack(0, 2));
@@ -170,12 +170,12 @@ public final class Matrix4f {
 	}
 
 	/**
-	 * Reads a matrix from the buffer in column-major order.
+	 * Reads a matrix from the buffer in row-major order.
 	 * 
-	 * @see #readRowFirst(FloatBuffer)
+	 * @see #readColumnMajor(FloatBuffer)
 	 * @see #read(FloatBuffer, boolean)
 	 */
-	public void readColumnFirst(FloatBuffer buf) {
+	public void readRowMajor(FloatBuffer buf) {
 		this.a00 = buf.get(pack(0, 0));
 		this.a01 = buf.get(pack(1, 0));
 		this.a02 = buf.get(pack(2, 0));
@@ -197,17 +197,17 @@ public final class Matrix4f {
 	/**
 	 * Reads a matrix from the buffer.
 	 * 
-	 * @see #readRowFirst(FloatBuffer)
-	 * @see #readColumnFirst(FloatBuffer)
+	 * @see #readRowMajor(FloatBuffer)
+	 * @see #readColumnMajor(FloatBuffer)
 	 * 
-	 * @param columnFirst {@code true} to read in column-major order; {@code false} to read in
-	 * row-major order
+	 * @param rowMajor {@code true} to read in row-major order; {@code false} to read in
+	 * column-major order
 	 */
-	public void read(FloatBuffer buf, boolean columnFirst) {
-		if (columnFirst) {
-			this.readColumnFirst(buf);
+	public void read(FloatBuffer buf, boolean rowMajor) {
+		if (rowMajor) {
+			this.readRowMajor(buf);
 		} else {
-			this.readRowFirst(buf);
+			this.readColumnMajor(buf);
 		}
 	}
 
@@ -269,12 +269,12 @@ public final class Matrix4f {
 	}
 
 	/**
-	 * Writes this matrix to the buffer in row-major order.
+	 * Writes this matrix to the buffer in column-major order.
 	 * 
-	 * @see #writeColumnFirst(FloatBuffer)
+	 * @see #writeRowMajor(FloatBuffer)
 	 * @see #write(FloatBuffer, boolean)
 	 */
-	public void writeRowFirst(FloatBuffer buf) {
+	public void writeColumnMajor(FloatBuffer buf) {
 		buf.put(pack(0, 0), this.a00);
 		buf.put(pack(0, 1), this.a01);
 		buf.put(pack(0, 2), this.a02);
@@ -294,12 +294,12 @@ public final class Matrix4f {
 	}
 
 	/**
-	 * Writes this matrix to the buffer in column-major order.
+	 * Writes this matrix to the buffer in row-major order.
 	 * 
-	 * @see #writeRowFirst(FloatBuffer)
+	 * @see #writeColumnMajor(FloatBuffer)
 	 * @see #write(FloatBuffer, boolean)
 	 */
-	public void writeColumnFirst(FloatBuffer buf) {
+	public void writeRowMajor(FloatBuffer buf) {
 		buf.put(pack(0, 0), this.a00);
 		buf.put(pack(1, 0), this.a01);
 		buf.put(pack(2, 0), this.a02);
@@ -321,17 +321,17 @@ public final class Matrix4f {
 	/**
 	 * Writes this matrix to the buffer.
 	 * 
-	 * @see #writeRowFirst(FloatBuffer)
-	 * @see #writeColumnFirst(FloatBuffer)
+	 * @see #writeRowMajor(FloatBuffer)
+	 * @see #writeColumnMajor(FloatBuffer)
 	 * 
-	 * @param columnFirst {@code true} to write in column-major order; {@code false} to write in
-	 * row-major order
+	 * @param rowMajor {@code true} to write in row-major order; {@code false} to write in
+	 * column-major order
 	 */
-	public void write(FloatBuffer buf, boolean columnFirst) {
-		if (columnFirst) {
-			this.writeColumnFirst(buf);
+	public void write(FloatBuffer buf, boolean rowMajor) {
+		if (rowMajor) {
+			this.writeRowMajor(buf);
 		} else {
-			this.writeRowFirst(buf);
+			this.writeColumnMajor(buf);
 		}
 	}
 

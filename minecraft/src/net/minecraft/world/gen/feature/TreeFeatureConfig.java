@@ -18,6 +18,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 					BlockStateProvider.TYPE_CODEC.fieldOf("trunk_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkProvider),
 					TrunkPlacer.TYPE_CODEC.fieldOf("trunk_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkPlacer),
 					BlockStateProvider.TYPE_CODEC.fieldOf("foliage_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.foliageProvider),
+					BlockStateProvider.TYPE_CODEC.fieldOf("sapling_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.field_33933),
 					FoliagePlacer.TYPE_CODEC.fieldOf("foliage_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.foliagePlacer),
 					BlockStateProvider.TYPE_CODEC.fieldOf("dirt_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.dirtProvider),
 					FeatureSize.TYPE_CODEC.fieldOf("minimum_size").forGetter(treeFeatureConfig -> treeFeatureConfig.minimumSize),
@@ -31,6 +32,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 	public final BlockStateProvider dirtProvider;
 	public final TrunkPlacer trunkPlacer;
 	public final BlockStateProvider foliageProvider;
+	public final BlockStateProvider field_33933;
 	public final FoliagePlacer foliagePlacer;
 	public final FeatureSize minimumSize;
 	public final List<TreeDecorator> decorators;
@@ -41,22 +43,24 @@ public class TreeFeatureConfig implements FeatureConfig {
 		BlockStateProvider trunkProvider,
 		TrunkPlacer trunkPlacer,
 		BlockStateProvider foliageProvider,
+		BlockStateProvider blockStateProvider,
 		FoliagePlacer foliagePlacer,
-		BlockStateProvider dirtProvider,
-		FeatureSize minimumSize,
-		List<TreeDecorator> decorators,
-		boolean ignoreVines,
-		boolean forceDirt
+		BlockStateProvider blockStateProvider2,
+		FeatureSize featureSize,
+		List<TreeDecorator> list,
+		boolean bl,
+		boolean bl2
 	) {
 		this.trunkProvider = trunkProvider;
 		this.trunkPlacer = trunkPlacer;
 		this.foliageProvider = foliageProvider;
 		this.foliagePlacer = foliagePlacer;
-		this.dirtProvider = dirtProvider;
-		this.minimumSize = minimumSize;
-		this.decorators = decorators;
-		this.ignoreVines = ignoreVines;
-		this.forceDirt = forceDirt;
+		this.dirtProvider = blockStateProvider2;
+		this.field_33933 = blockStateProvider;
+		this.minimumSize = featureSize;
+		this.decorators = list;
+		this.ignoreVines = bl;
+		this.forceDirt = bl2;
 	}
 
 	public TreeFeatureConfig setTreeDecorators(List<TreeDecorator> decorators) {
@@ -64,6 +68,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 			this.trunkProvider,
 			this.trunkPlacer,
 			this.foliageProvider,
+			this.field_33933,
 			this.foliagePlacer,
 			this.dirtProvider,
 			this.minimumSize,
@@ -77,6 +82,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 		public final BlockStateProvider trunkProvider;
 		private final TrunkPlacer trunkPlacer;
 		public final BlockStateProvider foliageProvider;
+		public final BlockStateProvider field_33934;
 		private final FoliagePlacer foliagePlacer;
 		private BlockStateProvider dirtProvider;
 		private final FeatureSize minimumSize;
@@ -85,14 +91,20 @@ public class TreeFeatureConfig implements FeatureConfig {
 		private boolean forceDirt;
 
 		public Builder(
-			BlockStateProvider trunkProvider, TrunkPlacer trunkPlacer, BlockStateProvider foliageProvider, FoliagePlacer foliagePlacer, FeatureSize minimumSize
+			BlockStateProvider trunkProvider,
+			TrunkPlacer trunkPlacer,
+			BlockStateProvider foliageProvider,
+			BlockStateProvider blockStateProvider,
+			FoliagePlacer foliagePlacer,
+			FeatureSize featureSize
 		) {
 			this.trunkProvider = trunkProvider;
 			this.trunkPlacer = trunkPlacer;
 			this.foliageProvider = foliageProvider;
+			this.field_33934 = blockStateProvider;
 			this.dirtProvider = new SimpleBlockStateProvider(Blocks.DIRT.getDefaultState());
 			this.foliagePlacer = foliagePlacer;
-			this.minimumSize = minimumSize;
+			this.minimumSize = featureSize;
 		}
 
 		public TreeFeatureConfig.Builder dirtProvider(BlockStateProvider dirtProvider) {
@@ -120,6 +132,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 				this.trunkProvider,
 				this.trunkPlacer,
 				this.foliageProvider,
+				this.field_33934,
 				this.foliagePlacer,
 				this.dirtProvider,
 				this.minimumSize,

@@ -14,6 +14,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SnowGolemEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	/**
+	 * The key of the upper body model part, whose value is {@value}.
+	 */
 	private static final String UPPER_BODY = "upper_body";
 	private final ModelPart root;
 	private final ModelPart upperBody;

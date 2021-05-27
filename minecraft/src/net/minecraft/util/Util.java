@@ -20,6 +20,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.spi.FileSystemProvider;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.time.Instant;
@@ -71,6 +72,11 @@ public class Util {
 	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker();
 	public static LongSupplier nanoTimeSupplier = System::nanoTime;
 	public static final UUID NIL_UUID = new UUID(0L, 0L);
+	public static final FileSystemProvider field_33859 = (FileSystemProvider)FileSystemProvider.installedProviders()
+		.stream()
+		.filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar"))
+		.findFirst()
+		.orElseThrow(() -> new IllegalStateException("No jar file system provider found"));
 	static final Logger LOGGER = LogManager.getLogger();
 
 	public static <K, V> Collector<Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
@@ -315,17 +321,21 @@ public class Util {
 	 */
 	public static <V> CompletableFuture<List<V>> combineSafe(List<? extends CompletableFuture<? extends V>> futures) {
 		return (CompletableFuture<List<V>>)futures.stream()
-			.reduce(CompletableFuture.completedFuture(Lists.newArrayList()), (collected, each) -> each.thenCombine(collected, (eachResult, collectedResults) -> {
-					List<V> list = Lists.<V>newArrayListWithCapacity(collectedResults.size() + 1);
-					list.addAll(collectedResults);
-					list.add(eachResult);
-					return list;
-				}), (firstCollected, secondCollected) -> firstCollected.thenCombine(secondCollected, (firstResults, secondResults) -> {
-					List<V> list = Lists.<V>newArrayListWithCapacity(firstResults.size() + secondResults.size());
-					list.addAll(firstResults);
-					list.addAll(secondResults);
-					return list;
-				}));
+			.reduce(
+				CompletableFuture.completedFuture(Lists.newArrayList()),
+				(completableFuture, completableFuture2) -> completableFuture2.thenCombine(completableFuture, (object, list) -> {
+						List<V> list2 = Lists.<V>newArrayListWithCapacity(list.size() + 1);
+						list2.addAll(list);
+						list2.add(object);
+						return list2;
+					}),
+				(completableFuture, completableFuture2) -> completableFuture.thenCombine(completableFuture2, (list, list2) -> {
+						List<V> list3 = Lists.<V>newArrayListWithCapacity(list.size() + list2.size());
+						list3.addAll(list);
+						list3.addAll(list2);
+						return list3;
+					})
+			);
 	}
 
 	/**

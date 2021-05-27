@@ -49,6 +49,9 @@ public class Criteria {
 	public static final PlayerGeneratesContainerLootCriterion PLAYER_GENERATES_CONTAINER_LOOT = register(new PlayerGeneratesContainerLootCriterion());
 	public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_ENTITY = register(new ThrownItemPickedUpByEntityCriterion());
 	public static final PlayerInteractedWithEntityCriterion PLAYER_INTERACTED_WITH_ENTITY = register(new PlayerInteractedWithEntityCriterion());
+	public static final StartedRidingCriterion STARTED_RIDING = register(new StartedRidingCriterion());
+	public static final LightningStrikeCriterion LIGHTNING_STRIKE = register(new LightningStrikeCriterion());
+	public static final UsingItemCriterion USING_ITEM = register(new UsingItemCriterion());
 
 	private static <T extends Criterion<?>> T register(T object) {
 		if (VALUES.containsKey(object.getId())) {

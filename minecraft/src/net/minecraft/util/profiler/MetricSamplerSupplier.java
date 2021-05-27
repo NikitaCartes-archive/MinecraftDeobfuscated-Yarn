@@ -1,8 +1,8 @@
 package net.minecraft.util.profiler;
 
 import java.util.List;
-import net.minecraft.client.util.profiler.MetricSampler;
+import net.minecraft.client.util.profiler.SamplingRecorder;
 
 public interface MetricSamplerSupplier {
-	List<MetricSampler> getSamplers();
+	List<SamplingRecorder> getSamplers();
 }

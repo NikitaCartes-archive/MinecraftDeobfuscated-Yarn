@@ -1016,7 +1016,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	protected void sendToOtherNearbyPlayers(Entity entity, Packet<?> packet) {
+	public void sendToOtherNearbyPlayers(Entity entity, Packet<?> packet) {
 		ThreadedAnvilChunkStorage.EntityTracker entityTracker = this.entityTrackers.get(entity.getId());
 		if (entityTracker != null) {
 			entityTracker.sendToOtherNearbyPlayers(packet);

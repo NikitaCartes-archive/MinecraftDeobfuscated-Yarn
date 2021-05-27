@@ -13,9 +13,33 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
+/**
+ * Represents the model of an held shield.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value #PLATE}</td><td>{@linkplain #root Root part}</td><td>{@link #plate}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #HANDLE}</td><td>{@linkplain #root Root part}</td><td>{@link #handle}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class ShieldEntityModel extends Model {
+	/**
+	 * The key of the plate model part, whose value is {@value}.
+	 */
 	private static final String PLATE = "plate";
+	/**
+	 * The key of the handle model part, whose value is {@value}.
+	 */
 	private static final String HANDLE = "handle";
 	private static final int field_32551 = 10;
 	private static final int field_32552 = 20;

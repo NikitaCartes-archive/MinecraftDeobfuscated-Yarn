@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -128,7 +129,7 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 		}
 
 		this.dynamicIdCounters.put(prefix, integer);
-		Identifier identifier = new Identifier(String.format("dynamic/%s_%d", prefix, integer));
+		Identifier identifier = new Identifier(String.format(Locale.ROOT, "dynamic/%s_%d", prefix, integer));
 		this.registerTexture(identifier, texture);
 		return identifier;
 	}

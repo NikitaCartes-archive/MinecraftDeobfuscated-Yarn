@@ -1,7 +1,10 @@
 package net.minecraft.entity;
 
+import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
@@ -29,12 +32,16 @@ import net.minecraft.world.event.GameEvent;
 
 public class LightningEntity extends Entity {
 	private static final int field_30062 = 2;
+	private static final double field_33906 = 3.0;
+	private static final double field_33907 = 15.0;
 	private int ambientTick;
 	public long seed;
 	private int remainingActions;
 	private boolean cosmetic;
 	@Nullable
 	private ServerPlayerEntity channeler;
+	private final Set<Entity> field_33904 = Sets.<Entity>newHashSet();
+	private int field_33905;
 
 	public LightningEntity(EntityType<? extends LightningEntity> entityType, World world) {
 		super(entityType, world);
@@ -112,6 +119,19 @@ public class LightningEntity extends Entity {
 		this.ambientTick--;
 		if (this.ambientTick < 0) {
 			if (this.remainingActions == 0) {
+				if (this.world instanceof ServerWorld) {
+					List<Entity> list = this.world
+						.getOtherEntities(
+							this,
+							new Box(this.getX() - 15.0, this.getY() - 15.0, this.getZ() - 15.0, this.getX() + 15.0, this.getY() + 6.0 + 15.0, this.getZ() + 15.0),
+							entityx -> entityx.isAlive() && !this.field_33904.contains(entityx)
+						);
+
+					for (ServerPlayerEntity serverPlayerEntity : ((ServerWorld)this.world).getPlayers(serverPlayerEntityx -> serverPlayerEntityx.distanceTo(this) < 256.0F)) {
+						Criteria.LIGHTNING_STRIKE.test(serverPlayerEntity, this, list);
+					}
+				}
+
 				this.discard();
 			} else if (this.ambientTick < -this.random.nextInt(10)) {
 				this.remainingActions--;
@@ -125,7 +145,6 @@ public class LightningEntity extends Entity {
 			if (!(this.world instanceof ServerWorld)) {
 				this.world.setLightningTicksLeft(2);
 			} else if (!this.cosmetic) {
-				double d = 3.0;
 				List<Entity> list = this.world
 					.getOtherEntities(
 						this, new Box(this.getX() - 3.0, this.getY() - 3.0, this.getZ() - 3.0, this.getX() + 3.0, this.getY() + 6.0 + 3.0, this.getZ() + 3.0), Entity::isAlive
@@ -135,6 +154,7 @@ public class LightningEntity extends Entity {
 					entity.onStruckByLightning((ServerWorld)this.world, this);
 				}
 
+				this.field_33904.addAll(list);
 				if (this.channeler != null) {
 					Criteria.CHANNELED_LIGHTNING.trigger(this.channeler, list);
 				}
@@ -153,6 +173,7 @@ public class LightningEntity extends Entity {
 			BlockState blockState = AbstractFireBlock.getState(this.world, blockPos);
 			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
 				this.world.setBlockState(blockPos, blockState);
+				this.field_33905++;
 			}
 
 			for (int i = 0; i < spreadAttempts; i++) {
@@ -160,6 +181,7 @@ public class LightningEntity extends Entity {
 				blockState = AbstractFireBlock.getState(this.world, blockPos2);
 				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
 					this.world.setBlockState(blockPos2, blockState);
+					this.field_33905++;
 				}
 			}
 		}
@@ -236,5 +258,13 @@ public class LightningEntity extends Entity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this);
+	}
+
+	public int method_37220() {
+		return this.field_33905;
+	}
+
+	public Stream<Entity> method_37221() {
+		return this.field_33904.stream().filter(Entity::isAlive);
 	}
 }

@@ -12,11 +12,53 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of a {@linkplain WitherEntity}.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@code shoulders}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIBCAGE}</td><td>{@linkplain #root Root part}</td><td>{@link #ribcage}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#TAIL}</td><td>{@linkplain #root Root part}</td><td>{@link #tail}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #CENTER_HEAD}</td><td>{@linkplain #root Root part}</td><td>{@link #centerHead}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #RIGHT_HEAD}</td><td>{@linkplain #root Root part}</td><td>{@link #rightHead}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LEFT_HEAD}</td><td>{@linkplain #root Root part}</td><td>{@link #leftHead}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class WitherEntityModel<T extends WitherEntity> extends SinglePartEntityModel<T> {
+	/**
+	 * The key of the ribcage model part, whose value is {@value}.
+	 */
 	private static final String RIBCAGE = "ribcage";
+	/**
+	 * The key of the center head model part, whose value is {@value}.
+	 */
 	private static final String CENTER_HEAD = "center_head";
+	/**
+	 * The key of the right head model part, whose value is {@value}.
+	 */
 	private static final String RIGHT_HEAD = "right_head";
+	/**
+	 * The key of the left head model part, whose value is {@value}.
+	 */
 	private static final String LEFT_HEAD = "left_head";
 	private static final float field_32575 = 0.065F;
 	private static final float field_32576 = 0.265F;

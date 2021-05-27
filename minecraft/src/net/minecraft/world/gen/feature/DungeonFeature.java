@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,6 +13,7 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.LootTables;
 import net.minecraft.structure.StructurePiece;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -31,6 +33,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+		Predicate<BlockState> predicate = Feature.notInBlockTagPredicate(BlockTags.FEATURES_CANNOT_REPLACE.getId());
 		BlockPos blockPos = context.getOrigin();
 		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
@@ -77,13 +80,13 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 								structureWorldAccess.setBlockState(blockPos2x, AIR, Block.NOTIFY_LISTENERS);
 							} else if (blockState.getMaterial().isSolid() && !blockState.isOf(Blocks.CHEST)) {
 								if (t == -1 && random.nextInt(4) != 0) {
-									structureWorldAccess.setBlockState(blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
+									this.setBlockStateIf(structureWorldAccess, blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), predicate);
 								} else {
-									structureWorldAccess.setBlockState(blockPos2x, Blocks.COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
+									this.setBlockStateIf(structureWorldAccess, blockPos2x, Blocks.COBBLESTONE.getDefaultState(), predicate);
 								}
 							}
 						} else if (!blockState.isOf(Blocks.CHEST) && !blockState.isOf(Blocks.SPAWNER)) {
-							structureWorldAccess.setBlockState(blockPos2x, AIR, Block.NOTIFY_LISTENERS);
+							this.setBlockStateIf(structureWorldAccess, blockPos2x, AIR, predicate);
 						}
 					}
 				}
@@ -105,8 +108,8 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						}
 
 						if (x == 1) {
-							structureWorldAccess.setBlockState(
-								blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), Block.NOTIFY_LISTENERS
+							this.setBlockStateIf(
+								structureWorldAccess, blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), predicate
 							);
 							LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
 							break;
@@ -115,7 +118,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 				}
 			}
 
-			structureWorldAccess.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
+			this.setBlockStateIf(structureWorldAccess, blockPos, Blocks.SPAWNER.getDefaultState(), predicate);
 			BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos);
 			if (blockEntity instanceof MobSpawnerBlockEntity) {
 				((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));

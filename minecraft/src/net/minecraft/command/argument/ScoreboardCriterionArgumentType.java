@@ -53,7 +53,7 @@ public class ScoreboardCriterionArgumentType implements ArgumentType<ScoreboardC
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		List<String> list = Lists.<String>newArrayList(ScoreboardCriterion.CRITERIA.keySet());
+		List<String> list = Lists.<String>newArrayList(ScoreboardCriterion.method_37271());
 
 		for (StatType<?> statType : Registry.STAT_TYPE) {
 			for (Object object : statType.getRegistry()) {

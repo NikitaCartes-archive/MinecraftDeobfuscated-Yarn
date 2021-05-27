@@ -8,9 +8,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
@@ -104,8 +104,8 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
-		return mappedIndex >= 0 && mappedIndex < this.size() ? new CommandItemSlot() {
+	public StackReference getStackReference(int mappedIndex) {
+		return mappedIndex >= 0 && mappedIndex < this.size() ? new StackReference() {
 			@Override
 			public ItemStack get() {
 				return StorageMinecartEntity.this.getStack(mappedIndex);
@@ -116,7 +116,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 				StorageMinecartEntity.this.setStack(mappedIndex, stack);
 				return true;
 			}
-		} : super.getCommandItemSlot(mappedIndex);
+		} : super.getStackReference(mappedIndex);
 	}
 
 	@Override

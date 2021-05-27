@@ -57,6 +57,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	private static final int MAX_HEALTH = 200;
 	private static final int field_30429 = 400;
 	private static final float field_30430 = 0.25F;
+	private static final String field_33910 = "DragonDeathTime";
+	private static final String field_33911 = "DragonPhase";
 	/**
 	 * (yaw, y, ?)
 	 */
@@ -186,7 +188,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		} else {
 			this.tickWithEndCrystals();
 			Vec3d vec3d = this.getVelocity();
-			float g = 0.2F / (MathHelper.sqrt(squaredHorizontalLength(vec3d)) * 10.0F + 1.0F);
+			float g = 0.2F / ((float)vec3d.method_37267() * 10.0F + 1.0F);
 			g *= (float)Math.pow(2.0, vec3d.y);
 			if (this.phaseManager.getCurrent().isSittingOrHovering()) {
 				this.wingPosition += 0.1F;
@@ -746,6 +748,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putInt("DragonPhase", this.phaseManager.getCurrent().getType().getTypeId());
+		nbt.putInt("DragonDeathTime", this.ticksSinceDeath);
 	}
 
 	@Override
@@ -753,6 +756,10 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		super.readCustomDataFromNbt(nbt);
 		if (nbt.contains("DragonPhase")) {
 			this.phaseManager.setPhase(PhaseType.getFromId(nbt.getInt("DragonPhase")));
+		}
+
+		if (nbt.contains("DragonDeathTime")) {
+			this.ticksSinceDeath = nbt.getInt("DragonDeathTime");
 		}
 	}
 
@@ -814,7 +821,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		Vec3d vec3d;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
 			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-			float f = Math.max(MathHelper.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0F, 1.0F);
+			float f = Math.max((float)Math.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0F, 1.0F);
 			float g = 6.0F / f;
 			float h = this.getPitch();
 			float i = 1.5F;

@@ -20,8 +20,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
@@ -134,7 +136,6 @@ public class FallingBlockEntity extends Entity {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
 					if (!blockState.isOf(Blocks.MOVING_PISTON)) {
-						this.discard();
 						if (!this.destroyedOnLanding) {
 							boolean bl3 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
 							boolean bl4 = FallingBlock.canFallThrough(this.world.getBlockState(blockPos.down())) && (!bl || !bl2);
@@ -145,6 +146,11 @@ public class FallingBlockEntity extends Entity {
 								}
 
 								if (this.world.setBlockState(blockPos, this.block, Block.NOTIFY_ALL)) {
+									((ServerWorld)this.world)
+										.getChunkManager()
+										.threadedAnvilChunkStorage
+										.sendToOtherNearbyPlayers(this, new BlockUpdateS2CPacket(blockPos, this.world.getBlockState(blockPos)));
+									this.discard();
 									if (block instanceof LandingBlock) {
 										((LandingBlock)block).onLanding(this.world, blockPos, this.block, blockState, this);
 									}
@@ -161,19 +167,27 @@ public class FallingBlockEntity extends Entity {
 												}
 											}
 
-											blockEntity.readNbt(nbtCompound);
+											try {
+												blockEntity.readNbt(nbtCompound);
+											} catch (Exception var16) {
+												LOGGER.error("Failed to load block entity from falling block", (Throwable)var16);
+											}
+
 											blockEntity.markDirty();
 										}
 									}
 								} else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+									this.discard();
 									this.onDestroyedOnLanding(block, blockPos);
 									this.dropItem(block);
 								}
 							} else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+								this.discard();
 								this.onDestroyedOnLanding(block, blockPos);
 								this.dropItem(block);
 							}
 						} else {
+							this.discard();
 							this.onDestroyedOnLanding(block, blockPos);
 						}
 					}

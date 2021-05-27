@@ -27,10 +27,10 @@ public class PlayerListEntry {
 	private String model;
 	@Nullable
 	private Text displayName;
+	private int lastHealth;
 	private int health;
-	private int field_3736;
-	private long field_3737;
-	private long field_3747;
+	private long lastHealthTime;
+	private long blinkingHeartTime;
 	private long showTime;
 
 	public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry) {
@@ -126,6 +126,14 @@ public class PlayerListEntry {
 		return this.displayName;
 	}
 
+	public int getLastHealth() {
+		return this.lastHealth;
+	}
+
+	public void setLastHealth(int lastHealth) {
+		this.lastHealth = lastHealth;
+	}
+
 	public int getHealth() {
 		return this.health;
 	}
@@ -134,28 +142,20 @@ public class PlayerListEntry {
 		this.health = health;
 	}
 
-	public int method_2960() {
-		return this.field_3736;
+	public long getLastHealthTime() {
+		return this.lastHealthTime;
 	}
 
-	public void method_2965(int i) {
-		this.field_3736 = i;
+	public void setLastHealthTime(long lastHealthTime) {
+		this.lastHealthTime = lastHealthTime;
 	}
 
-	public long method_2974() {
-		return this.field_3737;
+	public long getBlinkingHeartTime() {
+		return this.blinkingHeartTime;
 	}
 
-	public void method_2978(long l) {
-		this.field_3737 = l;
-	}
-
-	public long method_2961() {
-		return this.field_3747;
-	}
-
-	public void method_2975(long l) {
-		this.field_3747 = l;
+	public void setBlinkingHeartTime(long blinkingHeartTime) {
+		this.blinkingHeartTime = blinkingHeartTime;
 	}
 
 	public long getShowTime() {

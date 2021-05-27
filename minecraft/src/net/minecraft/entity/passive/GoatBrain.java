@@ -53,6 +53,7 @@ public class GoatBrain {
 		.setPredicate(
 			livingEntity -> !livingEntity.getType().equals(EntityType.GOAT)
 					&& (livingEntity.world.getDifficulty() != Difficulty.PEACEFUL || !livingEntity.getType().equals(EntityType.PLAYER))
+					&& livingEntity.world.getWorldBorder().contains(livingEntity.getBoundingBox())
 		);
 	private static final float field_33501 = 3.0F;
 	public static final int field_33495 = 4;

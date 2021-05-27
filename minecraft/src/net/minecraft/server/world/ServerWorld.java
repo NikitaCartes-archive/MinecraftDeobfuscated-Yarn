@@ -1493,6 +1493,23 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return "Chunks[S] W: " + this.serverChunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
 	}
 
+	public boolean method_37116(long l) {
+		return this.entityManager.method_37252(l);
+	}
+
+	public boolean method_37117(BlockPos blockPos) {
+		long l = ChunkPos.method_37232(blockPos);
+		return this.serverChunkManager.method_37114(l) && this.method_37116(l);
+	}
+
+	public boolean method_37118(BlockPos blockPos) {
+		return this.entityManager.method_37254(blockPos);
+	}
+
+	public boolean method_37115(ChunkPos chunkPos) {
+		return this.entityManager.method_37253(chunkPos);
+	}
+
 	final class ServerEntityHandler implements EntityHandler<Entity> {
 		public void create(Entity entity) {
 		}

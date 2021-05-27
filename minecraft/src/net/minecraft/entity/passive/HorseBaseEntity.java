@@ -38,10 +38,10 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -357,12 +357,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
-		if (!state.getMaterial().isLiquid()) {
-			BlockState blockState = this.world.getBlockState(pos.up());
-			BlockSoundGroup blockSoundGroup = state.getSoundGroup();
-			if (blockState.isOf(Blocks.SNOW)) {
-				blockSoundGroup = blockState.getSoundGroup();
+	protected void playStepSound(BlockPos pos, BlockState blockState) {
+		if (!blockState.getMaterial().isLiquid()) {
+			BlockState blockState2 = this.world.getBlockState(pos.up());
+			BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
+			if (blockState2.isOf(Blocks.SNOW)) {
+				blockSoundGroup = blockState2.getSoundGroup();
 			}
 
 			if (this.hasPassengers() && this.playExtraHorseSounds) {
@@ -987,11 +987,11 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return false;
 	}
 
-	private CommandItemSlot method_32335(int i, Predicate<ItemStack> predicate) {
-		return new CommandItemSlot() {
+	private StackReference createInventoryStackReference(int slot, Predicate<ItemStack> predicate) {
+		return new StackReference() {
 			@Override
 			public ItemStack get() {
-				return HorseBaseEntity.this.items.getStack(i);
+				return HorseBaseEntity.this.items.getStack(slot);
 			}
 
 			@Override
@@ -999,7 +999,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 				if (!predicate.test(stack)) {
 					return false;
 				} else {
-					HorseBaseEntity.this.items.setStack(i, stack);
+					HorseBaseEntity.this.items.setStack(slot, stack);
 					HorseBaseEntity.this.updateSaddle();
 					return true;
 				}
@@ -1008,24 +1008,24 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+	public StackReference getStackReference(int mappedIndex) {
 		int i = mappedIndex - 400;
 		if (i >= 0 && i < 2 && i < this.items.size()) {
 			if (i == 0) {
-				return this.method_32335(i, itemStack -> itemStack.isEmpty() || itemStack.isOf(Items.SADDLE));
+				return this.createInventoryStackReference(i, stack -> stack.isEmpty() || stack.isOf(Items.SADDLE));
 			}
 
 			if (i == 1) {
 				if (!this.hasArmorSlot()) {
-					return CommandItemSlot.EMPTY;
+					return StackReference.EMPTY;
 				}
 
-				return this.method_32335(i, itemStack -> itemStack.isEmpty() || this.isHorseArmor(itemStack));
+				return this.createInventoryStackReference(i, stack -> stack.isEmpty() || this.isHorseArmor(stack));
 			}
 		}
 
 		int j = mappedIndex - 500 + 2;
-		return j >= 2 && j < this.items.size() ? CommandItemSlot.of(this.items, j) : super.getCommandItemSlot(mappedIndex);
+		return j >= 2 && j < this.items.size() ? StackReference.of(this.items, j) : super.getStackReference(mappedIndex);
 	}
 
 	@Nullable

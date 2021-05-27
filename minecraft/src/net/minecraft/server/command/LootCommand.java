@@ -26,8 +26,8 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.LootTable;
@@ -356,8 +356,8 @@ public class LootCommand {
 	private static void replace(Entity entity, List<ItemStack> stacks, int slot, int stackCount, List<ItemStack> addedStacks) {
 		for (int i = 0; i < stackCount; i++) {
 			ItemStack itemStack = i < stacks.size() ? (ItemStack)stacks.get(i) : ItemStack.EMPTY;
-			CommandItemSlot commandItemSlot = entity.getCommandItemSlot(slot + i);
-			if (commandItemSlot != CommandItemSlot.EMPTY && commandItemSlot.set(itemStack.copy())) {
+			StackReference stackReference = entity.getStackReference(slot + i);
+			if (stackReference != StackReference.EMPTY && stackReference.set(itemStack.copy())) {
 				addedStacks.add(itemStack);
 			}
 		}

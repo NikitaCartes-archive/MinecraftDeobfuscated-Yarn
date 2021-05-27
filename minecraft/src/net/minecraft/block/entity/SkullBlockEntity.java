@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
@@ -92,38 +93,38 @@ public class SkullBlockEntity extends BlockEntity {
 		return this.writeNbt(new NbtCompound());
 	}
 
-	public void setOwner(@Nullable GameProfile owner) {
-		this.owner = owner;
+	public void setOwner(@Nullable GameProfile gameProfile) {
+		synchronized (this) {
+			this.owner = gameProfile;
+		}
+
 		this.loadOwnerProperties();
 	}
 
 	private void loadOwnerProperties() {
-		this.owner = loadProperties(this.owner);
-		this.markDirty();
+		loadProperties(this.owner, gameProfile -> {
+			this.owner = gameProfile;
+			this.markDirty();
+		});
 	}
 
-	@Nullable
-	public static GameProfile loadProperties(@Nullable GameProfile profile) {
-		if (profile != null && !ChatUtil.isEmpty(profile.getName())) {
-			if (profile.isComplete() && profile.getProperties().containsKey("textures")) {
-				return profile;
-			} else if (userCache != null && sessionService != null) {
-				GameProfile gameProfile = userCache.findByName(profile.getName());
-				if (gameProfile == null) {
-					return profile;
-				} else {
-					Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
-					if (property == null) {
-						gameProfile = sessionService.fillProfileProperties(gameProfile, true);
-					}
-
-					return gameProfile;
+	public static void loadProperties(@Nullable GameProfile gameProfile, Consumer<GameProfile> consumer) {
+		if (gameProfile != null
+			&& !ChatUtil.isEmpty(gameProfile.getName())
+			&& (!gameProfile.isComplete() || !gameProfile.getProperties().containsKey("textures"))
+			&& userCache != null
+			&& sessionService != null) {
+			userCache.method_37156(gameProfile.getName(), gameProfilex -> {
+				Property property = Iterables.getFirst(gameProfilex.getProperties().get("textures"), null);
+				if (property == null) {
+					gameProfilex = sessionService.fillProfileProperties(gameProfilex, true);
 				}
-			} else {
-				return profile;
-			}
+
+				userCache.add(gameProfilex);
+				consumer.accept(gameProfilex);
+			});
 		} else {
-			return profile;
+			consumer.accept(gameProfile);
 		}
 	}
 }

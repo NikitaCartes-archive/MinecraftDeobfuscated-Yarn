@@ -127,6 +127,8 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
 		List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, box);
 		if (!list.isEmpty()) {
+			Entity entity2 = this.method_37225();
+
 			for (LivingEntity livingEntity : list) {
 				if (livingEntity.isAffectedBySplashPotions()) {
 					double d = this.squaredDistanceTo(livingEntity);
@@ -143,10 +145,11 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 							} else {
 								int i = (int)(e * (double)statusEffectInstance.getDuration() + 0.5);
 								if (i > 20) {
-									livingEntity.addStatusEffect(
+									livingEntity.method_37222(
 										new StatusEffectInstance(
 											statusEffect, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()
-										)
+										),
+										entity2
 									);
 								}
 							}

@@ -39,7 +39,6 @@ import net.minecraft.potion.Potions;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -219,7 +218,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			double d = target.getX() + vec3d.x - this.getX();
 			double e = target.getEyeY() - 1.1F - this.getY();
 			double f = target.getZ() + vec3d.z - this.getZ();
-			float g = MathHelper.sqrt(d * d + f * f);
+			double g = Math.sqrt(d * d + f * f);
 			Potion potion = Potions.HARMING;
 			if (target instanceof RaiderEntity) {
 				if (target.getHealth() <= 4.0F) {
@@ -229,18 +228,18 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				}
 
 				this.setTarget(null);
-			} else if (g >= 8.0F && !target.hasStatusEffect(StatusEffects.SLOWNESS)) {
+			} else if (g >= 8.0 && !target.hasStatusEffect(StatusEffects.SLOWNESS)) {
 				potion = Potions.SLOWNESS;
 			} else if (target.getHealth() >= 8.0F && !target.hasStatusEffect(StatusEffects.POISON)) {
 				potion = Potions.POISON;
-			} else if (g <= 3.0F && !target.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
+			} else if (g <= 3.0 && !target.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25F) {
 				potion = Potions.WEAKNESS;
 			}
 
 			PotionEntity potionEntity = new PotionEntity(this.world, this);
 			potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
 			potionEntity.setPitch(potionEntity.getPitch() - -20.0F);
-			potionEntity.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
+			potionEntity.setVelocity(d, e + g * 0.2, f, 0.75F, 8.0F);
 			if (!this.isSilent()) {
 				this.world
 					.playSound(

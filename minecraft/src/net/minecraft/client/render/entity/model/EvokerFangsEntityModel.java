@@ -11,10 +11,40 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of an evoker-fangs-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value #BASE}</td><td>{@linkplain #root Root part}</td><td>{@link #base}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #UPPER_JAW}</td><td>{@linkplain #root Root part}</td><td>{@link #upperJaw}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #LOWER_JAW}</td><td>{@linkplain #root Root part}</td><td>{@link #lowerJaw}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(EnvType.CLIENT)
 public class EvokerFangsEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+	/**
+	 * The key of the base model part, whose value is {@value}.
+	 */
 	private static final String BASE = "base";
+	/**
+	 * The key of the upper jaw model part, whose value is {@value}.
+	 */
 	private static final String UPPER_JAW = "upper_jaw";
+	/**
+	 * The key of the lower jaw model part, whose value is {@value}.
+	 */
 	private static final String LOWER_JAW = "lower_jaw";
 	private final ModelPart root;
 	private final ModelPart base;

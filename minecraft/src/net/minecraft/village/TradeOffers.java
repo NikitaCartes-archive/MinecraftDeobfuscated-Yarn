@@ -44,20 +44,20 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class TradeOffers {
-	private static final int field_30615 = 12;
-	private static final int field_30616 = 16;
-	private static final int field_30617 = 3;
-	private static final int field_30618 = 1;
-	private static final int field_30619 = 2;
-	private static final int field_30620 = 5;
-	private static final int field_30621 = 10;
-	private static final int field_30622 = 10;
-	private static final int field_30623 = 20;
-	private static final int field_30624 = 15;
-	private static final int field_30625 = 30;
-	private static final int field_30626 = 30;
-	private static final float field_30627 = 0.05F;
-	private static final float field_30628 = 0.2F;
+	private static final int DEFAULT_MAX_USES = 12;
+	private static final int COMMON_MAX_USES = 16;
+	private static final int RARE_MAX_USES = 3;
+	private static final int NOVICE_SELL_XP = 1;
+	private static final int NOVICE_BUY_XP = 2;
+	private static final int APPRENTICE_SELL_XP = 5;
+	private static final int APPRENTICE_BUY_XP = 10;
+	private static final int JOURNEYMAN_SELL_XP = 10;
+	private static final int JOURNEYMAN_BUY_XP = 20;
+	private static final int EXPERT_SELL_XP = 15;
+	private static final int EXPERT_BUY_XP = 30;
+	private static final int MASTER_TRADE_XP = 30;
+	private static final float LOW_PRICE_MULTIPLIER = 0.05F;
+	private static final float HIGH_PRICE_MULTIPLIER = 0.2F;
 	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(
 		Maps.<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>>newHashMap(),
 		map -> {

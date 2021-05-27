@@ -16,6 +16,7 @@ public class GeodeLayerConfig {
 	public final BlockStateProvider outerLayerProvider;
 	public final List<BlockState> innerBlocks;
 	public final Identifier field_33769;
+	public final Identifier field_33931;
 	public static final Codec<GeodeLayerConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					BlockStateProvider.TYPE_CODEC.fieldOf("filling_provider").forGetter(geodeLayerConfig -> geodeLayerConfig.fillingProvider),
@@ -24,7 +25,8 @@ public class GeodeLayerConfig {
 					BlockStateProvider.TYPE_CODEC.fieldOf("middle_layer_provider").forGetter(geodeLayerConfig -> geodeLayerConfig.middleLayerProvider),
 					BlockStateProvider.TYPE_CODEC.fieldOf("outer_layer_provider").forGetter(geodeLayerConfig -> geodeLayerConfig.outerLayerProvider),
 					Codecs.method_36973(BlockState.CODEC.listOf()).fieldOf("inner_placements").forGetter(geodeLayerConfig -> geodeLayerConfig.innerBlocks),
-					Identifier.CODEC.fieldOf("cannot_replace").forGetter(geodeLayerConfig -> geodeLayerConfig.field_33769)
+					Identifier.CODEC.fieldOf("cannot_replace").forGetter(geodeLayerConfig -> geodeLayerConfig.field_33769),
+					Identifier.CODEC.fieldOf("invalid_blocks").forGetter(geodeLayerConfig -> geodeLayerConfig.field_33931)
 				)
 				.apply(instance, GeodeLayerConfig::new)
 	);
@@ -36,7 +38,8 @@ public class GeodeLayerConfig {
 		BlockStateProvider middleLayerProvider,
 		BlockStateProvider outerLayerProvider,
 		List<BlockState> innerBlocks,
-		Identifier identifier
+		Identifier identifier,
+		Identifier identifier2
 	) {
 		this.fillingProvider = fillingProvider;
 		this.innerLayerProvider = innerLayerProvider;
@@ -45,5 +48,6 @@ public class GeodeLayerConfig {
 		this.outerLayerProvider = outerLayerProvider;
 		this.innerBlocks = innerBlocks;
 		this.field_33769 = identifier;
+		this.field_33931 = identifier2;
 	}
 }

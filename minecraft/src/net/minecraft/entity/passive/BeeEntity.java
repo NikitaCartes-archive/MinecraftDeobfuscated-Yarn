@@ -242,7 +242,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 				}
 
 				if (i > 0) {
-					((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0));
+					((LivingEntity)target).method_37222(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
 				}
 			}
 
@@ -574,7 +574,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState state) {
+	protected void playStepSound(BlockPos pos, BlockState blockState) {
 	}
 
 	@Override
@@ -1097,10 +1097,10 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		private static final int field_30301 = 20;
 		private static final int field_30302 = 60;
 		private final Predicate<BlockState> flowerPredicate = state -> {
-			if (state.isIn(BlockTags.TALL_FLOWERS)) {
+			if (state.isIn(BlockTags.FLOWERS)) {
 				return state.isOf(Blocks.SUNFLOWER) ? state.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER : true;
 			} else {
-				return state.isIn(BlockTags.SMALL_FLOWERS);
+				return false;
 			}
 		};
 		private static final double field_30303 = 0.1;
