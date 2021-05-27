@@ -260,7 +260,7 @@ public class EnderDragonFight {
                     BlockPattern.Result result;
                     if (!(blockEntity instanceof EndPortalBlockEntity) || (result = this.endPortalPattern.searchAround(this.world, blockEntity.getPos())) == null) continue;
                     BlockPos blockPos = result.translate(3, 3, 3).getBlockPos();
-                    if (this.exitPortalLocation == null && blockPos.getX() == 0 && blockPos.getZ() == 0) {
+                    if (this.exitPortalLocation == null) {
                         this.exitPortalLocation = blockPos;
                     }
                     return result;
@@ -409,7 +409,7 @@ public class EnderDragonFight {
                     LOGGER.debug("Couldn't find a portal, so we made one.");
                     this.generateEndPortal(true);
                 } else {
-                    LOGGER.debug("Found the exit portal & temporarily using it.");
+                    LOGGER.debug("Found the exit portal & saved its location for next time.");
                 }
                 blockPos = this.exitPortalLocation;
             }

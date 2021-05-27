@@ -3,11 +3,15 @@
  */
 package net.minecraft.util.profiler;
 
+import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 import java.util.function.Supplier;
+import net.minecraft.client.util.profiler.SamplingChannel;
 import net.minecraft.util.profiler.EmptyProfileResult;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerSystem;
 import net.minecraft.util.profiler.ReadableProfiler;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 public class DummyProfiler
@@ -31,6 +35,10 @@ implements ReadableProfiler {
 
     @Override
     public void push(Supplier<String> locationGetter) {
+    }
+
+    @Override
+    public void method_37167(SamplingChannel samplingChannel) {
     }
 
     @Override
@@ -62,6 +70,11 @@ implements ReadableProfiler {
     @Nullable
     public ProfilerSystem.LocatedInfo getInfo(String name) {
         return null;
+    }
+
+    @Override
+    public Set<Pair<String, SamplingChannel>> method_37168() {
+        return ImmutableSet.of();
     }
 }
 

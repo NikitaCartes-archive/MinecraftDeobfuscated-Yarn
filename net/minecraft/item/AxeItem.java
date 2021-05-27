@@ -6,6 +6,7 @@ package net.minecraft.item;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Optional;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,9 +15,11 @@ import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.HoneycombItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.ToolMaterial;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
@@ -42,6 +45,7 @@ extends MiningToolItem {
         Optional<BlockState> optional = this.getStrippedState(blockState);
         Optional<BlockState> optional2 = Oxidizable.getDecreasedOxidationState(blockState);
         Optional<BlockState> optional3 = Optional.ofNullable((Block)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get().get(blockState.getBlock())).map(block -> block.getStateWithProperties(blockState));
+        ItemStack itemStack = context.getStack();
         Optional<Object> optional4 = Optional.empty();
         if (optional.isPresent()) {
             world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0f, 1.0f);
@@ -56,9 +60,12 @@ extends MiningToolItem {
             optional4 = optional3;
         }
         if (optional4.isPresent()) {
+            if (playerEntity instanceof ServerPlayerEntity) {
+                Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+            }
             world.setBlockState(blockPos, (BlockState)optional4.get(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
             if (playerEntity != null) {
-                context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
+                itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
             }
             return ActionResult.success(world.isClient);
         }

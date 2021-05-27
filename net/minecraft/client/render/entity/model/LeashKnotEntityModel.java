@@ -14,9 +14,27 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 
+/**
+ * Represents the model of a leash-knot-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value KNOT}</td><td>{@linkplain #root Root part}</td><td>{@link #knot}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(value=EnvType.CLIENT)
 public class LeashKnotEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
+    /**
+     * The key of the knot model part, whose value is {@value}.
+     */
     private static final String KNOT = "knot";
     private final ModelPart root;
     private final ModelPart knot;

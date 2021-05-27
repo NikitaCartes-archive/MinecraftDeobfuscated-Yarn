@@ -9,6 +9,11 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.AbstractZombieModel;
 import net.minecraft.entity.mob.GiantEntity;
 
+/**
+ * Represents the model of a {@linkplain GiantEntity}.
+ * 
+ * <p>Inherits the model of {@link AbstractZombieModel}.
+ */
 @Environment(value=EnvType.CLIENT)
 public class GiantEntityModel
 extends AbstractZombieModel<GiantEntity> {

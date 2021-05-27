@@ -4,6 +4,7 @@
 package net.minecraft.util.profiler;
 
 import java.util.function.Supplier;
+import net.minecraft.client.util.profiler.SamplingChannel;
 import net.minecraft.util.profiler.DummyProfiler;
 
 public interface Profiler {
@@ -22,6 +23,8 @@ public interface Profiler {
     public void swap(String var1);
 
     public void swap(Supplier<String> var1);
+
+    public void method_37167(SamplingChannel var1);
 
     /**
      * Increment the visit count for a marker.
@@ -77,6 +80,12 @@ public interface Profiler {
             public void push(Supplier<String> locationGetter) {
                 a.push(locationGetter);
                 b.push(locationGetter);
+            }
+
+            @Override
+            public void method_37167(SamplingChannel samplingChannel) {
+                a.method_37167(samplingChannel);
+                b.method_37167(samplingChannel);
             }
 
             @Override

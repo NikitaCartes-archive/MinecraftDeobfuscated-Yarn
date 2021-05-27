@@ -291,7 +291,7 @@ implements RangedAttackMob {
 
         @Override
         protected void castSpell() {
-            IllusionerEntity.this.getTarget().addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 400));
+            IllusionerEntity.this.getTarget().method_37222(new StatusEffectInstance(StatusEffects.BLINDNESS, 400), IllusionerEntity.this);
         }
 
         @Override

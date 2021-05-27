@@ -16,6 +16,45 @@ import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 
+/**
+ * Represents the model of a {@linkplain GoatEntity}.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>Root part</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_HORN}</td><td>{@value EntityModelPartNames#HEAD}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_HORN}</td><td>{@value EntityModelPartNames#HEAD}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#NOSE}</td><td>{@value EntityModelPartNames#HEAD}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>Root part</td><td>{@link #body}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_HIND_LEG}</td><td>Root part</td><td>{@link #rightHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_HIND_LEG}</td><td>Root part</td><td>{@link #leftHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_FRONT_LEG}</td><td>Root part</td><td>{@link #rightFrontLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_FRONT_LEG}</td><td>Root part</td><td>{@link #leftFrontLeg}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(value=EnvType.CLIENT)
 public class GoatEntityModel<T extends GoatEntity>
 extends QuadrupedEntityModel<T> {

@@ -23,7 +23,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
@@ -111,8 +111,7 @@ implements ItemConvertible {
     public void onItemEntityDestroyed(ItemEntity entity) {
     }
 
-    public boolean postProcessNbt(NbtCompound nbt) {
-        return false;
+    public void postProcessNbt(NbtCompound nbt) {
     }
 
     /**
@@ -207,7 +206,7 @@ implements ItemConvertible {
         return false;
     }
 
-    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, CommandItemSlot cursorSlot) {
+    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
         return false;
     }
 

@@ -154,7 +154,7 @@ extends WaterCreatureEntity {
                 this.setVelocity(this.swimX * this.swimVelocityScale, this.swimY * this.swimVelocityScale, this.swimZ * this.swimVelocityScale);
             }
             Vec3d vec3d = this.getVelocity();
-            double d = Math.sqrt(SquidEntity.squaredHorizontalLength(vec3d));
+            double d = vec3d.method_37267();
             this.bodyYaw += (-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * 57.295776f - this.bodyYaw) * 0.1f;
             this.setYaw(this.bodyYaw);
             this.rollAngle = (float)((double)this.rollAngle + Math.PI * (double)this.turningSpeed * 1.5);

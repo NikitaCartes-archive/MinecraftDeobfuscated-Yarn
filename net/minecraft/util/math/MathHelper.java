@@ -53,10 +53,6 @@ public class MathHelper {
         return (float)Math.sqrt(value);
     }
 
-    public static float sqrt(double value) {
-        return (float)Math.sqrt(value);
-    }
-
     public static int floor(float value) {
         int i = (int)value;
         return value < (float)i ? i - 1 : i;
@@ -156,6 +152,16 @@ public class MathHelper {
             return end;
         }
         return MathHelper.lerp(delta, start, end);
+    }
+
+    public static float method_37166(float f, float g, float h) {
+        if (h < 0.0f) {
+            return f;
+        }
+        if (h > 1.0f) {
+            return g;
+        }
+        return MathHelper.lerp(h, f, g);
     }
 
     public static double absMax(double a, double b) {

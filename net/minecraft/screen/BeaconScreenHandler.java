@@ -69,14 +69,14 @@ extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity player) {
-        super.close(player);
-        if (player.world.isClient) {
+    public void close(PlayerEntity playerEntity) {
+        super.close(playerEntity);
+        if (playerEntity.world.isClient) {
             return;
         }
         ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxItemCount());
         if (!itemStack.isEmpty()) {
-            player.dropItem(itemStack, false);
+            playerEntity.dropItem(itemStack, false);
         }
     }
 

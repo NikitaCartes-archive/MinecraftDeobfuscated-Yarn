@@ -38,7 +38,7 @@ public class EffectCommand {
         int j = seconds != null ? (effect.isInstant() ? seconds : seconds * 20) : (effect.isInstant() ? 1 : 600);
         for (Entity entity : targets) {
             StatusEffectInstance statusEffectInstance;
-            if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).addStatusEffect(statusEffectInstance = new StatusEffectInstance(effect, j, amplifier, false, showParticles))) continue;
+            if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).method_37222(statusEffectInstance = new StatusEffectInstance(effect, j, amplifier, false, showParticles), source.getEntity())) continue;
             ++i;
         }
         if (i == 0) {

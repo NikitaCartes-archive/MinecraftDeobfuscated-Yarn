@@ -132,6 +132,7 @@ implements FlyingItemEntity {
         Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
         List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, box);
         if (!list.isEmpty()) {
+            Entity entity2 = this.method_37225();
             for (LivingEntity livingEntity : list) {
                 double d;
                 if (!livingEntity.isAffectedBySplashPotions() || !((d = this.squaredDistanceTo(livingEntity)) < 16.0)) continue;
@@ -147,7 +148,7 @@ implements FlyingItemEntity {
                     }
                     int i = (int)(e * (double)statusEffectInstance.getDuration() + 0.5);
                     if (i <= 20) continue;
-                    livingEntity.addStatusEffect(new StatusEffectInstance(statusEffect, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()));
+                    livingEntity.method_37222(new StatusEffectInstance(statusEffect, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()), entity2);
                 }
             }
         }

@@ -209,6 +209,11 @@ Selectable {
         return this.focused;
     }
 
+    @Override
+    public boolean method_37303() {
+        return this.visible && this.active;
+    }
+
     protected void setFocused(boolean focused) {
         this.focused = focused;
     }

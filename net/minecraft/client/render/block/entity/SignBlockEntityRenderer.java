@@ -23,6 +23,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -34,9 +35,13 @@ import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.SignType;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
@@ -45,6 +50,8 @@ implements BlockEntityRenderer<SignBlockEntity> {
     public static final int field_32828 = 90;
     private static final int field_32829 = 10;
     private static final String field_32830 = "stick";
+    private static final int field_33962 = -988212;
+    private static final int field_33963 = MathHelper.square(16);
     private final Map<SignType, SignModel> typeToModel = SignType.stream().collect(ImmutableMap.toImmutableMap(signType -> signType, signType -> new SignModel(ctx.getLayerModelPart(EntityModelLayers.createSign(signType)))));
     private final TextRenderer textRenderer;
 
@@ -54,6 +61,9 @@ implements BlockEntityRenderer<SignBlockEntity> {
 
     @Override
     public void render(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+        int o;
+        boolean bl;
+        int n;
         BlockState blockState = signBlockEntity.getCachedState();
         matrixStack.push();
         float g = 0.6666667f;
@@ -80,24 +90,56 @@ implements BlockEntityRenderer<SignBlockEntity> {
         float k = 0.010416667f;
         matrixStack.translate(0.0, 0.3333333432674408, 0.046666666865348816);
         matrixStack.scale(0.010416667f, -0.010416667f, 0.010416667f);
-        int l = signBlockEntity.getTextColor().getSignColor();
-        double d = 0.4;
-        int m = (int)((double)NativeImage.getRed(l) * 0.4);
-        int n = (int)((double)NativeImage.getGreen(l) * 0.4);
-        int o = (int)((double)NativeImage.getBlue(l) * 0.4);
-        int p = NativeImage.getAbgrColor(0, o, n, m);
-        int q = 20;
+        int l = SignBlockEntityRenderer.method_37311(signBlockEntity);
+        int m = 20;
         OrderedText[] orderedTexts = signBlockEntity.updateSign(MinecraftClient.getInstance().shouldFilterText(), text -> {
             List<OrderedText> list = this.textRenderer.wrapLines((StringVisitable)text, 90);
             return list.isEmpty() ? OrderedText.EMPTY : list.get(0);
         });
-        for (int r = 0; r < 4; ++r) {
-            OrderedText orderedText = orderedTexts[r];
-            float s = -this.textRenderer.getWidth(orderedText) / 2;
-            int t = signBlockEntity.isGlowingText() ? 0xF000F0 : i;
-            this.textRenderer.draw(orderedText, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, t);
+        if (signBlockEntity.isGlowingText()) {
+            n = signBlockEntity.getTextColor().getSignColor();
+            bl = SignBlockEntityRenderer.method_37312(signBlockEntity, n);
+            o = 0xF000F0;
+        } else {
+            n = l;
+            bl = false;
+            o = i;
+        }
+        for (int p = 0; p < 4; ++p) {
+            OrderedText orderedText = orderedTexts[p];
+            float q = -this.textRenderer.getWidth(orderedText) / 2;
+            if (bl) {
+                this.textRenderer.method_37296(orderedText, q, p * 10 - 20, n, l, matrixStack.peek().getModel(), vertexConsumerProvider, o);
+                continue;
+            }
+            this.textRenderer.draw(orderedText, q, (float)(p * 10 - 20), n, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, o);
         }
         matrixStack.pop();
+    }
+
+    private static boolean method_37312(SignBlockEntity signBlockEntity, int i) {
+        if (i == DyeColor.BLACK.getSignColor()) {
+            return true;
+        }
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        ClientPlayerEntity clientPlayerEntity = minecraftClient.player;
+        if (clientPlayerEntity != null && minecraftClient.options.getPerspective().isFirstPerson() && clientPlayerEntity.isUsingSpyglass()) {
+            return true;
+        }
+        Entity entity = minecraftClient.getCameraEntity();
+        return entity != null && entity.squaredDistanceTo(Vec3d.ofCenter(signBlockEntity.getPos())) < (double)field_33963;
+    }
+
+    private static int method_37311(SignBlockEntity signBlockEntity) {
+        int i = signBlockEntity.getTextColor().getSignColor();
+        double d = 0.4;
+        int j = (int)((double)NativeImage.getRed(i) * 0.4);
+        int k = (int)((double)NativeImage.getGreen(i) * 0.4);
+        int l = (int)((double)NativeImage.getBlue(i) * 0.4);
+        if (i == DyeColor.BLACK.getSignColor() && signBlockEntity.isGlowingText()) {
+            return -988212;
+        }
+        return NativeImage.getAbgrColor(0, l, k, j);
     }
 
     public static SignType getSignType(Block block) {

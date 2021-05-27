@@ -42,7 +42,6 @@ import net.minecraft.potion.Potions;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -197,22 +196,22 @@ implements RangedAttackMob {
         double d = target.getX() + vec3d.x - this.getX();
         double e = target.getEyeY() - (double)1.1f - this.getY();
         double f = target.getZ() + vec3d.z - this.getZ();
-        float g = MathHelper.sqrt(d * d + f * f);
+        double g = Math.sqrt(d * d + f * f);
         Potion potion = Potions.HARMING;
         if (target instanceof RaiderEntity) {
             potion = target.getHealth() <= 4.0f ? Potions.HEALING : Potions.REGENERATION;
             this.setTarget(null);
-        } else if (g >= 8.0f && !target.hasStatusEffect(StatusEffects.SLOWNESS)) {
+        } else if (g >= 8.0 && !target.hasStatusEffect(StatusEffects.SLOWNESS)) {
             potion = Potions.SLOWNESS;
         } else if (target.getHealth() >= 8.0f && !target.hasStatusEffect(StatusEffects.POISON)) {
             potion = Potions.POISON;
-        } else if (g <= 3.0f && !target.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25f) {
+        } else if (g <= 3.0 && !target.hasStatusEffect(StatusEffects.WEAKNESS) && this.random.nextFloat() < 0.25f) {
             potion = Potions.WEAKNESS;
         }
         PotionEntity potionEntity = new PotionEntity(this.world, this);
         potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
         potionEntity.setPitch(potionEntity.getPitch() - -20.0f);
-        potionEntity.setVelocity(d, e + (double)(g * 0.2f), f, 0.75f, 8.0f);
+        potionEntity.setVelocity(d, e + g * 0.2, f, 0.75f, 8.0f);
         if (!this.isSilent()) {
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0f, 0.8f + this.random.nextFloat() * 0.4f);
         }

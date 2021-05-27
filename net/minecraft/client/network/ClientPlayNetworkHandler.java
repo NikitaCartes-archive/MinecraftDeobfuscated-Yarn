@@ -1232,7 +1232,7 @@ implements ClientPlayPacketListener {
         }
         StatusEffectInstance statusEffectInstance = new StatusEffectInstance(statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon());
         statusEffectInstance.setPermanent(packet.isPermanent());
-        ((LivingEntity)entity).applyStatusEffect(statusEffectInstance);
+        ((LivingEntity)entity).applyStatusEffect(statusEffectInstance, null);
     }
 
     @Override

@@ -16,6 +16,41 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.entity.LivingEntity;
 
+/**
+ * Represents the model of an enderman-like living entity.
+ * 
+ * <p>The model parts are the same as a {@link BipedEntityModel} but with different proportions.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HAT}</td><td>Root part</td><td>{@link #hat}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>Root part</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>Root part</td><td>{@link #body}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_ARM}</td><td>Root part</td><td>{@link #rightArm}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_ARM}</td><td>Root part</td><td>{@link #leftArm}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_LEG}</td><td>Root part</td><td>{@link #rightLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_LEG}</td><td>Root part</td><td>{@link #leftLeg}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(value=EnvType.CLIENT)
 public class EndermanEntityModel<T extends LivingEntity>
 extends BipedEntityModel<T> {

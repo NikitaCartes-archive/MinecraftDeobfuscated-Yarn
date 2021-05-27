@@ -168,8 +168,7 @@ public final class SpawnHelper {
         if (world.getSpawnPos().isWithinDistance(new Vec3d((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5), 24.0)) {
             return false;
         }
-        ChunkPos chunkPos = new ChunkPos(pos);
-        return Objects.equals(chunkPos, chunk.getPos()) || world.getChunkManager().shouldTickChunk(chunkPos);
+        return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.method_37118(pos);
     }
 
     private static boolean canSpawn(ServerWorld world, SpawnGroup group, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnSettings.SpawnEntry spawnEntry, BlockPos.Mutable pos, double squaredDistance) {

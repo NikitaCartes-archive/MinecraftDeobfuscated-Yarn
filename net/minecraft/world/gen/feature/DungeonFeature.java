@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,6 +16,7 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.LootTables;
 import net.minecraft.structure.StructurePiece;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -41,6 +43,7 @@ extends Feature<DefaultFeatureConfig> {
         int u;
         int t;
         int s;
+        Predicate<BlockState> predicate = Feature.notInBlockTagPredicate(BlockTags.FEATURES_CANNOT_REPLACE.getId());
         BlockPos blockPos = context.getOrigin();
         Random random = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
@@ -86,14 +89,14 @@ extends Feature<DefaultFeatureConfig> {
                         }
                         if (!blockState.getMaterial().isSolid() || blockState.isOf(Blocks.CHEST)) continue;
                         if (t == -1 && random.nextInt(4) != 0) {
-                            structureWorldAccess.setBlockState(blockPos2, Blocks.MOSSY_COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
+                            this.setBlockStateIf(structureWorldAccess, blockPos2, Blocks.MOSSY_COBBLESTONE.getDefaultState(), predicate);
                             continue;
                         }
-                        structureWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
+                        this.setBlockStateIf(structureWorldAccess, blockPos2, Blocks.COBBLESTONE.getDefaultState(), predicate);
                         continue;
                     }
                     if (blockState.isOf(Blocks.CHEST) || blockState.isOf(Blocks.SPAWNER)) continue;
-                    structureWorldAccess.setBlockState(blockPos2, AIR, Block.NOTIFY_LISTENERS);
+                    this.setBlockStateIf(structureWorldAccess, blockPos2, AIR, predicate);
                 }
             }
         }
@@ -110,12 +113,12 @@ extends Feature<DefaultFeatureConfig> {
                     ++x;
                 }
                 if (x != 1) continue;
-                structureWorldAccess.setBlockState(blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), Block.NOTIFY_LISTENERS);
+                this.setBlockStateIf(structureWorldAccess, blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), predicate);
                 LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
                 continue block6;
             }
         }
-        structureWorldAccess.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
+        this.setBlockStateIf(structureWorldAccess, blockPos, Blocks.SPAWNER.getDefaultState(), predicate);
         BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos);
         if (blockEntity instanceof MobSpawnerBlockEntity) {
             ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));

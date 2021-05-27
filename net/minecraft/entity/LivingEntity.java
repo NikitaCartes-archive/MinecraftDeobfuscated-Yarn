@@ -74,7 +74,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
@@ -157,6 +157,7 @@ extends Entity {
     private static final int field_30080 = 10;
     private static final int field_30081 = 2;
     public static final int field_30063 = 4;
+    private static final double field_33908 = 128.0;
     protected static final int USING_ITEM_FLAG = 1;
     protected static final int OFF_HAND_ACTIVE_FLAG = 2;
     protected static final int USING_RIPTIDE_FLAG = 4;
@@ -726,14 +727,14 @@ extends Entity {
             while (iterator.hasNext()) {
                 StatusEffect statusEffect = iterator.next();
                 StatusEffectInstance statusEffectInstance = this.activeStatusEffects.get(statusEffect);
-                if (!statusEffectInstance.update(this, () -> this.onStatusEffectUpgraded(statusEffectInstance, true))) {
+                if (!statusEffectInstance.update(this, () -> this.onStatusEffectUpgraded(statusEffectInstance, true, null))) {
                     if (this.world.isClient) continue;
                     iterator.remove();
                     this.onStatusEffectRemoved(statusEffectInstance);
                     continue;
                 }
                 if (statusEffectInstance.getDuration() % 600 != 0) continue;
-                this.onStatusEffectUpgraded(statusEffectInstance, false);
+                this.onStatusEffectUpgraded(statusEffectInstance, false, null);
             }
         } catch (ConcurrentModificationException statusEffect) {
             // empty catch block
@@ -863,17 +864,21 @@ extends Entity {
     }
 
     public boolean addStatusEffect(StatusEffectInstance effect) {
-        if (!this.canHaveStatusEffect(effect)) {
+        return this.method_37222(effect, null);
+    }
+
+    public boolean method_37222(StatusEffectInstance statusEffectInstance, @Nullable Entity entity) {
+        if (!this.canHaveStatusEffect(statusEffectInstance)) {
             return false;
         }
-        StatusEffectInstance statusEffectInstance = this.activeStatusEffects.get(effect.getEffectType());
-        if (statusEffectInstance == null) {
-            this.activeStatusEffects.put(effect.getEffectType(), effect);
-            this.onStatusEffectApplied(effect);
+        StatusEffectInstance statusEffectInstance2 = this.activeStatusEffects.get(statusEffectInstance.getEffectType());
+        if (statusEffectInstance2 == null) {
+            this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
+            this.onStatusEffectApplied(statusEffectInstance, entity);
             return true;
         }
-        if (statusEffectInstance.upgrade(effect)) {
-            this.onStatusEffectUpgraded(statusEffectInstance, true);
+        if (statusEffectInstance2.upgrade(statusEffectInstance)) {
+            this.onStatusEffectUpgraded(statusEffectInstance2, true, entity);
             return true;
         }
         return false;
@@ -884,15 +889,15 @@ extends Entity {
         return this.getGroup() != EntityGroup.UNDEAD || (statusEffect = effect.getEffectType()) != StatusEffects.REGENERATION && statusEffect != StatusEffects.POISON;
     }
 
-    public void applyStatusEffect(StatusEffectInstance effect) {
+    public void applyStatusEffect(StatusEffectInstance effect, @Nullable Entity entity) {
         if (!this.canHaveStatusEffect(effect)) {
             return;
         }
         StatusEffectInstance statusEffectInstance = this.activeStatusEffects.put(effect.getEffectType(), effect);
         if (statusEffectInstance == null) {
-            this.onStatusEffectApplied(effect);
+            this.onStatusEffectApplied(effect, entity);
         } else {
-            this.onStatusEffectUpgraded(effect, true);
+            this.onStatusEffectUpgraded(effect, true, entity);
         }
     }
 
@@ -928,14 +933,14 @@ extends Entity {
         return false;
     }
 
-    protected void onStatusEffectApplied(StatusEffectInstance effect) {
+    protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity entity) {
         this.effectsChanged = true;
         if (!this.world.isClient) {
             effect.getEffectType().onApplied(this, this.getAttributes(), effect.getAmplifier());
         }
     }
 
-    protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect) {
+    protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect, @Nullable Entity entity) {
         this.effectsChanged = true;
         if (reapplyEffect && !this.world.isClient) {
             StatusEffect statusEffect = effect.getEffectType();
@@ -1913,7 +1918,7 @@ extends Entity {
                 Vec3d vec3d5 = this.getRotationVector();
                 float f = this.getPitch() * ((float)Math.PI / 180);
                 double i = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
-                double j = Math.sqrt(LivingEntity.squaredHorizontalLength(vec3d4));
+                double j = vec3d4.method_37267();
                 double k = vec3d5.length();
                 float l = MathHelper.cos(f);
                 l = (float)((double)l * ((double)l * Math.min(1.0, k / 0.4)));
@@ -1931,7 +1936,7 @@ extends Entity {
                 }
                 this.setVelocity(vec3d4.multiply(0.99f, 0.98f, 0.99f));
                 this.move(MovementType.SELF, this.getVelocity());
-                if (this.horizontalCollision && !this.world.isClient && (o = (float)((n = j - (m = Math.sqrt(LivingEntity.squaredHorizontalLength(this.getVelocity())))) * 10.0 - 3.0)) > 0.0f) {
+                if (this.horizontalCollision && !this.world.isClient && (o = (float)((n = j - (m = this.getVelocity().method_37267())) * 10.0 - 3.0)) > 0.0f) {
                     this.playSound(this.getFallSound((int)o), 1.0f, 1.0f);
                     this.damage(DamageSource.FLY_INTO_WALL, o);
                 }
@@ -1969,7 +1974,7 @@ extends Entity {
         double e;
         entity.lastLimbDistance = entity.limbDistance;
         double d = entity.getX() - entity.prevX;
-        float g = MathHelper.sqrt(d * d + (e = flutter ? entity.getY() - entity.prevY : 0.0) * e + (f = entity.getZ() - entity.prevZ) * f) * 4.0f;
+        float g = (float)Math.sqrt(d * d + (e = flutter ? entity.getY() - entity.prevY : 0.0) * e + (f = entity.getZ() - entity.prevZ) * f) * 4.0f;
         if (g > 1.0f) {
             g = 1.0f;
         }
@@ -2486,9 +2491,15 @@ extends Entity {
     }
 
     public boolean canSee(Entity entity) {
-        Vec3d vec3d2;
+        if (entity.world != this.world) {
+            return false;
+        }
         Vec3d vec3d = new Vec3d(this.getX(), this.getEyeY(), this.getZ());
-        return this.world.raycast(new RaycastContext(vec3d, vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ()), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)).getType() == HitResult.Type.MISS;
+        Vec3d vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ());
+        if (vec3d2.distanceTo(vec3d) > 128.0) {
+            return false;
+        }
+        return this.world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this)).getType() == HitResult.Type.MISS;
     }
 
     @Override
@@ -2585,16 +2596,20 @@ extends Entity {
         if (this.isUsingItem()) {
             if (ItemStack.areItemsEqual(this.getStackInHand(this.getActiveHand()), this.activeItemStack)) {
                 this.activeItemStack = this.getStackInHand(this.getActiveHand());
-                this.activeItemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
-                if (this.shouldSpawnConsumptionEffects()) {
-                    this.spawnConsumptionEffects(this.activeItemStack, 5);
-                }
-                if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !this.activeItemStack.isUsedOnRelease()) {
-                    this.consumeItem();
-                }
+                this.method_37119(this.activeItemStack);
             } else {
                 this.clearActiveItem();
             }
+        }
+    }
+
+    protected void method_37119(ItemStack itemStack) {
+        itemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
+        if (this.shouldSpawnConsumptionEffects()) {
+            this.spawnConsumptionEffects(itemStack, 5);
+        }
+        if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !itemStack.isUsedOnRelease()) {
+            this.consumeItem();
         }
     }
 
@@ -3005,11 +3020,11 @@ extends Entity {
         return EquipmentSlot.MAINHAND;
     }
 
-    private static CommandItemSlot getCommandItemSlot(LivingEntity entity, EquipmentSlot slot) {
+    private static StackReference getStackReference(LivingEntity entity, EquipmentSlot slot) {
         if (slot == EquipmentSlot.HEAD || slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) {
-            return CommandItemSlot.of(entity, slot);
+            return StackReference.of(entity, slot);
         }
-        return CommandItemSlot.of(entity, slot, stack -> stack.isEmpty() || MobEntity.getPreferredEquipmentSlot(stack) == slot);
+        return StackReference.of(entity, slot, stack -> stack.isEmpty() || MobEntity.getPreferredEquipmentSlot(stack) == slot);
     }
 
     @Nullable
@@ -3036,12 +3051,12 @@ extends Entity {
     }
 
     @Override
-    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+    public StackReference getStackReference(int mappedIndex) {
         EquipmentSlot equipmentSlot = LivingEntity.getEquipmentSlot(mappedIndex);
         if (equipmentSlot != null) {
-            return LivingEntity.getCommandItemSlot(this, equipmentSlot);
+            return LivingEntity.getStackReference(this, equipmentSlot);
         }
-        return super.getCommandItemSlot(mappedIndex);
+        return super.getStackReference(mappedIndex);
     }
 
     @Override

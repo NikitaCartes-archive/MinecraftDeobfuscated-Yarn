@@ -85,7 +85,7 @@ extends ExplosiveProjectileEntity {
                 i = 40;
             }
             if (i > 0) {
-                ((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1));
+                ((LivingEntity)entity).method_37222(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1), this.method_37225());
             }
         }
     }

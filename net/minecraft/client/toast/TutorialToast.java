@@ -51,7 +51,7 @@ implements Toast {
         }
         if (this.hasProgressBar) {
             DrawableHelper.fill(matrices, 3, 28, 157, 29, -1);
-            float f = (float)MathHelper.clampedLerp(this.lastProgress, this.progress, (float)(startTime - this.lastTime) / 100.0f);
+            float f = MathHelper.method_37166(this.lastProgress, this.progress, (float)(startTime - this.lastTime) / 100.0f);
             int i = this.progress >= this.lastProgress ? -16755456 : -11206656;
             DrawableHelper.fill(matrices, 3, 28, (int)(3.0f + 154.0f * f), 29, i);
             this.lastProgress = f;

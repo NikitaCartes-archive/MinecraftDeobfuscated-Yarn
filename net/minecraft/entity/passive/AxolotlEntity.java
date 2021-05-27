@@ -67,6 +67,42 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents an axolotl, the cutest predator.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Relations of this entity class with the codebase</caption>
+ * <tr>
+ *   <th><b>Relation</b></th><th><b>Class</b></th>
+ * </tr>
+ * <tr>
+ *   <td>Brain</td><td>{@link AxolotlBrain}</td>
+ * </tr>
+ * <tr>
+ *   <td>EntityData</td><td>{@link AxolotlData}</td>
+ * </tr>
+ * <tr>
+ *   <td>Look Control</td><td>{@link AxolotlLookControl}</td>
+ * </tr>
+ * <tr>
+ *   <td>Model</td><td>{@link net.minecraft.client.render.entity.model.AxolotlEntityModel}</td>
+ * </tr>
+ * <tr>
+ *   <td>Move Control</td><td>{@link AxolotlMoveControl}</td>
+ * </tr>
+ * <tr>
+ *   <td>Renderer</td><td>{@link net.minecraft.client.render.entity.AxolotlEntityRenderer}</td>
+ * </tr>
+ * <tr>
+ *   <td>Swim Navigation</td><td>{@link AxolotlSwimNavigation}</td>
+ * </tr>
+ * <tr>
+ *   <td>Variants</td><td>{@link Variant}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 public class AxolotlEntity
 extends AnimalEntity
 implements AngledModelEntity,
@@ -123,6 +159,14 @@ Bucketable {
         super.readCustomDataFromNbt(nbt);
         this.setVariant(Variant.VARIANTS[nbt.getInt(VARIANT_KEY)]);
         this.setFromBucket(nbt.getBoolean("FromBucket"));
+    }
+
+    @Override
+    public void playAmbientSound() {
+        if (this.isPlayingDead()) {
+            return;
+        }
+        super.playAmbientSound();
     }
 
     @Override
@@ -262,7 +306,7 @@ Bucketable {
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
         this.world.getProfiler().push("axolotlActivityUpdate");
-        AxolotlBrain.method_33244(this);
+        AxolotlBrain.updateActivities(this);
         this.world.getProfiler().pop();
         if (!this.isAiDisabled()) {
             Optional<Integer> optional = this.getBrain().getOptionalMemory(MemoryModuleType.PLAY_DEAD_TICKS);
@@ -370,16 +414,16 @@ Bucketable {
             PlayerEntity playerEntity = (PlayerEntity)entity;
             List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotl.getBoundingBox().expand(20.0));
             if (list.contains(playerEntity)) {
-                AxolotlEntity.buffPlayer(playerEntity);
+                axolotl.buffPlayer(playerEntity);
             }
         }
     }
 
-    public static void buffPlayer(PlayerEntity player) {
-        StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.REGENERATION);
+    public void buffPlayer(PlayerEntity playerEntity) {
+        StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.REGENERATION);
         int i = 100 + (statusEffectInstance != null ? statusEffectInstance.getDuration() : 0);
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0));
-        player.removeStatusEffect(StatusEffects.MINING_FATIGUE);
+        playerEntity.method_37222(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0), this);
+        playerEntity.removeStatusEffect(StatusEffects.MINING_FATIGUE);
     }
 
     @Override

@@ -4,10 +4,8 @@
 package net.minecraft.client;
 
 import com.google.common.base.MoreObjects;
-import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Locale;
-import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -102,16 +100,24 @@ public class Keyboard {
         return false;
     }
 
+    private void method_37273(Formatting formatting, Text text) {
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(formatting, Formatting.BOLD)).append(" ").append(text));
+    }
+
+    private void method_37272(Text text) {
+        this.method_37273(Formatting.YELLOW, text);
+    }
+
     private void debugWarn(String key, Object ... args) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(new TranslatableText(key, args)));
+        this.method_37272(new TranslatableText(key, args));
     }
 
     private void debugError(String key, Object ... args) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(key, args)));
+        this.method_37273(Formatting.RED, new TranslatableText(key, args));
     }
 
     private void method_35697(String key, Object ... args) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(MessageFormat.format(key, args)));
+        this.method_37272(new LiteralText(MessageFormat.format(key, args)));
     }
 
     private boolean processF3(int key) {
@@ -208,9 +214,9 @@ public class Keyboard {
                 return true;
             }
             case 76: {
-                Runnable runnable = () -> this.debugWarn("debug.profiling.start", 10);
-                Consumer<Path> consumer = path -> this.debugWarn("debug.profiling.stop", path.toAbsolutePath());
-                this.client.toggleDebugProfiler(runnable, consumer);
+                if (this.client.toggleDebugProfiler(this::method_37272)) {
+                    this.debugWarn("debug.profiling.start", 10);
+                }
                 return true;
             }
             case 67: {
@@ -432,7 +438,7 @@ public class Keyboard {
     }
 
     public void setup(long window2) {
-        InputUtil.setKeyboardCallbacks(window2, (window, key, i, j, modifiers) -> this.client.execute(() -> this.onKey(window, key, i, j, modifiers)), (window, i, modifiers) -> this.client.execute(() -> this.onChar(window, i, modifiers)));
+        InputUtil.setKeyboardCallbacks(window2, (window, i, modifiers, j, k) -> this.client.execute(() -> this.onKey(window, i, modifiers, j, k)), (window, key, i) -> this.client.execute(() -> this.onChar(window, key, i)));
     }
 
     public String getClipboard() {

@@ -62,7 +62,7 @@ implements Packet<ServerPlayPacketListener> {
         this.size = new Vec3i(MathHelper.clamp((int)buf.readByte(), 0, 48), MathHelper.clamp((int)buf.readByte(), 0, 48), MathHelper.clamp((int)buf.readByte(), 0, 48));
         this.mirror = buf.readEnumConstant(BlockMirror.class);
         this.rotation = buf.readEnumConstant(BlockRotation.class);
-        this.metadata = buf.readString(12);
+        this.metadata = buf.readString(128);
         this.integrity = MathHelper.clamp(buf.readFloat(), 0.0f, 1.0f);
         this.seed = buf.readVarLong();
         byte k = buf.readByte();

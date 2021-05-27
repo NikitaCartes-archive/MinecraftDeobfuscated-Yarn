@@ -14,10 +14,43 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 
+/**
+ * Represents the model of a minecart-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@code bottom}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@code front}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@code back}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@code left}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@code right}</td><td>{@linkplain #root Root part}</td><td></td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #CONTENTS}</td><td>{@linkplain #root Root part}</td><td>{@link #contents}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(value=EnvType.CLIENT)
 public class MinecartEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
     private final ModelPart root;
+    /**
+     * The key of the contents model part, whose value is {@value}.
+     */
     private static final String CONTENTS = "contents";
     private final ModelPart contents;
 

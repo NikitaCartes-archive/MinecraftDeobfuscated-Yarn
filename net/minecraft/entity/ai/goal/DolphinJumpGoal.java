@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.DiveJumpingGoal;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.fluid.FluidState;
@@ -88,7 +87,7 @@ extends DiveJumpingGoal {
         if (vec3d.y * vec3d.y < (double)0.03f && this.dolphin.getPitch() != 0.0f) {
             this.dolphin.setPitch(MathHelper.lerpAngle(this.dolphin.getPitch(), 0.0f, 0.2f));
         } else if (vec3d.length() > (double)1.0E-5f) {
-            double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
+            double d = vec3d.method_37267();
             double e = Math.atan2(-vec3d.y, d) * 57.2957763671875;
             this.dolphin.setPitch((float)e);
         }

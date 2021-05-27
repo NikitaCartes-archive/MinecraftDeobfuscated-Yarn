@@ -10,9 +10,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.minecraft.client.util.profiler.Metric;
-import net.minecraft.client.util.profiler.MetricSampler;
 import net.minecraft.client.util.profiler.SamplingChannel;
+import net.minecraft.client.util.profiler.SamplingRecorder;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.MetricSamplerSupplier;
 import net.minecraft.util.profiler.MetricSuppliers;
@@ -142,8 +141,8 @@ Runnable {
     }
 
     @Override
-    public List<MetricSampler> getSamplers() {
-        return ImmutableList.of(new MetricSampler(new Metric(this.name + "-queuesize"), this.queue::getSize, SamplingChannel.MAIL_BOX));
+    public List<SamplingRecorder> getSamplers() {
+        return ImmutableList.of(SamplingRecorder.create(this.name + "-queue-size", SamplingChannel.MAIL_BOXES, this::getQueueSize));
     }
 }
 

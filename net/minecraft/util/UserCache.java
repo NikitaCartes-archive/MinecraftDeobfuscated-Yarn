@@ -35,10 +35,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -50,10 +54,13 @@ public class UserCache {
     private static boolean useRemote;
     private final Map<String, Entry> byName = Maps.newConcurrentMap();
     private final Map<UUID, Entry> byUuid = Maps.newConcurrentMap();
+    private final Map<String, CompletableFuture<GameProfile>> field_33860 = Maps.newConcurrentMap();
     private final GameProfileRepository profileRepository;
     private final Gson gson = new GsonBuilder().create();
     private final File cacheFile;
     private final AtomicLong accessCount = new AtomicLong();
+    @Nullable
+    private Executor field_33861;
 
     public UserCache(GameProfileRepository profileRepository, File cacheFile) {
         this.profileRepository = profileRepository;
@@ -148,6 +155,18 @@ public class UserCache {
         return gameProfile;
     }
 
+    public void method_37156(String string, Consumer<GameProfile> consumer) {
+        if (this.field_33861 == null) {
+            throw new IllegalStateException("No executor");
+        }
+        CompletableFuture<GameProfile> completableFuture = this.field_33860.get(string);
+        if (completableFuture != null) {
+            this.field_33860.put(string, (CompletableFuture<GameProfile>)completableFuture.whenCompleteAsync((gameProfile, throwable) -> consumer.accept((GameProfile)gameProfile), this.field_33861));
+        } else {
+            this.field_33860.put(string, (CompletableFuture<GameProfile>)((CompletableFuture)CompletableFuture.supplyAsync(() -> this.findByName(string), Util.getMainWorkerExecutor()).whenCompleteAsync((gameProfile, throwable) -> this.field_33860.remove(string), this.field_33861)).whenCompleteAsync((gameProfile, throwable) -> consumer.accept((GameProfile)gameProfile), this.field_33861));
+        }
+    }
+
     @Nullable
     public GameProfile getByUuid(UUID uuid) {
         Entry entry = this.byUuid.get(uuid);
@@ -156,6 +175,10 @@ public class UserCache {
         }
         entry.setLastAccessed(this.incrementAndGetAccessCount());
         return entry.getProfile();
+    }
+
+    public void method_37157(Executor executor) {
+        this.field_33861 = executor;
     }
 
     private static DateFormat getDateFormat() {

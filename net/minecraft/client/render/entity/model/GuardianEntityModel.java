@@ -28,9 +28,21 @@ extends SinglePartEntityModel<GuardianEntity> {
     private static final float[] SPIKE_PIVOTS_X = new float[]{0.0f, 0.0f, 8.0f, -8.0f, -8.0f, 8.0f, 8.0f, -8.0f, 0.0f, 0.0f, 8.0f, -8.0f};
     private static final float[] SPIKE_PIVOTS_Y = new float[]{-8.0f, -8.0f, -8.0f, -8.0f, 0.0f, 0.0f, 0.0f, 0.0f, 8.0f, 8.0f, 8.0f, 8.0f};
     private static final float[] SPIKE_PIVOTS_Z = new float[]{8.0f, -8.0f, 0.0f, 0.0f, -8.0f, -8.0f, 8.0f, 8.0f, 8.0f, -8.0f, 0.0f, 0.0f};
+    /**
+     * The key of the eye model part, whose value is {@value}.
+     */
     private static final String EYE = "eye";
+    /**
+     * The key of the tail0 model part, whose value is {@value}.
+     */
     private static final String TAIL0 = "tail0";
+    /**
+     * The key of the tail1 model part, whose value is {@value}.
+     */
     private static final String TAIL1 = "tail1";
+    /**
+     * The key of the tail2 model part, whose value is {@value}.
+     */
     private static final String TAIL2 = "tail2";
     private final ModelPart root;
     private final ModelPart head;

@@ -176,7 +176,7 @@ implements Bucketable {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
+    protected void playStepSound(BlockPos pos, BlockState blockState) {
     }
 
     static class FishMoveControl

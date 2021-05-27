@@ -113,7 +113,7 @@ public abstract class Option {
     });
     private static final Text FOV_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.fovEffectScale.tooltip");
     public static final DoubleOption FOV_EFFECT_SCALE = new DoubleOption("options.fovEffectScale", 0.0, 1.0, 0.0f, gameOptions -> Math.pow(gameOptions.fovEffectScale, 2.0), (gameOptions, fovEffectScale) -> {
-        gameOptions.fovEffectScale = MathHelper.sqrt(fovEffectScale);
+        gameOptions.fovEffectScale = (float)Math.sqrt(fovEffectScale);
     }, (gameOptions, option) -> {
         double d = option.getRatio(option.get((GameOptions)gameOptions));
         if (d == 0.0) {

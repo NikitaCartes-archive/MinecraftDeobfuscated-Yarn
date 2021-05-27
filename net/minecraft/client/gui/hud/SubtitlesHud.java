@@ -74,7 +74,7 @@ implements SoundInstanceListener {
             int n = m / 2;
             float f = 1.0f;
             int o = this.client.textRenderer.getWidth(text);
-            int p = MathHelper.floor(MathHelper.clampedLerp(255.0, 75.0, (float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0f));
+            int p = MathHelper.floor(MathHelper.method_37166(255.0f, 75.0f, (float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0f));
             int q = p << 16 | p << 8 | p;
             matrices.push();
             matrices.translate((float)this.client.getWindow().getScaledWidth() - (float)l * 1.0f - 2.0f, (float)(this.client.getWindow().getScaledHeight() - 30) - (float)(i * (m + 1)) * 1.0f, 0.0);

@@ -217,8 +217,7 @@ implements StatsListener {
         protected final List<StatType<Item>> itemStatTypes;
         private final int[] HEADER_ICON_SPRITE_INDICES;
         protected int selectedHeaderColumn;
-        protected final List<Item> items;
-        protected final Comparator<Item> comparator;
+        protected final Comparator<Entry> comparator;
         @Nullable
         protected StatType<?> selectedStatType;
         protected int field_18760;
@@ -253,8 +252,7 @@ implements StatsListener {
                 set.add(block.asItem());
             }
             set.remove(Items.AIR);
-            this.items = Lists.newArrayList(set);
-            for (Item item : this.items) {
+            for (Item item : set) {
                 this.addEntry(new Entry(item));
             }
         }
@@ -337,7 +335,7 @@ implements StatsListener {
                 if (mouseX < i + 40 || mouseX > i + 40 + 20) {
                     return;
                 }
-                Item item = this.items.get(this.children().indexOf(entry));
+                Item item = entry.method_37307();
                 this.render(matrices, this.getText(item), mouseX, mouseY);
             } else {
                 Text text = null;
@@ -380,19 +378,21 @@ implements StatsListener {
                 this.selectedStatType = null;
                 this.field_18760 = 0;
             }
-            this.items.sort(this.comparator);
+            this.children().sort(this.comparator);
         }
 
         @Environment(value=EnvType.CLIENT)
         class ItemComparator
-        implements Comparator<Item> {
+        implements Comparator<Entry> {
             ItemComparator() {
             }
 
             @Override
-            public int compare(Item item, Item item2) {
+            public int compare(Entry entry, Entry entry2) {
                 int j;
                 int i;
+                Item item = entry.method_37307();
+                Item item2 = entry2.method_37307();
                 if (ItemStatsListWidget.this.selectedStatType == null) {
                     i = 0;
                     j = 0;
@@ -413,7 +413,7 @@ implements StatsListener {
 
             @Override
             public /* synthetic */ int compare(Object a, Object b) {
-                return this.compare((Item)a, (Item)b);
+                return this.compare((Entry)a, (Entry)b);
             }
         }
 
@@ -424,6 +424,10 @@ implements StatsListener {
 
             Entry(Item item) {
                 this.field_33830 = item;
+            }
+
+            public Item method_37307() {
+                return this.field_33830;
             }
 
             @Override

@@ -3,6 +3,7 @@
  */
 package net.minecraft.advancement.criterion;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
@@ -59,7 +60,7 @@ extends AbstractCriterion<Conditions> {
         }
 
         public static Conditions item(ItemConvertible item) {
-            return new Conditions(EntityPredicate.Extended.EMPTY, new ItemPredicate(null, item.asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.ARRAY_OF_ANY, EnchantmentPredicate.ARRAY_OF_ANY, null, NbtPredicate.ANY));
+            return new Conditions(EntityPredicate.Extended.EMPTY, new ItemPredicate(null, ImmutableSet.of(item.asItem()), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.ARRAY_OF_ANY, EnchantmentPredicate.ARRAY_OF_ANY, null, NbtPredicate.ANY));
         }
 
         public boolean matches(ItemStack stack) {

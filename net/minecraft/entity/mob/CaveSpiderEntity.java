@@ -43,7 +43,7 @@ extends SpiderEntity {
                     i = 15;
                 }
                 if (i > 0) {
-                    ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0));
+                    ((LivingEntity)target).method_37222(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
                 }
             }
             return true;

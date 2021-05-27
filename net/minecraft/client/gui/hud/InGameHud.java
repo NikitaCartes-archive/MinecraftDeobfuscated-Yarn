@@ -101,6 +101,8 @@ extends DrawableHelper {
     private static final int field_32170 = 10;
     private static final String field_32171 = ": ";
     private static final float field_32172 = 0.2f;
+    private static final int field_33942 = 9;
+    private static final int field_33943 = 8;
     private final Random random = new Random();
     private final MinecraftClient client;
     private final ItemRenderer itemRenderer;
@@ -337,10 +339,10 @@ extends DrawableHelper {
             matrices.pop();
             scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
             if (this.client.options.keyPlayerList.isPressed() && (!this.client.isInSingleplayer() || this.client.player.networkHandler.getPlayerList().size() > 1 || scoreboardObjective2 != null)) {
-                this.playerListHud.tick(true);
+                this.playerListHud.setVisible(true);
                 this.playerListHud.render(matrices, this.scaledWidth, scoreboard, scoreboardObjective2);
             } else {
-                this.playerListHud.tick(false);
+                this.playerListHud.setVisible(false);
             }
         }
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -681,7 +683,6 @@ extends DrawableHelper {
     }
 
     private void renderStatusBars(MatrixStack matrices) {
-        int ad;
         int ac;
         int ab;
         int aa;
@@ -715,127 +716,115 @@ extends DrawableHelper {
         int m = this.scaledWidth / 2 - 91;
         int n = this.scaledWidth / 2 + 91;
         int o = this.scaledHeight - 39;
-        float f = (float)playerEntity.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH);
+        float f = Math.max((float)playerEntity.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH), (float)Math.max(j, i));
         int p = MathHelper.ceil(playerEntity.getAbsorptionAmount());
         int q = MathHelper.ceil((f + (float)p) / 2.0f / 10.0f);
         int r = Math.max(10 - (q - 2), 3);
         int s = o - (q - 1) * r - 10;
         int t = o - 10;
-        int u = p;
-        int v = playerEntity.getArmor();
-        int w = -1;
+        int u = playerEntity.getArmor();
+        int v = -1;
         if (playerEntity.hasStatusEffect(StatusEffects.REGENERATION)) {
-            w = this.ticks % MathHelper.ceil(f + 5.0f);
+            v = this.ticks % MathHelper.ceil(f + 5.0f);
         }
         this.client.getProfiler().push("armor");
-        for (x = 0; x < 10; ++x) {
-            if (v <= 0) continue;
-            y = m + x * 8;
-            if (x * 2 + 1 < v) {
-                this.drawTexture(matrices, y, s, 34, 9, 9, 9);
+        for (int w = 0; w < 10; ++w) {
+            if (u <= 0) continue;
+            x = m + w * 8;
+            if (w * 2 + 1 < u) {
+                this.drawTexture(matrices, x, s, 34, 9, 9, 9);
             }
-            if (x * 2 + 1 == v) {
-                this.drawTexture(matrices, y, s, 25, 9, 9, 9);
+            if (w * 2 + 1 == u) {
+                this.drawTexture(matrices, x, s, 25, 9, 9, 9);
             }
-            if (x * 2 + 1 <= v) continue;
-            this.drawTexture(matrices, y, s, 16, 9, 9, 9);
+            if (w * 2 + 1 <= u) continue;
+            this.drawTexture(matrices, x, s, 16, 9, 9, 9);
         }
         this.client.getProfiler().swap("health");
-        for (x = MathHelper.ceil((f + (float)p) / 2.0f) - 1; x >= 0; --x) {
-            y = 16;
-            if (u <= 0) {
-                if (playerEntity.hasStatusEffect(StatusEffects.POISON)) {
-                    y += 36;
-                } else if (playerEntity.hasStatusEffect(StatusEffects.WITHER)) {
-                    y += 72;
-                } else if (playerEntity.isFreezing()) {
-                    y += 126;
-                }
-            }
-            z = 0;
-            if (bl) {
-                z = 1;
-            }
-            aa = MathHelper.ceil((float)(x + 1) / 10.0f) - 1;
-            ab = m + x % 10 * 8;
-            ac = o - aa * r;
-            if (i <= 4) {
-                ac += this.random.nextInt(2);
-            }
-            if (u <= 0 && x == w) {
-                ac -= 2;
-            }
-            ad = 0;
-            if (playerEntity.world.getLevelProperties().isHardcore()) {
-                ad = 5;
-            }
-            this.drawTexture(matrices, ab, ac, 16 + z * 9, 9 * ad, 9, 9);
-            if (bl) {
-                if (x * 2 + 1 < j) {
-                    this.drawTexture(matrices, ab, ac, y + 54, 9 * ad, 9, 9);
-                }
-                if (x * 2 + 1 == j) {
-                    this.drawTexture(matrices, ab, ac, y + 63, 9 * ad, 9, 9);
-                }
-            }
-            if (u > 0) {
-                if (u == p && p % 2 == 1) {
-                    this.drawTexture(matrices, ab, ac, y + 153, 9 * ad, 9, 9);
-                    --u;
-                    continue;
-                }
-                this.drawTexture(matrices, ab, ac, y + 144, 9 * ad, 9, 9);
-                u -= 2;
-                continue;
-            }
-            if (x * 2 + 1 < i) {
-                this.drawTexture(matrices, ab, ac, y + 36, 9 * ad, 9, 9);
-            }
-            if (x * 2 + 1 != i) continue;
-            this.drawTexture(matrices, ab, ac, y + 45, 9 * ad, 9, 9);
-        }
+        this.method_37298(matrices, playerEntity, m, o, r, v, f, i, j, p, bl);
         LivingEntity livingEntity = this.getRiddenEntity();
-        y = this.getHeartCount(livingEntity);
-        if (y == 0) {
+        x = this.getHeartCount(livingEntity);
+        if (x == 0) {
             this.client.getProfiler().swap("food");
-            for (z = 0; z < 10; ++z) {
-                aa = o;
-                ab = 16;
-                ac = 0;
+            for (y = 0; y < 10; ++y) {
+                z = o;
+                aa = 16;
+                ab = 0;
                 if (playerEntity.hasStatusEffect(StatusEffects.HUNGER)) {
-                    ab += 36;
-                    ac = 13;
+                    aa += 36;
+                    ab = 13;
                 }
                 if (playerEntity.getHungerManager().getSaturationLevel() <= 0.0f && this.ticks % (k * 3 + 1) == 0) {
-                    aa += this.random.nextInt(3) - 1;
+                    z += this.random.nextInt(3) - 1;
                 }
-                ad = n - z * 8 - 9;
-                this.drawTexture(matrices, ad, aa, 16 + ac * 9, 27, 9, 9);
-                if (z * 2 + 1 < k) {
-                    this.drawTexture(matrices, ad, aa, ab + 36, 27, 9, 9);
+                ac = n - y * 8 - 9;
+                this.drawTexture(matrices, ac, z, 16 + ab * 9, 27, 9, 9);
+                if (y * 2 + 1 < k) {
+                    this.drawTexture(matrices, ac, z, aa + 36, 27, 9, 9);
                 }
-                if (z * 2 + 1 != k) continue;
-                this.drawTexture(matrices, ad, aa, ab + 45, 27, 9, 9);
+                if (y * 2 + 1 != k) continue;
+                this.drawTexture(matrices, ac, z, aa + 45, 27, 9, 9);
             }
             t -= 10;
         }
         this.client.getProfiler().swap("air");
-        z = playerEntity.getMaxAir();
-        aa = Math.min(playerEntity.getAir(), z);
-        if (playerEntity.isSubmergedIn(FluidTags.WATER) || aa < z) {
-            ab = this.getHeartRows(y) - 1;
-            t -= ab * 10;
-            ac = MathHelper.ceil((double)(aa - 2) * 10.0 / (double)z);
-            ad = MathHelper.ceil((double)aa * 10.0 / (double)z) - ac;
-            for (int ae = 0; ae < ac + ad; ++ae) {
-                if (ae < ac) {
-                    this.drawTexture(matrices, n - ae * 8 - 9, t, 16, 18, 9, 9);
+        y = playerEntity.getMaxAir();
+        z = Math.min(playerEntity.getAir(), y);
+        if (playerEntity.isSubmergedIn(FluidTags.WATER) || z < y) {
+            aa = this.getHeartRows(x) - 1;
+            t -= aa * 10;
+            ab = MathHelper.ceil((double)(z - 2) * 10.0 / (double)y);
+            ac = MathHelper.ceil((double)z * 10.0 / (double)y) - ab;
+            for (int ad = 0; ad < ab + ac; ++ad) {
+                if (ad < ab) {
+                    this.drawTexture(matrices, n - ad * 8 - 9, t, 16, 18, 9, 9);
                     continue;
                 }
-                this.drawTexture(matrices, n - ae * 8 - 9, t, 25, 18, 9, 9);
+                this.drawTexture(matrices, n - ad * 8 - 9, t, 25, 18, 9, 9);
             }
         }
         this.client.getProfiler().pop();
+    }
+
+    private void method_37298(MatrixStack matrixStack, PlayerEntity playerEntity, int i, int j, int k, int l, float f, int m, int n, int o, boolean bl) {
+        class_6411 lv = class_6411.method_37301(playerEntity);
+        int p = 9 * (playerEntity.world.getLevelProperties().isHardcore() ? 5 : 0);
+        int q = MathHelper.ceil((double)f / 2.0);
+        int r = MathHelper.ceil((double)o / 2.0);
+        int s = q * 2;
+        for (int t = q + r - 1; t >= 0; --t) {
+            boolean bl4;
+            int z;
+            boolean bl2;
+            int u = t / 10;
+            int v = t % 10;
+            int w = i + v * 8;
+            int x = j - u * k;
+            if (m + o <= 4) {
+                x += this.random.nextInt(2);
+            }
+            if (t < q && t == l) {
+                x -= 2;
+            }
+            this.method_37299(matrixStack, class_6411.field_33944, w, x, p, bl, false);
+            int y = t * 2;
+            boolean bl3 = bl2 = t >= q;
+            if (bl2 && (z = y - s) < o) {
+                boolean bl32 = z + 1 == o;
+                this.method_37299(matrixStack, lv == class_6411.field_33947 ? lv : class_6411.field_33948, w, x, p, false, bl32);
+            }
+            if (bl && y < n) {
+                bl4 = y + 1 == n;
+                this.method_37299(matrixStack, lv, w, x, p, true, bl4);
+            }
+            if (y >= m) continue;
+            bl4 = y + 1 == m;
+            this.method_37299(matrixStack, lv, w, x, p, false, bl4);
+        }
+    }
+
+    private void method_37299(MatrixStack matrixStack, class_6411 arg, int i, int j, int k, boolean bl, boolean bl2) {
+        this.drawTexture(matrixStack, i, j, arg.method_37302(bl2, bl), k, 9, 9);
     }
 
     private void renderMountHealth(MatrixStack matrices) {
@@ -1160,6 +1149,41 @@ extends DrawableHelper {
 
     public void resetDebugHudChunk() {
         this.debugHud.resetChunk();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static enum class_6411 {
+        field_33944(0, false),
+        field_33945(2, true),
+        field_33946(4, true),
+        field_33947(6, true),
+        field_33948(8, false),
+        field_33949(9, false);
+
+        private final int field_33950;
+        private final boolean field_33951;
+
+        private class_6411(int j, boolean bl) {
+            this.field_33950 = j;
+            this.field_33951 = bl;
+        }
+
+        public int method_37302(boolean bl, boolean bl2) {
+            int i;
+            if (this == field_33944) {
+                i = bl2 ? 1 : 0;
+            } else {
+                int j = bl ? 1 : 0;
+                int k = this.field_33951 && bl2 ? 2 : 0;
+                i = j + k;
+            }
+            return 16 + (this.field_33950 * 2 + i) * 9;
+        }
+
+        static class_6411 method_37301(PlayerEntity playerEntity) {
+            class_6411 lv = playerEntity.hasStatusEffect(StatusEffects.POISON) ? field_33946 : (playerEntity.hasStatusEffect(StatusEffects.WITHER) ? field_33947 : (playerEntity.isFreezing() ? field_33949 : field_33945));
+            return lv;
+        }
     }
 }
 

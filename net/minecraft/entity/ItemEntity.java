@@ -125,7 +125,7 @@ extends Entity {
                 this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
             }
         }
-        if (!this.onGround || ItemEntity.squaredHorizontalLength(this.getVelocity()) > (double)1.0E-5f || (this.age + this.getId()) % 4 == 0) {
+        if (!this.onGround || this.getVelocity().method_37268() > (double)1.0E-5f || (this.age + this.getId()) % 4 == 0) {
             this.move(MovementType.SELF, this.getVelocity());
             float g = 0.98f;
             if (this.onGround) {

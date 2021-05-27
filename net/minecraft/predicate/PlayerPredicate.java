@@ -20,7 +20,9 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerRecipeBook;
@@ -29,18 +31,24 @@ import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerPredicate {
     public static final PlayerPredicate ANY = new Builder().build();
+    public static final int field_33928 = 100;
     private final NumberRange.IntRange experienceLevel;
     @Nullable
     private final GameMode gameMode;
     private final Map<Stat<?>, NumberRange.IntRange> stats;
     private final Object2BooleanMap<Identifier> recipes;
     private final Map<Identifier, AdvancementPredicate> advancements;
+    private final EntityPredicate field_33929;
 
     private static AdvancementPredicate criterionFromJson(JsonElement json) {
         if (json.isJsonPrimitive()) {
@@ -56,22 +64,23 @@ public class PlayerPredicate {
         return new AdvancementCriteriaPredicate(object2BooleanMap);
     }
 
-    PlayerPredicate(NumberRange.IntRange experienceLevel, @Nullable GameMode gameMode, Map<Stat<?>, NumberRange.IntRange> stats, Object2BooleanMap<Identifier> recipes, Map<Identifier, AdvancementPredicate> advancements) {
+    PlayerPredicate(NumberRange.IntRange experienceLevel, @Nullable GameMode gameMode, Map<Stat<?>, NumberRange.IntRange> stats, Object2BooleanMap<Identifier> recipes, Map<Identifier, AdvancementPredicate> advancements, EntityPredicate entityPredicate) {
         this.experienceLevel = experienceLevel;
         this.gameMode = gameMode;
         this.stats = stats;
         this.recipes = recipes;
         this.advancements = advancements;
+        this.field_33929 = entityPredicate;
     }
 
-    public boolean test(Entity entity) {
+    public boolean test(Entity entity2) {
         if (this == ANY) {
             return true;
         }
-        if (!(entity instanceof ServerPlayerEntity)) {
+        if (!(entity2 instanceof ServerPlayerEntity)) {
             return false;
         }
-        ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+        ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity2;
         if (!this.experienceLevel.test(serverPlayerEntity.experienceLevel)) {
             return false;
         }
@@ -95,6 +104,19 @@ public class PlayerPredicate {
             for (Map.Entry<Identifier, AdvancementPredicate> entry3 : this.advancements.entrySet()) {
                 Advancement advancement = serverAdvancementLoader.get(entry3.getKey());
                 if (advancement != null && entry3.getValue().test(playerAdvancementTracker.getProgress(advancement))) continue;
+                return false;
+            }
+        }
+        if (this.field_33929 != EntityPredicate.ANY) {
+            Vec3d vec3d = serverPlayerEntity.getEyePos();
+            Vec3d vec3d2 = serverPlayerEntity.getRotationVec(1.0f);
+            Vec3d vec3d3 = vec3d.add(vec3d2.x * 100.0, vec3d2.y * 100.0, vec3d2.z * 100.0);
+            EntityHitResult entityHitResult = ProjectileUtil.method_37226(serverPlayerEntity.world, serverPlayerEntity, vec3d, vec3d3, new Box(vec3d, vec3d3).expand(1.0), entity -> !entity.isSpectator(), 0.0f);
+            if (entityHitResult == null || entityHitResult.getType() != HitResult.Type.ENTITY) {
+                return false;
+            }
+            Entity entity22 = entityHitResult.getEntity();
+            if (!this.field_33929.test(serverPlayerEntity, entity22) || !serverPlayerEntity.canSee(entity22)) {
                 return false;
             }
         }
@@ -134,12 +156,13 @@ public class PlayerPredicate {
         }
         HashMap<Identifier, AdvancementPredicate> map2 = Maps.newHashMap();
         JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "advancements", new JsonObject());
-        for (Map.Entry<String, JsonElement> entry2 : jsonObject2.entrySet()) {
-            Identifier identifier4 = new Identifier(entry2.getKey());
-            AdvancementPredicate advancementPredicate = PlayerPredicate.criterionFromJson(entry2.getValue());
+        for (Map.Entry entry : jsonObject2.entrySet()) {
+            Identifier identifier4 = new Identifier((String)entry.getKey());
+            AdvancementPredicate advancementPredicate = PlayerPredicate.criterionFromJson((JsonElement)entry.getValue());
             map2.put(identifier4, advancementPredicate);
         }
-        return new PlayerPredicate(intRange, gameMode, map, object2BooleanMap, map2);
+        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("looking_at"));
+        return new PlayerPredicate(intRange, gameMode, map, object2BooleanMap, map2, entityPredicate);
     }
 
     private static <T> Stat<T> getStat(StatType<T> type, Identifier id) {
@@ -178,7 +201,7 @@ public class PlayerPredicate {
         }
         if (!this.recipes.isEmpty()) {
             jsonObject2 = new JsonObject();
-            this.recipes.forEach((id, present) -> jsonObject2.addProperty(id.toString(), (Boolean)present));
+            this.recipes.forEach((id, boolean_) -> jsonObject2.addProperty(id.toString(), (Boolean)boolean_));
             jsonObject.add("recipes", jsonObject2);
         }
         if (!this.advancements.isEmpty()) {
@@ -186,6 +209,7 @@ public class PlayerPredicate {
             this.advancements.forEach((id, advancementPredicate) -> jsonObject2.add(id.toString(), advancementPredicate.toJson()));
             jsonObject.add("advancements", jsonObject2);
         }
+        jsonObject.add("looking_at", this.field_33929.toJson());
         return jsonObject;
     }
 
@@ -256,6 +280,7 @@ public class PlayerPredicate {
         private final Map<Stat<?>, NumberRange.IntRange> stats = Maps.newHashMap();
         private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<Identifier>();
         private final Map<Identifier, AdvancementPredicate> advancements = Maps.newHashMap();
+        private EntityPredicate field_33930 = EntityPredicate.ANY;
 
         public static Builder create() {
             return new Builder();
@@ -281,6 +306,11 @@ public class PlayerPredicate {
             return this;
         }
 
+        public Builder method_37251(EntityPredicate entityPredicate) {
+            this.field_33930 = entityPredicate;
+            return this;
+        }
+
         public Builder advancement(Identifier id, boolean done) {
             this.advancements.put(id, new CompletedAdvancementPredicate(done));
             return this;
@@ -292,7 +322,7 @@ public class PlayerPredicate {
         }
 
         public PlayerPredicate build() {
-            return new PlayerPredicate(this.experienceLevel, this.gameMode, this.stats, this.recipes, this.advancements);
+            return new PlayerPredicate(this.experienceLevel, this.gameMode, this.stats, this.recipes, this.advancements, this.field_33930);
         }
     }
 }

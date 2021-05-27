@@ -11,9 +11,9 @@ import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
@@ -105,9 +105,9 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public CommandItemSlot getCommandItemSlot(final int mappedIndex) {
+    public StackReference getStackReference(final int mappedIndex) {
         if (mappedIndex >= 0 && mappedIndex < this.size()) {
-            return new CommandItemSlot(){
+            return new StackReference(){
 
                 @Override
                 public ItemStack get() {
@@ -121,7 +121,7 @@ NamedScreenHandlerFactory {
                 }
             };
         }
-        return super.getCommandItemSlot(mappedIndex);
+        return super.getStackReference(mappedIndex);
     }
 
     @Override

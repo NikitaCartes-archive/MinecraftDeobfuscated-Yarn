@@ -8,10 +8,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 
 public class RangeDecoratorConfig
-implements DecoratorConfig {
+implements DecoratorConfig,
+FeatureConfig {
     public static final Codec<RangeDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)HeightProvider.CODEC.fieldOf("height")).forGetter(rangeDecoratorConfig -> rangeDecoratorConfig.heightProvider)).apply((Applicative<RangeDecoratorConfig, ?>)instance, RangeDecoratorConfig::new));
     public final HeightProvider heightProvider;
 

@@ -21,6 +21,42 @@ import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of a llama-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>Root part</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>Root part</td><td>{@link #body}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_CHEST}</td><td>Root part</td><td>{@link #rightChest}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_CHEST}</td><td>Root part</td><td>{@link #leftChest}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_HIND_LEG}</td><td>Root part</td><td>{@link #rightHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_HIND_LEG}</td><td>Root part</td><td>{@link #leftHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_FRONT_LEG}</td><td>Root part</td><td>{@link #rightFrontLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_FRONT_LEG}</td><td>Root part</td><td>{@link #leftFrontLeg}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(value=EnvType.CLIENT)
 public class LlamaEntityModel<T extends AbstractDonkeyEntity>
 extends EntityModel<T> {
@@ -93,10 +129,10 @@ extends EntityModel<T> {
             matrices.push();
             matrices.scale(0.45454544f, 0.41322312f, 0.45454544f);
             matrices.translate(0.0, 2.0625, 0.0);
-            ImmutableList.of(this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         } else {
-            ImmutableList.of(this.head, this.body, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.head, this.body, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
         }
     }
 }

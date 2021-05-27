@@ -11,7 +11,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
@@ -62,12 +62,12 @@ extends Item {
     }
 
     @Override
-    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, CommandItemSlot cursorSlot) {
+    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
         if (clickType != ClickType.RIGHT || !slot.canTakePartial(player)) {
             return false;
         }
         if (otherStack.isEmpty()) {
-            BundleItem.removeFirstStack(stack).ifPresent(cursorSlot::set);
+            BundleItem.removeFirstStack(stack).ifPresent(cursorStackReference::set);
         } else {
             otherStack.decrement(BundleItem.addToBundle(stack, otherStack));
         }

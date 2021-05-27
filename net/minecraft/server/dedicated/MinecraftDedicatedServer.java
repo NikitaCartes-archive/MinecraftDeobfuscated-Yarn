@@ -10,11 +10,15 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +27,7 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_6396;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
@@ -52,7 +57,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.logging.UncaughtExceptionHandler;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
@@ -255,10 +259,28 @@ implements DedicatedServer {
     }
 
     @Override
-    public void populateCrashReport(CrashReportSection section) {
-        super.populateCrashReport(section);
-        section.add("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
-        section.add("Type", () -> "Dedicated Server (map_server.txt)");
+    public class_6396 populateCrashReport(class_6396 arg) {
+        arg.method_37123("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
+        arg.method_37123("Type", () -> "Dedicated Server (map_server.txt)");
+        return arg;
+    }
+
+    @Override
+    public void method_37113(Path path) throws IOException {
+        ServerPropertiesHandler serverPropertiesHandler = this.getProperties();
+        try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
+            writer.write(String.format("sync-chunk-writes=%s%n", serverPropertiesHandler.syncChunkWrites));
+            writer.write(String.format("gamemode=%s%n", new Object[]{serverPropertiesHandler.gameMode}));
+            writer.write(String.format("spawn-monsters=%s%n", serverPropertiesHandler.spawnMonsters));
+            writer.write(String.format("entity-broadcast-range-percentage=%d%n", serverPropertiesHandler.entityBroadcastRangePercentage));
+            writer.write(String.format("max-world-size=%d%n", serverPropertiesHandler.maxWorldSize));
+            writer.write(String.format("spawn-npcs=%s%n", serverPropertiesHandler.spawnNpcs));
+            writer.write(String.format("view-distance=%d%n", serverPropertiesHandler.viewDistance));
+            writer.write(String.format("spawn-animals=%s%n", serverPropertiesHandler.spawnAnimals));
+            writer.write(String.format("generate-structures=%s%n", serverPropertiesHandler.generatorOptions.shouldGenerateStructures()));
+            writer.write(String.format("use-native=%s%n", serverPropertiesHandler.useNativeTransport));
+            writer.write(String.format("rate-limit=%d%n", serverPropertiesHandler.rateLimit));
+        }
     }
 
     @Override

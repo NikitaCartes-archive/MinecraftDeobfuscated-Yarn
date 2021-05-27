@@ -61,10 +61,6 @@ extends Feature<TreeFeatureConfig> {
         return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
     }
 
-    private static boolean canPlaceTreeOn(TestableWorld world, BlockPos pos) {
-        return world.testBlockState(pos, state -> TreeFeature.isSoil(state) || state.isOf(Blocks.FARMLAND));
-    }
-
     private static boolean isReplaceablePlant(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> {
             Material material = state.getMaterial();
@@ -88,7 +84,7 @@ extends Feature<TreeFeatureConfig> {
         if (pos.getY() < world.getBottomY() + 1 || pos.getY() + i + 1 > world.getTopY()) {
             return false;
         }
-        if (!TreeFeature.canPlaceTreeOn(world, pos.down())) {
+        if (!treeFeatureConfig.field_33933.getBlockState(random, pos).canPlaceAt(world, pos)) {
             return false;
         }
         OptionalInt optionalInt = treeFeatureConfig.minimumSize.getMinClippedHeight();

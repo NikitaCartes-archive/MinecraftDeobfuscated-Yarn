@@ -264,7 +264,7 @@ Saddleable {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
+    protected void playStepSound(BlockPos pos, BlockState blockState) {
         this.playSound(this.isInLava() ? SoundEvents.ENTITY_STRIDER_STEP_LAVA : SoundEvents.ENTITY_STRIDER_STEP, 1.0f, 1.0f);
     }
 

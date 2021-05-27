@@ -94,7 +94,7 @@ extends HandledScreen<MerchantScreenHandler> {
         } else {
             this.textRenderer.draw(matrices, this.title, (float)(49 + this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0f, 0x404040);
         }
-        this.textRenderer.draw(matrices, this.displayName, (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 0x404040);
+        this.textRenderer.draw(matrices, this.playerInventoryTitle, (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 0x404040);
         int l = this.textRenderer.getWidth(TRADES_TEXT);
         this.textRenderer.draw(matrices, TRADES_TEXT, (float)(5 - l / 2 + 48), 6.0f, 0x404040);
     }

@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 public class StructurePool {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int field_31523 = Integer.MIN_VALUE;
-    public static final Codec<StructurePool> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Identifier.CODEC.fieldOf("name")).forGetter(StructurePool::getId), ((MapCodec)Identifier.CODEC.fieldOf("fallback")).forGetter(StructurePool::getTerminatorsId), ((MapCodec)Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.INT.fieldOf("weight")).codec().listOf().fieldOf("elements")).forGetter(structurePool -> structurePool.elementCounts)).apply((Applicative<StructurePool, ?>)instance, StructurePool::new));
+    public static final Codec<StructurePool> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Identifier.CODEC.fieldOf("name")).forGetter(StructurePool::getId), ((MapCodec)Identifier.CODEC.fieldOf("fallback")).forGetter(StructurePool::getTerminatorsId), ((MapCodec)Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.intRange(1, 150).fieldOf("weight")).codec().listOf().fieldOf("elements")).forGetter(structurePool -> structurePool.elementCounts)).apply((Applicative<StructurePool, ?>)instance, StructurePool::new));
     public static final Codec<Supplier<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_POOL_KEY, CODEC);
     private final Identifier id;
     private final List<Pair<StructurePoolElement, Integer>> elementCounts;

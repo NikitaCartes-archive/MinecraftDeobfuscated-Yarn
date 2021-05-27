@@ -17,7 +17,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -287,9 +287,9 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+    public StackReference getStackReference(int mappedIndex) {
         if (mappedIndex == 0) {
-            return new CommandItemSlot(){
+            return new StackReference(){
 
                 @Override
                 public ItemStack get() {
@@ -303,7 +303,7 @@ extends AbstractDecorationEntity {
                 }
             };
         }
-        return super.getCommandItemSlot(mappedIndex);
+        return super.getStackReference(mappedIndex);
     }
 
     @Override

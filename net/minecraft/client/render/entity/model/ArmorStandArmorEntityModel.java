@@ -16,6 +16,9 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 
+/**
+ * Represents the armor model of an {@linkplain ArmorStandEntity}.
+ */
 @Environment(value=EnvType.CLIENT)
 public class ArmorStandArmorEntityModel
 extends BipedEntityModel<ArmorStandEntity> {

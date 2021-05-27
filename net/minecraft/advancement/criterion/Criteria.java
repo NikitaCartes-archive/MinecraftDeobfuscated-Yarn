@@ -27,6 +27,7 @@ import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
 import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
 import net.minecraft.advancement.criterion.LevitationCriterion;
+import net.minecraft.advancement.criterion.LightningStrikeCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.NetherTravelCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
@@ -37,6 +38,7 @@ import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
 import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
+import net.minecraft.advancement.criterion.StartedRidingCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.advancement.criterion.TargetHitCriterion;
@@ -44,6 +46,7 @@ import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.advancement.criterion.UsedEnderEyeCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
+import net.minecraft.advancement.criterion.UsingItemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -92,6 +95,9 @@ public class Criteria {
     public static final PlayerGeneratesContainerLootCriterion PLAYER_GENERATES_CONTAINER_LOOT = Criteria.register(new PlayerGeneratesContainerLootCriterion());
     public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_ENTITY = Criteria.register(new ThrownItemPickedUpByEntityCriterion());
     public static final PlayerInteractedWithEntityCriterion PLAYER_INTERACTED_WITH_ENTITY = Criteria.register(new PlayerInteractedWithEntityCriterion());
+    public static final StartedRidingCriterion STARTED_RIDING = Criteria.register(new StartedRidingCriterion());
+    public static final LightningStrikeCriterion LIGHTNING_STRIKE = Criteria.register(new LightningStrikeCriterion());
+    public static final UsingItemCriterion USING_ITEM = Criteria.register(new UsingItemCriterion());
 
     private static <T extends Criterion<?>> T register(T object) {
         if (VALUES.containsKey(object.getId())) {

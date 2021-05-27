@@ -17,6 +17,42 @@ import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents the model of an ocelot-like entity.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Model parts of this model</caption>
+ * <tr>
+ *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>Root part</td><td>{@link #head}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#BODY}</td><td>Root part</td><td>{@link #body}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #TAIL1}</td><td>Root part</td><td>{@link #upperTail}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value #TAIL2}</td><td>Root part</td><td>{@link #lowerTail}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_HIND_LEG}</td><td>Root part</td><td>{@link #rightHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_HIND_LEG}</td><td>Root part</td><td>{@link #leftHindLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#RIGHT_FRONT_LEG}</td><td>Root part</td><td>{@link #rightFrontLeg}</td>
+ * </tr>
+ * <tr>
+ *   <td>{@value EntityModelPartNames#LEFT_FRONT_LEG}</td><td>Root part</td><td>{@link #leftFrontLeg}</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 @Environment(value=EnvType.CLIENT)
 public class OcelotEntityModel<T extends Entity>
 extends AnimalModel<T> {
@@ -39,7 +75,13 @@ extends AnimalModel<T> {
     protected static final float field_32522 = 5.0f;
     protected static final float field_32523 = 14.1f;
     private static final float field_32517 = -5.0f;
+    /**
+     * The key of the upper tail model part, whose value is {@value}.
+     */
     private static final String TAIL1 = "tail1";
+    /**
+     * The key of the lower tail model part, whose value is {@value}.
+     */
     private static final String TAIL2 = "tail2";
     protected final ModelPart leftHindLeg;
     protected final ModelPart rightHindLeg;

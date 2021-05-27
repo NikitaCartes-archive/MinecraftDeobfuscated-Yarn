@@ -27,8 +27,8 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.ItemSlotArgumentType;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
@@ -73,8 +73,8 @@ public class ItemCommand {
         HashMap<Entity, ItemStack> map = Maps.newHashMapWithExpectedSize(targets.size());
         for (Entity entity : targets) {
             ItemStack itemStack;
-            CommandItemSlot commandItemSlot = entity.getCommandItemSlot(slot);
-            if (commandItemSlot == CommandItemSlot.EMPTY || !commandItemSlot.set(itemStack = ItemCommand.getStackWithModifier(source, modifier, commandItemSlot.get().copy()))) continue;
+            StackReference stackReference = entity.getStackReference(slot);
+            if (stackReference == StackReference.EMPTY || !stackReference.set(itemStack = ItemCommand.getStackWithModifier(source, modifier, stackReference.get().copy()))) continue;
             map.put(entity, itemStack);
             if (!(entity instanceof ServerPlayerEntity)) continue;
             ((ServerPlayerEntity)entity).currentScreenHandler.sendContentUpdates();
@@ -112,8 +112,8 @@ public class ItemCommand {
     private static int executeEntityReplace(ServerCommandSource source, Collection<? extends Entity> targets, int slot, ItemStack stack) throws CommandSyntaxException {
         ArrayList<Entity> list = Lists.newArrayListWithCapacity(targets.size());
         for (Entity entity : targets) {
-            CommandItemSlot commandItemSlot = entity.getCommandItemSlot(slot);
-            if (commandItemSlot == CommandItemSlot.EMPTY || !commandItemSlot.set(stack.copy())) continue;
+            StackReference stackReference = entity.getStackReference(slot);
+            if (stackReference == StackReference.EMPTY || !stackReference.set(stack.copy())) continue;
             list.add(entity);
             if (!(entity instanceof ServerPlayerEntity)) continue;
             ((ServerPlayerEntity)entity).currentScreenHandler.sendContentUpdates();
@@ -168,11 +168,11 @@ public class ItemCommand {
     }
 
     private static ItemStack getStackInSlot(Entity entity, int slotId) throws CommandSyntaxException {
-        CommandItemSlot commandItemSlot = entity.getCommandItemSlot(slotId);
-        if (commandItemSlot == CommandItemSlot.EMPTY) {
+        StackReference stackReference = entity.getStackReference(slotId);
+        if (stackReference == StackReference.EMPTY) {
             throw NO_SUCH_SLOT_SOURCE_EXCEPTION.create(slotId);
         }
-        return commandItemSlot.get().copy();
+        return stackReference.get().copy();
     }
 
     private static ItemStack getStackInSlotFromInventoryAt(ServerCommandSource source, BlockPos pos, int slotId) throws CommandSyntaxException {

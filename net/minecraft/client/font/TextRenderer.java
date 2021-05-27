@@ -48,6 +48,7 @@ import org.jetbrains.annotations.Nullable;
 public class TextRenderer {
     private static final float field_32166 = 0.01f;
     private static final Vec3f FORWARD_SHIFT = new Vec3f(0.0f, 0.0f, 0.03f);
+    private static final Vec3f field_33941 = new Vec3f(0.0f, 0.0f, 0.0025f);
     /**
      * The font height of the text that is rendered by the text renderer.
      */
@@ -167,6 +168,31 @@ public class TextRenderer {
      */
     public int draw(OrderedText text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light) {
         return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
+    }
+
+    public void method_37296(OrderedText orderedText, float f, float g, int i, int j, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, int k) {
+        int l2 = TextRenderer.tweakTransparency(j);
+        Drawer drawer = new Drawer(vertexConsumerProvider, 0.0f, 0.0f, l2, false, matrix4f, false, k);
+        for (int m2 = -1; m2 <= 1; ++m2) {
+            for (int n = -1; n <= 1; ++n) {
+                if (m2 == 0 && n == 0) continue;
+                float[] fs = new float[]{f};
+                int o = m2;
+                int p = n;
+                orderedText.accept((l, style, m) -> {
+                    boolean bl = style.isBold();
+                    FontStorage fontStorage = this.getFontStorage(style.getFont());
+                    Glyph glyph = fontStorage.getGlyph(m);
+                    drawer.x = fs[0] + (float)o * glyph.getShadowOffset();
+                    drawer.y = g + (float)p * glyph.getShadowOffset();
+                    fs[0] = fs[0] + glyph.getAdvance(bl);
+                    return drawer.accept(l, style.withColor(l2), m);
+                });
+            }
+        }
+        Matrix4f matrix4f2 = matrix4f.copy();
+        matrix4f2.addToLastColumn(field_33941);
+        this.drawLayer(orderedText, f, g, TextRenderer.tweakTransparency(i), false, matrix4f2, vertexConsumerProvider, false, 0, k);
     }
 
     private static int tweakTransparency(int argb) {
@@ -328,8 +354,8 @@ public class TextRenderer {
         private final Matrix4f matrix;
         private final boolean seeThrough;
         private final int light;
-        private float x;
-        private final float y;
+        float x;
+        float y;
         @Nullable
         private List<GlyphRenderer.Rectangle> rectangles;
 

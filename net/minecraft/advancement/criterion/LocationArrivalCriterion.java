@@ -7,10 +7,15 @@ import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -58,12 +63,20 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.EMPTY, location);
         }
 
+        public static Conditions method_37245(EntityPredicate entityPredicate) {
+            return new Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.ofLegacy(entityPredicate), LocationPredicate.ANY);
+        }
+
         public static Conditions createSleptInBed() {
             return new Conditions(Criteria.SLEPT_IN_BED.id, EntityPredicate.Extended.EMPTY, LocationPredicate.ANY);
         }
 
         public static Conditions createHeroOfTheVillage() {
             return new Conditions(Criteria.HERO_OF_THE_VILLAGE.id, EntityPredicate.Extended.EMPTY, LocationPredicate.ANY);
+        }
+
+        public static Conditions method_37246(Block block, Item item) {
+            return Conditions.method_37245(EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(item).build()).build()).method_37230(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(block).build()).build()).build());
         }
 
         public boolean matches(ServerWorld world, double x, double y, double z) {

@@ -6,6 +6,7 @@ package net.minecraft.client.gl;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
@@ -70,7 +71,7 @@ public abstract class GLImportProcessor {
                 ++context.line;
                 k = context.line;
                 List<String> list2 = this.parseImports((String)string5, context, bl ? FileNameUtil.getPosixFullPath(string4) : "");
-                list2.set(0, String.format("#line %d %d\n%s", 0, k, this.extractVersion(list2.get(0), context)));
+                list2.set(0, String.format(Locale.ROOT, "#line %d %d\n%s", 0, k, this.extractVersion(list2.get(0), context)));
                 if (!StringUtils.isBlank(string3)) {
                     list.add(string3);
                 }
@@ -80,7 +81,7 @@ public abstract class GLImportProcessor {
                 list.add(string + string3 + string6);
             }
             k = ChatUtil.countLines(source.substring(0, matcher.end(1)));
-            string = String.format("#line %d %d", k, i);
+            string = String.format(Locale.ROOT, "#line %d %d", k, i);
             j = matcher.end(1);
         }
         string2 = source.substring(j);

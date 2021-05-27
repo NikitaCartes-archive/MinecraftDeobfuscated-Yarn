@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -95,6 +96,9 @@ implements Waterloggable {
                 if (bl2) {
                     world.playSound(null, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);
                     bl6 = signBlockEntity.setGlowingText(true);
+                    if (player instanceof ServerPlayerEntity) {
+                        Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)player, pos, itemStack);
+                    }
                 } else if (bl3) {
                     world.playSound(null, pos, SoundEvents.ITEM_INK_SAC_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);
                     bl6 = signBlockEntity.setGlowingText(false);

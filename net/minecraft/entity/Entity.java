@@ -49,7 +49,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.inventory.CommandItemSlot;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -508,9 +508,7 @@ CommandOutput {
         if (this.isFireImmune()) {
             return;
         }
-        if (!this.isWet() && !this.inPowderSnow) {
-            this.setOnFireFor(15);
-        }
+        this.setOnFireFor(15);
         if (this.damage(DamageSource.LAVA, 4.0f)) {
             this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
         }
@@ -592,6 +590,7 @@ CommandOutput {
         BlockState blockState = this.world.getBlockState(blockPos);
         this.fall(vec3d.y, this.onGround, blockState, blockPos);
         if (this.isRemoved()) {
+            this.world.getProfiler().pop();
             return;
         }
         Vec3d vec3d2 = this.getVelocity();
@@ -616,8 +615,8 @@ CommandOutput {
             if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
                 e = 0.0;
             }
-            this.horizontalSpeed += MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d)) * 0.6f;
-            this.distanceTraveled += MathHelper.sqrt(d * d + e * e + f * f) * 0.6f;
+            this.horizontalSpeed += (float)vec3d.method_37267() * 0.6f;
+            this.distanceTraveled += (float)Math.sqrt(d * d + e * e + f * f) * 0.6f;
             if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
                 this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
                 if (this.isTouchingWater()) {
@@ -625,10 +624,7 @@ CommandOutput {
                         Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
                         float g = entity == this ? 0.35f : 0.4f;
                         Vec3d vec3d3 = entity.getVelocity();
-                        float h = MathHelper.sqrt(vec3d3.x * vec3d3.x * (double)0.2f + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * (double)0.2f) * g;
-                        if (h > 1.0f) {
-                            h = 1.0f;
-                        }
+                        float h = Math.min(1.0f, (float)Math.sqrt(vec3d3.x * vec3d3.x * (double)0.2f + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * (double)0.2f) * g);
                         this.playSwimSound(h);
                     }
                     if (moveEffect.emitsGameEvents()) {
@@ -636,6 +632,7 @@ CommandOutput {
                     }
                 } else {
                     if (moveEffect.playsSounds()) {
+                        this.method_37215(blockState);
                         this.playStepSound(blockPos, blockState);
                     }
                     if (moveEffect.emitsGameEvents() && !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
@@ -649,13 +646,15 @@ CommandOutput {
         this.tryCheckBlockCollision();
         float i = this.getVelocityMultiplier();
         this.setVelocity(this.getVelocity().multiply(i, 1.0, i));
-        if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA)) && this.fireTicks <= 0) {
-            this.setFireTicks(-this.getBurningDuration());
-        }
-        if (this.isOnFire() && (this.isWet() || this.inPowderSnow)) {
-            if (this.wasOnFire) {
+        if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))) {
+            if (this.fireTicks <= 0) {
+                this.setFireTicks(-this.getBurningDuration());
+            }
+            if (this.wasOnFire && (this.inPowderSnow || this.isWet())) {
                 this.playExtinguishSound();
             }
+        }
+        if (this.isOnFire() && (this.inPowderSnow || this.isWet())) {
             this.setFireTicks(-this.getBurningDuration());
         }
         this.world.getProfiler().pop();
@@ -692,7 +691,7 @@ CommandOutput {
         }
     }
 
-    protected BlockPos getLandingPos() {
+    public BlockPos getLandingPos() {
         BlockPos blockPos2;
         BlockState blockState;
         int k;
@@ -777,18 +776,14 @@ CommandOutput {
             Vec3d vec3d4;
             Vec3d vec3d2 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, this.stepHeight, movement.z), box, this.world, shapeContext, reusableStream);
             Vec3d vec3d3 = Entity.adjustMovementForCollisions(this, new Vec3d(0.0, this.stepHeight, 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, shapeContext, reusableStream);
-            if (vec3d3.y < (double)this.stepHeight && Entity.squaredHorizontalLength(vec3d4 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, shapeContext, reusableStream).add(vec3d3)) > Entity.squaredHorizontalLength(vec3d2)) {
+            if (vec3d3.y < (double)this.stepHeight && (vec3d4 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, shapeContext, reusableStream).add(vec3d3)).method_37268() > vec3d2.method_37268()) {
                 vec3d2 = vec3d4;
             }
-            if (Entity.squaredHorizontalLength(vec3d2) > Entity.squaredHorizontalLength(vec3d)) {
+            if (vec3d2.method_37268() > vec3d.method_37268()) {
                 return vec3d2.add(Entity.adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.world, shapeContext, reusableStream));
             }
         }
         return vec3d;
-    }
-
-    public static double squaredHorizontalLength(Vec3d vector) {
-        return vector.x * vector.x + vector.z * vector.z;
     }
 
     public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, ShapeContext context, ReusableStream<VoxelShape> collisions) {
@@ -913,12 +908,17 @@ CommandOutput {
         this.emitGameEvent(event, this.blockPos);
     }
 
-    protected void playStepSound(BlockPos pos, BlockState state) {
-        BlockState blockState;
-        if (state.getMaterial().isLiquid()) {
+    protected void playStepSound(BlockPos pos, BlockState blockState) {
+        if (blockState.getMaterial().isLiquid()) {
             return;
         }
-        if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.prevAge + 20) {
+        BlockState blockState2 = this.world.getBlockState(pos.up());
+        BlockSoundGroup blockSoundGroup = blockState2.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState2.getSoundGroup() : blockState.getSoundGroup();
+        this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15f, blockSoundGroup.getPitch());
+    }
+
+    private void method_37215(BlockState blockState) {
+        if (blockState.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.prevAge + 20) {
             this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997f, this.age - this.prevAge));
             this.field_26997 = Math.min(1.0f, this.field_26997 + 0.07f);
             float f = 0.5f + this.field_26997 * this.random.nextFloat() * 1.2f;
@@ -926,8 +926,6 @@ CommandOutput {
             this.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, g, f);
             this.prevAge = this.age;
         }
-        BlockSoundGroup blockSoundGroup = (blockState = this.world.getBlockState(pos.up())).isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
-        this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15f, blockSoundGroup.getPitch());
     }
 
     protected void playSwimSound(float volume) {
@@ -1116,11 +1114,8 @@ CommandOutput {
         Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
         float f = entity == this ? 0.2f : 0.9f;
         Vec3d vec3d = entity.getVelocity();
-        float g = MathHelper.sqrt(vec3d.x * vec3d.x * (double)0.2f + vec3d.y * vec3d.y + vec3d.z * vec3d.z * (double)0.2f) * f;
-        if (g > 1.0f) {
-            g = 1.0f;
-        }
-        if ((double)g < 0.25) {
+        float g = Math.min(1.0f, (float)Math.sqrt(vec3d.x * vec3d.x * (double)0.2f + vec3d.y * vec3d.y + vec3d.z * vec3d.z * (double)0.2f) * f);
+        if (g < 0.25f) {
             this.playSound(this.getSplashSound(), g, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         } else {
             this.playSound(this.getHighSpeedSplashSound(), g, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
@@ -1705,23 +1700,24 @@ CommandOutput {
         return this instanceof LivingEntity;
     }
 
-    public boolean startRiding(Entity entity, boolean force) {
-        Entity entity2 = entity;
-        while (entity2.vehicle != null) {
-            if (entity2.vehicle == this) {
+    public boolean startRiding(Entity entity2, boolean force) {
+        Entity entity22 = entity2;
+        while (entity22.vehicle != null) {
+            if (entity22.vehicle == this) {
                 return false;
             }
-            entity2 = entity2.vehicle;
+            entity22 = entity22.vehicle;
         }
-        if (!(force || this.canStartRiding(entity) && entity.canAddPassenger(this))) {
+        if (!(force || this.canStartRiding(entity2) && entity2.canAddPassenger(this))) {
             return false;
         }
         if (this.hasVehicle()) {
             this.stopRiding();
         }
         this.setPose(EntityPose.STANDING);
-        this.vehicle = entity;
+        this.vehicle = entity2;
         this.vehicle.addPassenger(this);
+        entity2.streamIntoPassengers().filter(entity -> entity instanceof ServerPlayerEntity).forEach(entity -> Criteria.STARTED_RIDING.test((ServerPlayerEntity)entity));
         return true;
     }
 
@@ -2440,7 +2436,7 @@ CommandOutput {
             double d = (double)Math.max(0.0f, entityDimensions2.width - entityDimensions.width) + 1.0E-6;
             double e = (double)Math.max(0.0f, entityDimensions2.height - entityDimensions.height) + 1.0E-6;
             VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d2, d, e, d));
-            this.world.method_33594(this, voxelShape, vec3d2, entityDimensions2.width, entityDimensions2.height, entityDimensions2.width).ifPresent(vec3d -> this.setPosition(vec3d.add(0.0, (double)(-entityDimensions.height) / 2.0, 0.0)));
+            this.world.findClosestCollision(this, voxelShape, vec3d2, entityDimensions2.width, entityDimensions2.height, entityDimensions2.width).ifPresent(vec3d -> this.setPosition(vec3d.add(0.0, (double)(-entityDimensions.height) / 2.0, 0.0)));
         }
     }
 
@@ -2498,15 +2494,15 @@ CommandOutput {
     }
 
     /**
-     * Obtains an item slot for command modification purpose. Used by commands
-     * like {@code /loot} or {@code /replaceitem}.
+     * Obtains a stack reference to be modified. Used by commands like
+     * {@code /loot} or {@code /item}.
      * 
      * @see net.minecraft.command.argument.ItemSlotArgumentType
      * 
      * @param mappedIndex the mapped index as given by the item slot argument
      */
-    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
-        return CommandItemSlot.EMPTY;
+    public StackReference getStackReference(int mappedIndex) {
+        return StackReference.EMPTY;
     }
 
     @Override

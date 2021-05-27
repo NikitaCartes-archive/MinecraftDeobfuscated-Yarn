@@ -304,6 +304,14 @@ implements Position {
         return this.x * this.x + this.y * this.y + this.z * this.z;
     }
 
+    public double method_37267() {
+        return Math.sqrt(this.x * this.x + this.z * this.z);
+    }
+
+    public double method_37268() {
+        return this.x * this.x + this.z * this.z;
+    }
+
     public boolean equals(Object o) {
         if (this == o) {
             return true;

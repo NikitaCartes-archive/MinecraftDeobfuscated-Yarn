@@ -24,6 +24,9 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class TurtleEntityModel<T extends TurtleEntity>
 extends QuadrupedEntityModel<T> {
+    /**
+     * The key of the model part of the belly side of the turtle's shell, whose value is {@value}.
+     */
     private static final String EGG_BELLY = "egg_belly";
     /**
      * The belly side of the turtle's shell.

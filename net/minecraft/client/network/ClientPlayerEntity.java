@@ -326,9 +326,8 @@ extends AbstractClientPlayerEntity {
                 }
             } else {
                 this.lastDamageTaken = f;
-                this.setHealth(this.getHealth());
                 this.timeUntilRegen = 20;
-                this.applyDamage(DamageSource.GENERIC, f);
+                this.setHealth(health);
                 this.hurtTime = this.maxHurtTime = 10;
             }
         } else {
@@ -442,7 +441,7 @@ extends AbstractClientPlayerEntity {
     private boolean wouldCollideAt(BlockPos pos2) {
         Box box = this.getBoundingBox();
         Box box2 = new Box(pos2.getX(), box.minY, pos2.getZ(), (double)pos2.getX() + 1.0, box.maxY, (double)pos2.getZ() + 1.0).contract(1.0E-7);
-        return this.world.isBlockSpaceEmpty(this, box2, (state, pos) -> state.shouldSuffocate(this.world, (BlockPos)pos));
+        return this.world.hasBlockCollision(this, box2, (state, pos) -> state.shouldSuffocate(this.world, (BlockPos)pos));
     }
 
     @Override
@@ -767,6 +766,14 @@ extends AbstractClientPlayerEntity {
         if (this.onGround && this.getAbilities().flying && !this.client.interactionManager.isFlyingLocked()) {
             this.getAbilities().flying = false;
             this.sendAbilitiesUpdate();
+        }
+    }
+
+    @Override
+    protected void updatePostDeath() {
+        ++this.deathTime;
+        if (this.deathTime == 20) {
+            this.remove(Entity.RemovalReason.KILLED);
         }
     }
 

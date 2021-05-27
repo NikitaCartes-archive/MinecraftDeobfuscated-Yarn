@@ -41,10 +41,10 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -347,14 +347,14 @@ Saddleable {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
-        if (state.getMaterial().isLiquid()) {
+    protected void playStepSound(BlockPos pos, BlockState blockState) {
+        if (blockState.getMaterial().isLiquid()) {
             return;
         }
-        BlockState blockState = this.world.getBlockState(pos.up());
-        BlockSoundGroup blockSoundGroup = state.getSoundGroup();
-        if (blockState.isOf(Blocks.SNOW)) {
-            blockSoundGroup = blockState.getSoundGroup();
+        BlockState blockState2 = this.world.getBlockState(pos.up());
+        BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
+        if (blockState2.isOf(Blocks.SNOW)) {
+            blockSoundGroup = blockState2.getSoundGroup();
         }
         if (this.hasPassengers() && this.playExtraHorseSounds) {
             ++this.soundTicks;
@@ -916,12 +916,12 @@ Saddleable {
         return false;
     }
 
-    private CommandItemSlot method_32335(final int i, final Predicate<ItemStack> predicate) {
-        return new CommandItemSlot(){
+    private StackReference createInventoryStackReference(final int slot, final Predicate<ItemStack> predicate) {
+        return new StackReference(){
 
             @Override
             public ItemStack get() {
-                return HorseBaseEntity.this.items.getStack(i);
+                return HorseBaseEntity.this.items.getStack(slot);
             }
 
             @Override
@@ -929,7 +929,7 @@ Saddleable {
                 if (!predicate.test(stack)) {
                     return false;
                 }
-                HorseBaseEntity.this.items.setStack(i, stack);
+                HorseBaseEntity.this.items.setStack(slot, stack);
                 HorseBaseEntity.this.updateSaddle();
                 return true;
             }
@@ -937,24 +937,24 @@ Saddleable {
     }
 
     @Override
-    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+    public StackReference getStackReference(int mappedIndex) {
         int j;
         int i = mappedIndex - 400;
         if (i >= 0 && i < 2 && i < this.items.size()) {
             if (i == 0) {
-                return this.method_32335(i, itemStack -> itemStack.isEmpty() || itemStack.isOf(Items.SADDLE));
+                return this.createInventoryStackReference(i, stack -> stack.isEmpty() || stack.isOf(Items.SADDLE));
             }
             if (i == 1) {
                 if (!this.hasArmorSlot()) {
-                    return CommandItemSlot.EMPTY;
+                    return StackReference.EMPTY;
                 }
-                return this.method_32335(i, itemStack -> itemStack.isEmpty() || this.isHorseArmor((ItemStack)itemStack));
+                return this.createInventoryStackReference(i, stack -> stack.isEmpty() || this.isHorseArmor((ItemStack)stack));
             }
         }
         if ((j = mappedIndex - 500 + 2) >= 2 && j < this.items.size()) {
-            return CommandItemSlot.of(this.items, j);
+            return StackReference.of(this.items, j);
         }
-        return super.getCommandItemSlot(mappedIndex);
+        return super.getStackReference(mappedIndex);
     }
 
     @Override

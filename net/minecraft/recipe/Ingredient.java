@@ -153,7 +153,7 @@ implements Predicate<ItemStack> {
             throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
         }
         if (json.has("item")) {
-            Item item = ShapedRecipe.getItemStack(json);
+            Item item = ShapedRecipe.getItem(json);
             return new StackEntry(new ItemStack(item));
         }
         if (json.has("tag")) {

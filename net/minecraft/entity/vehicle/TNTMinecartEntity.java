@@ -53,9 +53,9 @@ extends AbstractMinecartEntity {
             --this.fuseTicks;
             this.world.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
         } else if (this.fuseTicks == 0) {
-            this.explode(TntMinecartEntity.squaredHorizontalLength(this.getVelocity()));
+            this.explode(this.getVelocity().method_37268());
         }
-        if (this.horizontalCollision && (d = TntMinecartEntity.squaredHorizontalLength(this.getVelocity())) >= (double)0.01f) {
+        if (this.horizontalCollision && (d = this.getVelocity().method_37268()) >= (double)0.01f) {
             this.explode(d);
         }
     }
@@ -72,7 +72,7 @@ extends AbstractMinecartEntity {
 
     @Override
     public void dropItems(DamageSource damageSource) {
-        double d = TntMinecartEntity.squaredHorizontalLength(this.getVelocity());
+        double d = this.getVelocity().method_37268();
         if (damageSource.isFire() || damageSource.isExplosive() || d >= (double)0.01f) {
             if (this.fuseTicks < 0) {
                 this.prime();

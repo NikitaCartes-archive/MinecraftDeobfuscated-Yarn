@@ -93,21 +93,20 @@ implements SynchronousResourceReloader {
             BlockEntity blockEntity;
             Block block = ((BlockItem)item).getBlock();
             if (block instanceof AbstractSkullBlock) {
-                GameProfile gameProfile = null;
+                GameProfile gameProfile2 = null;
                 if (stack.hasTag()) {
                     NbtCompound nbtCompound = stack.getTag();
                     if (nbtCompound.contains("SkullOwner", 10)) {
-                        gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+                        gameProfile2 = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
                     } else if (nbtCompound.contains("SkullOwner", 8) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
-                        gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
-                        gameProfile = SkullBlockEntity.loadProperties(gameProfile);
+                        gameProfile2 = new GameProfile(null, nbtCompound.getString("SkullOwner"));
                         nbtCompound.remove("SkullOwner");
-                        nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
+                        SkullBlockEntity.loadProperties(gameProfile2, gameProfile -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile)));
                     }
                 }
                 SkullBlock.SkullType skullType = ((AbstractSkullBlock)block).getSkullType();
                 SkullBlockEntityModel skullBlockEntityModel = this.skullModels.get(skullType);
-                RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
+                RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile2);
                 SkullBlockEntityRenderer.renderSkull(null, 180.0f, 0.0f, matrices, vertexConsumers, light, skullBlockEntityModel, renderLayer);
                 return;
             }

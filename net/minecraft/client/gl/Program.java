@@ -15,13 +15,16 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.GLImportProcessor;
 import net.minecraft.client.gl.GlShader;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class Program {
+    private static final Logger field_33940 = LogManager.getLogger();
     private static final int field_32037 = 32768;
     private final Type shaderType;
     private final String name;
-    private final int shaderRef;
+    private int shaderRef;
 
     protected Program(Type shaderType, int shaderRef, String name) {
         this.shaderType = shaderType;
@@ -35,8 +38,13 @@ public class Program {
     }
 
     public void release() {
+        if (this.shaderRef == -1) {
+            field_33940.warn("Double closing {} program: {}", (Object)this.shaderType, (Object)this.name);
+            return;
+        }
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlStateManager.glDeleteShader(this.shaderRef);
+        this.shaderRef = -1;
         this.shaderType.getProgramCache().remove(this.name);
     }
 

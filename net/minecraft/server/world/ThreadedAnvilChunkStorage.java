@@ -924,7 +924,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
     }
 
-    protected void sendToOtherNearbyPlayers(Entity entity, Packet<?> packet) {
+    public void sendToOtherNearbyPlayers(Entity entity, Packet<?> packet) {
         EntityTracker entityTracker = (EntityTracker)this.entityTrackers.get(entity.getId());
         if (entityTracker != null) {
             entityTracker.sendToOtherNearbyPlayers(packet);

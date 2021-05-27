@@ -11,6 +11,11 @@ import net.minecraft.client.render.entity.model.OcelotEntityModel;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.TameableEntity;
 
+/**
+ * Represents the model of a {@linkplain CatEntity}.
+ * 
+ * <p>Inherits the {@link OcelotEntityModel}.
+ */
 @Environment(value=EnvType.CLIENT)
 public class CatEntityModel<T extends CatEntity>
 extends OcelotEntityModel<T> {

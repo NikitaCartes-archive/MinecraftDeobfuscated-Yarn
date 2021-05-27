@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
@@ -127,6 +128,10 @@ CollisionView {
     @Override
     public int getHeight() {
         return this.world.getHeight();
+    }
+
+    public Profiler method_37233() {
+        return this.world.getProfiler();
     }
 }
 

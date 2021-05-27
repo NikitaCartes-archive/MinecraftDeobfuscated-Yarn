@@ -5,7 +5,6 @@ package net.minecraft.world.chunk;
 
 import java.io.IOException;
 import java.util.function.BooleanSupplier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.Chunk;
@@ -57,14 +56,6 @@ AutoCloseable {
     }
 
     public void setChunkForced(ChunkPos pos, boolean forced) {
-    }
-
-    public boolean shouldTickChunk(ChunkPos pos) {
-        return true;
-    }
-
-    public boolean shouldTickBlock(BlockPos pos) {
-        return true;
     }
 }
 

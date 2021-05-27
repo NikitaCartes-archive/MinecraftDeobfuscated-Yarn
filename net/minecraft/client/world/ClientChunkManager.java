@@ -16,7 +16,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.BlockView;
@@ -163,16 +162,6 @@ extends ChunkManager {
     @Override
     public void onLightUpdate(LightType type, ChunkSectionPos pos) {
         MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(pos.getSectionX(), pos.getSectionY(), pos.getSectionZ());
-    }
-
-    @Override
-    public boolean shouldTickBlock(BlockPos pos) {
-        return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
-    }
-
-    @Override
-    public boolean shouldTickChunk(ChunkPos pos) {
-        return this.isChunkLoaded(pos.x, pos.z);
     }
 
     @Override

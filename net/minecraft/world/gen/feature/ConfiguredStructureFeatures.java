@@ -12,6 +12,8 @@ import net.minecraft.structure.SnowyVillageData;
 import net.minecraft.structure.TaigaVillageData;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.gen.ProbabilityConfig;
+import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -24,6 +26,7 @@ import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
+import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class ConfiguredStructureFeatures {
     public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> PILLAGER_OUTPOST = ConfiguredStructureFeatures.register("pillager_outpost", StructureFeature.PILLAGER_OUTPOST.configure(new StructurePoolFeatureConfig(() -> PillagerOutpostGenerator.STRUCTURE_POOLS, 7)));
@@ -41,7 +44,7 @@ public class ConfiguredStructureFeatures {
     public static final ConfiguredStructureFeature<OceanRuinFeatureConfig, ? extends StructureFeature<OceanRuinFeatureConfig>> OCEAN_RUIN_COLD = ConfiguredStructureFeatures.register("ocean_ruin_cold", StructureFeature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.9f)));
     public static final ConfiguredStructureFeature<OceanRuinFeatureConfig, ? extends StructureFeature<OceanRuinFeatureConfig>> OCEAN_RUIN_WARM = ConfiguredStructureFeatures.register("ocean_ruin_warm", StructureFeature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3f, 0.9f)));
     public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> FORTRESS = ConfiguredStructureFeatures.register("fortress", StructureFeature.FORTRESS.configure(DefaultFeatureConfig.INSTANCE));
-    public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> NETHER_FOSSIL = ConfiguredStructureFeatures.register("nether_fossil", StructureFeature.NETHER_FOSSIL.configure(DefaultFeatureConfig.INSTANCE));
+    public static final ConfiguredStructureFeature<RangeDecoratorConfig, ? extends StructureFeature<RangeDecoratorConfig>> NETHER_FOSSIL = ConfiguredStructureFeatures.register("nether_fossil", StructureFeature.NETHER_FOSSIL.configure(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.fixed(32), YOffset.belowTop(2)))));
     public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> END_CITY = ConfiguredStructureFeatures.register("end_city", StructureFeature.END_CITY.configure(DefaultFeatureConfig.INSTANCE));
     public static final ConfiguredStructureFeature<ProbabilityConfig, ? extends StructureFeature<ProbabilityConfig>> BURIED_TREASURE = ConfiguredStructureFeatures.register("buried_treasure", StructureFeature.BURIED_TREASURE.configure(new ProbabilityConfig(0.01f)));
     public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> BASTION_REMNANT = ConfiguredStructureFeatures.register("bastion_remnant", StructureFeature.BASTION_REMNANT.configure(new StructurePoolFeatureConfig(() -> BastionRemnantGenerator.STRUCTURE_POOLS, 6)));

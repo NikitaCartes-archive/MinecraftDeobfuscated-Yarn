@@ -270,14 +270,7 @@ extends ChunkManager {
         return false;
     }
 
-    @Override
-    public boolean shouldTickChunk(ChunkPos pos) {
-        return this.isFutureReady(pos.toLong(), ChunkHolder::getEntityTickingFuture);
-    }
-
-    @Override
-    public boolean shouldTickBlock(BlockPos pos) {
-        long l = ChunkPos.toLong(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
+    public boolean method_37114(long l) {
         return this.isFutureReady(l, ChunkHolder::getTickingFuture);
     }
 
@@ -339,19 +332,15 @@ extends ChunkManager {
                     return;
                 }
                 this.world.getProfiler().push("broadcast");
-                chunkHolder.flushUpdates(optional.get());
+                WorldChunk worldChunk = optional.get();
+                chunkHolder.flushUpdates(worldChunk);
                 this.world.getProfiler().pop();
-                Optional<WorldChunk> optional2 = chunkHolder.getEntityTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK).left();
-                if (!optional2.isPresent()) {
-                    return;
-                }
-                WorldChunk worldChunk = optional2.get();
-                ChunkPos chunkPos = chunkHolder.getPos();
-                if (this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
+                ChunkPos chunkPos = worldChunk.getPos();
+                if (!this.world.method_37115(chunkPos) || this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
                     return;
                 }
                 worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
-                if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(worldChunk.getPos())) {
+                if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(chunkPos)) {
                     SpawnHelper.spawn(this.world, worldChunk, info, this.spawnAnimals, this.spawnMonsters, bl3);
                 }
                 this.world.tickChunk(worldChunk, i);

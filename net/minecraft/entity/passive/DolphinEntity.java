@@ -492,7 +492,7 @@ extends WaterCreatureEntity {
 
         @Override
         public void start() {
-            this.closestPlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 100));
+            this.closestPlayer.method_37222(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 100), this.dolphin);
         }
 
         @Override
@@ -510,7 +510,7 @@ extends WaterCreatureEntity {
                 this.dolphin.getNavigation().startMovingTo(this.closestPlayer, this.speed);
             }
             if (this.closestPlayer.isSwimming() && this.closestPlayer.world.random.nextInt(6) == 0) {
-                this.closestPlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 100));
+                this.closestPlayer.method_37222(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 100), this.dolphin);
             }
         }
     }

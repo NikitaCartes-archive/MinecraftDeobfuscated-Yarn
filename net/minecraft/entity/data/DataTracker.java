@@ -205,15 +205,21 @@ public class DataTracker {
         return new Entry<T>(trackedDataHandler.create(i), trackedDataHandler.read(buf));
     }
 
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
     public void writeUpdatedEntries(List<Entry<?>> list) {
         this.lock.writeLock().lock();
-        for (Entry<?> entry : list) {
-            Entry entry2 = (Entry)this.entries.get(entry.getData().getId());
-            if (entry2 == null) continue;
-            this.copyToFrom(entry2, entry);
-            this.trackedEntity.onTrackedDataSet(entry.getData());
+        try {
+            for (Entry<?> entry : list) {
+                Entry entry2 = (Entry)this.entries.get(entry.getData().getId());
+                if (entry2 == null) continue;
+                this.copyToFrom(entry2, entry);
+                this.trackedEntity.onTrackedDataSet(entry.getData());
+            }
+        } finally {
+            this.lock.writeLock().unlock();
         }
-        this.lock.writeLock().unlock();
         this.dirty = true;
     }
 

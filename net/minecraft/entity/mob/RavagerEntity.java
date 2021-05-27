@@ -309,7 +309,7 @@ extends RaiderEntity {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
+    protected void playStepSound(BlockPos pos, BlockState blockState) {
         this.playSound(SoundEvents.ENTITY_RAVAGER_STEP, 0.15f, 1.0f);
     }
 

@@ -52,20 +52,20 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
 public class TradeOffers {
-    private static final int field_30615 = 12;
-    private static final int field_30616 = 16;
-    private static final int field_30617 = 3;
-    private static final int field_30618 = 1;
-    private static final int field_30619 = 2;
-    private static final int field_30620 = 5;
-    private static final int field_30621 = 10;
-    private static final int field_30622 = 10;
-    private static final int field_30623 = 20;
-    private static final int field_30624 = 15;
-    private static final int field_30625 = 30;
-    private static final int field_30626 = 30;
-    private static final float field_30627 = 0.05f;
-    private static final float field_30628 = 0.2f;
+    private static final int DEFAULT_MAX_USES = 12;
+    private static final int COMMON_MAX_USES = 16;
+    private static final int RARE_MAX_USES = 3;
+    private static final int NOVICE_SELL_XP = 1;
+    private static final int NOVICE_BUY_XP = 2;
+    private static final int APPRENTICE_SELL_XP = 5;
+    private static final int APPRENTICE_BUY_XP = 10;
+    private static final int JOURNEYMAN_SELL_XP = 10;
+    private static final int JOURNEYMAN_BUY_XP = 20;
+    private static final int EXPERT_SELL_XP = 15;
+    private static final int EXPERT_BUY_XP = 30;
+    private static final int MASTER_TRADE_XP = 30;
+    private static final float LOW_PRICE_MULTIPLIER = 0.05f;
+    private static final float HIGH_PRICE_MULTIPLIER = 0.2f;
     public static final Map<VillagerProfession, Int2ObjectMap<Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(Maps.newHashMap(), map -> {
         map.put(VillagerProfession.FARMER, TradeOffers.copyToFastUtilMap(ImmutableMap.of(1, new Factory[]{new BuyForOneEmeraldFactory(Items.WHEAT, 20, 16, 2), new BuyForOneEmeraldFactory(Items.POTATO, 26, 16, 2), new BuyForOneEmeraldFactory(Items.CARROT, 22, 16, 2), new BuyForOneEmeraldFactory(Items.BEETROOT, 15, 16, 2), new SellItemFactory(Items.BREAD, 1, 6, 16, 1)}, 2, new Factory[]{new BuyForOneEmeraldFactory(Blocks.PUMPKIN, 6, 12, 10), new SellItemFactory(Items.PUMPKIN_PIE, 1, 4, 5), new SellItemFactory(Items.APPLE, 1, 4, 16, 5)}, 3, new Factory[]{new SellItemFactory(Items.COOKIE, 3, 18, 10), new BuyForOneEmeraldFactory(Blocks.MELON, 4, 12, 20)}, 4, new Factory[]{new SellItemFactory(Blocks.CAKE, 1, 1, 12, 15), new SellSuspiciousStewFactory(StatusEffects.NIGHT_VISION, 100, 15), new SellSuspiciousStewFactory(StatusEffects.JUMP_BOOST, 160, 15), new SellSuspiciousStewFactory(StatusEffects.WEAKNESS, 140, 15), new SellSuspiciousStewFactory(StatusEffects.BLINDNESS, 120, 15), new SellSuspiciousStewFactory(StatusEffects.POISON, 280, 15), new SellSuspiciousStewFactory(StatusEffects.SATURATION, 7, 15)}, 5, new Factory[]{new SellItemFactory(Items.GOLDEN_CARROT, 3, 3, 30), new SellItemFactory(Items.GLISTERING_MELON_SLICE, 4, 3, 30)})));
         map.put(VillagerProfession.FISHERMAN, TradeOffers.copyToFastUtilMap(ImmutableMap.of(1, new Factory[]{new BuyForOneEmeraldFactory(Items.STRING, 20, 16, 2), new BuyForOneEmeraldFactory(Items.COAL, 10, 16, 2), new ProcessItemFactory(Items.COD, 6, Items.COOKED_COD, 6, 16, 1), new SellItemFactory(Items.COD_BUCKET, 3, 1, 16, 1)}, 2, new Factory[]{new BuyForOneEmeraldFactory(Items.COD, 15, 16, 10), new ProcessItemFactory(Items.SALMON, 6, Items.COOKED_SALMON, 6, 16, 5), new SellItemFactory(Items.CAMPFIRE, 2, 1, 5)}, 3, new Factory[]{new BuyForOneEmeraldFactory(Items.SALMON, 13, 16, 20), new SellEnchantedToolFactory(Items.FISHING_ROD, 3, 3, 10, 0.2f)}, 4, new Factory[]{new BuyForOneEmeraldFactory(Items.TROPICAL_FISH, 6, 12, 30)}, 5, new Factory[]{new BuyForOneEmeraldFactory(Items.PUFFERFISH, 4, 12, 30), new TypeAwareBuyForOneEmeraldFactory(1, 12, 30, ImmutableMap.builder().put(VillagerType.PLAINS, Items.OAK_BOAT).put(VillagerType.TAIGA, Items.SPRUCE_BOAT).put(VillagerType.SNOW, Items.SPRUCE_BOAT).put(VillagerType.DESERT, Items.JUNGLE_BOAT).put(VillagerType.JUNGLE, Items.JUNGLE_BOAT).put(VillagerType.SAVANNA, Items.ACACIA_BOAT).put(VillagerType.SWAMP, Items.DARK_OAK_BOAT).build())})));

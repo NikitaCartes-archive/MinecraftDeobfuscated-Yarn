@@ -46,7 +46,7 @@ implements ScreenHandlerProvider<T> {
     protected int playerInventoryTitleX;
     protected int playerInventoryTitleY;
     protected final T handler;
-    protected final Text displayName;
+    protected final Text playerInventoryTitle;
     @Nullable
     protected Slot focusedSlot;
     @Nullable
@@ -80,7 +80,7 @@ implements ScreenHandlerProvider<T> {
     public HandledScreen(T handler, PlayerInventory inventory, Text title) {
         super(title);
         this.handler = handler;
-        this.displayName = inventory.getDisplayName();
+        this.playerInventoryTitle = inventory.getDisplayName();
         this.cancelNextRelease = true;
         this.titleX = 8;
         this.titleY = 6;
@@ -113,11 +113,11 @@ implements ScreenHandlerProvider<T> {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         for (int k = 0; k < ((ScreenHandler)this.handler).slots.size(); ++k) {
             Slot slot = ((ScreenHandler)this.handler).slots.get(k);
-            if (slot.doDrawHoveringEffect()) {
+            if (slot.isEnabled()) {
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
                 this.drawSlot(matrices, slot);
             }
-            if (!this.isPointOverSlot(slot, mouseX, mouseY) || !slot.doDrawHoveringEffect()) continue;
+            if (!this.isPointOverSlot(slot, mouseX, mouseY) || !slot.isEnabled()) continue;
             this.focusedSlot = slot;
             l = slot.x;
             int m = slot.y;
@@ -186,7 +186,7 @@ implements ScreenHandlerProvider<T> {
 
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 0x404040);
-        this.textRenderer.draw(matrices, this.displayName, (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 0x404040);
+        this.textRenderer.draw(matrices, this.playerInventoryTitle, (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 0x404040);
     }
 
     protected abstract void drawBackground(MatrixStack var1, float var2, int var3, int var4);
@@ -223,7 +223,7 @@ implements ScreenHandlerProvider<T> {
         }
         this.setZOffset(100);
         this.itemRenderer.zOffset = 100.0f;
-        if (itemStack.isEmpty() && slot.doDrawHoveringEffect() && (pair = slot.getBackgroundSprite()) != null) {
+        if (itemStack.isEmpty() && slot.isEnabled() && (pair = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
             RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
             HandledScreen.drawSprite(matrices, i, j, this.getZOffset(), 16, 16, sprite);
@@ -268,7 +268,7 @@ implements ScreenHandlerProvider<T> {
     private Slot getSlotAt(double x, double y) {
         for (int i = 0; i < ((ScreenHandler)this.handler).slots.size(); ++i) {
             Slot slot = ((ScreenHandler)this.handler).slots.get(i);
-            if (!this.isPointOverSlot(slot, x, y) || !slot.doDrawHoveringEffect()) continue;
+            if (!this.isPointOverSlot(slot, x, y) || !slot.isEnabled()) continue;
             return slot;
         }
         return null;

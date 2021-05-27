@@ -9,8 +9,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -23,14 +24,15 @@ import org.lwjgl.glfw.GLFW;
 public class ChatScreen
 extends Screen {
     public static final int field_32237 = 7;
+    private static final Text field_33953 = new TranslatableText("chat_screen.usage");
     private String chatLastMessage = "";
     private int messageHistorySize = -1;
     protected TextFieldWidget chatField;
-    private String originalChatText = "";
+    private final String originalChatText;
     CommandSuggestor commandSuggestor;
 
     public ChatScreen(String originalChatText) {
-        super(NarratorManager.EMPTY);
+        super(new TranslatableText("chat_screen.title"));
         this.originalChatText = originalChatText;
     }
 
@@ -207,6 +209,16 @@ extends Screen {
 
     private void setText(String text) {
         this.chatField.setText(text);
+    }
+
+    @Override
+    protected void addScreenNarrations(NarrationMessageBuilder builder) {
+        builder.put(NarrationPart.TITLE, this.getTitle());
+        builder.put(NarrationPart.USAGE, field_33953);
+        String string = this.chatField.getText();
+        if (!string.isEmpty()) {
+            builder.nextMessage().put(NarrationPart.TITLE, (Text)new TranslatableText("chat_screen.message", string));
+        }
     }
 }
 

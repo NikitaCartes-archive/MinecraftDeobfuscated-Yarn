@@ -249,7 +249,7 @@ Flutterer {
                     i = 18;
                 }
                 if (i > 0) {
-                    ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0));
+                    ((LivingEntity)target).method_37222(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
                 }
             }
             this.setHasStung(true);
@@ -556,7 +556,7 @@ Flutterer {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
+    protected void playStepSound(BlockPos pos, BlockState blockState) {
     }
 
     @Override
@@ -671,13 +671,13 @@ Flutterer {
 
         PollinateGoal() {
             this.flowerPredicate = state -> {
-                if (state.isIn(BlockTags.TALL_FLOWERS)) {
+                if (state.isIn(BlockTags.FLOWERS)) {
                     if (state.isOf(Blocks.SUNFLOWER)) {
                         return state.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER;
                     }
                     return true;
                 }
-                return state.isIn(BlockTags.SMALL_FLOWERS);
+                return false;
             };
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }

@@ -33,7 +33,7 @@ extends IdentifierNormalizingSchema {
     @Override
     public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
         Map<String, Supplier<TypeTemplate>> map = super.registerBlockEntities(schema);
-        schema.register(map, "minecraft:beehive", () -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "Bees", DSL.list(DSL.optionalFields("EntityData", TypeReferences.ENTITY_TREE.in(schema)))));
+        schema.register(map, "minecraft:beehive", () -> DSL.optionalFields("Bees", DSL.list(DSL.optionalFields("EntityData", TypeReferences.ENTITY_TREE.in(schema)))));
         return map;
     }
 }

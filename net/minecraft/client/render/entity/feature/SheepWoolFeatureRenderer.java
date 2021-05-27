@@ -5,7 +5,11 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -33,7 +37,19 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
         float u;
         float t;
         float s;
-        if (sheepEntity.isSheared() || sheepEntity.isInvisible()) {
+        if (sheepEntity.isSheared()) {
+            return;
+        }
+        if (sheepEntity.isInvisible()) {
+            MinecraftClient minecraftClient = MinecraftClient.getInstance();
+            boolean bl = minecraftClient.hasOutline(sheepEntity);
+            if (bl) {
+                ((SheepEntityModel)this.getContextModel()).copyStateTo(this.model);
+                this.model.animateModel(sheepEntity, f, g, h);
+                this.model.setAngles(sheepEntity, f, g, j, k, l);
+                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getOutline(SKIN));
+                this.model.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(sheepEntity, 0.0f), 0.0f, 0.0f, 0.0f, 1.0f);
+            }
             return;
         }
         if (sheepEntity.hasCustomName() && "jeb_".equals(sheepEntity.getName().asString())) {

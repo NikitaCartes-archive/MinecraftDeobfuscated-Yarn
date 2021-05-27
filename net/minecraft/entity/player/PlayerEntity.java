@@ -63,9 +63,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
@@ -455,7 +455,7 @@ extends LivingEntity {
             this.flyingSpeed = (float)((double)this.flyingSpeed + 0.005999999865889549);
         }
         this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
-        float f = !this.onGround || this.isDead() || this.isSwimming() ? 0.0f : Math.min(0.1f, MathHelper.sqrt(PlayerEntity.squaredHorizontalLength(this.getVelocity())));
+        float f = !this.onGround || this.isDead() || this.isSwimming() ? 0.0f : Math.min(0.1f, (float)this.getVelocity().method_37267());
         this.strideDistance += (f - this.strideDistance) * 0.4f;
         if (this.getHealth() > 0.0f && !this.isSpectator()) {
             Box box = this.hasVehicle() && !this.getVehicle().isRemoved() ? this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0) : this.getBoundingBox().expand(1.0, 0.5, 1.0);
@@ -1337,19 +1337,19 @@ extends LivingEntity {
             return;
         }
         if (this.isSwimming()) {
-            int i = Math.round(MathHelper.sqrt(dx * dx + dy * dy + dz * dz) * 100.0f);
+            int i = Math.round((float)Math.sqrt(dx * dx + dy * dy + dz * dz) * 100.0f);
             if (i > 0) {
                 this.increaseStat(Stats.SWIM_ONE_CM, i);
                 this.addExhaustion(0.01f * (float)i * 0.01f);
             }
         } else if (this.isSubmergedIn(FluidTags.WATER)) {
-            int i = Math.round(MathHelper.sqrt(dx * dx + dy * dy + dz * dz) * 100.0f);
+            int i = Math.round((float)Math.sqrt(dx * dx + dy * dy + dz * dz) * 100.0f);
             if (i > 0) {
                 this.increaseStat(Stats.WALK_UNDER_WATER_ONE_CM, i);
                 this.addExhaustion(0.01f * (float)i * 0.01f);
             }
         } else if (this.isTouchingWater()) {
-            int i = Math.round(MathHelper.sqrt(dx * dx + dz * dz) * 100.0f);
+            int i = Math.round((float)Math.sqrt(dx * dx + dz * dz) * 100.0f);
             if (i > 0) {
                 this.increaseStat(Stats.WALK_ON_WATER_ONE_CM, i);
                 this.addExhaustion(0.01f * (float)i * 0.01f);
@@ -1359,7 +1359,7 @@ extends LivingEntity {
                 this.increaseStat(Stats.CLIMB_ONE_CM, (int)Math.round(dy * 100.0));
             }
         } else if (this.onGround) {
-            int i = Math.round(MathHelper.sqrt(dx * dx + dz * dz) * 100.0f);
+            int i = Math.round((float)Math.sqrt(dx * dx + dz * dz) * 100.0f);
             if (i > 0) {
                 if (this.isSprinting()) {
                     this.increaseStat(Stats.SPRINT_ONE_CM, i);
@@ -1373,10 +1373,10 @@ extends LivingEntity {
                 }
             }
         } else if (this.isFallFlying()) {
-            int i = Math.round(MathHelper.sqrt(dx * dx + dy * dy + dz * dz) * 100.0f);
+            int i = Math.round((float)Math.sqrt(dx * dx + dy * dy + dz * dz) * 100.0f);
             this.increaseStat(Stats.AVIATE_ONE_CM, i);
         } else {
-            int i = Math.round(MathHelper.sqrt(dx * dx + dz * dz) * 100.0f);
+            int i = Math.round((float)Math.sqrt(dx * dx + dz * dz) * 100.0f);
             if (i > 25) {
                 this.increaseStat(Stats.FLY_ONE_CM, i);
             }
@@ -1385,7 +1385,7 @@ extends LivingEntity {
 
     private void increaseRidingMotionStats(double dx, double dy, double dz) {
         int i;
-        if (this.hasVehicle() && (i = Math.round(MathHelper.sqrt(dx * dx + dy * dy + dz * dz) * 100.0f)) > 0) {
+        if (this.hasVehicle() && (i = Math.round((float)Math.sqrt(dx * dx + dy * dy + dz * dz) * 100.0f)) > 0) {
             Entity entity = this.getVehicle();
             if (entity instanceof AbstractMinecartEntity) {
                 this.increaseStat(Stats.MINECART_ONE_CM, i);
@@ -1753,15 +1753,15 @@ extends LivingEntity {
     }
 
     @Override
-    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+    public StackReference getStackReference(int mappedIndex) {
         if (mappedIndex >= 0 && mappedIndex < this.inventory.main.size()) {
-            return CommandItemSlot.of(this.inventory, mappedIndex);
+            return StackReference.of(this.inventory, mappedIndex);
         }
         int i = mappedIndex - 200;
         if (i >= 0 && i < this.enderChestInventory.size()) {
-            return CommandItemSlot.of(this.enderChestInventory, i);
+            return StackReference.of(this.enderChestInventory, i);
         }
-        return super.getCommandItemSlot(mappedIndex);
+        return super.getStackReference(mappedIndex);
     }
 
     public boolean hasReducedDebugInfo() {
@@ -1891,8 +1891,8 @@ extends LivingEntity {
             float l;
             Vec3d vec3d = this.getRotationVec(f);
             Vec3d vec3d2 = this.getVelocity();
-            double e = Entity.squaredHorizontalLength(vec3d2);
-            double i = Entity.squaredHorizontalLength(vec3d);
+            double e = vec3d2.method_37268();
+            double i = vec3d.method_37268();
             if (e > 0.0 && i > 0.0) {
                 double j = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(e * i);
                 double k = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;

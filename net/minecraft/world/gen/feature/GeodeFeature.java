@@ -16,6 +16,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.BuddingAmethystBlock;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -76,7 +77,7 @@ extends Feature<GeodeFeatureConfig> {
             o = geodeFeatureConfig.outerWallDistance.get(random);
             BlockPos blockPos2 = blockPos.add(o, p = geodeFeatureConfig.outerWallDistance.get(random), q = geodeFeatureConfig.outerWallDistance.get(random));
             blockState = structureWorldAccess.getBlockState(blockPos2);
-            if ((blockState.isAir() || blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.LAVA)) && ++m > geodeFeatureConfig.invalidBlocksThreshold) {
+            if ((blockState.isAir() || blockState.isIn(BlockTags.GEODE_INVALID_BLOCKS)) && ++m > geodeFeatureConfig.invalidBlocksThreshold) {
                 return false;
             }
             list.add(Pair.of(blockPos2, geodeFeatureConfig.pointOffset.get(random)));

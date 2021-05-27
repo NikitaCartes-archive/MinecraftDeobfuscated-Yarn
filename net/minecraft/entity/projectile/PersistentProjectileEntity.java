@@ -134,7 +134,7 @@ extends ProjectileEntity {
         boolean bl = this.isNoClip();
         Vec3d vec3d = this.getVelocity();
         if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
-            double d = Math.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
+            double d = vec3d.method_37267();
             this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
             this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 57.2957763671875));
             this.prevYaw = this.getYaw();
@@ -201,7 +201,7 @@ extends ProjectileEntity {
         double h = this.getX() + e;
         double j = this.getY() + f;
         double k = this.getZ() + g;
-        double l = Math.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
+        double l = vec3d.method_37267();
         if (bl) {
             this.setYaw((float)(MathHelper.atan2(-e, -g) * 57.2957763671875));
         } else {

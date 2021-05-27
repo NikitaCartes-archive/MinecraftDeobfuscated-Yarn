@@ -8,21 +8,18 @@ import java.util.List;
 import java.util.Locale;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.crash.CrashCallable;
-import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.HeightLimitView;
 import org.jetbrains.annotations.Nullable;
 
 public class CrashReportSection {
-    private final CrashReport report;
     private final String title;
     private final List<Element> elements = Lists.newArrayList();
     private StackTraceElement[] stackTrace = new StackTraceElement[0];
 
-    public CrashReportSection(CrashReport report, String title) {
-        this.report = report;
-        this.title = title;
+    public CrashReportSection(String string) {
+        this.title = string;
     }
 
     public static String createPositionString(HeightLimitView world, double x, double y, double z) {

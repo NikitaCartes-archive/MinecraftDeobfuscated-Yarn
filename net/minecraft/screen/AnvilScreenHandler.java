@@ -86,6 +86,7 @@ extends ForgingScreenHandler {
                 if (blockState2 == null) {
                     world.removeBlock((BlockPos)blockPos, false);
                     world.syncWorldEvent(WorldEvents.ANVIL_DESTROYED, (BlockPos)blockPos, 0);
+                    player.getInventory().offerOrDrop(stack);
                 } else {
                     world.setBlockState((BlockPos)blockPos, blockState2, Block.NOTIFY_LISTENERS);
                     world.syncWorldEvent(WorldEvents.ANVIL_USED, (BlockPos)blockPos, 0);

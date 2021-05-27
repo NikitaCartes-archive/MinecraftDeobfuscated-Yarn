@@ -679,8 +679,9 @@ AutoCloseable {
     }
 
     public void setThunderGradient(float thunderGradient) {
-        this.thunderGradientPrev = thunderGradient;
-        this.thunderGradient = thunderGradient;
+        float f;
+        this.thunderGradientPrev = f = MathHelper.clamp(thunderGradient, 0.0f, 1.0f);
+        this.thunderGradient = f;
     }
 
     public float getRainGradient(float delta) {
@@ -688,8 +689,9 @@ AutoCloseable {
     }
 
     public void setRainGradient(float rainGradient) {
-        this.rainGradientPrev = rainGradient;
-        this.rainGradient = rainGradient;
+        float f;
+        this.rainGradientPrev = f = MathHelper.clamp(rainGradient, 0.0f, 1.0f);
+        this.rainGradient = f;
     }
 
     public boolean isThundering() {

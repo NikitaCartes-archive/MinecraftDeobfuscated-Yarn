@@ -8,12 +8,15 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import java.util.Optional;
 import java.util.function.Supplier;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -34,9 +37,13 @@ extends Item {
         BlockPos blockPos = context.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         return HoneycombItem.getWaxedState(blockState).map(state -> {
-            context.getStack().decrement(1);
-            world.setBlockState(blockPos, (BlockState)state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
             PlayerEntity playerEntity = context.getPlayer();
+            ItemStack itemStack = context.getStack();
+            if (playerEntity instanceof ServerPlayerEntity) {
+                Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+            }
+            itemStack.decrement(1);
+            world.setBlockState(blockPos, (BlockState)state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
             world.syncWorldEvent(playerEntity, WorldEvents.BLOCK_WAXED, blockPos, 0);
             return ActionResult.success(world.isClient);
         }).orElse(ActionResult.PASS);

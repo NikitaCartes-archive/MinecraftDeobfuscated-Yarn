@@ -154,13 +154,13 @@ RangedAttackMob {
             }
             vec3d = new Vec3d(vec3d.x, d, vec3d.z);
             Vec3d vec3d2 = new Vec3d(entity.getX() - this.getX(), 0.0, entity.getZ() - this.getZ());
-            if (WitherEntity.squaredHorizontalLength(vec3d2) > 9.0) {
+            if (vec3d2.method_37268() > 9.0) {
                 Vec3d vec3d3 = vec3d2.normalize();
                 vec3d = vec3d.add(vec3d3.x * 0.3 - vec3d.x * 0.6, 0.0, vec3d3.z * 0.3 - vec3d.z * 0.6);
             }
         }
         this.setVelocity(vec3d);
-        if (WitherEntity.squaredHorizontalLength(vec3d) > 0.05) {
+        if (vec3d.method_37268() > 0.05) {
             this.setYaw((float)MathHelper.atan2(vec3d.z, vec3d.x) * 57.295776f - 90.0f);
         }
         super.tickMovement();

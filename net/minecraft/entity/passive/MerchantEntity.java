@@ -21,9 +21,9 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
@@ -223,12 +223,12 @@ Merchant {
     }
 
     @Override
-    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+    public StackReference getStackReference(int mappedIndex) {
         int i = mappedIndex - 300;
         if (i >= 0 && i < this.inventory.size()) {
-            return CommandItemSlot.of(this.inventory, i);
+            return StackReference.of(this.inventory, i);
         }
-        return super.getCommandItemSlot(mappedIndex);
+        return super.getStackReference(mappedIndex);
     }
 
     @Override

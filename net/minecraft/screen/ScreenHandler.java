@@ -17,8 +17,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.Property;
 import net.minecraft.screen.PropertyDelegate;
@@ -416,7 +416,7 @@ public abstract class ScreenHandler {
                                         ItemStack itemStack6 = slot.getStack();
                                         ItemStack itemStack5 = this.getCursorStack();
                                         player.onPickupSlotClick(itemStack5, slot.getStack(), clickType);
-                                        if (!itemStack5.onStackClicked(slot, clickType, player) && !itemStack6.onClicked(itemStack5, slot, clickType, player, this.getCursorCommandItemSlot())) {
+                                        if (!itemStack5.onStackClicked(slot, clickType, player) && !itemStack6.onClicked(itemStack5, slot, clickType, player, this.getCursorStackReference())) {
                                             if (itemStack6.isEmpty()) {
                                                 if (!itemStack5.isEmpty()) {
                                                     int n = clickType == ClickType.LEFT ? itemStack5.getCount() : 1;
@@ -523,8 +523,8 @@ public abstract class ScreenHandler {
         }
     }
 
-    private CommandItemSlot getCursorCommandItemSlot() {
-        return new CommandItemSlot(){
+    private StackReference getCursorStackReference() {
+        return new StackReference(){
 
             @Override
             public ItemStack get() {
@@ -543,13 +543,9 @@ public abstract class ScreenHandler {
         return true;
     }
 
-    public void close(PlayerEntity player) {
+    public void close(PlayerEntity playerEntity) {
         if (!this.getCursorStack().isEmpty()) {
-            if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
-                player.dropItem(this.getCursorStack(), false);
-            } else {
-                player.getInventory().offer(this.getCursorStack(), false);
-            }
+            playerEntity.dropItem(this.getCursorStack(), false);
             this.setCursorStack(ItemStack.EMPTY);
         }
     }

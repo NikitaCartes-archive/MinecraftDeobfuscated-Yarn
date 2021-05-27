@@ -51,7 +51,10 @@ extends Feature<DefaultFeatureConfig> {
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos2;
             if (!(random.nextFloat() < 0.2f) || !world.getBlockState(blockPos2 = pos.offset(direction)).isOf(Blocks.WATER)) continue;
-            BlockState blockState2 = (BlockState)((Block)BlockTags.WALL_CORALS.getRandom(random)).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
+            BlockState blockState2 = ((Block)BlockTags.WALL_CORALS.getRandom(random)).getDefaultState();
+            if (blockState2.contains(DeadCoralWallFanBlock.FACING)) {
+                blockState2 = (BlockState)blockState2.with(DeadCoralWallFanBlock.FACING, direction);
+            }
             world.setBlockState(blockPos2, blockState2, Block.NOTIFY_LISTENERS);
         }
         return true;

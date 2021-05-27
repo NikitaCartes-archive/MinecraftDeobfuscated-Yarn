@@ -57,10 +57,17 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
+import net.minecraft.class_6396;
+import net.minecraft.class_6402;
+import net.minecraft.client.util.profiler.DebugRecorder;
+import net.minecraft.client.util.profiler.DummyRecorder;
+import net.minecraft.client.util.profiler.ProfilerDumper;
+import net.minecraft.client.util.profiler.Recorder;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -117,16 +124,15 @@ import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.DummyProfiler;
+import net.minecraft.util.profiler.EmptyProfileResult;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.profiler.TickTimeTracker;
+import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -216,8 +222,14 @@ AutoCloseable {
     protected final WorldSaveHandler saveHandler;
     private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
     private final List<Runnable> serverGuiTickables = Lists.newArrayList();
-    private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, this::getTicks);
-    private Profiler profiler = DummyProfiler.INSTANCE;
+    private Recorder tickTimeTracker = DummyRecorder.INSTANCE;
+    private Profiler profiler = this.tickTimeTracker.getProfiler();
+    private Consumer<ProfileResult> field_33975 = profileResult -> this.method_37322();
+    private Consumer<Path> field_33976 = path -> {};
+    private boolean field_33977;
+    @Nullable
+    private class_6414 field_33978;
+    private boolean field_33979;
     private final ServerNetworkIo networkIo;
     private final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
     private final ServerMetadata metadata = new ServerMetadata();
@@ -249,9 +261,10 @@ AutoCloseable {
     private String resourcePackHash = "";
     private volatile boolean loading;
     private long lastTimeReference;
-    private boolean profilerStartQueued;
     private final MinecraftSessionService sessionService;
+    @Nullable
     private final GameProfileRepository gameProfileRepo;
+    @Nullable
     private final UserCache userCache;
     private long lastPlayerSampleUpdate;
     private final Thread serverThread;
@@ -285,7 +298,7 @@ AutoCloseable {
         return (S)minecraftServer;
     }
 
-    public MinecraftServer(Thread serverThread, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, SaveProperties saveProperties, ResourcePackManager dataPackManager, Proxy proxy, DataFixer dataFixer, ServerResourceManager serverResourceManager, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+    public MinecraftServer(Thread serverThread, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, SaveProperties saveProperties, ResourcePackManager dataPackManager, Proxy proxy, DataFixer dataFixer, ServerResourceManager serverResourceManager, @Nullable MinecraftSessionService sessionService, @Nullable GameProfileRepository gameProfileRepo, @Nullable UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super("Server");
         this.registryManager = registryManager;
         this.saveProperties = saveProperties;
@@ -295,6 +308,9 @@ AutoCloseable {
         this.sessionService = sessionService;
         this.gameProfileRepo = gameProfileRepo;
         this.userCache = userCache;
+        if (userCache != null) {
+            userCache.method_37157(this);
+        }
         this.networkIo = new ServerNetworkIo(this);
         this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
         this.session = session;
@@ -651,10 +667,12 @@ AutoCloseable {
                         this.timeReference += m * 50L;
                         this.lastTimeReference = this.timeReference;
                     }
+                    if (this.field_33979) {
+                        this.field_33979 = false;
+                        this.field_33978 = new class_6414(Util.getMeasuringTimeNano(), this.ticks);
+                    }
                     this.timeReference += 50L;
-                    TickDurationMonitor tickDurationMonitor = TickDurationMonitor.create("Server");
-                    this.startMonitor(tickDurationMonitor);
-                    this.profiler.startTick();
+                    this.startMonitor();
                     this.profiler.push("tick");
                     this.tick(this::shouldKeepTicking);
                     this.profiler.swap("nextTickWait");
@@ -662,8 +680,7 @@ AutoCloseable {
                     this.nextTickTimestamp = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
                     this.method_16208();
                     this.profiler.pop();
-                    this.profiler.endTick();
-                    this.endMonitor(tickDurationMonitor);
+                    this.endMonitor();
                     this.loading = true;
                 }
             } else {
@@ -672,7 +689,7 @@ AutoCloseable {
         } catch (Throwable throwable) {
             LOGGER.error("Encountered an unexpected exception", throwable);
             CrashReport crashReport = throwable instanceof CrashException ? ((CrashException)throwable).getReport() : new CrashReport("Exception in server tick loop", throwable);
-            this.populateCrashReport(crashReport.getSystemDetailsSection());
+            this.method_37324(crashReport.getSystemDetailsSection());
             File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt");
             if (crashReport.writeToFile(file)) {
                 LOGGER.error("This crash report has been saved to: {}", (Object)file.getAbsolutePath());
@@ -919,11 +936,11 @@ AutoCloseable {
         return "vanilla";
     }
 
-    public void populateCrashReport(CrashReportSection section) {
+    public class_6396 method_37324(class_6396 arg) {
         if (this.playerManager != null) {
-            section.add("Player Count", () -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList());
+            arg.method_37123("Player Count", () -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList());
         }
-        section.add("Data Packs", () -> {
+        arg.method_37123("Data Packs", () -> {
             StringBuilder stringBuilder = new StringBuilder();
             for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getEnabledProfiles()) {
                 if (stringBuilder.length() > 0) {
@@ -936,9 +953,12 @@ AutoCloseable {
             return stringBuilder.toString();
         });
         if (this.serverId != null) {
-            section.add("Server Id", () -> this.serverId);
+            arg.method_37123("Server Id", () -> this.serverId);
         }
+        return this.populateCrashReport(arg);
     }
+
+    public abstract class_6396 populateCrashReport(class_6396 var1);
 
     public abstract Optional<String> getModdedStatusMessage();
 
@@ -1469,19 +1489,26 @@ AutoCloseable {
 
     public abstract boolean isHost(GameProfile var1);
 
-    public void dump(Path path) throws IOException {
+    public void method_37113(Path path) throws IOException {
+    }
+
+    private void dump(Path path) {
         Path path2 = path.resolve("levels");
-        for (Map.Entry<RegistryKey<World>, ServerWorld> entry : this.worlds.entrySet()) {
-            Identifier identifier = entry.getKey().getValue();
-            Path path3 = path2.resolve(identifier.getNamespace()).resolve(identifier.getPath());
-            Files.createDirectories(path3, new FileAttribute[0]);
-            entry.getValue().dump(path3);
+        try {
+            for (Map.Entry<RegistryKey<World>, ServerWorld> entry : this.worlds.entrySet()) {
+                Identifier identifier = entry.getKey().getValue();
+                Path path3 = path2.resolve(identifier.getNamespace()).resolve(identifier.getPath());
+                Files.createDirectories(path3, new FileAttribute[0]);
+                entry.getValue().dump(path3);
+            }
+            this.dumpGamerules(path.resolve("gamerules.txt"));
+            this.dumpClasspath(path.resolve("classpath.txt"));
+            this.dumpStats(path.resolve("stats.txt"));
+            this.dumpThreads(path.resolve("threads.txt"));
+            this.method_37113(path.resolve("server.properties.txt"));
+        } catch (IOException iOException) {
+            LOGGER.warn("Failed to save debug report", (Throwable)iOException);
         }
-        this.dumpGamerules(path.resolve("gamerules.txt"));
-        this.dumpClasspath(path.resolve("classpath.txt"));
-        this.dumpExampleCrash(path.resolve("example_crash.txt"));
-        this.dumpStats(path.resolve("stats.txt"));
-        this.dumpThreads(path.resolve("threads.txt"));
     }
 
     private void dumpStats(Path path) throws IOException {
@@ -1490,14 +1517,6 @@ AutoCloseable {
             writer.write(String.format("average_tick_time: %f\n", Float.valueOf(this.getTickTime())));
             writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
             writer.write(String.format("queue: %s\n", Util.getMainWorkerExecutor()));
-        }
-    }
-
-    private void dumpExampleCrash(Path path) throws IOException {
-        CrashReport crashReport = new CrashReport("Server dump", new Exception("dummy"));
-        this.populateCrashReport(crashReport.getSystemDetailsSection());
-        try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
-            writer.write(crashReport.asString());
         }
     }
 
@@ -1541,33 +1560,43 @@ AutoCloseable {
         }
     }
 
-    private void startMonitor(@Nullable TickDurationMonitor monitor) {
-        if (this.profilerStartQueued) {
-            this.profilerStartQueued = false;
-            this.tickTimeTracker.enable();
+    private void startMonitor() {
+        if (this.field_33977) {
+            this.tickTimeTracker = DebugRecorder.method_37191(new class_6402(Util.nanoTimeSupplier, this.isDedicated()), Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new ProfilerDumper("server"), this.field_33975, path -> {
+                this.dump(path.resolve("server"));
+                this.field_33976.accept((Path)path);
+            });
+            this.field_33977 = false;
         }
-        this.profiler = TickDurationMonitor.tickProfiler(this.tickTimeTracker.getProfiler(), monitor);
+        this.profiler = TickDurationMonitor.tickProfiler(this.tickTimeTracker.getProfiler(), TickDurationMonitor.create("Server"));
+        this.tickTimeTracker.start();
+        this.profiler.startTick();
     }
 
-    private void endMonitor(@Nullable TickDurationMonitor monitor) {
-        if (monitor != null) {
-            monitor.endTick();
-        }
-        this.profiler = this.tickTimeTracker.getProfiler();
+    private void endMonitor() {
+        this.profiler.endTick();
+        this.tickTimeTracker.read();
     }
 
-    public boolean isDebugRunning() {
+    public boolean method_37321() {
         return this.tickTimeTracker.isActive();
     }
 
-    public void enableProfiler() {
-        this.profilerStartQueued = true;
+    public void method_37320(Consumer<ProfileResult> consumer, Consumer<Path> consumer2) {
+        this.field_33975 = profileResult -> {
+            this.method_37322();
+            consumer.accept((ProfileResult)profileResult);
+        };
+        this.field_33976 = consumer2;
+        this.field_33977 = true;
     }
 
-    public ProfileResult stopDebug() {
-        ProfileResult profileResult = this.tickTimeTracker.getResult();
-        this.tickTimeTracker.disable();
-        return profileResult;
+    public void method_37322() {
+        this.tickTimeTracker = DummyRecorder.INSTANCE;
+    }
+
+    public void method_37323() {
+        this.tickTimeTracker.sample();
     }
 
     public Path getSavePath(WorldSavePath worldSavePath) {
@@ -1619,6 +1648,23 @@ AutoCloseable {
         return null;
     }
 
+    public boolean isDebugRunning() {
+        return this.field_33979 || this.field_33978 != null;
+    }
+
+    public void enableProfiler() {
+        this.field_33979 = true;
+    }
+
+    public ProfileResult stopDebug() {
+        if (this.field_33978 == null) {
+            return EmptyProfileResult.INSTANCE;
+        }
+        ProfileResult profileResult = this.field_33978.method_37330(Util.getMeasuringTimeNano(), this.ticks);
+        this.field_33978 = null;
+        return profileResult;
+    }
+
     @Override
     public /* synthetic */ void executeTask(Runnable task) {
         this.executeTask((ServerTask)task);
@@ -1632,6 +1678,56 @@ AutoCloseable {
     @Override
     public /* synthetic */ Runnable createTask(Runnable runnable) {
         return this.createTask(runnable);
+    }
+
+    static class class_6414 {
+        final long field_33980;
+        final int field_33981;
+
+        class_6414(long l, int i) {
+            this.field_33980 = l;
+            this.field_33981 = i;
+        }
+
+        ProfileResult method_37330(final long l, final int i) {
+            return new ProfileResult(){
+
+                @Override
+                public List<ProfilerTiming> getTimings(String parentPath) {
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public boolean save(Path path) {
+                    return false;
+                }
+
+                @Override
+                public long getStartTime() {
+                    return field_33980;
+                }
+
+                @Override
+                public int getStartTick() {
+                    return field_33981;
+                }
+
+                @Override
+                public long getEndTime() {
+                    return l;
+                }
+
+                @Override
+                public int getEndTick() {
+                    return i;
+                }
+
+                @Override
+                public String getRootTimings() {
+                    return "";
+                }
+            };
+        }
     }
 }
 

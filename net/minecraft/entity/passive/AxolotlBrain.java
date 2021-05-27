@@ -43,6 +43,55 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
+/**
+ * Represents the definition of an {@linkplain AxolotlEntity axolotl entity} brain.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Activites associated to the {@linkplain AxolotlEntity axolotl entity} brain</caption>
+ * <tr>
+ *   <th>Activity</th><th>Tasks</th>
+ * </tr>
+ * <tr>
+ *   <td>{@link net.minecraft.entity.ai.brain.Activity#CORE}</td>
+ *   <td><ul>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.LookAroundTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.WanderAroundTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.PlayDeadTimerTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.TemptationCooldownTask}</li>
+ *   </ul></td>
+ * </tr>
+ * <tr>
+ *   <td>{@link net.minecraft.entity.ai.brain.Activity#IDLE}</td>
+ *   <td><ul>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.FollowMobTask FollowMobTask(PLAYER)} (time limited)</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.BreedTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.TemptTask} (random)</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.SeekWaterTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.CompositeTask}</li>
+ *   </ul></td>
+ * </tr>
+ * <tr>
+ *   <td>{@link net.minecraft.entity.ai.brain.Activity#FIGHT}</td>
+ *   <td><ul>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.RangedApproachTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.MeleeAttackTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.ForgetTask}</li>
+ *   </ul></td>
+ * </tr>
+ * <tr>
+ *   <td>{@link net.minecraft.entity.ai.brain.Activity#PLAY_DEAD}</td>
+ *   <td><ul>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.PlayDeadTask}</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.ForgetTask}</li>
+ *   </ul></td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 public class AxolotlBrain {
     private static final UniformIntProvider WALK_TOWARD_ADULT_RANGE = UniformIntProvider.create(5, 16);
     private static final float field_30394 = 0.2f;
@@ -78,7 +127,7 @@ public class AxolotlBrain {
         brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0f), UniformIntProvider.create(30, 60))), Pair.of(1, new BreedTask(EntityType.AXOLOTL, 0.2f)), Pair.of(2, new RandomTask(ImmutableList.of(Pair.of(new TemptTask(AxolotlBrain::method_33248), 1), Pair.of(new WalkTowardClosestAdultTask(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::method_33245), 1)))), Pair.of(3, new UpdateAttackTargetTask<AxolotlEntity>(AxolotlBrain::getAttackTarget)), Pair.of(3, new SeekWaterTask(6, 0.15f)), Pair.of(4, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(Pair.of(new AquaticStrollTask(0.5f), 2), Pair.of(new StrollTask(0.15f), 2), Pair.of(new GoTowardsLookTarget(AxolotlBrain::method_33248, 3), 3), Pair.of(new ConditionalTask<LivingEntity>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5), Pair.of(new ConditionalTask<LivingEntity>(Entity::isOnGround, new WaitTask(200, 400)), 5))))));
     }
 
-    public static void method_33244(AxolotlEntity axolotl) {
+    public static void updateActivities(AxolotlEntity axolotl) {
         Brain<AxolotlEntity> brain = axolotl.getBrain();
         Activity activity = brain.getFirstPossibleNonCoreActivity().orElse(null);
         if (activity != Activity.PLAY_DEAD) {

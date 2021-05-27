@@ -538,7 +538,7 @@ implements TypeFilter<Entity, T> {
 
             @Override
             public int characteristics() {
-                return 1297;
+                return Spliterator.ORDERED | Spliterator.DISTINCT | Spliterator.NONNULL | Spliterator.IMMUTABLE;
             }
         }, false);
     }

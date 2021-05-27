@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
@@ -91,8 +92,7 @@ extends Feature<SingleStateFeatureConfig> {
                     structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
                     if (!bl2) continue;
                     structureWorldAccess.getBlockTickScheduler().schedule(blockPos2, CAVE_AIR.getBlock(), 0);
-                    BlockPos blockPos3 = blockPos2.up();
-                    this.method_37001(structureWorldAccess, blockPos3, structureWorldAccess.getBlockState(blockPos3));
+                    this.method_37256(structureWorldAccess, blockPos2);
                 }
             }
         }
@@ -115,13 +115,13 @@ extends Feature<SingleStateFeatureConfig> {
             for (int s = 0; s < 16; ++s) {
                 for (t = 0; t < 16; ++t) {
                     for (int u = 0; u < 8; ++u) {
+                        BlockState blockState;
                         boolean bl2;
                         boolean bl = bl2 = !bls[(s * 16 + t) * 8 + u] && (s < 15 && bls[((s + 1) * 16 + t) * 8 + u] || s > 0 && bls[((s - 1) * 16 + t) * 8 + u] || t < 15 && bls[(s * 16 + t + 1) * 8 + u] || t > 0 && bls[(s * 16 + (t - 1)) * 8 + u] || u < 7 && bls[(s * 16 + t) * 8 + u + 1] || u > 0 && bls[(s * 16 + t) * 8 + (u - 1)]);
-                        if (!bl2 || u >= 4 && random.nextInt(2) == 0 || !structureWorldAccess.getBlockState(blockPos.add(s, u, t)).getMaterial().isSolid()) continue;
+                        if (!bl2 || u >= 4 && random.nextInt(2) == 0 || !(blockState = structureWorldAccess.getBlockState(blockPos.add(s, u, t))).getMaterial().isSolid() || blockState.isIn(BlockTags.LAVA_POOL_STONE_REPLACEABLES)) continue;
                         BlockPos blockPos3 = blockPos.add(s, u, t);
                         structureWorldAccess.setBlockState(blockPos3, blockSource.get(blockPos3), Block.NOTIFY_LISTENERS);
-                        BlockPos blockPos4 = blockPos3.up();
-                        this.method_37001(structureWorldAccess, blockPos4, structureWorldAccess.getBlockState(blockPos4));
+                        this.method_37256(structureWorldAccess, blockPos3);
                     }
                 }
             }
@@ -137,12 +137,6 @@ extends Feature<SingleStateFeatureConfig> {
             }
         }
         return true;
-    }
-
-    private void method_37001(StructureWorldAccess structureWorldAccess, BlockPos blockPos, BlockState blockState) {
-        if (!blockState.isAir()) {
-            structureWorldAccess.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 0);
-        }
     }
 }
 

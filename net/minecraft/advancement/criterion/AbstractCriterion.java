@@ -63,7 +63,7 @@ implements Criterion<T> {
         ArrayList<Criterion.ConditionsContainer<T>> list = null;
         for (Criterion.ConditionsContainer<T> conditionsContainer : set) {
             AbstractCriterionConditions abstractCriterionConditions = (AbstractCriterionConditions)conditionsContainer.getConditions();
-            if (!abstractCriterionConditions.getPlayerPredicate().test(lootContext) || !tester.test(abstractCriterionConditions)) continue;
+            if (!tester.test(abstractCriterionConditions) || !abstractCriterionConditions.getPlayerPredicate().test(lootContext)) continue;
             if (list == null) {
                 list = Lists.newArrayList();
             }

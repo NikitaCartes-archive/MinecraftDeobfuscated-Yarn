@@ -3,6 +3,7 @@
  */
 package net.minecraft.client;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Queues;
 import com.google.common.hash.Hashing;
@@ -25,11 +26,13 @@ import com.mojang.serialization.Lifecycle;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -56,6 +59,9 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_6396;
+import net.minecraft.class_6397;
+import net.minecraft.class_6412;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -179,6 +185,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -220,6 +227,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -260,6 +268,7 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -1152,19 +1161,80 @@ WindowEventHandler {
         System.gc();
     }
 
-    void toggleDebugProfiler(Runnable startAction, Consumer<Path> completeAction) {
+    public boolean toggleDebugProfiler(Consumer<TranslatableText> consumer) {
+        Consumer<Path> consumer5;
         if (this.debugRecorder.isActive()) {
-            this.debugRecorder.sample();
-            return;
+            this.method_37286();
+            return false;
         }
-        Runnable runnable = () -> {
-            this.debugRecorder = DummyRecorder.INSTANCE;
+        Consumer<ProfileResult> consumer2 = profileResult -> {
+            int i = profileResult.getTickSpan();
+            double d = (double)profileResult.getTimeSpan() / (double)Durations.field_33868;
+            this.execute(() -> consumer.accept(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))));
         };
-        this.debugRecorder = DebugRecorder.create(Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new ProfilerDumper(), runnable, completeAction);
-        startAction.run();
+        Consumer<Path> consumer3 = path -> {
+            MutableText text = new LiteralText(path.toString()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
+            this.execute(() -> consumer.accept(new TranslatableText("debug.profiling.stop", text)));
+        };
+        class_6396 lv = MinecraftClient.method_37274(new class_6396(), this, this.languageManager, this.gameVersion, this.options);
+        Consumer<List> consumer4 = list -> {
+            Path path = this.method_37275(lv, (List<Path>)list);
+            consumer3.accept(path);
+        };
+        if (this.server == null) {
+            consumer5 = path -> consumer4.accept(ImmutableList.of(path));
+        } else {
+            this.server.method_37324(lv);
+            CompletableFuture completableFuture = new CompletableFuture();
+            CompletableFuture completableFuture2 = new CompletableFuture();
+            CompletableFuture.allOf(completableFuture, completableFuture2).thenRunAsync(() -> consumer4.accept(ImmutableList.of((Path)completableFuture.join(), (Path)completableFuture2.join())), Util.getIoWorkerExecutor());
+            this.server.method_37320(profileResult -> {}, completableFuture2::complete);
+            consumer5 = completableFuture::complete;
+        }
+        this.debugRecorder = DebugRecorder.method_37191(new class_6412(Util.nanoTimeSupplier, this.worldRenderer), Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new ProfilerDumper("client"), profileResult -> {
+            this.debugRecorder = DummyRecorder.INSTANCE;
+            consumer2.accept((ProfileResult)profileResult);
+        }, consumer5);
+        return true;
     }
 
-    void handleProfilerKeyPress(int digit) {
+    private void method_37286() {
+        this.debugRecorder.sample();
+        if (this.server != null) {
+            this.server.method_37323();
+        }
+    }
+
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
+    private Path method_37275(class_6396 arg, List<Path> list) {
+        Path path;
+        String string = this.isInSingleplayer() ? this.getServer().getSaveProperties().getLevelName() : this.getCurrentServerEntry().name;
+        try {
+            String string2 = String.format("%s-%s-%s", new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()), string, SharedConstants.getGameVersion().getId());
+            String string3 = FileNameUtil.getNextUniqueName(ProfilerDumper.DEBUG_PROFILING_DIRECTORY, string2, ".zip");
+            path = ProfilerDumper.DEBUG_PROFILING_DIRECTORY.resolve(string3);
+        } catch (IOException iOException) {
+            throw new UncheckedIOException(iOException);
+        }
+        try (class_6397 lv = new class_6397(path);){
+            lv.method_37163(Paths.get("system.txt", new String[0]), arg.method_37120());
+            lv.method_37163(Paths.get("client", new String[0]).resolve(this.options.method_37294().getName()), this.options.method_37295());
+            list.forEach(lv::method_37161);
+        } finally {
+            for (Path path2 : list) {
+                try {
+                    FileUtils.forceDelete(path2.toFile());
+                } catch (IOException iOException2) {
+                    LOGGER.warn("Failed to delete temporary profiling result {}", (Object)path2, (Object)iOException2);
+                }
+            }
+        }
+        return path;
+    }
+
+    public void handleProfilerKeyPress(int digit) {
         if (this.tickProfilerResult == null) {
             return;
         }
@@ -1694,6 +1764,7 @@ WindowEventHandler {
             MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
+            userCache.method_37157(this);
             SkullBlockEntity.setUserCache(userCache);
             SkullBlockEntity.setSessionService(minecraftSessionService);
             UserCache.setUseRemote(false);
@@ -1798,6 +1869,7 @@ WindowEventHandler {
             MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
+            userCache.method_37157(this);
             SkullBlockEntity.setUserCache(userCache);
             SkullBlockEntity.setSessionService(minecraftSessionService);
             UserCache.setUseRemote(false);
@@ -1997,27 +2069,32 @@ WindowEventHandler {
     }
 
     public CrashReport addDetailsToCrashReport(CrashReport report) {
-        MinecraftClient.addSystemDetailsToCrashReport(this, this.languageManager, this.gameVersion, this.options, report);
+        class_6396 lv = report.getSystemDetailsSection();
+        MinecraftClient.method_37274(lv, this, this.languageManager, this.gameVersion, this.options);
         if (this.world != null) {
             this.world.addDetailsToCrashReport(report);
         }
         if (this.server != null) {
-            this.server.populateCrashReport(report.addElement("Integrated server"));
+            this.server.method_37324(lv);
         }
         this.resourceReloadLogger.addReloadSection(report);
         return report;
     }
 
     public static void addSystemDetailsToCrashReport(@Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report) {
-        CrashReportSection crashReportSection = report.getSystemDetailsSection();
-        crashReportSection.add("Launched Version", () -> version);
-        crashReportSection.add("Backend library", RenderSystem::getBackendDescription);
-        crashReportSection.add("Backend API", RenderSystem::getApiDescription);
-        crashReportSection.add("Window size", () -> client != null ? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight() : "<not initialized>");
-        crashReportSection.add("GL Caps", RenderSystem::getCapsString);
-        crashReportSection.add("GL debug messages", () -> GlDebug.method_36479() ? String.join((CharSequence)"\n", GlDebug.method_36478()) : "<disabled>");
-        crashReportSection.add("Using VBOs", () -> "Yes");
-        crashReportSection.add("Is Modded", () -> {
+        class_6396 lv = report.getSystemDetailsSection();
+        MinecraftClient.method_37274(lv, client, languageManager, version, options);
+    }
+
+    private static class_6396 method_37274(class_6396 arg, @Nullable MinecraftClient minecraftClient, @Nullable LanguageManager languageManager, String string, GameOptions gameOptions) {
+        arg.method_37123("Launched Version", () -> string);
+        arg.method_37123("Backend library", RenderSystem::getBackendDescription);
+        arg.method_37123("Backend API", RenderSystem::getApiDescription);
+        arg.method_37123("Window size", () -> minecraftClient != null ? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight() : "<not initialized>");
+        arg.method_37123("GL Caps", RenderSystem::getCapsString);
+        arg.method_37123("GL debug messages", () -> GlDebug.method_36479() ? String.join((CharSequence)"\n", GlDebug.method_36478()) : "<disabled>");
+        arg.method_37123("Using VBOs", () -> "Yes");
+        arg.method_37123("Is Modded", () -> {
             String string = ClientBrandRetriever.getClientModName();
             if (!"vanilla".equals(string)) {
                 return "Definitely; Client brand changed to '" + string + "'";
@@ -2027,14 +2104,14 @@ WindowEventHandler {
             }
             return "Probably not. Jar signature remains and client brand is untouched.";
         });
-        crashReportSection.add("Type", "Client (map_client.txt)");
-        if (options != null) {
-            String string;
-            if (instance != null && (string = instance.getVideoWarningManager().getWarningsAsString()) != null) {
-                crashReportSection.add("GPU Warnings", string);
+        arg.method_37122("Type", "Client (map_client.txt)");
+        if (gameOptions != null) {
+            String string2;
+            if (instance != null && (string2 = instance.getVideoWarningManager().getWarningsAsString()) != null) {
+                arg.method_37122("GPU Warnings", string2);
             }
-            crashReportSection.add("Graphics mode", (Object)options.graphicsMode);
-            crashReportSection.add("Resource Packs", () -> {
+            arg.method_37122("Graphics mode", gameOptions.graphicsMode.toString());
+            arg.method_37123("Resource Packs", () -> {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (String string : gameOptions.resourcePacks) {
                     if (stringBuilder.length() > 0) {
@@ -2048,9 +2125,10 @@ WindowEventHandler {
             });
         }
         if (languageManager != null) {
-            crashReportSection.add("Current Language", () -> languageManager.getLanguage().toString());
+            arg.method_37123("Current Language", () -> languageManager.getLanguage().toString());
         }
-        crashReportSection.add("CPU", GlDebugInfo::getCpuInfo);
+        arg.method_37123("CPU", GlDebugInfo::getCpuInfo);
+        return arg;
     }
 
     public static MinecraftClient getInstance() {
@@ -2298,10 +2376,6 @@ WindowEventHandler {
 
     public <T> SearchableContainer<T> getSearchableContainer(SearchManager.Key<T> key) {
         return this.searchManager.get(key);
-    }
-
-    public static int getCurrentFps() {
-        return currentFps;
     }
 
     public MetricsData getMetricsData() {

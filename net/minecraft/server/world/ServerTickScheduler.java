@@ -17,7 +17,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
@@ -59,13 +58,12 @@ implements TickScheduler<T> {
         if (i > 65536) {
             i = 65536;
         }
-        ServerChunkManager serverChunkManager = this.world.getChunkManager();
         Iterator<ScheduledTick<T>> iterator = this.scheduledTickActionsInOrder.iterator();
         this.world.getProfiler().push("cleaning");
         while (i > 0 && iterator.hasNext()) {
             scheduledTick = iterator.next();
             if (scheduledTick.time > this.world.getTime()) break;
-            if (!serverChunkManager.shouldTickBlock(scheduledTick.pos)) continue;
+            if (!this.world.method_37117(scheduledTick.pos)) continue;
             iterator.remove();
             this.scheduledTickActions.remove(scheduledTick);
             this.currentTickActions.add(scheduledTick);
@@ -73,7 +71,7 @@ implements TickScheduler<T> {
         }
         this.world.getProfiler().swap("ticking");
         while ((scheduledTick = this.currentTickActions.poll()) != null) {
-            if (serverChunkManager.shouldTickBlock(scheduledTick.pos)) {
+            if (this.world.method_37117(scheduledTick.pos)) {
                 try {
                     this.consumedTickActions.add(scheduledTick);
                     this.tickConsumer.accept(scheduledTick);

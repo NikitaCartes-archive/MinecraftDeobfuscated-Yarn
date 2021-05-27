@@ -96,7 +96,7 @@ extends ProjectileEntity {
         vec3d = vec3d.multiply(0.6 / m + 0.5 + this.random.nextGaussian() * 0.0045, 0.6 / m + 0.5 + this.random.nextGaussian() * 0.0045, 0.6 / m + 0.5 + this.random.nextGaussian() * 0.0045);
         this.setVelocity(vec3d);
         this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
-        this.setPitch((float)(MathHelper.atan2(vec3d.y, Math.sqrt(FishingBobberEntity.squaredHorizontalLength(vec3d))) * 57.2957763671875));
+        this.setPitch((float)(MathHelper.atan2(vec3d.y, vec3d.method_37267()) * 57.2957763671875));
         this.prevYaw = this.getYaw();
         this.prevPitch = this.getPitch();
     }
@@ -176,8 +176,8 @@ extends ProjectileEntity {
         } else {
             if (this.state == State.HOOKED_IN_ENTITY) {
                 if (this.hookedEntity != null) {
-                    if (this.hookedEntity.isRemoved()) {
-                        this.hookedEntity = null;
+                    if (this.hookedEntity.isRemoved() || this.hookedEntity.world.getRegistryKey() != this.world.getRegistryKey()) {
+                        this.updateHookedEntityId(null);
                         this.state = State.FLYING;
                     } else {
                         this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
@@ -255,9 +255,9 @@ extends ProjectileEntity {
         this.setVelocity(this.getVelocity().normalize().multiply(blockHitResult.squaredDistanceTo(this)));
     }
 
-    private void updateHookedEntityId(Entity entity) {
+    private void updateHookedEntityId(@Nullable Entity entity) {
         this.hookedEntity = entity;
-        this.getDataTracker().set(HOOK_ENTITY_ID, entity.getId() + 1);
+        this.getDataTracker().set(HOOK_ENTITY_ID, entity == null ? 0 : entity.getId() + 1);
     }
 
     private void tickFishingLogic(BlockPos pos) {
@@ -388,7 +388,7 @@ extends ProjectileEntity {
 
     public int use(ItemStack usedItem) {
         PlayerEntity playerEntity = this.getPlayerOwner();
-        if (this.world.isClient || playerEntity == null) {
+        if (this.world.isClient || playerEntity == null || this.removeIfInvalid(playerEntity)) {
             return 0;
         }
         int i = 0;

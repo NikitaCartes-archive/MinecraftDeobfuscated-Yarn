@@ -258,7 +258,7 @@ implements CraftingRecipe {
     }
 
     public static ItemStack outputFromJson(JsonObject json) {
-        Item item = ShapedRecipe.getItemStack(json);
+        Item item = ShapedRecipe.getItem(json);
         if (json.has("data")) {
             throw new JsonParseException("Disallowed data tag found");
         }
@@ -269,7 +269,7 @@ implements CraftingRecipe {
         return new ItemStack(item, i);
     }
 
-    public static Item getItemStack(JsonObject json) {
+    public static Item getItem(JsonObject json) {
         String string = JsonHelper.getString(json, "item");
         Item item = Registry.ITEM.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + string + "'"));
         if (item == Items.AIR) {

@@ -12,6 +12,10 @@ public interface Selectable
 extends Narratable {
     public SelectionType getType();
 
+    default public boolean method_37303() {
+        return true;
+    }
+
     @Environment(value=EnvType.CLIENT)
     public static enum SelectionType {
         NONE,

@@ -81,21 +81,21 @@ extends FeatureRenderer<T, M> {
             if (bl) {
                 matrixStack.translate(0.0, 0.0625, 0.0);
             }
-            GameProfile gameProfile = null;
+            GameProfile gameProfile2 = null;
             if (itemStack.hasTag()) {
                 String string;
                 NbtCompound nbtCompound = itemStack.getTag();
                 if (nbtCompound.contains("SkullOwner", 10)) {
-                    gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+                    gameProfile2 = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
                 } else if (nbtCompound.contains("SkullOwner", 8) && !StringUtils.isBlank(string = nbtCompound.getString("SkullOwner"))) {
-                    gameProfile = SkullBlockEntity.loadProperties(new GameProfile(null, string));
-                    nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
+                    nbtCompound.remove("SkullOwner");
+                    SkullBlockEntity.loadProperties(new GameProfile(null, string), gameProfile -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile)));
                 }
             }
             matrixStack.translate(-0.5, 0.0, -0.5);
             SkullBlock.SkullType skullType = ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType();
             SkullBlockEntityModel skullBlockEntityModel = this.headModels.get(skullType);
-            RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
+            RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile2);
             SkullBlockEntityRenderer.renderSkull(null, 180.0f, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
         } else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
             HeadFeatureRenderer.translate(matrixStack, bl);

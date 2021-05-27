@@ -3,8 +3,11 @@
  */
 package net.minecraft.entity;
 
+import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
@@ -33,12 +36,16 @@ import org.jetbrains.annotations.Nullable;
 public class LightningEntity
 extends Entity {
     private static final int field_30062 = 2;
+    private static final double field_33906 = 3.0;
+    private static final double field_33907 = 15.0;
     private int ambientTick;
     public long seed;
     private int remainingActions;
     private boolean cosmetic;
     @Nullable
     private ServerPlayerEntity channeler;
+    private final Set<Entity> field_33904 = Sets.newHashSet();
+    private int field_33905;
 
     public LightningEntity(EntityType<? extends LightningEntity> entityType, World world) {
         super(entityType, world);
@@ -76,6 +83,7 @@ extends Entity {
 
     @Override
     public void tick() {
+        List<Entity> list;
         super.tick();
         if (this.ambientTick == 2) {
             if (this.world.isClient()) {
@@ -94,6 +102,12 @@ extends Entity {
         --this.ambientTick;
         if (this.ambientTick < 0) {
             if (this.remainingActions == 0) {
+                if (this.world instanceof ServerWorld) {
+                    list = this.world.getOtherEntities(this, new Box(this.getX() - 15.0, this.getY() - 15.0, this.getZ() - 15.0, this.getX() + 15.0, this.getY() + 6.0 + 15.0, this.getZ() + 15.0), entity -> entity.isAlive() && !this.field_33904.contains(entity));
+                    for (ServerPlayerEntity serverPlayerEntity2 : ((ServerWorld)this.world).getPlayers(serverPlayerEntity -> serverPlayerEntity.distanceTo(this) < 256.0f)) {
+                        Criteria.LIGHTNING_STRIKE.test(serverPlayerEntity2, this, list);
+                    }
+                }
                 this.discard();
             } else if (this.ambientTick < -this.random.nextInt(10)) {
                 --this.remainingActions;
@@ -106,11 +120,11 @@ extends Entity {
             if (!(this.world instanceof ServerWorld)) {
                 this.world.setLightningTicksLeft(2);
             } else if (!this.cosmetic) {
-                double d = 3.0;
-                List<Entity> list = this.world.getOtherEntities(this, new Box(this.getX() - 3.0, this.getY() - 3.0, this.getZ() - 3.0, this.getX() + 3.0, this.getY() + 6.0 + 3.0, this.getZ() + 3.0), Entity::isAlive);
-                for (Entity entity : list) {
-                    entity.onStruckByLightning((ServerWorld)this.world, this);
+                list = this.world.getOtherEntities(this, new Box(this.getX() - 3.0, this.getY() - 3.0, this.getZ() - 3.0, this.getX() + 3.0, this.getY() + 6.0 + 3.0, this.getZ() + 3.0), Entity::isAlive);
+                for (Entity entity2 : list) {
+                    entity2.onStruckByLightning((ServerWorld)this.world, this);
                 }
+                this.field_33904.addAll(list);
                 if (this.channeler != null) {
                     Criteria.CHANNELED_LIGHTNING.trigger(this.channeler, list);
                 }
@@ -131,12 +145,14 @@ extends Entity {
         BlockState blockState = AbstractFireBlock.getState(this.world, blockPos);
         if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
             this.world.setBlockState(blockPos, blockState);
+            ++this.field_33905;
         }
         for (int i = 0; i < spreadAttempts; ++i) {
             BlockPos blockPos2 = blockPos.add(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
             blockState = AbstractFireBlock.getState(this.world, blockPos2);
             if (!this.world.getBlockState(blockPos2).isAir() || !blockState.canPlaceAt(this.world, blockPos2)) continue;
             this.world.setBlockState(blockPos2, blockState);
+            ++this.field_33905;
         }
     }
 
@@ -203,6 +219,14 @@ extends Entity {
     @Override
     public Packet<?> createSpawnPacket() {
         return new EntitySpawnS2CPacket(this);
+    }
+
+    public int method_37220() {
+        return this.field_33905;
+    }
+
+    public Stream<Entity> method_37221() {
+        return this.field_33904.stream().filter(Entity::isAlive);
     }
 }
 

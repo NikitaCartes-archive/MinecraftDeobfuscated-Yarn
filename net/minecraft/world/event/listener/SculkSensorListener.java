@@ -97,7 +97,7 @@ implements GameEventListener {
     private void listen(World world, GameEvent event, BlockPos pos, BlockPos sourcePos) {
         this.event = Optional.of(event);
         if (world instanceof ServerWorld) {
-            this.delay = this.distance = MathHelper.floor(MathHelper.sqrt(pos.getSquaredDistance(sourcePos, false)));
+            this.delay = this.distance = MathHelper.floor(Math.sqrt(pos.getSquaredDistance(sourcePos, false)));
             ((ServerWorld)world).sendVibrationPacket(new Vibration(pos, this.positionSource, this.delay));
         }
     }

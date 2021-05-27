@@ -16,6 +16,11 @@ import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
 import net.minecraft.entity.Entity;
 
+/**
+ * Represents the model of a pig-like entity.
+ * 
+ * <p>{@inheritDoc}
+ */
 @Environment(value=EnvType.CLIENT)
 public class PigEntityModel<T extends Entity>
 extends QuadrupedEntityModel<T> {

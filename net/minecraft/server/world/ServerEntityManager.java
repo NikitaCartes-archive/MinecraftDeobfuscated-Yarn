@@ -342,6 +342,18 @@ implements AutoCloseable {
         return this.lookup;
     }
 
+    public boolean method_37254(BlockPos blockPos) {
+        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(ChunkPos.method_37232(blockPos)))).shouldTick();
+    }
+
+    public boolean method_37253(ChunkPos chunkPos) {
+        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(chunkPos.toLong()))).shouldTick();
+    }
+
+    public boolean method_37252(long l) {
+        return this.managedStatuses.get(l) == Status.LOADED;
+    }
+
     public void dump(Writer writer) throws IOException {
         CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("visibility").addColumn("load_status").addColumn("entity_count").startBody(writer);
         this.cache.getChunkPositions().forEach(chunkPos -> {

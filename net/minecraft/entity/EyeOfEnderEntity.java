@@ -119,7 +119,7 @@ implements FlyingItemEntity {
         double d = this.getX() + vec3d.x;
         double e = this.getY() + vec3d.y;
         double f = this.getZ() + vec3d.z;
-        double g = Math.sqrt(EyeOfEnderEntity.squaredHorizontalLength(vec3d));
+        double g = vec3d.method_37267();
         this.setPitch(ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875)));
         this.setYaw(ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875)));
         if (!this.world.isClient) {

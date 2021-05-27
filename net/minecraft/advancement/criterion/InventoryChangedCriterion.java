@@ -3,6 +3,7 @@
  */
 package net.minecraft.advancement.criterion;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -89,7 +90,7 @@ extends AbstractCriterion<Conditions> {
         public static Conditions items(ItemConvertible ... items) {
             ItemPredicate[] itemPredicates = new ItemPredicate[items.length];
             for (int i = 0; i < items.length; ++i) {
-                itemPredicates[i] = new ItemPredicate(null, items[i].asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.ARRAY_OF_ANY, EnchantmentPredicate.ARRAY_OF_ANY, null, NbtPredicate.ANY);
+                itemPredicates[i] = new ItemPredicate(null, ImmutableSet.of(items[i].asItem()), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.ARRAY_OF_ANY, EnchantmentPredicate.ARRAY_OF_ANY, null, NbtPredicate.ANY);
             }
             return Conditions.items(itemPredicates);
         }

@@ -65,6 +65,8 @@ implements Monster {
     private static final int MAX_HEALTH = 200;
     private static final int field_30429 = 400;
     private static final float field_30430 = 0.25f;
+    private static final String field_33910 = "DragonDeathTime";
+    private static final String field_33911 = "DragonPhase";
     /**
      * (yaw, y, ?)
      */
@@ -185,7 +187,7 @@ implements Monster {
         }
         this.tickWithEndCrystals();
         Vec3d vec3d = this.getVelocity();
-        float g = 0.2f / (MathHelper.sqrt(EnderDragonEntity.squaredHorizontalLength(vec3d)) * 10.0f + 1.0f);
+        float g = 0.2f / ((float)vec3d.method_37267() * 10.0f + 1.0f);
         this.wingPosition = this.phaseManager.getCurrent().isSittingOrHovering() ? (this.wingPosition += 0.1f) : (this.slowedDownByBlock ? (this.wingPosition += g * 0.5f) : (this.wingPosition += (g *= (float)Math.pow(2.0, vec3d.y))));
         this.setYaw(MathHelper.wrapDegrees(this.getYaw()));
         if (this.isAiDisabled()) {
@@ -656,14 +658,18 @@ implements Monster {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("DragonPhase", this.phaseManager.getCurrent().getType().getTypeId());
+        nbt.putInt(field_33911, this.phaseManager.getCurrent().getType().getTypeId());
+        nbt.putInt(field_33910, this.ticksSinceDeath);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("DragonPhase")) {
-            this.phaseManager.setPhase(PhaseType.getFromId(nbt.getInt("DragonPhase")));
+        if (nbt.contains(field_33911)) {
+            this.phaseManager.setPhase(PhaseType.getFromId(nbt.getInt(field_33911)));
+        }
+        if (nbt.contains(field_33910)) {
+            this.ticksSinceDeath = nbt.getInt(field_33910);
         }
     }
 
@@ -720,7 +726,7 @@ implements Monster {
         PhaseType<? extends Phase> phaseType = phase.getType();
         if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
             BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-            float f = Math.max(MathHelper.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0f, 1.0f);
+            float f = Math.max((float)Math.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0f, 1.0f);
             float g = 6.0f / f;
             float h = this.getPitch();
             float i = 1.5f;

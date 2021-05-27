@@ -340,7 +340,7 @@ implements Flutterer {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
+    protected void playStepSound(BlockPos pos, BlockState blockState) {
         this.playSound(SoundEvents.ENTITY_PARROT_STEP, 0.15f, 1.0f);
     }
 

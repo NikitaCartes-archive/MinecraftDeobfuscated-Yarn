@@ -67,8 +67,9 @@ extends Feature<GlowLichenFeatureConfig> {
                 return false;
             }
             world.setBlockState(pos, blockState2, Block.NOTIFY_ALL);
+            world.getChunk(pos).markBlockForPostProcessing(pos);
             if (random.nextFloat() < config.spreadChance) {
-                glowLichenBlock.trySpreadRandomly(blockState2, world, pos, direction, random);
+                glowLichenBlock.trySpreadRandomly(blockState2, world, pos, direction, random, true);
             }
             return true;
         }
