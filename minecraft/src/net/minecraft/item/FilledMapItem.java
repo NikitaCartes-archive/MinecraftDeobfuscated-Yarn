@@ -399,8 +399,8 @@ public class FilledMapItem extends NetworkSyncedItem {
 		if (blockState.isIn(BlockTags.BANNERS)) {
 			if (!context.getWorld().isClient) {
 				MapState mapState = getOrCreateMapState(context.getStack(), context.getWorld());
-				if (mapState != null) {
-					mapState.addBanner(context.getWorld(), context.getBlockPos());
+				if (mapState != null && !mapState.addBanner(context.getWorld(), context.getBlockPos())) {
+					return ActionResult.FAIL;
 				}
 			}
 

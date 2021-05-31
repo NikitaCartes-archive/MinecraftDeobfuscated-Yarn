@@ -127,7 +127,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 				if (weightedSoundSet.getSubtitle() instanceof TranslatableText) {
 					String string = ((TranslatableText)weightedSoundSet.getSubtitle()).getKey();
 					if (!I18n.hasTranslation(string) && Registry.SOUND_EVENT.containsId(identifier)) {
-						throw new IllegalArgumentException(String.format("Missing translation %s for sound event: %s", string, identifier));
+						LOGGER.error("Missing subtitle {} for sound event: {}", string, identifier);
 					}
 				}
 			}

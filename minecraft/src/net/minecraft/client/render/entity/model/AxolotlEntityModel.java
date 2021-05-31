@@ -137,7 +137,7 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 			this.setPlayingDeadAngles(i);
 			this.updateAnglesCache(axolotlEntity);
 		} else {
-			boolean bl = axolotlEntity.getVelocity().method_37268() > 1.0E-7
+			boolean bl = axolotlEntity.getVelocity().horizontalLengthSquared() > 1.0E-7
 				|| axolotlEntity.getPitch() != axolotlEntity.prevPitch
 				|| axolotlEntity.getYaw() != axolotlEntity.prevYaw
 				|| axolotlEntity.lastRenderX != axolotlEntity.getX()

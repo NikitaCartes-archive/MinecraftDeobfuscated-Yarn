@@ -39,7 +39,7 @@ public class CaveSpiderEntity extends SpiderEntity {
 				}
 
 				if (i > 0) {
-					((LivingEntity)target).method_37222(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
+					((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
 				}
 			}
 

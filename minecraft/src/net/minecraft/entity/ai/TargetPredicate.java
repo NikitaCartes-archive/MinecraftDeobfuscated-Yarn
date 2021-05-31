@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.world.Difficulty;
 
 public class TargetPredicate {
 	public static final TargetPredicate DEFAULT = createAttackable();
@@ -64,7 +65,7 @@ public class TargetPredicate {
 			return false;
 		} else {
 			if (baseEntity == null) {
-				if (this.attackable && !targetEntity.canTakeDamage()) {
+				if (this.attackable && (!targetEntity.canTakeDamage() || targetEntity.world.getDifficulty() == Difficulty.PEACEFUL)) {
 					return false;
 				}
 			} else {

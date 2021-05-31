@@ -10,7 +10,19 @@ import net.minecraft.util.math.Matrix4f;
 @Environment(EnvType.CLIENT)
 public class EmptyGlyphRenderer extends GlyphRenderer {
 	public EmptyGlyphRenderer() {
-		super(RenderLayer.getText(new Identifier("")), RenderLayer.getTextSeeThrough(new Identifier("")), 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+		super(
+			RenderLayer.getText(new Identifier("")),
+			RenderLayer.getTextSeeThrough(new Identifier("")),
+			RenderLayer.method_37345(new Identifier("")),
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F,
+			0.0F
+		);
 	}
 
 	@Override

@@ -250,7 +250,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 		@Override
 		protected void castSpell() {
-			IllusionerEntity.this.getTarget().method_37222(new StatusEffectInstance(StatusEffects.BLINDNESS, 400), IllusionerEntity.this);
+			IllusionerEntity.this.getTarget().addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 400), IllusionerEntity.this);
 		}
 
 		@Override

@@ -117,7 +117,7 @@ public class ItemEntity extends Entity {
 				}
 			}
 
-			if (!this.onGround || this.getVelocity().method_37268() > 1.0E-5F || (this.age + this.getId()) % 4 == 0) {
+			if (!this.onGround || this.getVelocity().horizontalLengthSquared() > 1.0E-5F || (this.age + this.getId()) % 4 == 0) {
 				this.move(MovementType.SELF, this.getVelocity());
 				float g = 0.98F;
 				if (this.onGround) {

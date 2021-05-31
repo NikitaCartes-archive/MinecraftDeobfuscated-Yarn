@@ -269,7 +269,7 @@ public class Vec3d implements Position {
 	}
 
 	/**
-	 * Returns the length of this vector.
+	 * {@return the length of this vector}
 	 * 
 	 * <p>The length of a vector is equivalent to the distance between that
 	 * vector and the {@linkplain #ZERO} vector.
@@ -281,7 +281,7 @@ public class Vec3d implements Position {
 	}
 
 	/**
-	 * Returns the squared length of this vector.
+	 * {@return the squared length of this vector}
 	 * 
 	 * <p>Can be used for fast comparison between lengths.
 	 * 
@@ -291,11 +291,27 @@ public class Vec3d implements Position {
 		return this.x * this.x + this.y * this.y + this.z * this.z;
 	}
 
-	public double method_37267() {
+	/**
+	 * {@return the horizontal length of this vector}
+	 * 
+	 * <p>This length is same as the length of a 2-vector with the {@link #x} and
+	 * {@link #z} components of this vector, or the euclidean distance between
+	 * {@code (x, z)} and the origin.
+	 * 
+	 * @see #horizontalLengthSquared()
+	 */
+	public double horizontalLength() {
 		return Math.sqrt(this.x * this.x + this.z * this.z);
 	}
 
-	public double method_37268() {
+	/**
+	 * {@return the squared horizontal length of this vector}
+	 * 
+	 * <p>Can be used for fast comparison between horizontal lengths.
+	 * 
+	 * @see #horizontalLength()
+	 */
+	public double horizontalLengthSquared() {
 		return this.x * this.x + this.z * this.z;
 	}
 

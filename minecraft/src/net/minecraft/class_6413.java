@@ -18,7 +18,9 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
+import net.minecraft.util.SystemDetails;
 import net.minecraft.util.profiler.ProfileResult;
+import net.minecraft.util.profiler.ZipCompressor;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -77,14 +79,14 @@ public class class_6413 {
 			return;
 		}
 
-		class_6397 lv = new class_6397(ProfilerDumper.DEBUG_PROFILING_DIRECTORY.resolve(string2));
+		ZipCompressor zipCompressor = new ZipCompressor(ProfilerDumper.DEBUG_PROFILING_DIRECTORY.resolve(string2));
 
 		try {
-			lv.method_37163(Paths.get("system.txt"), minecraftServer.method_37324(new class_6396()).method_37120());
-			lv.method_37161(path);
+			zipCompressor.write(Paths.get("system.txt"), minecraftServer.method_37324(new SystemDetails()).collect());
+			zipCompressor.copyAll(path);
 		} catch (Throwable var10) {
 			try {
-				lv.close();
+				zipCompressor.close();
 			} catch (Throwable var8) {
 				var10.addSuppressed(var8);
 			}
@@ -92,7 +94,7 @@ public class class_6413 {
 			throw var10;
 		}
 
-		lv.close();
+		zipCompressor.close();
 
 		try {
 			FileUtils.forceDelete(path.toFile());

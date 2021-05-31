@@ -199,7 +199,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		if (this.world.isClient) {
 			return false;
 		} else if (bl && source.getAttacker() instanceof LivingEntity livingEntity) {
-			if (livingEntity.canTakeDamage() && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
+			if (this.canTarget(livingEntity) && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
 				this.setAttackTarget(livingEntity);
 			}
 

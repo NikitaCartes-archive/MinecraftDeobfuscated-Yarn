@@ -462,6 +462,40 @@ public abstract class RenderLayer extends RenderPhase {
 					.build(false)
 			))
 	);
+	private static final Function<Identifier, RenderLayer> field_34002 = Util.memoize(
+		(Function<Identifier, RenderLayer>)(identifier -> of(
+				"text_polygon_offset",
+				VertexFormats.POSITION_COLOR_TEXTURE_LIGHT,
+				VertexFormat.DrawMode.QUADS,
+				256,
+				false,
+				true,
+				RenderLayer.MultiPhaseParameters.builder()
+					.shader(TEXT_SHADER)
+					.texture(new RenderPhase.Texture(identifier, false, false))
+					.transparency(TRANSLUCENT_TRANSPARENCY)
+					.lightmap(ENABLE_LIGHTMAP)
+					.layering(POLYGON_OFFSET_LAYERING)
+					.build(false)
+			))
+	);
+	private static final Function<Identifier, RenderLayer> field_34003 = Util.memoize(
+		(Function<Identifier, RenderLayer>)(identifier -> of(
+				"text_intensity_polygon_offset",
+				VertexFormats.POSITION_COLOR_TEXTURE_LIGHT,
+				VertexFormat.DrawMode.QUADS,
+				256,
+				false,
+				true,
+				RenderLayer.MultiPhaseParameters.builder()
+					.shader(field_33628)
+					.texture(new RenderPhase.Texture(identifier, false, false))
+					.transparency(TRANSLUCENT_TRANSPARENCY)
+					.lightmap(ENABLE_LIGHTMAP)
+					.layering(POLYGON_OFFSET_LAYERING)
+					.build(false)
+			))
+	);
 	private static final Function<Identifier, RenderLayer> TEXT_SEE_THROUGH = Util.memoize(
 		(Function<Identifier, RenderLayer>)(identifier -> of(
 				"text_see_through",
@@ -772,6 +806,14 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer method_36434(Identifier identifier) {
 		return (RenderLayer)field_33630.apply(identifier);
+	}
+
+	public static RenderLayer method_37345(Identifier identifier) {
+		return (RenderLayer)field_34002.apply(identifier);
+	}
+
+	public static RenderLayer method_37346(Identifier identifier) {
+		return (RenderLayer)field_34003.apply(identifier);
 	}
 
 	public static RenderLayer getTextSeeThrough(Identifier texture) {

@@ -354,7 +354,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	public boolean tryAttack(Entity target) {
 		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
-			this.dealDamage(this, target);
+			this.applyDamageEffects(this, target);
 			this.playSound(SoundEvents.ENTITY_AXOLOTL_ATTACK, 1.0F, 1.0F);
 		}
 
@@ -462,7 +462,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	public void buffPlayer(PlayerEntity playerEntity) {
 		StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.REGENERATION);
 		int i = 100 + (statusEffectInstance != null ? statusEffectInstance.getDuration() : 0);
-		playerEntity.method_37222(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0), this);
+		playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0), this);
 		playerEntity.removeStatusEffect(StatusEffects.MINING_FATIGUE);
 	}
 

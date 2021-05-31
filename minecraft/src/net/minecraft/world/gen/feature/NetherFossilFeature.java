@@ -48,12 +48,12 @@ public class NetherFossilFeature extends StructureFeature<RangeDecoratorConfig> 
 			HeightContext heightContext = new HeightContext() {
 				@Override
 				public int getMinY() {
-					return heightLimitView.getBottomY();
+					return chunkGenerator.getMinimumY();
 				}
 
 				@Override
 				public int getMaxY() {
-					return heightLimitView.getHeight();
+					return chunkGenerator.getWorldHeight();
 				}
 			};
 			int l = rangeDecoratorConfig.heightProvider.get(this.random, heightContext);

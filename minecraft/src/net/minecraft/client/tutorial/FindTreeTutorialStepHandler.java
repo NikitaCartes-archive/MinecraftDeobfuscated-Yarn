@@ -46,7 +46,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 		Blocks.NETHER_WART_BLOCK,
 		Blocks.WARPED_WART_BLOCK,
 		Blocks.AZALEA_LEAVES,
-		Blocks.AZALEA_LEAVES_FLOWERS
+		Blocks.FLOWERING_AZALEA_LEAVES
 	);
 	private static final Text TITLE = new TranslatableText("tutorial.find_tree.title");
 	private static final Text DESCRIPTION = new TranslatableText("tutorial.find_tree.description");

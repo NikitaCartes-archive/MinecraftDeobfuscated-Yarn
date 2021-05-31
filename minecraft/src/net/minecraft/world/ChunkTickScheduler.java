@@ -61,7 +61,10 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 
 	@Override
 	public void schedule(BlockPos pos, T object, int delay, TickPriority priority) {
-		Chunk.getList(this.scheduledPositions, this.world.getSectionIndex(pos.getY())).add(ProtoChunk.getPackedSectionRelative(pos));
+		int i = this.world.getSectionIndex(pos.getY());
+		if (i >= 0 && i < this.world.countVerticalSections()) {
+			Chunk.getList(this.scheduledPositions, i).add(ProtoChunk.getPackedSectionRelative(pos));
+		}
 	}
 
 	@Override

@@ -76,11 +76,11 @@ public interface Angerable {
 		}
 	}
 
-	default boolean shouldAngerAt(LivingEntity entity) {
-		if (!entity.canTakeDamage()) {
+	default boolean shouldAngerAt(LivingEntity livingEntity) {
+		if (!this.canTarget(livingEntity)) {
 			return false;
 		} else {
-			return entity.getType() == EntityType.PLAYER && this.isUniversallyAngry(entity.world) ? true : entity.getUuid().equals(this.getAngryAt());
+			return livingEntity.getType() == EntityType.PLAYER && this.isUniversallyAngry(livingEntity.world) ? true : livingEntity.getUuid().equals(this.getAngryAt());
 		}
 	}
 
@@ -120,6 +120,8 @@ public interface Angerable {
 	void setAttacking(@Nullable PlayerEntity attacking);
 
 	void setTarget(@Nullable LivingEntity target);
+
+	boolean canTarget(LivingEntity livingEntity);
 
 	@Nullable
 	LivingEntity getTarget();

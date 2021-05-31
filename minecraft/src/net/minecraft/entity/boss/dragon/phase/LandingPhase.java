@@ -53,7 +53,7 @@ public class LandingPhase extends AbstractPhase {
 
 	@Override
 	public float getYawAcceleration() {
-		float f = (float)this.dragon.getVelocity().method_37267() + 1.0F;
+		float f = (float)this.dragon.getVelocity().horizontalLength() + 1.0F;
 		float g = Math.min(f, 40.0F);
 		return g / f;
 	}

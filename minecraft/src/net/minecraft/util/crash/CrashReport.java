@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletionException;
-import net.minecraft.class_6396;
+import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -27,7 +27,7 @@ public class CrashReport {
 	private File file;
 	private boolean hasStackTrace = true;
 	private StackTraceElement[] stackTrace = new StackTraceElement[0];
-	private final class_6396 systemDetailsSection = new class_6396();
+	private final SystemDetails systemDetailsSection = new SystemDetails();
 
 	public CrashReport(String message, Throwable cause) {
 		this.message = message;
@@ -71,7 +71,7 @@ public class CrashReport {
 			crashReportBuilder.append("\n\n");
 		}
 
-		this.systemDetailsSection.method_37124(crashReportBuilder);
+		this.systemDetailsSection.writeTo(crashReportBuilder);
 	}
 
 	public String getCauseAsString() {
@@ -159,7 +159,7 @@ public class CrashReport {
 		}
 	}
 
-	public class_6396 getSystemDetailsSection() {
+	public SystemDetails getSystemDetailsSection() {
 		return this.systemDetailsSection;
 	}
 

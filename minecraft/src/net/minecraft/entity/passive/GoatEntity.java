@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -99,6 +100,11 @@ public class GoatEntity extends AnimalEntity {
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F)
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0);
+	}
+
+	@Override
+	public boolean canTarget(LivingEntity target) {
+		return target instanceof PlayerEntity ? super.canTarget(target) : target.canTakeDamage();
 	}
 
 	@Override
