@@ -35,30 +35,30 @@ public class LootContext {
 
 	LootContext(
 		Random random,
-		float f,
-		ServerWorld serverWorld,
-		Function<Identifier, LootTable> function,
-		Function<Identifier, LootCondition> function2,
-		Map<LootContextParameter<?>, Object> map,
-		Map<Identifier, LootContext.Dropper> map2
+		float luck,
+		ServerWorld world,
+		Function<Identifier, LootTable> tableGetter,
+		Function<Identifier, LootCondition> conditionGetter,
+		Map<LootContextParameter<?>, Object> parameters,
+		Map<Identifier, LootContext.Dropper> drops
 	) {
 		this.random = random;
-		this.luck = f;
-		this.world = serverWorld;
-		this.tableGetter = function;
-		this.conditionGetter = function2;
-		this.parameters = ImmutableMap.copyOf(map);
-		this.drops = ImmutableMap.copyOf(map2);
+		this.luck = luck;
+		this.world = world;
+		this.tableGetter = tableGetter;
+		this.conditionGetter = conditionGetter;
+		this.parameters = ImmutableMap.copyOf(parameters);
+		this.drops = ImmutableMap.copyOf(drops);
 	}
 
 	public boolean hasParameter(LootContextParameter<?> parameter) {
 		return this.parameters.containsKey(parameter);
 	}
 
-	public <T> T method_35508(LootContextParameter<T> lootContextParameter) {
-		T object = (T)this.parameters.get(lootContextParameter);
+	public <T> T requireParameter(LootContextParameter<T> parameter) {
+		T object = (T)this.parameters.get(parameter);
 		if (object == null) {
-			throw new NoSuchElementException(lootContextParameter.getIdentifier().toString());
+			throw new NoSuchElementException(parameter.getIdentifier().toString());
 		} else {
 			return object;
 		}
@@ -92,7 +92,7 @@ public class LootContext {
 		this.conditions.remove(condition);
 	}
 
-	public LootTable getSupplier(Identifier id) {
+	public LootTable getTable(Identifier id) {
 		return (LootTable)this.tableGetter.apply(id);
 	}
 

@@ -610,7 +610,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 						e = 0.0;
 					}
 
-					this.horizontalSpeed = this.horizontalSpeed + (float)vec3d.method_37267() * 0.6F;
+					this.horizontalSpeed = this.horizontalSpeed + (float)vec3d.horizontalLength() * 0.6F;
 					this.distanceTraveled = this.distanceTraveled + (float)Math.sqrt(d * d + e * e + f * f) * 0.6F;
 					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
 						this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
@@ -789,12 +789,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			if (vec3d3.y < (double)this.stepHeight) {
 				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, shapeContext, reusableStream)
 					.add(vec3d3);
-				if (vec3d4.method_37268() > vec3d2.method_37268()) {
+				if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
 					vec3d2 = vec3d4;
 				}
 			}
 
-			if (vec3d2.method_37268() > vec3d.method_37268()) {
+			if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
 				return vec3d2.add(
 					adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.world, shapeContext, reusableStream)
 				);
@@ -1369,7 +1369,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			return false;
 		} else {
 			this.scheduleVelocityUpdate();
-			return true;
+			return false;
 		}
 	}
 
@@ -2666,7 +2666,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return false;
 	}
 
-	public void dealDamage(LivingEntity attacker, Entity target) {
+	/**
+	 * Applies damage effects to {@code attacker} or {@code target}.
+	 * 
+	 * <p>Called when {@code attacker} damages {@code target}.
+	 * 
+	 * <p>Used to apply damage effects based on enchantments, such
+	 * as Thorns attacker damage or slowness from Bane of Arthropods.
+	 * 
+	 * @implNote Although this method is non-static, {@code this} keyword is
+	 * not used anywhere in this method.
+	 * 
+	 * @param attacker the attacker; usually this entity, but may be a {@linkplain
+	 * net.minecraft.entity.projectile.ProjectileEntity#getOwner() projectile's
+	 * owner entity}
+	 */
+	public void applyDamageEffects(LivingEntity attacker, Entity target) {
 		if (target instanceof LivingEntity) {
 			EnchantmentHelper.onUserDamaged((LivingEntity)target, attacker);
 		}

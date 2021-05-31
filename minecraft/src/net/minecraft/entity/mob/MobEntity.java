@@ -1336,7 +1336,7 @@ public abstract class MobEntity extends LivingEntity {
 				this.disablePlayerShield(playerEntity, this.getMainHandStack(), playerEntity.isUsingItem() ? playerEntity.getActiveItem() : ItemStack.EMPTY);
 			}
 
-			this.dealDamage(this, target);
+			this.applyDamageEffects(this, target);
 			this.onAttacking(target);
 		}
 
@@ -1384,6 +1384,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected void removeFromDimension() {
 		super.removeFromDimension();
 		this.detachLeash(true, false);
+		this.getItemsEquipped().forEach(itemStack -> itemStack.setCount(0));
 	}
 
 	@Nullable

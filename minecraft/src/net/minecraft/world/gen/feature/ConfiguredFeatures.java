@@ -2422,7 +2422,7 @@ public class ConfiguredFeatures {
 		protected static final BlockState BIG_DIRPLEAF_SOUTH = Blocks.BIG_DRIPLEAF.getDefaultState().with(BigDripleafBlock.FACING, Direction.SOUTH);
 		protected static final BlockState DEEPSLATE = Blocks.DEEPSLATE.getDefaultState();
 		protected static final BlockState field_33966 = Blocks.AZALEA_LEAVES.getDefaultState();
-		protected static final BlockState field_33967 = Blocks.AZALEA_LEAVES_FLOWERS.getDefaultState();
+		protected static final BlockState field_33967 = Blocks.FLOWERING_AZALEA_LEAVES.getDefaultState();
 		protected static final BlockState field_33968 = Blocks.AZALEA.getDefaultState();
 	}
 }

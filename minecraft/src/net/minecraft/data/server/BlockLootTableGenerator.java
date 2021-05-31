@@ -1378,7 +1378,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.OAK_LEAVES, blockx -> oakLeavesDrop(blockx, Blocks.OAK_SAPLING, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.DARK_OAK_LEAVES, blockx -> oakLeavesDrop(blockx, Blocks.DARK_OAK_SAPLING, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.AZALEA_LEAVES, blockx -> leavesDrop(blockx, Blocks.AZALEA, SAPLING_DROP_CHANCE));
-		this.addDrop(Blocks.AZALEA_LEAVES_FLOWERS, blockx -> leavesDrop(blockx, Blocks.FLOWERING_AZALEA, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.FLOWERING_AZALEA_LEAVES, blockx -> leavesDrop(blockx, Blocks.FLOWERING_AZALEA, SAPLING_DROP_CHANCE));
 		LootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.BEETROOTS)
 			.properties(StatePredicate.Builder.create().exactMatch(BeetrootsBlock.AGE, 3));
 		this.addDrop(Blocks.BEETROOTS, cropDrops(Blocks.BEETROOTS, Items.BEETROOT, Items.BEETROOT_SEEDS, builder));

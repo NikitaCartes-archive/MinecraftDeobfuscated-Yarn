@@ -39,7 +39,7 @@ public abstract class AbstractBeeSoundInstance extends MovingSoundInstance {
 			this.x = (double)((float)this.bee.getX());
 			this.y = (double)((float)this.bee.getY());
 			this.z = (double)((float)this.bee.getZ());
-			float f = (float)this.bee.getVelocity().method_37267();
+			float f = (float)this.bee.getVelocity().horizontalLength();
 			if (f >= 0.01F) {
 				this.pitch = MathHelper.lerp(MathHelper.clamp(f, this.getMinPitch(), this.getMaxPitch()), this.getMinPitch(), this.getMaxPitch());
 				this.volume = MathHelper.lerp(MathHelper.clamp(f, 0.0F, 0.5F), 0.0F, 1.2F);

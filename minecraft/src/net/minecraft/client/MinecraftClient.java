@@ -52,8 +52,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6396;
-import net.minecraft.class_6397;
 import net.minecraft.class_6412;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -222,6 +220,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
+import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
@@ -245,6 +244,7 @@ import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.TickTimeTracker;
+import net.minecraft.util.profiler.ZipCompressor;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
@@ -1296,16 +1296,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
 				this.execute(() -> consumer.accept(new TranslatableText("debug.profiling.stop", text)));
 			};
-			class_6396 lv = method_37274(new class_6396(), this, this.languageManager, this.gameVersion, this.options);
+			SystemDetails systemDetails = method_37274(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
 			Consumer<List<Path>> consumer4 = list -> {
-				Path path = this.method_37275(lv, list);
+				Path path = this.method_37275(systemDetails, list);
 				consumer3.accept(path);
 			};
 			Consumer<Path> consumer5;
 			if (this.server == null) {
 				consumer5 = path -> consumer4.accept(ImmutableList.of(path));
 			} else {
-				this.server.method_37324(lv);
+				this.server.method_37324(systemDetails);
 				CompletableFuture<Path> completableFuture = new CompletableFuture();
 				CompletableFuture<Path> completableFuture2 = new CompletableFuture();
 				CompletableFuture.allOf(completableFuture, completableFuture2)
@@ -1337,7 +1337,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	private Path method_37275(class_6396 arg, List<Path> list) {
+	private Path method_37275(SystemDetails systemDetails, List<Path> list) {
 		String string;
 		if (this.isInSingleplayer()) {
 			string = this.getServer().getSaveProperties().getLevelName();
@@ -1355,15 +1355,15 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		try {
-			class_6397 lv = new class_6397(path);
+			ZipCompressor zipCompressor = new ZipCompressor(path);
 
 			try {
-				lv.method_37163(Paths.get("system.txt"), arg.method_37120());
-				lv.method_37163(Paths.get("client").resolve(this.options.method_37294().getName()), this.options.method_37295());
-				list.forEach(lv::method_37161);
+				zipCompressor.write(Paths.get("system.txt"), systemDetails.collect());
+				zipCompressor.write(Paths.get("client").resolve(this.options.method_37294().getName()), this.options.method_37295());
+				list.forEach(zipCompressor::copyAll);
 			} catch (Throwable var20) {
 				try {
-					lv.close();
+					zipCompressor.close();
 				} catch (Throwable var19) {
 					var20.addSuppressed(var19);
 				}
@@ -1371,7 +1371,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				throw var20;
 			}
 
-			lv.close();
+			zipCompressor.close();
 		} finally {
 			for (Path path3 : list) {
 				try {
@@ -2378,14 +2378,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public CrashReport addDetailsToCrashReport(CrashReport report) {
-		class_6396 lv = report.getSystemDetailsSection();
-		method_37274(lv, this, this.languageManager, this.gameVersion, this.options);
+		SystemDetails systemDetails = report.getSystemDetailsSection();
+		method_37274(systemDetails, this, this.languageManager, this.gameVersion, this.options);
 		if (this.world != null) {
 			this.world.addDetailsToCrashReport(report);
 		}
 
 		if (this.server != null) {
-			this.server.method_37324(lv);
+			this.server.method_37324(systemDetails);
 		}
 
 		this.resourceReloadLogger.addReloadSection(report);
@@ -2395,26 +2395,28 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static void addSystemDetailsToCrashReport(
 		@Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report
 	) {
-		class_6396 lv = report.getSystemDetailsSection();
-		method_37274(lv, client, languageManager, version, options);
+		SystemDetails systemDetails = report.getSystemDetailsSection();
+		method_37274(systemDetails, client, languageManager, version, options);
 	}
 
-	private static class_6396 method_37274(
-		class_6396 arg, @Nullable MinecraftClient minecraftClient, @Nullable LanguageManager languageManager, String string, GameOptions gameOptions
+	private static SystemDetails method_37274(
+		SystemDetails systemDetails, @Nullable MinecraftClient minecraftClient, @Nullable LanguageManager languageManager, String string, GameOptions gameOptions
 	) {
-		arg.method_37123("Launched Version", () -> string);
-		arg.method_37123("Backend library", RenderSystem::getBackendDescription);
-		arg.method_37123("Backend API", RenderSystem::getApiDescription);
-		arg.method_37123(
+		systemDetails.addSection("Launched Version", (Supplier<String>)(() -> string));
+		systemDetails.addSection("Backend library", RenderSystem::getBackendDescription);
+		systemDetails.addSection("Backend API", RenderSystem::getApiDescription);
+		systemDetails.addSection(
 			"Window size",
-			() -> minecraftClient != null ? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight() : "<not initialized>"
+			(Supplier<String>)(() -> minecraftClient != null
+					? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight()
+					: "<not initialized>")
 		);
-		arg.method_37123("GL Caps", RenderSystem::getCapsString);
-		arg.method_37123("GL debug messages", () -> GlDebug.method_36479() ? String.join("\n", GlDebug.method_36478()) : "<disabled>");
-		arg.method_37123("Using VBOs", () -> "Yes");
-		arg.method_37123(
+		systemDetails.addSection("GL Caps", RenderSystem::getCapsString);
+		systemDetails.addSection("GL debug messages", (Supplier<String>)(() -> GlDebug.method_36479() ? String.join("\n", GlDebug.method_36478()) : "<disabled>"));
+		systemDetails.addSection("Using VBOs", (Supplier<String>)(() -> "Yes"));
+		systemDetails.addSection(
 			"Is Modded",
-			() -> {
+			(Supplier<String>)(() -> {
 				String stringx = ClientBrandRetriever.getClientModName();
 				if (!"vanilla".equals(stringx)) {
 					return "Definitely; Client brand changed to '" + stringx + "'";
@@ -2423,19 +2425,19 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 						? "Very likely; Jar signature invalidated"
 						: "Probably not. Jar signature remains and client brand is untouched.";
 				}
-			}
+			})
 		);
-		arg.method_37122("Type", "Client (map_client.txt)");
+		systemDetails.addSection("Type", "Client (map_client.txt)");
 		if (gameOptions != null) {
 			if (instance != null) {
 				String string2 = instance.getVideoWarningManager().getWarningsAsString();
 				if (string2 != null) {
-					arg.method_37122("GPU Warnings", string2);
+					systemDetails.addSection("GPU Warnings", string2);
 				}
 			}
 
-			arg.method_37122("Graphics mode", gameOptions.graphicsMode.toString());
-			arg.method_37123("Resource Packs", () -> {
+			systemDetails.addSection("Graphics mode", gameOptions.graphicsMode.toString());
+			systemDetails.addSection("Resource Packs", (Supplier<String>)(() -> {
 				StringBuilder stringBuilder = new StringBuilder();
 
 				for (String stringx : gameOptions.resourcePacks) {
@@ -2450,15 +2452,15 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 
 				return stringBuilder.toString();
-			});
+			}));
 		}
 
 		if (languageManager != null) {
-			arg.method_37123("Current Language", () -> languageManager.getLanguage().toString());
+			systemDetails.addSection("Current Language", (Supplier<String>)(() -> languageManager.getLanguage().toString()));
 		}
 
-		arg.method_37123("CPU", GlDebugInfo::getCpuInfo);
-		return arg;
+		systemDetails.addSection("CPU", GlDebugInfo::getCpuInfo);
+		return systemDetails;
 	}
 
 	public static MinecraftClient getInstance() {

@@ -259,7 +259,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.build(consumer, "husbandry/axolotl_in_a_bucket");
 		Advancement.Task.create()
 			.parent(advancement7)
-			.criterion("kill_axolotl_target", EffectsChangedCriterion.Conditions.method_37224(EntityPredicate.Builder.create().type(EntityType.AXOLOTL).build()))
+			.criterion("kill_axolotl_target", EffectsChangedCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.AXOLOTL).build()))
 			.display(
 				Items.TROPICAL_FISH_BUCKET,
 				new TranslatableText("advancements.husbandry.kill_axolotl_target.title"),

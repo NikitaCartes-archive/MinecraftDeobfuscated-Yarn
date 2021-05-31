@@ -219,7 +219,7 @@ public class Blocks {
 	public static final Block ACACIA_LEAVES = register("acacia_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
 	public static final Block DARK_OAK_LEAVES = register("dark_oak_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
 	public static final Block AZALEA_LEAVES = register("azalea_leaves", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
-	public static final Block AZALEA_LEAVES_FLOWERS = register("azalea_leaves_flowers", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
+	public static final Block FLOWERING_AZALEA_LEAVES = register("flowering_azalea_leaves", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
 	public static final Block SPONGE = register("sponge", new SpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6F).sounds(BlockSoundGroup.GRASS)));
 	public static final Block WET_SPONGE = register(
 		"wet_sponge", new WetSpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6F).sounds(BlockSoundGroup.GRASS))
@@ -2318,7 +2318,13 @@ public class Blocks {
 	public static final Block BAMBOO = register(
 		"bamboo",
 		new BambooBlock(
-			AbstractBlock.Settings.of(Material.BAMBOO, MapColor.DARK_GREEN).ticksRandomly().breakInstantly().strength(1.0F).sounds(BlockSoundGroup.BAMBOO).nonOpaque()
+			AbstractBlock.Settings.of(Material.BAMBOO, MapColor.DARK_GREEN)
+				.ticksRandomly()
+				.breakInstantly()
+				.strength(1.0F)
+				.sounds(BlockSoundGroup.BAMBOO)
+				.nonOpaque()
+				.dynamicBounds()
 		)
 	);
 	public static final Block POTTED_BAMBOO = register(
@@ -3141,6 +3147,7 @@ public class Blocks {
 				.sounds(BlockSoundGroup.POINTED_DRIPSTONE)
 				.ticksRandomly()
 				.strength(1.5F, 3.0F)
+				.dynamicBounds()
 		)
 	);
 	public static final Block DRIPSTONE_BLOCK = register(

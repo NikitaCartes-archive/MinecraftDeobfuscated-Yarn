@@ -128,7 +128,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			this.lookingAtVillagerTicksLeft--;
 		}
 
-		if (this.getVelocity().method_37268() > 2.5000003E-7F && this.random.nextInt(5) == 0) {
+		if (this.getVelocity().horizontalLengthSquared() > 2.5000003E-7F && this.random.nextInt(5) == 0) {
 			int i = MathHelper.floor(this.getX());
 			int j = MathHelper.floor(this.getY() - 0.2F);
 			int k = MathHelper.floor(this.getZ());
@@ -213,7 +213,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		boolean bl = target.damage(DamageSource.mob(this), g);
 		if (bl) {
 			target.setVelocity(target.getVelocity().add(0.0, 0.4F, 0.0));
-			this.dealDamage(this, target);
+			this.applyDamageEffects(this, target);
 		}
 
 		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);

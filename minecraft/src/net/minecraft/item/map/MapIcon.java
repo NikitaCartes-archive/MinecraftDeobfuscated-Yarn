@@ -69,43 +69,46 @@ public class MapIcon {
 	}
 
 	public static enum Type {
-		PLAYER(false),
-		FRAME(true),
-		RED_MARKER(false),
-		BLUE_MARKER(false),
-		TARGET_X(true),
-		TARGET_POINT(true),
-		PLAYER_OFF_MAP(false),
-		PLAYER_OFF_LIMITS(false),
-		MANSION(true, 5393476),
-		MONUMENT(true, 3830373),
-		BANNER_WHITE(true),
-		BANNER_ORANGE(true),
-		BANNER_MAGENTA(true),
-		BANNER_LIGHT_BLUE(true),
-		BANNER_YELLOW(true),
-		BANNER_LIME(true),
-		BANNER_PINK(true),
-		BANNER_GRAY(true),
-		BANNER_LIGHT_GRAY(true),
-		BANNER_CYAN(true),
-		BANNER_PURPLE(true),
-		BANNER_BLUE(true),
-		BANNER_BROWN(true),
-		BANNER_GREEN(true),
-		BANNER_RED(true),
-		BANNER_BLACK(true),
-		RED_X(true);
+		PLAYER(false, true),
+		FRAME(true, true),
+		RED_MARKER(false, true),
+		BLUE_MARKER(false, true),
+		TARGET_X(true, false),
+		TARGET_POINT(true, false),
+		PLAYER_OFF_MAP(false, true),
+		PLAYER_OFF_LIMITS(false, true),
+		MANSION(true, 5393476, false),
+		MONUMENT(true, 3830373, false),
+		BANNER_WHITE(true, true),
+		BANNER_ORANGE(true, true),
+		BANNER_MAGENTA(true, true),
+		BANNER_LIGHT_BLUE(true, true),
+		BANNER_YELLOW(true, true),
+		BANNER_LIME(true, true),
+		BANNER_PINK(true, true),
+		BANNER_GRAY(true, true),
+		BANNER_LIGHT_GRAY(true, true),
+		BANNER_CYAN(true, true),
+		BANNER_PURPLE(true, true),
+		BANNER_BLUE(true, true),
+		BANNER_BROWN(true, true),
+		BANNER_GREEN(true, true),
+		BANNER_RED(true, true),
+		BANNER_BLACK(true, true),
+		RED_X(true, false);
 
-		private final byte id = (byte)this.ordinal();
+		private final byte id;
 		private final boolean alwaysRender;
 		private final int tintColor;
+		private final boolean field_33990;
 
-		private Type(boolean alwaysRender) {
-			this(alwaysRender, -1);
+		private Type(boolean alwaysRender, boolean bl) {
+			this(alwaysRender, -1, bl);
 		}
 
-		private Type(boolean alwaysRender, int tintColor) {
+		private Type(boolean alwaysRender, int tintColor, boolean bl) {
+			this.field_33990 = bl;
+			this.id = (byte)this.ordinal();
 			this.alwaysRender = alwaysRender;
 			this.tintColor = tintColor;
 		}
@@ -128,6 +131,10 @@ public class MapIcon {
 
 		public static MapIcon.Type byId(byte id) {
 			return values()[MathHelper.clamp(id, 0, values().length - 1)];
+		}
+
+		public boolean method_37342() {
+			return this.field_33990;
 		}
 	}
 }

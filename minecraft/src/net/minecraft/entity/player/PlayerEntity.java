@@ -509,7 +509,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 		float f;
 		if (this.onGround && !this.isDead() && !this.isSwimming()) {
-			f = Math.min(0.1F, (float)this.getVelocity().method_37267());
+			f = Math.min(0.1F, (float)this.getVelocity().horizontalLength());
 		} else {
 			f = 0.0F;
 		}
@@ -2066,8 +2066,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (this.isFallFlying() || this.isUsingRiptide()) {
 			Vec3d vec3d = this.getRotationVec(f);
 			Vec3d vec3d2 = this.getVelocity();
-			double e = vec3d2.method_37268();
-			double i = vec3d.method_37268();
+			double e = vec3d2.horizontalLengthSquared();
+			double i = vec3d.horizontalLengthSquared();
 			float l;
 			if (e > 0.0 && i > 0.0) {
 				double j = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(e * i);

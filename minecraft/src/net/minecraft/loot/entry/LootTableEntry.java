@@ -28,7 +28,7 @@ public class LootTableEntry extends LeafEntry {
 
 	@Override
 	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
-		LootTable lootTable = context.getSupplier(this.id);
+		LootTable lootTable = context.getTable(this.id);
 		lootTable.generateUnprocessedLoot(context, lootConsumer);
 	}
 

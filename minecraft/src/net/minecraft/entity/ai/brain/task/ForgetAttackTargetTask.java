@@ -39,7 +39,7 @@ public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 
 	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
 		LivingEntity livingEntity = this.getAttackTarget(mobEntity);
-		if (!livingEntity.canTakeDamage()) {
+		if (!mobEntity.canTarget(livingEntity)) {
 			this.forgetAttackTarget(mobEntity);
 		} else if (cannotReachTarget(mobEntity)) {
 			this.forgetAttackTarget(mobEntity);

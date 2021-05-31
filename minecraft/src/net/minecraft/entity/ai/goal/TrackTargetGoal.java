@@ -41,7 +41,7 @@ public abstract class TrackTargetGoal extends Goal {
 
 		if (livingEntity == null) {
 			return false;
-		} else if (!livingEntity.canTakeDamage()) {
+		} else if (!this.mob.canTarget(livingEntity)) {
 			return false;
 		} else {
 			AbstractTeam abstractTeam = this.mob.getScoreboardTeam();

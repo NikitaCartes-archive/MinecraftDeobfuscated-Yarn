@@ -188,7 +188,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		} else {
 			this.tickWithEndCrystals();
 			Vec3d vec3d = this.getVelocity();
-			float g = 0.2F / ((float)vec3d.method_37267() * 10.0F + 1.0F);
+			float g = 0.2F / ((float)vec3d.horizontalLength() * 10.0F + 1.0F);
 			g *= (float)Math.pow(2.0, vec3d.y);
 			if (this.phaseManager.getCurrent().isSittingOrHovering()) {
 				this.wingPosition += 0.1F;
@@ -417,7 +417,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				entity.addVelocity(f / h * 4.0, 0.2F, g / h * 4.0);
 				if (!this.phaseManager.getCurrent().isSittingOrHovering() && ((LivingEntity)entity).getLastAttackedTime() < entity.age - 2) {
 					entity.damage(DamageSource.mob(this), 5.0F);
-					this.dealDamage(this, entity);
+					this.applyDamageEffects(this, entity);
 				}
 			}
 		}
@@ -427,7 +427,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity) {
 				entity.damage(DamageSource.mob(this), 10.0F);
-				this.dealDamage(this, entity);
+				this.applyDamageEffects(this, entity);
 			}
 		}
 	}
@@ -901,8 +901,6 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 	@Override
 	public boolean canTarget(LivingEntity target) {
-		return !(target instanceof PlayerEntity)
-			? super.canTarget(target)
-			: !((PlayerEntity)target).getAbilities().invulnerable && !target.isInvulnerable() && target.isPartOfGame();
+		return target instanceof PlayerEntity ? target.canTakeDamage() : super.canTarget(target);
 	}
 }

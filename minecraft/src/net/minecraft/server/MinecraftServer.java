@@ -54,7 +54,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6396;
 import net.minecraft.class_6402;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.profiler.DebugRecorder;
@@ -101,6 +100,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ProgressListener;
+import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
@@ -1024,15 +1024,19 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return "vanilla";
 	}
 
-	public class_6396 method_37324(class_6396 arg) {
+	public SystemDetails method_37324(SystemDetails systemDetails) {
 		if (this.playerManager != null) {
-			arg.method_37123(
+			systemDetails.addSection(
 				"Player Count",
-				() -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList()
+				(Supplier<String>)(() -> this.playerManager.getCurrentPlayerCount()
+						+ " / "
+						+ this.playerManager.getMaxPlayerCount()
+						+ "; "
+						+ this.playerManager.getPlayerList())
 			);
 		}
 
-		arg.method_37123("Data Packs", () -> {
+		systemDetails.addSection("Data Packs", (Supplier<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getEnabledProfiles()) {
@@ -1047,15 +1051,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			return stringBuilder.toString();
-		});
+		}));
 		if (this.serverId != null) {
-			arg.method_37123("Server Id", () -> this.serverId);
+			systemDetails.addSection("Server Id", (Supplier<String>)(() -> this.serverId));
 		}
 
-		return this.populateCrashReport(arg);
+		return this.populateCrashReport(systemDetails);
 	}
 
-	public abstract class_6396 populateCrashReport(class_6396 arg);
+	public abstract SystemDetails populateCrashReport(SystemDetails systemDetails);
 
 	public abstract Optional<String> getModdedStatusMessage();
 

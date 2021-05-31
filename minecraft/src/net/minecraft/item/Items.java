@@ -156,7 +156,7 @@ public class Items {
 	public static final Item ACACIA_LEAVES = register(Blocks.ACACIA_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item DARK_OAK_LEAVES = register(Blocks.DARK_OAK_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item AZALEA_LEAVES = register(Blocks.AZALEA_LEAVES, ItemGroup.DECORATIONS);
-	public static final Item AZALEA_LEAVES_FLOWERS = register(Blocks.AZALEA_LEAVES_FLOWERS, ItemGroup.DECORATIONS);
+	public static final Item AZALEA_LEAVES_FLOWERS = register(Blocks.FLOWERING_AZALEA_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item SPONGE = register(Blocks.SPONGE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WET_SPONGE = register(Blocks.WET_SPONGE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item GLASS = register(Blocks.GLASS, ItemGroup.BUILDING_BLOCKS);

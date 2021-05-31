@@ -337,7 +337,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			}
 
 			this.setRotation(this.getYaw(), this.getPitch());
-			if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && this.getVelocity().method_37268() > 0.01) {
+			if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && this.getVelocity().horizontalLengthSquared() > 0.01) {
 				List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F), EntityPredicates.canBePushedBy(this));
 				if (!list.isEmpty()) {
 					for (int n = 0; n < list.size(); n++) {
@@ -444,14 +444,14 @@ public abstract class AbstractMinecartEntity extends Entity {
 			i = -i;
 		}
 
-		double l = Math.min(2.0, vec3d2.method_37267());
+		double l = Math.min(2.0, vec3d2.horizontalLength());
 		vec3d2 = new Vec3d(l * h / j, vec3d2.y, l * i / j);
 		this.setVelocity(vec3d2);
 		Entity entity = this.getFirstPassenger();
 		if (entity instanceof PlayerEntity) {
 			Vec3d vec3d3 = entity.getVelocity();
-			double m = vec3d3.method_37268();
-			double n = this.getVelocity().method_37268();
+			double m = vec3d3.horizontalLengthSquared();
+			double n = this.getVelocity().horizontalLengthSquared();
 			if (m > 1.0E-4 && n < 0.01) {
 				this.setVelocity(this.getVelocity().add(vec3d3.x * 0.1, 0.0, vec3d3.z * 0.1));
 				bl2 = false;
@@ -459,7 +459,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 
 		if (bl2) {
-			double o = this.getVelocity().method_37267();
+			double o = this.getVelocity().horizontalLength();
 			if (o < 0.03) {
 				this.setVelocity(Vec3d.ZERO);
 			} else {
@@ -502,7 +502,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		if (vec3d4 != null && vec3d != null) {
 			double v = (vec3d.y - vec3d4.y) * 0.05;
 			Vec3d vec3d5 = this.getVelocity();
-			double w = vec3d5.method_37267();
+			double w = vec3d5.horizontalLength();
 			if (w > 0.0) {
 				this.setVelocity(vec3d5.multiply((w + v) / w, 1.0, (w + v) / w));
 			}
@@ -514,13 +514,13 @@ public abstract class AbstractMinecartEntity extends Entity {
 		int y = MathHelper.floor(this.getZ());
 		if (x != pos.getX() || y != pos.getZ()) {
 			Vec3d vec3d5 = this.getVelocity();
-			double w = vec3d5.method_37267();
+			double w = vec3d5.horizontalLength();
 			this.setVelocity(w * (double)(x - pos.getX()), vec3d5.y, w * (double)(y - pos.getZ()));
 		}
 
 		if (bl) {
 			Vec3d vec3d5 = this.getVelocity();
-			double w = vec3d5.method_37267();
+			double w = vec3d5.horizontalLength();
 			if (w > 0.01) {
 				double z = 0.06;
 				this.setVelocity(vec3d5.add(vec3d5.x / w * 0.06, 0.0, vec3d5.z / w * 0.06));

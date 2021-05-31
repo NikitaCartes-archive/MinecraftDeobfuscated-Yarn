@@ -64,7 +64,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEntityPotionEffect(this);
+		clientPlayPacketListener.onEntityStatusEffect(this);
 	}
 
 	public int getEntityId() {

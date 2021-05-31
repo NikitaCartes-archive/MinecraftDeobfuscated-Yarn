@@ -126,7 +126,7 @@ public class EffectCommand {
 		for (Entity entity : targets) {
 			if (entity instanceof LivingEntity) {
 				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(effect, j, amplifier, false, showParticles);
-				if (((LivingEntity)entity).method_37222(statusEffectInstance, source.getEntity())) {
+				if (((LivingEntity)entity).addStatusEffect(statusEffectInstance, source.getEntity())) {
 					i++;
 				}
 			}

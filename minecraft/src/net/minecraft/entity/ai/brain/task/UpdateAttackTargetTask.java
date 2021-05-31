@@ -31,7 +31,7 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 			return false;
 		} else {
 			Optional<? extends LivingEntity> optional = (Optional<? extends LivingEntity>)this.targetGetter.apply(mobEntity);
-			return optional.isPresent() ? ((LivingEntity)optional.get()).canTakeDamage() : false;
+			return optional.isPresent() ? mobEntity.canTarget((LivingEntity)optional.get()) : false;
 		}
 	}
 

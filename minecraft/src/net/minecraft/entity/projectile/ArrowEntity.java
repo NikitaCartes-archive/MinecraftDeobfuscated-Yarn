@@ -175,10 +175,10 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	@Override
 	protected void onHit(LivingEntity target) {
 		super.onHit(target);
-		Entity entity = this.method_37225();
+		Entity entity = this.getEffectCause();
 
 		for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
-			target.method_37222(
+			target.addStatusEffect(
 				new StatusEffectInstance(
 					statusEffectInstance.getEffectType(),
 					Math.max(statusEffectInstance.getDuration() / 8, 1),
@@ -192,7 +192,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 
 		if (!this.effects.isEmpty()) {
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				target.method_37222(statusEffectInstance, entity);
+				target.addStatusEffect(statusEffectInstance, entity);
 			}
 		}
 	}

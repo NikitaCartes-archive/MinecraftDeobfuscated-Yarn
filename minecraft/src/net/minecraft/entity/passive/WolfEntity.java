@@ -315,7 +315,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	public boolean tryAttack(Entity target) {
 		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
-			this.dealDamage(this, target);
+			this.applyDamageEffects(this, target);
 		}
 
 		return bl;

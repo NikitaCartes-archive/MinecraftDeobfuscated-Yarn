@@ -31,11 +31,10 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 		super.init();
 		this.narrow = this.width < 379;
 		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
-		this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
+		this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
 		this.addDrawableChild(new TexturedButtonWidget(this.x + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
-			this.recipeBook.reset(this.narrow);
 			this.recipeBook.toggleOpen();
-			this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
+			this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
 			((TexturedButtonWidget)button).setPos(this.x + 5, this.height / 2 - 49);
 		}));
 		this.addSelectableChild(this.recipeBook);

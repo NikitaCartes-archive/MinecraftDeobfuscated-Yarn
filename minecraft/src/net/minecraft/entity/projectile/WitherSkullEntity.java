@@ -57,7 +57,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 				bl = entity.damage(DamageSource.witherSkull(this, livingEntity), 8.0F);
 				if (bl) {
 					if (entity.isAlive()) {
-						this.dealDamage(livingEntity, entity);
+						this.applyDamageEffects(livingEntity, entity);
 					} else {
 						livingEntity.heal(5.0F);
 					}
@@ -75,7 +75,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 				}
 
 				if (i > 0) {
-					((LivingEntity)entity).method_37222(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1), this.method_37225());
+					((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1), this.getEffectCause());
 				}
 			}
 		}

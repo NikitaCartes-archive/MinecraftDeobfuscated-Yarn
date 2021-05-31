@@ -36,7 +36,7 @@ public class RenderLayers {
 		hashMap.put(Blocks.BIRCH_LEAVES, renderLayer2);
 		hashMap.put(Blocks.DARK_OAK_LEAVES, renderLayer2);
 		hashMap.put(Blocks.AZALEA_LEAVES, renderLayer2);
-		hashMap.put(Blocks.AZALEA_LEAVES_FLOWERS, renderLayer2);
+		hashMap.put(Blocks.FLOWERING_AZALEA_LEAVES, renderLayer2);
 		RenderLayer renderLayer3 = RenderLayer.getCutout();
 		hashMap.put(Blocks.OAK_SAPLING, renderLayer3);
 		hashMap.put(Blocks.SPRUCE_SAPLING, renderLayer3);

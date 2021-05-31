@@ -55,10 +55,12 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	private int parentHeight;
 	protected final RecipeBookGhostSlots ghostSlots = new RecipeBookGhostSlots();
 	private final List<RecipeGroupButtonWidget> tabButtons = Lists.<RecipeGroupButtonWidget>newArrayList();
+	@Nullable
 	private RecipeGroupButtonWidget currentTab;
 	protected ToggleButtonWidget toggleCraftableButton;
 	protected AbstractRecipeScreenHandler<?> craftingScreenHandler;
 	protected MinecraftClient client;
+	@Nullable
 	private TextFieldWidget searchField;
 	private String searchText = "";
 	private ClientRecipeBook recipeBook;
@@ -67,25 +69,27 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	private int cachedInvChangeCount;
 	private boolean searching;
 	private boolean open;
+	private boolean field_34001;
 
 	public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean narrow, AbstractRecipeScreenHandler<?> craftingScreenHandler) {
 		this.client = client;
 		this.parentWidth = parentWidth;
 		this.parentHeight = parentHeight;
 		this.craftingScreenHandler = craftingScreenHandler;
+		this.field_34001 = narrow;
 		client.player.currentScreenHandler = craftingScreenHandler;
 		this.recipeBook = client.player.getRecipeBook();
 		this.cachedInvChangeCount = client.player.getInventory().getChangeCount();
 		this.open = this.isGuiOpen();
 		if (this.open) {
-			this.reset(narrow);
+			this.reset();
 		}
 
 		client.keyboard.setRepeatEvents(true);
 	}
 
-	public void reset(boolean narrow) {
-		this.leftOffset = narrow ? 0 : 86;
+	public void reset() {
+		this.leftOffset = this.field_34001 ? 0 : 86;
 		int i = (this.parentWidth - 147) / 2 - this.leftOffset;
 		int j = (this.parentHeight - 166) / 2;
 		this.recipeFinder.clear();
@@ -140,15 +144,15 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		this.client.keyboard.setRepeatEvents(false);
 	}
 
-	public int findLeftEdge(boolean narrow, int width, int parentWidth) {
-		int i;
-		if (this.isOpen() && !narrow) {
-			i = 177 + (width - parentWidth - 200) / 2;
+	public int findLeftEdge(int i, int j) {
+		int k;
+		if (this.isOpen() && !this.field_34001) {
+			k = 177 + (i - j - 200) / 2;
 		} else {
-			i = (width - parentWidth) / 2;
+			k = (i - j) / 2;
 		}
 
-		return i;
+		return k;
 	}
 
 	public void toggleOpen() {
@@ -164,6 +168,10 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	protected void setOpen(boolean opened) {
+		if (opened) {
+			this.reset();
+		}
+
 		this.open = opened;
 		this.recipeBook.setGuiOpen(this.craftingScreenHandler.getCategory(), opened);
 		if (!opened) {
@@ -349,7 +357,10 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 				for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
 					if (recipeGroupButtonWidget.mouseClicked(mouseX, mouseY, button)) {
 						if (this.currentTab != recipeGroupButtonWidget) {
-							this.currentTab.setToggled(false);
+							if (this.currentTab != null) {
+								this.currentTab.setToggled(false);
+							}
+
 							this.currentTab = recipeGroupButtonWidget;
 							this.currentTab.setToggled(true);
 							this.refreshResults(true);

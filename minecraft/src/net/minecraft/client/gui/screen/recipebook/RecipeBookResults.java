@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen.recipebook;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.Consumer;
@@ -17,17 +18,20 @@ import net.minecraft.recipe.book.RecipeBook;
 public class RecipeBookResults {
 	public static final int field_32411 = 20;
 	private final List<AnimatedResultButton> resultButtons = Lists.<AnimatedResultButton>newArrayListWithCapacity(20);
+	@Nullable
 	private AnimatedResultButton hoveredResultButton;
 	private final RecipeAlternativesWidget alternatesWidget = new RecipeAlternativesWidget();
 	private MinecraftClient client;
 	private final List<RecipeDisplayListener> recipeDisplayListeners = Lists.<RecipeDisplayListener>newArrayList();
-	private List<RecipeResultCollection> resultCollections;
+	private List<RecipeResultCollection> resultCollections = ImmutableList.of();
 	private ToggleButtonWidget nextPageButton;
 	private ToggleButtonWidget prevPageButton;
 	private int pageCount;
 	private int currentPage;
 	private RecipeBook recipeBook;
+	@Nullable
 	private Recipe<?> lastClickedRecipe;
+	@Nullable
 	private RecipeResultCollection resultCollection;
 
 	public RecipeBookResults() {

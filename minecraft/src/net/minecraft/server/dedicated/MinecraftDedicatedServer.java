@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6396;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
@@ -43,6 +43,7 @@ import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.SystemDetails;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -289,10 +290,10 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public class_6396 populateCrashReport(class_6396 arg) {
-		arg.method_37123("Is Modded", () -> (String)this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
-		arg.method_37123("Type", () -> "Dedicated Server (map_server.txt)");
-		return arg;
+	public SystemDetails populateCrashReport(SystemDetails systemDetails) {
+		systemDetails.addSection("Is Modded", (Supplier<String>)(() -> (String)this.getModdedStatusMessage().orElse("Unknown (can't tell)")));
+		systemDetails.addSection("Type", (Supplier<String>)(() -> "Dedicated Server (map_server.txt)"));
+		return systemDetails;
 	}
 
 	@Override

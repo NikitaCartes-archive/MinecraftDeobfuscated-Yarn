@@ -56,11 +56,10 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 			this.narrow = this.width < 379;
 			this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
 			this.open = true;
-			this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
+			this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
 			this.addDrawableChild(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
-				this.recipeBook.reset(this.narrow);
 				this.recipeBook.toggleOpen();
-				this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
+				this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
 				((TexturedButtonWidget)button).setPos(this.x + 104, this.height / 2 - 22);
 				this.mouseDown = true;
 			}));

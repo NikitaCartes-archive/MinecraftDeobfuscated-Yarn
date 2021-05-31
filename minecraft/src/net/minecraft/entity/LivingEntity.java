@@ -877,7 +877,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public boolean canTarget(LivingEntity target) {
-		return target.canTakeDamage();
+		return target.canTakeDamage() && this.world.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
 	public boolean isTarget(LivingEntity entity, TargetPredicate predicate) {
@@ -885,7 +885,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public boolean canTakeDamage() {
-		return !this.isInvulnerable() && this.world.getDifficulty() != Difficulty.PEACEFUL && this.isPartOfGame();
+		return !this.isInvulnerable() && this.isPartOfGame();
 	}
 
 	public boolean isPartOfGame() {
@@ -940,21 +940,43 @@ public abstract class LivingEntity extends Entity {
 		return (StatusEffectInstance)this.activeStatusEffects.get(effect);
 	}
 
+	/**
+	 * Adds a status effect to this entity without specifying a source entity.
+	 * 
+	 * <p>Consider calling {@link #addStatusEffect(StatusEffectInstance, Entity)}
+	 * if the {@code effect} is caused by or from an entity.
+	 * 
+	 * @return whether the active status effects of this entity has been modified
+	 * @see #addStatusEffect(StatusEffectInstance, Entity)
+	 * 
+	 * @param effect the effect to add
+	 */
 	public boolean addStatusEffect(StatusEffectInstance effect) {
-		return this.method_37222(effect, null);
+		return this.addStatusEffect(effect, null);
 	}
 
-	public boolean method_37222(StatusEffectInstance statusEffectInstance, @Nullable Entity entity) {
-		if (!this.canHaveStatusEffect(statusEffectInstance)) {
+	/**
+	 * Adds a status effect to this entity.
+	 * 
+	 * @implNote A status effect may fail to be added due to getting overridden by
+	 * existing effects or the effect being incompatible with this entity.
+	 * 
+	 * @return whether the active status effects of this entity has been modified
+	 * 
+	 * @param effect the effect to add
+	 * @param source the source entity or {@code null} for non-entity sources
+	 */
+	public boolean addStatusEffect(StatusEffectInstance effect, @Nullable Entity source) {
+		if (!this.canHaveStatusEffect(effect)) {
 			return false;
 		} else {
-			StatusEffectInstance statusEffectInstance2 = (StatusEffectInstance)this.activeStatusEffects.get(statusEffectInstance.getEffectType());
-			if (statusEffectInstance2 == null) {
-				this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
-				this.onStatusEffectApplied(statusEffectInstance, entity);
+			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)this.activeStatusEffects.get(effect.getEffectType());
+			if (statusEffectInstance == null) {
+				this.activeStatusEffects.put(effect.getEffectType(), effect);
+				this.onStatusEffectApplied(effect, source);
 				return true;
-			} else if (statusEffectInstance2.upgrade(statusEffectInstance)) {
-				this.onStatusEffectUpgraded(statusEffectInstance2, true, entity);
+			} else if (statusEffectInstance.upgrade(effect)) {
+				this.onStatusEffectUpgraded(statusEffectInstance, true, source);
 				return true;
 			} else {
 				return false;
@@ -973,13 +995,28 @@ public abstract class LivingEntity extends Entity {
 		return true;
 	}
 
-	public void applyStatusEffect(StatusEffectInstance effect, @Nullable Entity entity) {
+	/**
+	 * Sets a status effect in this entity.
+	 * 
+	 * <p>The preexistent status effect of the same type on this entity, if there is one, is cleared.
+	 * To actually add a status effect and undergo effect combination logic, call
+	 * {@link #addStatusEffect(StatusEffectInstance, Entity)}.
+	 * 
+	 * @apiNote In vanilla, this is exclusively used by the client to set a status
+	 * effect on the player upon {@linkplain
+	 * net.minecraft.client.network.ClientPlayNetworkHandler#onEntityStatusEffect
+	 * reception} of the status effect packet.
+	 * 
+	 * @param effect the effect to set
+	 * @param source the source entity or {@code null} for non-entity sources
+	 */
+	public void setStatusEffect(StatusEffectInstance effect, @Nullable Entity source) {
 		if (this.canHaveStatusEffect(effect)) {
 			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)this.activeStatusEffects.put(effect.getEffectType(), effect);
 			if (statusEffectInstance == null) {
-				this.onStatusEffectApplied(effect, entity);
+				this.onStatusEffectApplied(effect, source);
 			} else {
-				this.onStatusEffectUpgraded(effect, true, entity);
+				this.onStatusEffectUpgraded(effect, true, source);
 			}
 		}
 	}
@@ -991,8 +1028,10 @@ public abstract class LivingEntity extends Entity {
 	/**
 	 * Removes a status effect from this entity without calling any listener.
 	 * 
-	 * <p> This method does not perform any cleanup or synchronization operation.
-	 * Under most circumstances, calling {@link net.minecraft.entity.LivingEntity#removeStatusEffect(net.minecraft.entity.effect.StatusEffect)} is highly preferable.
+	 * <p>This method does not perform any cleanup or synchronization operation.
+	 * Under most circumstances, calling {@link #removeStatusEffect(StatusEffect)} is highly preferable.
+	 * 
+	 * @return the status effect removed
 	 */
 	@Nullable
 	public StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type) {
@@ -1002,10 +1041,11 @@ public abstract class LivingEntity extends Entity {
 	/**
 	 * Removes a status effect from this entity.
 	 * 
-	 * <p> Calling this method will call cleanup methods on the status effect and trigger synchronization of effect particles with watching clients. If this entity is a player,
+	 * <p>Calling this method will call cleanup methods on the status effect and trigger synchronization of effect particles with watching clients. If this entity is a player,
 	 * the change in the list of effects will also be synchronized with the corresponding client.
 	 * 
-	 * @return {@code true} if a {@link net.minecraft.entity.effect.StatusEffectInstance} with the given type was in effect before the removal.
+	 * @return whether the active status effects on this entity has been changed by
+	 * this call
 	 */
 	public boolean removeStatusEffect(StatusEffect type) {
 		StatusEffectInstance statusEffectInstance = this.removeStatusEffectInternal(type);
@@ -1017,14 +1057,14 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity entity) {
+	protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity source) {
 		this.effectsChanged = true;
 		if (!this.world.isClient) {
 			effect.getEffectType().onApplied(this, this.getAttributes(), effect.getAmplifier());
 		}
 	}
 
-	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect, @Nullable Entity entity) {
+	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect, @Nullable Entity source) {
 		this.effectsChanged = true;
 		if (reapplyEffect && !this.world.isClient) {
 			StatusEffect statusEffect = effect.getEffectType();
@@ -2127,7 +2167,7 @@ public abstract class LivingEntity extends Entity {
 				Vec3d vec3d5 = this.getRotationVector();
 				float fx = this.getPitch() * (float) (Math.PI / 180.0);
 				double i = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
-				double j = vec3d4.method_37267();
+				double j = vec3d4.horizontalLength();
 				double k = vec3d5.length();
 				float l = MathHelper.cos(fx);
 				l = (float)((double)l * (double)l * Math.min(1.0, k / 0.4));
@@ -2149,7 +2189,7 @@ public abstract class LivingEntity extends Entity {
 				this.setVelocity(vec3d4.multiply(0.99F, 0.98F, 0.99F));
 				this.move(MovementType.SELF, this.getVelocity());
 				if (this.horizontalCollision && !this.world.isClient) {
-					double m = this.getVelocity().method_37267();
+					double m = this.getVelocity().horizontalLength();
 					double n = j - m;
 					float o = (float)(n * 10.0 - 3.0);
 					if (o > 0.0F) {

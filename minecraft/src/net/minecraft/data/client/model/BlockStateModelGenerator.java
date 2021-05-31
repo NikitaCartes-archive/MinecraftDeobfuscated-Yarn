@@ -3754,7 +3754,7 @@ public class BlockStateModelGenerator {
 		this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("ender_chest"), Blocks.OBSIDIAN).includeWithoutItem(Blocks.ENDER_CHEST);
 		this.registerBuiltin(Blocks.END_PORTAL, Blocks.OBSIDIAN).includeWithItem(Blocks.END_PORTAL, Blocks.END_GATEWAY);
 		this.registerSimpleCubeAll(Blocks.AZALEA_LEAVES);
-		this.registerSimpleCubeAll(Blocks.AZALEA_LEAVES_FLOWERS);
+		this.registerSimpleCubeAll(Blocks.FLOWERING_AZALEA_LEAVES);
 		this.registerSimpleCubeAll(Blocks.WHITE_CONCRETE);
 		this.registerSimpleCubeAll(Blocks.ORANGE_CONCRETE);
 		this.registerSimpleCubeAll(Blocks.MAGENTA_CONCRETE);

@@ -35,6 +35,7 @@ public class MapState extends PersistentState {
 	private static final int field_31832 = 128;
 	private static final int field_31833 = 64;
 	public static final int field_31831 = 4;
+	public static final int field_33991 = 256;
 	/**
 	 * The scaled center coordinate of the map state on the X axis.
 	 * <p>
@@ -63,6 +64,7 @@ public class MapState extends PersistentState {
 	private final Map<String, MapBannerMarker> banners = Maps.<String, MapBannerMarker>newHashMap();
 	final Map<String, MapIcon> icons = Maps.<String, MapIcon>newLinkedHashMap();
 	private final Map<String, MapFrameMarker> frames = Maps.<String, MapFrameMarker>newHashMap();
+	private int field_33992;
 
 	private MapState(int centerX, int centerZ, byte scale, boolean showIcons, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
 		this.scale = scale;
@@ -184,6 +186,7 @@ public class MapState extends PersistentState {
 		MapState mapState = new MapState(this.centerX, this.centerZ, this.scale, this.showIcons, this.unlimitedTracking, true, this.dimension);
 		mapState.banners.putAll(this.banners);
 		mapState.icons.putAll(this.icons);
+		mapState.field_33992 = this.field_33992;
 		System.arraycopy(this.colors, 0, mapState.colors, 0, this.colors.length);
 		mapState.markDirty();
 		return mapState;
@@ -212,7 +215,7 @@ public class MapState extends PersistentState {
 		}
 
 		if (!player.getInventory().contains(stack)) {
-			this.icons.remove(player.getName().getString());
+			this.removeIcon(player.getName().getString());
 		}
 
 		for (int i = 0; i < this.updateTrackers.size(); i++) {
@@ -280,7 +283,11 @@ public class MapState extends PersistentState {
 	}
 
 	private void removeIcon(String id) {
-		this.icons.remove(id);
+		MapIcon mapIcon = (MapIcon)this.icons.remove(id);
+		if (mapIcon != null && mapIcon.getType().method_37342()) {
+			this.field_33992--;
+		}
+
 		this.markIconsDirty();
 	}
 
@@ -360,6 +367,14 @@ public class MapState extends PersistentState {
 		MapIcon mapIcon = new MapIcon(type, b, c, d, text);
 		MapIcon mapIcon2 = (MapIcon)this.icons.put(key, mapIcon);
 		if (!mapIcon.equals(mapIcon2)) {
+			if (mapIcon2 != null && mapIcon2.getType().method_37342()) {
+				this.field_33992--;
+			}
+
+			if (type.method_37342()) {
+				this.field_33992++;
+			}
+
 			this.markIconsDirty();
 		}
 	}
@@ -394,7 +409,7 @@ public class MapState extends PersistentState {
 		return playerUpdateTracker;
 	}
 
-	public void addBanner(WorldAccess world, BlockPos pos) {
+	public boolean addBanner(WorldAccess world, BlockPos pos) {
 		double d = (double)pos.getX() + 0.5;
 		double e = (double)pos.getZ() + 0.5;
 		int i = 1 << this.scale;
@@ -404,16 +419,22 @@ public class MapState extends PersistentState {
 		if (f >= -63.0 && g >= -63.0 && f <= 63.0 && g <= 63.0) {
 			MapBannerMarker mapBannerMarker = MapBannerMarker.fromWorldBlock(world, pos);
 			if (mapBannerMarker == null) {
-				return;
+				return false;
 			}
 
 			if (this.banners.remove(mapBannerMarker.getKey(), mapBannerMarker)) {
 				this.removeIcon(mapBannerMarker.getKey());
-			} else {
+				return true;
+			}
+
+			if (!this.method_37343(256)) {
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
 				this.addIcon(mapBannerMarker.getIconType(), world, mapBannerMarker.getKey(), d, e, 180.0, mapBannerMarker.getName());
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	public void removeBanner(BlockView world, int x, int z) {
@@ -472,15 +493,23 @@ public class MapState extends PersistentState {
 
 	public void replaceIcons(List<MapIcon> icons) {
 		this.icons.clear();
+		this.field_33992 = 0;
 
 		for (int i = 0; i < icons.size(); i++) {
 			MapIcon mapIcon = (MapIcon)icons.get(i);
 			this.icons.put("icon-" + i, mapIcon);
+			if (mapIcon.getType().method_37342()) {
+				this.field_33992++;
+			}
 		}
 	}
 
 	public Iterable<MapIcon> getIcons() {
 		return this.icons.values();
+	}
+
+	public boolean method_37343(int i) {
+		return this.field_33992 >= i;
 	}
 
 	public class PlayerUpdateTracker {

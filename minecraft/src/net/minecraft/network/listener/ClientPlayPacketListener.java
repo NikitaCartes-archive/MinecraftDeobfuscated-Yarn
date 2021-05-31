@@ -233,7 +233,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onEntityAttributes(EntityAttributesS2CPacket packet);
 
-	void onEntityPotionEffect(EntityStatusEffectS2CPacket packet);
+	void onEntityStatusEffect(EntityStatusEffectS2CPacket packet);
 
 	void onSynchronizeTags(SynchronizeTagsS2CPacket packet);
 

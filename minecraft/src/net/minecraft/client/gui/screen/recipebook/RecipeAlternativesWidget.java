@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -36,6 +37,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	private int buttonY;
 	MinecraftClient client;
 	private RecipeResultCollection resultCollection;
+	@Nullable
 	private Recipe<?> lastClickedRecipe;
 	float time;
 	boolean furnace;
@@ -104,6 +106,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		return this.resultCollection;
 	}
 
+	@Nullable
 	public Recipe<?> getLastClickedRecipe() {
 		return this.lastClickedRecipe;
 	}

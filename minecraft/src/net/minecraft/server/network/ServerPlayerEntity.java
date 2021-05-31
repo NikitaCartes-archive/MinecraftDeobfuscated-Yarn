@@ -1159,22 +1159,22 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity entity) {
-		super.onStatusEffectApplied(effect, entity);
+	protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity source) {
+		super.onStatusEffectApplied(effect, source);
 		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
 		if (effect.getEffectType() == StatusEffects.LEVITATION) {
 			this.levitationStartTick = this.age;
 			this.levitationStartPos = this.getPos();
 		}
 
-		Criteria.EFFECTS_CHANGED.trigger(this, entity);
+		Criteria.EFFECTS_CHANGED.trigger(this, source);
 	}
 
 	@Override
-	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect, @Nullable Entity entity) {
-		super.onStatusEffectUpgraded(effect, reapplyEffect, entity);
+	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect, @Nullable Entity source) {
+		super.onStatusEffectUpgraded(effect, reapplyEffect, source);
 		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
-		Criteria.EFFECTS_CHANGED.trigger(this, entity);
+		Criteria.EFFECTS_CHANGED.trigger(this, source);
 	}
 
 	@Override

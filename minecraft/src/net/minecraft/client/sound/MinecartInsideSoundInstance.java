@@ -47,7 +47,7 @@ public class MinecartInsideSoundInstance extends MovingSoundInstance {
 		} else if (this.underwater != this.player.isSubmergedInWater()) {
 			this.volume = 0.0F;
 		} else {
-			float f = (float)this.minecart.getVelocity().method_37267();
+			float f = (float)this.minecart.getVelocity().horizontalLength();
 			if (f >= 0.01F) {
 				this.volume = MathHelper.method_37166(0.0F, 0.75F, f);
 			} else {

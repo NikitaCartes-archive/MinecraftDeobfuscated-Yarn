@@ -74,6 +74,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Responsible for rendering the HUD elements while the player is in game.
+ * 
+ * <p>The current instance used by the client can be obtained by {@link
+ * MinecraftClient#inGameHud MinecraftClient.getInstance().inGameHud}.
+ */
 @Environment(EnvType.CLIENT)
 public class InGameHud extends DrawableHelper {
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
@@ -645,7 +651,7 @@ public class InGameHud extends DrawableHelper {
 		Scoreboard scoreboard = objective.getScoreboard();
 		Collection<ScoreboardPlayerScore> collection = scoreboard.getAllPlayerScores(objective);
 		List<ScoreboardPlayerScore> list = (List<ScoreboardPlayerScore>)collection.stream()
-			.filter(scoreboardPlayerScore -> scoreboardPlayerScore.getPlayerName() != null && !scoreboardPlayerScore.getPlayerName().startsWith("#"))
+			.filter(score -> score.getPlayerName() != null && !score.getPlayerName().startsWith("#"))
 			.collect(Collectors.toList());
 		if (list.size() > 15) {
 			collection = Lists.<ScoreboardPlayerScore>newArrayList(Iterables.skip(list, collection.size() - 15));
@@ -730,6 +736,9 @@ public class InGameHud extends DrawableHelper {
 		return (int)Math.ceil((double)heartCount / 10.0);
 	}
 
+	/**
+	 * Renders the armor, health, air, and hunger bars.
+	 */
 	private void renderStatusBars(MatrixStack matrices) {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
@@ -790,7 +799,7 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			this.client.getProfiler().swap("health");
-			this.method_37298(matrices, playerEntity, m, o, r, v, f, i, j, p, bl);
+			this.renderHealthBar(matrices, playerEntity, m, o, r, v, f, i, j, p, bl);
 			LivingEntity livingEntity = this.getRiddenEntity();
 			int xx = this.getHeartCount(livingEntity);
 			if (xx == 0) {
@@ -845,51 +854,63 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	private void method_37298(MatrixStack matrixStack, PlayerEntity playerEntity, int i, int j, int k, int l, float f, int m, int n, int o, boolean bl) {
-		InGameHud.class_6411 lv = InGameHud.class_6411.method_37301(playerEntity);
-		int p = 9 * (playerEntity.world.getLevelProperties().isHardcore() ? 5 : 0);
-		int q = MathHelper.ceil((double)f / 2.0);
-		int r = MathHelper.ceil((double)o / 2.0);
-		int s = q * 2;
+	private void renderHealthBar(
+		MatrixStack matrices,
+		PlayerEntity player,
+		int x,
+		int y,
+		int lines,
+		int regeneratingHeartIndex,
+		float maxHealth,
+		int lastHealth,
+		int health,
+		int absorption,
+		boolean blinking
+	) {
+		InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(player);
+		int i = 9 * (player.world.getLevelProperties().isHardcore() ? 5 : 0);
+		int j = MathHelper.ceil((double)maxHealth / 2.0);
+		int k = MathHelper.ceil((double)absorption / 2.0);
+		int l = j * 2;
 
-		for (int t = q + r - 1; t >= 0; t--) {
-			int u = t / 10;
-			int v = t % 10;
-			int w = i + v * 8;
-			int x = j - u * k;
-			if (m + o <= 4) {
-				x += this.random.nextInt(2);
+		for (int m = j + k - 1; m >= 0; m--) {
+			int n = m / 10;
+			int o = m % 10;
+			int p = x + o * 8;
+			int q = y - n * lines;
+			if (lastHealth + absorption <= 4) {
+				q += this.random.nextInt(2);
 			}
 
-			if (t < q && t == l) {
-				x -= 2;
+			if (m < j && m == regeneratingHeartIndex) {
+				q -= 2;
 			}
 
-			this.method_37299(matrixStack, InGameHud.class_6411.field_33944, w, x, p, bl, false);
-			int y = t * 2;
-			boolean bl2 = t >= q;
-			if (bl2) {
-				int z = y - s;
-				if (z < o) {
-					boolean bl3 = z + 1 == o;
-					this.method_37299(matrixStack, lv == InGameHud.class_6411.field_33947 ? lv : InGameHud.class_6411.field_33948, w, x, p, false, bl3);
+			this.drawHeart(matrices, InGameHud.HeartType.CONTAINER, p, q, i, blinking, false);
+			int r = m * 2;
+			boolean bl = m >= j;
+			if (bl) {
+				int s = r - l;
+				if (s < absorption) {
+					boolean bl2 = s + 1 == absorption;
+					this.drawHeart(matrices, heartType == InGameHud.HeartType.WITHERED ? heartType : InGameHud.HeartType.ABSORBING, p, q, i, false, bl2);
 				}
 			}
 
-			if (bl && y < n) {
-				boolean bl4 = y + 1 == n;
-				this.method_37299(matrixStack, lv, w, x, p, true, bl4);
+			if (blinking && r < health) {
+				boolean bl3 = r + 1 == health;
+				this.drawHeart(matrices, heartType, p, q, i, true, bl3);
 			}
 
-			if (y < m) {
-				boolean bl4 = y + 1 == m;
-				this.method_37299(matrixStack, lv, w, x, p, false, bl4);
+			if (r < lastHealth) {
+				boolean bl3 = r + 1 == lastHealth;
+				this.drawHeart(matrices, heartType, p, q, i, false, bl3);
 			}
 		}
 	}
 
-	private void method_37299(MatrixStack matrixStack, InGameHud.class_6411 arg, int i, int j, int k, boolean bl, boolean bl2) {
-		this.drawTexture(matrixStack, i, j, arg.method_37302(bl2, bl), k, 9, 9);
+	private void drawHeart(MatrixStack matrices, InGameHud.HeartType type, int x, int y, int v, boolean blinking, boolean halfHeart) {
+		this.drawTexture(matrices, x, y, type.getU(halfHeart, blinking), v, 9, 9);
 	}
 
 	private void renderMountHealth(MatrixStack matrices) {
@@ -1077,7 +1098,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int i) {
+	private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed) {
 		if (!stack.isEmpty()) {
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			float f = (float)stack.getCooldown() - tickDelta;
@@ -1090,7 +1111,7 @@ public class InGameHud extends DrawableHelper {
 				RenderSystem.applyModelViewMatrix();
 			}
 
-			this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, i);
+			this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, seed);
 			RenderSystem.setShader(GameRenderer::getPositionColorShader);
 			if (f > 0.0F) {
 				matrixStack.pop();
@@ -1230,48 +1251,51 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum class_6411 {
-		field_33944(0, false),
-		field_33945(2, true),
-		field_33946(4, true),
-		field_33947(6, true),
-		field_33948(8, false),
-		field_33949(9, false);
+	static enum HeartType {
+		CONTAINER(0, false),
+		NORMAL(2, true),
+		POISIONED(4, true),
+		WITHERED(6, true),
+		ABSORBING(8, false),
+		FROZEN(9, false);
 
-		private final int field_33950;
-		private final boolean field_33951;
+		private final int textureIndex;
+		private final boolean hasBlinkingTexture;
 
-		private class_6411(int j, boolean bl) {
-			this.field_33950 = j;
-			this.field_33951 = bl;
+		private HeartType(int textureIndex, boolean hasBlinkingTexture) {
+			this.textureIndex = textureIndex;
+			this.hasBlinkingTexture = hasBlinkingTexture;
 		}
 
-		public int method_37302(boolean bl, boolean bl2) {
+		/**
+		 * {@return the left-most coordinate of the heart texture}
+		 */
+		public int getU(boolean halfHeart, boolean blinking) {
 			int i;
-			if (this == field_33944) {
-				i = bl2 ? 1 : 0;
+			if (this == CONTAINER) {
+				i = blinking ? 1 : 0;
 			} else {
-				int j = bl ? 1 : 0;
-				int k = this.field_33951 && bl2 ? 2 : 0;
+				int j = halfHeart ? 1 : 0;
+				int k = this.hasBlinkingTexture && blinking ? 2 : 0;
 				i = j + k;
 			}
 
-			return 16 + (this.field_33950 * 2 + i) * 9;
+			return 16 + (this.textureIndex * 2 + i) * 9;
 		}
 
-		static InGameHud.class_6411 method_37301(PlayerEntity playerEntity) {
-			InGameHud.class_6411 lv;
-			if (playerEntity.hasStatusEffect(StatusEffects.POISON)) {
-				lv = field_33946;
-			} else if (playerEntity.hasStatusEffect(StatusEffects.WITHER)) {
-				lv = field_33947;
-			} else if (playerEntity.isFreezing()) {
-				lv = field_33949;
+		static InGameHud.HeartType fromPlayerState(PlayerEntity player) {
+			InGameHud.HeartType heartType;
+			if (player.hasStatusEffect(StatusEffects.POISON)) {
+				heartType = POISIONED;
+			} else if (player.hasStatusEffect(StatusEffects.WITHER)) {
+				heartType = WITHERED;
+			} else if (player.isFreezing()) {
+				heartType = FROZEN;
 			} else {
-				lv = field_33945;
+				heartType = NORMAL;
 			}
 
-			return lv;
+			return heartType;
 		}
 	}
 }

@@ -235,7 +235,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 				&& this.canSee(target)
 				&& target.damage(DamageSource.mob(this), this.getDamageAmount())) {
 				this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-				this.dealDamage(this, target);
+				this.applyDamageEffects(this, target);
 			}
 		}
 	}
@@ -362,7 +362,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			if (livingEntity == null) {
 				return false;
 			} else {
-				return this.slime.canTarget(livingEntity) ? false : this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
+				return !this.slime.canTarget(livingEntity) ? false : this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
 			}
 		}
 
@@ -378,7 +378,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			if (livingEntity == null) {
 				return false;
 			} else {
-				return this.slime.canTarget(livingEntity) ? false : --this.ticksLeft > 0;
+				return !this.slime.canTarget(livingEntity) ? false : --this.ticksLeft > 0;
 			}
 		}
 

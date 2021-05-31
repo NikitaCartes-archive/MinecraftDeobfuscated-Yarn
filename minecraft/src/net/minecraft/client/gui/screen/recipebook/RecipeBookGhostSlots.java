@@ -18,6 +18,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookGhostSlots {
+	@Nullable
 	private Recipe<?> recipe;
 	private final List<RecipeBookGhostSlots.GhostInputSlot> slots = Lists.<RecipeBookGhostSlots.GhostInputSlot>newArrayList();
 	float time;

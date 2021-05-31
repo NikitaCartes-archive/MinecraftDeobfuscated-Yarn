@@ -64,25 +64,31 @@ public abstract class BlockEntity {
 	@Nullable
 	public static BlockEntity createFromNbt(BlockPos pos, BlockState state, NbtCompound nbt) {
 		String string = nbt.getString("id");
-		return (BlockEntity)Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
-			try {
-				return blockEntityType.instantiate(pos, state);
-			} catch (Throwable var5) {
-				LOGGER.error("Failed to create block entity {}", string, var5);
-				return null;
-			}
-		}).map(blockEntity -> {
-			try {
-				blockEntity.readNbt(nbt);
-				return blockEntity;
-			} catch (Throwable var4) {
-				LOGGER.error("Failed to load data for block entity {}", string, var4);
-				return null;
-			}
-		}).orElseGet(() -> {
-			LOGGER.warn("Skipping BlockEntity with id {}", string);
+		Identifier identifier = Identifier.tryParse(string);
+		if (identifier == null) {
+			LOGGER.error("Block entity has invalid type: {}", string);
 			return null;
-		});
+		} else {
+			return (BlockEntity)Registry.BLOCK_ENTITY_TYPE.getOrEmpty(identifier).map(blockEntityType -> {
+				try {
+					return blockEntityType.instantiate(pos, state);
+				} catch (Throwable var5) {
+					LOGGER.error("Failed to create block entity {}", string, var5);
+					return null;
+				}
+			}).map(blockEntity -> {
+				try {
+					blockEntity.readNbt(nbt);
+					return blockEntity;
+				} catch (Throwable var4x) {
+					LOGGER.error("Failed to load data for block entity {}", string, var4x);
+					return null;
+				}
+			}).orElseGet(() -> {
+				LOGGER.warn("Skipping BlockEntity with id {}", string);
+				return null;
+			});
+		}
 	}
 
 	public void markDirty() {

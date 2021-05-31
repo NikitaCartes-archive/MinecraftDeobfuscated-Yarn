@@ -808,17 +808,23 @@ public abstract class AbstractBlock {
 				}
 
 				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
-				this.exceedsCube = Arrays.stream(Direction.Axis.values())
-					.anyMatch(axis -> this.collisionShape.getMin(axis) < 0.0 || this.collisionShape.getMax(axis) > 1.0);
-				this.solidSides = new boolean[DIRECTIONS.length * SHAPE_TYPE_LENGTH];
+				if (!this.collisionShape.isEmpty() && block.getOffsetType() != AbstractBlock.OffsetType.NONE) {
+					throw new IllegalStateException(
+						String.format("%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registry.BLOCK.getId(block))
+					);
+				} else {
+					this.exceedsCube = Arrays.stream(Direction.Axis.values())
+						.anyMatch(axis -> this.collisionShape.getMin(axis) < 0.0 || this.collisionShape.getMax(axis) > 1.0);
+					this.solidSides = new boolean[DIRECTIONS.length * SHAPE_TYPE_LENGTH];
 
-				for (Direction direction2 : DIRECTIONS) {
-					for (SideShapeType sideShapeType : SideShapeType.values()) {
-						this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+					for (Direction direction2 : DIRECTIONS) {
+						for (SideShapeType sideShapeType : SideShapeType.values()) {
+							this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+						}
 					}
-				}
 
-				this.isFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
+					this.isFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
+				}
 			}
 
 			public boolean isSideSolid(Direction direction, SideShapeType shapeType) {

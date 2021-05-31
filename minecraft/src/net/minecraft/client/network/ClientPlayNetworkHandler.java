@@ -1317,7 +1317,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onEntityPotionEffect(EntityStatusEffectS2CPacket packet) {
+	public void onEntityStatusEffect(EntityStatusEffectS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity instanceof LivingEntity) {
@@ -1327,7 +1327,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon()
 				);
 				statusEffectInstance.setPermanent(packet.isPermanent());
-				((LivingEntity)entity).applyStatusEffect(statusEffectInstance, null);
+				((LivingEntity)entity).setStatusEffect(statusEffectInstance, null);
 			}
 		}
 	}
@@ -1436,6 +1436,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	@Override
 	public void onTitleClear(ClearTitleS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.inGameHud.clearTitle();
 		if (packet.shouldReset()) {
 			this.client.inGameHud.setDefaultTitleFade();
@@ -1444,26 +1445,31 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	@Override
 	public void onOverlayMessage(OverlayMessageS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.inGameHud.setOverlayMessage(packet.getMessage(), false);
 	}
 
 	@Override
 	public void onTitle(TitleS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.inGameHud.setTitle(packet.getTitle());
 	}
 
 	@Override
 	public void onSubtitle(SubtitleS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.inGameHud.setSubtitle(packet.getSubtitle());
 	}
 
 	@Override
 	public void onTitleFade(TitleFadeS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.inGameHud.setTitleTicks(packet.getFadeInTicks(), packet.getRemainTicks(), packet.getFadeOutTicks());
 	}
 
 	@Override
 	public void onPlayerListHeader(PlayerListHeaderS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.inGameHud.getPlayerListHud().setHeader(packet.getHeader().getString().isEmpty() ? null : packet.getHeader());
 		this.client.inGameHud.getPlayerListHud().setFooter(packet.getFooter().getString().isEmpty() ? null : packet.getFooter());
 	}

@@ -191,7 +191,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	public boolean tryAttack(Entity target) {
 		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
-			this.dealDamage(this, target);
+			this.applyDamageEffects(this, target);
 			this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0F, 1.0F);
 		}
 
@@ -596,7 +596,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 		@Override
 		public void start() {
-			this.closestPlayer.method_37222(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 100), this.dolphin);
+			this.closestPlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 100), this.dolphin);
 		}
 
 		@Override
@@ -615,7 +615,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 			}
 
 			if (this.closestPlayer.isSwimming() && this.closestPlayer.world.random.nextInt(6) == 0) {
-				this.closestPlayer.method_37222(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 100), this.dolphin);
+				this.closestPlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.DOLPHINS_GRACE, 100), this.dolphin);
 			}
 		}
 	}

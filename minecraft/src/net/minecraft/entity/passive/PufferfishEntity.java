@@ -137,7 +137,7 @@ public class PufferfishEntity extends FishEntity {
 	private void sting(MobEntity mob) {
 		int i = this.getPuffState();
 		if (mob.damage(DamageSource.mob(this), (float)(1 + i))) {
-			mob.method_37222(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0), this);
+			mob.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0), this);
 			this.playSound(SoundEvents.ENTITY_PUFFER_FISH_STING, 1.0F, 1.0F);
 		}
 	}
@@ -152,7 +152,7 @@ public class PufferfishEntity extends FishEntity {
 					.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PUFFERFISH_STING, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
 			}
 
-			player.method_37222(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0), this);
+			player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0), this);
 		}
 	}
 

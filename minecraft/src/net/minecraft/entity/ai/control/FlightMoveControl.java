@@ -40,9 +40,11 @@ public class FlightMoveControl extends MoveControl {
 
 			this.entity.setMovementSpeed(i);
 			double j = Math.sqrt(d * d + f * f);
-			float k = (float)(-(MathHelper.atan2(e, j) * 180.0F / (float)Math.PI));
-			this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), k, (float)this.maxPitchChange));
-			this.entity.setUpwardSpeed(e > 0.0 ? i : -i);
+			if (Math.abs(e) > 1.0E-5F || Math.abs(j) > 1.0E-5F) {
+				float k = (float)(-(MathHelper.atan2(e, j) * 180.0F / (float)Math.PI));
+				this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), k, (float)this.maxPitchChange));
+				this.entity.setUpwardSpeed(e > 0.0 ? i : -i);
+			}
 		} else {
 			if (!this.noGravity) {
 				this.entity.setNoGravity(false);

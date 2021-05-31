@@ -52,7 +52,12 @@ public abstract class ProjectileEntity extends Entity {
 		}
 	}
 
-	public Entity method_37225() {
+	/**
+	 * {@return the cause entity of any effect applied by this projectile} If this
+	 * projectile has an owner, the effect is attributed to the owner; otherwise, it
+	 * is attributed to this projectile itself.
+	 */
+	public Entity getEffectCause() {
 		return MoreObjects.firstNonNull(this.getOwner(), this);
 	}
 
@@ -121,7 +126,7 @@ public abstract class ProjectileEntity extends Entity {
 			)
 			.multiply((double)speed);
 		this.setVelocity(vec3d);
-		double d = vec3d.method_37267();
+		double d = vec3d.horizontalLength();
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
 		this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 180.0F / (float)Math.PI));
 		this.prevYaw = this.getYaw();
@@ -182,7 +187,7 @@ public abstract class ProjectileEntity extends Entity {
 
 	protected void updateRotation() {
 		Vec3d vec3d = this.getVelocity();
-		double d = vec3d.method_37267();
+		double d = vec3d.horizontalLength();
 		this.setPitch(updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, d) * 180.0F / (float)Math.PI)));
 		this.setYaw(updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI)));
 	}

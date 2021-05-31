@@ -65,7 +65,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.tickHandSwing();
 		float g;
 		if (this.onGround && !this.isDead()) {
-			g = (float)Math.min(0.1, this.getVelocity().method_37267());
+			g = (float)Math.min(0.1, this.getVelocity().horizontalLength());
 		} else {
 			g = 0.0F;
 		}
