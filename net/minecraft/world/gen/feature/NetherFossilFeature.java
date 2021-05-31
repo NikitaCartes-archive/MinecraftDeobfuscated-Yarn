@@ -40,7 +40,7 @@ extends StructureFeature<RangeDecoratorConfig> {
         }
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, RangeDecoratorConfig rangeDecoratorConfig, final HeightLimitView heightLimitView) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, final ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, RangeDecoratorConfig rangeDecoratorConfig, HeightLimitView heightLimitView) {
             int l;
             int i = chunkPos.getStartX() + this.random.nextInt(16);
             int j = chunkPos.getStartZ() + this.random.nextInt(16);
@@ -49,12 +49,12 @@ extends StructureFeature<RangeDecoratorConfig> {
 
                 @Override
                 public int getMinY() {
-                    return heightLimitView.getBottomY();
+                    return chunkGenerator.getMinimumY();
                 }
 
                 @Override
                 public int getMaxY() {
-                    return heightLimitView.getHeight();
+                    return chunkGenerator.getWorldHeight();
                 }
             };
             VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(i, j, heightLimitView);

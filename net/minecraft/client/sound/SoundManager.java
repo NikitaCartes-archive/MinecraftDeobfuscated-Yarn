@@ -101,7 +101,7 @@ extends SinglePreparationResourceReloader<SoundList> {
                 String string;
                 WeightedSoundSet weightedSoundSet = this.sounds.get(identifier);
                 if (!(weightedSoundSet.getSubtitle() instanceof TranslatableText) || I18n.hasTranslation(string = ((TranslatableText)weightedSoundSet.getSubtitle()).getKey()) || !Registry.SOUND_EVENT.containsId(identifier)) continue;
-                throw new IllegalArgumentException(String.format("Missing translation %s for sound event: %s", string, identifier));
+                LOGGER.error("Missing subtitle {} for sound event: {}", (Object)string, (Object)identifier);
             }
         }
         if (LOGGER.isDebugEnabled()) {

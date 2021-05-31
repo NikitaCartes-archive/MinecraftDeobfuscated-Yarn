@@ -455,7 +455,7 @@ extends LivingEntity {
             this.flyingSpeed = (float)((double)this.flyingSpeed + 0.005999999865889549);
         }
         this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
-        float f = !this.onGround || this.isDead() || this.isSwimming() ? 0.0f : Math.min(0.1f, (float)this.getVelocity().method_37267());
+        float f = !this.onGround || this.isDead() || this.isSwimming() ? 0.0f : Math.min(0.1f, (float)this.getVelocity().horizontalLength());
         this.strideDistance += (f - this.strideDistance) * 0.4f;
         if (this.getHealth() > 0.0f && !this.isSpectator()) {
             Box box = this.hasVehicle() && !this.getVehicle().isRemoved() ? this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0) : this.getBoundingBox().expand(1.0, 0.5, 1.0);
@@ -1891,8 +1891,8 @@ extends LivingEntity {
             float l;
             Vec3d vec3d = this.getRotationVec(f);
             Vec3d vec3d2 = this.getVelocity();
-            double e = vec3d2.method_37268();
-            double i = vec3d.method_37268();
+            double e = vec3d2.horizontalLengthSquared();
+            double i = vec3d.horizontalLengthSquared();
             if (e > 0.0 && i > 0.0) {
                 double j = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(e * i);
                 double k = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;

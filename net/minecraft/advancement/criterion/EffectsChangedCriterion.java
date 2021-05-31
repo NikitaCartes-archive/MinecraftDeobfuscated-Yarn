@@ -32,9 +32,9 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(extended, entityEffectPredicate, extended2);
     }
 
-    public void trigger(ServerPlayerEntity serverPlayerEntity, @Nullable Entity entity) {
-        LootContext lootContext = entity != null ? EntityPredicate.createAdvancementEntityLootContext(serverPlayerEntity, entity) : null;
-        this.test(serverPlayerEntity, conditions -> conditions.matches(serverPlayerEntity, lootContext));
+    public void trigger(ServerPlayerEntity player, @Nullable Entity source) {
+        LootContext lootContext = source != null ? EntityPredicate.createAdvancementEntityLootContext(player, source) : null;
+        this.test(player, conditions -> conditions.matches(player, lootContext));
     }
 
     @Override
@@ -45,34 +45,34 @@ extends AbstractCriterion<Conditions> {
     public static class Conditions
     extends AbstractCriterionConditions {
         private final EntityEffectPredicate effects;
-        private final EntityPredicate.Extended field_33909;
+        private final EntityPredicate.Extended source;
 
-        public Conditions(EntityPredicate.Extended player, EntityEffectPredicate effects, EntityPredicate.Extended extended) {
+        public Conditions(EntityPredicate.Extended player, EntityEffectPredicate effects, EntityPredicate.Extended source) {
             super(ID, player);
             this.effects = effects;
-            this.field_33909 = extended;
+            this.source = source;
         }
 
         public static Conditions create(EntityEffectPredicate effects) {
             return new Conditions(EntityPredicate.Extended.EMPTY, effects, EntityPredicate.Extended.EMPTY);
         }
 
-        public static Conditions method_37224(EntityPredicate entityPredicate) {
-            return new Conditions(EntityPredicate.Extended.EMPTY, EntityEffectPredicate.EMPTY, EntityPredicate.Extended.ofLegacy(entityPredicate));
+        public static Conditions create(EntityPredicate source) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, EntityEffectPredicate.EMPTY, EntityPredicate.Extended.ofLegacy(source));
         }
 
-        public boolean matches(ServerPlayerEntity player, @Nullable LootContext lootContext) {
+        public boolean matches(ServerPlayerEntity player, @Nullable LootContext context) {
             if (!this.effects.test(player)) {
                 return false;
             }
-            return this.field_33909 == EntityPredicate.Extended.EMPTY || lootContext != null && this.field_33909.test(lootContext);
+            return this.source == EntityPredicate.Extended.EMPTY || context != null && this.source.test(context);
         }
 
         @Override
         public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.add("effects", this.effects.toJson());
-            jsonObject.add("source", this.field_33909.toJson(predicateSerializer));
+            jsonObject.add("source", this.source.toJson(predicateSerializer));
             return jsonObject;
         }
     }

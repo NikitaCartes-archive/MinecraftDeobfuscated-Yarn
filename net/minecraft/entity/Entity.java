@@ -615,7 +615,7 @@ CommandOutput {
             if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
                 e = 0.0;
             }
-            this.horizontalSpeed += (float)vec3d.method_37267() * 0.6f;
+            this.horizontalSpeed += (float)vec3d.horizontalLength() * 0.6f;
             this.distanceTraveled += (float)Math.sqrt(d * d + e * e + f * f) * 0.6f;
             if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
                 this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
@@ -776,10 +776,10 @@ CommandOutput {
             Vec3d vec3d4;
             Vec3d vec3d2 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, this.stepHeight, movement.z), box, this.world, shapeContext, reusableStream);
             Vec3d vec3d3 = Entity.adjustMovementForCollisions(this, new Vec3d(0.0, this.stepHeight, 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, shapeContext, reusableStream);
-            if (vec3d3.y < (double)this.stepHeight && (vec3d4 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, shapeContext, reusableStream).add(vec3d3)).method_37268() > vec3d2.method_37268()) {
+            if (vec3d3.y < (double)this.stepHeight && (vec3d4 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, shapeContext, reusableStream).add(vec3d3)).horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
                 vec3d2 = vec3d4;
             }
-            if (vec3d2.method_37268() > vec3d.method_37268()) {
+            if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
                 return vec3d2.add(Entity.adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.world, shapeContext, reusableStream));
             }
         }
@@ -1313,7 +1313,7 @@ CommandOutput {
             return false;
         }
         this.scheduleVelocityUpdate();
-        return true;
+        return false;
     }
 
     public final Vec3d getRotationVec(float tickDelta) {
@@ -2526,7 +2526,22 @@ CommandOutput {
         return false;
     }
 
-    public void dealDamage(LivingEntity attacker, Entity target) {
+    /**
+     * Applies damage effects to {@code attacker} or {@code target}.
+     * 
+     * <p>Called when {@code attacker} damages {@code target}.
+     * 
+     * <p>Used to apply damage effects based on enchantments, such
+     * as Thorns attacker damage or slowness from Bane of Arthropods.
+     * 
+     * @implNote Although this method is non-static, {@code this} keyword is
+     * not used anywhere in this method.
+     * 
+     * @param attacker the attacker; usually this entity, but may be a {@linkplain
+     * net.minecraft.entity.projectile.ProjectileEntity#getOwner() projectile's
+     * owner entity}
+     */
+    public void applyDamageEffects(LivingEntity attacker, Entity target) {
         if (target instanceof LivingEntity) {
             EnchantmentHelper.onUserDamaged((LivingEntity)target, attacker);
         }

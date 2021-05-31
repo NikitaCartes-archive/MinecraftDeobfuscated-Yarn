@@ -61,7 +61,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onEntityPotionEffect(this);
+        clientPlayPacketListener.onEntityStatusEffect(this);
     }
 
     public int getEntityId() {

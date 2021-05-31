@@ -133,14 +133,14 @@ implements Monster {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("ExplosionPower", this.fireballStrength);
+        nbt.putByte("ExplosionPower", (byte)this.fireballStrength);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("ExplosionPower", 99)) {
-            this.fireballStrength = nbt.getInt("ExplosionPower");
+            this.fireballStrength = nbt.getByte("ExplosionPower");
         }
     }
 
@@ -299,8 +299,7 @@ implements Monster {
                     if (!this.ghast.isSilent()) {
                         world.syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, this.ghast.getBlockPos(), 0);
                     }
-                    FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h);
-                    fireballEntity.explosionPower = this.ghast.getFireballStrength();
+                    FireballEntity fireballEntity = new FireballEntity(world, (LivingEntity)this.ghast, f, g, h, this.ghast.getFireballStrength());
                     fireballEntity.setPosition(this.ghast.getX() + vec3d.x * 4.0, this.ghast.getBodyY(0.5) + 0.5, fireballEntity.getZ() + vec3d.z * 4.0);
                     world.spawnEntity(fireballEntity);
                     this.cooldown = -40;

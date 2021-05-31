@@ -27,6 +27,7 @@ import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class RecipeAlternativesWidget
@@ -43,6 +44,7 @@ Element {
     private int buttonY;
     MinecraftClient client;
     private RecipeResultCollection resultCollection;
+    @Nullable
     private Recipe<?> lastClickedRecipe;
     float time;
     boolean furnace;
@@ -103,6 +105,7 @@ Element {
         return this.resultCollection;
     }
 
+    @Nullable
     public Recipe<?> getLastClickedRecipe() {
         return this.lastClickedRecipe;
     }

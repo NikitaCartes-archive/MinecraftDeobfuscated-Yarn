@@ -92,7 +92,7 @@ extends SinglePartEntityModel<T> {
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.body.pitch = headPitch * ((float)Math.PI / 180);
         this.body.yaw = headYaw * ((float)Math.PI / 180);
-        if (((Entity)entity).getVelocity().method_37268() > 1.0E-7) {
+        if (((Entity)entity).getVelocity().horizontalLengthSquared() > 1.0E-7) {
             this.body.pitch += -0.05f - 0.05f * MathHelper.cos(animationProgress * 0.3f);
             this.tail.pitch = -0.1f * MathHelper.cos(animationProgress * 0.3f);
             this.tailFin.pitch = -0.2f * MathHelper.cos(animationProgress * 0.3f);

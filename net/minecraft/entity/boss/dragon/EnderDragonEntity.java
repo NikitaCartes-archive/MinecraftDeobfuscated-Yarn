@@ -187,7 +187,7 @@ implements Monster {
         }
         this.tickWithEndCrystals();
         Vec3d vec3d = this.getVelocity();
-        float g = 0.2f / ((float)vec3d.method_37267() * 10.0f + 1.0f);
+        float g = 0.2f / ((float)vec3d.horizontalLength() * 10.0f + 1.0f);
         this.wingPosition = this.phaseManager.getCurrent().isSittingOrHovering() ? (this.wingPosition += 0.1f) : (this.slowedDownByBlock ? (this.wingPosition += g * 0.5f) : (this.wingPosition += (g *= (float)Math.pow(2.0, vec3d.y))));
         this.setYaw(MathHelper.wrapDegrees(this.getYaw()));
         if (this.isAiDisabled()) {
@@ -372,7 +372,7 @@ implements Monster {
             entity.addVelocity(f / h * 4.0, 0.2f, g / h * 4.0);
             if (this.phaseManager.getCurrent().isSittingOrHovering() || ((LivingEntity)entity).getLastAttackedTime() >= entity.age - 2) continue;
             entity.damage(DamageSource.mob(this), 5.0f);
-            this.dealDamage(this, entity);
+            this.applyDamageEffects(this, entity);
         }
     }
 
@@ -380,7 +380,7 @@ implements Monster {
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) continue;
             entity.damage(DamageSource.mob(this), 10.0f);
-            this.dealDamage(this, entity);
+            this.applyDamageEffects(this, entity);
         }
     }
 
@@ -797,7 +797,7 @@ implements Monster {
     @Override
     public boolean canTarget(LivingEntity target) {
         if (target instanceof PlayerEntity) {
-            return !((PlayerEntity)target).getAbilities().invulnerable && !target.isInvulnerable() && target.isPartOfGame();
+            return target.canTakeDamage();
         }
         return super.canTarget(target);
     }

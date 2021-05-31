@@ -174,7 +174,7 @@ Hoglin {
             return bl;
         }
         LivingEntity livingEntity = (LivingEntity)source.getAttacker();
-        if (livingEntity.canTakeDamage() && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
+        if (this.canTarget(livingEntity) && !LookTargetUtil.isNewTargetTooFar(this, livingEntity, 4.0)) {
             this.setAttackTarget(livingEntity);
         }
         return bl;

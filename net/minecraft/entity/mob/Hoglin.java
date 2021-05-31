@@ -18,7 +18,7 @@ public interface Hoglin {
         float g = !attacker.isBaby() && (int)f > 0 ? f / 2.0f + (float)attacker.world.random.nextInt((int)f) : f;
         boolean bl = target.damage(DamageSource.mob(attacker), g);
         if (bl) {
-            attacker.dealDamage(attacker, target);
+            attacker.applyDamageEffects(attacker, target);
             if (!attacker.isBaby()) {
                 Hoglin.knockback(attacker, target);
             }

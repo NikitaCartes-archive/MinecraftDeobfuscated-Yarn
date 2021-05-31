@@ -74,7 +74,7 @@ extends GuardianEntity {
             for (ServerPlayerEntity serverPlayerEntity : list) {
                 if (serverPlayerEntity.hasStatusEffect(statusEffect) && serverPlayerEntity.getStatusEffect(statusEffect).getAmplifier() >= 2 && serverPlayerEntity.getStatusEffect(statusEffect).getDuration() >= 1200) continue;
                 serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : (int)1.0f));
-                serverPlayerEntity.method_37222(new StatusEffectInstance(statusEffect, 6000, 2), this);
+                serverPlayerEntity.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2), this);
             }
         }
         if (!this.hasPositionTarget()) {

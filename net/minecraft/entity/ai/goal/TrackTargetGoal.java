@@ -46,7 +46,7 @@ extends Goal {
         if (livingEntity == null) {
             return false;
         }
-        if (!livingEntity.canTakeDamage()) {
+        if (!this.mob.canTarget(livingEntity)) {
             return false;
         }
         AbstractTeam abstractTeam = this.mob.getScoreboardTeam();

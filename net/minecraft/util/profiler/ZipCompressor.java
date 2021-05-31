@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.util.profiler;
 
 import com.google.common.collect.ImmutableMap;
 import java.io.Closeable;
@@ -23,37 +23,37 @@ import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class class_6397
+public class ZipCompressor
 implements Closeable {
-    private static final Logger field_33864 = LogManager.getLogger();
-    private final Path field_33865;
-    private final Path field_33866;
-    private final FileSystem field_33867;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final Path profilingDirectory;
+    private final Path temporaryDirectory;
+    private final FileSystem zip;
 
-    public class_6397(Path path) {
-        this.field_33865 = path;
-        this.field_33866 = path.resolveSibling(path.getFileName().toString() + "_tmp");
+    public ZipCompressor(Path profilingDirectory) {
+        this.profilingDirectory = profilingDirectory;
+        this.temporaryDirectory = profilingDirectory.resolveSibling(profilingDirectory.getFileName().toString() + "_tmp");
         try {
-            this.field_33867 = Util.field_33859.newFileSystem(this.field_33866, ImmutableMap.of("create", "true"));
+            this.zip = Util.zipFileSystemProvider.newFileSystem(this.temporaryDirectory, ImmutableMap.of("create", "true"));
         } catch (IOException iOException) {
             throw new UncheckedIOException(iOException);
         }
     }
 
-    public void method_37163(Path path, String string) {
+    public void write(Path path, String content) {
         try {
-            Path path2 = this.field_33867.getPath(File.separator, new String[0]);
+            Path path2 = this.zip.getPath(File.separator, new String[0]);
             Path path3 = path2.resolve(path.toString());
             Files.createDirectories(path3.getParent(), new FileAttribute[0]);
-            Files.write(path3, string.getBytes(StandardCharsets.UTF_8), new OpenOption[0]);
+            Files.write(path3, content.getBytes(StandardCharsets.UTF_8), new OpenOption[0]);
         } catch (IOException iOException) {
             throw new UncheckedIOException(iOException);
         }
     }
 
-    public void method_37162(Path path, File file) {
+    public void copy(Path path, File file) {
         try {
-            Path path2 = this.field_33867.getPath(File.separator, new String[0]);
+            Path path2 = this.zip.getPath(File.separator, new String[0]);
             Path path3 = path2.resolve(path.toString());
             Files.createDirectories(path3.getParent(), new FileAttribute[0]);
             Files.copy(file.toPath(), path3, new CopyOption[0]);
@@ -62,15 +62,15 @@ implements Closeable {
         }
     }
 
-    public void method_37161(Path path2) {
+    public void copyAll(Path path2) {
         try {
-            Path path22 = this.field_33867.getPath(File.separator, new String[0]);
+            Path path22 = this.zip.getPath(File.separator, new String[0]);
             if (Files.isRegularFile(path2, new LinkOption[0])) {
                 Path path3 = path22.resolve(path2.getParent().relativize(path2).toString());
                 Files.copy(path3, path2, new CopyOption[0]);
                 return;
             }
-            try (Stream<Path> stream = Files.find(path2, Integer.MAX_VALUE, (path, basicFileAttributes) -> basicFileAttributes.isRegularFile(), new FileVisitOption[0]);){
+            try (Stream<Path> stream = Files.find(path2, Integer.MAX_VALUE, (path, attributes) -> attributes.isRegularFile(), new FileVisitOption[0]);){
                 for (Path path4 : stream.collect(Collectors.toList())) {
                     Path path5 = path22.resolve(path2.relativize(path4).toString());
                     Files.createDirectories(path5.getParent(), new FileAttribute[0]);
@@ -85,9 +85,9 @@ implements Closeable {
     @Override
     public void close() {
         try {
-            this.field_33867.close();
-            Files.move(this.field_33866, this.field_33865, new CopyOption[0]);
-            field_33864.info("Compressed to {}", (Object)this.field_33865);
+            this.zip.close();
+            Files.move(this.temporaryDirectory, this.profilingDirectory, new CopyOption[0]);
+            LOGGER.info("Compressed to {}", (Object)this.profilingDirectory);
         } catch (IOException iOException) {
             throw new UncheckedIOException(iOException);
         }

@@ -38,9 +38,11 @@ extends MoveControl {
             float i = this.entity.isOnGround() ? (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)) : (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_FLYING_SPEED));
             this.entity.setMovementSpeed(i);
             double j = Math.sqrt(d * d + f * f);
-            float k = (float)(-(MathHelper.atan2(e, j) * 57.2957763671875));
-            this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), k, this.maxPitchChange));
-            this.entity.setUpwardSpeed(e > 0.0 ? i : -i);
+            if (Math.abs(e) > (double)1.0E-5f || Math.abs(j) > (double)1.0E-5f) {
+                float k = (float)(-(MathHelper.atan2(e, j) * 57.2957763671875));
+                this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), k, this.maxPitchChange));
+                this.entity.setUpwardSpeed(e > 0.0 ? i : -i);
+            }
         } else {
             if (!this.noGravity) {
                 this.entity.setNoGravity(false);

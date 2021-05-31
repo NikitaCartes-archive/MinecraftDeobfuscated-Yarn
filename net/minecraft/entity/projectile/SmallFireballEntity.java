@@ -46,7 +46,7 @@ extends AbstractFireballEntity {
             if (!bl) {
                 entity.setFireTicks(i);
             } else if (entity2 instanceof LivingEntity) {
-                this.dealDamage((LivingEntity)entity2, entity);
+                this.applyDamageEffects((LivingEntity)entity2, entity);
             }
         }
     }

@@ -230,7 +230,7 @@ implements Monster {
             int i = this.getSize();
             if (this.squaredDistanceTo(target) < 0.6 * (double)i * (0.6 * (double)i) && this.canSee(target) && target.damage(DamageSource.mob(this), this.getDamageAmount())) {
                 this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
-                this.dealDamage(this, target);
+                this.applyDamageEffects(this, target);
             }
         }
     }
@@ -436,7 +436,7 @@ implements Monster {
             if (livingEntity == null) {
                 return false;
             }
-            if (this.slime.canTarget(livingEntity)) {
+            if (!this.slime.canTarget(livingEntity)) {
                 return false;
             }
             return this.slime.getMoveControl() instanceof SlimeMoveControl;
@@ -454,7 +454,7 @@ implements Monster {
             if (livingEntity == null) {
                 return false;
             }
-            if (this.slime.canTarget(livingEntity)) {
+            if (!this.slime.canTarget(livingEntity)) {
                 return false;
             }
             return --this.ticksLeft > 0;

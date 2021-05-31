@@ -947,7 +947,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.OAK_LEAVES, (Block block) -> BlockLootTableGenerator.oakLeavesDrop(block, Blocks.OAK_SAPLING, SAPLING_DROP_CHANCE));
         this.addDrop(Blocks.DARK_OAK_LEAVES, (Block block) -> BlockLootTableGenerator.oakLeavesDrop(block, Blocks.DARK_OAK_SAPLING, SAPLING_DROP_CHANCE));
         this.addDrop(Blocks.AZALEA_LEAVES, (Block block) -> BlockLootTableGenerator.leavesDrop(block, Blocks.AZALEA, SAPLING_DROP_CHANCE));
-        this.addDrop(Blocks.AZALEA_LEAVES_FLOWERS, (Block block) -> BlockLootTableGenerator.leavesDrop(block, Blocks.FLOWERING_AZALEA, SAPLING_DROP_CHANCE));
+        this.addDrop(Blocks.FLOWERING_AZALEA_LEAVES, (Block block) -> BlockLootTableGenerator.leavesDrop(block, Blocks.FLOWERING_AZALEA, SAPLING_DROP_CHANCE));
         BlockStatePropertyLootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.BEETROOTS).properties(StatePredicate.Builder.create().exactMatch(BeetrootsBlock.AGE, 3));
         this.addDrop(Blocks.BEETROOTS, BlockLootTableGenerator.cropDrops(Blocks.BEETROOTS, Items.BEETROOT, Items.BEETROOT_SEEDS, builder));
         BlockStatePropertyLootCondition.Builder builder2 = BlockStatePropertyLootCondition.builder(Blocks.WHEAT).properties(StatePredicate.Builder.create().exactMatch(CropBlock.AGE, 7));

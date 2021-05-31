@@ -379,8 +379,8 @@ extends NetworkSyncedItem {
         BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
         if (blockState.isIn(BlockTags.BANNERS)) {
             MapState mapState;
-            if (!context.getWorld().isClient && (mapState = FilledMapItem.getOrCreateMapState(context.getStack(), context.getWorld())) != null) {
-                mapState.addBanner(context.getWorld(), context.getBlockPos());
+            if (!context.getWorld().isClient && (mapState = FilledMapItem.getOrCreateMapState(context.getStack(), context.getWorld())) != null && !mapState.addBanner(context.getWorld(), context.getBlockPos())) {
+                return ActionResult.FAIL;
             }
             return ActionResult.success(context.getWorld().isClient);
         }

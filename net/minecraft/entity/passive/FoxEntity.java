@@ -912,7 +912,7 @@ extends AnimalEntity {
                 if (vec3d.y * vec3d.y < (double)0.03f && FoxEntity.this.getPitch() != 0.0f) {
                     FoxEntity.this.setPitch(MathHelper.lerpAngle(FoxEntity.this.getPitch(), 0.0f, 0.2f));
                 } else {
-                    double d = vec3d.method_37267();
+                    double d = vec3d.horizontalLength();
                     double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 57.2957763671875;
                     FoxEntity.this.setPitch((float)e);
                 }

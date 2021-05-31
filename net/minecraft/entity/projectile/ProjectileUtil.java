@@ -103,7 +103,7 @@ public final class ProjectileUtil {
         if (vec3d.lengthSquared() == 0.0) {
             return;
         }
-        double d = vec3d.method_37267();
+        double d = vec3d.horizontalLength();
         entity.setYaw((float)(MathHelper.atan2(vec3d.z, vec3d.x) * 57.2957763671875) + 90.0f);
         entity.setPitch((float)(MathHelper.atan2(d, vec3d.y) * 57.2957763671875) - 90.0f);
         while (entity.getPitch() - entity.prevPitch < -180.0f) {

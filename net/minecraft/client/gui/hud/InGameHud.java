@@ -86,6 +86,12 @@ import net.minecraft.world.border.WorldBorder;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Responsible for rendering the HUD elements while the player is in game.
+ * 
+ * <p>The current instance used by the client can be obtained by {@link
+ * MinecraftClient#inGameHud MinecraftClient.getInstance().inGameHud}.
+ */
 @Environment(value=EnvType.CLIENT)
 public class InGameHud
 extends DrawableHelper {
@@ -609,17 +615,17 @@ extends DrawableHelper {
         int i;
         Scoreboard scoreboard = objective.getScoreboard();
         Collection<ScoreboardPlayerScore> collection = scoreboard.getAllPlayerScores(objective);
-        List list = collection.stream().filter(scoreboardPlayerScore -> scoreboardPlayerScore.getPlayerName() != null && !scoreboardPlayerScore.getPlayerName().startsWith("#")).collect(Collectors.toList());
+        List list = collection.stream().filter(score -> score.getPlayerName() != null && !score.getPlayerName().startsWith("#")).collect(Collectors.toList());
         collection = list.size() > 15 ? Lists.newArrayList(Iterables.skip(list, collection.size() - 15)) : list;
         ArrayList<Pair<ScoreboardPlayerScore, MutableText>> list2 = Lists.newArrayListWithCapacity(collection.size());
         Text text = objective.getDisplayName();
         int j = i = this.getFontRenderer().getWidth(text);
         int k = this.getFontRenderer().getWidth(field_32171);
-        for (ScoreboardPlayerScore scoreboardPlayerScore2 : collection) {
-            Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
-            MutableText text2 = Team.decorateName(team, new LiteralText(scoreboardPlayerScore2.getPlayerName()));
-            list2.add(Pair.of(scoreboardPlayerScore2, text2));
-            j = Math.max(j, this.getFontRenderer().getWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore2.getScore())));
+        for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
+            Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
+            MutableText text2 = Team.decorateName(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
+            list2.add(Pair.of(scoreboardPlayerScore, text2));
+            j = Math.max(j, this.getFontRenderer().getWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
         }
         int l = collection.size() * this.getFontRenderer().fontHeight;
         int m = this.scaledHeight / 2 + l / 3;
@@ -682,6 +688,9 @@ extends DrawableHelper {
         return (int)Math.ceil((double)heartCount / 10.0);
     }
 
+    /**
+     * Renders the armor, health, air, and hunger bars.
+     */
     private void renderStatusBars(MatrixStack matrices) {
         int ac;
         int ab;
@@ -741,7 +750,7 @@ extends DrawableHelper {
             this.drawTexture(matrices, x, s, 16, 9, 9, 9);
         }
         this.client.getProfiler().swap("health");
-        this.method_37298(matrices, playerEntity, m, o, r, v, f, i, j, p, bl);
+        this.renderHealthBar(matrices, playerEntity, m, o, r, v, f, i, j, p, bl);
         LivingEntity livingEntity = this.getRiddenEntity();
         x = this.getHeartCount(livingEntity);
         if (x == 0) {
@@ -786,45 +795,45 @@ extends DrawableHelper {
         this.client.getProfiler().pop();
     }
 
-    private void method_37298(MatrixStack matrixStack, PlayerEntity playerEntity, int i, int j, int k, int l, float f, int m, int n, int o, boolean bl) {
-        class_6411 lv = class_6411.method_37301(playerEntity);
-        int p = 9 * (playerEntity.world.getLevelProperties().isHardcore() ? 5 : 0);
-        int q = MathHelper.ceil((double)f / 2.0);
-        int r = MathHelper.ceil((double)o / 2.0);
-        int s = q * 2;
-        for (int t = q + r - 1; t >= 0; --t) {
-            boolean bl4;
-            int z;
-            boolean bl2;
-            int u = t / 10;
-            int v = t % 10;
-            int w = i + v * 8;
-            int x = j - u * k;
-            if (m + o <= 4) {
-                x += this.random.nextInt(2);
+    private void renderHealthBar(MatrixStack matrices, PlayerEntity player, int x, int y, int lines, int regeneratingHeartIndex, float maxHealth, int lastHealth, int health, int absorption, boolean blinking) {
+        HeartType heartType = HeartType.fromPlayerState(player);
+        int i = 9 * (player.world.getLevelProperties().isHardcore() ? 5 : 0);
+        int j = MathHelper.ceil((double)maxHealth / 2.0);
+        int k = MathHelper.ceil((double)absorption / 2.0);
+        int l = j * 2;
+        for (int m = j + k - 1; m >= 0; --m) {
+            boolean bl3;
+            int s;
+            boolean bl;
+            int n = m / 10;
+            int o = m % 10;
+            int p = x + o * 8;
+            int q = y - n * lines;
+            if (lastHealth + absorption <= 4) {
+                q += this.random.nextInt(2);
             }
-            if (t < q && t == l) {
-                x -= 2;
+            if (m < j && m == regeneratingHeartIndex) {
+                q -= 2;
             }
-            this.method_37299(matrixStack, class_6411.field_33944, w, x, p, bl, false);
-            int y = t * 2;
-            boolean bl3 = bl2 = t >= q;
-            if (bl2 && (z = y - s) < o) {
-                boolean bl32 = z + 1 == o;
-                this.method_37299(matrixStack, lv == class_6411.field_33947 ? lv : class_6411.field_33948, w, x, p, false, bl32);
+            this.drawHeart(matrices, HeartType.CONTAINER, p, q, i, blinking, false);
+            int r = m * 2;
+            boolean bl2 = bl = m >= j;
+            if (bl && (s = r - l) < absorption) {
+                boolean bl22 = s + 1 == absorption;
+                this.drawHeart(matrices, heartType == HeartType.WITHERED ? heartType : HeartType.ABSORBING, p, q, i, false, bl22);
             }
-            if (bl && y < n) {
-                bl4 = y + 1 == n;
-                this.method_37299(matrixStack, lv, w, x, p, true, bl4);
+            if (blinking && r < health) {
+                bl3 = r + 1 == health;
+                this.drawHeart(matrices, heartType, p, q, i, true, bl3);
             }
-            if (y >= m) continue;
-            bl4 = y + 1 == m;
-            this.method_37299(matrixStack, lv, w, x, p, false, bl4);
+            if (r >= lastHealth) continue;
+            bl3 = r + 1 == lastHealth;
+            this.drawHeart(matrices, heartType, p, q, i, false, bl3);
         }
     }
 
-    private void method_37299(MatrixStack matrixStack, class_6411 arg, int i, int j, int k, boolean bl, boolean bl2) {
-        this.drawTexture(matrixStack, i, j, arg.method_37302(bl2, bl), k, 9, 9);
+    private void drawHeart(MatrixStack matrices, HeartType type, int x, int y, int v, boolean blinking, boolean halfHeart) {
+        this.drawTexture(matrices, x, y, type.getU(halfHeart, blinking), v, 9, 9);
     }
 
     private void renderMountHealth(MatrixStack matrices) {
@@ -1002,7 +1011,7 @@ extends DrawableHelper {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int i) {
+    private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed) {
         if (stack.isEmpty()) {
             return;
         }
@@ -1016,7 +1025,7 @@ extends DrawableHelper {
             matrixStack.translate(-(x + 8), -(y + 12), 0.0);
             RenderSystem.applyModelViewMatrix();
         }
-        this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, i);
+        this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, seed);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         if (f > 0.0f) {
             matrixStack.pop();
@@ -1152,37 +1161,37 @@ extends DrawableHelper {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static enum class_6411 {
-        field_33944(0, false),
-        field_33945(2, true),
-        field_33946(4, true),
-        field_33947(6, true),
-        field_33948(8, false),
-        field_33949(9, false);
+    static enum HeartType {
+        CONTAINER(0, false),
+        NORMAL(2, true),
+        POISIONED(4, true),
+        WITHERED(6, true),
+        ABSORBING(8, false),
+        FROZEN(9, false);
 
-        private final int field_33950;
-        private final boolean field_33951;
+        private final int textureIndex;
+        private final boolean hasBlinkingTexture;
 
-        private class_6411(int j, boolean bl) {
-            this.field_33950 = j;
-            this.field_33951 = bl;
+        private HeartType(int textureIndex, boolean hasBlinkingTexture) {
+            this.textureIndex = textureIndex;
+            this.hasBlinkingTexture = hasBlinkingTexture;
         }
 
-        public int method_37302(boolean bl, boolean bl2) {
+        public int getU(boolean halfHeart, boolean blinking) {
             int i;
-            if (this == field_33944) {
-                i = bl2 ? 1 : 0;
+            if (this == CONTAINER) {
+                i = blinking ? 1 : 0;
             } else {
-                int j = bl ? 1 : 0;
-                int k = this.field_33951 && bl2 ? 2 : 0;
+                int j = halfHeart ? 1 : 0;
+                int k = this.hasBlinkingTexture && blinking ? 2 : 0;
                 i = j + k;
             }
-            return 16 + (this.field_33950 * 2 + i) * 9;
+            return 16 + (this.textureIndex * 2 + i) * 9;
         }
 
-        static class_6411 method_37301(PlayerEntity playerEntity) {
-            class_6411 lv = playerEntity.hasStatusEffect(StatusEffects.POISON) ? field_33946 : (playerEntity.hasStatusEffect(StatusEffects.WITHER) ? field_33947 : (playerEntity.isFreezing() ? field_33949 : field_33945));
-            return lv;
+        static HeartType fromPlayerState(PlayerEntity player) {
+            HeartType heartType = player.hasStatusEffect(StatusEffects.POISON) ? POISIONED : (player.hasStatusEffect(StatusEffects.WITHER) ? WITHERED : (player.isFreezing() ? FROZEN : NORMAL));
+            return heartType;
         }
     }
 }

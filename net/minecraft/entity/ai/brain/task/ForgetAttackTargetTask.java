@@ -41,7 +41,7 @@ extends Task<E> {
     @Override
     protected void run(ServerWorld serverWorld, E mobEntity, long l) {
         LivingEntity livingEntity = this.getAttackTarget(mobEntity);
-        if (!livingEntity.canTakeDamage()) {
+        if (!((LivingEntity)mobEntity).canTarget(livingEntity)) {
             this.forgetAttackTarget(mobEntity);
             return;
         }

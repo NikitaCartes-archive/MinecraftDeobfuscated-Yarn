@@ -239,7 +239,7 @@ Flutterer {
     public boolean tryAttack(Entity target) {
         boolean bl = target.damage(DamageSource.sting(this), (int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
         if (bl) {
-            this.dealDamage(this, target);
+            this.applyDamageEffects(this, target);
             if (target instanceof LivingEntity) {
                 ((LivingEntity)target).setStingerCount(((LivingEntity)target).getStingerCount() + 1);
                 int i = 0;
@@ -249,7 +249,7 @@ Flutterer {
                     i = 18;
                 }
                 if (i > 0) {
-                    ((LivingEntity)target).method_37222(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
+                    ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, i * 20, 0), this);
                 }
             }
             this.setHasStung(true);

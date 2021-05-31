@@ -291,13 +291,13 @@ public class BlockModelRenderer {
             int l = brightnessCache.getInt(blockState4, world, mutable);
             float m = brightnessCache.getFloat(blockState4, world, mutable);
             mutable.set((Vec3i)blockPos, neighborData.faces[0]).move(direction);
-            boolean bl2 = world.getBlockState(mutable).getOpacity(world, mutable) == 0;
+            boolean bl2 = !blockState.shouldBlockVision(world, mutable) || blockState.getOpacity(world, mutable) == 0;
             mutable.set((Vec3i)blockPos, neighborData.faces[1]).move(direction);
-            boolean bl3 = world.getBlockState(mutable).getOpacity(world, mutable) == 0;
+            boolean bl3 = !blockState2.shouldBlockVision(world, mutable) || blockState2.getOpacity(world, mutable) == 0;
             mutable.set((Vec3i)blockPos, neighborData.faces[2]).move(direction);
-            boolean bl4 = world.getBlockState(mutable).getOpacity(world, mutable) == 0;
+            boolean bl4 = !blockState3.shouldBlockVision(world, mutable) || blockState3.getOpacity(world, mutable) == 0;
             mutable.set((Vec3i)blockPos, neighborData.faces[3]).move(direction);
-            boolean bl6 = bl5 = world.getBlockState(mutable).getOpacity(world, mutable) == 0;
+            boolean bl6 = bl5 = !blockState4.shouldBlockVision(world, mutable) || blockState4.getOpacity(world, mutable) == 0;
             if (bl4 || bl2) {
                 mutable.set((Vec3i)blockPos, neighborData.faces[0]).move(neighborData.faces[2]);
                 blockState5 = world.getBlockState(mutable);

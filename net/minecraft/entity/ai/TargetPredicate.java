@@ -6,6 +6,7 @@ package net.minecraft.entity.ai;
 import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.world.Difficulty;
 import org.jetbrains.annotations.Nullable;
 
 public class TargetPredicate {
@@ -69,7 +70,7 @@ public class TargetPredicate {
             return false;
         }
         if (baseEntity == null) {
-            if (this.attackable && !targetEntity.canTakeDamage()) {
+            if (this.attackable && (!targetEntity.canTakeDamage() || targetEntity.world.getDifficulty() == Difficulty.PEACEFUL)) {
                 return false;
             }
         } else {

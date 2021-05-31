@@ -27,7 +27,6 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_6396;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
@@ -54,6 +53,7 @@ import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.SystemDetails;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -259,10 +259,10 @@ implements DedicatedServer {
     }
 
     @Override
-    public class_6396 populateCrashReport(class_6396 arg) {
-        arg.method_37123("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
-        arg.method_37123("Type", () -> "Dedicated Server (map_server.txt)");
-        return arg;
+    public SystemDetails populateCrashReport(SystemDetails systemDetails) {
+        systemDetails.addSection("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
+        systemDetails.addSection("Type", () -> "Dedicated Server (map_server.txt)");
+        return systemDetails;
     }
 
     @Override

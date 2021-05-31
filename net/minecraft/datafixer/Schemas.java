@@ -580,6 +580,9 @@ public class Schemas {
         builder.addFixer(new ChoiceTypesFix(schema139, "Added Marker", TypeReferences.ENTITY));
         Schema schema140 = builder.addSchema(2710, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new SwimStatsRenameFix(schema140, "Renamed play_one_minute stat to play_time", ImmutableMap.of("minecraft:play_one_minute", "minecraft:play_time")));
+        Schema schema141 = builder.addSchema(2717, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(ItemNameFix.create(schema141, "Rename azalea_leaves_flowers", Schemas.replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))));
+        builder.addFixer(BlockNameFix.create(schema141, "Rename azalea_leaves_flowers items", Schemas.replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))));
     }
 
     private static UnaryOperator<String> replacing(Map<String, String> replacements) {

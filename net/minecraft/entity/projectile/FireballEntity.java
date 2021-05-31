@@ -17,14 +17,15 @@ import net.minecraft.world.explosion.Explosion;
 
 public class FireballEntity
 extends AbstractFireballEntity {
-    public int explosionPower = 1;
+    private int explosionPower = 1;
 
     public FireballEntity(EntityType<? extends FireballEntity> entityType, World world) {
         super((EntityType<? extends AbstractFireballEntity>)entityType, world);
     }
 
-    public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ) {
+    public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int i) {
         super((EntityType<? extends AbstractFireballEntity>)EntityType.FIREBALL, owner, velocityX, velocityY, velocityZ, world);
+        this.explosionPower = i;
     }
 
     @Override
@@ -47,21 +48,21 @@ extends AbstractFireballEntity {
         Entity entity2 = this.getOwner();
         entity.damage(DamageSource.fireball(this, entity2), 6.0f);
         if (entity2 instanceof LivingEntity) {
-            this.dealDamage((LivingEntity)entity2, entity);
+            this.applyDamageEffects((LivingEntity)entity2, entity);
         }
     }
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("ExplosionPower", this.explosionPower);
+        nbt.putByte("ExplosionPower", (byte)this.explosionPower);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("ExplosionPower", 99)) {
-            this.explosionPower = nbt.getInt("ExplosionPower");
+            this.explosionPower = nbt.getByte("ExplosionPower");
         }
     }
 }

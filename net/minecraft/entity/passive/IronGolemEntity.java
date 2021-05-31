@@ -130,7 +130,7 @@ implements Angerable {
         if (this.lookingAtVillagerTicksLeft > 0) {
             --this.lookingAtVillagerTicksLeft;
         }
-        if (this.getVelocity().method_37268() > 2.500000277905201E-7 && this.random.nextInt(5) == 0 && !(blockState = this.world.getBlockState(new BlockPos(i = MathHelper.floor(this.getX()), j = MathHelper.floor(this.getY() - (double)0.2f), k = MathHelper.floor(this.getZ())))).isAir()) {
+        if (this.getVelocity().horizontalLengthSquared() > 2.500000277905201E-7 && this.random.nextInt(5) == 0 && !(blockState = this.world.getBlockState(new BlockPos(i = MathHelper.floor(this.getX()), j = MathHelper.floor(this.getY() - (double)0.2f), k = MathHelper.floor(this.getZ())))).isAir()) {
             this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), this.getY() + 0.1, this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), 4.0 * ((double)this.random.nextFloat() - 0.5), 0.5, ((double)this.random.nextFloat() - 0.5) * 4.0);
         }
         if (!this.world.isClient) {
@@ -201,7 +201,7 @@ implements Angerable {
         boolean bl = target.damage(DamageSource.mob(this), g);
         if (bl) {
             target.setVelocity(target.getVelocity().add(0.0, 0.4f, 0.0));
-            this.dealDamage(this, target);
+            this.applyDamageEffects(this, target);
         }
         this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0f, 1.0f);
         return bl;

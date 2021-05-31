@@ -81,7 +81,7 @@ extends Sensor<LivingEntity> {
             }
             if (livingEntity instanceof PlayerEntity) {
                 PlayerEntity playerEntity = (PlayerEntity)livingEntity;
-                if (!optional6.isPresent() && livingEntity.canTakeDamage() && !PiglinBrain.wearsGoldArmor(playerEntity)) {
+                if (!optional6.isPresent() && entity.canTarget(livingEntity) && !PiglinBrain.wearsGoldArmor(playerEntity)) {
                     optional6 = Optional.of(playerEntity);
                 }
                 if (optional7.isPresent() || playerEntity.isSpectator() || !PiglinBrain.isGoldHoldingPlayer(playerEntity)) continue;

@@ -19,11 +19,14 @@ import net.minecraft.client.util.profiler.SamplingChannel;
 import net.minecraft.client.util.profiler.SamplingRecorder;
 import net.minecraft.util.profiler.MetricSuppliers;
 import net.minecraft.util.profiler.ReadableProfiler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 
 public class class_6402
 implements class_6400 {
+    private static final Logger field_33988 = LogManager.getLogger();
     private final Set<SamplingRecorder> field_33895 = new ObjectOpenHashSet<SamplingRecorder>();
     private final class_6401 field_33896 = new class_6401();
 
@@ -36,8 +39,12 @@ implements class_6400 {
 
     public static Set<SamplingRecorder> method_37199() {
         ImmutableSet.Builder builder = ImmutableSet.builder();
-        class_6403 lv = new class_6403();
-        IntStream.range(0, lv.field_33897).mapToObj(i -> SamplingRecorder.create("cpu#" + i, SamplingChannel.CPU, () -> lv.method_37205(i))).forEach(builder::add);
+        try {
+            class_6403 lv = new class_6403();
+            IntStream.range(0, lv.field_33897).mapToObj(i -> SamplingRecorder.create("cpu#" + i, SamplingChannel.CPU, () -> lv.method_37205(i))).forEach(builder::add);
+        } catch (Throwable throwable) {
+            field_33988.warn("Failed to query cpu, no cpu stats will be recorded", throwable);
+        }
         builder.add(SamplingRecorder.create("heap MiB", SamplingChannel.JVM, () -> (float)(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576.0f));
         builder.addAll(MetricSuppliers.INSTANCE.method_37178());
         return builder.build();

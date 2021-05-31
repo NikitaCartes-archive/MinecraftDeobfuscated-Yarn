@@ -46,7 +46,7 @@ extends MovingSoundInstance {
         this.x = (float)this.bee.getX();
         this.y = (float)this.bee.getY();
         this.z = (float)this.bee.getZ();
-        float f = (float)this.bee.getVelocity().method_37267();
+        float f = (float)this.bee.getVelocity().horizontalLength();
         if (f >= 0.01f) {
             this.pitch = MathHelper.lerp(MathHelper.clamp(f, this.getMinPitch(), this.getMaxPitch()), this.getMinPitch(), this.getMaxPitch());
             this.volume = MathHelper.lerp(MathHelper.clamp(f, 0.0f, 0.5f), 0.0f, 1.2f);

@@ -105,7 +105,7 @@ extends AbstractSkeletonEntity {
             return false;
         }
         if (target instanceof LivingEntity) {
-            ((LivingEntity)target).method_37222(new StatusEffectInstance(StatusEffects.WITHER, 200), this);
+            ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 200), this);
         }
         return true;
     }

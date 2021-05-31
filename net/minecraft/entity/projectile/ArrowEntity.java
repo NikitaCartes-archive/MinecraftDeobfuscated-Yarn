@@ -175,13 +175,13 @@ extends PersistentProjectileEntity {
     @Override
     protected void onHit(LivingEntity target) {
         super.onHit(target);
-        Entity entity = this.method_37225();
+        Entity entity = this.getEffectCause();
         for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
-            target.method_37222(new StatusEffectInstance(statusEffectInstance.getEffectType(), Math.max(statusEffectInstance.getDuration() / 8, 1), statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()), entity);
+            target.addStatusEffect(new StatusEffectInstance(statusEffectInstance.getEffectType(), Math.max(statusEffectInstance.getDuration() / 8, 1), statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()), entity);
         }
         if (!this.effects.isEmpty()) {
             for (StatusEffectInstance statusEffectInstance : this.effects) {
-                target.method_37222(statusEffectInstance, entity);
+                target.addStatusEffect(statusEffectInstance, entity);
             }
         }
     }

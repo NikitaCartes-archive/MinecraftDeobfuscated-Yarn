@@ -66,7 +66,12 @@ public abstract class BlockEntity {
     @Nullable
     public static BlockEntity createFromNbt(BlockPos pos, BlockState state, NbtCompound nbt) {
         String string = nbt.getString("id");
-        return Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
+        Identifier identifier = Identifier.tryParse(string);
+        if (identifier == null) {
+            LOGGER.error("Block entity has invalid type: {}", (Object)string);
+            return null;
+        }
+        return Registry.BLOCK_ENTITY_TYPE.getOrEmpty(identifier).map(blockEntityType -> {
             try {
                 return blockEntityType.instantiate(pos, state);
             } catch (Throwable throwable) {

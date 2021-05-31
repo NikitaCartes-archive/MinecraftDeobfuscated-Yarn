@@ -131,7 +131,7 @@ extends AnimalEntity {
         double e;
         super.jump();
         double d = this.moveControl.getSpeed();
-        if (d > 0.0 && (e = this.getVelocity().method_37268()) < 0.01) {
+        if (d > 0.0 && (e = this.getVelocity().horizontalLengthSquared()) < 0.01) {
             this.updateVelocity(0.1f, new Vec3d(0.0, 0.0, 1.0));
         }
         if (!this.world.isClient) {

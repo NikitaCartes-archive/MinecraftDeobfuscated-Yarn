@@ -238,7 +238,7 @@ extends PacketListener {
 
     public void onEntityAttributes(EntityAttributesS2CPacket var1);
 
-    public void onEntityPotionEffect(EntityStatusEffectS2CPacket var1);
+    public void onEntityStatusEffect(EntityStatusEffectS2CPacket var1);
 
     public void onSynchronizeTags(SynchronizeTagsS2CPacket var1);
 

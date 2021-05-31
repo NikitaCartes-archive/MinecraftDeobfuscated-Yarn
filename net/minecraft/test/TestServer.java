@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import net.minecraft.class_6396;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
@@ -27,6 +26,7 @@ import net.minecraft.test.TestManager;
 import net.minecraft.test.TestSet;
 import net.minecraft.test.TestUtil;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
@@ -115,9 +115,9 @@ extends MinecraftServer {
     }
 
     @Override
-    public class_6396 populateCrashReport(class_6396 arg) {
-        arg.method_37122("Type", "Game test server");
-        return arg;
+    public SystemDetails populateCrashReport(SystemDetails systemDetails) {
+        systemDetails.addSection("Type", "Game test server");
+        return systemDetails;
     }
 
     @Override

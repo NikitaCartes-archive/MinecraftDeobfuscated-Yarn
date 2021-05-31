@@ -56,7 +56,12 @@ extends Entity {
         return null;
     }
 
-    public Entity method_37225() {
+    /**
+     * {@return the cause entity of any effect applied by this projectile} If this
+     * projectile has an owner, the effect is attributed to the owner; otherwise, it
+     * is attributed to this projectile itself.
+     */
+    public Entity getEffectCause() {
         return MoreObjects.firstNonNull(this.getOwner(), this);
     }
 
@@ -110,7 +115,7 @@ extends Entity {
     public void setVelocity(double x, double y, double z, float speed, float divergence) {
         Vec3d vec3d = new Vec3d(x, y, z).normalize().add(this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence).multiply(speed);
         this.setVelocity(vec3d);
-        double d = vec3d.method_37267();
+        double d = vec3d.horizontalLength();
         this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
         this.setPitch((float)(MathHelper.atan2(vec3d.y, d) * 57.2957763671875));
         this.prevYaw = this.getYaw();
@@ -169,7 +174,7 @@ extends Entity {
 
     protected void updateRotation() {
         Vec3d vec3d = this.getVelocity();
-        double d = vec3d.method_37267();
+        double d = vec3d.horizontalLength();
         this.setPitch(ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, d) * 57.2957763671875)));
         this.setYaw(ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875)));
     }

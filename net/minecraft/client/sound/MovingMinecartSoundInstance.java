@@ -55,7 +55,7 @@ extends MovingSoundInstance {
         this.x = (float)this.minecart.getX();
         this.y = (float)this.minecart.getY();
         this.z = (float)this.minecart.getZ();
-        float f = (float)this.minecart.getVelocity().method_37267();
+        float f = (float)this.minecart.getVelocity().horizontalLength();
         if (f >= 0.01f) {
             this.distance = MathHelper.clamp(this.distance + 0.0025f, 0.0f, 1.0f);
             this.volume = MathHelper.lerp(MathHelper.clamp(f, 0.0f, 0.5f), 0.0f, 0.7f);
