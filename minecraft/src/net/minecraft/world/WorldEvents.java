@@ -363,7 +363,14 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.PointedDripstoneBlock#dripTick(net.minecraft.block.BlockState, net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos, float) PointedDripstoneBlock#dripTick}
 	 */
 	public static final int POINTED_DRIPSTONE_DRIPS = 1504;
-	public static final int field_33511 = 1505;
+	/**
+	 * Bone meal is used.
+	 * <br>Plays the bone meal item used sound event and spawns happy villager particles.
+	 * <p>Called by {@link net.minecraft.item.BoneMealItem#useOnBlock(net.minecraft.item.ItemUsageContext) BoneMealItem#useOnBlock},
+	 * an anonymus class in {@link net.minecraft.block.dispenser.DispenserBehavior#registerDefaults() DispenserBehavior#registerDefaults},
+	 * and {@link net.minecraft.entity.ai.brain.task.BoneMealTask#keepRunning(net.minecraft.server.world.ServerWorld, net.minecraft.entity.passive.VillagerEntity, long) BoneMealTask#keepRunning}
+	 */
+	public static final int BONE_MEAL_USED = 1505;
 	/**
 	 * A Dispenser is activated.
 	 * <br>Spawns smoke particles.

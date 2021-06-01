@@ -244,7 +244,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criteriaMerger(CriterionMerger.OR)
 			.criterion(
 				Registry.ITEM.getId(Items.AXOLOTL_BUCKET).getPath(),
-				FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().item(Items.AXOLOTL_BUCKET).build())
+				FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.AXOLOTL_BUCKET).build())
 			)
 			.display(
 				Items.AXOLOTL_BUCKET,
@@ -291,7 +291,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				"safely_harvest_honey",
 				ItemUsedOnBlockCriterion.Conditions.create(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.BEEHIVES).build()).smokey(true),
-					ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE)
+					ItemPredicate.Builder.create().items(Items.GLASS_BOTTLE)
 				)
 			)
 			.display(
@@ -320,9 +320,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion(
 				"wax_on",
 				ItemUsedOnBlockCriterion.Conditions.create(
-					LocationPredicate.Builder.create()
-						.block(BlockPredicate.Builder.create().method_37214(((BiMap)HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get()).keySet()).build()),
-					ItemPredicate.Builder.create().item(Items.HONEYCOMB)
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(((BiMap)HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get()).keySet()).build()),
+					ItemPredicate.Builder.create().items(Items.HONEYCOMB)
 				)
 			)
 			.build(consumer, "husbandry/wax_on");
@@ -341,9 +340,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion(
 				"wax_off",
 				ItemUsedOnBlockCriterion.Conditions.create(
-					LocationPredicate.Builder.create()
-						.block(BlockPredicate.Builder.create().method_37214(((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).keySet()).build()),
-					ItemPredicate.Builder.create().item(field_33964)
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).keySet()).build()),
+					ItemPredicate.Builder.create().items(field_33964)
 				)
 			)
 			.build(consumer, "husbandry/wax_off");
@@ -384,7 +382,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				"ride_a_boat_with_a_goat",
 				StartedRidingCriterion.Conditions.create(
 					EntityPredicate.Builder.create()
-						.vehicle(EntityPredicate.Builder.create().type(EntityType.BOAT).method_37229(EntityPredicate.Builder.create().type(EntityType.GOAT).build()).build())
+						.vehicle(EntityPredicate.Builder.create().type(EntityType.BOAT).passenger(EntityPredicate.Builder.create().type(EntityType.GOAT).build()).build())
 				)
 			)
 			.build(consumer, "husbandry/ride_a_boat_with_a_goat");
@@ -404,7 +402,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				"make_a_sign_glow",
 				ItemUsedOnBlockCriterion.Conditions.create(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.SIGNS).build()),
-					ItemPredicate.Builder.create().item(Items.GLOW_INK_SAC)
+					ItemPredicate.Builder.create().items(Items.GLOW_INK_SAC)
 				)
 			)
 			.build(consumer, "husbandry/make_a_sign_glow");
@@ -434,7 +432,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 
 	private Advancement.Task requireListedFishBucketsFilled(Advancement.Task task) {
 		for (Item item : FISH_BUCKET_ITEMS) {
-			task.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().item(item).build()));
+			task.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(item).build()));
 		}
 
 		return task;
@@ -444,7 +442,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		for (Item item : FISH_ITEMS) {
 			task.criterion(
 				Registry.ITEM.getId(item).getPath(),
-				FishingRodHookedCriterion.Conditions.create(ItemPredicate.ANY, EntityPredicate.ANY, ItemPredicate.Builder.create().item(item).build())
+				FishingRodHookedCriterion.Conditions.create(ItemPredicate.ANY, EntityPredicate.ANY, ItemPredicate.Builder.create().items(item).build())
 			);
 		}
 

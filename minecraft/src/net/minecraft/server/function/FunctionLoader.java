@@ -30,11 +30,27 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * The function loader holds the functions and function tags for a {@link
+ * CommandFunctionManager} to use. In the reloads, it loads the tags in one
+ * completable future and each function in a completable future for all functions.
+ * 
+ * <p>The functions are stored in {@code .mcfunction} files; each line is one
+ * Minecraft command, with blank lines and contents starting with a trailing hash
+ * {@code #} sign ignored.
+ * 
+ * <p>The function tags are ordered, unlike other tags. Each function's order in
+ * the collection of functions from the tag is determined by the order it is listed
+ * in the JSON files; if it appears multiple times through tag nesting, only its
+ * first appearance will be considered.
+ * 
+ * @see CommandFunctionManager
+ */
 public class FunctionLoader implements ResourceReloader {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String PATH_SUFFIX = ".mcfunction";
+	private static final String EXTENSION = ".mcfunction";
 	private static final int PATH_PREFIX_LENGTH = "functions/".length();
-	private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
+	private static final int EXTENSION_LENGTH = ".mcfunction".length();
 	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
 	private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader<>(this::get, "tags/functions");
 	private volatile TagGroup<CommandFunction> tags = TagGroup.createEmpty();
@@ -53,7 +69,7 @@ public class FunctionLoader implements ResourceReloader {
 		return this.tags;
 	}
 
-	public Tag<CommandFunction> getOrCreateTag(Identifier id) {
+	public Tag<CommandFunction> getTagOrEmpty(Identifier id) {
 		return this.tags.getTagOrEmpty(id);
 	}
 
@@ -84,7 +100,7 @@ public class FunctionLoader implements ResourceReloader {
 
 					for (Identifier identifier : ids) {
 						String string = identifier.getPath();
-						Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - PATH_SUFFIX_LENGTH));
+						Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
 						map.put(identifier2, CompletableFuture.supplyAsync(() -> {
 							List<String> list = readLines(manager, identifier);
 							return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);
@@ -92,23 +108,23 @@ public class FunctionLoader implements ResourceReloader {
 					}
 
 					CompletableFuture<?>[] completableFutures = (CompletableFuture<?>[])map.values().toArray(new CompletableFuture[0]);
-					return CompletableFuture.allOf(completableFutures).handle((void_, throwable) -> map);
+					return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map);
 				}
 			);
-		return completableFuture.thenCombine(completableFuture2, Pair::of).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(pair -> {
-			Map<Identifier, CompletableFuture<CommandFunction>> map = (Map<Identifier, CompletableFuture<CommandFunction>>)pair.getSecond();
+		return completableFuture.thenCombine(completableFuture2, Pair::of).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(intermediate -> {
+			Map<Identifier, CompletableFuture<CommandFunction>> map = (Map<Identifier, CompletableFuture<CommandFunction>>)intermediate.getSecond();
 			Builder<Identifier, CommandFunction> builder = ImmutableMap.builder();
-			map.forEach((identifier, completableFuturex) -> completableFuturex.handle((commandFunction, throwable) -> {
-					if (throwable != null) {
-						LOGGER.error("Failed to load function {}", identifier, throwable);
+			map.forEach((id, functionFuture) -> functionFuture.handle((function, ex) -> {
+					if (ex != null) {
+						LOGGER.error("Failed to load function {}", id, ex);
 					} else {
-						builder.put(identifier, commandFunction);
+						builder.put(id, function);
 					}
 
 					return null;
 				}).join());
 			this.functions = builder.build();
-			this.tags = this.tagLoader.buildGroup((Map<Identifier, Tag.Builder>)pair.getFirst());
+			this.tags = this.tagLoader.buildGroup((Map<Identifier, Tag.Builder>)intermediate.getFirst());
 		}, applyExecutor);
 	}
 

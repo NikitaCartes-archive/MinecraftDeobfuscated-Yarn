@@ -1032,10 +1032,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		boolean bl2 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		if (this.client.options.viewDistance >= 4) {
-			BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2);
 			profiler.swap("sky");
 			RenderSystem.setShader(GameRenderer::getPositionShader);
-			this.renderSky(matrices, matrix4f, tickDelta);
+			this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2));
 		}
 
 		profiler.swap("fog");
@@ -1716,7 +1715,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		RenderSystem.disableBlend();
 	}
 
-	public void renderSky(MatrixStack matrices, Matrix4f matrix4f, float f) {
+	public void renderSky(MatrixStack matrices, Matrix4f matrix4f, float f, Runnable runnable) {
+		runnable.run();
 		if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.END) {
 			this.renderEndSky(matrices);
 		} else if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.NORMAL) {
@@ -1801,7 +1801,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			float v = this.world.method_23787(f) * j;
 			if (v > 0.0F) {
 				RenderSystem.setShaderColor(v, v, v, v);
+				BackgroundRenderer.method_23792();
 				this.starsBuffer.setShader(matrices.peek().getModel(), matrix4f, GameRenderer.getPositionShader());
+				runnable.run();
 			}
 
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

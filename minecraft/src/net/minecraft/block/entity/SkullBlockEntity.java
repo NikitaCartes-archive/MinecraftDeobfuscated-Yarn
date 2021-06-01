@@ -93,38 +93,38 @@ public class SkullBlockEntity extends BlockEntity {
 		return this.writeNbt(new NbtCompound());
 	}
 
-	public void setOwner(@Nullable GameProfile gameProfile) {
+	public void setOwner(@Nullable GameProfile owner) {
 		synchronized (this) {
-			this.owner = gameProfile;
+			this.owner = owner;
 		}
 
 		this.loadOwnerProperties();
 	}
 
 	private void loadOwnerProperties() {
-		loadProperties(this.owner, gameProfile -> {
-			this.owner = gameProfile;
+		loadProperties(this.owner, owner -> {
+			this.owner = owner;
 			this.markDirty();
 		});
 	}
 
-	public static void loadProperties(@Nullable GameProfile gameProfile, Consumer<GameProfile> consumer) {
-		if (gameProfile != null
-			&& !ChatUtil.isEmpty(gameProfile.getName())
-			&& (!gameProfile.isComplete() || !gameProfile.getProperties().containsKey("textures"))
+	public static void loadProperties(@Nullable GameProfile owner, Consumer<GameProfile> callback) {
+		if (owner != null
+			&& !ChatUtil.isEmpty(owner.getName())
+			&& (!owner.isComplete() || !owner.getProperties().containsKey("textures"))
 			&& userCache != null
 			&& sessionService != null) {
-			userCache.method_37156(gameProfile.getName(), gameProfilex -> {
-				Property property = Iterables.getFirst(gameProfilex.getProperties().get("textures"), null);
+			userCache.method_37156(owner.getName(), gameProfile -> {
+				Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
 				if (property == null) {
-					gameProfilex = sessionService.fillProfileProperties(gameProfilex, true);
+					gameProfile = sessionService.fillProfileProperties(gameProfile, true);
 				}
 
-				userCache.add(gameProfilex);
-				consumer.accept(gameProfilex);
+				userCache.add(gameProfile);
+				callback.accept(gameProfile);
 			});
 		} else {
-			consumer.accept(gameProfile);
+			callback.accept(owner);
 		}
 	}
 }

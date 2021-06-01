@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.server.dedicated.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.function.Consumer;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.util.profiler.ProfilerDumper;
 import net.minecraft.entity.ai.Durations;
 import net.minecraft.server.MinecraftServer;
@@ -24,13 +25,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class class_6413 {
-	private static final Logger field_33985 = LogManager.getLogger();
-	private static final SimpleCommandExceptionType field_33986 = new SimpleCommandExceptionType(new TranslatableText("commands.perf.notRunning"));
-	private static final SimpleCommandExceptionType field_33987 = new SimpleCommandExceptionType(new TranslatableText("commands.perf.alreadyRunning"));
+public class PerfCommand {
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.perf.notRunning"));
+	private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableText("commands.perf.alreadyRunning")
+	);
 
-	public static void method_37331(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("perf")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 				.then(CommandManager.literal("start").executes(commandContext -> method_37333(commandContext.getSource())))
@@ -38,23 +41,23 @@ public class class_6413 {
 		);
 	}
 
-	private static int method_37333(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-		if (minecraftServer.method_37321()) {
-			throw field_33987.create();
+	private static int method_37333(ServerCommandSource source) throws CommandSyntaxException {
+		MinecraftServer minecraftServer = source.getMinecraftServer();
+		if (minecraftServer.isRunningMonitor()) {
+			throw ALREADY_RUNNING_EXCEPTION.create();
 		} else {
-			Consumer<ProfileResult> consumer = profileResult -> method_37334(serverCommandSource, profileResult);
-			Consumer<Path> consumer2 = path -> method_37335(serverCommandSource, path, minecraftServer);
+			Consumer<ProfileResult> consumer = profileResult -> method_37334(source, profileResult);
+			Consumer<Path> consumer2 = path -> method_37335(source, path, minecraftServer);
 			minecraftServer.method_37320(consumer, consumer2);
-			serverCommandSource.sendFeedback(new TranslatableText("commands.perf.started"), false);
+			source.sendFeedback(new TranslatableText("commands.perf.started"), false);
 			return 0;
 		}
 	}
 
 	private static int method_37338(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-		if (!minecraftServer.method_37321()) {
-			throw field_33986.create();
+		if (!minecraftServer.isRunningMonitor()) {
+			throw NOT_RUNNING_EXCEPTION.create();
 		} else {
 			minecraftServer.method_37323();
 			return 0;
@@ -74,7 +77,7 @@ public class class_6413 {
 			string2 = FileNameUtil.getNextUniqueName(ProfilerDumper.DEBUG_PROFILING_DIRECTORY, string, ".zip");
 		} catch (IOException var11) {
 			serverCommandSource.sendError(new TranslatableText("commands.perf.reportFailed"));
-			field_33985.error(var11);
+			LOGGER.error(var11);
 			return;
 		}
 
@@ -98,7 +101,7 @@ public class class_6413 {
 		try {
 			FileUtils.forceDelete(path.toFile());
 		} catch (IOException var9) {
-			field_33985.warn("Failed to delete temporary profiling file {}", path, var9);
+			LOGGER.warn("Failed to delete temporary profiling file {}", path, var9);
 		}
 
 		serverCommandSource.sendFeedback(new TranslatableText("commands.perf.reportSaved", string2), false);

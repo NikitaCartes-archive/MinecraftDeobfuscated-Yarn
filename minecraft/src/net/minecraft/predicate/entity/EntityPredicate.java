@@ -6,7 +6,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_6404;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -39,23 +38,23 @@ public class EntityPredicate {
 		EntityEquipmentPredicate.ANY,
 		PlayerPredicate.ANY,
 		FishingHookPredicate.ANY,
-		class_6404.field_33920,
+		LightningBoltPredicate.ANY,
 		null,
 		null
 	);
 	private final EntityTypePredicate type;
 	private final DistancePredicate distance;
 	private final LocationPredicate location;
-	private final LocationPredicate field_33912;
+	private final LocationPredicate steppingOn;
 	private final EntityEffectPredicate effects;
 	private final NbtPredicate nbt;
 	private final EntityFlagsPredicate flags;
 	private final EntityEquipmentPredicate equipment;
 	private final PlayerPredicate player;
 	private final FishingHookPredicate fishingHook;
-	private final class_6404 field_33913;
+	private final LightningBoltPredicate lightningBolt;
 	private final EntityPredicate vehicle;
-	private final EntityPredicate field_33914;
+	private final EntityPredicate passenger;
 	private final EntityPredicate targetedEntity;
 	@Nullable
 	private final String team;
@@ -66,69 +65,69 @@ public class EntityPredicate {
 		EntityTypePredicate type,
 		DistancePredicate distance,
 		LocationPredicate location,
-		LocationPredicate locationPredicate,
-		EntityEffectPredicate entityEffectPredicate,
-		NbtPredicate nbtPredicate,
-		EntityFlagsPredicate entityFlagsPredicate,
-		EntityEquipmentPredicate entityEquipmentPredicate,
-		PlayerPredicate playerPredicate,
-		FishingHookPredicate fishingHookPredicate,
-		class_6404 arg,
-		@Nullable String string,
-		@Nullable Identifier identifier
+		LocationPredicate steppingOn,
+		EntityEffectPredicate effects,
+		NbtPredicate nbt,
+		EntityFlagsPredicate flags,
+		EntityEquipmentPredicate equipment,
+		PlayerPredicate player,
+		FishingHookPredicate fishingHook,
+		LightningBoltPredicate lightningBolt,
+		@Nullable String team,
+		@Nullable Identifier catType
 	) {
 		this.type = type;
 		this.distance = distance;
 		this.location = location;
-		this.field_33912 = locationPredicate;
-		this.effects = entityEffectPredicate;
-		this.nbt = nbtPredicate;
-		this.flags = entityFlagsPredicate;
-		this.equipment = entityEquipmentPredicate;
-		this.player = playerPredicate;
-		this.fishingHook = fishingHookPredicate;
-		this.field_33913 = arg;
-		this.field_33914 = this;
+		this.steppingOn = steppingOn;
+		this.effects = effects;
+		this.nbt = nbt;
+		this.flags = flags;
+		this.equipment = equipment;
+		this.player = player;
+		this.fishingHook = fishingHook;
+		this.lightningBolt = lightningBolt;
+		this.passenger = this;
 		this.vehicle = this;
 		this.targetedEntity = this;
-		this.team = string;
-		this.catType = identifier;
+		this.team = team;
+		this.catType = catType;
 	}
 
 	EntityPredicate(
 		EntityTypePredicate type,
 		DistancePredicate distance,
 		LocationPredicate location,
-		LocationPredicate locationPredicate,
-		EntityEffectPredicate entityEffectPredicate,
-		NbtPredicate nbtPredicate,
-		EntityFlagsPredicate entityFlagsPredicate,
-		EntityEquipmentPredicate entityEquipmentPredicate,
-		PlayerPredicate playerPredicate,
-		FishingHookPredicate fishingHookPredicate,
-		class_6404 arg,
+		LocationPredicate steppingOn,
+		EntityEffectPredicate effects,
+		NbtPredicate nbt,
+		EntityFlagsPredicate flags,
+		EntityEquipmentPredicate equipment,
+		PlayerPredicate player,
+		FishingHookPredicate fishingHook,
+		LightningBoltPredicate lightningBoltPredicate,
+		EntityPredicate vehicle,
 		EntityPredicate entityPredicate,
-		EntityPredicate entityPredicate2,
-		EntityPredicate entityPredicate3,
-		@Nullable String string,
-		@Nullable Identifier identifier
+		EntityPredicate targetedEntity,
+		@Nullable String team,
+		@Nullable Identifier catType
 	) {
 		this.type = type;
 		this.distance = distance;
 		this.location = location;
-		this.field_33912 = locationPredicate;
-		this.effects = entityEffectPredicate;
-		this.nbt = nbtPredicate;
-		this.flags = entityFlagsPredicate;
-		this.equipment = entityEquipmentPredicate;
-		this.player = playerPredicate;
-		this.fishingHook = fishingHookPredicate;
-		this.field_33913 = arg;
-		this.vehicle = entityPredicate;
-		this.field_33914 = entityPredicate2;
-		this.targetedEntity = entityPredicate3;
-		this.team = string;
-		this.catType = identifier;
+		this.steppingOn = steppingOn;
+		this.effects = effects;
+		this.nbt = nbt;
+		this.flags = flags;
+		this.equipment = equipment;
+		this.player = player;
+		this.fishingHook = fishingHook;
+		this.lightningBolt = lightningBoltPredicate;
+		this.vehicle = vehicle;
+		this.passenger = entityPredicate;
+		this.targetedEntity = targetedEntity;
+		this.team = team;
+		this.catType = catType;
 	}
 
 	public boolean test(ServerPlayerEntity player, @Nullable Entity entity) {
@@ -154,9 +153,9 @@ public class EntityPredicate {
 			if (!this.location.test(world, entity.getX(), entity.getY(), entity.getZ())) {
 				return false;
 			} else {
-				if (this.field_33912 != LocationPredicate.ANY) {
+				if (this.steppingOn != LocationPredicate.ANY) {
 					Vec3d vec3d = Vec3d.ofCenter(entity.getLandingPos());
-					if (!this.field_33912.test(world, vec3d.getX(), vec3d.getY(), vec3d.getZ())) {
+					if (!this.steppingOn.test(world, vec3d.getX(), vec3d.getY(), vec3d.getZ())) {
 						return false;
 					}
 				}
@@ -173,11 +172,11 @@ public class EntityPredicate {
 					return false;
 				} else if (!this.fishingHook.test(entity)) {
 					return false;
-				} else if (!this.field_33913.method_37236(entity, world, pos)) {
+				} else if (!this.lightningBolt.test(entity, world, pos)) {
 					return false;
 				} else if (!this.vehicle.test(world, pos, entity.getVehicle())) {
 					return false;
-				} else if (this.field_33914 != ANY && entity.getPassengerList().stream().noneMatch(entityx -> this.field_33914.test(world, pos, entityx))) {
+				} else if (this.passenger != ANY && entity.getPassengerList().stream().noneMatch(entityx -> this.passenger.test(world, pos, entityx))) {
 					return false;
 				} else if (!this.targetedEntity.test(world, pos, entity instanceof MobEntity ? ((MobEntity)entity).getTarget() : null)) {
 					return false;
@@ -211,24 +210,24 @@ public class EntityPredicate {
 			EntityPredicate entityPredicate = fromJson(jsonObject.get("vehicle"));
 			EntityPredicate entityPredicate2 = fromJson(jsonObject.get("passenger"));
 			EntityPredicate entityPredicate3 = fromJson(jsonObject.get("targeted_entity"));
-			class_6404 lv = class_6404.method_37238(jsonObject.get("lightning_bolt"));
+			LightningBoltPredicate lightningBoltPredicate = LightningBoltPredicate.fromJson(jsonObject.get("lightning_bolt"));
 			String string = JsonHelper.getString(jsonObject, "team", null);
 			Identifier identifier = jsonObject.has("catType") ? new Identifier(JsonHelper.getString(jsonObject, "catType")) : null;
 			return new EntityPredicate.Builder()
 				.type(entityTypePredicate)
 				.distance(distancePredicate)
 				.location(locationPredicate)
-				.method_37230(locationPredicate2)
+				.steppingOn(locationPredicate2)
 				.effects(entityEffectPredicate)
 				.nbt(nbtPredicate)
 				.flags(entityFlagsPredicate)
 				.equipment(entityEquipmentPredicate)
 				.player(playerPredicate)
 				.fishHook(fishingHookPredicate)
-				.method_37228(lv)
+				.lightningBolt(lightningBoltPredicate)
 				.team(string)
 				.vehicle(entityPredicate)
-				.method_37229(entityPredicate2)
+				.passenger(entityPredicate2)
 				.targetedEntity(entityPredicate3)
 				.catType(identifier)
 				.build();
@@ -245,16 +244,16 @@ public class EntityPredicate {
 			jsonObject.add("type", this.type.toJson());
 			jsonObject.add("distance", this.distance.toJson());
 			jsonObject.add("location", this.location.toJson());
-			jsonObject.add("stepping_on", this.field_33912.toJson());
+			jsonObject.add("stepping_on", this.steppingOn.toJson());
 			jsonObject.add("effects", this.effects.toJson());
 			jsonObject.add("nbt", this.nbt.toJson());
 			jsonObject.add("flags", this.flags.toJson());
 			jsonObject.add("equipment", this.equipment.toJson());
 			jsonObject.add("player", this.player.toJson());
 			jsonObject.add("fishing_hook", this.fishingHook.toJson());
-			jsonObject.add("lightning_bolt", this.field_33913.method_37234());
+			jsonObject.add("lightning_bolt", this.lightningBolt.toJson());
 			jsonObject.add("vehicle", this.vehicle.toJson());
-			jsonObject.add("passenger", this.field_33914.toJson());
+			jsonObject.add("passenger", this.passenger.toJson());
 			jsonObject.add("targeted_entity", this.targetedEntity.toJson());
 			jsonObject.addProperty("team", this.team);
 			if (this.catType != null) {
@@ -277,16 +276,16 @@ public class EntityPredicate {
 		private EntityTypePredicate type = EntityTypePredicate.ANY;
 		private DistancePredicate distance = DistancePredicate.ANY;
 		private LocationPredicate location = LocationPredicate.ANY;
-		private LocationPredicate field_33915 = LocationPredicate.ANY;
+		private LocationPredicate steppingOn = LocationPredicate.ANY;
 		private EntityEffectPredicate effects = EntityEffectPredicate.EMPTY;
 		private NbtPredicate nbt = NbtPredicate.ANY;
 		private EntityFlagsPredicate flags = EntityFlagsPredicate.ANY;
 		private EntityEquipmentPredicate equipment = EntityEquipmentPredicate.ANY;
 		private PlayerPredicate player = PlayerPredicate.ANY;
 		private FishingHookPredicate fishHook = FishingHookPredicate.ANY;
-		private class_6404 field_33916 = class_6404.field_33920;
+		private LightningBoltPredicate lightningBolt = LightningBoltPredicate.ANY;
 		private EntityPredicate vehicle = EntityPredicate.ANY;
-		private EntityPredicate field_33917 = EntityPredicate.ANY;
+		private EntityPredicate passenger = EntityPredicate.ANY;
 		private EntityPredicate targetedEntity = EntityPredicate.ANY;
 		private String team;
 		private Identifier catType;
@@ -325,8 +324,8 @@ public class EntityPredicate {
 			return this;
 		}
 
-		public EntityPredicate.Builder method_37230(LocationPredicate locationPredicate) {
-			this.field_33915 = locationPredicate;
+		public EntityPredicate.Builder steppingOn(LocationPredicate location) {
+			this.steppingOn = location;
 			return this;
 		}
 
@@ -360,8 +359,8 @@ public class EntityPredicate {
 			return this;
 		}
 
-		public EntityPredicate.Builder method_37228(class_6404 arg) {
-			this.field_33916 = arg;
+		public EntityPredicate.Builder lightningBolt(LightningBoltPredicate lightningBolt) {
+			this.lightningBolt = lightningBolt;
 			return this;
 		}
 
@@ -370,8 +369,8 @@ public class EntityPredicate {
 			return this;
 		}
 
-		public EntityPredicate.Builder method_37229(EntityPredicate entityPredicate) {
-			this.field_33917 = entityPredicate;
+		public EntityPredicate.Builder passenger(EntityPredicate passenger) {
+			this.passenger = passenger;
 			return this;
 		}
 
@@ -395,16 +394,16 @@ public class EntityPredicate {
 				this.type,
 				this.distance,
 				this.location,
-				this.field_33915,
+				this.steppingOn,
 				this.effects,
 				this.nbt,
 				this.flags,
 				this.equipment,
 				this.player,
 				this.fishHook,
-				this.field_33916,
+				this.lightningBolt,
 				this.vehicle,
-				this.field_33917,
+				this.passenger,
 				this.targetedEntity,
 				this.team,
 				this.catType

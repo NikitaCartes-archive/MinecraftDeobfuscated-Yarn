@@ -930,7 +930,7 @@ public class Blocks {
 				.noCollision()
 				.strength(0.2F)
 				.sounds(BlockSoundGroup.GLOW_LICHEN)
-				.luminance(state -> 7)
+				.luminance(GlowLichenBlock.method_37364(7))
 		)
 	);
 	public static final Block OAK_FENCE_GATE = register(
@@ -2307,7 +2307,7 @@ public class Blocks {
 		"blue_ice", new TransparentBlock(AbstractBlock.Settings.of(Material.DENSE_ICE).strength(2.8F).slipperiness(0.989F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block CONDUIT = register(
-		"conduit", new ConduitBlock(AbstractBlock.Settings.of(Material.GLASS, MapColor.DIAMOND_BLUE).strength(3.0F).luminance(state -> 15).nonOpaque())
+		"conduit", new ConduitBlock(AbstractBlock.Settings.of(Material.GLASS, MapColor.DIAMOND_BLUE).strength(3.0F).luminance(blockStatex -> 15).nonOpaque())
 	);
 	public static final Block BAMBOO_SAPLING = register(
 		"bamboo_sapling",
@@ -2512,7 +2512,7 @@ public class Blocks {
 	);
 	public static final Block SHROOMLIGHT = register(
 		"shroomlight",
-		new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.RED).strength(1.0F).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(state -> 15))
+		new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.RED).strength(1.0F).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(blockStatex -> 15))
 	);
 	public static final Block WEEPING_VINES = register(
 		"weeping_vines",
@@ -2986,11 +2986,11 @@ public class Blocks {
 	);
 	public static final Block LARGE_AMETHYST_BUD = register(
 		"large_amethyst_bud",
-		new AmethystClusterBlock(5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(blockStatex -> 4))
+		new AmethystClusterBlock(5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(state -> 4))
 	);
 	public static final Block MEDIUM_AMETHYST_BUD = register(
 		"medium_amethyst_bud",
-		new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(blockStatex -> 2))
+		new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(state -> 2))
 	);
 	public static final Block SMALL_AMETHYST_BUD = register(
 		"small_amethyst_bud",
@@ -3160,7 +3160,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.PLANT)
 				.ticksRandomly()
 				.noCollision()
-				.luminance(createLightLevelFromBerriesBlockState(14))
+				.luminance(CaveVines.method_37362(14))
 				.breakInstantly()
 				.sounds(BlockSoundGroup.CAVE_VINES)
 		)
@@ -3168,11 +3168,7 @@ public class Blocks {
 	public static final Block CAVE_VINES_PLANT = register(
 		"cave_vines_plant",
 		new CaveVinesBodyBlock(
-			AbstractBlock.Settings.of(Material.PLANT)
-				.noCollision()
-				.luminance(createLightLevelFromBerriesBlockState(14))
-				.breakInstantly()
-				.sounds(BlockSoundGroup.CAVE_VINES)
+			AbstractBlock.Settings.of(Material.PLANT).noCollision().luminance(CaveVines.method_37362(14)).breakInstantly().sounds(BlockSoundGroup.CAVE_VINES)
 		)
 	);
 	public static final Block SPORE_BLOSSOM = register(
@@ -3270,10 +3266,6 @@ public class Blocks {
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;
-	}
-
-	private static ToIntFunction<BlockState> createLightLevelFromBerriesBlockState(int berriesLevel) {
-		return state -> state.get(Properties.BERRIES) ? berriesLevel : 0;
 	}
 
 	/**

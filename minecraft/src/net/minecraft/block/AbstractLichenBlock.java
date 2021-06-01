@@ -142,9 +142,9 @@ public class AbstractLichenBlock extends Block {
 
 				blockState = state;
 			} else if (this.isWaterlogged() && state.getFluidState().isEqualAndStill(Fluids.WATER)) {
-				blockState = withNoDirections(this).with(Properties.WATERLOGGED, Boolean.valueOf(true));
+				blockState = this.getDefaultState().with(Properties.WATERLOGGED, Boolean.valueOf(true));
 			} else {
-				blockState = withNoDirections(this);
+				blockState = this.getDefaultState();
 			}
 
 			BlockPos blockPos = pos.offset(direction);
@@ -184,17 +184,17 @@ public class AbstractLichenBlock extends Block {
 		return list.stream().filter(from -> hasDirection(state, from)).anyMatch(to -> this.trySpreadRandomly(state, world, pos, to, random, false));
 	}
 
-	public boolean trySpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random, boolean bl) {
+	public boolean trySpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random, boolean postProcess) {
 		List<Direction> list = Arrays.asList(DIRECTIONS);
 		Collections.shuffle(list, random);
-		return list.stream().anyMatch(direction2 -> this.trySpreadTo(state, world, pos, from, direction2, bl));
+		return list.stream().anyMatch(direction2 -> this.trySpreadTo(state, world, pos, from, direction2, postProcess));
 	}
 
-	public boolean trySpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to, boolean bl) {
+	public boolean trySpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to, boolean postProcess) {
 		Optional<Pair<BlockPos, Direction>> optional = this.getSpreadLocation(state, world, pos, from, to);
 		if (optional.isPresent()) {
 			Pair<BlockPos, Direction> pair = (Pair<BlockPos, Direction>)optional.get();
-			return this.addDirection(world, pair.getFirst(), pair.getSecond(), bl);
+			return this.addDirection(world, pair.getFirst(), pair.getSecond(), postProcess);
 		} else {
 			return false;
 		}
@@ -231,11 +231,11 @@ public class AbstractLichenBlock extends Block {
 		}
 	}
 
-	private boolean addDirection(WorldAccess world, BlockPos pos, Direction direction, boolean bl) {
+	private boolean addDirection(WorldAccess world, BlockPos pos, Direction direction, boolean postProcess) {
 		BlockState blockState = world.getBlockState(pos);
 		BlockState blockState2 = this.withDirection(blockState, world, pos, direction);
 		if (blockState2 != null) {
-			if (bl) {
+			if (postProcess) {
 				world.getChunk(pos).markBlockForPostProcessing(pos);
 			}
 
@@ -271,22 +271,16 @@ public class AbstractLichenBlock extends Block {
 		return (BooleanProperty)FACING_PROPERTIES.get(direction);
 	}
 
-	public static BlockState withNoDirections(Block block) {
-		return withAllDirectionsSet(block.getDefaultState(), false);
-	}
-
 	private static BlockState withAllDirections(StateManager<Block, BlockState> stateManager) {
-		return withAllDirectionsSet(stateManager.getDefaultState(), true);
-	}
+		BlockState blockState = stateManager.getDefaultState();
 
-	private static BlockState withAllDirectionsSet(BlockState state, boolean facing) {
 		for (BooleanProperty booleanProperty : FACING_PROPERTIES.values()) {
-			if (state.contains(booleanProperty)) {
-				state = state.with(booleanProperty, Boolean.valueOf(facing));
+			if (blockState.contains(booleanProperty)) {
+				blockState = blockState.with(booleanProperty, Boolean.valueOf(false));
 			}
 		}
 
-		return state;
+		return blockState;
 	}
 
 	private static VoxelShape getShapeForState(BlockState state) {
@@ -298,10 +292,10 @@ public class AbstractLichenBlock extends Block {
 			}
 		}
 
-		return voxelShape;
+		return voxelShape.isEmpty() ? VoxelShapes.fullCube() : voxelShape;
 	}
 
-	private static boolean hasAnyDirection(BlockState state) {
+	protected static boolean hasAnyDirection(BlockState state) {
 		return Arrays.stream(DIRECTIONS).anyMatch(direction -> hasDirection(state, direction));
 	}
 

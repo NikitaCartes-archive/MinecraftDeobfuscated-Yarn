@@ -82,7 +82,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		int l = treeFeatureConfig.foliagePlacer.getRandomRadius(random, k);
 		if (pos.getY() < world.getBottomY() + 1 || pos.getY() + i + 1 > world.getTopY()) {
 			return false;
-		} else if (!treeFeatureConfig.field_33933.getBlockState(random, pos).canPlaceAt(world, pos)) {
+		} else if (!treeFeatureConfig.saplingProvider.getBlockState(random, pos).canPlaceAt(world, pos)) {
 			return false;
 		} else {
 			OptionalInt optionalInt = treeFeatureConfig.minimumSize.getMinClippedHeight();

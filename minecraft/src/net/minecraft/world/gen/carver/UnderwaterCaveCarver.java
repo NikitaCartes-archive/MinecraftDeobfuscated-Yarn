@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -53,8 +54,6 @@ public class UnderwaterCaveCarver extends CaveCarver {
 			Blocks.WATER,
 			Blocks.LAVA,
 			Blocks.OBSIDIAN,
-			Blocks.AIR,
-			Blocks.CAVE_AIR,
 			Blocks.PACKED_ICE
 		);
 	}
@@ -100,22 +99,16 @@ public class UnderwaterCaveCarver extends CaveCarver {
 				chunk.setBlockState(pos, Blocks.LAVA.getDefaultState(), false);
 				return false;
 			} else {
+				chunk.setBlockState(pos, WATER.getBlockState(), false);
 				int i = chunk.getPos().x;
 				int j = chunk.getPos().z;
-				boolean bl = false;
 
-				for (Direction direction : Direction.Type.HORIZONTAL) {
+				for (Direction direction : FluidBlock.field_34006) {
 					downPos.set(pos, direction);
 					if (ChunkSectionPos.getSectionCoord(downPos.getX()) != i || ChunkSectionPos.getSectionCoord(downPos.getZ()) != j || chunk.getBlockState(downPos).isAir()) {
-						chunk.setBlockState(downPos, WATER.getBlockState(), false);
-						chunk.getFluidTickScheduler().schedule(downPos, WATER.getFluid(), 0);
-						bl = true;
+						chunk.getFluidTickScheduler().schedule(pos, WATER.getFluid(), 0);
 						break;
 					}
-				}
-
-				if (!bl) {
-					chunk.setBlockState(pos, WATER.getBlockState(), false);
 				}
 
 				return true;

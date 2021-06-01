@@ -450,31 +450,20 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		if (requiredStatus == ChunkStatus.EMPTY) {
 			return this.loadChunk(chunkPos);
 		} else {
-			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = holder.getChunkAt(requiredStatus.getPrevious(), this);
-			return completableFuture.thenComposeAsync(
-				either -> {
-					Optional<Chunk> optional = either.left();
-					if (!optional.isPresent()) {
-						return CompletableFuture.completedFuture(either);
-					} else {
-						if (requiredStatus == ChunkStatus.LIGHT) {
-							this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), chunkPos);
-						}
+			if (requiredStatus == ChunkStatus.LIGHT) {
+				this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), chunkPos);
+			}
 
-						Chunk chunk = (Chunk)optional.get();
-						if (chunk.getStatus().isAtLeast(requiredStatus)) {
-							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = requiredStatus.runLoadTask(
-								this.world, this.structureManager, this.serverLightingProvider, chunkx -> this.convertToFullChunk(holder), chunk
-							);
-							this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
-							return completableFuturex;
-						} else {
-							return this.upgradeChunk(holder, requiredStatus);
-						}
-					}
-				},
-				this.mainThreadExecutor
-			);
+			Optional<Chunk> optional = ((Either)holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
+			if (optional.isPresent() && ((Chunk)optional.get()).getStatus().isAtLeast(requiredStatus)) {
+				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(
+					this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(holder), (Chunk)optional.get()
+				);
+				this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
+				return completableFuture;
+			} else {
+				return this.upgradeChunk(holder, requiredStatus);
+			}
 		}
 	}
 

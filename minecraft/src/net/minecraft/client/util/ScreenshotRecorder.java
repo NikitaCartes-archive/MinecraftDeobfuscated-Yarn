@@ -25,11 +25,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * A screenshooter takes screenshots and saves them into tga file format. It also
+ * A screenshot recorder takes screenshots and saves them into tga file format. It also
  * holds a few utility methods for other types of screenshots.
  */
 @Environment(EnvType.CLIENT)
-public class Screenshooter {
+public class ScreenshotRecorder {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 	private int unitHeight;
@@ -110,11 +110,11 @@ public class Screenshooter {
 	}
 
 	/**
-	 * Creates a screenshooter for huge screenshots.
+	 * Creates a screenshot recorder for huge screenshots.
 	 * 
 	 * @see net.minecraft.client.MinecraftClient#takeHugeScreenshot
 	 */
-	public Screenshooter(File gameDirectory, int width, int height, int unitHeight) throws IOException {
+	public ScreenshotRecorder(File gameDirectory, int width, int height, int unitHeight) throws IOException {
 		this.width = width;
 		this.height = height;
 		this.unitHeight = unitHeight;

@@ -131,6 +131,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	private static final int MAX_AIR = 6000;
 	public static final String VARIANT_KEY = "Variant";
 	private static final int field_33485 = 1800;
+	private static final int field_34005 = 2400;
 	private final Map<String, Vec3f> modelAngles = Maps.<String, Vec3f>newHashMap();
 	private static final int BUFF_DURATION = 100;
 
@@ -304,6 +305,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 			}
 
 			axolotlEntity.setVariant(variant);
+			axolotlEntity.setPersistent();
 		}
 
 		return axolotlEntity;
@@ -459,11 +461,15 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		}
 	}
 
-	public void buffPlayer(PlayerEntity playerEntity) {
-		StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.REGENERATION);
-		int i = 100 + (statusEffectInstance != null ? statusEffectInstance.getDuration() : 0);
-		playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0), this);
-		playerEntity.removeStatusEffect(StatusEffects.MINING_FATIGUE);
+	public void buffPlayer(PlayerEntity player) {
+		StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.REGENERATION);
+		int i = statusEffectInstance != null ? statusEffectInstance.getDuration() : 0;
+		if (i < 2400) {
+			i = Math.min(2400, 100 + i);
+			player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0), this);
+		}
+
+		player.removeStatusEffect(StatusEffects.MINING_FATIGUE);
 	}
 
 	@Override

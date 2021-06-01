@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.function.ToIntFunction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
@@ -30,5 +31,9 @@ public interface CaveVines {
 
 	static boolean hasBerries(BlockState state) {
 		return state.contains(BERRIES) && (Boolean)state.get(BERRIES);
+	}
+
+	static ToIntFunction<BlockState> method_37362(int i) {
+		return blockState -> blockState.get(Properties.BERRIES) ? i : 0;
 	}
 }

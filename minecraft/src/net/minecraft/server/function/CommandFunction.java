@@ -74,6 +74,10 @@ public class CommandFunction {
 		return new CommandFunction(id, (CommandFunction.Element[])list.toArray(new CommandFunction.Element[0]));
 	}
 
+	/**
+	 * A standard element of a command function. Functions created by {@link
+	 * CommandFunction#create} will only contain these elements.
+	 */
 	public static class CommandElement implements CommandFunction.Element {
 		private final ParseResults<ServerCommandSource> parsed;
 
@@ -122,6 +126,11 @@ public class CommandFunction {
 		) throws CommandSyntaxException;
 	}
 
+	/**
+	 * A synthetic element to be stored in a {@link CommandFunctionManager.Entry}.
+	 * This is not present as parts of command functions, but created by {@link
+	 * CommandFunctionManager.Execution#recursiveRun}.
+	 */
 	public static class FunctionElement implements CommandFunction.Element {
 		private final CommandFunction.LazyContainer function;
 
@@ -138,10 +147,10 @@ public class CommandFunction {
 			int depth,
 			@Nullable CommandFunctionManager.Tracer tracer
 		) {
-			Util.ifPresentOrElse(this.function.get(manager), function -> {
-				CommandFunction.Element[] elements = function.getElements();
+			Util.ifPresentOrElse(this.function.get(manager), f -> {
+				CommandFunction.Element[] elements = f.getElements();
 				if (tracer != null) {
-					tracer.traceFunctionCall(depth, function.getId(), elements.length);
+					tracer.traceFunctionCall(depth, f.getId(), elements.length);
 				}
 
 				int k = maxChainLength - entries.size();
@@ -162,6 +171,12 @@ public class CommandFunction {
 		}
 	}
 
+	/**
+	 * A lazy reference to another command function that may or may not exist.
+	 * 
+	 * <p>Notice that such an instance does not refresh upon reloads and may become
+	 * invalid.
+	 */
 	public static class LazyContainer {
 		public static final CommandFunction.LazyContainer EMPTY = new CommandFunction.LazyContainer((Identifier)null);
 		@Nullable
@@ -193,7 +208,7 @@ public class CommandFunction {
 
 		@Nullable
 		public Identifier getId() {
-			return (Identifier)this.function.map(function -> function.id).orElse(this.id);
+			return (Identifier)this.function.map(f -> f.id).orElse(this.id);
 		}
 	}
 }

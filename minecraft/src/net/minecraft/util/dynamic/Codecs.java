@@ -1,5 +1,6 @@
 package net.minecraft.util.dynamic;
 
+import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A few extensions for {@link Codec} or {@link DynamicOps}.
@@ -58,6 +60,40 @@ public class Codecs {
 
 	public static <T> Codec<List<T>> method_36973(Codec<List<T>> codec) {
 		return codec.flatXmap(method_36240(), method_36240());
+	}
+
+	public static <T> Function<List<Supplier<T>>, DataResult<List<Supplier<T>>>> method_37351() {
+		return list -> {
+			List<String> list2 = Lists.<String>newArrayList();
+
+			for (int i = 0; i < list.size(); i++) {
+				Supplier<T> supplier = (Supplier<T>)list.get(i);
+
+				try {
+					if (supplier.get() == null) {
+						list2.add("Missing value [" + i + "] : " + supplier);
+					}
+				} catch (Exception var5) {
+					list2.add("Invalid value [" + i + "]: " + supplier + ", message: " + var5.getMessage());
+				}
+			}
+
+			return !list2.isEmpty() ? DataResult.error(String.join("; ", list2)) : DataResult.success(list);
+		};
+	}
+
+	public static <T> Function<Supplier<T>, DataResult<Supplier<T>>> method_37352() {
+		return supplier -> {
+			try {
+				if (supplier.get() == null) {
+					return DataResult.error("Missing value: " + supplier);
+				}
+			} catch (Exception var2) {
+				return DataResult.error("Invalid value: " + supplier + ", message: " + var2.getMessage());
+			}
+
+			return DataResult.success(supplier);
+		};
 	}
 
 	/**

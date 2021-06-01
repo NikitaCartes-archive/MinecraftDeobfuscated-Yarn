@@ -49,6 +49,7 @@ public class DamageSource {
 	private boolean magic;
 	private boolean explosive;
 	private boolean fromFalling;
+	private boolean field_34004;
 	public final String name;
 
 	public static DamageSource sting(LivingEntity attacker) {
@@ -198,6 +199,11 @@ public class DamageSource {
 		return this;
 	}
 
+	public DamageSource method_37353() {
+		this.field_34004 = true;
+		return this;
+	}
+
 	public Text getDeathMessage(LivingEntity entity) {
 		LivingEntity livingEntity = entity.getPrimeAdversary();
 		String string = "death.attack." + this.name;
@@ -209,6 +215,10 @@ public class DamageSource {
 
 	public boolean isFire() {
 		return this.fire;
+	}
+
+	public boolean method_37354() {
+		return this.field_34004;
 	}
 
 	public String getName() {

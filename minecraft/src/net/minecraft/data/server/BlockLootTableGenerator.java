@@ -91,7 +91,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1)))
 	);
 	private static final LootCondition.Builder WITHOUT_SILK_TOUCH = WITH_SILK_TOUCH.invert();
-	private static final LootCondition.Builder WITH_SHEARS = MatchToolLootCondition.builder(ItemPredicate.Builder.create().item(Items.SHEARS));
+	private static final LootCondition.Builder WITH_SHEARS = MatchToolLootCondition.builder(ItemPredicate.Builder.create().items(Items.SHEARS));
 	private static final LootCondition.Builder WITH_SILK_TOUCH_OR_SHEARS = WITH_SHEARS.or(WITH_SILK_TOUCH);
 	private static final LootCondition.Builder WITHOUT_SILK_TOUCH_NOR_SHEARS = WITH_SILK_TOUCH_OR_SHEARS.invert();
 	private static final Set<Item> EXPLOSION_IMMUNE = (Set<Item>)Stream.of(
@@ -555,7 +555,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							LocationPredicate.Builder.create()
 								.block(
 									BlockPredicate.Builder.create()
-										.block(tallGrass)
+										.blocks(tallGrass)
 										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER).build())
 										.build()
 								),
@@ -574,7 +574,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							LocationPredicate.Builder.create()
 								.block(
 									BlockPredicate.Builder.create()
-										.block(tallGrass)
+										.blocks(tallGrass)
 										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER).build())
 										.build()
 								),

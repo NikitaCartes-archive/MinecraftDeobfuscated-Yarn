@@ -211,7 +211,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private boolean field_33977;
 	@Nullable
 	private MinecraftServer.class_6414 field_33978;
-	private boolean field_33979;
+	private boolean profilerEnabled;
 	private final ServerNetworkIo networkIo;
 	private final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
 	private final ServerMetadata metadata = new ServerMetadata();
@@ -730,8 +730,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 						this.lastTimeReference = this.timeReference;
 					}
 
-					if (this.field_33979) {
-						this.field_33979 = false;
+					if (this.profilerEnabled) {
+						this.profilerEnabled = false;
 						this.field_33978 = new MinecraftServer.class_6414(Util.getMeasuringTimeNano(), this.ticks);
 					}
 
@@ -1441,7 +1441,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				serverResourceManager.loadRegistryTags();
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
-				this.commandFunctionManager.update(this.serverResourceManager.getFunctionLoader());
+				this.commandFunctionManager.setFunctions(this.serverResourceManager.getFunctionLoader());
 				this.structureManager.setResourceManager(this.serverResourceManager.getResourceManager());
 			}, this);
 		if (this.isOnThread()) {
@@ -1786,7 +1786,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.tickTimeTracker.read();
 	}
 
-	public boolean method_37321() {
+	public boolean isRunningMonitor() {
 		return this.tickTimeTracker.isActive();
 	}
 
@@ -1857,11 +1857,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public boolean isDebugRunning() {
-		return this.field_33979 || this.field_33978 != null;
+		return this.profilerEnabled || this.field_33978 != null;
 	}
 
 	public void enableProfiler() {
-		this.field_33979 = true;
+		this.profilerEnabled = true;
 	}
 
 	public ProfileResult stopDebug() {

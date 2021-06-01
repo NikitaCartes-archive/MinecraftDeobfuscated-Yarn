@@ -236,7 +236,39 @@ public class ChunkRegion implements StructureWorldAccess {
 		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
 		int k = Math.abs(this.centerPos.x - i);
 		int l = Math.abs(this.centerPos.z - j);
-		if (k > this.field_33755 || l > this.field_33755) {
+		if (k <= this.field_33755 && l <= this.field_33755) {
+			Chunk chunk = this.getChunk(i, j);
+			BlockState blockState = chunk.setBlockState(pos, state, false);
+			if (blockState != null) {
+				this.world.onBlockChanged(pos, blockState, state);
+			}
+
+			if (state.hasBlockEntity()) {
+				if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
+					BlockEntity blockEntity = ((BlockEntityProvider)state.getBlock()).createBlockEntity(pos, state);
+					if (blockEntity != null) {
+						chunk.setBlockEntity(blockEntity);
+					} else {
+						chunk.removeBlockEntity(pos);
+					}
+				} else {
+					NbtCompound nbtCompound = new NbtCompound();
+					nbtCompound.putInt("x", pos.getX());
+					nbtCompound.putInt("y", pos.getY());
+					nbtCompound.putInt("z", pos.getZ());
+					nbtCompound.putString("id", "DUMMY");
+					chunk.addPendingBlockEntityNbt(nbtCompound);
+				}
+			} else if (blockState != null && blockState.hasBlockEntity()) {
+				chunk.removeBlockEntity(pos);
+			}
+
+			if (state.shouldPostProcess(this, pos)) {
+				this.markBlockForPostProcessing(pos);
+			}
+
+			return true;
+		} else {
 			Util.error(
 				"Detected setBlock in a far chunk ["
 					+ i
@@ -246,39 +278,8 @@ public class ChunkRegion implements StructureWorldAccess {
 					+ this.field_33754
 					+ (this.field_33756 == null ? "" : ", currently generating: " + (String)this.field_33756.get())
 			);
+			return false;
 		}
-
-		Chunk chunk = this.getChunk(i, j);
-		BlockState blockState = chunk.setBlockState(pos, state, false);
-		if (blockState != null) {
-			this.world.onBlockChanged(pos, blockState, state);
-		}
-
-		if (state.hasBlockEntity()) {
-			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
-				BlockEntity blockEntity = ((BlockEntityProvider)state.getBlock()).createBlockEntity(pos, state);
-				if (blockEntity != null) {
-					chunk.setBlockEntity(blockEntity);
-				} else {
-					chunk.removeBlockEntity(pos);
-				}
-			} else {
-				NbtCompound nbtCompound = new NbtCompound();
-				nbtCompound.putInt("x", pos.getX());
-				nbtCompound.putInt("y", pos.getY());
-				nbtCompound.putInt("z", pos.getZ());
-				nbtCompound.putString("id", "DUMMY");
-				chunk.addPendingBlockEntityNbt(nbtCompound);
-			}
-		} else if (blockState != null && blockState.hasBlockEntity()) {
-			chunk.removeBlockEntity(pos);
-		}
-
-		if (state.shouldPostProcess(this, pos)) {
-			this.markBlockForPostProcessing(pos);
-		}
-
-		return true;
 	}
 
 	private void markBlockForPostProcessing(BlockPos pos) {

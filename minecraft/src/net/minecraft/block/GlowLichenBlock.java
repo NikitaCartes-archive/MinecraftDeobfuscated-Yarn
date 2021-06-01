@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -22,6 +23,10 @@ public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable
 	public GlowLichenBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)));
+	}
+
+	public static ToIntFunction<BlockState> method_37364(int i) {
+		return blockState -> AbstractLichenBlock.hasAnyDirection(blockState) ? i : 0;
 	}
 
 	@Override
@@ -64,5 +69,10 @@ public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable
 	@Override
 	public FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+	}
+
+	@Override
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
+		return state.getFluidState().isEmpty();
 	}
 }

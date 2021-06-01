@@ -52,10 +52,8 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 			);
 		}
 
-		public boolean test(LootContext lightningContext, List<LootContext> bystanderContexts) {
-			return !this.lightning.test(lightningContext)
-				? false
-				: this.bystander == EntityPredicate.Extended.EMPTY || !bystanderContexts.stream().noneMatch(this.bystander::test);
+		public boolean test(LootContext lightning, List<LootContext> bystanders) {
+			return !this.lightning.test(lightning) ? false : this.bystander == EntityPredicate.Extended.EMPTY || !bystanders.stream().noneMatch(this.bystander::test);
 		}
 
 		@Override

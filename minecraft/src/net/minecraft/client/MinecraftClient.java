@@ -161,7 +161,7 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.Screenshooter;
+import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
@@ -2834,7 +2834,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				} catch (InterruptedException var17) {
 				}
 
-				Screenshooter.saveScreenshot(directory, "panorama_" + l + ".png", width, height, framebuffer, text -> {
+				ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", width, height, framebuffer, text -> {
 				});
 			}
 
@@ -2874,7 +2874,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private Text takeHugeScreenshot(File gameDirectory, int unitWidth, int unitHeight, int width, int height) {
 		try {
 			ByteBuffer byteBuffer = GlDebugInfo.allocateMemory(unitWidth * unitHeight * 3);
-			Screenshooter screenshooter = new Screenshooter(gameDirectory, width, height, unitHeight);
+			ScreenshotRecorder screenshotRecorder = new ScreenshotRecorder(gameDirectory, width, height, unitHeight);
 			float f = (float)width / (float)unitWidth;
 			float g = (float)height / (float)unitHeight;
 			float h = f > g ? f : g;
@@ -2891,13 +2891,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					RenderSystem.pixelStore(3333, 1);
 					RenderSystem.pixelStore(3317, 1);
 					RenderSystem.readPixels(0, 0, unitWidth, unitHeight, 32992, 5121, byteBuffer);
-					screenshooter.getIntoBuffer(byteBuffer, j, i, unitWidth, unitHeight);
+					screenshotRecorder.getIntoBuffer(byteBuffer, j, i, unitWidth, unitHeight);
 				}
 
-				screenshooter.writeToStream();
+				screenshotRecorder.writeToStream();
 			}
 
-			File file = screenshooter.finish();
+			File file = screenshotRecorder.finish();
 			GlDebugInfo.freeMemory(byteBuffer);
 			Text text = new LiteralText(file.getName())
 				.formatted(Formatting.UNDERLINE)

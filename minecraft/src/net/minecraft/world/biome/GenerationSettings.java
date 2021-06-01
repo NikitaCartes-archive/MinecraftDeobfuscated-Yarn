@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
@@ -36,22 +37,27 @@ public class GenerationSettings {
 	);
 	public static final MapCodec<GenerationSettings> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					ConfiguredSurfaceBuilder.REGISTRY_CODEC.fieldOf("surface_builder").forGetter(generationSettings -> generationSettings.surfaceBuilder),
+					ConfiguredSurfaceBuilder.REGISTRY_CODEC
+						.fieldOf("surface_builder")
+						.flatXmap(Codecs.method_37352(), Codecs.method_37352())
+						.forGetter(generationSettings -> generationSettings.surfaceBuilder),
 					Codec.simpleMap(
 							GenerationStep.Carver.CODEC,
-							ConfiguredCarver.LIST_CODEC.promotePartial(Util.addPrefix("Carver: ", LOGGER::error)),
+							ConfiguredCarver.LIST_CODEC.promotePartial(Util.addPrefix("Carver: ", LOGGER::error)).flatXmap(Codecs.method_37351(), Codecs.method_37351()),
 							StringIdentifiable.toKeyable(GenerationStep.Carver.values())
 						)
 						.fieldOf("carvers")
 						.forGetter(generationSettings -> generationSettings.carvers),
 					ConfiguredFeature.field_26756
 						.promotePartial(Util.addPrefix("Feature: ", LOGGER::error))
+						.flatXmap(Codecs.method_37351(), Codecs.method_37351())
 						.listOf()
 						.fieldOf("features")
 						.forGetter(generationSettings -> generationSettings.features),
 					ConfiguredStructureFeature.REGISTRY_ELEMENT_CODEC
 						.promotePartial(Util.addPrefix("Structure start: ", LOGGER::error))
 						.fieldOf("starts")
+						.flatXmap(Codecs.method_37351(), Codecs.method_37351())
 						.forGetter(generationSettings -> generationSettings.structureFeatures)
 				)
 				.apply(instance, GenerationSettings::new)

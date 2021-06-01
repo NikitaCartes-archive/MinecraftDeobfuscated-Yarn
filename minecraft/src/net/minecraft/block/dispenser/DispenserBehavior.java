@@ -431,7 +431,7 @@ public interface DispenserBehavior {
 				if (!BoneMealItem.useOnFertilizable(stack, world, blockPos) && !BoneMealItem.useOnGround(stack, world, blockPos, null)) {
 					this.setSuccess(false);
 				} else if (!world.isClient) {
-					world.syncWorldEvent(1505, blockPos, 0);
+					world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 0);
 				}
 
 				return stack;

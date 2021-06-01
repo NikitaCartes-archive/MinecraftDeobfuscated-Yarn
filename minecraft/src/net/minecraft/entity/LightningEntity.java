@@ -40,8 +40,8 @@ public class LightningEntity extends Entity {
 	private boolean cosmetic;
 	@Nullable
 	private ServerPlayerEntity channeler;
-	private final Set<Entity> field_33904 = Sets.<Entity>newHashSet();
-	private int field_33905;
+	private final Set<Entity> struckEntities = Sets.<Entity>newHashSet();
+	private int blocksSetOnFire;
 
 	public LightningEntity(EntityType<? extends LightningEntity> entityType, World world) {
 		super(entityType, world);
@@ -124,7 +124,7 @@ public class LightningEntity extends Entity {
 						.getOtherEntities(
 							this,
 							new Box(this.getX() - 15.0, this.getY() - 15.0, this.getZ() - 15.0, this.getX() + 15.0, this.getY() + 6.0 + 15.0, this.getZ() + 15.0),
-							entityx -> entityx.isAlive() && !this.field_33904.contains(entityx)
+							entityx -> entityx.isAlive() && !this.struckEntities.contains(entityx)
 						);
 
 					for (ServerPlayerEntity serverPlayerEntity : ((ServerWorld)this.world).getPlayers(serverPlayerEntityx -> serverPlayerEntityx.distanceTo(this) < 256.0F)) {
@@ -154,7 +154,7 @@ public class LightningEntity extends Entity {
 					entity.onStruckByLightning((ServerWorld)this.world, this);
 				}
 
-				this.field_33904.addAll(list);
+				this.struckEntities.addAll(list);
 				if (this.channeler != null) {
 					Criteria.CHANNELED_LIGHTNING.trigger(this.channeler, list);
 				}
@@ -173,7 +173,7 @@ public class LightningEntity extends Entity {
 			BlockState blockState = AbstractFireBlock.getState(this.world, blockPos);
 			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
 				this.world.setBlockState(blockPos, blockState);
-				this.field_33905++;
+				this.blocksSetOnFire++;
 			}
 
 			for (int i = 0; i < spreadAttempts; i++) {
@@ -181,7 +181,7 @@ public class LightningEntity extends Entity {
 				blockState = AbstractFireBlock.getState(this.world, blockPos2);
 				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
 					this.world.setBlockState(blockPos2, blockState);
-					this.field_33905++;
+					this.blocksSetOnFire++;
 				}
 			}
 		}
@@ -260,11 +260,11 @@ public class LightningEntity extends Entity {
 		return new EntitySpawnS2CPacket(this);
 	}
 
-	public int method_37220() {
-		return this.field_33905;
+	public int getBlocksSetOnFire() {
+		return this.blocksSetOnFire;
 	}
 
-	public Stream<Entity> method_37221() {
-		return this.field_33904.stream().filter(Entity::isAlive);
+	public Stream<Entity> getStruckEntities() {
+		return this.struckEntities.stream().filter(Entity::isAlive);
 	}
 }

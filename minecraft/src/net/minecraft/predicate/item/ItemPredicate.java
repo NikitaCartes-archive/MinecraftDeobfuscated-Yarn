@@ -35,7 +35,7 @@ public class ItemPredicate {
 	@Nullable
 	private final Tag<Item> tag;
 	@Nullable
-	private final Set<Item> item;
+	private final Set<Item> items;
 	private final NumberRange.IntRange count;
 	private final NumberRange.IntRange durability;
 	private final EnchantmentPredicate[] enchantments;
@@ -46,7 +46,7 @@ public class ItemPredicate {
 
 	public ItemPredicate() {
 		this.tag = null;
-		this.item = null;
+		this.items = null;
 		this.potion = null;
 		this.count = NumberRange.IntRange.ANY;
 		this.durability = NumberRange.IntRange.ANY;
@@ -57,7 +57,7 @@ public class ItemPredicate {
 
 	public ItemPredicate(
 		@Nullable Tag<Item> tag,
-		@Nullable Set<Item> set,
+		@Nullable Set<Item> items,
 		NumberRange.IntRange count,
 		NumberRange.IntRange durability,
 		EnchantmentPredicate[] enchantments,
@@ -66,7 +66,7 @@ public class ItemPredicate {
 		NbtPredicate nbt
 	) {
 		this.tag = tag;
-		this.item = set;
+		this.items = items;
 		this.count = count;
 		this.durability = durability;
 		this.enchantments = enchantments;
@@ -80,7 +80,7 @@ public class ItemPredicate {
 			return true;
 		} else if (this.tag != null && !stack.isIn(this.tag)) {
 			return false;
-		} else if (this.item != null && !this.item.contains(stack.getItem())) {
+		} else if (this.items != null && !this.items.contains(stack.getItem())) {
 			return false;
 		} else if (!this.count.test(stack.getCount())) {
 			return false;
@@ -164,10 +164,10 @@ public class ItemPredicate {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			if (this.item != null) {
+			if (this.items != null) {
 				JsonArray jsonArray = new JsonArray();
 
-				for (Item item : this.item) {
+				for (Item item : this.items) {
 					jsonArray.add(Registry.ITEM.getId(item).toString());
 				}
 
@@ -246,8 +246,8 @@ public class ItemPredicate {
 			return new ItemPredicate.Builder();
 		}
 
-		public ItemPredicate.Builder item(ItemConvertible... itemConvertibles) {
-			this.item = (Set<Item>)Stream.of(itemConvertibles).map(ItemConvertible::asItem).collect(ImmutableSet.toImmutableSet());
+		public ItemPredicate.Builder items(ItemConvertible... items) {
+			this.item = (Set<Item>)Stream.of(items).map(ItemConvertible::asItem).collect(ImmutableSet.toImmutableSet());
 			return this;
 		}
 

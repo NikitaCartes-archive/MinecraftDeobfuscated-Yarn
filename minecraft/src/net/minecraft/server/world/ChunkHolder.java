@@ -266,7 +266,8 @@ public class ChunkHolder {
 			.get(i);
 		if (completableFuture != null) {
 			Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)completableFuture.getNow(null);
-			if (either == null || either.left().isPresent()) {
+			boolean bl = either != null && either.right().isPresent();
+			if (!bl) {
 				return completableFuture;
 			}
 		}

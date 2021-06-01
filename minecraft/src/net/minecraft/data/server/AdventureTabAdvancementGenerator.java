@@ -3,7 +3,6 @@ package net.minecraft.data.server;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.function.Consumer;
-import net.minecraft.class_6404;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
@@ -32,6 +31,7 @@ import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.EntityTypeTags;
@@ -129,7 +129,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		return LightningStrikeCriterion.Conditions.create(
 			EntityPredicate.Builder.create()
 				.distance(DistancePredicate.method_37223(NumberRange.FloatRange.atMost(30.0)))
-				.method_37228(class_6404.method_37237(intRange))
+				.lightningBolt(LightningBoltPredicate.of(intRange))
 				.build(),
 			entityPredicate
 		);
@@ -138,7 +138,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 	private static UsingItemCriterion.Conditions method_37315(EntityType<?> entityType, Item item) {
 		return UsingItemCriterion.Conditions.create(
 			EntityPredicate.Builder.create().player(PlayerPredicate.Builder.create().method_37251(EntityPredicate.Builder.create().type(entityType).build()).build()),
-			ItemPredicate.Builder.create().item(item)
+			ItemPredicate.Builder.create().items(item)
 		);
 	}
 

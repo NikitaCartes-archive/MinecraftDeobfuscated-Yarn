@@ -136,7 +136,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	 * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.
 	 */
 	private <E> DataResult<Supplier<E>> readSupplier(RegistryKey<? extends Registry<E>> key, MutableRegistry<E> registry, Codec<E> codec, Identifier elementId) {
-		RegistryKey<E> registryKey = RegistryKey.of(key, elementId);
+		final RegistryKey<E> registryKey = RegistryKey.of(key, elementId);
 		RegistryOps.ValueHolder<E> valueHolder = this.getValueHolder(key);
 		DataResult<Supplier<E>> dataResult = (DataResult<Supplier<E>>)valueHolder.values.get(registryKey);
 		if (dataResult != null) {
@@ -154,7 +154,15 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 			Optional<DataResult<Pair<E, OptionalInt>>> optional = this.entryLoader.load(this.entryOps, key, registryKey, codec);
 			DataResult<Supplier<E>> dataResult2;
 			if (!optional.isPresent()) {
-				dataResult2 = DataResult.success(() -> registry.get(registryKey), Lifecycle.stable());
+				dataResult2 = DataResult.success(new Supplier<E>() {
+					public E get() {
+						return registry.get(registryKey);
+					}
+
+					public String toString() {
+						return registryKey.toString();
+					}
+				}, Lifecycle.stable());
 			} else {
 				DataResult<Pair<E, OptionalInt>> dataResult3 = (DataResult<Pair<E, OptionalInt>>)optional.get();
 				Optional<Pair<E, OptionalInt>> optional2 = dataResult3.result();

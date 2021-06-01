@@ -81,12 +81,17 @@ public class VineBlock extends Block {
 			voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
 		}
 
-		return voxelShape;
+		return voxelShape.isEmpty() ? VoxelShapes.fullCube() : voxelShape;
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return (VoxelShape)this.shapesByState.get(state);
+	}
+
+	@Override
+	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
+		return true;
 	}
 
 	@Override
@@ -220,7 +225,7 @@ public class VineBlock extends Block {
 						BlockState blockState2 = state;
 
 						for (Direction direction2 : Direction.Type.HORIZONTAL) {
-							if (random.nextBoolean() || !shouldConnectTo(world, blockPos.offset(direction2), Direction.UP)) {
+							if (random.nextBoolean() || !shouldConnectTo(world, blockPos.offset(direction2), direction2)) {
 								blockState2 = blockState2.with(getFacingProperty(direction2), Boolean.valueOf(false));
 							}
 						}

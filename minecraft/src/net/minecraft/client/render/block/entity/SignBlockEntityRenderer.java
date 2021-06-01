@@ -43,7 +43,7 @@ import net.minecraft.util.math.Vec3f;
 public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEntity> {
 	public static final int field_32828 = 90;
 	private static final int field_32829 = 10;
-	private static final String field_32830 = "stick";
+	private static final String STICK = "stick";
 	private static final int field_33962 = -988212;
 	private static final int field_33963 = MathHelper.square(16);
 	private final Map<SignType, SignBlockEntityRenderer.SignModel> typeToModel;

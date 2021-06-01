@@ -3276,9 +3276,17 @@ public class BlockStateModelGenerator {
 		this.registerItemModel(block);
 		Identifier identifier = ModelIds.getBlockModelId(block);
 		MultipartBlockStateSupplier multipartBlockStateSupplier = MultipartBlockStateSupplier.create(block);
-		CONNECTION_VARIANT_FUNCTIONS.forEach((property, variantFactory) -> {
-			if (block.getDefaultState().contains(property)) {
-				multipartBlockStateSupplier.with(When.create().set(property, true), (BlockStateVariant)variantFactory.apply(identifier));
+		When.PropertyCondition propertyCondition = Util.make(
+			When.create(), propertyConditionx -> CONNECTION_VARIANT_FUNCTIONS.forEach((booleanProperty, function) -> {
+					if (block.getDefaultState().contains(booleanProperty)) {
+						propertyConditionx.set(booleanProperty, false);
+					}
+				})
+		);
+		CONNECTION_VARIANT_FUNCTIONS.forEach((booleanProperty, function) -> {
+			if (block.getDefaultState().contains(booleanProperty)) {
+				multipartBlockStateSupplier.with(When.create().set(booleanProperty, true), (BlockStateVariant)function.apply(identifier));
+				multipartBlockStateSupplier.with(propertyCondition, (BlockStateVariant)function.apply(identifier));
 			}
 		});
 		this.blockStateCollector.accept(multipartBlockStateSupplier);
@@ -4033,7 +4041,7 @@ public class BlockStateModelGenerator {
 		}
 	}
 
-	private void registerCandle(Block candle, Block cake) {
+	private void registerCandle(Block candle, Block block) {
 		this.registerItemModel(candle.asItem());
 		Texture texture = Texture.all(Texture.getId(candle));
 		Texture texture2 = Texture.all(Texture.getSubId(candle, "_lit"));
@@ -4060,8 +4068,9 @@ public class BlockStateModelGenerator {
 							.register(4, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier8))
 					)
 			);
-		this.blockStateCollector
-			.accept(createSingletonBlockState(cake, Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, Texture.candleCake(candle), this.modelCollector)));
+		Identifier identifier9 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(block, Texture.candleCake(candle, false), this.modelCollector);
+		Identifier identifier10 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(block, "_lit", Texture.candleCake(candle, true), this.modelCollector);
+		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(createBooleanModelMap(Properties.LIT, identifier10, identifier9)));
 	}
 
 	class BlockTexturePool {

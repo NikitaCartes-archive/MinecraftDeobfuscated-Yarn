@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +31,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	protected final FlowableFluid fluid;
 	private final List<FluidState> statesByLevel;
 	public static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+	public static final ImmutableList<Direction> field_34006 = ImmutableList.of(Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST);
 
 	protected FluidBlock(FlowableFluid fluid, AbstractBlock.Settings settings) {
 		super(settings);
@@ -127,21 +129,19 @@ public class FluidBlock extends Block implements FluidDrainable {
 		if (this.fluid.isIn(FluidTags.LAVA)) {
 			boolean bl = world.getBlockState(pos.down()).isOf(Blocks.SOUL_SOIL);
 
-			for (Direction direction : Direction.values()) {
-				if (direction != Direction.DOWN) {
-					BlockPos blockPos = pos.offset(direction);
-					if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
-						Block block = world.getFluidState(pos).isStill() ? Blocks.OBSIDIAN : Blocks.COBBLESTONE;
-						world.setBlockState(pos, block.getDefaultState());
-						this.playExtinguishSound(world, pos);
-						return false;
-					}
+			for (Direction direction : field_34006) {
+				BlockPos blockPos = pos.offset(direction.getOpposite());
+				if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
+					Block block = world.getFluidState(pos).isStill() ? Blocks.OBSIDIAN : Blocks.COBBLESTONE;
+					world.setBlockState(pos, block.getDefaultState());
+					this.playExtinguishSound(world, pos);
+					return false;
+				}
 
-					if (bl && world.getBlockState(blockPos).isOf(Blocks.BLUE_ICE)) {
-						world.setBlockState(pos, Blocks.BASALT.getDefaultState());
-						this.playExtinguishSound(world, pos);
-						return false;
-					}
+				if (bl && world.getBlockState(blockPos).isOf(Blocks.BLUE_ICE)) {
+					world.setBlockState(pos, Blocks.BASALT.getDefaultState());
+					this.playExtinguishSound(world, pos);
+					return false;
 				}
 			}
 		}

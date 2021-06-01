@@ -263,8 +263,8 @@ public final class Window implements AutoCloseable {
 		int[] is = new int[1];
 		int[] js = new int[1];
 		GLFW.glfwGetFramebufferSize(this.handle, is, js);
-		this.framebufferWidth = is[0];
-		this.framebufferHeight = js[0];
+		this.framebufferWidth = is[0] > 0 ? is[0] : 1;
+		this.framebufferHeight = js[0] > 0 ? js[0] : 1;
 	}
 
 	private void onWindowSizeChanged(long window, int width, int height) {

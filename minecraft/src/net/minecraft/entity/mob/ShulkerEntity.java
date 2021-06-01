@@ -708,7 +708,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 
 		@Override
-		protected float getTargetYaw() {
+		protected Optional<Float> getTargetYaw() {
 			Direction direction = ShulkerEntity.this.getAttachedFace().getOpposite();
 			Vec3f vec3f = ShulkerEntity.field_33765.copy();
 			vec3f.rotate(direction.getRotationQuaternion());
@@ -721,12 +721,14 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			Vec3f vec3f3 = new Vec3f((float)d, (float)e, (float)f);
 			float g = vec3f2.dot(vec3f3);
 			float h = vec3f.dot(vec3f3);
-			return (float)(MathHelper.atan2((double)(-g), (double)h) * 180.0F / (float)Math.PI);
+			return !(Math.abs(g) > 1.0E-5F) && !(Math.abs(h) > 1.0E-5F)
+				? Optional.empty()
+				: Optional.of((float)(MathHelper.atan2((double)(-g), (double)h) * 180.0F / (float)Math.PI));
 		}
 
 		@Override
-		protected float getTargetPitch() {
-			return 0.0F;
+		protected Optional<Float> getTargetPitch() {
+			return Optional.of(0.0F);
 		}
 	}
 }

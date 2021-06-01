@@ -42,11 +42,11 @@ public class CreditsScreen extends Screen {
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-	private static final StringVisitable field_33955 = new LiteralText("============").formatted(Formatting.WHITE);
+	private static final StringVisitable SEPARATOR_LINE = new LiteralText("============").formatted(Formatting.WHITE);
 	private static final String CENTERED_LINE_PREFIX = "           ";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 	private static final int field_33956 = 274;
-	private static final float field_33957 = 5.0F;
+	private static final float SPACE_BAR_SPEED_MULTIPLIER = 5.0F;
 	private final boolean endCredits;
 	private final Runnable finishAction;
 	private float time;
@@ -54,19 +54,19 @@ public class CreditsScreen extends Screen {
 	private IntSet centeredLines;
 	private int creditsHeight;
 	private float speed;
-	private final float field_33954;
+	private final float baseSpeed;
 
 	public CreditsScreen(boolean endCredits, Runnable finishAction) {
 		super(NarratorManager.EMPTY);
 		this.endCredits = endCredits;
 		this.finishAction = finishAction;
 		if (!endCredits) {
-			this.field_33954 = 0.75F;
+			this.baseSpeed = 0.75F;
 		} else {
-			this.field_33954 = 0.5F;
+			this.baseSpeed = 0.5F;
 		}
 
-		this.speed = this.field_33954;
+		this.speed = this.baseSpeed;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class CreditsScreen extends Screen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_SPACE) {
-			this.speed = this.field_33954 * 5.0F;
+			this.speed = this.baseSpeed * 5.0F;
 		}
 
 		return super.keyPressed(keyCode, scanCode, modifiers);
@@ -91,7 +91,7 @@ public class CreditsScreen extends Screen {
 	@Override
 	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_SPACE) {
-			this.speed = this.field_33954;
+			this.speed = this.baseSpeed;
 		}
 
 		return super.keyReleased(keyCode, scanCode, modifiers);
@@ -132,14 +132,14 @@ public class CreditsScreen extends Screen {
 							string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
 						}
 
-						this.method_37305(string, false);
-						this.method_37306();
+						this.addText(string, false);
+						this.addEmptyLine();
 					}
 
 					inputStream.close();
 
 					for (int i = 0; i < 8; i++) {
-						this.method_37306();
+						this.addEmptyLine();
 					}
 				}
 
@@ -149,30 +149,30 @@ public class CreditsScreen extends Screen {
 				for (JsonElement jsonElement : jsonArray.getAsJsonArray()) {
 					JsonObject jsonObject = jsonElement.getAsJsonObject();
 					String string2 = jsonObject.get("section").getAsString();
-					this.method_37304(field_33955, true);
-					this.method_37306();
-					this.method_37304(new LiteralText(string2).formatted(Formatting.YELLOW), true);
-					this.method_37306();
-					this.method_37304(field_33955, true);
-					this.method_37306();
-					this.method_37306();
-					this.method_37306();
+					this.addText(SEPARATOR_LINE, true);
+					this.addEmptyLine();
+					this.addText(new LiteralText(string2).formatted(Formatting.YELLOW), true);
+					this.addEmptyLine();
+					this.addText(SEPARATOR_LINE, true);
+					this.addEmptyLine();
+					this.addEmptyLine();
+					this.addEmptyLine();
 
 					for (JsonElement jsonElement2 : jsonObject.getAsJsonArray("titles")) {
 						JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
 						String string4 = jsonObject2.get("title").getAsString();
 						JsonArray jsonArray4 = jsonObject2.getAsJsonArray("names");
-						this.method_37304(new LiteralText(string4).formatted(Formatting.GRAY), false);
-						this.method_37306();
+						this.addText(new LiteralText(string4).formatted(Formatting.GRAY), false);
+						this.addEmptyLine();
 
 						for (JsonElement jsonElement3 : jsonArray4) {
 							String string5 = jsonElement3.getAsString();
-							this.method_37304(new LiteralText("           ").append(new LiteralText(string5)).formatted(Formatting.WHITE), false);
-							this.method_37306();
+							this.addText(new LiteralText("           ").append(new LiteralText(string5)).formatted(Formatting.WHITE), false);
+							this.addEmptyLine();
 						}
 
-						this.method_37306();
-						this.method_37306();
+						this.addEmptyLine();
+						this.addEmptyLine();
 					}
 				}
 
@@ -185,17 +185,17 @@ public class CreditsScreen extends Screen {
 		}
 	}
 
-	private void method_37306() {
+	private void addEmptyLine() {
 		this.credits.add(OrderedText.EMPTY);
 	}
 
-	private void method_37305(String string, boolean bl) {
-		this.method_37304(new LiteralText(string), bl);
+	private void addText(String text, boolean centered) {
+		this.addText(new LiteralText(text), centered);
 	}
 
-	private void method_37304(StringVisitable stringVisitable, boolean bl) {
-		for (OrderedText orderedText : this.client.textRenderer.wrapLines(stringVisitable, 274)) {
-			if (bl) {
+	private void addText(StringVisitable text, boolean centered) {
+		for (OrderedText orderedText : this.client.textRenderer.wrapLines(text, 274)) {
+			if (centered) {
 				this.centeredLines.add(this.credits.size());
 			}
 
@@ -210,9 +210,9 @@ public class CreditsScreen extends Screen {
 		float f = -this.time * 0.5F;
 		float g = (float)this.height - 0.5F * this.time;
 		float h = 0.015625F;
-		float j = this.time / this.field_33954;
+		float j = this.time / this.baseSpeed;
 		float k = j * 0.02F;
-		float l = (float)(this.creditsHeight + this.height + this.height + 24) / this.field_33954;
+		float l = (float)(this.creditsHeight + this.height + this.height + 24) / this.baseSpeed;
 		float m = (l - 20.0F - j) * 0.005F;
 		if (m < k) {
 			k = m;

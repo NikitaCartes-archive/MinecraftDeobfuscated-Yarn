@@ -251,7 +251,6 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 						this.setVelocity(this.getVelocity().add(0.0, j * 0.01, 0.0));
 						this.setYaw(MathHelper.wrapDegrees(this.getYaw()));
-						double o = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(e, k) * 180.0F / (float)Math.PI - (double)this.getYaw()), -50.0, 50.0);
 						Vec3d vec3d3 = vec3d2.subtract(this.getX(), this.getY(), this.getZ()).normalize();
 						Vec3d vec3d4 = new Vec3d(
 								(double)MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)),
@@ -259,13 +258,17 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 								(double)(-MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)))
 							)
 							.normalize();
-						float p = Math.max(((float)vec3d4.dotProduct(vec3d3) + 0.5F) / 1.5F, 0.0F);
-						this.yawAcceleration *= 0.8F;
-						this.yawAcceleration = (float)((double)this.yawAcceleration + o * (double)phase.getYawAcceleration());
-						this.setYaw(this.getYaw() + this.yawAcceleration * 0.1F);
+						float o = Math.max(((float)vec3d4.dotProduct(vec3d3) + 0.5F) / 1.5F, 0.0F);
+						if (Math.abs(e) > 1.0E-5F || Math.abs(k) > 1.0E-5F) {
+							double p = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(e, k) * 180.0F / (float)Math.PI - (double)this.getYaw()), -50.0, 50.0);
+							this.yawAcceleration *= 0.8F;
+							this.yawAcceleration = (float)((double)this.yawAcceleration + p * (double)phase.getYawAcceleration());
+							this.setYaw(this.getYaw() + this.yawAcceleration * 0.1F);
+						}
+
 						float q = (float)(2.0 / (l + 1.0));
 						float r = 0.06F;
-						this.updateVelocity(0.06F * (p * q + (1.0F - q)), new Vec3d(0.0, 0.0, -1.0));
+						this.updateVelocity(0.06F * (o * q + (1.0F - q)), new Vec3d(0.0, 0.0, -1.0));
 						if (this.slowedDownByBlock) {
 							this.move(MovementType.SELF, this.getVelocity().multiply(0.8F));
 						} else {
@@ -330,11 +333,11 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 					double[] es = this.getSegmentProperties(12 + ad * 2, 1.0F);
 					float ae = this.getYaw() * (float) (Math.PI / 180.0) + this.wrapYawChange(es[0] - ds[0]) * (float) (Math.PI / 180.0);
-					float af = MathHelper.sin(ae);
-					float ag = MathHelper.cos(ae);
-					float p = 1.5F;
-					float q = (float)(ad + 1) * 2.0F;
-					this.movePart(enderDragonPart, (double)(-(y * 1.5F + af * q) * v), es[1] - ds[1] - (double)((q + 1.5F) * w) + 1.5, (double)((z * 1.5F + ag * q) * v));
+					float ox = MathHelper.sin(ae);
+					float q = MathHelper.cos(ae);
+					float r = 1.5F;
+					float af = (float)(ad + 1) * 2.0F;
+					this.movePart(enderDragonPart, (double)(-(y * 1.5F + ox * af) * v), es[1] - ds[1] - (double)((af + 1.5F) * w) + 1.5, (double)((z * 1.5F + q * af) * v));
 				}
 
 				if (!this.world.isClient) {

@@ -3108,11 +3108,11 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private static InventoryChangedCriterion.Conditions conditionsFromItem(NumberRange.IntRange count, ItemConvertible item) {
-		return conditionsFromItemPredicates(ItemPredicate.Builder.create().item(item).count(count).build());
+		return conditionsFromItemPredicates(ItemPredicate.Builder.create().items(item).count(count).build());
 	}
 
 	private static InventoryChangedCriterion.Conditions conditionsFromItem(ItemConvertible item) {
-		return conditionsFromItemPredicates(ItemPredicate.Builder.create().item(item).build());
+		return conditionsFromItemPredicates(ItemPredicate.Builder.create().items(item).build());
 	}
 
 	private static InventoryChangedCriterion.Conditions conditionsFromTag(Tag<Item> tag) {
