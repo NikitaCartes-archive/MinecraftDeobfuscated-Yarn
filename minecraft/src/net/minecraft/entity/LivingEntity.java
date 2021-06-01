@@ -1165,7 +1165,7 @@ public abstract class LivingEntity extends Entity {
 			this.knockbackVelocity = 0.0F;
 			Entity entity2 = source.getAttacker();
 			if (entity2 != null) {
-				if (entity2 instanceof LivingEntity) {
+				if (entity2 instanceof LivingEntity && !source.method_37354()) {
 					this.setAttacker((LivingEntity)entity2);
 				}
 

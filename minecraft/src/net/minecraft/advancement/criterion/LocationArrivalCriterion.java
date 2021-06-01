@@ -66,8 +66,8 @@ public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalC
 		public static LocationArrivalCriterion.Conditions method_37246(Block block, Item item) {
 			return method_37245(
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(item).build()).build())
-					.method_37230(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(block).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(item).build()).build())
+					.steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block).build()).build())
 					.build()
 			);
 		}

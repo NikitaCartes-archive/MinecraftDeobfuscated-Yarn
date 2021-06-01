@@ -188,8 +188,8 @@ public class ServerCommandSource implements CommandSource {
 			);
 	}
 
-	public ServerCommandSource mergeConsumers(ResultConsumer<ServerCommandSource> consumer, BinaryOperator<ResultConsumer<ServerCommandSource>> binaryOperator) {
-		ResultConsumer<ServerCommandSource> resultConsumer = (ResultConsumer)binaryOperator.apply(this.resultConsumer, consumer);
+	public ServerCommandSource mergeConsumers(ResultConsumer<ServerCommandSource> consumer, BinaryOperator<ResultConsumer<ServerCommandSource>> merger) {
+		ResultConsumer<ServerCommandSource> resultConsumer = (ResultConsumer)merger.apply(this.resultConsumer, consumer);
 		return this.withConsumer(resultConsumer);
 	}
 

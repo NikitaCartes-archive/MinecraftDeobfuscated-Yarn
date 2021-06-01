@@ -17,8 +17,8 @@ public class AquaticLookControl extends LookControl {
 	public void tick() {
 		if (this.active) {
 			this.active = false;
-			this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.getTargetYaw() + 20.0F, this.yawSpeed);
-			this.entity.setPitch(this.changeAngle(this.entity.getPitch(), this.getTargetPitch() + 10.0F, this.pitchSpeed));
+			this.getTargetYaw().ifPresent(float_ -> this.entity.headYaw = this.changeAngle(this.entity.headYaw, float_ + 20.0F, this.yawSpeed));
+			this.getTargetPitch().ifPresent(float_ -> this.entity.setPitch(this.changeAngle(this.entity.getPitch(), float_ + 10.0F, this.pitchSpeed)));
 		} else {
 			if (this.entity.getNavigation().isIdle()) {
 				this.entity.setPitch(this.changeAngle(this.entity.getPitch(), 0.0F, 5.0F));

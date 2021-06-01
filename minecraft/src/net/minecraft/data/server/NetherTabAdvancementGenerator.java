@@ -57,28 +57,28 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().item(Items.GOLDEN_HELMET).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().items(Items.GOLDEN_HELMET).build()).build())
 			)
 			.invert()
 			.build(),
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().item(Items.GOLDEN_CHESTPLATE).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().items(Items.GOLDEN_CHESTPLATE).build()).build())
 			)
 			.invert()
 			.build(),
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().item(Items.GOLDEN_LEGGINGS).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().items(Items.GOLDEN_LEGGINGS).build()).build())
 			)
 			.invert()
 			.build(),
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(Items.GOLDEN_BOOTS).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(Items.GOLDEN_BOOTS).build()).build())
 			)
 			.invert()
 			.build()
@@ -378,8 +378,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"use_lodestone",
 				ItemUsedOnBlockCriterion.Conditions.create(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(Blocks.LODESTONE).build()),
-					ItemPredicate.Builder.create().item(Items.COMPASS)
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(Blocks.LODESTONE).build()),
+					ItemPredicate.Builder.create().items(Items.COMPASS)
 				)
 			)
 			.build(consumer, "nether/use_lodestone");
@@ -415,11 +415,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 					LocationPredicate.Builder.create()
 						.block(
 							BlockPredicate.Builder.create()
-								.block(Blocks.RESPAWN_ANCHOR)
+								.blocks(Blocks.RESPAWN_ANCHOR)
 								.state(StatePredicate.Builder.create().exactMatch(RespawnAnchorBlock.CHARGES, 4).build())
 								.build()
 						),
-					ItemPredicate.Builder.create().item(Blocks.GLOWSTONE)
+					ItemPredicate.Builder.create().items(Blocks.GLOWSTONE)
 				)
 			)
 			.build(consumer, "nether/charge_respawn_anchor");
@@ -439,7 +439,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				"used_warped_fungus_on_a_stick",
 				ItemDurabilityChangedCriterion.Conditions.create(
 					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()).build()),
-					ItemPredicate.Builder.create().item(Items.WARPED_FUNGUS_ON_A_STICK).build(),
+					ItemPredicate.Builder.create().items(Items.WARPED_FUNGUS_ON_A_STICK).build(),
 					NumberRange.IntRange.ANY
 				)
 			)
@@ -517,7 +517,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				"distract_piglin_directly",
 				PlayerInteractedWithEntityCriterion.Conditions.create(
 					PIGLIN_DISTRACTION_PREDICATE,
-					ItemPredicate.Builder.create().item(PiglinBrain.BARTERING_ITEM),
+					ItemPredicate.Builder.create().items(PiglinBrain.BARTERING_ITEM),
 					EntityPredicate.Extended.ofLegacy(
 						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()
 					)

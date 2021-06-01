@@ -52,11 +52,11 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 			);
 		}
 
-		public boolean test(LootContext lightningContext, List<LootContext> bystanderContexts) {
-			if (!this.lightning.test(lightningContext)) {
+		public boolean test(LootContext lightning, List<LootContext> bystanders) {
+			if (!this.lightning.test(lightning)) {
 				return false;
 			} else {
-				return this.bystander == EntityPredicate.Extended.EMPTY || !bystanderContexts.stream().noneMatch(this.bystander::test);
+				return this.bystander == EntityPredicate.Extended.EMPTY || !bystanders.stream().noneMatch(this.bystander::test);
 			}
 		}
 

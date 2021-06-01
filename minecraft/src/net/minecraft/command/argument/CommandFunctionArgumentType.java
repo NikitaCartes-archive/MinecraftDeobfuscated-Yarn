@@ -70,7 +70,7 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 	}
 
 	static Tag<CommandFunction> getFunctionTag(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
-		Tag<CommandFunction> tag = context.getSource().getMinecraftServer().getCommandFunctionManager().getTaggedFunctions(id);
+		Tag<CommandFunction> tag = context.getSource().getMinecraftServer().getCommandFunctionManager().getTag(id);
 		if (tag == null) {
 			throw UNKNOWN_FUNCTION_TAG_EXCEPTION.create(id.toString());
 		} else {

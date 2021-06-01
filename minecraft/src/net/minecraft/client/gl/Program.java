@@ -33,9 +33,7 @@ public class Program {
 	}
 
 	public void release() {
-		if (this.shaderRef == -1) {
-			field_33940.warn("Double closing {} program: {}", this.shaderType, this.name);
-		} else {
+		if (this.shaderRef != -1) {
 			RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 			GlStateManager.glDeleteShader(this.shaderRef);
 			this.shaderRef = -1;

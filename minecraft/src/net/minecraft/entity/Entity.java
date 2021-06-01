@@ -78,6 +78,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.ReusableStream;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -3160,7 +3161,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setYaw(float yaw) {
 		if (!Float.isFinite(yaw)) {
-			throw new IllegalStateException("Invalid entity rotation: " + yaw);
+			Util.error("Invalid entity rotation: " + yaw + ", discarding.");
 		} else {
 			this.yaw = yaw;
 		}
@@ -3172,7 +3173,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setPitch(float pitch) {
 		if (!Float.isFinite(pitch)) {
-			throw new IllegalStateException("Invalid entity rotation: " + pitch);
+			Util.error("Invalid entity rotation: " + pitch + ", discarding.");
 		} else {
 			this.pitch = pitch;
 		}
