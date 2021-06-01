@@ -423,27 +423,20 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
+        Optional<Chunk> optional;
         ChunkPos chunkPos = holder.getPos();
         if (requiredStatus == ChunkStatus.EMPTY) {
             return this.loadChunk(chunkPos);
         }
-        CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = holder.getChunkAt(requiredStatus.getPrevious(), this);
-        return completableFuture.thenComposeAsync(either -> {
-            Chunk chunk2;
-            Optional optional = either.left();
-            if (!optional.isPresent()) {
-                return CompletableFuture.completedFuture(either);
-            }
-            if (requiredStatus == ChunkStatus.LIGHT) {
-                this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), chunkPos);
-            }
-            if ((chunk2 = (Chunk)optional.get()).getStatus().isAtLeast(requiredStatus)) {
-                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(holder), chunk2);
-                this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
-                return completableFuture;
-            }
-            return this.upgradeChunk(holder, requiredStatus);
-        }, (Executor)this.mainThreadExecutor);
+        if (requiredStatus == ChunkStatus.LIGHT) {
+            this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), chunkPos);
+        }
+        if ((optional = holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK).left()).isPresent() && optional.get().getStatus().isAtLeast(requiredStatus)) {
+            CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(holder), optional.get());
+            this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
+            return completableFuture;
+        }
+        return this.upgradeChunk(holder, requiredStatus);
     }
 
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadChunk(ChunkPos pos) {

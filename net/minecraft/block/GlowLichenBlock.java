@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractLichenBlock;
@@ -34,6 +35,10 @@ Waterloggable {
     public GlowLichenBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)this.getDefaultState().with(WATERLOGGED, false));
+    }
+
+    public static ToIntFunction<BlockState> method_37364(int i) {
+        return blockState -> AbstractLichenBlock.hasAnyDirection(blockState) ? i : 0;
     }
 
     @Override
@@ -76,6 +81,11 @@ Waterloggable {
             return Fluids.WATER.getStill(false);
         }
         return super.getFluidState(state);
+    }
+
+    @Override
+    public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
+        return state.getFluidState().isEmpty();
     }
 }
 

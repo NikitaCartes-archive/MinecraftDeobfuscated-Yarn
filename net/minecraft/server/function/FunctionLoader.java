@@ -35,12 +35,28 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * The function loader holds the functions and function tags for a {@link
+ * CommandFunctionManager} to use. In the reloads, it loads the tags in one
+ * completable future and each function in a completable future for all functions.
+ * 
+ * <p>The functions are stored in {@code .mcfunction} files; each line is one
+ * Minecraft command, with blank lines and contents starting with a trailing hash
+ * {@code #} sign ignored.
+ * 
+ * <p>The function tags are ordered, unlike other tags. Each function's order in
+ * the collection of functions from the tag is determined by the order it is listed
+ * in the JSON files; if it appears multiple times through tag nesting, only its
+ * first appearance will be considered.
+ * 
+ * @see CommandFunctionManager
+ */
 public class FunctionLoader
 implements ResourceReloader {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String PATH_SUFFIX = ".mcfunction";
+    private static final String EXTENSION = ".mcfunction";
     private static final int PATH_PREFIX_LENGTH = "functions/".length();
-    private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
+    private static final int EXTENSION_LENGTH = ".mcfunction".length();
     private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
     private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader(this::get, "tags/functions");
     private volatile TagGroup<CommandFunction> tags = TagGroup.createEmpty();
@@ -59,7 +75,7 @@ implements ResourceReloader {
         return this.tags;
     }
 
-    public Tag<CommandFunction> getOrCreateTag(Identifier id) {
+    public Tag<CommandFunction> getTagOrEmpty(Identifier id) {
         return this.tags.getTagOrEmpty(id);
     }
 
@@ -71,33 +87,33 @@ implements ResourceReloader {
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         CompletableFuture<Map> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
-        CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", path -> path.endsWith(PATH_SUFFIX)), prepareExecutor).thenCompose(ids -> {
+        CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", path -> path.endsWith(EXTENSION)), prepareExecutor).thenCompose(ids -> {
             HashMap<Identifier, CompletableFuture<CommandFunction>> map = Maps.newHashMap();
             ServerCommandSource serverCommandSource = new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", LiteralText.EMPTY, null, null);
             for (Identifier identifier : ids) {
                 String string = identifier.getPath();
-                Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - PATH_SUFFIX_LENGTH));
+                Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
                 map.put(identifier2, CompletableFuture.supplyAsync(() -> {
                     List<String> list = FunctionLoader.readLines(manager, identifier);
                     return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);
                 }, prepareExecutor));
             }
             CompletableFuture[] completableFutures = map.values().toArray(new CompletableFuture[0]);
-            return CompletableFuture.allOf(completableFutures).handle((void_, throwable) -> map);
+            return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map);
         });
-        return ((CompletableFuture)((CompletableFuture)completableFuture.thenCombine(completableFuture2, Pair::of)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(pair -> {
-            Map map = (Map)pair.getSecond();
+        return ((CompletableFuture)((CompletableFuture)completableFuture.thenCombine(completableFuture2, Pair::of)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(intermediate -> {
+            Map map = (Map)intermediate.getSecond();
             ImmutableMap.Builder builder = ImmutableMap.builder();
-            map.forEach((identifier, completableFuture) -> ((CompletableFuture)completableFuture.handle((commandFunction, throwable) -> {
-                if (throwable != null) {
-                    LOGGER.error("Failed to load function {}", identifier, throwable);
+            map.forEach((id, functionFuture) -> ((CompletableFuture)functionFuture.handle((function, ex) -> {
+                if (ex != null) {
+                    LOGGER.error("Failed to load function {}", id, ex);
                 } else {
-                    builder.put(identifier, commandFunction);
+                    builder.put(id, function);
                 }
                 return null;
             })).join());
             this.functions = builder.build();
-            this.tags = this.tagLoader.buildGroup((Map)pair.getFirst());
+            this.tags = this.tagLoader.buildGroup((Map)intermediate.getFirst());
         }, applyExecutor);
     }
 

@@ -23,9 +23,9 @@ implements TimerCallback<MinecraftServer> {
     @Override
     public void call(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
         CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
-        Tag<CommandFunction> tag = commandFunctionManager.getTaggedFunctions(this.name);
+        Tag<CommandFunction> tag = commandFunctionManager.getTag(this.name);
         for (CommandFunction commandFunction : tag.values()) {
-            commandFunctionManager.execute(commandFunction, commandFunctionManager.getTaggedFunctionSource());
+            commandFunctionManager.execute(commandFunction, commandFunctionManager.getScheduledCommandSource());
         }
     }
 

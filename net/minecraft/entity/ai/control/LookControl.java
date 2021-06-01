@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.ai.control;
 
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.Control;
@@ -55,8 +56,10 @@ implements Control {
         }
         if (this.active) {
             this.active = false;
-            this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.getTargetYaw(), this.yawSpeed);
-            this.entity.setPitch(this.changeAngle(this.entity.getPitch(), this.getTargetPitch(), this.pitchSpeed));
+            this.getTargetYaw().ifPresent(float_ -> {
+                this.entity.headYaw = this.changeAngle(this.entity.headYaw, float_.floatValue(), this.yawSpeed);
+            });
+            this.getTargetPitch().ifPresent(float_ -> this.entity.setPitch(this.changeAngle(this.entity.getPitch(), float_.floatValue(), this.pitchSpeed)));
         } else {
             this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.bodyYaw, 10.0f);
         }
@@ -89,18 +92,18 @@ implements Control {
         return this.lookZ;
     }
 
-    protected float getTargetPitch() {
+    protected Optional<Float> getTargetPitch() {
         double d = this.lookX - this.entity.getX();
         double e = this.lookY - this.entity.getEyeY();
         double f = this.lookZ - this.entity.getZ();
         double g = Math.sqrt(d * d + f * f);
-        return (float)(-(MathHelper.atan2(e, g) * 57.2957763671875));
+        return Math.abs(e) > (double)1.0E-5f || Math.abs(g) > (double)1.0E-5f ? Optional.of(Float.valueOf((float)(-(MathHelper.atan2(e, g) * 57.2957763671875)))) : Optional.empty();
     }
 
-    protected float getTargetYaw() {
+    protected Optional<Float> getTargetYaw() {
         double d = this.lookX - this.entity.getX();
         double e = this.lookZ - this.entity.getZ();
-        return (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;
+        return Math.abs(e) > (double)1.0E-5f || Math.abs(d) > (double)1.0E-5f ? Optional.of(Float.valueOf((float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f)) : Optional.empty();
     }
 
     protected float changeAngle(float from, float to, float max) {

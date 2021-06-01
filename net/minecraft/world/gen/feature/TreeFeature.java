@@ -84,7 +84,7 @@ extends Feature<TreeFeatureConfig> {
         if (pos.getY() < world.getBottomY() + 1 || pos.getY() + i + 1 > world.getTopY()) {
             return false;
         }
-        if (!treeFeatureConfig.field_33933.getBlockState(random, pos).canPlaceAt(world, pos)) {
+        if (!treeFeatureConfig.saplingProvider.getBlockState(random, pos).canPlaceAt(world, pos)) {
             return false;
         }
         OptionalInt optionalInt = treeFeatureConfig.minimumSize.getMinClippedHeight();

@@ -135,7 +135,7 @@ public class CommandFunction {
 
         @Nullable
         public Identifier getId() {
-            return this.function.map(function -> function.id).orElse(this.id);
+            return this.function.map(f -> f.id).orElse(this.id);
         }
     }
 
@@ -149,10 +149,10 @@ public class CommandFunction {
 
         @Override
         public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, int depth, @Nullable CommandFunctionManager.Tracer tracer) {
-            Util.ifPresentOrElse(this.function.get(manager), function -> {
-                Element[] elements = function.getElements();
+            Util.ifPresentOrElse(this.function.get(manager), f -> {
+                Element[] elements = f.getElements();
                 if (tracer != null) {
-                    tracer.traceFunctionCall(depth, function.getId(), elements.length);
+                    tracer.traceFunctionCall(depth, f.getId(), elements.length);
                 }
                 int k = maxChainLength - entries.size();
                 int l = Math.min(elements.length, k);

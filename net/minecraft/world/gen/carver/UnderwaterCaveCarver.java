@@ -11,6 +11,7 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -28,7 +29,7 @@ public class UnderwaterCaveCarver
 extends CaveCarver {
     public UnderwaterCaveCarver(Codec<CaveCarverConfig> codec) {
         super(codec);
-        this.alwaysCarvableBlocks = ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, new Block[]{Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.TERRACOTTA, Blocks.WHITE_TERRACOTTA, Blocks.ORANGE_TERRACOTTA, Blocks.MAGENTA_TERRACOTTA, Blocks.LIGHT_BLUE_TERRACOTTA, Blocks.YELLOW_TERRACOTTA, Blocks.LIME_TERRACOTTA, Blocks.PINK_TERRACOTTA, Blocks.GRAY_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA, Blocks.CYAN_TERRACOTTA, Blocks.PURPLE_TERRACOTTA, Blocks.BLUE_TERRACOTTA, Blocks.BROWN_TERRACOTTA, Blocks.GREEN_TERRACOTTA, Blocks.RED_TERRACOTTA, Blocks.BLACK_TERRACOTTA, Blocks.SANDSTONE, Blocks.RED_SANDSTONE, Blocks.MYCELIUM, Blocks.SNOW, Blocks.SAND, Blocks.GRAVEL, Blocks.WATER, Blocks.LAVA, Blocks.OBSIDIAN, Blocks.AIR, Blocks.CAVE_AIR, Blocks.PACKED_ICE});
+        this.alwaysCarvableBlocks = ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, new Block[]{Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.TERRACOTTA, Blocks.WHITE_TERRACOTTA, Blocks.ORANGE_TERRACOTTA, Blocks.MAGENTA_TERRACOTTA, Blocks.LIGHT_BLUE_TERRACOTTA, Blocks.YELLOW_TERRACOTTA, Blocks.LIME_TERRACOTTA, Blocks.PINK_TERRACOTTA, Blocks.GRAY_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA, Blocks.CYAN_TERRACOTTA, Blocks.PURPLE_TERRACOTTA, Blocks.BLUE_TERRACOTTA, Blocks.BROWN_TERRACOTTA, Blocks.GREEN_TERRACOTTA, Blocks.RED_TERRACOTTA, Blocks.BLACK_TERRACOTTA, Blocks.SANDSTONE, Blocks.RED_SANDSTONE, Blocks.MYCELIUM, Blocks.SNOW, Blocks.SAND, Blocks.GRAVEL, Blocks.WATER, Blocks.LAVA, Blocks.OBSIDIAN, Blocks.PACKED_ICE});
     }
 
     @Override
@@ -63,19 +64,14 @@ extends CaveCarver {
             chunk.setBlockState(pos, Blocks.LAVA.getDefaultState(), false);
             return false;
         }
+        chunk.setBlockState(pos, WATER.getBlockState(), false);
         int i = chunk.getPos().x;
         int j = chunk.getPos().z;
-        boolean bl = false;
-        for (Direction direction : Direction.Type.HORIZONTAL) {
+        for (Direction direction : FluidBlock.field_34006) {
             downPos.set((Vec3i)pos, direction);
             if (ChunkSectionPos.getSectionCoord(downPos.getX()) == i && ChunkSectionPos.getSectionCoord(downPos.getZ()) == j && !chunk.getBlockState(downPos).isAir()) continue;
-            chunk.setBlockState(downPos, WATER.getBlockState(), false);
-            chunk.getFluidTickScheduler().schedule(downPos, WATER.getFluid(), 0);
-            bl = true;
+            chunk.getFluidTickScheduler().schedule(pos, WATER.getFluid(), 0);
             break;
-        }
-        if (!bl) {
-            chunk.setBlockState(pos, WATER.getBlockState(), false);
         }
         return true;
     }

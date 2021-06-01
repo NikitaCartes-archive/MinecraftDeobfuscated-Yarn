@@ -53,7 +53,7 @@ extends AbstractCriterion<Conditions> {
         }
 
         public static Conditions create(ItemConvertible item) {
-            return new Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.Builder.create().item(item).build());
+            return new Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.Builder.create().items(item).build());
         }
 
         public boolean matches(ItemStack stack) {

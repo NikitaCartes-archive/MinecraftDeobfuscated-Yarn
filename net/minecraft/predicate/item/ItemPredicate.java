@@ -40,7 +40,7 @@ public class ItemPredicate {
     @Nullable
     private final Tag<Item> tag;
     @Nullable
-    private final Set<Item> item;
+    private final Set<Item> items;
     private final NumberRange.IntRange count;
     private final NumberRange.IntRange durability;
     private final EnchantmentPredicate[] enchantments;
@@ -51,7 +51,7 @@ public class ItemPredicate {
 
     public ItemPredicate() {
         this.tag = null;
-        this.item = null;
+        this.items = null;
         this.potion = null;
         this.count = NumberRange.IntRange.ANY;
         this.durability = NumberRange.IntRange.ANY;
@@ -60,9 +60,9 @@ public class ItemPredicate {
         this.nbt = NbtPredicate.ANY;
     }
 
-    public ItemPredicate(@Nullable Tag<Item> tag, @Nullable Set<Item> set, NumberRange.IntRange count, NumberRange.IntRange durability, EnchantmentPredicate[] enchantments, EnchantmentPredicate[] storedEnchantments, @Nullable Potion potion, NbtPredicate nbt) {
+    public ItemPredicate(@Nullable Tag<Item> tag, @Nullable Set<Item> items, NumberRange.IntRange count, NumberRange.IntRange durability, EnchantmentPredicate[] enchantments, EnchantmentPredicate[] storedEnchantments, @Nullable Potion potion, NbtPredicate nbt) {
         this.tag = tag;
-        this.item = set;
+        this.items = items;
         this.count = count;
         this.durability = durability;
         this.enchantments = enchantments;
@@ -79,7 +79,7 @@ public class ItemPredicate {
         if (this.tag != null && !stack.isIn(this.tag)) {
             return false;
         }
-        if (this.item != null && !this.item.contains(stack.getItem())) {
+        if (this.items != null && !this.items.contains(stack.getItem())) {
             return false;
         }
         if (!this.count.test(stack.getCount())) {
@@ -154,9 +154,9 @@ public class ItemPredicate {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
-        if (this.item != null) {
+        if (this.items != null) {
             jsonArray = new JsonArray();
-            for (Item item : this.item) {
+            for (Item item : this.items) {
                 jsonArray.add(Registry.ITEM.getId(item).toString());
             }
             jsonObject.add("items", jsonArray);
@@ -219,8 +219,8 @@ public class ItemPredicate {
             return new Builder();
         }
 
-        public Builder item(ItemConvertible ... itemConvertibles) {
-            this.item = Stream.of(itemConvertibles).map(ItemConvertible::asItem).collect(ImmutableSet.toImmutableSet());
+        public Builder items(ItemConvertible ... items) {
+            this.item = Stream.of(items).map(ItemConvertible::asItem).collect(ImmutableSet.toImmutableSet());
             return this;
         }
 

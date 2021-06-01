@@ -1077,7 +1077,7 @@ extends Entity {
         Entity entity2 = source.getAttacker();
         if (entity2 != null) {
             WolfEntity wolfEntity;
-            if (entity2 instanceof LivingEntity) {
+            if (entity2 instanceof LivingEntity && !source.method_37354()) {
                 this.setAttacker((LivingEntity)entity2);
             }
             if (entity2 instanceof PlayerEntity) {

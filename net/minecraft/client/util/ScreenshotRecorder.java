@@ -29,11 +29,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A screenshooter takes screenshots and saves them into tga file format. It also
+ * A screenshot recorder takes screenshots and saves them into tga file format. It also
  * holds a few utility methods for other types of screenshots.
  */
 @Environment(value=EnvType.CLIENT)
-public class Screenshooter {
+public class ScreenshotRecorder {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
     private int unitHeight;
@@ -44,22 +44,22 @@ public class Screenshooter {
     private File file;
 
     public static void saveScreenshot(File gameDirectory, int framebufferWidth, int framebufferHeight, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
-        Screenshooter.saveScreenshot(gameDirectory, null, framebufferWidth, framebufferHeight, framebuffer, messageReceiver);
+        ScreenshotRecorder.saveScreenshot(gameDirectory, null, framebufferWidth, framebufferHeight, framebuffer, messageReceiver);
     }
 
     public static void saveScreenshot(File gameDirectory, @Nullable String fileName, int framebufferWidth, int framebufferHeight, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> Screenshooter.saveScreenshotInner(gameDirectory, fileName, framebufferWidth, framebufferHeight, framebuffer, messageReceiver));
+            RenderSystem.recordRenderCall(() -> ScreenshotRecorder.saveScreenshotInner(gameDirectory, fileName, framebufferWidth, framebufferHeight, framebuffer, messageReceiver));
         } else {
-            Screenshooter.saveScreenshotInner(gameDirectory, fileName, framebufferWidth, framebufferHeight, framebuffer, messageReceiver);
+            ScreenshotRecorder.saveScreenshotInner(gameDirectory, fileName, framebufferWidth, framebufferHeight, framebuffer, messageReceiver);
         }
     }
 
     private static void saveScreenshotInner(File gameDirectory, @Nullable String fileName, int framebufferWidth, int framebufferHeight, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
-        NativeImage nativeImage = Screenshooter.takeScreenshot(framebufferWidth, framebufferHeight, framebuffer);
+        NativeImage nativeImage = ScreenshotRecorder.takeScreenshot(framebufferWidth, framebufferHeight, framebuffer);
         File file = new File(gameDirectory, "screenshots");
         file.mkdir();
-        File file2 = fileName == null ? Screenshooter.getScreenshotFilename(file) : new File(file, fileName);
+        File file2 = fileName == null ? ScreenshotRecorder.getScreenshotFilename(file) : new File(file, fileName);
         Util.getIoWorkerExecutor().execute(() -> {
             try {
                 nativeImage.writeFile(file2);
@@ -95,11 +95,11 @@ public class Screenshooter {
     }
 
     /**
-     * Creates a screenshooter for huge screenshots.
+     * Creates a screenshot recorder for huge screenshots.
      * 
      * @see net.minecraft.client.MinecraftClient#takeHugeScreenshot
      */
-    public Screenshooter(File gameDirectory, int width, int height, int unitHeight) throws IOException {
+    public ScreenshotRecorder(File gameDirectory, int width, int height, int unitHeight) throws IOException {
         this.width = width;
         this.height = height;
         this.unitHeight = unitHeight;

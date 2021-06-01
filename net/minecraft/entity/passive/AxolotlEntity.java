@@ -118,6 +118,7 @@ Bucketable {
     private static final int MAX_AIR = 6000;
     public static final String VARIANT_KEY = "Variant";
     private static final int field_33485 = 1800;
+    private static final int field_34005 = 2400;
     private final Map<String, Vec3f> modelAngles = Maps.newHashMap();
     private static final int BUFF_DURATION = 100;
 
@@ -281,6 +282,7 @@ Bucketable {
         if (axolotlEntity != null) {
             Variant variant = AxolotlEntity.shouldBabyBeDifferent(this.random) ? Variant.getRandomNatural(this.random) : (this.random.nextBoolean() ? this.getVariant() : ((AxolotlEntity)entity).getVariant());
             axolotlEntity.setVariant(variant);
+            axolotlEntity.setPersistent();
         }
         return axolotlEntity;
     }
@@ -419,11 +421,15 @@ Bucketable {
         }
     }
 
-    public void buffPlayer(PlayerEntity playerEntity) {
-        StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.REGENERATION);
-        int i = 100 + (statusEffectInstance != null ? statusEffectInstance.getDuration() : 0);
-        playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0), this);
-        playerEntity.removeStatusEffect(StatusEffects.MINING_FATIGUE);
+    public void buffPlayer(PlayerEntity player) {
+        int i;
+        StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.REGENERATION);
+        int n = i = statusEffectInstance != null ? statusEffectInstance.getDuration() : 0;
+        if (i < 2400) {
+            i = Math.min(2400, 100 + i);
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0), this);
+        }
+        player.removeStatusEffect(StatusEffects.MINING_FATIGUE);
     }
 
     @Override

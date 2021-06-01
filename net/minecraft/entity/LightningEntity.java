@@ -44,8 +44,8 @@ extends Entity {
     private boolean cosmetic;
     @Nullable
     private ServerPlayerEntity channeler;
-    private final Set<Entity> field_33904 = Sets.newHashSet();
-    private int field_33905;
+    private final Set<Entity> struckEntities = Sets.newHashSet();
+    private int blocksSetOnFire;
 
     public LightningEntity(EntityType<? extends LightningEntity> entityType, World world) {
         super(entityType, world);
@@ -103,7 +103,7 @@ extends Entity {
         if (this.ambientTick < 0) {
             if (this.remainingActions == 0) {
                 if (this.world instanceof ServerWorld) {
-                    list = this.world.getOtherEntities(this, new Box(this.getX() - 15.0, this.getY() - 15.0, this.getZ() - 15.0, this.getX() + 15.0, this.getY() + 6.0 + 15.0, this.getZ() + 15.0), entity -> entity.isAlive() && !this.field_33904.contains(entity));
+                    list = this.world.getOtherEntities(this, new Box(this.getX() - 15.0, this.getY() - 15.0, this.getZ() - 15.0, this.getX() + 15.0, this.getY() + 6.0 + 15.0, this.getZ() + 15.0), entity -> entity.isAlive() && !this.struckEntities.contains(entity));
                     for (ServerPlayerEntity serverPlayerEntity2 : ((ServerWorld)this.world).getPlayers(serverPlayerEntity -> serverPlayerEntity.distanceTo(this) < 256.0f)) {
                         Criteria.LIGHTNING_STRIKE.test(serverPlayerEntity2, this, list);
                     }
@@ -124,7 +124,7 @@ extends Entity {
                 for (Entity entity2 : list) {
                     entity2.onStruckByLightning((ServerWorld)this.world, this);
                 }
-                this.field_33904.addAll(list);
+                this.struckEntities.addAll(list);
                 if (this.channeler != null) {
                     Criteria.CHANNELED_LIGHTNING.trigger(this.channeler, list);
                 }
@@ -145,14 +145,14 @@ extends Entity {
         BlockState blockState = AbstractFireBlock.getState(this.world, blockPos);
         if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
             this.world.setBlockState(blockPos, blockState);
-            ++this.field_33905;
+            ++this.blocksSetOnFire;
         }
         for (int i = 0; i < spreadAttempts; ++i) {
             BlockPos blockPos2 = blockPos.add(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
             blockState = AbstractFireBlock.getState(this.world, blockPos2);
             if (!this.world.getBlockState(blockPos2).isAir() || !blockState.canPlaceAt(this.world, blockPos2)) continue;
             this.world.setBlockState(blockPos2, blockState);
-            ++this.field_33905;
+            ++this.blocksSetOnFire;
         }
     }
 
@@ -221,12 +221,12 @@ extends Entity {
         return new EntitySpawnS2CPacket(this);
     }
 
-    public int method_37220() {
-        return this.field_33905;
+    public int getBlocksSetOnFire() {
+        return this.blocksSetOnFire;
     }
 
-    public Stream<Entity> method_37221() {
-        return this.field_33904.stream().filter(Entity::isAlive);
+    public Stream<Entity> getStruckEntities() {
+        return this.struckEntities.stream().filter(Entity::isAlive);
     }
 }
 

@@ -229,16 +229,17 @@ implements StructureWorldAccess {
 
     @Override
     public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-        Chunk chunk;
-        BlockState blockState;
         int i = ChunkSectionPos.getSectionCoord(pos.getX());
         int j = ChunkSectionPos.getSectionCoord(pos.getZ());
         int k = Math.abs(this.centerPos.x - i);
         int l = Math.abs(this.centerPos.z - j);
         if (k > this.field_33755 || l > this.field_33755) {
             Util.error("Detected setBlock in a far chunk [" + i + ", " + j + "], status: " + this.field_33754 + (String)(this.field_33756 == null ? "" : ", currently generating: " + this.field_33756.get()));
+            return false;
         }
-        if ((blockState = (chunk = this.getChunk(i, j)).setBlockState(pos, state, false)) != null) {
+        Chunk chunk = this.getChunk(i, j);
+        BlockState blockState = chunk.setBlockState(pos, state, false);
+        if (blockState != null) {
             this.world.onBlockChanged(pos, blockState, state);
         }
         if (state.hasBlockEntity()) {

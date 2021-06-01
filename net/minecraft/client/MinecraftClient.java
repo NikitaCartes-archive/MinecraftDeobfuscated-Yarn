@@ -170,7 +170,7 @@ import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.Screenshooter;
+import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
@@ -2507,7 +2507,7 @@ WindowEventHandler {
                 } catch (InterruptedException interruptedException) {
                     // empty catch block
                 }
-                Screenshooter.saveScreenshot(directory, "panorama_" + l + ".png", width, height, framebuffer, text -> {});
+                ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", width, height, framebuffer, text -> {});
             }
             MutableText text2 = new LiteralText(directory.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
             TranslatableText translatableText = new TranslatableText("screenshot.success", text2);
@@ -2543,7 +2543,7 @@ WindowEventHandler {
     private Text takeHugeScreenshot(File gameDirectory, int unitWidth, int unitHeight, int width, int height) {
         try {
             ByteBuffer byteBuffer = GlDebugInfo.allocateMemory(unitWidth * unitHeight * 3);
-            Screenshooter screenshooter = new Screenshooter(gameDirectory, width, height, unitHeight);
+            ScreenshotRecorder screenshotRecorder = new ScreenshotRecorder(gameDirectory, width, height, unitHeight);
             float f = (float)width / (float)unitWidth;
             float g = (float)height / (float)unitHeight;
             float h = f > g ? f : g;
@@ -2557,11 +2557,11 @@ WindowEventHandler {
                     RenderSystem.pixelStore(3333, 1);
                     RenderSystem.pixelStore(3317, 1);
                     RenderSystem.readPixels(0, 0, unitWidth, unitHeight, 32992, 5121, byteBuffer);
-                    screenshooter.getIntoBuffer(byteBuffer, j, i, unitWidth, unitHeight);
+                    screenshotRecorder.getIntoBuffer(byteBuffer, j, i, unitWidth, unitHeight);
                 }
-                screenshooter.writeToStream();
+                screenshotRecorder.writeToStream();
             }
-            File file = screenshooter.finish();
+            File file = screenshotRecorder.finish();
             GlDebugInfo.freeMemory(byteBuffer);
             MutableText text = new LiteralText(file.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
             return new TranslatableText("screenshot.success", text);

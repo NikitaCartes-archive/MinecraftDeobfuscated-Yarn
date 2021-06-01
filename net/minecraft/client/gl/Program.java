@@ -39,7 +39,6 @@ public class Program {
 
     public void release() {
         if (this.shaderRef == -1) {
-            field_33940.warn("Double closing {} program: {}", (Object)this.shaderType, (Object)this.name);
             return;
         }
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);

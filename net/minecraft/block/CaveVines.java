@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import java.util.function.ToIntFunction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -34,6 +35,10 @@ public interface CaveVines {
 
     public static boolean hasBerries(BlockState state) {
         return state.contains(BERRIES) && state.get(BERRIES) != false;
+    }
+
+    public static ToIntFunction<BlockState> method_37362(int i) {
+        return blockState -> blockState.get(Properties.BERRIES) != false ? i : 0;
     }
 }
 

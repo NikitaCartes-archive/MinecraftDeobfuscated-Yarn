@@ -143,7 +143,7 @@ extends Block {
             }
             blockState = state;
         } else {
-            blockState = this.isWaterlogged() && state.getFluidState().isEqualAndStill(Fluids.WATER) ? (BlockState)AbstractLichenBlock.withNoDirections(this).with(Properties.WATERLOGGED, true) : AbstractLichenBlock.withNoDirections(this);
+            blockState = this.isWaterlogged() && state.getFluidState().isEqualAndStill(Fluids.WATER) ? (BlockState)this.getDefaultState().with(Properties.WATERLOGGED, true) : this.getDefaultState();
         }
         BlockPos blockPos = pos.offset(direction);
         if (AbstractLichenBlock.canGrowOn(world, direction, blockPos, world.getBlockState(blockPos))) {
@@ -186,17 +186,17 @@ extends Block {
         return list.stream().filter(from -> AbstractLichenBlock.hasDirection(state, from)).anyMatch(to -> this.trySpreadRandomly(state, world, pos, (Direction)to, random, false));
     }
 
-    public boolean trySpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random, boolean bl) {
+    public boolean trySpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random, boolean postProcess) {
         List<Direction> list = Arrays.asList(DIRECTIONS);
         Collections.shuffle(list, random);
-        return list.stream().anyMatch(direction2 -> this.trySpreadTo(state, world, pos, from, (Direction)direction2, bl));
+        return list.stream().anyMatch(direction2 -> this.trySpreadTo(state, world, pos, from, (Direction)direction2, postProcess));
     }
 
-    public boolean trySpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to, boolean bl) {
+    public boolean trySpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to, boolean postProcess) {
         Optional<Pair<BlockPos, Direction>> optional = this.getSpreadLocation(state, world, pos, from, to);
         if (optional.isPresent()) {
             Pair<BlockPos, Direction> pair = optional.get();
-            return this.addDirection(world, pair.getFirst(), pair.getSecond(), bl);
+            return this.addDirection(world, pair.getFirst(), pair.getSecond(), postProcess);
         }
         return false;
     }
@@ -233,11 +233,11 @@ extends Block {
         return blockState2 != null;
     }
 
-    private boolean addDirection(WorldAccess world, BlockPos pos, Direction direction, boolean bl) {
+    private boolean addDirection(WorldAccess world, BlockPos pos, Direction direction, boolean postProcess) {
         BlockState blockState = world.getBlockState(pos);
         BlockState blockState2 = this.withDirection(blockState, world, pos, direction);
         if (blockState2 != null) {
-            if (bl) {
+            if (postProcess) {
                 world.getChunk(pos).markBlockForPostProcessing(pos);
             }
             return world.setBlockState(pos, blockState2, Block.NOTIFY_LISTENERS);
@@ -274,20 +274,13 @@ extends Block {
         return FACING_PROPERTIES.get(direction);
     }
 
-    public static BlockState withNoDirections(Block block) {
-        return AbstractLichenBlock.withAllDirectionsSet(block.getDefaultState(), false);
-    }
-
     private static BlockState withAllDirections(StateManager<Block, BlockState> stateManager) {
-        return AbstractLichenBlock.withAllDirectionsSet(stateManager.getDefaultState(), true);
-    }
-
-    private static BlockState withAllDirectionsSet(BlockState state, boolean facing) {
+        BlockState blockState = stateManager.getDefaultState();
         for (BooleanProperty booleanProperty : FACING_PROPERTIES.values()) {
-            if (!state.contains(booleanProperty)) continue;
-            state = (BlockState)state.with(booleanProperty, facing);
+            if (!blockState.contains(booleanProperty)) continue;
+            blockState = (BlockState)blockState.with(booleanProperty, false);
         }
-        return state;
+        return blockState;
     }
 
     private static VoxelShape getShapeForState(BlockState state) {
@@ -296,10 +289,10 @@ extends Block {
             if (!AbstractLichenBlock.hasDirection(state, direction)) continue;
             voxelShape = VoxelShapes.union(voxelShape, SHAPES_FOR_DIRECTIONS.get(direction));
         }
-        return voxelShape;
+        return voxelShape.isEmpty() ? VoxelShapes.fullCube() : voxelShape;
     }
 
-    private static boolean hasAnyDirection(BlockState state) {
+    protected static boolean hasAnyDirection(BlockState state) {
         return Arrays.stream(DIRECTIONS).anyMatch(direction -> AbstractLichenBlock.hasDirection(state, direction));
     }
 

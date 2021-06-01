@@ -23,6 +23,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +45,7 @@ extends Item {
         BlockPos blockPos2 = blockPos.offset(context.getSide());
         if (BoneMealItem.useOnFertilizable(context.getStack(), world, blockPos)) {
             if (!world.isClient) {
-                world.syncWorldEvent(1505, blockPos, 0);
+                world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 0);
             }
             return ActionResult.success(world.isClient);
         }
@@ -52,7 +53,7 @@ extends Item {
         boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
         if (bl && BoneMealItem.useOnGround(context.getStack(), world, blockPos2, context.getSide())) {
             if (!world.isClient) {
-                world.syncWorldEvent(1505, blockPos2, 0);
+                world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos2, 0);
             }
             return ActionResult.success(world.isClient);
         }

@@ -101,33 +101,33 @@ extends BlockEntity {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void setOwner(@Nullable GameProfile gameProfile) {
+    public void setOwner(@Nullable GameProfile owner) {
         SkullBlockEntity skullBlockEntity = this;
         synchronized (skullBlockEntity) {
-            this.owner = gameProfile;
+            this.owner = owner;
         }
         this.loadOwnerProperties();
     }
 
     private void loadOwnerProperties() {
-        SkullBlockEntity.loadProperties(this.owner, gameProfile -> {
-            this.owner = gameProfile;
+        SkullBlockEntity.loadProperties(this.owner, owner -> {
+            this.owner = owner;
             this.markDirty();
         });
     }
 
-    public static void loadProperties(@Nullable GameProfile gameProfile2, Consumer<GameProfile> consumer) {
-        if (gameProfile2 == null || ChatUtil.isEmpty(gameProfile2.getName()) || gameProfile2.isComplete() && gameProfile2.getProperties().containsKey("textures") || userCache == null || sessionService == null) {
-            consumer.accept(gameProfile2);
+    public static void loadProperties(@Nullable GameProfile owner, Consumer<GameProfile> callback) {
+        if (owner == null || ChatUtil.isEmpty(owner.getName()) || owner.isComplete() && owner.getProperties().containsKey("textures") || userCache == null || sessionService == null) {
+            callback.accept(owner);
             return;
         }
-        userCache.method_37156(gameProfile2.getName(), gameProfile -> {
+        userCache.method_37156(owner.getName(), gameProfile -> {
             Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
             if (property == null) {
                 gameProfile = sessionService.fillProfileProperties((GameProfile)gameProfile, true);
             }
             userCache.add((GameProfile)gameProfile);
-            consumer.accept((GameProfile)gameProfile);
+            callback.accept((GameProfile)gameProfile);
         });
     }
 }

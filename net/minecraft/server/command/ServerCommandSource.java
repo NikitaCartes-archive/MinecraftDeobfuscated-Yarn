@@ -118,8 +118,8 @@ implements CommandSource {
         return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, consumer, this.entityAnchor);
     }
 
-    public ServerCommandSource mergeConsumers(ResultConsumer<ServerCommandSource> consumer, BinaryOperator<ResultConsumer<ServerCommandSource>> binaryOperator) {
-        ResultConsumer resultConsumer = (ResultConsumer)binaryOperator.apply(this.resultConsumer, consumer);
+    public ServerCommandSource mergeConsumers(ResultConsumer<ServerCommandSource> consumer, BinaryOperator<ResultConsumer<ServerCommandSource>> merger) {
+        ResultConsumer resultConsumer = (ResultConsumer)merger.apply(this.resultConsumer, consumer);
         return this.withConsumer(resultConsumer);
     }
 

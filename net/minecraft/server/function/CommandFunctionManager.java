@@ -22,21 +22,44 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * The command function manager implements execution of functions, like that from
+ * the {@code function} command.
+ */
 public class CommandFunctionManager {
-    private static final Text NO_RECURSION_TEXT = new TranslatableText("commands.debug.function.noRecursion");
-    private static final Identifier TICK_FUNCTION = new Identifier("tick");
-    private static final Identifier LOAD_FUNCTION = new Identifier("load");
+    /**
+     * A localized piece of text indicating that calling the debug command to debug
+     * functions from within a function is not supported.
+     */
+    private static final Text NO_TRACE_IN_FUNCTION_TEXT = new TranslatableText("commands.debug.function.noRecursion");
+    private static final Identifier TICK_TAG_ID = new Identifier("tick");
+    private static final Identifier LOAD_TAG_ID = new Identifier("load");
     final MinecraftServer server;
+    /**
+     * The active execution within this manager.
+     */
     @Nullable
-    private class_6345 field_33543;
+    private Execution execution;
+    /**
+     * A list of {@code minecraft:tick} tag functions to run on every tick. Set up on
+     * load, this is more efficient than polling the tag from the {@link #loader}
+     * every tick.
+     */
     private final List<CommandFunction> tickFunctions = Lists.newArrayList();
-    private boolean needToRunLoadFunctions;
+    /**
+     * Whether this command function manager has just {@linkplain #load(FunctionLoader)
+     * loaded} and should run all functions in the {@code minecraft:load} function tag.
+     */
+    private boolean justLoaded;
+    /**
+     * The source of functions for this command function manager.
+     */
     private FunctionLoader loader;
 
     public CommandFunctionManager(MinecraftServer server, FunctionLoader loader) {
         this.server = server;
         this.loader = loader;
-        this.initialize(loader);
+        this.load(loader);
     }
 
     public int getMaxCommandChainLength() {
@@ -48,22 +71,34 @@ public class CommandFunctionManager {
     }
 
     public void tick() {
-        this.executeAll(this.tickFunctions, TICK_FUNCTION);
-        if (this.needToRunLoadFunctions) {
-            this.needToRunLoadFunctions = false;
-            List<CommandFunction> collection = this.loader.getTags().getTagOrEmpty(LOAD_FUNCTION).values();
-            this.executeAll(collection, LOAD_FUNCTION);
+        this.executeAll(this.tickFunctions, TICK_TAG_ID);
+        if (this.justLoaded) {
+            this.justLoaded = false;
+            List<CommandFunction> collection = this.loader.getTags().getTagOrEmpty(LOAD_TAG_ID).values();
+            this.executeAll(collection, LOAD_TAG_ID);
         }
     }
 
     private void executeAll(Collection<CommandFunction> functions, Identifier label) {
         this.server.getProfiler().push(label::toString);
         for (CommandFunction commandFunction : functions) {
-            this.execute(commandFunction, this.getTaggedFunctionSource());
+            this.execute(commandFunction, this.getScheduledCommandSource());
         }
         this.server.getProfiler().pop();
     }
 
+    /**
+     * Executes a function.
+     * 
+     * <p>This is same as calling {@link #execute(CommandFunction, ServerCommandSource,
+     * Tracer) execute(function, source, null)}.
+     * 
+     * @return the command output value
+     * @see #execute(CommandFunction, ServerCommandSource, Tracer)
+     * 
+     * @param function the function
+     * @param source the command source to execute with
+     */
     public int execute(CommandFunction function, ServerCommandSource source) {
         return this.execute(function, source, null);
     }
@@ -71,41 +106,70 @@ public class CommandFunctionManager {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
+    /**
+     * Executes a function. This may have two cases: new or recursive.
+     * 
+     * <p>In a new execution, the {@link #execution execution == null}, and a custom
+     * {@code tracer} can be specified. The return value indicates the number of
+     * commands and nested functions ran.
+     * 
+     * <p>In a recursive execution, {@link #execution execution != null}. It is
+     * required that {@code tracer == null}, or the execution reports an error and is
+     * skipped. The return value is {@code 0}.
+     * 
+     * @return a non-zero value for a new execution, or {@code 0} for a recursive
+     * execution
+     * @see #execute(CommandFunction, ServerCommandSource)
+     * 
+     * @param function the function
+     * @param source the command source to execute with
+     * @param tracer a tracer for a non-recursive function execution
+     */
     public int execute(CommandFunction function, ServerCommandSource source, @Nullable Tracer tracer) {
-        if (this.field_33543 != null) {
+        if (this.execution != null) {
             if (tracer != null) {
-                this.field_33543.reportError(NO_RECURSION_TEXT.getString());
+                this.execution.reportError(NO_TRACE_IN_FUNCTION_TEXT.getString());
                 return 0;
             }
-            this.field_33543.method_36343(function, source);
+            this.execution.recursiveRun(function, source);
             return 0;
         }
         try {
-            this.field_33543 = new class_6345(tracer);
-            int n = this.field_33543.method_36346(function, source);
+            this.execution = new Execution(tracer);
+            int n = this.execution.run(function, source);
             return n;
         } finally {
-            this.field_33543 = null;
+            this.execution = null;
         }
     }
 
     /**
-     * Called to update the loaded functions on datapack reload.
+     * Sets the functions that this command function manager will use in executions.
      * 
      * @param loader the new loader functions will be taken from
      */
-    public void update(FunctionLoader loader) {
+    public void setFunctions(FunctionLoader loader) {
         this.loader = loader;
-        this.initialize(loader);
+        this.load(loader);
     }
 
-    private void initialize(FunctionLoader loader) {
+    private void load(FunctionLoader loader) {
         this.tickFunctions.clear();
-        this.tickFunctions.addAll(loader.getTags().getTagOrEmpty(TICK_FUNCTION).values());
-        this.needToRunLoadFunctions = true;
+        this.tickFunctions.addAll(loader.getTags().getTagOrEmpty(TICK_TAG_ID).values());
+        this.justLoaded = true;
     }
 
-    public ServerCommandSource getTaggedFunctionSource() {
+    /**
+     * {@return the command source to execute scheduled functions} Scheduled functions
+     * are those from the {@code /schedule} command and those from the {@code
+     * minecraft:tick} tag.
+     * 
+     * <p>This command source {@linkplain ServerCommandSource#hasPermissionLevel(int)
+     * has permission level 2} and is {@linkplain ServerCommandSource#withSilent()
+     * silent} compared to the server's {@linkplain MinecraftServer#getCommandSource()
+     * command source}.
+     */
+    public ServerCommandSource getScheduledCommandSource() {
         return this.server.getCommandSource().withLevel(2).withSilent();
     }
 
@@ -113,8 +177,8 @@ public class CommandFunctionManager {
         return this.loader.get(id);
     }
 
-    public Tag<CommandFunction> getTaggedFunctions(Identifier tag) {
-        return this.loader.getOrCreateTag(tag);
+    public Tag<CommandFunction> getTag(Identifier id) {
+        return this.loader.getTagOrEmpty(id);
     }
 
     public Iterable<Identifier> getAllFunctions() {
@@ -135,43 +199,43 @@ public class CommandFunctionManager {
         public void traceFunctionCall(int var1, Identifier var2, int var3);
     }
 
-    class class_6345 {
+    class Execution {
         private int depth;
         @Nullable
         private final Tracer tracer;
-        private final Deque<Entry> field_33547 = Queues.newArrayDeque();
-        private final List<Entry> field_33548 = Lists.newArrayList();
+        private final Deque<Entry> queue = Queues.newArrayDeque();
+        private final List<Entry> waitlist = Lists.newArrayList();
 
-        class_6345(Tracer tracer) {
+        Execution(Tracer tracer) {
             this.tracer = tracer;
         }
 
-        void method_36343(CommandFunction function, ServerCommandSource source) {
+        void recursiveRun(CommandFunction function, ServerCommandSource source) {
             int i = CommandFunctionManager.this.getMaxCommandChainLength();
-            if (this.field_33547.size() + this.field_33548.size() < i) {
-                this.field_33548.add(new Entry(source, this.depth, new CommandFunction.FunctionElement(function)));
+            if (this.queue.size() + this.waitlist.size() < i) {
+                this.waitlist.add(new Entry(source, this.depth, new CommandFunction.FunctionElement(function)));
             }
         }
 
         /*
          * WARNING - Removed try catching itself - possible behaviour change.
          */
-        int method_36346(CommandFunction function, ServerCommandSource source) {
+        int run(CommandFunction function, ServerCommandSource source) {
             int i = CommandFunctionManager.this.getMaxCommandChainLength();
             int j = 0;
             CommandFunction.Element[] elements = function.getElements();
             for (int k = elements.length - 1; k >= 0; --k) {
-                this.field_33547.push(new Entry(source, 0, elements[k]));
+                this.queue.push(new Entry(source, 0, elements[k]));
             }
-            while (!this.field_33547.isEmpty()) {
+            while (!this.queue.isEmpty()) {
                 try {
-                    Entry entry = this.field_33547.removeFirst();
+                    Entry entry = this.queue.removeFirst();
                     CommandFunctionManager.this.server.getProfiler().push(entry::toString);
                     this.depth = entry.depth;
-                    entry.execute(CommandFunctionManager.this, this.field_33547, i, this.tracer);
-                    if (!this.field_33548.isEmpty()) {
-                        Lists.reverse(this.field_33548).forEach(this.field_33547::addFirst);
-                        this.field_33548.clear();
+                    entry.execute(CommandFunctionManager.this, this.queue, i, this.tracer);
+                    if (!this.waitlist.isEmpty()) {
+                        Lists.reverse(this.waitlist).forEach(this.queue::addFirst);
+                        this.waitlist.clear();
                     }
                 } finally {
                     CommandFunctionManager.this.server.getProfiler().pop();
@@ -200,10 +264,10 @@ public class CommandFunctionManager {
             this.element = element;
         }
 
-        public void execute(CommandFunctionManager manager, Deque<Entry> deque, int maxChainLength, @Nullable Tracer tracer) {
+        public void execute(CommandFunctionManager manager, Deque<Entry> entries, int maxChainLength, @Nullable Tracer tracer) {
             block4: {
                 try {
-                    this.element.execute(manager, this.source, deque, maxChainLength, this.depth, tracer);
+                    this.element.execute(manager, this.source, entries, maxChainLength, this.depth, tracer);
                 } catch (CommandSyntaxException commandSyntaxException) {
                     if (tracer != null) {
                         tracer.traceError(this.depth, commandSyntaxException.getRawMessage().getString());

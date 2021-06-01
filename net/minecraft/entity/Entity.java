@@ -87,6 +87,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.ReusableStream;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -2986,7 +2987,8 @@ CommandOutput {
 
     public void setYaw(float yaw) {
         if (!Float.isFinite(yaw)) {
-            throw new IllegalStateException("Invalid entity rotation: " + yaw);
+            Util.error("Invalid entity rotation: " + yaw + ", discarding.");
+            return;
         }
         this.yaw = yaw;
     }
@@ -2997,7 +2999,8 @@ CommandOutput {
 
     public void setPitch(float pitch) {
         if (!Float.isFinite(pitch)) {
-            throw new IllegalStateException("Invalid entity rotation: " + pitch);
+            Util.error("Invalid entity rotation: " + pitch + ", discarding.");
+            return;
         }
         this.pitch = pitch;
     }

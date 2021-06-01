@@ -246,11 +246,15 @@ public class ChunkHolder {
     }
 
     public CompletableFuture<Either<Chunk, Unloaded>> getChunkAt(ChunkStatus targetStatus, ThreadedAnvilChunkStorage chunkStorage) {
-        Either either;
         int i = targetStatus.getIndex();
         CompletableFuture<Either<Chunk, Unloaded>> completableFuture = this.futuresByStatus.get(i);
-        if (completableFuture != null && ((either = (Either)completableFuture.getNow(null)) == null || either.left().isPresent())) {
-            return completableFuture;
+        if (completableFuture != null) {
+            boolean bl;
+            Either either = completableFuture.getNow(null);
+            boolean bl2 = bl = either != null && either.right().isPresent();
+            if (!bl) {
+                return completableFuture;
+            }
         }
         if (ChunkHolder.getTargetStatusForLevel(this.level).isAtLeast(targetStatus)) {
             CompletableFuture<Either<Chunk, Unloaded>> completableFuture2 = chunkStorage.getChunk(this, targetStatus);

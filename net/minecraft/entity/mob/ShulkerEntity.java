@@ -537,7 +537,7 @@ implements Monster {
         }
 
         @Override
-        protected float getTargetYaw() {
+        protected Optional<Float> getTargetYaw() {
             Direction direction = ShulkerEntity.this.getAttachedFace().getOpposite();
             Vec3f vec3f = field_33765.copy();
             vec3f.rotate(direction.getRotationQuaternion());
@@ -550,12 +550,12 @@ implements Monster {
             Vec3f vec3f3 = new Vec3f((float)d, (float)e, (float)f);
             float g = vec3f2.dot(vec3f3);
             float h = vec3f.dot(vec3f3);
-            return (float)(MathHelper.atan2(-g, h) * 57.2957763671875);
+            return Math.abs(g) > 1.0E-5f || Math.abs(h) > 1.0E-5f ? Optional.of(Float.valueOf((float)(MathHelper.atan2(-g, h) * 57.2957763671875))) : Optional.empty();
         }
 
         @Override
-        protected float getTargetPitch() {
-            return 0.0f;
+        protected Optional<Float> getTargetPitch() {
+            return Optional.of(Float.valueOf(0.0f));
         }
     }
 

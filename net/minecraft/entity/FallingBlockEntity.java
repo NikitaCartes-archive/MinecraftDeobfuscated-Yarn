@@ -170,10 +170,12 @@ extends Entity {
                                 this.onDestroyedOnLanding(block, blockPos);
                                 this.dropItem(block);
                             }
-                        } else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+                        } else {
                             this.discard();
-                            this.onDestroyedOnLanding(block, blockPos);
-                            this.dropItem(block);
+                            if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+                                this.onDestroyedOnLanding(block, blockPos);
+                                this.dropItem(block);
+                            }
                         }
                     } else {
                         this.discard();

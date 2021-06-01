@@ -75,7 +75,7 @@ extends Task<E> {
         Brain<?> brain = ((LivingEntity)pathAwareEntity).getBrain();
         if (!list.isEmpty()) {
             LivingEntity livingEntity = list.get(0);
-            livingEntity.damage(DamageSource.mob(pathAwareEntity), this.damage.applyAsInt(pathAwareEntity));
+            livingEntity.damage(DamageSource.mob(pathAwareEntity).method_37353(), this.damage.applyAsInt(pathAwareEntity));
             float f = livingEntity.blockedByShield(DamageSource.mob(pathAwareEntity)) ? 0.5f : 1.0f;
             float g = MathHelper.clamp(((LivingEntity)pathAwareEntity).getMovementSpeed() * 1.65f, 0.2f, 3.0f);
             livingEntity.takeKnockback((double)(f * g) * this.strengthMultiplierFactory.applyAsDouble(pathAwareEntity), this.direction.getX(), this.direction.getZ());

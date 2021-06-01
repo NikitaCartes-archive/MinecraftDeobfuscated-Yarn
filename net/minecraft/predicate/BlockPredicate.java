@@ -31,13 +31,13 @@ public class BlockPredicate {
     @Nullable
     private final Tag<Block> tag;
     @Nullable
-    private final Set<Block> block;
+    private final Set<Block> blocks;
     private final StatePredicate state;
     private final NbtPredicate nbt;
 
-    public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Set<Block> set, StatePredicate state, NbtPredicate nbt) {
+    public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Set<Block> blocks, StatePredicate state, NbtPredicate nbt) {
         this.tag = tag;
-        this.block = set;
+        this.blocks = blocks;
         this.state = state;
         this.nbt = nbt;
     }
@@ -54,7 +54,7 @@ public class BlockPredicate {
         if (this.tag != null && !blockState.isIn(this.tag)) {
             return false;
         }
-        if (this.block != null && !this.block.contains(blockState.getBlock())) {
+        if (this.blocks != null && !this.blocks.contains(blockState.getBlock())) {
             return false;
         }
         if (!this.state.test(blockState)) {
@@ -93,9 +93,9 @@ public class BlockPredicate {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
-        if (this.block != null) {
+        if (this.blocks != null) {
             JsonArray jsonArray = new JsonArray();
-            for (Block block : this.block) {
+            for (Block block : this.blocks) {
                 jsonArray.add(Registry.BLOCK.getId(block).toString());
             }
             jsonObject.add("blocks", jsonArray);
@@ -110,7 +110,7 @@ public class BlockPredicate {
 
     public static class Builder {
         @Nullable
-        private Set<Block> block;
+        private Set<Block> blocks;
         @Nullable
         private Tag<Block> tag;
         private StatePredicate state = StatePredicate.ANY;
@@ -123,13 +123,13 @@ public class BlockPredicate {
             return new Builder();
         }
 
-        public Builder block(Block ... blocks) {
-            this.block = ImmutableSet.copyOf(blocks);
+        public Builder blocks(Block ... blocks) {
+            this.blocks = ImmutableSet.copyOf(blocks);
             return this;
         }
 
-        public Builder method_37214(Iterable<Block> iterable) {
-            this.block = ImmutableSet.copyOf(iterable);
+        public Builder blocks(Iterable<Block> blocks) {
+            this.blocks = ImmutableSet.copyOf(blocks);
             return this;
         }
 
@@ -149,7 +149,7 @@ public class BlockPredicate {
         }
 
         public BlockPredicate build() {
-            return new BlockPredicate(this.tag, this.block, this.state, this.nbt);
+            return new BlockPredicate(this.tag, this.blocks, this.state, this.nbt);
         }
     }
 }

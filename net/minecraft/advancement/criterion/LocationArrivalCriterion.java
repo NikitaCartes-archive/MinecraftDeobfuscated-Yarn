@@ -76,7 +76,7 @@ extends AbstractCriterion<Conditions> {
         }
 
         public static Conditions method_37246(Block block, Item item) {
-            return Conditions.method_37245(EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(item).build()).build()).method_37230(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(block).build()).build()).build());
+            return Conditions.method_37245(EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(item).build()).build()).steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block).build()).build()).build());
         }
 
         public boolean matches(ServerWorld world, double x, double y, double z) {

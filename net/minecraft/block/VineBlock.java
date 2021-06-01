@@ -69,12 +69,17 @@ extends Block {
         if (state.get(WEST).booleanValue()) {
             voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
         }
-        return voxelShape;
+        return voxelShape.isEmpty() ? VoxelShapes.fullCube() : voxelShape;
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.shapesByState.get(state);
+    }
+
+    @Override
+    public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
+        return true;
     }
 
     @Override
@@ -203,7 +208,7 @@ extends Block {
                 }
                 BlockState blockState2 = state;
                 for (Direction direction2 : Direction.Type.HORIZONTAL) {
-                    if (!random.nextBoolean() && VineBlock.shouldConnectTo(world, blockPos.offset(direction2), Direction.UP)) continue;
+                    if (!random.nextBoolean() && VineBlock.shouldConnectTo(world, blockPos.offset(direction2), direction2)) continue;
                     blockState2 = (BlockState)blockState2.with(VineBlock.getFacingProperty(direction2), false);
                 }
                 if (this.hasHorizontalSide(blockState2)) {

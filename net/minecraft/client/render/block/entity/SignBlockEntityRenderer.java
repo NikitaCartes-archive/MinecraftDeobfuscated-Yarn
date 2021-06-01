@@ -49,7 +49,7 @@ public class SignBlockEntityRenderer
 implements BlockEntityRenderer<SignBlockEntity> {
     public static final int field_32828 = 90;
     private static final int field_32829 = 10;
-    private static final String field_32830 = "stick";
+    private static final String STICK = "stick";
     private static final int field_33962 = -988212;
     private static final int field_33963 = MathHelper.square(16);
     private final Map<SignType, SignModel> typeToModel = SignType.stream().collect(ImmutableMap.toImmutableMap(signType -> signType, signType -> new SignModel(ctx.getLayerModelPart(EntityModelLayers.createSign(signType)))));
@@ -155,7 +155,7 @@ implements BlockEntityRenderer<SignBlockEntity> {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
         modelPartData.addChild("sign", ModelPartBuilder.create().uv(0, 0).cuboid(-12.0f, -14.0f, -1.0f, 24.0f, 12.0f, 2.0f), ModelTransform.NONE);
-        modelPartData.addChild(field_32830, ModelPartBuilder.create().uv(0, 14).cuboid(-1.0f, -2.0f, -1.0f, 2.0f, 14.0f, 2.0f), ModelTransform.NONE);
+        modelPartData.addChild(STICK, ModelPartBuilder.create().uv(0, 14).cuboid(-1.0f, -2.0f, -1.0f, 2.0f, 14.0f, 2.0f), ModelTransform.NONE);
         return TexturedModelData.of(modelData, 64, 32);
     }
 
@@ -168,7 +168,7 @@ implements BlockEntityRenderer<SignBlockEntity> {
         public SignModel(ModelPart root) {
             super(RenderLayer::getEntityCutoutNoCull);
             this.root = root;
-            this.stick = root.getChild(SignBlockEntityRenderer.field_32830);
+            this.stick = root.getChild(SignBlockEntityRenderer.STICK);
         }
 
         @Override

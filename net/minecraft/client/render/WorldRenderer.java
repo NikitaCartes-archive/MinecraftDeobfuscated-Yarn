@@ -939,10 +939,9 @@ AutoCloseable {
         float g = gameRenderer.getViewDistance();
         boolean bl4 = bl2 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
         if (this.client.options.viewDistance >= 4) {
-            BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2);
             profiler.swap("sky");
             RenderSystem.setShader(GameRenderer::getPositionShader);
-            this.renderSky(matrices, matrix4f, tickDelta);
+            this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2));
         }
         profiler.swap("fog");
         BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0f, 32.0f), bl2);
@@ -1508,13 +1507,14 @@ AutoCloseable {
         RenderSystem.disableBlend();
     }
 
-    public void renderSky(MatrixStack matrices, Matrix4f matrix4f, float f) {
+    public void renderSky(MatrixStack matrices, Matrix4f matrix4f, float f, Runnable runnable) {
         float r;
         float q;
         float p;
         int n;
         float l;
         float j;
+        runnable.run();
         if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.END) {
             this.renderEndSky(matrices);
             return;
@@ -1600,7 +1600,9 @@ AutoCloseable {
         float v = this.world.method_23787(f) * j;
         if (v > 0.0f) {
             RenderSystem.setShaderColor(v, v, v, v);
+            BackgroundRenderer.method_23792();
             this.starsBuffer.setShader(matrices.peek().getModel(), matrix4f, GameRenderer.getPositionShader());
+            runnable.run();
         }
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();

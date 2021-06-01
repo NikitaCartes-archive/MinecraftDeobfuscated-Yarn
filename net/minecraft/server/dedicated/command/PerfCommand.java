@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.server.dedicated.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -29,31 +29,31 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class class_6413 {
-    private static final Logger field_33985 = LogManager.getLogger();
-    private static final SimpleCommandExceptionType field_33986 = new SimpleCommandExceptionType(new TranslatableText("commands.perf.notRunning"));
-    private static final SimpleCommandExceptionType field_33987 = new SimpleCommandExceptionType(new TranslatableText("commands.perf.alreadyRunning"));
+public class PerfCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.perf.notRunning"));
+    private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.perf.alreadyRunning"));
 
-    public static void method_37331(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("perf").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))).then(CommandManager.literal("start").executes(commandContext -> class_6413.method_37333((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("stop").executes(commandContext -> class_6413.method_37338((ServerCommandSource)commandContext.getSource()))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("perf").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))).then(CommandManager.literal("start").executes(commandContext -> PerfCommand.method_37333((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("stop").executes(commandContext -> PerfCommand.method_37338((ServerCommandSource)commandContext.getSource()))));
     }
 
-    private static int method_37333(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-        if (minecraftServer.method_37321()) {
-            throw field_33987.create();
+    private static int method_37333(ServerCommandSource source) throws CommandSyntaxException {
+        MinecraftServer minecraftServer = source.getMinecraftServer();
+        if (minecraftServer.isRunningMonitor()) {
+            throw ALREADY_RUNNING_EXCEPTION.create();
         }
-        Consumer<ProfileResult> consumer = profileResult -> class_6413.method_37334(serverCommandSource, profileResult);
-        Consumer<Path> consumer2 = path -> class_6413.method_37335(serverCommandSource, path, minecraftServer);
+        Consumer<ProfileResult> consumer = profileResult -> PerfCommand.method_37334(source, profileResult);
+        Consumer<Path> consumer2 = path -> PerfCommand.method_37335(source, path, minecraftServer);
         minecraftServer.method_37320(consumer, consumer2);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.perf.started"), false);
+        source.sendFeedback(new TranslatableText("commands.perf.started"), false);
         return 0;
     }
 
     private static int method_37338(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
         MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-        if (!minecraftServer.method_37321()) {
-            throw field_33986.create();
+        if (!minecraftServer.isRunningMonitor()) {
+            throw NOT_RUNNING_EXCEPTION.create();
         }
         minecraftServer.method_37323();
         return 0;
@@ -66,7 +66,7 @@ public class class_6413 {
             string2 = FileNameUtil.getNextUniqueName(ProfilerDumper.DEBUG_PROFILING_DIRECTORY, string, ".zip");
         } catch (IOException iOException) {
             serverCommandSource.sendError(new TranslatableText("commands.perf.reportFailed"));
-            field_33985.error(iOException);
+            LOGGER.error(iOException);
             return;
         }
         try (ZipCompressor zipCompressor = new ZipCompressor(ProfilerDumper.DEBUG_PROFILING_DIRECTORY.resolve(string2));){
@@ -76,7 +76,7 @@ public class class_6413 {
         try {
             FileUtils.forceDelete(path.toFile());
         } catch (IOException iOException) {
-            field_33985.warn("Failed to delete temporary profiling file {}", (Object)path, (Object)iOException);
+            LOGGER.warn("Failed to delete temporary profiling file {}", (Object)path, (Object)iOException);
         }
         serverCommandSource.sendFeedback(new TranslatableText("commands.perf.reportSaved", string2), false);
     }

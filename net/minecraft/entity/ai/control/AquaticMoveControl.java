@@ -51,11 +51,15 @@ extends MoveControl {
         this.entity.headYaw = this.entity.getYaw();
         float i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
         if (this.entity.isTouchingWater()) {
+            float k;
             this.entity.setMovementSpeed(i * this.speedInWater);
-            float j = -((float)(MathHelper.atan2(e, Math.sqrt(d * d + f * f)) * 57.2957763671875));
-            j = MathHelper.clamp(MathHelper.wrapDegrees(j), (float)(-this.pitchChange), (float)this.pitchChange);
-            this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), j, 5.0f));
-            float k = MathHelper.cos(this.entity.getPitch() * ((float)Math.PI / 180));
+            double j = Math.sqrt(d * d + f * f);
+            if (Math.abs(e) > (double)1.0E-5f || Math.abs(j) > (double)1.0E-5f) {
+                k = -((float)(MathHelper.atan2(e, j) * 57.2957763671875));
+                k = MathHelper.clamp(MathHelper.wrapDegrees(k), (float)(-this.pitchChange), (float)this.pitchChange);
+                this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), k, 5.0f));
+            }
+            k = MathHelper.cos(this.entity.getPitch() * ((float)Math.PI / 180));
             float l = MathHelper.sin(this.entity.getPitch() * ((float)Math.PI / 180));
             this.entity.forwardSpeed = k * i;
             this.entity.upwardSpeed = -l * i;

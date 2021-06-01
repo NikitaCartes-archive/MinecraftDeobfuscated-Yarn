@@ -39,6 +39,7 @@ import net.minecraft.block.CarrotsBlock;
 import net.minecraft.block.CartographyTableBlock;
 import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.block.CauldronBlock;
+import net.minecraft.block.CaveVines;
 import net.minecraft.block.CaveVinesBodyBlock;
 import net.minecraft.block.CaveVinesHeadBlock;
 import net.minecraft.block.ChainBlock;
@@ -510,7 +511,7 @@ public class Blocks {
     public static final Block PUMPKIN_STEM = Blocks.register("pumpkin_stem", new StemBlock((GourdBlock)PUMPKIN, () -> Items.PUMPKIN_SEEDS, AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
     public static final Block MELON_STEM = Blocks.register("melon_stem", new StemBlock((GourdBlock)MELON, () -> Items.MELON_SEEDS, AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
     public static final Block VINE = Blocks.register("vine", new VineBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2f).sounds(BlockSoundGroup.VINE)));
-    public static final Block GLOW_LICHEN = Blocks.register("glow_lichen", new GlowLichenBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MapColor.LICHEN_GREEN).noCollision().strength(0.2f).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(state -> 7)));
+    public static final Block GLOW_LICHEN = Blocks.register("glow_lichen", new GlowLichenBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MapColor.LICHEN_GREEN).noCollision().strength(0.2f).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(GlowLichenBlock.method_37364(7))));
     public static final Block OAK_FENCE_GATE = Blocks.register("oak_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getDefaultMapColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BRICK_STAIRS = Blocks.register("brick_stairs", new StairsBlock(BRICKS.getDefaultState(), AbstractBlock.Settings.copy(BRICKS)));
     public static final Block STONE_BRICK_STAIRS = Blocks.register("stone_brick_stairs", new StairsBlock(STONE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(STONE_BRICKS)));
@@ -886,7 +887,7 @@ public class Blocks {
     public static final Block HORN_CORAL_WALL_FAN = Blocks.register("horn_coral_wall_fan", new CoralWallFanBlock(DEAD_HORN_CORAL_WALL_FAN, AbstractBlock.Settings.of(Material.UNDERWATER_PLANT, MapColor.YELLOW).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS).dropsLike(HORN_CORAL_FAN)));
     public static final Block SEA_PICKLE = Blocks.register("sea_pickle", new SeaPickleBlock(AbstractBlock.Settings.of(Material.UNDERWATER_PLANT, MapColor.GREEN).luminance(state -> SeaPickleBlock.isDry(state) ? 0 : 3 + 3 * state.get(SeaPickleBlock.PICKLES)).sounds(BlockSoundGroup.SLIME).nonOpaque()));
     public static final Block BLUE_ICE = Blocks.register("blue_ice", new TransparentBlock(AbstractBlock.Settings.of(Material.DENSE_ICE).strength(2.8f).slipperiness(0.989f).sounds(BlockSoundGroup.GLASS)));
-    public static final Block CONDUIT = Blocks.register("conduit", new ConduitBlock(AbstractBlock.Settings.of(Material.GLASS, MapColor.DIAMOND_BLUE).strength(3.0f).luminance(state -> 15).nonOpaque()));
+    public static final Block CONDUIT = Blocks.register("conduit", new ConduitBlock(AbstractBlock.Settings.of(Material.GLASS, MapColor.DIAMOND_BLUE).strength(3.0f).luminance(blockState -> 15).nonOpaque()));
     public static final Block BAMBOO_SAPLING = Blocks.register("bamboo_sapling", new BambooSaplingBlock(AbstractBlock.Settings.of(Material.BAMBOO_SAPLING).ticksRandomly().breakInstantly().noCollision().strength(1.0f).sounds(BlockSoundGroup.BAMBOO_SAPLING)));
     public static final Block BAMBOO = Blocks.register("bamboo", new BambooBlock(AbstractBlock.Settings.of(Material.BAMBOO, MapColor.DARK_GREEN).ticksRandomly().breakInstantly().strength(1.0f).sounds(BlockSoundGroup.BAMBOO).nonOpaque().dynamicBounds()));
     public static final Block POTTED_BAMBOO = Blocks.register("potted_bamboo", new FlowerPotBlock(BAMBOO, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque()));
@@ -964,7 +965,7 @@ public class Blocks {
     public static final Block STRIPPED_CRIMSON_HYPHAE = Blocks.register("stripped_crimson_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MapColor.DARK_CRIMSON).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
     public static final Block CRIMSON_NYLIUM = Blocks.register("crimson_nylium", new NyliumBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.DULL_RED).requiresTool().strength(0.4f).sounds(BlockSoundGroup.NYLIUM).ticksRandomly()));
     public static final Block CRIMSON_FUNGUS = Blocks.register("crimson_fungus", new FungusBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.DARK_RED).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS), () -> ConfiguredFeatures.CRIMSON_FUNGI_PLANTED));
-    public static final Block SHROOMLIGHT = Blocks.register("shroomlight", new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.RED).strength(1.0f).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(state -> 15)));
+    public static final Block SHROOMLIGHT = Blocks.register("shroomlight", new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.RED).strength(1.0f).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(blockState -> 15)));
     public static final Block WEEPING_VINES = Blocks.register("weeping_vines", new WeepingVinesBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.DARK_RED).ticksRandomly().noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)));
     public static final Block WEEPING_VINES_PLANT = Blocks.register("weeping_vines_plant", new WeepingVinesPlantBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.DARK_RED).noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)));
     public static final Block TWISTING_VINES = Blocks.register("twisting_vines", new TwistingVinesBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.CYAN).ticksRandomly().noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)));
@@ -1066,8 +1067,8 @@ public class Blocks {
     public static final Block AMETHYST_BLOCK = Blocks.register("amethyst_block", new AmethystBlock(AbstractBlock.Settings.of(Material.AMETHYST, MapColor.PURPLE).strength(1.5f).sounds(BlockSoundGroup.AMETHYST_BLOCK).requiresTool()));
     public static final Block BUDDING_AMETHYST = Blocks.register("budding_amethyst", new BuddingAmethystBlock(AbstractBlock.Settings.of(Material.AMETHYST).ticksRandomly().strength(1.5f).sounds(BlockSoundGroup.AMETHYST_BLOCK).requiresTool()));
     public static final Block AMETHYST_CLUSTER = Blocks.register("amethyst_cluster", new AmethystClusterBlock(7, 3, AbstractBlock.Settings.of(Material.AMETHYST).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.AMETHYST_CLUSTER).strength(1.5f).luminance(state -> 5)));
-    public static final Block LARGE_AMETHYST_BUD = Blocks.register("large_amethyst_bud", new AmethystClusterBlock(5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(blockState -> 4)));
-    public static final Block MEDIUM_AMETHYST_BUD = Blocks.register("medium_amethyst_bud", new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(blockState -> 2)));
+    public static final Block LARGE_AMETHYST_BUD = Blocks.register("large_amethyst_bud", new AmethystClusterBlock(5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(state -> 4)));
+    public static final Block MEDIUM_AMETHYST_BUD = Blocks.register("medium_amethyst_bud", new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(state -> 2)));
     public static final Block SMALL_AMETHYST_BUD = Blocks.register("small_amethyst_bud", new AmethystClusterBlock(3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(blockState -> 1)));
     public static final Block TUFF = Blocks.register("tuff", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_GRAY).sounds(BlockSoundGroup.TUFF).requiresTool().strength(1.5f, 6.0f)));
     public static final Block CALCITE = Blocks.register("calcite", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_WHITE).sounds(BlockSoundGroup.CALCITE).requiresTool().strength(0.75f)));
@@ -1111,8 +1112,8 @@ public class Blocks {
     public static final Block LIGHTNING_ROD = Blocks.register("lightning_rod", new LightningRodBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER).nonOpaque()));
     public static final Block POINTED_DRIPSTONE = Blocks.register("pointed_dripstone", new PointedDripstoneBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_BROWN).nonOpaque().sounds(BlockSoundGroup.POINTED_DRIPSTONE).ticksRandomly().strength(1.5f, 3.0f).dynamicBounds()));
     public static final Block DRIPSTONE_BLOCK = Blocks.register("dripstone_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_BROWN).sounds(BlockSoundGroup.DRIPSTONE_BLOCK).requiresTool().strength(1.5f, 1.0f)));
-    public static final Block CAVE_VINES = Blocks.register("cave_vines", new CaveVinesHeadBlock(AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().noCollision().luminance(Blocks.createLightLevelFromBerriesBlockState(14)).breakInstantly().sounds(BlockSoundGroup.CAVE_VINES)));
-    public static final Block CAVE_VINES_PLANT = Blocks.register("cave_vines_plant", new CaveVinesBodyBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().luminance(Blocks.createLightLevelFromBerriesBlockState(14)).breakInstantly().sounds(BlockSoundGroup.CAVE_VINES)));
+    public static final Block CAVE_VINES = Blocks.register("cave_vines", new CaveVinesHeadBlock(AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().noCollision().luminance(CaveVines.method_37362(14)).breakInstantly().sounds(BlockSoundGroup.CAVE_VINES)));
+    public static final Block CAVE_VINES_PLANT = Blocks.register("cave_vines_plant", new CaveVinesBodyBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().luminance(CaveVines.method_37362(14)).breakInstantly().sounds(BlockSoundGroup.CAVE_VINES)));
     public static final Block SPORE_BLOSSOM = Blocks.register("spore_blossom", new SporeBlossomBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.SPORE_BLOSSOM)));
     public static final Block AZALEA = Blocks.register("azalea", new AzaleaBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.AZALEA).nonOpaque()));
     public static final Block FLOWERING_AZALEA = Blocks.register("flowering_azalea", new AzaleaBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.FLOWERING_AZALEA).nonOpaque()));
@@ -1153,10 +1154,6 @@ public class Blocks {
 
     private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
         return state -> state.get(Properties.LIT) != false ? litLevel : 0;
-    }
-
-    private static ToIntFunction<BlockState> createLightLevelFromBerriesBlockState(int berriesLevel) {
-        return state -> state.get(Properties.BERRIES) != false ? berriesLevel : 0;
     }
 
     /**

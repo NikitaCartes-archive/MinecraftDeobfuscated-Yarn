@@ -59,12 +59,12 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(lightning), EntityPredicate.Extended.ofLegacy(bystander));
         }
 
-        public boolean test(LootContext lightningContext, List<LootContext> bystanderContexts) {
-            if (!this.lightning.test(lightningContext)) {
+        public boolean test(LootContext lightning, List<LootContext> bystanders) {
+            if (!this.lightning.test(lightning)) {
                 return false;
             }
             if (this.bystander != EntityPredicate.Extended.EMPTY) {
-                if (bystanderContexts.stream().noneMatch(this.bystander::test)) {
+                if (bystanders.stream().noneMatch(this.bystander::test)) {
                     return false;
                 }
             }

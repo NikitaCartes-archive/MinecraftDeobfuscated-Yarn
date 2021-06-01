@@ -20,6 +20,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Program;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -39,7 +40,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.util.Screenshooter;
+import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -370,176 +371,180 @@ AutoCloseable {
 
     public void loadShaders(ResourceManager manager) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        ArrayList<Pair<Shader, Consumer<Shader>>> list = Lists.newArrayListWithCapacity(this.shaders.size());
+        ArrayList<Program> list = Lists.newArrayList();
+        list.addAll(Program.Type.FRAGMENT.getProgramCache().values());
+        list.addAll(Program.Type.VERTEX.getProgramCache().values());
+        list.forEach(Program::release);
+        ArrayList<Pair<Shader, Consumer<Shader>>> list2 = Lists.newArrayListWithCapacity(this.shaders.size());
         try {
-            list.add(Pair.of(new Shader(manager, "block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 blockShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "new_entity", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "new_entity", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 newEntityShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "particle", VertexFormats.POSITION_TEXTURE_COLOR_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(manager, "particle", VertexFormats.POSITION_TEXTURE_COLOR_LIGHT), shader -> {
                 particleShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "position", VertexFormats.POSITION), shader -> {
+            list2.add(Pair.of(new Shader(manager, "position", VertexFormats.POSITION), shader -> {
                 positionShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "position_color", VertexFormats.POSITION_COLOR), shader -> {
+            list2.add(Pair.of(new Shader(manager, "position_color", VertexFormats.POSITION_COLOR), shader -> {
                 positionColorShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(manager, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT), shader -> {
                 positionColorLightmapShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE), shader -> {
                 positionColorTexShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(manager, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 positionColorTexLightmapShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "position_tex", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "position_tex", VertexFormats.POSITION_TEXTURE), shader -> {
                 positionTexShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR), shader -> {
+            list2.add(Pair.of(new Shader(manager, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR), shader -> {
                 positionTexColorShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL), shader -> {
                 positionTexColorNormalShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR), shader -> {
+            list2.add(Pair.of(new Shader(manager, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR), shader -> {
                 positionTexLightmapColorShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeSolidShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeCutoutMippedShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeCutoutShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeTranslucentShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeTranslucentMovingBlockShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeTranslucentNoCrumblingShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeArmorCutoutNoCullShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntitySolidShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityCutoutShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityCutoutNoNullShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityCutoutNoNullZOffsetShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeItemEntityTranslucentCullShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityTranslucentCullShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityTranslucentShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntitySmoothCutoutShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeBeaconBeamShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityDecalShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityNoOutlineShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityShadowShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityAlphaShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_eyes", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_eyes", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEyesShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_energy_swirl", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_energy_swirl", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEnergySwirlShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT), shader -> {
                 renderTypeLeashShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_water_mask", VertexFormats.POSITION), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_water_mask", VertexFormats.POSITION), shader -> {
                 renderTypeWaterMaskShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE), shader -> {
                 renderTypeOutlineShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeArmorGlintShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeArmorEntityGlintShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeGlintTranslucentShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_glint", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_glint", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeGlintShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeGlintDirectShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeEntityGlintShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeEntityGlintDirectShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 renderTypeTextShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_text_intensity", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_text_intensity", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 renderTypeTextIntensityShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 renderTypeTextSeeThroughShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_text_intensity_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_text_intensity_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 renderTypeTextIntensitySeeThroughShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_lightning", VertexFormats.POSITION_COLOR), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_lightning", VertexFormats.POSITION_COLOR), shader -> {
                 renderTypeLightningShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeTripwireShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_end_portal", VertexFormats.POSITION), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_end_portal", VertexFormats.POSITION), shader -> {
                 renderTypeEndPortalShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_end_gateway", VertexFormats.POSITION), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_end_gateway", VertexFormats.POSITION), shader -> {
                 renderTypeEndGatewayShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_lines", VertexFormats.LINES), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_lines", VertexFormats.LINES), shader -> {
                 renderTypeLinesShader = shader;
             }));
-            list.add(Pair.of(new Shader(manager, "rendertype_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(manager, "rendertype_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeCrumblingShader = shader;
             }));
         } catch (IOException iOException) {
-            list.forEach(pair -> ((Shader)pair.getFirst()).close());
+            list2.forEach(pair -> ((Shader)pair.getFirst()).close());
             throw new RuntimeException("could not reload shaders", iOException);
         }
         this.clearShaders();
-        list.forEach(pair -> {
+        list2.forEach(pair -> {
             Shader shader = (Shader)pair.getFirst();
             this.shaders.put(shader.method_35787(), shader);
             ((Consumer)pair.getSecond()).accept(shader);
@@ -875,7 +880,7 @@ AutoCloseable {
 
     private void updateWorldIcon() {
         if (this.client.worldRenderer.getCompletedChunkCount() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().hasIconFile()) {
-            NativeImage nativeImage = Screenshooter.takeScreenshot(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer());
+            NativeImage nativeImage = ScreenshotRecorder.takeScreenshot(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer());
             Util.getIoWorkerExecutor().execute(() -> {
                 int i = nativeImage.getWidth();
                 int j = nativeImage.getHeight();

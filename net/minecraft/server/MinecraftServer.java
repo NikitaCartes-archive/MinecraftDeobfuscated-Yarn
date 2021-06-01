@@ -229,7 +229,7 @@ AutoCloseable {
     private boolean field_33977;
     @Nullable
     private class_6414 field_33978;
-    private boolean field_33979;
+    private boolean profilerEnabled;
     private final ServerNetworkIo networkIo;
     private final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
     private final ServerMetadata metadata = new ServerMetadata();
@@ -667,8 +667,8 @@ AutoCloseable {
                         this.timeReference += m * 50L;
                         this.lastTimeReference = this.timeReference;
                     }
-                    if (this.field_33979) {
-                        this.field_33979 = false;
+                    if (this.profilerEnabled) {
+                        this.profilerEnabled = false;
                         this.field_33978 = new class_6414(Util.getMeasuringTimeNano(), this.ticks);
                     }
                     this.timeReference += 50L;
@@ -1321,7 +1321,7 @@ AutoCloseable {
             serverResourceManager.loadRegistryTags();
             this.getPlayerManager().saveAllPlayerData();
             this.getPlayerManager().onDataPacksReloaded();
-            this.commandFunctionManager.update(this.serverResourceManager.getFunctionLoader());
+            this.commandFunctionManager.setFunctions(this.serverResourceManager.getFunctionLoader());
             this.structureManager.setResourceManager(this.serverResourceManager.getResourceManager());
         }, (Executor)this);
         if (this.isOnThread()) {
@@ -1578,7 +1578,7 @@ AutoCloseable {
         this.tickTimeTracker.read();
     }
 
-    public boolean method_37321() {
+    public boolean isRunningMonitor() {
         return this.tickTimeTracker.isActive();
     }
 
@@ -1649,11 +1649,11 @@ AutoCloseable {
     }
 
     public boolean isDebugRunning() {
-        return this.field_33979 || this.field_33978 != null;
+        return this.profilerEnabled || this.field_33978 != null;
     }
 
     public void enableProfiler() {
-        this.field_33979 = true;
+        this.profilerEnabled = true;
     }
 
     public ProfileResult stopDebug() {

@@ -429,7 +429,7 @@ public interface DispenserBehavior {
                 BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
                 if (BoneMealItem.useOnFertilizable(stack, world, blockPos) || BoneMealItem.useOnGround(stack, world, blockPos, null)) {
                     if (!world.isClient) {
-                        world.syncWorldEvent(1505, blockPos, 0);
+                        world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 0);
                     }
                 } else {
                     this.setSuccess(false);

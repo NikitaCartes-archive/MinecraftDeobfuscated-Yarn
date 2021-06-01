@@ -151,7 +151,7 @@ public final class ItemStack {
         this.count = tag.getByte("Count");
         if (tag.contains("tag", 10)) {
             this.tag = tag.getCompound("tag");
-            this.getItem().postProcessNbt(tag);
+            this.getItem().postProcessNbt(this.tag);
         }
         if (this.getItem().isDamageable()) {
             this.setDamage(this.getDamage());
@@ -535,6 +535,7 @@ public final class ItemStack {
         if (this.getItem().isDamageable()) {
             this.setDamage(this.getDamage());
         }
+        this.getItem().postProcessNbt(tag);
     }
 
     public Text getName() {

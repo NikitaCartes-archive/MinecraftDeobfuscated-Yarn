@@ -104,7 +104,7 @@ extends Feature<GeodeFeatureConfig> {
             }
         }
         ArrayList<BlockPos> list3 = Lists.newArrayList();
-        Predicate<BlockState> predicate = GeodeFeature.notInBlockTagPredicate(geodeFeatureConfig.layerConfig.field_33769);
+        Predicate<BlockState> predicate = GeodeFeature.notInBlockTagPredicate(geodeFeatureConfig.layerConfig.cannotReplace);
         for (BlockPos blockPos3 : BlockPos.iterate(blockPos.add(i, i, i), blockPos.add(j, j, j))) {
             double r = doublePerlinNoiseSampler.sample(blockPos3.getX(), blockPos3.getY(), blockPos3.getZ()) * geodeFeatureConfig.noiseMultiplier;
             double s = 0.0;

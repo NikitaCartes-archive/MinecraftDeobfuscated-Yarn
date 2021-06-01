@@ -1198,11 +1198,11 @@ implements DataProvider {
     }
 
     private static InventoryChangedCriterion.Conditions conditionsFromItem(NumberRange.IntRange count, ItemConvertible item) {
-        return RecipesProvider.conditionsFromItemPredicates(ItemPredicate.Builder.create().item(item).count(count).build());
+        return RecipesProvider.conditionsFromItemPredicates(ItemPredicate.Builder.create().items(item).count(count).build());
     }
 
     private static InventoryChangedCriterion.Conditions conditionsFromItem(ItemConvertible item) {
-        return RecipesProvider.conditionsFromItemPredicates(ItemPredicate.Builder.create().item(item).build());
+        return RecipesProvider.conditionsFromItemPredicates(ItemPredicate.Builder.create().items(item).build());
     }
 
     private static InventoryChangedCriterion.Conditions conditionsFromTag(Tag<Item> tag) {

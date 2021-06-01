@@ -24,7 +24,6 @@ import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.UsingItemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6404;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -35,6 +34,7 @@ import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.EntityTypeTags;
@@ -53,11 +53,11 @@ implements Consumer<Consumer<Advancement>> {
     private static final EntityType<?>[] MONSTERS = new EntityType[]{EntityType.BLAZE, EntityType.CAVE_SPIDER, EntityType.CREEPER, EntityType.DROWNED, EntityType.ELDER_GUARDIAN, EntityType.ENDER_DRAGON, EntityType.ENDERMAN, EntityType.ENDERMITE, EntityType.EVOKER, EntityType.GHAST, EntityType.GUARDIAN, EntityType.HOGLIN, EntityType.HUSK, EntityType.MAGMA_CUBE, EntityType.PHANTOM, EntityType.PIGLIN, EntityType.PIGLIN_BRUTE, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.SHULKER, EntityType.SILVERFISH, EntityType.SKELETON, EntityType.SLIME, EntityType.SPIDER, EntityType.STRAY, EntityType.VEX, EntityType.VINDICATOR, EntityType.WITCH, EntityType.WITHER_SKELETON, EntityType.WITHER, EntityType.ZOGLIN, EntityType.ZOMBIE_VILLAGER, EntityType.ZOMBIE, EntityType.ZOMBIFIED_PIGLIN};
 
     private static LightningStrikeCriterion.Conditions method_37316(NumberRange.IntRange intRange, EntityPredicate entityPredicate) {
-        return LightningStrikeCriterion.Conditions.create(EntityPredicate.Builder.create().distance(DistancePredicate.method_37223(NumberRange.FloatRange.atMost(30.0))).method_37228(class_6404.method_37237(intRange)).build(), entityPredicate);
+        return LightningStrikeCriterion.Conditions.create(EntityPredicate.Builder.create().distance(DistancePredicate.method_37223(NumberRange.FloatRange.atMost(30.0))).lightningBolt(LightningBoltPredicate.of(intRange)).build(), entityPredicate);
     }
 
     private static UsingItemCriterion.Conditions method_37315(EntityType<?> entityType, Item item) {
-        return UsingItemCriterion.Conditions.create(EntityPredicate.Builder.create().player(PlayerPredicate.Builder.create().method_37251(EntityPredicate.Builder.create().type(entityType).build()).build()), ItemPredicate.Builder.create().item(item));
+        return UsingItemCriterion.Conditions.create(EntityPredicate.Builder.create().player(PlayerPredicate.Builder.create().method_37251(EntityPredicate.Builder.create().type(entityType).build()).build()), ItemPredicate.Builder.create().items(item));
     }
 
     @Override
