@@ -27,7 +27,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.Resource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
-import net.minecraft.text.StringVisitable;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -42,17 +42,20 @@ public class CreditsScreen extends Screen {
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-	private static final StringVisitable SEPARATOR_LINE = new LiteralText("============").formatted(Formatting.WHITE);
+	private static final Text SEPARATOR_LINE = new LiteralText("============").formatted(Formatting.WHITE);
 	private static final String CENTERED_LINE_PREFIX = "           ";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 	private static final int field_33956 = 274;
 	private static final float SPACE_BAR_SPEED_MULTIPLIER = 5.0F;
+	private static final float field_34012 = 15.0F;
 	private final boolean endCredits;
 	private final Runnable finishAction;
 	private float time;
 	private List<OrderedText> credits;
 	private IntSet centeredLines;
 	private int creditsHeight;
+	private boolean field_34010;
+	private final IntSet field_34011 = new IntOpenHashSet();
 	private float speed;
 	private final float baseSpeed;
 
@@ -69,6 +72,10 @@ public class CreditsScreen extends Screen {
 		this.speed = this.baseSpeed;
 	}
 
+	private float method_37369() {
+		return this.field_34010 ? this.baseSpeed * (5.0F + (float)this.field_34011.size() * 15.0F) : this.baseSpeed;
+	}
+
 	@Override
 	public void tick() {
 		this.client.getMusicTracker().tick();
@@ -81,19 +88,25 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_SPACE) {
-			this.speed = this.baseSpeed * 5.0F;
+		if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
+			this.field_34011.add(keyCode);
+		} else if (keyCode == GLFW.GLFW_KEY_SPACE) {
+			this.field_34010 = true;
 		}
 
+		this.speed = this.method_37369();
 		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
 	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_SPACE) {
-			this.speed = this.baseSpeed;
+			this.field_34010 = false;
+		} else if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
+			this.field_34011.remove(keyCode);
 		}
 
+		this.speed = this.method_37369();
 		return super.keyReleased(keyCode, scanCode, modifiers);
 	}
 
@@ -132,7 +145,7 @@ public class CreditsScreen extends Screen {
 							string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
 						}
 
-						this.addText(string, false);
+						this.addText(string);
 						this.addEmptyLine();
 					}
 
@@ -150,11 +163,8 @@ public class CreditsScreen extends Screen {
 					JsonObject jsonObject = jsonElement.getAsJsonObject();
 					String string2 = jsonObject.get("section").getAsString();
 					this.addText(SEPARATOR_LINE, true);
-					this.addEmptyLine();
 					this.addText(new LiteralText(string2).formatted(Formatting.YELLOW), true);
-					this.addEmptyLine();
 					this.addText(SEPARATOR_LINE, true);
-					this.addEmptyLine();
 					this.addEmptyLine();
 					this.addEmptyLine();
 
@@ -163,12 +173,10 @@ public class CreditsScreen extends Screen {
 						String string4 = jsonObject2.get("title").getAsString();
 						JsonArray jsonArray4 = jsonObject2.getAsJsonArray("names");
 						this.addText(new LiteralText(string4).formatted(Formatting.GRAY), false);
-						this.addEmptyLine();
 
 						for (JsonElement jsonElement3 : jsonArray4) {
 							String string5 = jsonElement3.getAsString();
-							this.addText(new LiteralText("           ").append(new LiteralText(string5)).formatted(Formatting.WHITE), false);
-							this.addEmptyLine();
+							this.addText(new LiteralText("           ").append(string5).formatted(Formatting.WHITE), false);
 						}
 
 						this.addEmptyLine();
@@ -189,18 +197,16 @@ public class CreditsScreen extends Screen {
 		this.credits.add(OrderedText.EMPTY);
 	}
 
-	private void addText(String text, boolean centered) {
-		this.addText(new LiteralText(text), centered);
+	private void addText(String text) {
+		this.credits.addAll(this.client.textRenderer.wrapLines(new LiteralText(text), 274));
 	}
 
-	private void addText(StringVisitable text, boolean centered) {
-		for (OrderedText orderedText : this.client.textRenderer.wrapLines(text, 274)) {
-			if (centered) {
-				this.centeredLines.add(this.credits.size());
-			}
-
-			this.credits.add(orderedText);
+	private void addText(Text text, boolean centered) {
+		if (centered) {
+			this.centeredLines.add(this.credits.size());
 		}
+
+		this.credits.add(text.asOrderedText());
 	}
 
 	private void renderBackground() {

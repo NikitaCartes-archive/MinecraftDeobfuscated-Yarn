@@ -96,10 +96,16 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	public T setSync(int x, int y, int z, T value) {
-		this.lock();
-		T object = this.setAndGetOldValue(toIndex(x, y, z), value);
-		this.unlock();
-		return object;
+		Object var6;
+		try {
+			this.lock();
+			T object = this.setAndGetOldValue(toIndex(x, y, z), value);
+			var6 = object;
+		} finally {
+			this.unlock();
+		}
+
+		return (T)var6;
 	}
 
 	public T set(int x, int y, int z, T value) {
@@ -114,9 +120,12 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	public void method_35321(int i, int j, int k, T object) {
-		this.lock();
-		this.set(toIndex(i, j, k), object);
-		this.unlock();
+		try {
+			this.lock();
+			this.set(toIndex(i, j, k), object);
+		} finally {
+			this.unlock();
+		}
 	}
 
 	private void set(int index, T object) {
@@ -134,86 +143,97 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	public void fromPacket(PacketByteBuf buf) {
-		this.lock();
-		int i = buf.readByte();
-		if (this.paletteSize != i) {
-			this.setPaletteSize(i);
-		}
+		try {
+			this.lock();
+			int i = buf.readByte();
+			if (this.paletteSize != i) {
+				this.setPaletteSize(i);
+			}
 
-		this.palette.fromPacket(buf);
-		buf.readLongArray(this.data.getStorage());
-		this.unlock();
+			this.palette.fromPacket(buf);
+			buf.readLongArray(this.data.getStorage());
+		} finally {
+			this.unlock();
+		}
 	}
 
 	public void toPacket(PacketByteBuf buf) {
-		this.lock();
-		buf.writeByte(this.paletteSize);
-		this.palette.toPacket(buf);
-		buf.writeLongArray(this.data.getStorage());
-		this.unlock();
+		try {
+			this.lock();
+			buf.writeByte(this.paletteSize);
+			this.palette.toPacket(buf);
+			buf.writeLongArray(this.data.getStorage());
+		} finally {
+			this.unlock();
+		}
 	}
 
 	public void read(NbtList paletteNbt, long[] data) {
-		this.lock();
-		int i = Math.max(4, MathHelper.log2DeBruijn(paletteNbt.size()));
-		if (i != this.paletteSize) {
-			this.setPaletteSize(i);
-		}
-
-		this.palette.readNbt(paletteNbt);
-		int j = data.length * 64 / 4096;
-		if (this.palette == this.fallbackPalette) {
-			Palette<T> palette = new BiMapPalette<>(this.idList, i, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer);
-			palette.readNbt(paletteNbt);
-			PackedIntegerArray packedIntegerArray = new PackedIntegerArray(i, 4096, data);
-
-			for (int k = 0; k < 4096; k++) {
-				this.data.set(k, this.fallbackPalette.getIndex(palette.getByIndex(packedIntegerArray.get(k))));
+		try {
+			this.lock();
+			int i = Math.max(4, MathHelper.log2DeBruijn(paletteNbt.size()));
+			if (i != this.paletteSize) {
+				this.setPaletteSize(i);
 			}
-		} else if (j == this.paletteSize) {
-			System.arraycopy(data, 0, this.data.getStorage(), 0, data.length);
-		} else {
-			PackedIntegerArray packedIntegerArray2 = new PackedIntegerArray(j, 4096, data);
 
-			for (int l = 0; l < 4096; l++) {
-				this.data.set(l, packedIntegerArray2.get(l));
+			this.palette.readNbt(paletteNbt);
+			int j = data.length * 64 / 4096;
+			if (this.palette == this.fallbackPalette) {
+				Palette<T> palette = new BiMapPalette<>(this.idList, i, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer);
+				palette.readNbt(paletteNbt);
+				PackedIntegerArray packedIntegerArray = new PackedIntegerArray(i, 4096, data);
+
+				for (int k = 0; k < 4096; k++) {
+					this.data.set(k, this.fallbackPalette.getIndex(palette.getByIndex(packedIntegerArray.get(k))));
+				}
+			} else if (j == this.paletteSize) {
+				System.arraycopy(data, 0, this.data.getStorage(), 0, data.length);
+			} else {
+				PackedIntegerArray packedIntegerArray2 = new PackedIntegerArray(j, 4096, data);
+
+				for (int l = 0; l < 4096; l++) {
+					this.data.set(l, packedIntegerArray2.get(l));
+				}
 			}
+		} finally {
+			this.unlock();
 		}
-
-		this.unlock();
 	}
 
 	public void write(NbtCompound nbt, String paletteKey, String dataKey) {
-		this.lock();
-		BiMapPalette<T> biMapPalette = new BiMapPalette<>(
-			this.idList, this.paletteSize, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer
-		);
-		T object = this.defaultValue;
-		int i = biMapPalette.getIndex(this.defaultValue);
-		int[] is = new int[4096];
+		try {
+			this.lock();
+			BiMapPalette<T> biMapPalette = new BiMapPalette<>(
+				this.idList, this.paletteSize, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer
+			);
+			T object = this.defaultValue;
+			int i = biMapPalette.getIndex(this.defaultValue);
+			int[] is = new int[4096];
 
-		for (int j = 0; j < 4096; j++) {
-			T object2 = this.get(j);
-			if (object2 != object) {
-				object = object2;
-				i = biMapPalette.getIndex(object2);
+			for (int j = 0; j < 4096; j++) {
+				T object2 = this.get(j);
+				if (object2 != object) {
+					object = object2;
+					i = biMapPalette.getIndex(object2);
+				}
+
+				is[j] = i;
 			}
 
-			is[j] = i;
+			NbtList nbtList = new NbtList();
+			biMapPalette.writeNbt(nbtList);
+			nbt.put(paletteKey, nbtList);
+			int k = Math.max(4, MathHelper.log2DeBruijn(nbtList.size()));
+			PackedIntegerArray packedIntegerArray = new PackedIntegerArray(k, 4096);
+
+			for (int l = 0; l < is.length; l++) {
+				packedIntegerArray.set(l, is[l]);
+			}
+
+			nbt.putLongArray(dataKey, packedIntegerArray.getStorage());
+		} finally {
+			this.unlock();
 		}
-
-		NbtList nbtList = new NbtList();
-		biMapPalette.writeNbt(nbtList);
-		nbt.put(paletteKey, nbtList);
-		int k = Math.max(4, MathHelper.log2DeBruijn(nbtList.size()));
-		PackedIntegerArray packedIntegerArray = new PackedIntegerArray(k, 4096);
-
-		for (int l = 0; l < is.length; l++) {
-			packedIntegerArray.set(l, is[l]);
-		}
-
-		nbt.putLongArray(dataKey, packedIntegerArray.getStorage());
-		this.unlock();
 	}
 
 	public int getPacketSize() {

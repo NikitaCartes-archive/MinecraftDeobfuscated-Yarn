@@ -1769,7 +1769,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				new ProfilerDumper("server"),
 				this.field_33975,
 				path -> {
-					this.dump(path.resolve("server"));
+					this.submitAndJoin(() -> this.dump(path.resolve("server")));
 					this.field_33976.accept(path);
 				}
 			);

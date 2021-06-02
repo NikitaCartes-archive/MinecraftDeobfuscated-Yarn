@@ -65,13 +65,9 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (isCharged(itemStack)) {
-			if (user.getOffHandStack().isOf(Items.CROSSBOW) && !user.getMainHandStack().isEmpty()) {
-				return TypedActionResult.fail(itemStack);
-			} else {
-				shootAll(world, user, hand, itemStack, getSpeed(itemStack), 1.0F);
-				setCharged(itemStack, false);
-				return TypedActionResult.consume(itemStack);
-			}
+			shootAll(world, user, hand, itemStack, getSpeed(itemStack), 1.0F);
+			setCharged(itemStack, false);
+			return TypedActionResult.consume(itemStack);
 		} else if (!user.getArrowType(itemStack).isEmpty()) {
 			if (!isCharged(itemStack)) {
 				this.charged = false;

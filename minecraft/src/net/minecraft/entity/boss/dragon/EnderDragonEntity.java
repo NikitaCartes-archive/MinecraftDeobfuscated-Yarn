@@ -904,6 +904,6 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 	@Override
 	public boolean canTarget(LivingEntity target) {
-		return target instanceof PlayerEntity ? target.canTakeDamage() : super.canTarget(target);
+		return target.canTakeDamage();
 	}
 }

@@ -358,21 +358,26 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		} else {
 			int m = chunk.getSectionIndex(l * this.verticalNoiseResolution - 1 + i);
 			int n = chunk.getSectionIndex(i);
-			Set<ChunkSection> set = Sets.<ChunkSection>newHashSet();
+			return CompletableFuture.supplyAsync(() -> {
+				Set<ChunkSection> set = Sets.<ChunkSection>newHashSet();
 
-			for (int o = m; o >= n; o--) {
-				ChunkSection chunkSection = chunk.getSection(o);
-				chunkSection.lock();
-				set.add(chunkSection);
-			}
+				Chunk var16;
+				try {
+					for (int mx = m; mx >= n; mx--) {
+						ChunkSection chunkSection = chunk.getSection(mx);
+						chunkSection.lock();
+						set.add(chunkSection);
+					}
 
-			return CompletableFuture.supplyAsync(() -> this.populateNoise(accessor, chunk, k, l), Util.getMainWorkerExecutor()).thenApplyAsync(chunkx -> {
-				for (ChunkSection chunkSectionx : set) {
-					chunkSectionx.unlock();
+					var16 = this.populateNoise(accessor, chunk, k, l);
+				} finally {
+					for (ChunkSection chunkSection3 : set) {
+						chunkSection3.unlock();
+					}
 				}
 
-				return chunkx;
-			}, executor);
+				return var16;
+			}, Util.getMainWorkerExecutor());
 		}
 	}
 

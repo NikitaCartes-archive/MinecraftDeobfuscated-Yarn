@@ -877,7 +877,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public boolean canTarget(LivingEntity target) {
-		return target.canTakeDamage() && this.world.getDifficulty() != Difficulty.PEACEFUL;
+		return target instanceof PlayerEntity && this.world.getDifficulty() == Difficulty.PEACEFUL ? false : target.canTakeDamage();
 	}
 
 	public boolean isTarget(LivingEntity entity, TargetPredicate predicate) {
