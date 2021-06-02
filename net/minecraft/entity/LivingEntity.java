@@ -804,7 +804,10 @@ extends Entity {
     }
 
     public boolean canTarget(LivingEntity target) {
-        return target.canTakeDamage() && this.world.getDifficulty() != Difficulty.PEACEFUL;
+        if (target instanceof PlayerEntity && this.world.getDifficulty() == Difficulty.PEACEFUL) {
+            return false;
+        }
+        return target.canTakeDamage();
     }
 
     public boolean isTarget(LivingEntity entity, TargetPredicate predicate) {

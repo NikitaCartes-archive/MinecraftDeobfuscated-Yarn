@@ -76,9 +76,6 @@ implements Vanishable {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         if (CrossbowItem.isCharged(itemStack)) {
-            if (user.getOffHandStack().isOf(Items.CROSSBOW) && !user.getMainHandStack().isEmpty()) {
-                return TypedActionResult.fail(itemStack);
-            }
             CrossbowItem.shootAll(world, user, hand, itemStack, CrossbowItem.getSpeed(itemStack), 1.0f);
             CrossbowItem.setCharged(itemStack, false);
             return TypedActionResult.consume(itemStack);

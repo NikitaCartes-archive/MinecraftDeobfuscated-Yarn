@@ -799,10 +799,7 @@ implements Monster {
 
     @Override
     public boolean canTarget(LivingEntity target) {
-        if (target instanceof PlayerEntity) {
-            return target.canTakeDamage();
-        }
-        return super.canTarget(target);
+        return target.canTakeDamage();
     }
 }
 

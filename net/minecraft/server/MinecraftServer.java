@@ -1563,7 +1563,7 @@ AutoCloseable {
     private void startMonitor() {
         if (this.field_33977) {
             this.tickTimeTracker = DebugRecorder.method_37191(new class_6402(Util.nanoTimeSupplier, this.isDedicated()), Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new ProfilerDumper("server"), this.field_33975, path -> {
-                this.dump(path.resolve("server"));
+                this.submitAndJoin(() -> this.dump(path.resolve("server")));
                 this.field_33976.accept((Path)path);
             });
             this.field_33977 = false;

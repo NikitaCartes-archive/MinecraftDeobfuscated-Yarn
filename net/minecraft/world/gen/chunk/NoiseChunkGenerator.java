@@ -302,29 +302,33 @@ extends ChunkGenerator {
     }
 
     @Override
-    public CompletableFuture<Chunk> populateNoise(Executor executor, StructureAccessor accessor, Chunk chunk2) {
+    public CompletableFuture<Chunk> populateNoise(Executor executor, StructureAccessor accessor, Chunk chunk) {
         GenerationShapeConfig generationShapeConfig = this.settings.get().getGenerationShapeConfig();
-        int i = Math.max(generationShapeConfig.getMinimumY(), chunk2.getBottomY());
-        int j = Math.min(generationShapeConfig.getMinimumY() + generationShapeConfig.getHeight(), chunk2.getTopY());
+        int i = Math.max(generationShapeConfig.getMinimumY(), chunk.getBottomY());
+        int j = Math.min(generationShapeConfig.getMinimumY() + generationShapeConfig.getHeight(), chunk.getTopY());
         int k = MathHelper.floorDiv(i, this.verticalNoiseResolution);
         int l = MathHelper.floorDiv(j - i, this.verticalNoiseResolution);
         if (l <= 0) {
-            return CompletableFuture.completedFuture(chunk2);
+            return CompletableFuture.completedFuture(chunk);
         }
-        int m = chunk2.getSectionIndex(l * this.verticalNoiseResolution - 1 + i);
-        int n = chunk2.getSectionIndex(i);
-        HashSet<ChunkSection> set = Sets.newHashSet();
-        for (int o = m; o >= n; --o) {
-            ChunkSection chunkSection = chunk2.getSection(o);
-            chunkSection.lock();
-            set.add(chunkSection);
-        }
-        return CompletableFuture.supplyAsync(() -> this.populateNoise(accessor, chunk2, k, l), Util.getMainWorkerExecutor()).thenApplyAsync(chunk -> {
-            for (ChunkSection chunkSection : set) {
-                chunkSection.unlock();
+        int m = chunk.getSectionIndex(l * this.verticalNoiseResolution - 1 + i);
+        int n = chunk.getSectionIndex(i);
+        return CompletableFuture.supplyAsync(() -> {
+            HashSet<ChunkSection> set = Sets.newHashSet();
+            try {
+                for (int m = m; m >= n; --m) {
+                    ChunkSection chunkSection = chunk.getSection(m);
+                    chunkSection.lock();
+                    set.add(chunkSection);
+                }
+                Chunk chunk2 = this.populateNoise(accessor, chunk, k, l);
+                return chunk2;
+            } finally {
+                for (ChunkSection chunkSection2 : set) {
+                    chunkSection2.unlock();
+                }
             }
-            return chunk;
-        }, executor);
+        }, Util.getMainWorkerExecutor());
     }
 
     private Chunk populateNoise(StructureAccessor accessor, Chunk chunk, int startY, int noiseSizeY) {
