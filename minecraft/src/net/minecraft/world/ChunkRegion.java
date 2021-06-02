@@ -231,13 +231,35 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-		int i = ChunkSectionPos.getSectionCoord(pos.getX());
-		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
+	public boolean method_37368(BlockPos blockPos) {
+		int i = ChunkSectionPos.getSectionCoord(blockPos.getX());
+		int j = ChunkSectionPos.getSectionCoord(blockPos.getZ());
 		int k = Math.abs(this.centerPos.x - i);
 		int l = Math.abs(this.centerPos.z - j);
 		if (k <= this.field_33755 && l <= this.field_33755) {
-			Chunk chunk = this.getChunk(i, j);
+			return true;
+		} else {
+			Util.error(
+				"Detected setBlock in a far chunk ["
+					+ i
+					+ ", "
+					+ j
+					+ "], pos: "
+					+ blockPos
+					+ ", status: "
+					+ this.field_33754
+					+ (this.field_33756 == null ? "" : ", currently generating: " + (String)this.field_33756.get())
+			);
+			return false;
+		}
+	}
+
+	@Override
+	public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
+		if (!this.method_37368(pos)) {
+			return false;
+		} else {
+			Chunk chunk = this.getChunk(pos);
 			BlockState blockState = chunk.setBlockState(pos, state, false);
 			if (blockState != null) {
 				this.world.onBlockChanged(pos, blockState, state);
@@ -268,17 +290,6 @@ public class ChunkRegion implements StructureWorldAccess {
 			}
 
 			return true;
-		} else {
-			Util.error(
-				"Detected setBlock in a far chunk ["
-					+ i
-					+ ", "
-					+ j
-					+ "], status: "
-					+ this.field_33754
-					+ (this.field_33756 == null ? "" : ", currently generating: " + (String)this.field_33756.get())
-			);
-			return false;
 		}
 	}
 
