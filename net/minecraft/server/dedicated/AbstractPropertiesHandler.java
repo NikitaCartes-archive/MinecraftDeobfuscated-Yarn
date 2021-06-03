@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHandler<T>> {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Properties properties;
+    protected final Properties properties;
 
     public AbstractPropertiesHandler(Properties properties) {
         this.properties = properties;

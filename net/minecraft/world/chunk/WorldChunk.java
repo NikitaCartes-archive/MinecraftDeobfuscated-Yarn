@@ -794,8 +794,8 @@ implements Chunk {
     implements BlockEntityTickInvoker {
         private BlockEntityTickInvoker wrapped;
 
-        WrappedBlockEntityTickInvoker(BlockEntityTickInvoker blockEntityTickInvoker) {
-            this.wrapped = blockEntityTickInvoker;
+        WrappedBlockEntityTickInvoker(BlockEntityTickInvoker wrapped) {
+            this.wrapped = wrapped;
         }
 
         void setWrapped(BlockEntityTickInvoker wrapped) {

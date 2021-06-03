@@ -9,11 +9,11 @@ import net.minecraft.obfuscate.DontObfuscate;
 
 @Environment(value=EnvType.CLIENT)
 public class ClientBrandRetriever {
-    public static final String field_33204 = "vanilla";
+    public static final String VANILLA = "vanilla";
 
     @DontObfuscate
     public static String getClientModName() {
-        return field_33204;
+        return VANILLA;
     }
 }
 

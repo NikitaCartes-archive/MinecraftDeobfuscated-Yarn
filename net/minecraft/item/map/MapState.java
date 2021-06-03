@@ -441,8 +441,8 @@ extends PersistentState {
         private int emptyPacketsRequested;
         public int field_131;
 
-        PlayerUpdateTracker(PlayerEntity playerEntity) {
-            this.player = playerEntity;
+        PlayerUpdateTracker(PlayerEntity player) {
+            this.player = player;
         }
 
         private UpdateData getMapUpdateData() {

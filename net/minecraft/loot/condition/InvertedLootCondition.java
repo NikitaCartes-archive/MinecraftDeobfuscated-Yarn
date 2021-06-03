@@ -20,8 +20,8 @@ public class InvertedLootCondition
 implements LootCondition {
     final LootCondition term;
 
-    InvertedLootCondition(LootCondition lootCondition) {
-        this.term = lootCondition;
+    InvertedLootCondition(LootCondition term) {
+        this.term = term;
     }
 
     @Override

@@ -39,7 +39,7 @@ extends StructurePieceWithDimensions {
     private static final CobblestoneRandomizer COBBLESTONE_RANDOMIZER = new CobblestoneRandomizer();
 
     public JungleTempleGenerator(Random random, int x, int z) {
-        super(StructurePieceType.JUNGLE_TEMPLE, x, 64, z, 12, 10, 15, JungleTempleGenerator.method_35457(random));
+        super(StructurePieceType.JUNGLE_TEMPLE, x, 64, z, 12, 10, 15, JungleTempleGenerator.getRandomHorizontalDirection(random));
     }
 
     public JungleTempleGenerator(ServerWorld world, NbtCompound nbt) {

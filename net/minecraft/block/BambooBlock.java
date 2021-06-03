@@ -89,6 +89,11 @@ implements Fertilizable {
     }
 
     @Override
+    public boolean method_37403(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return false;
+    }
+
+    @Override
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());

@@ -57,6 +57,9 @@ implements Packet<ClientPlayPacketListener> {
         this.chunkZ = buf.readInt();
         this.verticalStripBitmask = buf.readBitSet();
         this.heightmaps = buf.readNbt();
+        if (this.heightmaps == null) {
+            throw new RuntimeException("Can't read heightmap in packet for [" + this.chunkX + ", " + this.chunkZ + "]");
+        }
         this.biomeArray = buf.readIntArray(BiomeArray.DEFAULT_LENGTH);
         int i = buf.readVarInt();
         if (i > 0x200000) {

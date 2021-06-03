@@ -30,7 +30,7 @@ extends StructurePoolElement {
     }
 
     @Override
-    public Vec3i getStart(StructureManager structureManager, BlockRotation blockRotation) {
+    public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
         return Vec3i.ZERO;
     }
 

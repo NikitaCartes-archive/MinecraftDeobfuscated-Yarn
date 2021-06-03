@@ -99,7 +99,7 @@ public class Main {
             Util.startTimerHack();
             DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
             Path path = Paths.get("server.properties", new String[0]);
-            ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(impl, path);
+            ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(path);
             serverPropertiesLoader.store();
             Path path2 = Paths.get("eula.txt", new String[0]);
             EulaReader eulaReader = new EulaReader(path2);
@@ -142,6 +142,7 @@ public class Main {
             }
             serverResourceManager.loadRegistryTags();
             RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+            serverPropertiesLoader.getPropertiesHandler().method_37371(impl);
             SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
             if (saveProperties == null) {
                 GeneratorOptions generatorOptions;
@@ -152,7 +153,7 @@ public class Main {
                 } else {
                     ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
                     levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), dataPackSettings2);
-                    generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.generatorOptions.withBonusChest() : serverPropertiesHandler.generatorOptions;
+                    generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.method_37371(impl).withBonusChest() : serverPropertiesHandler.method_37371(impl);
                 }
                 saveProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
             }

@@ -130,7 +130,7 @@ CollisionView {
         return this.world.getHeight();
     }
 
-    public Profiler method_37233() {
+    public Profiler getProfiler() {
         return this.world.getProfiler();
     }
 }

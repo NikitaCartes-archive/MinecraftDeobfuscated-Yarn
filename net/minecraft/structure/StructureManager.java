@@ -34,9 +34,9 @@ import org.apache.logging.log4j.Logger;
 
 public class StructureManager {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String field_31684 = "structures";
-    private static final String field_31685 = ".nbt";
-    private static final String field_31686 = ".snbt";
+    private static final String STRUCTURES_DIRECTORY = "structures";
+    private static final String NBT_FILE_EXTENSION = ".nbt";
+    private static final String SNBT_FILE_EXTENSION = ".snbt";
     private final Map<Identifier, Optional<Structure>> structures = Maps.newConcurrentMap();
     private final DataFixer dataFixer;
     private ResourceManager resourceManager;
@@ -73,7 +73,7 @@ public class StructureManager {
     private Optional<Structure> loadStructureFromResource(Identifier id) {
         Optional<Structure> optional;
         block9: {
-            Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + field_31685);
+            Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + NBT_FILE_EXTENSION);
             Resource resource = this.resourceManager.getResource(identifier);
             try {
                 optional = Optional.of(this.readStructure(resource.getInputStream()));
@@ -105,7 +105,7 @@ public class StructureManager {
         if (!this.generatedPath.toFile().isDirectory()) {
             return Optional.empty();
         }
-        Path path = this.getAndCheckStructurePath(id, field_31685);
+        Path path = this.getAndCheckStructurePath(id, NBT_FILE_EXTENSION);
         FileInputStream inputStream = new FileInputStream(path.toFile());
         try {
             optional = Optional.of(this.readStructure(inputStream));
@@ -142,13 +142,13 @@ public class StructureManager {
         return structure;
     }
 
-    public boolean saveStructure(Identifier identifier) {
-        Optional<Structure> optional = this.structures.get(identifier);
+    public boolean saveStructure(Identifier id) {
+        Optional<Structure> optional = this.structures.get(id);
         if (!optional.isPresent()) {
             return false;
         }
         Structure structure = optional.get();
-        Path path = this.getAndCheckStructurePath(identifier, field_31685);
+        Path path = this.getAndCheckStructurePath(id, NBT_FILE_EXTENSION);
         Path path2 = path.getParent();
         if (path2 == null) {
             return false;
@@ -171,7 +171,7 @@ public class StructureManager {
     public Path getStructurePath(Identifier id, String extension) {
         try {
             Path path = this.generatedPath.resolve(id.getNamespace());
-            Path path2 = path.resolve(field_31684);
+            Path path2 = path.resolve(STRUCTURES_DIRECTORY);
             return FileNameUtil.getResourcePath(path2, id.getPath(), extension);
         } catch (InvalidPathException invalidPathException) {
             throw new InvalidIdentifierException("Invalid resource path: " + id, invalidPathException);

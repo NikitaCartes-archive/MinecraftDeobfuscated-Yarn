@@ -35,23 +35,23 @@ public class PerfCommand {
     private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.perf.alreadyRunning"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("perf").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))).then(CommandManager.literal("start").executes(commandContext -> PerfCommand.method_37333((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("stop").executes(commandContext -> PerfCommand.method_37338((ServerCommandSource)commandContext.getSource()))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("perf").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))).then(CommandManager.literal("start").executes(commandContext -> PerfCommand.executeStart((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("stop").executes(commandContext -> PerfCommand.executeStop((ServerCommandSource)commandContext.getSource()))));
     }
 
-    private static int method_37333(ServerCommandSource source) throws CommandSyntaxException {
+    private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
         MinecraftServer minecraftServer = source.getMinecraftServer();
         if (minecraftServer.isRunningMonitor()) {
             throw ALREADY_RUNNING_EXCEPTION.create();
         }
-        Consumer<ProfileResult> consumer = profileResult -> PerfCommand.method_37334(source, profileResult);
-        Consumer<Path> consumer2 = path -> PerfCommand.method_37335(source, path, minecraftServer);
+        Consumer<ProfileResult> consumer = profileResult -> PerfCommand.sendProfilingStoppedMessage(source, profileResult);
+        Consumer<Path> consumer2 = path -> PerfCommand.saveReport(source, path, minecraftServer);
         minecraftServer.method_37320(consumer, consumer2);
         source.sendFeedback(new TranslatableText("commands.perf.started"), false);
         return 0;
     }
 
-    private static int method_37338(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-        MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+    private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
+        MinecraftServer minecraftServer = source.getMinecraftServer();
         if (!minecraftServer.isRunningMonitor()) {
             throw NOT_RUNNING_EXCEPTION.create();
         }
@@ -59,32 +59,32 @@ public class PerfCommand {
         return 0;
     }
 
-    private static void method_37335(ServerCommandSource serverCommandSource, Path path, MinecraftServer minecraftServer) {
+    private static void saveReport(ServerCommandSource source, Path tempProfilingFile, MinecraftServer server) {
         String string2;
-        String string = String.format("%s-%s-%s", new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()), minecraftServer.getSaveProperties().getLevelName(), SharedConstants.getGameVersion().getId());
+        String string = String.format("%s-%s-%s", new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()), server.getSaveProperties().getLevelName(), SharedConstants.getGameVersion().getId());
         try {
             string2 = FileNameUtil.getNextUniqueName(ProfilerDumper.DEBUG_PROFILING_DIRECTORY, string, ".zip");
         } catch (IOException iOException) {
-            serverCommandSource.sendError(new TranslatableText("commands.perf.reportFailed"));
+            source.sendError(new TranslatableText("commands.perf.reportFailed"));
             LOGGER.error(iOException);
             return;
         }
         try (ZipCompressor zipCompressor = new ZipCompressor(ProfilerDumper.DEBUG_PROFILING_DIRECTORY.resolve(string2));){
-            zipCompressor.write(Paths.get("system.txt", new String[0]), minecraftServer.method_37324(new SystemDetails()).collect());
-            zipCompressor.copyAll(path);
+            zipCompressor.write(Paths.get("system.txt", new String[0]), server.method_37324(new SystemDetails()).collect());
+            zipCompressor.copyAll(tempProfilingFile);
         }
         try {
-            FileUtils.forceDelete(path.toFile());
+            FileUtils.forceDelete(tempProfilingFile.toFile());
         } catch (IOException iOException) {
-            LOGGER.warn("Failed to delete temporary profiling file {}", (Object)path, (Object)iOException);
+            LOGGER.warn("Failed to delete temporary profiling file {}", (Object)tempProfilingFile, (Object)iOException);
         }
-        serverCommandSource.sendFeedback(new TranslatableText("commands.perf.reportSaved", string2), false);
+        source.sendFeedback(new TranslatableText("commands.perf.reportSaved", string2), false);
     }
 
-    private static void method_37334(ServerCommandSource serverCommandSource, ProfileResult profileResult) {
-        int i = profileResult.getTickSpan();
-        double d = (double)profileResult.getTimeSpan() / (double)Durations.field_33868;
-        serverCommandSource.sendFeedback(new TranslatableText("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false);
+    private static void sendProfilingStoppedMessage(ServerCommandSource source, ProfileResult result) {
+        int i = result.getTickSpan();
+        double d = (double)result.getTimeSpan() / (double)Durations.field_33868;
+        source.sendFeedback(new TranslatableText("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false);
     }
 }
 

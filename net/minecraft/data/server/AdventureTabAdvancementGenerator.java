@@ -57,7 +57,7 @@ implements Consumer<Consumer<Advancement>> {
     }
 
     private static UsingItemCriterion.Conditions method_37315(EntityType<?> entityType, Item item) {
-        return UsingItemCriterion.Conditions.create(EntityPredicate.Builder.create().player(PlayerPredicate.Builder.create().method_37251(EntityPredicate.Builder.create().type(entityType).build()).build()), ItemPredicate.Builder.create().items(item));
+        return UsingItemCriterion.Conditions.create(EntityPredicate.Builder.create().player(PlayerPredicate.Builder.create().lookingAt(EntityPredicate.Builder.create().type(entityType).build()).build()), ItemPredicate.Builder.create().items(item));
     }
 
     @Override

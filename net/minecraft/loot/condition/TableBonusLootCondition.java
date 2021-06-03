@@ -28,9 +28,9 @@ implements LootCondition {
     final Enchantment enchantment;
     final float[] chances;
 
-    TableBonusLootCondition(Enchantment enchantment, float[] fs) {
+    TableBonusLootCondition(Enchantment enchantment, float[] chances) {
         this.enchantment = enchantment;
-        this.chances = fs;
+        this.chances = chances;
     }
 
     @Override

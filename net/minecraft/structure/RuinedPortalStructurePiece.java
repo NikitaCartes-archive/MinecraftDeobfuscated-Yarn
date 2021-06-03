@@ -66,14 +66,14 @@ extends SimpleStructurePiece {
     private final VerticalPlacement verticalPlacement;
     private final Properties properties;
 
-    public RuinedPortalStructurePiece(StructureManager structureManager, BlockPos blockPos, VerticalPlacement verticalPlacement, Properties properties, Identifier identifier, Structure structure, BlockRotation blockRotation, BlockMirror blockMirror, BlockPos blockPos2) {
-        super(StructurePieceType.RUINED_PORTAL, 0, structureManager, identifier, identifier.toString(), RuinedPortalStructurePiece.method_35450(blockMirror, blockRotation, verticalPlacement, blockPos2, properties), blockPos);
+    public RuinedPortalStructurePiece(StructureManager structureManager, BlockPos blockPos, VerticalPlacement verticalPlacement, Properties properties, Identifier identifier, Structure structure, BlockRotation rotation, BlockMirror mirror, BlockPos blockPos2) {
+        super(StructurePieceType.RUINED_PORTAL, 0, structureManager, identifier, identifier.toString(), RuinedPortalStructurePiece.createPlacementData(mirror, rotation, verticalPlacement, blockPos2, properties), blockPos);
         this.verticalPlacement = verticalPlacement;
         this.properties = properties;
     }
 
     public RuinedPortalStructurePiece(ServerWorld world, NbtCompound nbt) {
-        super(StructurePieceType.RUINED_PORTAL, nbt, world, identifier -> RuinedPortalStructurePiece.method_35449(world, nbt, identifier));
+        super(StructurePieceType.RUINED_PORTAL, nbt, world, identifier -> RuinedPortalStructurePiece.createPlacementData(world, nbt, identifier));
         this.verticalPlacement = VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
         this.properties = (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error);
     }
@@ -87,13 +87,13 @@ extends SimpleStructurePiece {
         Properties.CODEC.encodeStart(NbtOps.INSTANCE, this.properties).resultOrPartial(field_24992::error).ifPresent(nbtElement -> nbt.put("Properties", (NbtElement)nbtElement));
     }
 
-    private static StructurePlacementData method_35449(ServerWorld world, NbtCompound nbt, Identifier id) {
+    private static StructurePlacementData createPlacementData(ServerWorld world, NbtCompound nbt, Identifier id) {
         Structure structure = world.getStructureManager().getStructureOrBlank(id);
         BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
-        return RuinedPortalStructurePiece.method_35450(BlockMirror.valueOf(nbt.getString("Mirror")), BlockRotation.valueOf(nbt.getString("Rotation")), VerticalPlacement.getFromId(nbt.getString("VerticalPlacement")), blockPos, (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error));
+        return RuinedPortalStructurePiece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mirror")), BlockRotation.valueOf(nbt.getString("Rotation")), VerticalPlacement.getFromId(nbt.getString("VerticalPlacement")), blockPos, (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error));
     }
 
-    private static StructurePlacementData method_35450(BlockMirror blockMirror, BlockRotation blockRotation, VerticalPlacement verticalPlacement, BlockPos blockPos, Properties properties) {
+    private static StructurePlacementData createPlacementData(BlockMirror mirror, BlockRotation rotation, VerticalPlacement verticalPlacement, BlockPos pos, Properties properties) {
         BlockIgnoreStructureProcessor blockIgnoreStructureProcessor = properties.airPocket ? BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS : BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS;
         ArrayList<StructureProcessorRule> list = Lists.newArrayList();
         list.add(RuinedPortalStructurePiece.createReplacementRule(Blocks.GOLD_BLOCK, 0.3f, Blocks.AIR));
@@ -101,7 +101,7 @@ extends SimpleStructurePiece {
         if (!properties.cold) {
             list.add(RuinedPortalStructurePiece.createReplacementRule(Blocks.NETHERRACK, 0.07f, Blocks.MAGMA_BLOCK));
         }
-        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setMirror(blockMirror).setPosition(blockPos).addProcessor(blockIgnoreStructureProcessor).addProcessor(new RuleStructureProcessor(list)).addProcessor(new BlockAgeStructureProcessor(properties.mossiness)).addProcessor(new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE.getId())).addProcessor(new LavaSubmergedBlockStructureProcessor());
+        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(rotation).setMirror(mirror).setPosition(pos).addProcessor(blockIgnoreStructureProcessor).addProcessor(new RuleStructureProcessor(list)).addProcessor(new BlockAgeStructureProcessor(properties.mossiness)).addProcessor(new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE.getId())).addProcessor(new LavaSubmergedBlockStructureProcessor());
         if (properties.replaceWithBlackstone) {
             structurePlacementData.addProcessor(BlackstoneReplacementStructureProcessor.INSTANCE);
         }
@@ -149,7 +149,7 @@ extends SimpleStructurePiece {
         if (blockState.isAir() || blockState.isOf(Blocks.VINE)) {
             return;
         }
-        Direction direction = RuinedPortalStructurePiece.method_35457(random);
+        Direction direction = RuinedPortalStructurePiece.getRandomHorizontalDirection(random);
         BlockPos blockPos = pos.offset(direction);
         BlockState blockState2 = world.getBlockState(blockPos);
         if (!blockState2.isAir()) {

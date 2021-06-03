@@ -37,8 +37,17 @@ Waterloggable {
         this.setDefaultState((BlockState)this.getDefaultState().with(WATERLOGGED, false));
     }
 
-    public static ToIntFunction<BlockState> method_37364(int i) {
-        return blockState -> AbstractLichenBlock.hasAnyDirection(blockState) ? i : 0;
+    /**
+     * {@return a function that receives a {@link BlockState} and returns the luminance for the state}
+     * If the lichen has no visible sides, it supplies 0.
+     * 
+     * @apiNote The return value is meant to be passed to
+     * {@link AbstractBlock.Settings#luminance} builder method.
+     * 
+     * @param luminance luminance supplied when the lichen has at least one visible side
+     */
+    public static ToIntFunction<BlockState> getLuminanceSupplier(int luminance) {
+        return state -> AbstractLichenBlock.hasAnyDirection(state) ? luminance : 0;
     }
 
     @Override

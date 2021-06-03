@@ -36,10 +36,10 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
-        Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
+    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData data) {
+        Random random = data.getRandom(structureBlockInfo2.pos);
         BlockState blockState = structureBlockInfo2.state;
-        BlockPos blockPos2 = structureBlockInfo2.pos;
+        BlockPos blockPos = structureBlockInfo2.pos;
         BlockState blockState2 = null;
         if (blockState.isOf(Blocks.STONE_BRICKS) || blockState.isOf(Blocks.STONE) || blockState.isOf(Blocks.CHISELED_STONE_BRICKS)) {
             blockState2 = this.processBlocks(random);
@@ -53,7 +53,7 @@ extends StructureProcessor {
             blockState2 = this.processObsidian(random);
         }
         if (blockState2 != null) {
-            return new Structure.StructureBlockInfo(blockPos2, blockState2, structureBlockInfo2.nbt);
+            return new Structure.StructureBlockInfo(blockPos, blockState2, structureBlockInfo2.nbt);
         }
         return structureBlockInfo2;
     }

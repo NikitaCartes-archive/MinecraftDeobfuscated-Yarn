@@ -974,24 +974,24 @@ public class WoodlandMansionGenerator {
         }
 
         public Piece(StructureManager structureManager, String template, BlockPos pos, BlockRotation rotation, BlockMirror mirror) {
-            super(StructurePieceType.WOODLAND_MANSION, 0, structureManager, Piece.method_35474(template), template, Piece.method_35473(mirror, rotation), pos);
+            super(StructurePieceType.WOODLAND_MANSION, 0, structureManager, Piece.getId(template), template, Piece.createPlacementData(mirror, rotation), pos);
         }
 
-        public Piece(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.WOODLAND_MANSION, nbt, serverWorld, (Identifier identifier) -> Piece.method_35473(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot"))));
+        public Piece(ServerWorld world, NbtCompound nbt) {
+            super(StructurePieceType.WOODLAND_MANSION, nbt, world, (Identifier identifier) -> Piece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot"))));
         }
 
         @Override
-        protected Identifier method_35470() {
-            return Piece.method_35474(this.field_31664);
+        protected Identifier getId() {
+            return Piece.getId(this.identifier);
         }
 
-        private static Identifier method_35474(String string) {
-            return new Identifier("woodland_mansion/" + string);
+        private static Identifier getId(String identifier) {
+            return new Identifier("woodland_mansion/" + identifier);
         }
 
-        private static StructurePlacementData method_35473(BlockMirror blockMirror, BlockRotation blockRotation) {
-            return new StructurePlacementData().setIgnoreEntities(true).setRotation(blockRotation).setMirror(blockMirror).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
+        private static StructurePlacementData createPlacementData(BlockMirror mirror, BlockRotation rotation) {
+            return new StructurePlacementData().setIgnoreEntities(true).setRotation(rotation).setMirror(mirror).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
         }
 
         @Override

@@ -18,8 +18,8 @@ public class CrashReportSection {
     private final List<Element> elements = Lists.newArrayList();
     private StackTraceElement[] stackTrace = new StackTraceElement[0];
 
-    public CrashReportSection(String string) {
-        this.title = string;
+    public CrashReportSection(String title) {
+        this.title = title;
     }
 
     public static String createPositionString(HeightLimitView world, double x, double y, double z) {

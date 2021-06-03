@@ -25,8 +25,8 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
-        Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
+    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData data) {
+        Random random = data.getRandom(structureBlockInfo2.pos);
         if (this.integrity >= 1.0f || random.nextFloat() <= this.integrity) {
             return structureBlockInfo2;
         }

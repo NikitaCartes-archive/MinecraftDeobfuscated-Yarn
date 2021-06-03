@@ -48,7 +48,7 @@ public class PlayerPredicate {
     private final Map<Stat<?>, NumberRange.IntRange> stats;
     private final Object2BooleanMap<Identifier> recipes;
     private final Map<Identifier, AdvancementPredicate> advancements;
-    private final EntityPredicate field_33929;
+    private final EntityPredicate lookingAt;
 
     private static AdvancementPredicate criterionFromJson(JsonElement json) {
         if (json.isJsonPrimitive()) {
@@ -64,13 +64,13 @@ public class PlayerPredicate {
         return new AdvancementCriteriaPredicate(object2BooleanMap);
     }
 
-    PlayerPredicate(NumberRange.IntRange experienceLevel, @Nullable GameMode gameMode, Map<Stat<?>, NumberRange.IntRange> stats, Object2BooleanMap<Identifier> recipes, Map<Identifier, AdvancementPredicate> advancements, EntityPredicate entityPredicate) {
+    PlayerPredicate(NumberRange.IntRange experienceLevel, @Nullable GameMode gameMode, Map<Stat<?>, NumberRange.IntRange> stats, Object2BooleanMap<Identifier> recipes, Map<Identifier, AdvancementPredicate> advancements, EntityPredicate lookingAt) {
         this.experienceLevel = experienceLevel;
         this.gameMode = gameMode;
         this.stats = stats;
         this.recipes = recipes;
         this.advancements = advancements;
-        this.field_33929 = entityPredicate;
+        this.lookingAt = lookingAt;
     }
 
     public boolean test(Entity entity2) {
@@ -107,7 +107,7 @@ public class PlayerPredicate {
                 return false;
             }
         }
-        if (this.field_33929 != EntityPredicate.ANY) {
+        if (this.lookingAt != EntityPredicate.ANY) {
             Vec3d vec3d = serverPlayerEntity.getEyePos();
             Vec3d vec3d2 = serverPlayerEntity.getRotationVec(1.0f);
             Vec3d vec3d3 = vec3d.add(vec3d2.x * 100.0, vec3d2.y * 100.0, vec3d2.z * 100.0);
@@ -116,7 +116,7 @@ public class PlayerPredicate {
                 return false;
             }
             Entity entity22 = entityHitResult.getEntity();
-            if (!this.field_33929.test(serverPlayerEntity, entity22) || !serverPlayerEntity.canSee(entity22)) {
+            if (!this.lookingAt.test(serverPlayerEntity, entity22) || !serverPlayerEntity.canSee(entity22)) {
                 return false;
             }
         }
@@ -209,7 +209,7 @@ public class PlayerPredicate {
             this.advancements.forEach((id, advancementPredicate) -> jsonObject2.add(id.toString(), advancementPredicate.toJson()));
             jsonObject.add("advancements", jsonObject2);
         }
-        jsonObject.add("looking_at", this.field_33929.toJson());
+        jsonObject.add("looking_at", this.lookingAt.toJson());
         return jsonObject;
     }
 
@@ -280,7 +280,7 @@ public class PlayerPredicate {
         private final Map<Stat<?>, NumberRange.IntRange> stats = Maps.newHashMap();
         private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<Identifier>();
         private final Map<Identifier, AdvancementPredicate> advancements = Maps.newHashMap();
-        private EntityPredicate field_33930 = EntityPredicate.ANY;
+        private EntityPredicate lookingAt = EntityPredicate.ANY;
 
         public static Builder create() {
             return new Builder();
@@ -306,8 +306,8 @@ public class PlayerPredicate {
             return this;
         }
 
-        public Builder method_37251(EntityPredicate entityPredicate) {
-            this.field_33930 = entityPredicate;
+        public Builder lookingAt(EntityPredicate lookingAt) {
+            this.lookingAt = lookingAt;
             return this;
         }
 
@@ -322,7 +322,7 @@ public class PlayerPredicate {
         }
 
         public PlayerPredicate build() {
-            return new PlayerPredicate(this.experienceLevel, this.gameMode, this.stats, this.recipes, this.advancements, this.field_33930);
+            return new PlayerPredicate(this.experienceLevel, this.gameMode, this.stats, this.recipes, this.advancements, this.lookingAt);
         }
     }
 }

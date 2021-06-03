@@ -166,16 +166,16 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        protected BridgeCrossing(int i, int j, Direction direction) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, 0, StructurePiece.method_35454(i, 64, j, direction, 19, 10, 19));
-            this.setOrientation(direction);
+        protected BridgeCrossing(int i, int j, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, 0, StructurePiece.createBox(i, 64, j, orientation, 19, 10, 19));
+            this.setOrientation(orientation);
         }
 
         protected BridgeCrossing(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
             super(structurePieceType, nbtCompound);
         }
 
-        public BridgeCrossing(ServerWorld serverWorld, NbtCompound nbt) {
+        public BridgeCrossing(ServerWorld world, NbtCompound nbt) {
             this(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, nbt);
         }
 
@@ -245,7 +245,7 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        public BridgeSmallCrossing(ServerWorld serverWorld, NbtCompound nbt) {
+        public BridgeSmallCrossing(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_BRIDGE_SMALL_CROSSING, nbt);
         }
 
@@ -306,7 +306,7 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        public BridgeStairs(ServerWorld serverWorld, NbtCompound nbt) {
+        public BridgeStairs(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_BRIDGE_STAIRS, nbt);
         }
 
@@ -367,7 +367,7 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        public BridgePlatform(ServerWorld serverWorld, NbtCompound nbt) {
+        public BridgePlatform(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_BRIDGE_PLATFORM, nbt);
             this.hasBlazeSpawner = nbt.getBoolean("Mob");
         }
@@ -446,7 +446,7 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        public CorridorExit(ServerWorld serverWorld, NbtCompound nbt) {
+        public CorridorExit(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, nbt);
         }
 
@@ -545,7 +545,7 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        public SmallCorridor(ServerWorld serverWorld, NbtCompound nbt) {
+        public SmallCorridor(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, nbt);
         }
 
@@ -596,7 +596,7 @@ public class NetherFortressGenerator {
             this.containsChest = random.nextInt(3) == 0;
         }
 
-        public CorridorRightTurn(ServerWorld serverWorld, NbtCompound nbt) {
+        public CorridorRightTurn(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_RIGHT_TURN, nbt);
             this.containsChest = nbt.getBoolean("Chest");
         }
@@ -660,7 +660,7 @@ public class NetherFortressGenerator {
             this.containsChest = random.nextInt(3) == 0;
         }
 
-        public CorridorLeftTurn(ServerWorld serverWorld, NbtCompound nbt) {
+        public CorridorLeftTurn(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_LEFT_TURN, nbt);
             this.containsChest = nbt.getBoolean("Chest");
         }
@@ -722,7 +722,7 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        public CorridorStairs(ServerWorld serverWorld, NbtCompound nbt) {
+        public CorridorStairs(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_STAIRS, nbt);
         }
 
@@ -780,7 +780,7 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        public CorridorBalcony(ServerWorld serverWorld, NbtCompound nbt) {
+        public CorridorBalcony(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_BALCONY, nbt);
         }
 
@@ -848,7 +848,7 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        public CorridorCrossing(ServerWorld serverWorld, NbtCompound nbt) {
+        public CorridorCrossing(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_CROSSING, nbt);
         }
 
@@ -896,7 +896,7 @@ public class NetherFortressGenerator {
             this.setOrientation(orientation);
         }
 
-        public CorridorNetherWartsRoom(ServerWorld serverWorld, NbtCompound nbt) {
+        public CorridorNetherWartsRoom(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_NETHER_WARTS_ROOM, nbt);
         }
 
@@ -1033,7 +1033,7 @@ public class NetherFortressGenerator {
             this.seed = random.nextInt();
         }
 
-        public BridgeEnd(ServerWorld serverWorld, NbtCompound nbt) {
+        public BridgeEnd(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_BRIDGE_END, nbt);
             this.seed = nbt.getInt("Seed");
         }
@@ -1090,7 +1090,7 @@ public class NetherFortressGenerator {
         public final List<StructurePiece> pieces = Lists.newArrayList();
 
         public Start(Random random, int i, int j) {
-            super(i, j, Start.method_35457(random));
+            super(i, j, Start.getRandomHorizontalDirection(random));
             this.bridgePieces = Lists.newArrayList();
             for (PieceData pieceData : ALL_BRIDGE_PIECES) {
                 pieceData.generatedCount = 0;

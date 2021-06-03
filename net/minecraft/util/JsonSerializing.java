@@ -75,13 +75,13 @@ public class JsonSerializing {
         @Nullable
         private final Pair<T, CustomSerializer<? extends E>> elementSerializer;
 
-        GsonSerializer(Registry<T> registry, String string, String string2, Function<E, T> function, @Nullable T jsonSerializableType, @Nullable Pair<T, CustomSerializer<? extends E>> pair) {
+        GsonSerializer(Registry<T> registry, String rootFieldName, String idFieldName, Function<E, T> typeIdentification, @Nullable T jsonSerializableType, @Nullable Pair<T, CustomSerializer<? extends E>> elementSerializer) {
             this.registry = registry;
-            this.rootFieldName = string;
-            this.idFieldName = string2;
-            this.typeIdentification = function;
+            this.rootFieldName = rootFieldName;
+            this.idFieldName = idFieldName;
+            this.typeIdentification = typeIdentification;
             this.field_28445 = jsonSerializableType;
-            this.elementSerializer = pair;
+            this.elementSerializer = elementSerializer;
         }
 
         @Override

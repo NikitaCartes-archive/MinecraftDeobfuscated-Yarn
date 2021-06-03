@@ -25,9 +25,9 @@ implements LootCondition {
     final EntityPredicate predicate;
     final LootContext.EntityTarget entity;
 
-    EntityPropertiesLootCondition(EntityPredicate entityPredicate, LootContext.EntityTarget entityTarget) {
-        this.predicate = entityPredicate;
-        this.entity = entityTarget;
+    EntityPropertiesLootCondition(EntityPredicate predicate, LootContext.EntityTarget entity) {
+        this.predicate = predicate;
+        this.entity = entity;
     }
 
     @Override

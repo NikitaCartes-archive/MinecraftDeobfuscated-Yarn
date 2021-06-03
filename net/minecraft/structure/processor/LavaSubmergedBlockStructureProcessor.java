@@ -21,11 +21,11 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
-        BlockPos blockPos2 = structureBlockInfo2.pos;
-        boolean bl = world.getBlockState(blockPos2).isOf(Blocks.LAVA);
-        if (bl && !Block.isShapeFullCube(structureBlockInfo2.state.getOutlineShape(world, blockPos2))) {
-            return new Structure.StructureBlockInfo(blockPos2, Blocks.LAVA.getDefaultState(), structureBlockInfo2.nbt);
+    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData data) {
+        BlockPos blockPos = structureBlockInfo2.pos;
+        boolean bl = world.getBlockState(blockPos).isOf(Blocks.LAVA);
+        if (bl && !Block.isShapeFullCube(structureBlockInfo2.state.getOutlineShape(world, blockPos))) {
+            return new Structure.StructureBlockInfo(blockPos, Blocks.LAVA.getDefaultState(), structureBlockInfo2.nbt);
         }
         return structureBlockInfo2;
     }

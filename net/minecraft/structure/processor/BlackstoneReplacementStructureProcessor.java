@@ -53,7 +53,7 @@ extends StructureProcessor {
     }
 
     @Override
-    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
+    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData data) {
         Block block = this.replacementMap.get(structureBlockInfo2.state.getBlock());
         if (block == null) {
             return structureBlockInfo2;

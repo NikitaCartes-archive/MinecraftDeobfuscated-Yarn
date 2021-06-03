@@ -535,7 +535,9 @@ public final class ItemStack {
         if (this.getItem().isDamageable()) {
             this.setDamage(this.getDamage());
         }
-        this.getItem().postProcessNbt(tag);
+        if (tag != null) {
+            this.getItem().postProcessNbt(tag);
+        }
     }
 
     public Text getName() {

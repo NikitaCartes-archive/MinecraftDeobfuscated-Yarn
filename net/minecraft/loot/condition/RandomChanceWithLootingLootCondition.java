@@ -25,9 +25,9 @@ implements LootCondition {
     final float chance;
     final float lootingMultiplier;
 
-    RandomChanceWithLootingLootCondition(float f, float g) {
-        this.chance = f;
-        this.lootingMultiplier = g;
+    RandomChanceWithLootingLootCondition(float chance, float lootingMultiplier) {
+        this.chance = chance;
+        this.lootingMultiplier = lootingMultiplier;
     }
 
     @Override

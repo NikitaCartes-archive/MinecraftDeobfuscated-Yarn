@@ -1176,7 +1176,7 @@ WindowEventHandler {
             MutableText text = new LiteralText(path.toString()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
             this.execute(() -> consumer.accept(new TranslatableText("debug.profiling.stop", text)));
         };
-        SystemDetails systemDetails = MinecraftClient.method_37274(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
+        SystemDetails systemDetails = MinecraftClient.addSystemDetailsToCrashReport(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
         Consumer<List> consumer4 = list -> {
             Path path = this.method_37275(systemDetails, (List<Path>)list);
             consumer3.accept(path);
@@ -2070,7 +2070,7 @@ WindowEventHandler {
 
     public CrashReport addDetailsToCrashReport(CrashReport report) {
         SystemDetails systemDetails = report.getSystemDetailsSection();
-        MinecraftClient.method_37274(systemDetails, this, this.languageManager, this.gameVersion, this.options);
+        MinecraftClient.addSystemDetailsToCrashReport(systemDetails, this, this.languageManager, this.gameVersion, this.options);
         if (this.world != null) {
             this.world.addDetailsToCrashReport(report);
         }
@@ -2083,14 +2083,14 @@ WindowEventHandler {
 
     public static void addSystemDetailsToCrashReport(@Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report) {
         SystemDetails systemDetails = report.getSystemDetailsSection();
-        MinecraftClient.method_37274(systemDetails, client, languageManager, version, options);
+        MinecraftClient.addSystemDetailsToCrashReport(systemDetails, client, languageManager, version, options);
     }
 
-    private static SystemDetails method_37274(SystemDetails systemDetails, @Nullable MinecraftClient minecraftClient, @Nullable LanguageManager languageManager, String string, GameOptions gameOptions) {
-        systemDetails.addSection("Launched Version", () -> string);
+    private static SystemDetails addSystemDetailsToCrashReport(SystemDetails systemDetails, @Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, GameOptions options) {
+        systemDetails.addSection("Launched Version", () -> version);
         systemDetails.addSection("Backend library", RenderSystem::getBackendDescription);
         systemDetails.addSection("Backend API", RenderSystem::getApiDescription);
-        systemDetails.addSection("Window size", () -> minecraftClient != null ? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight() : "<not initialized>");
+        systemDetails.addSection("Window size", () -> client != null ? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight() : "<not initialized>");
         systemDetails.addSection("GL Caps", RenderSystem::getCapsString);
         systemDetails.addSection("GL debug messages", () -> GlDebug.method_36479() ? String.join((CharSequence)"\n", GlDebug.method_36478()) : "<disabled>");
         systemDetails.addSection("Using VBOs", () -> "Yes");
@@ -2105,12 +2105,12 @@ WindowEventHandler {
             return "Probably not. Jar signature remains and client brand is untouched.";
         });
         systemDetails.addSection("Type", "Client (map_client.txt)");
-        if (gameOptions != null) {
-            String string2;
-            if (instance != null && (string2 = instance.getVideoWarningManager().getWarningsAsString()) != null) {
-                systemDetails.addSection("GPU Warnings", string2);
+        if (options != null) {
+            String string;
+            if (instance != null && (string = instance.getVideoWarningManager().getWarningsAsString()) != null) {
+                systemDetails.addSection("GPU Warnings", string);
             }
-            systemDetails.addSection("Graphics mode", gameOptions.graphicsMode.toString());
+            systemDetails.addSection("Graphics mode", options.graphicsMode.toString());
             systemDetails.addSection("Resource Packs", () -> {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (String string : gameOptions.resourcePacks) {
@@ -2688,8 +2688,8 @@ WindowEventHandler {
 
         private final Text description;
 
-        ChatRestriction(Text text) {
-            this.description = text;
+        ChatRestriction(Text description) {
+            this.description = description;
         }
 
         public Text getDescription() {

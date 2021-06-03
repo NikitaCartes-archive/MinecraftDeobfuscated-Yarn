@@ -31,9 +31,9 @@ implements LootCondition {
     final Map<String, BoundedIntUnaryOperator> scores;
     final LootContext.EntityTarget target;
 
-    EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> map, LootContext.EntityTarget entityTarget) {
-        this.scores = ImmutableMap.copyOf(map);
-        this.target = entityTarget;
+    EntityScoresLootCondition(Map<String, BoundedIntUnaryOperator> scores, LootContext.EntityTarget target) {
+        this.scores = ImmutableMap.copyOf(scores);
+        this.target = target;
     }
 
     @Override
