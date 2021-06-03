@@ -36,10 +36,10 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 	public Structure.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData data
 	) {
 		return this.blocks.contains(structureBlockInfo2.state.getBlock()) ? null : structureBlockInfo2;
 	}

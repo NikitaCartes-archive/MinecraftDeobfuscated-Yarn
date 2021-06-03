@@ -428,11 +428,11 @@ public final class SpawnHelper {
 		private EntityType<?> cachedEntityType;
 		private double cachedDensityMass;
 
-		Info(int i, Object2IntOpenHashMap<SpawnGroup> object2IntOpenHashMap, GravityField gravityField) {
-			this.spawningChunkCount = i;
-			this.groupToCount = object2IntOpenHashMap;
-			this.densityField = gravityField;
-			this.groupToCountView = Object2IntMaps.unmodifiable(object2IntOpenHashMap);
+		Info(int spawningChunkCount, Object2IntOpenHashMap<SpawnGroup> groupToCount, GravityField densityField) {
+			this.spawningChunkCount = spawningChunkCount;
+			this.groupToCount = groupToCount;
+			this.densityField = densityField;
+			this.groupToCountView = Object2IntMaps.unmodifiable(groupToCount);
 		}
 
 		/**

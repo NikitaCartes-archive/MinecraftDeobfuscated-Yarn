@@ -15,8 +15,8 @@ public class ReferenceLootCondition implements LootCondition {
 	private static final Logger LOGGER = LogManager.getLogger();
 	final Identifier id;
 
-	ReferenceLootCondition(Identifier identifier) {
-		this.id = identifier;
+	ReferenceLootCondition(Identifier id) {
+		this.id = id;
 	}
 
 	@Override

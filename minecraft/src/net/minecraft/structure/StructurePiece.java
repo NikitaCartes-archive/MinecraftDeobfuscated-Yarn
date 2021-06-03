@@ -59,10 +59,10 @@ public abstract class StructurePiece {
 		.add(Blocks.IRON_BARS)
 		.build();
 
-	protected StructurePiece(StructurePieceType type, int length, BlockBox blockBox) {
+	protected StructurePiece(StructurePieceType type, int length, BlockBox boundingBox) {
 		this.type = type;
 		this.chainLength = length;
-		this.boundingBox = blockBox;
+		this.boundingBox = boundingBox;
 	}
 
 	public StructurePiece(StructurePieceType type, NbtCompound nbt) {
@@ -78,13 +78,13 @@ public abstract class StructurePiece {
 		this.setOrientation(i == -1 ? null : Direction.fromHorizontal(i));
 	}
 
-	protected static BlockBox method_35454(int i, int j, int k, Direction direction, int l, int m, int n) {
-		return direction.getAxis() == Direction.Axis.Z
-			? new BlockBox(i, j, k, i + l - 1, j + m - 1, k + n - 1)
-			: new BlockBox(i, j, k, i + n - 1, j + m - 1, k + l - 1);
+	protected static BlockBox createBox(int x, int y, int z, Direction orientation, int width, int height, int depth) {
+		return orientation.getAxis() == Direction.Axis.Z
+			? new BlockBox(x, y, z, x + width - 1, y + height - 1, z + depth - 1)
+			: new BlockBox(x, y, z, x + depth - 1, y + height - 1, z + width - 1);
 	}
 
-	protected static Direction method_35457(Random random) {
+	protected static Direction getRandomHorizontalDirection(Random random) {
 		return Direction.Type.HORIZONTAL.random(random);
 	}
 
@@ -132,7 +132,7 @@ public abstract class StructurePiece {
 		return this.boundingBox.intersectsXZ(i - offset, j - offset, i + 15 + offset, j + 15 + offset);
 	}
 
-	public BlockPos method_35458() {
+	public BlockPos getCenter() {
 		return new BlockPos(this.boundingBox.getCenter());
 	}
 
@@ -182,10 +182,10 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void addBlock(StructureWorldAccess world, BlockState block, int x, int i, int j, BlockBox box) {
-		BlockPos blockPos = this.offsetPos(x, i, j);
+	protected void addBlock(StructureWorldAccess world, BlockState block, int x, int y, int z, BlockBox box) {
+		BlockPos blockPos = this.offsetPos(x, y, z);
 		if (box.contains(blockPos)) {
-			if (this.canAddBlock(world, x, i, j, box)) {
+			if (this.canAddBlock(world, x, y, z, box)) {
 				if (this.mirror != BlockMirror.NONE) {
 					block = block.mirror(this.mirror);
 				}
@@ -211,8 +211,8 @@ public abstract class StructurePiece {
 		return true;
 	}
 
-	protected BlockState getBlockAt(BlockView world, int x, int i, int j, BlockBox box) {
-		BlockPos blockPos = this.offsetPos(x, i, j);
+	protected BlockState getBlockAt(BlockView world, int x, int y, int z, BlockBox box) {
+		BlockPos blockPos = this.offsetPos(x, y, z);
 		return !box.contains(blockPos) ? Blocks.AIR.getDefaultState() : world.getBlockState(blockPos);
 	}
 
@@ -259,21 +259,19 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void method_35455(
-		StructureWorldAccess structureWorldAccess, BlockBox blockBox, BlockBox blockBox2, BlockState blockState, BlockState blockState2, boolean bl
-	) {
+	protected void fillWithOutline(StructureWorldAccess world, BlockBox box, BlockBox fillBox, BlockState outline, BlockState inside, boolean cantReplaceAir) {
 		this.fillWithOutline(
-			structureWorldAccess,
-			blockBox,
-			blockBox2.getMinX(),
-			blockBox2.getMinY(),
-			blockBox2.getMinZ(),
-			blockBox2.getMaxX(),
-			blockBox2.getMaxY(),
-			blockBox2.getMaxZ(),
-			blockState,
-			blockState2,
-			bl
+			world,
+			box,
+			fillBox.getMinX(),
+			fillBox.getMinY(),
+			fillBox.getMinZ(),
+			fillBox.getMaxX(),
+			fillBox.getMaxY(),
+			fillBox.getMaxZ(),
+			outline,
+			inside,
+			cantReplaceAir
 		);
 	}
 
@@ -302,21 +300,21 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void method_35456(
-		StructureWorldAccess structureWorldAccess, BlockBox blockBox, BlockBox blockBox2, boolean bl, Random random, StructurePiece.BlockRandomizer blockRandomizer
+	protected void fillWithOutline(
+		StructureWorldAccess world, BlockBox box, BlockBox fillBox, boolean cantReplaceAir, Random random, StructurePiece.BlockRandomizer randomizer
 	) {
 		this.fillWithOutline(
-			structureWorldAccess,
-			blockBox,
-			blockBox2.getMinX(),
-			blockBox2.getMinY(),
-			blockBox2.getMinZ(),
-			blockBox2.getMaxX(),
-			blockBox2.getMaxY(),
-			blockBox2.getMaxZ(),
-			bl,
+			world,
+			box,
+			fillBox.getMinX(),
+			fillBox.getMinY(),
+			fillBox.getMinZ(),
+			fillBox.getMaxX(),
+			fillBox.getMaxY(),
+			fillBox.getMaxZ(),
+			cantReplaceAir,
 			random,
-			blockRandomizer
+			randomizer
 		);
 	}
 
@@ -387,8 +385,8 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void fillDownwards(StructureWorldAccess world, BlockState state, int x, int i, int j, BlockBox box) {
-		BlockPos.Mutable mutable = this.offsetPos(x, i, j);
+	protected void fillDownwards(StructureWorldAccess world, BlockState state, int x, int y, int z, BlockBox box) {
+		BlockPos.Mutable mutable = this.offsetPos(x, y, z);
 		if (box.contains(mutable)) {
 			while (this.canReplace(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
 				world.setBlockState(mutable, state, Block.NOTIFY_LISTENERS);
@@ -521,7 +519,7 @@ public abstract class StructurePiece {
 		return this.rotation;
 	}
 
-	public BlockMirror method_35460() {
+	public BlockMirror getMirror() {
 		return this.mirror;
 	}
 

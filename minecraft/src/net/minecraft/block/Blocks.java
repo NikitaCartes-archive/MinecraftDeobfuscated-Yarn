@@ -930,7 +930,7 @@ public class Blocks {
 				.noCollision()
 				.strength(0.2F)
 				.sounds(BlockSoundGroup.GLOW_LICHEN)
-				.luminance(GlowLichenBlock.method_37364(7))
+				.luminance(GlowLichenBlock.getLuminanceSupplier(7))
 		)
 	);
 	public static final Block OAK_FENCE_GATE = register(
@@ -3160,7 +3160,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.PLANT)
 				.ticksRandomly()
 				.noCollision()
-				.luminance(CaveVines.method_37362(14))
+				.luminance(CaveVines.getLuminanceSupplier(14))
 				.breakInstantly()
 				.sounds(BlockSoundGroup.CAVE_VINES)
 		)
@@ -3168,7 +3168,7 @@ public class Blocks {
 	public static final Block CAVE_VINES_PLANT = register(
 		"cave_vines_plant",
 		new CaveVinesBodyBlock(
-			AbstractBlock.Settings.of(Material.PLANT).noCollision().luminance(CaveVines.method_37362(14)).breakInstantly().sounds(BlockSoundGroup.CAVE_VINES)
+			AbstractBlock.Settings.of(Material.PLANT).noCollision().luminance(CaveVines.getLuminanceSupplier(14)).breakInstantly().sounds(BlockSoundGroup.CAVE_VINES)
 		)
 	);
 	public static final Block SPORE_BLOSSOM = register(

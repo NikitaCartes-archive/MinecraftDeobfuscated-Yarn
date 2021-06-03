@@ -21,7 +21,7 @@ import net.minecraft.entity.ai.goal.CatSitOnBlockGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.FollowTargetIfTamedGoal;
-import net.minecraft.entity.ai.goal.GoToOwnerAndPurrGoal;
+import net.minecraft.entity.ai.goal.GoToBedAndSleepGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
@@ -75,19 +75,55 @@ public class CatEntity extends TameableEntity {
 	public static final double field_30312 = 1.33;
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
 	private static final TrackedData<Integer> CAT_TYPE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Boolean> SLEEPING_WITH_OWNER = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> IN_SLEEPING_POSE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	/**
+	 * The tabby cat type, whose value is {@value}.
+	 */
 	public static final int TABBY_TYPE = 0;
+	/**
+	 * The black cat type, whose value is {@value}.
+	 */
 	public static final int BLACK_TYPE = 1;
+	/**
+	 * The red cat type, whose value is {@value}.
+	 */
 	public static final int RED_TYPE = 2;
+	/**
+	 * The Siamese cat type, whose value is {@value}.
+	 */
 	public static final int SIAMESE_TYPE = 3;
+	/**
+	 * The British shorthair cat type, whose value is {@value}.
+	 */
 	public static final int BRITISH_SHORTHAIR_TYPE = 4;
+	/**
+	 * The calico cat type, whose value is {@value}.
+	 */
 	public static final int CALICO_TYPE = 5;
+	/**
+	 * The Persian cat type, whose value is {@value}.
+	 */
 	public static final int PERSIAN_TYPE = 6;
+	/**
+	 * The ragdoll cat type, whose value is {@value}.
+	 */
 	public static final int RAGDOLL_TYPE = 7;
+	/**
+	 * The white cat type, whose value is {@value}.
+	 */
 	public static final int WHITE_TYPE = 8;
+	/**
+	 * The Jellie cat type, whose value is {@value}.
+	 * <p>
+	 * This cat type was added in the 1.14 update after the community cat contest.
+	 * The winner was GoodTimesWithScar's cat named Jellie.
+	 */
 	public static final int JELLIE_TYPE = 9;
+	/**
+	 * The all black cat type, whose value is {@value}.
+	 */
 	public static final int ALL_BLACK_TYPE = 10;
 	private static final int field_30324 = 11;
 	private static final int field_30325 = 10;
@@ -128,7 +164,7 @@ public class CatEntity extends TameableEntity {
 		this.goalSelector.add(1, new SitGoal(this));
 		this.goalSelector.add(2, new CatEntity.SleepWithOwnerGoal(this));
 		this.goalSelector.add(3, this.temptGoal);
-		this.goalSelector.add(5, new GoToOwnerAndPurrGoal(this, 1.1, 8));
+		this.goalSelector.add(5, new GoToBedAndSleepGoal(this, 1.1, 8));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 5.0F, false));
 		this.goalSelector.add(7, new CatSitOnBlockGoal(this, 0.8));
 		this.goalSelector.add(8, new PounceAtTargetGoal(this, 0.3F));
@@ -152,12 +188,20 @@ public class CatEntity extends TameableEntity {
 		this.dataTracker.set(CAT_TYPE, type);
 	}
 
-	public void setSleepingWithOwner(boolean sleeping) {
-		this.dataTracker.set(SLEEPING_WITH_OWNER, sleeping);
+	/**
+	 * Sets whether this cat is in a sleeping pose or not.
+	 * 
+	 * @param sleeping {@code true} if this cat is in a sleeping pose, otherwise {@code false}
+	 */
+	public void setInSleepingPose(boolean sleeping) {
+		this.dataTracker.set(IN_SLEEPING_POSE, sleeping);
 	}
 
-	public boolean isSleepingWithOwner() {
-		return this.dataTracker.get(SLEEPING_WITH_OWNER);
+	/**
+	 * {@return whether this cat is in a sleeping pose}
+	 */
+	public boolean isInSleepingPose() {
+		return this.dataTracker.get(IN_SLEEPING_POSE);
 	}
 
 	public void setHeadDown(boolean headDown) {
@@ -180,7 +224,7 @@ public class CatEntity extends TameableEntity {
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(CAT_TYPE, 1);
-		this.dataTracker.startTracking(SLEEPING_WITH_OWNER, false);
+		this.dataTracker.startTracking(IN_SLEEPING_POSE, false);
 		this.dataTracker.startTracking(HEAD_DOWN, false);
 		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
 	}
@@ -295,7 +339,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	private void updateAnimations() {
-		if ((this.isSleepingWithOwner() || this.isHeadDown()) && this.age % 5 == 0) {
+		if ((this.isInSleepingPose() || this.isHeadDown()) && this.age % 5 == 0) {
 			this.playSound(SoundEvents.ENTITY_CAT_PURR, 0.6F + 0.4F * (this.random.nextFloat() - this.random.nextFloat()), 1.0F);
 		}
 
@@ -306,7 +350,7 @@ public class CatEntity extends TameableEntity {
 	private void updateSleepAnimation() {
 		this.prevSleepAnimation = this.sleepAnimation;
 		this.prevTailCurlAnimation = this.tailCurlAnimation;
-		if (this.isSleepingWithOwner()) {
+		if (this.isInSleepingPose()) {
 			this.sleepAnimation = Math.min(1.0F, this.sleepAnimation + 0.15F);
 			this.tailCurlAnimation = Math.min(1.0F, this.tailCurlAnimation + 0.08F);
 		} else {
@@ -547,7 +591,7 @@ public class CatEntity extends TameableEntity {
 
 		private boolean cannotSleep() {
 			for (CatEntity catEntity : this.cat.world.getNonSpectatingEntities(CatEntity.class, new Box(this.bedPos).expand(2.0))) {
-				if (catEntity != this.cat && (catEntity.isSleepingWithOwner() || catEntity.isHeadDown())) {
+				if (catEntity != this.cat && (catEntity.isInSleepingPose() || catEntity.isHeadDown())) {
 					return true;
 				}
 			}
@@ -570,7 +614,7 @@ public class CatEntity extends TameableEntity {
 
 		@Override
 		public void stop() {
-			this.cat.setSleepingWithOwner(false);
+			this.cat.setInSleepingPose(false);
 			float f = this.cat.world.getSkyAngle(1.0F);
 			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.world.getRandom().nextFloat() < 0.7) {
 				this.dropMorningGifts();
@@ -622,14 +666,14 @@ public class CatEntity extends TameableEntity {
 				if (this.cat.squaredDistanceTo(this.owner) < 2.5) {
 					this.ticksOnBed++;
 					if (this.ticksOnBed > 16) {
-						this.cat.setSleepingWithOwner(true);
+						this.cat.setInSleepingPose(true);
 						this.cat.setHeadDown(false);
 					} else {
 						this.cat.lookAtEntity(this.owner, 45.0F, 45.0F);
 						this.cat.setHeadDown(true);
 					}
 				} else {
-					this.cat.setSleepingWithOwner(false);
+					this.cat.setInSleepingPose(false);
 				}
 			}
 		}

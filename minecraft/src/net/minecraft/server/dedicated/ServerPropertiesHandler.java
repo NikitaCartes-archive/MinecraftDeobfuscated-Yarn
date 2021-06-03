@@ -3,6 +3,7 @@ package net.minecraft.server.dedicated;
 import java.nio.file.Path;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
@@ -59,9 +60,10 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final String textFilteringConfig;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList;
-	public final GeneratorOptions generatorOptions;
+	@Nullable
+	private GeneratorOptions generatorOptions;
 
-	public ServerPropertiesHandler(Properties properties, DynamicRegistryManager registryManager) {
+	public ServerPropertiesHandler(Properties properties) {
 		super(properties);
 		if (this.parseBoolean("snooper-enabled", true)) {
 		}
@@ -87,14 +89,23 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		this.textFilteringConfig = this.getString("text-filtering-config", "");
 		this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 		this.whiteList = this.booleanAccessor("white-list", false);
-		this.generatorOptions = GeneratorOptions.fromProperties(registryManager, properties);
 	}
 
-	public static ServerPropertiesHandler load(DynamicRegistryManager registryManager, Path path) {
-		return new ServerPropertiesHandler(loadProperties(path), registryManager);
+	public static ServerPropertiesHandler load(Path path) {
+		return new ServerPropertiesHandler(loadProperties(path));
 	}
 
 	protected ServerPropertiesHandler create(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
-		return new ServerPropertiesHandler(properties, dynamicRegistryManager);
+		ServerPropertiesHandler serverPropertiesHandler = new ServerPropertiesHandler(properties);
+		serverPropertiesHandler.method_37371(dynamicRegistryManager);
+		return serverPropertiesHandler;
+	}
+
+	public GeneratorOptions method_37371(DynamicRegistryManager dynamicRegistryManager) {
+		if (this.generatorOptions == null) {
+			this.generatorOptions = GeneratorOptions.fromProperties(dynamicRegistryManager, this.properties);
+		}
+
+		return this.generatorOptions;
 	}
 }

@@ -6,9 +6,6 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Dynamic;
-import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -20,22 +17,19 @@ public class ObjectiveDisplayNameFix extends DataFix {
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		Type<Pair<String, Dynamic<?>>> type = DSL.named(TypeReferences.OBJECTIVE.typeName(), DSL.remainderType());
-		if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.OBJECTIVE))) {
-			throw new IllegalStateException("Objective type is not what was expected.");
-		} else {
-			return this.fixTypeEverywhere(
-				"ObjectiveDisplayNameFix",
-				type,
-				dynamicOps -> pair -> pair.mapSecond(
-							dynamic -> dynamic.update(
-									"DisplayName",
-									dynamic2 -> DataFixUtils.orElse(
-											dynamic2.asString().map(string -> Text.Serializer.toJson(new LiteralText(string))).map(dynamic::createString).result(), dynamic2
-										)
+		Type<?> type = this.getInputSchema().getType(TypeReferences.OBJECTIVE);
+		return this.fixTypeEverywhereTyped(
+			"ObjectiveDisplayNameFix",
+			type,
+			typed -> typed.update(
+					DSL.remainderFinder(),
+					dynamic -> dynamic.update(
+							"DisplayName",
+							dynamic2 -> DataFixUtils.orElse(
+									dynamic2.asString().map(string -> Text.Serializer.toJson(new LiteralText(string))).map(dynamic::createString).result(), dynamic2
 								)
 						)
-			);
-		}
+				)
+		);
 	}
 }

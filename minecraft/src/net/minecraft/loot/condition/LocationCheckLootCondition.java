@@ -15,9 +15,9 @@ public class LocationCheckLootCondition implements LootCondition {
 	final LocationPredicate predicate;
 	final BlockPos offset;
 
-	LocationCheckLootCondition(LocationPredicate locationPredicate, BlockPos blockPos) {
-		this.predicate = locationPredicate;
-		this.offset = blockPos;
+	LocationCheckLootCondition(LocationPredicate predicate, BlockPos offset) {
+		this.predicate = predicate;
+		this.offset = offset;
 	}
 
 	@Override

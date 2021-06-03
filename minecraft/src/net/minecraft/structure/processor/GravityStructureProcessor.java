@@ -34,10 +34,10 @@ public class GravityStructureProcessor extends StructureProcessor {
 	public Structure.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData data
 	) {
 		Heightmap.Type type;
 		if (world instanceof ServerWorld) {

@@ -238,8 +238,8 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 		this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, longRunningTask));
 	}
 
-	public void switchSlot(Runnable callback) {
-		this.method_32490(new SwitchSlotTask(this.serverData.id, this.slot, callback));
+	public void switchSlot(Runnable runnable) {
+		this.method_32490(new SwitchSlotTask(this.serverData.id, this.slot, () -> this.client.execute(runnable)));
 	}
 
 	private void onSelectWorldTemplate(@Nullable WorldTemplate template) {

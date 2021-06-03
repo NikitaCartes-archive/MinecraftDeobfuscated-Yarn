@@ -17,9 +17,9 @@ public class TimeCheckLootCondition implements LootCondition {
 	final Long period;
 	final BoundedIntUnaryOperator value;
 
-	TimeCheckLootCondition(@Nullable Long long_, BoundedIntUnaryOperator boundedIntUnaryOperator) {
-		this.period = long_;
-		this.value = boundedIntUnaryOperator;
+	TimeCheckLootCondition(@Nullable Long period, BoundedIntUnaryOperator value) {
+		this.period = period;
+		this.value = value;
 	}
 
 	@Override

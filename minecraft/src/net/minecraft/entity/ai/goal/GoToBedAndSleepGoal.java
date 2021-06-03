@@ -7,10 +7,13 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
-public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
+/**
+ * Makes a {@link CatEntity} go to a bed and sleep.
+ */
+public class GoToBedAndSleepGoal extends MoveToTargetPosGoal {
 	private final CatEntity cat;
 
-	public GoToOwnerAndPurrGoal(CatEntity cat, double speed, int range) {
+	public GoToBedAndSleepGoal(CatEntity cat, double speed, int range) {
 		super(cat, speed, range, 6);
 		this.cat = cat;
 		this.lowestY = -2;
@@ -19,7 +22,7 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 
 	@Override
 	public boolean canStart() {
-		return this.cat.isTamed() && !this.cat.isSitting() && !this.cat.isSleepingWithOwner() && super.canStart();
+		return this.cat.isTamed() && !this.cat.isSitting() && !this.cat.isInSleepingPose() && super.canStart();
 	}
 
 	@Override
@@ -36,7 +39,7 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	@Override
 	public void stop() {
 		super.stop();
-		this.cat.setSleepingWithOwner(false);
+		this.cat.setInSleepingPose(false);
 	}
 
 	@Override
@@ -44,9 +47,9 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 		super.tick();
 		this.cat.setInSittingPose(false);
 		if (!this.hasReached()) {
-			this.cat.setSleepingWithOwner(false);
-		} else if (!this.cat.isSleepingWithOwner()) {
-			this.cat.setSleepingWithOwner(true);
+			this.cat.setInSleepingPose(false);
+		} else if (!this.cat.isInSleepingPose()) {
+			this.cat.setInSleepingPose(true);
 		}
 	}
 

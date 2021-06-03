@@ -314,6 +314,11 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
+	public boolean method_37403(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
+	}
+
+	@Deprecated
 	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.getCollisionShape(state, world, pos, context);
 	}
@@ -769,7 +774,7 @@ public abstract class AbstractBlock {
 		}
 
 		public boolean isFullCube(BlockView world, BlockPos pos) {
-			return this.shapeCache != null ? this.shapeCache.isFullCube : Block.isShapeFullCube(this.getCollisionShape(world, pos));
+			return this.shapeCache != null ? this.shapeCache.isFullCube : this.getBlock().method_37403(this.asBlockState(), world, pos);
 		}
 
 		protected abstract BlockState asBlockState();

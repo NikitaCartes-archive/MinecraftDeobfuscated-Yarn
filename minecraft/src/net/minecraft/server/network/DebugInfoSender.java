@@ -192,7 +192,7 @@ public class DebugInfoSender {
 	}
 
 	private static List<String> listMemories(LivingEntity entity, long currentTime) {
-		Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> map = entity.getBrain().method_35058();
+		Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> map = entity.getBrain().getMemories();
 		List<String> list = Lists.<String>newArrayList();
 
 		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : map.entrySet()) {

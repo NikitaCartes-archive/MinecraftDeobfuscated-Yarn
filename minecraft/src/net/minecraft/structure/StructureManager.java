@@ -31,9 +31,9 @@ import org.apache.logging.log4j.Logger;
 
 public class StructureManager {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_31684 = "structures";
-	private static final String field_31685 = ".nbt";
-	private static final String field_31686 = ".snbt";
+	private static final String STRUCTURES_DIRECTORY = "structures";
+	private static final String NBT_FILE_EXTENSION = ".nbt";
+	private static final String SNBT_FILE_EXTENSION = ".snbt";
 	private final Map<Identifier, Optional<Structure>> structures = Maps.<Identifier, Optional<Structure>>newConcurrentMap();
 	private final DataFixer dataFixer;
 	private ResourceManager resourceManager;
@@ -150,13 +150,13 @@ public class StructureManager {
 		return structure;
 	}
 
-	public boolean saveStructure(Identifier identifier) {
-		Optional<Structure> optional = (Optional<Structure>)this.structures.get(identifier);
+	public boolean saveStructure(Identifier id) {
+		Optional<Structure> optional = (Optional<Structure>)this.structures.get(id);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
 			Structure structure = (Structure)optional.get();
-			Path path = this.getAndCheckStructurePath(identifier, ".nbt");
+			Path path = this.getAndCheckStructurePath(id, ".nbt");
 			Path path2 = path.getParent();
 			if (path2 == null) {
 				return false;

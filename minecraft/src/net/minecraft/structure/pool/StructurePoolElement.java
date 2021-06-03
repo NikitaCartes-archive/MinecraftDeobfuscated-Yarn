@@ -38,7 +38,7 @@ public abstract class StructurePoolElement {
 		this.projection = projection;
 	}
 
-	public abstract Vec3i getStart(StructureManager structureManager, BlockRotation blockRotation);
+	public abstract Vec3i getStart(StructureManager structureManager, BlockRotation rotation);
 
 	public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(
 		StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random

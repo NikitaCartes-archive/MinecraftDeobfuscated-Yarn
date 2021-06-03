@@ -6,7 +6,7 @@ import net.minecraft.obfuscate.DontObfuscate;
 
 @Environment(EnvType.CLIENT)
 public class ClientBrandRetriever {
-	public static final String field_33204 = "vanilla";
+	public static final String VANILLA = "vanilla";
 
 	@DontObfuscate
 	public static String getClientModName() {

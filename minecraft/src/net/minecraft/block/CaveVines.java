@@ -33,7 +33,16 @@ public interface CaveVines {
 		return state.contains(BERRIES) && (Boolean)state.get(BERRIES);
 	}
 
-	static ToIntFunction<BlockState> method_37362(int i) {
-		return blockState -> blockState.get(Properties.BERRIES) ? i : 0;
+	/**
+	 * {@return a function that receives a {@link BlockState} and returns the luminance for the state}
+	 * If there are no berries, it supplies the value 0.
+	 * 
+	 * @apiNote The return value is meant to be passed to
+	 * {@link AbstractBlock.Settings#luminance} builder method.
+	 * 
+	 * @param luminance luminance supplied when the block has berries
+	 */
+	static ToIntFunction<BlockState> getLuminanceSupplier(int luminance) {
+		return state -> state.get(Properties.BERRIES) ? luminance : 0;
 	}
 }

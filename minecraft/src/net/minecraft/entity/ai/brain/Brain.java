@@ -183,14 +183,14 @@ public class Brain<E extends LivingEntity> {
 		return ((Optional)this.memories.get(type)).map(Memory::getValue);
 	}
 
-	public <U> long method_36978(MemoryModuleType<U> memoryModuleType) {
-		Optional<? extends Memory<?>> optional = (Optional<? extends Memory<?>>)this.memories.get(memoryModuleType);
+	public <U> long getMemory(MemoryModuleType<U> type) {
+		Optional<? extends Memory<?>> optional = (Optional<? extends Memory<?>>)this.memories.get(type);
 		return (Long)optional.map(Memory::getExpiry).orElse(0L);
 	}
 
 	@Deprecated
 	@Debug
-	public Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> method_35058() {
+	public Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> getMemories() {
 		return this.memories;
 	}
 
@@ -471,9 +471,9 @@ public class Brain<E extends LivingEntity> {
 			return new Brain.MemoryEntry<>(type, (Optional<? extends Memory<U>>)data);
 		}
 
-		MemoryEntry(MemoryModuleType<U> memoryModuleType, Optional<? extends Memory<U>> optional) {
-			this.type = memoryModuleType;
-			this.data = optional;
+		MemoryEntry(MemoryModuleType<U> type, Optional<? extends Memory<U>> data) {
+			this.type = type;
+			this.data = data;
 		}
 
 		void apply(Brain<?> brain) {
@@ -496,10 +496,10 @@ public class Brain<E extends LivingEntity> {
 		private final Collection<? extends SensorType<? extends Sensor<? super E>>> sensors;
 		private final Codec<Brain<E>> codec;
 
-		Profile(Collection<? extends MemoryModuleType<?>> collection, Collection<? extends SensorType<? extends Sensor<? super E>>> collection2) {
-			this.memoryModules = collection;
-			this.sensors = collection2;
-			this.codec = Brain.createBrainCodec(collection, collection2);
+		Profile(Collection<? extends MemoryModuleType<?>> memoryModules, Collection<? extends SensorType<? extends Sensor<? super E>>> sensors) {
+			this.memoryModules = memoryModules;
+			this.sensors = sensors;
+			this.codec = Brain.createBrainCodec(memoryModules, sensors);
 		}
 
 		public Brain<E> deserialize(Dynamic<?> data) {

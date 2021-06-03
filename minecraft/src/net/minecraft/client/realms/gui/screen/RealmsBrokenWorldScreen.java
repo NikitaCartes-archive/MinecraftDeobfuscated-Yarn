@@ -237,10 +237,13 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 					RealmsClient realmsClient = RealmsClient.createRealmsClient();
 					if (this.field_20492.state == RealmsServer.State.CLOSED) {
 						this.client
-							.execute(() -> this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.field_20492, this, this.mainScreen, true))));
+							.execute(
+								() -> this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.field_20492, this, this.mainScreen, true, this.client)))
+							);
 					} else {
 						try {
-							this.mainScreen.newScreen().play(realmsClient.getOwnWorld(this.serverId), this);
+							RealmsServer realmsServer = realmsClient.getOwnWorld(this.serverId);
+							this.client.execute(() -> this.mainScreen.newScreen().play(realmsServer, this));
 						} catch (RealmsServiceException var3) {
 							LOGGER.error("Couldn't get own world");
 							this.client.execute(() -> this.client.openScreen(this.parent));

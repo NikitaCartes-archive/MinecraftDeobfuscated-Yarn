@@ -318,12 +318,12 @@ public class WorldBorder {
 		private final long timeStart;
 		private final double timeDuration;
 
-		MovingArea(double d, double e, long l) {
-			this.oldSize = d;
-			this.newSize = e;
-			this.timeDuration = (double)l;
+		MovingArea(double oldSize, double newSize, long timeDuration) {
+			this.oldSize = oldSize;
+			this.newSize = newSize;
+			this.timeDuration = (double)timeDuration;
 			this.timeStart = Util.getMeasuringTimeMs();
-			this.timeEnd = this.timeStart + l;
+			this.timeEnd = this.timeStart + timeDuration;
 		}
 
 		@Override

@@ -75,12 +75,12 @@ public class ShipwreckGenerator {
 		private final boolean grounded;
 
 		public Piece(StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, boolean grounded) {
-			super(StructurePieceType.SHIPWRECK, 0, manager, identifier, identifier.toString(), method_35452(rotation), pos);
+			super(StructurePieceType.SHIPWRECK, 0, manager, identifier, identifier.toString(), createPlacementData(rotation), pos);
 			this.grounded = grounded;
 		}
 
 		public Piece(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.SHIPWRECK, nbt, world, identifier -> method_35452(BlockRotation.valueOf(nbt.getString("Rot"))));
+			super(StructurePieceType.SHIPWRECK, nbt, world, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 			this.grounded = nbt.getBoolean("isBeached");
 		}
 
@@ -91,9 +91,9 @@ public class ShipwreckGenerator {
 			nbt.putString("Rot", this.placementData.getRotation().name());
 		}
 
-		private static StructurePlacementData method_35452(BlockRotation blockRotation) {
+		private static StructurePlacementData createPlacementData(BlockRotation rotation) {
 			return new StructurePlacementData()
-				.setRotation(blockRotation)
+				.setRotation(rotation)
 				.setMirror(BlockMirror.NONE)
 				.setPosition(ShipwreckGenerator.DEFAULT_POSITION)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);

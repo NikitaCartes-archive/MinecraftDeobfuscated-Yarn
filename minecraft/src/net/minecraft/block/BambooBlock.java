@@ -77,6 +77,11 @@ public class BambooBlock extends Block implements Fertilizable {
 		return NO_LEAVES_SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
+	@Override
+	public boolean method_37403(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return false;
+	}
+
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {

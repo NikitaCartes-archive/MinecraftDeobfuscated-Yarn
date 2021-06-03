@@ -66,9 +66,9 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public Vec3i getStart(StructureManager structureManager, BlockRotation blockRotation) {
+	public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
 		Structure structure = this.method_27233(structureManager);
-		return structure.getRotatedSize(blockRotation);
+		return structure.getRotatedSize(rotation);
 	}
 
 	private Structure method_27233(StructureManager structureManager) {

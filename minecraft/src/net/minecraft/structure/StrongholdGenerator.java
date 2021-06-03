@@ -214,7 +214,7 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public ChestCorridor(ServerWorld serverWorld, NbtCompound nbt) {
+		public ChestCorridor(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, nbt);
 			this.chestGenerated = nbt.getBoolean("Chest");
 		}
@@ -286,7 +286,7 @@ public class StrongholdGenerator {
 			this.rightExitExists = random.nextInt(2) == 0;
 		}
 
-		public Corridor(ServerWorld serverWorld, NbtCompound nbt) {
+		public Corridor(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_CORRIDOR, nbt);
 			this.leftExitExists = nbt.getBoolean("Left");
 			this.rightExitExists = nbt.getBoolean("Right");
@@ -490,7 +490,7 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public LeftTurn(ServerWorld serverWorld, NbtCompound nbt) {
+		public LeftTurn(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_LEFT_TURN, nbt);
 		}
 
@@ -1041,7 +1041,7 @@ public class StrongholdGenerator {
 			this.setOrientation(orientation);
 		}
 
-		public PortalRoom(ServerWorld serverWorld, NbtCompound nbt) {
+		public PortalRoom(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, nbt);
 			this.spawnerPlaced = nbt.getBoolean("Mob");
 		}
@@ -1176,7 +1176,7 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public PrisonHall(ServerWorld serverWorld, NbtCompound nbt) {
+		public PrisonHall(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_PRISON_HALL, nbt);
 		}
 
@@ -1265,7 +1265,7 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public RightTurn(ServerWorld serverWorld, NbtCompound nbt) {
+		public RightTurn(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_RIGHT_TURN, nbt);
 		}
 
@@ -1394,7 +1394,7 @@ public class StrongholdGenerator {
 		private final boolean isStructureStart;
 
 		public SpiralStaircase(StructurePieceType structurePieceType, int chainLength, int i, int x, Direction direction) {
-			super(structurePieceType, chainLength, method_35454(i, 64, x, direction, 5, 11, 5));
+			super(structurePieceType, chainLength, createBox(i, 64, x, direction, 5, 11, 5));
 			this.isStructureStart = true;
 			this.setOrientation(direction);
 			this.entryDoor = StrongholdGenerator.Piece.EntranceType.OPENING;
@@ -1487,7 +1487,7 @@ public class StrongholdGenerator {
 			this.roomType = random.nextInt(5);
 		}
 
-		public SquareRoom(ServerWorld serverWorld, NbtCompound nbt) {
+		public SquareRoom(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, nbt);
 			this.roomType = nbt.getInt("Type");
 		}
@@ -1624,7 +1624,7 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public Stairs(ServerWorld serverWorld, NbtCompound nbt) {
+		public Stairs(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_STAIRS, nbt);
 		}
 
@@ -1679,7 +1679,7 @@ public class StrongholdGenerator {
 		public final List<StructurePiece> pieces = Lists.<StructurePiece>newArrayList();
 
 		public Start(Random random, int i, int j) {
-			super(StructurePieceType.STRONGHOLD_START, 0, i, j, method_35457(random));
+			super(StructurePieceType.STRONGHOLD_START, 0, i, j, getRandomHorizontalDirection(random));
 		}
 
 		public Start(ServerWorld serverWorld, NbtCompound nbtCompound) {
@@ -1687,8 +1687,8 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public BlockPos method_35458() {
-			return this.portalRoom != null ? this.portalRoom.method_35458() : super.method_35458();
+		public BlockPos getCenter() {
+			return this.portalRoom != null ? this.portalRoom.getCenter() : super.getCenter();
 		}
 	}
 

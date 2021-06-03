@@ -1296,7 +1296,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
 				this.execute(() -> consumer.accept(new TranslatableText("debug.profiling.stop", text)));
 			};
-			SystemDetails systemDetails = method_37274(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
+			SystemDetails systemDetails = addSystemDetailsToCrashReport(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
 			Consumer<List<Path>> consumer4 = list -> {
 				Path path = this.method_37275(systemDetails, list);
 				consumer3.accept(path);
@@ -2379,7 +2379,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public CrashReport addDetailsToCrashReport(CrashReport report) {
 		SystemDetails systemDetails = report.getSystemDetailsSection();
-		method_37274(systemDetails, this, this.languageManager, this.gameVersion, this.options);
+		addSystemDetailsToCrashReport(systemDetails, this, this.languageManager, this.gameVersion, this.options);
 		if (this.world != null) {
 			this.world.addDetailsToCrashReport(report);
 		}
@@ -2396,20 +2396,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		@Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, @Nullable GameOptions options, CrashReport report
 	) {
 		SystemDetails systemDetails = report.getSystemDetailsSection();
-		method_37274(systemDetails, client, languageManager, version, options);
+		addSystemDetailsToCrashReport(systemDetails, client, languageManager, version, options);
 	}
 
-	private static SystemDetails method_37274(
-		SystemDetails systemDetails, @Nullable MinecraftClient minecraftClient, @Nullable LanguageManager languageManager, String string, GameOptions gameOptions
+	private static SystemDetails addSystemDetailsToCrashReport(
+		SystemDetails systemDetails, @Nullable MinecraftClient client, @Nullable LanguageManager languageManager, String version, GameOptions options
 	) {
-		systemDetails.addSection("Launched Version", (Supplier<String>)(() -> string));
+		systemDetails.addSection("Launched Version", (Supplier<String>)(() -> version));
 		systemDetails.addSection("Backend library", RenderSystem::getBackendDescription);
 		systemDetails.addSection("Backend API", RenderSystem::getApiDescription);
 		systemDetails.addSection(
 			"Window size",
-			(Supplier<String>)(() -> minecraftClient != null
-					? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight()
-					: "<not initialized>")
+			(Supplier<String>)(() -> client != null ? client.window.getFramebufferWidth() + "x" + client.window.getFramebufferHeight() : "<not initialized>")
 		);
 		systemDetails.addSection("GL Caps", RenderSystem::getCapsString);
 		systemDetails.addSection("GL debug messages", (Supplier<String>)(() -> GlDebug.method_36479() ? String.join("\n", GlDebug.method_36478()) : "<disabled>"));
@@ -2428,25 +2426,25 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			})
 		);
 		systemDetails.addSection("Type", "Client (map_client.txt)");
-		if (gameOptions != null) {
+		if (options != null) {
 			if (instance != null) {
-				String string2 = instance.getVideoWarningManager().getWarningsAsString();
-				if (string2 != null) {
-					systemDetails.addSection("GPU Warnings", string2);
+				String string = instance.getVideoWarningManager().getWarningsAsString();
+				if (string != null) {
+					systemDetails.addSection("GPU Warnings", string);
 				}
 			}
 
-			systemDetails.addSection("Graphics mode", gameOptions.graphicsMode.toString());
+			systemDetails.addSection("Graphics mode", options.graphicsMode.toString());
 			systemDetails.addSection("Resource Packs", (Supplier<String>)(() -> {
 				StringBuilder stringBuilder = new StringBuilder();
 
-				for (String stringx : gameOptions.resourcePacks) {
+				for (String stringx : options.resourcePacks) {
 					if (stringBuilder.length() > 0) {
 						stringBuilder.append(", ");
 					}
 
 					stringBuilder.append(stringx);
-					if (gameOptions.incompatibleResourcePacks.contains(stringx)) {
+					if (options.incompatibleResourcePacks.contains(stringx)) {
 						stringBuilder.append(" (incompatible)");
 					}
 				}
@@ -3023,8 +3021,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		private final Text description;
 
-		ChatRestriction(Text text) {
-			this.description = text;
+		ChatRestriction(Text description) {
+			this.description = description;
 		}
 
 		public Text getDescription() {

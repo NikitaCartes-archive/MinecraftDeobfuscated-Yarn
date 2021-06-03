@@ -2,15 +2,14 @@ package net.minecraft.server.dedicated;
 
 import java.nio.file.Path;
 import java.util.function.UnaryOperator;
-import net.minecraft.util.registry.DynamicRegistryManager;
 
 public class ServerPropertiesLoader {
 	private final Path path;
 	private ServerPropertiesHandler propertiesHandler;
 
-	public ServerPropertiesLoader(DynamicRegistryManager registryManager, Path path) {
+	public ServerPropertiesLoader(Path path) {
 		this.path = path;
-		this.propertiesHandler = ServerPropertiesHandler.load(registryManager, path);
+		this.propertiesHandler = ServerPropertiesHandler.load(path);
 	}
 
 	public ServerPropertiesHandler getPropertiesHandler() {

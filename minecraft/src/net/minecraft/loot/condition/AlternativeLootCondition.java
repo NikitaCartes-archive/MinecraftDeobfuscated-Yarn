@@ -15,9 +15,9 @@ public class AlternativeLootCondition implements LootCondition {
 	final LootCondition[] terms;
 	private final Predicate<LootContext> predicate;
 
-	AlternativeLootCondition(LootCondition[] lootConditions) {
-		this.terms = lootConditions;
-		this.predicate = LootConditionTypes.joinOr(lootConditions);
+	AlternativeLootCondition(LootCondition[] terms) {
+		this.terms = terms;
+		this.predicate = LootConditionTypes.joinOr(terms);
 	}
 
 	@Override

@@ -333,12 +333,12 @@ public class ChunkStatus {
 		ServerWorld world,
 		ChunkGenerator chunkGenerator,
 		StructureManager structureManager,
-		ServerLightingProvider serverLightingProvider,
+		ServerLightingProvider lightingProvider,
 		Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 		List<Chunk> list
 	) {
 		return this.generationTask
-			.doWork(this, executor, world, chunkGenerator, structureManager, serverLightingProvider, function, list, (Chunk)list.get(list.size() / 2));
+			.doWork(this, executor, world, chunkGenerator, structureManager, lightingProvider, function, list, (Chunk)list.get(list.size() / 2));
 	}
 
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> runLoadTask(
@@ -402,7 +402,7 @@ public class ChunkStatus {
 			ServerWorld world,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			ServerLightingProvider serverLightingProvider,
+			ServerLightingProvider lightingProvider,
 			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 			List<Chunk> list,
 			Chunk chunk
@@ -446,6 +446,6 @@ public class ChunkStatus {
 			return CompletableFuture.completedFuture(Either.left(chunk));
 		}
 
-		void doWork(ChunkStatus chunkStatus, ServerWorld serverWorld, ChunkGenerator chunkGenerator, List<Chunk> list, Chunk chunk);
+		void doWork(ChunkStatus targetStatus, ServerWorld world, ChunkGenerator chunkGenerator, List<Chunk> list, Chunk chunk);
 	}
 }

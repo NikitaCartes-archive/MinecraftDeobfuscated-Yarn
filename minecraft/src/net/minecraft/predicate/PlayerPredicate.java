@@ -44,7 +44,7 @@ public class PlayerPredicate {
 	private final Map<Stat<?>, NumberRange.IntRange> stats;
 	private final Object2BooleanMap<Identifier> recipes;
 	private final Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements;
-	private final EntityPredicate field_33929;
+	private final EntityPredicate lookingAt;
 
 	private static PlayerPredicate.AdvancementPredicate criterionFromJson(JsonElement json) {
 		if (json.isJsonPrimitive()) {
@@ -67,14 +67,14 @@ public class PlayerPredicate {
 		Map<Stat<?>, NumberRange.IntRange> stats,
 		Object2BooleanMap<Identifier> recipes,
 		Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements,
-		EntityPredicate entityPredicate
+		EntityPredicate lookingAt
 	) {
 		this.experienceLevel = experienceLevel;
 		this.gameMode = gameMode;
 		this.stats = stats;
 		this.recipes = recipes;
 		this.advancements = advancements;
-		this.field_33929 = entityPredicate;
+		this.lookingAt = lookingAt;
 	}
 
 	public boolean test(Entity entity) {
@@ -116,7 +116,7 @@ public class PlayerPredicate {
 				}
 			}
 
-			if (this.field_33929 != EntityPredicate.ANY) {
+			if (this.lookingAt != EntityPredicate.ANY) {
 				Vec3d vec3d = serverPlayerEntity.getEyePos();
 				Vec3d vec3d2 = serverPlayerEntity.getRotationVec(1.0F);
 				Vec3d vec3d3 = vec3d.add(vec3d2.x * 100.0, vec3d2.y * 100.0, vec3d2.z * 100.0);
@@ -128,7 +128,7 @@ public class PlayerPredicate {
 				}
 
 				Entity entity2 = entityHitResult.getEntity();
-				if (!this.field_33929.test(serverPlayerEntity, entity2) || !serverPlayerEntity.canSee(entity2)) {
+				if (!this.lookingAt.test(serverPlayerEntity, entity2) || !serverPlayerEntity.canSee(entity2)) {
 					return false;
 				}
 			}
@@ -234,7 +234,7 @@ public class PlayerPredicate {
 				jsonObject.add("advancements", jsonObject2);
 			}
 
-			jsonObject.add("looking_at", this.field_33929.toJson());
+			jsonObject.add("looking_at", this.lookingAt.toJson());
 			return jsonObject;
 		}
 	}
@@ -276,7 +276,7 @@ public class PlayerPredicate {
 		private final Map<Stat<?>, NumberRange.IntRange> stats = Maps.<Stat<?>, NumberRange.IntRange>newHashMap();
 		private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<>();
 		private final Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements = Maps.<Identifier, PlayerPredicate.AdvancementPredicate>newHashMap();
-		private EntityPredicate field_33930 = EntityPredicate.ANY;
+		private EntityPredicate lookingAt = EntityPredicate.ANY;
 
 		public static PlayerPredicate.Builder create() {
 			return new PlayerPredicate.Builder();
@@ -302,8 +302,8 @@ public class PlayerPredicate {
 			return this;
 		}
 
-		public PlayerPredicate.Builder method_37251(EntityPredicate entityPredicate) {
-			this.field_33930 = entityPredicate;
+		public PlayerPredicate.Builder lookingAt(EntityPredicate lookingAt) {
+			this.lookingAt = lookingAt;
 			return this;
 		}
 
@@ -318,7 +318,7 @@ public class PlayerPredicate {
 		}
 
 		public PlayerPredicate build() {
-			return new PlayerPredicate(this.experienceLevel, this.gameMode, this.stats, this.recipes, this.advancements, this.field_33930);
+			return new PlayerPredicate(this.experienceLevel, this.gameMode, this.stats, this.recipes, this.advancements, this.lookingAt);
 		}
 	}
 

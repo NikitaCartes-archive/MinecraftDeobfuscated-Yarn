@@ -34,13 +34,13 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public Vec3i getStart(StructureManager structureManager, BlockRotation blockRotation) {
+	public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
 		int i = 0;
 		int j = 0;
 		int k = 0;
 
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			Vec3i vec3i = structurePoolElement.getStart(structureManager, blockRotation);
+			Vec3i vec3i = structurePoolElement.getStart(structureManager, rotation);
 			i = Math.max(i, vec3i.getX());
 			j = Math.max(j, vec3i.getY());
 			k = Math.max(k, vec3i.getZ());

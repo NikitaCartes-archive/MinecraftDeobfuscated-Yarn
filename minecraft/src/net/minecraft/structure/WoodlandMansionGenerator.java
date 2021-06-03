@@ -1049,32 +1049,32 @@ public class WoodlandMansionGenerator {
 		}
 
 		public Piece(StructureManager structureManager, String template, BlockPos pos, BlockRotation rotation, BlockMirror mirror) {
-			super(StructurePieceType.WOODLAND_MANSION, 0, structureManager, method_35474(template), template, method_35473(mirror, rotation), pos);
+			super(StructurePieceType.WOODLAND_MANSION, 0, structureManager, getId(template), template, createPlacementData(mirror, rotation), pos);
 		}
 
-		public Piece(ServerWorld serverWorld, NbtCompound nbt) {
+		public Piece(ServerWorld world, NbtCompound nbt) {
 			super(
 				StructurePieceType.WOODLAND_MANSION,
 				nbt,
-				serverWorld,
-				identifier -> method_35473(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot")))
+				world,
+				identifier -> createPlacementData(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot")))
 			);
 		}
 
 		@Override
-		protected Identifier method_35470() {
-			return method_35474(this.field_31664);
+		protected Identifier getId() {
+			return getId(this.identifier);
 		}
 
-		private static Identifier method_35474(String string) {
-			return new Identifier("woodland_mansion/" + string);
+		private static Identifier getId(String identifier) {
+			return new Identifier("woodland_mansion/" + identifier);
 		}
 
-		private static StructurePlacementData method_35473(BlockMirror blockMirror, BlockRotation blockRotation) {
+		private static StructurePlacementData createPlacementData(BlockMirror mirror, BlockRotation rotation) {
 			return new StructurePlacementData()
 				.setIgnoreEntities(true)
-				.setRotation(blockRotation)
-				.setMirror(blockMirror)
+				.setRotation(rotation)
+				.setMirror(mirror)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 		}
 

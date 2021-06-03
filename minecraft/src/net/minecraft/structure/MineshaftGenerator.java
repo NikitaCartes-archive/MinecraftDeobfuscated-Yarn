@@ -93,7 +93,7 @@ public class MineshaftGenerator {
 		private boolean hasSpawner;
 		private final int length;
 
-		public MineshaftCorridor(ServerWorld serverWorld, NbtCompound nbt) {
+		public MineshaftCorridor(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.MINESHAFT_CORRIDOR, nbt);
 			this.hasRails = nbt.getBoolean("hr");
 			this.hasCobwebs = nbt.getBoolean("sc");
@@ -445,17 +445,17 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		protected void fillDownwards(StructureWorldAccess world, BlockState state, int x, int i, int j, BlockBox box) {
-			BlockPos.Mutable mutable = this.offsetPos(x, i, j);
+		protected void fillDownwards(StructureWorldAccess world, BlockState state, int x, int y, int z, BlockBox box) {
+			BlockPos.Mutable mutable = this.offsetPos(x, y, z);
 			if (box.contains(mutable)) {
-				int k = mutable.getY();
+				int i = mutable.getY();
 
 				while (this.canReplace(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
 					mutable.move(Direction.DOWN);
 				}
 
 				if (this.isNotRailOrLava(world.getBlockState(mutable))) {
-					while (mutable.getY() < k) {
+					while (mutable.getY() < i) {
 						mutable.move(Direction.UP);
 						world.setBlockState(mutable, state, Block.NOTIFY_LISTENERS);
 					}
@@ -463,45 +463,45 @@ public class MineshaftGenerator {
 			}
 		}
 
-		protected void method_33879(StructureWorldAccess structureWorldAccess, BlockState blockState, int i, int j, int k, BlockBox blockBox) {
-			BlockPos.Mutable mutable = this.offsetPos(i, j, k);
-			if (blockBox.contains(mutable)) {
-				int l = mutable.getY();
-				int m = 1;
+		protected void method_33879(StructureWorldAccess world, BlockState state, int x, int y, int z, BlockBox box) {
+			BlockPos.Mutable mutable = this.offsetPos(x, y, z);
+			if (box.contains(mutable)) {
+				int i = mutable.getY();
+				int j = 1;
 				boolean bl = true;
 
-				for (boolean bl2 = true; bl || bl2; m++) {
+				for (boolean bl2 = true; bl || bl2; j++) {
 					if (bl) {
-						mutable.setY(l - m);
-						BlockState blockState2 = structureWorldAccess.getBlockState(mutable);
-						boolean bl3 = this.canReplace(blockState2) && !blockState2.isOf(Blocks.LAVA);
-						if (!bl3 && this.isNotRailOrLava(blockState2)) {
-							method_33878(structureWorldAccess, blockState, mutable, l - m + 1, l);
+						mutable.setY(i - j);
+						BlockState blockState = world.getBlockState(mutable);
+						boolean bl3 = this.canReplace(blockState) && !blockState.isOf(Blocks.LAVA);
+						if (!bl3 && this.isNotRailOrLava(blockState)) {
+							fillColumn(world, state, mutable, i - j + 1, i);
 							return;
 						}
 
-						bl = m <= 20 && bl3 && mutable.getY() > structureWorldAccess.getBottomY() + 1;
+						bl = j <= 20 && bl3 && mutable.getY() > world.getBottomY() + 1;
 					}
 
 					if (bl2) {
-						mutable.setY(l + m);
-						BlockState blockState2 = structureWorldAccess.getBlockState(mutable);
-						boolean bl3 = this.canReplace(blockState2);
-						if (!bl3 && this.method_33877(structureWorldAccess, mutable, blockState2)) {
-							structureWorldAccess.setBlockState(mutable.setY(l + 1), this.mineshaftType.getFence(), Block.NOTIFY_LISTENERS);
-							method_33878(structureWorldAccess, Blocks.CHAIN.getDefaultState(), mutable, l + 2, l + m);
+						mutable.setY(i + j);
+						BlockState blockState = world.getBlockState(mutable);
+						boolean bl3 = this.canReplace(blockState);
+						if (!bl3 && this.sideCoversSmallSquare(world, mutable, blockState)) {
+							world.setBlockState(mutable.setY(i + 1), this.mineshaftType.getFence(), Block.NOTIFY_LISTENERS);
+							fillColumn(world, Blocks.CHAIN.getDefaultState(), mutable, i + 2, i + j);
 							return;
 						}
 
-						bl2 = m <= 50 && bl3 && mutable.getY() < structureWorldAccess.getTopY() - 1;
+						bl2 = j <= 50 && bl3 && mutable.getY() < world.getTopY() - 1;
 					}
 				}
 			}
 		}
 
-		private static void method_33878(StructureWorldAccess structureWorldAccess, BlockState blockState, BlockPos.Mutable mutable, int i, int j) {
-			for (int k = i; k < j; k++) {
-				structureWorldAccess.setBlockState(mutable.setY(k), blockState, Block.NOTIFY_LISTENERS);
+		private static void fillColumn(StructureWorldAccess world, BlockState state, BlockPos.Mutable pos, int startY, int endY) {
+			for (int i = startY; i < endY; i++) {
+				world.setBlockState(pos.setY(i), state, Block.NOTIFY_LISTENERS);
 			}
 		}
 
@@ -509,8 +509,8 @@ public class MineshaftGenerator {
 			return !state.isOf(Blocks.RAIL) && !state.isOf(Blocks.LAVA);
 		}
 
-		private boolean method_33877(WorldView worldView, BlockPos blockPos, BlockState blockState) {
-			return Block.sideCoversSmallSquare(worldView, blockPos, Direction.DOWN) && !(blockState.getBlock() instanceof FallingBlock);
+		private boolean sideCoversSmallSquare(WorldView world, BlockPos pos, BlockState state) {
+			return Block.sideCoversSmallSquare(world, pos, Direction.DOWN) && !(state.getBlock() instanceof FallingBlock);
 		}
 
 		private void generateSupports(StructureWorldAccess world, BlockBox boundingBox, int minX, int minY, int z, int maxY, int maxX, Random random) {
@@ -534,22 +534,20 @@ public class MineshaftGenerator {
 			}
 		}
 
-		private void addCobwebsUnderground(StructureWorldAccess world, BlockBox blockBox, Random random, float threshold, int x, int y, int z) {
-			if (this.isUnderSeaLevel(world, x, y, z, blockBox) && random.nextFloat() < threshold && this.method_36422(world, blockBox, x, y, z, 2)) {
-				this.addBlock(world, Blocks.COBWEB.getDefaultState(), x, y, z, blockBox);
+		private void addCobwebsUnderground(StructureWorldAccess world, BlockBox box, Random random, float threshold, int x, int y, int z) {
+			if (this.isUnderSeaLevel(world, x, y, z, box) && random.nextFloat() < threshold && this.method_36422(world, box, x, y, z, 2)) {
+				this.addBlock(world, Blocks.COBWEB.getDefaultState(), x, y, z, box);
 			}
 		}
 
-		private boolean method_36422(StructureWorldAccess structureWorldAccess, BlockBox blockBox, int i, int j, int k, int l) {
-			BlockPos.Mutable mutable = this.offsetPos(i, j, k);
-			int m = 0;
+		private boolean method_36422(StructureWorldAccess world, BlockBox box, int x, int y, int z, int count) {
+			BlockPos.Mutable mutable = this.offsetPos(x, y, z);
+			int i = 0;
 
 			for (Direction direction : Direction.values()) {
 				mutable.move(direction);
-				if (blockBox.contains(mutable) && structureWorldAccess.getBlockState(mutable).isSideSolidFullSquare(structureWorldAccess, mutable, direction.getOpposite())
-					)
-				 {
-					if (++m >= l) {
+				if (box.contains(mutable) && world.getBlockState(mutable).isSideSolidFullSquare(world, mutable, direction.getOpposite())) {
+					if (++i >= count) {
 						return true;
 					}
 				}
@@ -565,7 +563,7 @@ public class MineshaftGenerator {
 		private final Direction direction;
 		private final boolean twoFloors;
 
-		public MineshaftCrossing(ServerWorld serverWorld, NbtCompound nbt) {
+		public MineshaftCrossing(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.MINESHAFT_CROSSING, nbt);
 			this.twoFloors = nbt.getBoolean("tf");
 			this.direction = Direction.fromHorizontal(nbt.getInt("D"));
@@ -850,8 +848,8 @@ public class MineshaftGenerator {
 	abstract static class MineshaftPart extends StructurePiece {
 		protected MineshaftFeature.Type mineshaftType;
 
-		public MineshaftPart(StructurePieceType structurePieceType, int chainLength, MineshaftFeature.Type type, BlockBox blockBox) {
-			super(structurePieceType, chainLength, blockBox);
+		public MineshaftPart(StructurePieceType structurePieceType, int chainLength, MineshaftFeature.Type type, BlockBox box) {
+			super(structurePieceType, chainLength, box);
 			this.mineshaftType = type;
 		}
 
@@ -884,22 +882,22 @@ public class MineshaftGenerator {
 			return true;
 		}
 
-		protected boolean method_33999(BlockView blockView, BlockBox blockBox) {
-			int i = Math.max(this.boundingBox.getMinX() - 1, blockBox.getMinX());
-			int j = Math.max(this.boundingBox.getMinY() - 1, blockBox.getMinY());
-			int k = Math.max(this.boundingBox.getMinZ() - 1, blockBox.getMinZ());
-			int l = Math.min(this.boundingBox.getMaxX() + 1, blockBox.getMaxX());
-			int m = Math.min(this.boundingBox.getMaxY() + 1, blockBox.getMaxY());
-			int n = Math.min(this.boundingBox.getMaxZ() + 1, blockBox.getMaxZ());
+		protected boolean method_33999(BlockView world, BlockBox box) {
+			int i = Math.max(this.boundingBox.getMinX() - 1, box.getMinX());
+			int j = Math.max(this.boundingBox.getMinY() - 1, box.getMinY());
+			int k = Math.max(this.boundingBox.getMinZ() - 1, box.getMinZ());
+			int l = Math.min(this.boundingBox.getMaxX() + 1, box.getMaxX());
+			int m = Math.min(this.boundingBox.getMaxY() + 1, box.getMaxY());
+			int n = Math.min(this.boundingBox.getMaxZ() + 1, box.getMaxZ());
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int o = i; o <= l; o++) {
 				for (int p = k; p <= n; p++) {
-					if (blockView.getBlockState(mutable.set(o, j, p)).getMaterial().isLiquid()) {
+					if (world.getBlockState(mutable.set(o, j, p)).getMaterial().isLiquid()) {
 						return true;
 					}
 
-					if (blockView.getBlockState(mutable.set(o, m, p)).getMaterial().isLiquid()) {
+					if (world.getBlockState(mutable.set(o, m, p)).getMaterial().isLiquid()) {
 						return true;
 					}
 				}
@@ -907,11 +905,11 @@ public class MineshaftGenerator {
 
 			for (int o = i; o <= l; o++) {
 				for (int p = j; p <= m; p++) {
-					if (blockView.getBlockState(mutable.set(o, p, k)).getMaterial().isLiquid()) {
+					if (world.getBlockState(mutable.set(o, p, k)).getMaterial().isLiquid()) {
 						return true;
 					}
 
-					if (blockView.getBlockState(mutable.set(o, p, n)).getMaterial().isLiquid()) {
+					if (world.getBlockState(mutable.set(o, p, n)).getMaterial().isLiquid()) {
 						return true;
 					}
 				}
@@ -919,11 +917,11 @@ public class MineshaftGenerator {
 
 			for (int o = k; o <= n; o++) {
 				for (int p = j; p <= m; p++) {
-					if (blockView.getBlockState(mutable.set(i, p, o)).getMaterial().isLiquid()) {
+					if (world.getBlockState(mutable.set(i, p, o)).getMaterial().isLiquid()) {
 						return true;
 					}
 
-					if (blockView.getBlockState(mutable.set(l, p, o)).getMaterial().isLiquid()) {
+					if (world.getBlockState(mutable.set(l, p, o)).getMaterial().isLiquid()) {
 						return true;
 					}
 				}
@@ -932,12 +930,12 @@ public class MineshaftGenerator {
 			return false;
 		}
 
-		protected void method_33880(StructureWorldAccess structureWorldAccess, BlockBox blockBox, BlockState blockState, int i, int j, int k) {
-			if (this.isUnderSeaLevel(structureWorldAccess, i, j, k, blockBox)) {
-				BlockPos blockPos = this.offsetPos(i, j, k);
-				BlockState blockState2 = structureWorldAccess.getBlockState(blockPos);
-				if (blockState2.isAir() || blockState2.isOf(Blocks.CHAIN)) {
-					structureWorldAccess.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS);
+		protected void method_33880(StructureWorldAccess world, BlockBox box, BlockState state, int x, int y, int z) {
+			if (this.isUnderSeaLevel(world, x, y, z, box)) {
+				BlockPos blockPos = this.offsetPos(x, y, z);
+				BlockState blockState = world.getBlockState(blockPos);
+				if (blockState.isAir() || blockState.isOf(Blocks.CHAIN)) {
+					world.setBlockState(blockPos, state, Block.NOTIFY_LISTENERS);
 				}
 			}
 		}
@@ -953,7 +951,7 @@ public class MineshaftGenerator {
 			this.mineshaftType = type;
 		}
 
-		public MineshaftRoom(ServerWorld serverWorld, NbtCompound nbt) {
+		public MineshaftRoom(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.MINESHAFT_ROOM, nbt);
 			BlockBox.CODEC
 				.listOf()
@@ -1185,7 +1183,7 @@ public class MineshaftGenerator {
 			this.setOrientation(orientation);
 		}
 
-		public MineshaftStairs(ServerWorld serverWorld, NbtCompound nbt) {
+		public MineshaftStairs(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.MINESHAFT_STAIRS, nbt);
 		}
 

@@ -81,15 +81,15 @@ public class Structure {
 		return this.author;
 	}
 
-	public void saveFromWorld(World world, BlockPos start, Vec3i vec3i, boolean includeEntities, @Nullable Block ignoredBlock) {
-		if (vec3i.getX() >= 1 && vec3i.getY() >= 1 && vec3i.getZ() >= 1) {
-			BlockPos blockPos = start.add(vec3i).add(-1, -1, -1);
+	public void saveFromWorld(World world, BlockPos start, Vec3i dimensions, boolean includeEntities, @Nullable Block ignoredBlock) {
+		if (dimensions.getX() >= 1 && dimensions.getY() >= 1 && dimensions.getZ() >= 1) {
+			BlockPos blockPos = start.add(dimensions).add(-1, -1, -1);
 			List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 			List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 			List<Structure.StructureBlockInfo> list3 = Lists.<Structure.StructureBlockInfo>newArrayList();
 			BlockPos blockPos2 = new BlockPos(Math.min(start.getX(), blockPos.getX()), Math.min(start.getY(), blockPos.getY()), Math.min(start.getZ(), blockPos.getZ()));
 			BlockPos blockPos3 = new BlockPos(Math.max(start.getX(), blockPos.getX()), Math.max(start.getY(), blockPos.getY()), Math.max(start.getZ(), blockPos.getZ()));
-			this.size = vec3i;
+			this.size = dimensions;
 
 			for (BlockPos blockPos4 : BlockPos.iterate(blockPos2, blockPos3)) {
 				BlockPos blockPos5 = blockPos4.subtract(blockPos2);
@@ -203,7 +203,7 @@ public class Structure {
 		return transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
 	}
 
-	public boolean place(ServerWorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, Random random, int i) {
+	public boolean place(ServerWorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, Random random, int i) {
 		if (this.blockInfoLists.isEmpty()) {
 			return false;
 		} else {
@@ -223,31 +223,31 @@ public class Structure {
 				int n = Integer.MIN_VALUE;
 				int o = Integer.MIN_VALUE;
 
-				for (Structure.StructureBlockInfo structureBlockInfo : process(world, pos, blockPos, placementData, list)) {
-					BlockPos blockPos2 = structureBlockInfo.pos;
-					if (blockBox == null || blockBox.contains(blockPos2)) {
-						FluidState fluidState = placementData.shouldPlaceFluids() ? world.getFluidState(blockPos2) : null;
+				for (Structure.StructureBlockInfo structureBlockInfo : process(world, pos, pivot, placementData, list)) {
+					BlockPos blockPos = structureBlockInfo.pos;
+					if (blockBox == null || blockBox.contains(blockPos)) {
+						FluidState fluidState = placementData.shouldPlaceFluids() ? world.getFluidState(blockPos) : null;
 						BlockState blockState = structureBlockInfo.state.mirror(placementData.getMirror()).rotate(placementData.getRotation());
 						if (structureBlockInfo.nbt != null) {
-							BlockEntity blockEntity = world.getBlockEntity(blockPos2);
+							BlockEntity blockEntity = world.getBlockEntity(blockPos);
 							Clearable.clear(blockEntity);
-							world.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), Block.NO_REDRAW | Block.FORCE_STATE);
+							world.setBlockState(blockPos, Blocks.BARRIER.getDefaultState(), Block.NO_REDRAW | Block.FORCE_STATE);
 						}
 
-						if (world.setBlockState(blockPos2, blockState, i)) {
-							j = Math.min(j, blockPos2.getX());
-							k = Math.min(k, blockPos2.getY());
-							l = Math.min(l, blockPos2.getZ());
-							m = Math.max(m, blockPos2.getX());
-							n = Math.max(n, blockPos2.getY());
-							o = Math.max(o, blockPos2.getZ());
-							list4.add(Pair.of(blockPos2, structureBlockInfo.nbt));
+						if (world.setBlockState(blockPos, blockState, i)) {
+							j = Math.min(j, blockPos.getX());
+							k = Math.min(k, blockPos.getY());
+							l = Math.min(l, blockPos.getZ());
+							m = Math.max(m, blockPos.getX());
+							n = Math.max(n, blockPos.getY());
+							o = Math.max(o, blockPos.getZ());
+							list4.add(Pair.of(blockPos, structureBlockInfo.nbt));
 							if (structureBlockInfo.nbt != null) {
-								BlockEntity blockEntity = world.getBlockEntity(blockPos2);
+								BlockEntity blockEntity = world.getBlockEntity(blockPos);
 								if (blockEntity != null) {
-									structureBlockInfo.nbt.putInt("x", blockPos2.getX());
-									structureBlockInfo.nbt.putInt("y", blockPos2.getY());
-									structureBlockInfo.nbt.putInt("z", blockPos2.getZ());
+									structureBlockInfo.nbt.putInt("x", blockPos.getX());
+									structureBlockInfo.nbt.putInt("y", blockPos.getY());
+									structureBlockInfo.nbt.putInt("z", blockPos.getZ());
 									if (blockEntity instanceof LootableContainerBlockEntity) {
 										structureBlockInfo.nbt.putLong("LootTableSeed", random.nextLong());
 									}
@@ -258,11 +258,11 @@ public class Structure {
 
 							if (fluidState != null) {
 								if (blockState.getFluidState().isStill()) {
-									list3.add(blockPos2);
+									list3.add(blockPos);
 								} else if (blockState.getBlock() instanceof FluidFillable) {
-									((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, blockPos2, blockState, fluidState);
+									((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, blockPos, blockState, fluidState);
 									if (!fluidState.isStill()) {
-										list2.add(blockPos2);
+										list2.add(blockPos);
 									}
 								}
 							}
@@ -278,22 +278,22 @@ public class Structure {
 					Iterator<BlockPos> iterator = list2.iterator();
 
 					while (iterator.hasNext()) {
-						BlockPos blockPos3 = (BlockPos)iterator.next();
-						FluidState fluidState2 = world.getFluidState(blockPos3);
+						BlockPos blockPos2 = (BlockPos)iterator.next();
+						FluidState fluidState2 = world.getFluidState(blockPos2);
 
 						for (int p = 0; p < directions.length && !fluidState2.isStill(); p++) {
-							BlockPos blockPos4 = blockPos3.offset(directions[p]);
-							FluidState fluidState3 = world.getFluidState(blockPos4);
-							if (fluidState3.isStill() && !list3.contains(blockPos4)) {
+							BlockPos blockPos3 = blockPos2.offset(directions[p]);
+							FluidState fluidState3 = world.getFluidState(blockPos3);
+							if (fluidState3.isStill() && !list3.contains(blockPos3)) {
 								fluidState2 = fluidState3;
 							}
 						}
 
 						if (fluidState2.isStill()) {
-							BlockState blockState2 = world.getBlockState(blockPos3);
+							BlockState blockState2 = world.getBlockState(blockPos2);
 							Block block = blockState2.getBlock();
 							if (block instanceof FluidFillable) {
-								((FluidFillable)block).tryFillWithFluid(world, blockPos3, blockState2, fluidState2);
+								((FluidFillable)block).tryFillWithFluid(world, blockPos2, blockState2, fluidState2);
 								bl = true;
 								iterator.remove();
 							}
@@ -309,27 +309,27 @@ public class Structure {
 						int px = l;
 
 						for (Pair<BlockPos, NbtCompound> pair : list4) {
-							BlockPos blockPos5 = pair.getFirst();
-							voxelSet.set(blockPos5.getX() - q, blockPos5.getY() - r, blockPos5.getZ() - px);
+							BlockPos blockPos4 = pair.getFirst();
+							voxelSet.set(blockPos4.getX() - q, blockPos4.getY() - r, blockPos4.getZ() - px);
 						}
 
 						updateCorner(world, i, voxelSet, q, r, px);
 					}
 
 					for (Pair<BlockPos, NbtCompound> pair2 : list4) {
-						BlockPos blockPos6 = pair2.getFirst();
+						BlockPos blockPos5 = pair2.getFirst();
 						if (!placementData.shouldUpdateNeighbors()) {
-							BlockState blockState2 = world.getBlockState(blockPos6);
-							BlockState blockState3 = Block.postProcessState(blockState2, world, blockPos6);
+							BlockState blockState2 = world.getBlockState(blockPos5);
+							BlockState blockState3 = Block.postProcessState(blockState2, world, blockPos5);
 							if (blockState2 != blockState3) {
-								world.setBlockState(blockPos6, blockState3, i & ~Block.NOTIFY_NEIGHBORS | Block.FORCE_STATE);
+								world.setBlockState(blockPos5, blockState3, i & ~Block.NOTIFY_NEIGHBORS | Block.FORCE_STATE);
 							}
 
-							world.updateNeighbors(blockPos6, blockState3.getBlock());
+							world.updateNeighbors(blockPos5, blockState3.getBlock());
 						}
 
 						if (pair2.getSecond() != null) {
-							BlockEntity blockEntity = world.getBlockEntity(blockPos6);
+							BlockEntity blockEntity = world.getBlockEntity(blockPos5);
 							if (blockEntity != null) {
 								blockEntity.markDirty();
 							}
@@ -367,19 +367,19 @@ public class Structure {
 	}
 
 	public static List<Structure.StructureBlockInfo> process(
-		WorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, List<Structure.StructureBlockInfo> list
+		WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<Structure.StructureBlockInfo> list
 	) {
 		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 
 		for (Structure.StructureBlockInfo structureBlockInfo : list) {
-			BlockPos blockPos2 = transform(placementData, structureBlockInfo.pos).add(pos);
+			BlockPos blockPos = transform(placementData, structureBlockInfo.pos).add(pos);
 			Structure.StructureBlockInfo structureBlockInfo2 = new Structure.StructureBlockInfo(
-				blockPos2, structureBlockInfo.state, structureBlockInfo.nbt != null ? structureBlockInfo.nbt.copy() : null
+				blockPos, structureBlockInfo.state, structureBlockInfo.nbt != null ? structureBlockInfo.nbt.copy() : null
 			);
 			Iterator<StructureProcessor> iterator = placementData.getProcessors().iterator();
 
 			while (structureBlockInfo2 != null && iterator.hasNext()) {
-				structureBlockInfo2 = ((StructureProcessor)iterator.next()).process(world, pos, blockPos, structureBlockInfo, structureBlockInfo2, placementData);
+				structureBlockInfo2 = ((StructureProcessor)iterator.next()).process(world, pos, pivot, structureBlockInfo, structureBlockInfo2, placementData);
 			}
 
 			if (structureBlockInfo2 != null) {
@@ -528,16 +528,16 @@ public class Structure {
 		return this.calculateBoundingBox(pos, placementData.getRotation(), placementData.getPosition(), placementData.getMirror());
 	}
 
-	public BlockBox calculateBoundingBox(BlockPos pos, BlockRotation rotation, BlockPos blockPos, BlockMirror mirror) {
-		return method_34400(pos, rotation, blockPos, mirror, this.size);
+	public BlockBox calculateBoundingBox(BlockPos pos, BlockRotation rotation, BlockPos pivot, BlockMirror mirror) {
+		return createBox(pos, rotation, pivot, mirror, this.size);
 	}
 
 	@VisibleForTesting
-	protected static BlockBox method_34400(BlockPos blockPos, BlockRotation blockRotation, BlockPos blockPos2, BlockMirror blockMirror, Vec3i vec3i) {
-		Vec3i vec3i2 = vec3i.add(-1, -1, -1);
-		BlockPos blockPos3 = transformAround(BlockPos.ORIGIN, blockMirror, blockRotation, blockPos2);
-		BlockPos blockPos4 = transformAround(BlockPos.ORIGIN.add(vec3i2), blockMirror, blockRotation, blockPos2);
-		return BlockBox.create(blockPos3, blockPos4).move(blockPos);
+	protected static BlockBox createBox(BlockPos pos, BlockRotation rotation, BlockPos pivot, BlockMirror mirror, Vec3i dimensions) {
+		Vec3i vec3i = dimensions.add(-1, -1, -1);
+		BlockPos blockPos = transformAround(BlockPos.ORIGIN, mirror, rotation, pivot);
+		BlockPos blockPos2 = transformAround(BlockPos.ORIGIN.add(vec3i), mirror, rotation, pivot);
+		return BlockBox.create(blockPos, blockPos2).move(pos);
 	}
 
 	public NbtCompound writeNbt(NbtCompound nbt) {
@@ -737,8 +737,8 @@ public class Structure {
 		private final List<Structure.StructureBlockInfo> infos;
 		private final Map<Block, List<Structure.StructureBlockInfo>> blockToInfos = Maps.<Block, List<Structure.StructureBlockInfo>>newHashMap();
 
-		PalettedBlockInfoList(List<Structure.StructureBlockInfo> list) {
-			this.infos = list;
+		PalettedBlockInfoList(List<Structure.StructureBlockInfo> infos) {
+			this.infos = infos;
 		}
 
 		public List<Structure.StructureBlockInfo> getAll() {

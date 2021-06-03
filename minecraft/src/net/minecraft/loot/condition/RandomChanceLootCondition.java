@@ -10,8 +10,8 @@ import net.minecraft.util.JsonSerializer;
 public class RandomChanceLootCondition implements LootCondition {
 	final float chance;
 
-	RandomChanceLootCondition(float f) {
-		this.chance = f;
+	RandomChanceLootCondition(float chance) {
+		this.chance = chance;
 	}
 
 	@Override

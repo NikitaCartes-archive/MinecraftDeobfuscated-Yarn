@@ -391,7 +391,12 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 					)
 				)
 		);
-		schema.registerType(false, TypeReferences.OBJECTIVE, DSL::remainder);
+		Map<String, Supplier<TypeTemplate>> map = Schema1451v6.method_37389(schema);
+		schema.registerType(
+			false,
+			TypeReferences.OBJECTIVE,
+			() -> DSL.hook(DSL.optionalFields("CriteriaType", DSL.taggedChoiceLazy("type", DSL.string(), map)), Schema1451v6.field_34014, Schema1451v6.field_34015)
+		);
 		schema.registerType(false, TypeReferences.TEAM, DSL::remainder);
 		schema.registerType(
 			true,

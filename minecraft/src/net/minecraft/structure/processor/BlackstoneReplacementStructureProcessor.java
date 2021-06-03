@@ -56,10 +56,10 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 	public Structure.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData data
 	) {
 		Block block = (Block)this.replacementMap.get(structureBlockInfo2.state.getBlock());
 		if (block == null) {
