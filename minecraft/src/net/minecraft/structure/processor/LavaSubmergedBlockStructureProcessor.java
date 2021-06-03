@@ -21,15 +21,15 @@ public class LavaSubmergedBlockStructureProcessor extends StructureProcessor {
 	public Structure.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData data
 	) {
-		BlockPos blockPos2 = structureBlockInfo2.pos;
-		boolean bl = world.getBlockState(blockPos2).isOf(Blocks.LAVA);
-		return bl && !Block.isShapeFullCube(structureBlockInfo2.state.getOutlineShape(world, blockPos2))
-			? new Structure.StructureBlockInfo(blockPos2, Blocks.LAVA.getDefaultState(), structureBlockInfo2.nbt)
+		BlockPos blockPos = structureBlockInfo2.pos;
+		boolean bl = world.getBlockState(blockPos).isOf(Blocks.LAVA);
+		return bl && !Block.isShapeFullCube(structureBlockInfo2.state.getOutlineShape(world, blockPos))
+			? new Structure.StructureBlockInfo(blockPos, Blocks.LAVA.getDefaultState(), structureBlockInfo2.nbt)
 			: structureBlockInfo2;
 	}
 

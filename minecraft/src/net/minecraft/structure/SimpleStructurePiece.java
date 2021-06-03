@@ -26,43 +26,35 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class SimpleStructurePiece extends StructurePiece {
 	private static final Logger LOGGER = LogManager.getLogger();
-	protected final String field_31664;
+	protected final String identifier;
 	protected Structure structure;
 	protected StructurePlacementData placementData;
 	protected BlockPos pos;
 
 	public SimpleStructurePiece(
-		StructurePieceType structurePieceType,
-		int i,
-		StructureManager structureManager,
-		Identifier identifier,
-		String string,
-		StructurePlacementData structurePlacementData,
-		BlockPos blockPos
+		StructurePieceType type, int i, StructureManager structureManager, Identifier identifier, String string, StructurePlacementData placementData, BlockPos pos
 	) {
-		super(structurePieceType, i, structureManager.getStructureOrBlank(identifier).calculateBoundingBox(structurePlacementData, blockPos));
+		super(type, i, structureManager.getStructureOrBlank(identifier).calculateBoundingBox(placementData, pos));
 		this.setOrientation(Direction.NORTH);
-		this.field_31664 = string;
-		this.pos = blockPos;
+		this.identifier = string;
+		this.pos = pos;
 		this.structure = structureManager.getStructureOrBlank(identifier);
-		this.placementData = structurePlacementData;
+		this.placementData = placementData;
 	}
 
-	public SimpleStructurePiece(
-		StructurePieceType structurePieceType, NbtCompound nbtCompound, ServerWorld serverWorld, Function<Identifier, StructurePlacementData> function
-	) {
-		super(structurePieceType, nbtCompound);
+	public SimpleStructurePiece(StructurePieceType type, NbtCompound nbtCompound, ServerWorld world, Function<Identifier, StructurePlacementData> function) {
+		super(type, nbtCompound);
 		this.setOrientation(Direction.NORTH);
-		this.field_31664 = nbtCompound.getString("Template");
+		this.identifier = nbtCompound.getString("Template");
 		this.pos = new BlockPos(nbtCompound.getInt("TPX"), nbtCompound.getInt("TPY"), nbtCompound.getInt("TPZ"));
-		Identifier identifier = this.method_35470();
-		this.structure = serverWorld.getStructureManager().getStructureOrBlank(identifier);
+		Identifier identifier = this.getId();
+		this.structure = world.getStructureManager().getStructureOrBlank(identifier);
 		this.placementData = (StructurePlacementData)function.apply(identifier);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
 	}
 
-	protected Identifier method_35470() {
-		return new Identifier(this.field_31664);
+	protected Identifier getId() {
+		return new Identifier(this.identifier);
 	}
 
 	@Override
@@ -70,7 +62,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		nbt.putInt("TPX", this.pos.getX());
 		nbt.putInt("TPY", this.pos.getY());
 		nbt.putInt("TPZ", this.pos.getZ());
-		nbt.putString("Template", this.field_31664);
+		nbt.putString("Template", this.identifier);
 	}
 
 	@Override

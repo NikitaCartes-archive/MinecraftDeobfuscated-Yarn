@@ -37,18 +37,18 @@ public class JsonSerializing {
 
 		GsonSerializer(
 			Registry<T> registry,
-			String string,
-			String string2,
-			Function<E, T> function,
+			String rootFieldName,
+			String idFieldName,
+			Function<E, T> typeIdentification,
 			@Nullable T jsonSerializableType,
-			@Nullable com.mojang.datafixers.util.Pair<T, JsonSerializing.CustomSerializer<? extends E>> pair
+			@Nullable com.mojang.datafixers.util.Pair<T, JsonSerializing.CustomSerializer<? extends E>> elementSerializer
 		) {
 			this.registry = registry;
-			this.rootFieldName = string;
-			this.idFieldName = string2;
-			this.typeIdentification = function;
+			this.rootFieldName = rootFieldName;
+			this.idFieldName = idFieldName;
+			this.typeIdentification = typeIdentification;
 			this.field_28445 = jsonSerializableType;
-			this.elementSerializer = pair;
+			this.elementSerializer = elementSerializer;
 		}
 
 		@Override

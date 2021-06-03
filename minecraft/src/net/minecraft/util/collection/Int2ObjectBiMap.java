@@ -39,8 +39,8 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 		return index == -1 ? -1 : this.ids[index];
 	}
 
-	public boolean method_34904(K object) {
-		return this.getRawId(object) != -1;
+	public boolean contains(K value) {
+		return this.getRawId(value) != -1;
 	}
 
 	public boolean containsKey(int index) {

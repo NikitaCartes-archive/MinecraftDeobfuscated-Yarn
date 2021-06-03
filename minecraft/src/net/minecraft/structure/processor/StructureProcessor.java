@@ -11,10 +11,10 @@ public abstract class StructureProcessor {
 	public abstract Structure.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData data
 	);
 
 	protected abstract StructureProcessorType<?> getType();

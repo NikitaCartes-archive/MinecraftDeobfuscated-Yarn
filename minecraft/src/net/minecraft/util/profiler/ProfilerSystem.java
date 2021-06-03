@@ -39,9 +39,9 @@ public class ProfilerSystem implements ReadableProfiler {
 	private final boolean checkTimeout;
 	private final Set<Pair<String, SamplingChannel>> field_33873 = new ObjectArraySet<>();
 
-	public ProfilerSystem(LongSupplier longSupplier, IntSupplier tickGetter, boolean checkTimeout) {
-		this.startTime = longSupplier.getAsLong();
-		this.timeGetter = longSupplier;
+	public ProfilerSystem(LongSupplier timeGetter, IntSupplier tickGetter, boolean checkTimeout) {
+		this.startTime = timeGetter.getAsLong();
+		this.timeGetter = timeGetter;
 		this.startTick = tickGetter.getAsInt();
 		this.endTickGetter = tickGetter;
 		this.checkTimeout = checkTimeout;

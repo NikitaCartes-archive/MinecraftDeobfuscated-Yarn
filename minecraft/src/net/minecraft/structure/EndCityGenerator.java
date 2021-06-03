@@ -257,33 +257,33 @@ public class EndCityGenerator {
 	}
 
 	public static class Piece extends SimpleStructurePiece {
-		public Piece(StructureManager manager, String template, BlockPos pos, BlockRotation rotation, boolean ignoreAir) {
-			super(StructurePieceType.END_CITY, 0, manager, method_35425(template), template, method_35427(ignoreAir, rotation), pos);
+		public Piece(StructureManager manager, String template, BlockPos pos, BlockRotation rotation, boolean includeAir) {
+			super(StructurePieceType.END_CITY, 0, manager, getId(template), template, createPlacementData(includeAir, rotation), pos);
 		}
 
-		public Piece(ServerWorld serverWorld, NbtCompound nbtCompound) {
+		public Piece(ServerWorld world, NbtCompound nbtCompound) {
 			super(
 				StructurePieceType.END_CITY,
 				nbtCompound,
-				serverWorld,
-				identifier -> method_35427(nbtCompound.getBoolean("OW"), BlockRotation.valueOf(nbtCompound.getString("Rot")))
+				world,
+				identifier -> createPlacementData(nbtCompound.getBoolean("OW"), BlockRotation.valueOf(nbtCompound.getString("Rot")))
 			);
 		}
 
-		private static StructurePlacementData method_35427(boolean bl, BlockRotation blockRotation) {
-			BlockIgnoreStructureProcessor blockIgnoreStructureProcessor = bl
+		private static StructurePlacementData createPlacementData(boolean includeAir, BlockRotation rotation) {
+			BlockIgnoreStructureProcessor blockIgnoreStructureProcessor = includeAir
 				? BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS
 				: BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS;
-			return new StructurePlacementData().setIgnoreEntities(true).addProcessor(blockIgnoreStructureProcessor).setRotation(blockRotation);
+			return new StructurePlacementData().setIgnoreEntities(true).addProcessor(blockIgnoreStructureProcessor).setRotation(rotation);
 		}
 
 		@Override
-		protected Identifier method_35470() {
-			return method_35425(this.field_31664);
+		protected Identifier getId() {
+			return getId(this.identifier);
 		}
 
-		private static Identifier method_35425(String string) {
-			return new Identifier("end_city/" + string);
+		private static Identifier getId(String template) {
+			return new Identifier("end_city/" + template);
 		}
 
 		@Override

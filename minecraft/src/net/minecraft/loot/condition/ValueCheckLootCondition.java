@@ -16,9 +16,9 @@ public class ValueCheckLootCondition implements LootCondition {
 	final LootNumberProvider value;
 	final BoundedIntUnaryOperator range;
 
-	ValueCheckLootCondition(LootNumberProvider lootNumberProvider, BoundedIntUnaryOperator boundedIntUnaryOperator) {
-		this.value = lootNumberProvider;
-		this.range = boundedIntUnaryOperator;
+	ValueCheckLootCondition(LootNumberProvider value, BoundedIntUnaryOperator range) {
+		this.value = value;
+		this.range = range;
 	}
 
 	@Override

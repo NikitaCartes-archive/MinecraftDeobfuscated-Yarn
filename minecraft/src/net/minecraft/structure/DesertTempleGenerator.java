@@ -19,7 +19,7 @@ public class DesertTempleGenerator extends StructurePieceWithDimensions {
 	private final boolean[] hasPlacedChest = new boolean[4];
 
 	public DesertTempleGenerator(Random random, int x, int z) {
-		super(StructurePieceType.DESERT_TEMPLE, x, 64, z, 21, 15, 21, method_35457(random));
+		super(StructurePieceType.DESERT_TEMPLE, x, 64, z, 21, 15, 21, getRandomHorizontalDirection(random));
 	}
 
 	public DesertTempleGenerator(ServerWorld world, NbtCompound nbt) {

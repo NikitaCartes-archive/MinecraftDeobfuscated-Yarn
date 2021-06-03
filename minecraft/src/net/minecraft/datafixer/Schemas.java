@@ -323,6 +323,7 @@ public class Schemas {
 		builder.addFixer(new LevelFlatGeneratorInfoFix(schema43, false));
 		Schema schema44 = builder.addSchema(1451, 6, Schema1451v6::new);
 		builder.addFixer(new StatsCounterFix(schema44, true));
+		builder.addFixer(new WriteAndReadFix(schema44, "Rewrite objectives", TypeReferences.OBJECTIVE));
 		builder.addFixer(new BlockEntityJukeboxFix(schema44, false));
 		Schema schema45 = builder.addSchema(1451, 7, Schema1451v7::new);
 		builder.addFixer(new SavedDataVillageCropFix(schema45, true));

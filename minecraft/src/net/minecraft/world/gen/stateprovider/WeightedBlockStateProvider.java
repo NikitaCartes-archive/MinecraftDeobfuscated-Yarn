@@ -22,8 +22,8 @@ public class WeightedBlockStateProvider extends BlockStateProvider {
 		this.states = states;
 	}
 
-	public WeightedBlockStateProvider(DataPool.Builder<BlockState> builder) {
-		this(builder.build());
+	public WeightedBlockStateProvider(DataPool.Builder<BlockState> states) {
+		this(states.build());
 	}
 
 	@Override

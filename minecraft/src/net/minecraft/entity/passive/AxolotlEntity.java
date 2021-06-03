@@ -408,7 +408,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		nbtCompound.putInt("Age", this.getBreedingAge());
 		Brain<?> brain = this.getBrain();
 		if (brain.hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN)) {
-			nbtCompound.putLong("HuntingCooldown", brain.method_36978(MemoryModuleType.HAS_HUNTING_COOLDOWN));
+			nbtCompound.putLong("HuntingCooldown", brain.getMemory(MemoryModuleType.HAS_HUNTING_COOLDOWN));
 		}
 	}
 

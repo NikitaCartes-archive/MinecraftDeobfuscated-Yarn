@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHandler<T>> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Properties properties;
+	protected final Properties properties;
 
 	public AbstractPropertiesHandler(Properties properties) {
 		this.properties = properties;

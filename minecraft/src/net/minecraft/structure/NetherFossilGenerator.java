@@ -41,16 +41,16 @@ public class NetherFossilGenerator {
 
 	public static class Piece extends SimpleStructurePiece {
 		public Piece(StructureManager manager, Identifier template, BlockPos pos, BlockRotation rotation) {
-			super(StructurePieceType.NETHER_FOSSIL, 0, manager, template, template.toString(), method_35431(rotation), pos);
+			super(StructurePieceType.NETHER_FOSSIL, 0, manager, template, template.toString(), createPlacementData(rotation), pos);
 		}
 
 		public Piece(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.NETHER_FOSSIL, nbt, world, identifier -> method_35431(BlockRotation.valueOf(nbt.getString("Rot"))));
+			super(StructurePieceType.NETHER_FOSSIL, nbt, world, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 		}
 
-		private static StructurePlacementData method_35431(BlockRotation blockRotation) {
+		private static StructurePlacementData createPlacementData(BlockRotation rotation) {
 			return new StructurePlacementData()
-				.setRotation(blockRotation)
+				.setRotation(rotation)
 				.setMirror(BlockMirror.NONE)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 		}

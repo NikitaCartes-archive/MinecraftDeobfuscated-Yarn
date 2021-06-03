@@ -10,9 +10,9 @@ public class LootContextType {
 	private final Set<LootContextParameter<?>> required;
 	private final Set<LootContextParameter<?>> allowed;
 
-	LootContextType(Set<LootContextParameter<?>> set, Set<LootContextParameter<?>> set2) {
-		this.required = ImmutableSet.copyOf(set);
-		this.allowed = ImmutableSet.copyOf(Sets.union(set, set2));
+	LootContextType(Set<LootContextParameter<?>> required, Set<LootContextParameter<?>> allowed) {
+		this.required = ImmutableSet.copyOf(required);
+		this.allowed = ImmutableSet.copyOf(Sets.union(required, allowed));
 	}
 
 	public boolean isAllowed(LootContextParameter<?> parameter) {

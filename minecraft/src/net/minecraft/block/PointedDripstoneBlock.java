@@ -255,6 +255,11 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Override
+	public boolean method_37403(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return false;
+	}
+
+	@Override
 	public AbstractBlock.OffsetType getOffsetType() {
 		return AbstractBlock.OffsetType.XZ;
 	}

@@ -74,8 +74,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData method_35476(boolean bl) {
-		this.placeFluids = bl;
+	public StructurePlacementData setPlaceFluids(boolean placeFluids) {
+		this.placeFluids = placeFluids;
 		return this;
 	}
 

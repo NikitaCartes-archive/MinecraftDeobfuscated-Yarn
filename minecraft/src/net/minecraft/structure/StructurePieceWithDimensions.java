@@ -14,12 +14,12 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 	protected final int depth;
 	protected int hPos = -1;
 
-	protected StructurePieceWithDimensions(StructurePieceType type, int i, int x, int y, int z, int width, int height, Direction direction) {
-		super(type, 0, StructurePiece.method_35454(i, x, y, direction, z, width, height));
-		this.width = z;
-		this.height = width;
-		this.depth = height;
-		this.setOrientation(direction);
+	protected StructurePieceWithDimensions(StructurePieceType type, int x, int y, int z, int width, int height, int depth, Direction orientation) {
+		super(type, 0, StructurePiece.createBox(x, y, z, orientation, width, height, depth));
+		this.width = width;
+		this.height = height;
+		this.depth = depth;
+		this.setOrientation(orientation);
 	}
 
 	protected StructurePieceWithDimensions(StructurePieceType structurePieceType, NbtCompound nbtCompound) {

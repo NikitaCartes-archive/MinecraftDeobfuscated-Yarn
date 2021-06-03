@@ -27,10 +27,10 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	public Structure.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData data
 	) {
 		BlockState blockState = structureBlockInfo2.state;
 		if (blockState.isOf(Blocks.JIGSAW)) {

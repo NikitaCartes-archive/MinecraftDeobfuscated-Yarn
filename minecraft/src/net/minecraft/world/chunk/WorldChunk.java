@@ -927,8 +927,8 @@ public class WorldChunk implements Chunk {
 	class WrappedBlockEntityTickInvoker implements BlockEntityTickInvoker {
 		private BlockEntityTickInvoker wrapped;
 
-		WrappedBlockEntityTickInvoker(BlockEntityTickInvoker blockEntityTickInvoker) {
-			this.wrapped = blockEntityTickInvoker;
+		WrappedBlockEntityTickInvoker(BlockEntityTickInvoker wrapped) {
+			this.wrapped = wrapped;
 		}
 
 		void setWrapped(BlockEntityTickInvoker wrapped) {
