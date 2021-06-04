@@ -556,7 +556,7 @@ Flutterer {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
     }
 
     @Override

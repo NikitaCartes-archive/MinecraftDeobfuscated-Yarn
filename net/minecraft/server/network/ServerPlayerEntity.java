@@ -1489,9 +1489,9 @@ extends PlayerEntity {
     }
 
     @Override
-    protected void method_37119(ItemStack itemStack) {
-        Criteria.USING_ITEM.test(this, itemStack);
-        super.method_37119(itemStack);
+    protected void tickItemStackUsage(ItemStack stack) {
+        Criteria.USING_ITEM.test(this, stack);
+        super.tickItemStackUsage(stack);
     }
 }
 

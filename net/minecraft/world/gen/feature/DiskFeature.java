@@ -46,7 +46,7 @@ extends Feature<DiskFeatureConfig> {
                         for (BlockState blockState2 : diskFeatureConfig.targets) {
                             if (!blockState2.isOf(block)) continue;
                             structureWorldAccess.setBlockState(blockPos2, diskFeatureConfig.state, Block.NOTIFY_LISTENERS);
-                            this.method_37256(structureWorldAccess, blockPos2);
+                            this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos2);
                             bl = true;
                             bl4 = true;
                             break;

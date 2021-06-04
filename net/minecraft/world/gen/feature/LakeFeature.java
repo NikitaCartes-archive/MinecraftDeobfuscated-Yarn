@@ -92,7 +92,7 @@ extends Feature<SingleStateFeatureConfig> {
                     structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
                     if (!bl2) continue;
                     structureWorldAccess.getBlockTickScheduler().schedule(blockPos2, CAVE_AIR.getBlock(), 0);
-                    this.method_37256(structureWorldAccess, blockPos2);
+                    this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos2);
                 }
             }
         }
@@ -121,7 +121,7 @@ extends Feature<SingleStateFeatureConfig> {
                         if (!bl2 || u >= 4 && random.nextInt(2) == 0 || !(blockState = structureWorldAccess.getBlockState(blockPos.add(s, u, t))).getMaterial().isSolid() || blockState.isIn(BlockTags.LAVA_POOL_STONE_REPLACEABLES)) continue;
                         BlockPos blockPos3 = blockPos.add(s, u, t);
                         structureWorldAccess.setBlockState(blockPos3, blockSource.get(blockPos3), Block.NOTIFY_LISTENERS);
-                        this.method_37256(structureWorldAccess, blockPos3);
+                        this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos3);
                     }
                 }
             }

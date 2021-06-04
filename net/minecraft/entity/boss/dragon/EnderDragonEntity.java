@@ -64,9 +64,12 @@ implements Monster {
     private static final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
     private static final int MAX_HEALTH = 200;
     private static final int field_30429 = 400;
-    private static final float field_30430 = 0.25f;
-    private static final String field_33910 = "DragonDeathTime";
-    private static final String field_33911 = "DragonPhase";
+    /**
+     * The damage the dragon can take before it takes off, represented as a ratio to the full health.
+     */
+    private static final float TAKEOFF_THRESHOLD = 0.25f;
+    private static final String DRAGON_DEATH_TIME_KEY = "DragonDeathTime";
+    private static final String DRAGON_PHASE_KEY = "DragonPhase";
     /**
      * (yaw, y, ?)
      */
@@ -661,18 +664,18 @@ implements Monster {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt(field_33911, this.phaseManager.getCurrent().getType().getTypeId());
-        nbt.putInt(field_33910, this.ticksSinceDeath);
+        nbt.putInt(DRAGON_PHASE_KEY, this.phaseManager.getCurrent().getType().getTypeId());
+        nbt.putInt(DRAGON_DEATH_TIME_KEY, this.ticksSinceDeath);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains(field_33911)) {
-            this.phaseManager.setPhase(PhaseType.getFromId(nbt.getInt(field_33911)));
+        if (nbt.contains(DRAGON_PHASE_KEY)) {
+            this.phaseManager.setPhase(PhaseType.getFromId(nbt.getInt(DRAGON_PHASE_KEY)));
         }
-        if (nbt.contains(field_33910)) {
-            this.ticksSinceDeath = nbt.getInt(field_33910);
+        if (nbt.contains(DRAGON_DEATH_TIME_KEY)) {
+            this.ticksSinceDeath = nbt.getInt(DRAGON_DEATH_TIME_KEY);
         }
     }
 

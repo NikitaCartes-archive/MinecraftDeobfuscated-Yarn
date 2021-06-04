@@ -35,7 +35,7 @@ public class PerfCommand {
     private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.perf.alreadyRunning"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("perf").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))).then(CommandManager.literal("start").executes(commandContext -> PerfCommand.executeStart((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("stop").executes(commandContext -> PerfCommand.executeStop((ServerCommandSource)commandContext.getSource()))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("perf").requires(source -> source.hasPermissionLevel(4))).then(CommandManager.literal("start").executes(context -> PerfCommand.executeStart((ServerCommandSource)context.getSource())))).then(CommandManager.literal("stop").executes(context -> PerfCommand.executeStop((ServerCommandSource)context.getSource()))));
     }
 
     private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
@@ -43,7 +43,7 @@ public class PerfCommand {
         if (minecraftServer.isRunningMonitor()) {
             throw ALREADY_RUNNING_EXCEPTION.create();
         }
-        Consumer<ProfileResult> consumer = profileResult -> PerfCommand.sendProfilingStoppedMessage(source, profileResult);
+        Consumer<ProfileResult> consumer = result -> PerfCommand.sendProfilingStoppedMessage(source, result);
         Consumer<Path> consumer2 = path -> PerfCommand.saveReport(source, path, minecraftServer);
         minecraftServer.method_37320(consumer, consumer2);
         source.sendFeedback(new TranslatableText("commands.perf.started"), false);

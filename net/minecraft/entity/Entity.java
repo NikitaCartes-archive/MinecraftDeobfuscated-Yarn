@@ -235,7 +235,7 @@ CommandOutput {
     public boolean wasInPowderSnow;
     public boolean wasOnFire;
     private float field_26997;
-    private int prevAge;
+    private int lastChimeAge;
     private boolean hasVisualFire;
 
     public Entity(EntityType<?> type, World world) {
@@ -633,7 +633,7 @@ CommandOutput {
                     }
                 } else {
                     if (moveEffect.playsSounds()) {
-                        this.method_37215(blockState);
+                        this.playAmethystChimeSound(blockState);
                         this.playStepSound(blockPos, blockState);
                     }
                     if (moveEffect.emitsGameEvents() && !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
@@ -909,23 +909,23 @@ CommandOutput {
         this.emitGameEvent(event, this.blockPos);
     }
 
-    protected void playStepSound(BlockPos pos, BlockState blockState) {
-        if (blockState.getMaterial().isLiquid()) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        if (state.getMaterial().isLiquid()) {
             return;
         }
-        BlockState blockState2 = this.world.getBlockState(pos.up());
-        BlockSoundGroup blockSoundGroup = blockState2.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState2.getSoundGroup() : blockState.getSoundGroup();
+        BlockState blockState = this.world.getBlockState(pos.up());
+        BlockSoundGroup blockSoundGroup = blockState.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
         this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15f, blockSoundGroup.getPitch());
     }
 
-    private void method_37215(BlockState blockState) {
-        if (blockState.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.prevAge + 20) {
-            this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997f, this.age - this.prevAge));
+    private void playAmethystChimeSound(BlockState state) {
+        if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.lastChimeAge + 20) {
+            this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997f, this.age - this.lastChimeAge));
             this.field_26997 = Math.min(1.0f, this.field_26997 + 0.07f);
             float f = 0.5f + this.field_26997 * this.random.nextFloat() * 1.2f;
             float g = 0.1f + this.field_26997 * 1.2f;
             this.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, g, f);
-            this.prevAge = this.age;
+            this.lastChimeAge = this.age;
         }
     }
 
@@ -1702,6 +1702,9 @@ CommandOutput {
     }
 
     public boolean startRiding(Entity entity2, boolean force) {
+        if (entity2 == this.vehicle) {
+            return false;
+        }
         Entity entity22 = entity2;
         while (entity22.vehicle != null) {
             if (entity22.vehicle == this) {
@@ -2433,11 +2436,11 @@ CommandOutput {
         this.refreshPosition();
         boolean bl2 = bl = (double)entityDimensions2.width <= 4.0 && (double)entityDimensions2.height <= 4.0;
         if (!(this.world.isClient || this.firstUpdate || this.noClip || !bl || !(entityDimensions2.width > entityDimensions.width) && !(entityDimensions2.height > entityDimensions.height) || this instanceof PlayerEntity)) {
-            Vec3d vec3d2 = this.getPos().add(0.0, (double)entityDimensions.height / 2.0, 0.0);
+            Vec3d vec3d = this.getPos().add(0.0, (double)entityDimensions.height / 2.0, 0.0);
             double d = (double)Math.max(0.0f, entityDimensions2.width - entityDimensions.width) + 1.0E-6;
             double e = (double)Math.max(0.0f, entityDimensions2.height - entityDimensions.height) + 1.0E-6;
-            VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d2, d, e, d));
-            this.world.findClosestCollision(this, voxelShape, vec3d2, entityDimensions2.width, entityDimensions2.height, entityDimensions2.width).ifPresent(vec3d -> this.setPosition(vec3d.add(0.0, (double)(-entityDimensions.height) / 2.0, 0.0)));
+            VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, d, e, d));
+            this.world.findClosestCollision(this, voxelShape, vec3d, entityDimensions2.width, entityDimensions2.height, entityDimensions2.width).ifPresent(pos -> this.setPosition(pos.add(0.0, (double)(-entityDimensions.height) / 2.0, 0.0)));
         }
     }
 

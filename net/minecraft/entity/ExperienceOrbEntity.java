@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 public class ExperienceOrbEntity
 extends Entity {
     private static final int DESPAWN_AGE = 6000;
-    private static final int field_30056 = 20;
+    private static final int EXPENSIVE_UPDATE_INTERVAL = 20;
     private static final int field_30057 = 8;
     private static final int field_30058 = 40;
     private static final double field_30059 = 0.5;
@@ -80,7 +80,7 @@ extends Entity {
             this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
         }
         if (this.age % 20 == 1) {
-            this.onEverySecond();
+            this.expensiveUpdate();
         }
         if (this.target != null && (this.target.isSpectator() || this.target.isDead())) {
             this.target = null;
@@ -105,12 +105,13 @@ extends Entity {
     }
 
     /**
-     * Called every second (every 20 ticks).
+     * Performs an expensive update.
      * 
-     * @implSpec This method first checks if the orb still has a nearby {@link #target},
+     * @implSpec Called every second (every {@link #EXPENSIVE_UPDATE_INTERVAL} ticks).
+     * This method first checks if the orb still has a nearby {@link #target},
      * and assigns a new target if there is none. It then tries to merge nearby experience orbs.
      */
-    private void onEverySecond() {
+    private void expensiveUpdate() {
         if (this.target == null || this.target.squaredDistanceTo(this) > 64.0) {
             this.target = this.world.getClosestPlayer(this, 8.0);
         }
@@ -134,11 +135,11 @@ extends Entity {
     private static boolean wasMergedIntoExistingOrb(ServerWorld world, Vec3d pos, int amount) {
         Box box = Box.of(pos, 1.0, 1.0, 1.0);
         int i = world.getRandom().nextInt(40);
-        List<ExperienceOrbEntity> list = world.getEntitiesByType(TypeFilter.instanceOf(ExperienceOrbEntity.class), box, experienceOrbEntity -> ExperienceOrbEntity.isMergeable(experienceOrbEntity, i, amount));
+        List<ExperienceOrbEntity> list = world.getEntitiesByType(TypeFilter.instanceOf(ExperienceOrbEntity.class), box, orb -> ExperienceOrbEntity.isMergeable(orb, i, amount));
         if (!list.isEmpty()) {
-            ExperienceOrbEntity experienceOrbEntity2 = list.get(0);
-            ++experienceOrbEntity2.pickingCount;
-            experienceOrbEntity2.orbAge = 0;
+            ExperienceOrbEntity experienceOrbEntity = list.get(0);
+            ++experienceOrbEntity.pickingCount;
+            experienceOrbEntity.orbAge = 0;
             return true;
         }
         return false;

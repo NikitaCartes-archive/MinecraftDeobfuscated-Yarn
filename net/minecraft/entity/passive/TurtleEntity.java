@@ -260,7 +260,7 @@ extends AnimalEntity {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         SoundEvent soundEvent = this.isBaby() ? SoundEvents.ENTITY_TURTLE_SHAMBLE_BABY : SoundEvents.ENTITY_TURTLE_SHAMBLE;
         this.playSound(soundEvent, 0.15f, 1.0f);
     }

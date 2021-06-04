@@ -38,8 +38,8 @@ public class ItemEntity
 extends Entity {
     private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final int DESPAWN_AGE = 6000;
-    private static final int field_30457 = Short.MAX_VALUE;
-    private static final int field_30458 = Short.MIN_VALUE;
+    private static final int CANNOT_PICK_UP_DELAY = Short.MAX_VALUE;
+    private static final int NEVER_DESPAWN_AGE = Short.MIN_VALUE;
     /**
      * The number of ticks since this item entity has been created.
      * It is a short value with key {@code Age} in the NBT structure.

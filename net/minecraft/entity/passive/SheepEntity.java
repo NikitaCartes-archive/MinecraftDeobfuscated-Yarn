@@ -296,7 +296,7 @@ implements Shearable {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_SHEEP_STEP, 0.15f, 1.0f);
     }
 

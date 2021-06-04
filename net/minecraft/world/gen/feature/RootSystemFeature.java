@@ -49,14 +49,14 @@ extends Feature<RootSystemFeatureConfig> {
         for (int i = 1; i <= config.requiredVerticalSpaceForTree; ++i) {
             mutable.move(Direction.UP);
             BlockState blockState = world.getBlockState(mutable);
-            if (RootSystemFeature.method_36419(blockState, i, config.field_33616)) continue;
+            if (RootSystemFeature.isAirOrWater(blockState, i, config.allowedVerticalWaterForTree)) continue;
             return false;
         }
         return true;
     }
 
-    private static boolean method_36419(BlockState blockState, int i, int j) {
-        return blockState.isAir() || i <= j && blockState.getFluidState().isIn(FluidTags.WATER);
+    private static boolean isAirOrWater(BlockState state, int height, int allowedVerticalWaterForTree) {
+        return state.isAir() || height <= allowedVerticalWaterForTree && state.getFluidState().isIn(FluidTags.WATER);
     }
 
     private boolean generateTreeAndRoots(StructureWorldAccess world, ChunkGenerator generator, RootSystemFeatureConfig config, Random random, BlockPos.Mutable mutablePos, BlockPos pos) {

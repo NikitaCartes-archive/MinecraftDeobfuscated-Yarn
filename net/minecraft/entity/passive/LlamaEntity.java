@@ -277,7 +277,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_LLAMA_STEP, 0.15f, 1.0f);
     }
 

@@ -347,14 +347,14 @@ Saddleable {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState blockState) {
-        if (blockState.getMaterial().isLiquid()) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        if (state.getMaterial().isLiquid()) {
             return;
         }
-        BlockState blockState2 = this.world.getBlockState(pos.up());
-        BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-        if (blockState2.isOf(Blocks.SNOW)) {
-            blockSoundGroup = blockState2.getSoundGroup();
+        BlockState blockState = this.world.getBlockState(pos.up());
+        BlockSoundGroup blockSoundGroup = state.getSoundGroup();
+        if (blockState.isOf(Blocks.SNOW)) {
+            blockSoundGroup = blockState.getSoundGroup();
         }
         if (this.hasPassengers() && this.playExtraHorseSounds) {
             ++this.soundTicks;

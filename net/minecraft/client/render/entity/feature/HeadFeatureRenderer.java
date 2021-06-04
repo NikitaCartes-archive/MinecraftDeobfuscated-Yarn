@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.SkullBlock;
-import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -33,7 +32,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.Vec3f;
-import org.apache.commons.lang3.StringUtils;
 
 @Environment(value=EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
@@ -76,26 +74,20 @@ extends FeatureRenderer<T, M> {
         }
         ((ModelWithHead)this.getContextModel()).getHead().rotate(matrixStack);
         if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
+            NbtCompound nbtCompound;
             m = 1.1875f;
             matrixStack.scale(1.1875f, -1.1875f, -1.1875f);
             if (bl) {
                 matrixStack.translate(0.0, 0.0625, 0.0);
             }
-            GameProfile gameProfile2 = null;
-            if (itemStack.hasTag()) {
-                String string;
-                NbtCompound nbtCompound = itemStack.getTag();
-                if (nbtCompound.contains("SkullOwner", 10)) {
-                    gameProfile2 = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-                } else if (nbtCompound.contains("SkullOwner", 8) && !StringUtils.isBlank(string = nbtCompound.getString("SkullOwner"))) {
-                    nbtCompound.remove("SkullOwner");
-                    SkullBlockEntity.loadProperties(new GameProfile(null, string), gameProfile -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile)));
-                }
+            GameProfile gameProfile = null;
+            if (itemStack.hasTag() && (nbtCompound = itemStack.getTag()).contains("SkullOwner", 10)) {
+                gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
             }
             matrixStack.translate(-0.5, 0.0, -0.5);
             SkullBlock.SkullType skullType = ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType();
             SkullBlockEntityModel skullBlockEntityModel = this.headModels.get(skullType);
-            RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile2);
+            RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
             SkullBlockEntityRenderer.renderSkull(null, 180.0f, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
         } else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
             HeadFeatureRenderer.translate(matrixStack, bl);

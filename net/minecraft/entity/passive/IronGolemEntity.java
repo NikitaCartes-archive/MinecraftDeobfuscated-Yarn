@@ -280,7 +280,7 @@ implements Angerable {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, BlockState blockState) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0f, 1.0f);
     }
 

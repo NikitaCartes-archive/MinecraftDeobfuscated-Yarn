@@ -23,9 +23,9 @@ extends AbstractFireballEntity {
         super((EntityType<? extends AbstractFireballEntity>)entityType, world);
     }
 
-    public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int i) {
+    public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int explosionPower) {
         super((EntityType<? extends AbstractFireballEntity>)EntityType.FIREBALL, owner, velocityX, velocityY, velocityZ, world);
-        this.explosionPower = i;
+        this.explosionPower = explosionPower;
     }
 
     @Override

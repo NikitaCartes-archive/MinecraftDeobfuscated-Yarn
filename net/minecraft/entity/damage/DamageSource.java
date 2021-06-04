@@ -55,7 +55,14 @@ public class DamageSource {
     private boolean magic;
     private boolean explosive;
     private boolean fromFalling;
-    private boolean field_34004;
+    /**
+     * Whether the attacked entity should be neutral to the attacker.
+     * 
+     * @apiNote This is used by goats to prevent rammed mobs from retaliating.
+     * Damages that are neutral do not cause {@link LivingEntity#setAttacker(LivingEntity)}
+     * to be called.
+     */
+    private boolean neutral;
     public final String name;
 
     public static DamageSource sting(LivingEntity attacker) {
@@ -207,8 +214,8 @@ public class DamageSource {
         return this;
     }
 
-    public DamageSource method_37353() {
-        this.field_34004 = true;
+    public DamageSource setNeutral() {
+        this.neutral = true;
         return this;
     }
 
@@ -226,8 +233,8 @@ public class DamageSource {
         return this.fire;
     }
 
-    public boolean method_37354() {
-        return this.field_34004;
+    public boolean isNeutral() {
+        return this.neutral;
     }
 
     public String getName() {

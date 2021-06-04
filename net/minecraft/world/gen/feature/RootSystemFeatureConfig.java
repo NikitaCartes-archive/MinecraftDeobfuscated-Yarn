@@ -27,9 +27,9 @@ implements FeatureConfig {
     public final int hangingRootVerticalSpan;
     public final BlockStateProvider hangingRootStateProvider;
     public final int hangingRootPlacementAttempts;
-    public final int field_33616;
+    public final int allowedVerticalWaterForTree;
 
-    public RootSystemFeatureConfig(Supplier<ConfiguredFeature<?, ?>> feature, int requiredVerticalSpaceForTree, int rootRadius, Identifier rootReplaceable, BlockStateProvider rootStateProvider, int rootPlacementAttempts, int maxRootColumnHeight, int hangingRootRadius, int hangingRootVerticalSpan, BlockStateProvider hangingRootStateProvider, int hangingRootPlacementAttempts, int i) {
+    public RootSystemFeatureConfig(Supplier<ConfiguredFeature<?, ?>> feature, int requiredVerticalSpaceForTree, int rootRadius, Identifier rootReplaceable, BlockStateProvider rootStateProvider, int rootPlacementAttempts, int maxRootColumnHeight, int hangingRootRadius, int hangingRootVerticalSpan, BlockStateProvider hangingRootStateProvider, int hangingRootPlacementAttempts, int allowedVerticalWaterForTree) {
         this.feature = feature;
         this.requiredVerticalSpaceForTree = requiredVerticalSpaceForTree;
         this.rootRadius = rootRadius;
@@ -41,7 +41,7 @@ implements FeatureConfig {
         this.hangingRootVerticalSpan = hangingRootVerticalSpan;
         this.hangingRootStateProvider = hangingRootStateProvider;
         this.hangingRootPlacementAttempts = hangingRootPlacementAttempts;
-        this.field_33616 = i;
+        this.allowedVerticalWaterForTree = allowedVerticalWaterForTree;
     }
 }
 

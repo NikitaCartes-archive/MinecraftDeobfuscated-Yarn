@@ -781,6 +781,7 @@ extends LivingEntity {
 
     @Override
     public void equipStack(EquipmentSlot slot, ItemStack stack) {
+        this.method_37410(stack);
         switch (slot.getType()) {
             case HAND: {
                 this.handItems.set(slot.getEntitySlotId(), stack);
@@ -1322,7 +1323,7 @@ extends LivingEntity {
     protected void removeFromDimension() {
         super.removeFromDimension();
         this.detachLeash(true, false);
-        this.getItemsEquipped().forEach(itemStack -> itemStack.setCount(0));
+        this.getItemsEquipped().forEach(stack -> stack.setCount(0));
     }
 
     @Override

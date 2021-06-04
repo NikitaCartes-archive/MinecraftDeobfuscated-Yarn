@@ -32,14 +32,14 @@ implements FeatureConfig {
     public final boolean ignoreVines;
     public final boolean forceDirt;
 
-    protected TreeFeatureConfig(BlockStateProvider trunkProvider, TrunkPlacer trunkPlacer, BlockStateProvider foliageProvider, BlockStateProvider saplingProvider, FoliagePlacer foliagePlacer, BlockStateProvider dirtProvider, FeatureSize maximumSize, List<TreeDecorator> decorators, boolean ignoreVines, boolean forceDirt) {
+    protected TreeFeatureConfig(BlockStateProvider trunkProvider, TrunkPlacer trunkPlacer, BlockStateProvider foliageProvider, BlockStateProvider saplingProvider, FoliagePlacer foliagePlacer, BlockStateProvider dirtProvider, FeatureSize minimumSize, List<TreeDecorator> decorators, boolean ignoreVines, boolean forceDirt) {
         this.trunkProvider = trunkProvider;
         this.trunkPlacer = trunkPlacer;
         this.foliageProvider = foliageProvider;
         this.foliagePlacer = foliagePlacer;
         this.dirtProvider = dirtProvider;
         this.saplingProvider = saplingProvider;
-        this.minimumSize = maximumSize;
+        this.minimumSize = minimumSize;
         this.decorators = decorators;
         this.ignoreVines = ignoreVines;
         this.forceDirt = forceDirt;
