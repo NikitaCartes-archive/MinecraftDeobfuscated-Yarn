@@ -297,7 +297,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0F, 1.0F);
 	}
 

@@ -379,14 +379,14 @@ public class BlockModelRenderer {
 			BlockState blockState4 = world.getBlockState(mutable);
 			int l = brightnessCache.getInt(blockState4, world, mutable);
 			float m = brightnessCache.getFloat(blockState4, world, mutable);
-			mutable.set(blockPos, neighborData.faces[0]).move(direction);
-			boolean bl2 = !blockState.shouldBlockVision(world, mutable) || blockState.getOpacity(world, mutable) == 0;
-			mutable.set(blockPos, neighborData.faces[1]).move(direction);
-			boolean bl3 = !blockState2.shouldBlockVision(world, mutable) || blockState2.getOpacity(world, mutable) == 0;
-			mutable.set(blockPos, neighborData.faces[2]).move(direction);
-			boolean bl4 = !blockState3.shouldBlockVision(world, mutable) || blockState3.getOpacity(world, mutable) == 0;
-			mutable.set(blockPos, neighborData.faces[3]).move(direction);
-			boolean bl5 = !blockState4.shouldBlockVision(world, mutable) || blockState4.getOpacity(world, mutable) == 0;
+			BlockState blockState5 = world.getBlockState(mutable.set(blockPos, neighborData.faces[0]).move(direction));
+			boolean bl2 = !blockState5.shouldBlockVision(world, mutable) || blockState5.getOpacity(world, mutable) == 0;
+			BlockState blockState6 = world.getBlockState(mutable.set(blockPos, neighborData.faces[1]).move(direction));
+			boolean bl3 = !blockState6.shouldBlockVision(world, mutable) || blockState6.getOpacity(world, mutable) == 0;
+			BlockState blockState7 = world.getBlockState(mutable.set(blockPos, neighborData.faces[2]).move(direction));
+			boolean bl4 = !blockState7.shouldBlockVision(world, mutable) || blockState7.getOpacity(world, mutable) == 0;
+			BlockState blockState8 = world.getBlockState(mutable.set(blockPos, neighborData.faces[3]).move(direction));
+			boolean bl5 = !blockState8.shouldBlockVision(world, mutable) || blockState8.getOpacity(world, mutable) == 0;
 			float n;
 			int o;
 			if (!bl4 && !bl2) {
@@ -394,9 +394,9 @@ public class BlockModelRenderer {
 				o = i;
 			} else {
 				mutable.set(blockPos, neighborData.faces[0]).move(neighborData.faces[2]);
-				BlockState blockState5 = world.getBlockState(mutable);
-				n = brightnessCache.getFloat(blockState5, world, mutable);
-				o = brightnessCache.getInt(blockState5, world, mutable);
+				BlockState blockState9 = world.getBlockState(mutable);
+				n = brightnessCache.getFloat(blockState9, world, mutable);
+				o = brightnessCache.getInt(blockState9, world, mutable);
 			}
 
 			float p;
@@ -406,9 +406,9 @@ public class BlockModelRenderer {
 				q = i;
 			} else {
 				mutable.set(blockPos, neighborData.faces[0]).move(neighborData.faces[3]);
-				BlockState blockState5 = world.getBlockState(mutable);
-				p = brightnessCache.getFloat(blockState5, world, mutable);
-				q = brightnessCache.getInt(blockState5, world, mutable);
+				BlockState blockState9 = world.getBlockState(mutable);
+				p = brightnessCache.getFloat(blockState9, world, mutable);
+				q = brightnessCache.getInt(blockState9, world, mutable);
 			}
 
 			float r;
@@ -418,9 +418,9 @@ public class BlockModelRenderer {
 				s = i;
 			} else {
 				mutable.set(blockPos, neighborData.faces[1]).move(neighborData.faces[2]);
-				BlockState blockState5 = world.getBlockState(mutable);
-				r = brightnessCache.getFloat(blockState5, world, mutable);
-				s = brightnessCache.getInt(blockState5, world, mutable);
+				BlockState blockState9 = world.getBlockState(mutable);
+				r = brightnessCache.getFloat(blockState9, world, mutable);
+				s = brightnessCache.getInt(blockState9, world, mutable);
 			}
 
 			float t;
@@ -430,16 +430,16 @@ public class BlockModelRenderer {
 				u = i;
 			} else {
 				mutable.set(blockPos, neighborData.faces[1]).move(neighborData.faces[3]);
-				BlockState blockState5 = world.getBlockState(mutable);
-				t = brightnessCache.getFloat(blockState5, world, mutable);
-				u = brightnessCache.getInt(blockState5, world, mutable);
+				BlockState blockState9 = world.getBlockState(mutable);
+				t = brightnessCache.getFloat(blockState9, world, mutable);
+				u = brightnessCache.getInt(blockState9, world, mutable);
 			}
 
 			int v = brightnessCache.getInt(state, world, pos);
 			mutable.set(pos, direction);
-			BlockState blockState6 = world.getBlockState(mutable);
-			if (flags.get(0) || !blockState6.isOpaqueFullCube(world, mutable)) {
-				v = brightnessCache.getInt(blockState6, world, mutable);
+			BlockState blockState10 = world.getBlockState(mutable);
+			if (flags.get(0) || !blockState10.isOpaqueFullCube(world, mutable)) {
+				v = brightnessCache.getInt(blockState10, world, mutable);
 			}
 
 			float w = flags.get(0)

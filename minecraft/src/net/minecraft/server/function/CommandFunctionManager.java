@@ -1,5 +1,6 @@
 package net.minecraft.server.function;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.mojang.brigadier.CommandDispatcher;
@@ -40,7 +41,7 @@ public class CommandFunctionManager {
 	 * load, this is more efficient than polling the tag from the {@link #loader}
 	 * every tick.
 	 */
-	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
+	private List<CommandFunction> tickFunctions = ImmutableList.of();
 	/**
 	 * Whether this command function manager has just {@linkplain #load(FunctionLoader)
 	 * loaded} and should run all functions in the {@code minecraft:load} function tag.
@@ -152,8 +153,7 @@ public class CommandFunctionManager {
 	}
 
 	private void load(FunctionLoader loader) {
-		this.tickFunctions.clear();
-		this.tickFunctions.addAll(loader.getTags().getTagOrEmpty(TICK_TAG_ID).values());
+		this.tickFunctions = ImmutableList.copyOf(loader.getTags().getTagOrEmpty(TICK_TAG_ID).values());
 		this.justLoaded = true;
 	}
 

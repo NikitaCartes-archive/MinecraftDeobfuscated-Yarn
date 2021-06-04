@@ -58,8 +58,8 @@ import org.apache.logging.log4j.Logger;
 
 public class EnderDragonFight {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_31443 = 1200;
-	private static final int field_31444 = 100;
+	private static final int CHECK_DRAGON_SEEN_INTERVAL = 1200;
+	private static final int CRYSTAL_COUNTING_INTERVAL = 100;
 	private static final int field_31445 = 20;
 	private static final int field_31446 = 8;
 	public static final int field_31441 = 9;

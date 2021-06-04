@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.SkullBlock;
-import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -29,7 +28,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.Vec3f;
-import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithHead> extends FeatureRenderer<T, M> {
@@ -80,14 +78,6 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 					NbtCompound nbtCompound = itemStack.getTag();
 					if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-					} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE)) {
-						String string = nbtCompound.getString("SkullOwner");
-						if (!StringUtils.isBlank(string)) {
-							nbtCompound.remove("SkullOwner");
-							SkullBlockEntity.loadProperties(
-								new GameProfile(null, string), gameProfilex -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfilex))
-							);
-						}
 					}
 				}
 
