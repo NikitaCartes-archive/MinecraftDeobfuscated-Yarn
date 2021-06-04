@@ -574,7 +574,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 	}
 
 	@Override

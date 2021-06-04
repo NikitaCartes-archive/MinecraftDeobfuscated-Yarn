@@ -711,13 +711,13 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		nbt.putBoolean("FallFlying", this.isFallFlying());
-		this.getSleepingPosition().ifPresent(blockPos -> {
-			nbt.putInt("SleepingX", blockPos.getX());
-			nbt.putInt("SleepingY", blockPos.getY());
-			nbt.putInt("SleepingZ", blockPos.getZ());
+		this.getSleepingPosition().ifPresent(pos -> {
+			nbt.putInt("SleepingX", pos.getX());
+			nbt.putInt("SleepingY", pos.getY());
+			nbt.putInt("SleepingZ", pos.getZ());
 		});
 		DataResult<NbtElement> dataResult = this.brain.encode(NbtOps.INSTANCE);
-		dataResult.resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("Brain", nbtElement));
+		dataResult.resultOrPartial(LOGGER::error).ifPresent(brain -> nbt.put("Brain", brain));
 	}
 
 	@Override
@@ -1165,7 +1165,7 @@ public abstract class LivingEntity extends Entity {
 			this.knockbackVelocity = 0.0F;
 			Entity entity2 = source.getAttacker();
 			if (entity2 != null) {
-				if (entity2 instanceof LivingEntity && !source.method_37354()) {
+				if (entity2 instanceof LivingEntity && !source.isNeutral()) {
 					this.setAttacker((LivingEntity)entity2);
 				}
 
@@ -1989,6 +1989,13 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	public abstract void equipStack(EquipmentSlot slot, ItemStack stack);
+
+	protected void method_37410(ItemStack itemStack) {
+		NbtCompound nbtCompound = itemStack.getTag();
+		if (nbtCompound != null) {
+			itemStack.getItem().postProcessNbt(nbtCompound);
+		}
+	}
 
 	public float getArmorVisibility() {
 		Iterable<ItemStack> iterable = this.getArmorItems();
@@ -2931,20 +2938,20 @@ public abstract class LivingEntity extends Entity {
 		if (this.isUsingItem()) {
 			if (ItemStack.areItemsEqual(this.getStackInHand(this.getActiveHand()), this.activeItemStack)) {
 				this.activeItemStack = this.getStackInHand(this.getActiveHand());
-				this.method_37119(this.activeItemStack);
+				this.tickItemStackUsage(this.activeItemStack);
 			} else {
 				this.clearActiveItem();
 			}
 		}
 	}
 
-	protected void method_37119(ItemStack itemStack) {
-		itemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
+	protected void tickItemStackUsage(ItemStack stack) {
+		stack.usageTick(this.world, this, this.getItemUseTimeLeft());
 		if (this.shouldSpawnConsumptionEffects()) {
-			this.spawnConsumptionEffects(itemStack, 5);
+			this.spawnConsumptionEffects(stack, 5);
 		}
 
-		if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !itemStack.isUsedOnRelease()) {
+		if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !stack.isUsedOnRelease()) {
 			this.consumeItem();
 		}
 	}

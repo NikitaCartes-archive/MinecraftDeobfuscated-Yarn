@@ -357,12 +357,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState blockState) {
-		if (!blockState.getMaterial().isLiquid()) {
-			BlockState blockState2 = this.world.getBlockState(pos.up());
-			BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-			if (blockState2.isOf(Blocks.SNOW)) {
-				blockSoundGroup = blockState2.getSoundGroup();
+	protected void playStepSound(BlockPos pos, BlockState state) {
+		if (!state.getMaterial().isLiquid()) {
+			BlockState blockState = this.world.getBlockState(pos.up());
+			BlockSoundGroup blockSoundGroup = state.getSoundGroup();
+			if (blockState.isOf(Blocks.SNOW)) {
+				blockSoundGroup = blockState.getSoundGroup();
 			}
 
 			if (this.hasPassengers() && this.playExtraHorseSounds) {

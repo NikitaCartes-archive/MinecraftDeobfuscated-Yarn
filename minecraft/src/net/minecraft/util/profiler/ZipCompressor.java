@@ -19,59 +19,98 @@ import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * A ZIP compressor builds up a ZIP file. It completes the ZIP file when it is
+ * {@linkplain #close() closed}. All its methods and constructors throw
+ * {@link java.io.UncheckedIOException} when an I/O error occurs.
+ * 
+ * @implSpec The compressor writes the contents of the ZIP to a {@link #temp} file
+ * first; then, it replaces the desired {@link #file} with the temp file when
+ * closed.
+ */
 public class ZipCompressor implements Closeable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Path profilingDirectory;
-	private final Path temporaryDirectory;
+	private final Path file;
+	private final Path temp;
 	private final FileSystem zip;
 
-	public ZipCompressor(Path profilingDirectory) {
-		this.profilingDirectory = profilingDirectory;
-		this.temporaryDirectory = profilingDirectory.resolveSibling(profilingDirectory.getFileName().toString() + "_tmp");
+	/**
+	 * Creates a ZIP compressor.
+	 * 
+	 * @param file the path of the ZIP file
+	 */
+	public ZipCompressor(Path file) {
+		this.file = file;
+		this.temp = file.resolveSibling(file.getFileName().toString() + "_tmp");
 
 		try {
-			this.zip = Util.zipFileSystemProvider.newFileSystem(this.temporaryDirectory, ImmutableMap.of("create", "true"));
+			this.zip = Util.JAR_FILE_SYSTEM_PROVIDER.newFileSystem(this.temp, ImmutableMap.of("create", "true"));
 		} catch (IOException var3) {
 			throw new UncheckedIOException(var3);
 		}
 	}
 
-	public void write(Path path, String content) {
+	/**
+	 * Writes the {@code content}, in UTF-8 encoding, to the {@code target} path
+	 * within the ZIP.
+	 * 
+	 * <p>The {@code target} should be a relative path, as it will be resolved
+	 * against the root of the ZIP.
+	 * 
+	 * @param target the target path in the ZIP
+	 * @param content the file content to write in UTF-8
+	 */
+	public void write(Path target, String content) {
 		try {
-			Path path2 = this.zip.getPath(File.separator);
-			Path path3 = path2.resolve(path.toString());
-			Files.createDirectories(path3.getParent());
-			Files.write(path3, content.getBytes(StandardCharsets.UTF_8), new OpenOption[0]);
+			Path path = this.zip.getPath(File.separator);
+			Path path2 = path.resolve(target.toString());
+			Files.createDirectories(path2.getParent());
+			Files.write(path2, content.getBytes(StandardCharsets.UTF_8), new OpenOption[0]);
 		} catch (IOException var5) {
 			throw new UncheckedIOException(var5);
 		}
 	}
 
-	public void copy(Path path, File file) {
+	/**
+	 * Copies a {@code source} file to the {@code target} path within the ZIP.
+	 * 
+	 * <p>If the {@code source} is a directory, then an empty directory would be
+	 * copied. The {@code target} should be a relative path, as it will be resolved
+	 * against the root of the ZIP.
+	 * 
+	 * @param target the target path in the ZIP
+	 * @param source the source file to copy
+	 */
+	public void copy(Path target, File source) {
 		try {
-			Path path2 = this.zip.getPath(File.separator);
-			Path path3 = path2.resolve(path.toString());
-			Files.createDirectories(path3.getParent());
-			Files.copy(file.toPath(), path3);
+			Path path = this.zip.getPath(File.separator);
+			Path path2 = path.resolve(target.toString());
+			Files.createDirectories(path2.getParent());
+			Files.copy(source.toPath(), path2);
 		} catch (IOException var5) {
 			throw new UncheckedIOException(var5);
 		}
 	}
 
-	public void copyAll(Path path) {
+	/**
+	 * Copies the {@code source} file or directory to the root of the ZIP.
+	 * 
+	 * @param source the source file or directory to copy
+	 */
+	public void copyAll(Path source) {
 		try {
-			Path path2 = this.zip.getPath(File.separator);
-			if (Files.isRegularFile(path, new LinkOption[0])) {
-				Path path3 = path2.resolve(path.getParent().relativize(path).toString());
-				Files.copy(path3, path);
+			Path path = this.zip.getPath(File.separator);
+			if (Files.isRegularFile(source, new LinkOption[0])) {
+				Path path2 = path.resolve(source.getParent().relativize(source).toString());
+				Files.copy(path2, source);
 			} else {
-				Stream<Path> stream = Files.find(path, Integer.MAX_VALUE, (pathx, attributes) -> attributes.isRegularFile(), new FileVisitOption[0]);
+				Stream<Path> stream = Files.find(source, Integer.MAX_VALUE, (pathx, attributes) -> attributes.isRegularFile(), new FileVisitOption[0]);
 
 				try {
-					for (Path path4 : (List)stream.collect(Collectors.toList())) {
-						Path path5 = path2.resolve(path.relativize(path4).toString());
-						Files.createDirectories(path5.getParent());
-						Files.copy(path4, path5);
+					for (Path path3 : (List)stream.collect(Collectors.toList())) {
+						Path path4 = path.resolve(source.relativize(path3).toString());
+						Files.createDirectories(path4.getParent());
+						Files.copy(path3, path4);
 					}
 				} catch (Throwable var8) {
 					if (stream != null) {
@@ -97,8 +136,8 @@ public class ZipCompressor implements Closeable {
 	public void close() {
 		try {
 			this.zip.close();
-			Files.move(this.temporaryDirectory, this.profilingDirectory);
-			LOGGER.info("Compressed to {}", this.profilingDirectory);
+			Files.move(this.temp, this.file);
+			LOGGER.info("Compressed to {}", this.file);
 		} catch (IOException var2) {
 			throw new UncheckedIOException(var2);
 		}

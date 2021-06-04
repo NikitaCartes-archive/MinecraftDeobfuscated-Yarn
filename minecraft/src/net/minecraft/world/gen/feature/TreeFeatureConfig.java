@@ -46,7 +46,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 		BlockStateProvider saplingProvider,
 		FoliagePlacer foliagePlacer,
 		BlockStateProvider dirtProvider,
-		FeatureSize maximumSize,
+		FeatureSize minimumSize,
 		List<TreeDecorator> decorators,
 		boolean ignoreVines,
 		boolean forceDirt
@@ -57,7 +57,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 		this.foliagePlacer = foliagePlacer;
 		this.dirtProvider = dirtProvider;
 		this.saplingProvider = saplingProvider;
-		this.minimumSize = maximumSize;
+		this.minimumSize = minimumSize;
 		this.decorators = decorators;
 		this.ignoreVines = ignoreVines;
 		this.forceDirt = forceDirt;

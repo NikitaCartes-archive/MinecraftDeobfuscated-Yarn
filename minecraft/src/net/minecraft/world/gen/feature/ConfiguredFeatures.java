@@ -1308,7 +1308,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
 						new StraightTrunkPlacer(4, 2, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33969),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_SAPLING),
 						new BlobFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0), 3),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
@@ -1324,7 +1324,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.DARK_OAK_LOG),
 						new DarkOakTrunkPlacer(6, 2, 1),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.DARK_OAK_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33974),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.DARK_OAK_SAPLING),
 						new DarkOakFoliagePlacer(ConstantIntProvider.create(0), ConstantIntProvider.create(0)),
 						new ThreeLayersFeatureSize(1, 1, 0, 1, 2, OptionalInt.empty())
 					)
@@ -1340,7 +1340,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LOG),
 						new StraightTrunkPlacer(5, 2, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33973),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_SAPLING),
 						new BlobFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0), 3),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
@@ -1356,7 +1356,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.ACACIA_LOG),
 						new ForkingTrunkPlacer(5, 2, 2),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.ACACIA_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33972),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.ACACIA_SAPLING),
 						new AcaciaFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0)),
 						new TwoLayersFeatureSize(1, 0, 2)
 					)
@@ -1372,7 +1372,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
 						new StraightTrunkPlacer(5, 2, 1),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33971),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_SAPLING),
 						new SpruceFoliagePlacer(UniformIntProvider.create(2, 3), UniformIntProvider.create(0, 2), UniformIntProvider.create(1, 2)),
 						new TwoLayersFeatureSize(2, 0, 2)
 					)
@@ -1388,7 +1388,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
 						new StraightTrunkPlacer(6, 4, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33971),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_SAPLING),
 						new PineFoliagePlacer(ConstantIntProvider.create(1), ConstantIntProvider.create(1), UniformIntProvider.create(3, 4)),
 						new TwoLayersFeatureSize(2, 0, 2)
 					)
@@ -1404,7 +1404,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
 						new StraightTrunkPlacer(4, 8, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33970),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_SAPLING),
 						new BlobFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0), 3),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
@@ -1421,7 +1421,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
 						new LargeOakTrunkPlacer(3, 11, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33969),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_SAPLING),
 						new LargeOakFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(4), 4),
 						new TwoLayersFeatureSize(0, 0, 0, OptionalInt.of(4))
 					)
@@ -1437,7 +1437,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
 						new StraightTrunkPlacer(4, 8, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33970),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_SAPLING),
 						new BlobFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0), 3),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
@@ -1453,7 +1453,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
 						new MegaJungleTrunkPlacer(10, 2, 19),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33970),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_SAPLING),
 						new JungleFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0), 2),
 						new TwoLayersFeatureSize(1, 1, 2)
 					)
@@ -1469,7 +1469,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
 						new GiantTrunkPlacer(13, 2, 14),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33971),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_SAPLING),
 						new MegaPineFoliagePlacer(ConstantIntProvider.create(0), ConstantIntProvider.create(0), UniformIntProvider.create(13, 17)),
 						new TwoLayersFeatureSize(1, 1, 2)
 					)
@@ -1485,7 +1485,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
 						new GiantTrunkPlacer(13, 2, 14),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33971),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_SAPLING),
 						new MegaPineFoliagePlacer(ConstantIntProvider.create(0), ConstantIntProvider.create(0), UniformIntProvider.create(3, 7)),
 						new TwoLayersFeatureSize(1, 1, 2)
 					)
@@ -1501,7 +1501,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LOG),
 						new StraightTrunkPlacer(5, 2, 6),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33973),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_SAPLING),
 						new BlobFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0), 3),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
@@ -1518,7 +1518,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
 						new StraightTrunkPlacer(5, 3, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33969),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_SAPLING),
 						new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
@@ -1534,7 +1534,7 @@ public class ConfiguredFeatures {
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
 						new StraightTrunkPlacer(1, 0, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LEAVES),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33969),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_SAPLING),
 						new BushFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(1), 2),
 						new TwoLayersFeatureSize(0, 0, 0)
 					)
@@ -1548,8 +1548,8 @@ public class ConfiguredFeatures {
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
 						new BendingTrunkPlacer(4, 2, 0, 3, UniformIntProvider.create(1, 2)),
-						new WeightedBlockStateProvider(method_35926().add(ConfiguredFeatures.States.field_33966, 3).add(ConfiguredFeatures.States.field_33967, 1)),
-						new SimpleBlockStateProvider(ConfiguredFeatures.States.field_33968),
+						new WeightedBlockStateProvider(method_35926().add(ConfiguredFeatures.States.AZALEA_LEAVES, 3).add(ConfiguredFeatures.States.FLOWERING_AZALEA_LEAVES, 1)),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.AZALEA),
 						new RandomSpreadFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), ConstantIntProvider.create(2), 50),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
@@ -2308,22 +2308,22 @@ public class ConfiguredFeatures {
 		protected static final BlockState ICE = Blocks.ICE.getDefaultState();
 		protected static final BlockState OAK_LOG = Blocks.OAK_LOG.getDefaultState();
 		protected static final BlockState OAK_LEAVES = Blocks.OAK_LEAVES.getDefaultState();
-		protected static final BlockState field_33969 = Blocks.OAK_SAPLING.getDefaultState();
+		protected static final BlockState OAK_SAPLING = Blocks.OAK_SAPLING.getDefaultState();
 		protected static final BlockState JUNGLE_LOG = Blocks.JUNGLE_LOG.getDefaultState();
 		protected static final BlockState JUNGLE_LEAVES = Blocks.JUNGLE_LEAVES.getDefaultState();
-		protected static final BlockState field_33970 = Blocks.JUNGLE_SAPLING.getDefaultState();
+		protected static final BlockState JUNGLE_SAPLING = Blocks.JUNGLE_SAPLING.getDefaultState();
 		protected static final BlockState SPRUCE_LOG = Blocks.SPRUCE_LOG.getDefaultState();
 		protected static final BlockState SPRUCE_LEAVES = Blocks.SPRUCE_LEAVES.getDefaultState();
-		protected static final BlockState field_33971 = Blocks.SPRUCE_SAPLING.getDefaultState();
+		protected static final BlockState SPRUCE_SAPLING = Blocks.SPRUCE_SAPLING.getDefaultState();
 		protected static final BlockState ACACIA_LOG = Blocks.ACACIA_LOG.getDefaultState();
 		protected static final BlockState ACACIA_LEAVES = Blocks.ACACIA_LEAVES.getDefaultState();
-		protected static final BlockState field_33972 = Blocks.ACACIA_SAPLING.getDefaultState();
+		protected static final BlockState ACACIA_SAPLING = Blocks.ACACIA_SAPLING.getDefaultState();
 		protected static final BlockState BIRCH_LOG = Blocks.BIRCH_LOG.getDefaultState();
 		protected static final BlockState BIRCH_LEAVES = Blocks.BIRCH_LEAVES.getDefaultState();
-		protected static final BlockState field_33973 = Blocks.BIRCH_SAPLING.getDefaultState();
+		protected static final BlockState BIRCH_SAPLING = Blocks.BIRCH_SAPLING.getDefaultState();
 		protected static final BlockState DARK_OAK_LOG = Blocks.DARK_OAK_LOG.getDefaultState();
 		protected static final BlockState DARK_OAK_LEAVES = Blocks.DARK_OAK_LEAVES.getDefaultState();
-		protected static final BlockState field_33974 = Blocks.DARK_OAK_SAPLING.getDefaultState();
+		protected static final BlockState DARK_OAK_SAPLING = Blocks.DARK_OAK_SAPLING.getDefaultState();
 		protected static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
 		protected static final BlockState LARGE_FERN = Blocks.LARGE_FERN.getDefaultState();
 		protected static final BlockState TALL_GRASS = Blocks.TALL_GRASS.getDefaultState();
@@ -2421,8 +2421,8 @@ public class ConfiguredFeatures {
 		protected static final BlockState BIG_DRIPLEAF_NORTH = Blocks.BIG_DRIPLEAF.getDefaultState().with(BigDripleafBlock.FACING, Direction.NORTH);
 		protected static final BlockState BIG_DIRPLEAF_SOUTH = Blocks.BIG_DRIPLEAF.getDefaultState().with(BigDripleafBlock.FACING, Direction.SOUTH);
 		protected static final BlockState DEEPSLATE = Blocks.DEEPSLATE.getDefaultState();
-		protected static final BlockState field_33966 = Blocks.AZALEA_LEAVES.getDefaultState();
-		protected static final BlockState field_33967 = Blocks.FLOWERING_AZALEA_LEAVES.getDefaultState();
-		protected static final BlockState field_33968 = Blocks.AZALEA.getDefaultState();
+		protected static final BlockState AZALEA_LEAVES = Blocks.AZALEA_LEAVES.getDefaultState();
+		protected static final BlockState FLOWERING_AZALEA_LEAVES = Blocks.FLOWERING_AZALEA_LEAVES.getDefaultState();
+		protected static final BlockState AZALEA = Blocks.AZALEA.getDefaultState();
 	}
 }

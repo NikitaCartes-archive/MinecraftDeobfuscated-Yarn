@@ -73,7 +73,7 @@ public class RamImpactTask<E extends PathAwareEntity> extends Task<E> {
 		Brain<?> brain = pathAwareEntity.getBrain();
 		if (!list.isEmpty()) {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
-			livingEntity.damage(DamageSource.mob(pathAwareEntity).method_37353(), (float)this.damage.applyAsInt(pathAwareEntity));
+			livingEntity.damage(DamageSource.mob(pathAwareEntity).setNeutral(), (float)this.damage.applyAsInt(pathAwareEntity));
 			float f = livingEntity.blockedByShield(DamageSource.mob(pathAwareEntity)) ? 0.5F : 1.0F;
 			float g = MathHelper.clamp(pathAwareEntity.getMovementSpeed() * 1.65F, 0.2F, 3.0F);
 			livingEntity.takeKnockback((double)(f * g) * this.strengthMultiplierFactory.applyAsDouble(pathAwareEntity), this.direction.getX(), this.direction.getZ());

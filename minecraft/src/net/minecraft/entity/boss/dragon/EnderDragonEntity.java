@@ -56,9 +56,12 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
 	private static final int MAX_HEALTH = 200;
 	private static final int field_30429 = 400;
-	private static final float field_30430 = 0.25F;
-	private static final String field_33910 = "DragonDeathTime";
-	private static final String field_33911 = "DragonPhase";
+	/**
+	 * The damage the dragon can take before it takes off, represented as a ratio to the full health.
+	 */
+	private static final float TAKEOFF_THRESHOLD = 0.25F;
+	private static final String DRAGON_DEATH_TIME_KEY = "DragonDeathTime";
+	private static final String DRAGON_PHASE_KEY = "DragonPhase";
 	/**
 	 * (yaw, y, ?)
 	 */

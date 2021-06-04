@@ -35,9 +35,9 @@ public class PerfCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("perf")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
-				.then(CommandManager.literal("start").executes(commandContext -> executeStart(commandContext.getSource())))
-				.then(CommandManager.literal("stop").executes(commandContext -> executeStop(commandContext.getSource())))
+				.requires(source -> source.hasPermissionLevel(4))
+				.then(CommandManager.literal("start").executes(context -> executeStart(context.getSource())))
+				.then(CommandManager.literal("stop").executes(context -> executeStop(context.getSource())))
 		);
 	}
 
@@ -46,7 +46,7 @@ public class PerfCommand {
 		if (minecraftServer.isRunningMonitor()) {
 			throw ALREADY_RUNNING_EXCEPTION.create();
 		} else {
-			Consumer<ProfileResult> consumer = profileResult -> sendProfilingStoppedMessage(source, profileResult);
+			Consumer<ProfileResult> consumer = result -> sendProfilingStoppedMessage(source, result);
 			Consumer<Path> consumer2 = path -> saveReport(source, path, minecraftServer);
 			minecraftServer.method_37320(consumer, consumer2);
 			source.sendFeedback(new TranslatableText("commands.perf.started"), false);

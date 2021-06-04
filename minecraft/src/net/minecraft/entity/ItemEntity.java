@@ -30,8 +30,8 @@ import net.minecraft.world.event.GameEvent;
 public class ItemEntity extends Entity {
 	private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final int DESPAWN_AGE = 6000;
-	private static final int field_30457 = 32767;
-	private static final int field_30458 = -32768;
+	private static final int CANNOT_PICK_UP_DELAY = 32767;
+	private static final int NEVER_DESPAWN_AGE = -32768;
 	/**
 	 * The number of ticks since this item entity has been created.
 	 * It is a short value with key {@code Age} in the NBT structure.

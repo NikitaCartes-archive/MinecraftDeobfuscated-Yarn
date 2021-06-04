@@ -220,7 +220,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public boolean wasInPowderSnow;
 	public boolean wasOnFire;
 	private float field_26997;
-	private int prevAge;
+	private int lastChimeAge;
 	private boolean hasVisualFire;
 
 	public Entity(EntityType<?> type, World world) {
@@ -629,7 +629,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 							}
 						} else {
 							if (moveEffect.playsSounds()) {
-								this.method_37215(blockState);
+								this.playAmethystChimeSound(blockState);
 								this.playStepSound(blockPos, blockState);
 							}
 
@@ -952,22 +952,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.emitGameEvent(event, this.blockPos);
 	}
 
-	protected void playStepSound(BlockPos pos, BlockState blockState) {
-		if (!blockState.getMaterial().isLiquid()) {
-			BlockState blockState2 = this.world.getBlockState(pos.up());
-			BlockSoundGroup blockSoundGroup = blockState2.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState2.getSoundGroup() : blockState.getSoundGroup();
+	protected void playStepSound(BlockPos pos, BlockState state) {
+		if (!state.getMaterial().isLiquid()) {
+			BlockState blockState = this.world.getBlockState(pos.up());
+			BlockSoundGroup blockSoundGroup = blockState.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
 			this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 		}
 	}
 
-	private void method_37215(BlockState blockState) {
-		if (blockState.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.prevAge + 20) {
-			this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997F, (double)(this.age - this.prevAge)));
+	private void playAmethystChimeSound(BlockState state) {
+		if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.lastChimeAge + 20) {
+			this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997F, (double)(this.age - this.lastChimeAge)));
 			this.field_26997 = Math.min(1.0F, this.field_26997 + 0.07F);
 			float f = 0.5F + this.field_26997 * this.random.nextFloat() * 1.2F;
 			float g = 0.1F + this.field_26997 * 1.2F;
 			this.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, g, f);
-			this.prevAge = this.age;
+			this.lastChimeAge = this.age;
 		}
 	}
 
@@ -1782,26 +1782,30 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public boolean startRiding(Entity entity, boolean force) {
-		for (Entity entity2 = entity; entity2.vehicle != null; entity2 = entity2.vehicle) {
-			if (entity2.vehicle == this) {
+		if (entity == this.vehicle) {
+			return false;
+		} else {
+			for (Entity entity2 = entity; entity2.vehicle != null; entity2 = entity2.vehicle) {
+				if (entity2.vehicle == this) {
+					return false;
+				}
+			}
+
+			if (force || this.canStartRiding(entity) && entity.canAddPassenger(this)) {
+				if (this.hasVehicle()) {
+					this.stopRiding();
+				}
+
+				this.setPose(EntityPose.STANDING);
+				this.vehicle = entity;
+				this.vehicle.addPassenger(this);
+				entity.streamIntoPassengers()
+					.filter(entityx -> entityx instanceof ServerPlayerEntity)
+					.forEach(entityx -> Criteria.STARTED_RIDING.test((ServerPlayerEntity)entityx));
+				return true;
+			} else {
 				return false;
 			}
-		}
-
-		if (force || this.canStartRiding(entity) && entity.canAddPassenger(this)) {
-			if (this.hasVehicle()) {
-				this.stopRiding();
-			}
-
-			this.setPose(EntityPose.STANDING);
-			this.vehicle = entity;
-			this.vehicle.addPassenger(this);
-			entity.streamIntoPassengers()
-				.filter(entityx -> entityx instanceof ServerPlayerEntity)
-				.forEach(entityx -> Criteria.STARTED_RIDING.test((ServerPlayerEntity)entityx));
-			return true;
-		} else {
-			return false;
 		}
 	}
 
@@ -2577,7 +2581,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, d, e, d));
 			this.world
 				.findClosestCollision(this, voxelShape, vec3d, (double)entityDimensions2.width, (double)entityDimensions2.height, (double)entityDimensions2.width)
-				.ifPresent(vec3dx -> this.setPosition(vec3dx.add(0.0, (double)(-entityDimensions2.height) / 2.0, 0.0)));
+				.ifPresent(pos -> this.setPosition(pos.add(0.0, (double)(-entityDimensions2.height) / 2.0, 0.0)));
 		}
 	}
 

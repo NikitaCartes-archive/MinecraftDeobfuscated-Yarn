@@ -80,7 +80,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos pos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15F, 1.0F);
 	}
 

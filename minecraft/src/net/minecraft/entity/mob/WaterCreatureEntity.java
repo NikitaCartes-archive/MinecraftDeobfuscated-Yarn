@@ -79,20 +79,26 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 	}
 
 	public static boolean canSpawnUnderground(
-		EntityType<? extends LivingEntity> entityType, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random
+		EntityType<? extends LivingEntity> entityType, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random
 	) {
-		return pos.getY() < serverWorldAccess.getSeaLevel()
-			&& pos.getY() < serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, pos.getX(), pos.getZ())
-			&& method_37359(serverWorldAccess, pos)
-			&& method_37360(pos, serverWorldAccess);
+		return pos.getY() < world.getSeaLevel()
+			&& pos.getY() < world.getTopY(Heightmap.Type.OCEAN_FLOOR, pos.getX(), pos.getZ())
+			&& hasNoLight(world, pos)
+			&& hasStoneFloor(pos, world);
 	}
 
-	public static boolean method_37360(BlockPos blockPos, ServerWorldAccess serverWorldAccess) {
-		BlockPos.Mutable mutable = blockPos.mutableCopy();
+	/**
+	 * Returns if the position has a stone floor.
+	 * 
+	 * @implNote This method checks if a block in the {@link net.minecraft.tag.BlockTags#BASE_STONE_OVERWORLD}
+	 * tag exists within 5 blocks, and all blocks in between are water.
+	 */
+	public static boolean hasStoneFloor(BlockPos pos, ServerWorldAccess world) {
+		BlockPos.Mutable mutable = pos.mutableCopy();
 
 		for (int i = 0; i < 5; i++) {
 			mutable.move(Direction.DOWN);
-			BlockState blockState = serverWorldAccess.getBlockState(mutable);
+			BlockState blockState = world.getBlockState(mutable);
 			if (blockState.isIn(BlockTags.BASE_STONE_OVERWORLD)) {
 				return true;
 			}
@@ -105,8 +111,8 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 		return false;
 	}
 
-	public static boolean method_37359(ServerWorldAccess serverWorldAccess, BlockPos blockPos) {
-		int i = serverWorldAccess.toServerWorld().isThundering() ? serverWorldAccess.getLightLevel(blockPos, 10) : serverWorldAccess.getLightLevel(blockPos);
+	public static boolean hasNoLight(ServerWorldAccess world, BlockPos pos) {
+		int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
 		return i == 0;
 	}
 }

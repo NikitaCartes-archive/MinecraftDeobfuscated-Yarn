@@ -19,9 +19,9 @@ public class FireballEntity extends AbstractFireballEntity {
 		super(entityType, world);
 	}
 
-	public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int i) {
+	public FireballEntity(World world, LivingEntity owner, double velocityX, double velocityY, double velocityZ, int explosionPower) {
 		super(EntityType.FIREBALL, owner, velocityX, velocityY, velocityZ, world);
-		this.explosionPower = i;
+		this.explosionPower = explosionPower;
 	}
 
 	@Override

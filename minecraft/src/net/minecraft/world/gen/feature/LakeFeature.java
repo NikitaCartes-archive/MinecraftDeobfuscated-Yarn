@@ -101,7 +101,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 								structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
 								if (bl2) {
 									structureWorldAccess.getBlockTickScheduler().schedule(blockPos2, CAVE_AIR.getBlock(), 0);
-									this.method_37256(structureWorldAccess, blockPos2);
+									this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos2);
 								}
 							}
 						}
@@ -146,7 +146,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 									if (blockState.getMaterial().isSolid() && !blockState.isIn(BlockTags.LAVA_POOL_STONE_REPLACEABLES)) {
 										BlockPos blockPos3 = blockPos.add(s, u, txxx);
 										structureWorldAccess.setBlockState(blockPos3, blockSource.get(blockPos3), Block.NOTIFY_LISTENERS);
-										this.method_37256(structureWorldAccess, blockPos3);
+										this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos3);
 									}
 								}
 							}

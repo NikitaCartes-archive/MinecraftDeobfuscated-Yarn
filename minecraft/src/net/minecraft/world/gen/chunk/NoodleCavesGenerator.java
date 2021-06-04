@@ -24,61 +24,61 @@ public class NoodleCavesGenerator {
 		this.field_33661 = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -7, 1.0);
 	}
 
-	public void method_36471(double[] ds, int i, int j, int k, int l) {
-		this.method_36472(ds, i, j, k, l, this.field_33658, 1.0);
+	public void method_36471(double[] buffer, int x, int z, int minY, int noiseSizeY) {
+		this.sample(buffer, x, z, minY, noiseSizeY, this.field_33658, 1.0);
 	}
 
-	public void method_36474(double[] ds, int i, int j, int k, int l) {
-		this.method_36472(ds, i, j, k, l, this.field_33659, 1.0);
+	public void method_36474(double[] buffer, int x, int z, int minY, int noiseSizeY) {
+		this.sample(buffer, x, z, minY, noiseSizeY, this.field_33659, 1.0);
 	}
 
-	public void method_36475(double[] ds, int i, int j, int k, int l) {
-		this.method_36473(ds, i, j, k, l, this.field_33660, 2.6666666666666665, 2.6666666666666665);
+	public void method_36475(double[] buffer, int x, int z, int minY, int noiseSizeY) {
+		this.sample(buffer, x, z, minY, noiseSizeY, this.field_33660, 2.6666666666666665, 2.6666666666666665);
 	}
 
-	public void method_36476(double[] ds, int i, int j, int k, int l) {
-		this.method_36473(ds, i, j, k, l, this.field_33661, 2.6666666666666665, 2.6666666666666665);
+	public void method_36476(double[] buffer, int x, int z, int minY, int noiseSizeY) {
+		this.sample(buffer, x, z, minY, noiseSizeY, this.field_33661, 2.6666666666666665, 2.6666666666666665);
 	}
 
-	public void method_36472(double[] ds, int i, int j, int k, int l, DoublePerlinNoiseSampler doublePerlinNoiseSampler, double d) {
-		this.method_36473(ds, i, j, k, l, doublePerlinNoiseSampler, d, d);
+	public void sample(double[] buffer, int x, int z, int minY, int noiseSizeY, DoublePerlinNoiseSampler sampler, double scale) {
+		this.sample(buffer, x, z, minY, noiseSizeY, sampler, scale, scale);
 	}
 
-	public void method_36473(double[] ds, int i, int j, int k, int l, DoublePerlinNoiseSampler doublePerlinNoiseSampler, double d, double e) {
-		int m = 8;
-		int n = 4;
+	public void sample(double[] buffer, int x, int z, int minY, int noiseSizeY, DoublePerlinNoiseSampler sampler, double horizontalScale, double verticalScale) {
+		int i = 8;
+		int j = 4;
 
-		for (int o = 0; o < l; o++) {
-			int p = o + k;
-			int q = i * 4;
-			int r = p * 8;
-			int s = j * 4;
-			double f;
-			if (r < 38) {
-				f = NoiseHelper.lerpFromProgress(doublePerlinNoiseSampler, (double)q * d, (double)r * e, (double)s * d, -1.0, 1.0);
+		for (int k = 0; k < noiseSizeY; k++) {
+			int l = k + minY;
+			int m = x * 4;
+			int n = l * 8;
+			int o = z * 4;
+			double d;
+			if (n < 38) {
+				d = NoiseHelper.lerpFromProgress(sampler, (double)m * horizontalScale, (double)n * verticalScale, (double)o * horizontalScale, -1.0, 1.0);
 			} else {
-				f = 1.0;
+				d = 1.0;
 			}
 
-			ds[o] = f;
+			buffer[k] = d;
 		}
 	}
 
-	public double method_36470(double d, int i, int j, int k, double e, double f, double g, double h, int l) {
-		if (j > 30 || j < l + 4) {
-			return d;
+	public double method_36470(double weight, int x, int y, int z, double d, double e, double f, double g, int minY) {
+		if (y > 30 || y < minY + 4) {
+			return weight;
+		} else if (weight < 0.0) {
+			return weight;
 		} else if (d < 0.0) {
-			return d;
-		} else if (e < 0.0) {
-			return d;
+			return weight;
 		} else {
-			double m = 0.05;
-			double n = 0.1;
-			double o = MathHelper.clampedLerpFromProgress(f, -1.0, 1.0, 0.05, 0.1);
-			double p = Math.abs(1.5 * g) - o;
-			double q = Math.abs(1.5 * h) - o;
-			double r = Math.max(p, q);
-			return Math.min(d, r);
+			double h = 0.05;
+			double i = 0.1;
+			double j = MathHelper.clampedLerpFromProgress(e, -1.0, 1.0, 0.05, 0.1);
+			double k = Math.abs(1.5 * f) - j;
+			double l = Math.abs(1.5 * g) - j;
+			double m = Math.max(k, l);
+			return Math.min(weight, m);
 		}
 	}
 }

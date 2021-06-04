@@ -72,7 +72,7 @@ public class Util {
 	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker();
 	public static LongSupplier nanoTimeSupplier = System::nanoTime;
 	public static final UUID NIL_UUID = new UUID(0L, 0L);
-	public static final FileSystemProvider zipFileSystemProvider = (FileSystemProvider)FileSystemProvider.installedProviders()
+	public static final FileSystemProvider JAR_FILE_SYSTEM_PROVIDER = (FileSystemProvider)FileSystemProvider.installedProviders()
 		.stream()
 		.filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar"))
 		.findFirst()
