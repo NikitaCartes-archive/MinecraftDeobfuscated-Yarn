@@ -36,8 +36,8 @@ public class DistancePredicate {
 		return new DistancePredicate(NumberRange.FloatRange.ANY, y, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY);
 	}
 
-	public static DistancePredicate method_37223(NumberRange.FloatRange floatRange) {
-		return new DistancePredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, floatRange);
+	public static DistancePredicate absolute(NumberRange.FloatRange absolute) {
+		return new DistancePredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, absolute);
 	}
 
 	public boolean test(double x0, double y0, double z0, double x1, double y1, double z1) {

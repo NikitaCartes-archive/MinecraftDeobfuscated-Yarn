@@ -69,7 +69,7 @@ public class ClientPlayerInteractionManager {
 	@Nullable
 	private GameMode previousGameMode;
 	private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, Vec3d> unacknowledgedPlayerActions = new Object2ObjectLinkedOpenHashMap<>();
-	private static final int field_32647 = 50;
+	private static final int MAX_UNACKNOWLEDGED_PLAYER_ACTIONS = 50;
 	private int lastSelectedSlot;
 
 	public ClientPlayerInteractionManager(MinecraftClient client, ClientPlayNetworkHandler networkHandler) {

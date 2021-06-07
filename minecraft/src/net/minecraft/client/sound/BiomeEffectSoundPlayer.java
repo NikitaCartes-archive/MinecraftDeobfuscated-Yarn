@@ -52,37 +52,37 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 			this.moodSound = biome.getMoodSound();
 			this.additionsSound = biome.getAdditionsSound();
 			this.soundLoops.values().forEach(BiomeEffectSoundPlayer.MusicLoop::fadeOut);
-			biome.getLoopSound().ifPresent(soundEvent -> this.soundLoops.compute(biome, (biomexx, musicLoop) -> {
-					if (musicLoop == null) {
-						musicLoop = new BiomeEffectSoundPlayer.MusicLoop(soundEvent);
-						this.soundManager.play(musicLoop);
+			biome.getLoopSound().ifPresent(sound -> this.soundLoops.compute(biome, (soundx, loop) -> {
+					if (loop == null) {
+						loop = new BiomeEffectSoundPlayer.MusicLoop(sound);
+						this.soundManager.play(loop);
 					}
 
-					musicLoop.fadeIn();
-					return musicLoop;
+					loop.fadeIn();
+					return loop;
 				}));
 		}
 
-		this.additionsSound.ifPresent(biomeAdditionsSound -> {
-			if (this.random.nextDouble() < biomeAdditionsSound.getChance()) {
-				this.soundManager.play(PositionedSoundInstance.ambient(biomeAdditionsSound.getSound()));
+		this.additionsSound.ifPresent(sound -> {
+			if (this.random.nextDouble() < sound.getChance()) {
+				this.soundManager.play(PositionedSoundInstance.ambient(sound.getSound()));
 			}
 		});
 		this.moodSound
 			.ifPresent(
-				biomeMoodSound -> {
+				sound -> {
 					World world = this.player.world;
-					int i = biomeMoodSound.getSpawnRange() * 2 + 1;
+					int i = sound.getSpawnRange() * 2 + 1;
 					BlockPos blockPos = new BlockPos(
-						this.player.getX() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange(),
-						this.player.getEyeY() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange(),
-						this.player.getZ() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange()
+						this.player.getX() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange(),
+						this.player.getEyeY() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange(),
+						this.player.getZ() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange()
 					);
 					int j = world.getLightLevel(LightType.SKY, blockPos);
 					if (j > 0) {
 						this.moodPercentage = this.moodPercentage - (float)j / (float)world.getMaxLightLevel() * 0.001F;
 					} else {
-						this.moodPercentage = this.moodPercentage - (float)(world.getLightLevel(LightType.BLOCK, blockPos) - 1) / (float)biomeMoodSound.getCultivationTicks();
+						this.moodPercentage = this.moodPercentage - (float)(world.getLightLevel(LightType.BLOCK, blockPos) - 1) / (float)sound.getCultivationTicks();
 					}
 
 					if (this.moodPercentage >= 1.0F) {
@@ -93,9 +93,9 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 						double h = e - this.player.getEyeY();
 						double k = f - this.player.getZ();
 						double l = Math.sqrt(g * g + h * h + k * k);
-						double m = l + biomeMoodSound.getExtraDistance();
+						double m = l + sound.getExtraDistance();
 						PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(
-							biomeMoodSound.getSound(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m
+							sound.getSound(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m
 						);
 						this.soundManager.play(positionedSoundInstance);
 						this.moodPercentage = 0.0F;

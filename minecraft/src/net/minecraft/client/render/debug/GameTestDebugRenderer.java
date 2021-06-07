@@ -39,7 +39,7 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 		);
 		RenderSystem.setShaderColor(0.0F, 1.0F, 0.0F, 0.75F);
 		RenderSystem.disableTexture();
-		DebugRenderer.drawBox(blockPos, 0.02F, marker.method_23112(), marker.method_23113(), marker.method_23114(), marker.method_23115());
+		DebugRenderer.drawBox(blockPos, 0.02F, marker.getBlue(), marker.getGreen(), marker.getAlpha(), marker.getRed());
 		if (!marker.message.isEmpty()) {
 			double d = (double)blockPos.getX() + 0.5;
 			double e = (double)blockPos.getY() + 1.2;
@@ -63,19 +63,19 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 			this.removalTime = removalTime;
 		}
 
-		public float method_23112() {
+		public float getBlue() {
 			return (float)(this.color >> 16 & 0xFF) / 255.0F;
 		}
 
-		public float method_23113() {
+		public float getGreen() {
 			return (float)(this.color >> 8 & 0xFF) / 255.0F;
 		}
 
-		public float method_23114() {
+		public float getAlpha() {
 			return (float)(this.color & 0xFF) / 255.0F;
 		}
 
-		public float method_23115() {
+		public float getRed() {
 			return (float)(this.color >> 24 & 0xFF) / 255.0F;
 		}
 	}

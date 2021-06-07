@@ -61,40 +61,40 @@ public class Keyboard {
 		this.client = client;
 	}
 
-	private boolean method_35696(int key) {
+	private boolean processDebugKeys(int key) {
 		switch (key) {
 			case 69:
 				this.client.debugChunkInfo = !this.client.debugChunkInfo;
-				this.method_35697("ChunkPath: {0}", this.client.debugChunkInfo ? "shown" : "hidden");
+				this.debugFormattedLog("ChunkPath: {0}", this.client.debugChunkInfo ? "shown" : "hidden");
 				return true;
 			case 76:
 				this.client.chunkCullingEnabled = !this.client.chunkCullingEnabled;
-				this.method_35697("SmartCull: {0}", this.client.chunkCullingEnabled ? "enabled" : "disabled");
+				this.debugFormattedLog("SmartCull: {0}", this.client.chunkCullingEnabled ? "enabled" : "disabled");
 				return true;
 			case 85:
 				if (Screen.hasShiftDown()) {
-					this.client.worldRenderer.method_35776();
-					this.method_35697("Killed frustum");
+					this.client.worldRenderer.killFrustum();
+					this.debugFormattedLog("Killed frustum");
 				} else {
-					this.client.worldRenderer.method_35775();
-					this.method_35697("Captured frustum");
+					this.client.worldRenderer.captureFrustum();
+					this.debugFormattedLog("Captured frustum");
 				}
 
 				return true;
 			case 86:
 				this.client.debugChunkOcclusion = !this.client.debugChunkOcclusion;
-				this.method_35697("ChunkVisibility: {0}", this.client.debugChunkOcclusion ? "enabled" : "disabled");
+				this.debugFormattedLog("ChunkVisibility: {0}", this.client.debugChunkOcclusion ? "enabled" : "disabled");
 				return true;
 			case 87:
-				this.client.field_32144 = !this.client.field_32144;
-				this.method_35697("WireFrame: {0}", this.client.field_32144 ? "enabled" : "disabled");
+				this.client.wireFrame = !this.client.wireFrame;
+				this.debugFormattedLog("WireFrame: {0}", this.client.wireFrame ? "enabled" : "disabled");
 				return true;
 			default:
 				return false;
 		}
 	}
 
-	private void method_37273(Formatting formatting, Text text) {
+	private void addDebugMessage(Formatting formatting, Text text) {
 		this.client
 			.inGameHud
 			.getChatHud()
@@ -103,20 +103,20 @@ public class Keyboard {
 			);
 	}
 
-	private void method_37272(Text text) {
-		this.method_37273(Formatting.YELLOW, text);
+	private void debugLog(Text text) {
+		this.addDebugMessage(Formatting.YELLOW, text);
 	}
 
-	private void debugWarn(String key, Object... args) {
-		this.method_37272(new TranslatableText(key, args));
+	private void debugLog(String key, Object... args) {
+		this.debugLog(new TranslatableText(key, args));
 	}
 
 	private void debugError(String key, Object... args) {
-		this.method_37273(Formatting.RED, new TranslatableText(key, args));
+		this.addDebugMessage(Formatting.RED, new TranslatableText(key, args));
 	}
 
-	private void method_35697(String key, Object... args) {
-		this.method_37272(new LiteralText(MessageFormat.format(key, args)));
+	private void debugFormattedLog(String pattern, Object... args) {
+		this.debugLog(new LiteralText(MessageFormat.format(pattern, args)));
 	}
 
 	private boolean processF3(int key) {
@@ -126,12 +126,12 @@ public class Keyboard {
 			switch (key) {
 				case 65:
 					this.client.worldRenderer.reload();
-					this.debugWarn("debug.reload_chunks.message");
+					this.debugLog("debug.reload_chunks.message");
 					return true;
 				case 66:
 					boolean bl = !this.client.getEntityRenderDispatcher().shouldRenderHitboxes();
 					this.client.getEntityRenderDispatcher().setRenderHitboxes(bl);
-					this.debugWarn(bl ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
+					this.debugLog(bl ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
 					return true;
 				case 67:
 					if (this.client.player.hasReducedDebugInfo()) {
@@ -142,7 +142,7 @@ public class Keyboard {
 							return false;
 						}
 
-						this.debugWarn("debug.copy_location.message");
+						this.debugLog("debug.copy_location.message");
 						this.setClipboard(
 							String.format(
 								Locale.ROOT,
@@ -171,15 +171,15 @@ public class Keyboard {
 								(double)(this.client.options.viewDistance + (Screen.hasShiftDown() ? -1 : 1)), Option.RENDER_DISTANCE.getMin(), Option.RENDER_DISTANCE.getMax()
 							)
 						);
-					this.debugWarn("debug.cycle_renderdistance.message", this.client.options.viewDistance);
+					this.debugLog("debug.cycle_renderdistance.message", this.client.options.viewDistance);
 					return true;
 				case 71:
 					boolean bl2 = this.client.debugRenderer.toggleShowChunkBorder();
-					this.debugWarn(bl2 ? "debug.chunk_boundaries.on" : "debug.chunk_boundaries.off");
+					this.debugLog(bl2 ? "debug.chunk_boundaries.on" : "debug.chunk_boundaries.off");
 					return true;
 				case 72:
 					this.client.options.advancedItemTooltips = !this.client.options.advancedItemTooltips;
-					this.debugWarn(this.client.options.advancedItemTooltips ? "debug.advanced_tooltips.on" : "debug.advanced_tooltips.off");
+					this.debugLog(this.client.options.advancedItemTooltips ? "debug.advanced_tooltips.on" : "debug.advanced_tooltips.off");
 					this.client.options.write();
 					return true;
 				case 73:
@@ -189,14 +189,14 @@ public class Keyboard {
 
 					return true;
 				case 76:
-					if (this.client.toggleDebugProfiler(this::method_37272)) {
-						this.debugWarn("debug.profiling.start", 10);
+					if (this.client.toggleDebugProfiler(this::debugLog)) {
+						this.debugLog("debug.profiling.start", 10);
 					}
 
 					return true;
 				case 78:
 					if (!this.client.player.hasPermissionLevel(2)) {
-						this.debugWarn("debug.creative_spectator.error");
+						this.debugLog("debug.creative_spectator.error");
 					} else if (!this.client.player.isSpectator()) {
 						this.client.player.sendChatMessage("/gamemode spectator");
 					} else {
@@ -209,10 +209,10 @@ public class Keyboard {
 				case 80:
 					this.client.options.pauseOnLostFocus = !this.client.options.pauseOnLostFocus;
 					this.client.options.write();
-					this.debugWarn(this.client.options.pauseOnLostFocus ? "debug.pause_focus.on" : "debug.pause_focus.off");
+					this.debugLog(this.client.options.pauseOnLostFocus ? "debug.pause_focus.on" : "debug.pause_focus.off");
 					return true;
 				case 81:
-					this.debugWarn("debug.help.message");
+					this.debugLog("debug.help.message");
 					ChatHud chatHud = this.client.inGameHud.getChatHud();
 					chatHud.addMessage(new TranslatableText("debug.reload_chunks.help"));
 					chatHud.addMessage(new TranslatableText("debug.show_hitboxes.help"));
@@ -231,12 +231,12 @@ public class Keyboard {
 					chatHud.addMessage(new TranslatableText("debug.gamemodes.help"));
 					return true;
 				case 84:
-					this.debugWarn("debug.reload_resourcepacks.message");
+					this.debugLog("debug.reload_resourcepacks.message");
 					this.client.reloadResources();
 					return true;
 				case 293:
 					if (!this.client.player.hasPermissionLevel(2)) {
-						this.debugWarn("debug.gamemodes.error");
+						this.debugLog("debug.gamemodes.error");
 					} else {
 						this.client.openScreen(new GameModeSelectionScreen());
 					}
@@ -248,47 +248,47 @@ public class Keyboard {
 		}
 	}
 
-	private void copyLookAt(boolean bl, boolean bl2) {
+	private void copyLookAt(boolean hasQueryPermission, boolean queryServer) {
 		HitResult hitResult = this.client.crosshairTarget;
 		if (hitResult != null) {
 			switch (hitResult.getType()) {
 				case BLOCK:
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					BlockState blockState = this.client.player.world.getBlockState(blockPos);
-					if (bl) {
-						if (bl2) {
-							this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, nbtCompoundx -> {
-								this.copyBlock(blockState, blockPos, nbtCompoundx);
-								this.debugWarn("debug.inspect.server.block");
+					if (hasQueryPermission) {
+						if (queryServer) {
+							this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, nbt -> {
+								this.copyBlock(blockState, blockPos, nbt);
+								this.debugLog("debug.inspect.server.block");
 							});
 						} else {
 							BlockEntity blockEntity = this.client.player.world.getBlockEntity(blockPos);
 							NbtCompound nbtCompound = blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : null;
 							this.copyBlock(blockState, blockPos, nbtCompound);
-							this.debugWarn("debug.inspect.client.block");
+							this.debugLog("debug.inspect.client.block");
 						}
 					} else {
 						this.copyBlock(blockState, blockPos, null);
-						this.debugWarn("debug.inspect.client.block");
+						this.debugLog("debug.inspect.client.block");
 					}
 					break;
 				case ENTITY:
 					Entity entity = ((EntityHitResult)hitResult).getEntity();
 					Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
-					if (bl) {
-						if (bl2) {
+					if (hasQueryPermission) {
+						if (queryServer) {
 							this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getId(), nbt -> {
 								this.copyEntity(identifier, entity.getPos(), nbt);
-								this.debugWarn("debug.inspect.server.entity");
+								this.debugLog("debug.inspect.server.entity");
 							});
 						} else {
 							NbtCompound nbtCompound2 = entity.writeNbt(new NbtCompound());
 							this.copyEntity(identifier, entity.getPos(), nbtCompound2);
-							this.debugWarn("debug.inspect.client.entity");
+							this.debugLog("debug.inspect.client.entity");
 						}
 					} else {
 						this.copyEntity(identifier, entity.getPos(), null);
-						this.debugWarn("debug.inspect.client.entity");
+						this.debugLog("debug.inspect.client.entity");
 					}
 			}
 		}
@@ -326,7 +326,7 @@ public class Keyboard {
 		this.setClipboard(string2);
 	}
 
-	public void onKey(long window, int key, int scancode, int i, int modifiers) {
+	public void onKey(long window, int key, int scancode, int action, int modifiers) {
 		if (window == this.client.getWindow().getHandle()) {
 			if (this.debugCrashStartTime > 0L) {
 				if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C)
@@ -342,7 +342,8 @@ public class Keyboard {
 			}
 
 			Screen screen = this.client.currentScreen;
-			if (i == 1 && (!(this.client.currentScreen instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)screen).time <= Util.getMeasuringTimeMs() - 20L)) {
+			if (action == 1
+				&& (!(this.client.currentScreen instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)screen).time <= Util.getMeasuringTimeMs() - 20L)) {
 				if (this.client.options.keyFullscreen.matchesKey(key, scancode)) {
 					this.client.getWindow().toggleFullscreen();
 					this.client.options.fullscreen = this.client.getWindow().isFullscreen();
@@ -367,7 +368,7 @@ public class Keyboard {
 
 			if (NarratorManager.INSTANCE.isActive()) {
 				boolean bl = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
-				if (i != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl) {
+				if (action != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl) {
 					boolean bl2 = this.client.options.narrator == NarratorMode.OFF;
 					this.client.options.narrator = NarratorMode.byId(this.client.options.narrator.getId() + 1);
 					NarratorManager.INSTANCE.addToast(this.client.options.narrator);
@@ -384,8 +385,8 @@ public class Keyboard {
 			if (screen != null) {
 				boolean[] bls = new boolean[]{false};
 				Screen.wrapScreenError(() -> {
-					if (i != 1 && (i != 2 || !this.repeatEvents)) {
-						if (i == 0) {
+					if (action != 1 && (action != 2 || !this.repeatEvents)) {
+						if (action == 0) {
 							bls[0] = screen.keyReleased(key, scancode, modifiers);
 						}
 					} else {
@@ -400,7 +401,7 @@ public class Keyboard {
 
 			if (this.client.currentScreen == null || this.client.currentScreen.passEvents) {
 				InputUtil.Key key2 = InputUtil.fromKeyCode(key, scancode);
-				if (i == 0) {
+				if (action == 0) {
 					KeyBinding.setKeyPressed(key2, false);
 					if (key == GLFW.GLFW_KEY_F3) {
 						if (this.switchF3State) {
@@ -445,14 +446,14 @@ public class Keyboard {
 		}
 	}
 
-	private void onChar(long window, int i, int modifiers) {
+	private void onChar(long window, int codePoint, int modifiers) {
 		if (window == this.client.getWindow().getHandle()) {
 			Element element = this.client.currentScreen;
 			if (element != null && this.client.getOverlay() == null) {
-				if (Character.charCount(i) == 1) {
-					Screen.wrapScreenError(() -> element.charTyped((char)i, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
+				if (Character.charCount(codePoint) == 1) {
+					Screen.wrapScreenError(() -> element.charTyped((char)codePoint, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
 				} else {
-					for (char c : Character.toChars(i)) {
+					for (char c : Character.toChars(codePoint)) {
 						Screen.wrapScreenError(() -> element.charTyped(c, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
 					}
 				}
@@ -467,8 +468,8 @@ public class Keyboard {
 	public void setup(long window) {
 		InputUtil.setKeyboardCallbacks(
 			window,
-			(windowx, i, modifiers, j, k) -> this.client.execute(() -> this.onKey(windowx, i, modifiers, j, k)),
-			(windowx, key, i) -> this.client.execute(() -> this.onChar(windowx, key, i))
+			(windowx, key, scancode, action, modifiers) -> this.client.execute(() -> this.onKey(windowx, key, scancode, action, modifiers)),
+			(windowx, codePoint, modifiers) -> this.client.execute(() -> this.onChar(windowx, codePoint, modifiers))
 		);
 	}
 
@@ -501,7 +502,7 @@ public class Keyboard {
 
 			if (n >= 1000L) {
 				if (this.debugCrashElapsedTime == 0L) {
-					this.debugWarn("debug.crash.message");
+					this.debugLog("debug.crash.message");
 				} else {
 					this.debugError("debug.crash.warning", MathHelper.ceil((float)m / 1000.0F));
 				}

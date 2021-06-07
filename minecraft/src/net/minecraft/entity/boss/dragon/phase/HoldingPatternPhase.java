@@ -15,7 +15,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class HoldingPatternPhase extends AbstractPhase {
-	private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = TargetPredicate.createAttackable().visibleOnly();
+	private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = TargetPredicate.createAttackable().ignoreVisibility();
 	private Path path;
 	private Vec3d pathTarget;
 	private boolean shouldFindNewPath;

@@ -55,7 +55,7 @@ import org.apache.logging.log4j.Logger;
 public class ChunkBuilder {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_32831 = 4;
-	private static final VertexFormat field_29500 = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
+	private static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT_NORMAL = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
 	private final PriorityQueue<ChunkBuilder.BuiltChunk.Task> rebuildQueue = Queues.newPriorityQueue();
 	private final Queue<BlockBufferBuilderStorage> threadBuffers;
 	private final Queue<Runnable> uploadQueue = Queues.<Runnable>newConcurrentLinkedQueue();
@@ -235,14 +235,14 @@ public class ChunkBuilder {
 		private boolean needsRebuild = true;
 		final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
 		private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
-			for (int ix = 0; ix < mutables.length; ix++) {
-				mutables[ix] = new BlockPos.Mutable();
+			for (int i = 0; i < mutables.length; i++) {
+				mutables[i] = new BlockPos.Mutable();
 			}
 		});
 		private boolean needsImportantRebuild;
 
-		public BuiltChunk(int i) {
-			this.index = i;
+		public BuiltChunk(int index) {
+			this.index = index;
 		}
 
 		private boolean isChunkNonEmpty(BlockPos pos) {
@@ -400,9 +400,9 @@ public class ChunkBuilder {
 			@Nullable
 			protected ChunkRendererRegion region;
 
-			public RebuildTask(double d, @Nullable ChunkRendererRegion chunkRendererRegion) {
-				super(d);
-				this.region = chunkRendererRegion;
+			public RebuildTask(double distance, @Nullable ChunkRendererRegion region) {
+				super(distance);
+				this.region = region;
 			}
 
 			@Override
@@ -542,9 +542,9 @@ public class ChunkBuilder {
 		class SortTask extends ChunkBuilder.BuiltChunk.Task {
 			private final ChunkBuilder.ChunkData data;
 
-			public SortTask(double d, ChunkBuilder.ChunkData chunkData) {
-				super(d);
-				this.data = chunkData;
+			public SortTask(double distance, ChunkBuilder.ChunkData data) {
+				super(distance);
+				this.data = data;
 			}
 
 			@Override
@@ -603,8 +603,8 @@ public class ChunkBuilder {
 			protected final double distance;
 			protected final AtomicBoolean cancelled = new AtomicBoolean(false);
 
-			public Task(double d) {
-				this.distance = d;
+			public Task(double distance) {
+				this.distance = distance;
 			}
 
 			public abstract CompletableFuture<ChunkBuilder.Result> run(BlockBufferBuilderStorage buffers);
@@ -621,7 +621,7 @@ public class ChunkBuilder {
 	public static class ChunkData {
 		public static final ChunkBuilder.ChunkData EMPTY = new ChunkBuilder.ChunkData() {
 			@Override
-			public boolean isVisibleThrough(Direction direction, Direction direction2) {
+			public boolean isVisibleThrough(Direction from, Direction to) {
 				return false;
 			}
 		};
@@ -645,8 +645,8 @@ public class ChunkBuilder {
 			return this.blockEntities;
 		}
 
-		public boolean isVisibleThrough(Direction direction, Direction direction2) {
-			return this.occlusionGraph.isVisibleThrough(direction, direction2);
+		public boolean isVisibleThrough(Direction from, Direction to) {
+			return this.occlusionGraph.isVisibleThrough(from, to);
 		}
 	}
 

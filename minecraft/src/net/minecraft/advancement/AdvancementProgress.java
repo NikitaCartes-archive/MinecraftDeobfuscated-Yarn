@@ -25,8 +25,8 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	final Map<String, CriterionProgress> criteriaProgresses;
 	private String[][] requirements = new String[0][];
 
-	private AdvancementProgress(Map<String, CriterionProgress> map) {
-		this.criteriaProgresses = map;
+	private AdvancementProgress(Map<String, CriterionProgress> criteriaProgresses) {
+		this.criteriaProgresses = criteriaProgresses;
 	}
 
 	public AdvancementProgress() {
@@ -35,7 +35,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 
 	public void init(Map<String, AdvancementCriterion> criteria, String[][] requirements) {
 		Set<String> set = criteria.keySet();
-		this.criteriaProgresses.entrySet().removeIf(entry -> !set.contains(entry.getKey()));
+		this.criteriaProgresses.entrySet().removeIf(progress -> !set.contains(progress.getKey()));
 
 		for (String string : set) {
 			if (!this.criteriaProgresses.containsKey(string)) {
@@ -105,7 +105,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	public void toPacket(PacketByteBuf buf) {
-		buf.writeMap(this.criteriaProgresses, PacketByteBuf::writeString, (packetByteBuf, criterionProgress) -> criterionProgress.toPacket(packetByteBuf));
+		buf.writeMap(this.criteriaProgresses, PacketByteBuf::writeString, (bufx, progresses) -> progresses.toPacket(bufx));
 	}
 
 	public static AdvancementProgress fromPacket(PacketByteBuf buf) {

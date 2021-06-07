@@ -37,7 +37,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	public static final Codec<SinglePoolElement> field_24952 = RecordCodecBuilder.create(
 		instance -> instance.group(method_28882(), method_28880(), method_28883()).apply(instance, SinglePoolElement::new)
 	);
-	protected final Either<Identifier, Structure> field_24015;
+	protected final Either<Identifier, Structure> location;
 	protected final Supplier<StructureProcessorList> processors;
 
 	private static <T> DataResult<T> method_28877(Either<Identifier, Structure> either, DynamicOps<T> dynamicOps, T object) {
@@ -52,12 +52,12 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, Structure>> method_28882() {
-		return field_24951.fieldOf("location").forGetter(singlePoolElement -> singlePoolElement.field_24015);
+		return field_24951.fieldOf("location").forGetter(singlePoolElement -> singlePoolElement.location);
 	}
 
-	protected SinglePoolElement(Either<Identifier, Structure> either, Supplier<StructureProcessorList> processors, StructurePool.Projection projection) {
+	protected SinglePoolElement(Either<Identifier, Structure> location, Supplier<StructureProcessorList> processors, StructurePool.Projection projection) {
 		super(projection);
-		this.field_24015 = either;
+		this.location = location;
 		this.processors = processors;
 	}
 
@@ -72,7 +72,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	private Structure method_27233(StructureManager structureManager) {
-		return this.field_24015.map(structureManager::getStructureOrBlank, Function.identity());
+		return this.location.map(structureManager::getStructureOrBlank, Function.identity());
 	}
 
 	public List<Structure.StructureBlockInfo> getDataStructureBlocks(
@@ -161,6 +161,6 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	public String toString() {
-		return "Single[" + this.field_24015 + "]";
+		return "Single[" + this.location + "]";
 	}
 }

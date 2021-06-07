@@ -303,7 +303,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		}
 	}
 
-	public void method_35771() {
+	public void loadForcedShader() {
 		if (this.client.getCameraEntity() instanceof PlayerEntity) {
 			if (this.shader != null) {
 				this.shader.close();
@@ -558,7 +558,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		this.clearShaders();
 		list2.forEach(pair -> {
 			Shader shader = (Shader)pair.getFirst();
-			this.shaders.put(shader.method_35787(), shader);
+			this.shaders.put(shader.getName(), shader);
 			((Consumer)pair.getSecond()).accept(shader);
 		});
 	}
@@ -570,8 +570,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	}
 
 	@Nullable
-	public Shader method_35767(@Nullable String string) {
-		return string == null ? null : (Shader)this.shaders.get(string);
+	public Shader getShader(@Nullable String name) {
+		return name == null ? null : (Shader)this.shaders.get(name);
 	}
 
 	public void tick() {
@@ -1145,7 +1145,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		RenderSystem.enableDepthTest();
 	}
 
-	public MinecraftClient method_35772() {
+	public MinecraftClient getClient() {
 		return this.client;
 	}
 

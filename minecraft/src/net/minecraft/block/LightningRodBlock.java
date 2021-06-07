@@ -32,7 +32,7 @@ import net.minecraft.world.WorldEvents;
 public class LightningRodBlock extends RodBlock implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty POWERED = Properties.POWERED;
-	private static final int field_31192 = 8;
+	private static final int SCHEDULED_TICK_DELAY = 8;
 	public static final int field_31190 = 128;
 	private static final int field_31191 = 200;
 

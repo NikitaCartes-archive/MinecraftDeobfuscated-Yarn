@@ -23,8 +23,8 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 		this.goalSelectors.clear();
 	}
 
-	public void setGoalSelectorList(int index, List<GoalSelectorDebugRenderer.GoalSelector> list) {
-		this.goalSelectors.put(index, list);
+	public void setGoalSelectorList(int index, List<GoalSelectorDebugRenderer.GoalSelector> selectors) {
+		this.goalSelectors.put(index, selectors);
 	}
 
 	public void removeGoalSelectorList(int index) {

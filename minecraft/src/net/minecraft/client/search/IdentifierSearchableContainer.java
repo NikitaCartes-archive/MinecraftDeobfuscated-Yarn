@@ -23,8 +23,8 @@ public class IdentifierSearchableContainer<T> implements SearchableContainer<T> 
 	private final List<T> entries = Lists.<T>newArrayList();
 	private final Object2IntMap<T> entryIds = new Object2IntOpenHashMap<>();
 
-	public IdentifierSearchableContainer(Function<T, Stream<Identifier>> function) {
-		this.identifierFinder = function;
+	public IdentifierSearchableContainer(Function<T, Stream<Identifier>> identifierFinder) {
+		this.identifierFinder = identifierFinder;
 	}
 
 	@Override

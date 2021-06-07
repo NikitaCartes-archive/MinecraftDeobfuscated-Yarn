@@ -26,14 +26,14 @@ public class KeyBinding implements Comparable<KeyBinding> {
 	public static final String INVENTORY_CATEGORY = "key.categories.inventory";
 	public static final String UI_CATEGORY = "key.categories.ui";
 	public static final String CREATIVE_CATEGORY = "key.categories.creative";
-	private static final Map<String, Integer> categoryOrderMap = Util.make(Maps.<String, Integer>newHashMap(), hashMap -> {
-		hashMap.put("key.categories.movement", 1);
-		hashMap.put("key.categories.gameplay", 2);
-		hashMap.put("key.categories.inventory", 3);
-		hashMap.put("key.categories.creative", 4);
-		hashMap.put("key.categories.multiplayer", 5);
-		hashMap.put("key.categories.ui", 6);
-		hashMap.put("key.categories.misc", 7);
+	private static final Map<String, Integer> categoryOrderMap = Util.make(Maps.<String, Integer>newHashMap(), map -> {
+		map.put("key.categories.movement", 1);
+		map.put("key.categories.gameplay", 2);
+		map.put("key.categories.inventory", 3);
+		map.put("key.categories.creative", 4);
+		map.put("key.categories.multiplayer", 5);
+		map.put("key.categories.ui", 6);
+		map.put("key.categories.misc", 7);
 	});
 	private final String translationKey;
 	private final InputUtil.Key defaultKey;

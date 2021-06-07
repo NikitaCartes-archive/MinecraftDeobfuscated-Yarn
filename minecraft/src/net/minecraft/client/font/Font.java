@@ -17,9 +17,7 @@ public interface Font extends Closeable {
 	}
 
 	/**
-	 * Returns the set of code points for which this font can provide glyphs.
-	 * 
-	 * @return a set of integer code points.
+	 * {@return the set of code points for which this font can provide glyphs}
 	 */
 	IntSet getProvidedGlyphs();
 }

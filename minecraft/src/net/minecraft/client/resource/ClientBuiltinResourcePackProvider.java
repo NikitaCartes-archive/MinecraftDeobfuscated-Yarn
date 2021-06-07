@@ -55,11 +55,11 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	private static final Pattern ALPHANUMERAL = Pattern.compile("^[a-fA-F0-9]{40}$");
 	private static final int field_32958 = 104857600;
 	private static final int field_32959 = 10;
-	private static final String field_32960 = "vanilla";
-	private static final String field_32961 = "server";
-	private static final String field_32962 = "programer_art";
-	private static final String field_32963 = "Programmer Art";
-	private static final Text field_33633 = new TranslatableText("multiplayer.applyingPack");
+	private static final String VANILLA = "vanilla";
+	private static final String SERVER = "server";
+	private static final String PROGRAMER_ART_ID = "programer_art";
+	private static final String PROGRAMMER_ART_NAME = "Programmer Art";
+	private static final Text APPLYING_PACK_TEXT = new TranslatableText("multiplayer.applyingPack");
 	private final DefaultResourcePack pack;
 	private final File serverPacksRoot;
 	private final ReentrantLock lock = new ReentrantLock();
@@ -137,7 +137,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 						MinecraftClient minecraftClientx = MinecraftClient.getInstance();
 						minecraftClientx.execute(() -> {
 							if (!bl) {
-								minecraftClientx.openScreen(new SaveLevelScreen(field_33633));
+								minecraftClientx.openScreen(new SaveLevelScreen(APPLYING_PACK_TEXT));
 							}
 						});
 						return this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER);

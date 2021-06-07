@@ -293,7 +293,7 @@ public class VexEntity extends HostileEntity {
 	}
 
 	class TrackOwnerTargetGoal extends TrackTargetGoal {
-		private final TargetPredicate TRACK_OWNER_PREDICATE = TargetPredicate.createNonAttackable().visibleOnly().ignoreDistanceScalingFactor();
+		private final TargetPredicate TRACK_OWNER_PREDICATE = TargetPredicate.createNonAttackable().ignoreVisibility().ignoreDistanceScalingFactor();
 
 		public TrackOwnerTargetGoal(PathAwareEntity mob) {
 			super(mob, false);

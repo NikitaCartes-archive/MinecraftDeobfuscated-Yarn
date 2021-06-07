@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 public class DetectorRailBlock extends AbstractRailBlock {
 	public static final EnumProperty<RailShape> SHAPE = Properties.STRAIGHT_RAIL_SHAPE;
 	public static final BooleanProperty POWERED = Properties.POWERED;
-	private static final int field_31081 = 20;
+	private static final int SCHEDULED_TICK_DELAY = 20;
 
 	public DetectorRailBlock(AbstractBlock.Settings settings) {
 		super(true, settings);

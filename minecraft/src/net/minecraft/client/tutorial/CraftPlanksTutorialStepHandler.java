@@ -14,7 +14,7 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
-	private static final int field_33027 = 1200;
+	private static final int DELAY = 1200;
 	private static final Text TITLE = new TranslatableText("tutorial.craft_planks.title");
 	private static final Text DESCRIPTION = new TranslatableText("tutorial.craft_planks.description");
 	private final TutorialManager manager;

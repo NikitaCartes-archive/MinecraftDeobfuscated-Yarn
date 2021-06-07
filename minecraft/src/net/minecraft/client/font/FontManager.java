@@ -46,10 +46,10 @@ public class FontManager implements AutoCloseable {
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 			Map<Identifier, List<Font>> map = Maps.<Identifier, List<Font>>newHashMap();
 
-			for (Identifier identifier : resourceManager.findResources("font", stringx -> stringx.endsWith(".json"))) {
+			for (Identifier identifier : resourceManager.findResources("font", fileName -> fileName.endsWith(".json"))) {
 				String string = identifier.getPath();
 				Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring("font/".length(), string.length() - ".json".length()));
-				List<Font> list = (List<Font>)map.computeIfAbsent(identifier2, identifierx -> Lists.<Font>newArrayList(new BlankFont()));
+				List<Font> list = (List<Font>)map.computeIfAbsent(identifier2, id -> Lists.<Font>newArrayList(new BlankFont()));
 				profiler.push(identifier2::toString);
 
 				try {
@@ -133,10 +133,10 @@ public class FontManager implements AutoCloseable {
 					intSet.addAll(font2.getProvidedGlyphs());
 				}
 
-				intSet.forEach(ix -> {
-					if (ix != 32) {
+				intSet.forEach(codePoint -> {
+					if (codePoint != 32) {
 						for (Font fontx : Lists.reverse(list)) {
-							if (fontx.getGlyph(ix) != null) {
+							if (fontx.getGlyph(codePoint) != null) {
 								break;
 							}
 						}
@@ -156,10 +156,10 @@ public class FontManager implements AutoCloseable {
 			FontManager.this.fontStorages.values().forEach(FontStorage::close);
 			FontManager.this.fontStorages.clear();
 			profiler.swap("reloading");
-			map.forEach((identifier, list) -> {
-				FontStorage fontStorage = new FontStorage(FontManager.this.textureManager, identifier);
-				fontStorage.setFonts(Lists.reverse(list));
-				FontManager.this.fontStorages.put(identifier, fontStorage);
+			map.forEach((id, fonts) -> {
+				FontStorage fontStorage = new FontStorage(FontManager.this.textureManager, id);
+				fontStorage.setFonts(Lists.reverse(fonts));
+				FontManager.this.fontStorages.put(id, fontStorage);
 			});
 			profiler.pop();
 			profiler.endTick();
@@ -181,7 +181,7 @@ public class FontManager implements AutoCloseable {
 	}
 
 	public TextRenderer createTextRenderer() {
-		return new TextRenderer(identifier -> (FontStorage)this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(identifier, identifier), this.missingStorage));
+		return new TextRenderer(id -> (FontStorage)this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(id, id), this.missingStorage));
 	}
 
 	public ResourceReloader getResourceReloadListener() {

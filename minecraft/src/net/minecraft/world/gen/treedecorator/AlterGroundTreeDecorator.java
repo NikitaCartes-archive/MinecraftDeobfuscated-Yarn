@@ -30,22 +30,24 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 	public void generate(
 		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions
 	) {
-		int i = ((BlockPos)logPositions.get(0)).getY();
-		logPositions.stream().filter(pos -> pos.getY() == i).forEach(pos -> {
-			this.setArea(world, replacer, random, pos.west().north());
-			this.setArea(world, replacer, random, pos.east(2).north());
-			this.setArea(world, replacer, random, pos.west().south(2));
-			this.setArea(world, replacer, random, pos.east(2).south(2));
+		if (!logPositions.isEmpty()) {
+			int i = ((BlockPos)logPositions.get(0)).getY();
+			logPositions.stream().filter(pos -> pos.getY() == i).forEach(pos -> {
+				this.setArea(world, replacer, random, pos.west().north());
+				this.setArea(world, replacer, random, pos.east(2).north());
+				this.setArea(world, replacer, random, pos.west().south(2));
+				this.setArea(world, replacer, random, pos.east(2).south(2));
 
-			for (int ix = 0; ix < 5; ix++) {
-				int j = random.nextInt(64);
-				int k = j % 8;
-				int l = j / 8;
-				if (k == 0 || k == 7 || l == 0 || l == 7) {
-					this.setArea(world, replacer, random, pos.add(-3 + k, 0, -3 + l));
+				for (int ix = 0; ix < 5; ix++) {
+					int j = random.nextInt(64);
+					int k = j % 8;
+					int l = j / 8;
+					if (k == 0 || k == 7 || l == 0 || l == 7) {
+						this.setArea(world, replacer, random, pos.add(-3 + k, 0, -3 + l));
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	private void setArea(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos) {

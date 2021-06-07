@@ -119,7 +119,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final String ID_KEY = "id";
 	public static final String PASSENGERS_KEY = "Passengers";
-	private static final AtomicInteger ENTITY_ID_COUNTER = new AtomicInteger();
+	/**
+	 * A generator of unique entity {@link #id network IDs}. The generated
+	 * ID for client entities are useless and discarded subsequently through
+	 * {@link #setId(int)} calls.
+	 */
+	private static final AtomicInteger CURRENT_ID = new AtomicInteger();
 	private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
 	public static final int field_29987 = 60;
 	public static final int field_29988 = 300;
@@ -135,7 +140,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public static final String UUID_KEY = "UUID";
 	private static double renderDistanceMultiplier = 1.0;
 	private final EntityType<?> type;
-	private int entityId = ENTITY_ID_COUNTER.incrementAndGet();
+	/**
+	 * The entity's network ID, used as a reference for synchronization over network.
+	 * This is not persistent across save and loads; use {@link #uuid} to identify
+	 * an entity in those cases.
+	 * 
+	 * @see #getId()
+	 */
+	private int id = CURRENT_ID.incrementAndGet();
 	public boolean inanimate;
 	private ImmutableList<Entity> passengerList = ImmutableList.of();
 	protected int ridingCooldown;
@@ -290,11 +302,20 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	@Override
 	public int getId() {
-		return this.entityId;
+		return this.id;
 	}
 
-	public void setEntityId(int id) {
-		this.entityId = id;
+	/**
+	 * Sets the network ID of this entity.
+	 * 
+	 * @apiNote This is used by client-side networking logic to set up the network
+	 * ID of entities from the server. This shouldn't be used by server-side logic
+	 * as the network ID is already properly initialized on entity object construction.
+	 * 
+	 * @see #getId()
+	 */
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public Set<String> getScoreboardTags() {
@@ -324,11 +345,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public boolean equals(Object o) {
-		return o instanceof Entity ? ((Entity)o).entityId == this.entityId : false;
+		return o instanceof Entity ? ((Entity)o).id == this.id : false;
 	}
 
 	public int hashCode() {
-		return this.entityId;
+		return this.id;
 	}
 
 	public void remove(Entity.RemovalReason reason) {
@@ -2285,7 +2306,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			"%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]",
 			this.getClass().getSimpleName(),
 			this.getName().getString(),
-			this.entityId,
+			this.id,
 			this.world == null ? "~NULL~" : this.world.toString(),
 			this.getX(),
 			this.getY(),
@@ -2451,7 +2472,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void populateCrashReport(CrashReportSection section) {
 		section.add("Entity Type", (CrashCallable<String>)(() -> EntityType.getId(this.getType()) + " (" + this.getClass().getCanonicalName() + ")"));
-		section.add("Entity ID", this.entityId);
+		section.add("Entity ID", this.id);
 		section.add("Entity Name", (CrashCallable<String>)(() -> this.getName().getString()));
 		section.add("Entity's Exact location", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", this.getX(), this.getY(), this.getZ()));
 		section.add(
@@ -3132,7 +3153,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.refreshPositionAfterTeleport(d, e, f);
 		this.setPitch((float)(packet.getPitch() * 360) / 256.0F);
 		this.setYaw((float)(packet.getYaw() * 360) / 256.0F);
-		this.setEntityId(i);
+		this.setId(i);
 		this.setUuid(packet.getUuid());
 	}
 

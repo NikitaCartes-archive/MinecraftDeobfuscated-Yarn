@@ -758,7 +758,7 @@ public class FoxEntity extends AnimalEntity {
 	abstract class CalmDownGoal extends Goal {
 		private final TargetPredicate WORRIABLE_ENTITY_PREDICATE = TargetPredicate.createAttackable()
 			.setBaseMaxDistance(12.0)
-			.visibleOnly()
+			.ignoreVisibility()
 			.setPredicate(FoxEntity.this.new WorriableEntityFilter());
 
 		protected boolean isAtFavoredLocation() {

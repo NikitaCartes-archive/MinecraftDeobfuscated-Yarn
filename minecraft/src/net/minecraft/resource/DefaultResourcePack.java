@@ -12,7 +12,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -50,7 +49,7 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 						FileSystem fileSystem;
 						try {
 							fileSystem = FileSystems.getFileSystem(uRI);
-						} catch (FileSystemNotFoundException var11) {
+						} catch (Exception var11) {
 							fileSystem = FileSystems.newFileSystem(uRI, Collections.emptyMap());
 						}
 

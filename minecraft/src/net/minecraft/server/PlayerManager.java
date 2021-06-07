@@ -438,7 +438,7 @@ public abstract class PlayerManager {
 		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile());
 		serverPlayerEntity.networkHandler = player.networkHandler;
 		serverPlayerEntity.copyFrom(player, alive);
-		serverPlayerEntity.setEntityId(player.getId());
+		serverPlayerEntity.setId(player.getId());
 		serverPlayerEntity.setMainArm(player.getMainArm());
 
 		for (String string : player.getScoreboardTags()) {

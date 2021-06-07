@@ -67,7 +67,7 @@ public class LecternBlock extends BlockWithEntity {
 		Block.createCuboidShape(0.0, 14.0, 2.0, 16.0, 18.0, 6.333333),
 		BASE_SHAPE
 	);
-	private static final int field_31113 = 2;
+	private static final int SCHEDULED_TICK_DELAY = 2;
 
 	protected LecternBlock(AbstractBlock.Settings settings) {
 		super(settings);

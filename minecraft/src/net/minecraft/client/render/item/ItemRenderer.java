@@ -189,7 +189,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	public static VertexConsumer getItemGlintConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
 		if (glint) {
 			return MinecraftClient.isFabulousGraphicsOrBetter() && layer == TexturedRenderLayers.getItemEntityTranslucentCull()
-				? VertexConsumers.union(vertexConsumers.getBuffer(RenderLayer.method_30676()), vertexConsumers.getBuffer(layer))
+				? VertexConsumers.union(vertexConsumers.getBuffer(RenderLayer.getGlintTranslucent()), vertexConsumers.getBuffer(layer))
 				: VertexConsumers.union(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer));
 		} else {
 			return vertexConsumers.getBuffer(layer);

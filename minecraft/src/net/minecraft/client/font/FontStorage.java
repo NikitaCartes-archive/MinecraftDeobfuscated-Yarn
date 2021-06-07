@@ -52,13 +52,13 @@ public class FontStorage implements AutoCloseable {
 		}
 
 		Set<Font> set = Sets.<Font>newHashSet();
-		intSet.forEach(i -> {
+		intSet.forEach(codePoint -> {
 			for (Font fontx : fonts) {
-				Glyph glyph = (Glyph)(i == 32 ? SPACE : fontx.getGlyph(i));
+				Glyph glyph = (Glyph)(codePoint == 32 ? SPACE : fontx.getGlyph(codePoint));
 				if (glyph != null) {
 					set.add(fontx);
 					if (glyph != BlankGlyph.INSTANCE) {
-						this.charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), ix -> new IntArrayList()).add(i);
+						this.charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), i -> new IntArrayList()).add(codePoint);
 					}
 					break;
 				}
@@ -88,13 +88,13 @@ public class FontStorage implements AutoCloseable {
 		this.glyphAtlases.clear();
 	}
 
-	public Glyph getGlyph(int i) {
-		return this.glyphCache.computeIfAbsent(i, ix -> (Glyph)(ix == 32 ? SPACE : this.getRenderableGlyph(ix)));
+	public Glyph getGlyph(int codePoint) {
+		return this.glyphCache.computeIfAbsent(codePoint, codePointx -> (Glyph)(codePointx == 32 ? SPACE : this.getRenderableGlyph(codePointx)));
 	}
 
-	private RenderableGlyph getRenderableGlyph(int i) {
+	private RenderableGlyph getRenderableGlyph(int codePoint) {
 		for (Font font : this.fonts) {
-			RenderableGlyph renderableGlyph = font.getGlyph(i);
+			RenderableGlyph renderableGlyph = font.getGlyph(codePoint);
 			if (renderableGlyph != null) {
 				return renderableGlyph;
 			}

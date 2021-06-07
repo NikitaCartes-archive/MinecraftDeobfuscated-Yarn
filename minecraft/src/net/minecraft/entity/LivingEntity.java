@@ -1990,10 +1990,10 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	public abstract void equipStack(EquipmentSlot slot, ItemStack stack);
 
-	protected void method_37410(ItemStack itemStack) {
-		NbtCompound nbtCompound = itemStack.getTag();
+	protected void processEquippedStack(ItemStack stack) {
+		NbtCompound nbtCompound = stack.getTag();
 		if (nbtCompound != null) {
-			itemStack.getItem().postProcessNbt(nbtCompound);
+			stack.getItem().postProcessNbt(nbtCompound);
 		}
 	}
 
@@ -3447,7 +3447,7 @@ public abstract class LivingEntity extends Entity {
 		this.updateTrackedPosition(d, e, f);
 		this.bodyYaw = (float)(packet.getHeadYaw() * 360) / 256.0F;
 		this.headYaw = (float)(packet.getHeadYaw() * 360) / 256.0F;
-		this.setEntityId(packet.getId());
+		this.setId(packet.getId());
 		this.setUuid(packet.getUuid());
 		this.updatePositionAndAngles(d, e, f, g, h);
 		this.setVelocity(

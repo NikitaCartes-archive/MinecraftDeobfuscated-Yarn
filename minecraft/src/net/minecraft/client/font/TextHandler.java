@@ -27,7 +27,7 @@ public class TextHandler {
 	}
 
 	/**
-	 * Returns the width of a string.
+	 * {@return the width of a string}
 	 */
 	public float getWidth(@Nullable String text) {
 		if (text == null) {
@@ -43,7 +43,7 @@ public class TextHandler {
 	}
 
 	/**
-	 * Returns the width of a text.
+	 * {@return the width of a text}
 	 */
 	public float getWidth(StringVisitable text) {
 		MutableFloat mutableFloat = new MutableFloat();
@@ -64,8 +64,8 @@ public class TextHandler {
 	}
 
 	/**
-	 * Returns the length of a string when it is trimmed to be at most {@code
-	 * maxWidth} wide.
+	 * {@return the length of a string when it is trimmed to be at most {@code
+	 * maxWidth} wide}
 	 * 
 	 * @param text the string to trim
 	 * @param maxWidth the max width of the trimmed string
@@ -114,16 +114,14 @@ public class TextHandler {
 		return text.substring(mutableInt.intValue());
 	}
 
-	public int method_35715(String text, int maxWidth, Style style) {
+	public int getLimitedStringLength(String text, int maxWidth, Style style) {
 		TextHandler.WidthLimitingVisitor widthLimitingVisitor = new TextHandler.WidthLimitingVisitor((float)maxWidth);
 		TextVisitFactory.visitFormatted(text, style, widthLimitingVisitor);
 		return widthLimitingVisitor.getLength();
 	}
 
 	/**
-	 * Gets the style at the {@code x} position in a text.
-	 * 
-	 * @return a style
+	 * {@return the style at the {@code x} position in a text}
 	 * 
 	 * @param x the position in the text
 	 */
@@ -158,8 +156,8 @@ public class TextHandler {
 		return mutableObject.getValue();
 	}
 
-	public String method_35716(String text, int maxWidth, Style style) {
-		return text.substring(0, this.method_35715(text, maxWidth, style));
+	public String limitString(String text, int maxWidth, Style style) {
+		return text.substring(0, this.getLimitedStringLength(text, maxWidth, style));
 	}
 
 	public StringVisitable trimToWidth(StringVisitable text, int width, Style style) {
@@ -529,7 +527,7 @@ public class TextHandler {
 	@Environment(EnvType.CLIENT)
 	public interface WidthRetriever {
 		/**
-		 * Returns the width of a character.
+		 * {@return the width of a character}
 		 * 
 		 * @param codePoint the character's code point
 		 * @param style the style of the character, carrying font and formatting information

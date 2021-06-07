@@ -51,8 +51,8 @@ public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalC
 			return new LocationArrivalCriterion.Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.EMPTY, location);
 		}
 
-		public static LocationArrivalCriterion.Conditions method_37245(EntityPredicate entityPredicate) {
-			return new LocationArrivalCriterion.Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.ofLegacy(entityPredicate), LocationPredicate.ANY);
+		public static LocationArrivalCriterion.Conditions create(EntityPredicate entity) {
+			return new LocationArrivalCriterion.Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.ofLegacy(entity), LocationPredicate.ANY);
 		}
 
 		public static LocationArrivalCriterion.Conditions createSleptInBed() {
@@ -63,10 +63,10 @@ public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalC
 			return new LocationArrivalCriterion.Conditions(Criteria.HERO_OF_THE_VILLAGE.id, EntityPredicate.Extended.EMPTY, LocationPredicate.ANY);
 		}
 
-		public static LocationArrivalCriterion.Conditions method_37246(Block block, Item item) {
-			return method_37245(
+		public static LocationArrivalCriterion.Conditions createSteppingOnWithBoots(Block block, Item boots) {
+			return create(
 				EntityPredicate.Builder.create()
-					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(item).build()).build())
+					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(boots).build()).build())
 					.steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block).build()).build())
 					.build()
 			);

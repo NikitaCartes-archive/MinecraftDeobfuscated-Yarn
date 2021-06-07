@@ -10,7 +10,7 @@ public interface FluidDrainable {
 	ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state);
 
 	/**
-	 * Returns the sound played when filling a bucket with the fluid contained in this block.
+	 * {@return the sound played when filling a bucket with the fluid contained in this block}
 	 * 
 	 * @see net.minecraft.fluid.Fluid#getBucketFillSound()
 	 */

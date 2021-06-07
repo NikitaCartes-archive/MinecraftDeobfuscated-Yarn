@@ -60,7 +60,7 @@ public class AdvancementCriterion {
 	}
 
 	public static void criteriaToPacket(Map<String, AdvancementCriterion> criteria, PacketByteBuf buf) {
-		buf.writeMap(criteria, PacketByteBuf::writeString, (packetByteBuf, advancementCriterion) -> advancementCriterion.toPacket(packetByteBuf));
+		buf.writeMap(criteria, PacketByteBuf::writeString, (bufx, criterion) -> criterion.toPacket(bufx));
 	}
 
 	@Nullable

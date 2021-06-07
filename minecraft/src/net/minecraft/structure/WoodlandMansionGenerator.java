@@ -531,27 +531,27 @@ public class WoodlandMansionGenerator {
 		}
 
 		private void addSmallRoom(
-			List<WoodlandMansionGenerator.Piece> list, BlockPos blockPos, BlockRotation blockRotation, Direction direction, WoodlandMansionGenerator.RoomPool roomPool
+			List<WoodlandMansionGenerator.Piece> pieces, BlockPos pos, BlockRotation rotation, Direction direction, WoodlandMansionGenerator.RoomPool roomPool
 		) {
-			BlockRotation blockRotation2 = BlockRotation.NONE;
+			BlockRotation blockRotation = BlockRotation.NONE;
 			String string = roomPool.getSmallRoom(this.random);
 			if (direction != Direction.EAST) {
 				if (direction == Direction.NORTH) {
-					blockRotation2 = blockRotation2.rotate(BlockRotation.COUNTERCLOCKWISE_90);
+					blockRotation = blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
 				} else if (direction == Direction.WEST) {
-					blockRotation2 = blockRotation2.rotate(BlockRotation.CLOCKWISE_180);
+					blockRotation = blockRotation.rotate(BlockRotation.CLOCKWISE_180);
 				} else if (direction == Direction.SOUTH) {
-					blockRotation2 = blockRotation2.rotate(BlockRotation.CLOCKWISE_90);
+					blockRotation = blockRotation.rotate(BlockRotation.CLOCKWISE_90);
 				} else {
 					string = roomPool.getSmallSecretRoom(this.random);
 				}
 			}
 
-			BlockPos blockPos2 = Structure.applyTransformedOffset(new BlockPos(1, 0, 0), BlockMirror.NONE, blockRotation2, 7, 7);
-			blockRotation2 = blockRotation2.rotate(blockRotation);
-			blockPos2 = blockPos2.rotate(blockRotation);
-			BlockPos blockPos3 = blockPos.add(blockPos2.getX(), 0, blockPos2.getZ());
-			list.add(new WoodlandMansionGenerator.Piece(this.manager, string, blockPos3, blockRotation2));
+			BlockPos blockPos = Structure.applyTransformedOffset(new BlockPos(1, 0, 0), BlockMirror.NONE, blockRotation, 7, 7);
+			blockRotation = blockRotation.rotate(rotation);
+			blockPos = blockPos.rotate(rotation);
+			BlockPos blockPos2 = pos.add(blockPos.getX(), 0, blockPos.getZ());
+			pieces.add(new WoodlandMansionGenerator.Piece(this.manager, string, blockPos2, blockRotation));
 		}
 
 		private void addMediumRoom(
@@ -655,16 +655,16 @@ public class WoodlandMansionGenerator {
 		}
 
 		private void addBigRoom(
-			List<WoodlandMansionGenerator.Piece> list,
-			BlockPos blockPos,
-			BlockRotation blockRotation,
+			List<WoodlandMansionGenerator.Piece> pieces,
+			BlockPos pos,
+			BlockRotation rotation,
 			Direction direction,
 			Direction direction2,
 			WoodlandMansionGenerator.RoomPool roomPool
 		) {
 			int i = 0;
 			int j = 0;
-			BlockRotation blockRotation2 = blockRotation;
+			BlockRotation blockRotation = rotation;
 			BlockMirror blockMirror = BlockMirror.NONE;
 			if (direction2 == Direction.EAST && direction == Direction.SOUTH) {
 				i = -7;
@@ -675,33 +675,33 @@ public class WoodlandMansionGenerator {
 			} else if (direction2 == Direction.NORTH && direction == Direction.EAST) {
 				i = 1;
 				j = 14;
-				blockRotation2 = blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
+				blockRotation = rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
 			} else if (direction2 == Direction.NORTH && direction == Direction.WEST) {
 				i = 7;
 				j = 14;
-				blockRotation2 = blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
+				blockRotation = rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
 				blockMirror = BlockMirror.LEFT_RIGHT;
 			} else if (direction2 == Direction.SOUTH && direction == Direction.WEST) {
 				i = 7;
 				j = -8;
-				blockRotation2 = blockRotation.rotate(BlockRotation.CLOCKWISE_90);
+				blockRotation = rotation.rotate(BlockRotation.CLOCKWISE_90);
 			} else if (direction2 == Direction.SOUTH && direction == Direction.EAST) {
 				i = 1;
 				j = -8;
-				blockRotation2 = blockRotation.rotate(BlockRotation.CLOCKWISE_90);
+				blockRotation = rotation.rotate(BlockRotation.CLOCKWISE_90);
 				blockMirror = BlockMirror.LEFT_RIGHT;
 			} else if (direction2 == Direction.WEST && direction == Direction.NORTH) {
 				i = 15;
 				j = 6;
-				blockRotation2 = blockRotation.rotate(BlockRotation.CLOCKWISE_180);
+				blockRotation = rotation.rotate(BlockRotation.CLOCKWISE_180);
 			} else if (direction2 == Direction.WEST && direction == Direction.SOUTH) {
 				i = 15;
 				blockMirror = BlockMirror.FRONT_BACK;
 			}
 
-			BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), i);
-			blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), j);
-			list.add(new WoodlandMansionGenerator.Piece(this.manager, roomPool.getBigRoom(this.random), blockPos2, blockRotation2, blockMirror));
+			BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), i);
+			blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), j);
+			pieces.add(new WoodlandMansionGenerator.Piece(this.manager, roomPool.getBigRoom(this.random), blockPos, blockRotation, blockMirror));
 		}
 
 		private void addBigSecretRoom(

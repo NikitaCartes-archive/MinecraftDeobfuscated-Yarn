@@ -19,7 +19,7 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 
 	@Override
 	public final void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditions) {
-		((Set)this.progressions.computeIfAbsent(manager, playerAdvancementTracker -> Sets.newHashSet())).add(conditions);
+		((Set)this.progressions.computeIfAbsent(manager, managerx -> Sets.newHashSet())).add(conditions);
 	}
 
 	@Override

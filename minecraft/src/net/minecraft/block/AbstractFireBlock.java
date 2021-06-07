@@ -18,9 +18,9 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.dimension.AreaHelper;
 
 public abstract class AbstractFireBlock extends Block {
-	private static final int field_31008 = 8;
+	private static final int SET_ON_FIRE_SECONDS = 8;
 	private final float damage;
-	protected static final float field_31007 = 1.0F;
+	protected static final float BASE_SOUND_VOLUME = 1.0F;
 	protected static final VoxelShape BASE_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
 
 	public AbstractFireBlock(AbstractBlock.Settings settings, float damage) {

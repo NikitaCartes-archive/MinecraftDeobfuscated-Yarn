@@ -99,8 +99,8 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		this.brains.put(brain.uuid, brain);
 	}
 
-	public void method_35797(int i) {
-		this.brains.values().removeIf(brain -> brain.field_18924 == i);
+	public void removeBrain(int entityId) {
+		this.brains.values().removeIf(brain -> brain.entityId == entityId);
 	}
 
 	@Override
@@ -108,8 +108,8 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
-		this.method_24805();
-		this.method_23135(cameraX, cameraY, cameraZ);
+		this.removeRemovedBrains();
+		this.draw(cameraX, cameraY, cameraZ);
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		if (!this.client.player.isSpectator()) {
@@ -117,18 +117,18 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	private void method_24805() {
+	private void removeRemovedBrains() {
 		this.brains.entrySet().removeIf(entry -> {
-			Entity entity = this.client.world.getEntityById(((VillageDebugRenderer.Brain)entry.getValue()).field_18924);
+			Entity entity = this.client.world.getEntityById(((VillageDebugRenderer.Brain)entry.getValue()).entityId);
 			return entity == null || entity.isRemoved();
 		});
 	}
 
-	private void method_23135(double d, double e, double f) {
-		BlockPos blockPos = new BlockPos(d, e, f);
+	private void draw(double x, double y, double z) {
+		BlockPos blockPos = new BlockPos(x, y, z);
 		this.brains.values().forEach(brain -> {
 			if (this.isClose(brain)) {
-				this.drawBrain(brain, d, e, f);
+				this.drawBrain(brain, x, y, z);
 			}
 		});
 
@@ -138,14 +138,14 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		this.pointsOfInterest.values().forEach(pointOfInterest -> {
-			if (blockPos.isWithinDistance(pointOfInterest.pos, 30.0)) {
-				this.drawPointOfInterestInfo(pointOfInterest);
+		this.pointsOfInterest.values().forEach(poi -> {
+			if (blockPos.isWithinDistance(poi.pos, 30.0)) {
+				this.drawPointOfInterestInfo(poi);
 			}
 		});
-		this.getGhostPointsOfInterest().forEach((blockPos2x, list) -> {
-			if (blockPos.isWithinDistance(blockPos2x, 30.0)) {
-				this.drawGhostPointOfInterest(blockPos2x, list);
+		this.getGhostPointsOfInterest().forEach((pos, brains) -> {
+			if (blockPos.isWithinDistance(pos, 30.0)) {
+				this.drawGhostPointOfInterest(pos, brains);
 			}
 		});
 	}
@@ -204,8 +204,8 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (bl) {
-			int j = brain.field_22406 < brain.field_22407 ? -23296 : -1;
-			drawString(brain.pos, i, "health: " + String.format("%.1f", brain.field_22406) + " / " + String.format("%.1f", brain.field_22407), j, 0.02F);
+			int j = brain.health < brain.maxHealth ? -23296 : -1;
+			drawString(brain.pos, i, "health: " + String.format("%.1f", brain.health) + " / " + String.format("%.1f", brain.maxHealth), j, 0.02F);
 			i++;
 		}
 
@@ -340,12 +340,12 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	@Environment(EnvType.CLIENT)
 	public static class Brain {
 		public final UUID uuid;
-		public final int field_18924;
+		public final int entityId;
 		public final String field_19328;
 		public final String profession;
 		public final int xp;
-		public final float field_22406;
-		public final float field_22407;
+		public final float health;
+		public final float maxHealth;
 		public final Position pos;
 		public final String field_19372;
 		public final Path path;
@@ -358,15 +358,25 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		public final Set<BlockPos> field_25287 = Sets.<BlockPos>newHashSet();
 
 		public Brain(
-			UUID uuid, int i, String string, String profession, int xp, float f, float g, Position pos, String string2, @Nullable Path path, boolean wantsGolem
+			UUID uuid,
+			int entityId,
+			String string,
+			String profession,
+			int xp,
+			float health,
+			float maxHealth,
+			Position pos,
+			String string2,
+			@Nullable Path path,
+			boolean wantsGolem
 		) {
 			this.uuid = uuid;
-			this.field_18924 = i;
+			this.entityId = entityId;
 			this.field_19328 = string;
 			this.profession = profession;
 			this.xp = xp;
-			this.field_22406 = f;
-			this.field_22407 = g;
+			this.health = health;
+			this.maxHealth = maxHealth;
 			this.pos = pos;
 			this.field_19372 = string2;
 			this.path = path;

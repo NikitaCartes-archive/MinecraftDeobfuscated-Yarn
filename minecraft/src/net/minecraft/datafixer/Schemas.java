@@ -127,11 +127,11 @@ import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
 import net.minecraft.datafixer.fix.SavedDataVillageCropFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
+import net.minecraft.datafixer.fix.StatsRenameFix;
 import net.minecraft.datafixer.fix.StriderGravityFix;
 import net.minecraft.datafixer.fix.StructureFeatureChildrenPoolElementFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.StructureSeparationDataFix;
-import net.minecraft.datafixer.fix.SwimStatsRenameFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
 import net.minecraft.datafixer.fix.VillagerFollowRangeFix;
 import net.minecraft.datafixer.fix.VillagerGossipFix;
@@ -466,7 +466,7 @@ public class Schemas {
 		builder.addFixer(new RecipeRenamingFix(schema69, false));
 		builder.addFixer(new EntityTheRenameningBlock(schema69, true));
 		builder.addFixer(
-			new SwimStatsRenameFix(
+			new StatsRenameFix(
 				schema69,
 				"SwimStatsRenameFix",
 				ImmutableMap.of("minecraft:swim_one_cm", "minecraft:walk_on_water_one_cm", "minecraft:dive_one_cm", "minecraft:walk_under_water_one_cm")
@@ -756,7 +756,7 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema139, "Added Marker", TypeReferences.ENTITY));
 		Schema schema140 = builder.addSchema(2710, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
-			new SwimStatsRenameFix(schema140, "Renamed play_one_minute stat to play_time", ImmutableMap.of("minecraft:play_one_minute", "minecraft:play_time"))
+			new StatsRenameFix(schema140, "Renamed play_one_minute stat to play_time", ImmutableMap.of("minecraft:play_one_minute", "minecraft:play_time"))
 		);
 		Schema schema141 = builder.addSchema(2717, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(

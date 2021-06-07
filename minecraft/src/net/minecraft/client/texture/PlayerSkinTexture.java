@@ -23,6 +23,9 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class PlayerSkinTexture extends ResourceTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int WIDTH = 64;
+	private static final int HEIGHT = 64;
+	private static final int OLD_HEIGHT = 32;
 	@Nullable
 	private final File cacheFile;
 	private final String url;
@@ -133,45 +136,54 @@ public class PlayerSkinTexture extends ResourceTexture {
 		try {
 			nativeImage = NativeImage.read(stream);
 			if (this.convertLegacy) {
-				nativeImage = remapTexture(nativeImage);
+				nativeImage = this.remapTexture(nativeImage);
 			}
-		} catch (IOException var4) {
+		} catch (Exception var4) {
 			LOGGER.warn("Error while loading the skin texture", (Throwable)var4);
 		}
 
 		return nativeImage;
 	}
 
-	private static NativeImage remapTexture(NativeImage image) {
-		boolean bl = image.getHeight() == 32;
-		if (bl) {
-			NativeImage nativeImage = new NativeImage(64, 64, true);
-			nativeImage.copyFrom(image);
-			image.close();
-			image = nativeImage;
-			nativeImage.fillRect(0, 32, 64, 32, 0);
-			nativeImage.copyRect(4, 16, 16, 32, 4, 4, true, false);
-			nativeImage.copyRect(8, 16, 16, 32, 4, 4, true, false);
-			nativeImage.copyRect(0, 20, 24, 32, 4, 12, true, false);
-			nativeImage.copyRect(4, 20, 16, 32, 4, 12, true, false);
-			nativeImage.copyRect(8, 20, 8, 32, 4, 12, true, false);
-			nativeImage.copyRect(12, 20, 16, 32, 4, 12, true, false);
-			nativeImage.copyRect(44, 16, -8, 32, 4, 4, true, false);
-			nativeImage.copyRect(48, 16, -8, 32, 4, 4, true, false);
-			nativeImage.copyRect(40, 20, 0, 32, 4, 12, true, false);
-			nativeImage.copyRect(44, 20, -8, 32, 4, 12, true, false);
-			nativeImage.copyRect(48, 20, -16, 32, 4, 12, true, false);
-			nativeImage.copyRect(52, 20, -8, 32, 4, 12, true, false);
-		}
+	@Nullable
+	private NativeImage remapTexture(NativeImage nativeImage) {
+		int i = nativeImage.getHeight();
+		int j = nativeImage.getWidth();
+		if (j == 64 && (i == 32 || i == 64)) {
+			boolean bl = i == 32;
+			if (bl) {
+				NativeImage nativeImage2 = new NativeImage(64, 64, true);
+				nativeImage2.copyFrom(nativeImage);
+				nativeImage.close();
+				nativeImage = nativeImage2;
+				nativeImage2.fillRect(0, 32, 64, 32, 0);
+				nativeImage2.copyRect(4, 16, 16, 32, 4, 4, true, false);
+				nativeImage2.copyRect(8, 16, 16, 32, 4, 4, true, false);
+				nativeImage2.copyRect(0, 20, 24, 32, 4, 12, true, false);
+				nativeImage2.copyRect(4, 20, 16, 32, 4, 12, true, false);
+				nativeImage2.copyRect(8, 20, 8, 32, 4, 12, true, false);
+				nativeImage2.copyRect(12, 20, 16, 32, 4, 12, true, false);
+				nativeImage2.copyRect(44, 16, -8, 32, 4, 4, true, false);
+				nativeImage2.copyRect(48, 16, -8, 32, 4, 4, true, false);
+				nativeImage2.copyRect(40, 20, 0, 32, 4, 12, true, false);
+				nativeImage2.copyRect(44, 20, -8, 32, 4, 12, true, false);
+				nativeImage2.copyRect(48, 20, -16, 32, 4, 12, true, false);
+				nativeImage2.copyRect(52, 20, -8, 32, 4, 12, true, false);
+			}
 
-		stripAlpha(image, 0, 0, 32, 16);
-		if (bl) {
-			stripColor(image, 32, 0, 64, 32);
-		}
+			stripAlpha(nativeImage, 0, 0, 32, 16);
+			if (bl) {
+				stripColor(nativeImage, 32, 0, 64, 32);
+			}
 
-		stripAlpha(image, 0, 16, 64, 32);
-		stripAlpha(image, 16, 48, 48, 64);
-		return image;
+			stripAlpha(nativeImage, 0, 16, 64, 32);
+			stripAlpha(nativeImage, 16, 48, 48, 64);
+			return nativeImage;
+		} else {
+			nativeImage.close();
+			LOGGER.warn("Discarding incorrectly sized ({}x{}) skin texture from {}", j, i, this.url);
+			return null;
+		}
 	}
 
 	private static void stripColor(NativeImage image, int x1, int y1, int x2, int y2) {

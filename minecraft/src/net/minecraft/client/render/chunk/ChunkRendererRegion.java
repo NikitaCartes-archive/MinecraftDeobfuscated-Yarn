@@ -42,7 +42,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 			}
 		}
 
-		if (method_30000(startPos, endPos, i, j, worldChunks)) {
+		if (isEmptyBetween(startPos, endPos, i, j, worldChunks)) {
 			return null;
 		} else {
 			int m = 1;
@@ -52,11 +52,11 @@ public class ChunkRendererRegion implements BlockRenderView {
 		}
 	}
 
-	public static boolean method_30000(BlockPos blockPos, BlockPos blockPos2, int i, int j, WorldChunk[][] worldChunks) {
-		for (int k = ChunkSectionPos.getSectionCoord(blockPos.getX()); k <= ChunkSectionPos.getSectionCoord(blockPos2.getX()); k++) {
-			for (int l = ChunkSectionPos.getSectionCoord(blockPos.getZ()); l <= ChunkSectionPos.getSectionCoord(blockPos2.getZ()); l++) {
-				WorldChunk worldChunk = worldChunks[k - i][l - j];
-				if (!worldChunk.areSectionsEmptyBetween(blockPos.getY(), blockPos2.getY())) {
+	public static boolean isEmptyBetween(BlockPos from, BlockPos to, int i, int j, WorldChunk[][] chunks) {
+		for (int k = ChunkSectionPos.getSectionCoord(from.getX()); k <= ChunkSectionPos.getSectionCoord(to.getX()); k++) {
+			for (int l = ChunkSectionPos.getSectionCoord(from.getZ()); l <= ChunkSectionPos.getSectionCoord(to.getZ()); l++) {
+				WorldChunk worldChunk = chunks[k - i][l - j];
+				if (!worldChunk.areSectionsEmptyBetween(from.getY(), to.getY())) {
 					return false;
 				}
 			}

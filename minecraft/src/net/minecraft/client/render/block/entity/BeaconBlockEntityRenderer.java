@@ -220,11 +220,11 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 	}
 
 	@Override
-	public int method_33893() {
+	public int getRenderDistance() {
 		return 256;
 	}
 
 	public boolean method_33892(BeaconBlockEntity beaconBlockEntity, Vec3d vec3d) {
-		return Vec3d.ofCenter(beaconBlockEntity.getPos()).multiply(1.0, 0.0, 1.0).isInRange(vec3d.multiply(1.0, 0.0, 1.0), (double)this.method_33893());
+		return Vec3d.ofCenter(beaconBlockEntity.getPos()).multiply(1.0, 0.0, 1.0).isInRange(vec3d.multiply(1.0, 0.0, 1.0), (double)this.getRenderDistance());
 	}
 }

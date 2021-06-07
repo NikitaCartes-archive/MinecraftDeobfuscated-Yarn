@@ -901,7 +901,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		EnderDragonPart[] enderDragonParts = this.getBodyParts();
 
 		for (int i = 0; i < enderDragonParts.length; i++) {
-			enderDragonParts[i].setEntityId(i + packet.getId());
+			enderDragonParts[i].setId(i + packet.getId());
 		}
 	}
 

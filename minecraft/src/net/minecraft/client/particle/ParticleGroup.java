@@ -25,8 +25,8 @@ public class ParticleGroup {
 	}
 
 	/**
-	 * Returns the maximum count of particles from this group that can be
-	 * rendered in a particle manager.
+	 * {@return the maximum count of particles from this group that can be
+	 * rendered in a particle manager}
 	 */
 	public int getMaxCount() {
 		return this.maxCount;

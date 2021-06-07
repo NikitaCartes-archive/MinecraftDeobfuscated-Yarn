@@ -26,17 +26,17 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class Format4ResourcePack implements ResourcePack {
 	private static final Map<String, Pair<ChestType, Identifier>> NEW_TO_OLD_CHEST_TEXTURES = Util.make(
-		Maps.<String, Pair<ChestType, Identifier>>newHashMap(), hashMap -> {
-			hashMap.put("textures/entity/chest/normal_left.png", new Pair<>(ChestType.LEFT, new Identifier("textures/entity/chest/normal_double.png")));
-			hashMap.put("textures/entity/chest/normal_right.png", new Pair<>(ChestType.RIGHT, new Identifier("textures/entity/chest/normal_double.png")));
-			hashMap.put("textures/entity/chest/normal.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/normal.png")));
-			hashMap.put("textures/entity/chest/trapped_left.png", new Pair<>(ChestType.LEFT, new Identifier("textures/entity/chest/trapped_double.png")));
-			hashMap.put("textures/entity/chest/trapped_right.png", new Pair<>(ChestType.RIGHT, new Identifier("textures/entity/chest/trapped_double.png")));
-			hashMap.put("textures/entity/chest/trapped.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/trapped.png")));
-			hashMap.put("textures/entity/chest/christmas_left.png", new Pair<>(ChestType.LEFT, new Identifier("textures/entity/chest/christmas_double.png")));
-			hashMap.put("textures/entity/chest/christmas_right.png", new Pair<>(ChestType.RIGHT, new Identifier("textures/entity/chest/christmas_double.png")));
-			hashMap.put("textures/entity/chest/christmas.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/christmas.png")));
-			hashMap.put("textures/entity/chest/ender.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/ender.png")));
+		Maps.<String, Pair<ChestType, Identifier>>newHashMap(), map -> {
+			map.put("textures/entity/chest/normal_left.png", new Pair<>(ChestType.LEFT, new Identifier("textures/entity/chest/normal_double.png")));
+			map.put("textures/entity/chest/normal_right.png", new Pair<>(ChestType.RIGHT, new Identifier("textures/entity/chest/normal_double.png")));
+			map.put("textures/entity/chest/normal.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/normal.png")));
+			map.put("textures/entity/chest/trapped_left.png", new Pair<>(ChestType.LEFT, new Identifier("textures/entity/chest/trapped_double.png")));
+			map.put("textures/entity/chest/trapped_right.png", new Pair<>(ChestType.RIGHT, new Identifier("textures/entity/chest/trapped_double.png")));
+			map.put("textures/entity/chest/trapped.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/trapped.png")));
+			map.put("textures/entity/chest/christmas_left.png", new Pair<>(ChestType.LEFT, new Identifier("textures/entity/chest/christmas_double.png")));
+			map.put("textures/entity/chest/christmas_right.png", new Pair<>(ChestType.RIGHT, new Identifier("textures/entity/chest/christmas_double.png")));
+			map.put("textures/entity/chest/christmas.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/christmas.png")));
+			map.put("textures/entity/chest/ender.png", new Pair<>(ChestType.SINGLE, new Identifier("textures/entity/chest/ender.png")));
 		}
 	);
 	private static final List<String> BANNER_PATTERN_TYPES = Lists.<String>newArrayList(

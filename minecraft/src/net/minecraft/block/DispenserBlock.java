@@ -44,7 +44,7 @@ public class DispenserBlock extends BlockWithEntity {
 	private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(
 		new Object2ObjectOpenHashMap<>(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior())
 	);
-	private static final int field_31082 = 4;
+	private static final int SCHEDULED_TICK_DELAY = 4;
 
 	public static void registerBehavior(ItemConvertible provider, DispenserBehavior behavior) {
 		BEHAVIORS.put(provider.asItem(), behavior);

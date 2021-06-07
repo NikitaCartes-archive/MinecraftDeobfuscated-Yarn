@@ -33,7 +33,7 @@ public class TripwireBlock extends Block {
 	private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = HorizontalConnectingBlock.FACING_PROPERTIES;
 	protected static final VoxelShape ATTACHED_SHAPE = Block.createCuboidShape(0.0, 1.0, 0.0, 16.0, 2.5, 16.0);
 	protected static final VoxelShape DETACHED_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-	private static final int field_31267 = 10;
+	private static final int SCHEDULED_TICK_DELAY = 10;
 	private final TripwireHookBlock hookBlock;
 
 	public TripwireBlock(TripwireHookBlock hookBlock, AbstractBlock.Settings settings) {

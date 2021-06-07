@@ -95,12 +95,12 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private void removeInvalidBees() {
-		this.bees.entrySet().removeIf(entry -> this.client.world.getEntityById(((BeeDebugRenderer.Bee)entry.getValue()).entityId) == null);
+		this.bees.entrySet().removeIf(bee -> this.client.world.getEntityById(((BeeDebugRenderer.Bee)bee.getValue()).entityId) == null);
 	}
 
 	private void removeOutdatedHives() {
 		long l = this.client.world.getTime() - 20L;
-		this.hives.entrySet().removeIf(entry -> ((BeeDebugRenderer.Hive)entry.getValue()).time < l);
+		this.hives.entrySet().removeIf(hive -> ((BeeDebugRenderer.Hive)hive.getValue()).time < l);
 	}
 
 	private void render() {
@@ -125,9 +125,9 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 				this.drawHiveInfo(hive, (Collection<UUID>)(set == null ? Sets.<UUID>newHashSet() : set));
 			}
 		});
-		this.getBeesByHive().forEach((blockPos2x, list) -> {
-			if (blockPos.isWithinDistance(blockPos2x, 30.0)) {
-				this.drawHiveBees(blockPos2x, list);
+		this.getBeesByHive().forEach((hivePos, bees) -> {
+			if (blockPos.isWithinDistance(hivePos, 30.0)) {
+				this.drawHiveBees(hivePos, bees);
 			}
 		});
 	}

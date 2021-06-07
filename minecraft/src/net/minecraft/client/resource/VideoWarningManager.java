@@ -171,10 +171,10 @@ public class VideoWarningManager extends SinglePreparationResourceReloader<Video
 		private final List<Pattern> versionPatterns;
 		private final List<Pattern> vendorPatterns;
 
-		WarningPatternLoader(List<Pattern> list, List<Pattern> list2, List<Pattern> list3) {
-			this.rendererPatterns = list;
-			this.versionPatterns = list2;
-			this.vendorPatterns = list3;
+		WarningPatternLoader(List<Pattern> rendererPatterns, List<Pattern> versionPatterns, List<Pattern> vendorPatterns) {
+			this.rendererPatterns = rendererPatterns;
+			this.versionPatterns = versionPatterns;
+			this.vendorPatterns = vendorPatterns;
 		}
 
 		private static String buildWarning(List<Pattern> warningPattern, String info) {

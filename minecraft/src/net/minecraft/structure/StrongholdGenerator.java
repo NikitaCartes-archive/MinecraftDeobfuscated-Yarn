@@ -203,9 +203,9 @@ public class StrongholdGenerator {
 	}
 
 	public static class ChestCorridor extends StrongholdGenerator.Piece {
-		private static final int field_31629 = 5;
-		private static final int field_31630 = 5;
-		private static final int field_31631 = 7;
+		private static final int SIZE_X = 5;
+		private static final int SIZE_Y = 5;
+		private static final int SIZE_Z = 7;
 		private boolean chestGenerated;
 
 		public ChestCorridor(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
@@ -272,9 +272,9 @@ public class StrongholdGenerator {
 	}
 
 	public static class Corridor extends StrongholdGenerator.Piece {
-		private static final int field_31651 = 5;
-		private static final int field_31652 = 5;
-		private static final int field_31653 = 7;
+		private static final int SIZE_X = 5;
+		private static final int SIZE_Y = 5;
+		private static final int SIZE_Z = 7;
 		private final boolean leftExitExists;
 		private final boolean rightExitExists;
 
@@ -352,9 +352,9 @@ public class StrongholdGenerator {
 	}
 
 	public static class FiveWayCrossing extends StrongholdGenerator.Piece {
-		protected static final int field_31632 = 10;
-		protected static final int field_31633 = 9;
-		protected static final int field_31634 = 11;
+		protected static final int SIZE_X = 10;
+		protected static final int SIZE_Y = 9;
+		protected static final int SIZE_Z = 11;
 		private final boolean lowerLeftExists;
 		private final boolean upperLeftExists;
 		private final boolean lowerRightExists;
@@ -370,7 +370,7 @@ public class StrongholdGenerator {
 			this.upperRightExists = random.nextInt(3) > 0;
 		}
 
-		public FiveWayCrossing(ServerWorld serverWorld, NbtCompound nbt) {
+		public FiveWayCrossing(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, nbt);
 			this.lowerLeftExists = nbt.getBoolean("leftLow");
 			this.upperLeftExists = nbt.getBoolean("leftHigh");
@@ -537,10 +537,10 @@ public class StrongholdGenerator {
 	}
 
 	public static class Library extends StrongholdGenerator.Piece {
-		protected static final int field_31635 = 14;
+		protected static final int SIZE_X = 14;
 		protected static final int field_31636 = 6;
-		protected static final int field_31637 = 11;
-		protected static final int field_31638 = 15;
+		protected static final int SIZE_Y = 11;
+		protected static final int SIZE_Z = 15;
 		private final boolean tall;
 
 		public Library(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
@@ -550,7 +550,7 @@ public class StrongholdGenerator {
 			this.tall = boundingBox.getBlockCountY() > 6;
 		}
 
-		public Library(ServerWorld serverWorld, NbtCompound nbt) {
+		public Library(ServerWorld world, NbtCompound nbt) {
 			super(StructurePieceType.STRONGHOLD_LIBRARY, nbt);
 			this.tall = nbt.getBoolean("Tall");
 		}
@@ -1031,9 +1031,9 @@ public class StrongholdGenerator {
 	}
 
 	public static class PortalRoom extends StrongholdGenerator.Piece {
-		protected static final int field_31639 = 11;
-		protected static final int field_31640 = 8;
-		protected static final int field_31641 = 16;
+		protected static final int SIZE_X = 11;
+		protected static final int SIZE_Y = 8;
+		protected static final int SIZE_Z = 16;
 		private boolean spawnerPlaced;
 
 		public PortalRoom(int chainLength, BlockBox boundingBox, Direction orientation) {
@@ -1166,9 +1166,9 @@ public class StrongholdGenerator {
 	}
 
 	public static class PrisonHall extends StrongholdGenerator.Piece {
-		protected static final int field_31642 = 9;
-		protected static final int field_31643 = 5;
-		protected static final int field_31644 = 11;
+		protected static final int SIZE_X = 9;
+		protected static final int SIZE_Y = 5;
+		protected static final int SIZE_Z = 11;
 
 		public PrisonHall(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
 			super(StructurePieceType.STRONGHOLD_PRISON_HALL, chainLength, boundingBox);
@@ -1388,15 +1388,15 @@ public class StrongholdGenerator {
 	}
 
 	public static class SpiralStaircase extends StrongholdGenerator.Piece {
-		private static final int field_31648 = 5;
-		private static final int field_31649 = 11;
-		private static final int field_31650 = 5;
+		private static final int SIZE_X = 5;
+		private static final int SIZE_Y = 11;
+		private static final int SIZE_Z = 5;
 		private final boolean isStructureStart;
 
-		public SpiralStaircase(StructurePieceType structurePieceType, int chainLength, int i, int x, Direction direction) {
-			super(structurePieceType, chainLength, createBox(i, 64, x, direction, 5, 11, 5));
+		public SpiralStaircase(StructurePieceType structurePieceType, int chainLength, int x, int z, Direction orientation) {
+			super(structurePieceType, chainLength, createBox(x, 64, z, orientation, 5, 11, 5));
 			this.isStructureStart = true;
-			this.setOrientation(direction);
+			this.setOrientation(orientation);
 			this.entryDoor = StrongholdGenerator.Piece.EntranceType.OPENING;
 		}
 
@@ -1412,7 +1412,7 @@ public class StrongholdGenerator {
 			this.isStructureStart = nbtCompound.getBoolean("Source");
 		}
 
-		public SpiralStaircase(ServerWorld serverWorld, NbtCompound nbt) {
+		public SpiralStaircase(ServerWorld world, NbtCompound nbt) {
 			this(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, nbt);
 		}
 
@@ -1475,9 +1475,9 @@ public class StrongholdGenerator {
 	}
 
 	public static class SquareRoom extends StrongholdGenerator.Piece {
-		protected static final int field_31645 = 11;
-		protected static final int field_31646 = 7;
-		protected static final int field_31647 = 11;
+		protected static final int SIZE_X = 11;
+		protected static final int SIZE_Y = 7;
+		protected static final int SIZE_Z = 11;
 		protected final int roomType;
 
 		public SquareRoom(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
@@ -1614,9 +1614,9 @@ public class StrongholdGenerator {
 	}
 
 	public static class Stairs extends StrongholdGenerator.Piece {
-		private static final int field_31654 = 5;
-		private static final int field_31655 = 11;
-		private static final int field_31656 = 8;
+		private static final int SIZE_X = 5;
+		private static final int SIZE_Y = 11;
+		private static final int SIZE_Z = 8;
 
 		public Stairs(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
 			super(StructurePieceType.STRONGHOLD_STAIRS, chainLength, boundingBox);
@@ -1713,9 +1713,9 @@ public class StrongholdGenerator {
 	}
 
 	public abstract static class Turn extends StrongholdGenerator.Piece {
-		protected static final int field_31657 = 5;
-		protected static final int field_31658 = 5;
-		protected static final int field_31659 = 5;
+		protected static final int SIZE_X = 5;
+		protected static final int SIZE_Y = 5;
+		protected static final int SIZE_Z = 5;
 
 		protected Turn(StructurePieceType structurePieceType, int i, BlockBox blockBox) {
 			super(structurePieceType, i, blockBox);

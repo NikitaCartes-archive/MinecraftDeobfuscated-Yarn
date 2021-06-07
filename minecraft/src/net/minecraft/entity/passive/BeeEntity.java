@@ -107,12 +107,18 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	 */
 	private static final int POLLINATION_FAIL_TICKS = 3600;
 	private static final int field_30287 = 4;
-	private static final int field_30288 = 10;
-	private static final int field_30289 = 10;
-	private static final int field_30290 = 18;
-	private static final int field_30291 = 32;
+	private static final int MAX_POLLINATED_CROPS = 10;
+	private static final int NORMAL_DIFFICULTY_STING_POISON_DURATION = 10;
+	private static final int HARD_DIFFICULTY_STING_POISON_DURATION = 18;
+	/**
+	 * The minimum distance that bees lose their hive or flower position at.
+	 */
+	private static final int TOO_FAR_DISTANCE = 32;
 	private static final int field_30292 = 2;
-	private static final int field_30293 = 16;
+	/**
+	 * The minimum distance that bees will immediately return to their hive at.
+	 */
+	private static final int MIN_HIVE_RETURN_DISTANCE = 16;
 	private static final int field_30294 = 20;
 	public static final String CROPS_GROWN_SINCE_POLLINATION_KEY = "CropsGrownSincePollination";
 	public static final String CANNOT_ENTER_HIVE_TICKS_KEY = "CannotEnterHiveTicks";

@@ -368,7 +368,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.debugRenderer.reset();
 		this.client.player.init();
 		int i = packet.getEntityId();
-		this.client.player.setEntityId(i);
+		this.client.player.setId(i);
 		this.world.addPlayer(i, this.client.player);
 		this.client.player.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(this.client.player);
@@ -408,7 +408,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		entity.updateTrackedPosition(d, e, f);
 		entity.setYaw(0.0F);
 		entity.setPitch(0.0F);
-		entity.setEntityId(packet.getId());
+		entity.setId(packet.getId());
 		this.world.addEntity(packet.getId(), entity);
 	}
 
@@ -427,7 +427,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPaintingSpawn(PaintingSpawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PaintingEntity paintingEntity = new PaintingEntity(this.world, packet.getPos(), packet.getFacing(), packet.getMotive());
-		paintingEntity.setEntityId(packet.getId());
+		paintingEntity.setId(packet.getId());
 		paintingEntity.setUuid(packet.getPaintingUuid());
 		this.world.addEntity(packet.getId(), paintingEntity);
 	}
@@ -460,7 +460,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		float h = (float)(packet.getPitch() * 360) / 256.0F;
 		int i = packet.getId();
 		OtherClientPlayerEntity otherClientPlayerEntity = new OtherClientPlayerEntity(this.client.world, this.getPlayerListEntry(packet.getPlayerUuid()).getProfile());
-		otherClientPlayerEntity.setEntityId(i);
+		otherClientPlayerEntity.setId(i);
 		otherClientPlayerEntity.updateTrackedPosition(d, e, f);
 		otherClientPlayerEntity.updatePositionAndAngles(d, e, f, g, h);
 		otherClientPlayerEntity.resetPosition();
@@ -913,7 +913,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			.createPlayer(
 				this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook(), clientPlayerEntity.isSneaking(), clientPlayerEntity.isSprinting()
 			);
-		clientPlayerEntity2.setEntityId(i);
+		clientPlayerEntity2.setId(i);
 		this.client.player = clientPlayerEntity2;
 		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
 			this.client.getMusicTracker().stop();
@@ -2021,22 +2021,22 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		Optional<TeamS2CPacket.SerializableTeam> optional = packet.getTeam();
-		optional.ifPresent(serializableTeam -> {
-			team.setDisplayName(serializableTeam.getDisplayName());
-			team.setColor(serializableTeam.getColor());
-			team.setFriendlyFlagsBitwise(serializableTeam.getFriendlyFlagsBitwise());
-			AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(serializableTeam.getNameTagVisibilityRule());
+		optional.ifPresent(teamx -> {
+			team.setDisplayName(teamx.getDisplayName());
+			team.setColor(teamx.getColor());
+			team.setFriendlyFlagsBitwise(teamx.getFriendlyFlagsBitwise());
+			AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(teamx.getNameTagVisibilityRule());
 			if (visibilityRule != null) {
 				team.setNameTagVisibilityRule(visibilityRule);
 			}
 
-			AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(serializableTeam.getCollisionRule());
+			AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(teamx.getCollisionRule());
 			if (collisionRule != null) {
 				team.setCollisionRule(collisionRule);
 			}
 
-			team.setPrefix(serializableTeam.getPrefix());
-			team.setSuffix(serializableTeam.getSuffix());
+			team.setPrefix(teamx.getPrefix());
+			team.setSuffix(teamx.getSuffix());
 		});
 		TeamS2CPacket.Operation operation2 = packet.getPlayerListOperation();
 		if (operation2 == TeamS2CPacket.Operation.ADD) {

@@ -44,8 +44,8 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 	public static final int field_32828 = 90;
 	private static final int field_32829 = 10;
 	private static final String STICK = "stick";
-	private static final int field_33962 = -988212;
-	private static final int field_33963 = MathHelper.square(16);
+	private static final int GLOWING_BLACK_COLOR = -988212;
+	private static final int RENDER_DISTANCE = MathHelper.square(16);
 	private final Map<SignType, SignBlockEntityRenderer.SignModel> typeToModel;
 	private final TextRenderer textRenderer;
 
@@ -87,7 +87,7 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		float k = 0.010416667F;
 		matrixStack.translate(0.0, 0.33333334F, 0.046666667F);
 		matrixStack.scale(0.010416667F, -0.010416667F, 0.010416667F);
-		int l = method_37311(signBlockEntity);
+		int l = getColor(signBlockEntity);
 		int m = 20;
 		OrderedText[] orderedTexts = signBlockEntity.updateSign(MinecraftClient.getInstance().shouldFilterText(), text -> {
 			List<OrderedText> list = this.textRenderer.wrapLines(text, 90);
@@ -98,7 +98,7 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		int o;
 		if (signBlockEntity.isGlowingText()) {
 			n = signBlockEntity.getTextColor().getSignColor();
-			bl = method_37312(signBlockEntity, n);
+			bl = shouldRender(signBlockEntity, n);
 			o = 15728880;
 		} else {
 			n = l;
@@ -119,8 +119,8 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		matrixStack.pop();
 	}
 
-	private static boolean method_37312(SignBlockEntity signBlockEntity, int i) {
-		if (i == DyeColor.BLACK.getSignColor()) {
+	private static boolean shouldRender(SignBlockEntity sign, int signColor) {
+		if (signColor == DyeColor.BLACK.getSignColor()) {
 			return true;
 		} else {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
@@ -129,18 +129,18 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 				return true;
 			} else {
 				Entity entity = minecraftClient.getCameraEntity();
-				return entity != null && entity.squaredDistanceTo(Vec3d.ofCenter(signBlockEntity.getPos())) < (double)field_33963;
+				return entity != null && entity.squaredDistanceTo(Vec3d.ofCenter(sign.getPos())) < (double)RENDER_DISTANCE;
 			}
 		}
 	}
 
-	private static int method_37311(SignBlockEntity signBlockEntity) {
-		int i = signBlockEntity.getTextColor().getSignColor();
+	private static int getColor(SignBlockEntity sign) {
+		int i = sign.getTextColor().getSignColor();
 		double d = 0.4;
 		int j = (int)((double)NativeImage.getRed(i) * 0.4);
 		int k = (int)((double)NativeImage.getGreen(i) * 0.4);
 		int l = (int)((double)NativeImage.getBlue(i) * 0.4);
-		return i == DyeColor.BLACK.getSignColor() && signBlockEntity.isGlowingText() ? -988212 : NativeImage.getAbgrColor(0, l, k, j);
+		return i == DyeColor.BLACK.getSignColor() && sign.isGlowingText() ? -988212 : NativeImage.getAbgrColor(0, l, k, j);
 	}
 
 	public static SignType getSignType(Block block) {

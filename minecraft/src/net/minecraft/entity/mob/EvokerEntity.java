@@ -233,7 +233,10 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	class SummonVexGoal extends SpellcastingIllagerEntity.CastSpellGoal {
-		private final TargetPredicate closeVexPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).visibleOnly().ignoreDistanceScalingFactor();
+		private final TargetPredicate closeVexPredicate = TargetPredicate.createNonAttackable()
+			.setBaseMaxDistance(16.0)
+			.ignoreVisibility()
+			.ignoreDistanceScalingFactor();
 
 		@Override
 		public boolean canStart() {

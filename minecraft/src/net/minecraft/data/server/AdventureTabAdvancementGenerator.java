@@ -125,19 +125,19 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		EntityType.ZOMBIFIED_PIGLIN
 	};
 
-	private static LightningStrikeCriterion.Conditions method_37316(NumberRange.IntRange intRange, EntityPredicate entityPredicate) {
+	private static LightningStrikeCriterion.Conditions createLightningStrike(NumberRange.IntRange range, EntityPredicate entity) {
 		return LightningStrikeCriterion.Conditions.create(
 			EntityPredicate.Builder.create()
-				.distance(DistancePredicate.method_37223(NumberRange.FloatRange.atMost(30.0)))
-				.lightningBolt(LightningBoltPredicate.of(intRange))
+				.distance(DistancePredicate.absolute(NumberRange.FloatRange.atMost(30.0)))
+				.lightningBolt(LightningBoltPredicate.of(range))
 				.build(),
-			entityPredicate
+			entity
 		);
 	}
 
-	private static UsingItemCriterion.Conditions method_37315(EntityType<?> entityType, Item item) {
+	private static UsingItemCriterion.Conditions createLookingAtEntityUsing(EntityType<?> entity, Item item) {
 		return UsingItemCriterion.Conditions.create(
-			EntityPredicate.Builder.create().player(PlayerPredicate.Builder.create().lookingAt(EntityPredicate.Builder.create().type(entityType).build()).build()),
+			EntityPredicate.Builder.create().player(PlayerPredicate.Builder.create().lookingAt(EntityPredicate.Builder.create().type(entity).build()).build()),
 			ItemPredicate.Builder.create().items(item)
 		);
 	}
@@ -475,7 +475,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true,
 				false
 			)
-			.criterion("walk_on_powder_snow_with_leather_boots", LocationArrivalCriterion.Conditions.method_37246(Blocks.POWDER_SNOW, Items.LEATHER_BOOTS))
+			.criterion("walk_on_powder_snow_with_leather_boots", LocationArrivalCriterion.Conditions.createSteppingOnWithBoots(Blocks.POWDER_SNOW, Items.LEATHER_BOOTS))
 			.build(consumer, "adventure/walk_on_powder_snow_with_leather_boots");
 		Advancement.Task.create()
 			.parent(advancement)
@@ -490,7 +490,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.criterion(
-				"lightning_rod_with_villager_no_fire", method_37316(NumberRange.IntRange.exactly(0), EntityPredicate.Builder.create().type(EntityType.VILLAGER).build())
+				"lightning_rod_with_villager_no_fire",
+				createLightningStrike(NumberRange.IntRange.exactly(0), EntityPredicate.Builder.create().type(EntityType.VILLAGER).build())
 			)
 			.build(consumer, "adventure/lightning_rod_with_villager_no_fire");
 		Advancement advancement9 = Advancement.Task.create()
@@ -505,7 +506,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true,
 				false
 			)
-			.criterion("spyglass_at_parrot", method_37315(EntityType.PARROT, Items.SPYGLASS))
+			.criterion("spyglass_at_parrot", createLookingAtEntityUsing(EntityType.PARROT, Items.SPYGLASS))
 			.build(consumer, "adventure/spyglass_at_parrot");
 		Advancement advancement10 = Advancement.Task.create()
 			.parent(advancement9)
@@ -519,7 +520,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true,
 				false
 			)
-			.criterion("spyglass_at_ghast", method_37315(EntityType.GHAST, Items.SPYGLASS))
+			.criterion("spyglass_at_ghast", createLookingAtEntityUsing(EntityType.GHAST, Items.SPYGLASS))
 			.build(consumer, "adventure/spyglass_at_ghast");
 		Advancement.Task.create()
 			.parent(advancement10)
@@ -533,7 +534,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true,
 				false
 			)
-			.criterion("spyglass_at_dragon", method_37315(EntityType.ENDER_DRAGON, Items.SPYGLASS))
+			.criterion("spyglass_at_dragon", createLookingAtEntityUsing(EntityType.ENDER_DRAGON, Items.SPYGLASS))
 			.build(consumer, "adventure/spyglass_at_dragon");
 	}
 

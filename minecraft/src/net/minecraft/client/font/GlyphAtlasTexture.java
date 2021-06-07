@@ -16,7 +16,7 @@ public class GlyphAtlasTexture extends AbstractTexture {
 	private final Identifier id;
 	private final RenderLayer textLayer;
 	private final RenderLayer seeThroughTextLayer;
-	private final RenderLayer field_33998;
+	private final RenderLayer polygonOffsetTextLayer;
 	private final boolean hasColor;
 	private final GlyphAtlasTexture.Slot rootSlot;
 
@@ -25,9 +25,9 @@ public class GlyphAtlasTexture extends AbstractTexture {
 		this.hasColor = hasColor;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
 		TextureUtil.prepareImage(hasColor ? NativeImage.GLFormat.ABGR : NativeImage.GLFormat.RED, this.getGlId(), 256, 256);
-		this.textLayer = hasColor ? RenderLayer.getText(id) : RenderLayer.method_36434(id);
-		this.seeThroughTextLayer = hasColor ? RenderLayer.getTextSeeThrough(id) : RenderLayer.method_36435(id);
-		this.field_33998 = hasColor ? RenderLayer.method_37345(id) : RenderLayer.method_37346(id);
+		this.textLayer = hasColor ? RenderLayer.getText(id) : RenderLayer.getTextIntensity(id);
+		this.seeThroughTextLayer = hasColor ? RenderLayer.getTextSeeThrough(id) : RenderLayer.getTextIntensitySeeThrough(id);
+		this.polygonOffsetTextLayer = hasColor ? RenderLayer.getTextPolygonOffset(id) : RenderLayer.getTextIntensityPolygonOffset(id);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class GlyphAtlasTexture extends AbstractTexture {
 				return new GlyphRenderer(
 					this.textLayer,
 					this.seeThroughTextLayer,
-					this.field_33998,
+					this.polygonOffsetTextLayer,
 					((float)slot.x + 0.01F) / 256.0F,
 					((float)slot.x - 0.01F + (float)glyph.getWidth()) / 256.0F,
 					((float)slot.y + 0.01F) / 256.0F,
@@ -84,11 +84,11 @@ public class GlyphAtlasTexture extends AbstractTexture {
 		private GlyphAtlasTexture.Slot subSlot2;
 		private boolean occupied;
 
-		Slot(int i, int j, int k, int l) {
-			this.x = i;
-			this.y = j;
-			this.width = k;
-			this.height = l;
+		Slot(int x, int y, int width, int height) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
 		}
 
 		@Nullable

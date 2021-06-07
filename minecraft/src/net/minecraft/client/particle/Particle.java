@@ -238,7 +238,7 @@ public abstract class Particle {
 	}
 
 	/**
-	 * Returns the optional group that this particle belongs to.
+	 * {@return the optional group that this particle belongs to}
 	 * 
 	 * <p>A particle group restricts the number of particles from the group that
 	 * can be rendered in a client world. If the particle does not have a group,

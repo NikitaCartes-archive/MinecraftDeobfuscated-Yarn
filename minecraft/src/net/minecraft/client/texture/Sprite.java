@@ -430,7 +430,7 @@ public class Sprite implements AutoCloseable {
 		}
 
 		/**
-		 * Returns the pixel color at frame {@code frameIndex} within mipmap {@code layer} at sprite relative coordinates.
+		 * {@return the pixel color at frame {@code frameIndex} within mipmap {@code layer} at sprite relative coordinates}
 		 */
 		private int getPixelColor(Sprite.Animation animation, int frameIndex, int layer, int x, int y) {
 			return Sprite.this.images[layer]

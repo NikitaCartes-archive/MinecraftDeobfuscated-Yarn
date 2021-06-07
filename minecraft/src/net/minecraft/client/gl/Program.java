@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Program {
-	private static final Logger field_33940 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_32037 = 32768;
 	private final Program.Type shaderType;
 	private final String name;

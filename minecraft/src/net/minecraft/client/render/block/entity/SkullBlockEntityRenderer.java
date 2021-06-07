@@ -34,13 +34,13 @@ import net.minecraft.util.math.Direction;
 @Environment(EnvType.CLIENT)
 public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockEntity> {
 	private final Map<SkullBlock.SkullType, SkullBlockEntityModel> MODELS;
-	private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = Util.make(Maps.<SkullBlock.SkullType, Identifier>newHashMap(), hashMap -> {
-		hashMap.put(SkullBlock.Type.SKELETON, new Identifier("textures/entity/skeleton/skeleton.png"));
-		hashMap.put(SkullBlock.Type.WITHER_SKELETON, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
-		hashMap.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));
-		hashMap.put(SkullBlock.Type.CREEPER, new Identifier("textures/entity/creeper/creeper.png"));
-		hashMap.put(SkullBlock.Type.DRAGON, new Identifier("textures/entity/enderdragon/dragon.png"));
-		hashMap.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.getTexture());
+	private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = Util.make(Maps.<SkullBlock.SkullType, Identifier>newHashMap(), map -> {
+		map.put(SkullBlock.Type.SKELETON, new Identifier("textures/entity/skeleton/skeleton.png"));
+		map.put(SkullBlock.Type.WITHER_SKELETON, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
+		map.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));
+		map.put(SkullBlock.Type.CREEPER, new Identifier("textures/entity/creeper/creeper.png"));
+		map.put(SkullBlock.Type.DRAGON, new Identifier("textures/entity/enderdragon/dragon.png"));
+		map.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.getTexture());
 	});
 
 	public static Map<SkullBlock.SkullType, SkullBlockEntityModel> getModels(EntityModelLoader modelLoader) {

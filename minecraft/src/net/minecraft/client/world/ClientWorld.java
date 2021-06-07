@@ -317,10 +317,10 @@ public class ClientWorld extends World {
 			this.getBiome(pos)
 				.getParticleConfig()
 				.ifPresent(
-					biomeParticleConfig -> {
-						if (biomeParticleConfig.shouldAddParticle(this.random)) {
+					config -> {
+						if (config.shouldAddParticle(this.random)) {
 							this.addParticle(
-								biomeParticleConfig.getParticle(),
+								config.getParticle(),
 								(double)pos.getX() + this.random.nextDouble(),
 								(double)pos.getY() + this.random.nextDouble(),
 								(double)pos.getZ() + this.random.nextDouble(),

@@ -13,7 +13,7 @@ public class CauldronRenameFix extends DataFix {
 		super(outputSchema, bl);
 	}
 
-	private static Dynamic<?> method_31465(Dynamic<?> dynamic) {
+	private static Dynamic<?> rename(Dynamic<?> dynamic) {
 		Optional<String> optional = dynamic.get("Name").asString().result();
 		if (optional.equals(Optional.of("minecraft:cauldron"))) {
 			Dynamic<?> dynamic2 = dynamic.get("Properties").orElseEmptyMap();
@@ -28,9 +28,7 @@ public class CauldronRenameFix extends DataFix {
 	@Override
 	protected TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
-			"cauldron_rename_fix",
-			this.getInputSchema().getType(TypeReferences.BLOCK_STATE),
-			typed -> typed.update(DSL.remainderFinder(), CauldronRenameFix::method_31465)
+			"cauldron_rename_fix", this.getInputSchema().getType(TypeReferences.BLOCK_STATE), typed -> typed.update(DSL.remainderFinder(), CauldronRenameFix::rename)
 		);
 	}
 }

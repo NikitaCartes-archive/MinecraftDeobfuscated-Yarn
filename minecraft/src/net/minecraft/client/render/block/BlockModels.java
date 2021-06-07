@@ -20,8 +20,8 @@ public class BlockModels {
 	private final Map<BlockState, BakedModel> models = Maps.<BlockState, BakedModel>newIdentityHashMap();
 	private final BakedModelManager modelManager;
 
-	public BlockModels(BakedModelManager bakedModelManager) {
-		this.modelManager = bakedModelManager;
+	public BlockModels(BakedModelManager modelManager) {
+		this.modelManager = modelManager;
 	}
 
 	public Sprite getSprite(BlockState state) {
@@ -45,7 +45,7 @@ public class BlockModels {
 		this.models.clear();
 
 		for (Block block : Registry.BLOCK) {
-			block.getStateManager().getStates().forEach(blockState -> this.models.put(blockState, this.modelManager.getModel(getModelId(blockState))));
+			block.getStateManager().getStates().forEach(state -> this.models.put(state, this.modelManager.getModel(getModelId(state))));
 		}
 	}
 

@@ -55,8 +55,8 @@ public class OverlayTexture implements AutoCloseable {
 		return u | v << 16;
 	}
 
-	public static int getUv(float f, boolean hurt) {
-		return packUv(getU(f), getV(hurt));
+	public static int getUv(float whiteOverlayProgress, boolean hurt) {
+		return packUv(getU(whiteOverlayProgress), getV(hurt));
 	}
 
 	public void teardownOverlayColor() {

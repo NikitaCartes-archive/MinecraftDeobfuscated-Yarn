@@ -35,7 +35,7 @@ public class PufferfishEntity extends FishEntity {
 			: entity.getType() == EntityType.AXOLOTL || entity.getGroup() != EntityGroup.AQUATIC;
 	static final TargetPredicate BLOW_UP_TARGET_PREDICATE = TargetPredicate.createNonAttackable()
 		.ignoreDistanceScalingFactor()
-		.visibleOnly()
+		.ignoreVisibility()
 		.setPredicate(BLOW_UP_FILTER);
 	public static final int NOT_PUFFED = 0;
 	public static final int SEMI_PUFFED = 1;

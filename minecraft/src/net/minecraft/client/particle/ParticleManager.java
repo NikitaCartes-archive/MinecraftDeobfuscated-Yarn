@@ -526,8 +526,8 @@ public class ParticleManager implements ResourceReloader {
 	}
 
 	/**
-	 * Returns if another particle from {@code group} can be rendered by this
-	 * manager.
+	 * {@return whether another particle from {@code group} can be rendered by this
+	 * manager}
 	 */
 	private boolean canAdd(ParticleGroup group) {
 		return this.groupCounts.getInt(group) < group.getMaxCount();

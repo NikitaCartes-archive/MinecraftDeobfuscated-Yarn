@@ -93,49 +93,49 @@ public class GlBlendState {
 		return this.blendDisabled;
 	}
 
-	public static int getFuncFromString(String string) {
-		String string2 = string.trim().toLowerCase(Locale.ROOT);
-		if ("add".equals(string2)) {
+	public static int getFuncFromString(String name) {
+		String string = name.trim().toLowerCase(Locale.ROOT);
+		if ("add".equals(string)) {
 			return 32774;
-		} else if ("subtract".equals(string2)) {
+		} else if ("subtract".equals(string)) {
 			return 32778;
-		} else if ("reversesubtract".equals(string2)) {
+		} else if ("reversesubtract".equals(string)) {
 			return 32779;
-		} else if ("reverse_subtract".equals(string2)) {
+		} else if ("reverse_subtract".equals(string)) {
 			return 32779;
-		} else if ("min".equals(string2)) {
+		} else if ("min".equals(string)) {
 			return 32775;
 		} else {
-			return "max".equals(string2) ? 32776 : 32774;
+			return "max".equals(string) ? 32776 : 32774;
 		}
 	}
 
-	public static int getComponentFromString(String string) {
-		String string2 = string.trim().toLowerCase(Locale.ROOT);
-		string2 = string2.replaceAll("_", "");
-		string2 = string2.replaceAll("one", "1");
-		string2 = string2.replaceAll("zero", "0");
-		string2 = string2.replaceAll("minus", "-");
-		if ("0".equals(string2)) {
+	public static int getComponentFromString(String expression) {
+		String string = expression.trim().toLowerCase(Locale.ROOT);
+		string = string.replaceAll("_", "");
+		string = string.replaceAll("one", "1");
+		string = string.replaceAll("zero", "0");
+		string = string.replaceAll("minus", "-");
+		if ("0".equals(string)) {
 			return 0;
-		} else if ("1".equals(string2)) {
+		} else if ("1".equals(string)) {
 			return 1;
-		} else if ("srccolor".equals(string2)) {
+		} else if ("srccolor".equals(string)) {
 			return 768;
-		} else if ("1-srccolor".equals(string2)) {
+		} else if ("1-srccolor".equals(string)) {
 			return 769;
-		} else if ("dstcolor".equals(string2)) {
+		} else if ("dstcolor".equals(string)) {
 			return 774;
-		} else if ("1-dstcolor".equals(string2)) {
+		} else if ("1-dstcolor".equals(string)) {
 			return 775;
-		} else if ("srcalpha".equals(string2)) {
+		} else if ("srcalpha".equals(string)) {
 			return 770;
-		} else if ("1-srcalpha".equals(string2)) {
+		} else if ("1-srcalpha".equals(string)) {
 			return 771;
-		} else if ("dstalpha".equals(string2)) {
+		} else if ("dstalpha".equals(string)) {
 			return 772;
 		} else {
-			return "1-dstalpha".equals(string2) ? 773 : -1;
+			return "1-dstalpha".equals(string) ? 773 : -1;
 		}
 	}
 }

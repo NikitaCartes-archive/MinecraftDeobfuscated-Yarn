@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class MagmaBlock extends Block {
-	private static final int field_31193 = 20;
+	private static final int SCHEDULED_TICK_DELAY = 20;
 
 	public MagmaBlock(AbstractBlock.Settings settings) {
 		super(settings);

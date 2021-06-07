@@ -36,6 +36,6 @@ public class LegacySinglePoolElement extends SinglePoolElement {
 
 	@Override
 	public String toString() {
-		return "LegacySingle[" + this.field_24015 + "]";
+		return "LegacySingle[" + this.location + "]";
 	}
 }

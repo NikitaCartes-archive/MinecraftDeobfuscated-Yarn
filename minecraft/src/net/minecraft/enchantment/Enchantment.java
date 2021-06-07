@@ -76,17 +76,17 @@ public abstract class Enchantment {
 	}
 
 	/**
-	 * Returns whether this enchantment can exist on an item stack with the
+	 * {@return whether this enchantment can exist on an item stack with the
 	 * {@code other} enchantment and the {@code other} enchantment can exist
-	 * with this enchantment.
+	 * with this enchantment}
 	 */
 	public final boolean canCombine(Enchantment other) {
 		return this.canAccept(other) && other.canAccept(this);
 	}
 
 	/**
-	 * Returns whether this enchantment can exist on an item stack with the
-	 * {@code other} enchantment.
+	 * {@return whether this enchantment can exist on an item stack with the
+	 * {@code other} enchantment}
 	 */
 	protected boolean canAccept(Enchantment other) {
 		return this != other;
@@ -138,16 +138,16 @@ public abstract class Enchantment {
 	}
 
 	/**
-	 * Returns whether this enchantment will appear in the enchanted book trade
-	 * offers of librarian villagers.
+	 * {@return whether this enchantment will appear in the enchanted book trade
+	 * offers of librarian villagers}
 	 */
 	public boolean isAvailableForEnchantedBookOffer() {
 		return true;
 	}
 
 	/**
-	 * Returns whether this enchantment will appear in the enchanting table or
-	 * loots with random enchant function.
+	 * {@return whether this enchantment will appear in the enchanting table or
+	 * loots with random enchant function}
 	 */
 	public boolean isAvailableForRandomSelection() {
 		return true;
@@ -172,7 +172,7 @@ public abstract class Enchantment {
 		}
 
 		/**
-		 * Returns the weight of an enchantment in weighted pickers.
+		 * {@return the weight of an enchantment in weighted pickers}
 		 */
 		public int getWeight() {
 			return this.weight;

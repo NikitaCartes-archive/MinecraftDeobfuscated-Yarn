@@ -34,16 +34,16 @@ public class LanguageManager implements SynchronousResourceReloader {
 
 	private static Map<String, LanguageDefinition> loadAvailableLanguages(Stream<ResourcePack> packs) {
 		Map<String, LanguageDefinition> map = Maps.<String, LanguageDefinition>newHashMap();
-		packs.forEach(resourcePack -> {
+		packs.forEach(pack -> {
 			try {
-				LanguageResourceMetadata languageResourceMetadata = resourcePack.parseMetadata(LanguageResourceMetadata.READER);
+				LanguageResourceMetadata languageResourceMetadata = pack.parseMetadata(LanguageResourceMetadata.READER);
 				if (languageResourceMetadata != null) {
 					for (LanguageDefinition languageDefinition : languageResourceMetadata.getLanguageDefinitions()) {
 						map.putIfAbsent(languageDefinition.getCode(), languageDefinition);
 					}
 				}
 			} catch (IOException | RuntimeException var5) {
-				LOGGER.warn("Unable to parse language metadata section of resourcepack: {}", resourcePack.getName(), var5);
+				LOGGER.warn("Unable to parse language metadata section of resourcepack: {}", pack.getName(), var5);
 			}
 		});
 		return ImmutableMap.copyOf(map);

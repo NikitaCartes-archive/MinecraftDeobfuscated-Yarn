@@ -22,8 +22,8 @@ import net.minecraft.world.WorldAccess;
 
 public class TargetBlock extends Block {
 	private static final IntProperty POWER = Properties.POWER;
-	private static final int field_31263 = 20;
-	private static final int field_31264 = 8;
+	private static final int RECOVERABLE_POWER_DELAY = 20;
+	private static final int REGULAR_POWER_DELAY = 8;
 
 	public TargetBlock(AbstractBlock.Settings settings) {
 		super(settings);

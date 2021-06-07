@@ -8,7 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.Ingredient;
 
 public class TemptGoal extends Goal {
-	private static final TargetPredicate TEMPTING_ENTITY_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(10.0).visibleOnly();
+	private static final TargetPredicate TEMPTING_ENTITY_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(10.0).ignoreVisibility();
 	private final TargetPredicate predicate;
 	protected final PathAwareEntity mob;
 	private final double speed;

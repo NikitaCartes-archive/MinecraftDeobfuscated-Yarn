@@ -13,8 +13,8 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 	private int blue = 255;
 	private int alpha = 255;
 
-	public OutlineVertexConsumerProvider(VertexConsumerProvider.Immediate immediate) {
-		this.parent = immediate;
+	public OutlineVertexConsumerProvider(VertexConsumerProvider.Immediate parent) {
+		this.parent = parent;
 	}
 
 	@Override

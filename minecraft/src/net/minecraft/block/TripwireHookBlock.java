@@ -30,7 +30,7 @@ public class TripwireHookBlock extends Block {
 	public static final BooleanProperty ATTACHED = Properties.ATTACHED;
 	protected static final int field_31268 = 1;
 	protected static final int field_31269 = 42;
-	private static final int field_31271 = 10;
+	private static final int SCHEDULED_TICK_DELAY = 10;
 	protected static final int field_31270 = 3;
 	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
 	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 10.0, 6.0);

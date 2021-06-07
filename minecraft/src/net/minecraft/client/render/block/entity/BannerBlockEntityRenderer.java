@@ -34,9 +34,9 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 	private static final int field_32817 = 20;
 	private static final int field_32818 = 40;
 	private static final int field_32819 = 16;
-	public static final String field_32816 = "flag";
-	private static final String field_32820 = "pole";
-	private static final String field_32821 = "bar";
+	public static final String BANNER = "flag";
+	private static final String PILLAR = "pole";
+	private static final String CROSSBAR = "bar";
 	private final ModelPart banner;
 	private final ModelPart pillar;
 	private final ModelPart crossbar;

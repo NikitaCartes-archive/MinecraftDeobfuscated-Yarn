@@ -78,7 +78,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean method_37403(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
 		return false;
 	}
 

@@ -11,9 +11,9 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface BlockListChecker {
-	boolean isBlocked(Address address);
+	boolean isAllowed(Address address);
 
-	boolean isBlocked(ServerAddress address);
+	boolean isAllowed(ServerAddress address);
 
 	static BlockListChecker create() {
 		final ImmutableList<Predicate<String>> immutableList = (ImmutableList<Predicate<String>>)Streams.stream(ServiceLoader.load(BlockListSupplier.class))
@@ -22,14 +22,14 @@ public interface BlockListChecker {
 			.collect(ImmutableList.toImmutableList());
 		return new BlockListChecker() {
 			@Override
-			public boolean isBlocked(Address address) {
+			public boolean isAllowed(Address address) {
 				String string = address.getHostName();
 				String string2 = address.getHostAddress();
 				return immutableList.stream().noneMatch(predicate -> predicate.test(string) || predicate.test(string2));
 			}
 
 			@Override
-			public boolean isBlocked(ServerAddress address) {
+			public boolean isAllowed(ServerAddress address) {
 				String string = address.getAddress();
 				return immutableList.stream().noneMatch(predicate -> predicate.test(string));
 			}

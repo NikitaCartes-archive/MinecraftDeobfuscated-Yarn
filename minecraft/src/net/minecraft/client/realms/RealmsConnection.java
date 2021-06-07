@@ -30,12 +30,12 @@ public class RealmsConnection {
 		this.onlineScreen = onlineScreen;
 	}
 
-	public void connect(RealmsServer server, ServerAddress serverAddress) {
+	public void connect(RealmsServer server, ServerAddress address) {
 		final MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.setConnectedToRealms(true);
 		NarratorManager.INSTANCE.narrate(new TranslatableText("mco.connect.success"));
-		final String string = serverAddress.getAddress();
-		final int i = serverAddress.getPort();
+		final String string = address.getAddress();
+		final int i = address.getPort();
 		(new Thread("Realms-connect-task") {
 				public void run() {
 					InetSocketAddress inetSocketAddress = null;
