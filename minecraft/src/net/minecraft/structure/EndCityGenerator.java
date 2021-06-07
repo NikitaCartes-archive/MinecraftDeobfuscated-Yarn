@@ -23,7 +23,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class EndCityGenerator {
-	private static final int field_31549 = 8;
+	private static final int MAX_DEPTH = 8;
 	static final EndCityGenerator.Part BUILDING = new EndCityGenerator.Part() {
 		@Override
 		public void init() {

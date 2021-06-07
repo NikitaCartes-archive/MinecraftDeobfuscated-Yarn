@@ -212,13 +212,13 @@ public abstract class Framebuffer {
 		}
 	}
 
-	private void drawInternal(int width, int height, boolean bl) {
+	private void drawInternal(int width, int height, boolean disableBlend) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		GlStateManager._colorMask(true, true, true, false);
 		GlStateManager._disableDepthTest();
 		GlStateManager._depthMask(false);
 		GlStateManager._viewport(0, 0, width, height);
-		if (bl) {
+		if (disableBlend) {
 			GlStateManager._disableBlend();
 		}
 

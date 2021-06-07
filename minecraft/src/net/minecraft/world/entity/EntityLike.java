@@ -11,7 +11,12 @@ import net.minecraft.util.math.Box;
  */
 public interface EntityLike {
 	/**
-	 * Returns the network ID of this entity.
+	 * {@return the network ID of this entity}
+	 * 
+	 * <p>Compared to the {@linkplain #getUuid() UUID}, the integer network ID is
+	 * significantly smaller and more suitable for network transportation. However, it
+	 * is not persistent across game runs. For persistent purposes such as commands
+	 * or game data, use the UUID.
 	 */
 	int getId();
 

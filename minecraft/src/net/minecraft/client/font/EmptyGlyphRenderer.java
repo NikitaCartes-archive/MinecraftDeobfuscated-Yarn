@@ -13,7 +13,7 @@ public class EmptyGlyphRenderer extends GlyphRenderer {
 		super(
 			RenderLayer.getText(new Identifier("")),
 			RenderLayer.getTextSeeThrough(new Identifier("")),
-			RenderLayer.method_37345(new Identifier("")),
+			RenderLayer.getTextPolygonOffset(new Identifier("")),
 			0.0F,
 			0.0F,
 			0.0F,

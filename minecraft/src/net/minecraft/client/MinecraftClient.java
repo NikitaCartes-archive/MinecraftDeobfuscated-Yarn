@@ -451,7 +451,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private CrashReport crashReport;
 	private static int currentFps;
 	public String fpsDebugString = "";
-	public boolean field_32144;
+	public boolean wireFrame;
 	public boolean debugChunkInfo;
 	public boolean debugChunkOcclusion;
 	public boolean chunkCullingEnabled = true;
@@ -617,8 +617,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					+ this.window.getFramebufferHeight()
 					+ ").\nPlease make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions)."
 			);
-			if (GlDebug.method_36479()) {
-				stringBuilder.append("\n\nReported GL debug messages:\n").append(String.join("\n", GlDebug.method_36478()));
+			if (GlDebug.isDebugMessageEnabled()) {
+				stringBuilder.append("\n\nReported GL debug messages:\n").append(String.join("\n", GlDebug.collectDebugMessages()));
 			}
 
 			this.window.setWindowedSize(this.framebuffer.textureWidth, this.framebuffer.textureHeight);
@@ -1364,7 +1364,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			try {
 				zipCompressor.write(Paths.get("system.txt"), systemDetails.collect());
-				zipCompressor.write(Paths.get("client").resolve(this.options.method_37294().getName()), this.options.method_37295());
+				zipCompressor.write(Paths.get("client").resolve(this.options.getOptionsFile().getName()), this.options.collectProfiledOptions());
 				list.forEach(zipCompressor::copyAll);
 			} catch (Throwable var20) {
 				try {
@@ -2417,7 +2417,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			(Supplier<String>)(() -> client != null ? client.window.getFramebufferWidth() + "x" + client.window.getFramebufferHeight() : "<not initialized>")
 		);
 		systemDetails.addSection("GL Caps", RenderSystem::getCapsString);
-		systemDetails.addSection("GL debug messages", (Supplier<String>)(() -> GlDebug.method_36479() ? String.join("\n", GlDebug.method_36478()) : "<disabled>"));
+		systemDetails.addSection(
+			"GL debug messages", (Supplier<String>)(() -> GlDebug.isDebugMessageEnabled() ? String.join("\n", GlDebug.collectDebugMessages()) : "<disabled>")
+		);
 		systemDetails.addSection("Using VBOs", (Supplier<String>)(() -> "Yes"));
 		systemDetails.addSection(
 			"Is Modded",

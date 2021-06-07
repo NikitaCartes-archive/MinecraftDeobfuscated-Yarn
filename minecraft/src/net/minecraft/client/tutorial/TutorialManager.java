@@ -134,7 +134,7 @@ public class TutorialManager {
 	}
 
 	/**
-	 * Returns whether the current game mode of the client is {@linkplain net.minecraft.world.GameMode#SURVIVAL survival}.
+	 * {@return whether the current game mode of the client is {@linkplain net.minecraft.world.GameMode#SURVIVAL survival}}
 	 */
 	public boolean isInSurvival() {
 		if (this.client.interactionManager == null) {
@@ -164,9 +164,9 @@ public class TutorialManager {
 		private final int expiry;
 		private int age;
 
-		Entry(TutorialToast tutorialToast, int i) {
-			this.toast = tutorialToast;
-			this.expiry = i;
+		Entry(TutorialToast toast, int expiry) {
+			this.toast = toast;
+			this.expiry = expiry;
 		}
 
 		/**

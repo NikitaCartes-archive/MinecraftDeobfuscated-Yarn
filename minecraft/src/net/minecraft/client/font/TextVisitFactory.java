@@ -204,8 +204,8 @@ public class TextVisitFactory {
 	}
 
 	/**
-	 * Returns a new string that has all surrogate characters within validated
-	 * from an original string.
+	 * {@return a new string that has all surrogate characters within}
+	 * The characters are validated from an original string {@code text}.
 	 * 
 	 * @param text the original string
 	 */

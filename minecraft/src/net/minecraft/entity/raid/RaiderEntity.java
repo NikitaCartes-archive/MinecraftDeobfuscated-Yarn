@@ -440,7 +440,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		private final float squaredDistance;
 		public final TargetPredicate closeRaiderPredicate = TargetPredicate.createNonAttackable()
 			.setBaseMaxDistance(8.0)
-			.visibleOnly()
+			.ignoreVisibility()
 			.ignoreDistanceScalingFactor();
 
 		public PatrolApproachGoal(IllagerEntity illager, float distance) {

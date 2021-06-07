@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 
 public class FungusBlock extends PlantBlock implements Fertilizable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 9.0, 12.0);
-	private static final double field_31099 = 0.4;
+	private static final double GROW_CHANCE = 0.4;
 	private final Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> feature;
 
 	protected FungusBlock(AbstractBlock.Settings settings, Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> feature) {

@@ -124,11 +124,11 @@ public class WindowFramebuffer extends Framebuffer {
 				: ImmutableList.of(WindowFramebuffer.DEFAULT);
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				WindowFramebuffer.Size size = (WindowFramebuffer.Size)object;
+			} else if (o != null && this.getClass() == o.getClass()) {
+				WindowFramebuffer.Size size = (WindowFramebuffer.Size)o;
 				return this.width == size.width && this.height == size.height;
 			} else {
 				return false;

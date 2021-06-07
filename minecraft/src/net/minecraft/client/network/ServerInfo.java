@@ -57,7 +57,7 @@ public class ServerInfo {
 	}
 
 	/**
-	 * Returns the policy on resource packs sent by this server.
+	 * {@return the policy on resource packs sent by this server}
 	 */
 	public ServerInfo.ResourcePackPolicy getResourcePackPolicy() {
 		return this.resourcePackPolicy;

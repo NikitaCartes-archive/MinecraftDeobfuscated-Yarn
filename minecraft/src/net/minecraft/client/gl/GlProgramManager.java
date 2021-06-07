@@ -12,16 +12,16 @@ import org.apache.logging.log4j.Logger;
 public class GlProgramManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static void useProgram(int i) {
+	public static void useProgram(int program) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		GlStateManager._glUseProgram(i);
+		GlStateManager._glUseProgram(program);
 	}
 
-	public static void deleteProgram(GlShader glShader) {
+	public static void deleteProgram(GlShader shader) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		glShader.getFragmentShader().release();
-		glShader.getVertexShader().release();
-		GlStateManager.glDeleteProgram(glShader.getProgramRef());
+		shader.getFragmentShader().release();
+		shader.getVertexShader().release();
+		GlStateManager.glDeleteProgram(shader.getProgramRef());
 	}
 
 	public static int createProgram() throws IOException {
@@ -34,18 +34,16 @@ public class GlProgramManager {
 		}
 	}
 
-	public static void linkProgram(GlShader glShader) {
+	public static void linkProgram(GlShader shader) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		glShader.attachReferencedShaders();
-		GlStateManager.glLinkProgram(glShader.getProgramRef());
-		int i = GlStateManager.glGetProgrami(glShader.getProgramRef(), 35714);
+		shader.attachReferencedShaders();
+		GlStateManager.glLinkProgram(shader.getProgramRef());
+		int i = GlStateManager.glGetProgrami(shader.getProgramRef(), 35714);
 		if (i == 0) {
 			LOGGER.warn(
-				"Error encountered when linking program containing VS {} and FS {}. Log output:",
-				glShader.getVertexShader().getName(),
-				glShader.getFragmentShader().getName()
+				"Error encountered when linking program containing VS {} and FS {}. Log output:", shader.getVertexShader().getName(), shader.getFragmentShader().getName()
 			);
-			LOGGER.warn(GlStateManager.glGetProgramInfoLog(glShader.getProgramRef(), 32768));
+			LOGGER.warn(GlStateManager.glGetProgramInfoLog(shader.getProgramRef(), 32768));
 		}
 	}
 }

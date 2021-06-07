@@ -907,8 +907,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, 1, orientation, setting, 1, 2, 1);
 		}
 
-		public DoubleYRoom(ServerWorld world, NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, nbtCompound);
+		public DoubleYRoom(ServerWorld world, NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, nbt);
 		}
 
 		@Override

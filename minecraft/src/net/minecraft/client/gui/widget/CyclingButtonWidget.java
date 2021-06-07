@@ -141,7 +141,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 	}
 
 	/**
-	 * Returns a generic narration message for this button.
+	 * {@return a generic narration message for this button}
 	 * 
 	 * <p>If the button omits the option text in rendering, such as showing only
 	 * "Value", this narration message will still read out the option like

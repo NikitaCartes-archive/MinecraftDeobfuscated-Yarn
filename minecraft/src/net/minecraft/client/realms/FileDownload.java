@@ -378,10 +378,10 @@ public class FileDownload {
 		private final LevelStorage levelStorageSource;
 		private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
 
-		ProgressListener(String string, File file, LevelStorage levelStorage, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus) {
-			this.worldName = string;
-			this.tempFile = file;
-			this.levelStorageSource = levelStorage;
+		ProgressListener(String worldName, File tempFile, LevelStorage levelStorageSource, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus) {
+			this.worldName = worldName;
+			this.tempFile = tempFile;
+			this.levelStorageSource = levelStorageSource;
 			this.downloadStatus = downloadStatus;
 		}
 

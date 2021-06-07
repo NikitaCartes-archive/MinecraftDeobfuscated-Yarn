@@ -75,7 +75,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof HorseBaseEntity && ((HorseBaseEntity)entity).isBred();
 	private static final TargetPredicate PARENT_HORSE_PREDICATE = TargetPredicate.createNonAttackable()
 		.setBaseMaxDistance(16.0)
-		.visibleOnly()
+		.ignoreVisibility()
 		.setPredicate(IS_BRED_HORSE);
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
 		Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE

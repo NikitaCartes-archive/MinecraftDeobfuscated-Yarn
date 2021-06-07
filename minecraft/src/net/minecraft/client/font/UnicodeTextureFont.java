@@ -228,12 +228,12 @@ public class UnicodeTextureFont implements Font {
 		private final int unpackSkipRows;
 		private final NativeImage image;
 
-		UnicodeTextureGlyph(int i, int j, int k, int l, NativeImage nativeImage) {
-			this.width = k;
-			this.height = l;
-			this.unpackSkipPixels = i;
-			this.unpackSkipRows = j;
-			this.image = nativeImage;
+		UnicodeTextureGlyph(int unpackSkipPixels, int unpackSkipRows, int width, int height, NativeImage image) {
+			this.width = width;
+			this.height = height;
+			this.unpackSkipPixels = unpackSkipPixels;
+			this.unpackSkipRows = unpackSkipRows;
+			this.image = image;
 		}
 
 		@Override

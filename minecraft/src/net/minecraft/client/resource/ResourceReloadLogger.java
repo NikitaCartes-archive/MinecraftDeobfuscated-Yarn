@@ -96,9 +96,9 @@ public class ResourceReloadLogger {
 		ResourceReloadLogger.RecoveryEntry recovery;
 		boolean finished;
 
-		ReloadState(ResourceReloadLogger.ReloadReason reloadReason, List<String> list) {
-			this.reason = reloadReason;
-			this.packs = list;
+		ReloadState(ResourceReloadLogger.ReloadReason reason, List<String> packs) {
+			this.reason = reason;
+			this.packs = packs;
 		}
 
 		public void addReloadSection(CrashReportSection section) {

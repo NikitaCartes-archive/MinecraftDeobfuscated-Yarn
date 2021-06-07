@@ -44,7 +44,7 @@ public interface MultilineText {
 			renderer,
 			(List<MultilineText.Line>)renderer.wrapLines(text, width)
 				.stream()
-				.map(orderedText -> new MultilineText.Line(orderedText, renderer.getWidth(orderedText)))
+				.map(textx -> new MultilineText.Line(textx, renderer.getWidth(textx)))
 				.collect(ImmutableList.toImmutableList())
 		);
 	}
@@ -55,7 +55,7 @@ public interface MultilineText {
 			(List<MultilineText.Line>)renderer.wrapLines(text, width)
 				.stream()
 				.limit((long)maxLines)
-				.map(orderedText -> new MultilineText.Line(orderedText, renderer.getWidth(orderedText)))
+				.map(textx -> new MultilineText.Line(textx, renderer.getWidth(textx)))
 				.collect(ImmutableList.toImmutableList())
 		);
 	}
@@ -65,17 +65,17 @@ public interface MultilineText {
 			renderer,
 			(List<MultilineText.Line>)Arrays.stream(texts)
 				.map(Text::asOrderedText)
-				.map(orderedText -> new MultilineText.Line(orderedText, renderer.getWidth(orderedText)))
+				.map(text -> new MultilineText.Line(text, renderer.getWidth(text)))
 				.collect(ImmutableList.toImmutableList())
 		);
 	}
 
-	static MultilineText method_35726(TextRenderer textRenderer, List<Text> list) {
+	static MultilineText method_35726(TextRenderer renderer, List<Text> texts) {
 		return create(
-			textRenderer,
-			(List<MultilineText.Line>)list.stream()
+			renderer,
+			(List<MultilineText.Line>)texts.stream()
 				.map(Text::asOrderedText)
-				.map(orderedText -> new MultilineText.Line(orderedText, textRenderer.getWidth(orderedText)))
+				.map(text -> new MultilineText.Line(text, renderer.getWidth(text)))
 				.collect(ImmutableList.toImmutableList())
 		);
 	}
@@ -145,9 +145,9 @@ public interface MultilineText {
 		final OrderedText text;
 		final int width;
 
-		Line(OrderedText orderedText, int i) {
-			this.text = orderedText;
-			this.width = i;
+		Line(OrderedText text, int width) {
+			this.text = text;
+			this.width = width;
 		}
 	}
 }

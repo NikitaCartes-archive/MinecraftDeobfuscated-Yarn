@@ -41,7 +41,7 @@ public class TargetPredicate {
 		return this;
 	}
 
-	public TargetPredicate visibleOnly() {
+	public TargetPredicate ignoreVisibility() {
 		this.respectsVisibility = false;
 		return this;
 	}

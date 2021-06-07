@@ -9,7 +9,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 public class AnimalMateGoal extends Goal {
-	private static final TargetPredicate VALID_MATE_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(8.0).visibleOnly();
+	private static final TargetPredicate VALID_MATE_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(8.0).ignoreVisibility();
 	protected final AnimalEntity animal;
 	private final Class<? extends AnimalEntity> entityClass;
 	protected final World world;

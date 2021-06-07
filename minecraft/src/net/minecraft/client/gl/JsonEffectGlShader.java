@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class JsonEffectGlShader implements EffectGlShader, AutoCloseable {
-	private static final String field_32682 = "shaders/program/";
+	private static final String PROGRAM_DIRECTORY = "shaders/program/";
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Uniform DEFAULT_UNIFORM = new Uniform();
 	private static final boolean field_32683 = true;

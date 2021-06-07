@@ -387,14 +387,22 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		private final boolean cameraOffset;
 		private final boolean textured;
 
-		DrawArrayParameters(VertexFormat vertexFormat, int i, int j, VertexFormat.DrawMode drawMode, VertexFormat.IntType intType, boolean bl, boolean bl2) {
+		DrawArrayParameters(
+			VertexFormat vertexFormat,
+			int count,
+			int vertexCount,
+			VertexFormat.DrawMode mode,
+			VertexFormat.IntType elementFormat,
+			boolean cameraOffset,
+			boolean textured
+		) {
 			this.vertexFormat = vertexFormat;
-			this.count = i;
-			this.vertexCount = j;
-			this.mode = drawMode;
-			this.elementFormat = intType;
-			this.cameraOffset = bl;
-			this.textured = bl2;
+			this.count = count;
+			this.vertexCount = vertexCount;
+			this.mode = mode;
+			this.elementFormat = elementFormat;
+			this.cameraOffset = cameraOffset;
+			this.textured = textured;
 		}
 
 		public VertexFormat getVertexFormat() {

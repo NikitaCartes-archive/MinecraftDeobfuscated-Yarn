@@ -23,10 +23,10 @@ public class AllowedAddressResolver {
 
 	public Optional<Address> resolve(ServerAddress address) {
 		Optional<Address> optional = this.addressResolver.resolve(address);
-		if ((!optional.isPresent() || this.blockListChecker.isBlocked((Address)optional.get())) && this.blockListChecker.isBlocked(address)) {
+		if ((!optional.isPresent() || this.blockListChecker.isAllowed((Address)optional.get())) && this.blockListChecker.isAllowed(address)) {
 			Optional<ServerAddress> optional2 = this.redirectResolver.lookupRedirect(address);
 			if (optional2.isPresent()) {
-				optional = this.addressResolver.resolve((ServerAddress)optional2.get()).filter(this.blockListChecker::isBlocked);
+				optional = this.addressResolver.resolve((ServerAddress)optional2.get()).filter(this.blockListChecker::isAllowed);
 			}
 
 			return optional;

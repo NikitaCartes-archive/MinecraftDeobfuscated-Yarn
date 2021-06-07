@@ -16,7 +16,7 @@ public interface FetchRateLimiter {
 	void onRun();
 
 	/**
-	 * Returns the time left before the next scheduled run of the tracked task.
+	 * {@return the time left before the next scheduled run of the tracked task}
 	 */
 	long getRemainingPeriod();
 }

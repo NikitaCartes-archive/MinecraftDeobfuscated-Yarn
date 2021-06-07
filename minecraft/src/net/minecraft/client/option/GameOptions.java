@@ -728,11 +728,11 @@ public class GameOptions {
 		return arm == Arm.LEFT ? "left" : "right";
 	}
 
-	public File method_37294() {
+	public File getOptionsFile() {
 		return this.optionsFile;
 	}
 
-	public String method_37295() {
+	public String collectProfiledOptions() {
 		ImmutableList<Pair<String, String>> immutableList = ImmutableList.<Pair<String, String>>builder()
 			.add(Pair.of("ao", String.valueOf(this.ao)))
 			.add(Pair.of("biomeBlendRadius", String.valueOf(this.biomeBlendRadius)))
@@ -763,7 +763,7 @@ public class GameOptions {
 			.add(Pair.of("useNativeTransport", String.valueOf(this.useNativeTransport)))
 			.build();
 		return (String)immutableList.stream()
-			.map(pair -> (String)pair.getFirst() + ": " + (String)pair.getSecond())
+			.map(option -> (String)option.getFirst() + ": " + (String)option.getSecond())
 			.collect(Collectors.joining(System.lineSeparator()));
 	}
 

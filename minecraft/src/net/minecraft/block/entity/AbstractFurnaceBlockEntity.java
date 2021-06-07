@@ -178,8 +178,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	/**
-	 * Returns whether the provided {@code item} is in the {@link
-	 * net.minecraft.tag.ItemTags#NON_FLAMMABLE_WOOD non_flammable_wood} tag.
+	 * {@return whether the provided {@code item} is in the {@link
+	 * net.minecraft.tag.ItemTags#NON_FLAMMABLE_WOOD non_flammable_wood} tag}
 	 */
 	private static boolean isNonFlammableWood(Item item) {
 		return ItemTags.NON_FLAMMABLE_WOOD.contains(item);

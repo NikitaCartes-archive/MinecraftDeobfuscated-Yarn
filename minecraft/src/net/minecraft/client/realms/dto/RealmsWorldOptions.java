@@ -32,10 +32,10 @@ public class RealmsWorldOptions extends ValueObject {
 	private static final boolean field_32104 = true;
 	private static final int field_32105 = 0;
 	private static final boolean field_32106 = false;
-	private static final int field_32107 = 2;
+	private static final int DEFAULT_DIFFICULTY = 2;
 	private static final int field_32108 = 0;
-	private static final String field_32109 = "";
-	private static final long field_32110 = -1L;
+	private static final String DEFAULT_SLOT_NAME = "";
+	private static final long DEFAULT_WORLD_TEMPLATE_ID = -1L;
 	private static final String DEFAULT_WORLD_TEMPLATE_IMAGE = null;
 
 	public RealmsWorldOptions(

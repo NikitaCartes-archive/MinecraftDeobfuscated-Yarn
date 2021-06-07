@@ -13,7 +13,7 @@ public class BlockBreakingInfo implements Comparable<BlockBreakingInfo> {
 		this.pos = pos;
 	}
 
-	public int method_34868() {
+	public int getActorId() {
 		return this.actorNetworkId;
 	}
 

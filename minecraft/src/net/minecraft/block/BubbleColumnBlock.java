@@ -26,7 +26,7 @@ import net.minecraft.world.WorldView;
 
 public class BubbleColumnBlock extends Block implements FluidDrainable {
 	public static final BooleanProperty DRAG = Properties.DRAG;
-	private static final int field_31038 = 5;
+	private static final int SCHEDULED_TICK_DELAY = 5;
 
 	public BubbleColumnBlock(AbstractBlock.Settings settings) {
 		super(settings);

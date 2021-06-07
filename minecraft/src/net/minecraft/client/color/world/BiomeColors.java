@@ -10,8 +10,8 @@ import net.minecraft.world.level.ColorResolver;
 @Environment(EnvType.CLIENT)
 public class BiomeColors {
 	public static final ColorResolver GRASS_COLOR = Biome::getGrassColorAt;
-	public static final ColorResolver FOLIAGE_COLOR = (biome, d, e) -> biome.getFoliageColor();
-	public static final ColorResolver WATER_COLOR = (biome, d, e) -> biome.getWaterColor();
+	public static final ColorResolver FOLIAGE_COLOR = (biome, x, z) -> biome.getFoliageColor();
+	public static final ColorResolver WATER_COLOR = (biome, x, z) -> biome.getWaterColor();
 
 	private static int getColor(BlockRenderView world, BlockPos pos, ColorResolver resolver) {
 		return world.getColor(pos, resolver);

@@ -40,8 +40,8 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Shader implements GlShader, AutoCloseable {
-	private static final String field_32778 = "shaders/core/";
-	private static final String field_32779 = "shaders/include/";
+	private static final String CORE_DIRECTORY = "shaders/core/";
+	private static final String INCLUDE_DIRECTORY = "shaders/include/";
 	static final Logger LOGGER = LogManager.getLogger();
 	private static final Uniform DEFAULT_UNIFORM = new Uniform();
 	private static final boolean field_32780 = true;
@@ -393,9 +393,9 @@ public class Shader implements GlShader, AutoCloseable {
 		return (GlUniform)this.loadedUniforms.get(name);
 	}
 
-	public Uniform method_35785(String string) {
+	public Uniform getUniformOrDefault(String name) {
 		RenderSystem.assertThread(RenderSystem::isOnGameThread);
-		GlUniform glUniform = this.getUniform(string);
+		GlUniform glUniform = this.getUniform(name);
 		return (Uniform)(glUniform == null ? DEFAULT_UNIFORM : glUniform);
 	}
 
@@ -510,11 +510,11 @@ public class Shader implements GlShader, AutoCloseable {
 		this.vertexShader.attachTo(this);
 	}
 
-	public VertexFormat method_35786() {
+	public VertexFormat getFormat() {
 		return this.format;
 	}
 
-	public String method_35787() {
+	public String getName() {
 		return this.name;
 	}
 
