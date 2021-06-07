@@ -30,14 +30,14 @@ implements Comparable<KeyBinding> {
     public static final String INVENTORY_CATEGORY = "key.categories.inventory";
     public static final String UI_CATEGORY = "key.categories.ui";
     public static final String CREATIVE_CATEGORY = "key.categories.creative";
-    private static final Map<String, Integer> categoryOrderMap = Util.make(Maps.newHashMap(), hashMap -> {
-        hashMap.put(MOVEMENT_CATEGORY, 1);
-        hashMap.put(GAMEPLAY_CATEGORY, 2);
-        hashMap.put(INVENTORY_CATEGORY, 3);
-        hashMap.put(CREATIVE_CATEGORY, 4);
-        hashMap.put(MULTIPLAYER_CATEGORY, 5);
-        hashMap.put(UI_CATEGORY, 6);
-        hashMap.put(MISC_CATEGORY, 7);
+    private static final Map<String, Integer> categoryOrderMap = Util.make(Maps.newHashMap(), map -> {
+        map.put(MOVEMENT_CATEGORY, 1);
+        map.put(GAMEPLAY_CATEGORY, 2);
+        map.put(INVENTORY_CATEGORY, 3);
+        map.put(CREATIVE_CATEGORY, 4);
+        map.put(MULTIPLAYER_CATEGORY, 5);
+        map.put(UI_CATEGORY, 6);
+        map.put(MISC_CATEGORY, 7);
     });
     private final String translationKey;
     private final InputUtil.Key defaultKey;

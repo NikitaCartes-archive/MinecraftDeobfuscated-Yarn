@@ -42,7 +42,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class StructurePiece {
-    private static final Logger field_29327 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     protected static final BlockState AIR = Blocks.CAVE_AIR.getDefaultState();
     protected BlockBox boundingBox;
     @Nullable
@@ -60,7 +60,7 @@ public abstract class StructurePiece {
     }
 
     public StructurePiece(StructurePieceType type, NbtCompound nbt) {
-        this(type, nbt.getInt("GD"), (BlockBox)BlockBox.CODEC.parse(NbtOps.INSTANCE, nbt.get("BB")).resultOrPartial(field_29327::error).orElseThrow(() -> new IllegalArgumentException("Invalid boundingbox")));
+        this(type, nbt.getInt("GD"), (BlockBox)BlockBox.CODEC.parse(NbtOps.INSTANCE, nbt.get("BB")).resultOrPartial(LOGGER::error).orElseThrow(() -> new IllegalArgumentException("Invalid boundingbox")));
         int i = nbt.getInt("O");
         this.setOrientation(i == -1 ? null : Direction.fromHorizontal(i));
     }
@@ -79,7 +79,7 @@ public abstract class StructurePiece {
     public final NbtCompound toNbt(ServerWorld world) {
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
-        BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(field_29327::error).ifPresent(nbtElement -> nbtCompound.put("BB", (NbtElement)nbtElement));
+        BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbtCompound.put("BB", (NbtElement)nbtElement));
         Direction direction = this.getFacing();
         nbtCompound.putInt("O", direction == null ? -1 : direction.getHorizontal());
         nbtCompound.putInt("GD", this.chainLength);

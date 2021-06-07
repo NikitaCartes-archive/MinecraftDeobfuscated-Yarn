@@ -651,13 +651,13 @@ public class GameOptions {
         return arm == Arm.LEFT ? "left" : "right";
     }
 
-    public File method_37294() {
+    public File getOptionsFile() {
         return this.optionsFile;
     }
 
-    public String method_37295() {
+    public String collectProfiledOptions() {
         ImmutableCollection immutableList = ((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)ImmutableList.builder().add(Pair.of("ao", String.valueOf((Object)this.ao)))).add(Pair.of("biomeBlendRadius", String.valueOf(this.biomeBlendRadius)))).add(Pair.of("enableVsync", String.valueOf(this.enableVsync)))).add(Pair.of("entityDistanceScaling", String.valueOf(this.entityDistanceScaling)))).add(Pair.of("entityShadows", String.valueOf(this.entityShadows)))).add(Pair.of("forceUnicodeFont", String.valueOf(this.forceUnicodeFont)))).add(Pair.of("fov", String.valueOf(this.fov)))).add(Pair.of("fovEffectScale", String.valueOf(this.fovEffectScale)))).add(Pair.of("fullscreen", String.valueOf(this.fullscreen)))).add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution)))).add(Pair.of("gamma", String.valueOf(this.gamma)))).add(Pair.of("glDebugVerbosity", String.valueOf(this.glDebugVerbosity)))).add(Pair.of("graphicsMode", String.valueOf((Object)this.graphicsMode)))).add(Pair.of("guiScale", String.valueOf(this.guiScale)))).add(Pair.of("maxFps", String.valueOf(this.maxFps)))).add(Pair.of("mipmapLevels", String.valueOf(this.mipmapLevels)))).add(Pair.of("narrator", String.valueOf((Object)this.narrator)))).add(Pair.of("overrideHeight", String.valueOf(this.overrideHeight)))).add(Pair.of("overrideWidth", String.valueOf(this.overrideWidth)))).add(Pair.of("particles", String.valueOf((Object)this.particles)))).add(Pair.of("reducedDebugInfo", String.valueOf(this.reducedDebugInfo)))).add(Pair.of("renderClouds", String.valueOf((Object)this.cloudRenderMode)))).add(Pair.of("renderDistance", String.valueOf(this.viewDistance)))).add(Pair.of("resourcePacks", String.valueOf(this.resourcePacks)))).add(Pair.of("screenEffectScale", String.valueOf(this.distortionEffectScale)))).add(Pair.of("syncChunkWrites", String.valueOf(this.syncChunkWrites)))).add(Pair.of("useNativeTransport", String.valueOf(this.useNativeTransport)))).build();
-        return immutableList.stream().map(pair -> (String)pair.getFirst() + ": " + (String)pair.getSecond()).collect(Collectors.joining(System.lineSeparator()));
+        return immutableList.stream().map(option -> (String)option.getFirst() + ": " + (String)option.getSecond()).collect(Collectors.joining(System.lineSeparator()));
     }
 
     @Environment(value=EnvType.CLIENT)

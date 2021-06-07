@@ -322,8 +322,8 @@ public abstract class AbstractBlock {
     }
 
     @Deprecated
-    public boolean method_37403(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
+    public boolean isShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
+        return Block.isShapeFullCube(state.getCollisionShape(world, pos));
     }
 
     @Deprecated
@@ -994,7 +994,7 @@ public abstract class AbstractBlock {
             if (this.shapeCache != null) {
                 return this.shapeCache.isFullCube;
             }
-            return this.getBlock().method_37403(this.asBlockState(), world, pos);
+            return this.getBlock().isShapeFullCube(this.asBlockState(), world, pos);
         }
 
         protected abstract BlockState asBlockState();

@@ -145,7 +145,7 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
     }
 
     @Override
-    public int method_33893() {
+    public int getRenderDistance() {
         return 96;
     }
 }

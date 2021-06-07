@@ -49,10 +49,10 @@ public class FluidRenderer {
         return fluidState.getFluid().matchesType(state.getFluid());
     }
 
-    private static boolean method_29710(BlockView blockView, Direction direction, float f, BlockPos blockPos, BlockState blockState) {
-        if (blockState.isOpaque()) {
+    private static boolean isSideCovered(BlockView world, Direction direction, float f, BlockPos pos, BlockState state) {
+        if (state.isOpaque()) {
             VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, f, 1.0);
-            VoxelShape voxelShape2 = blockState.getCullingShape(blockView, blockPos);
+            VoxelShape voxelShape2 = state.getCullingShape(world, pos);
             return VoxelShapes.isSideCovered(voxelShape, voxelShape2, direction);
         }
         return false;
@@ -61,15 +61,15 @@ public class FluidRenderer {
     private static boolean isSideCovered(BlockView world, BlockPos pos, Direction direction, float maxDeviation) {
         BlockPos blockPos = pos.offset(direction);
         BlockState blockState = world.getBlockState(blockPos);
-        return FluidRenderer.method_29710(world, direction, maxDeviation, blockPos, blockState);
+        return FluidRenderer.isSideCovered(world, direction, maxDeviation, blockPos, blockState);
     }
 
-    private static boolean method_29709(BlockView blockView, BlockPos blockPos, BlockState blockState, Direction direction) {
-        return FluidRenderer.method_29710(blockView, direction.getOpposite(), 1.0f, blockPos, blockState);
+    private static boolean isOppositeSideCovered(BlockView world, BlockPos pos, BlockState state, Direction direction) {
+        return FluidRenderer.isSideCovered(world, direction.getOpposite(), 1.0f, pos, state);
     }
 
     public static boolean method_29708(BlockRenderView blockRenderView, BlockPos blockPos, FluidState fluidState, BlockState blockState, Direction direction) {
-        return !FluidRenderer.method_29709(blockRenderView, blockPos, blockState, direction) && !FluidRenderer.isSameFluid(blockRenderView, blockPos, direction, fluidState);
+        return !FluidRenderer.isOppositeSideCovered(blockRenderView, blockPos, blockState, direction) && !FluidRenderer.isSameFluid(blockRenderView, blockPos, direction, fluidState);
     }
 
     public boolean render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state) {

@@ -43,7 +43,7 @@ public class ClientEntityManager<T extends EntityLike> {
         this.cache.getTrackingSections(l).forEach(sections -> {
             EntityTrackingStatus entityTrackingStatus = sections.swapStatus(EntityTrackingStatus.TICKING);
             if (!entityTrackingStatus.shouldTick()) {
-                sections.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this.handler::startTicking);
+                sections.stream().filter(e -> !e.isPlayer()).forEach(this.handler::startTicking);
             }
         });
     }
@@ -54,7 +54,7 @@ public class ClientEntityManager<T extends EntityLike> {
         this.cache.getTrackingSections(l).forEach(sections -> {
             EntityTrackingStatus entityTrackingStatus = sections.swapStatus(EntityTrackingStatus.TRACKED);
             if (entityTrackingStatus.shouldTick()) {
-                sections.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this.handler::stopTicking);
+                sections.stream().filter(e -> !e.isPlayer()).forEach(this.handler::stopTicking);
             }
         });
     }
@@ -103,12 +103,12 @@ public class ClientEntityManager<T extends EntityLike> {
          * WARNING - Possible parameter corruption
          * WARNING - void declaration
          */
-        Listener(T entityLike, long l, EntityTrackingSection<T> entityTrackingSection) {
+        Listener(T entity, long pos, EntityTrackingSection<T> section) {
             void var3_3;
             this.manager = clientEntityManager;
-            this.entity = entityLike;
+            this.entity = entity;
             this.lastSectionPos = var3_3;
-            this.section = entityTrackingSection;
+            this.section = section;
         }
 
         @Override

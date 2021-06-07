@@ -325,7 +325,7 @@ extends HostileEntity {
 
         public TrackOwnerTargetGoal(PathAwareEntity mob) {
             super(mob, false);
-            this.TRACK_OWNER_PREDICATE = TargetPredicate.createNonAttackable().visibleOnly().ignoreDistanceScalingFactor();
+            this.TRACK_OWNER_PREDICATE = TargetPredicate.createNonAttackable().ignoreVisibility().ignoreDistanceScalingFactor();
         }
 
         @Override

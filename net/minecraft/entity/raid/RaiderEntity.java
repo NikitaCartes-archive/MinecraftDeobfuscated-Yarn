@@ -451,7 +451,7 @@ extends PatrolEntity {
     extends Goal {
         private final RaiderEntity raider;
         private final float squaredDistance;
-        public final TargetPredicate closeRaiderPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(8.0).visibleOnly().ignoreDistanceScalingFactor();
+        public final TargetPredicate closeRaiderPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(8.0).ignoreVisibility().ignoreDistanceScalingFactor();
 
         public PatrolApproachGoal(IllagerEntity illager, float distance) {
             this.raider = illager;

@@ -39,26 +39,26 @@ implements BlockEntityRenderer<BannerBlockEntity> {
     private static final int field_32817 = 20;
     private static final int field_32818 = 40;
     private static final int field_32819 = 16;
-    public static final String field_32816 = "flag";
-    private static final String field_32820 = "pole";
-    private static final String field_32821 = "bar";
+    public static final String BANNER = "flag";
+    private static final String PILLAR = "pole";
+    private static final String CROSSBAR = "bar";
     private final ModelPart banner;
     private final ModelPart pillar;
     private final ModelPart crossbar;
 
     public BannerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         ModelPart modelPart = ctx.getLayerModelPart(EntityModelLayers.BANNER);
-        this.banner = modelPart.getChild(field_32816);
-        this.pillar = modelPart.getChild(field_32820);
-        this.crossbar = modelPart.getChild(field_32821);
+        this.banner = modelPart.getChild(BANNER);
+        this.pillar = modelPart.getChild(PILLAR);
+        this.crossbar = modelPart.getChild(CROSSBAR);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild(field_32816, ModelPartBuilder.create().uv(0, 0).cuboid(-10.0f, 0.0f, -2.0f, 20.0f, 40.0f, 1.0f), ModelTransform.NONE);
-        modelPartData.addChild(field_32820, ModelPartBuilder.create().uv(44, 0).cuboid(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f), ModelTransform.NONE);
-        modelPartData.addChild(field_32821, ModelPartBuilder.create().uv(0, 42).cuboid(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f), ModelTransform.NONE);
+        modelPartData.addChild(BANNER, ModelPartBuilder.create().uv(0, 0).cuboid(-10.0f, 0.0f, -2.0f, 20.0f, 40.0f, 1.0f), ModelTransform.NONE);
+        modelPartData.addChild(PILLAR, ModelPartBuilder.create().uv(44, 0).cuboid(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f), ModelTransform.NONE);
+        modelPartData.addChild(CROSSBAR, ModelPartBuilder.create().uv(0, 42).cuboid(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f), ModelTransform.NONE);
         return TexturedModelData.of(modelData, 64, 64);
     }
 

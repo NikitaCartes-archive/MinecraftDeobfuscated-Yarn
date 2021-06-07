@@ -37,10 +37,10 @@ extends ValueObject {
     private static final boolean field_32104 = true;
     private static final int field_32105 = 0;
     private static final boolean field_32106 = false;
-    private static final int field_32107 = 2;
+    private static final int DEFAULT_DIFFICULTY = 2;
     private static final int field_32108 = 0;
-    private static final String field_32109 = "";
-    private static final long field_32110 = -1L;
+    private static final String DEFAULT_SLOT_NAME = "";
+    private static final long DEFAULT_WORLD_TEMPLATE_ID = -1L;
     private static final String DEFAULT_WORLD_TEMPLATE_IMAGE = null;
 
     public RealmsWorldOptions(boolean pvp, boolean spawnAnimals, boolean spawnMonsters, boolean spawnNpcs, int spawnProtection, boolean commandBlocks, int difficulty, int gameMode, boolean forceGameMode, @Nullable String slotName) {
@@ -57,7 +57,7 @@ extends ValueObject {
     }
 
     public static RealmsWorldOptions getDefaults() {
-        return new RealmsWorldOptions(true, true, true, true, 0, false, 2, 0, false, field_32109);
+        return new RealmsWorldOptions(true, true, true, true, 0, false, 2, 0, false, DEFAULT_SLOT_NAME);
     }
 
     public static RealmsWorldOptions getEmptyDefaults() {
@@ -71,7 +71,7 @@ extends ValueObject {
     }
 
     public static RealmsWorldOptions parse(JsonObject json) {
-        RealmsWorldOptions realmsWorldOptions = new RealmsWorldOptions(JsonUtils.getBooleanOr("pvp", json, true), JsonUtils.getBooleanOr("spawnAnimals", json, true), JsonUtils.getBooleanOr("spawnMonsters", json, true), JsonUtils.getBooleanOr("spawnNPCs", json, true), JsonUtils.getIntOr("spawnProtection", json, 0), JsonUtils.getBooleanOr("commandBlocks", json, false), JsonUtils.getIntOr("difficulty", json, 2), JsonUtils.getIntOr("gameMode", json, 0), JsonUtils.getBooleanOr("forceGameMode", json, false), JsonUtils.getStringOr("slotName", json, field_32109));
+        RealmsWorldOptions realmsWorldOptions = new RealmsWorldOptions(JsonUtils.getBooleanOr("pvp", json, true), JsonUtils.getBooleanOr("spawnAnimals", json, true), JsonUtils.getBooleanOr("spawnMonsters", json, true), JsonUtils.getBooleanOr("spawnNPCs", json, true), JsonUtils.getIntOr("spawnProtection", json, 0), JsonUtils.getBooleanOr("commandBlocks", json, false), JsonUtils.getIntOr("difficulty", json, 2), JsonUtils.getIntOr("gameMode", json, 0), JsonUtils.getBooleanOr("forceGameMode", json, false), JsonUtils.getStringOr("slotName", json, DEFAULT_SLOT_NAME));
         realmsWorldOptions.templateId = JsonUtils.getLongOr("worldTemplateId", json, -1L);
         realmsWorldOptions.templateImage = JsonUtils.getStringOr("worldTemplateImage", json, DEFAULT_WORLD_TEMPLATE_IMAGE);
         return realmsWorldOptions;
@@ -120,7 +120,7 @@ extends ValueObject {
         if (this.forceGameMode) {
             jsonObject.addProperty("forceGameMode", this.forceGameMode);
         }
-        if (!Objects.equals(this.slotName, field_32109)) {
+        if (!Objects.equals(this.slotName, DEFAULT_SLOT_NAME)) {
             jsonObject.addProperty("slotName", this.slotName);
         }
         return jsonObject.toString();

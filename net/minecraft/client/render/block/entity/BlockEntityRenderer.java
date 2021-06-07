@@ -18,12 +18,12 @@ public interface BlockEntityRenderer<T extends BlockEntity> {
         return false;
     }
 
-    default public int method_33893() {
+    default public int getRenderDistance() {
         return 64;
     }
 
     default public boolean method_33892(T blockEntity, Vec3d vec3d) {
-        return Vec3d.ofCenter(((BlockEntity)blockEntity).getPos()).isInRange(vec3d, this.method_33893());
+        return Vec3d.ofCenter(((BlockEntity)blockEntity).getPos()).isInRange(vec3d, this.getRenderDistance());
     }
 }
 

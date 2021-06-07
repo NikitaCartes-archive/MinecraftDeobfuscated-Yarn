@@ -149,7 +149,7 @@ implements FeatureRendererContext<T, M> {
     }
 
     /**
-     * Returns the packed overlay color for an entity, determined by its death progress and whether it is flashing.
+     * {@return the packed overlay color for an entity} It is determined by the entity's death progress and whether the entity is flashing.
      */
     public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
         return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
@@ -178,9 +178,8 @@ implements FeatureRendererContext<T, M> {
     }
 
     /**
-     * Returns if this entity is shaking in the way a zombie villager,
+     * {@return if this entity is shaking} Specifically, in the way a zombie villager,
      * zombie, husk, or piglin undergoing conversion shakes.
-     * husk, or piglin are undergoing conversion.
      */
     protected boolean isShaking(T entity) {
         return ((Entity)entity).isFreezing();

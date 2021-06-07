@@ -63,8 +63,8 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.EMPTY, location);
         }
 
-        public static Conditions method_37245(EntityPredicate entityPredicate) {
-            return new Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.ofLegacy(entityPredicate), LocationPredicate.ANY);
+        public static Conditions create(EntityPredicate entity) {
+            return new Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.ofLegacy(entity), LocationPredicate.ANY);
         }
 
         public static Conditions createSleptInBed() {
@@ -75,8 +75,8 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(Criteria.HERO_OF_THE_VILLAGE.id, EntityPredicate.Extended.EMPTY, LocationPredicate.ANY);
         }
 
-        public static Conditions method_37246(Block block, Item item) {
-            return Conditions.method_37245(EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(item).build()).build()).steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block).build()).build()).build());
+        public static Conditions createSteppingOnWithBoots(Block block, Item boots) {
+            return Conditions.create(EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(boots).build()).build()).steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block).build()).build()).build());
         }
 
         public boolean matches(ServerWorld world, double x, double y, double z) {

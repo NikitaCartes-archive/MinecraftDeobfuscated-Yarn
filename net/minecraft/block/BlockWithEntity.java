@@ -46,7 +46,7 @@ implements BlockEntityProvider {
     }
 
     /**
-     * Returns the ticker if the given type and expected type are the same, or null if they are different.
+     * {@return the ticker if the given type and expected type are the same, or {@code null} if they are different}
      */
     @Nullable
     protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> checkType(BlockEntityType<A> givenType, BlockEntityType<E> expectedType, BlockEntityTicker<? super E> ticker) {

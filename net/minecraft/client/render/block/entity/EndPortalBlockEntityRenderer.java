@@ -28,7 +28,7 @@ implements BlockEntityRenderer<T> {
     @Override
     public void render(T endPortalBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         Matrix4f matrix4f = matrixStack.peek().getModel();
-        this.renderSides(endPortalBlockEntity, matrix4f, vertexConsumerProvider.getBuffer(this.method_34589()));
+        this.renderSides(endPortalBlockEntity, matrix4f, vertexConsumerProvider.getBuffer(this.getLayer()));
     }
 
     private void renderSides(T entity, Matrix4f matrix4f, VertexConsumer vertexConsumer) {
@@ -59,7 +59,7 @@ implements BlockEntityRenderer<T> {
         return 0.375f;
     }
 
-    protected RenderLayer method_34589() {
+    protected RenderLayer getLayer() {
         return RenderLayer.getEndPortal();
     }
 }

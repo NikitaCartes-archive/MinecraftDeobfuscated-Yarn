@@ -32,6 +32,9 @@ extends TreeDecorator {
 
     @Override
     public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions) {
+        if (logPositions.isEmpty()) {
+            return;
+        }
         int i = logPositions.get(0).getY();
         logPositions.stream().filter(pos -> pos.getY() == i).forEach(pos -> {
             this.setArea(world, replacer, random, pos.west().north());

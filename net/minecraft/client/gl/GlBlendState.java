@@ -105,62 +105,62 @@ public class GlBlendState {
         return this.blendDisabled;
     }
 
-    public static int getFuncFromString(String string) {
-        String string2 = string.trim().toLowerCase(Locale.ROOT);
-        if ("add".equals(string2)) {
+    public static int getFuncFromString(String name) {
+        String string = name.trim().toLowerCase(Locale.ROOT);
+        if ("add".equals(string)) {
             return 32774;
         }
-        if ("subtract".equals(string2)) {
+        if ("subtract".equals(string)) {
             return 32778;
         }
-        if ("reversesubtract".equals(string2)) {
+        if ("reversesubtract".equals(string)) {
             return 32779;
         }
-        if ("reverse_subtract".equals(string2)) {
+        if ("reverse_subtract".equals(string)) {
             return 32779;
         }
-        if ("min".equals(string2)) {
+        if ("min".equals(string)) {
             return 32775;
         }
-        if ("max".equals(string2)) {
+        if ("max".equals(string)) {
             return 32776;
         }
         return 32774;
     }
 
-    public static int getComponentFromString(String string) {
-        String string2 = string.trim().toLowerCase(Locale.ROOT);
-        string2 = string2.replaceAll("_", "");
-        string2 = string2.replaceAll("one", "1");
-        string2 = string2.replaceAll("zero", "0");
-        if ("0".equals(string2 = string2.replaceAll("minus", "-"))) {
+    public static int getComponentFromString(String expression) {
+        String string = expression.trim().toLowerCase(Locale.ROOT);
+        string = string.replaceAll("_", "");
+        string = string.replaceAll("one", "1");
+        string = string.replaceAll("zero", "0");
+        if ("0".equals(string = string.replaceAll("minus", "-"))) {
             return 0;
         }
-        if ("1".equals(string2)) {
+        if ("1".equals(string)) {
             return 1;
         }
-        if ("srccolor".equals(string2)) {
+        if ("srccolor".equals(string)) {
             return 768;
         }
-        if ("1-srccolor".equals(string2)) {
+        if ("1-srccolor".equals(string)) {
             return 769;
         }
-        if ("dstcolor".equals(string2)) {
+        if ("dstcolor".equals(string)) {
             return 774;
         }
-        if ("1-dstcolor".equals(string2)) {
+        if ("1-dstcolor".equals(string)) {
             return 775;
         }
-        if ("srcalpha".equals(string2)) {
+        if ("srcalpha".equals(string)) {
             return 770;
         }
-        if ("1-srcalpha".equals(string2)) {
+        if ("1-srcalpha".equals(string)) {
             return 771;
         }
-        if ("dstalpha".equals(string2)) {
+        if ("dstalpha".equals(string)) {
             return 772;
         }
-        if ("1-dstalpha".equals(string2)) {
+        if ("1-dstalpha".equals(string)) {
             return 773;
         }
         return -1;

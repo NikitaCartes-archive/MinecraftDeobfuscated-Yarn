@@ -308,9 +308,9 @@ extends World {
             this.addParticle(blockParticle.particle, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
         }
         if (!blockState.isFullCube(this, pos)) {
-            this.getBiome(pos).getParticleConfig().ifPresent(biomeParticleConfig -> {
-                if (biomeParticleConfig.shouldAddParticle(this.random)) {
-                    this.addParticle(biomeParticleConfig.getParticle(), (double)pos.getX() + this.random.nextDouble(), (double)pos.getY() + this.random.nextDouble(), (double)pos.getZ() + this.random.nextDouble(), 0.0, 0.0, 0.0);
+            this.getBiome(pos).getParticleConfig().ifPresent(config -> {
+                if (config.shouldAddParticle(this.random)) {
+                    this.addParticle(config.getParticle(), (double)pos.getX() + this.random.nextDouble(), (double)pos.getY() + this.random.nextDouble(), (double)pos.getZ() + this.random.nextDouble(), 0.0, 0.0, 0.0);
                 }
             });
         }

@@ -140,8 +140,8 @@ implements AutoCloseable {
         return 1.0f - g * g * g * g;
     }
 
-    private float getBrightness(World world, int i) {
-        return world.getDimension().getBrightness(i);
+    private float getBrightness(World world, int lightLevel) {
+        return world.getDimension().getBrightness(lightLevel);
     }
 
     public static int pack(int block, int sky) {

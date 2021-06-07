@@ -15,7 +15,7 @@ import net.minecraft.util.math.Matrix4f;
 public class EmptyGlyphRenderer
 extends GlyphRenderer {
     public EmptyGlyphRenderer() {
-        super(RenderLayer.getText(new Identifier("")), RenderLayer.getTextSeeThrough(new Identifier("")), RenderLayer.method_37345(new Identifier("")), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        super(RenderLayer.getText(new Identifier("")), RenderLayer.getTextSeeThrough(new Identifier("")), RenderLayer.getTextPolygonOffset(new Identifier("")), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     @Override

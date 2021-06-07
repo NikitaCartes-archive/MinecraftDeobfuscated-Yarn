@@ -240,11 +240,11 @@ AutoCloseable {
     private final float[] field_20794 = new float[1024];
     private final float[] field_20795 = new float[1024];
 
-    public WorldRenderer(MinecraftClient client, BufferBuilderStorage bufferBuilderStorage) {
+    public WorldRenderer(MinecraftClient client, BufferBuilderStorage bufferBuilders) {
         this.client = client;
         this.entityRenderDispatcher = client.getEntityRenderDispatcher();
         this.blockEntityRenderDispatcher = client.getBlockEntityRenderDispatcher();
-        this.bufferBuilders = bufferBuilderStorage;
+        this.bufferBuilders = bufferBuilders;
         this.textureManager = client.getTextureManager();
         for (int i = 0; i < 32; ++i) {
             for (int j = 0; j < 32; ++j) {
@@ -680,13 +680,13 @@ AutoCloseable {
         this.chunkBuilder.reset();
     }
 
-    public void onResized(int i, int j) {
+    public void onResized(int width, int height) {
         this.scheduleTerrainUpdate();
         if (this.entityOutlineShader != null) {
-            this.entityOutlineShader.setupDimensions(i, j);
+            this.entityOutlineShader.setupDimensions(width, height);
         }
         if (this.transparencyShader != null) {
-            this.transparencyShader.setupDimensions(i, j);
+            this.transparencyShader.setupDimensions(width, height);
         }
     }
 
@@ -1007,7 +1007,7 @@ AutoCloseable {
             }
             this.renderEntity(entity, d, e, f, tickDelta, matrices, vertexConsumerProvider);
         }
-        immediate.method_37104();
+        immediate.drawCurrentLayer();
         this.checkEmpty(matrices);
         immediate.draw(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
         immediate.draw(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
@@ -1104,7 +1104,7 @@ AutoCloseable {
         immediate.draw(RenderLayer.getArmorEntityGlint());
         immediate.draw(RenderLayer.getGlint());
         immediate.draw(RenderLayer.getDirectGlint());
-        immediate.draw(RenderLayer.method_30676());
+        immediate.draw(RenderLayer.getGlintTranslucent());
         immediate.draw(RenderLayer.getEntityGlint());
         immediate.draw(RenderLayer.getDirectEntityGlint());
         immediate.draw(RenderLayer.getWaterMask());
@@ -1436,11 +1436,11 @@ AutoCloseable {
         vertexConsumer.vertex(this.capturedFrustumOrientation[l].getX(), this.capturedFrustumOrientation[l].getY(), this.capturedFrustumOrientation[l].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
     }
 
-    public void method_35775() {
+    public void captureFrustum() {
         this.shouldCaptureFrustum = true;
     }
 
-    public void method_35776() {
+    public void killFrustum() {
         this.capturedFrustum = null;
     }
 
@@ -1459,10 +1459,10 @@ AutoCloseable {
         }
     }
 
-    private void removeBlockBreakingInfo(BlockBreakingInfo blockBreakingInfo) {
-        long l = blockBreakingInfo.getPos().asLong();
+    private void removeBlockBreakingInfo(BlockBreakingInfo info) {
+        long l = info.getPos().asLong();
         Set set = (Set)this.blockBreakingProgressions.get(l);
-        set.remove(blockBreakingInfo);
+        set.remove(info);
         if (set.isEmpty()) {
             this.blockBreakingProgressions.remove(l);
         }
@@ -2707,12 +2707,12 @@ AutoCloseable {
         byte cullingState;
         final int propagationLevel;
 
-        ChunkInfo(ChunkBuilder.BuiltChunk builtChunk, @Nullable Direction direction, int i) {
-            this.chunk = builtChunk;
+        ChunkInfo(ChunkBuilder.BuiltChunk chunk, @Nullable Direction direction, int propagationLevel) {
+            this.chunk = chunk;
             if (direction != null) {
                 this.addDirection(direction);
             }
-            this.propagationLevel = i;
+            this.propagationLevel = propagationLevel;
         }
 
         public void updateCullingState(byte parentCullingState, Direction from) {

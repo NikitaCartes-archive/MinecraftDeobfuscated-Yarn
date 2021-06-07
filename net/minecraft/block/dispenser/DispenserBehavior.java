@@ -78,8 +78,11 @@ import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public interface DispenserBehavior {
+    public static final Logger LOGGER = LogManager.getLogger();
     public static final DispenserBehavior NOOP = (blockPointer, itemStack) -> itemStack;
 
     public ItemStack dispense(BlockPointer var1, ItemStack var2);
@@ -196,7 +199,12 @@ public interface DispenserBehavior {
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
                 EntityType<?> entityType = ((SpawnEggItem)stack.getItem()).getEntityType(stack.getTag());
-                entityType.spawnFromItemStack(pointer.getWorld(), stack, null, pointer.getBlockPos().offset(direction), SpawnReason.DISPENSER, direction != Direction.UP, false);
+                try {
+                    entityType.spawnFromItemStack(pointer.getWorld(), stack, null, pointer.getBlockPos().offset(direction), SpawnReason.DISPENSER, direction != Direction.UP, false);
+                } catch (Exception exception) {
+                    LOGGER.error("Error while dispensing spawn egg from dispenser at {}", (Object)pointer.getBlockPos(), (Object)exception);
+                    return ItemStack.EMPTY;
+                }
                 stack.decrement(1);
                 pointer.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, pointer.getBlockPos());
                 return stack;

@@ -98,16 +98,16 @@ public class NetherFortressGenerator {
 
     public static class Bridge
     extends Piece {
-        private static final int field_31565 = 5;
-        private static final int field_31566 = 10;
-        private static final int field_31567 = 19;
+        private static final int SIZE_X = 5;
+        private static final int SIZE_Y = 10;
+        private static final int SIZE_Z = 19;
 
         public Bridge(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_BRIDGE, chainLength, boundingBox);
             this.setOrientation(orientation);
         }
 
-        public Bridge(ServerWorld serverWorld, NbtCompound nbt) {
+        public Bridge(ServerWorld world, NbtCompound nbt) {
             super(StructurePieceType.NETHER_FORTRESS_BRIDGE, nbt);
         }
 
@@ -157,17 +157,17 @@ public class NetherFortressGenerator {
 
     public static class BridgeCrossing
     extends Piece {
-        private static final int field_31559 = 19;
-        private static final int field_31560 = 10;
-        private static final int field_31561 = 19;
+        private static final int SIZE_X = 19;
+        private static final int SIZE_Y = 10;
+        private static final int SIZE_Z = 19;
 
         public BridgeCrossing(int chainLength, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, chainLength, boundingBox);
             this.setOrientation(orientation);
         }
 
-        protected BridgeCrossing(int i, int j, Direction orientation) {
-            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, 0, StructurePiece.createBox(i, 64, j, orientation, 19, 10, 19));
+        protected BridgeCrossing(int x, int z, Direction orientation) {
+            super(StructurePieceType.NETHER_FORTRESS_BRIDGE_CROSSING, 0, StructurePiece.createBox(x, 64, z, orientation, 19, 10, 19));
             this.setOrientation(orientation);
         }
 
@@ -236,9 +236,9 @@ public class NetherFortressGenerator {
 
     public static class BridgeSmallCrossing
     extends Piece {
-        private static final int field_31595 = 7;
-        private static final int field_31596 = 9;
-        private static final int field_31597 = 7;
+        private static final int SIZE_X = 7;
+        private static final int SIZE_Y = 9;
+        private static final int SIZE_Z = 7;
 
         public BridgeSmallCrossing(int chainLength, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_BRIDGE_SMALL_CROSSING, chainLength, boundingBox);
@@ -297,9 +297,9 @@ public class NetherFortressGenerator {
 
     public static class BridgeStairs
     extends Piece {
-        private static final int field_31598 = 7;
-        private static final int field_31599 = 11;
-        private static final int field_31600 = 7;
+        private static final int SIZE_X = 7;
+        private static final int SIZE_Y = 11;
+        private static final int SIZE_Z = 7;
 
         public BridgeStairs(int chainLength, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_BRIDGE_STAIRS, chainLength, boundingBox);
@@ -357,9 +357,9 @@ public class NetherFortressGenerator {
 
     public static class BridgePlatform
     extends Piece {
-        private static final int field_31592 = 7;
-        private static final int field_31593 = 8;
-        private static final int field_31594 = 9;
+        private static final int SIZE_X = 7;
+        private static final int SIZE_Y = 8;
+        private static final int SIZE_Z = 9;
         private boolean hasBlazeSpawner;
 
         public BridgePlatform(int chainLength, BlockBox boundingBox, Direction orientation) {
@@ -437,9 +437,9 @@ public class NetherFortressGenerator {
 
     public static class CorridorExit
     extends Piece {
-        private static final int field_31574 = 13;
-        private static final int field_31575 = 14;
-        private static final int field_31576 = 13;
+        private static final int SIZE_X = 13;
+        private static final int SIZE_Y = 14;
+        private static final int SIZE_Z = 13;
 
         public CorridorExit(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, chainLength, boundingBox);
@@ -536,9 +536,9 @@ public class NetherFortressGenerator {
 
     public static class SmallCorridor
     extends Piece {
-        private static final int field_31583 = 5;
-        private static final int field_31584 = 7;
-        private static final int field_31585 = 5;
+        private static final int SIZE_X = 5;
+        private static final int SIZE_Y = 7;
+        private static final int SIZE_Z = 5;
 
         public SmallCorridor(int chainLength, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_SMALL_CORRIDOR, chainLength, boundingBox);
@@ -585,9 +585,9 @@ public class NetherFortressGenerator {
 
     public static class CorridorRightTurn
     extends Piece {
-        private static final int field_31586 = 5;
-        private static final int field_31587 = 7;
-        private static final int field_31588 = 5;
+        private static final int SIZE_X = 5;
+        private static final int SIZE_Y = 7;
+        private static final int SIZE_Z = 5;
         private boolean containsChest;
 
         public CorridorRightTurn(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
@@ -649,9 +649,9 @@ public class NetherFortressGenerator {
 
     public static class CorridorLeftTurn
     extends Piece {
-        private static final int field_31580 = 5;
-        private static final int field_31581 = 7;
-        private static final int field_31582 = 5;
+        private static final int SIZE_X = 5;
+        private static final int SIZE_Y = 7;
+        private static final int SIZE_Z = 5;
         private boolean containsChest;
 
         public CorridorLeftTurn(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
@@ -713,9 +713,9 @@ public class NetherFortressGenerator {
 
     public static class CorridorStairs
     extends Piece {
-        private static final int field_31568 = 5;
-        private static final int field_31569 = 14;
-        private static final int field_31570 = 10;
+        private static final int SIZE_X = 5;
+        private static final int SIZE_Y = 14;
+        private static final int SIZE_Z = 10;
 
         public CorridorStairs(int chainLength, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_STAIRS, chainLength, boundingBox);
@@ -771,9 +771,9 @@ public class NetherFortressGenerator {
 
     public static class CorridorBalcony
     extends Piece {
-        private static final int field_31571 = 9;
-        private static final int field_31572 = 7;
-        private static final int field_31573 = 9;
+        private static final int SIZE_X = 9;
+        private static final int SIZE_Y = 7;
+        private static final int SIZE_Z = 9;
 
         public CorridorBalcony(int chainLength, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_BALCONY, chainLength, boundingBox);
@@ -839,9 +839,9 @@ public class NetherFortressGenerator {
 
     public static class CorridorCrossing
     extends Piece {
-        private static final int field_31577 = 5;
-        private static final int field_31578 = 7;
-        private static final int field_31579 = 5;
+        private static final int SIZE_X = 5;
+        private static final int SIZE_Y = 7;
+        private static final int SIZE_Z = 5;
 
         public CorridorCrossing(int chainLength, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_CROSSING, chainLength, boundingBox);
@@ -887,9 +887,9 @@ public class NetherFortressGenerator {
 
     public static class CorridorNetherWartsRoom
     extends Piece {
-        private static final int field_31589 = 13;
-        private static final int field_31590 = 14;
-        private static final int field_31591 = 13;
+        private static final int SIZE_X = 13;
+        private static final int SIZE_Y = 14;
+        private static final int SIZE_Z = 13;
 
         public CorridorNetherWartsRoom(int chainLength, BlockBox boundingBox, Direction orientation) {
             super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_NETHER_WARTS_ROOM, chainLength, boundingBox);
@@ -1022,9 +1022,9 @@ public class NetherFortressGenerator {
 
     public static class BridgeEnd
     extends Piece {
-        private static final int field_31562 = 5;
-        private static final int field_31563 = 10;
-        private static final int field_31564 = 8;
+        private static final int SIZE_X = 5;
+        private static final int SIZE_Y = 10;
+        private static final int SIZE_Z = 8;
         private final int seed;
 
         public BridgeEnd(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
@@ -1089,8 +1089,8 @@ public class NetherFortressGenerator {
         public List<PieceData> corridorPieces;
         public final List<StructurePiece> pieces = Lists.newArrayList();
 
-        public Start(Random random, int i, int j) {
-            super(i, j, Start.getRandomHorizontalDirection(random));
+        public Start(Random random, int x, int z) {
+            super(x, z, Start.getRandomHorizontalDirection(random));
             this.bridgePieces = Lists.newArrayList();
             for (PieceData pieceData : ALL_BRIDGE_PIECES) {
                 pieceData.generatedCount = 0;

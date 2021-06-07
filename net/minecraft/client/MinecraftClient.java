@@ -462,7 +462,7 @@ WindowEventHandler {
     private CrashReport crashReport;
     private static int currentFps;
     public String fpsDebugString = "";
-    public boolean field_32144;
+    public boolean wireFrame;
     public boolean debugChunkInfo;
     public boolean debugChunkOcclusion;
     public boolean chunkCullingEnabled = true;
@@ -603,8 +603,8 @@ WindowEventHandler {
         RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
         if (this.framebuffer.textureWidth != this.window.getFramebufferWidth() || this.framebuffer.textureHeight != this.window.getFramebufferHeight()) {
             StringBuilder stringBuilder = new StringBuilder("Recovering from unsupported resolution (" + this.window.getFramebufferWidth() + "x" + this.window.getFramebufferHeight() + ").\nPlease make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).");
-            if (GlDebug.method_36479()) {
-                stringBuilder.append("\n\nReported GL debug messages:\n").append(String.join((CharSequence)"\n", GlDebug.method_36478()));
+            if (GlDebug.isDebugMessageEnabled()) {
+                stringBuilder.append("\n\nReported GL debug messages:\n").append(String.join((CharSequence)"\n", GlDebug.collectDebugMessages()));
             }
             this.window.setWindowedSize(this.framebuffer.textureWidth, this.framebuffer.textureHeight);
             TinyFileDialogs.tinyfd_messageBox("Minecraft", stringBuilder.toString(), "ok", "error", false);
@@ -1220,7 +1220,7 @@ WindowEventHandler {
         }
         try (ZipCompressor zipCompressor = new ZipCompressor(path);){
             zipCompressor.write(Paths.get("system.txt", new String[0]), systemDetails.collect());
-            zipCompressor.write(Paths.get("client", new String[0]).resolve(this.options.method_37294().getName()), this.options.method_37295());
+            zipCompressor.write(Paths.get("client", new String[0]).resolve(this.options.getOptionsFile().getName()), this.options.collectProfiledOptions());
             list.forEach(zipCompressor::copyAll);
         } finally {
             for (Path path2 : list) {
@@ -2092,7 +2092,7 @@ WindowEventHandler {
         systemDetails.addSection("Backend API", RenderSystem::getApiDescription);
         systemDetails.addSection("Window size", () -> client != null ? minecraftClient.window.getFramebufferWidth() + "x" + minecraftClient.window.getFramebufferHeight() : "<not initialized>");
         systemDetails.addSection("GL Caps", RenderSystem::getCapsString);
-        systemDetails.addSection("GL debug messages", () -> GlDebug.method_36479() ? String.join((CharSequence)"\n", GlDebug.method_36478()) : "<disabled>");
+        systemDetails.addSection("GL debug messages", () -> GlDebug.isDebugMessageEnabled() ? String.join((CharSequence)"\n", GlDebug.collectDebugMessages()) : "<disabled>");
         systemDetails.addSection("Using VBOs", () -> "Yes");
         systemDetails.addSection("Is Modded", () -> {
             String string = ClientBrandRetriever.getClientModName();

@@ -28,9 +28,9 @@ extends Option {
     private final Function<GameOptions, Double> getter;
     private final BiConsumer<GameOptions, Double> setter;
     private final BiFunction<GameOptions, DoubleOption, Text> displayStringGetter;
-    private final Function<MinecraftClient, List<OrderedText>> field_27958;
+    private final Function<MinecraftClient, List<OrderedText>> tooltipsGetter;
 
-    public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter, Function<MinecraftClient, List<OrderedText>> function) {
+    public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter, Function<MinecraftClient, List<OrderedText>> tooltipsGetter) {
         super(key);
         this.min = min;
         this.max = max;
@@ -38,7 +38,7 @@ extends Option {
         this.getter = getter;
         this.setter = setter;
         this.displayStringGetter = displayStringGetter;
-        this.field_27958 = function;
+        this.tooltipsGetter = tooltipsGetter;
     }
 
     public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter) {
@@ -47,7 +47,7 @@ extends Option {
 
     @Override
     public ClickableWidget createButton(GameOptions options, int x, int y, int width) {
-        List<OrderedText> list = this.field_27958.apply(MinecraftClient.getInstance());
+        List<OrderedText> list = this.tooltipsGetter.apply(MinecraftClient.getInstance());
         return new DoubleOptionSliderWidget(options, x, y, width, 20, this, list);
     }
 

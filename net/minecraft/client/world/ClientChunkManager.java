@@ -179,9 +179,9 @@ extends ChunkManager {
         volatile int centerChunkZ;
         int loadedChunkCount;
 
-        ClientChunkMap(int i) {
-            this.radius = i;
-            this.diameter = i * 2 + 1;
+        ClientChunkMap(int radius) {
+            this.radius = radius;
+            this.diameter = radius * 2 + 1;
             this.chunks = new AtomicReferenceArray(this.diameter * this.diameter);
         }
 
@@ -217,8 +217,8 @@ extends ChunkManager {
             return this.chunks.get(index);
         }
 
-        private void method_35751(String string) {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(new File(string));){
+        private void writePositions(String fileName) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(new File(fileName));){
                 int i = ClientChunkManager.this.chunks.radius;
                 for (int j = this.centerChunkZ - i; j <= this.centerChunkZ + i; ++j) {
                     for (int k = this.centerChunkX - i; k <= this.centerChunkX + i; ++k) {

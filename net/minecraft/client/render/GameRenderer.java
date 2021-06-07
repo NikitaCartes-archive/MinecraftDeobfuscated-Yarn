@@ -294,7 +294,7 @@ AutoCloseable {
         }
     }
 
-    public void method_35771() {
+    public void loadForcedShader() {
         if (!(this.client.getCameraEntity() instanceof PlayerEntity)) {
             return;
         }
@@ -546,7 +546,7 @@ AutoCloseable {
         this.clearShaders();
         list2.forEach(pair -> {
             Shader shader = (Shader)pair.getFirst();
-            this.shaders.put(shader.method_35787(), shader);
+            this.shaders.put(shader.getName(), shader);
             ((Consumer)pair.getSecond()).accept(shader);
         });
     }
@@ -558,11 +558,11 @@ AutoCloseable {
     }
 
     @Nullable
-    public Shader method_35767(@Nullable String string) {
-        if (string == null) {
+    public Shader getShader(@Nullable String name) {
+        if (name == null) {
             return null;
         }
-        return this.shaders.get(string);
+        return this.shaders.get(name);
     }
 
     public void tick() {
@@ -1053,7 +1053,7 @@ AutoCloseable {
         RenderSystem.enableDepthTest();
     }
 
-    public MinecraftClient method_35772() {
+    public MinecraftClient getClient() {
         return this.client;
     }
 

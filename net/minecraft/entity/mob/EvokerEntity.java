@@ -174,7 +174,7 @@ extends SpellcastingIllagerEntity {
 
         SummonVexGoal() {
             super(EvokerEntity.this);
-            this.closeVexPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).visibleOnly().ignoreDistanceScalingFactor();
+            this.closeVexPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).ignoreVisibility().ignoreDistanceScalingFactor();
         }
 
         @Override

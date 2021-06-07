@@ -59,8 +59,8 @@ public class AdvancementCriterion {
         return buf.readMap(PacketByteBuf::readString, AdvancementCriterion::fromPacket);
     }
 
-    public static void criteriaToPacket(Map<String, AdvancementCriterion> criteria, PacketByteBuf buf) {
-        buf.writeMap(criteria, PacketByteBuf::writeString, (packetByteBuf, advancementCriterion) -> advancementCriterion.toPacket((PacketByteBuf)packetByteBuf));
+    public static void criteriaToPacket(Map<String, AdvancementCriterion> criteria, PacketByteBuf buf2) {
+        buf2.writeMap(criteria, PacketByteBuf::writeString, (buf, criterion) -> criterion.toPacket((PacketByteBuf)buf));
     }
 
     @Nullable

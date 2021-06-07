@@ -46,8 +46,8 @@ extends WallStandingBlockItem {
     public void postProcessNbt(NbtCompound nbt) {
         super.postProcessNbt(nbt);
         if (nbt.contains(SKULL_OWNER_KEY, 8) && !StringUtils.isBlank(nbt.getString(SKULL_OWNER_KEY))) {
-            GameProfile gameProfile2 = new GameProfile(null, nbt.getString(SKULL_OWNER_KEY));
-            SkullBlockEntity.loadProperties(gameProfile2, gameProfile -> nbt.put(SKULL_OWNER_KEY, NbtHelper.writeGameProfile(new NbtCompound(), gameProfile)));
+            GameProfile gameProfile = new GameProfile(null, nbt.getString(SKULL_OWNER_KEY));
+            SkullBlockEntity.loadProperties(gameProfile, profile -> nbt.put(SKULL_OWNER_KEY, NbtHelper.writeGameProfile(new NbtCompound(), profile)));
         }
     }
 }

@@ -376,7 +376,7 @@ implements ClientPlayPacketListener {
         this.client.debugRenderer.reset();
         this.client.player.init();
         int i = packet.getEntityId();
-        this.client.player.setEntityId(i);
+        this.client.player.setId(i);
         this.world.addPlayer(i, this.client.player);
         this.client.player.input = new KeyboardInput(this.client.options);
         this.client.interactionManager.copyAbilities(this.client.player);
@@ -415,7 +415,7 @@ implements ClientPlayPacketListener {
         entity.updateTrackedPosition(d, e, f);
         entity.setYaw(0.0f);
         entity.setPitch(0.0f);
-        entity.setEntityId(packet.getId());
+        entity.setId(packet.getId());
         this.world.addEntity(packet.getId(), entity);
     }
 
@@ -431,7 +431,7 @@ implements ClientPlayPacketListener {
     public void onPaintingSpawn(PaintingSpawnS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         PaintingEntity paintingEntity = new PaintingEntity(this.world, packet.getPos(), packet.getFacing(), packet.getMotive());
-        paintingEntity.setEntityId(packet.getId());
+        paintingEntity.setId(packet.getId());
         paintingEntity.setUuid(packet.getPaintingUuid());
         this.world.addEntity(packet.getId(), paintingEntity);
     }
@@ -465,7 +465,7 @@ implements ClientPlayPacketListener {
         float h = (float)(packet.getPitch() * 360) / 256.0f;
         int i = packet.getId();
         OtherClientPlayerEntity otherClientPlayerEntity = new OtherClientPlayerEntity(this.client.world, this.getPlayerListEntry(packet.getPlayerUuid()).getProfile());
-        otherClientPlayerEntity.setEntityId(i);
+        otherClientPlayerEntity.setId(i);
         otherClientPlayerEntity.updateTrackedPosition(d, e, f);
         otherClientPlayerEntity.updatePositionAndAngles(d, e, f, g, h);
         otherClientPlayerEntity.resetPosition();
@@ -863,7 +863,7 @@ implements ClientPlayPacketListener {
         String string = clientPlayerEntity.getServerBrand();
         this.client.cameraEntity = null;
         ClientPlayerEntity clientPlayerEntity2 = this.client.interactionManager.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook(), clientPlayerEntity.isSneaking(), clientPlayerEntity.isSprinting());
-        clientPlayerEntity2.setEntityId(i);
+        clientPlayerEntity2.setId(i);
         this.client.player = clientPlayerEntity2;
         if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
             this.client.getMusicTracker().stop();
@@ -1841,35 +1841,35 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Scoreboard scoreboard = this.world.getScoreboard();
         TeamS2CPacket.Operation operation = packet.getTeamOperation();
-        Team team = operation == TeamS2CPacket.Operation.ADD ? scoreboard.addTeam(packet.getTeamName()) : scoreboard.getTeam(packet.getTeamName());
+        Team team2 = operation == TeamS2CPacket.Operation.ADD ? scoreboard.addTeam(packet.getTeamName()) : scoreboard.getTeam(packet.getTeamName());
         Optional<TeamS2CPacket.SerializableTeam> optional = packet.getTeam();
-        optional.ifPresent(serializableTeam -> {
+        optional.ifPresent(team -> {
             AbstractTeam.CollisionRule collisionRule;
-            team.setDisplayName(serializableTeam.getDisplayName());
-            team.setColor(serializableTeam.getColor());
-            team.setFriendlyFlagsBitwise(serializableTeam.getFriendlyFlagsBitwise());
-            AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(serializableTeam.getNameTagVisibilityRule());
+            team2.setDisplayName(team.getDisplayName());
+            team2.setColor(team.getColor());
+            team2.setFriendlyFlagsBitwise(team.getFriendlyFlagsBitwise());
+            AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(team.getNameTagVisibilityRule());
             if (visibilityRule != null) {
-                team.setNameTagVisibilityRule(visibilityRule);
+                team2.setNameTagVisibilityRule(visibilityRule);
             }
-            if ((collisionRule = AbstractTeam.CollisionRule.getRule(serializableTeam.getCollisionRule())) != null) {
-                team.setCollisionRule(collisionRule);
+            if ((collisionRule = AbstractTeam.CollisionRule.getRule(team.getCollisionRule())) != null) {
+                team2.setCollisionRule(collisionRule);
             }
-            team.setPrefix(serializableTeam.getPrefix());
-            team.setSuffix(serializableTeam.getSuffix());
+            team2.setPrefix(team.getPrefix());
+            team2.setSuffix(team.getSuffix());
         });
         TeamS2CPacket.Operation operation2 = packet.getPlayerListOperation();
         if (operation2 == TeamS2CPacket.Operation.ADD) {
             for (String string : packet.getPlayerNames()) {
-                scoreboard.addPlayerToTeam(string, team);
+                scoreboard.addPlayerToTeam(string, team2);
             }
         } else if (operation2 == TeamS2CPacket.Operation.REMOVE) {
             for (String string : packet.getPlayerNames()) {
-                scoreboard.removePlayerFromTeam(string, team);
+                scoreboard.removePlayerFromTeam(string, team2);
             }
         }
         if (operation == TeamS2CPacket.Operation.REMOVE) {
-            scoreboard.removeTeam(team);
+            scoreboard.removeTeam(team2);
         }
     }
 

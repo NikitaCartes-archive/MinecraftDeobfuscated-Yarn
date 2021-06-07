@@ -16,12 +16,12 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class SkyProperties {
-    private static final Object2ObjectMap<Identifier, SkyProperties> BY_IDENTIFIER = Util.make(new Object2ObjectArrayMap(), object2ObjectArrayMap -> {
+    private static final Object2ObjectMap<Identifier, SkyProperties> BY_IDENTIFIER = Util.make(new Object2ObjectArrayMap(), map -> {
         Overworld overworld = new Overworld();
-        object2ObjectArrayMap.defaultReturnValue(overworld);
-        object2ObjectArrayMap.put(DimensionType.OVERWORLD_ID, overworld);
-        object2ObjectArrayMap.put(DimensionType.THE_NETHER_ID, new Nether());
-        object2ObjectArrayMap.put(DimensionType.THE_END_ID, new End());
+        map.defaultReturnValue(overworld);
+        map.put(DimensionType.OVERWORLD_ID, overworld);
+        map.put(DimensionType.THE_NETHER_ID, new Nether());
+        map.put(DimensionType.THE_END_ID, new End());
     });
     private final float[] rgba = new float[4];
     private final float cloudsHeight;
@@ -43,10 +43,8 @@ public abstract class SkyProperties {
     }
 
     /**
-     * Returns a fog color override based on the current sky angle. This is used in vanilla to render sunset and
-     * sunrise fog.
-     * 
-     * @return an RGBA array of four floats, or {@code null} if fog color should not be overridden
+     * {@return an RGBA fog color override based on the current sky angle, or {@code null} if fog color should not be overridden}
+     * This is used in vanilla to render sunset and sunrise fog.
      */
     @Nullable
     public float[] getFogColorOverride(float skyAngle, float tickDelta) {

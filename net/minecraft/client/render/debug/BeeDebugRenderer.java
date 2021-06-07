@@ -104,12 +104,12 @@ implements DebugRenderer.Renderer {
     }
 
     private void removeInvalidBees() {
-        this.bees.entrySet().removeIf(entry -> this.client.world.getEntityById(((Bee)entry.getValue()).entityId) == null);
+        this.bees.entrySet().removeIf(bee -> this.client.world.getEntityById(((Bee)bee.getValue()).entityId) == null);
     }
 
     private void removeOutdatedHives() {
         long l = this.client.world.getTime() - 20L;
-        this.hives.entrySet().removeIf(entry -> ((Hive)entry.getValue()).time < l);
+        this.hives.entrySet().removeIf(hive -> ((Hive)hive.getValue()).time < l);
     }
 
     private void render() {
@@ -120,9 +120,9 @@ implements DebugRenderer.Renderer {
             }
         });
         this.drawFlowers();
-        for (BlockPos blockPos22 : this.hives.keySet()) {
-            if (!blockPos.isWithinDistance(blockPos22, 30.0)) continue;
-            BeeDebugRenderer.drawHive(blockPos22);
+        for (BlockPos blockPos2 : this.hives.keySet()) {
+            if (!blockPos.isWithinDistance(blockPos2, 30.0)) continue;
+            BeeDebugRenderer.drawHive(blockPos2);
         }
         Map<BlockPos, Set<UUID>> map = this.getBlacklistingBees();
         this.hives.values().forEach(hive -> {
@@ -131,9 +131,9 @@ implements DebugRenderer.Renderer {
                 this.drawHiveInfo((Hive)hive, set == null ? Sets.newHashSet() : set);
             }
         });
-        this.getBeesByHive().forEach((blockPos2, list) -> {
-            if (blockPos.isWithinDistance((Vec3i)blockPos2, 30.0)) {
-                this.drawHiveBees((BlockPos)blockPos2, (List<String>)list);
+        this.getBeesByHive().forEach((hivePos, bees) -> {
+            if (blockPos.isWithinDistance((Vec3i)hivePos, 30.0)) {
+                this.drawHiveBees((BlockPos)hivePos, (List<String>)bees);
             }
         });
     }

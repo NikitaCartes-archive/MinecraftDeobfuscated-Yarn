@@ -24,7 +24,7 @@ import org.lwjgl.system.MemoryUtil;
 @Environment(value=EnvType.CLIENT)
 public class TrueTypeFont
 implements Font {
-    private final ByteBuffer field_21839;
+    private final ByteBuffer buffer;
     final STBTTFontinfo info;
     final float oversample;
     private final IntSet excludedCharacters = new IntArraySet();
@@ -33,11 +33,11 @@ implements Font {
     final float scaleFactor;
     final float ascent;
 
-    public TrueTypeFont(ByteBuffer byteBuffer, STBTTFontinfo info, float f, float oversample, float g, float h, String string) {
-        this.field_21839 = byteBuffer;
+    public TrueTypeFont(ByteBuffer buffer, STBTTFontinfo info, float f, float oversample, float g, float h, String excludedCharacters) {
+        this.buffer = buffer;
         this.info = info;
         this.oversample = oversample;
-        string.codePoints().forEach(this.excludedCharacters::add);
+        excludedCharacters.codePoints().forEach(this.excludedCharacters::add);
         this.shiftX = g * oversample;
         this.shiftY = h * oversample;
         this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(info, f * oversample);
@@ -84,12 +84,12 @@ implements Font {
     @Override
     public void close() {
         this.info.free();
-        MemoryUtil.memFree(this.field_21839);
+        MemoryUtil.memFree(this.buffer);
     }
 
     @Override
     public IntSet getProvidedGlyphs() {
-        return IntStream.range(0, 65535).filter(i -> !this.excludedCharacters.contains(i)).collect(IntOpenHashSet::new, IntCollection::add, IntCollection::addAll);
+        return IntStream.range(0, 65535).filter(codePoint -> !this.excludedCharacters.contains(codePoint)).collect(IntOpenHashSet::new, IntCollection::add, IntCollection::addAll);
     }
 
     @Override

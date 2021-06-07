@@ -250,7 +250,7 @@ Waterloggable {
     }
 
     @Override
-    public boolean method_37403(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public boolean isShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
         return false;
     }
 
@@ -528,7 +528,7 @@ Waterloggable {
     }
 
     /**
-     * Returns whether the provided {@code fluid} is liquid, namely lava or water.
+     * {@return whether the provided {@code fluid} is liquid, namely lava or water}
      */
     private static boolean isFluidLiquid(Fluid fluid) {
         return fluid == Fluids.LAVA || fluid == Fluids.WATER;

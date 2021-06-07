@@ -55,7 +55,7 @@ public class SoundSystem {
     private static final float field_33024 = 1.0f;
     private static final int field_33025 = 20;
     private static final Set<Identifier> unknownSounds = Sets.newHashSet();
-    public static final String field_33020 = "FOR THE DEBUG!";
+    public static final String FOR_THE_DEBUG = "FOR THE DEBUG!";
     private final SoundManager loader;
     private final GameOptions settings;
     private boolean started;
@@ -123,8 +123,8 @@ public class SoundSystem {
             this.listener.setVolume(volume);
             return;
         }
-        this.sources.forEach((soundInstance, sourceManager) -> {
-            float f = this.getAdjustedVolume((SoundInstance)soundInstance);
+        this.sources.forEach((source2, sourceManager) -> {
+            float f = this.getAdjustedVolume((SoundInstance)source2);
             sourceManager.run(source -> {
                 if (f <= 0.0f) {
                     source.stop();
@@ -154,7 +154,7 @@ public class SoundSystem {
     public void stopAll() {
         if (this.started) {
             this.taskQueue.restart();
-            this.sources.values().forEach(sourceManager -> sourceManager.run(Source::stop));
+            this.sources.values().forEach(source -> source.run(Source::stop));
             this.sources.clear();
             this.channel.close();
             this.startTicks.clear();

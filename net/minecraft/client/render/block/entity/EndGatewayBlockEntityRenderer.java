@@ -50,12 +50,12 @@ extends EndPortalBlockEntityRenderer<EndGatewayBlockEntity> {
     }
 
     @Override
-    protected RenderLayer method_34589() {
+    protected RenderLayer getLayer() {
         return RenderLayer.getEndGateway();
     }
 
     @Override
-    public int method_33893() {
+    public int getRenderDistance() {
         return 256;
     }
 }

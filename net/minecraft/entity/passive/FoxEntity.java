@@ -1387,7 +1387,7 @@ extends AnimalEntity {
         private final TargetPredicate WORRIABLE_ENTITY_PREDICATE;
 
         CalmDownGoal() {
-            this.WORRIABLE_ENTITY_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(12.0).visibleOnly().setPredicate(new WorriableEntityFilter());
+            this.WORRIABLE_ENTITY_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(12.0).ignoreVisibility().setPredicate(new WorriableEntityFilter());
         }
 
         protected boolean isAtFavoredLocation() {

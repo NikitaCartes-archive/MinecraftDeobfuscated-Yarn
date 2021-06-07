@@ -60,11 +60,11 @@ implements ResourcePackProvider {
     private static final Pattern ALPHANUMERAL = Pattern.compile("^[a-fA-F0-9]{40}$");
     private static final int field_32958 = 0x6400000;
     private static final int field_32959 = 10;
-    private static final String field_32960 = "vanilla";
-    private static final String field_32961 = "server";
-    private static final String field_32962 = "programer_art";
-    private static final String field_32963 = "Programmer Art";
-    private static final Text field_33633 = new TranslatableText("multiplayer.applyingPack");
+    private static final String VANILLA = "vanilla";
+    private static final String SERVER = "server";
+    private static final String PROGRAMER_ART_ID = "programer_art";
+    private static final String PROGRAMMER_ART_NAME = "Programmer Art";
+    private static final Text APPLYING_PACK_TEXT = new TranslatableText("multiplayer.applyingPack");
     private final DefaultResourcePack pack;
     private final File serverPacksRoot;
     private final ReentrantLock lock = new ReentrantLock();
@@ -83,7 +83,7 @@ implements ResourcePackProvider {
     @Override
     public void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory) {
         ResourcePackProfile resourcePackProfile2;
-        ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(field_32960, true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.PACK_SOURCE_BUILTIN);
+        ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(VANILLA, true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.PACK_SOURCE_BUILTIN);
         if (resourcePackProfile != null) {
             profileAdder.accept(resourcePackProfile);
         }
@@ -138,7 +138,7 @@ implements ResourcePackProvider {
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.execute(() -> {
                     if (!bl) {
-                        minecraftClient.openScreen(new SaveLevelScreen(field_33633));
+                        minecraftClient.openScreen(new SaveLevelScreen(APPLYING_PACK_TEXT));
                     }
                 });
                 return this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER);
@@ -233,7 +233,7 @@ implements ResourcePackProvider {
             return Util.completeExceptionally(new IOException(String.format("Invalid resourcepack at %s", packZip), iOException));
         }
         LOGGER.info("Applying server pack {}", (Object)packZip);
-        this.serverContainer = new ResourcePackProfile(field_32961, true, () -> new ZipResourcePack(packZip), new TranslatableText("resourcePack.server.name"), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata, ResourceType.CLIENT_RESOURCES), ResourcePackProfile.InsertionPosition.TOP, true, packSource);
+        this.serverContainer = new ResourcePackProfile(SERVER, true, () -> new ZipResourcePack(packZip), new TranslatableText("resourcePack.server.name"), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata, ResourceType.CLIENT_RESOURCES), ResourcePackProfile.InsertionPosition.TOP, true, packSource);
         return MinecraftClient.getInstance().reloadResourcesConcurrently();
     }
 
@@ -253,7 +253,7 @@ implements ResourcePackProvider {
 
     @Nullable
     private static ResourcePackProfile getProgrammerArtResourcePackProfile(ResourcePackProfile.Factory factory, Supplier<ResourcePack> packSupplier) {
-        return ResourcePackProfile.of(field_32962, false, packSupplier, factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
+        return ResourcePackProfile.of(PROGRAMER_ART_ID, false, packSupplier, factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
     }
 
     private static DirectoryResourcePack getProgrammerArtResourcePackFromDirectory(File packDirectory) {
@@ -261,7 +261,7 @@ implements ResourcePackProvider {
 
             @Override
             public String getName() {
-                return ClientBuiltinResourcePackProvider.field_32963;
+                return ClientBuiltinResourcePackProvider.PROGRAMMER_ART_NAME;
             }
         };
     }
@@ -271,7 +271,7 @@ implements ResourcePackProvider {
 
             @Override
             public String getName() {
-                return ClientBuiltinResourcePackProvider.field_32963;
+                return ClientBuiltinResourcePackProvider.PROGRAMMER_ART_NAME;
             }
         };
     }

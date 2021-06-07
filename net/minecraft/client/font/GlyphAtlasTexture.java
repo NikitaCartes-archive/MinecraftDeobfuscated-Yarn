@@ -22,7 +22,7 @@ extends AbstractTexture {
     private final Identifier id;
     private final RenderLayer textLayer;
     private final RenderLayer seeThroughTextLayer;
-    private final RenderLayer field_33998;
+    private final RenderLayer polygonOffsetTextLayer;
     private final boolean hasColor;
     private final Slot rootSlot;
 
@@ -31,9 +31,9 @@ extends AbstractTexture {
         this.hasColor = hasColor;
         this.rootSlot = new Slot(0, 0, 256, 256);
         TextureUtil.prepareImage(hasColor ? NativeImage.GLFormat.ABGR : NativeImage.GLFormat.RED, this.getGlId(), 256, 256);
-        this.textLayer = hasColor ? RenderLayer.getText(id) : RenderLayer.method_36434(id);
-        this.seeThroughTextLayer = hasColor ? RenderLayer.getTextSeeThrough(id) : RenderLayer.method_36435(id);
-        this.field_33998 = hasColor ? RenderLayer.method_37345(id) : RenderLayer.method_37346(id);
+        this.textLayer = hasColor ? RenderLayer.getText(id) : RenderLayer.getTextIntensity(id);
+        this.seeThroughTextLayer = hasColor ? RenderLayer.getTextSeeThrough(id) : RenderLayer.getTextIntensitySeeThrough(id);
+        this.polygonOffsetTextLayer = hasColor ? RenderLayer.getTextPolygonOffset(id) : RenderLayer.getTextIntensityPolygonOffset(id);
     }
 
     @Override
@@ -57,7 +57,7 @@ extends AbstractTexture {
             float f = 256.0f;
             float g = 256.0f;
             float h = 0.01f;
-            return new GlyphRenderer(this.textLayer, this.seeThroughTextLayer, this.field_33998, ((float)slot.x + 0.01f) / 256.0f, ((float)slot.x - 0.01f + (float)glyph.getWidth()) / 256.0f, ((float)slot.y + 0.01f) / 256.0f, ((float)slot.y - 0.01f + (float)glyph.getHeight()) / 256.0f, glyph.getXMin(), glyph.getXMax(), glyph.getYMin(), glyph.getYMax());
+            return new GlyphRenderer(this.textLayer, this.seeThroughTextLayer, this.polygonOffsetTextLayer, ((float)slot.x + 0.01f) / 256.0f, ((float)slot.x - 0.01f + (float)glyph.getWidth()) / 256.0f, ((float)slot.y + 0.01f) / 256.0f, ((float)slot.y - 0.01f + (float)glyph.getHeight()) / 256.0f, glyph.getXMin(), glyph.getXMax(), glyph.getYMin(), glyph.getYMax());
         }
         return null;
     }
@@ -76,11 +76,11 @@ extends AbstractTexture {
         private Slot subSlot2;
         private boolean occupied;
 
-        Slot(int i, int j, int k, int l) {
-            this.x = i;
-            this.y = j;
-            this.width = k;
-            this.height = l;
+        Slot(int x, int y, int width, int height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
         }
 
         @Nullable

@@ -796,7 +796,7 @@ implements Monster {
         super.readFromPacket(packet);
         EnderDragonPart[] enderDragonParts = this.getBodyParts();
         for (int i = 0; i < enderDragonParts.length; ++i) {
-            enderDragonParts[i].setEntityId(i + packet.getId());
+            enderDragonParts[i].setId(i + packet.getId());
         }
     }
 

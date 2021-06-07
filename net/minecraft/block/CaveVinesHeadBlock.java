@@ -28,7 +28,7 @@ public class CaveVinesHeadBlock
 extends AbstractPlantStemBlock
 implements Fertilizable,
 CaveVines {
-    private static final float field_31053 = 0.11f;
+    private static final float GROW_CHANCE = 0.11f;
 
     public CaveVinesHeadBlock(AbstractBlock.Settings settings) {
         super(settings, Direction.DOWN, SHAPE, false, 0.1);

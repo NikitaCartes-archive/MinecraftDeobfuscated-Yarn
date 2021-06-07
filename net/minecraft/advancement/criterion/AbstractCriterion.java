@@ -25,8 +25,8 @@ implements Criterion<T> {
     private final Map<PlayerAdvancementTracker, Set<Criterion.ConditionsContainer<T>>> progressions = Maps.newIdentityHashMap();
 
     @Override
-    public final void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditions) {
-        this.progressions.computeIfAbsent(manager, playerAdvancementTracker -> Sets.newHashSet()).add(conditions);
+    public final void beginTrackingCondition(PlayerAdvancementTracker manager2, Criterion.ConditionsContainer<T> conditions) {
+        this.progressions.computeIfAbsent(manager2, manager -> Sets.newHashSet()).add(conditions);
     }
 
     @Override

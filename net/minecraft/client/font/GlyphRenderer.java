@@ -14,7 +14,7 @@ import net.minecraft.util.math.Matrix4f;
 public class GlyphRenderer {
     private final RenderLayer textLayer;
     private final RenderLayer seeThroughTextLayer;
-    private final RenderLayer field_33999;
+    private final RenderLayer polygonOffsetTextLayer;
     private final float minU;
     private final float maxU;
     private final float minV;
@@ -24,18 +24,18 @@ public class GlyphRenderer {
     private final float minY;
     private final float maxY;
 
-    public GlyphRenderer(RenderLayer textLayer, RenderLayer seeThroughTextLayer, RenderLayer renderLayer, float f, float g, float h, float i, float j, float k, float l, float m) {
+    public GlyphRenderer(RenderLayer textLayer, RenderLayer seeThroughTextLayer, RenderLayer polygonOffsetTextLayer, float minU, float maxU, float minV, float maxV, float minX, float maxX, float minY, float maxY) {
         this.textLayer = textLayer;
         this.seeThroughTextLayer = seeThroughTextLayer;
-        this.field_33999 = renderLayer;
-        this.minU = f;
-        this.maxU = g;
-        this.minV = h;
-        this.maxV = i;
-        this.minX = j;
-        this.maxX = k;
-        this.minY = l;
-        this.maxY = m;
+        this.polygonOffsetTextLayer = polygonOffsetTextLayer;
+        this.minU = minU;
+        this.maxU = maxU;
+        this.minV = minV;
+        this.maxV = maxV;
+        this.minX = minX;
+        this.maxX = maxX;
+        this.minY = minY;
+        this.maxY = maxY;
     }
 
     public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
@@ -61,17 +61,17 @@ public class GlyphRenderer {
         vertexConsumer.vertex(matrix, rectangle.minX, rectangle.maxY, rectangle.zIndex).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.maxU, this.minV).light(light).next();
     }
 
-    public RenderLayer getLayer(TextRenderer.class_6415 arg) {
-        switch (arg) {
+    public RenderLayer getLayer(TextRenderer.TextLayerType layerType) {
+        switch (layerType) {
             default: {
                 return this.textLayer;
             }
-            case field_33994: {
+            case SEE_THROUGH: {
                 return this.seeThroughTextLayer;
             }
-            case field_33995: 
+            case POLYGON_OFFSET: 
         }
-        return this.field_33999;
+        return this.polygonOffsetTextLayer;
     }
 
     @Environment(value=EnvType.CLIENT)

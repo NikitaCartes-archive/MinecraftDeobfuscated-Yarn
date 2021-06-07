@@ -111,14 +111,14 @@ extends Framebuffer {
             return ImmutableList.of(new Size(width, height), DEFAULT);
         }
 
-        public boolean equals(Object object) {
-            if (this == object) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (object == null || this.getClass() != object.getClass()) {
+            if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            Size size = (Size)object;
+            Size size = (Size)o;
             return this.width == size.width && this.height == size.height;
         }
 

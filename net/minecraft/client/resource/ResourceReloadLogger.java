@@ -63,9 +63,9 @@ public class ResourceReloadLogger {
         RecoveryEntry recovery;
         boolean finished;
 
-        ReloadState(ReloadReason reloadReason, List<String> list) {
-            this.reason = reloadReason;
-            this.packs = list;
+        ReloadState(ReloadReason reason, List<String> packs) {
+            this.reason = reason;
+            this.packs = packs;
         }
 
         public void addReloadSection(CrashReportSection section) {

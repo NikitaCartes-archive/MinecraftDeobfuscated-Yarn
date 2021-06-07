@@ -19,26 +19,26 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public class BufferBuilderStorage {
     private final BlockBufferBuilderStorage blockBuilders = new BlockBufferBuilderStorage();
-    private final SortedMap<RenderLayer, BufferBuilder> entityBuilders = Util.make(new Object2ObjectLinkedOpenHashMap(), object2ObjectLinkedOpenHashMap -> {
-        object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getEntitySolid(), this.blockBuilders.get(RenderLayer.getSolid()));
-        object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getEntityCutout(), this.blockBuilders.get(RenderLayer.getCutout()));
-        object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getBannerPatterns(), this.blockBuilders.get(RenderLayer.getCutoutMipped()));
-        object2ObjectLinkedOpenHashMap.put(TexturedRenderLayers.getEntityTranslucentCull(), this.blockBuilders.get(RenderLayer.getTranslucent()));
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getShieldPatterns());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getBeds());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getShulkerBoxes());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getSign());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getChest());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getTranslucentNoCrumbling());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getArmorGlint());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getArmorEntityGlint());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getGlint());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getDirectGlint());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.method_30676());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getEntityGlint());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getDirectEntityGlint());
-        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getWaterMask());
-        ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.forEach(renderLayer -> BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, renderLayer));
+    private final SortedMap<RenderLayer, BufferBuilder> entityBuilders = Util.make(new Object2ObjectLinkedOpenHashMap(), map -> {
+        map.put(TexturedRenderLayers.getEntitySolid(), this.blockBuilders.get(RenderLayer.getSolid()));
+        map.put(TexturedRenderLayers.getEntityCutout(), this.blockBuilders.get(RenderLayer.getCutout()));
+        map.put(TexturedRenderLayers.getBannerPatterns(), this.blockBuilders.get(RenderLayer.getCutoutMipped()));
+        map.put(TexturedRenderLayers.getEntityTranslucentCull(), this.blockBuilders.get(RenderLayer.getTranslucent()));
+        BufferBuilderStorage.assignBufferBuilder(map, TexturedRenderLayers.getShieldPatterns());
+        BufferBuilderStorage.assignBufferBuilder(map, TexturedRenderLayers.getBeds());
+        BufferBuilderStorage.assignBufferBuilder(map, TexturedRenderLayers.getShulkerBoxes());
+        BufferBuilderStorage.assignBufferBuilder(map, TexturedRenderLayers.getSign());
+        BufferBuilderStorage.assignBufferBuilder(map, TexturedRenderLayers.getChest());
+        BufferBuilderStorage.assignBufferBuilder(map, RenderLayer.getTranslucentNoCrumbling());
+        BufferBuilderStorage.assignBufferBuilder(map, RenderLayer.getArmorGlint());
+        BufferBuilderStorage.assignBufferBuilder(map, RenderLayer.getArmorEntityGlint());
+        BufferBuilderStorage.assignBufferBuilder(map, RenderLayer.getGlint());
+        BufferBuilderStorage.assignBufferBuilder(map, RenderLayer.getDirectGlint());
+        BufferBuilderStorage.assignBufferBuilder(map, RenderLayer.getGlintTranslucent());
+        BufferBuilderStorage.assignBufferBuilder(map, RenderLayer.getEntityGlint());
+        BufferBuilderStorage.assignBufferBuilder(map, RenderLayer.getDirectEntityGlint());
+        BufferBuilderStorage.assignBufferBuilder(map, RenderLayer.getWaterMask());
+        ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.forEach(layer -> BufferBuilderStorage.assignBufferBuilder(map, layer));
     });
     private final VertexConsumerProvider.Immediate entityVertexConsumers = VertexConsumerProvider.immediate(this.entityBuilders, new BufferBuilder(256));
     private final VertexConsumerProvider.Immediate effectVertexConsumers = VertexConsumerProvider.immediate(new BufferBuilder(256));

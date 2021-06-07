@@ -41,7 +41,7 @@ extends FishEntity {
         }
         return entity.getType() == EntityType.AXOLOTL || entity.getGroup() != EntityGroup.AQUATIC;
     };
-    static final TargetPredicate BLOW_UP_TARGET_PREDICATE = TargetPredicate.createNonAttackable().ignoreDistanceScalingFactor().visibleOnly().setPredicate(BLOW_UP_FILTER);
+    static final TargetPredicate BLOW_UP_TARGET_PREDICATE = TargetPredicate.createNonAttackable().ignoreDistanceScalingFactor().ignoreVisibility().setPredicate(BLOW_UP_FILTER);
     public static final int NOT_PUFFED = 0;
     public static final int SEMI_PUFFED = 1;
     public static final int FULLY_PUFFED = 2;

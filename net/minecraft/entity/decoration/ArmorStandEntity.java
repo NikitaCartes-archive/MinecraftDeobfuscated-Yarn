@@ -152,7 +152,7 @@ extends LivingEntity {
 
     @Override
     public void equipStack(EquipmentSlot slot, ItemStack stack) {
-        this.method_37410(stack);
+        this.processEquippedStack(stack);
         switch (slot.getType()) {
             case HAND: {
                 this.onEquipStack(stack);

@@ -65,7 +65,7 @@ import org.jetbrains.annotations.Nullable;
 public class ChunkBuilder {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int field_32831 = 4;
-    private static final VertexFormat field_29500 = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
+    private static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT_NORMAL = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
     private final PriorityQueue<BuiltChunk.Task> rebuildQueue = Queues.newPriorityQueue();
     private final Queue<BlockBufferBuilderStorage> threadBuffers;
     private final Queue<Runnable> uploadQueue = Queues.newConcurrentLinkedQueue();
@@ -239,8 +239,8 @@ public class ChunkBuilder {
         });
         private boolean needsImportantRebuild;
 
-        public BuiltChunk(int i) {
-            this.index = i;
+        public BuiltChunk(int index) {
+            this.index = index;
         }
 
         private boolean isChunkNonEmpty(BlockPos pos) {
@@ -391,9 +391,9 @@ public class ChunkBuilder {
         extends Task {
             private final ChunkData data;
 
-            public SortTask(double d, ChunkData chunkData) {
-                super(d);
-                this.data = chunkData;
+            public SortTask(double distance, ChunkData data) {
+                super(distance);
+                this.data = data;
             }
 
             @Override
@@ -446,8 +446,8 @@ public class ChunkBuilder {
             protected final double distance;
             protected final AtomicBoolean cancelled = new AtomicBoolean(false);
 
-            public Task(double d) {
-                this.distance = d;
+            public Task(double distance) {
+                this.distance = distance;
             }
 
             public abstract CompletableFuture<Result> run(BlockBufferBuilderStorage var1);
@@ -460,8 +460,8 @@ public class ChunkBuilder {
             }
 
             @Override
-            public /* synthetic */ int compareTo(Object object) {
-                return this.compareTo((Task)object);
+            public /* synthetic */ int compareTo(Object other) {
+                return this.compareTo((Task)other);
             }
         }
 
@@ -471,9 +471,9 @@ public class ChunkBuilder {
             @Nullable
             protected ChunkRendererRegion region;
 
-            public RebuildTask(@Nullable double d, ChunkRendererRegion chunkRendererRegion) {
-                super(d);
-                this.region = chunkRendererRegion;
+            public RebuildTask(@Nullable double distance, ChunkRendererRegion region) {
+                super(distance);
+                this.region = region;
             }
 
             @Override
@@ -608,7 +608,7 @@ public class ChunkBuilder {
         public static final ChunkData EMPTY = new ChunkData(){
 
             @Override
-            public boolean isVisibleThrough(Direction direction, Direction direction2) {
+            public boolean isVisibleThrough(Direction from, Direction to) {
                 return false;
             }
         };
@@ -632,8 +632,8 @@ public class ChunkBuilder {
             return this.blockEntities;
         }
 
-        public boolean isVisibleThrough(Direction direction, Direction direction2) {
-            return this.occlusionGraph.isVisibleThrough(direction, direction2);
+        public boolean isVisibleThrough(Direction from, Direction to) {
+            return this.occlusionGraph.isVisibleThrough(from, to);
         }
     }
 }

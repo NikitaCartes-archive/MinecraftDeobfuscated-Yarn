@@ -35,8 +35,8 @@ extends RecipeBook {
     private Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = ImmutableMap.of();
     private List<RecipeResultCollection> orderedResults = ImmutableList.of();
 
-    public void reload(Iterable<Recipe<?>> iterable) {
-        Map<RecipeBookGroup, List<List<Recipe<?>>>> map = ClientRecipeBook.method_30283(iterable);
+    public void reload(Iterable<Recipe<?>> recipes) {
+        Map<RecipeBookGroup, List<List<Recipe<?>>>> map = ClientRecipeBook.toGroupedMap(recipes);
         HashMap map2 = Maps.newHashMap();
         ImmutableList.Builder builder = ImmutableList.builder();
         map.forEach((recipeBookGroup, list) -> map2.put(recipeBookGroup, (List)list.stream().map(RecipeResultCollection::new).peek(builder::add).collect(ImmutableList.toImmutableList())));
@@ -45,22 +45,22 @@ extends RecipeBook {
         this.orderedResults = builder.build();
     }
 
-    private static Map<RecipeBookGroup, List<List<Recipe<?>>>> method_30283(Iterable<Recipe<?>> iterable) {
+    private static Map<RecipeBookGroup, List<List<Recipe<?>>>> toGroupedMap(Iterable<Recipe<?>> recipes) {
         HashMap<RecipeBookGroup, List<List<Recipe<?>>>> map = Maps.newHashMap();
         HashBasedTable table = HashBasedTable.create();
-        for (Recipe<?> recipe : iterable) {
+        for (Recipe<?> recipe : recipes) {
             if (recipe.isIgnoredInRecipeBook() || recipe.isEmpty()) continue;
-            RecipeBookGroup recipeBookGroup2 = ClientRecipeBook.getGroupForRecipe(recipe);
+            RecipeBookGroup recipeBookGroup = ClientRecipeBook.getGroupForRecipe(recipe);
             String string = recipe.getGroup();
             if (string.isEmpty()) {
-                map.computeIfAbsent(recipeBookGroup2, recipeBookGroup -> Lists.newArrayList()).add(ImmutableList.of(recipe));
+                map.computeIfAbsent(recipeBookGroup, group -> Lists.newArrayList()).add(ImmutableList.of(recipe));
                 continue;
             }
-            ArrayList<Recipe<?>> list = (ArrayList<Recipe<?>>)table.get((Object)recipeBookGroup2, string);
+            ArrayList<Recipe<?>> list = (ArrayList<Recipe<?>>)table.get((Object)recipeBookGroup, string);
             if (list == null) {
                 list = Lists.newArrayList();
-                table.put(recipeBookGroup2, string, list);
-                map.computeIfAbsent(recipeBookGroup2, recipeBookGroup -> Lists.newArrayList()).add(list);
+                table.put(recipeBookGroup, string, list);
+                map.computeIfAbsent(recipeBookGroup, group -> Lists.newArrayList()).add(list);
             }
             list.add(recipe);
         }

@@ -29,11 +29,11 @@ extends FixedColorVertexConsumer {
     private float normalY;
     private float normalZ;
 
-    public OverlayVertexConsumer(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f) {
+    public OverlayVertexConsumer(VertexConsumer vertexConsumer, Matrix4f textureMatrix, Matrix3f normalMatrix) {
         this.vertexConsumer = vertexConsumer;
-        this.textureMatrix = matrix4f.copy();
+        this.textureMatrix = textureMatrix.copy();
         this.textureMatrix.invert();
-        this.normalMatrix = matrix3f.copy();
+        this.normalMatrix = normalMatrix.copy();
         this.normalMatrix.invert();
         this.init();
     }

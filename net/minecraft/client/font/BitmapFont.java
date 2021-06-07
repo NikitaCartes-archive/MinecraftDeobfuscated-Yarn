@@ -35,9 +35,9 @@ implements Font {
     private final NativeImage image;
     private final Int2ObjectMap<BitmapFontGlyph> glyphs;
 
-    BitmapFont(NativeImage nativeImage, Int2ObjectMap<BitmapFontGlyph> int2ObjectMap) {
-        this.image = nativeImage;
-        this.glyphs = int2ObjectMap;
+    BitmapFont(NativeImage image, Int2ObjectMap<BitmapFontGlyph> glyphs) {
+        this.image = image;
+        this.glyphs = glyphs;
     }
 
     @Override
@@ -68,15 +68,15 @@ implements Font {
         private final int advance;
         private final int ascent;
 
-        BitmapFontGlyph(float f, NativeImage nativeImage, int i, int j, int k, int l, int m, int n) {
-            this.scaleFactor = f;
-            this.image = nativeImage;
-            this.x = i;
-            this.y = j;
-            this.width = k;
-            this.height = l;
-            this.advance = m;
-            this.ascent = n;
+        BitmapFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
+            this.scaleFactor = scaleFactor;
+            this.image = image;
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.advance = advance;
+            this.ascent = ascent;
         }
 
         @Override

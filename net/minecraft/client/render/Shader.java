@@ -46,8 +46,8 @@ import org.jetbrains.annotations.Nullable;
 public class Shader
 implements GlShader,
 AutoCloseable {
-    private static final String field_32778 = "shaders/core/";
-    private static final String field_32779 = "shaders/include/";
+    private static final String CORE_DIRECTORY = "shaders/core/";
+    private static final String INCLUDE_DIRECTORY = "shaders/include/";
     static final Logger LOGGER = LogManager.getLogger();
     private static final Uniform DEFAULT_UNIFORM = new Uniform();
     private static final boolean field_32780 = true;
@@ -98,7 +98,7 @@ AutoCloseable {
     public Shader(ResourceFactory factory, String name, VertexFormat format) throws IOException {
         this.name = name;
         this.format = format;
-        Identifier identifier = new Identifier(field_32778 + name + ".json");
+        Identifier identifier = new Identifier(CORE_DIRECTORY + name + ".json");
         Resource resource = null;
         try {
             JsonArray jsonArray3;
@@ -196,7 +196,7 @@ AutoCloseable {
         Program program2;
         Program program = type.getProgramCache().get(name);
         if (program == null) {
-            String string = field_32778 + name + type.getFileExtension();
+            String string = CORE_DIRECTORY + name + type.getFileExtension();
             Identifier identifier = new Identifier(string);
             Resource resource = factory.getResource(identifier);
             final String string2 = FileNameUtil.getPosixFullPath(string);
@@ -208,7 +208,7 @@ AutoCloseable {
                     public String loadImport(boolean inline, String name) {
                         String string;
                         block9: {
-                            name = FileNameUtil.normalizeToPosix((inline ? string2 : Shader.field_32779) + name);
+                            name = FileNameUtil.normalizeToPosix((inline ? string2 : Shader.INCLUDE_DIRECTORY) + name);
                             if (!this.visitedImports.add(name)) {
                                 return null;
                             }
@@ -357,9 +357,9 @@ AutoCloseable {
         return this.loadedUniforms.get(name);
     }
 
-    public Uniform method_35785(String string) {
+    public Uniform getUniformOrDefault(String name) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlUniform glUniform = this.getUniform(string);
+        GlUniform glUniform = this.getUniform(name);
         return glUniform == null ? DEFAULT_UNIFORM : glUniform;
     }
 
@@ -466,11 +466,11 @@ AutoCloseable {
         this.vertexShader.attachTo(this);
     }
 
-    public VertexFormat method_35786() {
+    public VertexFormat getFormat() {
         return this.format;
     }
 
-    public String method_35787() {
+    public String getName() {
         return this.name;
     }
 

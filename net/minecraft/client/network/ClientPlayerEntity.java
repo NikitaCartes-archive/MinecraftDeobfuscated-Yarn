@@ -213,8 +213,8 @@ extends AbstractClientPlayerEntity {
     }
 
     /**
-     * Returns the percentage for the biome mood sound for the debug HUD to
-     * display.
+     * {@return the percentage for the biome mood sound for the debug HUD to
+     * display}
      */
     public float getMoodPercentage() {
         for (ClientPlayerTickable clientPlayerTickable : this.tickables) {
@@ -944,9 +944,7 @@ extends AbstractClientPlayerEntity {
     }
 
     /**
-     * Returns whether the player has movement input.
-     * 
-     * @return True if the player has movement input, else false.
+     * {@return whether the player has movement input}
      */
     private boolean hasMovementInput() {
         Vec2f vec2f = this.input.getMovementInput();
@@ -959,7 +957,7 @@ extends AbstractClientPlayerEntity {
     }
 
     /**
-     * Returns the color multiplier of vision in water, so that visibility in
+     * {@return the color multiplier of vision in water} Visibility in
      * water is reduced when the player just entered water.
      */
     public float getUnderwaterVisibility() {

@@ -24,9 +24,9 @@ extends IdentifierSearchableContainer<T> {
     protected SuffixArray<T> byText = new SuffixArray();
     private final Function<T, Stream<String>> textFinder;
 
-    public TextSearchableContainer(Function<T, Stream<String>> function, Function<T, Stream<Identifier>> function2) {
-        super(function2);
-        this.textFinder = function;
+    public TextSearchableContainer(Function<T, Stream<String>> textFinder, Function<T, Stream<Identifier>> identifierFinder) {
+        super(identifierFinder);
+        this.textFinder = textFinder;
     }
 
     @Override

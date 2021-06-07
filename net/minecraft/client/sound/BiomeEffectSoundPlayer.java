@@ -60,26 +60,26 @@ implements ClientPlayerTickable {
             this.moodSound = biome.getMoodSound();
             this.additionsSound = biome.getAdditionsSound();
             this.soundLoops.values().forEach(MusicLoop::fadeOut);
-            biome.getLoopSound().ifPresent(soundEvent -> this.soundLoops.compute(biome, (biome, musicLoop) -> {
-                if (musicLoop == null) {
-                    musicLoop = new MusicLoop((SoundEvent)soundEvent);
-                    this.soundManager.play((SoundInstance)musicLoop);
+            biome.getLoopSound().ifPresent(sound2 -> this.soundLoops.compute(biome, (sound, loop) -> {
+                if (loop == null) {
+                    loop = new MusicLoop((SoundEvent)sound2);
+                    this.soundManager.play((SoundInstance)loop);
                 }
-                musicLoop.fadeIn();
-                return musicLoop;
+                loop.fadeIn();
+                return loop;
             }));
         }
-        this.additionsSound.ifPresent(biomeAdditionsSound -> {
-            if (this.random.nextDouble() < biomeAdditionsSound.getChance()) {
-                this.soundManager.play(PositionedSoundInstance.ambient(biomeAdditionsSound.getSound()));
+        this.additionsSound.ifPresent(sound -> {
+            if (this.random.nextDouble() < sound.getChance()) {
+                this.soundManager.play(PositionedSoundInstance.ambient(sound.getSound()));
             }
         });
-        this.moodSound.ifPresent(biomeMoodSound -> {
+        this.moodSound.ifPresent(sound -> {
             World world = this.player.world;
-            int i = biomeMoodSound.getSpawnRange() * 2 + 1;
-            BlockPos blockPos = new BlockPos(this.player.getX() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange(), this.player.getEyeY() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange(), this.player.getZ() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange());
+            int i = sound.getSpawnRange() * 2 + 1;
+            BlockPos blockPos = new BlockPos(this.player.getX() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange(), this.player.getEyeY() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange(), this.player.getZ() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange());
             int j = world.getLightLevel(LightType.SKY, blockPos);
-            this.moodPercentage = j > 0 ? (this.moodPercentage -= (float)j / (float)world.getMaxLightLevel() * 0.001f) : (this.moodPercentage -= (float)(world.getLightLevel(LightType.BLOCK, blockPos) - 1) / (float)biomeMoodSound.getCultivationTicks());
+            this.moodPercentage = j > 0 ? (this.moodPercentage -= (float)j / (float)world.getMaxLightLevel() * 0.001f) : (this.moodPercentage -= (float)(world.getLightLevel(LightType.BLOCK, blockPos) - 1) / (float)sound.getCultivationTicks());
             if (this.moodPercentage >= 1.0f) {
                 double d = (double)blockPos.getX() + 0.5;
                 double e = (double)blockPos.getY() + 0.5;
@@ -88,8 +88,8 @@ implements ClientPlayerTickable {
                 double h = e - this.player.getEyeY();
                 double k = f - this.player.getZ();
                 double l = Math.sqrt(g * g + h * h + k * k);
-                double m = l + biomeMoodSound.getExtraDistance();
-                PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(biomeMoodSound.getSound(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m);
+                double m = l + sound.getExtraDistance();
+                PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(sound.getSound(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m);
                 this.soundManager.play(positionedSoundInstance);
                 this.moodPercentage = 0.0f;
             } else {

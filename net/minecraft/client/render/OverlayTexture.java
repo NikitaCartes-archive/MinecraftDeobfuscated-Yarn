@@ -58,8 +58,8 @@ implements AutoCloseable {
         return u | v << 16;
     }
 
-    public static int getUv(float f, boolean hurt) {
-        return OverlayTexture.packUv(OverlayTexture.getU(f), OverlayTexture.getV(hurt));
+    public static int getUv(float whiteOverlayProgress, boolean hurt) {
+        return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(hurt));
     }
 
     public void teardownOverlayColor() {

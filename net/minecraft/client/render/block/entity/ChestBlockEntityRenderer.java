@@ -39,9 +39,9 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class ChestBlockEntityRenderer<T extends BlockEntity>
 implements BlockEntityRenderer<T> {
-    private static final String field_32825 = "bottom";
-    private static final String field_32826 = "lid";
-    private static final String field_32827 = "lock";
+    private static final String BASE = "bottom";
+    private static final String LID = "lid";
+    private static final String LATCH = "lock";
     private final ModelPart singleChestLid;
     private final ModelPart singleChestBase;
     private final ModelPart singleChestLatch;
@@ -59,43 +59,43 @@ implements BlockEntityRenderer<T> {
             this.christmas = true;
         }
         ModelPart modelPart = ctx.getLayerModelPart(EntityModelLayers.CHEST);
-        this.singleChestBase = modelPart.getChild(field_32825);
-        this.singleChestLid = modelPart.getChild(field_32826);
-        this.singleChestLatch = modelPart.getChild(field_32827);
+        this.singleChestBase = modelPart.getChild(BASE);
+        this.singleChestLid = modelPart.getChild(LID);
+        this.singleChestLatch = modelPart.getChild(LATCH);
         ModelPart modelPart2 = ctx.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_LEFT);
-        this.doubleChestRightBase = modelPart2.getChild(field_32825);
-        this.doubleChestRightLid = modelPart2.getChild(field_32826);
-        this.doubleChestRightLatch = modelPart2.getChild(field_32827);
+        this.doubleChestRightBase = modelPart2.getChild(BASE);
+        this.doubleChestRightLid = modelPart2.getChild(LID);
+        this.doubleChestRightLatch = modelPart2.getChild(LATCH);
         ModelPart modelPart3 = ctx.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_RIGHT);
-        this.doubleChestLeftBase = modelPart3.getChild(field_32825);
-        this.doubleChestLeftLid = modelPart3.getChild(field_32826);
-        this.doubleChestLeftLatch = modelPart3.getChild(field_32827);
+        this.doubleChestLeftBase = modelPart3.getChild(BASE);
+        this.doubleChestLeftLid = modelPart3.getChild(LID);
+        this.doubleChestLeftLatch = modelPart3.getChild(LATCH);
     }
 
     public static TexturedModelData getSingleTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild(field_32825, ModelPartBuilder.create().uv(0, 19).cuboid(1.0f, 0.0f, 1.0f, 14.0f, 10.0f, 14.0f), ModelTransform.NONE);
-        modelPartData.addChild(field_32826, ModelPartBuilder.create().uv(0, 0).cuboid(1.0f, 0.0f, 0.0f, 14.0f, 5.0f, 14.0f), ModelTransform.pivot(0.0f, 9.0f, 1.0f));
-        modelPartData.addChild(field_32827, ModelPartBuilder.create().uv(0, 0).cuboid(7.0f, -1.0f, 15.0f, 2.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
+        modelPartData.addChild(BASE, ModelPartBuilder.create().uv(0, 19).cuboid(1.0f, 0.0f, 1.0f, 14.0f, 10.0f, 14.0f), ModelTransform.NONE);
+        modelPartData.addChild(LID, ModelPartBuilder.create().uv(0, 0).cuboid(1.0f, 0.0f, 0.0f, 14.0f, 5.0f, 14.0f), ModelTransform.pivot(0.0f, 9.0f, 1.0f));
+        modelPartData.addChild(LATCH, ModelPartBuilder.create().uv(0, 0).cuboid(7.0f, -1.0f, 15.0f, 2.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
         return TexturedModelData.of(modelData, 64, 64);
     }
 
     public static TexturedModelData getRightDoubleTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild(field_32825, ModelPartBuilder.create().uv(0, 19).cuboid(1.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f), ModelTransform.NONE);
-        modelPartData.addChild(field_32826, ModelPartBuilder.create().uv(0, 0).cuboid(1.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f), ModelTransform.pivot(0.0f, 9.0f, 1.0f));
-        modelPartData.addChild(field_32827, ModelPartBuilder.create().uv(0, 0).cuboid(15.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
+        modelPartData.addChild(BASE, ModelPartBuilder.create().uv(0, 19).cuboid(1.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f), ModelTransform.NONE);
+        modelPartData.addChild(LID, ModelPartBuilder.create().uv(0, 0).cuboid(1.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f), ModelTransform.pivot(0.0f, 9.0f, 1.0f));
+        modelPartData.addChild(LATCH, ModelPartBuilder.create().uv(0, 0).cuboid(15.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
         return TexturedModelData.of(modelData, 64, 64);
     }
 
     public static TexturedModelData getLeftDoubleTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild(field_32825, ModelPartBuilder.create().uv(0, 19).cuboid(0.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f), ModelTransform.NONE);
-        modelPartData.addChild(field_32826, ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f), ModelTransform.pivot(0.0f, 9.0f, 1.0f));
-        modelPartData.addChild(field_32827, ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
+        modelPartData.addChild(BASE, ModelPartBuilder.create().uv(0, 19).cuboid(0.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f), ModelTransform.NONE);
+        modelPartData.addChild(LID, ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f), ModelTransform.pivot(0.0f, 9.0f, 1.0f));
+        modelPartData.addChild(LATCH, ModelPartBuilder.create().uv(0, 0).cuboid(0.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f), ModelTransform.pivot(0.0f, 8.0f, 0.0f));
         return TexturedModelData.of(modelData, 64, 64);
     }
 

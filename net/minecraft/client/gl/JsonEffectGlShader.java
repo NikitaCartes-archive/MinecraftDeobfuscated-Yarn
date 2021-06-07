@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 public class JsonEffectGlShader
 implements EffectGlShader,
 AutoCloseable {
-    private static final String field_32682 = "shaders/program/";
+    private static final String PROGRAM_DIRECTORY = "shaders/program/";
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Uniform DEFAULT_UNIFORM = new Uniform();
     private static final boolean field_32683 = true;
@@ -64,7 +64,7 @@ AutoCloseable {
     private final EffectProgram fragmentShader;
 
     public JsonEffectGlShader(ResourceManager resource, String name) throws IOException {
-        Identifier identifier = new Identifier(field_32682 + name + ".json");
+        Identifier identifier = new Identifier(PROGRAM_DIRECTORY + name + ".json");
         this.name = name;
         Resource resource2 = null;
         try {
@@ -152,7 +152,7 @@ AutoCloseable {
             throw new InvalidClassException("Program is not of type EffectProgram");
         }
         if (program == null) {
-            Identifier identifier = new Identifier(field_32682 + name + type.getFileExtension());
+            Identifier identifier = new Identifier(PROGRAM_DIRECTORY + name + type.getFileExtension());
             Resource resource = resourceManager.getResource(identifier);
             try {
                 effectProgram = EffectProgram.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName());

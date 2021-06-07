@@ -15,23 +15,23 @@ import java.util.Map;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
-public class SwimStatsRenameFix
+public class StatsRenameFix
 extends DataFix {
-    private final String field_33560;
-    private final Map<String, String> field_33561;
+    private final String name;
+    private final Map<String, String> replacements;
 
-    public SwimStatsRenameFix(Schema outputSchema, String string, Map<String, String> map) {
+    public StatsRenameFix(Schema outputSchema, String name, Map<String, String> replacements) {
         super(outputSchema, false);
-        this.field_33560 = string;
-        this.field_33561 = map;
+        this.name = name;
+        this.replacements = replacements;
     }
 
     @Override
     protected TypeRewriteRule makeRule() {
-        return TypeRewriteRule.seq(this.method_37383(), this.method_37378());
+        return TypeRewriteRule.seq(this.renameStats(), this.renameObjectives());
     }
 
-    private TypeRewriteRule method_37378() {
+    private TypeRewriteRule renameObjectives() {
         Type<?> type = this.getOutputSchema().getType(TypeReferences.OBJECTIVE);
         Type<?> type2 = this.getInputSchema().getType(TypeReferences.OBJECTIVE);
         OpticFinder<?> opticFinder = type2.findField("CriteriaType");
@@ -42,16 +42,16 @@ extends DataFix {
         }
         OpticFinder<?> opticFinder2 = DSL.namedChoice("minecraft:custom", type3);
         OpticFinder<String> opticFinder3 = DSL.fieldFinder("id", IdentifierNormalizingSchema.getIdentifierType());
-        return this.fixTypeEverywhereTyped(this.field_33560, type2, type, (Typed<?> typed) -> typed.updateTyped(opticFinder, typed2 -> typed2.updateTyped(opticFinder2, typed -> typed.update(opticFinder3, string -> this.field_33561.getOrDefault(string, (String)string)))));
+        return this.fixTypeEverywhereTyped(this.name, type2, type, (Typed<?> typed) -> typed.updateTyped(opticFinder, typed2 -> typed2.updateTyped(opticFinder2, typed -> typed.update(opticFinder3, old -> this.replacements.getOrDefault(old, (String)old)))));
     }
 
-    private TypeRewriteRule method_37383() {
+    private TypeRewriteRule renameStats() {
         Type<?> type = this.getOutputSchema().getType(TypeReferences.STATS);
         Type<?> type2 = this.getInputSchema().getType(TypeReferences.STATS);
         OpticFinder<?> opticFinder = type2.findField("stats");
         OpticFinder<?> opticFinder2 = opticFinder.type().findField("minecraft:custom");
         OpticFinder<String> opticFinder3 = IdentifierNormalizingSchema.getIdentifierType().finder();
-        return this.fixTypeEverywhereTyped(this.field_33560, type2, type, (Typed<?> typed) -> typed.updateTyped(opticFinder, typed2 -> typed2.updateTyped(opticFinder2, typed -> typed.update(opticFinder3, string -> this.field_33561.getOrDefault(string, (String)string)))));
+        return this.fixTypeEverywhereTyped(this.name, type2, type, (Typed<?> typed) -> typed.updateTyped(opticFinder, typed2 -> typed2.updateTyped(opticFinder2, typed -> typed.update(opticFinder3, old -> this.replacements.getOrDefault(old, (String)old)))));
     }
 }
 

@@ -17,7 +17,7 @@ implements Comparable<BlockBreakingInfo> {
         this.pos = pos;
     }
 
-    public int method_34868() {
+    public int getActorId() {
         return this.actorNetworkId;
     }
 
@@ -68,8 +68,8 @@ implements Comparable<BlockBreakingInfo> {
     }
 
     @Override
-    public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((BlockBreakingInfo)object);
+    public /* synthetic */ int compareTo(Object other) {
+        return this.compareTo((BlockBreakingInfo)other);
     }
 }
 

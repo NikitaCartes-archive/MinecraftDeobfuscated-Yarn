@@ -48,9 +48,9 @@ implements DebugRenderer.Renderer {
 
     private void drawSections(double cameraX, double cameraY, double cameraZ) {
         BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
-        this.sections.forEach(chunkSectionPos -> {
-            if (blockPos.isWithinDistance(chunkSectionPos.getCenterPos(), 60.0)) {
-                VillageSectionsDebugRenderer.drawBoxAtCenterOf(chunkSectionPos);
+        this.sections.forEach(section -> {
+            if (blockPos.isWithinDistance(section.getCenterPos(), 60.0)) {
+                VillageSectionsDebugRenderer.drawBoxAtCenterOf(section);
             }
         });
     }

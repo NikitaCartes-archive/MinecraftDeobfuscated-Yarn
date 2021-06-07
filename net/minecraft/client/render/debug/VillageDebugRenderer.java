@@ -108,8 +108,8 @@ implements DebugRenderer.Renderer {
         this.brains.put(brain.uuid, brain);
     }
 
-    public void method_35797(int i) {
-        this.brains.values().removeIf(brain -> brain.field_18924 == i);
+    public void removeBrain(int entityId) {
+        this.brains.values().removeIf(brain -> brain.entityId == entityId);
     }
 
     @Override
@@ -117,8 +117,8 @@ implements DebugRenderer.Renderer {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableTexture();
-        this.method_24805();
-        this.method_23135(cameraX, cameraY, cameraZ);
+        this.removeRemovedBrains();
+        this.draw(cameraX, cameraY, cameraZ);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         if (!this.client.player.isSpectator()) {
@@ -126,32 +126,32 @@ implements DebugRenderer.Renderer {
         }
     }
 
-    private void method_24805() {
+    private void removeRemovedBrains() {
         this.brains.entrySet().removeIf(entry -> {
-            Entity entity = this.client.world.getEntityById(((Brain)entry.getValue()).field_18924);
+            Entity entity = this.client.world.getEntityById(((Brain)entry.getValue()).entityId);
             return entity == null || entity.isRemoved();
         });
     }
 
-    private void method_23135(double d, double e, double f) {
-        BlockPos blockPos = new BlockPos(d, e, f);
+    private void draw(double x, double y, double z) {
+        BlockPos blockPos = new BlockPos(x, y, z);
         this.brains.values().forEach(brain -> {
             if (this.isClose((Brain)brain)) {
-                this.drawBrain((Brain)brain, d, e, f);
+                this.drawBrain((Brain)brain, x, y, z);
             }
         });
-        for (BlockPos blockPos22 : this.pointsOfInterest.keySet()) {
-            if (!blockPos.isWithinDistance(blockPos22, 30.0)) continue;
-            VillageDebugRenderer.drawPointOfInterest(blockPos22);
+        for (BlockPos blockPos2 : this.pointsOfInterest.keySet()) {
+            if (!blockPos.isWithinDistance(blockPos2, 30.0)) continue;
+            VillageDebugRenderer.drawPointOfInterest(blockPos2);
         }
-        this.pointsOfInterest.values().forEach(pointOfInterest -> {
-            if (blockPos.isWithinDistance(pointOfInterest.pos, 30.0)) {
-                this.drawPointOfInterestInfo((PointOfInterest)pointOfInterest);
+        this.pointsOfInterest.values().forEach(poi -> {
+            if (blockPos.isWithinDistance(poi.pos, 30.0)) {
+                this.drawPointOfInterestInfo((PointOfInterest)poi);
             }
         });
-        this.getGhostPointsOfInterest().forEach((blockPos2, list) -> {
-            if (blockPos.isWithinDistance((Vec3i)blockPos2, 30.0)) {
-                this.drawGhostPointOfInterest((BlockPos)blockPos2, (List<String>)list);
+        this.getGhostPointsOfInterest().forEach((pos, brains) -> {
+            if (blockPos.isWithinDistance((Vec3i)pos, 30.0)) {
+                this.drawGhostPointOfInterest((BlockPos)pos, (List<String>)brains);
             }
         });
     }
@@ -207,8 +207,8 @@ implements DebugRenderer.Renderer {
             ++i;
         }
         if (bl) {
-            int j = brain.field_22406 < brain.field_22407 ? -23296 : -1;
-            VillageDebugRenderer.drawString(brain.pos, i, "health: " + String.format("%.1f", Float.valueOf(brain.field_22406)) + " / " + String.format("%.1f", Float.valueOf(brain.field_22407)), j, 0.02f);
+            int j = brain.health < brain.maxHealth ? -23296 : -1;
+            VillageDebugRenderer.drawString(brain.pos, i, "health: " + String.format("%.1f", Float.valueOf(brain.health)) + " / " + String.format("%.1f", Float.valueOf(brain.maxHealth)), j, 0.02f);
             ++i;
         }
         if (bl && !brain.field_19372.equals("")) {
@@ -337,12 +337,12 @@ implements DebugRenderer.Renderer {
     @Environment(value=EnvType.CLIENT)
     public static class Brain {
         public final UUID uuid;
-        public final int field_18924;
+        public final int entityId;
         public final String field_19328;
         public final String profession;
         public final int xp;
-        public final float field_22406;
-        public final float field_22407;
+        public final float health;
+        public final float maxHealth;
         public final Position pos;
         public final String field_19372;
         public final Path path;
@@ -354,14 +354,14 @@ implements DebugRenderer.Renderer {
         public final Set<BlockPos> pointsOfInterest = Sets.newHashSet();
         public final Set<BlockPos> field_25287 = Sets.newHashSet();
 
-        public Brain(UUID uuid, int i, String string, String profession, int xp, float f, float g, Position pos, String string2, @Nullable Path path, boolean wantsGolem) {
+        public Brain(UUID uuid, int entityId, String string, String profession, int xp, float health, float maxHealth, Position pos, String string2, @Nullable Path path, boolean wantsGolem) {
             this.uuid = uuid;
-            this.field_18924 = i;
+            this.entityId = entityId;
             this.field_19328 = string;
             this.profession = profession;
             this.xp = xp;
-            this.field_22406 = f;
-            this.field_22407 = g;
+            this.health = health;
+            this.maxHealth = maxHealth;
             this.pos = pos;
             this.field_19372 = string2;
             this.path = path;

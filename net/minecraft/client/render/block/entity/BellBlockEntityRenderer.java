@@ -29,18 +29,18 @@ import net.minecraft.util.math.MathHelper;
 public class BellBlockEntityRenderer
 implements BlockEntityRenderer<BellBlockEntity> {
     public static final SpriteIdentifier BELL_BODY_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/bell/bell_body"));
-    private static final String field_32823 = "bell_body";
+    private static final String BELL_BODY = "bell_body";
     private final ModelPart bellBody;
 
     public BellBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         ModelPart modelPart = ctx.getLayerModelPart(EntityModelLayers.BELL);
-        this.bellBody = modelPart.getChild(field_32823);
+        this.bellBody = modelPart.getChild(BELL_BODY);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData modelPartData2 = modelPartData.addChild(field_32823, ModelPartBuilder.create().uv(0, 0).cuboid(-3.0f, -6.0f, -3.0f, 6.0f, 7.0f, 6.0f), ModelTransform.pivot(8.0f, 12.0f, 8.0f));
+        ModelPartData modelPartData2 = modelPartData.addChild(BELL_BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-3.0f, -6.0f, -3.0f, 6.0f, 7.0f, 6.0f), ModelTransform.pivot(8.0f, 12.0f, 8.0f));
         modelPartData2.addChild("bell_base", ModelPartBuilder.create().uv(0, 13).cuboid(4.0f, 4.0f, 4.0f, 8.0f, 2.0f, 8.0f), ModelTransform.pivot(-8.0f, -12.0f, -8.0f));
         return TexturedModelData.of(modelData, 32, 32);
     }

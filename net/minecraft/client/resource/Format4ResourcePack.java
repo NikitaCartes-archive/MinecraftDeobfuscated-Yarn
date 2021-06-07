@@ -29,17 +29,17 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class Format4ResourcePack
 implements ResourcePack {
-    private static final Map<String, Pair<ChestType, Identifier>> NEW_TO_OLD_CHEST_TEXTURES = Util.make(Maps.newHashMap(), hashMap -> {
-        hashMap.put("textures/entity/chest/normal_left.png", new Pair<ChestType, Identifier>(ChestType.LEFT, new Identifier("textures/entity/chest/normal_double.png")));
-        hashMap.put("textures/entity/chest/normal_right.png", new Pair<ChestType, Identifier>(ChestType.RIGHT, new Identifier("textures/entity/chest/normal_double.png")));
-        hashMap.put("textures/entity/chest/normal.png", new Pair<ChestType, Identifier>(ChestType.SINGLE, new Identifier("textures/entity/chest/normal.png")));
-        hashMap.put("textures/entity/chest/trapped_left.png", new Pair<ChestType, Identifier>(ChestType.LEFT, new Identifier("textures/entity/chest/trapped_double.png")));
-        hashMap.put("textures/entity/chest/trapped_right.png", new Pair<ChestType, Identifier>(ChestType.RIGHT, new Identifier("textures/entity/chest/trapped_double.png")));
-        hashMap.put("textures/entity/chest/trapped.png", new Pair<ChestType, Identifier>(ChestType.SINGLE, new Identifier("textures/entity/chest/trapped.png")));
-        hashMap.put("textures/entity/chest/christmas_left.png", new Pair<ChestType, Identifier>(ChestType.LEFT, new Identifier("textures/entity/chest/christmas_double.png")));
-        hashMap.put("textures/entity/chest/christmas_right.png", new Pair<ChestType, Identifier>(ChestType.RIGHT, new Identifier("textures/entity/chest/christmas_double.png")));
-        hashMap.put("textures/entity/chest/christmas.png", new Pair<ChestType, Identifier>(ChestType.SINGLE, new Identifier("textures/entity/chest/christmas.png")));
-        hashMap.put("textures/entity/chest/ender.png", new Pair<ChestType, Identifier>(ChestType.SINGLE, new Identifier("textures/entity/chest/ender.png")));
+    private static final Map<String, Pair<ChestType, Identifier>> NEW_TO_OLD_CHEST_TEXTURES = Util.make(Maps.newHashMap(), map -> {
+        map.put("textures/entity/chest/normal_left.png", new Pair<ChestType, Identifier>(ChestType.LEFT, new Identifier("textures/entity/chest/normal_double.png")));
+        map.put("textures/entity/chest/normal_right.png", new Pair<ChestType, Identifier>(ChestType.RIGHT, new Identifier("textures/entity/chest/normal_double.png")));
+        map.put("textures/entity/chest/normal.png", new Pair<ChestType, Identifier>(ChestType.SINGLE, new Identifier("textures/entity/chest/normal.png")));
+        map.put("textures/entity/chest/trapped_left.png", new Pair<ChestType, Identifier>(ChestType.LEFT, new Identifier("textures/entity/chest/trapped_double.png")));
+        map.put("textures/entity/chest/trapped_right.png", new Pair<ChestType, Identifier>(ChestType.RIGHT, new Identifier("textures/entity/chest/trapped_double.png")));
+        map.put("textures/entity/chest/trapped.png", new Pair<ChestType, Identifier>(ChestType.SINGLE, new Identifier("textures/entity/chest/trapped.png")));
+        map.put("textures/entity/chest/christmas_left.png", new Pair<ChestType, Identifier>(ChestType.LEFT, new Identifier("textures/entity/chest/christmas_double.png")));
+        map.put("textures/entity/chest/christmas_right.png", new Pair<ChestType, Identifier>(ChestType.RIGHT, new Identifier("textures/entity/chest/christmas_double.png")));
+        map.put("textures/entity/chest/christmas.png", new Pair<ChestType, Identifier>(ChestType.SINGLE, new Identifier("textures/entity/chest/christmas.png")));
+        map.put("textures/entity/chest/ender.png", new Pair<ChestType, Identifier>(ChestType.SINGLE, new Identifier("textures/entity/chest/ender.png")));
     });
     private static final List<String> BANNER_PATTERN_TYPES = Lists.newArrayList("base", "border", "bricks", "circle", "creeper", "cross", "curly_border", "diagonal_left", "diagonal_right", "diagonal_up_left", "diagonal_up_right", "flower", "globe", "gradient", "gradient_up", "half_horizontal", "half_horizontal_bottom", "half_vertical", "half_vertical_right", "mojang", "rhombus", "skull", "small_stripes", "square_bottom_left", "square_bottom_right", "square_top_left", "square_top_right", "straight_cross", "stripe_bottom", "stripe_center", "stripe_downleft", "stripe_downright", "stripe_left", "stripe_middle", "stripe_right", "stripe_top", "triangle_bottom", "triangle_top", "triangles_bottom", "triangles_top");
     private static final Set<String> SHIELD_PATTERN_TEXTURES = BANNER_PATTERN_TYPES.stream().map(string -> "textures/entity/shield/" + string + ".png").collect(Collectors.toSet());

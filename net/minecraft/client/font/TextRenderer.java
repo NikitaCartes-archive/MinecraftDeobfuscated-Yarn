@@ -171,7 +171,7 @@ public class TextRenderer {
 
     public void method_37296(OrderedText orderedText, float f, float g, int i, int j, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, int k) {
         int l2 = TextRenderer.tweakTransparency(j);
-        Drawer drawer = new Drawer(vertexConsumerProvider, 0.0f, 0.0f, l2, false, matrix4f, class_6415.field_33993, k);
+        Drawer drawer = new Drawer(vertexConsumerProvider, 0.0f, 0.0f, l2, false, matrix4f, TextLayerType.NORMAL, k);
         for (int m2 = -1; m2 <= 1; ++m2) {
             for (int n = -1; n <= 1; ++n) {
                 if (m2 == 0 && n == 0) continue;
@@ -189,7 +189,7 @@ public class TextRenderer {
                 });
             }
         }
-        Drawer drawer2 = new Drawer(vertexConsumerProvider, f, g, TextRenderer.tweakTransparency(i), false, matrix4f, class_6415.field_33995, k);
+        Drawer drawer2 = new Drawer(vertexConsumerProvider, f, g, TextRenderer.tweakTransparency(i), false, matrix4f, TextLayerType.POLYGON_OFFSET, k);
         orderedText.accept(drawer2);
         drawer2.drawLayer(0, f);
     }
@@ -351,7 +351,7 @@ public class TextRenderer {
         private final float blue;
         private final float alpha;
         private final Matrix4f matrix;
-        private final class_6415 field_33997;
+        private final TextLayerType layerType;
         private final int light;
         float x;
         float y;
@@ -366,22 +366,22 @@ public class TextRenderer {
         }
 
         public Drawer(VertexConsumerProvider vertexConsumers, float x, float y, int color, boolean shadow, Matrix4f matrix, boolean seeThrough, int light) {
-            this(vertexConsumers, x, y, color, shadow, matrix, seeThrough ? class_6415.field_33994 : class_6415.field_33993, light);
+            this(vertexConsumers, x, y, color, shadow, matrix, seeThrough ? TextLayerType.SEE_THROUGH : TextLayerType.NORMAL, light);
         }
 
-        public Drawer(VertexConsumerProvider vertexConsumerProvider, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_6415 arg, int j) {
-            this.vertexConsumers = vertexConsumerProvider;
-            this.x = f;
-            this.y = g;
-            this.shadow = bl;
-            this.brightnessMultiplier = bl ? 0.25f : 1.0f;
-            this.red = (float)(i >> 16 & 0xFF) / 255.0f * this.brightnessMultiplier;
-            this.green = (float)(i >> 8 & 0xFF) / 255.0f * this.brightnessMultiplier;
-            this.blue = (float)(i & 0xFF) / 255.0f * this.brightnessMultiplier;
-            this.alpha = (float)(i >> 24 & 0xFF) / 255.0f;
-            this.matrix = matrix4f;
-            this.field_33997 = arg;
-            this.light = j;
+        public Drawer(VertexConsumerProvider vertexConsumers, float x, float y, int color, boolean shadow, Matrix4f matrix, TextLayerType layerType, int light) {
+            this.vertexConsumers = vertexConsumers;
+            this.x = x;
+            this.y = y;
+            this.shadow = shadow;
+            this.brightnessMultiplier = shadow ? 0.25f : 1.0f;
+            this.red = (float)(color >> 16 & 0xFF) / 255.0f * this.brightnessMultiplier;
+            this.green = (float)(color >> 8 & 0xFF) / 255.0f * this.brightnessMultiplier;
+            this.blue = (float)(color & 0xFF) / 255.0f * this.brightnessMultiplier;
+            this.alpha = (float)(color >> 24 & 0xFF) / 255.0f;
+            this.matrix = matrix;
+            this.layerType = layerType;
+            this.light = light;
         }
 
         @Override
@@ -409,7 +409,7 @@ public class TextRenderer {
             if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
                 float m = bl ? glyph.getBoldOffset() : 0.0f;
                 n = this.shadow ? glyph.getShadowOffset() : 0.0f;
-                VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.field_33997));
+                VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
                 TextRenderer.this.drawGlyph(glyphRenderer, bl, style.isItalic(), m, this.x + n, this.y + n, this.matrix, vertexConsumer, g, h, l, f, this.light);
             }
             float m = glyph.getAdvance(bl);
@@ -434,7 +434,7 @@ public class TextRenderer {
             }
             if (this.rectangles != null) {
                 GlyphRenderer glyphRenderer = TextRenderer.this.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleRenderer();
-                VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.field_33997));
+                VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
                 for (GlyphRenderer.Rectangle rectangle : this.rectangles) {
                     glyphRenderer.drawRectangle(rectangle, this.matrix, vertexConsumer, this.light);
                 }
@@ -444,10 +444,10 @@ public class TextRenderer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum class_6415 {
-        field_33993,
-        field_33994,
-        field_33995;
+    public static enum TextLayerType {
+        NORMAL,
+        SEE_THROUGH,
+        POLYGON_OFFSET;
 
     }
 }

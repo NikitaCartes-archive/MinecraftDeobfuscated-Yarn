@@ -1792,10 +1792,10 @@ extends Entity {
     @Override
     public abstract void equipStack(EquipmentSlot var1, ItemStack var2);
 
-    protected void method_37410(ItemStack itemStack) {
-        NbtCompound nbtCompound = itemStack.getTag();
+    protected void processEquippedStack(ItemStack stack) {
+        NbtCompound nbtCompound = stack.getTag();
         if (nbtCompound != null) {
-            itemStack.getItem().postProcessNbt(nbtCompound);
+            stack.getItem().postProcessNbt(nbtCompound);
         }
     }
 
@@ -3132,7 +3132,7 @@ extends Entity {
         this.updateTrackedPosition(d, e, f);
         this.bodyYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
         this.headYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
-        this.setEntityId(packet.getId());
+        this.setId(packet.getId());
         this.setUuid(packet.getUuid());
         this.updatePositionAndAngles(d, e, f, g, h);
         this.setVelocity((float)packet.getVelocityX() / 8000.0f, (float)packet.getVelocityY() / 8000.0f, (float)packet.getVelocityZ() / 8000.0f);

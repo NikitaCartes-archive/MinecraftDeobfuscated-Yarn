@@ -171,8 +171,8 @@ public class EnchantmentHelper {
     }
 
     /**
-     * Returns the highest level of the passed enchantment in the enchantment's
-     * applicable equipment slots' item stacks.
+     * {@return the highest level of the passed enchantment in the enchantment's
+     * applicable equipment slots' item stacks}
      * 
      * @param enchantment the enchantment
      * @param entity the entity whose equipment slots are checked
@@ -256,8 +256,8 @@ public class EnchantmentHelper {
     }
 
     /**
-     * Returns a pair of an equipment slot and the item stack in the supplied
-     * entity's slot, indicating the item stack has the enchantment supplied.
+     * {@return a pair of an equipment slot and the item stack in the supplied
+     * entity's slot} It indicates the item stack has the enchantment supplied.
      * 
      * <p>If multiple equipment slots' item stacks are valid, a random pair is
      * returned.
@@ -271,8 +271,8 @@ public class EnchantmentHelper {
     }
 
     /**
-     * Returns a pair of an equipment slot and the item stack in the supplied
-     * entity's slot, indicating the item stack has the enchantment supplied
+     * {@return a pair of an equipment slot and the item stack in the supplied
+     * entity's slot} It indicates the item stack has the enchantment supplied
      * and fulfills the extra condition.
      * 
      * <p>If multiple equipment slots' item stacks are valid, a random pair is
@@ -298,8 +298,8 @@ public class EnchantmentHelper {
     }
 
     /**
-     * Returns the required experience level for an enchanting option in the
-     * enchanting table's screen, or the enchantment screen.
+     * {@return the required experience level for an enchanting option in the
+     * enchanting table's screen, or the enchantment screen}
      * 
      * @param random the random, which guarantees consistent results with the same seed
      * @param slotIndex the index of the enchanting option
@@ -392,8 +392,8 @@ public class EnchantmentHelper {
     }
 
     /**
-     * Returns whether the {@code candidate} enchantment is compatible with the
-     * {@code existing} enchantments.
+     * {@return whether the {@code candidate} enchantment is compatible with the
+     * {@code existing} enchantments}
      */
     public static boolean isCompatible(Collection<Enchantment> existing, Enchantment candidate) {
         for (Enchantment enchantment : existing) {

@@ -74,7 +74,7 @@ implements BlockEntityRenderer<PistonBlockEntity> {
     }
 
     @Override
-    public int method_33893() {
+    public int getRenderDistance() {
         return 68;
     }
 }

@@ -42,16 +42,16 @@ implements SynchronousResourceReloader {
 
     private static Map<String, LanguageDefinition> loadAvailableLanguages(Stream<ResourcePack> packs) {
         HashMap map = Maps.newHashMap();
-        packs.forEach(resourcePack -> {
+        packs.forEach(pack -> {
             try {
-                LanguageResourceMetadata languageResourceMetadata = resourcePack.parseMetadata(LanguageResourceMetadata.READER);
+                LanguageResourceMetadata languageResourceMetadata = pack.parseMetadata(LanguageResourceMetadata.READER);
                 if (languageResourceMetadata != null) {
                     for (LanguageDefinition languageDefinition : languageResourceMetadata.getLanguageDefinitions()) {
                         map.putIfAbsent(languageDefinition.getCode(), languageDefinition);
                     }
                 }
             } catch (IOException | RuntimeException exception) {
-                LOGGER.warn("Unable to parse language metadata section of resourcepack: {}", (Object)resourcePack.getName(), (Object)exception);
+                LOGGER.warn("Unable to parse language metadata section of resourcepack: {}", (Object)pack.getName(), (Object)exception);
             }
         });
         return ImmutableMap.copyOf(map);

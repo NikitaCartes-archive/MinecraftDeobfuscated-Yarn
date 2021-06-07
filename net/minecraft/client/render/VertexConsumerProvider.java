@@ -61,7 +61,7 @@ public interface VertexConsumerProvider {
             return this.layerBuffers.getOrDefault(layer, this.fallbackBuffer);
         }
 
-        public void method_37104() {
+        public void drawCurrentLayer() {
             if (this.currentLayer.isPresent()) {
                 RenderLayer renderLayer = this.currentLayer.get();
                 if (!this.layerBuffers.containsKey(renderLayer)) {
@@ -72,14 +72,14 @@ public interface VertexConsumerProvider {
         }
 
         public void draw() {
-            this.currentLayer.ifPresent(renderLayer -> {
-                VertexConsumer vertexConsumer = this.getBuffer((RenderLayer)renderLayer);
+            this.currentLayer.ifPresent(layer -> {
+                VertexConsumer vertexConsumer = this.getBuffer((RenderLayer)layer);
                 if (vertexConsumer == this.fallbackBuffer) {
-                    this.draw((RenderLayer)renderLayer);
+                    this.draw((RenderLayer)layer);
                 }
             });
-            for (RenderLayer renderLayer2 : this.layerBuffers.keySet()) {
-                this.draw(renderLayer2);
+            for (RenderLayer renderLayer : this.layerBuffers.keySet()) {
+                this.draw(renderLayer);
             }
         }
 
