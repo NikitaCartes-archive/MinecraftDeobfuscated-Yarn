@@ -10,15 +10,15 @@ import net.minecraft.command.TranslatableBuiltInExceptions;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean field_29709 = true;
+	public static final boolean IS_DEVELOPMENT_VERSION = false;
 	@Deprecated
-	public static final int WORLD_VERSION = 2723;
+	public static final int WORLD_VERSION = 2724;
 	@Deprecated
-	public static final String VERSION_NAME = "1.17-rc2";
+	public static final String VERSION_NAME = "1.17";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.17";
 	@Deprecated
-	public static final int field_29735 = 755;
+	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 755;
 	@Deprecated
 	public static final int field_29736 = 35;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2678;
@@ -157,7 +157,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741859;
+		return 755;
 	}
 
 	static {

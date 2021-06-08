@@ -9,6 +9,9 @@ import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
+/**
+ * A dispenser behavior that spawns a projectile with velocity in front of the dispenser.
+ */
 public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior {
 	@Override
 	public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
@@ -29,12 +32,27 @@ public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior 
 		pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_LAUNCHES_PROJECTILE, pointer.getBlockPos(), 0);
 	}
 
+	/**
+	 * Creates the entity that will be spawned in front of the dispenser.
+	 * 
+	 * @return the created projectile
+	 * 
+	 * @param world the world the projectile will spawn in
+	 * @param position the output location of the dispenser
+	 * @param stack the stack that the dispenser will consume
+	 */
 	protected abstract ProjectileEntity createProjectile(World world, Position position, ItemStack stack);
 
+	/**
+	 * {@return the variation of a projectile's velocity when spawned}
+	 */
 	protected float getVariation() {
 		return 6.0F;
 	}
 
+	/**
+	 * {@return the force of a projectile's velocity when spawned}
+	 */
 	protected float getForce() {
 		return 1.1F;
 	}

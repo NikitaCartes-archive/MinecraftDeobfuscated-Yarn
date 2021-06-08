@@ -22,6 +22,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
+/**
+ * A memory module type represents a type of data stored in a brain. The memory
+ * data can be shared by different tasks once they are updated by a sensor or
+ * created by some task. This can avoid some redundant calculations.
+ * 
+ * @see Brain#memories
+ * @see Memory
+ */
 public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Void> DUMMY = register("dummy");
 	public static final MemoryModuleType<GlobalPos> HOME = register("home", GlobalPos.CODEC);

@@ -70,7 +70,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 		return ImmutableList.<ModelPart>of(this.base, this.lid);
 	}
 
-	public ModelPart getTopShell() {
+	public ModelPart getLid() {
 		return this.lid;
 	}
 

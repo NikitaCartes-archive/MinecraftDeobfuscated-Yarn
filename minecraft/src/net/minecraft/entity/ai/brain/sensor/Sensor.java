@@ -7,6 +7,13 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
+/**
+ * A sensor can update memories over time in a brain. The sensor's computation
+ * replaces that of individual tasks, so that it is more efficient than the goal
+ * system.
+ * 
+ * @see Brain#sensors
+ */
 public abstract class Sensor<E extends LivingEntity> {
 	private static final Random RANDOM = new Random();
 	private static final int DEFAULT_RUN_TIME = 20;

@@ -11,11 +11,11 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public abstract class AbstractTeam {
-	public boolean isEqual(@Nullable AbstractTeam abstractTeam) {
-		if (abstractTeam == null) {
+	public boolean isEqual(@Nullable AbstractTeam team) {
+		if (team == null) {
 			return false;
 		} else {
-			return this == abstractTeam;
+			return this == team;
 		}
 	}
 

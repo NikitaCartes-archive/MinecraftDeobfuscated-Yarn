@@ -24,9 +24,9 @@ public abstract class AlwaysSelectedEntryListWidget<E extends AlwaysSelectedEntr
 			return false;
 		} else {
 			this.inFocus = !this.inFocus;
-			if (this.inFocus && this.getSelected() == null && this.getEntryCount() > 0) {
+			if (this.inFocus && this.getSelectedOrNull() == null && this.getEntryCount() > 0) {
 				this.moveSelection(EntryListWidget.MoveDirection.DOWN);
-			} else if (this.inFocus && this.getSelected() != null) {
+			} else if (this.inFocus && this.getSelectedOrNull() != null) {
 				this.ensureSelectedEntryVisible();
 			}
 
@@ -41,7 +41,7 @@ public abstract class AlwaysSelectedEntryListWidget<E extends AlwaysSelectedEntr
 			this.method_37017(builder.nextMessage(), entry);
 			entry.appendNarrations(builder);
 		} else {
-			E entry2 = this.getSelected();
+			E entry2 = this.getSelectedOrNull();
 			if (entry2 != null) {
 				this.method_37017(builder.nextMessage(), entry2);
 				entry2.appendNarrations(builder);

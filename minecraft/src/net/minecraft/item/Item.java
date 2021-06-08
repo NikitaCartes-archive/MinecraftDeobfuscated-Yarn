@@ -168,14 +168,23 @@ public class Item implements ItemConvertible {
 		return this.isFood() ? user.eatFood(world, stack) : stack;
 	}
 
+	/**
+	 * {@return the maximum stack count of any ItemStack with this item} Can be configured through {@link Item.Settings#maxCount(int) settings.maxCount()}.
+	 */
 	public final int getMaxCount() {
 		return this.maxCount;
 	}
 
+	/**
+	 * {@return the maximum durability of this item} Can be configured through {@link Item.Settings#maxDamage(int) settings.maxDamage()}.
+	 */
 	public final int getMaxDamage() {
 		return this.maxDamage;
 	}
 
+	/**
+	 * {@return whether this item can lose durability}
+	 */
 	public boolean isDamageable() {
 		return this.maxDamage > 0;
 	}
@@ -297,6 +306,10 @@ public class Item implements ItemConvertible {
 		return stack.getItem().isFood() ? UseAction.EAT : UseAction.NONE;
 	}
 
+	/**
+	 * {@return the maximum use (right-click) time of this item, in ticks}
+	 * Once a player has used an item for said number of ticks, they stop using it, and {@link Item#finishUsing} is called.
+	 */
 	public int getMaxUseTime(ItemStack stack) {
 		if (stack.getItem().isFood()) {
 			return this.getFoodComponent().isSnack() ? 16 : 32;
@@ -328,6 +341,15 @@ public class Item implements ItemConvertible {
 		return stack.hasEnchantments();
 	}
 
+	/**
+	 * {@return this item's rarity, which changes the color of its name}
+	 * 
+	 * <p>By default, if an item has an enchantment, its rarity is modified:
+	 * <ul>
+	 * 	<li>Common and Uncommon -> Rare
+	 * 	<li>Rare -> Epic
+	 * </ul>
+	 */
 	public Rarity getRarity(ItemStack stack) {
 		if (!stack.hasEnchantments()) {
 			return this.rarity;
@@ -345,6 +367,11 @@ public class Item implements ItemConvertible {
 		}
 	}
 
+	/**
+	 * {@return whether the given {@link ItemStack} is enchantable}
+	 * 
+	 * <p>By default, ItemStacks are enchantable if their max stack count is 1 and they can be damaged.
+	 */
 	public boolean isEnchantable(ItemStack stack) {
 		return this.getMaxCount() == 1 && this.isDamageable();
 	}
@@ -419,6 +446,9 @@ public class Item implements ItemConvertible {
 		return this.foodComponent != null;
 	}
 
+	/**
+	 * {@return this item's {@link #foodComponent FoodComponent}, or {@code null} if none was set}
+	 */
 	@Nullable
 	public FoodComponent getFoodComponent() {
 		return this.foodComponent;
@@ -432,10 +462,16 @@ public class Item implements ItemConvertible {
 		return SoundEvents.ENTITY_GENERIC_EAT;
 	}
 
+	/**
+	 * {@return whether this item is immune to fire and lava damage}
+	 */
 	public boolean isFireproof() {
 		return this.fireproof;
 	}
 
+	/**
+	 * {@return whether this item can be damaged by the given {@link DamageSource source}}
+	 */
 	public boolean damage(DamageSource source) {
 		return !this.fireproof || !source.isFire();
 	}
@@ -461,11 +497,30 @@ public class Item implements ItemConvertible {
 		FoodComponent foodComponent;
 		boolean fireproof;
 
+		/**
+		 * When set, any item configured with this Settings instance will be edible based on the provided {@link FoodComponent}.
+		 * 
+		 * @return this instance
+		 * 
+		 * @param foodComponent configured food properties for any item using this Settings instance
+		 */
 		public Item.Settings food(FoodComponent foodComponent) {
 			this.foodComponent = foodComponent;
 			return this;
 		}
 
+		/**
+		 * Sets the maximum stack count of any ItemStack with an Item using this Settings instance.
+		 * 
+		 * <p>Note that a count over 64 leads to unreliable behavior in GUIs.
+		 * Damageable items can not have a maximum stack count (they default to 1).
+		 * An Item.Settings' max count defaults to 64.
+		 * 
+		 * @throws RuntimeException if this Settings instance also has a max damage value set
+		 * @return this instance
+		 * 
+		 * @param maxCount maximum stack count of any ItemStack with an item using this Settings instance
+		 */
 		public Item.Settings maxCount(int maxCount) {
 			if (this.maxDamage > 0) {
 				throw new RuntimeException("Unable to have damage AND stack.");
@@ -475,31 +530,76 @@ public class Item implements ItemConvertible {
 			}
 		}
 
+		/**
+		 * Calls {@link Item.Settings#maxDamage} If this Settings instance has not already set max damage (or if max damage is the default value, 0).
+		 * 
+		 * <p>Note that max stack count is set to 1 when maxDamage is called.
+		 * 
+		 * @return this instance
+		 * 
+		 * @param maxDamage maximum durability of an ItemStack using an item with this Item.Settings instance
+		 */
 		public Item.Settings maxDamageIfAbsent(int maxDamage) {
 			return this.maxDamage == 0 ? this.maxDamage(maxDamage) : this;
 		}
 
+		/**
+		 * Sets the maximum durability of any item configured with this Settings instance.
+		 * 
+		 * <p>Note that max stack count is set to 1 when this method is called.
+		 * 
+		 * @return this instance
+		 * 
+		 * @param maxDamage maximum durability of an ItemStack using an item with this Item.Settings instance
+		 */
 		public Item.Settings maxDamage(int maxDamage) {
 			this.maxDamage = maxDamage;
 			this.maxCount = 1;
 			return this;
 		}
 
+		/**
+		 * Sets the recipe remainder for any item configured with this Settings instance.
+		 * When an item with a recipe remainder is used in a crafting recipe, the remainder is left in the table or returned to the player.
+		 * 
+		 * @return this instance
+		 */
 		public Item.Settings recipeRemainder(Item recipeRemainder) {
 			this.recipeRemainder = recipeRemainder;
 			return this;
 		}
 
+		/**
+		 * Sets the ItemGroup of any item using this Settings instance. ItemGroups represent tabs in the creative inventory.
+		 * 
+		 * @return this instance
+		 * 
+		 * @param group {@link ItemGroup itemGroup} to use
+		 */
 		public Item.Settings group(ItemGroup group) {
 			this.group = group;
 			return this;
 		}
 
+		/**
+		 * Sets the {@link Rarity} of any item configured with this Settings instance, which changes the color of its name.
+		 * 
+		 * <p>An item's rarity defaults to {@link Rarity.COMMON}.
+		 * 
+		 * @return this instance
+		 * 
+		 * @param rarity rarity to apply to items using this Settings instance
+		 */
 		public Item.Settings rarity(Rarity rarity) {
 			this.rarity = rarity;
 			return this;
 		}
 
+		/**
+		 * If called, any item with this Settings instance is immune to fire and lava damage.
+		 * 
+		 * @return this instance
+		 */
 		public Item.Settings fireproof() {
 			this.fireproof = true;
 			return this;

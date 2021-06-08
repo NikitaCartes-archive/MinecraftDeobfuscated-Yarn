@@ -50,25 +50,25 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
-	private static final int field_32524 = 0;
-	private static final int field_32525 = 1;
-	private static final int field_32526 = 2;
-	protected static final int field_32520 = 3;
+	private static final int SNEAKING_ANIMATION_STATE = 0;
+	private static final int STANDING_ANIMATION_STATE = 1;
+	private static final int SPRINTING_ANIMATION_STATE = 2;
+	protected static final int SITTING_ANIMATION_STATE = 3;
 	private static final float field_32527 = 0.0F;
-	private static final float field_32528 = 16.0F;
+	private static final float BODY_SIZE_Y = 16.0F;
 	private static final float field_32529 = -9.0F;
-	private static final float field_32530 = 15.0F;
-	private static final float field_32531 = -9.0F;
-	private static final float field_32532 = 12.0F;
-	private static final float field_32512 = -10.0F;
-	private static final float field_32513 = 15.0F;
-	private static final float field_32514 = 8.0F;
-	private static final float field_32515 = 20.0F;
-	private static final float field_32516 = 14.0F;
-	protected static final float field_32521 = 18.0F;
-	protected static final float field_32522 = 5.0F;
-	protected static final float field_32523 = 14.1F;
-	private static final float field_32517 = -5.0F;
+	private static final float HEAD_PIVOT_Y = 15.0F;
+	private static final float HEAD_PIVOT_Z = -9.0F;
+	private static final float BODY_PIVOT_Y = 12.0F;
+	private static final float BODY_PIVOT_Z = -10.0F;
+	private static final float UPPER_TAIL_PIVOT_Y = 15.0F;
+	private static final float UPPER_TAIL_PIVOT_Z = 8.0F;
+	private static final float LOWER_TAIL_PIVOT_Y = 20.0F;
+	private static final float LOWER_TAIL_PIVOT_Z = 14.0F;
+	protected static final float HIND_LEG_PIVOT_Y = 18.0F;
+	protected static final float HIND_LEG_PIVOT_Z = 5.0F;
+	protected static final float FRONT_LEG_PIVOT_Y = 14.1F;
+	private static final float FRONT_LEG_PIVOT_Z = -5.0F;
 	/**
 	 * The key of the upper tail model part, whose value is {@value}.
 	 */

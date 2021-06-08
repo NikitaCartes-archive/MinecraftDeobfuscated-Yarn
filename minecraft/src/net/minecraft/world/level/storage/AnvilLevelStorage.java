@@ -33,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 public class AnvilLevelStorage {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_31842 = ".mcr";
+	private static final String FILE_EXTENSION = ".mcr";
 
 	static boolean convertLevel(LevelStorage.Session storageSession, ProgressListener progressListener) {
 		progressListener.progressStagePercentage(0);
@@ -192,7 +192,7 @@ public class AnvilLevelStorage {
 
 	private static void addRegionFiles(File worldDirectory, Collection<File> files) {
 		File file = new File(worldDirectory, "region");
-		File[] files2 = file.listFiles((filex, string) -> string.endsWith(".mcr"));
+		File[] files2 = file.listFiles((directory, name) -> name.endsWith(".mcr"));
 		if (files2 != null) {
 			Collections.addAll(files, files2);
 		}

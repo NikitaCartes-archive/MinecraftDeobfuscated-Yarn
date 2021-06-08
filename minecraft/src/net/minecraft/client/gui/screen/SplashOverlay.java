@@ -25,7 +25,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SplashScreen extends Overlay {
+public class SplashOverlay extends Overlay {
 	static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
 	private static final int MOJANG_RED = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
 	private static final int MONOCHROME_BLACK = BackgroundHelper.ColorMixer.getArgb(255, 0, 0, 0);
@@ -36,8 +36,8 @@ public class SplashScreen extends Overlay {
 	private static final int field_32254 = 120;
 	private static final float field_32255 = 0.0625F;
 	private static final float field_32256 = 0.95F;
-	public static final long field_32247 = 1000L;
-	public static final long field_32248 = 500L;
+	public static final long RELOAD_COMPLETE_FADE_DURATION = 1000L;
+	public static final long RELOAD_START_FADE_DURATION = 500L;
 	private final MinecraftClient client;
 	private final ResourceReload reload;
 	private final Consumer<Optional<Throwable>> exceptionHandler;
@@ -46,7 +46,7 @@ public class SplashScreen extends Overlay {
 	private long reloadCompleteTime = -1L;
 	private long reloadStartTime = -1L;
 
-	public SplashScreen(MinecraftClient client, ResourceReload monitor, Consumer<Optional<Throwable>> exceptionHandler, boolean reloading) {
+	public SplashOverlay(MinecraftClient client, ResourceReload monitor, Consumer<Optional<Throwable>> exceptionHandler, boolean reloading) {
 		this.client = client;
 		this.reload = monitor;
 		this.exceptionHandler = exceptionHandler;
@@ -54,7 +54,7 @@ public class SplashScreen extends Overlay {
 	}
 
 	public static void init(MinecraftClient client) {
-		client.getTextureManager().registerTexture(LOGO, new SplashScreen.LogoTexture());
+		client.getTextureManager().registerTexture(LOGO, new SplashOverlay.LogoTexture());
 	}
 
 	private static int withAlpha(int color, int alpha) {
@@ -141,15 +141,15 @@ public class SplashScreen extends Overlay {
 		}
 	}
 
-	private void renderProgressBar(MatrixStack matrices, int i, int j, int k, int l, float opacity) {
-		int m = MathHelper.ceil((float)(k - i - 2) * this.progress);
-		int n = Math.round(opacity * 255.0F);
-		int o = BackgroundHelper.ColorMixer.getArgb(n, 255, 255, 255);
-		fill(matrices, i + 2, j + 2, i + m, l - 2, o);
-		fill(matrices, i + 1, j, k - 1, j + 1, o);
-		fill(matrices, i + 1, l, k - 1, l - 1, o);
-		fill(matrices, i, j, i + 1, l, o);
-		fill(matrices, k, j, k - 1, l, o);
+	private void renderProgressBar(MatrixStack matrices, int minX, int minY, int maxX, int maxY, float opacity) {
+		int i = MathHelper.ceil((float)(maxX - minX - 2) * this.progress);
+		int j = Math.round(opacity * 255.0F);
+		int k = BackgroundHelper.ColorMixer.getArgb(j, 255, 255, 255);
+		fill(matrices, minX + 2, minY + 2, minX + i, maxY - 2, k);
+		fill(matrices, minX + 1, minY, maxX - 1, minY + 1, k);
+		fill(matrices, minX + 1, maxY, maxX - 1, maxY - 1, k);
+		fill(matrices, minX, minY, minX + 1, maxY, k);
+		fill(matrices, maxX, minY, maxX - 1, maxY, k);
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class SplashScreen extends Overlay {
 	@Environment(EnvType.CLIENT)
 	static class LogoTexture extends ResourceTexture {
 		public LogoTexture() {
-			super(SplashScreen.LOGO);
+			super(SplashOverlay.LOGO);
 		}
 
 		@Override
@@ -169,7 +169,7 @@ public class SplashScreen extends Overlay {
 			DefaultResourcePack defaultResourcePack = minecraftClient.getResourcePackProvider().getPack();
 
 			try {
-				InputStream inputStream = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, SplashScreen.LOGO);
+				InputStream inputStream = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, SplashOverlay.LOGO);
 
 				ResourceTexture.TextureData var5;
 				try {

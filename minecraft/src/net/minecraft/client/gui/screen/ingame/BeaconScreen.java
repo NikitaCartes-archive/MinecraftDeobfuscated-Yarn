@@ -157,8 +157,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 			super(x, y, 22, 22, LiteralText.EMPTY);
 		}
 
-		protected BaseButtonWidget(int i, int j, Text text) {
-			super(i, j, 22, 22, text);
+		protected BaseButtonWidget(int x, int y, Text message) {
+			super(x, y, 22, 22, message);
 		}
 
 		@Override
@@ -303,10 +303,10 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		private final int u;
 		private final int v;
 
-		protected IconButtonWidget(int i, int j, int k, int l, Text text) {
-			super(i, j, text);
-			this.u = k;
-			this.v = l;
+		protected IconButtonWidget(int x, int y, int u, int v, Text message) {
+			super(x, y, message);
+			this.u = u;
+			this.v = v;
 		}
 
 		@Override

@@ -156,7 +156,7 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 		return this.parts;
 	}
 
-	public ModelPart getBottom() {
+	public ModelPart getWaterPatch() {
 		return this.waterPatch;
 	}
 

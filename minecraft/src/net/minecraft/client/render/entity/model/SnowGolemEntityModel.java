@@ -74,7 +74,7 @@ public class SnowGolemEntityModel<T extends Entity> extends SinglePartEntityMode
 		return this.root;
 	}
 
-	public ModelPart getTopSnowball() {
+	public ModelPart getHead() {
 		return this.head;
 	}
 }

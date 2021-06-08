@@ -66,7 +66,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		boatEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		if (!boatEntity.isSubmergedInWater()) {
 			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getWaterMask());
-			boatEntityModel.getBottom().render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV);
+			boatEntityModel.getWaterPatch().render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV);
 		}
 
 		matrixStack.pop();

@@ -41,7 +41,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 			boolean bl = minecraftClient.hasOutline(snowGolemEntity) && snowGolemEntity.isInvisible();
 			if (!snowGolemEntity.isInvisible() || bl) {
 				matrixStack.push();
-				this.getContextModel().getTopSnowball().rotate(matrixStack);
+				this.getContextModel().getHead().rotate(matrixStack);
 				float m = 0.625F;
 				matrixStack.translate(0.0, -0.34375, 0.0);
 				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));

@@ -61,8 +61,8 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel<T> {
-	private static final float field_32484 = 0.87266463F;
-	private static final float field_32485 = (float) (-Math.PI / 9);
+	private static final float HEAD_PITCH_START = 0.87266463F;
+	private static final float HEAD_PITCH_END = (float) (-Math.PI / 9);
 	private final ModelPart head;
 	private final ModelPart rightEar;
 	private final ModelPart leftEar;

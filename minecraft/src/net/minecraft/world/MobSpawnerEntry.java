@@ -6,7 +6,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.Weighted;
 
 public class MobSpawnerEntry extends Weighted.Absent {
-	public static final int field_30976 = 1;
+	public static final int DEFAULT_WEIGHT = 1;
 	public static final String DEFAULT_ENTITY_ID = "minecraft:pig";
 	private final NbtCompound entityNbt;
 

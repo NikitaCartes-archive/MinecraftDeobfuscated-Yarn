@@ -79,7 +79,7 @@ public abstract class EntityRenderer<T extends Entity> {
 
 	public abstract Identifier getTexture(T entity);
 
-	public TextRenderer getFontRenderer() {
+	public TextRenderer getTextRenderer() {
 		return this.textRenderer;
 	}
 
@@ -96,7 +96,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			Matrix4f matrix4f = matrices.peek().getModel();
 			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
 			int j = (int)(g * 255.0F) << 24;
-			TextRenderer textRenderer = this.getFontRenderer();
+			TextRenderer textRenderer = this.getTextRenderer();
 			float h = (float)(-textRenderer.getWidth(text) / 2);
 			textRenderer.draw(text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl, j, light);
 			if (bl) {

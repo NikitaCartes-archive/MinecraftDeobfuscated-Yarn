@@ -85,7 +85,7 @@ import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.SleepingChatScreen;
-import net.minecraft.client.gui.screen.SplashScreen;
+import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
@@ -356,7 +356,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public final File runDirectory;
 	private final String gameVersion;
 	private final String versionType;
-	private final Proxy netProxy;
+	private final Proxy networkProxy;
 	private final LevelStorage levelStorage;
 	public final MetricsData metricsData = new MetricsData();
 	private final boolean is64Bit;
@@ -485,8 +485,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.builtinPackProvider,
 			new FileResourcePackProvider(this.resourcePackDir, ResourcePackSource.PACK_SOURCE_NONE)
 		);
-		this.netProxy = args.network.netProxy;
-		YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
+		this.networkProxy = args.network.netProxy;
+		YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
 		this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
 		this.socialInteractionsService = this.createSocialInteractionsService(yggdrasilAuthenticationService, args);
 		this.session = args.network.session;
@@ -639,11 +639,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack());
-		SplashScreen.init(this);
+		SplashOverlay.init(this);
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
 		this.setOverlay(
-			new SplashScreen(
+			new SplashOverlay(
 				this,
 				this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
 				throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
@@ -881,7 +881,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			return this.resourceReloadFuture;
 		} else {
 			CompletableFuture<Void> completableFuture = new CompletableFuture();
-			if (!force && this.overlay instanceof SplashScreen) {
+			if (!force && this.overlay instanceof SplashOverlay) {
 				this.resourceReloadFuture = completableFuture;
 				return completableFuture;
 			} else {
@@ -892,7 +892,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 
 				this.setOverlay(
-					new SplashScreen(
+					new SplashOverlay(
 						this,
 						this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
 						throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
@@ -1079,7 +1079,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.scheduleStop();
 		}
 
-		if (this.resourceReloadFuture != null && !(this.overlay instanceof SplashScreen)) {
+		if (this.resourceReloadFuture != null && !(this.overlay instanceof SplashOverlay)) {
 			CompletableFuture<Void> completableFuture = this.resourceReloadFuture;
 			this.resourceReloadFuture = null;
 			this.reloadResources().thenRun(() -> completableFuture.complete(null));
@@ -2006,7 +2006,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			try {
 				session.backupLevelDataFile(registryTracker, saveProperties);
 				integratedResourceManager.getServerResourceManager().loadRegistryTags();
-				YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
+				YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
 				MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
 				GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
 				UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
@@ -2171,7 +2171,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.world = world;
 		this.setWorld(world);
 		if (!this.integratedServerRunning) {
-			AuthenticationService authenticationService = new YggdrasilAuthenticationService(this.netProxy);
+			AuthenticationService authenticationService = new YggdrasilAuthenticationService(this.networkProxy);
 			MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
 			GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
 			UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
@@ -2581,7 +2581,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public Proxy getNetworkProxy() {
-		return this.netProxy;
+		return this.networkProxy;
 	}
 
 	public TextureManager getTextureManager() {
