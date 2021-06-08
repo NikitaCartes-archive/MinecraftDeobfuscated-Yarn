@@ -69,7 +69,7 @@ extends CompositeEntityModel<T> {
         return ImmutableList.of(this.base, this.lid);
     }
 
-    public ModelPart getTopShell() {
+    public ModelPart getLid() {
         return this.lid;
     }
 

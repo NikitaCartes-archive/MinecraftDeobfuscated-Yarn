@@ -169,29 +169,33 @@ public class TextRenderer {
         return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
     }
 
-    public void method_37296(OrderedText orderedText, float f, float g, int i, int j, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, int k) {
-        int l2 = TextRenderer.tweakTransparency(j);
-        Drawer drawer = new Drawer(vertexConsumerProvider, 0.0f, 0.0f, l2, false, matrix4f, TextLayerType.NORMAL, k);
-        for (int m2 = -1; m2 <= 1; ++m2) {
-            for (int n = -1; n <= 1; ++n) {
-                if (m2 == 0 && n == 0) continue;
-                float[] fs = new float[]{f};
-                int o = m2;
-                int p = n;
-                orderedText.accept((l, style, m) -> {
+    /**
+     * @param color the text color in 0xAARRGGBB
+     * @param outlineColor the outline color in 0xAARRGGBB
+     */
+    public void drawWithOutline(OrderedText text, float x, float y, int color, int outlineColor, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light) {
+        int i = TextRenderer.tweakTransparency(outlineColor);
+        Drawer drawer = new Drawer(vertexConsumers, 0.0f, 0.0f, i, false, matrix, TextLayerType.NORMAL, light);
+        for (int j = -1; j <= 1; ++j) {
+            for (int k = -1; k <= 1; ++k) {
+                if (j == 0 && k == 0) continue;
+                float[] fs = new float[]{x};
+                int l2 = j;
+                int m2 = k;
+                text.accept((l, style, m) -> {
                     boolean bl = style.isBold();
                     FontStorage fontStorage = this.getFontStorage(style.getFont());
                     Glyph glyph = fontStorage.getGlyph(m);
-                    drawer.x = fs[0] + (float)o * glyph.getShadowOffset();
-                    drawer.y = g + (float)p * glyph.getShadowOffset();
+                    drawer.x = fs[0] + (float)l2 * glyph.getShadowOffset();
+                    drawer.y = y + (float)m2 * glyph.getShadowOffset();
                     fs[0] = fs[0] + glyph.getAdvance(bl);
-                    return drawer.accept(l, style.withColor(l2), m);
+                    return drawer.accept(l, style.withColor(i), m);
                 });
             }
         }
-        Drawer drawer2 = new Drawer(vertexConsumerProvider, f, g, TextRenderer.tweakTransparency(i), false, matrix4f, TextLayerType.POLYGON_OFFSET, k);
-        orderedText.accept(drawer2);
-        drawer2.drawLayer(0, f);
+        Drawer drawer2 = new Drawer(vertexConsumers, x, y, TextRenderer.tweakTransparency(color), false, matrix, TextLayerType.POLYGON_OFFSET, light);
+        text.accept(drawer2);
+        drawer2.drawLayer(0, x);
     }
 
     private static int tweakTransparency(int argb) {

@@ -212,10 +212,10 @@ extends AnimalModel<T> {
     }
 
     private float lerpAngleDegrees(float start, float end) {
-        return this.lerpAngleDegress(0.05f, start, end);
+        return this.lerpAngleDegrees(0.05f, start, end);
     }
 
-    private float lerpAngleDegress(float delta, float start, float end) {
+    private float lerpAngleDegrees(float delta, float start, float end) {
         return MathHelper.lerpAngleDegrees(delta, start, end);
     }
 
@@ -239,7 +239,7 @@ extends AnimalModel<T> {
         this.setAngles(this.leftHindLeg, 1.1f, 1.0f, 0.0f);
         this.setAngles(this.leftFrontLeg, 0.8f, 2.3f, -0.5f);
         this.copyLegAngles();
-        this.body.pitch = this.lerpAngleDegress(0.2f, this.body.pitch, 0.0f);
+        this.body.pitch = this.lerpAngleDegrees(0.2f, this.body.pitch, 0.0f);
         this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * ((float)Math.PI / 180));
         this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.0f);
     }
@@ -260,7 +260,7 @@ extends AnimalModel<T> {
         this.setAngles(this.leftFrontLeg, 1.0995574f, 1.5707964f - i, 0.0f);
         this.setAngles(this.rightHindLeg, this.leftHindLeg.pitch, -1.0f - h, 0.0f);
         this.setAngles(this.rightFrontLeg, this.leftFrontLeg.pitch, -1.5707964f - i, 0.0f);
-        this.body.pitch = this.lerpAngleDegress(0.2f, this.body.pitch, 0.0f);
+        this.body.pitch = this.lerpAngleDegrees(0.2f, this.body.pitch, 0.0f);
         this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * ((float)Math.PI / 180));
         this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.0f);
     }
@@ -288,7 +288,7 @@ extends AnimalModel<T> {
         float g = MathHelper.sin(f);
         float h = MathHelper.cos(f);
         float i = 0.13f * g;
-        this.body.pitch = this.lerpAngleDegress(0.1f, this.body.pitch, headPitch * ((float)Math.PI / 180) + i);
+        this.body.pitch = this.lerpAngleDegrees(0.1f, this.body.pitch, headPitch * ((float)Math.PI / 180) + i);
         this.head.pitch = -i * 1.8f;
         this.body.pivotY -= 0.45f * h;
         this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, -0.5f * g - 0.8f);

@@ -29,9 +29,9 @@ extends EntryListWidget<E> {
             return false;
         }
         boolean bl = this.inFocus = !this.inFocus;
-        if (this.inFocus && this.getSelected() == null && this.getEntryCount() > 0) {
+        if (this.inFocus && this.getSelectedOrNull() == null && this.getEntryCount() > 0) {
             this.moveSelection(EntryListWidget.MoveDirection.DOWN);
-        } else if (this.inFocus && this.getSelected() != null) {
+        } else if (this.inFocus && this.getSelectedOrNull() != null) {
             this.ensureSelectedEntryVisible();
         }
         return this.inFocus;
@@ -44,7 +44,7 @@ extends EntryListWidget<E> {
             this.method_37017(builder.nextMessage(), entry);
             entry.appendNarrations(builder);
         } else {
-            Entry entry2 = (Entry)this.getSelected();
+            Entry entry2 = (Entry)this.getSelectedOrNull();
             if (entry2 != null) {
                 this.method_37017(builder.nextMessage(), entry2);
                 entry2.appendNarrations(builder);

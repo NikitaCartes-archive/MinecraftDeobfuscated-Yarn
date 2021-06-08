@@ -42,7 +42,7 @@ extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> 
             return;
         }
         matrixStack.push();
-        ((SnowGolemEntityModel)this.getContextModel()).getTopSnowball().rotate(matrixStack);
+        ((SnowGolemEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
         float m = 0.625f;
         matrixStack.translate(0.0, -0.34375, 0.0);
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));

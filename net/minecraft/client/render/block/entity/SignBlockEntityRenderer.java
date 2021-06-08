@@ -109,7 +109,7 @@ implements BlockEntityRenderer<SignBlockEntity> {
             OrderedText orderedText = orderedTexts[p];
             float q = -this.textRenderer.getWidth(orderedText) / 2;
             if (bl) {
-                this.textRenderer.method_37296(orderedText, q, p * 10 - 20, n, l, matrixStack.peek().getModel(), vertexConsumerProvider, o);
+                this.textRenderer.drawWithOutline(orderedText, q, p * 10 - 20, n, l, matrixStack.peek().getModel(), vertexConsumerProvider, o);
                 continue;
             }
             this.textRenderer.draw(orderedText, q, (float)(p * 10 - 20), n, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, o);

@@ -1071,7 +1071,7 @@ extends RealmsScreen {
         @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
             if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_SPACE || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-                Entry entry = (Entry)this.getSelected();
+                Entry entry = (Entry)this.getSelectedOrNull();
                 if (entry == null) {
                     return super.keyPressed(keyCode, scanCode, modifiers);
                 }

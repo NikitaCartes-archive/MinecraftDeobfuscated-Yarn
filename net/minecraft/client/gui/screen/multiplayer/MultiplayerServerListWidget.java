@@ -83,7 +83,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        Entry entry = (Entry)this.getSelected();
+        Entry entry = (Entry)this.getSelectedOrNull();
         return entry != null ? entry.keyPressed(keyCode, scanCode, modifiers) : super.keyPressed(keyCode, scanCode, modifiers);
     }
 

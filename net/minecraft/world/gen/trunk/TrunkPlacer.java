@@ -24,8 +24,8 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public abstract class TrunkPlacer {
     public static final Codec<TrunkPlacer> TYPE_CODEC = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::getType, TrunkPlacerType::getCodec);
-    private static final int field_31528 = 32;
-    private static final int field_31529 = 24;
+    private static final int MAX_BASE_HEIGHT = 32;
+    private static final int MAX_RANDOM_HEIGHT = 24;
     public static final int field_31530 = 80;
     protected final int baseHeight;
     protected final int firstRandomHeight;

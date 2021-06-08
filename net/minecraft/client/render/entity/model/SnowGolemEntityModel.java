@@ -72,7 +72,7 @@ extends SinglePartEntityModel<T> {
         return this.root;
     }
 
-    public ModelPart getTopSnowball() {
+    public ModelPart getHead() {
         return this.head;
     }
 }

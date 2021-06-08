@@ -39,7 +39,7 @@ import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class TreeFeature
 extends Feature<TreeFeatureConfig> {
-    private static final int field_31519 = 19;
+    private static final int FORCE_STATE_AND_NOTIFY_ALL = 19;
 
     public TreeFeature(Codec<TreeFeatureConfig> codec) {
         super(codec);

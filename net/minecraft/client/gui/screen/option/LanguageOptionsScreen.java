@@ -39,7 +39,7 @@ extends GameOptionsScreen {
         this.addSelectableChild(this.languageSelectionList);
         this.addDrawableChild(Option.FORCE_UNICODE_FONT.createButton(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, ScreenTexts.DONE, button -> {
-            LanguageSelectionListWidget.LanguageEntry languageEntry = (LanguageSelectionListWidget.LanguageEntry)this.languageSelectionList.getSelected();
+            LanguageSelectionListWidget.LanguageEntry languageEntry = (LanguageSelectionListWidget.LanguageEntry)this.languageSelectionList.getSelectedOrNull();
             if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
                 this.languageManager.setLanguage(languageEntry.languageDefinition);
                 this.gameOptions.language = languageEntry.languageDefinition.getCode();
@@ -70,8 +70,8 @@ extends GameOptionsScreen {
                 if (!LanguageOptionsScreen.this.languageManager.getLanguage().getCode().equals(languageDefinition.getCode())) continue;
                 this.setSelected(languageEntry);
             }
-            if (this.getSelected() != null) {
-                this.centerScrollOn((LanguageEntry)this.getSelected());
+            if (this.getSelectedOrNull() != null) {
+                this.centerScrollOn((LanguageEntry)this.getSelectedOrNull());
             }
         }
 

@@ -187,7 +187,7 @@ extends Screen {
             this.client.openScreen(this.parent);
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
-        this.updateSelectButton(this.listWidget.getSelected() != null);
+        this.updateSelectButton(this.listWidget.getSelectedOrNull() != null);
     }
 
     @Override
@@ -297,8 +297,8 @@ extends Screen {
             if (super.keyPressed(keyCode, scanCode, modifiers)) {
                 return true;
             }
-            if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) && this.getSelected() != null) {
-                ((SuperflatPresetEntry)this.getSelected()).setPreset();
+            if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) && this.getSelectedOrNull() != null) {
+                ((SuperflatPresetEntry)this.getSelectedOrNull()).setPreset();
             }
             return false;
         }

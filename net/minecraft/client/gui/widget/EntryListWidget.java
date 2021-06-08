@@ -87,8 +87,11 @@ Selectable {
         return 220;
     }
 
+    /**
+     * {@return the selected entry of this entry list, or {@code null} if there is none}
+     */
     @Nullable
-    public E getSelected() {
+    public E getSelectedOrNull() {
         return this.selected;
     }
 
@@ -136,7 +139,7 @@ Selectable {
     }
 
     protected boolean isSelectedEntry(int index) {
-        return Objects.equals(this.getSelected(), this.children().get(index));
+        return Objects.equals(this.getSelectedOrNull(), this.children().get(index));
     }
 
     @Nullable
@@ -398,7 +401,7 @@ Selectable {
     }
 
     protected void ensureSelectedEntryVisible() {
-        E entry = this.getSelected();
+        E entry = this.getSelectedOrNull();
         if (entry != null) {
             this.setSelected(entry);
             this.ensureVisible(entry);
@@ -415,7 +418,7 @@ Selectable {
         int n = i = direction == MoveDirection.UP ? -1 : 1;
         if (!this.children().isEmpty()) {
             int k;
-            int j = this.children().indexOf(this.getSelected());
+            int j = this.children().indexOf(this.getSelectedOrNull());
             while (j != (k = MathHelper.clamp(j + i, 0, this.getEntryCount() - 1))) {
                 Entry entry = (Entry)this.children().get(k);
                 if (predicate.test(entry)) {
@@ -515,7 +518,7 @@ Selectable {
 
     protected boolean removeEntry(E entry) {
         boolean bl = this.children.remove(entry);
-        if (bl && entry == this.getSelected()) {
+        if (bl && entry == this.getSelectedOrNull()) {
             this.setSelected(null);
         }
         return bl;

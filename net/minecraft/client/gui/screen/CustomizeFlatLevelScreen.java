@@ -72,7 +72,7 @@ extends Screen {
                 return;
             }
             List<FlatChunkGeneratorLayer> list = this.config.getLayers();
-            int i = this.layers.children().indexOf(this.layers.getSelected());
+            int i = this.layers.children().indexOf(this.layers.getSelectedOrNull());
             int j = list.size() - i - 1;
             list.remove(j);
             this.layers.setSelected(list.isEmpty() ? null : (SuperflatLayersListWidget.SuperflatLayerEntry)this.layers.children().get(Math.min(i, list.size() - 1)));
@@ -103,7 +103,7 @@ extends Screen {
     }
 
     private boolean hasLayerSelected() {
-        return this.layers.getSelected() != null;
+        return this.layers.getSelectedOrNull() != null;
     }
 
     @Override
@@ -149,7 +149,7 @@ extends Screen {
         }
 
         public void updateLayers() {
-            int i = this.children().indexOf(this.getSelected());
+            int i = this.children().indexOf(this.getSelectedOrNull());
             this.clearEntries();
             for (int j = 0; j < CustomizeFlatLevelScreen.this.config.getLayers().size(); ++j) {
                 this.addEntry(new SuperflatLayerEntry());

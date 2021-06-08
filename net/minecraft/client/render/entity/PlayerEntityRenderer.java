@@ -153,7 +153,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         if (d < 100.0 && (scoreboardObjective = (scoreboard = abstractClientPlayerEntity.getScoreboard()).getObjectiveForSlot(2)) != null) {
             ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
             super.renderLabelIfPresent(abstractClientPlayerEntity, new LiteralText(Integer.toString(scoreboardPlayerScore.getScore())).append(" ").append(scoreboardObjective.getDisplayName()), matrixStack, vertexConsumerProvider, i);
-            Objects.requireNonNull(this.getFontRenderer());
+            Objects.requireNonNull(this.getTextRenderer());
             matrixStack.translate(0.0, 9.0f * 1.15f * 0.025f, 0.0);
         }
         super.renderLabelIfPresent(abstractClientPlayerEntity, text, matrixStack, vertexConsumerProvider, i);

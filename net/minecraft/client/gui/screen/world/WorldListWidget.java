@@ -142,7 +142,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     public Optional<Entry> getSelectedAsOptional() {
-        return Optional.ofNullable((Entry)this.getSelected());
+        return Optional.ofNullable((Entry)this.getSelectedOrNull());
     }
 
     public SelectWorldScreen getParent() {

@@ -177,14 +177,23 @@ implements ItemConvertible {
         return stack;
     }
 
+    /**
+     * {@return the maximum stack count of any ItemStack with this item} Can be configured through {@link Item.Settings#maxCount(int) settings.maxCount()}.
+     */
     public final int getMaxCount() {
         return this.maxCount;
     }
 
+    /**
+     * {@return the maximum durability of this item} Can be configured through {@link Item.Settings#maxDamage(int) settings.maxDamage()}.
+     */
     public final int getMaxDamage() {
         return this.maxDamage;
     }
 
+    /**
+     * {@return whether this item can lose durability}
+     */
     public boolean isDamageable() {
         return this.maxDamage > 0;
     }
@@ -305,6 +314,10 @@ implements ItemConvertible {
         return stack.getItem().isFood() ? UseAction.EAT : UseAction.NONE;
     }
 
+    /**
+     * {@return the maximum use (right-click) time of this item, in ticks}
+     * Once a player has used an item for said number of ticks, they stop using it, and {@link Item#finishUsing} is called.
+     */
     public int getMaxUseTime(ItemStack stack) {
         if (stack.getItem().isFood()) {
             return this.getFoodComponent().isSnack() ? 16 : 32;
@@ -335,6 +348,15 @@ implements ItemConvertible {
         return stack.hasEnchantments();
     }
 
+    /**
+     * {@return this item's rarity, which changes the color of its name}
+     * 
+     * <p>By default, if an item has an enchantment, its rarity is modified:
+     * <ul>
+     * \u0009<li>Common and Uncommon -> Rare
+     * \u0009<li>Rare -> Epic
+     * </ul>
+     */
     public Rarity getRarity(ItemStack stack) {
         if (!stack.hasEnchantments()) {
             return this.rarity;
@@ -351,6 +373,11 @@ implements ItemConvertible {
         return this.rarity;
     }
 
+    /**
+     * {@return whether the given {@link ItemStack} is enchantable}
+     * 
+     * <p>By default, ItemStacks are enchantable if their max stack count is 1 and they can be damaged.
+     */
     public boolean isEnchantable(ItemStack stack) {
         return this.getMaxCount() == 1 && this.isDamageable();
     }
@@ -426,6 +453,9 @@ implements ItemConvertible {
         return this.foodComponent != null;
     }
 
+    /**
+     * {@return this item's {@link #foodComponent FoodComponent}, or {@code null} if none was set}
+     */
     @Nullable
     public FoodComponent getFoodComponent() {
         return this.foodComponent;
@@ -439,10 +469,16 @@ implements ItemConvertible {
         return SoundEvents.ENTITY_GENERIC_EAT;
     }
 
+    /**
+     * {@return whether this item is immune to fire and lava damage}
+     */
     public boolean isFireproof() {
         return this.fireproof;
     }
 
+    /**
+     * {@return whether this item can be damaged by the given {@link DamageSource source}}
+     */
     public boolean damage(DamageSource source) {
         return !this.fireproof || !source.isFire();
     }

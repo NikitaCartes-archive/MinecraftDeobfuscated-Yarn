@@ -93,7 +93,7 @@ import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.SleepingChatScreen;
-import net.minecraft.client.gui.screen.SplashScreen;
+import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
@@ -367,7 +367,7 @@ WindowEventHandler {
     public final File runDirectory;
     private final String gameVersion;
     private final String versionType;
-    private final Proxy netProxy;
+    private final Proxy networkProxy;
     private final LevelStorage levelStorage;
     public final MetricsData metricsData = new MetricsData();
     private final boolean is64Bit;
@@ -494,8 +494,8 @@ WindowEventHandler {
         this.sessionPropertyMap = args.network.profileProperties;
         this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
         this.resourcePackManager = new ResourcePackManager(MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir, ResourcePackSource.PACK_SOURCE_NONE));
-        this.netProxy = args.network.netProxy;
-        YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
+        this.networkProxy = args.network.netProxy;
+        YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
         this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
         this.socialInteractionsService = this.createSocialInteractionsService(yggdrasilAuthenticationService, args);
         this.session = args.network.session;
@@ -622,10 +622,10 @@ WindowEventHandler {
             this.openScreen(new TitleScreen(true));
         }
         this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack());
-        SplashScreen.init(this);
+        SplashOverlay.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
         this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
-        this.setOverlay(new SplashScreen(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
+        this.setOverlay(new SplashOverlay(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
             if (SharedConstants.isDevelopment) {
                 this.checkGameData();
             }
@@ -824,7 +824,7 @@ WindowEventHandler {
             return this.resourceReloadFuture;
         }
         CompletableFuture<Void> completableFuture = new CompletableFuture<Void>();
-        if (!force && this.overlay instanceof SplashScreen) {
+        if (!force && this.overlay instanceof SplashOverlay) {
             this.resourceReloadFuture = completableFuture;
             return completableFuture;
         }
@@ -833,7 +833,7 @@ WindowEventHandler {
         if (!force) {
             this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.MANUAL, list);
         }
-        this.setOverlay(new SplashScreen(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
+        this.setOverlay(new SplashOverlay(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
             this.worldRenderer.reload();
             this.resourceReloadLogger.finish();
             completableFuture.complete(null);
@@ -994,7 +994,7 @@ WindowEventHandler {
         if (this.window.shouldClose()) {
             this.scheduleStop();
         }
-        if (this.resourceReloadFuture != null && !(this.overlay instanceof SplashScreen)) {
+        if (this.resourceReloadFuture != null && !(this.overlay instanceof SplashOverlay)) {
             CompletableFuture<Void> completableFuture = this.resourceReloadFuture;
             this.resourceReloadFuture = null;
             this.reloadResources().thenRun(() -> completableFuture.complete(null));
@@ -1760,7 +1760,7 @@ WindowEventHandler {
         try {
             session.backupLevelDataFile(registryTracker, saveProperties);
             integratedResourceManager.getServerResourceManager().loadRegistryTags();
-            YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
+            YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
             MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
@@ -1865,7 +1865,7 @@ WindowEventHandler {
         this.world = world;
         this.setWorld(world);
         if (!this.integratedServerRunning) {
-            YggdrasilAuthenticationService authenticationService = new YggdrasilAuthenticationService(this.netProxy);
+            YggdrasilAuthenticationService authenticationService = new YggdrasilAuthenticationService(this.networkProxy);
             MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
@@ -2244,7 +2244,7 @@ WindowEventHandler {
     }
 
     public Proxy getNetworkProxy() {
-        return this.netProxy;
+        return this.networkProxy;
     }
 
     public TextureManager getTextureManager() {

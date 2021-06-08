@@ -175,7 +175,7 @@ extends DrawableHelper {
         float g;
         this.scaledWidth = this.client.getWindow().getScaledWidth();
         this.scaledHeight = this.client.getWindow().getScaledHeight();
-        TextRenderer textRenderer = this.getFontRenderer();
+        TextRenderer textRenderer = this.getTextRenderer();
         RenderSystem.enableBlend();
         if (MinecraftClient.isFancyGraphicsOrBetter()) {
             this.renderVignetteOverlay(this.client.getCameraEntity());
@@ -564,13 +564,13 @@ extends DrawableHelper {
         if (this.client.player.experienceLevel > 0) {
             this.client.getProfiler().push("expLevel");
             String string = "" + this.client.player.experienceLevel;
-            k = (this.scaledWidth - this.getFontRenderer().getWidth(string)) / 2;
+            k = (this.scaledWidth - this.getTextRenderer().getWidth(string)) / 2;
             l = this.scaledHeight - 31 - 4;
-            this.getFontRenderer().draw(matrices, string, (float)(k + 1), (float)l, 0);
-            this.getFontRenderer().draw(matrices, string, (float)(k - 1), (float)l, 0);
-            this.getFontRenderer().draw(matrices, string, (float)k, (float)(l + 1), 0);
-            this.getFontRenderer().draw(matrices, string, (float)k, (float)(l - 1), 0);
-            this.getFontRenderer().draw(matrices, string, (float)k, (float)l, 8453920);
+            this.getTextRenderer().draw(matrices, string, (float)(k + 1), (float)l, 0);
+            this.getTextRenderer().draw(matrices, string, (float)(k - 1), (float)l, 0);
+            this.getTextRenderer().draw(matrices, string, (float)k, (float)(l + 1), 0);
+            this.getTextRenderer().draw(matrices, string, (float)k, (float)(l - 1), 0);
+            this.getTextRenderer().draw(matrices, string, (float)k, (float)l, 8453920);
             this.client.getProfiler().pop();
         }
     }
@@ -583,7 +583,7 @@ extends DrawableHelper {
             if (this.currentStack.hasCustomName()) {
                 mutableText.formatted(Formatting.ITALIC);
             }
-            int i = this.getFontRenderer().getWidth(mutableText);
+            int i = this.getTextRenderer().getWidth(mutableText);
             int j = (this.scaledWidth - i) / 2;
             int k = this.scaledHeight - 59;
             if (!this.client.interactionManager.hasStatusBars()) {
@@ -595,8 +595,8 @@ extends DrawableHelper {
             if (l > 0) {
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
-                InGameHud.fill(matrices, j - 2, k - 2, j + i + 2, k + this.getFontRenderer().fontHeight + 2, this.client.options.getTextBackgroundColor(0));
-                this.getFontRenderer().drawWithShadow(matrices, mutableText, (float)j, (float)k, 0xFFFFFF + (l << 24));
+                InGameHud.fill(matrices, j - 2, k - 2, j + i + 2, k + this.getTextRenderer().fontHeight + 2, this.client.options.getTextBackgroundColor(0));
+                this.getTextRenderer().drawWithShadow(matrices, mutableText, (float)j, (float)k, 0xFFFFFF + (l << 24));
                 RenderSystem.disableBlend();
             }
         }
@@ -606,8 +606,8 @@ extends DrawableHelper {
     public void renderDemoTimer(MatrixStack matrices) {
         this.client.getProfiler().push("demo");
         Text text = this.client.world.getTime() >= 120500L ? DEMO_EXPIRED_MESSAGE : new TranslatableText("demo.remainingTime", ChatUtil.ticksToString((int)(120500L - this.client.world.getTime())));
-        int i = this.getFontRenderer().getWidth(text);
-        this.getFontRenderer().drawWithShadow(matrices, text, (float)(this.scaledWidth - i - 10), 5.0f, 0xFFFFFF);
+        int i = this.getTextRenderer().getWidth(text);
+        this.getTextRenderer().drawWithShadow(matrices, text, (float)(this.scaledWidth - i - 10), 5.0f, 0xFFFFFF);
         this.client.getProfiler().pop();
     }
 
@@ -619,15 +619,15 @@ extends DrawableHelper {
         collection = list.size() > 15 ? Lists.newArrayList(Iterables.skip(list, collection.size() - 15)) : list;
         ArrayList<Pair<ScoreboardPlayerScore, MutableText>> list2 = Lists.newArrayListWithCapacity(collection.size());
         Text text = objective.getDisplayName();
-        int j = i = this.getFontRenderer().getWidth(text);
-        int k = this.getFontRenderer().getWidth(field_32171);
+        int j = i = this.getTextRenderer().getWidth(text);
+        int k = this.getTextRenderer().getWidth(field_32171);
         for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
             Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
             MutableText text2 = Team.decorateName(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
             list2.add(Pair.of(scoreboardPlayerScore, text2));
-            j = Math.max(j, this.getFontRenderer().getWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
+            j = Math.max(j, this.getTextRenderer().getWidth(text2) + k + this.getTextRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
         }
-        int l = collection.size() * this.getFontRenderer().fontHeight;
+        int l = collection.size() * this.getTextRenderer().fontHeight;
         int m = this.scaledHeight / 2 + l / 3;
         int n = 3;
         int o = this.scaledWidth - j - 3;
@@ -639,15 +639,15 @@ extends DrawableHelper {
             Text text3 = (Text)pair.getSecond();
             String string = "" + Formatting.RED + scoreboardPlayerScore2.getScore();
             int s = o;
-            int t = m - ++p * this.getFontRenderer().fontHeight;
+            int t = m - ++p * this.getTextRenderer().fontHeight;
             int u = this.scaledWidth - 3 + 2;
-            InGameHud.fill(matrices, s - 2, t, u, t + this.getFontRenderer().fontHeight, q);
-            this.getFontRenderer().draw(matrices, text3, (float)s, (float)t, -1);
-            this.getFontRenderer().draw(matrices, string, (float)(u - this.getFontRenderer().getWidth(string)), (float)t, -1);
+            InGameHud.fill(matrices, s - 2, t, u, t + this.getTextRenderer().fontHeight, q);
+            this.getTextRenderer().draw(matrices, text3, (float)s, (float)t, -1);
+            this.getTextRenderer().draw(matrices, string, (float)(u - this.getTextRenderer().getWidth(string)), (float)t, -1);
             if (p != collection.size()) continue;
-            InGameHud.fill(matrices, s - 2, t - this.getFontRenderer().fontHeight - 1, u, t - 1, r);
+            InGameHud.fill(matrices, s - 2, t - this.getTextRenderer().fontHeight - 1, u, t - 1, r);
             InGameHud.fill(matrices, s - 2, t - 1, u, t, q);
-            this.getFontRenderer().draw(matrices, text, (float)(s + j / 2 - i / 2), (float)(t - this.getFontRenderer().fontHeight), -1);
+            this.getTextRenderer().draw(matrices, text, (float)(s + j / 2 - i / 2), (float)(t - this.getTextRenderer().fontHeight), -1);
         }
     }
 
@@ -1132,7 +1132,7 @@ extends DrawableHelper {
         return this.ticks;
     }
 
-    public TextRenderer getFontRenderer() {
+    public TextRenderer getTextRenderer() {
         return this.client.textRenderer;
     }
 

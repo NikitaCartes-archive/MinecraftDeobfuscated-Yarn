@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Logger;
 
 public class AnvilLevelStorage {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String field_31842 = ".mcr";
+    private static final String FILE_EXTENSION = ".mcr";
 
     static boolean convertLevel(LevelStorage.Session storageSession, ProgressListener progressListener) {
         progressListener.progressStagePercentage(0);
@@ -96,7 +96,7 @@ public class AnvilLevelStorage {
     private static void convertRegion(DynamicRegistryManager.Impl registryManager, File directory, File file, BiomeSource biomeSource, int i, int j, ProgressListener progressListener) {
         String string = file.getName();
         try (RegionFile regionFile = new RegionFile(file, directory, true);
-             RegionFile regionFile2 = new RegionFile(new File(directory, string.substring(0, string.length() - field_31842.length()) + ".mca"), directory, true);){
+             RegionFile regionFile2 = new RegionFile(new File(directory, string.substring(0, string.length() - FILE_EXTENSION.length()) + ".mca"), directory, true);){
             for (int k = 0; k < 32; ++k) {
                 int l;
                 for (l = 0; l < 32; ++l) {
@@ -135,8 +135,8 @@ public class AnvilLevelStorage {
     }
 
     private static void addRegionFiles(File worldDirectory, Collection<File> files) {
-        File file2 = new File(worldDirectory, "region");
-        File[] files2 = file2.listFiles((file, string) -> string.endsWith(field_31842));
+        File file = new File(worldDirectory, "region");
+        File[] files2 = file.listFiles((directory, name) -> name.endsWith(FILE_EXTENSION));
         if (files2 != null) {
             Collections.addAll(files, files2);
         }

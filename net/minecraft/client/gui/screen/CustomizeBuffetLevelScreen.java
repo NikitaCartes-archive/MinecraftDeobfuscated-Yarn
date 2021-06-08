@@ -63,7 +63,7 @@ extends Screen {
     }
 
     void refreshConfirmButton() {
-        this.confirmButton.active = this.biomeSelectionList.getSelected() != null;
+        this.confirmButton.active = this.biomeSelectionList.getSelectedOrNull() != null;
     }
 
     @Override

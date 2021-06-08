@@ -14,11 +14,11 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractTeam {
-    public boolean isEqual(@Nullable AbstractTeam abstractTeam) {
-        if (abstractTeam == null) {
+    public boolean isEqual(@Nullable AbstractTeam team) {
+        if (team == null) {
             return false;
         }
-        return this == abstractTeam;
+        return this == team;
     }
 
     public abstract String getName();
