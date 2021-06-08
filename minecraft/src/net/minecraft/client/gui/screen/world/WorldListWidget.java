@@ -150,7 +150,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	public Optional<WorldListWidget.Entry> getSelectedAsOptional() {
-		return Optional.ofNullable(this.getSelected());
+		return Optional.ofNullable(this.getSelectedOrNull());
 	}
 
 	public SelectWorldScreen getParent() {

@@ -80,8 +80,11 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return 220;
 	}
 
+	/**
+	 * {@return the selected entry of this entry list, or {@code null} if there is none}
+	 */
 	@Nullable
-	public E getSelected() {
+	public E getSelectedOrNull() {
 		return this.selected;
 	}
 
@@ -130,7 +133,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	protected boolean isSelectedEntry(int index) {
-		return Objects.equals(this.getSelected(), this.children().get(index));
+		return Objects.equals(this.getSelectedOrNull(), this.children().get(index));
 	}
 
 	@Nullable
@@ -422,7 +425,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	protected void ensureSelectedEntryVisible() {
-		E entry = this.getSelected();
+		E entry = this.getSelectedOrNull();
 		if (entry != null) {
 			this.setSelected(entry);
 			this.ensureVisible(entry);
@@ -437,7 +440,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected void moveSelectionIf(EntryListWidget.MoveDirection direction, Predicate<E> predicate) {
 		int i = direction == EntryListWidget.MoveDirection.UP ? -1 : 1;
 		if (!this.children().isEmpty()) {
-			int j = this.children().indexOf(this.getSelected());
+			int j = this.children().indexOf(this.getSelectedOrNull());
 
 			while (true) {
 				int k = MathHelper.clamp(j + i, 0, this.getEntryCount() - 1);
@@ -541,7 +544,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	protected boolean removeEntry(E entry) {
 		boolean bl = this.children.remove(entry);
-		if (bl && entry == this.getSelected()) {
+		if (bl && entry == this.getSelectedOrNull()) {
 			this.setSelected(null);
 		}
 

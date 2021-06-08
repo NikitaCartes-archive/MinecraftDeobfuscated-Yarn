@@ -36,6 +36,21 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * A brain is associated with each living entity.
+ * 
+ * <p>A brain has {@linkplain #memories memories}, {@linkplain #sensors sensors},
+ * and {@linkplain #tasks tasks}. In general, the brain can use sensors to refresh
+ * the memories over time, and the memories can be shared by different tasks,
+ * which can reduce duplicate calculation. For instance, instead of having each
+ * task scan for the player, the memories can hold information about nearby player,
+ * and the task can choose to run or not accordingly.
+ * 
+ * <p>To construct a brain, you need to specify the memory (module) types and
+ * sensors present in a brain, and then you can add individual tasks.
+ * 
+ * @see LivingEntity#brain
+ */
 public class Brain<E extends LivingEntity> {
 	static final Logger LOGGER = LogManager.getLogger();
 	private final Supplier<Codec<Brain<E>>> codecSupplier;

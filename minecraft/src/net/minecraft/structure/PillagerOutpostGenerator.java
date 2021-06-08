@@ -13,7 +13,7 @@ public class PillagerOutpostGenerator {
 		new StructurePool(
 			new Identifier("pillager_outpost/base_plates"),
 			new Identifier("empty"),
-			ImmutableList.of(Pair.of(StructurePoolElement.method_30425("pillager_outpost/base_plate"), 1)),
+			ImmutableList.of(Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/base_plate"), 1)),
 			StructurePool.Projection.RIGID
 		)
 	);
@@ -28,10 +28,10 @@ public class PillagerOutpostGenerator {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(
-						StructurePoolElement.method_30429(
+						StructurePoolElement.ofList(
 							ImmutableList.of(
-								StructurePoolElement.method_30425("pillager_outpost/watchtower"),
-								StructurePoolElement.method_30426("pillager_outpost/watchtower_overgrown", StructureProcessorLists.OUTPOST_ROT)
+								StructurePoolElement.ofLegacySingle("pillager_outpost/watchtower"),
+								StructurePoolElement.ofProcessedLegacySingle("pillager_outpost/watchtower_overgrown", StructureProcessorLists.OUTPOST_ROT)
 							)
 						),
 						1
@@ -44,7 +44,7 @@ public class PillagerOutpostGenerator {
 			new StructurePool(
 				new Identifier("pillager_outpost/feature_plates"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.method_30425("pillager_outpost/feature_plate"), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_plate"), 1)),
 				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
@@ -53,13 +53,13 @@ public class PillagerOutpostGenerator {
 				new Identifier("pillager_outpost/features"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30425("pillager_outpost/feature_cage1"), 1),
-					Pair.of(StructurePoolElement.method_30425("pillager_outpost/feature_cage2"), 1),
-					Pair.of(StructurePoolElement.method_30425("pillager_outpost/feature_logs"), 1),
-					Pair.of(StructurePoolElement.method_30425("pillager_outpost/feature_tent1"), 1),
-					Pair.of(StructurePoolElement.method_30425("pillager_outpost/feature_tent2"), 1),
-					Pair.of(StructurePoolElement.method_30425("pillager_outpost/feature_targets"), 1),
-					Pair.of(StructurePoolElement.method_30438(), 6)
+					Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_cage1"), 1),
+					Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_cage2"), 1),
+					Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_logs"), 1),
+					Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_tent1"), 1),
+					Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_tent2"), 1),
+					Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_targets"), 1),
+					Pair.of(StructurePoolElement.ofEmpty(), 6)
 				),
 				StructurePool.Projection.RIGID
 			)

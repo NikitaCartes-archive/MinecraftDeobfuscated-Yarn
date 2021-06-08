@@ -1233,7 +1233,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 				return super.keyPressed(keyCode, scanCode, modifiers);
 			} else {
-				RealmsMainScreen.Entry entry = this.getSelected();
+				RealmsMainScreen.Entry entry = this.getSelectedOrNull();
 				return entry == null ? super.keyPressed(keyCode, scanCode, modifiers) : entry.mouseClicked(0.0, 0.0, 0);
 			}
 		}

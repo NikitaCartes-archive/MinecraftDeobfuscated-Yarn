@@ -88,7 +88,7 @@ public class EnchantingPhrases {
 		return INSTANCE;
 	}
 
-	public StringVisitable generatePhrase(TextRenderer fontRenderer, int width) {
+	public StringVisitable generatePhrase(TextRenderer textRenderer, int width) {
 		StringBuilder stringBuilder = new StringBuilder();
 		int i = this.random.nextInt(2) + 3;
 
@@ -100,7 +100,7 @@ public class EnchantingPhrases {
 			stringBuilder.append(Util.getRandom(this.phrases, this.random));
 		}
 
-		return fontRenderer.getTextHandler().trimToWidth(new LiteralText(stringBuilder.toString()).fillStyle(STYLE), width, Style.EMPTY);
+		return textRenderer.getTextHandler().trimToWidth(new LiteralText(stringBuilder.toString()).fillStyle(STYLE), width, Style.EMPTY);
 	}
 
 	public void setSeed(long seed) {

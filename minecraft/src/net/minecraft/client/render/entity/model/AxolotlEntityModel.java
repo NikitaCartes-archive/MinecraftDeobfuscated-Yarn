@@ -220,10 +220,10 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 	}
 
 	private float lerpAngleDegrees(float start, float end) {
-		return this.lerpAngleDegress(0.05F, start, end);
+		return this.lerpAngleDegrees(0.05F, start, end);
 	}
 
-	private float lerpAngleDegress(float delta, float start, float end) {
+	private float lerpAngleDegrees(float delta, float start, float end) {
 		return MathHelper.lerpAngleDegrees(delta, start, end);
 	}
 
@@ -247,7 +247,7 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 		this.setAngles(this.leftHindLeg, 1.1F, 1.0F, 0.0F);
 		this.setAngles(this.leftFrontLeg, 0.8F, 2.3F, -0.5F);
 		this.copyLegAngles();
-		this.body.pitch = this.lerpAngleDegress(0.2F, this.body.pitch, 0.0F);
+		this.body.pitch = this.lerpAngleDegrees(0.2F, this.body.pitch, 0.0F);
 		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * (float) (Math.PI / 180.0));
 		this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.0F);
 	}
@@ -268,7 +268,7 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 		this.setAngles(this.leftFrontLeg, 1.0995574F, (float) (Math.PI / 2) - i, 0.0F);
 		this.setAngles(this.rightHindLeg, this.leftHindLeg.pitch, -1.0F - h, 0.0F);
 		this.setAngles(this.rightFrontLeg, this.leftFrontLeg.pitch, (float) (-Math.PI / 2) - i, 0.0F);
-		this.body.pitch = this.lerpAngleDegress(0.2F, this.body.pitch, 0.0F);
+		this.body.pitch = this.lerpAngleDegrees(0.2F, this.body.pitch, 0.0F);
 		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * (float) (Math.PI / 180.0));
 		this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.0F);
 	}
@@ -296,7 +296,7 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 		float g = MathHelper.sin(f);
 		float h = MathHelper.cos(f);
 		float i = 0.13F * g;
-		this.body.pitch = this.lerpAngleDegress(0.1F, this.body.pitch, headPitch * (float) (Math.PI / 180.0) + i);
+		this.body.pitch = this.lerpAngleDegrees(0.1F, this.body.pitch, headPitch * (float) (Math.PI / 180.0) + i);
 		this.head.pitch = -i * 1.8F;
 		this.body.pivotY -= 0.45F * h;
 		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, -0.5F * g - 0.8F);

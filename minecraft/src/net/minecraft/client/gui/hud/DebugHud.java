@@ -79,7 +79,7 @@ public class DebugHud extends DrawableHelper {
 		types.put(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, "ML");
 	});
 	private final MinecraftClient client;
-	private final TextRenderer fontRenderer;
+	private final TextRenderer textRenderer;
 	private HitResult blockHit;
 	private HitResult fluidHit;
 	@Nullable
@@ -94,7 +94,7 @@ public class DebugHud extends DrawableHelper {
 
 	public DebugHud(MinecraftClient client) {
 		this.client = client;
-		this.fontRenderer = client.textRenderer;
+		this.textRenderer = client.textRenderer;
 	}
 
 	public void resetChunk() {
@@ -138,11 +138,11 @@ public class DebugHud extends DrawableHelper {
 			String string = (String)list.get(i);
 			if (!Strings.isNullOrEmpty(string)) {
 				int j = 9;
-				int k = this.fontRenderer.getWidth(string);
+				int k = this.textRenderer.getWidth(string);
 				int l = 2;
 				int m = 2 + j * i;
 				fill(matrices, 1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
-				this.fontRenderer.draw(matrices, string, 2.0F, (float)m, 14737632);
+				this.textRenderer.draw(matrices, string, 2.0F, (float)m, 14737632);
 			}
 		}
 	}
@@ -154,11 +154,11 @@ public class DebugHud extends DrawableHelper {
 			String string = (String)list.get(i);
 			if (!Strings.isNullOrEmpty(string)) {
 				int j = 9;
-				int k = this.fontRenderer.getWidth(string);
+				int k = this.textRenderer.getWidth(string);
 				int l = this.client.getWindow().getScaledWidth() - 2 - k;
 				int m = 2 + j * i;
 				fill(matrices, l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
-				this.fontRenderer.draw(matrices, string, (float)l, (float)m, 14737632);
+				this.textRenderer.draw(matrices, string, (float)l, (float)m, 14737632);
 			}
 		}
 	}
@@ -514,14 +514,14 @@ public class DebugHud extends DrawableHelper {
 		RenderSystem.disableBlend();
 		if (showFps) {
 			fill(matrices, x + 1, r - 30 + 1, x + 14, r - 30 + 10, -1873784752);
-			this.fontRenderer.draw(matrices, "60 FPS", (float)(x + 2), (float)(r - 30 + 2), 14737632);
+			this.textRenderer.draw(matrices, "60 FPS", (float)(x + 2), (float)(r - 30 + 2), 14737632);
 			this.drawHorizontalLine(matrices, x, x + n - 1, r - 30, -1);
 			fill(matrices, x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
-			this.fontRenderer.draw(matrices, "30 FPS", (float)(x + 2), (float)(r - 60 + 2), 14737632);
+			this.textRenderer.draw(matrices, "30 FPS", (float)(x + 2), (float)(r - 60 + 2), 14737632);
 			this.drawHorizontalLine(matrices, x, x + n - 1, r - 60, -1);
 		} else {
 			fill(matrices, x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
-			this.fontRenderer.draw(matrices, "20 TPS", (float)(x + 2), (float)(r - 60 + 2), 14737632);
+			this.textRenderer.draw(matrices, "20 TPS", (float)(x + 2), (float)(r - 60 + 2), 14737632);
 			this.drawHorizontalLine(matrices, x, x + n - 1, r - 60, -1);
 		}
 
@@ -535,9 +535,9 @@ public class DebugHud extends DrawableHelper {
 		String string = p + " ms min";
 		String string2 = o / (long)n + " ms avg";
 		String string3 = q + " ms max";
-		this.fontRenderer.drawWithShadow(matrices, string, (float)(x + 2), (float)(r - 60 - 9), 14737632);
-		this.fontRenderer.drawWithShadow(matrices, string2, (float)(x + n / 2 - this.fontRenderer.getWidth(string2) / 2), (float)(r - 60 - 9), 14737632);
-		this.fontRenderer.drawWithShadow(matrices, string3, (float)(x + n - this.fontRenderer.getWidth(string3)), (float)(r - 60 - 9), 14737632);
+		this.textRenderer.drawWithShadow(matrices, string, (float)(x + 2), (float)(r - 60 - 9), 14737632);
+		this.textRenderer.drawWithShadow(matrices, string2, (float)(x + n / 2 - this.textRenderer.getWidth(string2) / 2), (float)(r - 60 - 9), 14737632);
+		this.textRenderer.drawWithShadow(matrices, string3, (float)(x + n - this.textRenderer.getWidth(string3)), (float)(r - 60 - 9), 14737632);
 		RenderSystem.enableDepthTest();
 	}
 

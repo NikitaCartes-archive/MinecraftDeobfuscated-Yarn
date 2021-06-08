@@ -70,7 +70,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				button -> {
 					if (this.hasLayerSelected()) {
 						List<FlatChunkGeneratorLayer> list = this.config.getLayers();
-						int i = this.layers.children().indexOf(this.layers.getSelected());
+						int i = this.layers.children().indexOf(this.layers.getSelectedOrNull());
 						int j = list.size() - i - 1;
 						list.remove(j);
 						this.layers
@@ -109,7 +109,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	private boolean hasLayerSelected() {
-		return this.layers.getSelected() != null;
+		return this.layers.getSelectedOrNull() != null;
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 		}
 
 		public void updateLayers() {
-			int i = this.children().indexOf(this.getSelected());
+			int i = this.children().indexOf(this.getSelectedOrNull());
 			this.clearEntries();
 
 			for (int j = 0; j < CustomizeFlatLevelScreen.this.config.getLayers().size(); j++) {

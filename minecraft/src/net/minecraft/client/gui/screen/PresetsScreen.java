@@ -194,7 +194,7 @@ public class PresetsScreen extends Screen {
 			})
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
-		this.updateSelectButton(this.listWidget.getSelected() != null);
+		this.updateSelectButton(this.listWidget.getSelectedOrNull() != null);
 	}
 
 	@Override
@@ -438,8 +438,8 @@ public class PresetsScreen extends Screen {
 			if (super.keyPressed(keyCode, scanCode, modifiers)) {
 				return true;
 			} else {
-				if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) && this.getSelected() != null) {
-					this.getSelected().setPreset();
+				if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) && this.getSelectedOrNull() != null) {
+					this.getSelectedOrNull().setPreset();
 				}
 
 				return false;

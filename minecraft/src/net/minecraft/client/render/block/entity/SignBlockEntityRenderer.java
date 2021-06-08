@@ -110,7 +110,7 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 			OrderedText orderedText = orderedTexts[p];
 			float q = (float)(-this.textRenderer.getWidth(orderedText) / 2);
 			if (bl) {
-				this.textRenderer.method_37296(orderedText, q, (float)(p * 10 - 20), n, l, matrixStack.peek().getModel(), vertexConsumerProvider, o);
+				this.textRenderer.drawWithOutline(orderedText, q, (float)(p * 10 - 20), n, l, matrixStack.peek().getModel(), vertexConsumerProvider, o);
 			} else {
 				this.textRenderer.draw(orderedText, q, (float)(p * 10 - 20), n, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, o);
 			}

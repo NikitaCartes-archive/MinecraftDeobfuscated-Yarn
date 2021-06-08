@@ -17,10 +17,10 @@ public class BastionData {
 				new Identifier("bastion/mobs/piglin"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30434("bastion/mobs/melee_piglin"), 1),
-					Pair.of(StructurePoolElement.method_30434("bastion/mobs/sword_piglin"), 4),
-					Pair.of(StructurePoolElement.method_30434("bastion/mobs/crossbow_piglin"), 4),
-					Pair.of(StructurePoolElement.method_30434("bastion/mobs/empty"), 1)
+					Pair.of(StructurePoolElement.ofSingle("bastion/mobs/melee_piglin"), 1),
+					Pair.of(StructurePoolElement.ofSingle("bastion/mobs/sword_piglin"), 4),
+					Pair.of(StructurePoolElement.ofSingle("bastion/mobs/crossbow_piglin"), 4),
+					Pair.of(StructurePoolElement.ofSingle("bastion/mobs/empty"), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
@@ -29,7 +29,7 @@ public class BastionData {
 			new StructurePool(
 				new Identifier("bastion/mobs/hoglin"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.method_30434("bastion/mobs/hoglin"), 2), Pair.of(StructurePoolElement.method_30434("bastion/mobs/empty"), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofSingle("bastion/mobs/hoglin"), 2), Pair.of(StructurePoolElement.ofSingle("bastion/mobs/empty"), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
@@ -37,7 +37,7 @@ public class BastionData {
 			new StructurePool(
 				new Identifier("bastion/blocks/gold"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.method_30434("bastion/blocks/air"), 3), Pair.of(StructurePoolElement.method_30434("bastion/blocks/gold"), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofSingle("bastion/blocks/air"), 3), Pair.of(StructurePoolElement.ofSingle("bastion/blocks/gold"), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
@@ -46,9 +46,9 @@ public class BastionData {
 				new Identifier("bastion/mobs/piglin_melee"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30434("bastion/mobs/melee_piglin_always"), 1),
-					Pair.of(StructurePoolElement.method_30434("bastion/mobs/melee_piglin"), 5),
-					Pair.of(StructurePoolElement.method_30434("bastion/mobs/sword_piglin"), 1)
+					Pair.of(StructurePoolElement.ofSingle("bastion/mobs/melee_piglin_always"), 1),
+					Pair.of(StructurePoolElement.ofSingle("bastion/mobs/melee_piglin"), 5),
+					Pair.of(StructurePoolElement.ofSingle("bastion/mobs/sword_piglin"), 1)
 				),
 				StructurePool.Projection.RIGID
 			)

@@ -16,13 +16,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class Scoreboard {
-	public static final int field_31886 = 0;
-	public static final int field_31887 = 1;
-	public static final int field_31888 = 2;
-	public static final int field_31889 = 3;
-	public static final int field_31890 = 18;
-	public static final int field_31891 = 19;
-	public static final int field_31892 = 40;
+	public static final int LIST_DISPLAY_SLOT_ID = 0;
+	public static final int SIDEBAR_DISPLAY_SLOT_ID = 1;
+	public static final int BELOW_NAME_DISPLAY_SLOT_ID = 2;
+	public static final int MIN_SIDEBAR_TEAM_DISPLAY_SLOT_ID = 3;
+	public static final int MAX_SIDEBAR_TEAM_DISPLAY_SLOT_ID = 18;
+	public static final int DISPLAY_SLOT_COUNT = 19;
+	public static final int MAX_NAME_LENGTH = 40;
 	private final Map<String, ScoreboardObjective> objectives = Maps.<String, ScoreboardObjective>newHashMap();
 	private final Map<ScoreboardCriterion, List<ScoreboardObjective>> objectivesByCriterion = Maps.<ScoreboardCriterion, List<ScoreboardObjective>>newHashMap();
 	private final Map<String, Map<ScoreboardObjective, ScoreboardPlayerScore>> playerObjectives = Maps.<String, Map<ScoreboardObjective, ScoreboardPlayerScore>>newHashMap();

@@ -47,7 +47,7 @@ import org.apache.logging.log4j.Logger;
 
 public final class SpawnHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_30974 = 24;
+	private static final int MIN_SPAWN_DISTANCE = 24;
 	public static final int field_30972 = 8;
 	public static final int field_30973 = 128;
 	static final int CHUNK_AREA = (int)Math.pow(17.0, 2.0);

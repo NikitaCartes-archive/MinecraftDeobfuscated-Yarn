@@ -206,34 +206,40 @@ public class TextRenderer {
 		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
 	}
 
-	public void method_37296(OrderedText orderedText, float f, float g, int i, int j, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, int k) {
-		int l = tweakTransparency(j);
-		TextRenderer.Drawer drawer = new TextRenderer.Drawer(vertexConsumerProvider, 0.0F, 0.0F, l, false, matrix4f, TextRenderer.TextLayerType.NORMAL, k);
+	/**
+	 * @param color the text color in 0xAARRGGBB
+	 * @param outlineColor the outline color in 0xAARRGGBB
+	 */
+	public void drawWithOutline(
+		OrderedText text, float x, float y, int color, int outlineColor, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light
+	) {
+		int i = tweakTransparency(outlineColor);
+		TextRenderer.Drawer drawer = new TextRenderer.Drawer(vertexConsumers, 0.0F, 0.0F, i, false, matrix, TextRenderer.TextLayerType.NORMAL, light);
 
-		for (int m = -1; m <= 1; m++) {
-			for (int n = -1; n <= 1; n++) {
-				if (m != 0 || n != 0) {
-					float[] fs = new float[]{f};
-					int o = m;
-					int p = n;
-					orderedText.accept((lx, style, mx) -> {
+		for (int j = -1; j <= 1; j++) {
+			for (int k = -1; k <= 1; k++) {
+				if (j != 0 || k != 0) {
+					float[] fs = new float[]{x};
+					int l = j;
+					int m = k;
+					text.accept((lx, style, mx) -> {
 						boolean bl = style.isBold();
 						FontStorage fontStorage = this.getFontStorage(style.getFont());
 						Glyph glyph = fontStorage.getGlyph(mx);
-						drawer.x = fs[0] + (float)o * glyph.getShadowOffset();
-						drawer.y = g + (float)p * glyph.getShadowOffset();
+						drawer.x = fs[0] + (float)l * glyph.getShadowOffset();
+						drawer.y = y + (float)m * glyph.getShadowOffset();
 						fs[0] += glyph.getAdvance(bl);
-						return drawer.accept(lx, style.withColor(l), mx);
+						return drawer.accept(lx, style.withColor(i), mx);
 					});
 				}
 			}
 		}
 
 		TextRenderer.Drawer drawer2 = new TextRenderer.Drawer(
-			vertexConsumerProvider, f, g, tweakTransparency(i), false, matrix4f, TextRenderer.TextLayerType.POLYGON_OFFSET, k
+			vertexConsumers, x, y, tweakTransparency(color), false, matrix, TextRenderer.TextLayerType.POLYGON_OFFSET, light
 		);
-		orderedText.accept(drawer2);
-		drawer2.drawLayer(0, f);
+		text.accept(drawer2);
+		drawer2.drawLayer(0, x);
 	}
 
 	private static int tweakTransparency(int argb) {
