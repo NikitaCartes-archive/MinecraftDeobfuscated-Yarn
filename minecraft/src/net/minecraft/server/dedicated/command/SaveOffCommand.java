@@ -16,7 +16,7 @@ public class SaveOffCommand {
 			ServerCommandSource serverCommandSource = context.getSource();
 			boolean bl = false;
 
-			for(ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
+			for(ServerWorld serverWorld : serverCommandSource.getServer().getWorlds()) {
 				if (serverWorld != null && !serverWorld.savingDisabled) {
 					serverWorld.savingDisabled = true;
 					bl = true;

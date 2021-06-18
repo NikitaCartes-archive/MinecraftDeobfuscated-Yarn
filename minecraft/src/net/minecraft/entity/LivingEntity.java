@@ -951,7 +951,7 @@ public abstract class LivingEntity extends Entity {
 	 * 
 	 * @param effect the effect to add
 	 */
-	public boolean addStatusEffect(StatusEffectInstance effect) {
+	public final boolean addStatusEffect(StatusEffectInstance effect) {
 		return this.addStatusEffect(effect, null);
 	}
 
@@ -2068,17 +2068,17 @@ public abstract class LivingEntity extends Entity {
 		return 0.42F * this.getJumpVelocityMultiplier();
 	}
 
-	protected void jump() {
-		float f = this.getJumpVelocity();
-		if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
-			f += 0.1F * (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1);
-		}
+	public double getJumpBoostVelocityModifier() {
+		return this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? (double)(0.1F * (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1)) : 0.0;
+	}
 
+	protected void jump() {
+		double d = (double)this.getJumpVelocity() + this.getJumpBoostVelocityModifier();
 		Vec3d vec3d = this.getVelocity();
-		this.setVelocity(vec3d.x, (double)f, vec3d.z);
+		this.setVelocity(vec3d.x, d, vec3d.z);
 		if (this.isSprinting()) {
-			float g = this.getYaw() * (float) (Math.PI / 180.0);
-			this.setVelocity(this.getVelocity().add((double)(-MathHelper.sin(g) * 0.2F), 0.0, (double)(MathHelper.cos(g) * 0.2F)));
+			float f = this.getYaw() * (float) (Math.PI / 180.0);
+			this.setVelocity(this.getVelocity().add((double)(-MathHelper.sin(f) * 0.2F), 0.0, (double)(MathHelper.cos(f) * 0.2F)));
 		}
 
 		this.velocityDirty = true;

@@ -42,7 +42,7 @@ public abstract class ProjectileEntity extends Entity {
 
 	@Nullable
 	public Entity getOwner() {
-		if (this.owner != null) {
+		if (this.owner != null && !this.owner.isRemoved()) {
 			return this.owner;
 		} else if (this.ownerUuid != null && this.world instanceof ServerWorld) {
 			this.owner = ((ServerWorld)this.world).getEntity(this.ownerUuid);

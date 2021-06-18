@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -37,13 +38,15 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private static final Text MONTHS_TEXT = new TranslatableText("mco.configure.world.subscription.months");
 	private static final Text DAY_TEXT = new TranslatableText("mco.configure.world.subscription.day");
 	private static final Text DAYS_TEXT = new TranslatableText("mco.configure.world.subscription.days");
+	private static final Text UNKNOWN_TEXT = new TranslatableText("mco.configure.world.subscription.unknown");
 	private final Screen parent;
 	final RealmsServer serverData;
 	final Screen mainScreen;
-	private Text daysLeft;
-	private String startDate;
+	private Text daysLeft = UNKNOWN_TEXT;
+	private Text startDate = UNKNOWN_TEXT;
+	@Nullable
 	private Subscription.SubscriptionType type;
-	private static final String field_32127 = "https://aka.ms/ExtendJavaRealms";
+	private static final String EXTEND_JAVA_REALMS_URL = "https://aka.ms/ExtendJavaRealms";
 
 	public RealmsSubscriptionInfoScreen(Screen parent, RealmsServer serverData, Screen mainScreen) {
 		super(NarratorManager.EMPTY);
@@ -78,18 +81,18 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 			this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.delete.button"), button -> {
 				Text text = new TranslatableText("mco.configure.world.delete.question.line1");
 				Text text2 = new TranslatableText("mco.configure.world.delete.question.line2");
-				this.client.openScreen(new RealmsLongConfirmationScreen(this::method_25271, RealmsLongConfirmationScreen.Type.Warning, text, text2, true));
+				this.client.openScreen(new RealmsLongConfirmationScreen(this::onDeletionConfirmed, RealmsLongConfirmationScreen.Type.Warning, text, text2, true));
 			}));
 		}
 	}
 
 	@Override
 	public Text getNarratedTitle() {
-		return ScreenTexts.joinLines(subscriptionTitle, subscriptionStartLabelText, new LiteralText(this.startDate), timeLeftLabelText, this.daysLeft);
+		return ScreenTexts.joinLines(subscriptionTitle, subscriptionStartLabelText, this.startDate, timeLeftLabelText, this.daysLeft);
 	}
 
-	private void method_25271(boolean bl) {
-		if (bl) {
+	private void onDeletionConfirmed(boolean delete) {
+		if (delete) {
 			(new Thread("Realms-delete-realm") {
 				public void run() {
 					try {
@@ -122,10 +125,10 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		}
 	}
 
-	private static String localPresentation(long l) {
+	private static Text localPresentation(long time) {
 		Calendar calendar = new GregorianCalendar(TimeZone.getDefault());
-		calendar.setTimeInMillis(l);
-		return DateFormat.getDateTimeInstance().format(calendar.getTime());
+		calendar.setTimeInMillis(time);
+		return new LiteralText(DateFormat.getDateTimeInstance().format(calendar.getTime()));
 	}
 
 	@Override

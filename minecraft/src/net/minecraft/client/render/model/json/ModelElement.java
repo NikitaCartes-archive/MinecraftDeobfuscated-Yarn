@@ -66,7 +66,7 @@ public class ModelElement {
 
 	@Environment(EnvType.CLIENT)
 	protected static class Deserializer implements JsonDeserializer<ModelElement> {
-		private static final boolean field_32788 = true;
+		private static final boolean DEFAULT_SHADE = true;
 
 		public ModelElement deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();

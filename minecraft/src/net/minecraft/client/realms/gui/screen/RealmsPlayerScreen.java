@@ -180,8 +180,8 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			PlayerInfo playerInfo = (PlayerInfo)this.serverData.players.get(index);
 			this.selectedInvited = playerInfo.getUuid();
 			this.selectedInvitedIndex = index;
-			RealmsConfirmScreen realmsConfirmScreen = new RealmsConfirmScreen(bl -> {
-				if (bl) {
+			RealmsConfirmScreen realmsConfirmScreen = new RealmsConfirmScreen(confirmed -> {
+				if (confirmed) {
 					RealmsClient realmsClient = RealmsClient.createRealmsClient();
 
 					try {
@@ -251,46 +251,46 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 	}
 
-	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int mouseX, int mouseY) {
-		if (text != null) {
+	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text tooltip, int mouseX, int mouseY) {
+		if (tooltip != null) {
 			int i = mouseX + 12;
 			int j = mouseY - 12;
-			int k = this.textRenderer.getWidth(text);
+			int k = this.textRenderer.getWidth(tooltip);
 			this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-			this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, 16777215);
+			this.textRenderer.drawWithShadow(matrices, tooltip, (float)i, (float)j, 16777215);
 		}
 	}
 
-	void drawRemoveIcon(MatrixStack matrices, int i, int j, int k, int l) {
-		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < row(12) + 20 && l > row(1);
+	void drawRemoveIcon(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
+		boolean bl = mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9 && mouseY < row(12) + 20 && mouseY > row(1);
 		RenderSystem.setShaderTexture(0, CROSS_PLAYER_ICON);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 7.0F : 0.0F;
-		DrawableHelper.drawTexture(matrices, i, j, 0.0F, f, 8, 7, 8, 14);
+		DrawableHelper.drawTexture(matrices, x, y, 0.0F, f, 8, 7, 8, 14);
 		if (bl) {
 			this.tooltipText = REMOVE_TOOLTIP;
 			this.operation = RealmsPlayerScreen.PlayerOperation.REMOVE;
 		}
 	}
 
-	void drawOpped(MatrixStack matrices, int i, int j, int k, int l) {
-		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < row(12) + 20 && l > row(1);
+	void drawOpped(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
+		boolean bl = mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9 && mouseY < row(12) + 20 && mouseY > row(1);
 		RenderSystem.setShaderTexture(0, OP_ICON);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 8.0F : 0.0F;
-		DrawableHelper.drawTexture(matrices, i, j, 0.0F, f, 8, 8, 8, 16);
+		DrawableHelper.drawTexture(matrices, x, y, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
 			this.tooltipText = OPERATOR_TOOLTIP;
 			this.operation = RealmsPlayerScreen.PlayerOperation.TOGGLE_OP;
 		}
 	}
 
-	void drawNormal(MatrixStack matrices, int i, int j, int k, int l) {
-		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < row(12) + 20 && l > row(1);
+	void drawNormal(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
+		boolean bl = mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9 && mouseY < row(12) + 20 && mouseY > row(1);
 		RenderSystem.setShaderTexture(0, USER_ICON);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 8.0F : 0.0F;
-		DrawableHelper.drawTexture(matrices, i, j, 0.0F, f, 8, 8, 8, 16);
+		DrawableHelper.drawTexture(matrices, x, y, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
 			this.tooltipText = NORMAL_TOOLTIP;
 			this.operation = RealmsPlayerScreen.PlayerOperation.TOGGLE_OP;

@@ -284,16 +284,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	@Override
-	public boolean dropSelectedItem(boolean dropEntireStack) {
-		PlayerActionC2SPacket.Action action = dropEntireStack ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
+	public boolean dropSelectedItem(boolean entireStack) {
+		PlayerActionC2SPacket.Action action = entireStack ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
+		ItemStack itemStack = this.getInventory().dropSelectedItem(entireStack);
 		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
-		return this.getInventory()
-				.removeStack(
-					this.getInventory().selectedSlot,
-					dropEntireStack && !this.getInventory().getMainHandStack().isEmpty() ? this.getInventory().getMainHandStack().getCount() : 1
-				)
-			!= ItemStack.EMPTY;
+		return !itemStack.isEmpty();
 	}
 
 	public void sendChatMessage(String message) {

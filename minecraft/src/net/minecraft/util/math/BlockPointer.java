@@ -14,7 +14,7 @@ public interface BlockPointer extends Position {
 	@Override
 	double getZ();
 
-	BlockPos getBlockPos();
+	BlockPos getPos();
 
 	BlockState getBlockState();
 

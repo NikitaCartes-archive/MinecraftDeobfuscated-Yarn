@@ -38,9 +38,9 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 
 	@Override
 	public void tick() {
-		if ((!this.method_25169() || !this.method_25170() || !validClient) && !REALMS_DATA_FETCHER.isStopped()) {
+		if ((!this.shouldShowNotifications() || !this.isTitleScreen() || !validClient) && !REALMS_DATA_FETCHER.isStopped()) {
 			REALMS_DATA_FETCHER.stop();
-		} else if (validClient && this.method_25169()) {
+		} else if (validClient && this.shouldShowNotifications()) {
 			REALMS_DATA_FETCHER.initWithSpecificTaskList();
 			if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.PENDING_INVITE)) {
 				this.numberOfPendingInvites = REALMS_DATA_FETCHER.getPendingInvitesCount();
@@ -58,11 +58,11 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 		}
 	}
 
-	private boolean method_25169() {
+	private boolean shouldShowNotifications() {
 		return this.client.options.realmsNotifications;
 	}
 
-	private boolean method_25170() {
+	private boolean isTitleScreen() {
 		return this.client.currentScreen instanceof TitleScreen;
 	}
 

@@ -233,10 +233,6 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		this.setAir(Math.min(i, this.getMaxAir()));
 	}
 
-	public boolean isAirLessThanMax() {
-		return this.getAir() < this.getMaxAir();
-	}
-
 	@Override
 	public int getMaxAir() {
 		return 6000;
@@ -250,7 +246,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		this.dataTracker.set(VARIANT, variant.getId());
 	}
 
-	static boolean shouldBabyBeDifferent(Random random) {
+	private static boolean shouldBabyBeDifferent(Random random) {
 		return random.nextInt(1200) == 0;
 	}
 
@@ -559,7 +555,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		}
 
 		public AxolotlEntity.Variant getRandomVariant(Random random) {
-			return AxolotlEntity.shouldBabyBeDifferent(random) ? AxolotlEntity.Variant.getRandomNatural(random) : this.variants[random.nextInt(this.variants.length)];
+			return this.variants[random.nextInt(this.variants.length)];
 		}
 	}
 

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.client.util.profiler.SamplingChannel;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class DummyProfiler implements ReadableProfiler {
@@ -30,7 +29,7 @@ public class DummyProfiler implements ReadableProfiler {
 	}
 
 	@Override
-	public void method_37167(SamplingChannel samplingChannel) {
+	public void markSampleType(SampleType type) {
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class DummyProfiler implements ReadableProfiler {
 	}
 
 	@Override
-	public Set<Pair<String, SamplingChannel>> method_37168() {
+	public Set<Pair<String, SampleType>> getSampleTargets() {
 		return ImmutableSet.of();
 	}
 }

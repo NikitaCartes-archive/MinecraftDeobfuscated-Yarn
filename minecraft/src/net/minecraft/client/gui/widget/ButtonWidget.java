@@ -34,12 +34,12 @@ public class ButtonWidget extends PressableWidget {
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		super.renderButton(matrices, mouseX, mouseY, delta);
 		if (this.isHovered()) {
-			this.renderToolTip(matrices, mouseX, mouseY);
+			this.renderTooltip(matrices, mouseX, mouseY);
 		}
 	}
 
 	@Override
-	public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+	public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
 		this.tooltipSupplier.onTooltip(this, matrices, mouseX, mouseY);
 	}
 

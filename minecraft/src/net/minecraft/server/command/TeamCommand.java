@@ -300,7 +300,7 @@ public class TeamCommand {
 	}
 
 	private static int executeLeave(ServerCommandSource source, Collection<String> members) {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 
 		for(String string : members) {
 			scoreboard.clearPlayerTeam(string);
@@ -316,7 +316,7 @@ public class TeamCommand {
 	}
 
 	private static int executeJoin(ServerCommandSource source, Team team, Collection<String> members) {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 
 		for(String string : members) {
 			scoreboard.addPlayerToTeam(string, team);
@@ -412,7 +412,7 @@ public class TeamCommand {
 	}
 
 	private static int executeEmpty(ServerCommandSource source, Team team) throws CommandSyntaxException {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		Collection<String> collection = Lists.newArrayList(team.getPlayerList());
 		if (collection.isEmpty()) {
 			throw EMPTY_UNCHANGED_EXCEPTION.create();
@@ -427,7 +427,7 @@ public class TeamCommand {
 	}
 
 	private static int executeRemove(ServerCommandSource source, Team team) {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		scoreboard.removeTeam(team);
 		source.sendFeedback(new TranslatableText("commands.team.remove.success", team.getFormattedName()), true);
 		return scoreboard.getTeams().size();
@@ -438,7 +438,7 @@ public class TeamCommand {
 	}
 
 	private static int executeAdd(ServerCommandSource source, String team, Text displayName) throws CommandSyntaxException {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		if (scoreboard.getTeam(team) != null) {
 			throw ADD_DUPLICATE_EXCEPTION.create();
 		} else if (team.length() > 16) {
@@ -465,7 +465,7 @@ public class TeamCommand {
 	}
 
 	private static int executeListTeams(ServerCommandSource source) {
-		Collection<Team> collection = source.getMinecraftServer().getScoreboard().getTeams();
+		Collection<Team> collection = source.getServer().getScoreboard().getTeams();
 		if (collection.isEmpty()) {
 			source.sendFeedback(new TranslatableText("commands.team.list.teams.empty"), false);
 		} else {

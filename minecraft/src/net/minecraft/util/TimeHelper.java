@@ -1,11 +1,11 @@
-package net.minecraft.entity.ai;
+package net.minecraft.util;
 
 import java.util.concurrent.TimeUnit;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-public class Durations {
-	public static final long field_33868 = TimeUnit.SECONDS.toNanos(1L);
-	public static final long field_33869 = TimeUnit.MILLISECONDS.toNanos(1L);
+public class TimeHelper {
+	public static final long SECOND_IN_MILLIS = TimeUnit.SECONDS.toNanos(1L);
+	public static final long MILLI_IN_NANOS = TimeUnit.MILLISECONDS.toNanos(1L);
 
 	public static UniformIntProvider betweenSeconds(int min, int max) {
 		return UniformIntProvider.create(min * 20, max * 20);

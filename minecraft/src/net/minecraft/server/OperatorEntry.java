@@ -30,7 +30,7 @@ public class OperatorEntry extends ServerConfigEntry<GameProfile> {
 	}
 
 	@Override
-	protected void fromJson(JsonObject json) {
+	protected void write(JsonObject json) {
 		if (this.getKey() != null) {
 			json.addProperty("uuid", this.getKey().getId() == null ? "" : this.getKey().getId().toString());
 			json.addProperty("name", this.getKey().getName());

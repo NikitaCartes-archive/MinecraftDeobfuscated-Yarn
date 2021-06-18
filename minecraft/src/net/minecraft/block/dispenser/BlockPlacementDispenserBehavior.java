@@ -20,7 +20,7 @@ public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavi
 		Item item = stack.getItem();
 		if (item instanceof BlockItem) {
 			Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-			BlockPos blockPos = pointer.getBlockPos().offset(direction);
+			BlockPos blockPos = pointer.getPos().offset(direction);
 			Direction direction2 = pointer.getWorld().isAir(blockPos.down()) ? direction : Direction.UP;
 
 			try {

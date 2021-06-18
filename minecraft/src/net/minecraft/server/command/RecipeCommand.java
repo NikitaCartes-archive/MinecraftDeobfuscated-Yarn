@@ -40,7 +40,7 @@ public class RecipeCommand {
 									CommandManager.literal("*")
 										.executes(
 											context -> executeGive(
-													context.getSource(), EntityArgumentType.getPlayers(context, "targets"), context.getSource().getMinecraftServer().getRecipeManager().values()
+													context.getSource(), EntityArgumentType.getPlayers(context, "targets"), context.getSource().getServer().getRecipeManager().values()
 												)
 										)
 								)
@@ -65,7 +65,7 @@ public class RecipeCommand {
 									CommandManager.literal("*")
 										.executes(
 											context -> executeTake(
-													context.getSource(), EntityArgumentType.getPlayers(context, "targets"), context.getSource().getMinecraftServer().getRecipeManager().values()
+													context.getSource(), EntityArgumentType.getPlayers(context, "targets"), context.getSource().getServer().getRecipeManager().values()
 												)
 										)
 								)

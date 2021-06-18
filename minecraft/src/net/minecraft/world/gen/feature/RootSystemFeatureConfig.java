@@ -29,7 +29,7 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootPlacementAttempts),
 					Codec.intRange(1, 64)
 						.fieldOf("allowed_vertical_water_for_tree")
-						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.requiredVerticalSpaceForTree)
+						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.allowedVerticalWaterForTree)
 				)
 				.apply(instance, RootSystemFeatureConfig::new)
 	);

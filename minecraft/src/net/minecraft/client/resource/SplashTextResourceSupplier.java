@@ -43,7 +43,7 @@ public class SplashTextResourceSupplier extends SinglePreparationResourceReloade
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
 
 				try {
-					var5 = (List)bufferedReader.lines().map(String::trim).filter(string -> string.hashCode() != 125780783).collect(Collectors.toList());
+					var5 = (List)bufferedReader.lines().map(String::trim).filter(splashText -> splashText.hashCode() != 125780783).collect(Collectors.toList());
 				} catch (Throwable var9) {
 					try {
 						bufferedReader.close();

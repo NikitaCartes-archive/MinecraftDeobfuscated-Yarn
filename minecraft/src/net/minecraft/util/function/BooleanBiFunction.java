@@ -1,22 +1,22 @@
 package net.minecraft.util.function;
 
 public interface BooleanBiFunction {
-	BooleanBiFunction FALSE = (bl, bl2) -> false;
-	BooleanBiFunction NOT_OR = (bl, bl2) -> !bl && !bl2;
-	BooleanBiFunction ONLY_SECOND = (bl, bl2) -> bl2 && !bl;
-	BooleanBiFunction NOT_FIRST = (bl, bl2) -> !bl;
-	BooleanBiFunction ONLY_FIRST = (bl, bl2) -> bl && !bl2;
-	BooleanBiFunction NOT_SECOND = (bl, bl2) -> !bl2;
-	BooleanBiFunction NOT_SAME = (bl, bl2) -> bl != bl2;
-	BooleanBiFunction NOT_AND = (bl, bl2) -> !bl || !bl2;
-	BooleanBiFunction AND = (bl, bl2) -> bl && bl2;
-	BooleanBiFunction SAME = (bl, bl2) -> bl == bl2;
-	BooleanBiFunction SECOND = (bl, bl2) -> bl2;
-	BooleanBiFunction CAUSES = (bl, bl2) -> !bl || bl2;
-	BooleanBiFunction FIRST = (bl, bl2) -> bl;
-	BooleanBiFunction CAUSED_BY = (bl, bl2) -> bl || !bl2;
-	BooleanBiFunction OR = (bl, bl2) -> bl || bl2;
-	BooleanBiFunction TRUE = (bl, bl2) -> true;
+	BooleanBiFunction FALSE = (a, b) -> false;
+	BooleanBiFunction NOT_OR = (a, b) -> !a && !b;
+	BooleanBiFunction ONLY_SECOND = (a, b) -> b && !a;
+	BooleanBiFunction NOT_FIRST = (a, b) -> !a;
+	BooleanBiFunction ONLY_FIRST = (a, b) -> a && !b;
+	BooleanBiFunction NOT_SECOND = (a, b) -> !b;
+	BooleanBiFunction NOT_SAME = (a, b) -> a != b;
+	BooleanBiFunction NOT_AND = (a, b) -> !a || !b;
+	BooleanBiFunction AND = (a, b) -> a && b;
+	BooleanBiFunction SAME = (a, b) -> a == b;
+	BooleanBiFunction SECOND = (a, b) -> b;
+	BooleanBiFunction CAUSES = (a, b) -> !a || b;
+	BooleanBiFunction FIRST = (a, b) -> a;
+	BooleanBiFunction CAUSED_BY = (a, b) -> a || !b;
+	BooleanBiFunction OR = (a, b) -> a || b;
+	BooleanBiFunction TRUE = (a, b) -> true;
 
-	boolean apply(boolean bl, boolean bl2);
+	boolean apply(boolean a, boolean b);
 }

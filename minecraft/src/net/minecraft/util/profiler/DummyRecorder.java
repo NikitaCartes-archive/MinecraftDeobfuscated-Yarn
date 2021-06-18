@@ -1,17 +1,14 @@
-package net.minecraft.client.util.profiler;
-
-import net.minecraft.util.profiler.DummyProfiler;
-import net.minecraft.util.profiler.Profiler;
+package net.minecraft.util.profiler;
 
 public class DummyRecorder implements Recorder {
 	public static final Recorder INSTANCE = new DummyRecorder();
 
 	@Override
-	public void sample() {
+	public void stop() {
 	}
 
 	@Override
-	public void start() {
+	public void startTick() {
 	}
 
 	@Override
@@ -25,6 +22,6 @@ public class DummyRecorder implements Recorder {
 	}
 
 	@Override
-	public void read() {
+	public void endTick() {
 	}
 }

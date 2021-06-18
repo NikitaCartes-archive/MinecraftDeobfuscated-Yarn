@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -207,19 +208,22 @@ public class BookEditScreen extends Screen {
 	private void finalizeBook(boolean signBook) {
 		if (this.dirty) {
 			this.removeEmptyPages();
-			NbtList nbtList = new NbtList();
-			this.pages.stream().map(NbtString::of).forEach(nbtList::add);
-			if (!this.pages.isEmpty()) {
-				this.itemStack.putSubTag("pages", nbtList);
-			}
-
-			if (signBook) {
-				this.itemStack.putSubTag("author", NbtString.of(this.player.getGameProfile().getName()));
-				this.itemStack.putSubTag("title", NbtString.of(this.title.trim()));
-			}
-
+			this.writeNbtData(signBook);
 			int i = this.hand == Hand.MAIN_HAND ? this.player.getInventory().selectedSlot : 40;
-			this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, signBook, i));
+			this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(i, this.pages, signBook ? Optional.of(this.title.trim()) : Optional.empty()));
+		}
+	}
+
+	private void writeNbtData(boolean signBook) {
+		NbtList nbtList = new NbtList();
+		this.pages.stream().map(NbtString::of).forEach(nbtList::add);
+		if (!this.pages.isEmpty()) {
+			this.itemStack.putSubTag("pages", nbtList);
+		}
+
+		if (signBook) {
+			this.itemStack.putSubTag("author", NbtString.of(this.player.getGameProfile().getName()));
+			this.itemStack.putSubTag("title", NbtString.of(this.title.trim()));
 		}
 	}
 

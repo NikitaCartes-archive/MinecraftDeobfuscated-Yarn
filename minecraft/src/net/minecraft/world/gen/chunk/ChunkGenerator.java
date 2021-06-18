@@ -145,7 +145,7 @@ public abstract class ChunkGenerator {
 		ChunkRandom chunkRandom = new ChunkRandom();
 		int i = 8;
 		ChunkPos chunkPos = chunk.getPos();
-		CarverContext carverContext = new CarverContext(this);
+		CarverContext carverContext = new CarverContext(this, chunk);
 		AquiferSampler aquiferSampler = this.createAquiferSampler(chunk);
 		BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
 

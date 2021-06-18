@@ -55,7 +55,7 @@ public class TimeCommand {
 	}
 
 	public static int executeSet(ServerCommandSource source, int time) {
-		for(ServerWorld serverWorld : source.getMinecraftServer().getWorlds()) {
+		for(ServerWorld serverWorld : source.getServer().getWorlds()) {
 			serverWorld.setTimeOfDay((long)time);
 		}
 
@@ -64,7 +64,7 @@ public class TimeCommand {
 	}
 
 	public static int executeAdd(ServerCommandSource source, int time) {
-		for(ServerWorld serverWorld : source.getMinecraftServer().getWorlds()) {
+		for(ServerWorld serverWorld : source.getServer().getWorlds()) {
 			serverWorld.setTimeOfDay(serverWorld.getTimeOfDay() + (long)time);
 		}
 

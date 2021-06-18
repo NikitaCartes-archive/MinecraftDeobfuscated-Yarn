@@ -29,7 +29,7 @@ public class ModelElementFace {
 
 	@Environment(EnvType.CLIENT)
 	protected static class Deserializer implements JsonDeserializer<ModelElementFace> {
-		private static final int field_32790 = -1;
+		private static final int DEFAULT_TINT_INDEX = -1;
 
 		public ModelElementFace deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();

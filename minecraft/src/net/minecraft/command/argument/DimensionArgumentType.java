@@ -51,7 +51,7 @@ public class DimensionArgumentType implements ArgumentType<Identifier> {
 	public static ServerWorld getDimensionArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		Identifier identifier = context.getArgument(name, Identifier.class);
 		RegistryKey<World> registryKey = RegistryKey.of(Registry.WORLD_KEY, identifier);
-		ServerWorld serverWorld = context.getSource().getMinecraftServer().getWorld(registryKey);
+		ServerWorld serverWorld = context.getSource().getServer().getWorld(registryKey);
 		if (serverWorld == null) {
 			throw INVALID_DIMENSION_EXCEPTION.create(identifier);
 		} else {

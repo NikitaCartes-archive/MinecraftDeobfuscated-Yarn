@@ -105,16 +105,17 @@ public abstract class Option {
 			return d <= 0.0 ? new TranslatableText("options.chat.delay_none") : new TranslatableText("options.chat.delay", String.format("%.1f", d));
 		}
 	);
-	public static final DoubleOption FOV = new DoubleOption(
-		"options.fov", 30.0, 110.0, 1.0F, gameOptions -> gameOptions.fov, (gameOptions, fov) -> gameOptions.fov = fov, (gameOptions, option) -> {
-			double d = option.get(gameOptions);
-			if (d == 70.0) {
-				return option.getGenericLabel(new TranslatableText("options.fov.min"));
-			} else {
-				return d == option.getMax() ? option.getGenericLabel(new TranslatableText("options.fov.max")) : option.getGenericLabel((int)d);
-			}
+	public static final DoubleOption FOV = new DoubleOption("options.fov", 30.0, 110.0, 1.0F, gameOptions -> gameOptions.fov, (gameOptions, fov) -> {
+		gameOptions.fov = fov;
+		MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate();
+	}, (gameOptions, option) -> {
+		double d = option.get(gameOptions);
+		if (d == 70.0) {
+			return option.getGenericLabel(new TranslatableText("options.fov.min"));
+		} else {
+			return d == option.getMax() ? option.getGenericLabel(new TranslatableText("options.fov.max")) : option.getGenericLabel((int)d);
 		}
-	);
+	});
 	private static final Text FOV_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.fovEffectScale.tooltip");
 	public static final DoubleOption FOV_EFFECT_SCALE = new DoubleOption(
 		"options.fovEffectScale",

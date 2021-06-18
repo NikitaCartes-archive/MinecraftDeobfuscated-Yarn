@@ -104,7 +104,7 @@ public abstract class ServerConfigList<K, V extends ServerConfigEntry<K>> {
 
 	public void save() throws IOException {
 		JsonArray jsonArray = new JsonArray();
-		this.map.values().stream().map(entry -> Util.make(new JsonObject(), entry::fromJson)).forEach(jsonArray::add);
+		this.map.values().stream().map(entry -> Util.make(new JsonObject(), entry::write)).forEach(jsonArray::add);
 		BufferedWriter bufferedWriter = Files.newWriter(this.file, StandardCharsets.UTF_8);
 
 		try {

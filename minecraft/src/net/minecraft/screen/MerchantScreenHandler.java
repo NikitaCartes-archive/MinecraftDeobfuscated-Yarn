@@ -160,23 +160,23 @@ public class MerchantScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public void close(PlayerEntity playerEntity) {
-		super.close(playerEntity);
+	public void close(PlayerEntity player) {
+		super.close(player);
 		this.merchant.setCurrentCustomer(null);
 		if (!this.merchant.getMerchantWorld().isClient) {
-			if (!playerEntity.isAlive() || playerEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity)playerEntity).isDisconnected()) {
+			if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
 				ItemStack itemStack = this.merchantInventory.removeStack(0);
 				if (!itemStack.isEmpty()) {
-					playerEntity.dropItem(itemStack, false);
+					player.dropItem(itemStack, false);
 				}
 
 				itemStack = this.merchantInventory.removeStack(1);
 				if (!itemStack.isEmpty()) {
-					playerEntity.dropItem(itemStack, false);
+					player.dropItem(itemStack, false);
 				}
-			} else if (playerEntity instanceof ServerPlayerEntity) {
-				playerEntity.getInventory().offerOrDrop(this.merchantInventory.removeStack(0));
-				playerEntity.getInventory().offerOrDrop(this.merchantInventory.removeStack(1));
+			} else if (player instanceof ServerPlayerEntity) {
+				player.getInventory().offerOrDrop(this.merchantInventory.removeStack(0));
+				player.getInventory().offerOrDrop(this.merchantInventory.removeStack(1));
 			}
 		}
 	}

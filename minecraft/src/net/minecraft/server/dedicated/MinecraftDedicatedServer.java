@@ -195,6 +195,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			long l = Util.getMeasuringTimeNano();
 			SkullBlockEntity.setUserCache(this.getUserCache());
 			SkullBlockEntity.setSessionService(this.getSessionService());
+			SkullBlockEntity.setExecutor(this);
 			UserCache.setUseRemote(this.isOnlineMode());
 			LOGGER.info("Preparing level \"{}\"", this.getLevelName());
 			this.loadWorld();
@@ -290,16 +291,16 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public SystemDetails populateCrashReport(SystemDetails systemDetails) {
-		systemDetails.addSection("Is Modded", (Supplier<String>)(() -> (String)this.getModdedStatusMessage().orElse("Unknown (can't tell)")));
-		systemDetails.addSection("Type", (Supplier<String>)(() -> "Dedicated Server (map_server.txt)"));
-		return systemDetails;
+	public SystemDetails addExtraSystemDetails(SystemDetails details) {
+		details.addSection("Is Modded", (Supplier<String>)(() -> (String)this.getModdedStatusMessage().orElse("Unknown (can't tell)")));
+		details.addSection("Type", (Supplier<String>)(() -> "Dedicated Server (map_server.txt)"));
+		return details;
 	}
 
 	@Override
-	public void method_37113(Path path) throws IOException {
+	public void dumpProperties(Path file) throws IOException {
 		ServerPropertiesHandler serverPropertiesHandler = this.getProperties();
-		Writer writer = Files.newBufferedWriter(path);
+		Writer writer = Files.newBufferedWriter(file);
 
 		try {
 			writer.write(String.format("sync-chunk-writes=%s%n", serverPropertiesHandler.syncChunkWrites));

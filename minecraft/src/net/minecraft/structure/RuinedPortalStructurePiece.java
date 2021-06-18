@@ -165,10 +165,11 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		if (!boundingBox.contains(this.pos)) {
+		BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
+		if (!boundingBox.contains(blockBox.getCenter())) {
 			return true;
 		} else {
-			boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
+			boundingBox.encompass(blockBox);
 			boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 			this.placeNetherrackBase(random, world);
 			this.updateNetherracksInBound(random, world);

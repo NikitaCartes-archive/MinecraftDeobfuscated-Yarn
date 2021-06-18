@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -13,6 +14,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -22,6 +24,8 @@ public class SkullBlockEntity extends BlockEntity {
 	private static UserCache userCache;
 	@Nullable
 	private static MinecraftSessionService sessionService;
+	@Nullable
+	private static Executor executor;
 	@Nullable
 	private GameProfile owner;
 	private int ticksPowered;
@@ -37,6 +41,10 @@ public class SkullBlockEntity extends BlockEntity {
 
 	public static void setSessionService(MinecraftSessionService value) {
 		sessionService = value;
+	}
+
+	public static void setExecutor(Executor executor) {
+		SkullBlockEntity.executor = executor;
 	}
 
 	@Override
@@ -114,14 +122,21 @@ public class SkullBlockEntity extends BlockEntity {
 			&& (!owner.isComplete() || !owner.getProperties().containsKey("textures"))
 			&& userCache != null
 			&& sessionService != null) {
-			userCache.method_37156(owner.getName(), gameProfile -> {
-				Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
-				if (property == null) {
-					gameProfile = sessionService.fillProfileProperties(gameProfile, true);
-				}
+			userCache.findByNameAsync(owner.getName(), profile -> {
+				Runnable runnable = () -> {
+					GameProfile gameProfile2 = profile;
+					Property property = Iterables.getFirst(profile.getProperties().get("textures"), null);
+					if (property == null) {
+						gameProfile2 = sessionService.fillProfileProperties(profile, true);
+					}
 
-				userCache.add(gameProfile);
-				callback.accept(gameProfile);
+					GameProfile gameProfile3 = gameProfile2;
+					executor.execute(() -> {
+						userCache.add(gameProfile3);
+						callback.accept(gameProfile3);
+					});
+				};
+				Util.getMainWorkerExecutor().execute(runnable);
 			});
 		} else {
 			callback.accept(owner);

@@ -85,7 +85,7 @@ public abstract class YOffset {
 
 		@Override
 		public int getY(HeightContext context) {
-			return context.getMaxY() - 1 + context.getMinY() - this.getOffset();
+			return context.getHeight() - 1 + context.getMinY() - this.getOffset();
 		}
 
 		public String toString() {

@@ -48,6 +48,8 @@ import net.minecraft.world.World;
 
 public class GoatEntity extends AnimalEntity {
 	public static final EntityDimensions LONG_JUMPING_DIMENSIONS = EntityDimensions.changing(0.9F, 1.3F).scaled(0.7F);
+	private static final int DEFAULT_ATTACK_DAMAGE = 2;
+	private static final int BABY_ATTACK_DAMAGE = 1;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super GoatEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES,
 		SensorType.NEAREST_PLAYERS,
@@ -98,7 +100,16 @@ public class GoatEntity extends AnimalEntity {
 		return MobEntity.createMobAttributes()
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F)
-			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
+	}
+
+	@Override
+	protected void onGrowUp() {
+		if (this.isBaby()) {
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(1.0);
+		} else {
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(2.0);
+		}
 	}
 
 	@Override
@@ -131,13 +142,14 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	public GoatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-		GoatEntity goatEntity = (GoatEntity)passiveEntity;
-		GoatEntity goatEntity2 = EntityType.GOAT.create(serverWorld);
-		if (goatEntity2 != null && goatEntity.isScreaming()) {
-			goatEntity2.setScreaming(true);
+		GoatEntity goatEntity = EntityType.GOAT.create(serverWorld);
+		if (goatEntity != null) {
+			GoatBrain.resetLongJumpCooldown(goatEntity);
+			boolean bl = passiveEntity instanceof GoatEntity && ((GoatEntity)passiveEntity).isScreaming();
+			goatEntity.setScreaming(bl || serverWorld.getRandom().nextDouble() < 0.02);
 		}
 
-		return goatEntity2;
+		return goatEntity;
 	}
 
 	@Override

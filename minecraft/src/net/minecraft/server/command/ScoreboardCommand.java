@@ -311,7 +311,7 @@ public class ScoreboardCommand {
 
 	private static CompletableFuture<Suggestions> suggestDisabled(ServerCommandSource source, Collection<String> targets, SuggestionsBuilder builder) {
 		List<String> list = Lists.newArrayList();
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 
 		for(ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
 			if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER) {
@@ -334,7 +334,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeGet(ServerCommandSource source, String target, ScoreboardObjective objective) throws CommandSyntaxException {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		if (!scoreboard.playerHasObjective(target, objective)) {
 			throw PLAYERS_GET_NULL_EXCEPTION.create(objective.getName(), target);
 		} else {
@@ -354,7 +354,7 @@ public class ScoreboardCommand {
 		Collection<String> sources,
 		ScoreboardObjective sourceObjectives
 	) throws CommandSyntaxException {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		int i = 0;
 
 		for(String string : targets) {
@@ -383,7 +383,7 @@ public class ScoreboardCommand {
 		if (objective.getCriterion() != ScoreboardCriterion.TRIGGER) {
 			throw PLAYERS_ENABLE_INVALID_EXCEPTION.create();
 		} else {
-			Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+			Scoreboard scoreboard = source.getServer().getScoreboard();
 			int i = 0;
 
 			for(String string : targets) {
@@ -411,7 +411,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeReset(ServerCommandSource source, Collection<String> targets) {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 
 		for(String string : targets) {
 			scoreboard.resetPlayerScore(string, null);
@@ -427,7 +427,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeReset(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective) {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 
 		for(String string : targets) {
 			scoreboard.resetPlayerScore(string, objective);
@@ -443,7 +443,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeSet(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, int score) {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 
 		for(String string : targets) {
 			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
@@ -462,7 +462,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeAdd(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, int score) {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		int i = 0;
 
 		for(String string : targets) {
@@ -483,7 +483,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeRemove(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, int score) {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		int i = 0;
 
 		for(String string : targets) {
@@ -504,7 +504,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeListPlayers(ServerCommandSource source) {
-		Collection<String> collection = source.getMinecraftServer().getScoreboard().getKnownPlayers();
+		Collection<String> collection = source.getServer().getScoreboard().getKnownPlayers();
 		if (collection.isEmpty()) {
 			source.sendFeedback(new TranslatableText("commands.scoreboard.players.list.empty"), false);
 		} else {
@@ -515,7 +515,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeListScores(ServerCommandSource source, String target) {
-		Map<ScoreboardObjective, ScoreboardPlayerScore> map = source.getMinecraftServer().getScoreboard().getPlayerObjectives(target);
+		Map<ScoreboardObjective, ScoreboardPlayerScore> map = source.getServer().getScoreboard().getPlayerObjectives(target);
 		if (map.isEmpty()) {
 			source.sendFeedback(new TranslatableText("commands.scoreboard.players.list.entity.empty", target), false);
 		} else {
@@ -537,7 +537,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeClearDisplay(ServerCommandSource source, int slot) throws CommandSyntaxException {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		if (scoreboard.getObjectiveForSlot(slot) == null) {
 			throw OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION.create();
 		} else {
@@ -548,7 +548,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeSetDisplay(ServerCommandSource source, int slot, ScoreboardObjective objective) throws CommandSyntaxException {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		if (scoreboard.getObjectiveForSlot(slot) == objective) {
 			throw OBJECTIVES_DISPLAY_ALREADY_SET_EXCEPTION.create();
 		} else {
@@ -579,14 +579,14 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeRemoveObjective(ServerCommandSource source, ScoreboardObjective objective) {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		scoreboard.removeObjective(objective);
 		source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.remove.success", objective.toHoverableText()), true);
 		return scoreboard.getObjectives().size();
 	}
 
 	private static int executeAddObjective(ServerCommandSource source, String objective, ScoreboardCriterion criteria, Text displayName) throws CommandSyntaxException {
-		Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = source.getServer().getScoreboard();
 		if (scoreboard.getNullableObjective(objective) != null) {
 			throw OBJECTIVES_ADD_DUPLICATE_EXCEPTION.create();
 		} else if (objective.length() > 16) {
@@ -600,7 +600,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int executeListObjectives(ServerCommandSource source) {
-		Collection<ScoreboardObjective> collection = source.getMinecraftServer().getScoreboard().getObjectives();
+		Collection<ScoreboardObjective> collection = source.getServer().getScoreboard().getObjectives();
 		if (collection.isEmpty()) {
 			source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.list.empty"), false);
 		} else {

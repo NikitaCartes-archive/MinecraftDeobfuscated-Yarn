@@ -45,17 +45,7 @@ public class NetherFossilFeature extends StructureFeature<RangeDecoratorConfig> 
 			int i = chunkPos.getStartX() + this.random.nextInt(16);
 			int j = chunkPos.getStartZ() + this.random.nextInt(16);
 			int k = chunkGenerator.getSeaLevel();
-			HeightContext heightContext = new HeightContext() {
-				@Override
-				public int getMinY() {
-					return chunkGenerator.getMinimumY();
-				}
-
-				@Override
-				public int getMaxY() {
-					return chunkGenerator.getWorldHeight();
-				}
-			};
+			HeightContext heightContext = new HeightContext(chunkGenerator, heightLimitView);
 			int l = rangeDecoratorConfig.heightProvider.get(this.random, heightContext);
 			VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(i, j, heightLimitView);
 

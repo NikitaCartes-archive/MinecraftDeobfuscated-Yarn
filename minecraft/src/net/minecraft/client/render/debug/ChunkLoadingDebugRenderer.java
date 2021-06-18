@@ -28,7 +28,7 @@ import net.minecraft.world.chunk.WorldChunk;
 public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 	final MinecraftClient client;
 	private double lastUpdateTime = Double.MIN_VALUE;
-	private final int field_4511 = 12;
+	private final int LOADING_DATA_CHUNK_RANGE = 12;
 	@Nullable
 	private ChunkLoadingDebugRenderer.ChunkLoadingStatus loadingData;
 
@@ -87,11 +87,11 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 		final Map<ChunkPos, String> clientStates;
 		final CompletableFuture<Map<ChunkPos, String>> serverStates;
 
-		ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
+		ChunkLoadingStatus(IntegratedServer server, double x, double z) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
 			RegistryKey<World> registryKey = clientWorld.getRegistryKey();
-			int i = ChunkSectionPos.getSectionCoord(d);
-			int j = ChunkSectionPos.getSectionCoord(e);
+			int i = ChunkSectionPos.getSectionCoord(x);
+			int j = ChunkSectionPos.getSectionCoord(z);
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();
 			ClientChunkManager clientChunkManager = clientWorld.getChunkManager();
 
@@ -113,8 +113,8 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			}
 
 			this.clientStates = builder.build();
-			this.serverStates = integratedServer.submit(() -> {
-				ServerWorld serverWorld = integratedServer.getWorld(registryKey);
+			this.serverStates = server.submit(() -> {
+				ServerWorld serverWorld = server.getWorld(registryKey);
 				if (serverWorld == null) {
 					return ImmutableMap.of();
 				} else {

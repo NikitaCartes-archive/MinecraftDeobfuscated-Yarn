@@ -11,14 +11,16 @@ import net.minecraft.screen.slot.SlotActionType;
 
 public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final int syncId;
+	private final int revision;
 	private final int slot;
 	private final int button;
 	private final SlotActionType actionType;
 	private final ItemStack stack;
 	private final Int2ObjectMap<ItemStack> modifiedStacks;
 
-	public ClickSlotC2SPacket(int syncId, int slot, int button, SlotActionType actionType, ItemStack stack, Int2ObjectMap<ItemStack> modifiedStacks) {
+	public ClickSlotC2SPacket(int syncId, int revision, int slot, int button, SlotActionType actionType, ItemStack stack, Int2ObjectMap<ItemStack> modifiedStacks) {
 		this.syncId = syncId;
+		this.revision = revision;
 		this.slot = slot;
 		this.button = button;
 		this.actionType = actionType;
@@ -28,6 +30,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 
 	public ClickSlotC2SPacket(PacketByteBuf buf) {
 		this.syncId = buf.readByte();
+		this.revision = buf.readVarInt();
 		this.slot = buf.readShort();
 		this.button = buf.readByte();
 		this.actionType = buf.readEnumConstant(SlotActionType.class);
@@ -40,6 +43,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
+		buf.writeVarInt(this.revision);
 		buf.writeShort(this.slot);
 		buf.writeByte(this.button);
 		buf.writeEnumConstant(this.actionType);
@@ -73,5 +77,9 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 
 	public SlotActionType getActionType() {
 		return this.actionType;
+	}
+
+	public int getRevision() {
+		return this.revision;
 	}
 }

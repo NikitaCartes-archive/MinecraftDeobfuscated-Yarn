@@ -11,27 +11,16 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class DecoratorContext implements HeightContext {
+public class DecoratorContext extends HeightContext {
 	private final StructureWorldAccess world;
-	private final ChunkGenerator generator;
 
 	public DecoratorContext(StructureWorldAccess world, ChunkGenerator generator) {
+		super(generator, world);
 		this.world = world;
-		this.generator = generator;
 	}
 
 	public int getTopY(Heightmap.Type heightmap, int x, int z) {
 		return this.world.getTopY(heightmap, x, z);
-	}
-
-	@Override
-	public int getMinY() {
-		return this.generator.getMinimumY();
-	}
-
-	@Override
-	public int getMaxY() {
-		return this.generator.getWorldHeight();
 	}
 
 	public BitSet getOrCreateCarvingMask(ChunkPos chunkPos, GenerationStep.Carver carver) {

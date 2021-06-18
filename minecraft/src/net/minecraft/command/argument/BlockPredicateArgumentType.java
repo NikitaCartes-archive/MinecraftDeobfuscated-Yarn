@@ -58,7 +58,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 
 	public static Predicate<CachedBlockPosition> getBlockPredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		return context.<BlockPredicateArgumentType.BlockPredicate>getArgument(name, BlockPredicateArgumentType.BlockPredicate.class)
-			.create(context.getSource().getMinecraftServer().getTagManager());
+			.create(context.getSource().getServer().getTagManager());
 	}
 
 	@Override

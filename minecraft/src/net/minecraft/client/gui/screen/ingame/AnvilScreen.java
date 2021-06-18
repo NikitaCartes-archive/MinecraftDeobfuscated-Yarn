@@ -32,8 +32,8 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
+	public void handledScreenTick() {
+		super.handledScreenTick();
 		this.nameField.tick();
 	}
 

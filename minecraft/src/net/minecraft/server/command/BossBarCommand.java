@@ -57,7 +57,7 @@ public class BossBarCommand {
 		new TranslatableText("commands.bossbar.set.visibility.unchanged.visible")
 	);
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestIdentifiers(
-			context.getSource().getMinecraftServer().getBossBarManager().getIds(), builder
+			context.getSource().getServer().getBossBarManager().getIds(), builder
 		);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -289,7 +289,7 @@ public class BossBarCommand {
 	}
 
 	private static int listBossBars(ServerCommandSource source) {
-		Collection<CommandBossBar> collection = source.getMinecraftServer().getBossBarManager().getAll();
+		Collection<CommandBossBar> collection = source.getServer().getBossBarManager().getAll();
 		if (collection.isEmpty()) {
 			source.sendFeedback(new TranslatableText("commands.bossbar.list.bars.none"), false);
 		} else {
@@ -302,7 +302,7 @@ public class BossBarCommand {
 	}
 
 	private static int addBossBar(ServerCommandSource source, Identifier name, Text displayName) throws CommandSyntaxException {
-		BossBarManager bossBarManager = source.getMinecraftServer().getBossBarManager();
+		BossBarManager bossBarManager = source.getServer().getBossBarManager();
 		if (bossBarManager.get(name) != null) {
 			throw CREATE_FAILED_EXCEPTION.create(name.toString());
 		} else {
@@ -313,7 +313,7 @@ public class BossBarCommand {
 	}
 
 	private static int removeBossBar(ServerCommandSource source, CommandBossBar bossBar) {
-		BossBarManager bossBarManager = source.getMinecraftServer().getBossBarManager();
+		BossBarManager bossBarManager = source.getServer().getBossBarManager();
 		bossBar.clearPlayers();
 		bossBarManager.remove(bossBar);
 		source.sendFeedback(new TranslatableText("commands.bossbar.remove.success", bossBar.toHoverableText()), true);
@@ -322,7 +322,7 @@ public class BossBarCommand {
 
 	public static CommandBossBar getBossBar(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		Identifier identifier = IdentifierArgumentType.getIdentifier(context, "id");
-		CommandBossBar commandBossBar = context.getSource().getMinecraftServer().getBossBarManager().get(identifier);
+		CommandBossBar commandBossBar = context.getSource().getServer().getBossBarManager().get(identifier);
 		if (commandBossBar == null) {
 			throw UNKNOWN_EXCEPTION.create(identifier.toString());
 		} else {

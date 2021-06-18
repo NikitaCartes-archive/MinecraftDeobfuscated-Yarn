@@ -35,18 +35,18 @@ public class DirectResourceIndex extends ResourceIndex {
 	}
 
 	@Override
-	public Collection<Identifier> getFilesRecursively(String string, String string2, int i, Predicate<String> predicate) {
-		Path path = this.assetDir.toPath().resolve(string2);
+	public Collection<Identifier> getFilesRecursively(String prefix, String namespace, int maxDepth, Predicate<String> pathFilter) {
+		Path path = this.assetDir.toPath().resolve(namespace);
 
 		try {
-			Stream<Path> stream = Files.walk(path.resolve(string), i, new FileVisitOption[0]);
+			Stream<Path> stream = Files.walk(path.resolve(prefix), maxDepth, new FileVisitOption[0]);
 
 			Collection var7;
 			try {
 				var7 = (Collection)stream.filter(pathx -> Files.isRegularFile(pathx, new LinkOption[0]))
 					.filter(pathx -> !pathx.endsWith(".mcmeta"))
-					.filter(pathx -> predicate.test(pathx.getFileName().toString()))
-					.map(path2 -> new Identifier(string2, path.relativize(path2).toString().replaceAll("\\\\", "/")))
+					.filter(pathx -> pathFilter.test(pathx.getFileName().toString()))
+					.map(pathx -> new Identifier(namespace, path.relativize(pathx).toString().replaceAll("\\\\", "/")))
 					.collect(Collectors.toList());
 			} catch (Throwable var10) {
 				if (stream != null) {
@@ -67,7 +67,7 @@ public class DirectResourceIndex extends ResourceIndex {
 			return var7;
 		} catch (NoSuchFileException var11) {
 		} catch (IOException var12) {
-			LOGGER.warn("Unable to getFiles on {}", string, var12);
+			LOGGER.warn("Unable to getFiles on {}", prefix, var12);
 		}
 
 		return Collections.emptyList();

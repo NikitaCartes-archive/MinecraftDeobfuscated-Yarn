@@ -10,6 +10,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+/**
+ * Sent when an explosion occurs in the world.
+ * 
+ * <p>The client will update {@linkplain
+ * net.minecraft.client.MinecraftClient#player the player}'s velocity as
+ * well as performing an explosion.
+ * 
+ * @see net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket
+ */
 public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final double x;
 	private final double y;
