@@ -12,16 +12,16 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-import net.minecraft.client.util.profiler.SamplingChannel;
-import net.minecraft.client.util.profiler.SamplingRecorder;
-import net.minecraft.util.profiler.MetricSamplerSupplier;
-import net.minecraft.util.profiler.MetricSuppliers;
+import net.minecraft.util.profiler.SampleType;
+import net.minecraft.util.profiler.Sampler;
+import net.minecraft.util.thread.ExecutorSampling;
 import net.minecraft.util.thread.MessageListener;
+import net.minecraft.util.thread.SampleableExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class ThreadExecutor<R extends Runnable>
-implements MetricSamplerSupplier,
+implements SampleableExecutor,
 MessageListener<R>,
 Executor {
     private final String name;
@@ -31,7 +31,7 @@ Executor {
 
     protected ThreadExecutor(String name) {
         this.name = name;
-        MetricSuppliers.INSTANCE.add(this);
+        ExecutorSampling.INSTANCE.add(this);
     }
 
     protected abstract R createTask(Runnable var1);
@@ -149,8 +149,8 @@ Executor {
     }
 
     @Override
-    public List<SamplingRecorder> getSamplers() {
-        return ImmutableList.of(SamplingRecorder.create(this.name + "-pending-tasks", SamplingChannel.EVENT_LOOPS, this::getTaskCount));
+    public List<Sampler> createSamplers() {
+        return ImmutableList.of(Sampler.create(this.name + "-pending-tasks", SampleType.EVENT_LOOPS, this::getTaskCount));
     }
 
     @Override

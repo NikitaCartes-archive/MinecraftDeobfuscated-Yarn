@@ -6,6 +6,7 @@ package net.minecraft.item;
 import java.util.List;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -55,22 +56,19 @@ extends Item {
     public static void addEnchantment(ItemStack stack, EnchantmentLevelEntry entry) {
         NbtList nbtList = EnchantedBookItem.getEnchantmentNbt(stack);
         boolean bl = true;
-        Identifier identifier = Registry.ENCHANTMENT.getId(entry.enchantment);
+        Identifier identifier = EnchantmentHelper.getEnchantmentId(entry.enchantment);
         for (int i = 0; i < nbtList.size(); ++i) {
             NbtCompound nbtCompound = nbtList.getCompound(i);
-            Identifier identifier2 = Identifier.tryParse(nbtCompound.getString("id"));
+            Identifier identifier2 = EnchantmentHelper.getIdFromNbt(nbtCompound);
             if (identifier2 == null || !identifier2.equals(identifier)) continue;
-            if (nbtCompound.getInt("lvl") < entry.level) {
-                nbtCompound.putShort("lvl", (short)entry.level);
+            if (EnchantmentHelper.getLevelFromNbt(nbtCompound) < entry.level) {
+                EnchantmentHelper.writeLevelToNbt(nbtCompound, entry.level);
             }
             bl = false;
             break;
         }
         if (bl) {
-            NbtCompound nbtCompound2 = new NbtCompound();
-            nbtCompound2.putString("id", String.valueOf(identifier));
-            nbtCompound2.putShort("lvl", (short)entry.level);
-            nbtList.add(nbtCompound2);
+            nbtList.add(EnchantmentHelper.createNbt(identifier, entry.level));
         }
         stack.getOrCreateTag().put(STORED_ENCHANTMENTS_KEY, nbtList);
     }

@@ -317,7 +317,7 @@ Nameable {
             }
             int j = stack.getMaxCount() - this.getStack(i).getCount();
             if (!this.insertStack(i, stack.split(j)) || !notifiesClient || !(this.player instanceof ServerPlayerEntity)) continue;
-            ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, i, this.getStack(i)));
+            ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, i, this.getStack(i)));
         }
     }
 
@@ -557,6 +557,14 @@ Nameable {
         for (ItemStack itemStack : this.main) {
             finder.addUnenchantedInput(itemStack);
         }
+    }
+
+    public ItemStack dropSelectedItem(boolean entireStack) {
+        ItemStack itemStack = this.getMainHandStack();
+        if (itemStack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        return this.removeStack(this.selectedSlot, entireStack ? itemStack.getCount() : 1);
     }
 }
 

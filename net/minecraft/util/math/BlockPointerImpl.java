@@ -40,7 +40,7 @@ implements BlockPointer {
     }
 
     @Override
-    public BlockPos getBlockPos() {
+    public BlockPos getPos() {
         return this.pos;
     }
 

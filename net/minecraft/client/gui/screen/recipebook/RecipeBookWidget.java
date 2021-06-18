@@ -145,8 +145,6 @@ RecipeGridAligner<Ingredient> {
     }
 
     public void close() {
-        this.searchField = null;
-        this.currentTab = null;
         this.client.keyboard.setRepeatEvents(false);
     }
 

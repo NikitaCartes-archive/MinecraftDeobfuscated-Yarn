@@ -56,8 +56,6 @@ public class GoatBrain {
     private static final TargetPredicate RAM_TARGET_PREDICATE = TargetPredicate.createAttackable().setPredicate(livingEntity -> !livingEntity.getType().equals(EntityType.GOAT) && livingEntity.world.getWorldBorder().contains(livingEntity.getBoundingBox()));
     private static final float field_33501 = 3.0f;
     public static final int field_33495 = 4;
-    private static final int field_33502 = 2;
-    private static final int field_33503 = 1;
     public static final float field_33496 = 2.5f;
     public static final float field_33497 = 1.0f;
 
@@ -90,7 +88,7 @@ public class GoatBrain {
     }
 
     private static void addRamActivities(Brain<GoatEntity> brain) {
-        brain.setTaskList(Activity.RAM, ImmutableList.of(Pair.of(0, new RamImpactTask<GoatEntity>(goat -> goat.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE : RAM_COOLDOWN_RANGE, RAM_TARGET_PREDICATE, goat -> goat.isBaby() ? 1 : 2, 3.0f, goatEntity -> goatEntity.isBaby() ? 1.0 : 2.5, goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT)), Pair.of(1, new PrepareRamTask<GoatEntity>(goatEntity -> goatEntity.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE.getMin() : RAM_COOLDOWN_RANGE.getMin(), 4, 7, 1.25f, RAM_TARGET_PREDICATE, 20, goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_PREPARE_RAM : SoundEvents.ENTITY_GOAT_PREPARE_RAM))), ImmutableSet.of(Pair.of(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT)));
+        brain.setTaskList(Activity.RAM, ImmutableList.of(Pair.of(0, new RamImpactTask<GoatEntity>(goat -> goat.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE : RAM_COOLDOWN_RANGE, RAM_TARGET_PREDICATE, 3.0f, goat -> goat.isBaby() ? 1.0 : 2.5, goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT)), Pair.of(1, new PrepareRamTask<GoatEntity>(goatEntity -> goatEntity.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE.getMin() : RAM_COOLDOWN_RANGE.getMin(), 4, 7, 1.25f, RAM_TARGET_PREDICATE, 20, goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_PREPARE_RAM : SoundEvents.ENTITY_GOAT_PREPARE_RAM))), ImmutableSet.of(Pair.of(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT)));
     }
 
     public static void updateActivities(GoatEntity goat) {

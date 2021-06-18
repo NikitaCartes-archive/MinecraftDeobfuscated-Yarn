@@ -35,8 +35,8 @@ public class RealmsUtil {
         }
 
         @Override
-        public /* synthetic */ Object load(Object object) throws Exception {
-            return this.load((String)object);
+        public /* synthetic */ Object load(Object uuid) throws Exception {
+            return this.load((String)uuid);
         }
     });
     private static final int SECONDS_PER_MINUTE = 60;

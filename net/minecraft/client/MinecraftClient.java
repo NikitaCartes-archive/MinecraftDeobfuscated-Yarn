@@ -59,7 +59,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_6412;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -169,21 +168,17 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
+import net.minecraft.client.util.ClientSamplerSource;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.profiler.DebugRecorder;
-import net.minecraft.client.util.profiler.DummyRecorder;
-import net.minecraft.client.util.profiler.ProfilerDumper;
-import net.minecraft.client.util.profiler.Recorder;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -232,12 +227,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.ZipCompressor;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashMemoryReserve;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -249,12 +247,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyProfiler;
+import net.minecraft.util.profiler.DummyRecorder;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
+import net.minecraft.util.profiler.RecordDumper;
+import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.TickTimeTracker;
-import net.minecraft.util.profiler.ZipCompressor;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
@@ -399,7 +400,6 @@ WindowEventHandler {
     private final SocialInteractionsManager socialInteractionsManager;
     private final EntityModelLoader entityModelLoader;
     private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
-    public static byte[] memoryReservedForCrash;
     @Nullable
     public ClientPlayerInteractionManager interactionManager;
     /**
@@ -477,7 +477,7 @@ WindowEventHandler {
     private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, () -> this.trackingTick);
     @Nullable
     private ProfileResult tickProfilerResult;
-    private Recorder debugRecorder = DummyRecorder.INSTANCE;
+    private Recorder recorder = DummyRecorder.INSTANCE;
     private final ResourceReloadLogger resourceReloadLogger = new ResourceReloadLogger();
     private String openProfilerSection = "root";
 
@@ -616,11 +616,6 @@ WindowEventHandler {
         this.window.setRawMouseMotion(this.options.rawMouseInput);
         this.window.logOnGlError();
         this.onResolutionChanged();
-        if (string != null) {
-            ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null);
-        } else {
-            this.openScreen(new TitleScreen(true));
-        }
         this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack());
         SplashOverlay.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
@@ -631,6 +626,11 @@ WindowEventHandler {
             }
             this.resourceReloadLogger.finish();
         }), false));
+        if (string != null) {
+            ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null);
+        } else {
+            this.openScreen(new TitleScreen(true));
+        }
     }
 
     public void updateWindowTitle() {
@@ -714,9 +714,9 @@ WindowEventHandler {
                     boolean bl2 = this.shouldMonitorTickDuration();
                     this.profiler = this.startMonitor(bl2, tickDurationMonitor);
                     this.profiler.startTick();
-                    this.debugRecorder.start();
+                    this.recorder.startTick();
                     this.render(!bl);
-                    this.debugRecorder.read();
+                    this.recorder.endTick();
                     this.profiler.endTick();
                     this.endMonitor(bl2, tickDurationMonitor);
                 } catch (OutOfMemoryError outOfMemoryError) {
@@ -1091,8 +1091,12 @@ WindowEventHandler {
     }
 
     private Profiler startMonitor(boolean active, @Nullable TickDurationMonitor tickDurationMonitor) {
-        if (!active && !this.debugRecorder.isActive()) {
-            return tickDurationMonitor == null ? DummyProfiler.INSTANCE : tickDurationMonitor.nextProfiler();
+        Profiler profiler;
+        if (!active) {
+            this.tickTimeTracker.disable();
+            if (!this.recorder.isActive() && tickDurationMonitor == null) {
+                return DummyProfiler.INSTANCE;
+            }
         }
         if (active) {
             if (!this.tickTimeTracker.isActive()) {
@@ -1100,13 +1104,14 @@ WindowEventHandler {
                 this.tickTimeTracker.enable();
             }
             ++this.trackingTick;
-            Profiler profiler = this.debugRecorder.isActive() ? Profiler.union(this.tickTimeTracker.getProfiler(), this.debugRecorder.getProfiler()) : this.tickTimeTracker.getProfiler();
-            return TickDurationMonitor.tickProfiler(profiler, tickDurationMonitor);
+            profiler = this.tickTimeTracker.getProfiler();
+        } else {
+            profiler = DummyProfiler.INSTANCE;
         }
-        if (this.tickTimeTracker.isActive()) {
-            this.tickTimeTracker.disable();
+        if (this.recorder.isActive()) {
+            profiler = Profiler.union(profiler, this.recorder.getProfiler());
         }
-        return TickDurationMonitor.tickProfiler(this.debugRecorder.getProfiler(), tickDurationMonitor);
+        return TickDurationMonitor.tickProfiler(profiler, tickDurationMonitor);
     }
 
     private void endMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
@@ -1144,7 +1149,7 @@ WindowEventHandler {
 
     public void cleanUpAfterCrash() {
         try {
-            memoryReservedForCrash = new byte[0];
+            CrashMemoryReserve.releaseMemory();
             this.worldRenderer.method_3267();
         } catch (Throwable throwable) {
             // empty catch block
@@ -1163,13 +1168,13 @@ WindowEventHandler {
 
     public boolean toggleDebugProfiler(Consumer<TranslatableText> consumer) {
         Consumer<Path> consumer5;
-        if (this.debugRecorder.isActive()) {
-            this.method_37286();
+        if (this.recorder.isActive()) {
+            this.stopRecorder();
             return false;
         }
         Consumer<ProfileResult> consumer2 = profileResult -> {
             int i = profileResult.getTickSpan();
-            double d = (double)profileResult.getTimeSpan() / (double)Durations.field_33868;
+            double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
             this.execute(() -> consumer.accept(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))));
         };
         Consumer<Path> consumer3 = path -> {
@@ -1184,24 +1189,24 @@ WindowEventHandler {
         if (this.server == null) {
             consumer5 = path -> consumer4.accept(ImmutableList.of(path));
         } else {
-            this.server.method_37324(systemDetails);
+            this.server.addSystemDetails(systemDetails);
             CompletableFuture completableFuture = new CompletableFuture();
             CompletableFuture completableFuture2 = new CompletableFuture();
             CompletableFuture.allOf(completableFuture, completableFuture2).thenRunAsync(() -> consumer4.accept(ImmutableList.of((Path)completableFuture.join(), (Path)completableFuture2.join())), Util.getIoWorkerExecutor());
-            this.server.method_37320(profileResult -> {}, completableFuture2::complete);
+            this.server.setupRecorder(profileResult -> {}, completableFuture2::complete);
             consumer5 = completableFuture::complete;
         }
-        this.debugRecorder = DebugRecorder.method_37191(new class_6412(Util.nanoTimeSupplier, this.worldRenderer), Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new ProfilerDumper("client"), profileResult -> {
-            this.debugRecorder = DummyRecorder.INSTANCE;
+        this.recorder = DebugRecorder.of(new ClientSamplerSource(Util.nanoTimeSupplier, this.worldRenderer), Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new RecordDumper("client"), profileResult -> {
+            this.recorder = DummyRecorder.INSTANCE;
             consumer2.accept((ProfileResult)profileResult);
         }, consumer5);
         return true;
     }
 
-    private void method_37286() {
-        this.debugRecorder.sample();
+    private void stopRecorder() {
+        this.recorder.stop();
         if (this.server != null) {
-            this.server.method_37323();
+            this.server.stopRecorder();
         }
     }
 
@@ -1213,8 +1218,8 @@ WindowEventHandler {
         String string = this.isInSingleplayer() ? this.getServer().getSaveProperties().getLevelName() : this.getCurrentServerEntry().name;
         try {
             String string2 = String.format("%s-%s-%s", new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()), string, SharedConstants.getGameVersion().getId());
-            String string3 = FileNameUtil.getNextUniqueName(ProfilerDumper.DEBUG_PROFILING_DIRECTORY, string2, ".zip");
-            path = ProfilerDumper.DEBUG_PROFILING_DIRECTORY.resolve(string3);
+            String string3 = FileNameUtil.getNextUniqueName(RecordDumper.DEBUG_PROFILING_DIRECTORY, string2, ".zip");
+            path = RecordDumper.DEBUG_PROFILING_DIRECTORY.resolve(string3);
         } catch (IOException iOException) {
             throw new UncheckedIOException(iOException);
         }
@@ -1764,9 +1769,10 @@ WindowEventHandler {
             MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
-            userCache.method_37157(this);
+            userCache.setExecutor(this);
             SkullBlockEntity.setUserCache(userCache);
             SkullBlockEntity.setSessionService(minecraftSessionService);
+            SkullBlockEntity.setExecutor(this);
             UserCache.setUseRemote(false);
             this.server = MinecraftServer.startServer(serverThread -> new IntegratedServer((Thread)serverThread, this, registryTracker, session, integratedResourceManager.getResourcePackManager(), integratedResourceManager.getServerResourceManager(), saveProperties, minecraftSessionService, gameProfileRepository, userCache, i -> {
                 WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
@@ -1869,9 +1875,10 @@ WindowEventHandler {
             MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
-            userCache.method_37157(this);
+            userCache.setExecutor(this);
             SkullBlockEntity.setUserCache(userCache);
             SkullBlockEntity.setSessionService(minecraftSessionService);
+            SkullBlockEntity.setExecutor(this);
             UserCache.setUseRemote(false);
         }
     }
@@ -2075,7 +2082,7 @@ WindowEventHandler {
             this.world.addDetailsToCrashReport(report);
         }
         if (this.server != null) {
-            this.server.method_37324(systemDetails);
+            this.server.addSystemDetails(systemDetails);
         }
         this.resourceReloadLogger.addReloadSection(report);
         return report;
@@ -2649,7 +2656,6 @@ WindowEventHandler {
         ALT_TEXT_RENDERER_ID = new Identifier("alt");
         COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
         SOCIAL_INTERACTIONS_NOT_AVAILABLE = new TranslatableText("multiplayer.socialInteractions.not_available");
-        memoryReservedForCrash = new byte[0xA00000];
     }
 
     @Environment(value=EnvType.CLIENT)

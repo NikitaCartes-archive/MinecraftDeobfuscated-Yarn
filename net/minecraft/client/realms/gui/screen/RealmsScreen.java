@@ -19,14 +19,14 @@ extends Screen {
     protected static final int field_33055 = 17;
     protected static final int field_33056 = 20;
     protected static final int field_33057 = 7;
-    protected static final long field_33058 = 0x140000000L;
-    public static final int field_33059 = 0xFFFFFF;
+    protected static final long MAX_FILE_SIZE = 0x140000000L;
+    public static final int WHITE = 0xFFFFFF;
     public static final int field_33060 = 0xA0A0A0;
     protected static final int field_33061 = 0x4C4C4C;
     protected static final int field_33062 = 0x6C6C6C;
     protected static final int field_33063 = 0x7FFF7F;
     protected static final int field_33064 = 6077788;
-    protected static final int field_33065 = 0xFF0000;
+    protected static final int RED = 0xFF0000;
     protected static final int field_33036 = 15553363;
     protected static final int field_33037 = -1073741824;
     protected static final int field_33038 = 0xCCAC5C;
@@ -35,7 +35,7 @@ extends Screen {
     protected static final int field_33041 = 7107012;
     protected static final int field_33042 = 8226750;
     protected static final int field_33043 = 0xFFFFA0;
-    protected static final String field_33044 = "https://www.minecraft.net/realms/adventure-maps-in-1-9";
+    protected static final String ADVENTURE_MAPS_IN_1_9_URL = "https://www.minecraft.net/realms/adventure-maps-in-1-9";
     protected static final int field_33045 = 8;
     protected static final int field_33046 = 8;
     protected static final int field_33047 = 8;
@@ -46,7 +46,7 @@ extends Screen {
     protected static final int field_33052 = 8;
     protected static final int field_33053 = 64;
     protected static final int field_33054 = 64;
-    private final List<RealmsLabel> field_33848 = Lists.newArrayList();
+    private final List<RealmsLabel> labels = Lists.newArrayList();
 
     public RealmsScreen(Text text) {
         super(text);
@@ -59,13 +59,13 @@ extends Screen {
         return 40 + index * 13;
     }
 
-    protected RealmsLabel method_37107(RealmsLabel realmsLabel) {
-        this.field_33848.add(realmsLabel);
-        return this.addDrawable(realmsLabel);
+    protected RealmsLabel addLabel(RealmsLabel label) {
+        this.labels.add(label);
+        return this.addDrawable(label);
     }
 
     public Text narrateLabels() {
-        return ScreenTexts.joinLines(this.field_33848.stream().map(RealmsLabel::getText).collect(Collectors.toList()));
+        return ScreenTexts.joinLines(this.labels.stream().map(RealmsLabel::getText).collect(Collectors.toList()));
     }
 }
 

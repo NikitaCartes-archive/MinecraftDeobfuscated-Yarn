@@ -40,13 +40,13 @@ public final class ServerMBean
 implements DynamicMBean {
     private static final Logger LOGGER = LogManager.getLogger();
     private final MinecraftServer server;
-    private final MBeanInfo beanInfo;
+    private final MBeanInfo mBeanInfo;
     private final Map<String, Entry> entries = Stream.of(new Entry("tickTimes", this::getTickTimes, "Historical tick times (ms)", long[].class), new Entry("averageTickTime", this::getAverageTickTime, "Current average tick time (ms)", Long.TYPE)).collect(Collectors.toMap(entry -> entry.name, Function.identity()));
 
     private ServerMBean(MinecraftServer server) {
         this.server = server;
         MBeanAttributeInfo[] mBeanAttributeInfos = (MBeanAttributeInfo[])this.entries.values().stream().map(Entry::createInfo).toArray(MBeanAttributeInfo[]::new);
-        this.beanInfo = new MBeanInfo(ServerMBean.class.getSimpleName(), "metrics for dedicated server", mBeanAttributeInfos, null, null, new MBeanNotificationInfo[0]);
+        this.mBeanInfo = new MBeanInfo(ServerMBean.class.getSimpleName(), "metrics for dedicated server", mBeanAttributeInfos, null, null, new MBeanNotificationInfo[0]);
     }
 
     /**
@@ -106,7 +106,7 @@ implements DynamicMBean {
 
     @Override
     public MBeanInfo getMBeanInfo() {
-        return this.beanInfo;
+        return this.mBeanInfo;
     }
 
     static final class Entry {

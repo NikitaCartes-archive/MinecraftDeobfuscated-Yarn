@@ -54,13 +54,13 @@ public class UserCache {
     private static boolean useRemote;
     private final Map<String, Entry> byName = Maps.newConcurrentMap();
     private final Map<UUID, Entry> byUuid = Maps.newConcurrentMap();
-    private final Map<String, CompletableFuture<GameProfile>> field_33860 = Maps.newConcurrentMap();
+    private final Map<String, CompletableFuture<GameProfile>> pendingRequests = Maps.newConcurrentMap();
     private final GameProfileRepository profileRepository;
     private final Gson gson = new GsonBuilder().create();
     private final File cacheFile;
     private final AtomicLong accessCount = new AtomicLong();
     @Nullable
-    private Executor field_33861;
+    private Executor executor;
 
     public UserCache(GameProfileRepository profileRepository, File cacheFile) {
         this.profileRepository = profileRepository;
@@ -155,15 +155,15 @@ public class UserCache {
         return gameProfile;
     }
 
-    public void method_37156(String string, Consumer<GameProfile> consumer) {
-        if (this.field_33861 == null) {
+    public void findByNameAsync(String username, Consumer<GameProfile> consumer) {
+        if (this.executor == null) {
             throw new IllegalStateException("No executor");
         }
-        CompletableFuture<GameProfile> completableFuture = this.field_33860.get(string);
+        CompletableFuture<GameProfile> completableFuture = this.pendingRequests.get(username);
         if (completableFuture != null) {
-            this.field_33860.put(string, (CompletableFuture<GameProfile>)completableFuture.whenCompleteAsync((gameProfile, throwable) -> consumer.accept((GameProfile)gameProfile), this.field_33861));
+            this.pendingRequests.put(username, (CompletableFuture<GameProfile>)completableFuture.whenCompleteAsync((profile, throwable) -> consumer.accept((GameProfile)profile), this.executor));
         } else {
-            this.field_33860.put(string, (CompletableFuture<GameProfile>)((CompletableFuture)CompletableFuture.supplyAsync(() -> this.findByName(string), Util.getMainWorkerExecutor()).whenCompleteAsync((gameProfile, throwable) -> this.field_33860.remove(string), this.field_33861)).whenCompleteAsync((gameProfile, throwable) -> consumer.accept((GameProfile)gameProfile), this.field_33861));
+            this.pendingRequests.put(username, (CompletableFuture<GameProfile>)((CompletableFuture)CompletableFuture.supplyAsync(() -> this.findByName(username), Util.getMainWorkerExecutor()).whenCompleteAsync((profile, throwable) -> this.pendingRequests.remove(username), this.executor)).whenCompleteAsync((profile, throwable) -> consumer.accept((GameProfile)profile), this.executor));
         }
     }
 
@@ -177,8 +177,8 @@ public class UserCache {
         return entry.getProfile();
     }
 
-    public void method_37157(Executor executor) {
-        this.field_33861 = executor;
+    public void setExecutor(Executor executor) {
+        this.executor = executor;
     }
 
     private static DateFormat getDateFormat() {

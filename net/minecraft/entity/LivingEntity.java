@@ -877,7 +877,7 @@ extends Entity {
      * 
      * @param effect the effect to add
      */
-    public boolean addStatusEffect(StatusEffectInstance effect) {
+    public final boolean addStatusEffect(StatusEffectInstance effect) {
         return this.addStatusEffect(effect, null);
     }
 
@@ -1868,16 +1868,17 @@ extends Entity {
         return 0.42f * this.getJumpVelocityMultiplier();
     }
 
+    public double getJumpBoostVelocityModifier() {
+        return this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? (double)(0.1f * (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1)) : 0.0;
+    }
+
     protected void jump() {
-        float f = this.getJumpVelocity();
-        if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
-            f += 0.1f * (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1);
-        }
+        double d = (double)this.getJumpVelocity() + this.getJumpBoostVelocityModifier();
         Vec3d vec3d = this.getVelocity();
-        this.setVelocity(vec3d.x, f, vec3d.z);
+        this.setVelocity(vec3d.x, d, vec3d.z);
         if (this.isSprinting()) {
-            float g = this.getYaw() * ((float)Math.PI / 180);
-            this.setVelocity(this.getVelocity().add(-MathHelper.sin(g) * 0.2f, 0.0, MathHelper.cos(g) * 0.2f));
+            float f = this.getYaw() * ((float)Math.PI / 180);
+            this.setVelocity(this.getVelocity().add(-MathHelper.sin(f) * 0.2f, 0.0, MathHelper.cos(f) * 0.2f));
         }
         this.velocityDirty = true;
     }

@@ -905,7 +905,6 @@ AutoCloseable {
      */
     public void render(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f) {
         int u;
-        boolean bl2;
         Frustum frustum;
         boolean bl;
         RenderSystem.setShaderGameTime(this.world.getTime(), tickDelta);
@@ -920,7 +919,7 @@ AutoCloseable {
         double f = vec3d.getZ();
         Matrix4f matrix4f2 = matrices.peek().getModel();
         profiler.swap("culling");
-        boolean bl3 = bl = this.capturedFrustum != null;
+        boolean bl2 = bl = this.capturedFrustum != null;
         if (bl) {
             frustum = this.capturedFrustum;
             frustum.setPosition(this.capturedFrustumPosition.x, this.capturedFrustumPosition.y, this.capturedFrustumPosition.z);
@@ -937,14 +936,12 @@ AutoCloseable {
         BackgroundRenderer.setFogBlack();
         RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
         float g = gameRenderer.getViewDistance();
-        boolean bl4 = bl2 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
-        if (this.client.options.viewDistance >= 4) {
-            profiler.swap("sky");
-            RenderSystem.setShader(GameRenderer::getPositionShader);
-            this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2));
-        }
+        boolean bl22 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
+        profiler.swap("sky");
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+        this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl22));
         profiler.swap("fog");
-        BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0f, 32.0f), bl2);
+        BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0f, 32.0f), bl22);
         profiler.swap("terrain_setup");
         this.setupTerrain(camera, frustum, bl, this.frame++, this.client.player.isSpectator());
         profiler.swap("updatechunks");
@@ -981,7 +978,7 @@ AutoCloseable {
             this.entityOutlinesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             this.client.getFramebuffer().beginWrite(false);
         }
-        boolean bl32 = false;
+        boolean bl3 = false;
         VertexConsumerProvider.Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
         for (Entity entity : this.world.getEntities()) {
             VertexConsumerProvider vertexConsumerProvider;
@@ -993,7 +990,7 @@ AutoCloseable {
                 entity.lastRenderZ = entity.getZ();
             }
             if (this.canDrawEntityOutlines() && this.client.hasOutline(entity)) {
-                bl32 = true;
+                bl3 = true;
                 OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
                 vertexConsumerProvider = outlineVertexConsumerProvider;
                 int k = entity.getTeamColorValue();
@@ -1059,7 +1056,7 @@ AutoCloseable {
         immediate.draw(TexturedRenderLayers.getSign());
         immediate.draw(TexturedRenderLayers.getChest());
         this.bufferBuilders.getOutlineVertexConsumers().draw();
-        if (bl32) {
+        if (bl3) {
             this.entityOutlineShader.render(tickDelta);
             this.client.getFramebuffer().beginWrite(false);
         }

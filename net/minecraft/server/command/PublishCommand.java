@@ -23,10 +23,10 @@ public class PublishCommand {
     }
 
     private static int execute(ServerCommandSource source, int port) throws CommandSyntaxException {
-        if (source.getMinecraftServer().isRemote()) {
-            throw ALREADY_PUBLISHED_EXCEPTION.create(source.getMinecraftServer().getServerPort());
+        if (source.getServer().isRemote()) {
+            throw ALREADY_PUBLISHED_EXCEPTION.create(source.getServer().getServerPort());
         }
-        if (!source.getMinecraftServer().openToLan(null, false, port)) {
+        if (!source.getServer().openToLan(null, false, port)) {
             throw FAILED_EXCEPTION.create();
         }
         source.sendFeedback(new TranslatableText("commands.publish.success", port), true);

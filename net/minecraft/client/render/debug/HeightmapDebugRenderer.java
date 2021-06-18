@@ -29,8 +29,8 @@ import net.minecraft.world.chunk.Chunk;
 public class HeightmapDebugRenderer
 implements DebugRenderer.Renderer {
     private final MinecraftClient client;
-    private static final int field_32903 = 2;
-    private static final float field_32904 = 0.09375f;
+    private static final int CHUNK_RANGE = 2;
+    private static final float BOX_HEIGHT = 0.09375f;
 
     public HeightmapDebugRenderer(MinecraftClient client) {
         this.client = client;
@@ -53,7 +53,7 @@ implements DebugRenderer.Renderer {
                 for (Map.Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
                     Heightmap.Type type = entry.getKey();
                     ChunkPos chunkPos = chunk.getPos();
-                    Vec3f vec3f = this.method_27037(type);
+                    Vec3f vec3f = this.getColorForHeightmapType(type);
                     for (int k = 0; k < 16; ++k) {
                         for (int l = 0; l < 16; ++l) {
                             int m = ChunkSectionPos.getOffsetPos(chunkPos.x, k);
@@ -69,7 +69,7 @@ implements DebugRenderer.Renderer {
         RenderSystem.enableTexture();
     }
 
-    private Vec3f method_27037(Heightmap.Type type) {
+    private Vec3f getColorForHeightmapType(Heightmap.Type type) {
         switch (type) {
             case WORLD_SURFACE_WG: {
                 return new Vec3f(1.0f, 1.0f, 0.0f);

@@ -17,7 +17,6 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
@@ -56,7 +55,7 @@ extends Feature<FossilFeatureConfig> {
                 l = Math.min(l, structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
             }
         }
-        m = MathHelper.clamp(blockPos.getY(), structureWorldAccess.getBottomY(), l - 15);
+        m = Math.max(l - 15 - random.nextInt(10), structureWorldAccess.getBottomY() + 10);
         BlockPos blockPos2 = structure.offsetByTransformedSize(blockPos.add(j, 0, k).withY(m), BlockMirror.NONE, blockRotation);
         if (FossilFeature.getEmptyCorners(structureWorldAccess, structure.calculateBoundingBox(structurePlacementData, blockPos2)) > fossilFeatureConfig.maxEmptyCorners) {
             return false;

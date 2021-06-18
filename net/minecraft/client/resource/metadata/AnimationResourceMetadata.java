@@ -15,8 +15,8 @@ import net.minecraft.client.resource.metadata.AnimationResourceMetadataReader;
 public class AnimationResourceMetadata {
     public static final AnimationResourceMetadataReader READER = new AnimationResourceMetadataReader();
     public static final String KEY = "animation";
-    public static final int field_32975 = 1;
-    public static final int field_32976 = -1;
+    public static final int EMPTY_FRAME_TIME = 1;
+    public static final int UNDEFINED = -1;
     public static final AnimationResourceMetadata EMPTY = new AnimationResourceMetadata((List)Lists.newArrayList(), -1, -1, 1, false){
 
         @Override

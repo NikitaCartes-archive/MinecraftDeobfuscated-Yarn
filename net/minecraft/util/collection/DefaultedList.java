@@ -14,10 +14,15 @@ import org.jetbrains.annotations.Nullable;
 public class DefaultedList<E>
 extends AbstractList<E> {
     private final List<E> delegate;
+    @Nullable
     private final E initialElement;
 
     public static <E> DefaultedList<E> of() {
-        return new DefaultedList<E>();
+        return new DefaultedList<Object>(Lists.newArrayList(), null);
+    }
+
+    public static <E> DefaultedList<E> ofSize(int size) {
+        return new DefaultedList<Object>(Lists.newArrayListWithCapacity(size), null);
     }
 
     public static <E> DefaultedList<E> ofSize(int size, E defaultValue) {
@@ -30,10 +35,6 @@ extends AbstractList<E> {
     @SafeVarargs
     public static <E> DefaultedList<E> copyOf(E defaultValue, E ... values) {
         return new DefaultedList<E>(Arrays.asList(values), defaultValue);
-    }
-
-    protected DefaultedList() {
-        this(Lists.newArrayList(), null);
     }
 
     protected DefaultedList(List<E> delegate, @Nullable E initialElement) {

@@ -79,7 +79,7 @@ extends Carver<RavineCarverConfig> {
     }
 
     private float[] createHorizontalStretchFactors(CarverContext context, RavineCarverConfig config, Random random) {
-        int i = context.getMaxY();
+        int i = context.getHeight();
         float[] fs = new float[i];
         float f = 1.0f;
         for (int j = 0; j < i; ++j) {

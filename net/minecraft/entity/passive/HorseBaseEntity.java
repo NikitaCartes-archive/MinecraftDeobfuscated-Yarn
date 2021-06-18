@@ -36,7 +36,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -680,7 +679,7 @@ Saddleable {
         }
         if (this.jumpStrength > 0.0f && !this.isInAir() && this.onGround) {
             double d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.getJumpVelocityMultiplier();
-            double e = this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? d + (double)((float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1f) : d;
+            double e = d + this.getJumpBoostVelocityModifier();
             Vec3d vec3d = this.getVelocity();
             this.setVelocity(vec3d.x, e, vec3d.z);
             this.setInAir(true);

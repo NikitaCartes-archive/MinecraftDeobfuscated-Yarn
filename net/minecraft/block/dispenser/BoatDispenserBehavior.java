@@ -31,7 +31,7 @@ extends ItemDispenserBehavior {
         double d = pointer.getX() + (double)((float)direction.getOffsetX() * 1.125f);
         double e = pointer.getY() + (double)((float)direction.getOffsetY() * 1.125f);
         double f = pointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125f);
-        BlockPos blockPos = pointer.getBlockPos().offset(direction);
+        BlockPos blockPos = pointer.getPos().offset(direction);
         if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
             g = 1.0;
         } else if (world.getBlockState(blockPos).isAir() && world.getFluidState(blockPos.down()).isIn(FluidTags.WATER)) {
@@ -49,7 +49,7 @@ extends ItemDispenserBehavior {
 
     @Override
     protected void playSound(BlockPointer pointer) {
-        pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getBlockPos(), 0);
+        pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getPos(), 0);
     }
 }
 

@@ -22,12 +22,12 @@ extends RealmsScreen {
     private final Type type;
     private final Text line2;
     private final Text line3;
-    protected final BooleanConsumer field_22697;
+    protected final BooleanConsumer callback;
     private final boolean yesNoQuestion;
 
-    public RealmsLongConfirmationScreen(BooleanConsumer booleanConsumer, Type type, Text line2, Text line3, boolean yesNoQuestion) {
+    public RealmsLongConfirmationScreen(BooleanConsumer callback, Type type, Text line2, Text line3, boolean yesNoQuestion) {
         super(NarratorManager.EMPTY);
-        this.field_22697 = booleanConsumer;
+        this.callback = callback;
         this.type = type;
         this.line2 = line2;
         this.line3 = line3;
@@ -37,10 +37,10 @@ extends RealmsScreen {
     @Override
     public void init() {
         if (this.yesNoQuestion) {
-            this.addDrawableChild(new ButtonWidget(this.width / 2 - 105, RealmsLongConfirmationScreen.row(8), 100, 20, ScreenTexts.YES, button -> this.field_22697.accept(true)));
-            this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, RealmsLongConfirmationScreen.row(8), 100, 20, ScreenTexts.NO, button -> this.field_22697.accept(false)));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 - 105, RealmsLongConfirmationScreen.row(8), 100, 20, ScreenTexts.YES, button -> this.callback.accept(true)));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, RealmsLongConfirmationScreen.row(8), 100, 20, ScreenTexts.NO, button -> this.callback.accept(false)));
         } else {
-            this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, RealmsLongConfirmationScreen.row(8), 100, 20, new TranslatableText("mco.gui.ok"), button -> this.field_22697.accept(true)));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, RealmsLongConfirmationScreen.row(8), 100, 20, new TranslatableText("mco.gui.ok"), button -> this.callback.accept(true)));
         }
     }
 
@@ -52,7 +52,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            this.field_22697.accept(false);
+            this.callback.accept(false);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

@@ -173,7 +173,7 @@ public class DebugInfoSender {
             buf2.writeVarInt(0);
         }
         if (entity instanceof VillagerEntity) {
-            Map<UUID, Object2IntMap<VillageGossipType>> map = ((VillagerEntity)entity).getGossip().method_35120();
+            Map<UUID, Object2IntMap<VillageGossipType>> map = ((VillagerEntity)entity).getGossip().getEntityReputationAssociatedGossips();
             ArrayList list = Lists.newArrayList();
             map.forEach((uuid, gossips) -> {
                 String string = NameGenerator.name(uuid);

@@ -420,6 +420,14 @@ extends HostileEntity {
     }
 
     @Override
+    public boolean canGather(ItemStack stack) {
+        if (stack.isOf(Items.GLOW_INK_SAC)) {
+            return false;
+        }
+        return super.canGather(stack);
+    }
+
+    @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);

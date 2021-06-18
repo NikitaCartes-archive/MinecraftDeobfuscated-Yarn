@@ -309,7 +309,7 @@ public class Items {
     public static final Item MOSS_BLOCK = Items.register(Blocks.MOSS_BLOCK, ItemGroup.DECORATIONS);
     public static final Item HANGING_ROOTS = Items.register(Blocks.HANGING_ROOTS, ItemGroup.DECORATIONS);
     public static final Item BIG_DRIPLEAF = Items.register(Blocks.BIG_DRIPLEAF, ItemGroup.DECORATIONS);
-    public static final Item SMALL_DRIPLEAF = Items.register(Blocks.SMALL_DRIPLEAF, ItemGroup.DECORATIONS);
+    public static final Item SMALL_DRIPLEAF = Items.register(new TallBlockItem(Blocks.SMALL_DRIPLEAF, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item BAMBOO = Items.register(Blocks.BAMBOO, ItemGroup.DECORATIONS);
     public static final Item OAK_SLAB = Items.register(Blocks.OAK_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPRUCE_SLAB = Items.register(Blocks.SPRUCE_SLAB, ItemGroup.BUILDING_BLOCKS);

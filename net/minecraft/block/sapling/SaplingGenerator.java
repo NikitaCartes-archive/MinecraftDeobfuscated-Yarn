@@ -18,10 +18,10 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class SaplingGenerator {
     @Nullable
-    protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random var1, boolean var2);
+    protected abstract ConfiguredFeature<TreeFeatureConfig, ?> getTreeFeature(Random var1, boolean var2);
 
     public boolean generate(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random) {
-        ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createTreeFeature(random, this.areFlowersNearby(world, pos));
+        ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.getTreeFeature(random, this.areFlowersNearby(world, pos));
         if (configuredFeature == null) {
             return false;
         }

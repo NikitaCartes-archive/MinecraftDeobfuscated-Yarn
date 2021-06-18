@@ -79,13 +79,13 @@ implements ModelBakeSettings {
     public static class Deserializer
     implements JsonDeserializer<ModelVariant> {
         @VisibleForTesting
-        static final boolean field_32810 = false;
+        static final boolean DEFAULT_UV_LOCK = false;
         @VisibleForTesting
-        static final int field_32811 = 1;
+        static final int DEFAULT_WEIGHT = 1;
         @VisibleForTesting
-        static final int field_32812 = 0;
+        static final int DEFAULT_X_ROTATION = 0;
         @VisibleForTesting
-        static final int field_32813 = 0;
+        static final int DEFAULT_Y_ROTATION = 0;
 
         @Override
         public ModelVariant deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {

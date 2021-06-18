@@ -18,12 +18,12 @@ import java.util.Set;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
-import net.minecraft.client.util.profiler.SamplingChannel;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileLocationInfo;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfileResultImpl;
 import net.minecraft.util.profiler.ReadableProfiler;
+import net.minecraft.util.profiler.SampleType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,12 +40,12 @@ implements ReadableProfiler {
     private final LongSupplier timeGetter;
     private final long startTime;
     private final int startTick;
-    private String location = "";
+    private String fullPath = "";
     private boolean tickStarted;
     @Nullable
     private LocatedInfo currentInfo;
     private final boolean checkTimeout;
-    private final Set<Pair<String, SamplingChannel>> field_33873 = new ObjectArraySet<Pair<String, SamplingChannel>>();
+    private final Set<Pair<String, SampleType>> sampleTypes = new ObjectArraySet<Pair<String, SampleType>>();
 
     public ProfilerSystem(LongSupplier timeGetter, IntSupplier tickGetter, boolean checkTimeout) {
         this.startTime = timeGetter.getAsLong();
@@ -62,7 +62,7 @@ implements ReadableProfiler {
             return;
         }
         this.tickStarted = true;
-        this.location = "";
+        this.fullPath = "";
         this.path.clear();
         this.push("root");
     }
@@ -75,8 +75,8 @@ implements ReadableProfiler {
         }
         this.pop();
         this.tickStarted = false;
-        if (!this.location.isEmpty()) {
-            LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", () -> ProfileResult.getHumanReadableName(this.location));
+        if (!this.fullPath.isEmpty()) {
+            LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", () -> ProfileResult.getHumanReadableName(this.fullPath));
         }
     }
 
@@ -86,11 +86,11 @@ implements ReadableProfiler {
             LOGGER.error("Cannot push '{}' to profiler if profiler tick hasn't started - missing startTick()?", (Object)location);
             return;
         }
-        if (!this.location.isEmpty()) {
-            this.location = this.location + "\u001e";
+        if (!this.fullPath.isEmpty()) {
+            this.fullPath = this.fullPath + "\u001e";
         }
-        this.location = this.location + location;
-        this.path.add(this.location);
+        this.fullPath = this.fullPath + location;
+        this.path.add(this.fullPath);
         this.timeList.add(Util.getMeasuringTimeNano());
         this.currentInfo = null;
     }
@@ -101,8 +101,8 @@ implements ReadableProfiler {
     }
 
     @Override
-    public void method_37167(SamplingChannel samplingChannel) {
-        this.field_33873.add(Pair.of(this.location, samplingChannel));
+    public void markSampleType(SampleType type) {
+        this.sampleTypes.add(Pair.of(this.fullPath, type));
     }
 
     @Override
@@ -120,14 +120,14 @@ implements ReadableProfiler {
         this.path.remove(this.path.size() - 1);
         long n = l - m;
         LocatedInfo locatedInfo = this.getCurrentInfo();
-        locatedInfo.time += n;
+        locatedInfo.totalTime += n;
         ++locatedInfo.visits;
-        locatedInfo.field_33874 = Math.max(locatedInfo.field_33874, n);
-        locatedInfo.field_33875 = Math.min(locatedInfo.field_33875, n);
+        locatedInfo.maxTime = Math.max(locatedInfo.maxTime, n);
+        locatedInfo.minTime = Math.min(locatedInfo.minTime, n);
         if (this.checkTimeout && n > TIMEOUT_NANOSECONDS) {
-            LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.getHumanReadableName(this.location), () -> (double)n / 1000000.0);
+            LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.getHumanReadableName(this.fullPath), () -> (double)n / 1000000.0);
         }
-        this.location = this.path.isEmpty() ? "" : this.path.get(this.path.size() - 1);
+        this.fullPath = this.path.isEmpty() ? "" : this.path.get(this.path.size() - 1);
         this.currentInfo = null;
     }
 
@@ -145,7 +145,7 @@ implements ReadableProfiler {
 
     private LocatedInfo getCurrentInfo() {
         if (this.currentInfo == null) {
-            this.currentInfo = this.locationInfos.computeIfAbsent(this.location, string -> new LocatedInfo());
+            this.currentInfo = this.locationInfos.computeIfAbsent(this.fullPath, k -> new LocatedInfo());
         }
         return this.currentInfo;
     }
@@ -172,26 +172,26 @@ implements ReadableProfiler {
     }
 
     @Override
-    public Set<Pair<String, SamplingChannel>> method_37168() {
-        return this.field_33873;
+    public Set<Pair<String, SampleType>> getSampleTargets() {
+        return this.sampleTypes;
     }
 
     public static class LocatedInfo
     implements ProfileLocationInfo {
-        long field_33874 = Long.MIN_VALUE;
-        long field_33875 = Long.MAX_VALUE;
-        long time;
+        long maxTime = Long.MIN_VALUE;
+        long minTime = Long.MAX_VALUE;
+        long totalTime;
         long visits;
         final Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap();
 
         @Override
         public long getTotalTime() {
-            return this.time;
+            return this.totalTime;
         }
 
         @Override
-        public long method_37169() {
-            return this.field_33874;
+        public long getMaxTime() {
+            return this.maxTime;
         }
 
         @Override

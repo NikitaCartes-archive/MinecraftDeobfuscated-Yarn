@@ -39,6 +39,34 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
 public class EnchantmentHelper {
+    private static final String ID_KEY = "id";
+    private static final String LEVEL_KEY = "lvl";
+
+    public static NbtCompound createNbt(@Nullable Identifier id, int lvl) {
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putString(ID_KEY, String.valueOf(id));
+        nbtCompound.putShort(LEVEL_KEY, (short)lvl);
+        return nbtCompound;
+    }
+
+    public static void writeLevelToNbt(NbtCompound nbt, int lvl) {
+        nbt.putShort(LEVEL_KEY, (short)lvl);
+    }
+
+    public static int getLevelFromNbt(NbtCompound nbt) {
+        return MathHelper.clamp(nbt.getInt(LEVEL_KEY), 0, 255);
+    }
+
+    @Nullable
+    public static Identifier getIdFromNbt(NbtCompound nbt) {
+        return Identifier.tryParse(nbt.getString(ID_KEY));
+    }
+
+    @Nullable
+    public static Identifier getEnchantmentId(Enchantment enchantment) {
+        return Registry.ENCHANTMENT.getId(enchantment);
+    }
+
     /**
      * Gets the level of an enchantment on an item stack.
      */
@@ -46,13 +74,13 @@ public class EnchantmentHelper {
         if (stack.isEmpty()) {
             return 0;
         }
-        Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
+        Identifier identifier = EnchantmentHelper.getEnchantmentId(enchantment);
         NbtList nbtList = stack.getEnchantments();
         for (int i = 0; i < nbtList.size(); ++i) {
             NbtCompound nbtCompound = nbtList.getCompound(i);
-            Identifier identifier2 = Identifier.tryParse(nbtCompound.getString("id"));
+            Identifier identifier2 = EnchantmentHelper.getIdFromNbt(nbtCompound);
             if (identifier2 == null || !identifier2.equals(identifier)) continue;
-            return MathHelper.clamp(nbtCompound.getInt("lvl"), 0, 255);
+            return EnchantmentHelper.getLevelFromNbt(nbtCompound);
         }
         return 0;
     }
@@ -78,7 +106,7 @@ public class EnchantmentHelper {
         LinkedHashMap<Enchantment, Integer> map = Maps.newLinkedHashMap();
         for (int i = 0; i < list.size(); ++i) {
             NbtCompound nbtCompound = list.getCompound(i);
-            Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString("id"))).ifPresent(enchantment -> map.put((Enchantment)enchantment, nbtCompound.getInt("lvl")));
+            Registry.ENCHANTMENT.getOrEmpty(EnchantmentHelper.getIdFromNbt(nbtCompound)).ifPresent(enchantment -> map.put((Enchantment)enchantment, EnchantmentHelper.getLevelFromNbt(nbtCompound)));
         }
         return map;
     }
@@ -98,10 +126,7 @@ public class EnchantmentHelper {
             Enchantment enchantment = entry.getKey();
             if (enchantment == null) continue;
             int i = entry.getValue();
-            NbtCompound nbtCompound = new NbtCompound();
-            nbtCompound.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
-            nbtCompound.putShort("lvl", (short)i);
-            nbtList.add(nbtCompound);
+            nbtList.add(EnchantmentHelper.createNbt(EnchantmentHelper.getEnchantmentId(enchantment), i));
             if (!stack.isOf(Items.ENCHANTED_BOOK)) continue;
             EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment, i));
         }
@@ -118,9 +143,8 @@ public class EnchantmentHelper {
         }
         NbtList nbtList = stack.getEnchantments();
         for (int i = 0; i < nbtList.size(); ++i) {
-            String string = nbtList.getCompound(i).getString("id");
-            int j = nbtList.getCompound(i).getInt("lvl");
-            Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(string)).ifPresent(enchantment -> consumer.accept((Enchantment)enchantment, j));
+            NbtCompound nbtCompound = nbtList.getCompound(i);
+            Registry.ENCHANTMENT.getOrEmpty(EnchantmentHelper.getIdFromNbt(nbtCompound)).ifPresent(enchantment -> consumer.accept((Enchantment)enchantment, EnchantmentHelper.getLevelFromNbt(nbtCompound)));
         }
     }
 

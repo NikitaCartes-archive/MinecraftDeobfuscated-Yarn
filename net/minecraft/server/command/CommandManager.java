@@ -209,7 +209,7 @@ public class CommandManager {
         if (stringReader.canRead() && stringReader.peek() == '/') {
             stringReader.skip();
         }
-        commandSource.getMinecraftServer().getProfiler().push(command);
+        commandSource.getServer().getProfiler().push(command);
         try {
             int n = this.dispatcher.execute(stringReader, commandSource);
             return n;
@@ -253,7 +253,7 @@ public class CommandManager {
             int n = 0;
             return n;
         } finally {
-            commandSource.getMinecraftServer().getProfiler().pop();
+            commandSource.getServer().getProfiler().pop();
         }
     }
 

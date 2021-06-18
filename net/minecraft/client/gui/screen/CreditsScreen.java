@@ -51,17 +51,17 @@ extends Screen {
     private static final Text SEPARATOR_LINE = new LiteralText("============").formatted(Formatting.WHITE);
     private static final String CENTERED_LINE_PREFIX = "           ";
     private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
-    private static final int field_33956 = 274;
+    private static final int MAX_WIDTH = 274;
     private static final float SPACE_BAR_SPEED_MULTIPLIER = 5.0f;
-    private static final float field_34012 = 15.0f;
+    private static final float CTRL_KEY_SPEED_MULTIPLIER = 15.0f;
     private final boolean endCredits;
     private final Runnable finishAction;
     private float time;
     private List<OrderedText> credits;
     private IntSet centeredLines;
     private int creditsHeight;
-    private boolean field_34010;
-    private final IntSet field_34011 = new IntOpenHashSet();
+    private boolean spaceKeyPressed;
+    private final IntSet pressedCtrlKeys = new IntOpenHashSet();
     private float speed;
     private final float baseSpeed;
 
@@ -73,9 +73,9 @@ extends Screen {
         this.speed = this.baseSpeed;
     }
 
-    private float method_37369() {
-        if (this.field_34010) {
-            return this.baseSpeed * (5.0f + (float)this.field_34011.size() * 15.0f);
+    private float getSpeed() {
+        if (this.spaceKeyPressed) {
+            return this.baseSpeed * (5.0f + (float)this.pressedCtrlKeys.size() * 15.0f);
         }
         return this.baseSpeed;
     }
@@ -93,22 +93,22 @@ extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
-            this.field_34011.add(keyCode);
+            this.pressedCtrlKeys.add(keyCode);
         } else if (keyCode == GLFW.GLFW_KEY_SPACE) {
-            this.field_34010 = true;
+            this.spaceKeyPressed = true;
         }
-        this.speed = this.method_37369();
+        this.speed = this.getSpeed();
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_SPACE) {
-            this.field_34010 = false;
+            this.spaceKeyPressed = false;
         } else if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
-            this.field_34011.remove(keyCode);
+            this.pressedCtrlKeys.remove(keyCode);
         }
-        this.speed = this.method_37369();
+        this.speed = this.getSpeed();
         return super.keyReleased(keyCode, scanCode, modifiers);
     }
 

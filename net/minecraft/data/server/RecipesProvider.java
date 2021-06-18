@@ -667,7 +667,7 @@ implements DataProvider {
         RecipesProvider.offerSmelting(exporter, COPPER_ORES, Items.COPPER_INGOT, 0.7f, 200, "copper_ingot");
         RecipesProvider.offerSmelting(exporter, GOLD_ORES, Items.GOLD_INGOT, 1.0f, 200, "gold_ingot");
         RecipesProvider.offerSmelting(exporter, DIAMOND_ORES, Items.DIAMOND, 1.0f, 200, "diamond");
-        RecipesProvider.offerSmelting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2f, 200, "lapus_lazuli");
+        RecipesProvider.offerSmelting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2f, 200, "lapis_lazuli");
         RecipesProvider.offerSmelting(exporter, REDSTONE_ORES, Items.REDSTONE, 0.7f, 200, "redstone");
         RecipesProvider.offerSmelting(exporter, EMERALD_ORES, Items.EMERALD, 1.0f, 200, "emerald");
         RecipesProvider.offerReversibleCompactingRecipes(exporter, Items.RAW_IRON, Items.RAW_IRON_BLOCK);
@@ -712,7 +712,7 @@ implements DataProvider {
         RecipesProvider.offerBlasting(exporter, COPPER_ORES, Items.COPPER_INGOT, 0.7f, 100, "copper_ingot");
         RecipesProvider.offerBlasting(exporter, GOLD_ORES, Items.GOLD_INGOT, 1.0f, 100, "gold_ingot");
         RecipesProvider.offerBlasting(exporter, DIAMOND_ORES, Items.DIAMOND, 1.0f, 100, "diamond");
-        RecipesProvider.offerBlasting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2f, 100, "lapus_lazuli");
+        RecipesProvider.offerBlasting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2f, 100, "lapis_lazuli");
         RecipesProvider.offerBlasting(exporter, REDSTONE_ORES, Items.REDSTONE, 0.7f, 100, "redstone");
         RecipesProvider.offerBlasting(exporter, EMERALD_ORES, Items.EMERALD, 1.0f, 100, "emerald");
         CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.NETHER_QUARTZ_ORE), Items.QUARTZ, 0.2f, 100).criterion("has_nether_quartz_ore", RecipesProvider.conditionsFromItem(Blocks.NETHER_QUARTZ_ORE)).offerTo(exporter, RecipesProvider.getBlastingItemPath(Items.QUARTZ));

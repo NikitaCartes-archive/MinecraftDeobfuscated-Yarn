@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -202,6 +203,12 @@ extends Screen {
             return;
         }
         this.removeEmptyPages();
+        this.writeNbtData(signBook);
+        int i = this.hand == Hand.MAIN_HAND ? this.player.getInventory().selectedSlot : 40;
+        this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(i, this.pages, signBook ? Optional.of(this.title.trim()) : Optional.empty()));
+    }
+
+    private void writeNbtData(boolean signBook) {
         NbtList nbtList = new NbtList();
         this.pages.stream().map(NbtString::of).forEach(nbtList::add);
         if (!this.pages.isEmpty()) {
@@ -211,8 +218,6 @@ extends Screen {
             this.itemStack.putSubTag("author", NbtString.of(this.player.getGameProfile().getName()));
             this.itemStack.putSubTag("title", NbtString.of(this.title.trim()));
         }
-        int i = this.hand == Hand.MAIN_HAND ? this.player.getInventory().selectedSlot : 40;
-        this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, signBook, i));
     }
 
     private void appendNewPage() {

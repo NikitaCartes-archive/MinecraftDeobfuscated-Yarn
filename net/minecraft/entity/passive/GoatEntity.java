@@ -54,6 +54,8 @@ import org.jetbrains.annotations.Nullable;
 public class GoatEntity
 extends AnimalEntity {
     public static final EntityDimensions LONG_JUMPING_DIMENSIONS = EntityDimensions.changing(0.9f, 1.3f).scaled(0.7f);
+    private static final int DEFAULT_ATTACK_DAMAGE = 2;
+    private static final int BABY_ATTACK_DAMAGE = 1;
     protected static final ImmutableList<SensorType<? extends Sensor<? super GoatEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.GOAT_TEMPTATIONS);
     protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.BREED_TARGET, MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, new MemoryModuleType[]{MemoryModuleType.IS_TEMPTED, MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleType.RAM_TARGET});
     public static final int FALL_DAMAGE_SUBTRACTOR = 10;
@@ -77,7 +79,16 @@ extends AnimalEntity {
     }
 
     public static DefaultAttributeContainer.Builder createGoatAttributes() {
-        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2f).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2f).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
+    }
+
+    @Override
+    protected void onGrowUp() {
+        if (this.isBaby()) {
+            this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(1.0);
+        } else {
+            this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(2.0);
+        }
     }
 
     @Override
@@ -123,12 +134,13 @@ extends AnimalEntity {
 
     @Override
     public GoatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        GoatEntity goatEntity = (GoatEntity)passiveEntity;
-        GoatEntity goatEntity2 = EntityType.GOAT.create(serverWorld);
-        if (goatEntity2 != null && goatEntity.isScreaming()) {
-            goatEntity2.setScreaming(true);
+        GoatEntity goatEntity = EntityType.GOAT.create(serverWorld);
+        if (goatEntity != null) {
+            GoatBrain.resetLongJumpCooldown(goatEntity);
+            boolean bl = passiveEntity instanceof GoatEntity && ((GoatEntity)passiveEntity).isScreaming();
+            goatEntity.setScreaming(bl || serverWorld.getRandom().nextDouble() < 0.02);
         }
-        return goatEntity2;
+        return goatEntity;
     }
 
     public Brain<GoatEntity> getBrain() {

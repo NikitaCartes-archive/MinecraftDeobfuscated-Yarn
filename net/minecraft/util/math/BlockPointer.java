@@ -20,7 +20,7 @@ extends Position {
     @Override
     public double getZ();
 
-    public BlockPos getBlockPos();
+    public BlockPos getPos();
 
     public BlockState getBlockState();
 

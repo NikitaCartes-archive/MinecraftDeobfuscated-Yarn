@@ -60,16 +60,16 @@ extends RealmsScreen {
     private final Runnable resetCallback;
     private final Runnable selectFileUploadCallback;
 
-    public RealmsResetWorldScreen(Screen parent, RealmsServer server, Text text, Runnable runnable, Runnable runnable2) {
-        super(text);
+    public RealmsResetWorldScreen(Screen parent, RealmsServer server, Text title, Runnable resetCallback, Runnable selectFileUploadCallback) {
+        super(title);
         this.parent = parent;
         this.serverData = server;
-        this.resetCallback = runnable;
-        this.selectFileUploadCallback = runnable2;
+        this.resetCallback = resetCallback;
+        this.selectFileUploadCallback = selectFileUploadCallback;
     }
 
-    public RealmsResetWorldScreen(Screen screen, RealmsServer realmsServer, Runnable runnable, Runnable runnable2) {
-        this(screen, realmsServer, new TranslatableText("mco.reset.world.title"), runnable, runnable2);
+    public RealmsResetWorldScreen(Screen parent, RealmsServer serverData, Runnable resetCallback, Runnable selectFileUploadCallback) {
+        this(parent, serverData, new TranslatableText("mco.reset.world.title"), resetCallback, selectFileUploadCallback);
     }
 
     public RealmsResetWorldScreen(Screen parent, RealmsServer server, Text title, Text subtitle, int subtitleColor, Text buttonTitle, Runnable resetCallback, Runnable selectFileUploadCallback) {
@@ -111,7 +111,7 @@ extends RealmsScreen {
                 }
             }
         }.start();
-        this.method_37107(new RealmsLabel(this.subtitle, this.width / 2, 22, this.subtitleColor));
+        this.addLabel(new RealmsLabel(this.subtitle, this.width / 2, 22, this.subtitleColor));
         this.addDrawableChild(new FrameButton(this.frame(1), RealmsResetWorldScreen.row(0) + 10, new TranslatableText("mco.reset.world.generate"), NEW_WORLD_TEXTURE, button -> this.client.openScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))));
         this.addDrawableChild(new FrameButton(this.frame(2), RealmsResetWorldScreen.row(0) + 10, new TranslatableText("mco.reset.world.upload"), UPLOAD_TEXTURE, button -> this.client.openScreen(new RealmsSelectFileToUploadScreen(this.serverData.id, this.slot != -1 ? this.slot : this.serverData.activeSlot, this, this.selectFileUploadCallback))));
         this.addDrawableChild(new FrameButton(this.frame(3), RealmsResetWorldScreen.row(0) + 10, new TranslatableText("mco.reset.world.template"), SURVIVAL_SPAWN_TEXTURE, button -> this.client.openScreen(new RealmsSelectWorldTemplateScreen(new TranslatableText("mco.reset.world.template"), this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates))));
@@ -169,33 +169,33 @@ extends RealmsScreen {
         RealmsResetWorldScreen.drawCenteredText(matrices, this.textRenderer, text, x + 30, y, i);
     }
 
-    private void method_32490(LongRunningTask longRunningTask) {
-        this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, longRunningTask));
+    private void executeLongRunningTask(LongRunningTask task) {
+        this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, task));
     }
 
-    public void switchSlot(Runnable runnable) {
-        this.method_32490(new SwitchSlotTask(this.serverData.id, this.slot, () -> this.client.execute(runnable)));
+    public void switchSlot(Runnable callback) {
+        this.executeLongRunningTask(new SwitchSlotTask(this.serverData.id, this.slot, () -> this.client.execute(callback)));
     }
 
     private void onSelectWorldTemplate(@Nullable WorldTemplate template) {
         this.client.openScreen(this);
         if (template != null) {
-            this.method_32493(() -> this.method_32490(new ResettingWorldTemplateTask(template, this.serverData.id, this.resetTitle, this.resetCallback)));
+            this.switchSlotAndResetWorld(() -> this.executeLongRunningTask(new ResettingWorldTemplateTask(template, this.serverData.id, this.resetTitle, this.resetCallback)));
         }
     }
 
     private void onResetNormalWorld(@Nullable ResetWorldInfo info) {
         this.client.openScreen(this);
         if (info != null) {
-            this.method_32493(() -> this.method_32490(new ResettingNormalWorldTask(info, this.serverData.id, this.resetTitle, this.resetCallback)));
+            this.switchSlotAndResetWorld(() -> this.executeLongRunningTask(new ResettingNormalWorldTask(info, this.serverData.id, this.resetTitle, this.resetCallback)));
         }
     }
 
-    private void method_32493(Runnable runnable) {
+    private void switchSlotAndResetWorld(Runnable resetter) {
         if (this.slot == -1) {
-            runnable.run();
+            resetter.run();
         } else {
-            this.switchSlot(runnable);
+            this.switchSlot(resetter);
         }
     }
 

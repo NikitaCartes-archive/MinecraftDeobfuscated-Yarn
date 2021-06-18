@@ -216,10 +216,6 @@ Bucketable {
         this.setAir(Math.min(i, this.getMaxAir()));
     }
 
-    public boolean isAirLessThanMax() {
-        return this.getAir() < this.getMaxAir();
-    }
-
     @Override
     public int getMaxAir() {
         return 6000;
@@ -233,7 +229,7 @@ Bucketable {
         this.dataTracker.set(VARIANT, variant.getId());
     }
 
-    static boolean shouldBabyBeDifferent(Random random) {
+    private static boolean shouldBabyBeDifferent(Random random) {
         return random.nextInt(1200) == 0;
     }
 
@@ -593,9 +589,6 @@ Bucketable {
         }
 
         public Variant getRandomVariant(Random random) {
-            if (AxolotlEntity.shouldBabyBeDifferent(random)) {
-                return Variant.getRandomNatural(random);
-            }
             return this.variants[random.nextInt(this.variants.length)];
         }
     }

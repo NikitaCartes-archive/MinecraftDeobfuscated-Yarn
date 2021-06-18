@@ -34,7 +34,7 @@ public class ModelElementFace {
     @Environment(value=EnvType.CLIENT)
     protected static class Deserializer
     implements JsonDeserializer<ModelElementFace> {
-        private static final int field_32790 = -1;
+        private static final int DEFAULT_TINT_INDEX = -1;
 
         protected Deserializer() {
         }

@@ -35,7 +35,7 @@ extends ServerConfigEntry<GameProfile> {
     }
 
     @Override
-    protected void fromJson(JsonObject json) {
+    protected void write(JsonObject json) {
         if (this.getKey() == null) {
             return;
         }

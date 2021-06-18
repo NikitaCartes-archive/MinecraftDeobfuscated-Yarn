@@ -17,8 +17,8 @@ import net.minecraft.util.math.BlockPos;
 @Environment(value=EnvType.CLIENT)
 public class RaidCenterDebugRenderer
 implements DebugRenderer.Renderer {
-    private static final int field_32914 = 160;
-    private static final float field_32915 = 0.04f;
+    private static final int RANGE = 160;
+    private static final float DRAWN_STRING_SIZE = 0.04f;
     private final MinecraftClient client;
     private Collection<BlockPos> raidCenters = Lists.newArrayList();
 
@@ -45,11 +45,11 @@ implements DebugRenderer.Renderer {
         RaidCenterDebugRenderer.drawString("Raid center", pos, -65536);
     }
 
-    private static void drawString(String string, BlockPos pos, int i) {
+    private static void drawString(String string, BlockPos pos, int color) {
         double d = (double)pos.getX() + 0.5;
         double e = (double)pos.getY() + 1.3;
         double f = (double)pos.getZ() + 0.5;
-        DebugRenderer.drawString(string, d, e, f, i, 0.04f, true, 0.0f, true);
+        DebugRenderer.drawString(string, d, e, f, color, 0.04f, true, 0.0f, true);
     }
 
     private Camera getCamera() {

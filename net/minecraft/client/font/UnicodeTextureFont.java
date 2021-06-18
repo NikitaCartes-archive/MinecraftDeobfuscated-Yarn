@@ -5,10 +5,12 @@ package net.minecraft.client.font;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.IllegalFormatException;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -202,7 +204,17 @@ implements Font {
         }
 
         public static FontLoader fromJson(JsonObject json) {
-            return new Loader(new Identifier(JsonHelper.getString(json, "sizes")), JsonHelper.getString(json, "template"));
+            return new Loader(new Identifier(JsonHelper.getString(json, "sizes")), Loader.getLegacyUnicodeTemplate(json));
+        }
+
+        private static String getLegacyUnicodeTemplate(JsonObject json) {
+            String string = JsonHelper.getString(json, "template");
+            try {
+                String.format(string, "");
+            } catch (IllegalFormatException illegalFormatException) {
+                throw new JsonParseException("Invalid legacy unicode template supplied, expected single '%s': " + string);
+            }
+            return string;
         }
 
         @Override

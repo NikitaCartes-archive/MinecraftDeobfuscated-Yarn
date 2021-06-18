@@ -39,7 +39,7 @@ public class TeamMsgCommand {
             throw NO_TEAM_EXCEPTION.create();
         }
         MutableText text = team.getFormattedName().fillStyle(STYLE);
-        List<ServerPlayerEntity> list = source.getMinecraftServer().getPlayerManager().getPlayerList();
+        List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayerList();
         for (ServerPlayerEntity serverPlayerEntity : list) {
             if (serverPlayerEntity == entity) {
                 serverPlayerEntity.sendSystemMessage(new TranslatableText("chat.type.team.sent", text, source.getDisplayName(), message), entity.getUuid());

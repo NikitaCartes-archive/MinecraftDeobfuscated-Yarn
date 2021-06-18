@@ -50,7 +50,7 @@ public class ItemCommand {
     private static final DynamicCommandExceptionType NO_CHANGES_EXCEPTION = new DynamicCommandExceptionType(slot -> new TranslatableText("commands.item.target.no_changes", slot));
     private static final Dynamic2CommandExceptionType KNOWN_ITEM_EXCEPTION = new Dynamic2CommandExceptionType((itemName, slot) -> new TranslatableText("commands.item.target.no_changed.known_item", itemName, slot));
     private static final SuggestionProvider<ServerCommandSource> MODIFIER_SUGGESTION_PROVIDER = (context, builder) -> {
-        LootFunctionManager lootFunctionManager = ((ServerCommandSource)context.getSource()).getMinecraftServer().getItemModifierManager();
+        LootFunctionManager lootFunctionManager = ((ServerCommandSource)context.getSource()).getServer().getItemModifierManager();
         return CommandSource.suggestIdentifiers(lootFunctionManager.getFunctionIds(), builder);
     };
 

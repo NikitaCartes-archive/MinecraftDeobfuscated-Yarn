@@ -46,7 +46,7 @@ extends SinglePreparationResourceReloader<List<String>> {
         try (Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(RESOURCE_ID);){
             List<String> list;
             try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));){
-                list = bufferedReader.lines().map(String::trim).filter(string -> string.hashCode() != 125780783).collect(Collectors.toList());
+                list = bufferedReader.lines().map(String::trim).filter(splashText -> splashText.hashCode() != 125780783).collect(Collectors.toList());
             }
             return list;
         } catch (IOException iOException) {

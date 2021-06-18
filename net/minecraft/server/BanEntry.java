@@ -75,7 +75,7 @@ extends ServerConfigEntry<T> {
     }
 
     @Override
-    protected void fromJson(JsonObject json) {
+    protected void write(JsonObject json) {
         json.addProperty("created", DATE_FORMAT.format(this.creationDate));
         json.addProperty("source", this.source);
         json.addProperty("expires", this.expiryDate == null ? FOREVER : DATE_FORMAT.format(this.expiryDate));

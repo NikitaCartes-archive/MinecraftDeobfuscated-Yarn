@@ -78,10 +78,10 @@ public class ResourceIndex {
         return this.rootIndex.get(path);
     }
 
-    public Collection<Identifier> getFilesRecursively(String string, String string2, int i, Predicate<String> predicate) {
-        return this.namespacedIndex.keySet().stream().filter(identifier -> {
-            String string3 = identifier.getPath();
-            return identifier.getNamespace().equals(string2) && !string3.endsWith(".mcmeta") && string3.startsWith(string + "/") && predicate.test(string3);
+    public Collection<Identifier> getFilesRecursively(String prefix, String namespace, int maxDepth, Predicate<String> pathFilter) {
+        return this.namespacedIndex.keySet().stream().filter(id -> {
+            String string3 = id.getPath();
+            return id.getNamespace().equals(namespace) && !string3.endsWith(".mcmeta") && string3.startsWith(prefix + "/") && pathFilter.test(string3);
         }).collect(Collectors.toList());
     }
 }

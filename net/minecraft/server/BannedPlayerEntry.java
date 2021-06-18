@@ -28,13 +28,13 @@ extends BanEntry<GameProfile> {
     }
 
     @Override
-    protected void fromJson(JsonObject json) {
+    protected void write(JsonObject json) {
         if (this.getKey() == null) {
             return;
         }
         json.addProperty("uuid", ((GameProfile)this.getKey()).getId() == null ? "" : ((GameProfile)this.getKey()).getId().toString());
         json.addProperty("name", ((GameProfile)this.getKey()).getName());
-        super.fromJson(json);
+        super.write(json);
     }
 
     @Override

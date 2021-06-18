@@ -45,10 +45,10 @@ extends RealmsScreen {
     private final WorldDownload worldDownload;
     private final Text downloadTitle;
     private final RateLimiter narrationRateLimiter;
-    private ButtonWidget field_22694;
+    private ButtonWidget cancelButton;
     private final String worldName;
     private final DownloadStatus downloadStatus;
-    private volatile Text field_20494;
+    private volatile Text downloadError;
     private volatile Text status = new TranslatableText("mco.download.preparing");
     private volatile String progress;
     private volatile boolean cancelled;
@@ -62,11 +62,11 @@ extends RealmsScreen {
     private static final String[] DOTS = new String[]{"", ".", ". .", ". . ."};
     private int dotIndex;
     private boolean checked;
-    private final BooleanConsumer field_22693;
+    private final BooleanConsumer onBack;
 
-    public RealmsDownloadLatestWorldScreen(Screen parent, WorldDownload worldDownload, String worldName, BooleanConsumer booleanConsumer) {
+    public RealmsDownloadLatestWorldScreen(Screen parent, WorldDownload worldDownload, String worldName, BooleanConsumer onBack) {
         super(NarratorManager.EMPTY);
-        this.field_22693 = booleanConsumer;
+        this.onBack = onBack;
         this.parent = parent;
         this.worldName = worldName;
         this.worldDownload = worldDownload;
@@ -78,7 +78,7 @@ extends RealmsScreen {
     @Override
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.field_22694 = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.CANCEL, button -> {
+        this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.CANCEL, button -> {
             this.cancelled = true;
             this.backButtonClicked();
         }));
@@ -92,7 +92,7 @@ extends RealmsScreen {
         if (!this.checked && this.getContentLength(this.worldDownload.downloadLink) >= 0x140000000L) {
             TranslatableText text = new TranslatableText("mco.download.confirmation.line1", SizeUnit.getUserFriendlyString(0x140000000L));
             TranslatableText text2 = new TranslatableText("mco.download.confirmation.line2");
-            this.client.openScreen(new RealmsLongConfirmationScreen(bl -> {
+            this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
                 this.checked = true;
                 this.client.openScreen(this);
                 this.downloadSave();
@@ -112,12 +112,12 @@ extends RealmsScreen {
         super.tick();
         ++this.animTick;
         if (this.status != null && this.narrationRateLimiter.tryAcquire(1)) {
-            Text text = this.method_37012();
+            Text text = this.getNarration();
             NarratorManager.INSTANCE.narrate(text);
         }
     }
 
-    private Text method_37012() {
+    private Text getNarration() {
         ArrayList<Text> list = Lists.newArrayList();
         list.add(this.downloadTitle);
         list.add(this.status);
@@ -125,8 +125,8 @@ extends RealmsScreen {
             list.add(new LiteralText(this.progress + "%"));
             list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPerSecond) + "/s"));
         }
-        if (this.field_20494 != null) {
-            list.add(this.field_20494);
+        if (this.downloadError != null) {
+            list.add(this.downloadError);
         }
         return ScreenTexts.joinLines(list);
     }
@@ -142,8 +142,8 @@ extends RealmsScreen {
     }
 
     private void backButtonClicked() {
-        if (this.finished && this.field_22693 != null && this.field_20494 == null) {
-            this.field_22693.accept(true);
+        if (this.finished && this.onBack != null && this.downloadError == null) {
+            this.onBack.accept(true);
         }
         this.client.openScreen(this.parent);
     }
@@ -160,8 +160,8 @@ extends RealmsScreen {
             this.drawProgressBar(matrices);
             this.drawDownloadSpeed(matrices);
         }
-        if (this.field_20494 != null) {
-            RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.field_20494, this.width / 2, 110, 0xFF0000);
+        if (this.downloadError != null) {
+            RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.downloadError, this.width / 2, 110, 0xFF0000);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -215,10 +215,10 @@ extends RealmsScreen {
         }
     }
 
-    private void drawDownloadSpeed0(MatrixStack matrices, long l) {
-        if (l > 0L) {
+    private void drawDownloadSpeed0(MatrixStack matrices, long bytesPerSecond) {
+        if (bytesPerSecond > 0L) {
             int i = this.textRenderer.getWidth(this.progress);
-            String string = "(" + SizeUnit.getUserFriendlyString(l) + "/s)";
+            String string = "(" + SizeUnit.getUserFriendlyString(bytesPerSecond) + "/s)";
             this.textRenderer.draw(matrices, string, (float)(this.width / 2 + i / 2 + 15), 84.0f, 0xFFFFFF);
         }
     }
@@ -241,8 +241,8 @@ extends RealmsScreen {
                 while (!fileDownload.isFinished()) {
                     if (fileDownload.isError()) {
                         fileDownload.cancel();
-                        this.field_20494 = new TranslatableText("mco.download.failed");
-                        this.field_22694.setMessage(ScreenTexts.DONE);
+                        this.downloadError = new TranslatableText("mco.download.failed");
+                        this.cancelButton.setMessage(ScreenTexts.DONE);
                         return;
                     }
                     if (fileDownload.isExtracting()) {
@@ -264,11 +264,11 @@ extends RealmsScreen {
                 }
                 this.finished = true;
                 this.status = new TranslatableText("mco.download.done");
-                this.field_22694.setMessage(ScreenTexts.DONE);
+                this.cancelButton.setMessage(ScreenTexts.DONE);
             } catch (InterruptedException interruptedException2) {
                 LOGGER.error("Could not acquire upload lock");
             } catch (Exception exception) {
-                this.field_20494 = new TranslatableText("mco.download.failed");
+                this.downloadError = new TranslatableText("mco.download.failed");
                 exception.printStackTrace();
             } finally {
                 if (!downloadLock.isHeldByCurrentThread()) {

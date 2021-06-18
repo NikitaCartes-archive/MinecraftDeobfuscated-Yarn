@@ -77,7 +77,7 @@ extends AbstractCauldronBlock {
 
     @Override
     public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
-        if (!CauldronBlock.canFillWithPrecipitation(world) || state.get(LEVEL) == 3 || !this.precipitationPredicate.test(precipitation)) {
+        if (!CauldronBlock.canFillWithPrecipitation(world, precipitation) || state.get(LEVEL) == 3 || !this.precipitationPredicate.test(precipitation)) {
             return;
         }
         world.setBlockState(pos, (BlockState)state.cycle(LEVEL));

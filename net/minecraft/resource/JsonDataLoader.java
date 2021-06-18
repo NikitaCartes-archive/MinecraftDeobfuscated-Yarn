@@ -45,9 +45,9 @@ extends SinglePreparationResourceReloader<Map<Identifier, JsonElement>> {
     protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
         HashMap<Identifier, JsonElement> map = Maps.newHashMap();
         int i = this.dataType.length() + 1;
-        for (Identifier identifier : resourceManager.findResources(this.dataType, string -> string.endsWith(FILE_SUFFIX))) {
-            String string2 = identifier.getPath();
-            Identifier identifier2 = new Identifier(identifier.getNamespace(), string2.substring(i, string2.length() - FILE_SUFFIX_LENGTH));
+        for (Identifier identifier : resourceManager.findResources(this.dataType, path -> path.endsWith(FILE_SUFFIX))) {
+            String string = identifier.getPath();
+            Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(i, string.length() - FILE_SUFFIX_LENGTH));
             try {
                 Resource resource = resourceManager.getResource(identifier);
                 try {

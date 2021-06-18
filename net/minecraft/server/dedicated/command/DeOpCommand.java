@@ -20,11 +20,11 @@ public class DeOpCommand {
     private static final SimpleCommandExceptionType ALREADY_DEOPPED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.deop.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("deop").requires(source -> source.hasPermissionLevel(3))).then(CommandManager.argument("targets", GameProfileArgumentType.gameProfile()).suggests((context, builder) -> CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getMinecraftServer().getPlayerManager().getOpNames(), builder)).executes(context -> DeOpCommand.deop((ServerCommandSource)context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("deop").requires(source -> source.hasPermissionLevel(3))).then(CommandManager.argument("targets", GameProfileArgumentType.gameProfile()).suggests((context, builder) -> CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getServer().getPlayerManager().getOpNames(), builder)).executes(context -> DeOpCommand.deop((ServerCommandSource)context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))));
     }
 
     private static int deop(ServerCommandSource source, Collection<GameProfile> targets) throws CommandSyntaxException {
-        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
+        PlayerManager playerManager = source.getServer().getPlayerManager();
         int i = 0;
         for (GameProfile gameProfile : targets) {
             if (!playerManager.isOperator(gameProfile)) continue;
@@ -35,7 +35,7 @@ public class DeOpCommand {
         if (i == 0) {
             throw ALREADY_DEOPPED_EXCEPTION.create();
         }
-        source.getMinecraftServer().kickNonWhitelistedPlayers(source);
+        source.getServer().kickNonWhitelistedPlayers(source);
         return i;
     }
 }

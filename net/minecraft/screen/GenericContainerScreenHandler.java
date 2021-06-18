@@ -103,9 +103,9 @@ extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
-        this.inventory.onClose(playerEntity);
+    public void close(PlayerEntity player) {
+        super.close(player);
+        this.inventory.onClose(player);
     }
 
     public Inventory getInventory() {

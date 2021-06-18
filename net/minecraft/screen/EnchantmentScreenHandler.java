@@ -104,29 +104,29 @@ extends ScreenHandler {
                     this.enchantmentLevel[i] = -1;
                 }
             } else {
-                this.context.run((world, blockPos) -> {
+                this.context.run((world, pos) -> {
                     int j;
                     int i = 0;
                     for (j = -1; j <= 1; ++j) {
                         for (int k = -1; k <= 1; ++k) {
-                            if (j == 0 && k == 0 || !world.isAir(blockPos.add(k, 0, j)) || !world.isAir(blockPos.add(k, 1, j))) continue;
-                            if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
+                            if (j == 0 && k == 0 || !world.isAir(pos.add(k, 0, j)) || !world.isAir(pos.add(k, 1, j))) continue;
+                            if (world.getBlockState(pos.add(k * 2, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
-                            if (world.getBlockState(blockPos.add(k * 2, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
+                            if (world.getBlockState(pos.add(k * 2, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
                             if (k == 0 || j == 0) continue;
-                            if (world.getBlockState(blockPos.add(k * 2, 0, j)).isOf(Blocks.BOOKSHELF)) {
+                            if (world.getBlockState(pos.add(k * 2, 0, j)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
-                            if (world.getBlockState(blockPos.add(k * 2, 1, j)).isOf(Blocks.BOOKSHELF)) {
+                            if (world.getBlockState(pos.add(k * 2, 1, j)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
-                            if (world.getBlockState(blockPos.add(k, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
+                            if (world.getBlockState(pos.add(k, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
-                            if (!world.getBlockState(blockPos.add(k, 1, j * 2)).isOf(Blocks.BOOKSHELF)) continue;
+                            if (!world.getBlockState(pos.add(k, 1, j * 2)).isOf(Blocks.BOOKSHELF)) continue;
                             ++i;
                         }
                     }
@@ -160,7 +160,7 @@ extends ScreenHandler {
             return false;
         }
         if (this.enchantmentPower[id] > 0 && !itemStack.isEmpty() && (player.experienceLevel >= i && player.experienceLevel >= this.enchantmentPower[id] || player.getAbilities().creativeMode)) {
-            this.context.run((world, blockPos) -> {
+            this.context.run((world, pos) -> {
                 ItemStack itemStack3 = itemStack;
                 List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack3, id, this.enchantmentPower[id]);
                 if (!list.isEmpty()) {
@@ -195,7 +195,7 @@ extends ScreenHandler {
                     this.inventory.markDirty();
                     this.seed.set(player.getEnchantmentTableSeed());
                     this.onContentChanged(this.inventory);
-                    world.playSound(null, (BlockPos)blockPos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0f, world.random.nextFloat() * 0.1f + 0.9f);
+                    world.playSound(null, (BlockPos)pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0f, world.random.nextFloat() * 0.1f + 0.9f);
                 }
             });
             return true;
@@ -225,9 +225,9 @@ extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
-        this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.inventory));
+    public void close(PlayerEntity player) {
+        super.close(player);
+        this.context.run((world, pos) -> this.dropInventory(player, this.inventory));
     }
 
     @Override

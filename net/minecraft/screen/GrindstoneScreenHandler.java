@@ -80,11 +80,11 @@ extends ScreenHandler {
 
             @Override
             public void onTakeItem(PlayerEntity player, ItemStack stack) {
-                context.run((world, blockPos) -> {
+                context.run((world, pos) -> {
                     if (world instanceof ServerWorld) {
-                        ExperienceOrbEntity.spawn((ServerWorld)world, Vec3d.ofCenter(blockPos), this.getExperience((World)world));
+                        ExperienceOrbEntity.spawn((ServerWorld)world, Vec3d.ofCenter(pos), this.getExperience((World)world));
                     }
-                    world.syncWorldEvent(WorldEvents.GRINDSTONE_USED, (BlockPos)blockPos, 0);
+                    world.syncWorldEvent(WorldEvents.GRINDSTONE_USED, (BlockPos)pos, 0);
                 });
                 GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
                 GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);
@@ -219,9 +219,9 @@ extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
-        this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.input));
+    public void close(PlayerEntity player) {
+        super.close(player);
+        this.context.run((world, pos) -> this.dropInventory(player, this.input));
     }
 
     @Override

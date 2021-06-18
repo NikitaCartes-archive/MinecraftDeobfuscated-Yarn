@@ -177,7 +177,7 @@ AutoCloseable {
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         return ((CompletableFuture)CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(ClickableWidget.WIDGETS_TEXTURE, prepareExecutor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
             MissingSprite.getMissingSpriteTexture();
-            RealmsMainScreen.method_23765(this.resourceContainer);
+            RealmsMainScreen.loadImages(this.resourceContainer);
             Iterator<Map.Entry<Identifier, AbstractTexture>> iterator = this.textures.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Identifier, AbstractTexture> entry = iterator.next();

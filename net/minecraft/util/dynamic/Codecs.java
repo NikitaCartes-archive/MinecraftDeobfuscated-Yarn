@@ -21,11 +21,13 @@ import java.util.function.Supplier;
 /**
  * A few extensions for {@link Codec} or {@link DynamicOps}.
  * 
- * <p>Expect its removal once Mojang updates DataFixerUpper.
+ * <p>It has a few methods to create checkers for {@code Codec.flatXmap} to add
+ * extra value validation to encoding and decoding. See the implementation of
+ * {@link #nonEmptyList(Codec)}.
  */
 public class Codecs {
-    public static final Codec<Integer> field_33441 = Codecs.method_36241(0, Integer.MAX_VALUE, integer -> "Value must be non-negative: " + integer);
-    public static final Codec<Integer> field_33442 = Codecs.method_36241(1, Integer.MAX_VALUE, integer -> "Value must be positive: " + integer);
+    public static final Codec<Integer> NONNEGATIVE_INT = Codecs.rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
+    public static final Codec<Integer> POSITIVE_INT = Codecs.rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
 
     /**
      * Returns an exclusive-or codec for {@link Either} instances.
@@ -49,21 +51,21 @@ public class Codecs {
         return new Xor<F, S>(first, second);
     }
 
-    private static <N extends Number> Function<N, DataResult<N>> method_36243(N number, N number2, Function<N, String> function) {
-        return number3 -> {
-            if (((Comparable)((Object)number3)).compareTo(number) >= 0 && ((Comparable)((Object)number3)).compareTo(number2) <= 0) {
-                return DataResult.success(number3);
+    private static <N extends Number> Function<N, DataResult<N>> createRangeChecker(N min, N max, Function<N, String> messageFactory) {
+        return value -> {
+            if (((Comparable)((Object)value)).compareTo(min) >= 0 && ((Comparable)((Object)value)).compareTo(max) <= 0) {
+                return DataResult.success(value);
             }
-            return DataResult.error((String)function.apply(number3));
+            return DataResult.error((String)messageFactory.apply(value));
         };
     }
 
-    private static Codec<Integer> method_36241(int i, int j, Function<Integer, String> function) {
-        Function<Integer, DataResult<Integer>> function2 = Codecs.method_36243(i, j, function);
-        return Codec.INT.flatXmap(function2, function2);
+    private static Codec<Integer> rangedInt(int min, int max, Function<Integer, String> messageFactory) {
+        Function<Integer, DataResult<Integer>> function = Codecs.createRangeChecker(min, max, messageFactory);
+        return Codec.INT.flatXmap(function, function);
     }
 
-    public static <T> Function<List<T>, DataResult<List<T>>> method_36240() {
+    public static <T> Function<List<T>, DataResult<List<T>>> createNonEmptyListChecker() {
         return list -> {
             if (list.isEmpty()) {
                 return DataResult.error("List must have contents");
@@ -72,31 +74,31 @@ public class Codecs {
         };
     }
 
-    public static <T> Codec<List<T>> method_36973(Codec<List<T>> codec) {
-        return codec.flatXmap(Codecs.method_36240(), Codecs.method_36240());
+    public static <T> Codec<List<T>> nonEmptyList(Codec<List<T>> originalCodec) {
+        return originalCodec.flatXmap(Codecs.createNonEmptyListChecker(), Codecs.createNonEmptyListChecker());
     }
 
-    public static <T> Function<List<Supplier<T>>, DataResult<List<Supplier<T>>>> method_37351() {
-        return list -> {
-            ArrayList<CallSite> list2 = Lists.newArrayList();
-            for (int i = 0; i < list.size(); ++i) {
-                Supplier supplier = (Supplier)list.get(i);
+    public static <T> Function<List<Supplier<T>>, DataResult<List<Supplier<T>>>> createPresentValuesChecker() {
+        return suppliers -> {
+            ArrayList<CallSite> list = Lists.newArrayList();
+            for (int i = 0; i < suppliers.size(); ++i) {
+                Supplier supplier = (Supplier)suppliers.get(i);
                 try {
                     if (supplier.get() != null) continue;
-                    list2.add((CallSite)((Object)("Missing value [" + i + "] : " + supplier)));
+                    list.add((CallSite)((Object)("Missing value [" + i + "] : " + supplier)));
                     continue;
                 } catch (Exception exception) {
-                    list2.add((CallSite)((Object)("Invalid value [" + i + "]: " + supplier + ", message: " + exception.getMessage())));
+                    list.add((CallSite)((Object)("Invalid value [" + i + "]: " + supplier + ", message: " + exception.getMessage())));
                 }
             }
-            if (!list2.isEmpty()) {
-                return DataResult.error(String.join((CharSequence)"; ", list2));
+            if (!list.isEmpty()) {
+                return DataResult.error(String.join((CharSequence)"; ", list));
             }
-            return DataResult.success(list, Lifecycle.stable());
+            return DataResult.success(suppliers, Lifecycle.stable());
         };
     }
 
-    public static <T> Function<Supplier<T>, DataResult<Supplier<T>>> method_37352() {
+    public static <T> Function<Supplier<T>, DataResult<Supplier<T>>> createPresentValueChecker() {
         return supplier -> {
             try {
                 if (supplier.get() == null) {

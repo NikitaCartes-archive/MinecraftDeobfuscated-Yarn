@@ -47,28 +47,28 @@ extends RealmsScreen {
     List<LevelSummary> levelList = Lists.newArrayList();
     int selectedWorld = -1;
     WorldSelectionList worldSelectionList;
-    private final Runnable field_22717;
+    private final Runnable onBack;
 
-    public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, Runnable runnable) {
+    public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, Runnable onBack) {
         super(new TranslatableText("mco.upload.select.world.title"));
         this.parent = parent;
         this.worldId = worldId;
         this.slotId = slotId;
-        this.field_22717 = runnable;
+        this.onBack = onBack;
     }
 
     private void loadLevelList() throws Exception {
-        this.levelList = this.client.getLevelStorage().getLevelList().stream().sorted((levelSummary, levelSummary2) -> {
-            if (levelSummary.getLastPlayed() < levelSummary2.getLastPlayed()) {
+        this.levelList = this.client.getLevelStorage().getLevelList().stream().sorted((a, b) -> {
+            if (a.getLastPlayed() < b.getLastPlayed()) {
                 return 1;
             }
-            if (levelSummary.getLastPlayed() > levelSummary2.getLastPlayed()) {
+            if (a.getLastPlayed() > b.getLastPlayed()) {
                 return -1;
             }
-            return levelSummary.getName().compareTo(levelSummary2.getName());
+            return a.getName().compareTo(b.getName());
         }).collect(Collectors.toList());
-        for (LevelSummary levelSummary3 : this.levelList) {
-            this.worldSelectionList.addEntry(levelSummary3);
+        for (LevelSummary levelSummary : this.levelList) {
+            this.worldSelectionList.addEntry(levelSummary);
         }
     }
 
@@ -87,9 +87,9 @@ extends RealmsScreen {
         this.uploadButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, new TranslatableText("mco.upload.button.name"), button -> this.upload()));
         this.uploadButton.active = this.selectedWorld >= 0 && this.selectedWorld < this.levelList.size();
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
-        this.method_37107(new RealmsLabel(new TranslatableText("mco.upload.select.world.subtitle"), this.width / 2, RealmsSelectFileToUploadScreen.row(-1), 0xA0A0A0));
+        this.addLabel(new RealmsLabel(new TranslatableText("mco.upload.select.world.subtitle"), this.width / 2, RealmsSelectFileToUploadScreen.row(-1), 0xA0A0A0));
         if (this.levelList.isEmpty()) {
-            this.method_37107(new RealmsLabel(new TranslatableText("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 0xFFFFFF));
+            this.addLabel(new RealmsLabel(new TranslatableText("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 0xFFFFFF));
         }
     }
 
@@ -106,7 +106,7 @@ extends RealmsScreen {
     private void upload() {
         if (this.selectedWorld != -1 && !this.levelList.get(this.selectedWorld).isHardcore()) {
             LevelSummary levelSummary = this.levelList.get(this.selectedWorld);
-            this.client.openScreen(new RealmsUploadScreen(this.worldId, this.slotId, this.parent, levelSummary, this.field_22717));
+            this.client.openScreen(new RealmsUploadScreen(this.worldId, this.slotId, this.parent, levelSummary, this.onBack));
         }
     }
 
@@ -127,12 +127,12 @@ extends RealmsScreen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    static Text method_21400(LevelSummary levelSummary) {
-        return levelSummary.getGameMode().getTranslatableName();
+    static Text getGameModeName(LevelSummary summary) {
+        return summary.getGameMode().getTranslatableName();
     }
 
-    static String method_21404(LevelSummary levelSummary) {
-        return DATE_FORMAT.format(new Date(levelSummary.getLastPlayed()));
+    static String getLastPlayed(LevelSummary summary) {
+        return DATE_FORMAT.format(new Date(summary.getLastPlayed()));
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -142,8 +142,8 @@ extends RealmsScreen {
             super(RealmsSelectFileToUploadScreen.this.width, RealmsSelectFileToUploadScreen.this.height, RealmsSelectFileToUploadScreen.row(0), RealmsSelectFileToUploadScreen.this.height - 40, 36);
         }
 
-        public void addEntry(LevelSummary levelSummary) {
-            this.addEntry(new WorldListEntry(levelSummary));
+        public void addEntry(LevelSummary summary) {
+            this.addEntry(new WorldListEntry(summary));
         }
 
         @Override
@@ -172,23 +172,23 @@ extends RealmsScreen {
     @Environment(value=EnvType.CLIENT)
     class WorldListEntry
     extends AlwaysSelectedEntryListWidget.Entry<WorldListEntry> {
-        private final LevelSummary field_22718;
-        private final String field_26509;
-        private final String field_26510;
-        private final Text field_26511;
+        private final LevelSummary summary;
+        private final String displayName;
+        private final String nameAndLastPlayed;
+        private final Text details;
 
-        public WorldListEntry(LevelSummary levelSummary) {
-            this.field_22718 = levelSummary;
-            this.field_26509 = levelSummary.getDisplayName();
-            this.field_26510 = levelSummary.getName() + " (" + RealmsSelectFileToUploadScreen.method_21404(levelSummary) + ")";
-            if (levelSummary.requiresConversion()) {
-                this.field_26511 = conversionLang;
+        public WorldListEntry(LevelSummary summary) {
+            this.summary = summary;
+            this.displayName = summary.getDisplayName();
+            this.nameAndLastPlayed = summary.getName() + " (" + RealmsSelectFileToUploadScreen.getLastPlayed(summary) + ")";
+            if (summary.requiresConversion()) {
+                this.details = conversionLang;
             } else {
-                Text text = levelSummary.isHardcore() ? HARDCORE_TEXT : RealmsSelectFileToUploadScreen.method_21400(levelSummary);
-                if (levelSummary.hasCheats()) {
+                Text text = summary.isHardcore() ? HARDCORE_TEXT : RealmsSelectFileToUploadScreen.getGameModeName(summary);
+                if (summary.hasCheats()) {
                     text = text.shallowCopy().append(", ").append(CHEATS_TEXT);
                 }
-                this.field_26511 = text;
+                this.details = text;
             }
         }
 
@@ -199,20 +199,20 @@ extends RealmsScreen {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            RealmsSelectFileToUploadScreen.this.worldSelectionList.setSelected(RealmsSelectFileToUploadScreen.this.levelList.indexOf(this.field_22718));
+            RealmsSelectFileToUploadScreen.this.worldSelectionList.setSelected(RealmsSelectFileToUploadScreen.this.levelList.indexOf(this.summary));
             return true;
         }
 
-        protected void renderItem(MatrixStack matrices, int i, int j, int k) {
-            Object string = this.field_26509.isEmpty() ? worldLang + " " + (i + 1) : this.field_26509;
-            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, (String)string, (float)(j + 2), (float)(k + 1), 0xFFFFFF);
-            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, this.field_26510, (float)(j + 2), (float)(k + 12), 0x808080);
-            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, this.field_26511, (float)(j + 2), (float)(k + 12 + 10), 0x808080);
+        protected void renderItem(MatrixStack matrices, int index, int x, int y) {
+            Object string = this.displayName.isEmpty() ? worldLang + " " + (index + 1) : this.displayName;
+            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, (String)string, (float)(x + 2), (float)(y + 1), 0xFFFFFF);
+            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, this.nameAndLastPlayed, (float)(x + 2), (float)(y + 12), 0x808080);
+            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, this.details, (float)(x + 2), (float)(y + 12 + 10), 0x808080);
         }
 
         @Override
         public Text method_37006() {
-            Text text = ScreenTexts.joinLines(new LiteralText(this.field_22718.getDisplayName()), new LiteralText(RealmsSelectFileToUploadScreen.method_21404(this.field_22718)), RealmsSelectFileToUploadScreen.method_21400(this.field_22718));
+            Text text = ScreenTexts.joinLines(new LiteralText(this.summary.getDisplayName()), new LiteralText(RealmsSelectFileToUploadScreen.getLastPlayed(this.summary)), RealmsSelectFileToUploadScreen.getGameModeName(this.summary));
             return new TranslatableText("narrator.select", text);
         }
     }

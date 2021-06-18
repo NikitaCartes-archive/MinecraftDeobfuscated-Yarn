@@ -50,7 +50,7 @@ extends RealmsScreen {
     private final RealmsConfigureWorldScreen parent;
     List<Backup> backups = Collections.emptyList();
     @Nullable
-    Text toolTip;
+    Text tooltip;
     BackupObjectSelectionList backupObjectSelectionList;
     int selectedBackup = -1;
     private final int slotId;
@@ -59,7 +59,7 @@ extends RealmsScreen {
     private ButtonWidget changesButton;
     Boolean noBackups = false;
     final RealmsServer serverData;
-    private static final String field_32119 = "Uploaded";
+    private static final String UPLOADED = "Uploaded";
 
     public RealmsBackupScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData, int slotId) {
         super(new TranslatableText("mco.configure.world.backup"));
@@ -117,7 +117,7 @@ extends RealmsScreen {
             Backup backup2 = this.backups.get(i + 1);
             if (backup.metadata.isEmpty() || backup2.metadata.isEmpty()) continue;
             for (String string : backup.metadata.keySet()) {
-                if (!string.contains(field_32119) && backup2.metadata.containsKey(string)) {
+                if (!string.contains(UPLOADED) && backup2.metadata.containsKey(string)) {
                     if (backup.metadata.get(string).equals(backup2.metadata.get(string))) continue;
                     this.addToChangeList(backup, string);
                     continue;
@@ -128,7 +128,7 @@ extends RealmsScreen {
     }
 
     private void addToChangeList(Backup backup, String key) {
-        if (key.contains(field_32119)) {
+        if (key.contains(UPLOADED)) {
             String string = DateFormat.getDateTimeInstance(3, 3).format(backup.lastModifiedDate);
             backup.changeList.put(key, string);
             backup.setUploadedVersion(true);
@@ -173,8 +173,8 @@ extends RealmsScreen {
             String string2 = RealmsUtil.convertToAgePresentation(date);
             TranslatableText text = new TranslatableText("mco.configure.world.restore.question.line1", string, string2);
             TranslatableText text2 = new TranslatableText("mco.configure.world.restore.question.line2");
-            this.client.openScreen(new RealmsLongConfirmationScreen(bl -> {
-                if (bl) {
+            this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+                if (confirmed) {
                     this.restore();
                 } else {
                     this.selectedBackup = -1;
@@ -187,8 +187,8 @@ extends RealmsScreen {
     private void downloadClicked() {
         TranslatableText text = new TranslatableText("mco.configure.world.restore.download.question.line1");
         TranslatableText text2 = new TranslatableText("mco.configure.world.restore.download.question.line2");
-        this.client.openScreen(new RealmsLongConfirmationScreen(bl -> {
-            if (bl) {
+        this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+            if (confirmed) {
                 this.downloadWorldData();
             } else {
                 this.client.openScreen(this);
@@ -208,7 +208,7 @@ extends RealmsScreen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.toolTip = null;
+        this.tooltip = null;
         this.renderBackground(matrices);
         this.backupObjectSelectionList.render(matrices, mouseX, mouseY, delta);
         RealmsBackupScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 12, 0xFFFFFF);
@@ -218,20 +218,20 @@ extends RealmsScreen {
         }
         this.downloadButton.active = this.noBackups == false;
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.toolTip != null) {
-            this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
+        if (this.tooltip != null) {
+            this.renderMousehoverTooltip(matrices, this.tooltip, mouseX, mouseY);
         }
     }
 
-    protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int i, int j) {
+    protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int mouseX, int mouseY) {
         if (text == null) {
             return;
         }
-        int k = i + 12;
-        int l = j - 12;
-        int m = this.textRenderer.getWidth(text);
-        this.fillGradient(matrices, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.drawWithShadow(matrices, text, (float)k, (float)l, 0xFFFFFF);
+        int i = mouseX + 12;
+        int j = mouseY - 12;
+        int k = this.textRenderer.getWidth(text);
+        this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
+        this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, 0xFFFFFF);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -340,19 +340,19 @@ extends RealmsScreen {
             this.renderBackupItem(matrices, this.mBackup, x - 40, y, mouseX, mouseY);
         }
 
-        private void renderBackupItem(MatrixStack matrices, Backup backup, int i, int j, int k, int l) {
-            int m = backup.isUploadedVersion() ? -8388737 : 0xFFFFFF;
-            RealmsBackupScreen.this.textRenderer.draw(matrices, "Backup (" + RealmsUtil.convertToAgePresentation(backup.lastModifiedDate) + ")", (float)(i + 40), (float)(j + 1), m);
-            RealmsBackupScreen.this.textRenderer.draw(matrices, this.getMediumDatePresentation(backup.lastModifiedDate), (float)(i + 40), (float)(j + 12), 0x4C4C4C);
-            int n = RealmsBackupScreen.this.width - 175;
-            int o = -3;
-            int p = n - 10;
-            boolean q = false;
+        private void renderBackupItem(MatrixStack matrices, Backup backup, int x, int y, int mouseX, int mouseY) {
+            int i = backup.isUploadedVersion() ? -8388737 : 0xFFFFFF;
+            RealmsBackupScreen.this.textRenderer.draw(matrices, "Backup (" + RealmsUtil.convertToAgePresentation(backup.lastModifiedDate) + ")", (float)(x + 40), (float)(y + 1), i);
+            RealmsBackupScreen.this.textRenderer.draw(matrices, this.getMediumDatePresentation(backup.lastModifiedDate), (float)(x + 40), (float)(y + 12), 0x4C4C4C);
+            int j = RealmsBackupScreen.this.width - 175;
+            int k = -3;
+            int l = j - 10;
+            boolean m = false;
             if (!RealmsBackupScreen.this.serverData.expired) {
-                this.drawRestore(matrices, n, j + -3, k, l);
+                this.drawRestore(matrices, j, y + -3, mouseX, mouseY);
             }
             if (!backup.changeList.isEmpty()) {
-                this.drawInfo(matrices, p, j + 0, k, l);
+                this.drawInfo(matrices, l, y + 0, mouseX, mouseY);
             }
         }
 
@@ -360,31 +360,31 @@ extends RealmsScreen {
             return DateFormat.getDateTimeInstance(3, 3).format(lastModifiedDate);
         }
 
-        private void drawRestore(MatrixStack matrices, int i, int j, int k, int l) {
-            boolean bl = k >= i && k <= i + 12 && l >= j && l <= j + 14 && l < RealmsBackupScreen.this.height - 15 && l > 32;
+        private void drawRestore(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
+            boolean bl = mouseX >= x && mouseX <= x + 12 && mouseY >= y && mouseY <= y + 14 && mouseY < RealmsBackupScreen.this.height - 15 && mouseY > 32;
             RenderSystem.setShaderTexture(0, RESTORE_ICON);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             matrices.push();
             matrices.scale(0.5f, 0.5f, 0.5f);
             float f = bl ? 28.0f : 0.0f;
-            DrawableHelper.drawTexture(matrices, i * 2, j * 2, 0.0f, f, 23, 28, 23, 56);
+            DrawableHelper.drawTexture(matrices, x * 2, y * 2, 0.0f, f, 23, 28, 23, 56);
             matrices.pop();
             if (bl) {
-                RealmsBackupScreen.this.toolTip = RESTORE_TEXT;
+                RealmsBackupScreen.this.tooltip = RESTORE_TEXT;
             }
         }
 
-        private void drawInfo(MatrixStack matrices, int i, int j, int k, int l) {
-            boolean bl = k >= i && k <= i + 8 && l >= j && l <= j + 8 && l < RealmsBackupScreen.this.height - 15 && l > 32;
+        private void drawInfo(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
+            boolean bl = mouseX >= x && mouseX <= x + 8 && mouseY >= y && mouseY <= y + 8 && mouseY < RealmsBackupScreen.this.height - 15 && mouseY > 32;
             RenderSystem.setShaderTexture(0, PLUS_ICON);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             matrices.push();
             matrices.scale(0.5f, 0.5f, 0.5f);
             float f = bl ? 15.0f : 0.0f;
-            DrawableHelper.drawTexture(matrices, i * 2, j * 2, 0.0f, f, 15, 15, 15, 30);
+            DrawableHelper.drawTexture(matrices, x * 2, y * 2, 0.0f, f, 15, 15, 15, 30);
             matrices.pop();
             if (bl) {
-                RealmsBackupScreen.this.toolTip = CHANGES_TOOLTIP;
+                RealmsBackupScreen.this.tooltip = CHANGES_TOOLTIP;
             }
         }
 

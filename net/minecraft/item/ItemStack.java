@@ -88,13 +88,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public final class ItemStack {
-    public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.ITEM.fieldOf(ID_KEY)).forGetter(stack -> stack.item), ((MapCodec)Codec.INT.fieldOf("Count")).forGetter(stack -> stack.count), NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.tag))).apply((Applicative<ItemStack, ?>)instance, ItemStack::new));
+    public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.ITEM.fieldOf("id")).forGetter(stack -> stack.item), ((MapCodec)Codec.INT.fieldOf("Count")).forGetter(stack -> stack.count), NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.tag))).apply((Applicative<ItemStack, ?>)instance, ItemStack::new));
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ItemStack EMPTY = new ItemStack((ItemConvertible)null);
     public static final DecimalFormat MODIFIER_FORMAT = Util.make(new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     public static final String ENCHANTMENTS_KEY = "Enchantments";
-    public static final String ID_KEY = "id";
-    public static final String LVL_KEY = "lvl";
     public static final String DISPLAY_KEY = "display";
     public static final String NAME_KEY = "Name";
     public static final String LORE_KEY = "Lore";
@@ -147,7 +145,7 @@ public final class ItemStack {
     }
 
     private ItemStack(NbtCompound tag) {
-        this.item = Registry.ITEM.get(new Identifier(tag.getString(ID_KEY)));
+        this.item = Registry.ITEM.get(new Identifier(tag.getString("id")));
         this.count = tag.getByte("Count");
         if (tag.contains("tag", 10)) {
             this.tag = tag.getCompound("tag");
@@ -227,7 +225,7 @@ public final class ItemStack {
 
     public NbtCompound writeNbt(NbtCompound nbt) {
         Identifier identifier = Registry.ITEM.getId(this.getItem());
-        nbt.putString(ID_KEY, identifier == null ? "minecraft:air" : identifier.toString());
+        nbt.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
         nbt.putByte("Count", (byte)this.count);
         if (this.tag != null) {
             nbt.put("tag", this.tag.copy());
@@ -716,7 +714,7 @@ public final class ItemStack {
     public static void appendEnchantments(List<Text> tooltip, NbtList enchantments) {
         for (int i = 0; i < enchantments.size(); ++i) {
             NbtCompound nbtCompound = enchantments.getCompound(i);
-            Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString(ID_KEY))).ifPresent(e -> tooltip.add(e.getName(nbtCompound.getInt(LVL_KEY))));
+            Registry.ENCHANTMENT.getOrEmpty(EnchantmentHelper.getIdFromNbt(nbtCompound)).ifPresent(e -> tooltip.add(e.getName(EnchantmentHelper.getLevelFromNbt(nbtCompound))));
         }
     }
 
@@ -765,10 +763,7 @@ public final class ItemStack {
             this.tag.put(ENCHANTMENTS_KEY, new NbtList());
         }
         NbtList nbtList = this.tag.getList(ENCHANTMENTS_KEY, 10);
-        NbtCompound nbtCompound = new NbtCompound();
-        nbtCompound.putString(ID_KEY, String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
-        nbtCompound.putShort(LVL_KEY, (byte)level);
-        nbtList.add(nbtCompound);
+        nbtList.add(EnchantmentHelper.createNbt(EnchantmentHelper.getEnchantmentId(enchantment), (byte)level));
     }
 
     public boolean hasEnchantments() {

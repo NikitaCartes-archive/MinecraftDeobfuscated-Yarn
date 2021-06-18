@@ -56,7 +56,7 @@ extends ScreenHandler {
                 return 1;
             }
         });
-        if (this.method_33354(entity)) {
+        if (this.hasChest(entity)) {
             for (k = 0; k < 3; ++k) {
                 for (l = 0; l < ((AbstractDonkeyEntity)entity).getInventoryColumns(); ++l) {
                     this.addSlot(new Slot(inventory, 2 + l + k * ((AbstractDonkeyEntity)entity).getInventoryColumns(), 80 + l * 18, 18 + k * 18));
@@ -78,8 +78,8 @@ extends ScreenHandler {
         return !this.entity.method_33338(this.inventory) && this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
     }
 
-    private boolean method_33354(HorseBaseEntity horseBaseEntity) {
-        return horseBaseEntity instanceof AbstractDonkeyEntity && ((AbstractDonkeyEntity)horseBaseEntity).hasChest();
+    private boolean hasChest(HorseBaseEntity horse) {
+        return horse instanceof AbstractDonkeyEntity && ((AbstractDonkeyEntity)horse).hasChest();
     }
 
     @Override
@@ -122,9 +122,9 @@ extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
-        this.inventory.onClose(playerEntity);
+    public void close(PlayerEntity player) {
+        super.close(player);
+        this.inventory.onClose(player);
     }
 }
 

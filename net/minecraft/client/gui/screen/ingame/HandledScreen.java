@@ -121,7 +121,7 @@ implements ScreenHandlerProvider<T> {
             this.focusedSlot = slot;
             l = slot.x;
             int m = slot.y;
-            HandledScreen.method_33285(matrices, l, m, this.getZOffset());
+            HandledScreen.drawSlotHighlight(matrices, l, m, this.getZOffset());
         }
         this.drawForeground(matrices, mouseX, mouseY);
         ItemStack itemStack2 = itemStack = this.touchDragStack.isEmpty() ? ((ScreenHandler)this.handler).getCursorStack() : this.touchDragStack;
@@ -158,10 +158,10 @@ implements ScreenHandlerProvider<T> {
         RenderSystem.enableDepthTest();
     }
 
-    public static void method_33285(MatrixStack matrices, int x, int y, int color) {
+    public static void drawSlotHighlight(MatrixStack matrices, int x, int y, int z) {
         RenderSystem.disableDepthTest();
         RenderSystem.colorMask(true, true, true, false);
-        HandledScreen.fillGradient(matrices, x, y, x + 16, y + 16, -2130706433, -2130706433, color);
+        HandledScreen.fillGradient(matrices, x, y, x + 16, y + 16, -2130706433, -2130706433, z);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.enableDepthTest();
     }
@@ -558,11 +558,16 @@ implements ScreenHandlerProvider<T> {
     }
 
     @Override
-    public void tick() {
+    public final void tick() {
         super.tick();
         if (!this.client.player.isAlive() || this.client.player.isRemoved()) {
             this.client.player.closeHandledScreen();
+        } else {
+            this.handledScreenTick();
         }
+    }
+
+    protected void handledScreenTick() {
     }
 
     @Override

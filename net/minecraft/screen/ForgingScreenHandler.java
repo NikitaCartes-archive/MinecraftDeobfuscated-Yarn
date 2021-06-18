@@ -89,22 +89,22 @@ extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
-        this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.input));
+    public void close(PlayerEntity player) {
+        super.close(player);
+        this.context.run((world, pos) -> this.dropInventory(player, this.input));
     }
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.context.get((world, blockPos) -> {
-            if (!this.canUse(world.getBlockState((BlockPos)blockPos))) {
+        return this.context.get((world, pos) -> {
+            if (!this.canUse(world.getBlockState((BlockPos)pos))) {
                 return false;
             }
-            return player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0;
+            return player.squaredDistanceTo((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5) <= 64.0;
         }, true);
     }
 
-    protected boolean method_30025(ItemStack itemStack) {
+    protected boolean isUsableAsAddition(ItemStack stack) {
         return false;
     }
 
@@ -126,7 +126,7 @@ extends ScreenHandler {
                 }
             } else if (index >= 3 && index < 39) {
                 int i;
-                int n = i = this.method_30025(itemStack) ? 1 : 0;
+                int n = i = this.isUsableAsAddition(itemStack) ? 1 : 0;
                 if (!this.insertItem(itemStack2, i, 2, false)) {
                     return ItemStack.EMPTY;
                 }

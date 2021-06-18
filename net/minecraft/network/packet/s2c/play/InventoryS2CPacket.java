@@ -20,32 +20,33 @@ implements Packet<ClientPlayPacketListener> {
      * The {@link net.minecraft.screen.ScreenHandler#syncId} of a screen handler.
      */
     private final int syncId;
+    private final int revision;
     private final List<ItemStack> contents;
+    private final ItemStack cursorStack;
 
-    public InventoryS2CPacket(int syncId, DefaultedList<ItemStack> contents) {
+    public InventoryS2CPacket(int syncId, int revision, DefaultedList<ItemStack> contents, ItemStack cursorStack) {
         this.syncId = syncId;
+        this.revision = revision;
         this.contents = DefaultedList.ofSize(contents.size(), ItemStack.EMPTY);
-        for (int i = 0; i < this.contents.size(); ++i) {
+        for (int i = 0; i < contents.size(); ++i) {
             this.contents.set(i, contents.get(i).copy());
         }
+        this.cursorStack = cursorStack.copy();
     }
 
     public InventoryS2CPacket(PacketByteBuf buf) {
         this.syncId = buf.readUnsignedByte();
-        int i = buf.readShort();
-        this.contents = DefaultedList.ofSize(i, ItemStack.EMPTY);
-        for (int j = 0; j < i; ++j) {
-            this.contents.set(j, buf.readItemStack());
-        }
+        this.revision = buf.readVarInt();
+        this.contents = buf.readCollection(DefaultedList::ofSize, PacketByteBuf::readItemStack);
+        this.cursorStack = buf.readItemStack();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeByte(this.syncId);
-        buf.writeShort(this.contents.size());
-        for (ItemStack itemStack : this.contents) {
-            buf.writeItemStack(itemStack);
-        }
+        buf.writeVarInt(this.revision);
+        buf.writeCollection(this.contents, PacketByteBuf::writeItemStack);
+        buf.writeItemStack(this.cursorStack);
     }
 
     @Override
@@ -59,6 +60,14 @@ implements Packet<ClientPlayPacketListener> {
 
     public List<ItemStack> getContents() {
         return this.contents;
+    }
+
+    public ItemStack getCursorStack() {
+        return this.cursorStack;
+    }
+
+    public int getRevision() {
+        return this.revision;
     }
 }
 

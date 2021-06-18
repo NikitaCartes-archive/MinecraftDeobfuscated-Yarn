@@ -18,6 +18,7 @@ import java.util.concurrent.CompletionException;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashMemoryReserve;
 import net.minecraft.util.crash.CrashReportSection;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -224,6 +225,7 @@ public class CrashReport {
     }
 
     public static void initCrashReport() {
+        CrashMemoryReserve.reserveMemory();
         new CrashReport("Don't panic!", new Throwable()).asString();
     }
 }

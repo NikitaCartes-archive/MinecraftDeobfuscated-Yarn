@@ -76,7 +76,7 @@ implements ParsableText {
     private String getScore(String playerName, ServerCommandSource source) {
         ScoreboardObjective scoreboardObjective;
         ServerScoreboard scoreboard;
-        MinecraftServer minecraftServer = source.getMinecraftServer();
+        MinecraftServer minecraftServer = source.getServer();
         if (minecraftServer != null && (scoreboard = minecraftServer.getScoreboard()).playerHasObjective(playerName, scoreboardObjective = scoreboard.getNullableObjective(this.objective))) {
             ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(playerName, scoreboardObjective);
             return Integer.toString(scoreboardPlayerScore.getScore());

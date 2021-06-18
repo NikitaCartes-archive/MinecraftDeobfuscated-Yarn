@@ -41,15 +41,15 @@ extends AbstractRecipeScreenHandler<Inventory> {
     private final RecipeType<? extends AbstractCookingRecipe> recipeType;
     private final RecipeBookCategory category;
 
-    protected AbstractFurnaceScreenHandler(ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, RecipeBookCategory recipeBookCategory, int i, PlayerInventory playerInventory) {
-        this(type, recipeType, recipeBookCategory, i, playerInventory, new SimpleInventory(3), new ArrayPropertyDelegate(4));
+    protected AbstractFurnaceScreenHandler(ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, RecipeBookCategory category, int syncId, PlayerInventory playerInventory) {
+        this(type, recipeType, category, syncId, playerInventory, new SimpleInventory(3), new ArrayPropertyDelegate(4));
     }
 
-    protected AbstractFurnaceScreenHandler(ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, RecipeBookCategory recipeBookCategory, int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-        super(type, i);
-        int j;
+    protected AbstractFurnaceScreenHandler(ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, RecipeBookCategory category, int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+        super(type, syncId);
+        int i;
         this.recipeType = recipeType;
-        this.category = recipeBookCategory;
+        this.category = category;
         AbstractFurnaceScreenHandler.checkSize(inventory, 3);
         AbstractFurnaceScreenHandler.checkDataCount(propertyDelegate, 4);
         this.inventory = inventory;
@@ -58,13 +58,13 @@ extends AbstractRecipeScreenHandler<Inventory> {
         this.addSlot(new Slot(inventory, 0, 56, 17));
         this.addSlot(new FurnaceFuelSlot(this, inventory, 1, 56, 53));
         this.addSlot(new FurnaceOutputSlot(playerInventory.player, inventory, 2, 116, 35));
-        for (j = 0; j < 3; ++j) {
-            for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+        for (i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
-        for (j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+        for (i = 0; i < 9; ++i) {
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
         this.addProperties(propertyDelegate);
     }

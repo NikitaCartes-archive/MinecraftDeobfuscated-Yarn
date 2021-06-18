@@ -69,8 +69,8 @@ implements SynchronousResourceReloader {
     private static final int field_32937 = 8;
     private static final int field_32938 = 8;
     public static final int field_32934 = 200;
-    public static final float field_32935 = 0.5f;
-    public static final float field_32936 = 0.75f;
+    public static final float COMPASS_WITH_GLINT_GUI_MODEL_MULTIPLIER = 0.5f;
+    public static final float COMPASS_WITH_GLINT_FIRST_PERSON_MODEL_MULTIPLIER = 0.75f;
     public float zOffset;
     private final ItemModels models;
     private final TextureManager textureManager;

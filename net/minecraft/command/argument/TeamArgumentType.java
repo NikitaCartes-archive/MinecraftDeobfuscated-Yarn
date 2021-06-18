@@ -30,7 +30,7 @@ implements ArgumentType<String> {
 
     public static Team getTeam(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         String string = context.getArgument(name, String.class);
-        ServerScoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
+        ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
         Team team = scoreboard.getTeam(string);
         if (team == null) {
             throw UNKNOWN_TEAM_EXCEPTION.create(string);

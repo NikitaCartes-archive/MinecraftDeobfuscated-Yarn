@@ -28,9 +28,9 @@ implements ResourcePack {
     private final Map<Identifier, Identifier> idMap;
     public static final Map<Identifier, Identifier> NEW_TO_OLD_MAP = Util.make(() -> {
         ImmutableMap.Builder builder = ImmutableMap.builder();
-        BiConsumer<String, String> biConsumer = (string, string2) -> {
-            Identifier identifier = new Identifier((String)string);
-            Identifier identifier2 = new Identifier((String)string2);
+        BiConsumer<String, String> biConsumer = (newId, oldId) -> {
+            Identifier identifier = new Identifier((String)newId);
+            Identifier identifier2 = new Identifier((String)oldId);
             builder.put(identifier, identifier2);
             builder.put(Format3ResourcePack.getMetadataLocation(identifier), Format3ResourcePack.getMetadataLocation(identifier2));
         };

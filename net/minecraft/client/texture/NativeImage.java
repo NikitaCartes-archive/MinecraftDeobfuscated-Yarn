@@ -88,8 +88,8 @@ implements AutoCloseable {
         return "NativeImage[" + this.format + " " + this.width + "x" + this.height + "@" + this.pointer + (this.isStbImage ? "S" : "N") + "]";
     }
 
-    private boolean method_36559(int i, int j) {
-        return i < 0 || i >= this.width || j < 0 || j >= this.height;
+    private boolean isOutOfBounds(int x, int y) {
+        return x < 0 || x >= this.width || y < 0 || y >= this.height;
     }
 
     public static NativeImage read(InputStream inputStream) throws IOException {
@@ -187,7 +187,7 @@ implements AutoCloseable {
         if (this.format != Format.ABGR) {
             throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", new Object[]{this.format}));
         }
-        if (this.method_36559(x, y)) {
+        if (this.isOutOfBounds(x, y)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
         this.checkAllocated();
@@ -205,7 +205,7 @@ implements AutoCloseable {
         if (this.format != Format.ABGR) {
             throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", new Object[]{this.format}));
         }
-        if (this.method_36559(x, y)) {
+        if (this.isOutOfBounds(x, y)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
         this.checkAllocated();
@@ -213,102 +213,102 @@ implements AutoCloseable {
         MemoryUtil.memPutInt(this.pointer + l, color);
     }
 
-    public void method_35621(int i, int j, byte b) {
+    public void setPixelLuminance(int x, int y, byte luminance) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         if (!this.format.hasLuminance()) {
             throw new IllegalArgumentException(String.format("setPixelLuminance only works on image with luminance; have %s", new Object[]{this.format}));
         }
-        if (this.method_36559(i, j)) {
-            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+        if (this.isOutOfBounds(x, y)) {
+            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
         this.checkAllocated();
-        long l = ((long)i + (long)j * (long)this.width) * (long)this.format.getChannelCount() + (long)(this.format.getLuminanceChannelOffset() / 8);
-        MemoryUtil.memPutByte(this.pointer + l, b);
+        long l = ((long)x + (long)y * (long)this.width) * (long)this.format.getChannelCount() + (long)(this.format.getLuminanceChannelOffset() / 8);
+        MemoryUtil.memPutByte(this.pointer + l, luminance);
     }
 
-    public byte method_35623(int i, int j) {
+    public byte getRed(int x, int y) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         if (!this.format.hasRedChannel()) {
             throw new IllegalArgumentException(String.format("no red or luminance in %s", new Object[]{this.format}));
         }
-        if (this.method_36559(i, j)) {
-            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+        if (this.isOutOfBounds(x, y)) {
+            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
-        int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getRedOrLuminanceOffset() / 8;
-        return MemoryUtil.memGetByte(this.pointer + (long)k);
+        int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getRedOrLuminanceOffset() / 8;
+        return MemoryUtil.memGetByte(this.pointer + (long)i);
     }
 
-    public byte method_35625(int i, int j) {
+    public byte getGreen(int x, int y) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         if (!this.format.hasGreenChannel()) {
             throw new IllegalArgumentException(String.format("no green or luminance in %s", new Object[]{this.format}));
         }
-        if (this.method_36559(i, j)) {
-            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+        if (this.isOutOfBounds(x, y)) {
+            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
-        int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getGreenOrLuminanceOffset() / 8;
-        return MemoryUtil.memGetByte(this.pointer + (long)k);
+        int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getGreenOrLuminanceOffset() / 8;
+        return MemoryUtil.memGetByte(this.pointer + (long)i);
     }
 
-    public byte method_35626(int i, int j) {
+    public byte getBlue(int x, int y) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         if (!this.format.hasBlueChannel()) {
             throw new IllegalArgumentException(String.format("no blue or luminance in %s", new Object[]{this.format}));
         }
-        if (this.method_36559(i, j)) {
-            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+        if (this.isOutOfBounds(x, y)) {
+            throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
-        int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getBlueOrLuminanceOffset() / 8;
-        return MemoryUtil.memGetByte(this.pointer + (long)k);
+        int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getBlueOrLuminanceOffset() / 8;
+        return MemoryUtil.memGetByte(this.pointer + (long)i);
     }
 
     public byte getPixelOpacity(int x, int y) {
         if (!this.format.hasOpacityChannel()) {
             throw new IllegalArgumentException(String.format("no luminance or alpha in %s", new Object[]{this.format}));
         }
-        if (this.method_36559(x, y)) {
+        if (this.isOutOfBounds(x, y)) {
             throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
         }
         int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getOpacityOffset() / 8;
         return MemoryUtil.memGetByte(this.pointer + (long)i);
     }
 
-    public void method_35624(int i, int j, int k) {
+    public void blendPixel(int x, int y, int color) {
         if (this.format != Format.ABGR) {
             throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
         }
-        int l = this.getPixelColor(i, j);
-        float f = (float)NativeImage.getAlpha(k) / 255.0f;
-        float g = (float)NativeImage.getBlue(k) / 255.0f;
-        float h = (float)NativeImage.getGreen(k) / 255.0f;
-        float m = (float)NativeImage.getRed(k) / 255.0f;
-        float n = (float)NativeImage.getAlpha(l) / 255.0f;
-        float o = (float)NativeImage.getBlue(l) / 255.0f;
-        float p = (float)NativeImage.getGreen(l) / 255.0f;
-        float q = (float)NativeImage.getRed(l) / 255.0f;
-        float r = f;
-        float s = 1.0f - f;
-        float t = f * r + n * s;
-        float u = g * r + o * s;
-        float v = h * r + p * s;
-        float w = m * r + q * s;
+        int i = this.getPixelColor(x, y);
+        float f = (float)NativeImage.getAlpha(color) / 255.0f;
+        float g = (float)NativeImage.getBlue(color) / 255.0f;
+        float h = (float)NativeImage.getGreen(color) / 255.0f;
+        float j = (float)NativeImage.getRed(color) / 255.0f;
+        float k = (float)NativeImage.getAlpha(i) / 255.0f;
+        float l = (float)NativeImage.getBlue(i) / 255.0f;
+        float m = (float)NativeImage.getGreen(i) / 255.0f;
+        float n = (float)NativeImage.getRed(i) / 255.0f;
+        float o = f;
+        float p = 1.0f - f;
+        float q = f * o + k * p;
+        float r = g * o + l * p;
+        float s = h * o + m * p;
+        float t = j * o + n * p;
+        if (q > 1.0f) {
+            q = 1.0f;
+        }
+        if (r > 1.0f) {
+            r = 1.0f;
+        }
+        if (s > 1.0f) {
+            s = 1.0f;
+        }
         if (t > 1.0f) {
             t = 1.0f;
         }
-        if (u > 1.0f) {
-            u = 1.0f;
-        }
-        if (v > 1.0f) {
-            v = 1.0f;
-        }
-        if (w > 1.0f) {
-            w = 1.0f;
-        }
-        int x = (int)(t * 255.0f);
-        int y = (int)(u * 255.0f);
-        int z = (int)(v * 255.0f);
-        int aa = (int)(w * 255.0f);
-        this.setPixelColor(i, j, NativeImage.getAbgrColor(x, y, z, aa));
+        int u = (int)(q * 255.0f);
+        int v = (int)(r * 255.0f);
+        int w = (int)(s * 255.0f);
+        int z = (int)(t * 255.0f);
+        this.setPixelColor(x, y, NativeImage.getAbgrColor(u, v, w, z));
     }
 
     @Deprecated

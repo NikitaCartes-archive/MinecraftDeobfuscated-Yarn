@@ -15,6 +15,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -53,7 +54,6 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
@@ -531,8 +531,8 @@ ServerPlayPacketListener {
     public void onPickFromInventory(PickFromInventoryC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         this.player.getInventory().swapSlotWithHotbar(packet.getSlot());
-        this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, this.player.getInventory().selectedSlot, this.player.getInventory().getStack(this.player.getInventory().selectedSlot)));
-        this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, packet.getSlot(), this.player.getInventory().getStack(packet.getSlot())));
+        this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, this.player.getInventory().selectedSlot, this.player.getInventory().getStack(this.player.getInventory().selectedSlot)));
+        this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, packet.getSlot(), this.player.getInventory().getStack(packet.getSlot())));
         this.player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(this.player.getInventory().selectedSlot));
     }
 
@@ -663,24 +663,11 @@ ServerPlayPacketListener {
         if (!PlayerInventory.isValidHotbarIndex(i) && i != 40) {
             return;
         }
-        ItemStack itemStack = packet.getBook();
-        if (!itemStack.isOf(Items.WRITABLE_BOOK)) {
-            return;
-        }
-        NbtCompound nbtCompound = itemStack.getTag();
-        if (!WritableBookItem.isValid(nbtCompound)) {
-            return;
-        }
         ArrayList<String> list2 = Lists.newArrayList();
-        boolean bl = packet.wasSigned();
-        if (bl) {
-            list2.add(nbtCompound.getString("title"));
-        }
-        NbtList nbtList = nbtCompound.getList("pages", 8);
-        for (int j = 0; j < nbtList.size(); ++j) {
-            list2.add(nbtList.getString(j));
-        }
-        this.filterTexts(list2, bl ? list -> this.addBook((TextStream.Message)list.get(0), list.subList(1, list.size()), i) : list -> this.updateBookContent((List<TextStream.Message>)list, i));
+        Optional<String> optional = packet.getTitle();
+        optional.ifPresent(list2::add);
+        packet.getPages().stream().limit(100L).forEach(list2::add);
+        this.filterTexts(list2, optional.isPresent() ? list -> this.addBook((TextStream.Message)list.get(0), list.subList(1, list.size()), i) : list -> this.updateBookContent((List<TextStream.Message>)list, i));
     }
 
     private void updateBookContent(List<TextStream.Message> pages, int slotId) {
@@ -1267,6 +1254,7 @@ ServerPlayPacketListener {
             if (this.player.isSpectator()) {
                 this.player.currentScreenHandler.syncState();
             } else {
+                boolean bl = packet.getRevision() != this.player.currentScreenHandler.getRevision();
                 this.player.currentScreenHandler.disableSyncing();
                 this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getButton(), packet.getActionType(), this.player);
                 for (Int2ObjectMap.Entry entry : Int2ObjectMaps.fastIterable(packet.getModifiedStacks())) {
@@ -1274,7 +1262,11 @@ ServerPlayPacketListener {
                 }
                 this.player.currentScreenHandler.setPreviousCursorStack(packet.getStack());
                 this.player.currentScreenHandler.enableSyncing();
-                this.player.currentScreenHandler.sendContentUpdates();
+                if (bl) {
+                    this.player.currentScreenHandler.updateToClient();
+                } else {
+                    this.player.currentScreenHandler.sendContentUpdates();
+                }
             }
         }
     }
@@ -1319,11 +1311,7 @@ ServerPlayPacketListener {
             boolean bl2 = packet.getSlot() >= 1 && packet.getSlot() <= 45;
             boolean bl4 = bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= 64 && !itemStack.isEmpty();
             if (bl2 && bl3) {
-                if (itemStack.isEmpty()) {
-                    this.player.playerScreenHandler.setStackInSlot(packet.getSlot(), ItemStack.EMPTY);
-                } else {
-                    this.player.playerScreenHandler.setStackInSlot(packet.getSlot(), itemStack);
-                }
+                this.player.playerScreenHandler.getSlot(packet.getSlot()).setStack(itemStack);
                 this.player.playerScreenHandler.sendContentUpdates();
             } else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
                 this.creativeItemDropThreshold += 20;

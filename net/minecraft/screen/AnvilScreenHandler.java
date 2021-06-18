@@ -79,20 +79,19 @@ extends ForgingScreenHandler {
             this.input.setStack(1, ItemStack.EMPTY);
         }
         this.levelCost.set(0);
-        this.context.run((world, blockPos) -> {
-            BlockState blockState = world.getBlockState((BlockPos)blockPos);
+        this.context.run((world, pos) -> {
+            BlockState blockState = world.getBlockState((BlockPos)pos);
             if (!playerEntity.getAbilities().creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12f) {
                 BlockState blockState2 = AnvilBlock.getLandingState(blockState);
                 if (blockState2 == null) {
-                    world.removeBlock((BlockPos)blockPos, false);
-                    world.syncWorldEvent(WorldEvents.ANVIL_DESTROYED, (BlockPos)blockPos, 0);
-                    player.getInventory().offerOrDrop(stack);
+                    world.removeBlock((BlockPos)pos, false);
+                    world.syncWorldEvent(WorldEvents.ANVIL_DESTROYED, (BlockPos)pos, 0);
                 } else {
-                    world.setBlockState((BlockPos)blockPos, blockState2, Block.NOTIFY_LISTENERS);
-                    world.syncWorldEvent(WorldEvents.ANVIL_USED, (BlockPos)blockPos, 0);
+                    world.setBlockState((BlockPos)pos, blockState2, Block.NOTIFY_LISTENERS);
+                    world.syncWorldEvent(WorldEvents.ANVIL_USED, (BlockPos)pos, 0);
                 }
             } else {
-                world.syncWorldEvent(WorldEvents.ANVIL_USED, (BlockPos)blockPos, 0);
+                world.syncWorldEvent(WorldEvents.ANVIL_USED, (BlockPos)pos, 0);
             }
         });
     }

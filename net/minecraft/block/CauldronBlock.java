@@ -18,6 +18,9 @@ import net.minecraft.world.event.GameEvent;
 
 public class CauldronBlock
 extends AbstractCauldronBlock {
+    private static final float FILL_WITH_RAIN_CHANCE = 0.05f;
+    private static final float FILL_WITH_SNOW_CHANCE = 0.1f;
+
     public CauldronBlock(AbstractBlock.Settings settings) {
         super(settings, CauldronBehavior.EMPTY_CAULDRON_BEHAVIOR);
     }
@@ -27,13 +30,19 @@ extends AbstractCauldronBlock {
         return false;
     }
 
-    protected static boolean canFillWithPrecipitation(World world) {
-        return world.random.nextInt(20) == 1;
+    protected static boolean canFillWithPrecipitation(World world, Biome.Precipitation precipitation) {
+        if (precipitation == Biome.Precipitation.RAIN) {
+            return world.getRandom().nextFloat() < 0.05f;
+        }
+        if (precipitation == Biome.Precipitation.SNOW) {
+            return world.getRandom().nextFloat() < 0.1f;
+        }
+        return false;
     }
 
     @Override
     public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
-        if (!CauldronBlock.canFillWithPrecipitation(world)) {
+        if (!CauldronBlock.canFillWithPrecipitation(world, precipitation)) {
             return;
         }
         if (precipitation == Biome.Precipitation.RAIN) {

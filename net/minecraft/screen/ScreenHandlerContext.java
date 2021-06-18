@@ -68,8 +68,8 @@ public interface ScreenHandlerContext {
      * if this context is active.
      */
     default public void run(BiConsumer<World, BlockPos> function) {
-        this.get((world, blockPos) -> {
-            function.accept((World)world, (BlockPos)blockPos);
+        this.get((world, pos) -> {
+            function.accept((World)world, (BlockPos)pos);
             return Optional.empty();
         });
     }

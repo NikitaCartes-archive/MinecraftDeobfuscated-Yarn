@@ -21,13 +21,13 @@ public class OpCommand {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("op").requires(source -> source.hasPermissionLevel(3))).then(CommandManager.argument("targets", GameProfileArgumentType.gameProfile()).suggests((context, builder) -> {
-            PlayerManager playerManager = ((ServerCommandSource)context.getSource()).getMinecraftServer().getPlayerManager();
+            PlayerManager playerManager = ((ServerCommandSource)context.getSource()).getServer().getPlayerManager();
             return CommandSource.suggestMatching(playerManager.getPlayerList().stream().filter(player -> !playerManager.isOperator(player.getGameProfile())).map(player -> player.getGameProfile().getName()), builder);
         }).executes(context -> OpCommand.op((ServerCommandSource)context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))));
     }
 
     private static int op(ServerCommandSource source, Collection<GameProfile> targets) throws CommandSyntaxException {
-        PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
+        PlayerManager playerManager = source.getServer().getPlayerManager();
         int i = 0;
         for (GameProfile gameProfile : targets) {
             if (playerManager.isOperator(gameProfile)) continue;

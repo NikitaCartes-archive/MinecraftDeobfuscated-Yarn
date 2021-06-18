@@ -11,6 +11,7 @@ import com.mojang.serialization.Dynamic;
 import io.netty.buffer.Unpooled;
 import java.io.File;
 import java.net.SocketAddress;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,6 +81,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -665,9 +667,10 @@ public abstract class PlayerManager {
         ServerStatHandler serverStatHandler2 = serverStatHandler = uUID == null ? null : this.statisticsMap.get(uUID);
         if (serverStatHandler == null) {
             File file3;
+            Path path;
             File file = this.server.getSavePath(WorldSavePath.STATS).toFile();
             File file2 = new File(file, uUID + ".json");
-            if (!file2.exists() && (file3 = new File(file, player.getName().getString() + ".json")).exists() && file3.isFile()) {
+            if (!file2.exists() && FileNameUtil.isNormal(path = (file3 = new File(file, player.getName().getString() + ".json")).toPath()) && FileNameUtil.isAllowedName(path) && path.startsWith(file.getPath()) && file3.isFile()) {
                 file3.renameTo(file2);
             }
             serverStatHandler = new ServerStatHandler(this.server, file2);

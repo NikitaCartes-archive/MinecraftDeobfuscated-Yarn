@@ -117,14 +117,14 @@ public class EntitySelector {
             return this.getPlayers(serverCommandSource);
         }
         if (this.playerName != null) {
-            ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
+            ServerPlayerEntity serverPlayerEntity = serverCommandSource.getServer().getPlayerManager().getPlayer(this.playerName);
             if (serverPlayerEntity == null) {
                 return Collections.emptyList();
             }
             return Lists.newArrayList(serverPlayerEntity);
         }
         if (this.uuid != null) {
-            for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
+            for (ServerWorld serverWorld : serverCommandSource.getServer().getWorlds()) {
                 Entity entity = serverWorld.getEntity(this.uuid);
                 if (entity == null) continue;
                 return Lists.newArrayList(entity);
@@ -143,7 +143,7 @@ public class EntitySelector {
         if (this.isLocalWorldOnly()) {
             this.appendEntitiesFromWorld(list, serverCommandSource.getWorld(), vec3d, predicate);
         } else {
-            for (ServerWorld serverWorld2 : serverCommandSource.getMinecraftServer().getWorlds()) {
+            for (ServerWorld serverWorld2 : serverCommandSource.getServer().getWorlds()) {
                 this.appendEntitiesFromWorld(list, serverWorld2, vec3d, predicate);
             }
         }
@@ -171,14 +171,14 @@ public class EntitySelector {
         List<Object> list;
         this.checkSourcePermission(serverCommandSource);
         if (this.playerName != null) {
-            ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
+            ServerPlayerEntity serverPlayerEntity = serverCommandSource.getServer().getPlayerManager().getPlayer(this.playerName);
             if (serverPlayerEntity == null) {
                 return Collections.emptyList();
             }
             return Lists.newArrayList(serverPlayerEntity);
         }
         if (this.uuid != null) {
-            ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.uuid);
+            ServerPlayerEntity serverPlayerEntity = serverCommandSource.getServer().getPlayerManager().getPlayer(this.uuid);
             if (serverPlayerEntity == null) {
                 return Collections.emptyList();
             }
@@ -197,7 +197,7 @@ public class EntitySelector {
             list = serverCommandSource.getWorld().getPlayers(predicate);
         } else {
             list = Lists.newArrayList();
-            for (ServerPlayerEntity serverPlayerEntity3 : serverCommandSource.getMinecraftServer().getPlayerManager().getPlayerList()) {
+            for (ServerPlayerEntity serverPlayerEntity3 : serverCommandSource.getServer().getPlayerManager().getPlayerList()) {
                 if (!predicate.test(serverPlayerEntity3)) continue;
                 list.add(serverPlayerEntity3);
             }

@@ -91,7 +91,7 @@ extends Screen {
                     inetSocketAddress = optional.get();
                     ConnectScreen.this.connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
                     ConnectScreen.this.connection.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, ConnectScreen.this.parent, ConnectScreen.this::setStatus));
-                    ConnectScreen.this.connection.send(new HandshakeC2SPacket(address.getAddress(), address.getPort(), NetworkState.LOGIN));
+                    ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
                     ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getProfile()));
                 } catch (Exception exception) {
                     if (ConnectScreen.this.connectingCancelled) {

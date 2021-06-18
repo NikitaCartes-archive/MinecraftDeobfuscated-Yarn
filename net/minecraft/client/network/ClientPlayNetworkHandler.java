@@ -939,9 +939,9 @@ implements ClientPlayPacketListener {
                 if (!itemStack.isEmpty() && ((itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack()).isEmpty() || itemStack2.getCount() < itemStack.getCount())) {
                     itemStack.setCooldown(5);
                 }
-                playerEntity.playerScreenHandler.setStackInSlot(i, itemStack);
+                playerEntity.playerScreenHandler.setStackInSlot(i, packet.getRevision(), itemStack);
             } else if (!(packet.getSyncId() != playerEntity.currentScreenHandler.syncId || packet.getSyncId() == 0 && bl)) {
-                playerEntity.currentScreenHandler.setStackInSlot(i, itemStack);
+                playerEntity.currentScreenHandler.setStackInSlot(i, packet.getRevision(), itemStack);
             }
         }
     }
@@ -951,9 +951,9 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ClientPlayerEntity playerEntity = this.client.player;
         if (packet.getSyncId() == 0) {
-            playerEntity.playerScreenHandler.updateSlotStacks(packet.getContents());
+            playerEntity.playerScreenHandler.updateSlotStacks(packet.getRevision(), packet.getContents(), packet.getCursorStack());
         } else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId) {
-            playerEntity.currentScreenHandler.updateSlotStacks(packet.getContents());
+            playerEntity.currentScreenHandler.updateSlotStacks(packet.getRevision(), packet.getContents(), packet.getCursorStack());
         }
     }
 
@@ -1622,7 +1622,7 @@ implements ClientPlayPacketListener {
                     list.add(new BlockBox(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt()));
                     list2.add(packetByteBuf.readBoolean());
                 }
-                this.client.debugRenderer.structureDebugRenderer.method_3871(blockBox, list, list2, dimensionType);
+                this.client.debugRenderer.structureDebugRenderer.addStructure(blockBox, list, list2, dimensionType);
             } else if (CustomPayloadS2CPacket.DEBUG_WORLDGEN_ATTEMPT.equals(identifier)) {
                 ((WorldGenAttemptDebugRenderer)this.client.debugRenderer.worldGenAttemptDebugRenderer).method_3872(packetByteBuf.readBlockPos(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
             } else if (CustomPayloadS2CPacket.DEBUG_VILLAGE_SECTIONS.equals(identifier)) {
@@ -1692,17 +1692,17 @@ implements ClientPlayPacketListener {
                 int r = packetByteBuf.readVarInt();
                 for (s = 0; s < r; ++s) {
                     String string6 = packetByteBuf.readString();
-                    brain.field_18927.add(string6);
+                    brain.possibleActivities.add(string6);
                 }
                 s = packetByteBuf.readVarInt();
                 for (t = 0; t < s; ++t) {
                     String string7 = packetByteBuf.readString();
-                    brain.field_18928.add(string7);
+                    brain.runningTasks.add(string7);
                 }
                 t = packetByteBuf.readVarInt();
                 for (u = 0; u < t; ++u) {
                     String string8 = packetByteBuf.readString();
-                    brain.field_19374.add(string8);
+                    brain.memories.add(string8);
                 }
                 u = packetByteBuf.readVarInt();
                 for (v = 0; v < u; ++v) {
@@ -1712,12 +1712,12 @@ implements ClientPlayPacketListener {
                 v = packetByteBuf.readVarInt();
                 for (w = 0; w < v; ++w) {
                     BlockPos blockPos4 = packetByteBuf.readBlockPos();
-                    brain.field_25287.add(blockPos4);
+                    brain.potentialJobSites.add(blockPos4);
                 }
                 w = packetByteBuf.readVarInt();
                 for (int x = 0; x < w; ++x) {
                     String string9 = packetByteBuf.readString();
-                    brain.field_19375.add(string9);
+                    brain.gossips.add(string9);
                 }
                 this.client.debugRenderer.villageDebugRenderer.addBrain(brain);
             } else if (CustomPayloadS2CPacket.DEBUG_BEE.equals(identifier)) {

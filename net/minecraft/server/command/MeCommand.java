@@ -24,7 +24,7 @@ public class MeCommand {
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("me").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("action", StringArgumentType.greedyString()).executes(context -> {
             String string = StringArgumentType.getString(context, "action");
             Entity entity = ((ServerCommandSource)context.getSource()).getEntity();
-            MinecraftServer minecraftServer = ((ServerCommandSource)context.getSource()).getMinecraftServer();
+            MinecraftServer minecraftServer = ((ServerCommandSource)context.getSource()).getServer();
             if (entity != null) {
                 if (entity instanceof ServerPlayerEntity) {
                     ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;

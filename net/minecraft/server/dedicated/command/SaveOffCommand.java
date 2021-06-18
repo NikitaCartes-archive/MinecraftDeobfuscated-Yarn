@@ -18,7 +18,7 @@ public class SaveOffCommand {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("save-off").requires(source -> source.hasPermissionLevel(4))).executes(context -> {
             ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
             boolean bl = false;
-            for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
+            for (ServerWorld serverWorld : serverCommandSource.getServer().getWorlds()) {
                 if (serverWorld == null || serverWorld.savingDisabled) continue;
                 serverWorld.savingDisabled = true;
                 bl = true;

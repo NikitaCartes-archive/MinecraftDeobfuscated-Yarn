@@ -44,7 +44,7 @@ implements AutoCloseable {
     }
 
     public ResourcePackManager(ResourceType type, ResourcePackProvider ... providers) {
-        this((String string, Text text, boolean bl, Supplier<ResourcePack> supplier, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) -> new ResourcePackProfile(string, text, bl, supplier, packResourceMetadata, type, insertionPosition, resourcePackSource), providers);
+        this((String name, Text displayName, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, PackResourceMetadata metadata, ResourcePackProfile.InsertionPosition direction, ResourcePackSource source) -> new ResourcePackProfile(name, displayName, alwaysEnabled, packFactory, metadata, type, direction, source), providers);
     }
 
     public void scanPacks() {
@@ -57,7 +57,7 @@ implements AutoCloseable {
     private Map<String, ResourcePackProfile> providePackProfiles() {
         TreeMap map = Maps.newTreeMap();
         for (ResourcePackProvider resourcePackProvider : this.providers) {
-            resourcePackProvider.register(resourcePackProfile -> map.put(resourcePackProfile.getName(), resourcePackProfile), this.profileFactory);
+            resourcePackProvider.register(profile -> map.put(profile.getName(), profile), this.profileFactory);
         }
         return ImmutableMap.copyOf(map);
     }

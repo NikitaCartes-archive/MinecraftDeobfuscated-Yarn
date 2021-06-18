@@ -173,6 +173,7 @@ implements DedicatedServer {
         long l = Util.getMeasuringTimeNano();
         SkullBlockEntity.setUserCache(this.getUserCache());
         SkullBlockEntity.setSessionService(this.getSessionService());
+        SkullBlockEntity.setExecutor(this);
         UserCache.setUseRemote(this.isOnlineMode());
         LOGGER.info("Preparing level \"{}\"", (Object)this.getLevelName());
         this.loadWorld();
@@ -259,16 +260,16 @@ implements DedicatedServer {
     }
 
     @Override
-    public SystemDetails populateCrashReport(SystemDetails systemDetails) {
-        systemDetails.addSection("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
-        systemDetails.addSection("Type", () -> "Dedicated Server (map_server.txt)");
-        return systemDetails;
+    public SystemDetails addExtraSystemDetails(SystemDetails details) {
+        details.addSection("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
+        details.addSection("Type", () -> "Dedicated Server (map_server.txt)");
+        return details;
     }
 
     @Override
-    public void method_37113(Path path) throws IOException {
+    public void dumpProperties(Path file) throws IOException {
         ServerPropertiesHandler serverPropertiesHandler = this.getProperties();
-        try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
+        try (BufferedWriter writer = Files.newBufferedWriter(file, new OpenOption[0]);){
             writer.write(String.format("sync-chunk-writes=%s%n", serverPropertiesHandler.syncChunkWrites));
             writer.write(String.format("gamemode=%s%n", new Object[]{serverPropertiesHandler.gameMode}));
             writer.write(String.format("spawn-monsters=%s%n", serverPropertiesHandler.spawnMonsters));

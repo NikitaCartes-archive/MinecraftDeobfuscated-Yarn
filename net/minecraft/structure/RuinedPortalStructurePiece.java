@@ -120,10 +120,11 @@ extends SimpleStructurePiece {
 
     @Override
     public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-        if (!boundingBox.contains(this.pos)) {
+        BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
+        if (!boundingBox.contains(blockBox.getCenter())) {
             return true;
         }
-        boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
+        boundingBox.encompass(blockBox);
         boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
         this.placeNetherrackBase(random, world);
         this.updateNetherracksInBound(random, world);

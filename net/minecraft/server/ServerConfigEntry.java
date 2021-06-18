@@ -23,6 +23,6 @@ public abstract class ServerConfigEntry<T> {
         return false;
     }
 
-    protected abstract void fromJson(JsonObject var1);
+    protected abstract void write(JsonObject var1);
 }
 

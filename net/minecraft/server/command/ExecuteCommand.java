@@ -83,7 +83,7 @@ public class ExecuteCommand {
         resultConsumer2.onCommandComplete(context, success, result);
     };
     private static final SuggestionProvider<ServerCommandSource> LOOT_CONDITIONS = (context, builder) -> {
-        LootConditionManager lootConditionManager = ((ServerCommandSource)context.getSource()).getMinecraftServer().getPredicateManager();
+        LootConditionManager lootConditionManager = ((ServerCommandSource)context.getSource()).getServer().getPredicateManager();
         return CommandSource.suggestIdentifiers(lootConditionManager.getIds(), builder);
     };
 
@@ -133,7 +133,7 @@ public class ExecuteCommand {
     }
 
     private static ServerCommandSource executeStoreScore(ServerCommandSource source, Collection<String> targets, ScoreboardObjective objective, boolean requestResult) {
-        ServerScoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+        ServerScoreboard scoreboard = source.getServer().getScoreboard();
         return source.mergeConsumers((context, success, result) -> {
             for (String string : targets) {
                 ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
@@ -206,7 +206,7 @@ public class ExecuteCommand {
         ScoreboardObjective scoreboardObjective = ScoreboardObjectiveArgumentType.getObjective(context, "targetObjective");
         String string2 = ScoreHolderArgumentType.getScoreHolder(context, "source");
         ScoreboardObjective scoreboardObjective2 = ScoreboardObjectiveArgumentType.getObjective(context, "sourceObjective");
-        ServerScoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
+        ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
         if (!scoreboard.playerHasObjective(string, scoreboardObjective) || !scoreboard.playerHasObjective(string2, scoreboardObjective2)) {
             return false;
         }
@@ -218,7 +218,7 @@ public class ExecuteCommand {
     private static boolean testScoreMatch(CommandContext<ServerCommandSource> context, NumberRange.IntRange range) throws CommandSyntaxException {
         String string = ScoreHolderArgumentType.getScoreHolder(context, "target");
         ScoreboardObjective scoreboardObjective = ScoreboardObjectiveArgumentType.getObjective(context, "targetObjective");
-        ServerScoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
+        ServerScoreboard scoreboard = context.getSource().getServer().getScoreboard();
         if (!scoreboard.playerHasObjective(string, scoreboardObjective)) {
             return false;
         }

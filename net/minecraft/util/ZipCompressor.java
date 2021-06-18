@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.util.profiler;
+package net.minecraft.util;
 
 import com.google.common.collect.ImmutableMap;
 import java.io.Closeable;

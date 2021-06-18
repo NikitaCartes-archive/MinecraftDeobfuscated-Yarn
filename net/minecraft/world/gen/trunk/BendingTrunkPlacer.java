@@ -27,7 +27,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public class BendingTrunkPlacer
 extends TrunkPlacer {
-    public static final Codec<BendingTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> BendingTrunkPlacer.fillTrunkPlacerFields(instance).and(instance.group(Codecs.field_33442.optionalFieldOf("min_height_for_leaves", 1).forGetter(placer -> placer.minHeightForLeaves), ((MapCodec)IntProvider.createValidatingCodec(1, 64).fieldOf("bend_length")).forGetter(placer -> placer.bendLength))).apply((Applicative<BendingTrunkPlacer, ?>)instance, BendingTrunkPlacer::new));
+    public static final Codec<BendingTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> BendingTrunkPlacer.fillTrunkPlacerFields(instance).and(instance.group(Codecs.POSITIVE_INT.optionalFieldOf("min_height_for_leaves", 1).forGetter(placer -> placer.minHeightForLeaves), ((MapCodec)IntProvider.createValidatingCodec(1, 64).fieldOf("bend_length")).forGetter(placer -> placer.bendLength))).apply((Applicative<BendingTrunkPlacer, ?>)instance, BendingTrunkPlacer::new));
     private final int minHeightForLeaves;
     private final IntProvider bendLength;
 

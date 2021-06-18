@@ -83,10 +83,10 @@ extends ScreenHandler {
                 ((Slot)CartographyTableScreenHandler.this.slots.get(0)).takeStack(1);
                 ((Slot)CartographyTableScreenHandler.this.slots.get(1)).takeStack(1);
                 stack.getItem().onCraft(stack, player.world, player);
-                context.run((world, blockPos) -> {
+                context.run((world, pos) -> {
                     long l = world.getTime();
                     if (CartographyTableScreenHandler.this.lastTakeResultTime != l) {
-                        world.playSound(null, (BlockPos)blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                        world.playSound(null, (BlockPos)pos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f);
                         CartographyTableScreenHandler.this.lastTakeResultTime = l;
                     }
                 });
@@ -121,7 +121,7 @@ extends ScreenHandler {
     }
 
     private void updateResult(ItemStack map, ItemStack item, ItemStack oldResult) {
-        this.context.run((world, blockPos) -> {
+        this.context.run((world, pos) -> {
             ItemStack itemStack4;
             MapState mapState = FilledMapItem.getOrCreateMapState(map, world);
             if (mapState == null) {
@@ -188,10 +188,10 @@ extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
+    public void close(PlayerEntity player) {
+        super.close(player);
         this.resultInventory.removeStack(2);
-        this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.inventory));
+        this.context.run((world, pos) -> this.dropInventory(player, this.inventory));
     }
 }
 

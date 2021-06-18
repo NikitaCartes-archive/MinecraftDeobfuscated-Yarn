@@ -37,6 +37,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.sound.BlockSoundGroup;
@@ -347,14 +348,15 @@ public class ClientPlayerInteractionManager {
     /**
      * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int, net.minecraft.screen.slot.SlotActionType, net.minecraft.entity.player.PlayerEntity)
      */
-    public void clickSlot(int syncId, int slotId, int button, SlotActionType actionType, PlayerEntity playerEntity) {
-        DefaultedList<Slot> defaultedList = playerEntity.currentScreenHandler.slots;
+    public void clickSlot(int syncId, int slotId, int button, SlotActionType actionType, PlayerEntity player) {
+        ScreenHandler screenHandler = player.currentScreenHandler;
+        DefaultedList<Slot> defaultedList = screenHandler.slots;
         int i = defaultedList.size();
         ArrayList<ItemStack> list = Lists.newArrayListWithCapacity(i);
         for (Slot slot : defaultedList) {
             list.add(slot.getStack().copy());
         }
-        playerEntity.currentScreenHandler.onSlotClick(slotId, button, actionType, playerEntity);
+        screenHandler.onSlotClick(slotId, button, actionType, player);
         Int2ObjectOpenHashMap<ItemStack> int2ObjectMap = new Int2ObjectOpenHashMap<ItemStack>();
         for (int j = 0; j < i; ++j) {
             ItemStack itemStack2;
@@ -362,7 +364,7 @@ public class ClientPlayerInteractionManager {
             if (ItemStack.areEqual(itemStack, itemStack2 = defaultedList.get(j).getStack())) continue;
             int2ObjectMap.put(j, itemStack2.copy());
         }
-        this.networkHandler.sendPacket(new ClickSlotC2SPacket(syncId, slotId, button, actionType, playerEntity.currentScreenHandler.getCursorStack().copy(), int2ObjectMap));
+        this.networkHandler.sendPacket(new ClickSlotC2SPacket(syncId, screenHandler.getRevision(), slotId, button, actionType, screenHandler.getCursorStack().copy(), int2ObjectMap));
     }
 
     public void clickRecipe(int syncId, Recipe<?> recipe, boolean craftAll) {

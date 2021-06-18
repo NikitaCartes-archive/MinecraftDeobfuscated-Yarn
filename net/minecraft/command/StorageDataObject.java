@@ -46,7 +46,7 @@ implements DataCommandObject {
     private final Identifier id;
 
     static DataCommandStorage of(CommandContext<ServerCommandSource> commandContext) {
-        return commandContext.getSource().getMinecraftServer().getDataCommandStorage();
+        return commandContext.getSource().getServer().getDataCommandStorage();
     }
 
     StorageDataObject(DataCommandStorage dataCommandStorage, Identifier identifier) {

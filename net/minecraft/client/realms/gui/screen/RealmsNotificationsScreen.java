@@ -43,11 +43,11 @@ extends RealmsScreen {
 
     @Override
     public void tick() {
-        if (!(this.method_25169() && this.method_25170() && validClient || REALMS_DATA_FETCHER.isStopped())) {
+        if (!(this.shouldShowNotifications() && this.isTitleScreen() && validClient || REALMS_DATA_FETCHER.isStopped())) {
             REALMS_DATA_FETCHER.stop();
             return;
         }
-        if (!validClient || !this.method_25169()) {
+        if (!validClient || !this.shouldShowNotifications()) {
             return;
         }
         REALMS_DATA_FETCHER.initWithSpecificTaskList();
@@ -63,11 +63,11 @@ extends RealmsScreen {
         REALMS_DATA_FETCHER.markClean();
     }
 
-    private boolean method_25169() {
+    private boolean shouldShowNotifications() {
         return this.client.options.realmsNotifications;
     }
 
-    private boolean method_25170() {
+    private boolean isTitleScreen() {
         return this.client.currentScreen instanceof TitleScreen;
     }
 

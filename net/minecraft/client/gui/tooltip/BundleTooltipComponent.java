@@ -71,7 +71,7 @@ implements TooltipComponent {
         itemRenderer.renderInGuiWithOverrides(itemStack, x + 1, y + 1, index);
         itemRenderer.renderGuiItemOverlay(textRenderer, itemStack, x + 1, y + 1);
         if (index == 0) {
-            HandledScreen.method_33285(matrices, x + 1, y + 1, z);
+            HandledScreen.drawSlotHighlight(matrices, x + 1, y + 1, z);
         }
     }
 

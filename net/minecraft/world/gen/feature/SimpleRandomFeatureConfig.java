@@ -14,7 +14,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class SimpleRandomFeatureConfig
 implements FeatureConfig {
-    public static final Codec<SimpleRandomFeatureConfig> CODEC = ((MapCodec)Codecs.method_36973(ConfiguredFeature.field_26756).fieldOf("features")).xmap(SimpleRandomFeatureConfig::new, simpleRandomFeatureConfig -> simpleRandomFeatureConfig.features).codec();
+    public static final Codec<SimpleRandomFeatureConfig> CODEC = ((MapCodec)Codecs.nonEmptyList(ConfiguredFeature.field_26756).fieldOf("features")).xmap(SimpleRandomFeatureConfig::new, simpleRandomFeatureConfig -> simpleRandomFeatureConfig.features).codec();
     public final List<Supplier<ConfiguredFeature<?, ?>>> features;
 
     public SimpleRandomFeatureConfig(List<Supplier<ConfiguredFeature<?, ?>>> features) {

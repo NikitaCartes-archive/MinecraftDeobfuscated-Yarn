@@ -6,11 +6,11 @@ package net.minecraft.util.profiler;
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import java.util.function.Supplier;
-import net.minecraft.client.util.profiler.SamplingChannel;
 import net.minecraft.util.profiler.EmptyProfileResult;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerSystem;
 import net.minecraft.util.profiler.ReadableProfiler;
+import net.minecraft.util.profiler.SampleType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +38,7 @@ implements ReadableProfiler {
     }
 
     @Override
-    public void method_37167(SamplingChannel samplingChannel) {
+    public void markSampleType(SampleType type) {
     }
 
     @Override
@@ -73,7 +73,7 @@ implements ReadableProfiler {
     }
 
     @Override
-    public Set<Pair<String, SamplingChannel>> method_37168() {
+    public Set<Pair<String, SampleType>> getSampleTargets() {
         return ImmutableSet.of();
     }
 }

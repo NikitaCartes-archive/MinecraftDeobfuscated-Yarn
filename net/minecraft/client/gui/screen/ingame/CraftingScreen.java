@@ -50,8 +50,8 @@ implements RecipeBookProvider {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void handledScreenTick() {
+        super.handledScreenTick();
         this.recipeBook.update();
     }
 

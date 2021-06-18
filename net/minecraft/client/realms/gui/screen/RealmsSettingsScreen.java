@@ -20,7 +20,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public class RealmsSettingsScreen
 extends RealmsScreen {
-    private static final int field_32124 = 212;
+    private static final int TEXT_FIELD_WIDTH = 212;
     private static final Text WORLD_NAME_TEXT = new TranslatableText("mco.configure.world.name");
     private static final Text WORLD_DESCRIPTION_TEXT = new TranslatableText("mco.configure.world.description");
     private final RealmsConfigureWorldScreen parent;
@@ -53,8 +53,8 @@ extends RealmsScreen {
             if (this.serverData.state == RealmsServer.State.OPEN) {
                 TranslatableText text = new TranslatableText("mco.configure.world.close.question.line1");
                 TranslatableText text2 = new TranslatableText("mco.configure.world.close.question.line2");
-                this.client.openScreen(new RealmsLongConfirmationScreen(bl -> {
-                    if (bl) {
+                this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+                    if (confirmed) {
                         this.parent.closeTheWorld(this);
                     } else {
                         this.client.openScreen(this);

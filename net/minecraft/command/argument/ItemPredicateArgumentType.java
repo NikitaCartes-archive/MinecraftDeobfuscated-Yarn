@@ -45,7 +45,7 @@ implements ArgumentType<ItemPredicateArgument> {
         }
         Identifier identifier = itemStringReader.getId();
         return commandContext -> {
-            Tag<Item> tag = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getTagManager().getTag(Registry.ITEM_KEY, identifier, identifier -> UNKNOWN_TAG_EXCEPTION.create(identifier.toString()));
+            Tag<Item> tag = ((ServerCommandSource)commandContext.getSource()).getServer().getTagManager().getTag(Registry.ITEM_KEY, identifier, identifier -> UNKNOWN_TAG_EXCEPTION.create(identifier.toString()));
             return new TagPredicate(tag, itemStringReader.getNbt());
         };
     }

@@ -100,10 +100,10 @@ extends ScreenHandler {
                 if (!LoomScreenHandler.this.bannerSlot.hasStack() || !LoomScreenHandler.this.dyeSlot.hasStack()) {
                     LoomScreenHandler.this.selectedPattern.set(0);
                 }
-                context.run((world, blockPos) -> {
+                context.run((world, pos) -> {
                     long l = world.getTime();
                     if (LoomScreenHandler.this.lastTakeResultTime != l) {
-                        world.playSound(null, (BlockPos)blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                        world.playSound(null, (BlockPos)pos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0f, 1.0f);
                         LoomScreenHandler.this.lastTakeResultTime = l;
                     }
                 });
@@ -196,9 +196,9 @@ extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
-        this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.input));
+    public void close(PlayerEntity player) {
+        super.close(player);
+        this.context.run((world, pos) -> this.dropInventory(player, this.input));
     }
 
     private void updateOutputSlot() {

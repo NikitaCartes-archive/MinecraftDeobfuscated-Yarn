@@ -14,13 +14,13 @@ public class SpruceSaplingGenerator
 extends LargeTreeSaplingGenerator {
     @Override
     @Nullable
-    protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bees) {
+    protected ConfiguredFeature<TreeFeatureConfig, ?> getTreeFeature(Random random, boolean bees) {
         return ConfiguredFeatures.SPRUCE;
     }
 
     @Override
     @Nullable
-    protected ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random random) {
+    protected ConfiguredFeature<TreeFeatureConfig, ?> getLargeTreeFeature(Random random) {
         return random.nextBoolean() ? ConfiguredFeatures.MEGA_SPRUCE : ConfiguredFeatures.MEGA_PINE;
     }
 }

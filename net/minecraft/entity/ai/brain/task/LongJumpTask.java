@@ -98,7 +98,10 @@ extends Task<E> {
             if (l - this.targetTime >= 40L) {
                 ((Entity)mobEntity).setYaw(((MobEntity)mobEntity).bodyYaw);
                 ((LivingEntity)mobEntity).setNoDrag(true);
-                ((Entity)mobEntity).setVelocity(this.lastTarget.get().getRammingVelocity());
+                Vec3d vec3d = this.lastTarget.get().getRammingVelocity();
+                double d = vec3d.length();
+                double e = d + ((LivingEntity)mobEntity).getJumpBoostVelocityModifier();
+                ((Entity)mobEntity).setVelocity(vec3d.multiply(e / d));
                 ((LivingEntity)mobEntity).getBrain().remember(MemoryModuleType.LONG_JUMP_MID_JUMP, true);
                 serverWorld.playSoundFromEntity(null, (Entity)mobEntity, this.field_33460.apply(mobEntity), SoundCategory.NEUTRAL, 1.0f, 1.0f);
             }

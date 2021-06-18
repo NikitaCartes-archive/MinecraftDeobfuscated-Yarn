@@ -131,13 +131,13 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
+    public void close(PlayerEntity player) {
+        super.close(player);
         this.craftingResult.clear();
-        if (playerEntity.world.isClient) {
+        if (player.world.isClient) {
             return;
         }
-        this.dropInventory(playerEntity, this.craftingInput);
+        this.dropInventory(player, this.craftingInput);
     }
 
     @Override

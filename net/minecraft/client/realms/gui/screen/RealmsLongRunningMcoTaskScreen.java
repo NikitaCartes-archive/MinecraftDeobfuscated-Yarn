@@ -27,7 +27,7 @@ import org.lwjgl.glfw.GLFW;
 public class RealmsLongRunningMcoTaskScreen
 extends RealmsScreen
 implements Errable {
-    private static final RepeatedNarrator field_33779 = new RepeatedNarrator(Duration.ofSeconds(5L));
+    private static final RepeatedNarrator NARRATOR = new RepeatedNarrator(Duration.ofSeconds(5L));
     private static final Logger LOGGER = LogManager.getLogger();
     private final Screen parent;
     private volatile Text title = LiteralText.EMPTY;
@@ -37,7 +37,7 @@ implements Errable {
     private int animTicks;
     private final LongRunningTask task;
     private final int buttonLength = 212;
-    private ButtonWidget field_33778;
+    private ButtonWidget cancelButton;
     public static final String[] symbols = new String[]{"\u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583", "_ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584", "_ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585", "_ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586", "_ _ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587", "_ _ _ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588", "_ _ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587", "_ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586", "_ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585", "_ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584", "\u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583", "\u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _", "\u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _", "\u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _", "\u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _ _", "\u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _ _ _", "\u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _ _", "\u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _", "\u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _", "\u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _"};
 
     public RealmsLongRunningMcoTaskScreen(Screen parent, LongRunningTask task) {
@@ -53,7 +53,7 @@ implements Errable {
     @Override
     public void tick() {
         super.tick();
-        field_33779.narrate(this.title);
+        NARRATOR.narrate(this.title);
         ++this.animTicks;
         this.task.tick();
     }
@@ -70,7 +70,7 @@ implements Errable {
     @Override
     public void init() {
         this.task.init();
-        this.field_33778 = this.addDrawableChild(new ButtonWidget(this.width / 2 - 106, RealmsLongRunningMcoTaskScreen.row(12), 212, 20, ScreenTexts.CANCEL, button -> this.cancelOrBackButtonClicked()));
+        this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 106, RealmsLongRunningMcoTaskScreen.row(12), 212, 20, ScreenTexts.CANCEL, button -> this.cancelOrBackButtonClicked()));
     }
 
     private void cancelOrBackButtonClicked() {
@@ -97,8 +97,8 @@ implements Errable {
         this.errorMessage = errorMessage;
         NarratorManager.INSTANCE.narrate(errorMessage);
         this.client.execute(() -> {
-            this.remove(this.field_33778);
-            this.field_33778 = this.addDrawableChild(new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked()));
+            this.remove(this.cancelButton);
+            this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked()));
         });
     }
 

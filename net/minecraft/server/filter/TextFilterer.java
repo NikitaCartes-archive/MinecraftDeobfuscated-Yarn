@@ -54,7 +54,7 @@ implements AutoCloseable {
     final HashIgnorer ignorer;
     final ExecutorService executor;
 
-    private TextFilterer(URI apiUrl, String apiKey, int ruleId, String serverId, HashIgnorer ignorer, int i) throws MalformedURLException {
+    private TextFilterer(URI apiUrl, String apiKey, int ruleId, String serverId, HashIgnorer ignorer, int threadsNumber) throws MalformedURLException {
         this.apiKey = apiKey;
         this.ruleId = ruleId;
         this.serverId = serverId;
@@ -62,7 +62,7 @@ implements AutoCloseable {
         this.chatEndpoint = apiUrl.resolve("/v1/chat").toURL();
         this.joinEndpoint = apiUrl.resolve("/v1/join").toURL();
         this.leaveEndpoint = apiUrl.resolve("/v1/leave").toURL();
-        this.executor = Executors.newFixedThreadPool(i, THREAD_FACTORY);
+        this.executor = Executors.newFixedThreadPool(threadsNumber, THREAD_FACTORY);
     }
 
     @Nullable
@@ -204,11 +204,11 @@ implements AutoCloseable {
 
     @FunctionalInterface
     public static interface HashIgnorer {
-        public static final HashIgnorer NEVER_IGNORE = (string, i) -> false;
-        public static final HashIgnorer IGNORE_IF_MATCHES_ALL = (string, i) -> string.length() == i;
+        public static final HashIgnorer NEVER_IGNORE = (hashes, hashesSize) -> false;
+        public static final HashIgnorer IGNORE_IF_MATCHES_ALL = (hashes, hashesSize) -> hashes.length() == hashesSize;
 
         public static HashIgnorer internalDropHashes(int hashesToDrop) {
-            return (string, j) -> j >= hashesToDrop;
+            return (hashes, hashesSize) -> hashesSize >= hashesToDrop;
         }
 
         public static HashIgnorer dropHashes(int hashesToDrop) {

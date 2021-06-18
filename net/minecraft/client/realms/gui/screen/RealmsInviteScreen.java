@@ -29,7 +29,7 @@ extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Text INVITE_PROFILE_NAME_TEXT = new TranslatableText("mco.configure.world.invite.profile.name");
     private static final Text PLAYER_ERROR_TEXT = new TranslatableText("mco.configure.world.players.error");
-    private TextFieldWidget field_22696;
+    private TextFieldWidget nameWidget;
     private final RealmsServer serverData;
     private final RealmsConfigureWorldScreen configureScreen;
     private final Screen parent;
@@ -45,15 +45,15 @@ extends RealmsScreen {
 
     @Override
     public void tick() {
-        this.field_22696.tick();
+        this.nameWidget.tick();
     }
 
     @Override
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.field_22696 = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, RealmsInviteScreen.row(2), 200, 20, null, new TranslatableText("mco.configure.world.invite.profile.name"));
-        this.addSelectableChild(this.field_22696);
-        this.setInitialFocus(this.field_22696);
+        this.nameWidget = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, RealmsInviteScreen.row(2), 200, 20, null, new TranslatableText("mco.configure.world.invite.profile.name"));
+        this.addSelectableChild(this.nameWidget);
+        this.setInitialFocus(this.nameWidget);
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsInviteScreen.row(10), 200, 20, new TranslatableText("mco.configure.world.buttons.invite"), button -> this.onInvite()));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsInviteScreen.row(12), 200, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
     }
@@ -65,12 +65,12 @@ extends RealmsScreen {
 
     private void onInvite() {
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
-        if (this.field_22696.getText() == null || this.field_22696.getText().isEmpty()) {
+        if (this.nameWidget.getText() == null || this.nameWidget.getText().isEmpty()) {
             this.showError(PLAYER_ERROR_TEXT);
             return;
         }
         try {
-            RealmsServer realmsServer = realmsClient.invite(this.serverData.id, this.field_22696.getText().trim());
+            RealmsServer realmsServer = realmsClient.invite(this.serverData.id, this.nameWidget.getText().trim());
             if (realmsServer != null) {
                 this.serverData.players = realmsServer.players;
                 this.client.openScreen(new RealmsPlayerScreen(this.configureScreen, this.serverData));
@@ -104,7 +104,7 @@ extends RealmsScreen {
         if (this.errorMessage != null) {
             RealmsInviteScreen.drawCenteredText(matrices, this.textRenderer, this.errorMessage, this.width / 2, RealmsInviteScreen.row(5), 0xFF0000);
         }
-        this.field_22696.render(matrices, mouseX, mouseY, delta);
+        this.nameWidget.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

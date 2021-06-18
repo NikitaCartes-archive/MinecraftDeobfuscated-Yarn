@@ -17,7 +17,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 @Environment(value=EnvType.CLIENT)
 public class VillageSectionsDebugRenderer
 implements DebugRenderer.Renderer {
-    private static final int field_32917 = 60;
+    private static final int RANGE = 60;
     private final Set<ChunkSectionPos> sections = Sets.newHashSet();
 
     VillageSectionsDebugRenderer() {

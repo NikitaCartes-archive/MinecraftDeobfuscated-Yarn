@@ -16,12 +16,12 @@ public interface ResourcePackSource {
     public Text decorate(Text var1);
 
     public static ResourcePackSource onlyName() {
-        return text -> text;
+        return name -> name;
     }
 
     public static ResourcePackSource nameAndSource(String source) {
         TranslatableText text = new TranslatableText(source);
-        return text2 -> new TranslatableText("pack.nameAndSource", text2, text).formatted(Formatting.GRAY);
+        return name -> new TranslatableText("pack.nameAndSource", name, text).formatted(Formatting.GRAY);
     }
 }
 

@@ -105,8 +105,8 @@ extends HandledScreen<BeaconScreenHandler> {
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void handledScreenTick() {
+        super.handledScreenTick();
         this.method_37078();
     }
 
@@ -121,7 +121,7 @@ extends HandledScreen<BeaconScreenHandler> {
         BeaconScreen.drawCenteredText(matrices, this.textRenderer, SECONDARY_POWER_TEXT, 169, 10, 0xE0E0E0);
         for (class_6392 lv : this.field_33832) {
             if (!lv.method_37079()) continue;
-            lv.renderToolTip(matrices, mouseX - this.x, mouseY - this.y);
+            lv.renderTooltip(matrices, mouseX - this.x, mouseY - this.y);
             break;
         }
     }
@@ -154,7 +154,7 @@ extends HandledScreen<BeaconScreenHandler> {
     static interface class_6392 {
         public boolean method_37079();
 
-        public void renderToolTip(MatrixStack var1, int var2, int var3);
+        public void renderTooltip(MatrixStack var1, int var2, int var3);
 
         public void method_37080(int var1);
     }
@@ -235,7 +235,7 @@ extends HandledScreen<BeaconScreenHandler> {
         }
 
         @Override
-        public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+        public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
             BeaconScreen.this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
         }
 
@@ -299,7 +299,7 @@ extends HandledScreen<BeaconScreenHandler> {
         }
 
         @Override
-        public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+        public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
             BeaconScreen.this.renderTooltip(matrices, BeaconScreen.this.title, mouseX, mouseY);
         }
     }

@@ -58,9 +58,9 @@ implements DebugRenderer.Renderer {
             this.listeners.clear();
             return;
         }
-        BlockPos blockPos2 = new BlockPos(cameraX, 0.0, cameraZ);
+        BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
         this.entries.removeIf(Entry::hasExpired);
-        this.listeners.removeIf(listener -> listener.isTooFar(world, blockPos2));
+        this.listeners.removeIf(listener -> listener.isTooFar(world, blockPos));
         RenderSystem.disableTexture();
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
@@ -83,9 +83,9 @@ implements DebugRenderer.Renderer {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
         for (Listener listener2 : this.listeners) {
-            listener2.getPos(world).ifPresent(blockPos -> {
+            listener2.getPos(world).ifPresent(pos -> {
                 Vec3f vec3f = new Vec3f(1.0f, 1.0f, 0.0f);
-                WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos.getX() - 0.25f) - cameraX, (double)blockPos.getY() - cameraY, (double)((float)blockPos.getZ() - 0.25f) - cameraZ, (double)((float)blockPos.getX() + 0.25f) - cameraX, (double)blockPos.getY() - cameraY + 1.0, (double)((float)blockPos.getZ() + 0.25f) - cameraZ, vec3f.getX(), vec3f.getY(), vec3f.getZ(), 0.35f);
+                WorldRenderer.drawBox(bufferBuilder, (double)((float)pos.getX() - 0.25f) - cameraX, (double)pos.getY() - cameraY, (double)((float)pos.getZ() - 0.25f) - cameraZ, (double)((float)pos.getX() + 0.25f) - cameraX, (double)pos.getY() - cameraY + 1.0, (double)((float)pos.getZ() + 0.25f) - cameraZ, vec3f.getX(), vec3f.getY(), vec3f.getZ(), 0.35f);
             });
         }
         tessellator.draw();
@@ -94,9 +94,9 @@ implements DebugRenderer.Renderer {
         RenderSystem.lineWidth(2.0f);
         RenderSystem.depthMask(false);
         for (Listener listener2 : this.listeners) {
-            listener2.getPos(world).ifPresent(blockPos -> {
-                DebugRenderer.drawString("Listener Origin", blockPos.getX(), (float)blockPos.getY() + 1.8f, blockPos.getZ(), -1, 0.025f);
-                DebugRenderer.drawString(new BlockPos((Vec3i)blockPos).toString(), blockPos.getX(), (float)blockPos.getY() + 1.5f, blockPos.getZ(), -6959665, 0.025f);
+            listener2.getPos(world).ifPresent(pos -> {
+                DebugRenderer.drawString("Listener Origin", pos.getX(), (float)pos.getY() + 1.8f, pos.getZ(), -1, 0.025f);
+                DebugRenderer.drawString(new BlockPos((Vec3i)pos).toString(), pos.getX(), (float)pos.getY() + 1.5f, pos.getZ(), -6959665, 0.025f);
             });
         }
         for (Entry entry : this.entries) {
@@ -108,7 +108,7 @@ implements DebugRenderer.Renderer {
             double h = vec3d.x + (double)0.2f;
             double i = vec3d.y + (double)0.2f + 0.5;
             double j = vec3d.z + (double)0.2f;
-            GameEventDebugRenderer.method_33089(new Box(e, f, g, h, i, j), 1.0f, 1.0f, 1.0f, 0.2f);
+            GameEventDebugRenderer.drawBoxIfCameraReady(new Box(e, f, g, h, i, j), 1.0f, 1.0f, 1.0f, 0.2f);
             DebugRenderer.drawString(entry.event.getId(), vec3d.x, vec3d.y + (double)0.85f, vec3d.z, -7564911, 0.0075f);
         }
         RenderSystem.depthMask(true);
@@ -116,7 +116,7 @@ implements DebugRenderer.Renderer {
         RenderSystem.disableBlend();
     }
 
-    private static void method_33089(Box box, float f, float g, float h, float i) {
+    private static void drawBoxIfCameraReady(Box box, float red, float green, float blue, float alpha) {
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
         if (!camera.isReady()) {
             return;
@@ -124,7 +124,7 @@ implements DebugRenderer.Renderer {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         Vec3d vec3d = camera.getPos().negate();
-        DebugRenderer.drawBox(box.offset(vec3d), f, g, h, i);
+        DebugRenderer.drawBox(box.offset(vec3d), red, green, blue, alpha);
     }
 
     public void addEvent(GameEvent event, BlockPos pos) {

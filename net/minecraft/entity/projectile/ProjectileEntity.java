@@ -46,7 +46,7 @@ extends Entity {
 
     @Nullable
     public Entity getOwner() {
-        if (this.owner != null) {
+        if (this.owner != null && !this.owner.isRemoved()) {
             return this.owner;
         }
         if (this.ownerUuid != null && this.world instanceof ServerWorld) {

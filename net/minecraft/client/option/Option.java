@@ -101,6 +101,7 @@ public abstract class Option {
     });
     public static final DoubleOption FOV = new DoubleOption("options.fov", 30.0, 110.0, 1.0f, gameOptions -> gameOptions.fov, (gameOptions, fov) -> {
         gameOptions.fov = fov;
+        MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate();
     }, (gameOptions, option) -> {
         double d = option.get((GameOptions)gameOptions);
         if (d == 70.0) {

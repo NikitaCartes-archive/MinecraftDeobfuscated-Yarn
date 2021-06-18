@@ -14,13 +14,13 @@ public class JungleSaplingGenerator
 extends LargeTreeSaplingGenerator {
     @Override
     @Nullable
-    protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bees) {
+    protected ConfiguredFeature<TreeFeatureConfig, ?> getTreeFeature(Random random, boolean bees) {
         return ConfiguredFeatures.JUNGLE_TREE_NO_VINE;
     }
 
     @Override
     @Nullable
-    protected ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random random) {
+    protected ConfiguredFeature<TreeFeatureConfig, ?> getLargeTreeFeature(Random random) {
         return ConfiguredFeatures.MEGA_JUNGLE_TREE;
     }
 }

@@ -1,9 +1,9 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.util.profiler;
+package net.minecraft.util.profiler;
 
-public enum SamplingChannel {
+public enum SampleType {
     PATH_FINDING("pathfinding"),
     EVENT_LOOPS("event-loops"),
     MAIL_BOXES("mailboxes"),
@@ -15,7 +15,7 @@ public enum SamplingChannel {
 
     private final String name;
 
-    private SamplingChannel(String name) {
+    private SampleType(String name) {
         this.name = name;
     }
 
