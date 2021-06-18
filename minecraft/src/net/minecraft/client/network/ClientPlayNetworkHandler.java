@@ -999,9 +999,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					}
 				}
 
-				playerEntity.playerScreenHandler.setStackInSlot(i, itemStack);
+				playerEntity.playerScreenHandler.setStackInSlot(i, packet.getRevision(), itemStack);
 			} else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId && (packet.getSyncId() != 0 || !bl)) {
-				playerEntity.currentScreenHandler.setStackInSlot(i, itemStack);
+				playerEntity.currentScreenHandler.setStackInSlot(i, packet.getRevision(), itemStack);
 			}
 		}
 	}
@@ -1011,9 +1011,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		if (packet.getSyncId() == 0) {
-			playerEntity.playerScreenHandler.updateSlotStacks(packet.getContents());
+			playerEntity.playerScreenHandler.updateSlotStacks(packet.getRevision(), packet.getContents(), packet.getCursorStack());
 		} else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId) {
-			playerEntity.currentScreenHandler.updateSlotStacks(packet.getContents());
+			playerEntity.currentScreenHandler.updateSlotStacks(packet.getRevision(), packet.getContents(), packet.getCursorStack());
 		}
 	}
 
@@ -1760,7 +1760,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					list2.add(packetByteBuf.readBoolean());
 				}
 
-				this.client.debugRenderer.structureDebugRenderer.method_3871(blockBox, list, list2, dimensionType);
+				this.client.debugRenderer.structureDebugRenderer.addStructure(blockBox, list, list2, dimensionType);
 			} else if (CustomPayloadS2CPacket.DEBUG_WORLDGEN_ATTEMPT.equals(identifier)) {
 				((WorldGenAttemptDebugRenderer)this.client.debugRenderer.worldGenAttemptDebugRenderer)
 					.method_3872(
@@ -1846,21 +1846,21 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 				for (int s = 0; s < r; s++) {
 					String string6 = packetByteBuf.readString();
-					brain.field_18927.add(string6);
+					brain.possibleActivities.add(string6);
 				}
 
 				int s = packetByteBuf.readVarInt();
 
 				for (int t = 0; t < s; t++) {
 					String string7 = packetByteBuf.readString();
-					brain.field_18928.add(string7);
+					brain.runningTasks.add(string7);
 				}
 
 				int t = packetByteBuf.readVarInt();
 
 				for (int u = 0; u < t; u++) {
 					String string8 = packetByteBuf.readString();
-					brain.field_19374.add(string8);
+					brain.memories.add(string8);
 				}
 
 				int u = packetByteBuf.readVarInt();
@@ -1874,14 +1874,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 				for (int w = 0; w < v; w++) {
 					BlockPos blockPos4 = packetByteBuf.readBlockPos();
-					brain.field_25287.add(blockPos4);
+					brain.potentialJobSites.add(blockPos4);
 				}
 
 				int w = packetByteBuf.readVarInt();
 
 				for (int x = 0; x < w; x++) {
 					String string9 = packetByteBuf.readString();
-					brain.field_19375.add(string9);
+					brain.gossips.add(string9);
 				}
 
 				this.client.debugRenderer.villageDebugRenderer.addBrain(brain);

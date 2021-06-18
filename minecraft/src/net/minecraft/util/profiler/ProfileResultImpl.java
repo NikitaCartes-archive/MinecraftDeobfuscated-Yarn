@@ -32,7 +32,7 @@ public class ProfileResultImpl implements ProfileResult {
 		}
 
 		@Override
-		public long method_37169() {
+		public long getMaxTime() {
 			return 0L;
 		}
 
@@ -130,13 +130,12 @@ public class ProfileResultImpl implements ProfileResult {
 		Map<String, ProfileResultImpl.CounterInfo> map = Maps.newTreeMap();
 		this.locationInfos
 			.forEach(
-				(string, profileLocationInfo) -> {
-					Object2LongMap<String> object2LongMap = profileLocationInfo.getCounts();
+				(location, info) -> {
+					Object2LongMap<String> object2LongMap = info.getCounts();
 					if (!object2LongMap.isEmpty()) {
-						List<String> list = SPLITTER.splitToList(string);
+						List<String> list = SPLITTER.splitToList(location);
 						object2LongMap.forEach(
-							(stringx, long_) -> ((ProfileResultImpl.CounterInfo)map.computeIfAbsent(stringx, stringxx -> new ProfileResultImpl.CounterInfo()))
-									.add(list.iterator(), long_)
+							(marker, count) -> ((ProfileResultImpl.CounterInfo)map.computeIfAbsent(marker, k -> new ProfileResultImpl.CounterInfo())).add(list.iterator(), count)
 						);
 					}
 				}
@@ -232,7 +231,7 @@ public class ProfileResultImpl implements ProfileResult {
 		List<ProfilerTiming> list = this.getTimings(name);
 		Object2LongMap<String> object2LongMap = ObjectUtils.firstNonNull((ProfileLocationInfo)this.locationInfos.get(name), EMPTY_INFO).getCounts();
 		object2LongMap.forEach(
-			(string, long_) -> indent(sb, level).append('#').append(string).append(' ').append(long_).append('/').append(long_ / (long)this.tickDuration).append('\n')
+			(marker, count) -> indent(sb, level).append('#').append(marker).append(' ').append(count).append('/').append(count / (long)this.tickDuration).append('\n')
 		);
 		if (list.size() >= 3) {
 			for (int i = 1; i < list.size(); i++) {
@@ -280,9 +279,9 @@ public class ProfileResultImpl implements ProfileResult {
 	}
 
 	private void appendCounterDump(Map<String, ProfileResultImpl.CounterInfo> counters, StringBuilder sb, int tickSpan) {
-		counters.forEach((string, counterInfo) -> {
-			sb.append("-- Counter: ").append(string).append(" --\n");
-			this.appendCounter(0, "root", (ProfileResultImpl.CounterInfo)counterInfo.subCounters.get("root"), tickSpan, sb);
+		counters.forEach((name, info) -> {
+			sb.append("-- Counter: ").append(name).append(" --\n");
+			this.appendCounter(0, "root", (ProfileResultImpl.CounterInfo)info.subCounters.get("root"), tickSpan, sb);
 			sb.append("\n\n");
 		});
 	}
@@ -327,7 +326,7 @@ public class ProfileResultImpl implements ProfileResult {
 			if (!pathIterator.hasNext()) {
 				this.selfTime += time;
 			} else {
-				((ProfileResultImpl.CounterInfo)this.subCounters.computeIfAbsent((String)pathIterator.next(), string -> new ProfileResultImpl.CounterInfo()))
+				((ProfileResultImpl.CounterInfo)this.subCounters.computeIfAbsent((String)pathIterator.next(), k -> new ProfileResultImpl.CounterInfo()))
 					.add(pathIterator, time);
 			}
 		}

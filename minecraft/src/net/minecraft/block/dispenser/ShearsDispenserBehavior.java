@@ -23,7 +23,7 @@ public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 	protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 		World world = pointer.getWorld();
 		if (!world.isClient()) {
-			BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+			BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 			this.setSuccess(tryShearBlock((ServerWorld)world, blockPos) || tryShearEntity((ServerWorld)world, blockPos));
 			if (this.isSuccess() && stack.damage(1, world.getRandom(), null)) {
 				stack.setCount(0);

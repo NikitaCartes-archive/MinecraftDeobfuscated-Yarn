@@ -2188,7 +2188,7 @@ public class RecipesProvider implements DataProvider {
 		offerSmelting(exporter, COPPER_ORES, Items.COPPER_INGOT, 0.7F, 200, "copper_ingot");
 		offerSmelting(exporter, GOLD_ORES, Items.GOLD_INGOT, 1.0F, 200, "gold_ingot");
 		offerSmelting(exporter, DIAMOND_ORES, Items.DIAMOND, 1.0F, 200, "diamond");
-		offerSmelting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2F, 200, "lapus_lazuli");
+		offerSmelting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2F, 200, "lapis_lazuli");
 		offerSmelting(exporter, REDSTONE_ORES, Items.REDSTONE, 0.7F, 200, "redstone");
 		offerSmelting(exporter, EMERALD_ORES, Items.EMERALD, 1.0F, 200, "emerald");
 		offerReversibleCompactingRecipes(exporter, Items.RAW_IRON, Items.RAW_IRON_BLOCK);
@@ -2359,7 +2359,7 @@ public class RecipesProvider implements DataProvider {
 		offerBlasting(exporter, COPPER_ORES, Items.COPPER_INGOT, 0.7F, 100, "copper_ingot");
 		offerBlasting(exporter, GOLD_ORES, Items.GOLD_INGOT, 1.0F, 100, "gold_ingot");
 		offerBlasting(exporter, DIAMOND_ORES, Items.DIAMOND, 1.0F, 100, "diamond");
-		offerBlasting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2F, 100, "lapus_lazuli");
+		offerBlasting(exporter, LAPIS_ORES, Items.LAPIS_LAZULI, 0.2F, 100, "lapis_lazuli");
 		offerBlasting(exporter, REDSTONE_ORES, Items.REDSTONE, 0.7F, 100, "redstone");
 		offerBlasting(exporter, EMERALD_ORES, Items.EMERALD, 1.0F, 100, "emerald");
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.NETHER_QUARTZ_ORE), Items.QUARTZ, 0.2F, 100)

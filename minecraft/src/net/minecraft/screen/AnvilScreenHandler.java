@@ -72,20 +72,19 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		}
 
 		this.levelCost.set(0);
-		this.context.run((world, blockPos) -> {
-			BlockState blockState = world.getBlockState(blockPos);
+		this.context.run((world, pos) -> {
+			BlockState blockState = world.getBlockState(pos);
 			if (!player.getAbilities().creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
 				BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 				if (blockState2 == null) {
-					world.removeBlock(blockPos, false);
-					world.syncWorldEvent(WorldEvents.ANVIL_DESTROYED, blockPos, 0);
-					player.getInventory().offerOrDrop(stack);
+					world.removeBlock(pos, false);
+					world.syncWorldEvent(WorldEvents.ANVIL_DESTROYED, pos, 0);
 				} else {
-					world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
-					world.syncWorldEvent(WorldEvents.ANVIL_USED, blockPos, 0);
+					world.setBlockState(pos, blockState2, Block.NOTIFY_LISTENERS);
+					world.syncWorldEvent(WorldEvents.ANVIL_USED, pos, 0);
 				}
 			} else {
-				world.syncWorldEvent(WorldEvents.ANVIL_USED, blockPos, 0);
+				world.syncWorldEvent(WorldEvents.ANVIL_USED, pos, 0);
 			}
 		});
 	}

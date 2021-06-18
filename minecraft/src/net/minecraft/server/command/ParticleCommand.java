@@ -33,7 +33,7 @@ public class ParticleCommand {
 									0.0F,
 									0,
 									false,
-									context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+									context.getSource().getServer().getPlayerManager().getPlayerList()
 								)
 						)
 						.then(
@@ -47,7 +47,7 @@ public class ParticleCommand {
 											0.0F,
 											0,
 											false,
-											context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+											context.getSource().getServer().getPlayerManager().getPlayerList()
 										)
 								)
 								.then(
@@ -65,7 +65,7 @@ public class ParticleCommand {
 																	FloatArgumentType.getFloat(context, "speed"),
 																	IntegerArgumentType.getInteger(context, "count"),
 																	false,
-																	context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+																	context.getSource().getServer().getPlayerManager().getPlayerList()
 																)
 														)
 														.then(
@@ -79,7 +79,7 @@ public class ParticleCommand {
 																			FloatArgumentType.getFloat(context, "speed"),
 																			IntegerArgumentType.getInteger(context, "count"),
 																			true,
-																			context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+																			context.getSource().getServer().getPlayerManager().getPlayerList()
 																		)
 																)
 																.then(
@@ -109,7 +109,7 @@ public class ParticleCommand {
 																			FloatArgumentType.getFloat(context, "speed"),
 																			IntegerArgumentType.getInteger(context, "count"),
 																			false,
-																			context.getSource().getMinecraftServer().getPlayerManager().getPlayerList()
+																			context.getSource().getServer().getPlayerManager().getPlayerList()
 																		)
 																)
 																.then(

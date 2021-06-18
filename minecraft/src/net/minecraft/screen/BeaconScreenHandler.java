@@ -60,12 +60,12 @@ public class BeaconScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public void close(PlayerEntity playerEntity) {
-		super.close(playerEntity);
-		if (!playerEntity.world.isClient) {
+	public void close(PlayerEntity player) {
+		super.close(player);
+		if (!player.world.isClient) {
 			ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxItemCount());
 			if (!itemStack.isEmpty()) {
-				playerEntity.dropItem(itemStack, false);
+				player.dropItem(itemStack, false);
 			}
 		}
 	}

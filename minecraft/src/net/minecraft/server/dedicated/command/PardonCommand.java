@@ -22,16 +22,14 @@ public class PardonCommand {
 				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
-						.suggests(
-							(context, builder) -> CommandSource.suggestMatching(context.getSource().getMinecraftServer().getPlayerManager().getUserBanList().getNames(), builder)
-						)
+						.suggests((context, builder) -> CommandSource.suggestMatching(context.getSource().getServer().getPlayerManager().getUserBanList().getNames(), builder))
 						.executes(context -> pardon(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))
 				)
 		);
 	}
 
 	private static int pardon(ServerCommandSource source, Collection<GameProfile> targets) throws CommandSyntaxException {
-		BannedPlayerList bannedPlayerList = source.getMinecraftServer().getPlayerManager().getUserBanList();
+		BannedPlayerList bannedPlayerList = source.getServer().getPlayerManager().getUserBanList();
 		int i = 0;
 
 		for (GameProfile gameProfile : targets) {

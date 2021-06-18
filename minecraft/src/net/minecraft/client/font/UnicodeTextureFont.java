@@ -2,10 +2,12 @@ package net.minecraft.client.font;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.IllegalFormatException;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -182,7 +184,18 @@ public class UnicodeTextureFont implements Font {
 		}
 
 		public static FontLoader fromJson(JsonObject json) {
-			return new UnicodeTextureFont.Loader(new Identifier(JsonHelper.getString(json, "sizes")), JsonHelper.getString(json, "template"));
+			return new UnicodeTextureFont.Loader(new Identifier(JsonHelper.getString(json, "sizes")), getLegacyUnicodeTemplate(json));
+		}
+
+		private static String getLegacyUnicodeTemplate(JsonObject json) {
+			String string = JsonHelper.getString(json, "template");
+
+			try {
+				String.format(string, "");
+				return string;
+			} catch (IllegalFormatException var3) {
+				throw new JsonParseException("Invalid legacy unicode template supplied, expected single '%s': " + string);
+			}
 		}
 
 		@Nullable

@@ -263,6 +263,7 @@ public class CrashReport {
 	}
 
 	public static void initCrashReport() {
+		CrashMemoryReserve.reserveMemory();
 		new CrashReport("Don't panic!", new Throwable()).asString();
 	}
 }

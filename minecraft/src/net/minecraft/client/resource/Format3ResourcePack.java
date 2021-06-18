@@ -25,9 +25,9 @@ public class Format3ResourcePack implements ResourcePack {
 	private final Map<Identifier, Identifier> idMap;
 	public static final Map<Identifier, Identifier> NEW_TO_OLD_MAP = Util.make(() -> {
 		Builder<Identifier, Identifier> builder = ImmutableMap.builder();
-		BiConsumer<String, String> biConsumer = (string, string2) -> {
-			Identifier identifier = new Identifier(string);
-			Identifier identifier2 = new Identifier(string2);
+		BiConsumer<String, String> biConsumer = (newId, oldId) -> {
+			Identifier identifier = new Identifier(newId);
+			Identifier identifier2 = new Identifier(oldId);
 			builder.put(identifier, identifier2);
 			builder.put(getMetadataLocation(identifier), getMetadataLocation(identifier2));
 		};

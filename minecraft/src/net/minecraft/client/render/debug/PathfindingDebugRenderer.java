@@ -23,21 +23,21 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	private final Map<Integer, Path> paths = Maps.<Integer, Path>newHashMap();
-	private final Map<Integer, Float> field_4617 = Maps.<Integer, Float>newHashMap();
+	private final Map<Integer, Float> nodeSizes = Maps.<Integer, Float>newHashMap();
 	private final Map<Integer, Long> pathTimes = Maps.<Integer, Long>newHashMap();
-	private static final long field_32906 = 5000L;
-	private static final float field_32907 = 80.0F;
+	private static final long MAX_PATH_AGE = 5000L;
+	private static final float RANGE = 80.0F;
 	private static final boolean field_32908 = true;
 	private static final boolean field_32909 = false;
 	private static final boolean field_32910 = false;
 	private static final boolean field_32911 = true;
 	private static final boolean field_32912 = true;
-	private static final float field_32913 = 0.02F;
+	private static final float DRAWN_STRING_SIZE = 0.02F;
 
-	public void addPath(int id, Path path, float f) {
+	public void addPath(int id, Path path, float nodeSize) {
 		this.paths.put(id, path);
 		this.pathTimes.put(id, Util.getMeasuringTimeMs());
-		this.field_4617.put(id, f);
+		this.nodeSizes.put(id, nodeSize);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 			for (Integer integer : this.paths.keySet()) {
 				Path path = (Path)this.paths.get(integer);
-				float f = (Float)this.field_4617.get(integer);
+				float f = (Float)this.nodeSizes.get(integer);
 				drawPath(path, f, true, true, cameraX, cameraY, cameraZ);
 			}
 
@@ -60,18 +60,18 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	public static void drawPath(Path path, float nodeSize, boolean bl, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {
+	public static void drawPath(Path path, float nodeSize, boolean drawDebugNodes, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShaderColor(0.0F, 1.0F, 0.0F, 0.75F);
 		RenderSystem.disableTexture();
 		RenderSystem.lineWidth(6.0F);
-		drawPathInternal(path, nodeSize, bl, drawLabels, cameraX, cameraY, cameraZ);
+		drawPathInternal(path, nodeSize, drawDebugNodes, drawLabels, cameraX, cameraY, cameraZ);
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
 
-	private static void drawPathInternal(Path path, float nodeSize, boolean bl, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {
+	private static void drawPathInternal(Path path, float nodeSize, boolean drawDebugNodes, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {
 		drawPathLines(path, cameraX, cameraY, cameraZ);
 		BlockPos blockPos = path.getTarget();
 		if (getManhattanDistance(blockPos, cameraX, cameraY, cameraZ) <= 80.0F) {
@@ -115,7 +115,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		if (bl) {
+		if (drawDebugNodes) {
 			for (PathNode pathNode2 : path.getDebugSecondNodes()) {
 				if (getManhattanDistance(pathNode2.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawBox(

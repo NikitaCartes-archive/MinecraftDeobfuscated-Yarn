@@ -261,7 +261,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 
 		@Override
 		protected Stream<NbtCompound> toNbt(ServerCommandSource source) {
-			NbtCompound nbtCompound = source.getMinecraftServer().getDataCommandStorage().get(this.id);
+			NbtCompound nbtCompound = source.getServer().getDataCommandStorage().get(this.id);
 			return Stream.of(nbtCompound);
 		}
 

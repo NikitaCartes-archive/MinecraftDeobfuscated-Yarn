@@ -650,18 +650,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		return SoundEvents.ENTITY_PLAYER_DEATH;
 	}
 
-	public boolean dropSelectedItem(boolean dropEntireStack) {
-		return this.dropItem(
-				this.inventory
-					.removeStack(
-						this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1
-					),
-				false,
-				true
-			)
-			!= null;
-	}
-
 	@Nullable
 	public ItemEntity dropItem(ItemStack stack, boolean retainOwnership) {
 		return this.dropItem(stack, false, retainOwnership);

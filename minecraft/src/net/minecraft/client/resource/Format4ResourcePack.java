@@ -82,10 +82,10 @@ public class Format4ResourcePack implements ResourcePack {
 		"triangles_top"
 	);
 	private static final Set<String> SHIELD_PATTERN_TEXTURES = (Set<String>)BANNER_PATTERN_TYPES.stream()
-		.map(string -> "textures/entity/shield/" + string + ".png")
+		.map(patternName -> "textures/entity/shield/" + patternName + ".png")
 		.collect(Collectors.toSet());
 	private static final Set<String> BANNER_PATTERN_TEXTURES = (Set<String>)BANNER_PATTERN_TYPES.stream()
-		.map(string -> "textures/entity/banner/" + string + ".png")
+		.map(patternName -> "textures/entity/banner/" + patternName + ".png")
 		.collect(Collectors.toSet());
 	public static final Identifier OLD_SHIELD_BASE_TEXTURE = new Identifier("textures/entity/shield_base.png");
 	public static final Identifier OLD_BANNER_BASE_TEXTURE = new Identifier("textures/entity/banner_base.png");
@@ -166,7 +166,7 @@ public class Format4ResourcePack implements ResourcePack {
 					}
 
 					if ("textures/entity/conduit/closed_eye.png".equals(string) || "textures/entity/conduit/open_eye.png".equals(string)) {
-						return method_24199(this.parent.open(type, id));
+						return cropConduitTexture(this.parent.open(type, id));
 					}
 
 					Pair<ChestType, Identifier> pair = (Pair<ChestType, Identifier>)NEW_TO_OLD_CHEST_TEXTURES.get(string);
@@ -193,22 +193,22 @@ public class Format4ResourcePack implements ResourcePack {
 	}
 
 	@Nullable
-	public static InputStream openCroppedStream(InputStream inputStream, InputStream inputStream2, int i, int j, int k, int l, int m) throws IOException {
+	public static InputStream openCroppedStream(InputStream base, InputStream overlay, int width, int left, int top, int right, int bottom) throws IOException {
 		try (
-			NativeImage nativeImage = NativeImage.read(inputStream);
-			NativeImage nativeImage2 = NativeImage.read(inputStream2);
+			NativeImage nativeImage = NativeImage.read(base);
+			NativeImage nativeImage2 = NativeImage.read(overlay);
 		) {
-			int n = nativeImage.getWidth();
-			int o = nativeImage.getHeight();
-			if (n == nativeImage2.getWidth() && o == nativeImage2.getHeight()) {
-				try (NativeImage nativeImage3 = new NativeImage(n, o, true)) {
-					int p = n / i;
+			int i = nativeImage.getWidth();
+			int j = nativeImage.getHeight();
+			if (i == nativeImage2.getWidth() && j == nativeImage2.getHeight()) {
+				try (NativeImage nativeImage3 = new NativeImage(i, j, true)) {
+					int k = i / width;
 
-					for (int q = k * p; q < m * p; q++) {
-						for (int r = j * p; r < l * p; r++) {
-							int s = NativeImage.getRed(nativeImage2.getPixelColor(r, q));
-							int t = nativeImage.getPixelColor(r, q);
-							nativeImage3.setPixelColor(r, q, NativeImage.getAbgrColor(s, NativeImage.getBlue(t), NativeImage.getGreen(t), NativeImage.getRed(t)));
+					for (int l = top * k; l < bottom * k; l++) {
+						for (int m = left * k; m < right * k; m++) {
+							int n = NativeImage.getRed(nativeImage2.getPixelColor(m, l));
+							int o = nativeImage.getPixelColor(m, l);
+							nativeImage3.setPixelColor(m, l, NativeImage.getAbgrColor(n, NativeImage.getBlue(o), NativeImage.getGreen(o), NativeImage.getRed(o)));
 						}
 					}
 
@@ -220,9 +220,9 @@ public class Format4ResourcePack implements ResourcePack {
 		return null;
 	}
 
-	public static InputStream method_24199(InputStream inputStream) throws IOException {
+	public static InputStream cropConduitTexture(InputStream stream) throws IOException {
 		ByteArrayInputStream var5;
-		try (NativeImage nativeImage = NativeImage.read(inputStream)) {
+		try (NativeImage nativeImage = NativeImage.read(stream)) {
 			int i = nativeImage.getWidth();
 			int j = nativeImage.getHeight();
 
@@ -235,9 +235,9 @@ public class Format4ResourcePack implements ResourcePack {
 		return var5;
 	}
 
-	public static InputStream cropLeftChestTexture(InputStream inputStream) throws IOException {
+	public static InputStream cropLeftChestTexture(InputStream stream) throws IOException {
 		ByteArrayInputStream var6;
-		try (NativeImage nativeImage = NativeImage.read(inputStream)) {
+		try (NativeImage nativeImage = NativeImage.read(stream)) {
 			int i = nativeImage.getWidth();
 			int j = nativeImage.getHeight();
 
@@ -265,9 +265,9 @@ public class Format4ResourcePack implements ResourcePack {
 		return var6;
 	}
 
-	public static InputStream cropRightChestTexture(InputStream inputStream) throws IOException {
+	public static InputStream cropRightChestTexture(InputStream stream) throws IOException {
 		ByteArrayInputStream var6;
-		try (NativeImage nativeImage = NativeImage.read(inputStream)) {
+		try (NativeImage nativeImage = NativeImage.read(stream)) {
 			int i = nativeImage.getWidth();
 			int j = nativeImage.getHeight();
 
@@ -295,9 +295,9 @@ public class Format4ResourcePack implements ResourcePack {
 		return var6;
 	}
 
-	public static InputStream cropSingleChestTexture(InputStream inputStream) throws IOException {
+	public static InputStream cropSingleChestTexture(InputStream stream) throws IOException {
 		ByteArrayInputStream var6;
-		try (NativeImage nativeImage = NativeImage.read(inputStream)) {
+		try (NativeImage nativeImage = NativeImage.read(stream)) {
 			int i = nativeImage.getWidth();
 			int j = nativeImage.getHeight();
 
@@ -354,17 +354,29 @@ public class Format4ResourcePack implements ResourcePack {
 		this.parent.close();
 	}
 
-	private static void loadBytes(NativeImage source, NativeImage target, int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2) {
-		n *= o;
-		m *= o;
-		k *= o;
-		l *= o;
-		i *= o;
-		j *= o;
+	private static void loadBytes(
+		NativeImage source,
+		NativeImage target,
+		int sourceLeft,
+		int sourceTop,
+		int left,
+		int top,
+		int right,
+		int bottom,
+		int multiplier,
+		boolean mirrorX,
+		boolean mirrorY
+	) {
+		bottom *= multiplier;
+		right *= multiplier;
+		left *= multiplier;
+		top *= multiplier;
+		sourceLeft *= multiplier;
+		sourceTop *= multiplier;
 
-		for (int p = 0; p < n; p++) {
-			for (int q = 0; q < m; q++) {
-				target.setPixelColor(k + q, l + p, source.getPixelColor(i + (bl ? m - 1 - q : q), j + (bl2 ? n - 1 - p : p)));
+		for (int i = 0; i < bottom; i++) {
+			for (int j = 0; j < right; j++) {
+				target.setPixelColor(left + j, top + i, source.getPixelColor(sourceLeft + (mirrorX ? right - 1 - j : j), sourceTop + (mirrorY ? bottom - 1 - i : i)));
 			}
 		}
 	}

@@ -60,7 +60,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	}
 
 	protected static void updateResult(
-		ScreenHandler screenHandler, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory
+		ScreenHandler handler, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory
 	) {
 		if (!world.isClient) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
@@ -74,14 +74,14 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 			}
 
 			resultInventory.setStack(0, itemStack);
-			screenHandler.setPreviousTrackedSlot(0, itemStack);
-			serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(screenHandler.syncId, 0, itemStack));
+			handler.setPreviousTrackedSlot(0, itemStack);
+			serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, handler.nextRevision(), 0, itemStack));
 		}
 	}
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.context.run((world, blockPos) -> updateResult(this, world, this.player, this.input, this.result));
+		this.context.run((world, pos) -> updateResult(this, world, this.player, this.input, this.result));
 	}
 
 	@Override
@@ -101,9 +101,9 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	}
 
 	@Override
-	public void close(PlayerEntity playerEntity) {
-		super.close(playerEntity);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.input));
+	public void close(PlayerEntity player) {
+		super.close(player);
+		this.context.run((world, pos) -> this.dropInventory(player, this.input));
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (index == 0) {
-				this.context.run((world, blockPos) -> itemStack2.getItem().onCraft(itemStack2, world, player));
+				this.context.run((world, pos) -> itemStack2.getItem().onCraft(itemStack2, world, player));
 				if (!this.insertItem(itemStack2, 10, 46, true)) {
 					return ItemStack.EMPTY;
 				}

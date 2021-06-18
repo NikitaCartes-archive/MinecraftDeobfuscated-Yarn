@@ -47,10 +47,10 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 	}
 
 	protected void playSound(BlockPointer pointer) {
-		pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getBlockPos(), 0);
+		pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getPos(), 0);
 	}
 
 	protected void spawnParticles(BlockPointer pointer, Direction side) {
-		pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_ACTIVATED, pointer.getBlockPos(), side.getId());
+		pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_ACTIVATED, pointer.getPos(), side.getId());
 	}
 }

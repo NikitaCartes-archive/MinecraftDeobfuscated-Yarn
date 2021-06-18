@@ -54,6 +54,7 @@ import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.CsvWriter;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -62,7 +63,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.CsvWriter;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.thread.MessageListener;
 import net.minecraft.util.thread.TaskExecutor;
@@ -104,7 +104,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> chunksToUnload = new Long2ObjectLinkedOpenHashMap<>();
 	private final LongSet loadedChunks = new LongOpenHashSet();
 	final ServerWorld world;
-	private final ServerLightingProvider serverLightingProvider;
+	private final ServerLightingProvider lightingProvider;
 	private final ThreadExecutor<Runnable> mainThreadExecutor;
 	private final ChunkGenerator chunkGenerator;
 	private final Supplier<PersistentStateManager> persistentStateManagerFactory;
@@ -155,7 +155,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), executor, Integer.MAX_VALUE);
 		this.worldGenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
 		this.mainExecutor = this.chunkTaskPrioritySystem.createExecutor(messageListener, false);
-		this.serverLightingProvider = new ServerLightingProvider(
+		this.lightingProvider = new ServerLightingProvider(
 			chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false)
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(executor, mainThreadExecutor);
@@ -197,8 +197,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return Math.max(Math.abs(i), Math.abs(j));
 	}
 
-	protected ServerLightingProvider getLightProvider() {
-		return this.serverLightingProvider;
+	protected ServerLightingProvider getLightingProvider() {
+		return this.lightingProvider;
 	}
 
 	@Nullable
@@ -316,7 +316,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				if (holder != null) {
 					holder.setLevel(level);
 				} else {
-					holder = new ChunkHolder(new ChunkPos(pos), level, this.world, this.serverLightingProvider, this.chunkTaskPrioritySystem, this);
+					holder = new ChunkHolder(new ChunkPos(pos), level, this.world, this.lightingProvider, this.chunkTaskPrioritySystem, this);
 				}
 
 				this.currentChunkHolders.put(pos, holder);
@@ -423,8 +423,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 						this.world.unloadEntities(worldChunk);
 					}
 
-					this.serverLightingProvider.updateChunkStatus(chunk.getPos());
-					this.serverLightingProvider.tick();
+					this.lightingProvider.updateChunkStatus(chunk.getPos());
+					this.lightingProvider.tick();
 					this.worldGenerationProgressListener.setChunkStatus(chunk.getPos(), null);
 				}
 			}
@@ -457,7 +457,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			Optional<Chunk> optional = ((Either)holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
 			if (optional.isPresent() && ((Chunk)optional.get()).getStatus().isAtLeast(requiredStatus)) {
 				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(
-					this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(holder), (Chunk)optional.get()
+					this.world, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (Chunk)optional.get()
 				);
 				this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
 				return completableFuture;
@@ -519,7 +519,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					list -> {
 						try {
 							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = requiredStatus.runGenerationTask(
-								executor, this.world, this.chunkGenerator, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(holder), list
+								executor, this.world, this.chunkGenerator, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), list
 							);
 							this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
 							return completableFuturex;
@@ -1022,7 +1022,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private void sendChunkDataPackets(ServerPlayerEntity player, Packet<?>[] packets, WorldChunk chunk) {
 		if (packets[0] == null) {
 			packets[0] = new ChunkDataS2CPacket(chunk);
-			packets[1] = new LightUpdateS2CPacket(chunk.getPos(), this.serverLightingProvider, null, null, true);
+			packets[1] = new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, null, null, true);
 		}
 
 		player.sendInitialChunkPackets(chunk.getPos(), packets[0], packets[1]);

@@ -37,7 +37,7 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloader<M
 		Map<Identifier, JsonElement> map = Maps.<Identifier, JsonElement>newHashMap();
 		int i = this.dataType.length() + 1;
 
-		for (Identifier identifier : resourceManager.findResources(this.dataType, stringx -> stringx.endsWith(".json"))) {
+		for (Identifier identifier : resourceManager.findResources(this.dataType, path -> path.endsWith(".json"))) {
 			String string = identifier.getPath();
 			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(i, string.length() - FILE_SUFFIX_LENGTH));
 

@@ -106,7 +106,10 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 			if (l - this.targetTime >= 40L) {
 				mobEntity.setYaw(mobEntity.bodyYaw);
 				mobEntity.setNoDrag(true);
-				mobEntity.setVelocity(((LongJumpTask.Target)this.lastTarget.get()).getRammingVelocity());
+				Vec3d vec3d = ((LongJumpTask.Target)this.lastTarget.get()).getRammingVelocity();
+				double d = vec3d.length();
+				double e = d + mobEntity.getJumpBoostVelocityModifier();
+				mobEntity.setVelocity(vec3d.multiply(e / d));
 				mobEntity.getBrain().remember(MemoryModuleType.LONG_JUMP_MID_JUMP, true);
 				serverWorld.playSoundFromEntity(null, mobEntity, (SoundEvent)this.field_33460.apply(mobEntity), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 			}

@@ -72,7 +72,7 @@ public class TriggerCommand {
 		Entity entity = source.getEntity();
 		List<String> list = Lists.<String>newArrayList();
 		if (entity != null) {
-			Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+			Scoreboard scoreboard = source.getServer().getScoreboard();
 			String string = entity.getEntityName();
 
 			for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {

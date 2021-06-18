@@ -14,7 +14,7 @@ public class ReloadCommand {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static void tryReloadDataPacks(Collection<String> dataPacks, ServerCommandSource source) {
-		source.getMinecraftServer().reloadResources(dataPacks).exceptionally(throwable -> {
+		source.getServer().reloadResources(dataPacks).exceptionally(throwable -> {
 			LOGGER.warn("Failed to execute reload", throwable);
 			source.sendError(new TranslatableText("commands.reload.failure"));
 			return null;
@@ -38,7 +38,7 @@ public class ReloadCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(CommandManager.literal("reload").requires(source -> source.hasPermissionLevel(2)).executes(context -> {
 			ServerCommandSource serverCommandSource = context.getSource();
-			MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+			MinecraftServer minecraftServer = serverCommandSource.getServer();
 			ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
 			SaveProperties saveProperties = minecraftServer.getSaveProperties();
 			Collection<String> collection = resourcePackManager.getEnabledNames();

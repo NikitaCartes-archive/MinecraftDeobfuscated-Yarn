@@ -17,14 +17,14 @@ public class OpenServerTask extends LongRunningTask {
 	private final Screen returnScreen;
 	private final boolean join;
 	private final RealmsMainScreen mainScreen;
-	private final MinecraftClient field_34016;
+	private final MinecraftClient client;
 
-	public OpenServerTask(RealmsServer realmsServer, Screen returnScreen, RealmsMainScreen mainScreen, boolean join, MinecraftClient minecraftClient) {
+	public OpenServerTask(RealmsServer realmsServer, Screen returnScreen, RealmsMainScreen mainScreen, boolean join, MinecraftClient client) {
 		this.serverData = realmsServer;
 		this.returnScreen = returnScreen;
 		this.join = join;
 		this.mainScreen = mainScreen;
-		this.field_34016 = minecraftClient;
+		this.client = client;
 	}
 
 	public void run() {
@@ -39,7 +39,7 @@ public class OpenServerTask extends LongRunningTask {
 			try {
 				boolean bl = realmsClient.open(this.serverData.id);
 				if (bl) {
-					this.field_34016.execute(() -> {
+					this.client.execute(() -> {
 						if (this.returnScreen instanceof RealmsConfigureWorldScreen) {
 							((RealmsConfigureWorldScreen)this.returnScreen).stateChanged();
 						}
@@ -48,7 +48,7 @@ public class OpenServerTask extends LongRunningTask {
 						if (this.join) {
 							this.mainScreen.play(this.serverData, this.returnScreen);
 						} else {
-							this.field_34016.openScreen(this.returnScreen);
+							this.client.openScreen(this.returnScreen);
 						}
 					});
 					break;

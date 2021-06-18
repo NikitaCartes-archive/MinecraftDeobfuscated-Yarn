@@ -21,7 +21,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Errable {
-	private static final RepeatedNarrator field_33779 = new RepeatedNarrator(Duration.ofSeconds(5L));
+	private static final RepeatedNarrator NARRATOR = new RepeatedNarrator(Duration.ofSeconds(5L));
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Screen parent;
 	private volatile Text title = LiteralText.EMPTY;
@@ -31,7 +31,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	private int animTicks;
 	private final LongRunningTask task;
 	private final int buttonLength = 212;
-	private ButtonWidget field_33778;
+	private ButtonWidget cancelButton;
 	public static final String[] symbols = new String[]{
 		"▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃",
 		"_ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄",
@@ -68,7 +68,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	@Override
 	public void tick() {
 		super.tick();
-		field_33779.narrate(this.title);
+		NARRATOR.narrate(this.title);
 		this.animTicks++;
 		this.task.tick();
 	}
@@ -86,7 +86,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	@Override
 	public void init() {
 		this.task.init();
-		this.field_33778 = this.addDrawableChild(
+		this.cancelButton = this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - 106, row(12), 212, 20, ScreenTexts.CANCEL, button -> this.cancelOrBackButtonClicked())
 		);
 	}
@@ -118,8 +118,8 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 		this.client
 			.execute(
 				() -> {
-					this.remove(this.field_33778);
-					this.field_33778 = this.addDrawableChild(
+					this.remove(this.cancelButton);
+					this.cancelButton = this.addDrawableChild(
 						new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked())
 					);
 				}

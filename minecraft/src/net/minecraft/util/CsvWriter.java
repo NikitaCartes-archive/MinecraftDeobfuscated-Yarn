@@ -1,4 +1,4 @@
-package net.minecraft.util.profiler;
+package net.minecraft.util;
 
 import com.google.common.collect.Lists;
 import java.io.IOException;

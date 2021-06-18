@@ -154,7 +154,7 @@ public class CommandManager {
 			stringReader.skip();
 		}
 
-		commandSource.getMinecraftServer().getProfiler().push(command);
+		commandSource.getServer().getProfiler().push(command);
 
 		byte var20;
 		try {
@@ -210,7 +210,7 @@ public class CommandManager {
 
 			var20 = 0;
 		} finally {
-			commandSource.getMinecraftServer().getProfiler().pop();
+			commandSource.getServer().getProfiler().pop();
 		}
 
 		return var20;

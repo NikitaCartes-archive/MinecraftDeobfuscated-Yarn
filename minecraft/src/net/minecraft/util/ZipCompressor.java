@@ -1,4 +1,4 @@
-package net.minecraft.util.profiler;
+package net.minecraft.util;
 
 import com.google.common.collect.ImmutableMap;
 import java.io.Closeable;
@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

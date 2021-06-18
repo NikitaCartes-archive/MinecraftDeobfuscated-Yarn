@@ -434,6 +434,11 @@ public class ZombieEntity extends HostileEntity {
 		return stack.isOf(Items.EGG) && this.isBaby() && this.hasVehicle() ? false : super.canPickupItem(stack);
 	}
 
+	@Override
+	public boolean canGather(ItemStack stack) {
+		return stack.isOf(Items.GLOW_INK_SAC) ? false : super.canGather(stack);
+	}
+
 	@Nullable
 	@Override
 	public EntityData initialize(

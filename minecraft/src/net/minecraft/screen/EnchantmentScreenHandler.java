@@ -88,34 +88,34 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		if (inventory == this.inventory) {
 			ItemStack itemStack = inventory.getStack(0);
 			if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
-				this.context.run((world, blockPos) -> {
+				this.context.run((world, pos) -> {
 					int ix = 0;
 
 					for (int j = -1; j <= 1; j++) {
 						for (int k = -1; k <= 1; k++) {
-							if ((j != 0 || k != 0) && world.isAir(blockPos.add(k, 0, j)) && world.isAir(blockPos.add(k, 1, j))) {
-								if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
+							if ((j != 0 || k != 0) && world.isAir(pos.add(k, 0, j)) && world.isAir(pos.add(k, 1, j))) {
+								if (world.getBlockState(pos.add(k * 2, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
 									ix++;
 								}
 
-								if (world.getBlockState(blockPos.add(k * 2, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
+								if (world.getBlockState(pos.add(k * 2, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
 									ix++;
 								}
 
 								if (k != 0 && j != 0) {
-									if (world.getBlockState(blockPos.add(k * 2, 0, j)).isOf(Blocks.BOOKSHELF)) {
+									if (world.getBlockState(pos.add(k * 2, 0, j)).isOf(Blocks.BOOKSHELF)) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k * 2, 1, j)).isOf(Blocks.BOOKSHELF)) {
+									if (world.getBlockState(pos.add(k * 2, 1, j)).isOf(Blocks.BOOKSHELF)) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
+									if (world.getBlockState(pos.add(k, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
 										ix++;
 									}
 
-									if (world.getBlockState(blockPos.add(k, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
+									if (world.getBlockState(pos.add(k, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
 										ix++;
 									}
 								}
@@ -169,7 +169,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			|| (player.experienceLevel < i || player.experienceLevel < this.enchantmentPower[id]) && !player.getAbilities().creativeMode) {
 			return false;
 		} else {
-			this.context.run((world, blockPos) -> {
+			this.context.run((world, pos) -> {
 				ItemStack itemStack3 = itemStack;
 				List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack, id, this.enchantmentPower[id]);
 				if (!list.isEmpty()) {
@@ -209,7 +209,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					this.inventory.markDirty();
 					this.seed.set(player.getEnchantmentTableSeed());
 					this.onContentChanged(this.inventory);
-					world.playSound(null, blockPos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
+					world.playSound(null, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 				}
 			});
 			return true;
@@ -236,9 +236,9 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public void close(PlayerEntity playerEntity) {
-		super.close(playerEntity);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.inventory));
+	public void close(PlayerEntity player) {
+		super.close(player);
+		this.context.run((world, pos) -> this.dropInventory(player, this.inventory));
 	}
 
 	@Override

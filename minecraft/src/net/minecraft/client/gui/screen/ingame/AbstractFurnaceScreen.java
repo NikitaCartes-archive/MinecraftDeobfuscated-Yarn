@@ -44,8 +44,8 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
+	public void handledScreenTick() {
+		super.handledScreenTick();
 		this.recipeBook.update();
 	}
 

@@ -405,8 +405,8 @@ public class FileDownload {
 		private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
 		private final WorldDownload worldDownload;
 
-		ResourcePackProgressListener(File file, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, WorldDownload worldDownload) {
-			this.tempFile = file;
+		ResourcePackProgressListener(File tempFile, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, WorldDownload worldDownload) {
+			this.tempFile = tempFile;
 			this.downloadStatus = downloadStatus;
 			this.worldDownload = worldDownload;
 		}

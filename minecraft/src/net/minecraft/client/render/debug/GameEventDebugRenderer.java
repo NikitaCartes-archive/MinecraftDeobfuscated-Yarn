@@ -94,16 +94,16 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
 				listener2.getPos(world)
 					.ifPresent(
-						blockPosx -> {
+						pos -> {
 							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
 							WorldRenderer.drawBox(
 								bufferBuilder,
-								(double)((float)blockPosx.getX() - 0.25F) - cameraX,
-								(double)blockPosx.getY() - cameraY,
-								(double)((float)blockPosx.getZ() - 0.25F) - cameraZ,
-								(double)((float)blockPosx.getX() + 0.25F) - cameraX,
-								(double)blockPosx.getY() - cameraY + 1.0,
-								(double)((float)blockPosx.getZ() + 0.25F) - cameraZ,
+								(double)((float)pos.getX() - 0.25F) - cameraX,
+								(double)pos.getY() - cameraY,
+								(double)((float)pos.getZ() - 0.25F) - cameraZ,
+								(double)((float)pos.getX() + 0.25F) - cameraX,
+								(double)pos.getY() - cameraY + 1.0,
+								(double)((float)pos.getZ() + 0.25F) - cameraZ,
 								vec3f.getX(),
 								vec3f.getY(),
 								vec3f.getZ(),
@@ -120,15 +120,10 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.depthMask(false);
 
 			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
-				listener2.getPos(world)
-					.ifPresent(
-						blockPosx -> {
-							DebugRenderer.drawString("Listener Origin", (double)blockPosx.getX(), (double)((float)blockPosx.getY() + 1.8F), (double)blockPosx.getZ(), -1, 0.025F);
-							DebugRenderer.drawString(
-								new BlockPos(blockPosx).toString(), (double)blockPosx.getX(), (double)((float)blockPosx.getY() + 1.5F), (double)blockPosx.getZ(), -6959665, 0.025F
-							);
-						}
-					);
+				listener2.getPos(world).ifPresent(pos -> {
+					DebugRenderer.drawString("Listener Origin", (double)pos.getX(), (double)((float)pos.getY() + 1.8F), (double)pos.getZ(), -1, 0.025F);
+					DebugRenderer.drawString(new BlockPos(pos).toString(), (double)pos.getX(), (double)((float)pos.getY() + 1.5F), (double)pos.getZ(), -6959665, 0.025F);
+				});
 			}
 
 			for (GameEventDebugRenderer.Entry entry : this.entries) {
@@ -140,7 +135,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 				double h = vec3d.x + 0.2F;
 				double i = vec3d.y + 0.2F + 0.5;
 				double j = vec3d.z + 0.2F;
-				method_33089(new Box(e, f, g, h, i, j), 1.0F, 1.0F, 1.0F, 0.2F);
+				drawBoxIfCameraReady(new Box(e, f, g, h, i, j), 1.0F, 1.0F, 1.0F, 0.2F);
 				DebugRenderer.drawString(entry.event.getId(), vec3d.x, vec3d.y + 0.85F, vec3d.z, -7564911, 0.0075F);
 			}
 
@@ -150,13 +145,13 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	private static void method_33089(Box box, float f, float g, float h, float i) {
+	private static void drawBoxIfCameraReady(Box box, float red, float green, float blue, float alpha) {
 		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		if (camera.isReady()) {
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			Vec3d vec3d = camera.getPos().negate();
-			DebugRenderer.drawBox(box.offset(vec3d), f, g, h, i);
+			DebugRenderer.drawBox(box.offset(vec3d), red, green, blue, alpha);
 		}
 	}
 

@@ -21,7 +21,7 @@ public class DefaultGameModeCommand {
 
 	private static int execute(ServerCommandSource source, GameMode defaultGameMode) {
 		int i = 0;
-		MinecraftServer minecraftServer = source.getMinecraftServer();
+		MinecraftServer minecraftServer = source.getServer();
 		minecraftServer.setDefaultGameMode(defaultGameMode);
 		GameMode gameMode = minecraftServer.getForcedGameMode();
 		if (gameMode != null) {

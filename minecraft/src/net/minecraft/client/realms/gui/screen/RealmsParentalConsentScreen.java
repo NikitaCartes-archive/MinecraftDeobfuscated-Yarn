@@ -16,7 +16,7 @@ import net.minecraft.util.Util;
 public class RealmsParentalConsentScreen extends RealmsScreen {
 	private static final Text PRIVACY_INFO_TEXT = new TranslatableText("mco.account.privacyinfo");
 	private final Screen parent;
-	private MultilineText field_26492 = MultilineText.EMPTY;
+	private MultilineText privacyInfoText = MultilineText.EMPTY;
 
 	public RealmsParentalConsentScreen(Screen parent) {
 		super(NarratorManager.EMPTY);
@@ -37,7 +37,7 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 			new ButtonWidget(this.width / 2 - (i + 5), row(13), i, 20, text, button -> Util.getOperatingSystem().open("https://aka.ms/UpdateMojangAccount"))
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, row(13), i, 20, text2, button -> this.client.openScreen(this.parent)));
-		this.field_26492 = MultilineText.create(this.textRenderer, PRIVACY_INFO_TEXT, (int)Math.round((double)this.width * 0.9));
+		this.privacyInfoText = MultilineText.create(this.textRenderer, PRIVACY_INFO_TEXT, (int)Math.round((double)this.width * 0.9));
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.field_26492.drawCenterWithShadow(matrices, this.width / 2, 15, 15, 16777215);
+		this.privacyInfoText.drawCenterWithShadow(matrices, this.width / 2, 15, 15, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

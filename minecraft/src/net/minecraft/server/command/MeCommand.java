@@ -21,7 +21,7 @@ public class MeCommand {
 							context -> {
 								String string = StringArgumentType.getString(context, "action");
 								Entity entity = context.getSource().getEntity();
-								MinecraftServer minecraftServer = context.getSource().getMinecraftServer();
+								MinecraftServer minecraftServer = context.getSource().getServer();
 								if (entity != null) {
 									if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 										serverPlayerEntity.getTextStream()

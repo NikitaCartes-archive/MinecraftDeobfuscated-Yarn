@@ -90,8 +90,8 @@ public final class NativeImage implements AutoCloseable {
 		return "NativeImage[" + this.format + " " + this.width + "x" + this.height + "@" + this.pointer + (this.isStbImage ? "S" : "N") + "]";
 	}
 
-	private boolean method_36559(int i, int j) {
-		return i < 0 || i >= this.width || j < 0 || j >= this.height;
+	private boolean isOutOfBounds(int x, int y) {
+		return x < 0 || x >= this.width || y < 0 || y >= this.height;
 	}
 
 	public static NativeImage read(InputStream inputStream) throws IOException {
@@ -193,7 +193,7 @@ public final class NativeImage implements AutoCloseable {
 	public int getPixelColor(int x, int y) {
 		if (this.format != NativeImage.Format.ABGR) {
 			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
-		} else if (this.method_36559(x, y)) {
+		} else if (this.isOutOfBounds(x, y)) {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
 			this.checkAllocated();
@@ -211,7 +211,7 @@ public final class NativeImage implements AutoCloseable {
 	public void setPixelColor(int x, int y, int color) {
 		if (this.format != NativeImage.Format.ABGR) {
 			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
-		} else if (this.method_36559(x, y)) {
+		} else if (this.isOutOfBounds(x, y)) {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
 			this.checkAllocated();
@@ -220,59 +220,59 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void method_35621(int i, int j, byte b) {
+	public void setPixelLuminance(int x, int y, byte luminance) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		if (!this.format.hasLuminance()) {
 			throw new IllegalArgumentException(String.format("setPixelLuminance only works on image with luminance; have %s", this.format));
-		} else if (this.method_36559(i, j)) {
-			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+		} else if (this.isOutOfBounds(x, y)) {
+			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
 			this.checkAllocated();
-			long l = ((long)i + (long)j * (long)this.width) * (long)this.format.getChannelCount() + (long)(this.format.getLuminanceChannelOffset() / 8);
-			MemoryUtil.memPutByte(this.pointer + l, b);
+			long l = ((long)x + (long)y * (long)this.width) * (long)this.format.getChannelCount() + (long)(this.format.getLuminanceChannelOffset() / 8);
+			MemoryUtil.memPutByte(this.pointer + l, luminance);
 		}
 	}
 
-	public byte method_35623(int i, int j) {
+	public byte getRed(int x, int y) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		if (!this.format.hasRedChannel()) {
 			throw new IllegalArgumentException(String.format("no red or luminance in %s", this.format));
-		} else if (this.method_36559(i, j)) {
-			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+		} else if (this.isOutOfBounds(x, y)) {
+			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
-			int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getRedOrLuminanceOffset() / 8;
-			return MemoryUtil.memGetByte(this.pointer + (long)k);
+			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getRedOrLuminanceOffset() / 8;
+			return MemoryUtil.memGetByte(this.pointer + (long)i);
 		}
 	}
 
-	public byte method_35625(int i, int j) {
+	public byte getGreen(int x, int y) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		if (!this.format.hasGreenChannel()) {
 			throw new IllegalArgumentException(String.format("no green or luminance in %s", this.format));
-		} else if (this.method_36559(i, j)) {
-			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+		} else if (this.isOutOfBounds(x, y)) {
+			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
-			int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getGreenOrLuminanceOffset() / 8;
-			return MemoryUtil.memGetByte(this.pointer + (long)k);
+			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getGreenOrLuminanceOffset() / 8;
+			return MemoryUtil.memGetByte(this.pointer + (long)i);
 		}
 	}
 
-	public byte method_35626(int i, int j) {
+	public byte getBlue(int x, int y) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		if (!this.format.hasBlueChannel()) {
 			throw new IllegalArgumentException(String.format("no blue or luminance in %s", this.format));
-		} else if (this.method_36559(i, j)) {
-			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", i, j, this.width, this.height));
+		} else if (this.isOutOfBounds(x, y)) {
+			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
-			int k = (i + j * this.width) * this.format.getChannelCount() + this.format.getBlueOrLuminanceOffset() / 8;
-			return MemoryUtil.memGetByte(this.pointer + (long)k);
+			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getBlueOrLuminanceOffset() / 8;
+			return MemoryUtil.memGetByte(this.pointer + (long)i);
 		}
 	}
 
 	public byte getPixelOpacity(int x, int y) {
 		if (!this.format.hasOpacityChannel()) {
 			throw new IllegalArgumentException(String.format("no luminance or alpha in %s", this.format));
-		} else if (this.method_36559(x, y)) {
+		} else if (this.isOutOfBounds(x, y)) {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
 			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getOpacityOffset() / 8;
@@ -280,45 +280,45 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void method_35624(int i, int j, int k) {
+	public void blendPixel(int x, int y, int color) {
 		if (this.format != NativeImage.Format.ABGR) {
 			throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
 		} else {
-			int l = this.getPixelColor(i, j);
-			float f = (float)getAlpha(k) / 255.0F;
-			float g = (float)getBlue(k) / 255.0F;
-			float h = (float)getGreen(k) / 255.0F;
-			float m = (float)getRed(k) / 255.0F;
-			float n = (float)getAlpha(l) / 255.0F;
-			float o = (float)getBlue(l) / 255.0F;
-			float p = (float)getGreen(l) / 255.0F;
-			float q = (float)getRed(l) / 255.0F;
-			float s = 1.0F - f;
-			float t = f * f + n * s;
-			float u = g * f + o * s;
-			float v = h * f + p * s;
-			float w = m * f + q * s;
+			int i = this.getPixelColor(x, y);
+			float f = (float)getAlpha(color) / 255.0F;
+			float g = (float)getBlue(color) / 255.0F;
+			float h = (float)getGreen(color) / 255.0F;
+			float j = (float)getRed(color) / 255.0F;
+			float k = (float)getAlpha(i) / 255.0F;
+			float l = (float)getBlue(i) / 255.0F;
+			float m = (float)getGreen(i) / 255.0F;
+			float n = (float)getRed(i) / 255.0F;
+			float p = 1.0F - f;
+			float q = f * f + k * p;
+			float r = g * f + l * p;
+			float s = h * f + m * p;
+			float t = j * f + n * p;
+			if (q > 1.0F) {
+				q = 1.0F;
+			}
+
+			if (r > 1.0F) {
+				r = 1.0F;
+			}
+
+			if (s > 1.0F) {
+				s = 1.0F;
+			}
+
 			if (t > 1.0F) {
 				t = 1.0F;
 			}
 
-			if (u > 1.0F) {
-				u = 1.0F;
-			}
-
-			if (v > 1.0F) {
-				v = 1.0F;
-			}
-
-			if (w > 1.0F) {
-				w = 1.0F;
-			}
-
-			int x = (int)(t * 255.0F);
-			int y = (int)(u * 255.0F);
-			int z = (int)(v * 255.0F);
-			int aa = (int)(w * 255.0F);
-			this.setPixelColor(i, j, getAbgrColor(x, y, z, aa));
+			int u = (int)(q * 255.0F);
+			int v = (int)(r * 255.0F);
+			int w = (int)(s * 255.0F);
+			int z = (int)(t * 255.0F);
+			this.setPixelColor(x, y, getAbgrColor(u, v, w, z));
 		}
 	}
 

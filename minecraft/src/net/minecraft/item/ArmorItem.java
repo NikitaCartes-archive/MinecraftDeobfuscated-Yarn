@@ -47,7 +47,7 @@ public class ArmorItem extends Item implements Wearable {
 	private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
 	public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
-		BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+		BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 		List<LivingEntity> list = pointer.getWorld()
 			.getEntitiesByClass(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.Equipable(armor)));
 		if (list.isEmpty()) {

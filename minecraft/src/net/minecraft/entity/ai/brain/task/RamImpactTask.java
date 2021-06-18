@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -13,7 +12,9 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -28,7 +29,6 @@ public class RamImpactTask<E extends PathAwareEntity> extends Task<E> {
 	public static final float SPEED_STRENGTH_MULTIPLIER = 1.65F;
 	private final Function<E, UniformIntProvider> cooldownRangeFactory;
 	private final TargetPredicate targetPredicate;
-	private final ToIntFunction<E> damage;
 	private final float speed;
 	private final ToDoubleFunction<E> strengthMultiplierFactory;
 	private Vec3d direction;
@@ -37,7 +37,6 @@ public class RamImpactTask<E extends PathAwareEntity> extends Task<E> {
 	public RamImpactTask(
 		Function<E, UniformIntProvider> cooldownRangeFactory,
 		TargetPredicate targetPredicate,
-		ToIntFunction<E> damage,
 		float speed,
 		ToDoubleFunction<E> strengthMultiplierFactory,
 		Function<E, SoundEvent> soundFactory
@@ -45,7 +44,6 @@ public class RamImpactTask<E extends PathAwareEntity> extends Task<E> {
 		super(ImmutableMap.of(MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.RAM_TARGET, MemoryModuleState.VALUE_PRESENT), 200);
 		this.cooldownRangeFactory = cooldownRangeFactory;
 		this.targetPredicate = targetPredicate;
-		this.damage = damage;
 		this.speed = speed;
 		this.strengthMultiplierFactory = strengthMultiplierFactory;
 		this.soundFactory = soundFactory;
@@ -73,10 +71,13 @@ public class RamImpactTask<E extends PathAwareEntity> extends Task<E> {
 		Brain<?> brain = pathAwareEntity.getBrain();
 		if (!list.isEmpty()) {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
-			livingEntity.damage(DamageSource.mob(pathAwareEntity).setNeutral(), (float)this.damage.applyAsInt(pathAwareEntity));
-			float f = livingEntity.blockedByShield(DamageSource.mob(pathAwareEntity)) ? 0.5F : 1.0F;
-			float g = MathHelper.clamp(pathAwareEntity.getMovementSpeed() * 1.65F, 0.2F, 3.0F);
-			livingEntity.takeKnockback((double)(f * g) * this.strengthMultiplierFactory.applyAsDouble(pathAwareEntity), this.direction.getX(), this.direction.getZ());
+			livingEntity.damage(DamageSource.mob(pathAwareEntity).setNeutral(), (float)pathAwareEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+			int i = pathAwareEntity.hasStatusEffect(StatusEffects.SPEED) ? pathAwareEntity.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1 : 0;
+			int j = pathAwareEntity.hasStatusEffect(StatusEffects.SLOWNESS) ? pathAwareEntity.getStatusEffect(StatusEffects.SLOWNESS).getAmplifier() + 1 : 0;
+			float f = 0.25F * (float)(i - j);
+			float g = MathHelper.clamp(pathAwareEntity.getMovementSpeed() * 1.65F, 0.2F, 3.0F) + f;
+			float h = livingEntity.blockedByShield(DamageSource.mob(pathAwareEntity)) ? 0.5F : 1.0F;
+			livingEntity.takeKnockback((double)(h * g) * this.strengthMultiplierFactory.applyAsDouble(pathAwareEntity), this.direction.getX(), this.direction.getZ());
 			this.finishRam(serverWorld, pathAwareEntity);
 			serverWorld.playSoundFromEntity(null, pathAwareEntity, (SoundEvent)this.soundFactory.apply(pathAwareEntity), SoundCategory.HOSTILE, 1.0F, 1.0F);
 		} else {

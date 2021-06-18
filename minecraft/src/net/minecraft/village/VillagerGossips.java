@@ -32,11 +32,11 @@ public class VillagerGossips {
 	private final Map<UUID, VillagerGossips.Reputation> entityReputation = Maps.<UUID, VillagerGossips.Reputation>newHashMap();
 
 	@Debug
-	public Map<UUID, Object2IntMap<VillageGossipType>> method_35120() {
+	public Map<UUID, Object2IntMap<VillageGossipType>> getEntityReputationAssociatedGossips() {
 		Map<UUID, Object2IntMap<VillageGossipType>> map = Maps.<UUID, Object2IntMap<VillageGossipType>>newHashMap();
-		this.entityReputation.keySet().forEach(uUID -> {
-			VillagerGossips.Reputation reputation = (VillagerGossips.Reputation)this.entityReputation.get(uUID);
-			map.put(uUID, reputation.associatedGossip);
+		this.entityReputation.keySet().forEach(uuid -> {
+			VillagerGossips.Reputation reputation = (VillagerGossips.Reputation)this.entityReputation.get(uuid);
+			map.put(uuid, reputation.associatedGossip);
 		});
 		return map;
 	}

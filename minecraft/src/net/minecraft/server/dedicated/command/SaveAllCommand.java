@@ -22,7 +22,7 @@ public class SaveAllCommand {
 
 	private static int saveAll(ServerCommandSource source, boolean flush) throws CommandSyntaxException {
 		source.sendFeedback(new TranslatableText("commands.save.saving"), false);
-		MinecraftServer minecraftServer = source.getMinecraftServer();
+		MinecraftServer minecraftServer = source.getServer();
 		minecraftServer.getPlayerManager().saveAllPlayerData();
 		boolean bl = minecraftServer.save(true, flush, true);
 		if (!bl) {

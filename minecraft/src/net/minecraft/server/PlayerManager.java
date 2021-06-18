@@ -8,6 +8,7 @@ import com.mojang.serialization.Dynamic;
 import io.netty.buffer.Unpooled;
 import java.io.File;
 import java.net.SocketAddress;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -772,7 +774,8 @@ public abstract class PlayerManager {
 			File file2 = new File(file, uUID + ".json");
 			if (!file2.exists()) {
 				File file3 = new File(file, player.getName().getString() + ".json");
-				if (file3.exists() && file3.isFile()) {
+				Path path = file3.toPath();
+				if (FileNameUtil.isNormal(path) && FileNameUtil.isAllowedName(path) && path.startsWith(file.getPath()) && file3.isFile()) {
 					file3.renameTo(file2);
 				}
 			}

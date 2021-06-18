@@ -190,7 +190,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 			&& mouseY < (double)(this.y + this.height);
 	}
 
-	public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+	public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
 	}
 
 	public void playDownSound(SoundManager soundManager) {

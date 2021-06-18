@@ -27,7 +27,7 @@ public class MinecartItem extends Item {
 			double d = pointer.getX() + (double)direction.getOffsetX() * 1.125;
 			double e = Math.floor(pointer.getY()) + (double)direction.getOffsetY();
 			double f = pointer.getZ() + (double)direction.getOffsetZ() * 1.125;
-			BlockPos blockPos = pointer.getBlockPos().offset(direction);
+			BlockPos blockPos = pointer.getPos().offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
 			RailShape railShape = blockState.getBlock() instanceof AbstractRailBlock
 				? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
@@ -67,7 +67,7 @@ public class MinecartItem extends Item {
 
 		@Override
 		protected void playSound(BlockPointer pointer) {
-			pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getBlockPos(), 0);
+			pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getPos(), 0);
 		}
 	};
 	final AbstractMinecartEntity.Type type;

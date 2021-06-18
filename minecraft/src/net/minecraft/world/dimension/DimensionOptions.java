@@ -24,7 +24,10 @@ import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 public final class DimensionOptions {
 	public static final Codec<DimensionOptions> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					DimensionType.REGISTRY_CODEC.fieldOf("type").flatXmap(Codecs.method_37352(), Codecs.method_37352()).forGetter(DimensionOptions::getDimensionTypeSupplier),
+					DimensionType.REGISTRY_CODEC
+						.fieldOf("type")
+						.flatXmap(Codecs.createPresentValueChecker(), Codecs.createPresentValueChecker())
+						.forGetter(DimensionOptions::getDimensionTypeSupplier),
 					ChunkGenerator.CODEC.fieldOf("generator").forGetter(DimensionOptions::getChunkGenerator)
 				)
 				.apply(instance, instance.stable(DimensionOptions::new))

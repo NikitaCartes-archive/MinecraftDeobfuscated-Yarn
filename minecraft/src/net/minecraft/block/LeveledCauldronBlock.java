@@ -67,7 +67,7 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 
 	@Override
 	public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
-		if (CauldronBlock.canFillWithPrecipitation(world) && (Integer)state.get(LEVEL) != 3 && this.precipitationPredicate.test(precipitation)) {
+		if (CauldronBlock.canFillWithPrecipitation(world, precipitation) && (Integer)state.get(LEVEL) != 3 && this.precipitationPredicate.test(precipitation)) {
 			world.setBlockState(pos, state.cycle(LEVEL));
 		}
 	}

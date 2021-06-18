@@ -44,7 +44,7 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 
 	public static Advancement getAdvancementArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
 		Identifier identifier = context.getArgument(argumentName, Identifier.class);
-		Advancement advancement = context.getSource().getMinecraftServer().getAdvancementLoader().get(identifier);
+		Advancement advancement = context.getSource().getServer().getAdvancementLoader().get(identifier);
 		if (advancement == null) {
 			throw UNKNOWN_ADVANCEMENT_EXCEPTION.create(identifier);
 		} else {
@@ -53,14 +53,14 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	}
 
 	public static Recipe<?> getRecipeArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-		RecipeManager recipeManager = context.getSource().getMinecraftServer().getRecipeManager();
+		RecipeManager recipeManager = context.getSource().getServer().getRecipeManager();
 		Identifier identifier = context.getArgument(argumentName, Identifier.class);
 		return (Recipe<?>)recipeManager.get(identifier).orElseThrow(() -> UNKNOWN_RECIPE_EXCEPTION.create(identifier));
 	}
 
 	public static LootCondition getPredicateArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
 		Identifier identifier = context.getArgument(argumentName, Identifier.class);
-		LootConditionManager lootConditionManager = context.getSource().getMinecraftServer().getPredicateManager();
+		LootConditionManager lootConditionManager = context.getSource().getServer().getPredicateManager();
 		LootCondition lootCondition = lootConditionManager.get(identifier);
 		if (lootCondition == null) {
 			throw UNKNOWN_PREDICATE_EXCEPTION.create(identifier);
@@ -71,7 +71,7 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 
 	public static LootFunction getItemModifierArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
 		Identifier identifier = context.getArgument(argumentName, Identifier.class);
-		LootFunctionManager lootFunctionManager = context.getSource().getMinecraftServer().getItemModifierManager();
+		LootFunctionManager lootFunctionManager = context.getSource().getServer().getItemModifierManager();
 		LootFunction lootFunction = lootFunctionManager.get(identifier);
 		if (lootFunction == null) {
 			throw UNKNOWN_ITEM_MODIFIER_EXCEPTION.create(identifier);

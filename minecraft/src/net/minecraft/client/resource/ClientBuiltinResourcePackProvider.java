@@ -52,9 +52,9 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		new TranslatableText("resourcePack.vanilla.description"), ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion())
 	);
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Pattern ALPHANUMERAL = Pattern.compile("^[a-fA-F0-9]{40}$");
-	private static final int field_32958 = 104857600;
-	private static final int field_32959 = 10;
+	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
+	private static final int MAX_FILE_SIZE = 104857600;
+	private static final int MAX_SAVED_PACKS = 10;
 	private static final String VANILLA = "vanilla";
 	private static final String SERVER = "server";
 	private static final String PROGRAMER_ART_ID = "programer_art";
@@ -109,34 +109,34 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		return map;
 	}
 
-	public CompletableFuture<?> download(String string, String string2, boolean bl) {
-		String string3 = DigestUtils.sha1Hex(string);
-		String string4 = ALPHANUMERAL.matcher(string2).matches() ? string2 : "";
+	public CompletableFuture<?> download(String url, String packSha1, boolean closeAfterDownload) {
+		String string = DigestUtils.sha1Hex(url);
+		String string2 = SHA1_PATTERN.matcher(packSha1).matches() ? packSha1 : "";
 		this.lock.lock();
 
 		CompletableFuture var14;
 		try {
 			this.clear();
 			this.deleteOldServerPack();
-			File file = new File(this.serverPacksRoot, string3);
+			File file = new File(this.serverPacksRoot, string);
 			CompletableFuture<?> completableFuture;
 			if (file.exists()) {
 				completableFuture = CompletableFuture.completedFuture("");
 			} else {
-				ProgressScreen progressScreen = new ProgressScreen(bl);
+				ProgressScreen progressScreen = new ProgressScreen(closeAfterDownload);
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
 				minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
-				completableFuture = NetworkUtils.downloadResourcePack(file, string, map, 104857600, progressScreen, minecraftClient.getNetworkProxy());
+				completableFuture = NetworkUtils.downloadResourcePack(file, url, map, 104857600, progressScreen, minecraftClient.getNetworkProxy());
 			}
 
 			this.downloadTask = completableFuture.thenCompose(object -> {
-					if (!this.verifyFile(string4, file)) {
+					if (!this.verifyFile(string2, file)) {
 						return Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"));
 					} else {
 						MinecraftClient minecraftClientx = MinecraftClient.getInstance();
 						minecraftClientx.execute(() -> {
-							if (!bl) {
+							if (!closeAfterDownload) {
 								minecraftClientx.openScreen(new SaveLevelScreen(APPLYING_PACK_TEXT));
 							}
 						});
@@ -152,8 +152,8 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 							minecraftClientx.execute(
 								() -> minecraftClientx.openScreen(
 										new ConfirmScreen(
-											blx -> {
-												if (blx) {
+											confirmed -> {
+												if (confirmed) {
 													minecraftClientx.openScreen(null);
 												} else {
 													ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClientx.getNetworkHandler();

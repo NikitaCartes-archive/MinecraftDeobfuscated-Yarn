@@ -91,8 +91,6 @@ public final class ItemStack {
 		new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
 	);
 	public static final String ENCHANTMENTS_KEY = "Enchantments";
-	public static final String ID_KEY = "id";
-	public static final String LVL_KEY = "lvl";
 	public static final String DISPLAY_KEY = "display";
 	public static final String NAME_KEY = "Name";
 	public static final String LORE_KEY = "Lore";
@@ -767,7 +765,9 @@ public final class ItemStack {
 	public static void appendEnchantments(List<Text> tooltip, NbtList enchantments) {
 		for (int i = 0; i < enchantments.size(); i++) {
 			NbtCompound nbtCompound = enchantments.getCompound(i);
-			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString("id"))).ifPresent(e -> tooltip.add(e.getName(nbtCompound.getInt("lvl"))));
+			Registry.ENCHANTMENT
+				.getOrEmpty(EnchantmentHelper.getIdFromNbt(nbtCompound))
+				.ifPresent(e -> tooltip.add(e.getName(EnchantmentHelper.getLevelFromNbt(nbtCompound))));
 		}
 	}
 
@@ -816,10 +816,7 @@ public final class ItemStack {
 		}
 
 		NbtList nbtList = this.tag.getList("Enchantments", NbtElement.COMPOUND_TYPE);
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
-		nbtCompound.putShort("lvl", (short)((byte)level));
-		nbtList.add(nbtCompound);
+		nbtList.add(EnchantmentHelper.createNbt(EnchantmentHelper.getEnchantmentId(enchantment), (byte)level));
 	}
 
 	public boolean hasEnchantments() {

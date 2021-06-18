@@ -21,7 +21,7 @@ public class BendingTrunkPlacer extends TrunkPlacer {
 		instance -> fillTrunkPlacerFields(instance)
 				.<Integer, IntProvider>and(
 					instance.group(
-						Codecs.field_33442.optionalFieldOf("min_height_for_leaves", 1).forGetter(placer -> placer.minHeightForLeaves),
+						Codecs.POSITIVE_INT.optionalFieldOf("min_height_for_leaves", 1).forGetter(placer -> placer.minHeightForLeaves),
 						IntProvider.createValidatingCodec(1, 64).fieldOf("bend_length").forGetter(placer -> placer.bendLength)
 					)
 				)

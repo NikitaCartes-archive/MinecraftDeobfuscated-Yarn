@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
-	private static final int field_32902 = 160;
+	private static final int RANGE = 160;
 	private final MinecraftClient client;
 	private final Map<Integer, List<GoalSelectorDebugRenderer.GoalSelector>> goalSelectors = Maps.<Integer, List<GoalSelectorDebugRenderer.GoalSelector>>newHashMap();
 

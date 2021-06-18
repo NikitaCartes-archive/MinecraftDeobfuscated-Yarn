@@ -45,6 +45,7 @@ import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.crash.CrashMemoryReserve;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -159,14 +160,24 @@ public class LevelStorage {
 					boolean bl;
 					try {
 						bl = SessionLock.isLocked(file.toPath());
-					} catch (Exception var9) {
-						LOGGER.warn("Failed to read {} lock", file, var9);
+					} catch (Exception var12) {
+						LOGGER.warn("Failed to read {} lock", file, var12);
 						continue;
 					}
 
-					LevelSummary levelSummary = this.readLevelProperties(file, this.createLevelDataParser(file, bl));
-					if (levelSummary != null) {
-						list.add(levelSummary);
+					try {
+						LevelSummary levelSummary = this.readLevelProperties(file, this.createLevelDataParser(file, bl));
+						if (levelSummary != null) {
+							list.add(levelSummary);
+						}
+					} catch (OutOfMemoryError var11) {
+						CrashMemoryReserve.releaseMemory();
+						System.gc();
+						String string = String.format("Ran out of memory trying to read summary of \"%s\"", file);
+						LOGGER.fatal(string);
+						OutOfMemoryError outOfMemoryError2 = new OutOfMemoryError(string);
+						outOfMemoryError2.initCause(var11);
+						throw outOfMemoryError2;
 					}
 				}
 			}

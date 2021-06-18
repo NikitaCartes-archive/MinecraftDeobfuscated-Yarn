@@ -10,10 +10,15 @@ import org.apache.commons.lang3.Validate;
 
 public class DefaultedList<E> extends AbstractList<E> {
 	private final List<E> delegate;
+	@Nullable
 	private final E initialElement;
 
 	public static <E> DefaultedList<E> of() {
-		return new DefaultedList<>();
+		return new DefaultedList<>(Lists.<E>newArrayList(), null);
+	}
+
+	public static <E> DefaultedList<E> ofSize(int size) {
+		return new DefaultedList<>(Lists.<E>newArrayListWithCapacity(size), null);
 	}
 
 	public static <E> DefaultedList<E> ofSize(int size, E defaultValue) {
@@ -26,10 +31,6 @@ public class DefaultedList<E> extends AbstractList<E> {
 	@SafeVarargs
 	public static <E> DefaultedList<E> copyOf(E defaultValue, E... values) {
 		return new DefaultedList<>(Arrays.asList(values), defaultValue);
-	}
-
-	protected DefaultedList() {
-		this(Lists.<E>newArrayList(), null);
 	}
 
 	protected DefaultedList(List<E> delegate, @Nullable E initialElement) {

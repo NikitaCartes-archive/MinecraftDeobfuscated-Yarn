@@ -24,7 +24,7 @@ public class GeodeLayerConfig {
 					BlockStateProvider.TYPE_CODEC.fieldOf("alternate_inner_layer_provider").forGetter(geodeLayerConfig -> geodeLayerConfig.alternateInnerLayerProvider),
 					BlockStateProvider.TYPE_CODEC.fieldOf("middle_layer_provider").forGetter(geodeLayerConfig -> geodeLayerConfig.middleLayerProvider),
 					BlockStateProvider.TYPE_CODEC.fieldOf("outer_layer_provider").forGetter(geodeLayerConfig -> geodeLayerConfig.outerLayerProvider),
-					Codecs.method_36973(BlockState.CODEC.listOf()).fieldOf("inner_placements").forGetter(geodeLayerConfig -> geodeLayerConfig.innerBlocks),
+					Codecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("inner_placements").forGetter(geodeLayerConfig -> geodeLayerConfig.innerBlocks),
 					Identifier.CODEC.fieldOf("cannot_replace").forGetter(geodeLayerConfig -> geodeLayerConfig.cannotReplace),
 					Identifier.CODEC.fieldOf("invalid_blocks").forGetter(geodeLayerConfig -> geodeLayerConfig.invalidBlocks)
 				)

@@ -11,7 +11,7 @@ import net.minecraft.text.TranslatableText;
 
 public class FunctionCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
-		CommandFunctionManager commandFunctionManager = context.getSource().getMinecraftServer().getCommandFunctionManager();
+		CommandFunctionManager commandFunctionManager = context.getSource().getServer().getCommandFunctionManager();
 		CommandSource.suggestIdentifiers(commandFunctionManager.getFunctionTags(), builder, "#");
 		return CommandSource.suggestIdentifiers(commandFunctionManager.getAllFunctions(), builder);
 	};
@@ -32,7 +32,7 @@ public class FunctionCommand {
 		int i = 0;
 
 		for (CommandFunction commandFunction : functions) {
-			i += source.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, source.withSilent().withMaxLevel(2));
+			i += source.getServer().getCommandFunctionManager().execute(commandFunction, source.withSilent().withMaxLevel(2));
 		}
 
 		if (functions.size() == 1) {

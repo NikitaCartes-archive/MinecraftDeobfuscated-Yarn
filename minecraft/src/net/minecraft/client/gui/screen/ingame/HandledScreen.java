@@ -115,7 +115,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				this.focusedSlot = slot;
 				int l = slot.x;
 				int m = slot.y;
-				method_33285(matrices, l, m, this.getZOffset());
+				drawSlotHighlight(matrices, l, m, this.getZOffset());
 			}
 		}
 
@@ -158,10 +158,10 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		RenderSystem.enableDepthTest();
 	}
 
-	public static void method_33285(MatrixStack matrices, int x, int y, int color) {
+	public static void drawSlotHighlight(MatrixStack matrices, int x, int y, int z) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.colorMask(true, true, true, false);
-		fillGradient(matrices, x, y, x + 16, y + 16, -2130706433, -2130706433, color);
+		fillGradient(matrices, x, y, x + 16, y + 16, -2130706433, -2130706433, z);
 		RenderSystem.colorMask(true, true, true, true);
 		RenderSystem.enableDepthTest();
 	}
@@ -614,11 +614,16 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	@Override
-	public void tick() {
+	public final void tick() {
 		super.tick();
-		if (!this.client.player.isAlive() || this.client.player.isRemoved()) {
+		if (this.client.player.isAlive() && !this.client.player.isRemoved()) {
+			this.handledScreenTick();
+		} else {
 			this.client.player.closeHandledScreen();
 		}
+	}
+
+	protected void handledScreenTick() {
 	}
 
 	@Override

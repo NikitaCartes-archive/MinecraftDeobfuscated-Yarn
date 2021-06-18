@@ -11,16 +11,16 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.util.profiler.ProfilerDumper;
-import net.minecraft.entity.ai.Durations;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.SystemDetails;
+import net.minecraft.util.TimeHelper;
+import net.minecraft.util.ZipCompressor;
 import net.minecraft.util.profiler.ProfileResult;
-import net.minecraft.util.profiler.ZipCompressor;
+import net.minecraft.util.profiler.RecordDumper;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,29 +42,29 @@ public class PerfCommand {
 	}
 
 	private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
-		MinecraftServer minecraftServer = source.getMinecraftServer();
-		if (minecraftServer.isRunningMonitor()) {
+		MinecraftServer minecraftServer = source.getServer();
+		if (minecraftServer.isRecorderActive()) {
 			throw ALREADY_RUNNING_EXCEPTION.create();
 		} else {
 			Consumer<ProfileResult> consumer = result -> sendProfilingStoppedMessage(source, result);
-			Consumer<Path> consumer2 = path -> saveReport(source, path, minecraftServer);
-			minecraftServer.method_37320(consumer, consumer2);
+			Consumer<Path> consumer2 = dumpDirectory -> saveReport(source, dumpDirectory, minecraftServer);
+			minecraftServer.setupRecorder(consumer, consumer2);
 			source.sendFeedback(new TranslatableText("commands.perf.started"), false);
 			return 0;
 		}
 	}
 
 	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
-		MinecraftServer minecraftServer = source.getMinecraftServer();
-		if (!minecraftServer.isRunningMonitor()) {
+		MinecraftServer minecraftServer = source.getServer();
+		if (!minecraftServer.isRecorderActive()) {
 			throw NOT_RUNNING_EXCEPTION.create();
 		} else {
-			minecraftServer.method_37323();
+			minecraftServer.stopRecorder();
 			return 0;
 		}
 	}
 
-	private static void saveReport(ServerCommandSource source, Path tempProfilingFile, MinecraftServer server) {
+	private static void saveReport(ServerCommandSource source, Path tempProfilingDirectory, MinecraftServer server) {
 		String string = String.format(
 			"%s-%s-%s",
 			new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()),
@@ -74,18 +74,18 @@ public class PerfCommand {
 
 		String string2;
 		try {
-			string2 = FileNameUtil.getNextUniqueName(ProfilerDumper.DEBUG_PROFILING_DIRECTORY, string, ".zip");
+			string2 = FileNameUtil.getNextUniqueName(RecordDumper.DEBUG_PROFILING_DIRECTORY, string, ".zip");
 		} catch (IOException var11) {
 			source.sendError(new TranslatableText("commands.perf.reportFailed"));
 			LOGGER.error(var11);
 			return;
 		}
 
-		ZipCompressor zipCompressor = new ZipCompressor(ProfilerDumper.DEBUG_PROFILING_DIRECTORY.resolve(string2));
+		ZipCompressor zipCompressor = new ZipCompressor(RecordDumper.DEBUG_PROFILING_DIRECTORY.resolve(string2));
 
 		try {
-			zipCompressor.write(Paths.get("system.txt"), server.method_37324(new SystemDetails()).collect());
-			zipCompressor.copyAll(tempProfilingFile);
+			zipCompressor.write(Paths.get("system.txt"), server.addSystemDetails(new SystemDetails()).collect());
+			zipCompressor.copyAll(tempProfilingDirectory);
 		} catch (Throwable var10) {
 			try {
 				zipCompressor.close();
@@ -99,9 +99,9 @@ public class PerfCommand {
 		zipCompressor.close();
 
 		try {
-			FileUtils.forceDelete(tempProfilingFile.toFile());
+			FileUtils.forceDelete(tempProfilingDirectory.toFile());
 		} catch (IOException var9) {
-			LOGGER.warn("Failed to delete temporary profiling file {}", tempProfilingFile, var9);
+			LOGGER.warn("Failed to delete temporary profiling file {}", tempProfilingDirectory, var9);
 		}
 
 		source.sendFeedback(new TranslatableText("commands.perf.reportSaved", string2), false);
@@ -109,7 +109,7 @@ public class PerfCommand {
 
 	private static void sendProfilingStoppedMessage(ServerCommandSource source, ProfileResult result) {
 		int i = result.getTickSpan();
-		double d = (double)result.getTimeSpan() / (double)Durations.field_33868;
+		double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
 		source.sendFeedback(
 			new TranslatableText("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false
 		);

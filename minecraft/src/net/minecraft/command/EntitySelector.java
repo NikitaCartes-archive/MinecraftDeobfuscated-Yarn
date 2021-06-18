@@ -124,10 +124,10 @@ public class EntitySelector {
 		if (!this.includesNonPlayers) {
 			return this.getPlayers(serverCommandSource);
 		} else if (this.playerName != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getServer().getPlayerManager().getPlayer(this.playerName);
 			return (List<? extends Entity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.newArrayList(serverPlayerEntity));
 		} else if (this.uuid != null) {
-			for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
+			for (ServerWorld serverWorld : serverCommandSource.getServer().getWorlds()) {
 				Entity entity = serverWorld.getEntity(this.uuid);
 				if (entity != null) {
 					return Lists.newArrayList(entity);
@@ -147,7 +147,7 @@ public class EntitySelector {
 				if (this.isLocalWorldOnly()) {
 					this.appendEntitiesFromWorld(list, serverCommandSource.getWorld(), vec3d, predicate);
 				} else {
-					for (ServerWorld serverWorld2 : serverCommandSource.getMinecraftServer().getWorlds()) {
+					for (ServerWorld serverWorld2 : serverCommandSource.getServer().getWorlds()) {
 						this.appendEntitiesFromWorld(list, serverWorld2, vec3d, predicate);
 					}
 				}
@@ -178,10 +178,10 @@ public class EntitySelector {
 	public List<ServerPlayerEntity> getPlayers(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		this.checkSourcePermission(serverCommandSource);
 		if (this.playerName != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getServer().getPlayerManager().getPlayer(this.playerName);
 			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
 		} else if (this.uuid != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.uuid);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getServer().getPlayerManager().getPlayer(this.uuid);
 			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
 		} else {
 			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.getPosition());
@@ -202,7 +202,7 @@ public class EntitySelector {
 				} else {
 					list = Lists.<ServerPlayerEntity>newArrayList();
 
-					for (ServerPlayerEntity serverPlayerEntity3 : serverCommandSource.getMinecraftServer().getPlayerManager().getPlayerList()) {
+					for (ServerPlayerEntity serverPlayerEntity3 : serverCommandSource.getServer().getPlayerManager().getPlayerList()) {
 						if (predicate.test(serverPlayerEntity3)) {
 							list.add(serverPlayerEntity3);
 						}

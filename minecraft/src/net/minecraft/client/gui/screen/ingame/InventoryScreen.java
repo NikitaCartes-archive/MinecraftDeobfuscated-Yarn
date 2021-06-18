@@ -39,7 +39,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	}
 
 	@Override
-	public void tick() {
+	public void handledScreenTick() {
 		if (this.client.interactionManager.hasCreativeInventory()) {
 			this.client.openScreen(new CreativeInventoryScreen(this.client.player));
 		} else {

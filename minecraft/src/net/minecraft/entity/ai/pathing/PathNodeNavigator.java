@@ -11,10 +11,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.client.util.profiler.SamplingChannel;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.SampleType;
 import net.minecraft.world.chunk.ChunkCache;
 
 public class PathNodeNavigator {
@@ -49,7 +49,7 @@ public class PathNodeNavigator {
 		Profiler profiler, PathNode startNode, Map<TargetPathNode, BlockPos> positions, float followRange, int distance, float rangeMultiplier
 	) {
 		profiler.push("find_path");
-		profiler.method_37167(SamplingChannel.PATH_FINDING);
+		profiler.markSampleType(SampleType.PATH_FINDING);
 		Set<TargetPathNode> set = positions.keySet();
 		startNode.penalizedPathLength = 0.0F;
 		startNode.distanceToNearestTarget = this.calculateDistances(startNode, set);

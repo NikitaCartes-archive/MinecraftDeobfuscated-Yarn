@@ -31,6 +31,34 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class EnchantmentHelper {
+	private static final String ID_KEY = "id";
+	private static final String LEVEL_KEY = "lvl";
+
+	public static NbtCompound createNbt(@Nullable Identifier id, int lvl) {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putString("id", String.valueOf(id));
+		nbtCompound.putShort("lvl", (short)lvl);
+		return nbtCompound;
+	}
+
+	public static void writeLevelToNbt(NbtCompound nbt, int lvl) {
+		nbt.putShort("lvl", (short)lvl);
+	}
+
+	public static int getLevelFromNbt(NbtCompound nbt) {
+		return MathHelper.clamp(nbt.getInt("lvl"), 0, 255);
+	}
+
+	@Nullable
+	public static Identifier getIdFromNbt(NbtCompound nbt) {
+		return Identifier.tryParse(nbt.getString("id"));
+	}
+
+	@Nullable
+	public static Identifier getEnchantmentId(Enchantment enchantment) {
+		return Registry.ENCHANTMENT.getId(enchantment);
+	}
+
 	/**
 	 * Gets the level of an enchantment on an item stack.
 	 */
@@ -38,14 +66,14 @@ public class EnchantmentHelper {
 		if (stack.isEmpty()) {
 			return 0;
 		} else {
-			Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
+			Identifier identifier = getEnchantmentId(enchantment);
 			NbtList nbtList = stack.getEnchantments();
 
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
-				Identifier identifier2 = Identifier.tryParse(nbtCompound.getString("id"));
+				Identifier identifier2 = getIdFromNbt(nbtCompound);
 				if (identifier2 != null && identifier2.equals(identifier)) {
-					return MathHelper.clamp(nbtCompound.getInt("lvl"), 0, 255);
+					return getLevelFromNbt(nbtCompound);
 				}
 			}
 
@@ -75,7 +103,7 @@ public class EnchantmentHelper {
 
 		for (int i = 0; i < list.size(); i++) {
 			NbtCompound nbtCompound = list.getCompound(i);
-			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(nbtCompound.getString("id"))).ifPresent(enchantment -> map.put(enchantment, nbtCompound.getInt("lvl")));
+			Registry.ENCHANTMENT.getOrEmpty(getIdFromNbt(nbtCompound)).ifPresent(enchantment -> map.put(enchantment, getLevelFromNbt(nbtCompound)));
 		}
 
 		return map;
@@ -97,10 +125,7 @@ public class EnchantmentHelper {
 			Enchantment enchantment = (Enchantment)entry.getKey();
 			if (enchantment != null) {
 				int i = (Integer)entry.getValue();
-				NbtCompound nbtCompound = new NbtCompound();
-				nbtCompound.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
-				nbtCompound.putShort("lvl", (short)i);
-				nbtList.add(nbtCompound);
+				nbtList.add(createNbt(getEnchantmentId(enchantment), i));
 				if (stack.isOf(Items.ENCHANTED_BOOK)) {
 					EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment, i));
 				}
@@ -119,9 +144,8 @@ public class EnchantmentHelper {
 			NbtList nbtList = stack.getEnchantments();
 
 			for (int i = 0; i < nbtList.size(); i++) {
-				String string = nbtList.getCompound(i).getString("id");
-				int j = nbtList.getCompound(i).getInt("lvl");
-				Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
+				NbtCompound nbtCompound = nbtList.getCompound(i);
+				Registry.ENCHANTMENT.getOrEmpty(getIdFromNbt(nbtCompound)).ifPresent(enchantment -> consumer.accept(enchantment, getLevelFromNbt(nbtCompound)));
 			}
 		}
 	}

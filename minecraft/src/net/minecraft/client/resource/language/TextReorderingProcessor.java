@@ -55,10 +55,10 @@ public class TextReorderingProcessor {
 	}
 
 	public static TextReorderingProcessor create(StringVisitable visitable) {
-		return create(visitable, i -> i, string -> string);
+		return create(visitable, codePoint -> codePoint, string -> string);
 	}
 
-	public static TextReorderingProcessor create(StringVisitable visitable, Int2IntFunction reverser, UnaryOperator<String> unaryOperator) {
+	public static TextReorderingProcessor create(StringVisitable visitable, Int2IntFunction reverser, UnaryOperator<String> shaper) {
 		StringBuilder stringBuilder = new StringBuilder();
 		List<Style> list = Lists.<Style>newArrayList();
 		visitable.visit((style, text) -> {
@@ -74,6 +74,6 @@ public class TextReorderingProcessor {
 			});
 			return Optional.empty();
 		}, Style.EMPTY);
-		return new TextReorderingProcessor((String)unaryOperator.apply(stringBuilder.toString()), list, reverser);
+		return new TextReorderingProcessor((String)shaper.apply(stringBuilder.toString()), list, reverser);
 	}
 }

@@ -82,6 +82,7 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Unit;
@@ -95,7 +96,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.CsvWriter;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -150,7 +150,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 */
 	private static final int SERVER_IDLE_COOLDOWN = 300;
 	final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
-	private final ServerChunkManager serverChunkManager;
+	private final ServerChunkManager chunkManager;
 	private final MinecraftServer server;
 	private final ServerWorldProperties worldProperties;
 	final EntityList entityList = new EntityList();
@@ -199,7 +199,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		DataFixer dataFixer = server.getDataFixer();
 		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(worldKey), "entities"), dataFixer, bl, server);
 		this.entityManager = new ServerEntityManager<>(Entity.class, new ServerWorld.ServerEntityHandler(), chunkDataAccess);
-		this.serverChunkManager = new ServerChunkManager(
+		this.chunkManager = new ServerChunkManager(
 			this,
 			session,
 			dataFixer,
@@ -354,8 +354,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		this.calculateAmbientDarkness();
 		this.tickTime();
-		profiler.swap("chunkSource");
-		this.getChunkManager().tick(shouldKeepTicking);
 		profiler.swap("tickPending");
 		if (!this.isDebugWorld()) {
 			this.blockTickScheduler.tick();
@@ -364,6 +362,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		profiler.swap("raid");
 		this.raidManager.tick();
+		profiler.swap("chunkSource");
+		this.getChunkManager().tick(shouldKeepTicking);
 		profiler.swap("blockEvents");
 		this.processSyncedBlockEvents();
 		this.inBlockTick = false;
@@ -879,7 +879,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public ServerChunkManager getChunkManager() {
-		return this.serverChunkManager;
+		return this.chunkManager;
 	}
 
 	@Override
@@ -1490,7 +1490,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public String asString() {
-		return "Chunks[S] W: " + this.serverChunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
+		return "Chunks[S] W: " + this.chunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
 	}
 
 	public boolean method_37116(long l) {
@@ -1499,7 +1499,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public boolean method_37117(BlockPos blockPos) {
 		long l = ChunkPos.method_37232(blockPos);
-		return this.serverChunkManager.method_37114(l) && this.method_37116(l);
+		return this.chunkManager.isTickingFutureReady(l) && this.method_37116(l);
 	}
 
 	public boolean method_37118(BlockPos blockPos) {

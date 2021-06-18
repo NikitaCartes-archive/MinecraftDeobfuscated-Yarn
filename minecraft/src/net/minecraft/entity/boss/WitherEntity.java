@@ -479,7 +479,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	public boolean addStatusEffect(StatusEffectInstance effect) {
+	public boolean addStatusEffect(StatusEffectInstance effect, @Nullable Entity source) {
 		return false;
 	}
 

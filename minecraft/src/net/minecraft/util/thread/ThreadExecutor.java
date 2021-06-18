@@ -9,14 +9,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-import net.minecraft.client.util.profiler.SamplingChannel;
-import net.minecraft.client.util.profiler.SamplingRecorder;
-import net.minecraft.util.profiler.MetricSamplerSupplier;
-import net.minecraft.util.profiler.MetricSuppliers;
+import net.minecraft.util.profiler.SampleType;
+import net.minecraft.util.profiler.Sampler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class ThreadExecutor<R extends Runnable> implements MetricSamplerSupplier, MessageListener<R>, Executor {
+public abstract class ThreadExecutor<R extends Runnable> implements SampleableExecutor, MessageListener<R>, Executor {
 	private final String name;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Queue<R> tasks = Queues.<R>newConcurrentLinkedQueue();
@@ -24,7 +22,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements MetricSample
 
 	protected ThreadExecutor(String name) {
 		this.name = name;
-		MetricSuppliers.INSTANCE.add(this);
+		ExecutorSampling.INSTANCE.add(this);
 	}
 
 	protected abstract R createTask(Runnable runnable);
@@ -140,7 +138,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements MetricSample
 	}
 
 	@Override
-	public List<SamplingRecorder> getSamplers() {
-		return ImmutableList.of(SamplingRecorder.create(this.name + "-pending-tasks", SamplingChannel.EVENT_LOOPS, this::getTaskCount));
+	public List<Sampler> createSamplers() {
+		return ImmutableList.of(Sampler.create(this.name + "-pending-tasks", SampleType.EVENT_LOOPS, this::getTaskCount));
 	}
 }

@@ -17,10 +17,10 @@ import net.minecraft.util.Util;
 public abstract class RenderLayer extends RenderPhase {
 	private static final int field_32776 = 4;
 	private static final int field_32777 = 1048576;
-	public static final int field_32772 = 2097152;
-	public static final int field_32773 = 262144;
-	public static final int field_32774 = 131072;
-	public static final int field_32775 = 256;
+	public static final int SOLID_BUFFER_SIZE = 2097152;
+	public static final int TRANSLUCENT_BUFFER_SIZE = 262144;
+	public static final int CUTOUT_BUFFER_SIZE = 131072;
+	public static final int DEFAULT_BUFFER_SIZE = 256;
 	private static final RenderLayer SOLID = of(
 		"solid",
 		VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL,

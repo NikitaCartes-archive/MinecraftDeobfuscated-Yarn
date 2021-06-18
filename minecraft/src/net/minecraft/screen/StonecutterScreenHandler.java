@@ -68,10 +68,10 @@ public class StonecutterScreenHandler extends ScreenHandler {
 					StonecutterScreenHandler.this.populateResult();
 				}
 
-				context.run((world, blockPos) -> {
+				context.run((world, pos) -> {
 					long l = world.getTime();
 					if (StonecutterScreenHandler.this.lastTakeTime != l) {
-						world.playSound(null, blockPos, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+						world.playSound(null, pos, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						StonecutterScreenHandler.this.lastTakeTime = l;
 					}
 				});
@@ -115,7 +115,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean onButtonClick(PlayerEntity player, int id) {
-		if (this.method_30160(id)) {
+		if (this.isInBounds(id)) {
 			this.selectedRecipe.set(id);
 			this.populateResult();
 		}
@@ -123,8 +123,8 @@ public class StonecutterScreenHandler extends ScreenHandler {
 		return true;
 	}
 
-	private boolean method_30160(int i) {
-		return i >= 0 && i < this.availableRecipes.size();
+	private boolean isInBounds(int id) {
+		return id >= 0 && id < this.availableRecipes.size();
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	}
 
 	void populateResult() {
-		if (!this.availableRecipes.isEmpty() && this.method_30160(this.selectedRecipe.get())) {
+		if (!this.availableRecipes.isEmpty() && this.isInBounds(this.selectedRecipe.get())) {
 			StonecuttingRecipe stonecuttingRecipe = (StonecuttingRecipe)this.availableRecipes.get(this.selectedRecipe.get());
 			this.output.setLastRecipe(stonecuttingRecipe);
 			this.outputSlot.setStack(stonecuttingRecipe.craft(this.input));
@@ -162,8 +162,8 @@ public class StonecutterScreenHandler extends ScreenHandler {
 		return ScreenHandlerType.STONECUTTER;
 	}
 
-	public void setContentsChangedListener(Runnable runnable) {
-		this.contentsChangedListener = runnable;
+	public void setContentsChangedListener(Runnable contentsChangedListener) {
+		this.contentsChangedListener = contentsChangedListener;
 	}
 
 	@Override
@@ -219,9 +219,9 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public void close(PlayerEntity playerEntity) {
-		super.close(playerEntity);
+	public void close(PlayerEntity player) {
+		super.close(player);
 		this.output.removeStack(1);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.input));
+		this.context.run((world, pos) -> this.dropInventory(player, this.input));
 	}
 }

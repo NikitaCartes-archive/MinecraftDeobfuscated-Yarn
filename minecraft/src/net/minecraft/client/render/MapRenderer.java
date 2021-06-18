@@ -22,8 +22,8 @@ import net.minecraft.util.math.Vec3f;
 public class MapRenderer implements AutoCloseable {
 	private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
 	static final RenderLayer MAP_ICONS_RENDER_LAYER = RenderLayer.getText(MAP_ICONS_TEXTURE);
-	private static final int field_32173 = 128;
-	private static final int field_32174 = 128;
+	private static final int DEFAULT_IMAGE_WIDTH = 128;
+	private static final int DEFAULT_IMAGE_HEIGHT = 128;
 	final TextureManager textureManager;
 	private final Int2ObjectMap<MapRenderer.MapTexture> mapTextures = new Int2ObjectOpenHashMap<>();
 

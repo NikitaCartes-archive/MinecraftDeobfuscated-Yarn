@@ -27,7 +27,7 @@ public class ScheduleCommand {
 		eventName -> new TranslatableText("commands.schedule.cleared.failure", eventName)
 	);
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
-			context.getSource().getMinecraftServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22592(), builder
+			context.getSource().getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22592(), builder
 		);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -82,7 +82,7 @@ public class ScheduleCommand {
 		} else {
 			long l = source.getWorld().getTime() + (long)time;
 			Identifier identifier = function.getFirst();
-			Timer<MinecraftServer> timer = source.getMinecraftServer().getSaveProperties().getMainWorldProperties().getScheduledEvents();
+			Timer<MinecraftServer> timer = source.getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents();
 			function.getSecond().ifLeft(functionx -> {
 				String string = identifier.toString();
 				if (replace) {
@@ -105,7 +105,7 @@ public class ScheduleCommand {
 	}
 
 	private static int clearEvent(ServerCommandSource source, String eventName) throws CommandSyntaxException {
-		int i = source.getMinecraftServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22593(eventName);
+		int i = source.getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22593(eventName);
 		if (i == 0) {
 			throw CLEARED_FAILURE_EXCEPTION.create(eventName);
 		} else {

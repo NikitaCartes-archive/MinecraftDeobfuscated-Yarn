@@ -29,10 +29,10 @@ public class BannedIpEntry extends BanEntry<String> {
 	}
 
 	@Override
-	protected void fromJson(JsonObject json) {
+	protected void write(JsonObject json) {
 		if (this.getKey() != null) {
 			json.addProperty("ip", this.getKey());
-			super.fromJson(json);
+			super.write(json);
 		}
 	}
 }

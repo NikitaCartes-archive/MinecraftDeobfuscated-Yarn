@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -126,6 +127,9 @@ import net.minecraft.util.math.Vec3d;
  * </tr>
  * <tr>
  *  <td>{@link BitSet}</td><td>{@link #readBitSet()}</td><td>{@link #writeBitSet(BitSet)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@link Optional}</td><td>{@link #readOptional(Function)}</td><td>{@link #writeOptional(Optional, BiConsumer)}</td>
  * </tr>
  * </table></div>
  * 
@@ -433,6 +437,34 @@ public class PacketByteBuf extends ByteBuf {
 		for (int j = 0; j < i; j++) {
 			consumer.accept(this);
 		}
+	}
+
+	/**
+	 * Writes an optional value to this buf. An optional value is represented by
+	 * a boolean indicating if the value is present, followed by the value only if
+	 * the value is present.
+	 * 
+	 * @see #readOptional(Function)
+	 */
+	public <T> void writeOptional(Optional<T> value, BiConsumer<PacketByteBuf, T> serializer) {
+		if (value.isPresent()) {
+			this.writeBoolean(true);
+			serializer.accept(this, value.get());
+		} else {
+			this.writeBoolean(false);
+		}
+	}
+
+	/**
+	 * Reads an optional value from this buf. An optional value is represented by
+	 * a boolean indicating if the value is present, followed by the value only if
+	 * the value is present.
+	 * 
+	 * @return the read optional value
+	 * @see #writeOptional(Optional, BiConsumer)
+	 */
+	public <T> Optional<T> readOptional(Function<PacketByteBuf, T> parser) {
+		return this.readBoolean() ? Optional.of(parser.apply(this)) : Optional.empty();
 	}
 
 	/**

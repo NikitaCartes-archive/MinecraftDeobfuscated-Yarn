@@ -36,13 +36,13 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	private final RealmsWorldOptions options;
 	private final RealmsServer.WorldType worldType;
 	private final int activeSlot;
-	private Difficulty field_27943;
-	private GameMode gameModeIndex;
+	private Difficulty difficulty;
+	private GameMode gameMode;
 	private boolean pvp;
 	private boolean spawnNpcs;
 	private boolean spawnAnimals;
 	private boolean spawnMonsters;
-	int difficultyIndex;
+	int spawnProtection;
 	private boolean commandBlocks;
 	private boolean forceGameMode;
 	RealmsSlotOptionsScreen.SettingsSlider spawnProtectionButton;
@@ -75,17 +75,17 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		}
 	}
 
-	private static <T> T method_32498(List<T> list, int i, int j) {
+	private static <T> T get(List<T> list, int index, int fallbackIndex) {
 		try {
-			return (T)list.get(i);
+			return (T)list.get(index);
 		} catch (IndexOutOfBoundsException var4) {
-			return (T)list.get(j);
+			return (T)list.get(fallbackIndex);
 		}
 	}
 
-	private static <T> int method_32499(List<T> list, T object, int i) {
-		int j = list.indexOf(object);
-		return j == -1 ? i : j;
+	private static <T> int indexOf(List<T> list, T value, int fallbackIndex) {
+		int i = list.indexOf(value);
+		return i == -1 ? fallbackIndex : i;
 	}
 
 	@Override
@@ -93,11 +93,11 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		this.column2_x = 170;
 		this.column1_x = this.width / 2 - this.column2_x;
 		int i = this.width / 2 + 10;
-		this.field_27943 = method_32498(DIFFICULTIES, this.options.difficulty, 2);
-		this.gameModeIndex = method_32498(GAME_MODES, this.options.gameMode, 0);
+		this.difficulty = get(DIFFICULTIES, this.options.difficulty, 2);
+		this.gameMode = get(GAME_MODES, this.options.gameMode, 0);
 		if (this.worldType == RealmsServer.WorldType.NORMAL) {
 			this.pvp = this.options.pvp;
-			this.difficultyIndex = this.options.spawnProtection;
+			this.spawnProtection = this.options.spawnProtection;
 			this.forceGameMode = this.options.forceGameMode;
 			this.spawnAnimals = this.options.spawnAnimals;
 			this.spawnMonsters = this.options.spawnMonsters;
@@ -113,9 +113,9 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 				text = new TranslatableText("mco.configure.world.edit.subscreen.experience");
 			}
 
-			this.method_37107(new RealmsLabel(text, this.width / 2, 26, 16711680));
+			this.addLabel(new RealmsLabel(text, this.width / 2, 26, 16711680));
 			this.pvp = true;
-			this.difficultyIndex = 0;
+			this.spawnProtection = 0;
 			this.forceGameMode = false;
 			this.spawnAnimals = true;
 			this.spawnMonsters = true;
@@ -136,27 +136,25 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		this.addDrawableChild(
 			CyclingButtonWidget.<GameMode>builder(GameMode::getSimpleTranslatableName)
 				.values(GAME_MODES)
-				.initially(this.gameModeIndex)
-				.build(
-					this.column1_x, row(3), this.column2_x, 20, new TranslatableText("selectWorld.gameMode"), (button, gameModeIndex) -> this.gameModeIndex = gameModeIndex
-				)
+				.initially(this.gameMode)
+				.build(this.column1_x, row(3), this.column2_x, 20, new TranslatableText("selectWorld.gameMode"), (button, gameModeIndex) -> this.gameMode = gameModeIndex)
 		);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget2 = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.spawnAnimals)
 				.build(i, row(3), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnAnimals"), (button, spawnAnimals) -> this.spawnAnimals = spawnAnimals)
 		);
-		CyclingButtonWidget<Boolean> cyclingButtonWidget3 = CyclingButtonWidget.onOffBuilder(this.field_27943 != Difficulty.PEACEFUL && this.spawnMonsters)
+		CyclingButtonWidget<Boolean> cyclingButtonWidget3 = CyclingButtonWidget.onOffBuilder(this.difficulty != Difficulty.PEACEFUL && this.spawnMonsters)
 			.build(
 				i, row(5), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnMonsters"), (button, spawnMonsters) -> this.spawnMonsters = spawnMonsters
 			);
 		this.addDrawableChild(
 			CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
 				.values(DIFFICULTIES)
-				.initially(this.field_27943)
+				.initially(this.difficulty)
 				.build(this.column1_x, row(5), this.column2_x, 20, new TranslatableText("options.difficulty"), (button, difficulty) -> {
-					this.field_27943 = difficulty;
+					this.difficulty = difficulty;
 					if (this.worldType == RealmsServer.WorldType.NORMAL) {
-						boolean bl = this.field_27943 != Difficulty.PEACEFUL;
+						boolean bl = this.difficulty != Difficulty.PEACEFUL;
 						cyclingButtonWidget3.active = bl;
 						cyclingButtonWidget3.setValue(bl && this.spawnMonsters);
 					}
@@ -164,7 +162,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		);
 		this.addDrawableChild(cyclingButtonWidget3);
 		this.spawnProtectionButton = this.addDrawableChild(
-			new RealmsSlotOptionsScreen.SettingsSlider(this.column1_x, row(7), this.column2_x, this.difficultyIndex, 0.0F, 16.0F)
+			new RealmsSlotOptionsScreen.SettingsSlider(this.column1_x, row(7), this.column2_x, this.spawnProtection, 0.0F, 16.0F)
 		);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget4 = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.spawnNpcs)
@@ -197,7 +195,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			cyclingButtonWidget5.active = false;
 		}
 
-		if (this.field_27943 == Difficulty.PEACEFUL) {
+		if (this.difficulty == Difficulty.PEACEFUL) {
 			cyclingButtonWidget3.active = false;
 		}
 
@@ -228,15 +226,15 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	}
 
 	private void saveSettings() {
-		int i = method_32499(DIFFICULTIES, this.field_27943, 2);
-		int j = method_32499(GAME_MODES, this.gameModeIndex, 0);
+		int i = indexOf(DIFFICULTIES, this.difficulty, 2);
+		int j = indexOf(GAME_MODES, this.gameMode, 0);
 		if (this.worldType != RealmsServer.WorldType.ADVENTUREMAP
 			&& this.worldType != RealmsServer.WorldType.EXPERIENCE
 			&& this.worldType != RealmsServer.WorldType.INSPIRATION) {
 			this.parent
 				.saveSlotSettings(
 					new RealmsWorldOptions(
-						this.pvp, this.spawnAnimals, this.spawnMonsters, this.spawnNpcs, this.difficultyIndex, this.commandBlocks, i, j, this.forceGameMode, this.getSlotName()
+						this.pvp, this.spawnAnimals, this.spawnMonsters, this.spawnNpcs, this.spawnProtection, this.commandBlocks, i, j, this.forceGameMode, this.getSlotName()
 					)
 				);
 		} else {
@@ -274,7 +272,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		@Override
 		public void applyValue() {
 			if (RealmsSlotOptionsScreen.this.spawnProtectionButton.active) {
-				RealmsSlotOptionsScreen.this.difficultyIndex = (int)MathHelper.lerp(MathHelper.clamp(this.value, 0.0, 1.0), this.min, this.max);
+				RealmsSlotOptionsScreen.this.spawnProtection = (int)MathHelper.lerp(MathHelper.clamp(this.value, 0.0, 1.0), this.min, this.max);
 			}
 		}
 
@@ -283,7 +281,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			this.setMessage(
 				ScreenTexts.composeGenericOptionText(
 					RealmsSlotOptionsScreen.SPAWN_PROTECTION,
-					(Text)(RealmsSlotOptionsScreen.this.difficultyIndex == 0 ? ScreenTexts.OFF : new LiteralText(String.valueOf(RealmsSlotOptionsScreen.this.difficultyIndex)))
+					(Text)(RealmsSlotOptionsScreen.this.spawnProtection == 0 ? ScreenTexts.OFF : new LiteralText(String.valueOf(RealmsSlotOptionsScreen.this.spawnProtection)))
 				)
 			);
 		}

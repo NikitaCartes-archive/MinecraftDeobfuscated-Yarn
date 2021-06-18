@@ -27,7 +27,7 @@ public final class DynamicSerializableUuid {
 		return new int[]{(int)(uuidMost >> 32), (int)uuidMost, (int)(uuidLeast >> 32), (int)uuidLeast};
 	}
 
-	public static UUID method_35848(Dynamic<?> dynamic) {
+	public static UUID toUuid(Dynamic<?> dynamic) {
 		int[] is = dynamic.asIntStream().toArray();
 		if (is.length != 4) {
 			throw new IllegalArgumentException("Could not read UUID. Expected int-array of length 4, got " + is.length + ".");

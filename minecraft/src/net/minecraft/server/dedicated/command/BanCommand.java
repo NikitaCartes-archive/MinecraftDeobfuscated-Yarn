@@ -38,7 +38,7 @@ public class BanCommand {
 	}
 
 	private static int ban(ServerCommandSource source, Collection<GameProfile> targets, @Nullable Text reason) throws CommandSyntaxException {
-		BannedPlayerList bannedPlayerList = source.getMinecraftServer().getPlayerManager().getUserBanList();
+		BannedPlayerList bannedPlayerList = source.getServer().getPlayerManager().getUserBanList();
 		int i = 0;
 
 		for (GameProfile gameProfile : targets) {
@@ -47,7 +47,7 @@ public class BanCommand {
 				bannedPlayerList.add(bannedPlayerEntry);
 				i++;
 				source.sendFeedback(new TranslatableText("commands.ban.success", Texts.toText(gameProfile), bannedPlayerEntry.getReason()), true);
-				ServerPlayerEntity serverPlayerEntity = source.getMinecraftServer().getPlayerManager().getPlayer(gameProfile.getId());
+				ServerPlayerEntity serverPlayerEntity = source.getServer().getPlayerManager().getPlayer(gameProfile.getId());
 				if (serverPlayerEntity != null) {
 					serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.banned"));
 				}

@@ -52,8 +52,6 @@ public class GoatBrain {
 		.setPredicate(livingEntity -> !livingEntity.getType().equals(EntityType.GOAT) && livingEntity.world.getWorldBorder().contains(livingEntity.getBoundingBox()));
 	private static final float field_33501 = 3.0F;
 	public static final int field_33495 = 4;
-	private static final int field_33502 = 2;
-	private static final int field_33503 = 1;
 	public static final float field_33496 = 2.5F;
 	public static final float field_33497 = 1.0F;
 
@@ -141,9 +139,8 @@ public class GoatBrain {
 					new RamImpactTask<>(
 						goat -> goat.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE : RAM_COOLDOWN_RANGE,
 						RAM_TARGET_PREDICATE,
-						goat -> goat.isBaby() ? 1 : 2,
 						3.0F,
-						goatEntity -> goatEntity.isBaby() ? 1.0 : 2.5,
+						goat -> goat.isBaby() ? 1.0 : 2.5,
 						goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT
 					)
 				),

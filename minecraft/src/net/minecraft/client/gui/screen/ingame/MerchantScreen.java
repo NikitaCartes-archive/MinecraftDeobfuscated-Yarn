@@ -210,7 +210,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 
 			for (MerchantScreen.WidgetButtonPage widgetButtonPage : this.offers) {
 				if (widgetButtonPage.isHovered()) {
-					widgetButtonPage.renderToolTip(matrices, mouseX, mouseY);
+					widgetButtonPage.renderTooltip(matrices, mouseX, mouseY);
 				}
 
 				widgetButtonPage.visible = widgetButtonPage.index < this.handler.getRecipes().size();
@@ -311,7 +311,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		}
 
 		@Override
-		public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+		public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
 			if (this.hovered && MerchantScreen.this.handler.getRecipes().size() > this.index + MerchantScreen.this.indexStartOffset) {
 				if (mouseX < this.x + 20) {
 					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset))

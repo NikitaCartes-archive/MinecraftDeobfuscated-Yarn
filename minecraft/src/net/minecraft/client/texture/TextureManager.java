@@ -182,7 +182,7 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();
-				RealmsMainScreen.method_23765(this.resourceContainer);
+				RealmsMainScreen.loadImages(this.resourceContainer);
 				Iterator<Entry<Identifier, AbstractTexture>> iterator = this.textures.entrySet().iterator();
 
 				while (iterator.hasNext()) {

@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -48,9 +49,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
@@ -547,18 +546,10 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			.networkHandler
 			.sendPacket(
 				new ScreenHandlerSlotUpdateS2CPacket(
-					ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID,
-					this.player.getInventory().selectedSlot,
-					this.player.getInventory().getStack(this.player.getInventory().selectedSlot)
+					-2, 0, this.player.getInventory().selectedSlot, this.player.getInventory().getStack(this.player.getInventory().selectedSlot)
 				)
 			);
-		this.player
-			.networkHandler
-			.sendPacket(
-				new ScreenHandlerSlotUpdateS2CPacket(
-					ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, packet.getSlot(), this.player.getInventory().getStack(packet.getSlot())
-				)
-			);
+		this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, packet.getSlot(), this.player.getInventory().getStack(packet.getSlot())));
 		this.player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(this.player.getInventory().selectedSlot));
 	}
 
@@ -676,27 +667,16 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onBookUpdate(BookUpdateC2SPacket packet) {
 		int i = packet.getSlot();
 		if (PlayerInventory.isValidHotbarIndex(i) || i == 40) {
-			ItemStack itemStack = packet.getBook();
-			if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-				NbtCompound nbtCompound = itemStack.getTag();
-				if (WritableBookItem.isValid(nbtCompound)) {
-					List<String> list = Lists.<String>newArrayList();
-					boolean bl = packet.wasSigned();
-					if (bl) {
-						list.add(nbtCompound.getString("title"));
-					}
-
-					NbtList nbtList = nbtCompound.getList("pages", NbtElement.STRING_TYPE);
-
-					for (int j = 0; j < nbtList.size(); j++) {
-						list.add(nbtList.getString(j));
-					}
-
-					this.filterTexts(
-						list, bl ? listx -> this.addBook((TextStream.Message)listx.get(0), listx.subList(1, listx.size()), i) : listx -> this.updateBookContent(listx, i)
-					);
-				}
-			}
+			List<String> list = Lists.<String>newArrayList();
+			Optional<String> optional = packet.getTitle();
+			optional.ifPresent(list::add);
+			packet.getPages().stream().limit(100L).forEach(list::add);
+			this.filterTexts(
+				list,
+				optional.isPresent()
+					? listx -> this.addBook((TextStream.Message)listx.get(0), listx.subList(1, listx.size()), i)
+					: listx -> this.updateBookContent(listx, i)
+			);
 		}
 	}
 
@@ -1319,6 +1299,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			if (this.player.isSpectator()) {
 				this.player.currentScreenHandler.syncState();
 			} else {
+				boolean bl = packet.getRevision() != this.player.currentScreenHandler.getRevision();
 				this.player.currentScreenHandler.disableSyncing();
 				this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getButton(), packet.getActionType(), this.player);
 
@@ -1328,7 +1309,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 				this.player.currentScreenHandler.setPreviousCursorStack(packet.getStack());
 				this.player.currentScreenHandler.enableSyncing();
-				this.player.currentScreenHandler.sendContentUpdates();
+				if (bl) {
+					this.player.currentScreenHandler.updateToClient();
+				} else {
+					this.player.currentScreenHandler.sendContentUpdates();
+				}
 			}
 		}
 	}
@@ -1379,12 +1364,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			boolean bl2 = packet.getSlot() >= 1 && packet.getSlot() <= 45;
 			boolean bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= 64 && !itemStack.isEmpty();
 			if (bl2 && bl3) {
-				if (itemStack.isEmpty()) {
-					this.player.playerScreenHandler.setStackInSlot(packet.getSlot(), ItemStack.EMPTY);
-				} else {
-					this.player.playerScreenHandler.setStackInSlot(packet.getSlot(), itemStack);
-				}
-
+				this.player.playerScreenHandler.getSlot(packet.getSlot()).setStack(itemStack);
 				this.player.playerScreenHandler.sendContentUpdates();
 			} else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
 				this.creativeItemDropThreshold += 20;

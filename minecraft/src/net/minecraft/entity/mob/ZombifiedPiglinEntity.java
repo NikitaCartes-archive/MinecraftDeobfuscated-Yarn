@@ -8,7 +8,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.UniversalAngerGoal;
@@ -28,6 +27,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -42,13 +42,13 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
 		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
 	);
-	private static final UniformIntProvider ANGRY_SOUND_DELAY_RANGE = Durations.betweenSeconds(0, 1);
+	private static final UniformIntProvider ANGRY_SOUND_DELAY_RANGE = TimeHelper.betweenSeconds(0, 1);
 	private int angrySoundDelay;
-	private static final UniformIntProvider ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
+	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	private int angerTime;
 	private UUID targetUuid;
 	private static final int field_30524 = 10;
-	private static final UniformIntProvider ANGER_PASSING_COOLDOWN_RANGE = Durations.betweenSeconds(4, 6);
+	private static final UniformIntProvider ANGER_PASSING_COOLDOWN_RANGE = TimeHelper.betweenSeconds(4, 6);
 	private int angerPassingCooldown;
 
 	public ZombifiedPiglinEntity(EntityType<? extends ZombifiedPiglinEntity> entityType, World world) {
@@ -237,5 +237,10 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Override
 	public boolean isAngryAt(PlayerEntity player) {
 		return this.shouldAngerAt(player);
+	}
+
+	@Override
+	public boolean canGather(ItemStack stack) {
+		return this.canPickupItem(stack);
 	}
 }

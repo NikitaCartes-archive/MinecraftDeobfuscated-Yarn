@@ -34,12 +34,12 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloader 
 	public World world;
 	public Camera camera;
 	public HitResult crosshairTarget;
-	private final Supplier<BlockRenderManager> field_27747;
+	private final Supplier<BlockRenderManager> blockRenderManager;
 
-	public BlockEntityRenderDispatcher(TextRenderer textRenderer, EntityModelLoader entityModelLoader, Supplier<BlockRenderManager> supplier) {
+	public BlockEntityRenderDispatcher(TextRenderer textRenderer, EntityModelLoader entityModelLoader, Supplier<BlockRenderManager> blockRenderManager) {
 		this.textRenderer = textRenderer;
 		this.entityModelLoader = entityModelLoader;
-		this.field_27747 = supplier;
+		this.blockRenderManager = blockRenderManager;
 	}
 
 	@Nullable
@@ -112,7 +112,7 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloader 
 	@Override
 	public void reload(ResourceManager manager) {
 		BlockEntityRendererFactory.Context context = new BlockEntityRendererFactory.Context(
-			this, (BlockRenderManager)this.field_27747.get(), this.entityModelLoader, this.textRenderer
+			this, (BlockRenderManager)this.blockRenderManager.get(), this.entityModelLoader, this.textRenderer
 		);
 		this.renderers = BlockEntityRendererFactories.reload(context);
 	}

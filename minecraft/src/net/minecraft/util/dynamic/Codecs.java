@@ -16,11 +16,13 @@ import java.util.function.Supplier;
 /**
  * A few extensions for {@link Codec} or {@link DynamicOps}.
  * 
- * <p>Expect its removal once Mojang updates DataFixerUpper.
+ * <p>It has a few methods to create checkers for {@code Codec.flatXmap} to add
+ * extra value validation to encoding and decoding. See the implementation of
+ * {@link #nonEmptyList(Codec)}.
  */
 public class Codecs {
-	public static final Codec<Integer> field_33441 = method_36241(0, Integer.MAX_VALUE, integer -> "Value must be non-negative: " + integer);
-	public static final Codec<Integer> field_33442 = method_36241(1, Integer.MAX_VALUE, integer -> "Value must be positive: " + integer);
+	public static final Codec<Integer> NONNEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
+	public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.
@@ -44,46 +46,46 @@ public class Codecs {
 		return new Codecs.Xor<>(first, second);
 	}
 
-	private static <N extends Number & Comparable<N>> Function<N, DataResult<N>> method_36243(N number, N number2, Function<N, String> function) {
-		return number3 -> ((Comparable)number3).compareTo(number) >= 0 && ((Comparable)number3).compareTo(number2) <= 0
-				? DataResult.success(number3)
-				: DataResult.error((String)function.apply(number3));
+	private static <N extends Number & Comparable<N>> Function<N, DataResult<N>> createRangeChecker(N min, N max, Function<N, String> messageFactory) {
+		return value -> ((Comparable)value).compareTo(min) >= 0 && ((Comparable)value).compareTo(max) <= 0
+				? DataResult.success(value)
+				: DataResult.error((String)messageFactory.apply(value));
 	}
 
-	private static Codec<Integer> method_36241(int i, int j, Function<Integer, String> function) {
-		Function<Integer, DataResult<Integer>> function2 = method_36243(i, j, function);
-		return Codec.INT.flatXmap(function2, function2);
+	private static Codec<Integer> rangedInt(int min, int max, Function<Integer, String> messageFactory) {
+		Function<Integer, DataResult<Integer>> function = createRangeChecker(min, max, messageFactory);
+		return Codec.INT.flatXmap(function, function);
 	}
 
-	public static <T> Function<List<T>, DataResult<List<T>>> method_36240() {
+	public static <T> Function<List<T>, DataResult<List<T>>> createNonEmptyListChecker() {
 		return list -> list.isEmpty() ? DataResult.error("List must have contents") : DataResult.success(list);
 	}
 
-	public static <T> Codec<List<T>> method_36973(Codec<List<T>> codec) {
-		return codec.flatXmap(method_36240(), method_36240());
+	public static <T> Codec<List<T>> nonEmptyList(Codec<List<T>> originalCodec) {
+		return originalCodec.flatXmap(createNonEmptyListChecker(), createNonEmptyListChecker());
 	}
 
-	public static <T> Function<List<Supplier<T>>, DataResult<List<Supplier<T>>>> method_37351() {
-		return list -> {
-			List<String> list2 = Lists.<String>newArrayList();
+	public static <T> Function<List<Supplier<T>>, DataResult<List<Supplier<T>>>> createPresentValuesChecker() {
+		return suppliers -> {
+			List<String> list = Lists.<String>newArrayList();
 
-			for (int i = 0; i < list.size(); i++) {
-				Supplier<T> supplier = (Supplier<T>)list.get(i);
+			for (int i = 0; i < suppliers.size(); i++) {
+				Supplier<T> supplier = (Supplier<T>)suppliers.get(i);
 
 				try {
 					if (supplier.get() == null) {
-						list2.add("Missing value [" + i + "] : " + supplier);
+						list.add("Missing value [" + i + "] : " + supplier);
 					}
 				} catch (Exception var5) {
-					list2.add("Invalid value [" + i + "]: " + supplier + ", message: " + var5.getMessage());
+					list.add("Invalid value [" + i + "]: " + supplier + ", message: " + var5.getMessage());
 				}
 			}
 
-			return !list2.isEmpty() ? DataResult.error(String.join("; ", list2)) : DataResult.success(list, Lifecycle.stable());
+			return !list.isEmpty() ? DataResult.error(String.join("; ", list)) : DataResult.success(suppliers, Lifecycle.stable());
 		};
 	}
 
-	public static <T> Function<Supplier<T>, DataResult<Supplier<T>>> method_37352() {
+	public static <T> Function<Supplier<T>, DataResult<Supplier<T>>> createPresentValueChecker() {
 		return supplier -> {
 			try {
 				if (supplier.get() == null) {
@@ -98,6 +100,10 @@ public class Codecs {
 	}
 
 	/**
+	 * An xor codec that only permits exactly one of the two data choices to be
+	 * present.
+	 * 
+	 * @see Codecs#xor(Codec, Codec)
 	 * @see com.mojang.serialization.codecs.EitherCodec
 	 */
 	static final class Xor<F, S> implements Codec<Either<F, S>> {

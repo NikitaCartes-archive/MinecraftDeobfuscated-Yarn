@@ -35,7 +35,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -717,13 +716,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 				if (this.jumpStrength > 0.0F && !this.isInAir() && this.onGround) {
 					double d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.getJumpVelocityMultiplier();
-					double e;
-					if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
-						e = d + (double)((float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1F);
-					} else {
-						e = d;
-					}
-
+					double e = d + this.getJumpBoostVelocityModifier();
 					Vec3d vec3d = this.getVelocity();
 					this.setVelocity(vec3d.x, e, vec3d.z);
 					this.setInAir(true);

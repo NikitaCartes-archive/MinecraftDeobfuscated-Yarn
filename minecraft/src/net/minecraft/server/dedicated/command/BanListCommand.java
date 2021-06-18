@@ -16,16 +16,16 @@ public class BanListCommand {
 			CommandManager.literal("banlist")
 				.requires(source -> source.hasPermissionLevel(3))
 				.executes(context -> {
-					PlayerManager playerManager = context.getSource().getMinecraftServer().getPlayerManager();
+					PlayerManager playerManager = context.getSource().getServer().getPlayerManager();
 					return execute(context.getSource(), Lists.newArrayList(Iterables.concat(playerManager.getUserBanList().values(), playerManager.getIpBanList().values())));
 				})
 				.then(
 					CommandManager.literal("ips")
-						.executes(context -> execute(context.getSource(), context.getSource().getMinecraftServer().getPlayerManager().getIpBanList().values()))
+						.executes(context -> execute(context.getSource(), context.getSource().getServer().getPlayerManager().getIpBanList().values()))
 				)
 				.then(
 					CommandManager.literal("players")
-						.executes(context -> execute(context.getSource(), context.getSource().getMinecraftServer().getPlayerManager().getUserBanList().values()))
+						.executes(context -> execute(context.getSource(), context.getSource().getServer().getPlayerManager().getUserBanList().values()))
 				)
 		);
 	}

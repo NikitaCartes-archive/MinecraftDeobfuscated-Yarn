@@ -16,7 +16,6 @@ import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.client.util.profiler.SamplingChannel;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -32,12 +31,12 @@ public class ProfilerSystem implements ReadableProfiler {
 	private final LongSupplier timeGetter;
 	private final long startTime;
 	private final int startTick;
-	private String location = "";
+	private String fullPath = "";
 	private boolean tickStarted;
 	@Nullable
 	private ProfilerSystem.LocatedInfo currentInfo;
 	private final boolean checkTimeout;
-	private final Set<Pair<String, SamplingChannel>> field_33873 = new ObjectArraySet<>();
+	private final Set<Pair<String, SampleType>> sampleTypes = new ObjectArraySet<>();
 
 	public ProfilerSystem(LongSupplier timeGetter, IntSupplier tickGetter, boolean checkTimeout) {
 		this.startTime = timeGetter.getAsLong();
@@ -53,7 +52,7 @@ public class ProfilerSystem implements ReadableProfiler {
 			LOGGER.error("Profiler tick already started - missing endTick()?");
 		} else {
 			this.tickStarted = true;
-			this.location = "";
+			this.fullPath = "";
 			this.path.clear();
 			this.push("root");
 		}
@@ -66,9 +65,9 @@ public class ProfilerSystem implements ReadableProfiler {
 		} else {
 			this.pop();
 			this.tickStarted = false;
-			if (!this.location.isEmpty()) {
+			if (!this.fullPath.isEmpty()) {
 				LOGGER.error(
-					"Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", () -> ProfileResult.getHumanReadableName(this.location)
+					"Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", () -> ProfileResult.getHumanReadableName(this.fullPath)
 				);
 			}
 		}
@@ -79,12 +78,12 @@ public class ProfilerSystem implements ReadableProfiler {
 		if (!this.tickStarted) {
 			LOGGER.error("Cannot push '{}' to profiler if profiler tick hasn't started - missing startTick()?", location);
 		} else {
-			if (!this.location.isEmpty()) {
-				this.location = this.location + "\u001e";
+			if (!this.fullPath.isEmpty()) {
+				this.fullPath = this.fullPath + "\u001e";
 			}
 
-			this.location = this.location + location;
-			this.path.add(this.location);
+			this.fullPath = this.fullPath + location;
+			this.path.add(this.fullPath);
 			this.timeList.add(Util.getMeasuringTimeNano());
 			this.currentInfo = null;
 		}
@@ -96,8 +95,8 @@ public class ProfilerSystem implements ReadableProfiler {
 	}
 
 	@Override
-	public void method_37167(SamplingChannel samplingChannel) {
-		this.field_33873.add(Pair.of(this.location, samplingChannel));
+	public void markSampleType(SampleType type) {
+		this.sampleTypes.add(Pair.of(this.fullPath, type));
 	}
 
 	@Override
@@ -112,15 +111,15 @@ public class ProfilerSystem implements ReadableProfiler {
 			this.path.remove(this.path.size() - 1);
 			long n = l - m;
 			ProfilerSystem.LocatedInfo locatedInfo = this.getCurrentInfo();
-			locatedInfo.time += n;
+			locatedInfo.totalTime += n;
 			locatedInfo.visits++;
-			locatedInfo.field_33874 = Math.max(locatedInfo.field_33874, n);
-			locatedInfo.field_33875 = Math.min(locatedInfo.field_33875, n);
+			locatedInfo.maxTime = Math.max(locatedInfo.maxTime, n);
+			locatedInfo.minTime = Math.min(locatedInfo.minTime, n);
 			if (this.checkTimeout && n > TIMEOUT_NANOSECONDS) {
-				LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.getHumanReadableName(this.location), () -> (double)n / 1000000.0);
+				LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.getHumanReadableName(this.fullPath), () -> (double)n / 1000000.0);
 			}
 
-			this.location = this.path.isEmpty() ? "" : (String)this.path.get(this.path.size() - 1);
+			this.fullPath = this.path.isEmpty() ? "" : (String)this.path.get(this.path.size() - 1);
 			this.currentInfo = null;
 		}
 	}
@@ -139,7 +138,7 @@ public class ProfilerSystem implements ReadableProfiler {
 
 	private ProfilerSystem.LocatedInfo getCurrentInfo() {
 		if (this.currentInfo == null) {
-			this.currentInfo = (ProfilerSystem.LocatedInfo)this.locationInfos.computeIfAbsent(this.location, string -> new ProfilerSystem.LocatedInfo());
+			this.currentInfo = (ProfilerSystem.LocatedInfo)this.locationInfos.computeIfAbsent(this.fullPath, k -> new ProfilerSystem.LocatedInfo());
 		}
 
 		return this.currentInfo;
@@ -167,25 +166,25 @@ public class ProfilerSystem implements ReadableProfiler {
 	}
 
 	@Override
-	public Set<Pair<String, SamplingChannel>> method_37168() {
-		return this.field_33873;
+	public Set<Pair<String, SampleType>> getSampleTargets() {
+		return this.sampleTypes;
 	}
 
 	public static class LocatedInfo implements ProfileLocationInfo {
-		long field_33874 = Long.MIN_VALUE;
-		long field_33875 = Long.MAX_VALUE;
-		long time;
+		long maxTime = Long.MIN_VALUE;
+		long minTime = Long.MAX_VALUE;
+		long totalTime;
 		long visits;
 		final Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap<>();
 
 		@Override
 		public long getTotalTime() {
-			return this.time;
+			return this.totalTime;
 		}
 
 		@Override
-		public long method_37169() {
-			return this.field_33874;
+		public long getMaxTime() {
+			return this.maxTime;
 		}
 
 		@Override

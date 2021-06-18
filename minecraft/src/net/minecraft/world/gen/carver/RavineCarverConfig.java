@@ -43,7 +43,7 @@ public class RavineCarverConfig extends CarverConfig {
 			instance -> instance.group(
 						FloatProvider.VALUE_CODEC.fieldOf("distance_factor").forGetter(shape -> shape.distanceFactor),
 						FloatProvider.VALUE_CODEC.fieldOf("thickness").forGetter(shape -> shape.thickness),
-						Codecs.field_33441.fieldOf("width_smoothness").forGetter(shape -> shape.widthSmoothness),
+						Codecs.NONNEGATIVE_INT.fieldOf("width_smoothness").forGetter(shape -> shape.widthSmoothness),
 						FloatProvider.VALUE_CODEC.fieldOf("horizontal_radius_factor").forGetter(shape -> shape.horizontalRadiusFactor),
 						Codec.FLOAT.fieldOf("vertical_radius_default_factor").forGetter(shape -> shape.verticalRadiusDefaultFactor),
 						Codec.FLOAT.fieldOf("vertical_radius_center_factor").forGetter(shape -> shape.verticalRadiusCenterFactor)

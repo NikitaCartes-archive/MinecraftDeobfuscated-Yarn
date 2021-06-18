@@ -160,13 +160,13 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public SystemDetails populateCrashReport(SystemDetails systemDetails) {
-		systemDetails.addSection("Type", "Integrated Server (map_client.txt)");
-		systemDetails.addSection(
+	public SystemDetails addExtraSystemDetails(SystemDetails details) {
+		details.addSection("Type", "Integrated Server (map_client.txt)");
+		details.addSection(
 			"Is Modded",
 			(Supplier<String>)(() -> (String)this.getModdedStatusMessage().orElse("Probably not. Jar signature remains and both client + server brands are untouched."))
 		);
-		return systemDetails;
+		return details;
 	}
 
 	@Override

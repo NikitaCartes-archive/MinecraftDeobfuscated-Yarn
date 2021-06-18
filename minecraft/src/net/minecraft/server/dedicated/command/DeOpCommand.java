@@ -21,14 +21,14 @@ public class DeOpCommand {
 				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("targets", GameProfileArgumentType.gameProfile())
-						.suggests((context, builder) -> CommandSource.suggestMatching(context.getSource().getMinecraftServer().getPlayerManager().getOpNames(), builder))
+						.suggests((context, builder) -> CommandSource.suggestMatching(context.getSource().getServer().getPlayerManager().getOpNames(), builder))
 						.executes(context -> deop(context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets")))
 				)
 		);
 	}
 
 	private static int deop(ServerCommandSource source, Collection<GameProfile> targets) throws CommandSyntaxException {
-		PlayerManager playerManager = source.getMinecraftServer().getPlayerManager();
+		PlayerManager playerManager = source.getServer().getPlayerManager();
 		int i = 0;
 
 		for (GameProfile gameProfile : targets) {
@@ -42,7 +42,7 @@ public class DeOpCommand {
 		if (i == 0) {
 			throw ALREADY_DEOPPED_EXCEPTION.create();
 		} else {
-			source.getMinecraftServer().kickNonWhitelistedPlayers(source);
+			source.getServer().kickNonWhitelistedPlayers(source);
 			return i;
 		}
 	}

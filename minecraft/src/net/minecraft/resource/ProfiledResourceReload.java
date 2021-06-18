@@ -85,12 +85,12 @@ public class ProfiledResourceReload extends SimpleResourceReload<ProfiledResourc
 		final AtomicLong prepareTimeMs;
 		final AtomicLong applyTimeMs;
 
-		Summary(String string, ProfileResult profileResult, ProfileResult profileResult2, AtomicLong atomicLong, AtomicLong atomicLong2) {
-			this.name = string;
-			this.prepareProfile = profileResult;
-			this.applyProfile = profileResult2;
-			this.prepareTimeMs = atomicLong;
-			this.applyTimeMs = atomicLong2;
+		Summary(String name, ProfileResult prepareProfile, ProfileResult applyProfile, AtomicLong prepareTimeMs, AtomicLong applyTimeMs) {
+			this.name = name;
+			this.prepareProfile = prepareProfile;
+			this.applyProfile = applyProfile;
+			this.prepareTimeMs = prepareTimeMs;
+			this.applyTimeMs = applyTimeMs;
 		}
 	}
 }

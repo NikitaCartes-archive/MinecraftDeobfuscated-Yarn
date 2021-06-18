@@ -31,19 +31,19 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	private static final Text MINIGAME_TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip.minigame");
 	private static final Text TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip");
 	private final Supplier<RealmsServer> serverDataProvider;
-	private final Consumer<Text> toolTipSetter;
+	private final Consumer<Text> tooltipSetter;
 	private final int slotIndex;
 	private int animTick;
 	@Nullable
 	private RealmsWorldSlotButton.State state;
 
 	public RealmsWorldSlotButton(
-		int x, int y, int width, int height, Supplier<RealmsServer> serverDataProvider, Consumer<Text> toolTipSetter, int id, ButtonWidget.PressAction action
+		int x, int y, int width, int height, Supplier<RealmsServer> serverDataProvider, Consumer<Text> tooltipSetter, int id, ButtonWidget.PressAction action
 	) {
 		super(x, y, width, height, LiteralText.EMPTY, action);
 		this.serverDataProvider = serverDataProvider;
 		this.slotIndex = id;
-		this.toolTipSetter = toolTipSetter;
+		this.tooltipSetter = tooltipSetter;
 	}
 
 	@Nullable
@@ -168,7 +168,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	) {
 		boolean bl = this.isHovered();
 		if (this.isMouseOver((double)mouseX, (double)mouseY) && actionPrompt != null) {
-			this.toolTipSetter.accept(actionPrompt);
+			this.tooltipSetter.accept(actionPrompt);
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();

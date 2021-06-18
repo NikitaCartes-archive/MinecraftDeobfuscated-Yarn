@@ -21,9 +21,7 @@ public class PardonIpCommand {
 				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("target", StringArgumentType.word())
-						.suggests(
-							(context, builder) -> CommandSource.suggestMatching(context.getSource().getMinecraftServer().getPlayerManager().getIpBanList().getNames(), builder)
-						)
+						.suggests((context, builder) -> CommandSource.suggestMatching(context.getSource().getServer().getPlayerManager().getIpBanList().getNames(), builder))
 						.executes(context -> pardonIp(context.getSource(), StringArgumentType.getString(context, "target")))
 				)
 		);
@@ -34,7 +32,7 @@ public class PardonIpCommand {
 		if (!matcher.matches()) {
 			throw INVALID_IP_EXCEPTION.create();
 		} else {
-			BannedIpList bannedIpList = source.getMinecraftServer().getPlayerManager().getIpBanList();
+			BannedIpList bannedIpList = source.getServer().getPlayerManager().getIpBanList();
 			if (!bannedIpList.isBanned(target)) {
 				throw ALREADY_UNBANNED_EXCEPTION.create();
 			} else {

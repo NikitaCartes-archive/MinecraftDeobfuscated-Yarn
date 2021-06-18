@@ -46,7 +46,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	private static final int field_32121 = 80;
 	private static final int field_32122 = 5;
 	@Nullable
-	private Text toolTip;
+	private Text tooltip;
 	private final RealmsMainScreen parent;
 	@Nullable
 	private RealmsServer server;
@@ -63,7 +63,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	private boolean stateChanged;
 	private int animTick;
 	private int clicks;
-	private final List<RealmsWorldSlotButton> field_33777 = Lists.<RealmsWorldSlotButton>newArrayList();
+	private final List<RealmsWorldSlotButton> slotButtons = Lists.<RealmsWorldSlotButton>newArrayList();
 
 	public RealmsConfigureWorldScreen(RealmsMainScreen parent, long serverId) {
 		super(CONFIGURE_REALM_TITLE);
@@ -110,10 +110,10 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 				button -> this.client.openScreen(new RealmsSubscriptionInfoScreen(this, this.server.clone(), this.parent))
 			)
 		);
-		this.field_33777.clear();
+		this.slotButtons.clear();
 
 		for (int i = 1; i < 5; i++) {
-			this.field_33777.add(this.addSlotButton(i));
+			this.slotButtons.add(this.addSlotButton(i));
 		}
 
 		this.switchMinigameButton = this.addDrawableChild(
@@ -124,7 +124,9 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 				20,
 				new TranslatableText("mco.configure.world.buttons.switchminigame"),
 				button -> this.client
-						.openScreen(new RealmsSelectWorldTemplateScreen(new TranslatableText("mco.template.title.minigame"), this::method_32484, RealmsServer.WorldType.MINIGAME))
+						.openScreen(
+							new RealmsSelectWorldTemplateScreen(new TranslatableText("mco.template.title.minigame"), this::switchMinigame, RealmsServer.WorldType.MINIGAME)
+						)
 			)
 		);
 		this.optionsButton = this.addDrawableChild(
@@ -191,29 +193,31 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	private RealmsWorldSlotButton addSlotButton(int slotIndex) {
 		int i = this.frame(slotIndex);
 		int j = row(5) + 5;
-		RealmsWorldSlotButton realmsWorldSlotButton = new RealmsWorldSlotButton(i, j, 80, 80, () -> this.server, text -> this.toolTip = text, slotIndex, button -> {
-			RealmsWorldSlotButton.State state = ((RealmsWorldSlotButton)button).getState();
-			if (state != null) {
-				switch (state.action) {
-					case NOTHING:
-						break;
-					case JOIN:
-						this.joinRealm(this.server);
-						break;
-					case SWITCH_SLOT:
-						if (state.minigame) {
-							this.switchToMinigame();
-						} else if (state.empty) {
-							this.switchToEmptySlot(slotIndex, this.server);
-						} else {
-							this.switchToFullSlot(slotIndex, this.server);
-						}
-						break;
-					default:
-						throw new IllegalStateException("Unknown action " + state.action);
+		RealmsWorldSlotButton realmsWorldSlotButton = new RealmsWorldSlotButton(
+			i, j, 80, 80, () -> this.server, tooltip -> this.tooltip = tooltip, slotIndex, button -> {
+				RealmsWorldSlotButton.State state = ((RealmsWorldSlotButton)button).getState();
+				if (state != null) {
+					switch (state.action) {
+						case NOTHING:
+							break;
+						case JOIN:
+							this.joinRealm(this.server);
+							break;
+						case SWITCH_SLOT:
+							if (state.minigame) {
+								this.switchToMinigame();
+							} else if (state.empty) {
+								this.switchToEmptySlot(slotIndex, this.server);
+							} else {
+								this.switchToFullSlot(slotIndex, this.server);
+							}
+							break;
+						default:
+							throw new IllegalStateException("Unknown action " + state.action);
+					}
 				}
 			}
-		});
+		);
 		return this.addDrawableChild(realmsWorldSlotButton);
 	}
 
@@ -234,12 +238,12 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			this.clicks = 0;
 		}
 
-		this.field_33777.forEach(RealmsWorldSlotButton::method_37007);
+		this.slotButtons.forEach(RealmsWorldSlotButton::method_37007);
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.toolTip = null;
+		this.tooltip = null;
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, WORLDS_TITLE, this.width / 2, row(4), 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
@@ -259,8 +263,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 					.draw(matrices, CURRENT_MINIGAME_TEXT.shallowCopy().append(this.server.getMinigameName()), (float)(this.left_x + 80 + 20 + 10), (float)row(13), 16777215);
 			}
 
-			if (this.toolTip != null) {
-				this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
+			if (this.tooltip != null) {
+				this.renderMousehoverTooltip(matrices, this.tooltip, mouseX, mouseY);
 			}
 		}
 	}
@@ -335,7 +339,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	private void switchToMinigame() {
 		RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(
-			new TranslatableText("mco.template.title.minigame"), this::method_32484, RealmsServer.WorldType.MINIGAME
+			new TranslatableText("mco.template.title.minigame"), this::switchMinigame, RealmsServer.WorldType.MINIGAME
 		);
 		realmsSelectWorldTemplateScreen.setWarning(new TranslatableText("mco.minigame.world.info.line1"), new TranslatableText("mco.minigame.world.info.line2"));
 		this.client.openScreen(realmsSelectWorldTemplateScreen);
@@ -347,8 +351,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 		this.client
 			.openScreen(
 				new RealmsLongConfirmationScreen(
-					bl -> {
-						if (bl) {
+					confirmed -> {
+						if (confirmed) {
 							this.client
 								.openScreen(
 									new RealmsLongRunningMcoTaskScreen(
@@ -373,8 +377,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 		this.client
 			.openScreen(
 				new RealmsLongConfirmationScreen(
-					bl -> {
-						if (bl) {
+					confirmed -> {
+						if (confirmed) {
 							RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
 								this,
 								serverData,
@@ -400,76 +404,76 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			);
 	}
 
-	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int i, int j) {
-		int k = i + 12;
-		int l = j - 12;
-		int m = this.textRenderer.getWidth(text);
-		if (k + m + 3 > this.right_x) {
-			k = k - m - 20;
+	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int mouseX, int mouseY) {
+		int i = mouseX + 12;
+		int j = mouseY - 12;
+		int k = this.textRenderer.getWidth(text);
+		if (i + k + 3 > this.right_x) {
+			i = i - k - 20;
 		}
 
-		this.fillGradient(matrices, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-		this.textRenderer.drawWithShadow(matrices, text, (float)k, (float)l, 16777215);
+		this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
+		this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, 16777215);
 	}
 
-	private void drawServerStatus(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawServerStatus(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		if (this.server.expired) {
-			this.drawExpired(matrices, i, j, k, l);
+			this.drawExpired(matrices, x, y, mouseX, mouseY);
 		} else if (this.server.state == RealmsServer.State.CLOSED) {
-			this.drawClosed(matrices, i, j, k, l);
+			this.drawClosed(matrices, x, y, mouseX, mouseY);
 		} else if (this.server.state == RealmsServer.State.OPEN) {
 			if (this.server.daysLeft < 7) {
-				this.drawExpiring(matrices, i, j, k, l, this.server.daysLeft);
+				this.drawExpiring(matrices, x, y, mouseX, mouseY, this.server.daysLeft);
 			} else {
-				this.drawOpen(matrices, i, j, k, l);
+				this.drawOpen(matrices, x, y, mouseX, mouseY);
 			}
 		}
 	}
 
-	private void drawExpired(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawExpired(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		RenderSystem.setShaderTexture(0, EXPIRED_ICON);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
-		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
-			this.toolTip = EXPIRED_TEXT;
+		DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 10, 28, 10, 28);
+		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
+			this.tooltip = EXPIRED_TEXT;
 		}
 	}
 
-	private void drawExpiring(MatrixStack matrices, int i, int j, int k, int l, int m) {
+	private void drawExpiring(MatrixStack matrices, int x, int y, int mouseX, int mouseY, int remainingDays) {
 		RenderSystem.setShaderTexture(0, EXPIRES_SOON_ICON);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.animTick % 20 < 10) {
-			DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 20, 28);
+			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 10, 28, 20, 28);
 		} else {
-			DrawableHelper.drawTexture(matrices, i, j, 10.0F, 0.0F, 10, 28, 20, 28);
+			DrawableHelper.drawTexture(matrices, x, y, 10.0F, 0.0F, 10, 28, 20, 28);
 		}
 
-		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
-			if (m <= 0) {
-				this.toolTip = EXPIRES_SOON_TEXT;
-			} else if (m == 1) {
-				this.toolTip = EXPIRES_IN_A_DAY_TEXT;
+		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
+			if (remainingDays <= 0) {
+				this.tooltip = EXPIRES_SOON_TEXT;
+			} else if (remainingDays == 1) {
+				this.tooltip = EXPIRES_IN_A_DAY_TEXT;
 			} else {
-				this.toolTip = new TranslatableText("mco.selectServer.expires.days", m);
+				this.tooltip = new TranslatableText("mco.selectServer.expires.days", remainingDays);
 			}
 		}
 	}
 
-	private void drawOpen(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawOpen(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		RenderSystem.setShaderTexture(0, ON_ICON);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
-		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
-			this.toolTip = OPEN_TEXT;
+		DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 10, 28, 10, 28);
+		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
+			this.tooltip = OPEN_TEXT;
 		}
 	}
 
-	private void drawClosed(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawClosed(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		RenderSystem.setShaderTexture(0, OFF_ICON);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
-		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
-			this.toolTip = CLOSED_TEXT;
+		DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 10, 28, 10, 28);
+		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
+			this.tooltip = CLOSED_TEXT;
 		}
 	}
 
@@ -544,9 +548,9 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 		this.stateChanged = true;
 	}
 
-	private void method_32484(@Nullable WorldTemplate worldTemplate) {
-		if (worldTemplate != null && WorldTemplate.WorldTemplateType.MINIGAME == worldTemplate.type) {
-			this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchMinigameTask(this.server.id, worldTemplate, this.getNewScreen())));
+	private void switchMinigame(@Nullable WorldTemplate template) {
+		if (template != null && WorldTemplate.WorldTemplateType.MINIGAME == template.type) {
+			this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchMinigameTask(this.server.id, template, this.getNewScreen())));
 		} else {
 			this.client.openScreen(this);
 		}

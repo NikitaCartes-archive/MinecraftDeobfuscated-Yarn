@@ -48,8 +48,8 @@ public class ServerCommandSource implements CommandSource {
 	private final Vec3d position;
 	private final ServerWorld world;
 	private final int level;
-	private final String simpleName;
-	private final Text name;
+	private final String name;
+	private final Text displayName;
 	private final MinecraftServer server;
 	private final boolean silent;
 	@Nullable
@@ -59,9 +59,9 @@ public class ServerCommandSource implements CommandSource {
 	private final Vec2f rotation;
 
 	public ServerCommandSource(
-		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String simpleName, Text name, MinecraftServer server, @Nullable Entity entity
+		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
 	) {
-		this(output, pos, rot, world, level, simpleName, name, server, entity, false, (context, success, result) -> {
+		this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {
 		}, EntityAnchorArgumentType.EntityAnchor.FEET);
 	}
 
@@ -71,8 +71,8 @@ public class ServerCommandSource implements CommandSource {
 		Vec2f rot,
 		ServerWorld world,
 		int level,
-		String simpleName,
-		Text name,
+		String name,
+		Text displayName,
 		MinecraftServer server,
 		@Nullable Entity entity,
 		boolean silent,
@@ -85,8 +85,8 @@ public class ServerCommandSource implements CommandSource {
 		this.silent = silent;
 		this.entity = entity;
 		this.level = level;
-		this.simpleName = simpleName;
 		this.name = name;
+		this.displayName = displayName;
 		this.server = server;
 		this.resultConsumer = consumer;
 		this.entityAnchor = entityAnchor;
@@ -102,8 +102,8 @@ public class ServerCommandSource implements CommandSource {
 				this.rotation,
 				this.world,
 				this.level,
-				this.simpleName,
 				this.name,
+				this.displayName,
 				this.server,
 				this.entity,
 				this.silent,
@@ -140,8 +140,8 @@ public class ServerCommandSource implements CommandSource {
 				this.rotation,
 				this.world,
 				this.level,
-				this.simpleName,
 				this.name,
+				this.displayName,
 				this.server,
 				this.entity,
 				this.silent,
@@ -159,8 +159,8 @@ public class ServerCommandSource implements CommandSource {
 				rotation,
 				this.world,
 				this.level,
-				this.simpleName,
 				this.name,
+				this.displayName,
 				this.server,
 				this.entity,
 				this.silent,
@@ -178,8 +178,8 @@ public class ServerCommandSource implements CommandSource {
 				this.rotation,
 				this.world,
 				this.level,
-				this.simpleName,
 				this.name,
+				this.displayName,
 				this.server,
 				this.entity,
 				this.silent,
@@ -201,8 +201,8 @@ public class ServerCommandSource implements CommandSource {
 				this.rotation,
 				this.world,
 				this.level,
-				this.simpleName,
 				this.name,
+				this.displayName,
 				this.server,
 				this.entity,
 				true,
@@ -221,8 +221,8 @@ public class ServerCommandSource implements CommandSource {
 				this.rotation,
 				this.world,
 				level,
-				this.simpleName,
 				this.name,
+				this.displayName,
 				this.server,
 				this.entity,
 				this.silent,
@@ -240,8 +240,8 @@ public class ServerCommandSource implements CommandSource {
 				this.rotation,
 				this.world,
 				level,
-				this.simpleName,
 				this.name,
+				this.displayName,
 				this.server,
 				this.entity,
 				this.silent,
@@ -259,8 +259,8 @@ public class ServerCommandSource implements CommandSource {
 				this.rotation,
 				this.world,
 				this.level,
-				this.simpleName,
 				this.name,
+				this.displayName,
 				this.server,
 				this.entity,
 				this.silent,
@@ -281,8 +281,8 @@ public class ServerCommandSource implements CommandSource {
 				this.rotation,
 				world,
 				this.level,
-				this.simpleName,
 				this.name,
+				this.displayName,
 				this.server,
 				this.entity,
 				this.silent,
@@ -308,11 +308,11 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	public Text getDisplayName() {
-		return this.name;
+		return this.displayName;
 	}
 
 	public String getName() {
-		return this.simpleName;
+		return this.name;
 	}
 
 	@Override
@@ -362,7 +362,7 @@ public class ServerCommandSource implements CommandSource {
 		return this.rotation;
 	}
 
-	public MinecraftServer getMinecraftServer() {
+	public MinecraftServer getServer() {
 		return this.server;
 	}
 

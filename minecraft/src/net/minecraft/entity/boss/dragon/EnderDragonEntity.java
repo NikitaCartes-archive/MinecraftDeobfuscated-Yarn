@@ -881,7 +881,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public boolean addStatusEffect(StatusEffectInstance effect) {
+	public boolean addStatusEffect(StatusEffectInstance effect, @Nullable Entity source) {
 		return false;
 	}
 

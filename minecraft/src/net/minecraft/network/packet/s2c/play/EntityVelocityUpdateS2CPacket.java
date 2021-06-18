@@ -7,6 +7,13 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+/**
+ * Sent when a server modifies an entity's velocity.
+ * 
+ * <p>If the entity is a player, {@link
+ * net.minecraft.network.packet.s2c.play.ExplosionS2CPacket} can be used as
+ * a replacement.
+ */
 public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int id;
 	private final int velocityX;

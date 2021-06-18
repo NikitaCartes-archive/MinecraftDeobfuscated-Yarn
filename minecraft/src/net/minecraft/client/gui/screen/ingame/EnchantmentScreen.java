@@ -56,8 +56,8 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
+	public void handledScreenTick() {
+		super.handledScreenTick();
 		this.doTick();
 	}
 

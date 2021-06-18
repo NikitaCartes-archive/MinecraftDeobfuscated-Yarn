@@ -37,7 +37,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	static final Text REJECT_TEXT = new TranslatableText("mco.invites.button.reject");
 	private final Screen parent;
 	@Nullable
-	Text toolTip;
+	Text tooltip;
 	boolean loaded;
 	RealmsPendingInvitesScreen.PendingInvitationSelectionList pendingInvitationSelectionList;
 	int selectedInvite = -1;
@@ -60,7 +60,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 					try {
 						List<PendingInvite> list = realmsClient.pendingInvites().pendingInvites;
 						List<RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry> list2 = (List<RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry>)list.stream()
-							.map(pendingInvite -> RealmsPendingInvitesScreen.this.new PendingInvitationSelectionListEntry(pendingInvite))
+							.map(invite -> RealmsPendingInvitesScreen.this.new PendingInvitationSelectionListEntry(invite))
 							.collect(Collectors.toList());
 						RealmsPendingInvitesScreen.this.client.execute(() -> RealmsPendingInvitesScreen.this.pendingInvitationSelectionList.replaceEntries(list2));
 					} catch (RealmsServiceException var7) {
@@ -150,12 +150,12 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.toolTip = null;
+		this.tooltip = null;
 		this.renderBackground(matrices);
 		this.pendingInvitationSelectionList.render(matrices, mouseX, mouseY, delta);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 12, 16777215);
-		if (this.toolTip != null) {
-			this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
+		if (this.tooltip != null) {
+			this.renderMousehoverTooltip(matrices, this.tooltip, mouseX, mouseY);
 		}
 
 		if (this.pendingInvitationSelectionList.getEntryCount() == 0 && this.loaded) {
@@ -165,13 +165,13 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int i, int j) {
-		if (text != null) {
-			int k = i + 12;
-			int l = j - 12;
-			int m = this.textRenderer.getWidth(text);
-			this.fillGradient(matrices, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-			this.textRenderer.drawWithShadow(matrices, text, (float)k, (float)l, 16777215);
+	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text tooltip, int mouseX, int mouseY) {
+		if (tooltip != null) {
+			int i = mouseX + 12;
+			int j = mouseY - 12;
+			int k = this.textRenderer.getWidth(tooltip);
+			this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
+			this.textRenderer.drawWithShadow(matrices, tooltip, (float)i, (float)j, 16777215);
 		}
 	}
 
@@ -257,16 +257,15 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			return true;
 		}
 
-		private void renderPendingInvitationItem(MatrixStack matrices, PendingInvite pendingInvite, int i, int j, int k, int l) {
-			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, pendingInvite.worldName, (float)(i + 38), (float)(j + 1), 16777215);
-			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, pendingInvite.worldOwnerName, (float)(i + 38), (float)(j + 12), 7105644);
-			RealmsPendingInvitesScreen.this.textRenderer
-				.draw(matrices, RealmsUtil.convertToAgePresentation(pendingInvite.date), (float)(i + 38), (float)(j + 24), 7105644);
-			RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, i, j, k, l);
-			RealmsTextureManager.withBoundFace(pendingInvite.worldOwnerUuid, () -> {
+		private void renderPendingInvitationItem(MatrixStack matrices, PendingInvite invite, int x, int y, int mouseX, int mouseY) {
+			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, invite.worldName, (float)(x + 38), (float)(y + 1), 16777215);
+			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, invite.worldOwnerName, (float)(x + 38), (float)(y + 12), 7105644);
+			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, RealmsUtil.convertToAgePresentation(invite.date), (float)(x + 38), (float)(y + 24), 7105644);
+			RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);
+			RealmsTextureManager.withBoundFace(invite.worldOwnerUuid, () -> {
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-				DrawableHelper.drawTexture(matrices, i, j, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
-				DrawableHelper.drawTexture(matrices, i, j, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
+				DrawableHelper.drawTexture(matrices, x, y, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
+				DrawableHelper.drawTexture(matrices, x, y, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
 			});
 		}
 
@@ -287,13 +286,13 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			}
 
 			@Override
-			protected void render(MatrixStack matrices, int x, int y, boolean bl) {
+			protected void render(MatrixStack matrices, int x, int y, boolean showTooltip) {
 				RenderSystem.setShaderTexture(0, RealmsPendingInvitesScreen.ACCEPT_ICON);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-				float f = bl ? 19.0F : 0.0F;
+				float f = showTooltip ? 19.0F : 0.0F;
 				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
-				if (bl) {
-					RealmsPendingInvitesScreen.this.toolTip = RealmsPendingInvitesScreen.ACCEPT_TEXT;
+				if (showTooltip) {
+					RealmsPendingInvitesScreen.this.tooltip = RealmsPendingInvitesScreen.ACCEPT_TEXT;
 				}
 			}
 
@@ -310,13 +309,13 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			}
 
 			@Override
-			protected void render(MatrixStack matrices, int x, int y, boolean bl) {
+			protected void render(MatrixStack matrices, int x, int y, boolean showTooltip) {
 				RenderSystem.setShaderTexture(0, RealmsPendingInvitesScreen.REJECT_ICON);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-				float f = bl ? 19.0F : 0.0F;
+				float f = showTooltip ? 19.0F : 0.0F;
 				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
-				if (bl) {
-					RealmsPendingInvitesScreen.this.toolTip = RealmsPendingInvitesScreen.REJECT_TEXT;
+				if (showTooltip) {
+					RealmsPendingInvitesScreen.this.tooltip = RealmsPendingInvitesScreen.REJECT_TEXT;
 				}
 			}
 

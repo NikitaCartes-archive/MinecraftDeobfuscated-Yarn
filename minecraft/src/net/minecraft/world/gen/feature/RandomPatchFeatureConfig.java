@@ -24,10 +24,10 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 						.fieldOf("whitelist")
 						.forGetter(randomPatchFeatureConfig -> (List)randomPatchFeatureConfig.whitelist.stream().map(Block::getDefaultState).collect(Collectors.toList())),
 					BlockState.CODEC.listOf().fieldOf("blacklist").forGetter(randomPatchFeatureConfig -> ImmutableList.copyOf(randomPatchFeatureConfig.blacklist)),
-					Codecs.field_33442.fieldOf("tries").orElse(128).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.tries),
-					Codecs.field_33441.fieldOf("xspread").orElse(7).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadX),
-					Codecs.field_33441.fieldOf("yspread").orElse(3).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadY),
-					Codecs.field_33441.fieldOf("zspread").orElse(7).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadZ),
+					Codecs.POSITIVE_INT.fieldOf("tries").orElse(128).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.tries),
+					Codecs.NONNEGATIVE_INT.fieldOf("xspread").orElse(7).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadX),
+					Codecs.NONNEGATIVE_INT.fieldOf("yspread").orElse(3).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadY),
+					Codecs.NONNEGATIVE_INT.fieldOf("zspread").orElse(7).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadZ),
 					Codec.BOOL.fieldOf("can_replace").orElse(false).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.canReplace),
 					Codec.BOOL.fieldOf("project").orElse(true).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.project),
 					Codec.BOOL.fieldOf("need_water").orElse(false).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.needsWater)

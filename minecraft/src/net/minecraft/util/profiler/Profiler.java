@@ -1,7 +1,6 @@
 package net.minecraft.util.profiler;
 
 import java.util.function.Supplier;
-import net.minecraft.client.util.profiler.SamplingChannel;
 
 public interface Profiler {
 	String ROOT_NAME = "root";
@@ -20,7 +19,7 @@ public interface Profiler {
 
 	void swap(Supplier<String> locationGetter);
 
-	void method_37167(SamplingChannel samplingChannel);
+	void markSampleType(SampleType type);
 
 	/**
 	 * Increment the visit count for a marker.
@@ -75,9 +74,9 @@ public interface Profiler {
 				}
 
 				@Override
-				public void method_37167(SamplingChannel samplingChannel) {
-					a.method_37167(samplingChannel);
-					b.method_37167(samplingChannel);
+				public void markSampleType(SampleType type) {
+					a.markSampleType(type);
+					b.markSampleType(type);
 				}
 
 				@Override

@@ -130,7 +130,7 @@ public abstract class Carver<C extends CarverConfig> {
 			int m = Math.max(MathHelper.floor(x - horizontalScale) - k - 1, 0);
 			int n = Math.min(MathHelper.floor(x + horizontalScale) - k, 15);
 			int o = Math.max(MathHelper.floor(y - verticalScale) - 1, context.getMinY() + 1);
-			int p = Math.min(MathHelper.floor(y + verticalScale) + 1, context.getMinY() + context.getMaxY() - 8);
+			int p = Math.min(MathHelper.floor(y + verticalScale) + 1, context.getMinY() + context.getHeight() - 8);
 			int q = Math.max(MathHelper.floor(z - horizontalScale) - l - 1, 0);
 			int r = Math.min(MathHelper.floor(z + horizontalScale) - l, 15);
 			if (!config.aquifers && this.isRegionUncarvable(chunk, m, n, o, p, q, r)) {

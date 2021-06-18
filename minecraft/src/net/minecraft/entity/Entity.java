@@ -1602,7 +1602,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			double e = nbtList2.getDouble(1);
 			double f = nbtList2.getDouble(2);
 			this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-			this.setPos(nbtList.getDouble(0), nbtList.getDouble(1), nbtList.getDouble(2));
+			this.setPos(nbtList.getDouble(0), MathHelper.clamp(nbtList.getDouble(1), -2.0E7, 2.0E7), nbtList.getDouble(2));
 			this.setYaw(nbtList3.getFloat(0));
 			this.setPitch(nbtList3.getFloat(1));
 			this.resetPosition();

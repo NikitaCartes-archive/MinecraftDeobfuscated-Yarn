@@ -16,13 +16,13 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
-import net.minecraft.entity.ai.Durations;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileResult;
 import org.apache.logging.log4j.LogManager;
@@ -54,23 +54,23 @@ public class DebugCommand {
 	}
 
 	private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
-		MinecraftServer minecraftServer = source.getMinecraftServer();
+		MinecraftServer minecraftServer = source.getServer();
 		if (minecraftServer.isDebugRunning()) {
 			throw ALREADY_RUNNING_EXCEPTION.create();
 		} else {
-			minecraftServer.enableProfiler();
+			minecraftServer.startDebug();
 			source.sendFeedback(new TranslatableText("commands.debug.started"), true);
 			return 0;
 		}
 	}
 
 	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
-		MinecraftServer minecraftServer = source.getMinecraftServer();
+		MinecraftServer minecraftServer = source.getServer();
 		if (!minecraftServer.isDebugRunning()) {
 			throw NOT_RUNNING_EXCEPTION.create();
 		} else {
 			ProfileResult profileResult = minecraftServer.stopDebug();
-			double d = (double)profileResult.getTimeSpan() / (double)Durations.field_33868;
+			double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
 			double e = (double)profileResult.getTickSpan() / d;
 			source.sendFeedback(
 				new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format("%.2f", e)), true
@@ -81,7 +81,7 @@ public class DebugCommand {
 
 	private static int executeFunction(ServerCommandSource source, Collection<CommandFunction> functions) {
 		int i = 0;
-		MinecraftServer minecraftServer = source.getMinecraftServer();
+		MinecraftServer minecraftServer = source.getServer();
 		String string = "debug-trace-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt";
 
 		try {
@@ -95,7 +95,7 @@ public class DebugCommand {
 				for (CommandFunction commandFunction : functions) {
 					printWriter.println(commandFunction.getId());
 					DebugCommand.Tracer tracer = new DebugCommand.Tracer(printWriter);
-					i += source.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, source.withOutput(tracer).withMaxLevel(2), tracer);
+					i += source.getServer().getCommandFunctionManager().execute(commandFunction, source.withOutput(tracer).withMaxLevel(2), tracer);
 				}
 			} catch (Throwable var12) {
 				if (writer != null) {

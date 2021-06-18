@@ -1031,12 +1031,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		float g = gameRenderer.getViewDistance();
 		boolean bl2 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
-		if (this.client.options.viewDistance >= 4) {
-			profiler.swap("sky");
-			RenderSystem.setShader(GameRenderer::getPositionShader);
-			this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2));
-		}
-
+		profiler.swap("sky");
+		RenderSystem.setShader(GameRenderer::getPositionShader);
+		this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2));
 		profiler.swap("fog");
 		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0F, 32.0F), bl2);
 		profiler.swap("terrain_setup");

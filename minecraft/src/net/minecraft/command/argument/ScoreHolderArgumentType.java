@@ -57,7 +57,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	}
 
 	public static Collection<String> getScoreboardScoreHolders(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getScoreHolders(context, name, context.getSource().getMinecraftServer().getScoreboard()::getKnownPlayers);
+		return getScoreHolders(context, name, context.getSource().getServer().getScoreboard()::getKnownPlayers);
 	}
 
 	public static Collection<String> getScoreHolders(CommandContext<ServerCommandSource> context, String name, Supplier<Collection<String>> players) throws CommandSyntaxException {

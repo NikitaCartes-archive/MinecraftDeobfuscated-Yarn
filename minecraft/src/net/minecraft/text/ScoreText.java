@@ -69,7 +69,7 @@ public class ScoreText extends BaseText implements ParsableText {
 	}
 
 	private String getScore(String playerName, ServerCommandSource source) {
-		MinecraftServer minecraftServer = source.getMinecraftServer();
+		MinecraftServer minecraftServer = source.getServer();
 		if (minecraftServer != null) {
 			Scoreboard scoreboard = minecraftServer.getScoreboard();
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(this.objective);

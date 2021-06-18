@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -35,13 +34,14 @@ import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class HoglinBrain {
 	public static final int field_30533 = 8;
 	public static final int field_30534 = 4;
-	private static final UniformIntProvider AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
+	private static final UniformIntProvider AVOID_MEMORY_DURATION = TimeHelper.betweenSeconds(5, 20);
 	private static final int field_30535 = 200;
 	private static final int field_30536 = 8;
 	private static final int field_30537 = 15;

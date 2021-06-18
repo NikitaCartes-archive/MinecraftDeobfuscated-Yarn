@@ -34,7 +34,7 @@ public class ScoreboardObjectiveArgumentType implements ArgumentType<String> {
 
 	public static ScoreboardObjective getObjective(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		String string = context.getArgument(name, String.class);
-		Scoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = context.getSource().getServer().getScoreboard();
 		ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
 		if (scoreboardObjective == null) {
 			throw UNKNOWN_OBJECTIVE_EXCEPTION.create(string);
@@ -64,7 +64,7 @@ public class ScoreboardObjectiveArgumentType implements ArgumentType<String> {
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		if (context.getSource() instanceof ServerCommandSource) {
-			return CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getMinecraftServer().getScoreboard().getObjectiveNames(), builder);
+			return CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getServer().getScoreboard().getObjectiveNames(), builder);
 		} else if (context.getSource() instanceof CommandSource) {
 			CommandSource commandSource = (CommandSource)context.getSource();
 			return commandSource.getCompletions(context, builder);

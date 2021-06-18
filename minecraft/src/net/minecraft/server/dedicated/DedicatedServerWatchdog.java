@@ -34,7 +34,7 @@ public class DedicatedServerWatchdog implements Runnable {
 
 	public void run() {
 		while (this.server.isRunning()) {
-			long l = this.server.getServerStartTime();
+			long l = this.server.getTimeReference();
 			long m = Util.getMeasuringTimeMs();
 			long n = m - l;
 			if (n > this.maxTickTime) {
@@ -59,7 +59,7 @@ public class DedicatedServerWatchdog implements Runnable {
 				}
 
 				CrashReport crashReport = new CrashReport("Watching Server", error);
-				this.server.method_37324(crashReport.getSystemDetailsSection());
+				this.server.addSystemDetails(crashReport.getSystemDetailsSection());
 				CrashReportSection crashReportSection = crashReport.addElement("Thread Dump");
 				crashReportSection.add("Threads", stringBuilder);
 				CrashReportSection crashReportSection2 = crashReport.addElement("Performance stats");

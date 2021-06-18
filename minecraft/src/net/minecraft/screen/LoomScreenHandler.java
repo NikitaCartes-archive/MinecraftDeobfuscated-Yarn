@@ -87,10 +87,10 @@ public class LoomScreenHandler extends ScreenHandler {
 					LoomScreenHandler.this.selectedPattern.set(0);
 				}
 
-				context.run((world, blockPos) -> {
+				context.run((world, pos) -> {
 					long l = world.getTime();
 					if (LoomScreenHandler.this.lastTakeResultTime != l) {
-						world.playSound(null, blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+						world.playSound(null, pos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						LoomScreenHandler.this.lastTakeResultTime = l;
 					}
 				});
@@ -220,9 +220,9 @@ public class LoomScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public void close(PlayerEntity playerEntity) {
-		super.close(playerEntity);
-		this.context.run((world, blockPos) -> this.dropInventory(playerEntity, this.input));
+	public void close(PlayerEntity player) {
+		super.close(player);
+		this.context.run((world, pos) -> this.dropInventory(player, this.input));
 	}
 
 	private void updateOutputSlot() {

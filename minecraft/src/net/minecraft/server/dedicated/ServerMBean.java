@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 public final class ServerMBean implements DynamicMBean {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftServer server;
-	private final MBeanInfo beanInfo;
+	private final MBeanInfo mBeanInfo;
 	private final Map<String, ServerMBean.Entry> entries = (Map<String, ServerMBean.Entry>)Stream.of(
 			new ServerMBean.Entry("tickTimes", this::getTickTimes, "Historical tick times (ms)", long[].class),
 			new ServerMBean.Entry("averageTickTime", this::getAverageTickTime, "Current average tick time (ms)", long.class)
@@ -50,7 +50,7 @@ public final class ServerMBean implements DynamicMBean {
 			.stream()
 			.map(ServerMBean.Entry::createInfo)
 			.toArray(MBeanAttributeInfo[]::new);
-		this.beanInfo = new MBeanInfo(
+		this.mBeanInfo = new MBeanInfo(
 			ServerMBean.class.getSimpleName(), "metrics for dedicated server", mBeanAttributeInfos, null, null, new MBeanNotificationInfo[0]
 		);
 	}
@@ -110,7 +110,7 @@ public final class ServerMBean implements DynamicMBean {
 	}
 
 	public MBeanInfo getMBeanInfo() {
-		return this.beanInfo;
+		return this.mBeanInfo;
 	}
 
 	/**

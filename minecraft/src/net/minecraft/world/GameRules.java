@@ -467,7 +467,7 @@ public class GameRules {
 
 		public void set(CommandContext<ServerCommandSource> context, String name) {
 			this.setFromArgument(context, name);
-			this.changed(context.getSource().getMinecraftServer());
+			this.changed(context.getSource().getServer());
 		}
 
 		protected void changed(@Nullable MinecraftServer server) {

@@ -17,7 +17,7 @@ import net.minecraft.text.TranslatableText;
 
 public class AdvancementCommand {
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
-		Collection<Advancement> collection = context.getSource().getMinecraftServer().getAdvancementLoader().getAdvancements();
+		Collection<Advancement> collection = context.getSource().getServer().getAdvancementLoader().getAdvancements();
 		return CommandSource.suggestIdentifiers(collection.stream().map(Advancement::getId), builder);
 	};
 
@@ -113,7 +113,7 @@ public class AdvancementCommand {
 													context.getSource(),
 													EntityArgumentType.getPlayers(context, "targets"),
 													AdvancementCommand.Operation.GRANT,
-													context.getSource().getMinecraftServer().getAdvancementLoader().getAdvancements()
+													context.getSource().getServer().getAdvancementLoader().getAdvancements()
 												)
 										)
 								)
@@ -207,7 +207,7 @@ public class AdvancementCommand {
 													context.getSource(),
 													EntityArgumentType.getPlayers(context, "targets"),
 													AdvancementCommand.Operation.REVOKE,
-													context.getSource().getMinecraftServer().getAdvancementLoader().getAdvancements()
+													context.getSource().getServer().getAdvancementLoader().getAdvancements()
 												)
 										)
 								)

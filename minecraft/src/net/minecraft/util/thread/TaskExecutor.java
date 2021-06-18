@@ -7,15 +7,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.minecraft.client.util.profiler.SamplingChannel;
-import net.minecraft.client.util.profiler.SamplingRecorder;
 import net.minecraft.util.Util;
-import net.minecraft.util.profiler.MetricSamplerSupplier;
-import net.minecraft.util.profiler.MetricSuppliers;
+import net.minecraft.util.profiler.SampleType;
+import net.minecraft.util.profiler.Sampler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TaskExecutor<T> implements MetricSamplerSupplier, MessageListener<T>, AutoCloseable, Runnable {
+public class TaskExecutor<T> implements SampleableExecutor, MessageListener<T>, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_29940 = 1;
 	private static final int field_29941 = 2;
@@ -32,7 +30,7 @@ public class TaskExecutor<T> implements MetricSamplerSupplier, MessageListener<T
 		this.executor = executor;
 		this.queue = queue;
 		this.name = name;
-		MetricSuppliers.INSTANCE.add(this);
+		ExecutorSampling.INSTANCE.add(this);
 	}
 
 	private boolean unpause() {
@@ -137,7 +135,7 @@ public class TaskExecutor<T> implements MetricSamplerSupplier, MessageListener<T
 	}
 
 	@Override
-	public List<SamplingRecorder> getSamplers() {
-		return ImmutableList.of(SamplingRecorder.create(this.name + "-queue-size", SamplingChannel.MAIL_BOXES, this::getQueueSize));
+	public List<Sampler> createSamplers() {
+		return ImmutableList.of(Sampler.create(this.name + "-queue-size", SampleType.MAIL_BOXES, this::getQueueSize));
 	}
 }

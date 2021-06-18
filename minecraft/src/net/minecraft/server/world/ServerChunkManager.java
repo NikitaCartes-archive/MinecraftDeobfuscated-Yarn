@@ -51,7 +51,7 @@ public class ServerChunkManager extends ChunkManager {
 	private final ChunkGenerator chunkGenerator;
 	final ServerWorld world;
 	final Thread serverThread;
-	final ServerLightingProvider lightProvider;
+	final ServerLightingProvider lightingProvider;
 	private final ServerChunkManager.MainThreadExecutor mainThreadExecutor;
 	public final ThreadedAnvilChunkStorage threadedAnvilChunkStorage;
 	private final PersistentStateManager persistentStateManager;
@@ -64,7 +64,7 @@ public class ServerChunkManager extends ChunkManager {
 	private final Chunk[] chunkCache = new Chunk[4];
 	@Nullable
 	@Debug
-	private SpawnHelper.Info spawnEntry;
+	private SpawnHelper.Info spawnInfo;
 
 	public ServerChunkManager(
 		ServerWorld world,
@@ -102,13 +102,13 @@ public class ServerChunkManager extends ChunkManager {
 			viewDistance,
 			bl
 		);
-		this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
+		this.lightingProvider = this.threadedAnvilChunkStorage.getLightingProvider();
 		this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
 		this.initChunkCaches();
 	}
 
 	public ServerLightingProvider getLightingProvider() {
-		return this.lightProvider;
+		return this.lightingProvider;
 	}
 
 	@Nullable
@@ -301,8 +301,8 @@ public class ServerChunkManager extends ChunkManager {
 		}
 	}
 
-	public boolean method_37114(long l) {
-		return this.isFutureReady(l, ChunkHolder::getTickingFuture);
+	public boolean isTickingFutureReady(long pos) {
+		return this.isFutureReady(pos, ChunkHolder::getTickingFuture);
 	}
 
 	private boolean isFutureReady(long pos, Function<ChunkHolder, CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>>> futureFunction) {
@@ -324,7 +324,7 @@ public class ServerChunkManager extends ChunkManager {
 	@Override
 	public void close() throws IOException {
 		this.save(true);
-		this.lightProvider.close();
+		this.lightingProvider.close();
 		this.threadedAnvilChunkStorage.close();
 	}
 
@@ -355,17 +355,14 @@ public class ServerChunkManager extends ChunkManager {
 			this.world.getProfiler().push("naturalSpawnCount");
 			int j = this.ticketManager.getSpawningChunkCount();
 			SpawnHelper.Info info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded);
-			this.spawnEntry = info;
+			this.spawnInfo = info;
 			this.world.getProfiler().pop();
 			List<ChunkHolder> list = Lists.<ChunkHolder>newArrayList(this.threadedAnvilChunkStorage.entryIterator());
 			Collections.shuffle(list);
 			list.forEach(chunkHolder -> {
 				Optional<WorldChunk> optional = ((Either)chunkHolder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
 				if (optional.isPresent()) {
-					this.world.getProfiler().push("broadcast");
 					WorldChunk worldChunk = (WorldChunk)optional.get();
-					chunkHolder.flushUpdates(worldChunk);
-					this.world.getProfiler().pop();
 					ChunkPos chunkPos = worldChunk.getPos();
 					if (this.world.method_37115(chunkPos) && !this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
 						worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
@@ -382,6 +379,8 @@ public class ServerChunkManager extends ChunkManager {
 				this.world.tickSpawners(this.spawnMonsters, this.spawnAnimals);
 			}
 
+			this.world.getProfiler().swap("broadcast");
+			list.forEach(chunkHolder -> ((Either)chunkHolder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left().ifPresent(chunkHolder::flushUpdates));
 			this.world.getProfiler().pop();
 			this.world.getProfiler().pop();
 		}
@@ -509,7 +508,7 @@ public class ServerChunkManager extends ChunkManager {
 	@Nullable
 	@Debug
 	public SpawnHelper.Info getSpawnInfo() {
-		return this.spawnEntry;
+		return this.spawnInfo;
 	}
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
@@ -548,7 +547,7 @@ public class ServerChunkManager extends ChunkManager {
 			if (ServerChunkManager.this.tick()) {
 				return true;
 			} else {
-				ServerChunkManager.this.lightProvider.tick();
+				ServerChunkManager.this.lightingProvider.tick();
 				return super.runTask();
 			}
 		}

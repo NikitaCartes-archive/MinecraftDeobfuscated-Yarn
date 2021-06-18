@@ -21,7 +21,7 @@ import org.apache.commons.lang3.tuple.Triple;
 
 @Environment(EnvType.CLIENT)
 public abstract class RenderPhase {
-	private static final float field_32771 = 0.99975586F;
+	private static final float VIEW_OFFSET_Z_LAYERING_SCALE = 0.99975586F;
 	protected final String name;
 	private final Runnable beginAction;
 	private final Runnable endAction;

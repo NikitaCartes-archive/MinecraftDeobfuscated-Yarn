@@ -14,7 +14,6 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -46,6 +45,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.TimeHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -72,7 +72,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final TrackedData<Boolean> PROVOKED = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int lastAngrySoundAge = Integer.MIN_VALUE;
 	private int ageWhenTargetSet;
-	private static final UniformIntProvider ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
+	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	private int angerTime;
 	private UUID targetUuid;
 

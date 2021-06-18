@@ -35,6 +35,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -186,8 +187,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
 		public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
-			ServerPlayerEntity.this.networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, stacks));
-			this.sendCursorStackUpdate(cursorStack);
+			ServerPlayerEntity.this.networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, handler.nextRevision(), stacks, cursorStack));
 
 			for (int i = 0; i < properties.length; i++) {
 				this.sendPropertyUpdate(handler, i, properties[i]);
@@ -196,12 +196,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 		@Override
 		public void updateSlot(ScreenHandler handler, int slot, ItemStack stack) {
-			ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slot, stack));
+			ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, handler.nextRevision(), slot, stack));
 		}
 
 		@Override
 		public void updateCursorStack(ScreenHandler handler, ItemStack stack) {
-			this.sendCursorStackUpdate(stack);
+			ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, handler.nextRevision(), -1, stack));
 		}
 
 		@Override
@@ -211,10 +211,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 		private void sendPropertyUpdate(ScreenHandler handler, int property, int value) {
 			ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, property, value));
-		}
-
-		private void sendCursorStackUpdate(ItemStack stack) {
-			ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_CURSOR_SYNC_ID, -1, stack));
 		}
 	};
 	private final ScreenHandlerListener screenHandlerListener = new ScreenHandlerListener() {
@@ -1466,9 +1462,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public void sendInitialChunkPackets(ChunkPos chunkPos, Packet<?> packet, Packet<?> packet2) {
-		this.networkHandler.sendPacket(packet2);
-		this.networkHandler.sendPacket(packet);
+	public void sendInitialChunkPackets(ChunkPos chunkPos, Packet<?> chunkDataPacket, Packet<?> lightUpdatePacket) {
+		this.networkHandler.sendPacket(lightUpdatePacket);
+		this.networkHandler.sendPacket(chunkDataPacket);
 	}
 
 	public void sendUnloadChunkPacket(ChunkPos chunkPos) {
@@ -1594,5 +1590,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 	protected void tickItemStackUsage(ItemStack stack) {
 		Criteria.USING_ITEM.test(this, stack);
 		super.tickItemStackUsage(stack);
+	}
+
+	public boolean dropSelectedItem(boolean entireStack) {
+		PlayerInventory playerInventory = this.getInventory();
+		ItemStack itemStack = playerInventory.dropSelectedItem(entireStack);
+		this.currentScreenHandler
+			.getSlotIndex(playerInventory, playerInventory.selectedSlot)
+			.ifPresent(i -> this.currentScreenHandler.setPreviousTrackedSlot(i, playerInventory.getMainHandStack()));
+		return this.dropItem(itemStack, false, true) != null;
 	}
 }

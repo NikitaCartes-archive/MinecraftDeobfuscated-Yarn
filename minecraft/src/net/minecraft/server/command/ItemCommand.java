@@ -54,7 +54,7 @@ public class ItemCommand {
 		(itemName, slot) -> new TranslatableText("commands.item.target.no_changed.known_item", itemName, slot)
 	);
 	private static final SuggestionProvider<ServerCommandSource> MODIFIER_SUGGESTION_PROVIDER = (context, builder) -> {
-		LootFunctionManager lootFunctionManager = context.getSource().getMinecraftServer().getItemModifierManager();
+		LootFunctionManager lootFunctionManager = context.getSource().getServer().getItemModifierManager();
 		return CommandSource.suggestIdentifiers(lootFunctionManager.getFunctionIds(), builder);
 	};
 

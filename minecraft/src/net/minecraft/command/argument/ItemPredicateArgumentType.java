@@ -42,7 +42,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 			Identifier identifier = itemStringReader.getId();
 			return commandContext -> {
 				Tag<Item> tag = commandContext.getSource()
-					.getMinecraftServer()
+					.getServer()
 					.getTagManager()
 					.getTag(Registry.ITEM_KEY, identifier, identifierxx -> UNKNOWN_TAG_EXCEPTION.create(identifierxx.toString()));
 				return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.getNbt());

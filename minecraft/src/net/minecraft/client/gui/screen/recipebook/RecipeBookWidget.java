@@ -139,8 +139,6 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	public void close() {
-		this.searchField = null;
-		this.currentTab = null;
 		this.client.keyboard.setRepeatEvents(false);
 	}
 

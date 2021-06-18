@@ -166,9 +166,9 @@ public class TestServer extends MinecraftServer {
 	}
 
 	@Override
-	public SystemDetails populateCrashReport(SystemDetails systemDetails) {
-		systemDetails.addSection("Type", "Game test server");
-		return systemDetails;
+	public SystemDetails addExtraSystemDetails(SystemDetails details) {
+		details.addSection("Type", "Game test server");
+		return details;
 	}
 
 	@Override

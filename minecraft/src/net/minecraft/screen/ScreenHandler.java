@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -54,6 +55,7 @@ public abstract class ScreenHandler {
 	private final DefaultedList<ItemStack> previousTrackedStacks = DefaultedList.of();
 	private final IntList trackedPropertyValues = new IntArrayList();
 	private ItemStack previousCursorStack = ItemStack.EMPTY;
+	private int revision;
 	@Nullable
 	private final ScreenHandlerType<?> type;
 	public final int syncId;
@@ -193,12 +195,32 @@ public abstract class ScreenHandler {
 			Property property = (Property)this.properties.get(i);
 			int j = property.get();
 			if (property.hasChanged()) {
-				for (ScreenHandlerListener screenHandlerListener : this.listeners) {
-					screenHandlerListener.onPropertyUpdate(this, i, j);
-				}
+				this.notifyPropertyUpdate(i, j);
 			}
 
 			this.checkPropertyUpdates(i, j);
+		}
+	}
+
+	public void updateToClient() {
+		for (int i = 0; i < this.slots.size(); i++) {
+			ItemStack itemStack = this.slots.get(i).getStack();
+			this.updateTrackedSlot(i, itemStack, itemStack::copy);
+		}
+
+		for (int i = 0; i < this.properties.size(); i++) {
+			Property property = (Property)this.properties.get(i);
+			if (property.hasChanged()) {
+				this.notifyPropertyUpdate(i, property.get());
+			}
+		}
+
+		this.syncState();
+	}
+
+	private void notifyPropertyUpdate(int index, int value) {
+		for (ScreenHandlerListener screenHandlerListener : this.listeners) {
+			screenHandlerListener.onPropertyUpdate(this, index, value);
 		}
 	}
 
@@ -409,9 +431,9 @@ public abstract class ScreenHandler {
 						if (itemStack5.isEmpty()) {
 							int n = clickType == ClickType.LEFT ? itemStack.getCount() : (itemStack.getCount() + 1) / 2;
 							Optional<ItemStack> optional = slot.tryTakeStackRange(n, Integer.MAX_VALUE, player);
-							optional.ifPresent(itemStackx -> {
-								this.setCursorStack(itemStackx);
-								slot.onTakeItem(player, itemStackx);
+							optional.ifPresent(stack -> {
+								this.setCursorStack(stack);
+								slot.onTakeItem(player, stack);
 							});
 						} else if (slot.canInsert(itemStack5)) {
 							if (ItemStack.canCombine(itemStack, itemStack5)) {
@@ -423,9 +445,9 @@ public abstract class ScreenHandler {
 							}
 						} else if (ItemStack.canCombine(itemStack, itemStack5)) {
 							Optional<ItemStack> optional2 = slot.tryTakeStackRange(itemStack.getCount(), itemStack5.getMaxCount() - itemStack5.getCount(), player);
-							optional2.ifPresent(itemStack2x -> {
-								itemStack5.increment(itemStack2x.getCount());
-								slot.onTakeItem(player, itemStack2x);
+							optional2.ifPresent(stack -> {
+								itemStack5.increment(stack.getCount());
+								slot.onTakeItem(player, stack);
 							});
 						}
 					}
@@ -524,10 +546,18 @@ public abstract class ScreenHandler {
 		return true;
 	}
 
-	public void close(PlayerEntity playerEntity) {
-		if (!this.getCursorStack().isEmpty()) {
-			playerEntity.dropItem(this.getCursorStack(), false);
-			this.setCursorStack(ItemStack.EMPTY);
+	public void close(PlayerEntity player) {
+		if (player instanceof ServerPlayerEntity) {
+			ItemStack itemStack = this.getCursorStack();
+			if (!itemStack.isEmpty()) {
+				if (player.isAlive() && !((ServerPlayerEntity)player).isDisconnected()) {
+					player.getInventory().offerOrDrop(itemStack);
+				} else {
+					player.dropItem(itemStack, false);
+				}
+
+				this.setCursorStack(ItemStack.EMPTY);
+			}
 		}
 	}
 
@@ -550,14 +580,18 @@ public abstract class ScreenHandler {
 		this.sendContentUpdates();
 	}
 
-	public void setStackInSlot(int slot, ItemStack stack) {
+	public void setStackInSlot(int slot, int revision, ItemStack stack) {
 		this.getSlot(slot).setStack(stack);
+		this.revision = revision;
 	}
 
-	public void updateSlotStacks(List<ItemStack> stacks) {
+	public void updateSlotStacks(int revision, List<ItemStack> stacks, ItemStack cursorStack) {
 		for (int i = 0; i < stacks.size(); i++) {
 			this.getSlot(i).setStack((ItemStack)stacks.get(i));
 		}
+
+		this.cursorStack = cursorStack;
+		this.revision = revision;
 	}
 
 	public void setProperty(int id, int value) {
@@ -738,5 +772,25 @@ public abstract class ScreenHandler {
 				this.previousTrackedStacks.set(i, handler.previousTrackedStacks.get(integer));
 			}
 		}
+	}
+
+	public OptionalInt getSlotIndex(Inventory inventory, int index) {
+		for (int i = 0; i < this.slots.size(); i++) {
+			Slot slot = this.slots.get(i);
+			if (slot.inventory == inventory && index == slot.getIndex()) {
+				return OptionalInt.of(i);
+			}
+		}
+
+		return OptionalInt.empty();
+	}
+
+	public int getRevision() {
+		return this.revision;
+	}
+
+	public int nextRevision() {
+		this.revision = this.revision + 1 & 32767;
+		return this.revision;
 	}
 }
