@@ -32,7 +32,7 @@ public class MapRenderer implements AutoCloseable {
 	}
 
 	public void updateTexture(int id, MapState state) {
-		this.getMapTexture(id, state).updateTexture();
+		this.getMapTexture(id, state).method_37450();
 	}
 
 	public void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int id, MapState state, boolean hidePlayerIcons, int light) {
@@ -40,7 +40,14 @@ public class MapRenderer implements AutoCloseable {
 	}
 
 	private MapRenderer.MapTexture getMapTexture(int id, MapState state) {
-		return this.mapTextures.computeIfAbsent(id, i -> new MapRenderer.MapTexture(i, state));
+		return this.mapTextures.compute(id, (integer, mapTexture) -> {
+			if (mapTexture == null) {
+				return new MapRenderer.MapTexture(integer, state);
+			} else {
+				mapTexture.method_37451(state);
+				return mapTexture;
+			}
+		});
 	}
 
 	public void clearStateTextures() {
@@ -57,9 +64,10 @@ public class MapRenderer implements AutoCloseable {
 
 	@Environment(EnvType.CLIENT)
 	class MapTexture implements AutoCloseable {
-		private final MapState state;
+		private MapState state;
 		private final NativeImageBackedTexture texture;
 		private final RenderLayer renderLayer;
+		private boolean field_34044 = true;
 
 		MapTexture(int i, MapState mapState) {
 			this.state = mapState;
@@ -68,7 +76,17 @@ public class MapRenderer implements AutoCloseable {
 			this.renderLayer = RenderLayer.getText(identifier);
 		}
 
-		void updateTexture() {
+		void method_37451(MapState mapState) {
+			boolean bl = this.state != mapState;
+			this.state = mapState;
+			this.field_34044 |= bl;
+		}
+
+		public void method_37450() {
+			this.field_34044 = true;
+		}
+
+		private void updateTexture() {
 			for (int i = 0; i < 128; i++) {
 				for (int j = 0; j < 128; j++) {
 					int k = j + i * 128;
@@ -85,6 +103,11 @@ public class MapRenderer implements AutoCloseable {
 		}
 
 		void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, boolean hidePlayerIcons, int light) {
+			if (this.field_34044) {
+				this.updateTexture();
+				this.field_34044 = false;
+			}
+
 			int i = 0;
 			int j = 0;
 			float f = 0.0F;

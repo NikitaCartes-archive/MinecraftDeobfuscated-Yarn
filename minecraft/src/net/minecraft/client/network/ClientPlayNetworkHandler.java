@@ -2018,6 +2018,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			team = scoreboard.addTeam(packet.getTeamName());
 		} else {
 			team = scoreboard.getTeam(packet.getTeamName());
+			if (team == null) {
+				LOGGER.warn(
+					"Received packet for unknown team {}: team action: {}, player action: {}",
+					packet.getTeamName(),
+					packet.getTeamOperation(),
+					packet.getPlayerListOperation()
+				);
+				return;
+			}
 		}
 
 		Optional<TeamS2CPacket.SerializableTeam> optional = packet.getTeam();

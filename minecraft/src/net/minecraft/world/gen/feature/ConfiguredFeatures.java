@@ -1043,7 +1043,7 @@ public class ConfiguredFeatures {
 		Feature.ORE.configure(REDSTONE_CONFIG).triangleRange(YOffset.aboveBottom(-32), YOffset.aboveBottom(32)).spreadHorizontally().repeat(8)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_DIAMOND = register(
-		"ore_diamond", Feature.ORE.configure(new OreFeatureConfig(DIAMOND_ORE_TARGETS, 8)).uniformRange(YOffset.getBottom(), YOffset.fixed(16)).spreadHorizontally()
+		"ore_diamond", Feature.ORE.configure(new OreFeatureConfig(DIAMOND_ORE_TARGETS, 8)).uniformRange(YOffset.getBottom(), YOffset.fixed(15)).spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_DIAMOND = register(
 		"prototype_ore_diamond",
@@ -1090,7 +1090,7 @@ public class ConfiguredFeatures {
 			.configure(new EmeraldOreFeatureConfig(EMERALD_ORE_TARGETS))
 			.uniformRange(YOffset.fixed(4), YOffset.fixed(31))
 			.spreadHorizontally()
-			.repeat(UniformIntProvider.create(6, 24))
+			.repeat(UniformIntProvider.create(3, 8))
 	);
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_ORE_EMERALD = register(
 		"prototype_ore_emerald",

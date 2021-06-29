@@ -28,6 +28,7 @@ public interface Bucketable {
 
 	SoundEvent getBucketedSound();
 
+	@Deprecated
 	static void copyDataToStack(MobEntity entity, ItemStack stack) {
 		NbtCompound nbtCompound = stack.getOrCreateTag();
 		if (entity.hasCustomName()) {
@@ -57,6 +58,7 @@ public interface Bucketable {
 		nbtCompound.putFloat("Health", entity.getHealth());
 	}
 
+	@Deprecated
 	static void copyDataFromNbt(MobEntity entity, NbtCompound nbt) {
 		if (nbt.contains("NoAI")) {
 			entity.setAiDisabled(nbt.getBoolean("NoAI"));
