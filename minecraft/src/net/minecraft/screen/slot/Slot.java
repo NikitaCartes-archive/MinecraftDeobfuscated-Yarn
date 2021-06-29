@@ -96,11 +96,15 @@ public class Slot {
 		} else {
 			min = Math.min(min, max);
 			ItemStack itemStack = this.takeStack(min);
-			if (this.getStack().isEmpty()) {
-				this.setStack(ItemStack.EMPTY);
-			}
+			if (itemStack.isEmpty()) {
+				return Optional.empty();
+			} else {
+				if (this.getStack().isEmpty()) {
+					this.setStack(ItemStack.EMPTY);
+				}
 
-			return Optional.of(itemStack);
+				return Optional.of(itemStack);
+			}
 		}
 	}
 

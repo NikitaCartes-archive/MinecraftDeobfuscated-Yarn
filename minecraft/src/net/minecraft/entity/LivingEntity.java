@@ -1362,6 +1362,10 @@ public abstract class LivingEntity extends Entity {
 				this.wakeUp();
 			}
 
+			if (!this.world.isClient && this.hasCustomName()) {
+				LOGGER.info("Named entity {} died: {}", this, this.getDamageTracker().getDeathMessage().getString());
+			}
+
 			this.dead = true;
 			this.getDamageTracker().update();
 			if (this.world instanceof ServerWorld) {
