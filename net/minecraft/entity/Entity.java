@@ -1082,7 +1082,7 @@ CommandOutput {
         if (this.isSwimming()) {
             this.setSwimming(this.isSprinting() && this.isTouchingWater() && !this.hasVehicle());
         } else {
-            this.setSwimming(this.isSprinting() && this.isSubmergedInWater() && !this.hasVehicle());
+            this.setSwimming(this.isSprinting() && this.isSubmergedInWater() && !this.hasVehicle() && this.world.getFluidState(this.blockPos).isIn(FluidTags.WATER));
         }
     }
 

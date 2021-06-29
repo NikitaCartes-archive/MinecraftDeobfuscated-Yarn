@@ -317,6 +317,7 @@ public abstract class Option {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         if (minecraftClient.getWindow() != null) {
             minecraftClient.initFont((boolean)forceUnicodeFont);
+            minecraftClient.onResolutionChanged();
         }
     });
     public static final CyclingOption<Boolean> INVERT_MOUSE = CyclingOption.create("options.invertMouse", gameOptions -> gameOptions.invertYMouse, (gameOptions, option, invertYMouse) -> {

@@ -66,7 +66,7 @@ extends Task<VillagerEntity> {
         if (!this.offers.isEmpty()) {
             this.refreshShownOffer(villagerEntity);
         } else {
-            villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+            HoldTradeOffersTask.method_37448(villagerEntity);
             this.ticksLeft = Math.min(this.ticksLeft, 40);
         }
         --this.ticksLeft;
@@ -76,7 +76,7 @@ extends Task<VillagerEntity> {
     public void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         super.finishRunning(serverWorld, villagerEntity, l);
         villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
-        villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        HoldTradeOffersTask.method_37448(villagerEntity);
         this.customerHeldStack = null;
     }
 
@@ -98,7 +98,7 @@ extends Task<VillagerEntity> {
     }
 
     private void holdOffer(VillagerEntity villager) {
-        villager.equipStack(EquipmentSlot.MAINHAND, this.offers.get(0));
+        HoldTradeOffersTask.method_37447(villager, this.offers.get(0));
     }
 
     private void loadPossibleOffers(VillagerEntity villager) {
@@ -110,6 +110,16 @@ extends Task<VillagerEntity> {
 
     private boolean isPossible(TradeOffer offer) {
         return ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, offer.getAdjustedFirstBuyItem()) || ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, offer.getSecondBuyItem());
+    }
+
+    private static void method_37448(VillagerEntity villagerEntity) {
+        villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        villagerEntity.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.085f);
+    }
+
+    private static void method_37447(VillagerEntity villagerEntity, ItemStack itemStack) {
+        villagerEntity.equipStack(EquipmentSlot.MAINHAND, itemStack);
+        villagerEntity.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0f);
     }
 
     private LivingEntity findPotentialCustomer(VillagerEntity villager) {
@@ -126,7 +136,7 @@ extends Task<VillagerEntity> {
             if (this.offerIndex > this.offers.size() - 1) {
                 this.offerIndex = 0;
             }
-            villager.equipStack(EquipmentSlot.MAINHAND, this.offers.get(this.offerIndex));
+            HoldTradeOffersTask.method_37447(villager, this.offers.get(this.offerIndex));
         }
     }
 

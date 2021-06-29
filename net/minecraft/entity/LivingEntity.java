@@ -1236,6 +1236,9 @@ extends Entity {
         if (this.isSleeping()) {
             this.wakeUp();
         }
+        if (!this.world.isClient && this.hasCustomName()) {
+            LOGGER.info("Named entity {} died: {}", (Object)this, (Object)this.getDamageTracker().getDeathMessage().getString());
+        }
         this.dead = true;
         this.getDamageTracker().update();
         if (this.world instanceof ServerWorld) {

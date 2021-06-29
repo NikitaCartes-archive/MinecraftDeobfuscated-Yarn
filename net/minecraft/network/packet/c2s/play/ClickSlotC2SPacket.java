@@ -14,6 +14,7 @@ import net.minecraft.screen.slot.SlotActionType;
 
 public class ClickSlotC2SPacket
 implements Packet<ServerPlayPacketListener> {
+    private static final int field_34045 = 128;
     private final int syncId;
     private final int revision;
     private final int slot;
@@ -38,7 +39,7 @@ implements Packet<ServerPlayPacketListener> {
         this.slot = buf.readShort();
         this.button = buf.readByte();
         this.actionType = buf.readEnumConstant(SlotActionType.class);
-        this.modifiedStacks = Int2ObjectMaps.unmodifiable(buf.readMap(Int2ObjectOpenHashMap::new, packetByteBuf -> packetByteBuf.readShort(), PacketByteBuf::readItemStack));
+        this.modifiedStacks = Int2ObjectMaps.unmodifiable(buf.readMap(PacketByteBuf.method_37453(Int2ObjectOpenHashMap::new, 128), packetByteBuf -> packetByteBuf.readShort(), PacketByteBuf::readItemStack));
         this.stack = buf.readItemStack();
     }
 

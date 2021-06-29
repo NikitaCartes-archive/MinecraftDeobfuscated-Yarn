@@ -105,12 +105,6 @@ extends SchoolingFishEntity {
     }
 
     @Override
-    public void copyDataFromNbt(NbtCompound nbt) {
-        super.copyDataFromNbt(nbt);
-        this.setVariant(nbt.getInt(BUCKET_VARIANT_TAG_KEY));
-    }
-
-    @Override
     public ItemStack getBucketItem() {
         return new ItemStack(Items.TROPICAL_FISH_BUCKET);
     }
@@ -182,7 +176,8 @@ extends SchoolingFishEntity {
         int j;
         int i;
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-        if (spawnReason == SpawnReason.BUCKET) {
+        if (spawnReason == SpawnReason.BUCKET && entityNbt != null && entityNbt.contains(BUCKET_VARIANT_TAG_KEY, 3)) {
+            this.setVariant(entityNbt.getInt(BUCKET_VARIANT_TAG_KEY));
             return entityData;
         }
         if (entityData instanceof TropicalFishData) {

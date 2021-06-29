@@ -98,8 +98,10 @@ public class Slot {
         if (!this.canTakePartial(player) && max < this.getStack().getCount()) {
             return Optional.empty();
         }
-        min = Math.min(min, max);
-        ItemStack itemStack = this.takeStack(min);
+        ItemStack itemStack = this.takeStack(min = Math.min(min, max));
+        if (itemStack.isEmpty()) {
+            return Optional.empty();
+        }
         if (this.getStack().isEmpty()) {
             this.setStack(ItemStack.EMPTY);
         }

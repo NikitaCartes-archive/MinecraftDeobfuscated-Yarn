@@ -169,6 +169,7 @@ public class Scoreboard {
         return this.objectiveSlots[slot];
     }
 
+    @Nullable
     public Team getTeam(String name) {
         return this.teams.get(name);
     }

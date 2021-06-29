@@ -1838,10 +1838,19 @@ implements ClientPlayPacketListener {
 
     @Override
     public void onTeam(TeamS2CPacket packet) {
+        Team team2;
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Scoreboard scoreboard = this.world.getScoreboard();
         TeamS2CPacket.Operation operation = packet.getTeamOperation();
-        Team team2 = operation == TeamS2CPacket.Operation.ADD ? scoreboard.addTeam(packet.getTeamName()) : scoreboard.getTeam(packet.getTeamName());
+        if (operation == TeamS2CPacket.Operation.ADD) {
+            team2 = scoreboard.addTeam(packet.getTeamName());
+        } else {
+            team2 = scoreboard.getTeam(packet.getTeamName());
+            if (team2 == null) {
+                LOGGER.warn("Received packet for unknown team {}: team action: {}, player action: {}", (Object)packet.getTeamName(), (Object)packet.getTeamOperation(), (Object)packet.getPlayerListOperation());
+                return;
+            }
+        }
         Optional<TeamS2CPacket.SerializableTeam> optional = packet.getTeam();
         optional.ifPresent(team -> {
             AbstractTeam.CollisionRule collisionRule;
