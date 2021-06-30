@@ -16,7 +16,6 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
-import net.minecraft.world.chunk.ColumnChunkNibbleArray;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 import net.minecraft.world.chunk.light.LightStorage;
 
@@ -163,7 +162,19 @@ extends LightStorage<Data> {
         while ((chunkNibbleArray2 = this.getLightSection(l, true)) == null) {
             l = ChunkSectionPos.offset(l, Direction.UP);
         }
-        return new ChunkNibbleArray(new ColumnChunkNibbleArray(chunkNibbleArray2, 0).asByteArray());
+        return SkyLightStorage.copy(chunkNibbleArray2);
+    }
+
+    private static ChunkNibbleArray copy(ChunkNibbleArray source) {
+        if (source.isUninitialized()) {
+            return new ChunkNibbleArray();
+        }
+        byte[] bs = source.asByteArray();
+        byte[] cs = new byte[2048];
+        for (int i = 0; i < 16; ++i) {
+            System.arraycopy(bs, 0, cs, i * 128, 128);
+        }
+        return new ChunkNibbleArray(cs);
     }
 
     @Override

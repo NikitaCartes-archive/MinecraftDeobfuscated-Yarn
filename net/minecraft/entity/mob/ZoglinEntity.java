@@ -111,7 +111,7 @@ Hoglin {
 
     private boolean shouldAttack(LivingEntity livingEntity) {
         EntityType<?> entityType = livingEntity.getType();
-        return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && Sensor.method_36982(this, livingEntity);
+        return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && Sensor.testAttackableTargetPredicate(this, livingEntity);
     }
 
     @Override

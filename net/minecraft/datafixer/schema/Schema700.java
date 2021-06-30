@@ -15,14 +15,14 @@ extends Schema {
         super(versionKey, parent);
     }
 
-    protected static void method_5288(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> Schema100.targetItems(schema));
+    protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+        schema.register(map, entityId, () -> Schema100.targetItems(schema));
     }
 
     @Override
     public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
         Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-        Schema700.method_5288(schema, map, "ElderGuardian");
+        Schema700.targetEntityItems(schema, map, "ElderGuardian");
         return map;
     }
 }

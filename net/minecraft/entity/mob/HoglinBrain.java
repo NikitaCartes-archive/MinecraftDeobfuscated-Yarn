@@ -172,7 +172,7 @@ public class HoglinBrain {
         if (hoglin.getBrain().hasActivity(Activity.AVOID) && target.getType() == EntityType.PIGLIN) {
             return;
         }
-        if (!Sensor.method_36982(hoglin, target)) {
+        if (!Sensor.testAttackableTargetPredicate(hoglin, target)) {
             return;
         }
         if (target.getType() == EntityType.HOGLIN) {

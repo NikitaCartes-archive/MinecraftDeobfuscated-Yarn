@@ -32,8 +32,7 @@ extends Feature<SimpleBlockFeatureConfig> {
         if (!simpleBlockFeatureConfig.placeOn.isEmpty() && !simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState(blockPos.down())) || !simpleBlockFeatureConfig.placeIn.isEmpty() && !simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) || !simpleBlockFeatureConfig.placeUnder.isEmpty() && !simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up())) || !(blockState = simpleBlockFeatureConfig.toPlace.getBlockState(context.getRandom(), blockPos)).canPlaceAt(structureWorldAccess, blockPos)) return false;
         if (blockState.getBlock() instanceof TallPlantBlock) {
             if (!structureWorldAccess.isAir(blockPos.up())) return false;
-            TallPlantBlock tallPlantBlock = (TallPlantBlock)blockState.getBlock();
-            tallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);
+            TallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);
             return true;
         } else {
             structureWorldAccess.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS);

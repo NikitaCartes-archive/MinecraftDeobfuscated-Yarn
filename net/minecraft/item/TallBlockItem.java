@@ -9,6 +9,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class TallBlockItem
 extends BlockItem {
@@ -18,7 +20,10 @@ extends BlockItem {
 
     @Override
     protected boolean place(ItemPlacementContext context, BlockState state) {
-        context.getWorld().setBlockState(context.getBlockPos().up(), Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD | Block.FORCE_STATE);
+        BlockPos blockPos;
+        World world = context.getWorld();
+        BlockState blockState = world.isWater(blockPos = context.getBlockPos().up()) ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+        world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD | Block.FORCE_STATE);
         return super.place(context, state);
     }
 }

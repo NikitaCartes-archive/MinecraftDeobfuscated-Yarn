@@ -70,9 +70,7 @@ implements BufferVertexConsumer {
         int i = this.buffer.capacity();
         int j = i + BufferBuilder.roundBufferSize(size);
         LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", (Object)i, (Object)j);
-        ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(j);
-        this.buffer.position(0);
-        byteBuffer.put(this.buffer);
+        ByteBuffer byteBuffer = GlAllocationUtils.resizeByteBuffer(this.buffer, j);
         byteBuffer.rewind();
         this.buffer = byteBuffer;
     }

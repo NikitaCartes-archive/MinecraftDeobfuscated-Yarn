@@ -92,7 +92,7 @@ extends LivingEntity {
     public static final float field_30085 = 0.25f;
     public static final String LEASH_KEY = "Leash";
     private static final int field_30087 = 1;
-    public static final float field_34043 = 0.085f;
+    public static final float DEFAULT_DROP_CHANCE = 0.085f;
     public int ambientSoundChance;
     protected int experiencePoints;
     protected LookControl lookControl;

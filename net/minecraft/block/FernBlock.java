@@ -47,7 +47,7 @@ implements Fertilizable {
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         TallPlantBlock tallPlantBlock = (TallPlantBlock)(state.isOf(Blocks.FERN) ? Blocks.LARGE_FERN : Blocks.TALL_GRASS);
         if (tallPlantBlock.getDefaultState().canPlaceAt(world, pos) && world.isAir(pos.up())) {
-            tallPlantBlock.placeAt(world, tallPlantBlock.getDefaultState(), pos, 2);
+            TallPlantBlock.placeAt(world, tallPlantBlock.getDefaultState(), pos, 2);
         }
     }
 

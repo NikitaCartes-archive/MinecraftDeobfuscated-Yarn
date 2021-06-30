@@ -74,20 +74,20 @@ extends Schema {
         return DSL.optionalFields("Equipment", DSL.list(TypeReferences.ITEM_STACK.in(schema)));
     }
 
-    protected static void method_5339(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> Schema99.targetEquipment(schema));
+    protected static void targetEquipment(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+        schema.register(map, entityId, () -> Schema99.targetEquipment(schema));
     }
 
-    protected static void method_5368(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> DSL.optionalFields("inTile", TypeReferences.BLOCK_NAME.in(schema)));
+    protected static void targetInTile(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+        schema.register(map, entityId, () -> DSL.optionalFields("inTile", TypeReferences.BLOCK_NAME.in(schema)));
     }
 
-    protected static void method_5377(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> DSL.optionalFields("DisplayTile", TypeReferences.BLOCK_NAME.in(schema)));
+    protected static void targetDisplayTile(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+        schema.register(map, entityId, () -> DSL.optionalFields("DisplayTile", TypeReferences.BLOCK_NAME.in(schema)));
     }
 
-    protected static void method_5346(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))));
+    protected static void targetItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+        schema.register(map, entityId, () -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))));
     }
 
     @Override
@@ -95,94 +95,94 @@ extends Schema {
         HashMap<String, Supplier<TypeTemplate>> map = Maps.newHashMap();
         schema.register(map, "Item", (String string) -> DSL.optionalFields("Item", TypeReferences.ITEM_STACK.in(schema)));
         schema.registerSimple(map, "XPOrb");
-        Schema99.method_5368(schema, map, "ThrownEgg");
+        Schema99.targetInTile(schema, map, "ThrownEgg");
         schema.registerSimple(map, "LeashKnot");
         schema.registerSimple(map, "Painting");
         schema.register(map, "Arrow", (String string) -> DSL.optionalFields("inTile", TypeReferences.BLOCK_NAME.in(schema)));
         schema.register(map, "TippedArrow", (String string) -> DSL.optionalFields("inTile", TypeReferences.BLOCK_NAME.in(schema)));
         schema.register(map, "SpectralArrow", (String string) -> DSL.optionalFields("inTile", TypeReferences.BLOCK_NAME.in(schema)));
-        Schema99.method_5368(schema, map, "Snowball");
-        Schema99.method_5368(schema, map, "Fireball");
-        Schema99.method_5368(schema, map, "SmallFireball");
-        Schema99.method_5368(schema, map, "ThrownEnderpearl");
+        Schema99.targetInTile(schema, map, "Snowball");
+        Schema99.targetInTile(schema, map, "Fireball");
+        Schema99.targetInTile(schema, map, "SmallFireball");
+        Schema99.targetInTile(schema, map, "ThrownEnderpearl");
         schema.registerSimple(map, "EyeOfEnderSignal");
         schema.register(map, "ThrownPotion", (String string) -> DSL.optionalFields("inTile", TypeReferences.BLOCK_NAME.in(schema), "Potion", TypeReferences.ITEM_STACK.in(schema)));
-        Schema99.method_5368(schema, map, "ThrownExpBottle");
+        Schema99.targetInTile(schema, map, "ThrownExpBottle");
         schema.register(map, "ItemFrame", (String string) -> DSL.optionalFields("Item", TypeReferences.ITEM_STACK.in(schema)));
-        Schema99.method_5368(schema, map, "WitherSkull");
+        Schema99.targetInTile(schema, map, "WitherSkull");
         schema.registerSimple(map, "PrimedTnt");
         schema.register(map, "FallingSand", (String string) -> DSL.optionalFields("Block", TypeReferences.BLOCK_NAME.in(schema), "TileEntityData", TypeReferences.BLOCK_ENTITY.in(schema)));
         schema.register(map, "FireworksRocketEntity", (String string) -> DSL.optionalFields("FireworksItem", TypeReferences.ITEM_STACK.in(schema)));
         schema.registerSimple(map, "Boat");
         schema.register(map, "Minecart", () -> DSL.optionalFields("DisplayTile", TypeReferences.BLOCK_NAME.in(schema), "Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))));
-        Schema99.method_5377(schema, map, "MinecartRideable");
+        Schema99.targetDisplayTile(schema, map, "MinecartRideable");
         schema.register(map, "MinecartChest", (String string) -> DSL.optionalFields("DisplayTile", TypeReferences.BLOCK_NAME.in(schema), "Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))));
-        Schema99.method_5377(schema, map, "MinecartFurnace");
-        Schema99.method_5377(schema, map, "MinecartTNT");
+        Schema99.targetDisplayTile(schema, map, "MinecartFurnace");
+        Schema99.targetDisplayTile(schema, map, "MinecartTNT");
         schema.register(map, "MinecartSpawner", () -> DSL.optionalFields("DisplayTile", TypeReferences.BLOCK_NAME.in(schema), TypeReferences.UNTAGGED_SPAWNER.in(schema)));
         schema.register(map, "MinecartHopper", (String string) -> DSL.optionalFields("DisplayTile", TypeReferences.BLOCK_NAME.in(schema), "Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))));
-        Schema99.method_5377(schema, map, "MinecartCommandBlock");
-        Schema99.method_5339(schema, map, "ArmorStand");
-        Schema99.method_5339(schema, map, "Creeper");
-        Schema99.method_5339(schema, map, "Skeleton");
-        Schema99.method_5339(schema, map, "Spider");
-        Schema99.method_5339(schema, map, "Giant");
-        Schema99.method_5339(schema, map, "Zombie");
-        Schema99.method_5339(schema, map, "Slime");
-        Schema99.method_5339(schema, map, "Ghast");
-        Schema99.method_5339(schema, map, "PigZombie");
+        Schema99.targetDisplayTile(schema, map, "MinecartCommandBlock");
+        Schema99.targetEquipment(schema, map, "ArmorStand");
+        Schema99.targetEquipment(schema, map, "Creeper");
+        Schema99.targetEquipment(schema, map, "Skeleton");
+        Schema99.targetEquipment(schema, map, "Spider");
+        Schema99.targetEquipment(schema, map, "Giant");
+        Schema99.targetEquipment(schema, map, "Zombie");
+        Schema99.targetEquipment(schema, map, "Slime");
+        Schema99.targetEquipment(schema, map, "Ghast");
+        Schema99.targetEquipment(schema, map, "PigZombie");
         schema.register(map, "Enderman", (String string) -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), Schema99.targetEquipment(schema)));
-        Schema99.method_5339(schema, map, "CaveSpider");
-        Schema99.method_5339(schema, map, "Silverfish");
-        Schema99.method_5339(schema, map, "Blaze");
-        Schema99.method_5339(schema, map, "LavaSlime");
-        Schema99.method_5339(schema, map, "EnderDragon");
-        Schema99.method_5339(schema, map, "WitherBoss");
-        Schema99.method_5339(schema, map, "Bat");
-        Schema99.method_5339(schema, map, "Witch");
-        Schema99.method_5339(schema, map, "Endermite");
-        Schema99.method_5339(schema, map, "Guardian");
-        Schema99.method_5339(schema, map, "Pig");
-        Schema99.method_5339(schema, map, "Sheep");
-        Schema99.method_5339(schema, map, "Cow");
-        Schema99.method_5339(schema, map, "Chicken");
-        Schema99.method_5339(schema, map, "Squid");
-        Schema99.method_5339(schema, map, "Wolf");
-        Schema99.method_5339(schema, map, "MushroomCow");
-        Schema99.method_5339(schema, map, "SnowMan");
-        Schema99.method_5339(schema, map, "Ozelot");
-        Schema99.method_5339(schema, map, "VillagerGolem");
+        Schema99.targetEquipment(schema, map, "CaveSpider");
+        Schema99.targetEquipment(schema, map, "Silverfish");
+        Schema99.targetEquipment(schema, map, "Blaze");
+        Schema99.targetEquipment(schema, map, "LavaSlime");
+        Schema99.targetEquipment(schema, map, "EnderDragon");
+        Schema99.targetEquipment(schema, map, "WitherBoss");
+        Schema99.targetEquipment(schema, map, "Bat");
+        Schema99.targetEquipment(schema, map, "Witch");
+        Schema99.targetEquipment(schema, map, "Endermite");
+        Schema99.targetEquipment(schema, map, "Guardian");
+        Schema99.targetEquipment(schema, map, "Pig");
+        Schema99.targetEquipment(schema, map, "Sheep");
+        Schema99.targetEquipment(schema, map, "Cow");
+        Schema99.targetEquipment(schema, map, "Chicken");
+        Schema99.targetEquipment(schema, map, "Squid");
+        Schema99.targetEquipment(schema, map, "Wolf");
+        Schema99.targetEquipment(schema, map, "MushroomCow");
+        Schema99.targetEquipment(schema, map, "SnowMan");
+        Schema99.targetEquipment(schema, map, "Ozelot");
+        Schema99.targetEquipment(schema, map, "VillagerGolem");
         schema.register(map, "EntityHorse", (String string) -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "ArmorItem", TypeReferences.ITEM_STACK.in(schema), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema99.targetEquipment(schema)));
-        Schema99.method_5339(schema, map, "Rabbit");
+        Schema99.targetEquipment(schema, map, "Rabbit");
         schema.register(map, "Villager", (String string) -> DSL.optionalFields("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "Offers", DSL.optionalFields("Recipes", DSL.list(DSL.optionalFields("buy", TypeReferences.ITEM_STACK.in(schema), "buyB", TypeReferences.ITEM_STACK.in(schema), "sell", TypeReferences.ITEM_STACK.in(schema)))), Schema99.targetEquipment(schema)));
         schema.registerSimple(map, "EnderCrystal");
         schema.registerSimple(map, "AreaEffectCloud");
         schema.registerSimple(map, "ShulkerBullet");
-        Schema99.method_5339(schema, map, "Shulker");
+        Schema99.targetEquipment(schema, map, "Shulker");
         return map;
     }
 
     @Override
     public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
         HashMap<String, Supplier<TypeTemplate>> map = Maps.newHashMap();
-        Schema99.method_5346(schema, map, "Furnace");
-        Schema99.method_5346(schema, map, "Chest");
+        Schema99.targetItems(schema, map, "Furnace");
+        Schema99.targetItems(schema, map, "Chest");
         schema.registerSimple(map, "EnderChest");
         schema.register(map, "RecordPlayer", (String string) -> DSL.optionalFields("RecordItem", TypeReferences.ITEM_STACK.in(schema)));
-        Schema99.method_5346(schema, map, "Trap");
-        Schema99.method_5346(schema, map, "Dropper");
+        Schema99.targetItems(schema, map, "Trap");
+        Schema99.targetItems(schema, map, "Dropper");
         schema.registerSimple(map, "Sign");
         schema.register(map, "MobSpawner", (String string) -> TypeReferences.UNTAGGED_SPAWNER.in(schema));
         schema.registerSimple(map, "Music");
         schema.registerSimple(map, "Piston");
-        Schema99.method_5346(schema, map, "Cauldron");
+        Schema99.targetItems(schema, map, "Cauldron");
         schema.registerSimple(map, "EnchantTable");
         schema.registerSimple(map, "Airportal");
         schema.registerSimple(map, "Control");
         schema.registerSimple(map, "Beacon");
         schema.registerSimple(map, "Skull");
         schema.registerSimple(map, "DLDetector");
-        Schema99.method_5346(schema, map, "Hopper");
+        Schema99.targetItems(schema, map, "Hopper");
         schema.registerSimple(map, "Comparator");
         schema.register(map, "FlowerPot", (String string) -> DSL.optionalFields("Item", DSL.or(DSL.constType(DSL.intType()), TypeReferences.ITEM_NAME.in(schema))));
         schema.registerSimple(map, "Banner");

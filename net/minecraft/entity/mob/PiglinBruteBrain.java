@@ -99,7 +99,7 @@ public class PiglinBruteBrain {
 
     private static Optional<? extends LivingEntity> method_30247(AbstractPiglinEntity piglin) {
         Optional<LivingEntity> optional = LookTargetUtil.getEntity(piglin, MemoryModuleType.ANGRY_AT);
-        if (optional.isPresent() && Sensor.method_36982(piglin, optional.get())) {
+        if (optional.isPresent() && Sensor.testAttackableTargetPredicateIgnoreVisibility(piglin, optional.get())) {
             return optional;
         }
         Optional<? extends LivingEntity> optional2 = PiglinBruteBrain.method_30249(piglin, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER);

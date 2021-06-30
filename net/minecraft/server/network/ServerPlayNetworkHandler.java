@@ -1258,7 +1258,7 @@ ServerPlayPacketListener {
                 this.player.currentScreenHandler.disableSyncing();
                 this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getButton(), packet.getActionType(), this.player);
                 for (Int2ObjectMap.Entry entry : Int2ObjectMaps.fastIterable(packet.getModifiedStacks())) {
-                    this.player.currentScreenHandler.method_37449(entry.getIntKey(), (ItemStack)entry.getValue());
+                    this.player.currentScreenHandler.setPreviousTrackedSlotMutable(entry.getIntKey(), (ItemStack)entry.getValue());
                 }
                 this.player.currentScreenHandler.setPreviousCursorStack(packet.getStack());
                 this.player.currentScreenHandler.enableSyncing();

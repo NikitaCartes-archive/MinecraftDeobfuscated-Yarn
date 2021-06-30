@@ -64,8 +64,7 @@ Waterloggable {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockState blockState = super.getPlacementState(ctx);
         if (blockState != null) {
-            FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-            return (BlockState)((BlockState)blockState.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER)).with(FACING, ctx.getPlayerFacing().getOpposite());
+            return SmallDripleafBlock.withWaterloggedState(ctx.getWorld(), ctx.getBlockPos(), (BlockState)blockState.with(FACING, ctx.getPlayerFacing().getOpposite()));
         }
         return null;
     }
@@ -73,8 +72,9 @@ Waterloggable {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
         if (!world.isClient()) {
-            Direction direction = state.get(FACING);
-            world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(WATERLOGGED, world.isWater(pos.up()))).with(FACING, direction), Block.NOTIFY_ALL);
+            BlockPos blockPos = pos.up();
+            BlockState blockState = TallPlantBlock.withWaterloggedState(world, blockPos, (BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(FACING, state.get(FACING)));
+            world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
         }
     }
 

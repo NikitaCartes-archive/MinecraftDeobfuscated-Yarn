@@ -14,7 +14,7 @@ import net.minecraft.screen.slot.SlotActionType;
 
 public class ClickSlotC2SPacket
 implements Packet<ServerPlayPacketListener> {
-    private static final int field_34045 = 128;
+    private static final int MAX_MODIFIED_STACKS = 128;
     private final int syncId;
     private final int revision;
     private final int slot;
@@ -33,14 +33,14 @@ implements Packet<ServerPlayPacketListener> {
         this.modifiedStacks = Int2ObjectMaps.unmodifiable(modifiedStacks);
     }
 
-    public ClickSlotC2SPacket(PacketByteBuf buf) {
-        this.syncId = buf.readByte();
-        this.revision = buf.readVarInt();
-        this.slot = buf.readShort();
-        this.button = buf.readByte();
-        this.actionType = buf.readEnumConstant(SlotActionType.class);
-        this.modifiedStacks = Int2ObjectMaps.unmodifiable(buf.readMap(PacketByteBuf.method_37453(Int2ObjectOpenHashMap::new, 128), packetByteBuf -> packetByteBuf.readShort(), PacketByteBuf::readItemStack));
-        this.stack = buf.readItemStack();
+    public ClickSlotC2SPacket(PacketByteBuf buf2) {
+        this.syncId = buf2.readByte();
+        this.revision = buf2.readVarInt();
+        this.slot = buf2.readShort();
+        this.button = buf2.readByte();
+        this.actionType = buf2.readEnumConstant(SlotActionType.class);
+        this.modifiedStacks = Int2ObjectMaps.unmodifiable(buf2.readMap(PacketByteBuf.getMaxValidator(Int2ObjectOpenHashMap::new, 128), buf -> buf.readShort(), PacketByteBuf::readItemStack));
+        this.stack = buf2.readItemStack();
     }
 
     @Override

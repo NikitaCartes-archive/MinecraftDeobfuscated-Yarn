@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.LookTarget;
@@ -18,15 +19,22 @@ public class GoTowardsLookTarget
 extends Task<LivingEntity> {
     private final Function<LivingEntity, Float> speed;
     private final int completionRange;
+    private final Predicate<LivingEntity> predicate;
 
     public GoTowardsLookTarget(float speed, int completionRange) {
-        this((LivingEntity livingEntity) -> Float.valueOf(speed), completionRange);
+        this((LivingEntity entity) -> true, entity -> Float.valueOf(speed), completionRange);
     }
 
-    public GoTowardsLookTarget(Function<LivingEntity, Float> speed, int completionRange) {
+    public GoTowardsLookTarget(Predicate<LivingEntity> predicate, Function<LivingEntity, Float> speed, int completionRange) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT));
         this.speed = speed;
         this.completionRange = completionRange;
+        this.predicate = predicate;
+    }
+
+    @Override
+    protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
+        return this.predicate.test(entity);
     }
 
     @Override

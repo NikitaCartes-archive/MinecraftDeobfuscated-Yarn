@@ -60,7 +60,8 @@ extends PlantBlock {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        world.setBlockState(pos.up(), (BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), Block.NOTIFY_ALL);
+        BlockPos blockPos = pos.up();
+        world.setBlockState(blockPos, TallPlantBlock.withWaterloggedState(world, blockPos, (BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)), Block.NOTIFY_ALL);
     }
 
     @Override
@@ -72,9 +73,17 @@ extends PlantBlock {
         return super.canPlaceAt(state, world, pos);
     }
 
-    public void placeAt(WorldAccess world, BlockState state, BlockPos pos, int flags) {
-        world.setBlockState(pos, (BlockState)state.with(HALF, DoubleBlockHalf.LOWER), flags);
-        world.setBlockState(pos.up(), (BlockState)state.with(HALF, DoubleBlockHalf.UPPER), flags);
+    public static void placeAt(WorldAccess world, BlockState state, BlockPos pos, int flags) {
+        BlockPos blockPos = pos.up();
+        world.setBlockState(pos, TallPlantBlock.withWaterloggedState(world, pos, (BlockState)state.with(HALF, DoubleBlockHalf.LOWER)), flags);
+        world.setBlockState(blockPos, TallPlantBlock.withWaterloggedState(world, blockPos, (BlockState)state.with(HALF, DoubleBlockHalf.UPPER)), flags);
+    }
+
+    public static BlockState withWaterloggedState(WorldView world, BlockPos pos, BlockState state) {
+        if (state.contains(Properties.WATERLOGGED)) {
+            return (BlockState)state.with(Properties.WATERLOGGED, world.isWater(pos));
+        }
+        return state;
     }
 
     @Override

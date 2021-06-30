@@ -52,12 +52,12 @@ implements AutoCloseable {
 
     @Override
     public int doLightUpdates(int i, boolean bl, boolean bl2) {
-        throw Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+        throw Util.throwOrPause(new UnsupportedOperationException("Ran automatically on a different thread!"));
     }
 
     @Override
     public void addLightSource(BlockPos pos, int level) {
-        throw Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+        throw Util.throwOrPause(new UnsupportedOperationException("Ran automatically on a different thread!"));
     }
 
     @Override
@@ -129,11 +129,11 @@ implements AutoCloseable {
             if (!excludeBlocks) {
                 chunk.getLightSourcesStream().forEach(pos -> super.addLightSource((BlockPos)pos, chunk.getLuminance((BlockPos)pos)));
             }
-            this.chunkStorage.releaseLightTicket(chunkPos);
         }, () -> "lightChunk " + chunkPos + " " + excludeBlocks));
         return CompletableFuture.supplyAsync(() -> {
             chunk.setLightOn(true);
             super.setRetainData(chunkPos, false);
+            this.chunkStorage.releaseLightTicket(chunkPos);
             return chunk;
         }, runnable -> this.enqueue(chunkPos.x, chunkPos.z, Stage.POST_UPDATE, runnable));
     }
