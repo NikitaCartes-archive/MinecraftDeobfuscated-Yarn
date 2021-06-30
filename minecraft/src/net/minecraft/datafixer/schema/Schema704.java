@@ -148,8 +148,8 @@ public class Schema704 extends Schema {
 		super(versionKey, parent);
 	}
 
-	protected static void method_5296(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)))));
+	protected static void targetItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String blockEntityId) {
+		schema.register(map, blockEntityId, (Supplier<TypeTemplate>)(() -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)))));
 	}
 
 	@Override
@@ -162,23 +162,23 @@ public class Schema704 extends Schema {
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = Maps.<String, Supplier<TypeTemplate>>newHashMap();
-		method_5296(schema, map, "minecraft:furnace");
-		method_5296(schema, map, "minecraft:chest");
+		targetItems(schema, map, "minecraft:furnace");
+		targetItems(schema, map, "minecraft:chest");
 		schema.registerSimple(map, "minecraft:ender_chest");
 		schema.register(map, "minecraft:jukebox", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("RecordItem", TypeReferences.ITEM_STACK.in(schema))));
-		method_5296(schema, map, "minecraft:dispenser");
-		method_5296(schema, map, "minecraft:dropper");
+		targetItems(schema, map, "minecraft:dispenser");
+		targetItems(schema, map, "minecraft:dropper");
 		schema.registerSimple(map, "minecraft:sign");
 		schema.register(map, "minecraft:mob_spawner", (Function<String, TypeTemplate>)(string -> TypeReferences.UNTAGGED_SPAWNER.in(schema)));
 		schema.registerSimple(map, "minecraft:noteblock");
 		schema.registerSimple(map, "minecraft:piston");
-		method_5296(schema, map, "minecraft:brewing_stand");
+		targetItems(schema, map, "minecraft:brewing_stand");
 		schema.registerSimple(map, "minecraft:enchanting_table");
 		schema.registerSimple(map, "minecraft:end_portal");
 		schema.registerSimple(map, "minecraft:beacon");
 		schema.registerSimple(map, "minecraft:skull");
 		schema.registerSimple(map, "minecraft:daylight_detector");
-		method_5296(schema, map, "minecraft:hopper");
+		targetItems(schema, map, "minecraft:hopper");
 		schema.registerSimple(map, "minecraft:comparator");
 		schema.register(
 			map,

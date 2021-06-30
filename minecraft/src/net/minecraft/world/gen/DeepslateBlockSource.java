@@ -31,7 +31,7 @@ public class DeepslateBlockSource implements BlockSource {
 			return this.defaultBlock;
 		} else {
 			double d = MathHelper.lerpFromProgress((double)y, -8.0, 0.0, 1.0, 0.0);
-			this.random.setGrimstoneSeed(this.seed, x, y, z);
+			this.random.setDeepslateSeed(this.seed, x, y, z);
 			return (double)this.random.nextFloat() < d ? this.deepslateState : this.defaultBlock;
 		}
 	}

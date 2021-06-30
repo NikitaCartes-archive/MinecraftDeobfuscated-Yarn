@@ -10,15 +10,15 @@ public class Schema701 extends Schema {
 		super(versionKey, parent);
 	}
 
-	protected static void method_5294(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
+	protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+		schema.register(map, entityId, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		method_5294(schema, map, "WitherSkeleton");
-		method_5294(schema, map, "Stray");
+		targetEntityItems(schema, map, "WitherSkeleton");
+		targetEntityItems(schema, map, "Stray");
 		return map;
 	}
 }

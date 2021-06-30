@@ -13,7 +13,6 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
-import net.minecraft.world.chunk.ColumnChunkNibbleArray;
 
 public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	private static final Direction[] LIGHT_REDUCTION_DIRECTIONS = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
@@ -162,10 +161,25 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 					l = ChunkSectionPos.offset(l, Direction.UP);
 				}
 
-				return new ChunkNibbleArray(new ColumnChunkNibbleArray(chunkNibbleArray2, 0).asByteArray());
+				return copy(chunkNibbleArray2);
 			} else {
 				return new ChunkNibbleArray();
 			}
+		}
+	}
+
+	private static ChunkNibbleArray copy(ChunkNibbleArray source) {
+		if (source.isUninitialized()) {
+			return new ChunkNibbleArray();
+		} else {
+			byte[] bs = source.asByteArray();
+			byte[] cs = new byte[2048];
+
+			for (int i = 0; i < 16; i++) {
+				System.arraycopy(bs, 0, cs, i * 128, 128);
+			}
+
+			return new ChunkNibbleArray(cs);
 		}
 	}
 

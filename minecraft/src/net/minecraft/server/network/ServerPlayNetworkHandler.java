@@ -1304,7 +1304,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getButton(), packet.getActionType(), this.player);
 
 				for (Entry<ItemStack> entry : Int2ObjectMaps.fastIterable(packet.getModifiedStacks())) {
-					this.player.currentScreenHandler.method_37449(entry.getIntKey(), (ItemStack)entry.getValue());
+					this.player.currentScreenHandler.setPreviousTrackedSlotMutable(entry.getIntKey(), (ItemStack)entry.getValue());
 				}
 
 				this.player.currentScreenHandler.setPreviousCursorStack(packet.getStack());

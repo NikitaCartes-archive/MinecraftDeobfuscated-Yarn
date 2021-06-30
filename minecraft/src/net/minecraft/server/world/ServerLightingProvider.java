@@ -51,12 +51,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 	@Override
 	public int doLightUpdates(int i, boolean bl, boolean bl2) {
-		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran automatically on a different thread!"));
 	}
 
 	@Override
 	public void addLightSource(BlockPos pos, int level) {
-		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran automatically on a different thread!"));
 	}
 
 	@Override
@@ -160,12 +160,11 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			if (!excludeBlocks) {
 				chunk.getLightSourcesStream().forEach(pos -> super.addLightSource(pos, chunk.getLuminance(pos)));
 			}
-
-			this.chunkStorage.releaseLightTicket(chunkPos);
 		}), (Supplier<String>)(() -> "lightChunk " + chunkPos + " " + excludeBlocks)));
 		return CompletableFuture.supplyAsync(() -> {
 			chunk.setLightOn(true);
 			super.setRetainData(chunkPos, false);
+			this.chunkStorage.releaseLightTicket(chunkPos);
 			return chunk;
 		}, runnable -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.POST_UPDATE, runnable));
 	}

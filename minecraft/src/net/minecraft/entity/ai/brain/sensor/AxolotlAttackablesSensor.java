@@ -9,7 +9,7 @@ public class AxolotlAttackablesSensor extends NearestVisibleLivingEntitySensor {
 
 	@Override
 	protected boolean matches(LivingEntity entity, LivingEntity target) {
-		return Sensor.method_36982(entity, target) && (this.isAlwaysHostileTo(target) || this.canHunt(entity, target))
+		return Sensor.testAttackableTargetPredicate(entity, target) && (this.isAlwaysHostileTo(target) || this.canHunt(entity, target))
 			? this.isInRange(entity, target) && target.isInsideWaterOrBubbleColumn()
 			: false;
 	}

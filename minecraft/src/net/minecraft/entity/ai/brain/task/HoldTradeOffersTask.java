@@ -64,7 +64,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 		if (!this.offers.isEmpty()) {
 			this.refreshShownOffer(villagerEntity);
 		} else {
-			method_37448(villagerEntity);
+			holdNothing(villagerEntity);
 			this.ticksLeft = Math.min(this.ticksLeft, 40);
 		}
 
@@ -74,7 +74,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	public void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		super.finishRunning(serverWorld, villagerEntity, l);
 		villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
-		method_37448(villagerEntity);
+		holdNothing(villagerEntity);
 		this.customerHeldStack = null;
 	}
 
@@ -97,7 +97,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	}
 
 	private void holdOffer(VillagerEntity villager) {
-		method_37447(villager, (ItemStack)this.offers.get(0));
+		holdOffer(villager, (ItemStack)this.offers.get(0));
 	}
 
 	private void loadPossibleOffers(VillagerEntity villager) {
@@ -113,14 +113,14 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 			|| ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, offer.getSecondBuyItem());
 	}
 
-	private static void method_37448(VillagerEntity villagerEntity) {
-		villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-		villagerEntity.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.085F);
+	private static void holdNothing(VillagerEntity villager) {
+		villager.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+		villager.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.085F);
 	}
 
-	private static void method_37447(VillagerEntity villagerEntity, ItemStack itemStack) {
-		villagerEntity.equipStack(EquipmentSlot.MAINHAND, itemStack);
-		villagerEntity.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
+	private static void holdOffer(VillagerEntity villager, ItemStack stack) {
+		villager.equipStack(EquipmentSlot.MAINHAND, stack);
+		villager.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
 	}
 
 	private LivingEntity findPotentialCustomer(VillagerEntity villager) {
@@ -138,7 +138,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 				this.offerIndex = 0;
 			}
 
-			method_37447(villager, (ItemStack)this.offers.get(this.offerIndex));
+			holdOffer(villager, (ItemStack)this.offers.get(this.offerIndex));
 		}
 	}
 }

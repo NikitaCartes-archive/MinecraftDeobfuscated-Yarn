@@ -92,7 +92,10 @@ public class BlockStateFlattening {
 		return dynamic == null ? field_24645[0] : dynamic;
 	}
 
-	static void method_31448() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 0 and 15 before 1.13.
+	 */
+	static void putStatesFromBlocks0To15() {
 		putStates(0, "{Name:'minecraft:air'}", "{Name:'minecraft:air'}");
 		putStates(16, "{Name:'minecraft:stone'}", "{Name:'minecraft:stone',Properties:{variant:'stone'}}");
 		putStates(17, "{Name:'minecraft:granite'}", "{Name:'minecraft:stone',Properties:{variant:'granite'}}");
@@ -216,7 +219,10 @@ public class BlockStateFlattening {
 		putStates(240, "{Name:'minecraft:iron_ore'}", "{Name:'minecraft:iron_ore'}");
 	}
 
-	static void method_31449() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 16 and 31 before 1.13.
+	 */
+	static void putStatesFromBlocks16To31() {
 		putStates(256, "{Name:'minecraft:coal_ore'}", "{Name:'minecraft:coal_ore'}");
 		putStates(272, "{Name:'minecraft:oak_log',Properties:{axis:'y'}}", "{Name:'minecraft:log',Properties:{axis:'y',variant:'oak'}}");
 		putStates(273, "{Name:'minecraft:spruce_log',Properties:{axis:'y'}}", "{Name:'minecraft:log',Properties:{axis:'y',variant:'spruce'}}");
@@ -623,7 +629,10 @@ public class BlockStateFlattening {
 		putStates(498, "{Name:'minecraft:fern'}", "{Name:'minecraft:tallgrass',Properties:{type:'fern'}}");
 	}
 
-	static void method_31450() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 32 and 47 before 1.13.
+	 */
+	static void putStatesFromBlocks32To47() {
 		putStates(512, "{Name:'minecraft:dead_bush'}", "{Name:'minecraft:deadbush'}");
 		putStates(
 			528, "{Name:'minecraft:piston',Properties:{extended:'false',facing:'down'}}", "{Name:'minecraft:piston',Properties:{extended:'false',facing:'down'}}"
@@ -899,7 +908,10 @@ public class BlockStateFlattening {
 		putStates(752, "{Name:'minecraft:bookshelf'}", "{Name:'minecraft:bookshelf'}");
 	}
 
-	static void method_31451() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 48 and 63 before 1.13.
+	 */
+	static void putStatesFromBlocks48To63() {
 		putStates(768, "{Name:'minecraft:mossy_cobblestone'}", "{Name:'minecraft:mossy_cobblestone'}");
 		putStates(784, "{Name:'minecraft:obsidian'}", "{Name:'minecraft:obsidian'}");
 		putStates(801, "{Name:'minecraft:wall_torch',Properties:{facing:'east'}}", "{Name:'minecraft:torch',Properties:{facing:'east'}}");
@@ -2965,7 +2977,10 @@ public class BlockStateFlattening {
 		putStates(1023, "{Name:'minecraft:sign',Properties:{rotation:'15'}}", "{Name:'minecraft:standing_sign',Properties:{rotation:'15'}}");
 	}
 
-	static void method_31452() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 64 and 79 before 1.13.
+	 */
+	static void putStatesFromBlocks64To79() {
 		putStates(
 			1024,
 			"{Name:'minecraft:oak_door',Properties:{facing:'east',half:'lower',hinge:'right',open:'false',powered:'false'}}",
@@ -3473,7 +3488,10 @@ public class BlockStateFlattening {
 		putStates(1264, "{Name:'minecraft:ice'}", "{Name:'minecraft:ice'}");
 	}
 
-	static void method_31453() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 80 and 95 before 1.13.
+	 */
+	static void putStatesFromBlocks80To95() {
 		putStates(1280, "{Name:'minecraft:snow_block'}", "{Name:'minecraft:snow'}");
 		putStates(1296, "{Name:'minecraft:cactus',Properties:{age:'0'}}", "{Name:'minecraft:cactus',Properties:{age:'0'}}");
 		putStates(1297, "{Name:'minecraft:cactus',Properties:{age:'1'}}", "{Name:'minecraft:cactus',Properties:{age:'1'}}");
@@ -3760,7 +3778,10 @@ public class BlockStateFlattening {
 		putStates(1535, "{Name:'minecraft:black_stained_glass'}", "{Name:'minecraft:stained_glass',Properties:{color:'black'}}");
 	}
 
-	static void method_31454() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 96 and 111 before 1.13.
+	 */
+	static void putStatesFromBlocks96To111() {
 		putStates(
 			1536,
 			"{Name:'minecraft:oak_trapdoor',Properties:{facing:'north',half:'bottom',open:'false'}}",
@@ -4517,7 +4538,10 @@ public class BlockStateFlattening {
 		putStates(1776, "{Name:'minecraft:lily_pad'}", "{Name:'minecraft:waterlily'}");
 	}
 
-	static void method_31455() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 112 and 127 before 1.13.
+	 */
+	static void putStatesFromBlocks112To127() {
 		putStates(1792, "{Name:'minecraft:nether_bricks'}", "{Name:'minecraft:nether_brick'}");
 		putStates(
 			1808,
@@ -4737,7 +4761,10 @@ public class BlockStateFlattening {
 		putStates(2043, "{Name:'minecraft:cocoa',Properties:{age:'2',facing:'east'}}", "{Name:'minecraft:cocoa',Properties:{age:'2',facing:'east'}}");
 	}
 
-	static void method_31456() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 128 and 143 before 1.13.
+	 */
+	static void putStatesFromBlocks128To143() {
 		putStates(
 			2048,
 			"{Name:'minecraft:sandstone_stairs',Properties:{facing:'east',half:'bottom',shape:'straight'}}",
@@ -5920,7 +5947,10 @@ public class BlockStateFlattening {
 		);
 	}
 
-	static void method_31457() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 144 and 159 before 1.13.
+	 */
+	static void putStatesFromBlocks144To159() {
 		putStates(2304, "{Name:'%%FILTER_ME%%',Properties:{facing:'down',nodrop:'false'}}", "{Name:'minecraft:skull',Properties:{facing:'down',nodrop:'false'}}");
 		putStates(2305, "{Name:'%%FILTER_ME%%',Properties:{facing:'up',nodrop:'false'}}", "{Name:'minecraft:skull',Properties:{facing:'up',nodrop:'false'}}");
 		putStates(2306, "{Name:'%%FILTER_ME%%',Properties:{facing:'north',nodrop:'false'}}", "{Name:'minecraft:skull',Properties:{facing:'north',nodrop:'false'}}");
@@ -6450,7 +6480,10 @@ public class BlockStateFlattening {
 		putStates(2559, "{Name:'minecraft:black_terracotta'}", "{Name:'minecraft:stained_hardened_clay',Properties:{color:'black'}}");
 	}
 
-	static void method_31458() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 160 and 175 before 1.13.
+	 */
+	static void putStatesFromBlocks160To175() {
 		putStates(
 			2560,
 			"{Name:'minecraft:white_stained_glass_pane',Properties:{east:'false',north:'false',south:'false',west:'false'}}",
@@ -7161,7 +7194,10 @@ public class BlockStateFlattening {
 		);
 	}
 
-	static void method_31459() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 176 and 191 before 1.13.
+	 */
+	static void putStatesFromBlocks176To191() {
 		putStates(2816, "{Name:'minecraft:white_banner',Properties:{rotation:'0'}}", "{Name:'minecraft:standing_banner',Properties:{rotation:'0'}}");
 		putStates(2817, "{Name:'minecraft:white_banner',Properties:{rotation:'1'}}", "{Name:'minecraft:standing_banner',Properties:{rotation:'1'}}");
 		putStates(2818, "{Name:'minecraft:white_banner',Properties:{rotation:'2'}}", "{Name:'minecraft:standing_banner',Properties:{rotation:'2'}}");
@@ -7893,7 +7929,10 @@ public class BlockStateFlattening {
 		);
 	}
 
-	static void method_31460() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 192 and 207 before 1.13.
+	 */
+	static void putStatesFromBlocks192To207() {
 		putStates(
 			3072,
 			"{Name:'minecraft:acacia_fence',Properties:{east:'false',north:'false',south:'false',west:'false'}}",
@@ -8640,7 +8679,10 @@ public class BlockStateFlattening {
 		putStates(3315, "{Name:'minecraft:beetroots',Properties:{age:'3'}}", "{Name:'minecraft:beetroots',Properties:{age:'3'}}");
 	}
 
-	static void method_31461() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 208 and 223 before 1.13.
+	 */
+	static void putStatesFromBlocks208To223() {
 		putStates(3328, "{Name:'minecraft:grass_path'}", "{Name:'minecraft:grass_path'}");
 		putStates(3344, "{Name:'minecraft:end_gateway'}", "{Name:'minecraft:end_gateway'}");
 		putStates(
@@ -8850,7 +8892,10 @@ public class BlockStateFlattening {
 		putStates(3573, "{Name:'minecraft:yellow_shulker_box',Properties:{facing:'east'}}", "{Name:'minecraft:yellow_shulker_box',Properties:{facing:'east'}}");
 	}
 
-	static void method_31462() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 224 and 239 before 1.13.
+	 */
+	static void putStatesFromBlocks224To239() {
 		putStates(3584, "{Name:'minecraft:lime_shulker_box',Properties:{facing:'down'}}", "{Name:'minecraft:lime_shulker_box',Properties:{facing:'down'}}");
 		putStates(3585, "{Name:'minecraft:lime_shulker_box',Properties:{facing:'up'}}", "{Name:'minecraft:lime_shulker_box',Properties:{facing:'up'}}");
 		putStates(3586, "{Name:'minecraft:lime_shulker_box',Properties:{facing:'north'}}", "{Name:'minecraft:lime_shulker_box',Properties:{facing:'north'}}");
@@ -8987,7 +9032,10 @@ public class BlockStateFlattening {
 		);
 	}
 
-	static void method_31463() {
+	/**
+	 * Adds states to flatten from the blocks which had numeric IDs between 240 and 255 before 1.13.
+	 */
+	static void putStatesFromBlocks240To255() {
 		putStates(
 			3840, "{Name:'minecraft:lime_glazed_terracotta',Properties:{facing:'south'}}", "{Name:'minecraft:lime_glazed_terracotta',Properties:{facing:'south'}}"
 		);
@@ -9161,21 +9209,21 @@ public class BlockStateFlattening {
 
 	static {
 		OLD_STATE_TO_ID.defaultReturnValue(-1);
-		method_31448();
-		method_31449();
-		method_31450();
-		method_31451();
-		method_31452();
-		method_31453();
-		method_31454();
-		method_31455();
-		method_31456();
-		method_31457();
-		method_31458();
-		method_31459();
-		method_31460();
-		method_31461();
-		method_31462();
-		method_31463();
+		putStatesFromBlocks0To15();
+		putStatesFromBlocks16To31();
+		putStatesFromBlocks32To47();
+		putStatesFromBlocks48To63();
+		putStatesFromBlocks64To79();
+		putStatesFromBlocks80To95();
+		putStatesFromBlocks96To111();
+		putStatesFromBlocks112To127();
+		putStatesFromBlocks128To143();
+		putStatesFromBlocks144To159();
+		putStatesFromBlocks160To175();
+		putStatesFromBlocks176To191();
+		putStatesFromBlocks192To207();
+		putStatesFromBlocks208To223();
+		putStatesFromBlocks224To239();
+		putStatesFromBlocks240To255();
 	}
 }

@@ -490,7 +490,7 @@ public class PiglinBrain {
 			return Optional.empty();
 		} else {
 			Optional<LivingEntity> optional = LookTargetUtil.getEntity(piglin, MemoryModuleType.ANGRY_AT);
-			if (optional.isPresent() && Sensor.method_36982(piglin, (LivingEntity)optional.get())) {
+			if (optional.isPresent() && Sensor.testAttackableTargetPredicateIgnoreVisibility(piglin, (LivingEntity)optional.get())) {
 				return optional;
 			} else {
 				if (brain.hasMemoryModule(MemoryModuleType.UNIVERSAL_ANGER)) {
@@ -505,7 +505,7 @@ public class PiglinBrain {
 					return optional2;
 				} else {
 					Optional<PlayerEntity> optional3 = brain.getOptionalMemory(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD);
-					return optional3.isPresent() && Sensor.method_36982(piglin, (LivingEntity)optional3.get()) ? optional3 : Optional.empty();
+					return optional3.isPresent() && Sensor.testAttackableTargetPredicate(piglin, (LivingEntity)optional3.get()) ? optional3 : Optional.empty();
 				}
 			}
 		}
@@ -563,7 +563,7 @@ public class PiglinBrain {
 			});
 			if (piglin.isBaby()) {
 				brain.remember(MemoryModuleType.AVOID_TARGET, attacker, 100L);
-				if (Sensor.method_36982(piglin, attacker)) {
+				if (Sensor.testAttackableTargetPredicateIgnoreVisibility(piglin, attacker)) {
 					angerAtCloserTargets(piglin, attacker);
 				}
 			} else if (attacker.getType() == EntityType.HOGLIN && hasOutnumberedHoglins(piglin)) {
@@ -577,7 +577,7 @@ public class PiglinBrain {
 
 	protected static void tryRevenge(AbstractPiglinEntity piglin, LivingEntity target) {
 		if (!piglin.getBrain().hasActivity(Activity.AVOID)) {
-			if (Sensor.method_36982(piglin, target)) {
+			if (Sensor.testAttackableTargetPredicateIgnoreVisibility(piglin, target)) {
 				if (!LookTargetUtil.isNewTargetTooFar(piglin, target, 4.0)) {
 					if (target.getType() == EntityType.PLAYER && piglin.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
 						becomeAngryWithPlayer(piglin, target);
@@ -678,7 +678,7 @@ public class PiglinBrain {
 	}
 
 	public static void becomeAngryWith(AbstractPiglinEntity piglin, LivingEntity target) {
-		if (Sensor.method_36982(piglin, target)) {
+		if (Sensor.testAttackableTargetPredicateIgnoreVisibility(piglin, target)) {
 			piglin.getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 			piglin.getBrain().remember(MemoryModuleType.ANGRY_AT, target.getUuid(), 600L);
 			if (target.getType() == EntityType.HOGLIN && piglin.canHunt()) {

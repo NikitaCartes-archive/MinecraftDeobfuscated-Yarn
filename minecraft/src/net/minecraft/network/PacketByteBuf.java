@@ -260,12 +260,12 @@ public class PacketByteBuf extends ByteBuf {
 		this.writeNbt((NbtCompound)dataResult.result().get());
 	}
 
-	public static <T> IntFunction<T> method_37453(IntFunction<T> intFunction, int i) {
-		return j -> {
-			if (j > i) {
-				throw new DecoderException("Value " + j + " is larger than limit " + i);
+	public static <T> IntFunction<T> getMaxValidator(IntFunction<T> applier, int max) {
+		return value -> {
+			if (value > max) {
+				throw new DecoderException("Value " + value + " is larger than limit " + max);
 			} else {
-				return intFunction.apply(j);
+				return applier.apply(value);
 			}
 		};
 	}

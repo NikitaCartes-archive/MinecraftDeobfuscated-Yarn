@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.AquaticStrollTask;
@@ -37,7 +38,9 @@ import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.world.World;
 
 /**
  * Represents the definition of an {@linkplain AxolotlEntity axolotl entity} brain.
@@ -165,8 +168,8 @@ public class AxolotlBrain {
 						CompositeTask.RunMode.TRY_ALL,
 						ImmutableList.of(
 							Pair.of(new AquaticStrollTask(0.5F), 2),
-							Pair.of(new StrollTask(0.15F), 2),
-							Pair.of(new GoTowardsLookTarget(AxolotlBrain::method_33248, 3), 3),
+							Pair.of(new StrollTask(0.15F, false), 2),
+							Pair.of(new GoTowardsLookTarget(AxolotlBrain::canGoToLookTarget, AxolotlBrain::method_33248, 3), 3),
 							Pair.of(new ConditionalTask<>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5),
 							Pair.of(new ConditionalTask<>(Entity::isOnGround, new WaitTask(200, 400)), 5)
 						)
@@ -174,6 +177,17 @@ public class AxolotlBrain {
 				)
 			)
 		);
+	}
+
+	private static boolean canGoToLookTarget(LivingEntity entity) {
+		World world = entity.world;
+		Optional<LookTarget> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.LOOK_TARGET);
+		if (optional.isPresent()) {
+			BlockPos blockPos = ((LookTarget)optional.get()).getBlockPos();
+			return world.isWater(blockPos) == entity.isInsideWaterOrBubbleColumn();
+		} else {
+			return false;
+		}
 	}
 
 	public static void updateActivities(AxolotlEntity axolotl) {

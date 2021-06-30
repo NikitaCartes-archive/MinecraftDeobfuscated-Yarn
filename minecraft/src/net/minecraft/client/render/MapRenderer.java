@@ -32,7 +32,7 @@ public class MapRenderer implements AutoCloseable {
 	}
 
 	public void updateTexture(int id, MapState state) {
-		this.getMapTexture(id, state).method_37450();
+		this.getMapTexture(id, state).setNeedsUpdate();
 	}
 
 	public void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int id, MapState state, boolean hidePlayerIcons, int light) {
@@ -44,7 +44,7 @@ public class MapRenderer implements AutoCloseable {
 			if (mapTexture == null) {
 				return new MapRenderer.MapTexture(integer, state);
 			} else {
-				mapTexture.method_37451(state);
+				mapTexture.setState(state);
 				return mapTexture;
 			}
 		});
@@ -67,23 +67,23 @@ public class MapRenderer implements AutoCloseable {
 		private MapState state;
 		private final NativeImageBackedTexture texture;
 		private final RenderLayer renderLayer;
-		private boolean field_34044 = true;
+		private boolean needsUpdate = true;
 
-		MapTexture(int i, MapState mapState) {
-			this.state = mapState;
+		MapTexture(int id, MapState state) {
+			this.state = state;
 			this.texture = new NativeImageBackedTexture(128, 128, true);
-			Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + i, this.texture);
+			Identifier identifier = MapRenderer.this.textureManager.registerDynamicTexture("map/" + id, this.texture);
 			this.renderLayer = RenderLayer.getText(identifier);
 		}
 
-		void method_37451(MapState mapState) {
-			boolean bl = this.state != mapState;
-			this.state = mapState;
-			this.field_34044 |= bl;
+		void setState(MapState state) {
+			boolean bl = this.state != state;
+			this.state = state;
+			this.needsUpdate |= bl;
 		}
 
-		public void method_37450() {
-			this.field_34044 = true;
+		public void setNeedsUpdate() {
+			this.needsUpdate = true;
 		}
 
 		private void updateTexture() {
@@ -103,9 +103,9 @@ public class MapRenderer implements AutoCloseable {
 		}
 
 		void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, boolean hidePlayerIcons, int light) {
-			if (this.field_34044) {
+			if (this.needsUpdate) {
 				this.updateTexture();
-				this.field_34044 = false;
+				this.needsUpdate = false;
 			}
 
 			int i = 0;

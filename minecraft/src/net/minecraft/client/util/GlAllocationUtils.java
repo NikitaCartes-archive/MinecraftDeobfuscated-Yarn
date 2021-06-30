@@ -1,43 +1,30 @@
 package net.minecraft.client.util;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.CharBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.LongBuffer;
-import java.nio.ShortBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.system.MemoryUtil.MemoryAllocator;
 
 @Environment(EnvType.CLIENT)
 public class GlAllocationUtils {
-	public static synchronized ByteBuffer allocateByteBuffer(int size) {
-		return ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
+	private static final MemoryAllocator ALLOCATOR = MemoryUtil.getAllocator(false);
+
+	public static ByteBuffer allocateByteBuffer(int size) {
+		long l = ALLOCATOR.malloc((long)size);
+		if (l == 0L) {
+			throw new OutOfMemoryError("Failed to allocate " + size + " bytes");
+		} else {
+			return MemoryUtil.memByteBuffer(l, size);
+		}
 	}
 
-	public static ShortBuffer allocateShortBuffer(int size) {
-		return allocateByteBuffer(size << 1).asShortBuffer();
-	}
-
-	public static CharBuffer allocateCharBuffer(int size) {
-		return allocateByteBuffer(size << 1).asCharBuffer();
-	}
-
-	public static IntBuffer allocateIntBuffer(int size) {
-		return allocateByteBuffer(size << 2).asIntBuffer();
-	}
-
-	public static LongBuffer allocateLongBuffer(int size) {
-		return allocateByteBuffer(size << 3).asLongBuffer();
-	}
-
-	public static FloatBuffer allocateFloatBuffer(int size) {
-		return allocateByteBuffer(size << 2).asFloatBuffer();
-	}
-
-	public static DoubleBuffer allocateDoubleBuffer(int size) {
-		return allocateByteBuffer(size << 3).asDoubleBuffer();
+	public static ByteBuffer resizeByteBuffer(ByteBuffer source, int size) {
+		long l = ALLOCATOR.realloc(MemoryUtil.memAddress0(source), (long)size);
+		if (l == 0L) {
+			throw new OutOfMemoryError("Failed to resize buffer from " + source.capacity() + " bytes to " + size + " bytes");
+		} else {
+			return MemoryUtil.memByteBuffer(l, size);
+		}
 	}
 }
