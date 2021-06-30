@@ -12,19 +12,19 @@ public class Schema1928 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static TypeTemplate method_17997(Schema schema) {
+	protected static TypeTemplate targetItems(Schema schema) {
 		return DSL.optionalFields("ArmorItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "HandItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)));
 	}
 
-	protected static void method_17998(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> method_17997(schema)));
+	protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+		schema.register(map, entityId, (Supplier<TypeTemplate>)(() -> targetItems(schema)));
 	}
 
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
 		map.remove("minecraft:illager_beast");
-		method_17998(schema, map, "minecraft:ravager");
+		targetEntityItems(schema, map, "minecraft:ravager");
 		return map;
 	}
 }

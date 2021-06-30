@@ -17,45 +17,45 @@ public class Schema100 extends Schema {
 		return DSL.optionalFields("ArmorItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "HandItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)));
 	}
 
-	protected static void targetEntity(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> targetItems(schema)));
+	protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+		schema.register(map, entityId, (Supplier<TypeTemplate>)(() -> targetItems(schema)));
 	}
 
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		targetEntity(schema, map, "ArmorStand");
-		targetEntity(schema, map, "Creeper");
-		targetEntity(schema, map, "Skeleton");
-		targetEntity(schema, map, "Spider");
-		targetEntity(schema, map, "Giant");
-		targetEntity(schema, map, "Zombie");
-		targetEntity(schema, map, "Slime");
-		targetEntity(schema, map, "Ghast");
-		targetEntity(schema, map, "PigZombie");
+		targetEntityItems(schema, map, "ArmorStand");
+		targetEntityItems(schema, map, "Creeper");
+		targetEntityItems(schema, map, "Skeleton");
+		targetEntityItems(schema, map, "Spider");
+		targetEntityItems(schema, map, "Giant");
+		targetEntityItems(schema, map, "Zombie");
+		targetEntityItems(schema, map, "Slime");
+		targetEntityItems(schema, map, "Ghast");
+		targetEntityItems(schema, map, "PigZombie");
 		schema.register(
 			map, "Enderman", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), targetItems(schema)))
 		);
-		targetEntity(schema, map, "CaveSpider");
-		targetEntity(schema, map, "Silverfish");
-		targetEntity(schema, map, "Blaze");
-		targetEntity(schema, map, "LavaSlime");
-		targetEntity(schema, map, "EnderDragon");
-		targetEntity(schema, map, "WitherBoss");
-		targetEntity(schema, map, "Bat");
-		targetEntity(schema, map, "Witch");
-		targetEntity(schema, map, "Endermite");
-		targetEntity(schema, map, "Guardian");
-		targetEntity(schema, map, "Pig");
-		targetEntity(schema, map, "Sheep");
-		targetEntity(schema, map, "Cow");
-		targetEntity(schema, map, "Chicken");
-		targetEntity(schema, map, "Squid");
-		targetEntity(schema, map, "Wolf");
-		targetEntity(schema, map, "MushroomCow");
-		targetEntity(schema, map, "SnowMan");
-		targetEntity(schema, map, "Ozelot");
-		targetEntity(schema, map, "VillagerGolem");
+		targetEntityItems(schema, map, "CaveSpider");
+		targetEntityItems(schema, map, "Silverfish");
+		targetEntityItems(schema, map, "Blaze");
+		targetEntityItems(schema, map, "LavaSlime");
+		targetEntityItems(schema, map, "EnderDragon");
+		targetEntityItems(schema, map, "WitherBoss");
+		targetEntityItems(schema, map, "Bat");
+		targetEntityItems(schema, map, "Witch");
+		targetEntityItems(schema, map, "Endermite");
+		targetEntityItems(schema, map, "Guardian");
+		targetEntityItems(schema, map, "Pig");
+		targetEntityItems(schema, map, "Sheep");
+		targetEntityItems(schema, map, "Cow");
+		targetEntityItems(schema, map, "Chicken");
+		targetEntityItems(schema, map, "Squid");
+		targetEntityItems(schema, map, "Wolf");
+		targetEntityItems(schema, map, "MushroomCow");
+		targetEntityItems(schema, map, "SnowMan");
+		targetEntityItems(schema, map, "Ozelot");
+		targetEntityItems(schema, map, "VillagerGolem");
 		schema.register(
 			map,
 			"EntityHorse",
@@ -69,7 +69,7 @@ public class Schema100 extends Schema {
 					targetItems(schema)
 				))
 		);
-		targetEntity(schema, map, "Rabbit");
+		targetEntityItems(schema, map, "Rabbit");
 		schema.register(
 			map,
 			"Villager",
@@ -88,7 +88,7 @@ public class Schema100 extends Schema {
 					targetItems(schema)
 				))
 		);
-		targetEntity(schema, map, "Shulker");
+		targetEntityItems(schema, map, "Shulker");
 		schema.registerSimple(map, "AreaEffectCloud");
 		schema.registerSimple(map, "ShulkerBullet");
 		return map;

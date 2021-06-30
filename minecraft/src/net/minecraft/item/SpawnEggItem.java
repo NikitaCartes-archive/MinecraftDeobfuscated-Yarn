@@ -133,8 +133,15 @@ public class SpawnEggItem extends Item {
 		return Objects.equals(this.getEntityType(nbt), type);
 	}
 
-	public int getColor(int num) {
-		return num == 0 ? this.primaryColor : this.secondaryColor;
+	/**
+	 * {@return the color of the specified tint index}
+	 * 
+	 * @implSpec If the tint index is 0, returns {@link #primaryColor}. Otherwise, returns {@link #secondaryColor}.
+	 * 
+	 * @param tintIndex the tint index
+	 */
+	public int getColor(int tintIndex) {
+		return tintIndex == 0 ? this.primaryColor : this.secondaryColor;
 	}
 
 	@Nullable

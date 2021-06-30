@@ -90,7 +90,7 @@ public class ChunkRandom extends Random implements WorldGenRandom {
 		return n;
 	}
 
-	public long setGrimstoneSeed(long worldSeed, int x, int y, int z) {
+	public long setDeepslateSeed(long worldSeed, int x, int y, int z) {
 		this.setSeed(worldSeed);
 		long l = this.nextLong();
 		long m = this.nextLong();

@@ -451,7 +451,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			return this.loadChunk(chunkPos);
 		} else {
 			if (requiredStatus == ChunkStatus.LIGHT) {
-				this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), chunkPos);
+				this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.LIGHT), chunkPos);
 			}
 
 			Optional<Chunk> optional = ((Either)holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
@@ -546,7 +546,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.mainThreadExecutor
 			.send(
 				Util.debugRunnable(
-					(Runnable)(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), pos)),
+					(Runnable)(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.LIGHT), pos)),
 					(Supplier<String>)(() -> "release light ticket " + pos)
 				)
 			);

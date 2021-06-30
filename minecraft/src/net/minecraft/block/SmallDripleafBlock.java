@@ -52,23 +52,17 @@ public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = super.getPlacementState(ctx);
-		if (blockState != null) {
-			FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-			return blockState.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER)).with(FACING, ctx.getPlayerFacing().getOpposite());
-		} else {
-			return null;
-		}
+		return blockState != null ? withWaterloggedState(ctx.getWorld(), ctx.getBlockPos(), blockState.with(FACING, ctx.getPlayerFacing().getOpposite())) : null;
 	}
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
 		if (!world.isClient()) {
-			Direction direction = state.get(FACING);
-			world.setBlockState(
-				pos.up(),
-				this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER).with(WATERLOGGED, Boolean.valueOf(world.isWater(pos.up()))).with(FACING, direction),
-				Block.NOTIFY_ALL
+			BlockPos blockPos = pos.up();
+			BlockState blockState = TallPlantBlock.withWaterloggedState(
+				world, blockPos, this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER).with(FACING, (Direction)state.get(FACING))
 			);
+			world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
 		}
 	}
 

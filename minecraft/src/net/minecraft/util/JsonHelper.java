@@ -60,11 +60,11 @@ public class JsonHelper {
 		return !hasElement(object, element) ? false : object.get(element).isJsonPrimitive();
 	}
 
-	public static boolean hasElement(JsonObject object, String lement) {
+	public static boolean hasElement(JsonObject object, String element) {
 		if (object == null) {
 			return false;
 		} else {
-			return object.get(lement) != null;
+			return object.get(element) != null;
 		}
 	}
 

@@ -516,9 +516,7 @@ public class ConfiguredFeatures {
 		"pile_ice",
 		Feature.BLOCK_PILE
 			.configure(
-				new BlockPileFeatureConfig(
-					new WeightedBlockStateProvider(method_35926().add(ConfiguredFeatures.States.BLUE_ICE, 1).add(ConfiguredFeatures.States.PACKED_ICE, 5))
-				)
+				new BlockPileFeatureConfig(new WeightedBlockStateProvider(pool().add(ConfiguredFeatures.States.BLUE_ICE, 1).add(ConfiguredFeatures.States.PACKED_ICE, 5)))
 			)
 	);
 	public static final ConfiguredFeature<?, ?> PILE_PUMPKIN = register(
@@ -526,7 +524,7 @@ public class ConfiguredFeatures {
 		Feature.BLOCK_PILE
 			.configure(
 				new BlockPileFeatureConfig(
-					new WeightedBlockStateProvider(method_35926().add(ConfiguredFeatures.States.PUMPKIN, 19).add(ConfiguredFeatures.States.JACK_O_LANTERN, 1))
+					new WeightedBlockStateProvider(pool().add(ConfiguredFeatures.States.PUMPKIN, 19).add(ConfiguredFeatures.States.JACK_O_LANTERN, 1))
 				)
 			)
 	);
@@ -1559,7 +1557,7 @@ public class ConfiguredFeatures {
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
 						new BendingTrunkPlacer(4, 2, 0, 3, UniformIntProvider.create(1, 2)),
-						new WeightedBlockStateProvider(method_35926().add(ConfiguredFeatures.States.AZALEA_LEAVES, 3).add(ConfiguredFeatures.States.FLOWERING_AZALEA_LEAVES, 1)),
+						new WeightedBlockStateProvider(pool().add(ConfiguredFeatures.States.AZALEA_LEAVES, 3).add(ConfiguredFeatures.States.FLOWERING_AZALEA_LEAVES, 1)),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.AZALEA),
 						new RandomSpreadFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), ConstantIntProvider.create(2), 50),
 						new TwoLayersFeatureSize(1, 0, 1)
@@ -1906,13 +1904,11 @@ public class ConfiguredFeatures {
 			.applyChance(2)
 	);
 	private static final WeightedBlockStateProvider RANDOM_BERRIES_CAVE_VINES_BODY_PROVIDER = new WeightedBlockStateProvider(
-		method_35926()
-			.add(Blocks.CAVE_VINES_PLANT.getDefaultState(), 4)
-			.add(Blocks.CAVE_VINES_PLANT.getDefaultState().with(CaveVines.BERRIES, Boolean.valueOf(true)), 1)
+		pool().add(Blocks.CAVE_VINES_PLANT.getDefaultState(), 4).add(Blocks.CAVE_VINES_PLANT.getDefaultState().with(CaveVines.BERRIES, Boolean.valueOf(true)), 1)
 	);
 	private static final RandomizedIntBlockStateProvider RANDOM_AGE_CAVE_VINES_HEAD_PROVIDER = new RandomizedIntBlockStateProvider(
 		new WeightedBlockStateProvider(
-			method_35926().add(Blocks.CAVE_VINES.getDefaultState(), 4).add(Blocks.CAVE_VINES.getDefaultState().with(CaveVines.BERRIES, Boolean.valueOf(true)), 1)
+			pool().add(Blocks.CAVE_VINES.getDefaultState(), 4).add(Blocks.CAVE_VINES.getDefaultState().with(CaveVines.BERRIES, Boolean.valueOf(true)), 1)
 		),
 		CaveVinesHeadBlock.AGE,
 		UniformIntProvider.create(17, 25)
@@ -1960,7 +1956,7 @@ public class ConfiguredFeatures {
 			.configure(
 				new SimpleBlockFeatureConfig(
 					new WeightedBlockStateProvider(
-						method_35926()
+						pool()
 							.add(Blocks.FLOWERING_AZALEA.getDefaultState(), 4)
 							.add(Blocks.AZALEA.getDefaultState(), 7)
 							.add(Blocks.MOSS_CARPET.getDefaultState(), 25)
@@ -2150,7 +2146,7 @@ public class ConfiguredFeatures {
 			.applyChance(53)
 	);
 
-	static DataPool.Builder<BlockState> method_35926() {
+	static DataPool.Builder<BlockState> pool() {
 		return DataPool.builder();
 	}
 
@@ -2172,7 +2168,7 @@ public class ConfiguredFeatures {
 			.configure(
 				new SimpleBlockFeatureConfig(
 					new WeightedBlockStateProvider(
-						method_35926()
+						pool()
 							.add(ConfiguredFeatures.States.SMALL_DRIPLEAF_EAST, 1)
 							.add(ConfiguredFeatures.States.SMALL_DRIPLEAF_WEST, 1)
 							.add(ConfiguredFeatures.States.SMALL_DRIPLEAF_NORTH, 1)
@@ -2193,20 +2189,20 @@ public class ConfiguredFeatures {
 			.tries(32)
 			.build();
 		public static final RandomPatchFeatureConfig TAIGA_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-				new WeightedBlockStateProvider(ConfiguredFeatures.method_35926().add(ConfiguredFeatures.States.GRASS, 1).add(ConfiguredFeatures.States.FERN, 4)),
+				new WeightedBlockStateProvider(ConfiguredFeatures.pool().add(ConfiguredFeatures.States.GRASS, 1).add(ConfiguredFeatures.States.FERN, 4)),
 				SimpleBlockPlacer.INSTANCE
 			)
 			.tries(32)
 			.build();
 		public static final RandomPatchFeatureConfig LUSH_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-				new WeightedBlockStateProvider(ConfiguredFeatures.method_35926().add(ConfiguredFeatures.States.GRASS, 3).add(ConfiguredFeatures.States.FERN, 1)),
+				new WeightedBlockStateProvider(ConfiguredFeatures.pool().add(ConfiguredFeatures.States.GRASS, 3).add(ConfiguredFeatures.States.FERN, 1)),
 				SimpleBlockPlacer.INSTANCE
 			)
 			.blacklist(ImmutableSet.of(ConfiguredFeatures.States.PODZOL))
 			.tries(32)
 			.build();
 		public static final RandomPatchFeatureConfig DEFAULT_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-				new WeightedBlockStateProvider(ConfiguredFeatures.method_35926().add(ConfiguredFeatures.States.POPPY, 2).add(ConfiguredFeatures.States.DANDELION, 1)),
+				new WeightedBlockStateProvider(ConfiguredFeatures.pool().add(ConfiguredFeatures.States.POPPY, 2).add(ConfiguredFeatures.States.DANDELION, 1)),
 				SimpleBlockPlacer.INSTANCE
 			)
 			.tries(64)
@@ -2251,7 +2247,7 @@ public class ConfiguredFeatures {
 		);
 		public static final BlockPileFeatureConfig CRIMSON_ROOTS_CONFIG = new BlockPileFeatureConfig(
 			new WeightedBlockStateProvider(
-				ConfiguredFeatures.method_35926()
+				ConfiguredFeatures.pool()
 					.add(ConfiguredFeatures.States.CRIMSON_ROOTS, 87)
 					.add(ConfiguredFeatures.States.CRIMSON_FUNGUS, 11)
 					.add(ConfiguredFeatures.States.WARPED_FUNGUS, 1)
@@ -2259,7 +2255,7 @@ public class ConfiguredFeatures {
 		);
 		public static final BlockPileFeatureConfig WARPED_ROOTS_CONFIG = new BlockPileFeatureConfig(
 			new WeightedBlockStateProvider(
-				ConfiguredFeatures.method_35926()
+				ConfiguredFeatures.pool()
 					.add(ConfiguredFeatures.States.WARPED_ROOTS, 85)
 					.add(ConfiguredFeatures.States.CRIMSON_ROOTS, 1)
 					.add(ConfiguredFeatures.States.WARPED_FUNGUS, 13)

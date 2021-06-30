@@ -9,7 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -28,7 +27,6 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class BlockEntityRenderDispatcher implements SynchronousResourceReloader {
 	private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = ImmutableMap.of();
-	private final BufferBuilder bufferBuilder = new BufferBuilder(256);
 	private final TextRenderer textRenderer;
 	private final EntityModelLoader entityModelLoader;
 	public World world;
