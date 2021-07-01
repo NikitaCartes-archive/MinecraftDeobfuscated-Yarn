@@ -461,7 +461,7 @@ extends RealmsScreen {
         }
 
         @Override
-        public Text method_37006() {
+        public Text getNarration() {
             Text text = ScreenTexts.joinLines(new LiteralText(this.mTemplate.name), new TranslatableText("mco.template.select.narrate.authors", this.mTemplate.author), new LiteralText(this.mTemplate.recommendedPlayers), new TranslatableText("mco.template.select.narrate.version", this.mTemplate.version));
             return new TranslatableText("narrator.select", text);
         }

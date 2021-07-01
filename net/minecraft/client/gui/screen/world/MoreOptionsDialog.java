@@ -168,9 +168,9 @@ implements Drawable {
             serverResourceManager.close();
             Lifecycle lifecycle = dataResult.lifecycle();
             dataResult.resultOrPartial(LOGGER::error).ifPresent(generatorOptions -> {
-                BooleanConsumer booleanConsumer = bl -> {
+                BooleanConsumer booleanConsumer = confirmed -> {
                     client.openScreen(parent);
-                    if (bl) {
+                    if (confirmed) {
                         this.importOptions(impl, (GeneratorOptions)generatorOptions);
                     }
                 };

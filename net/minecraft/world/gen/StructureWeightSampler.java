@@ -47,7 +47,7 @@ public class StructureWeightSampler {
         int j = chunkPos.getStartZ();
         this.junctions = new ObjectArrayList<JigsawJunction>(32);
         this.pieces = new ObjectArrayList<StructurePiece>(10);
-        for (StructureFeature<?> structureFeature : StructureFeature.JIGSAW_STRUCTURES) {
+        for (StructureFeature<?> structureFeature : StructureFeature.LAND_MODIFYING_STRUCTURES) {
             accessor.getStructuresWithChildren(ChunkSectionPos.from(chunk), structureFeature).forEach(start -> {
                 for (StructurePiece structurePiece : start.getChildren()) {
                     if (!structurePiece.intersectsChunk(chunkPos, 12)) continue;

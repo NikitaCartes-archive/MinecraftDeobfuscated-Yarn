@@ -51,14 +51,14 @@ extends Screen {
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 48 + -16, 98, 20, new TranslatableText("gui.advancements"), button -> this.client.openScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 48 + -16, 98, 20, new TranslatableText("gui.stats"), button -> this.client.openScreen(new StatsScreen(this, this.client.player.getStatHandler()))));
         String string = SharedConstants.getGameVersion().isStable() ? JAVA_FEEDBACK_URL : SNAPSHOT_FEEDBACK_URL;
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.sendFeedback"), button -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
-            if (bl) {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.sendFeedback"), button -> this.client.openScreen(new ConfirmChatLinkScreen(confirmed -> {
+            if (confirmed) {
                 Util.getOperatingSystem().open(string);
             }
             this.client.openScreen(this);
         }, string, true))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.reportBugs"), button -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
-            if (bl) {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.reportBugs"), button -> this.client.openScreen(new ConfirmChatLinkScreen(confirmed -> {
+            if (confirmed) {
                 Util.getOperatingSystem().open(SNAPSHOT_BUGS_URL);
             }
             this.client.openScreen(this);

@@ -13,8 +13,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 /**
  * A feature config that specifies a starting pool and a size for {@linkplain
- * net.minecraft.structure.pool.StructurePoolBasedGenerator#method_30419
- * method_30419}.
+ * net.minecraft.structure.pool.StructurePoolBasedGenerator#generate}.
  */
 public class StructurePoolFeatureConfig
 implements FeatureConfig {

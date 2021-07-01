@@ -15,7 +15,7 @@ import net.minecraft.util.Unit;
 public class Narration<T> {
     private final T value;
     private final BiConsumer<Consumer<String>, T> transformer;
-    public static final Narration<?> EMPTY = new Narration<Unit>(Unit.INSTANCE, (consumer, unit) -> {});
+    public static final Narration<?> EMPTY = new Narration<Unit>(Unit.INSTANCE, (consumer, text) -> {});
 
     private Narration(T value, BiConsumer<Consumer<String>, T> transformer) {
         this.value = value;

@@ -1309,7 +1309,7 @@ extends RealmsScreen {
         }
 
         @Override
-        public Text method_37006() {
+        public Text getNarration() {
             return TRIAL_NARRATION;
         }
     }
@@ -1439,7 +1439,7 @@ extends RealmsScreen {
         }
 
         @Override
-        public Text method_37006() {
+        public Text getNarration() {
             if (this.mServerData.state == RealmsServer.State.UNINITIALIZED) {
                 return UNINITIALIZED_BUTTON_NARRATION;
             }

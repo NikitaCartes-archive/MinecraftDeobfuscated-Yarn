@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.PortalUtil;
+import net.minecraft.world.BlockLocating;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
@@ -163,7 +163,7 @@ public class AreaHelper {
         return this.isValid() && this.foundPortalBlocks == this.width * this.height;
     }
 
-    public static Vec3d entityPosInPortal(PortalUtil.Rectangle portalRect, Direction.Axis portalAxis, Vec3d entityPos, EntityDimensions entityDimensions) {
+    public static Vec3d entityPosInPortal(BlockLocating.Rectangle portalRect, Direction.Axis portalAxis, Vec3d entityPos, EntityDimensions entityDimensions) {
         double h;
         Direction.Axis axis;
         double g;
@@ -192,7 +192,7 @@ public class AreaHelper {
      * 
      * <p>The offset, velocity, and angle are modified based on the portal's axis.
      */
-    public static TeleportTarget getNetherTeleportTarget(ServerWorld destination, PortalUtil.Rectangle portalRect, Direction.Axis portalAxis, Vec3d offset, EntityDimensions dimensions, Vec3d velocity, float yaw, float pitch) {
+    public static TeleportTarget getNetherTeleportTarget(ServerWorld destination, BlockLocating.Rectangle portalRect, Direction.Axis portalAxis, Vec3d offset, EntityDimensions dimensions, Vec3d velocity, float yaw, float pitch) {
         BlockPos blockPos = portalRect.lowerLeft;
         BlockState blockState = destination.getBlockState(blockPos);
         Direction.Axis axis = blockState.getOrEmpty(Properties.HORIZONTAL_AXIS).orElse(Direction.Axis.X);

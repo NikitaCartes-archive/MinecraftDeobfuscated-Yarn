@@ -94,7 +94,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
                 }
 
                 @Override
-                public void method_37023(Consumer<Text> consumer) {
+                public void supply(Consumer<Text> consumer) {
                     consumer.accept(SocialInteractionsPlayerListEntry.this.hideText);
                 }
             }, new TranslatableText("gui.socialInteractions.hide")){
@@ -118,7 +118,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
                 }
 
                 @Override
-                public void method_37023(Consumer<Text> consumer) {
+                public void supply(Consumer<Text> consumer) {
                     consumer.accept(SocialInteractionsPlayerListEntry.this.showText);
                 }
             }, new TranslatableText("gui.socialInteractions.show")){
@@ -180,7 +180,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     }
 
     @Override
-    public List<? extends Selectable> method_37025() {
+    public List<? extends Selectable> selectableChildren() {
         return this.buttons;
     }
 

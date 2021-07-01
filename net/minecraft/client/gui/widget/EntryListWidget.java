@@ -58,7 +58,7 @@ Selectable {
     private boolean renderBackground = true;
     private boolean renderHorizontalShadows = true;
     @Nullable
-    private E field_33780;
+    private E hoveredEntry;
 
     public EntryListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
         this.client = client;
@@ -197,8 +197,8 @@ Selectable {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        this.field_33780 = this.isMouseOver(mouseX, mouseY) ? this.getEntryAtPosition(mouseX, mouseY) : null;
-        Object v0 = this.field_33780;
+        this.hoveredEntry = this.isMouseOver(mouseX, mouseY) ? this.getEntryAtPosition(mouseX, mouseY) : null;
+        Object v0 = this.hoveredEntry;
         if (this.renderBackground) {
             RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -472,7 +472,7 @@ Selectable {
                 RenderSystem.enableTexture();
             }
             p = this.getRowLeft();
-            ((Entry)entry).render(matrices, j, k, p, o, n, mouseX, mouseY, Objects.equals(this.field_33780, entry), delta);
+            ((Entry)entry).render(matrices, j, k, p, o, n, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
         }
     }
 
@@ -501,7 +501,7 @@ Selectable {
         if (this.isFocused()) {
             return Selectable.SelectionType.FOCUSED;
         }
-        if (this.field_33780 != null) {
+        if (this.hoveredEntry != null) {
             return Selectable.SelectionType.HOVERED;
         }
         return Selectable.SelectionType.NONE;
@@ -525,19 +525,19 @@ Selectable {
     }
 
     @Nullable
-    protected E method_37019() {
-        return this.field_33780;
+    protected E getHoveredEntry() {
+        return this.hoveredEntry;
     }
 
     void setEntryParentList(Entry<E> entry) {
         entry.parentList = this;
     }
 
-    protected void method_37017(NarrationMessageBuilder narrationMessageBuilder, E entry) {
+    protected void appendNarrations(NarrationMessageBuilder builder, E entry) {
         int i;
         List<E> list = this.children();
         if (list.size() > 1 && (i = list.indexOf(entry)) != -1) {
-            narrationMessageBuilder.put(NarrationPart.POSITION, (Text)new TranslatableText("narrator.position.list", i + 1, list.size()));
+            builder.put(NarrationPart.POSITION, (Text)new TranslatableText("narrator.position.list", i + 1, list.size()));
         }
     }
 

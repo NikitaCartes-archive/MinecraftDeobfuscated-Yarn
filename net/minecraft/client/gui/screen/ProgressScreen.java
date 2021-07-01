@@ -24,11 +24,11 @@ implements ProgressListener {
     private Text task;
     private int progress;
     private boolean done;
-    private final boolean field_33625;
+    private final boolean closeAfterFinished;
 
-    public ProgressScreen(boolean bl) {
+    public ProgressScreen(boolean closeAfterFinished) {
         super(NarratorManager.EMPTY);
-        this.field_33625 = bl;
+        this.closeAfterFinished = closeAfterFinished;
     }
 
     @Override
@@ -66,7 +66,7 @@ implements ProgressListener {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (this.done) {
-            if (this.field_33625) {
+            if (this.closeAfterFinished) {
                 this.client.openScreen(null);
             }
             return;

@@ -177,7 +177,7 @@ extends RealmsScreen {
         if (this.clicks < 0) {
             this.clicks = 0;
         }
-        this.slotButtons.forEach(RealmsWorldSlotButton::method_37007);
+        this.slotButtons.forEach(RealmsWorldSlotButton::tick);
     }
 
     @Override

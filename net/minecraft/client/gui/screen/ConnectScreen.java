@@ -54,7 +54,7 @@ extends Screen {
     volatile boolean connectingCancelled;
     final Screen parent;
     private Text status = new TranslatableText("connect.connecting");
-    private long narratorTimer = -1L;
+    private long lastNarrationTime = -1L;
 
     private ConnectScreen(Screen parent) {
         super(NarratorManager.EMPTY);
@@ -142,8 +142,8 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         long l = Util.getMeasuringTimeMs();
-        if (l - this.narratorTimer > 2000L) {
-            this.narratorTimer = l;
+        if (l - this.lastNarrationTime > 2000L) {
+            this.lastNarrationTime = l;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining"));
         }
         ConnectScreen.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 0xFFFFFF);

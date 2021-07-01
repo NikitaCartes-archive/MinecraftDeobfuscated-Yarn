@@ -116,12 +116,12 @@ extends Screen {
 
                 @Override
                 public void visitBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
-                    this.createRuleWidget(key, (text, list, string, booleanRule) -> new BooleanRuleWidget(text, list, string, (GameRules.BooleanRule)booleanRule));
+                    this.createRuleWidget(key, (name, description, ruleName, rule) -> new BooleanRuleWidget(name, description, ruleName, (GameRules.BooleanRule)rule));
                 }
 
                 @Override
                 public void visitInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
-                    this.createRuleWidget(key, (text, list, string, intRule) -> new IntRuleWidget(text, list, string, (GameRules.IntRule)intRule));
+                    this.createRuleWidget(key, (name, description, ruleName, rule) -> new IntRuleWidget(name, description, ruleName, (GameRules.IntRule)rule));
                 }
 
                 private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, RuleWidgetFactory<T> widgetFactory) {
@@ -155,7 +155,7 @@ extends Screen {
         @Override
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             super.render(matrices, mouseX, mouseY, delta);
-            AbstractRuleWidget abstractRuleWidget = (AbstractRuleWidget)this.method_37019();
+            AbstractRuleWidget abstractRuleWidget = (AbstractRuleWidget)this.getHoveredEntry();
             if (abstractRuleWidget != null) {
                 EditGameRulesScreen.this.setTooltipDescription(abstractRuleWidget.description);
             }
@@ -230,7 +230,7 @@ extends Screen {
         }
 
         @Override
-        public List<? extends Selectable> method_37025() {
+        public List<? extends Selectable> selectableChildren() {
             return this.children;
         }
 
@@ -271,7 +271,7 @@ extends Screen {
         }
 
         @Override
-        public List<? extends Selectable> method_37025() {
+        public List<? extends Selectable> selectableChildren() {
             return ImmutableList.of(new Selectable(){
 
                 @Override

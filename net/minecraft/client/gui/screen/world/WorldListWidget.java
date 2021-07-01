@@ -184,7 +184,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         }
 
         @Override
-        public Text method_37006() {
+        public Text getNarration() {
             TranslatableText translatableText = new TranslatableText("narrator.select.world", this.level.getDisplayName(), new Date(this.level.getLastPlayed()), this.level.isHardcore() ? new TranslatableText("gameMode.hardcore") : new TranslatableText("gameMode." + this.level.getGameMode().getName()), this.level.hasCheats() ? new TranslatableText("selectWorld.cheats") : LiteralText.EMPTY, this.level.getVersion());
             MutableText text = this.level.isLocked() ? ScreenTexts.joinSentences(translatableText, LOCKED_TEXT) : (this.level.isPreWorldHeightChangeVersion() ? ScreenTexts.joinSentences(translatableText, PRE_WORLDHEIGHT_TEXT) : translatableText);
             return new TranslatableText("narrator.select", text);
@@ -277,8 +277,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     mutableText.formatted(Formatting.BOLD, Formatting.RED);
                 }
                 TranslatableText text = new TranslatableText(string2, this.level.getVersion(), SharedConstants.getGameVersion().getName());
-                this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
-                    if (bl) {
+                this.client.openScreen(new BackupPromptScreen(this.screen, (backup, eraseCache) -> {
+                    if (backup) {
                         String string = this.level.getName();
                         try (LevelStorage.Session session = this.client.getLevelStorage().createSession(string);){
                             EditWorldScreen.backupLevel(session);
@@ -333,13 +333,13 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             String string = this.level.getName();
             try {
                 LevelStorage.Session session = this.client.getLevelStorage().createSession(string);
-                this.client.openScreen(new EditWorldScreen(bl -> {
+                this.client.openScreen(new EditWorldScreen(edited -> {
                     try {
                         session.close();
                     } catch (IOException iOException) {
                         LOGGER.error("Failed to unlock level {}", (Object)string, (Object)iOException);
                     }
-                    if (bl) {
+                    if (edited) {
                         WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
                     }
                     this.client.openScreen(this.screen);
@@ -361,7 +361,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
                 Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
                 if (generatorOptions.isLegacyCustomizedType()) {
-                    this.client.openScreen(new ConfirmScreen(bl -> this.client.openScreen(bl ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl) : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
+                    this.client.openScreen(new ConfirmScreen(confirmed -> this.client.openScreen(confirmed ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl) : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
                 } else {
                     this.client.openScreen(new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl));
                 }

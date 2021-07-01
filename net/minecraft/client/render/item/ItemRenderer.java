@@ -249,22 +249,22 @@ implements SynchronousResourceReloader {
      * for calculating model overrides.
      */
     public void renderInGuiWithOverrides(ItemStack stack, int x, int y) {
-        this.method_36543(MinecraftClient.getInstance().player, stack, x, y, 0);
+        this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y, 0);
     }
 
-    public void renderInGuiWithOverrides(ItemStack stack, int x, int y, int i) {
-        this.method_36543(MinecraftClient.getInstance().player, stack, x, y, i);
+    public void renderInGuiWithOverrides(ItemStack stack, int x, int y, int seed) {
+        this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y, seed);
     }
 
-    public void method_36542(ItemStack itemStack, int i, int j, int k, int l) {
-        this.innerRenderInGui(MinecraftClient.getInstance().player, itemStack, i, j, k, l);
+    public void renderInGuiWithOverrides(ItemStack stack, int x, int y, int seed, int depth) {
+        this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y, seed, depth);
     }
 
     /**
      * Renders an item in a GUI without an attached entity.
      */
     public void renderInGui(ItemStack stack, int x, int y) {
-        this.method_36543(null, stack, x, y, 0);
+        this.innerRenderInGui(null, stack, x, y, 0);
     }
 
     /**
@@ -272,20 +272,20 @@ implements SynchronousResourceReloader {
      * 
      * <p>The entity is used to calculate model overrides for the item.
      */
-    public void renderInGuiWithOverrides(LivingEntity entity, ItemStack stack, int x, int y, int i) {
-        this.method_36543(entity, stack, x, y, i);
+    public void renderInGuiWithOverrides(LivingEntity entity, ItemStack stack, int x, int y, int seed) {
+        this.innerRenderInGui(entity, stack, x, y, seed);
     }
 
-    private void method_36543(@Nullable LivingEntity livingEntity, ItemStack itemStack, int i, int j, int k) {
-        this.innerRenderInGui(livingEntity, itemStack, i, j, k, 0);
+    private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack stack, int x, int y, int seed) {
+        this.innerRenderInGui(entity, stack, x, y, seed, 0);
     }
 
-    private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y, int i, int j) {
+    private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y, int seed, int depth) {
         if (itemStack.isEmpty()) {
             return;
         }
-        BakedModel bakedModel = this.getHeldItemModel(itemStack, null, entity, i);
-        this.zOffset = bakedModel.hasDepth() ? this.zOffset + 50.0f + (float)j : this.zOffset + 50.0f;
+        BakedModel bakedModel = this.getHeldItemModel(itemStack, null, entity, seed);
+        this.zOffset = bakedModel.hasDepth() ? this.zOffset + 50.0f + (float)depth : this.zOffset + 50.0f;
         try {
             this.renderGuiItemModel(itemStack, x, y, bakedModel);
         } catch (Throwable throwable) {
@@ -297,7 +297,7 @@ implements SynchronousResourceReloader {
             crashReportSection.add("Item Foil", () -> String.valueOf(itemStack.hasGlint()));
             throw new CrashException(crashReport);
         }
-        this.zOffset = bakedModel.hasDepth() ? this.zOffset - 50.0f - (float)j : this.zOffset - 50.0f;
+        this.zOffset = bakedModel.hasDepth() ? this.zOffset - 50.0f - (float)depth : this.zOffset - 50.0f;
     }
 
     /**

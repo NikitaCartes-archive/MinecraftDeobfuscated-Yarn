@@ -21,27 +21,27 @@ import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 public class JigsawFeature
 extends StructureFeature<StructurePoolFeatureConfig> {
     final int structureStartY;
-    final boolean field_25836;
+    final boolean modifyBoundingBox;
     final boolean surface;
 
-    public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int structureStartY, boolean bl, boolean surface) {
+    public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int structureStartY, boolean modifyBoundingBox, boolean surface) {
         super(codec);
         this.structureStartY = structureStartY;
-        this.field_25836 = bl;
+        this.modifyBoundingBox = modifyBoundingBox;
         this.surface = surface;
     }
 
     @Override
     public StructureFeature.StructureStartFactory<StructurePoolFeatureConfig> getStructureStartFactory() {
-        return (feature, chunkPos, i, l) -> new Start(this, chunkPos, i, l);
+        return (feature, pos, references, seed) -> new Start(this, pos, references, seed);
     }
 
     public static class Start
     extends MarginedStructureStart<StructurePoolFeatureConfig> {
         private final JigsawFeature jigsawFeature;
 
-        public Start(JigsawFeature feature, ChunkPos chunkPos, int i, long l) {
-            super(feature, chunkPos, i, l);
+        public Start(JigsawFeature feature, ChunkPos pos, int references, long seed) {
+            super(feature, pos, references, seed);
             this.jigsawFeature = feature;
         }
 
@@ -49,7 +49,7 @@ extends StructureFeature<StructurePoolFeatureConfig> {
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, StructurePoolFeatureConfig structurePoolFeatureConfig, HeightLimitView heightLimitView) {
             BlockPos blockPos = new BlockPos(chunkPos.getStartX(), this.jigsawFeature.structureStartY, chunkPos.getStartZ());
             StructurePools.initDefaultPools();
-            StructurePoolBasedGenerator.method_30419(dynamicRegistryManager, structurePoolFeatureConfig, PoolStructurePiece::new, chunkGenerator, structureManager, blockPos, this, this.random, this.jigsawFeature.field_25836, this.jigsawFeature.surface, heightLimitView);
+            StructurePoolBasedGenerator.generate(dynamicRegistryManager, structurePoolFeatureConfig, PoolStructurePiece::new, chunkGenerator, structureManager, blockPos, this, this.random, this.jigsawFeature.modifyBoundingBox, this.jigsawFeature.surface, heightLimitView);
         }
     }
 }

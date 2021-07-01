@@ -93,9 +93,9 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     public static final StructureFeature<StructurePoolFeatureConfig> VILLAGE = StructureFeature.register("Village", new VillageFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<RangeDecoratorConfig> NETHER_FOSSIL = StructureFeature.register("Nether_Fossil", new NetherFossilFeature(RangeDecoratorConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION);
     public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = StructureFeature.register("Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
-    public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
+    public static final List<StructureFeature<?>> LAND_MODIFYING_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
     private static final Identifier JIGSAW_ID = new Identifier("jigsaw");
-    private static final Map<Identifier, Identifier> field_25839 = ImmutableMap.builder().put(new Identifier("nvi"), JIGSAW_ID).put(new Identifier("pcp"), JIGSAW_ID).put(new Identifier("bastionremnant"), JIGSAW_ID).put(new Identifier("runtime"), JIGSAW_ID).build();
+    private static final Map<Identifier, Identifier> JIGSAW_STRUCTURE_PIECES = ImmutableMap.builder().put(new Identifier("nvi"), JIGSAW_ID).put(new Identifier("pcp"), JIGSAW_ID).put(new Identifier("bastionremnant"), JIGSAW_ID).put(new Identifier("runtime"), JIGSAW_ID).build();
     public static final int field_31518 = 8;
     private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 
@@ -140,7 +140,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                 NbtCompound nbtCompound = nbtList.getCompound(j);
                 String string2 = nbtCompound.getString("id").toLowerCase(Locale.ROOT);
                 Identifier identifier = new Identifier(string2);
-                Identifier identifier2 = field_25839.getOrDefault(identifier, identifier);
+                Identifier identifier2 = JIGSAW_STRUCTURE_PIECES.getOrDefault(identifier, identifier);
                 StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(identifier2);
                 if (structurePieceType == null) {
                     LOGGER.error("Unknown structure piece id: {}", (Object)identifier2);

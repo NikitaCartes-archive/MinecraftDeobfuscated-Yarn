@@ -210,7 +210,7 @@ Selectable {
     }
 
     @Override
-    public boolean method_37303() {
+    public boolean isNarratable() {
         return this.visible && this.active;
     }
 
@@ -229,13 +229,13 @@ Selectable {
         return Selectable.SelectionType.NONE;
     }
 
-    protected void method_37021(NarrationMessageBuilder narrationMessageBuilder) {
-        narrationMessageBuilder.put(NarrationPart.TITLE, (Text)this.getNarrationMessage());
+    protected void appendDefaultNarrations(NarrationMessageBuilder builder) {
+        builder.put(NarrationPart.TITLE, (Text)this.getNarrationMessage());
         if (this.active) {
             if (this.isFocused()) {
-                narrationMessageBuilder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.button.usage.focused"));
+                builder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.button.usage.focused"));
             } else {
-                narrationMessageBuilder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.button.usage.hovered"));
+                builder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.button.usage.hovered"));
             }
         }
     }

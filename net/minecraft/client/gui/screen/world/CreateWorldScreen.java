@@ -401,8 +401,8 @@ extends Screen {
         }, (Executor)this.client)).handle((void_, throwable) -> {
             if (throwable != null) {
                 LOGGER.warn("Failed to validate datapack", (Throwable)throwable);
-                this.client.send(() -> this.client.openScreen(new ConfirmScreen(bl -> {
-                    if (bl) {
+                this.client.send(() -> this.client.openScreen(new ConfirmScreen(confirmed -> {
+                    if (confirmed) {
                         this.openPackScreen();
                     } else {
                         this.dataPackSettings = DataPackSettings.SAFE_MODE;

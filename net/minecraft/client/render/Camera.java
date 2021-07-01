@@ -147,7 +147,13 @@ public class Camera {
         return this.thirdPerson;
     }
 
-    public class_6355 method_36425() {
+    /**
+     * {@return the field of vision of this camera}
+     * 
+     * @see GameRenderer#CAMERA_DEPTH
+     * @see net.minecraft.util.math.Matrix4f#viewboxMatrix
+     */
+    public Projection getProjection() {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         double d = (double)minecraftClient.getWindow().getFramebufferWidth() / (double)minecraftClient.getWindow().getFramebufferHeight();
         double e = Math.tan(minecraftClient.options.fov * 0.01745329238474369 / 2.0) * (double)0.05f;
@@ -155,7 +161,7 @@ public class Camera {
         Vec3d vec3d = new Vec3d(this.horizontalPlane).multiply(0.05f);
         Vec3d vec3d2 = new Vec3d(this.diagonalPlane).multiply(f);
         Vec3d vec3d3 = new Vec3d(this.verticalPlane).multiply(e);
-        return new class_6355(vec3d, vec3d2, vec3d3);
+        return new Projection(vec3d, vec3d2, vec3d3);
     }
 
     public CameraSubmersionType getSubmersionType() {
@@ -166,8 +172,8 @@ public class Camera {
         if (fluidState.isIn(FluidTags.WATER) && this.pos.y < (double)((float)this.blockPos.getY() + fluidState.getHeight(this.area, this.blockPos))) {
             return CameraSubmersionType.WATER;
         }
-        class_6355 lv = this.method_36425();
-        List<Vec3d> list = Arrays.asList(lv.field_33622, lv.method_36426(), lv.method_36429(), lv.method_36430(), lv.method_36431());
+        Projection projection = this.getProjection();
+        List<Vec3d> list = Arrays.asList(projection.center, projection.getBottomRight(), projection.getTopRight(), projection.getBottomLeft(), projection.getTopLeft());
         for (Vec3d vec3d : list) {
             Vec3d vec3d2 = this.pos.add(vec3d);
             BlockPos blockPos = new BlockPos(vec3d2);
@@ -202,35 +208,35 @@ public class Camera {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_6355 {
-        final Vec3d field_33622;
-        private final Vec3d field_33623;
-        private final Vec3d field_33624;
+    public static class Projection {
+        final Vec3d center;
+        private final Vec3d x;
+        private final Vec3d y;
 
-        class_6355(Vec3d vec3d, Vec3d vec3d2, Vec3d vec3d3) {
-            this.field_33622 = vec3d;
-            this.field_33623 = vec3d2;
-            this.field_33624 = vec3d3;
+        Projection(Vec3d center, Vec3d x, Vec3d y) {
+            this.center = center;
+            this.x = x;
+            this.y = y;
         }
 
-        public Vec3d method_36426() {
-            return this.field_33622.add(this.field_33624).add(this.field_33623);
+        public Vec3d getBottomRight() {
+            return this.center.add(this.y).add(this.x);
         }
 
-        public Vec3d method_36429() {
-            return this.field_33622.add(this.field_33624).subtract(this.field_33623);
+        public Vec3d getTopRight() {
+            return this.center.add(this.y).subtract(this.x);
         }
 
-        public Vec3d method_36430() {
-            return this.field_33622.subtract(this.field_33624).add(this.field_33623);
+        public Vec3d getBottomLeft() {
+            return this.center.subtract(this.y).add(this.x);
         }
 
-        public Vec3d method_36431() {
-            return this.field_33622.subtract(this.field_33624).subtract(this.field_33623);
+        public Vec3d getTopLeft() {
+            return this.center.subtract(this.y).subtract(this.x);
         }
 
-        public Vec3d method_36427(float f, float g) {
-            return this.field_33622.add(this.field_33624.multiply(g)).subtract(this.field_33623.multiply(f));
+        public Vec3d getPosition(float factorX, float factorY) {
+            return this.center.add(this.y.multiply(factorY)).subtract(this.x.multiply(factorX));
         }
     }
 }

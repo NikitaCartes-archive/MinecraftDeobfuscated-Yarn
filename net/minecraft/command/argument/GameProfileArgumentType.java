@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.EntitySelector;
@@ -55,11 +56,8 @@ implements ArgumentType<GameProfileArgument> {
         }
         String string = stringReader.getString().substring(i, stringReader.getCursor());
         return serverCommandSource -> {
-            GameProfile gameProfile = serverCommandSource.getServer().getUserCache().findByName(string);
-            if (gameProfile == null) {
-                throw UNKNOWN_PLAYER_EXCEPTION.create();
-            }
-            return Collections.singleton(gameProfile);
+            Optional<GameProfile> optional = serverCommandSource.getServer().getUserCache().findByName(string);
+            return Collections.singleton(optional.orElseThrow(UNKNOWN_PLAYER_EXCEPTION::create));
         };
     }
 

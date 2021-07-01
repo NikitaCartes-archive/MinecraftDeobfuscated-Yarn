@@ -71,7 +71,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         private static final int field_32402 = 32;
         private static final int field_32403 = 157;
         private static final int field_32404 = 157;
-        private static final String field_32405 = "...";
+        private static final String ELLIPSIS = "...";
         private final PackListWidget widget;
         protected final MinecraftClient client;
         protected final Screen screen;
@@ -95,7 +95,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         private static OrderedText trimTextToWidth(MinecraftClient client, Text text) {
             int i = client.textRenderer.getWidth(text);
             if (i > 157) {
-                StringVisitable stringVisitable = StringVisitable.concat(client.textRenderer.trimToWidth(text, 157 - client.textRenderer.getWidth(field_32405)), StringVisitable.plain(field_32405));
+                StringVisitable stringVisitable = StringVisitable.concat(client.textRenderer.trimToWidth(text, 157 - client.textRenderer.getWidth(ELLIPSIS)), StringVisitable.plain(ELLIPSIS));
                 return Language.getInstance().reorder(stringVisitable);
             }
             return text.asOrderedText();
@@ -106,7 +106,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         }
 
         @Override
-        public Text method_37006() {
+        public Text getNarration() {
             return new TranslatableText("narrator.select", this.pack.getDisplayName());
         }
 
@@ -118,7 +118,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, -8978432);
             }
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, this.pack.method_30286());
+            RenderSystem.setShaderTexture(0, this.pack.getIconId());
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             OrderedText orderedText = this.displayName;
@@ -183,9 +183,9 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                         this.pack.enable();
                     } else {
                         Text text = resourcePackCompatibility.getConfirmMessage();
-                        this.client.openScreen(new ConfirmScreen(bl -> {
+                        this.client.openScreen(new ConfirmScreen(confirmed -> {
                             this.client.openScreen(this.screen);
-                            if (bl) {
+                            if (confirmed) {
                                 this.pack.enable();
                             }
                         }, INCOMPATIBLE_CONFIRM, text));

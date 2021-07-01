@@ -49,15 +49,15 @@ extends PressableWidget {
 
     @Override
     public void appendNarrations(NarrationMessageBuilder builder) {
-        this.method_37021(builder);
-        this.tooltipSupplier.method_37023(text -> builder.put(NarrationPart.HINT, (Text)text));
+        this.appendDefaultNarrations(builder);
+        this.tooltipSupplier.supply(text -> builder.put(NarrationPart.HINT, (Text)text));
     }
 
     @Environment(value=EnvType.CLIENT)
     public static interface TooltipSupplier {
         public void onTooltip(ButtonWidget var1, MatrixStack var2, int var3, int var4);
 
-        default public void method_37023(Consumer<Text> consumer) {
+        default public void supply(Consumer<Text> consumer) {
         }
     }
 

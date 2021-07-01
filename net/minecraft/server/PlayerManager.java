@@ -142,8 +142,8 @@ public abstract class PlayerManager {
         ServerWorld serverWorld2;
         GameProfile gameProfile = player.getGameProfile();
         UserCache userCache = this.server.getUserCache();
-        GameProfile gameProfile2 = userCache.getByUuid(gameProfile.getId());
-        String string = gameProfile2 == null ? gameProfile.getName() : gameProfile2.getName();
+        Optional<GameProfile> optional = userCache.getByUuid(gameProfile.getId());
+        String string = optional.map(GameProfile::getName).orElse(gameProfile.getName());
         userCache.add(gameProfile);
         NbtCompound nbtCompound = this.loadPlayerData(player);
         RegistryKey<World> registryKey = nbtCompound != null ? DimensionType.worldFromDimensionNbt(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbtCompound.get("Dimension"))).resultOrPartial(LOGGER::error).orElse(World.OVERWORLD) : World.OVERWORLD;

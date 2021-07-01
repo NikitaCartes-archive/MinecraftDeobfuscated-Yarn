@@ -71,39 +71,39 @@ extends HandledScreen<T> {
         this.drawStatusEffectDescriptions(matrices, i, j, iterable);
     }
 
-    private void drawStatusEffectBackgrounds(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> statusEffects) {
+    private void drawStatusEffectBackgrounds(MatrixStack matrices, int x, int height, Iterable<StatusEffectInstance> statusEffects) {
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-        int k = this.y;
+        int i = this.y;
         for (StatusEffectInstance statusEffectInstance : statusEffects) {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            this.drawTexture(matrices, i, k, 0, 166, 140, 32);
-            k += j;
+            this.drawTexture(matrices, x, i, 0, 166, 140, 32);
+            i += height;
         }
     }
 
-    private void drawStatusEffectSprites(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> statusEffects) {
+    private void drawStatusEffectSprites(MatrixStack matrices, int x, int height, Iterable<StatusEffectInstance> statusEffects) {
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
-        int k = this.y;
+        int i = this.y;
         for (StatusEffectInstance statusEffectInstance : statusEffects) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
             RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
-            AbstractInventoryScreen.drawSprite(matrices, i + 6, k + 7, this.getZOffset(), 18, 18, sprite);
-            k += j;
+            AbstractInventoryScreen.drawSprite(matrices, x + 6, i + 7, this.getZOffset(), 18, 18, sprite);
+            i += height;
         }
     }
 
-    private void drawStatusEffectDescriptions(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> statusEffects) {
-        int k = this.y;
+    private void drawStatusEffectDescriptions(MatrixStack matrices, int x, int height, Iterable<StatusEffectInstance> statusEffects) {
+        int i = this.y;
         for (StatusEffectInstance statusEffectInstance : statusEffects) {
             Object string = I18n.translate(statusEffectInstance.getEffectType().getTranslationKey(), new Object[0]);
             if (statusEffectInstance.getAmplifier() >= 1 && statusEffectInstance.getAmplifier() <= 9) {
                 string = (String)string + " " + I18n.translate("enchantment.level." + (statusEffectInstance.getAmplifier() + 1), new Object[0]);
             }
-            this.textRenderer.drawWithShadow(matrices, (String)string, (float)(i + 10 + 18), (float)(k + 6), 0xFFFFFF);
+            this.textRenderer.drawWithShadow(matrices, (String)string, (float)(x + 10 + 18), (float)(i + 6), 0xFFFFFF);
             String string2 = StatusEffectUtil.durationToString(statusEffectInstance, 1.0f);
-            this.textRenderer.drawWithShadow(matrices, string2, (float)(i + 10 + 18), (float)(k + 6 + 10), 0x7F7F7F);
-            k += j;
+            this.textRenderer.drawWithShadow(matrices, string2, (float)(x + 10 + 18), (float)(i + 6 + 10), 0x7F7F7F);
+            i += height;
         }
     }
 }

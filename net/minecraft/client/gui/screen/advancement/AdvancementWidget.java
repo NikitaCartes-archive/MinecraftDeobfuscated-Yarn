@@ -163,28 +163,28 @@ extends DrawableHelper {
         this.children.add(widget);
     }
 
-    public void drawTooltip(MatrixStack matrices, int x, int y, float alpha, int i, int j) {
+    public void drawTooltip(MatrixStack matrices, int originX, int originY, float alpha, int x, int y) {
         AdvancementObtainedStatus advancementObtainedStatus3;
         AdvancementObtainedStatus advancementObtainedStatus2;
         AdvancementObtainedStatus advancementObtainedStatus;
-        boolean bl = i + x + this.x + this.width + 26 >= this.tab.getScreen().width;
+        boolean bl = x + originX + this.x + this.width + 26 >= this.tab.getScreen().width;
         String string = this.progress == null ? null : this.progress.getProgressBarFraction();
-        int k = string == null ? 0 : this.client.textRenderer.getWidth(string);
-        boolean bl2 = 113 - y - this.y - 26 <= 6 + this.description.size() * this.client.textRenderer.fontHeight;
+        int i = string == null ? 0 : this.client.textRenderer.getWidth(string);
+        boolean bl2 = 113 - originY - this.y - 26 <= 6 + this.description.size() * this.client.textRenderer.fontHeight;
         float f = this.progress == null ? 0.0f : this.progress.getProgressBarPercentage();
-        int l = MathHelper.floor(f * (float)this.width);
+        int j = MathHelper.floor(f * (float)this.width);
         if (f >= 1.0f) {
-            l = this.width / 2;
+            j = this.width / 2;
             advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
             advancementObtainedStatus2 = AdvancementObtainedStatus.OBTAINED;
             advancementObtainedStatus3 = AdvancementObtainedStatus.OBTAINED;
-        } else if (l < 2) {
-            l = this.width / 2;
+        } else if (j < 2) {
+            j = this.width / 2;
             advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
             advancementObtainedStatus2 = AdvancementObtainedStatus.UNOBTAINED;
             advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
-        } else if (l > this.width - 2) {
-            l = this.width / 2;
+        } else if (j > this.width - 2) {
+            j = this.width / 2;
             advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
             advancementObtainedStatus2 = AdvancementObtainedStatus.OBTAINED;
             advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
@@ -193,45 +193,45 @@ extends DrawableHelper {
             advancementObtainedStatus2 = AdvancementObtainedStatus.UNOBTAINED;
             advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
         }
-        int m = this.width - l;
+        int k = this.width - j;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
-        int n = y + this.y;
-        int o = bl ? x + this.x - this.width + 26 + 6 : x + this.x;
-        int p = 32 + this.description.size() * this.client.textRenderer.fontHeight;
+        int l = originY + this.y;
+        int m = bl ? originX + this.x - this.width + 26 + 6 : originX + this.x;
+        int n = 32 + this.description.size() * this.client.textRenderer.fontHeight;
         if (!this.description.isEmpty()) {
             if (bl2) {
-                this.method_2324(matrices, o, n + 26 - p, this.width, p, 10, 200, 26, 0, 52);
+                this.method_2324(matrices, m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
             } else {
-                this.method_2324(matrices, o, n, this.width, p, 10, 200, 26, 0, 52);
+                this.method_2324(matrices, m, l, this.width, n, 10, 200, 26, 0, 52);
             }
         }
-        this.drawTexture(matrices, o, n, 0, advancementObtainedStatus.getSpriteIndex() * 26, l, 26);
-        this.drawTexture(matrices, o + l, n, 200 - m, advancementObtainedStatus2.getSpriteIndex() * 26, m, 26);
-        this.drawTexture(matrices, x + this.x + 3, y + this.y, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26);
+        this.drawTexture(matrices, m, l, 0, advancementObtainedStatus.getSpriteIndex() * 26, j, 26);
+        this.drawTexture(matrices, m + j, l, 200 - k, advancementObtainedStatus2.getSpriteIndex() * 26, k, 26);
+        this.drawTexture(matrices, originX + this.x + 3, originY + this.y, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26);
         if (bl) {
-            this.client.textRenderer.drawWithShadow(matrices, this.title, (float)(o + 5), (float)(y + this.y + 9), -1);
+            this.client.textRenderer.drawWithShadow(matrices, this.title, (float)(m + 5), (float)(originY + this.y + 9), -1);
             if (string != null) {
-                this.client.textRenderer.drawWithShadow(matrices, string, (float)(x + this.x - k), (float)(y + this.y + 9), -1);
+                this.client.textRenderer.drawWithShadow(matrices, string, (float)(originX + this.x - i), (float)(originY + this.y + 9), -1);
             }
         } else {
-            this.client.textRenderer.drawWithShadow(matrices, this.title, (float)(x + this.x + 32), (float)(y + this.y + 9), -1);
+            this.client.textRenderer.drawWithShadow(matrices, this.title, (float)(originX + this.x + 32), (float)(originY + this.y + 9), -1);
             if (string != null) {
-                this.client.textRenderer.drawWithShadow(matrices, string, (float)(x + this.x + this.width - k - 5), (float)(y + this.y + 9), -1);
+                this.client.textRenderer.drawWithShadow(matrices, string, (float)(originX + this.x + this.width - i - 5), (float)(originY + this.y + 9), -1);
             }
         }
         if (bl2) {
-            for (int q = 0; q < this.description.size(); ++q) {
-                this.client.textRenderer.draw(matrices, this.description.get(q), (float)(o + 5), (float)(n + 26 - p + 7 + q * this.client.textRenderer.fontHeight), -5592406);
+            for (int o = 0; o < this.description.size(); ++o) {
+                this.client.textRenderer.draw(matrices, this.description.get(o), (float)(m + 5), (float)(l + 26 - n + 7 + o * this.client.textRenderer.fontHeight), -5592406);
             }
         } else {
-            for (int q = 0; q < this.description.size(); ++q) {
-                this.client.textRenderer.draw(matrices, this.description.get(q), (float)(o + 5), (float)(y + this.y + 9 + 17 + q * this.client.textRenderer.fontHeight), -5592406);
+            for (int o = 0; o < this.description.size(); ++o) {
+                this.client.textRenderer.draw(matrices, this.description.get(o), (float)(m + 5), (float)(originY + this.y + 9 + 17 + o * this.client.textRenderer.fontHeight), -5592406);
             }
         }
-        this.client.getItemRenderer().renderInGui(this.display.getIcon(), x + this.x + 8, y + this.y + 5);
+        this.client.getItemRenderer().renderInGui(this.display.getIcon(), originX + this.x + 8, originY + this.y + 5);
     }
 
     protected void method_2324(MatrixStack matrices, int x, int y, int i, int j, int k, int l, int m, int n, int o) {

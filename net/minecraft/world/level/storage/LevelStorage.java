@@ -342,9 +342,11 @@ public class LevelStorage {
             }
         }
 
-        public File getIconFile() {
-            this.checkValid();
-            return this.directory.resolve(LevelStorage.DEFAULT_ICON).toFile();
+        public Optional<Path> getIconFile() {
+            if (!this.lock.isValid()) {
+                return Optional.empty();
+            }
+            return Optional.of(this.directory.resolve(LevelStorage.DEFAULT_ICON));
         }
 
         public void deleteSessionLock() throws IOException {

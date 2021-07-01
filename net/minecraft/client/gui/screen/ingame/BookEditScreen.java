@@ -72,8 +72,8 @@ extends Screen {
     private final List<String> pages = Lists.newArrayList();
     private String title = "";
     private final SelectionManager currentPageSelectionManager = new SelectionManager(this::getCurrentPageContent, this::setPageContent, this::getClipboard, this::setClipboard, string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight((String)string, 114) <= 128);
-    private final SelectionManager bookTitleSelectionManager = new SelectionManager(() -> this.title, string -> {
-        this.title = string;
+    private final SelectionManager bookTitleSelectionManager = new SelectionManager(() -> this.title, title -> {
+        this.title = title;
     }, this::getClipboard, this::setClipboard, string -> string.length() < 16);
     private long lastClickTime;
     private int lastClickIndex = -1;
@@ -96,7 +96,7 @@ extends Screen {
         this.hand = hand;
         NbtCompound nbtCompound = itemStack.getTag();
         if (nbtCompound != null) {
-            BookScreen.method_33888(nbtCompound, this.pages::add);
+            BookScreen.filterPages(nbtCompound, this.pages::add);
         }
         if (this.pages.isEmpty()) {
             this.pages.add("");

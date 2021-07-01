@@ -42,8 +42,8 @@ extends AbstractCommandBlockScreen {
     @Override
     protected void init() {
         super.init();
-        this.modeButton = this.addDrawableChild(CyclingButtonWidget.builder(type -> {
-            switch (type) {
+        this.modeButton = this.addDrawableChild(CyclingButtonWidget.builder(value -> {
+            switch (value) {
                 case SEQUENCE: {
                     return new TranslatableText("advMode.mode.sequence");
                 }

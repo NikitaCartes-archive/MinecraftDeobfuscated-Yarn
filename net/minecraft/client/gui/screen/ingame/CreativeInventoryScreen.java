@@ -710,12 +710,12 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     public static class CreativeScreenHandler
     extends ScreenHandler {
         public final DefaultedList<ItemStack> itemList = DefaultedList.of();
-        private final ScreenHandler field_29349;
+        private final ScreenHandler parent;
 
         public CreativeScreenHandler(PlayerEntity player) {
             super(null, 0);
             int i;
-            this.field_29349 = player.playerScreenHandler;
+            this.parent = player.playerScreenHandler;
             PlayerInventory playerInventory = player.getInventory();
             for (i = 0; i < 5; ++i) {
                 for (int j = 0; j < 9; ++j) {
@@ -776,12 +776,12 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
 
         @Override
         public ItemStack getCursorStack() {
-            return this.field_29349.getCursorStack();
+            return this.parent.getCursorStack();
         }
 
         @Override
         public void setCursorStack(ItemStack stack) {
-            this.field_29349.setCursorStack(stack);
+            this.parent.setCursorStack(stack);
         }
     }
 

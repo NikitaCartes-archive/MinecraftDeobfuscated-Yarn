@@ -151,7 +151,7 @@ extends Screen {
             }
 
             @Override
-            public void method_37023(Consumer<Text> consumer) {
+            public void supply(Consumer<Text> consumer) {
                 consumer.accept(this.MULTIPLAYER_DISABLED_TEXT);
             }
         };
@@ -241,17 +241,17 @@ extends Screen {
         RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, g);
         if (this.isMinceraft) {
-            this.drawWithOutline(j, 30, (integer, integer2) -> {
-                this.drawTexture(matrices, integer + 0, (int)integer2, 0, 0, 99, 44);
-                this.drawTexture(matrices, integer + 99, (int)integer2, 129, 0, 27, 44);
-                this.drawTexture(matrices, integer + 99 + 26, (int)integer2, 126, 0, 3, 44);
-                this.drawTexture(matrices, integer + 99 + 26 + 3, (int)integer2, 99, 0, 26, 44);
-                this.drawTexture(matrices, integer + 155, (int)integer2, 0, 45, 155, 44);
+            this.drawWithOutline(j, 30, (x, y) -> {
+                this.drawTexture(matrices, x + 0, (int)y, 0, 0, 99, 44);
+                this.drawTexture(matrices, x + 99, (int)y, 129, 0, 27, 44);
+                this.drawTexture(matrices, x + 99 + 26, (int)y, 126, 0, 3, 44);
+                this.drawTexture(matrices, x + 99 + 26 + 3, (int)y, 99, 0, 26, 44);
+                this.drawTexture(matrices, x + 155, (int)y, 0, 45, 155, 44);
             });
         } else {
-            this.drawWithOutline(j, 30, (integer, integer2) -> {
-                this.drawTexture(matrices, integer + 0, (int)integer2, 0, 0, 155, 44);
-                this.drawTexture(matrices, integer + 155, (int)integer2, 0, 45, 155, 44);
+            this.drawWithOutline(j, 30, (x, y) -> {
+                this.drawTexture(matrices, x + 0, (int)y, 0, 0, 155, 44);
+                this.drawTexture(matrices, x + 155, (int)y, 0, 45, 155, 44);
             });
         }
         RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);

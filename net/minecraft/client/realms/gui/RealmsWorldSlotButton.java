@@ -54,7 +54,7 @@ extends ButtonWidget {
         return this.state;
     }
 
-    public void method_37007() {
+    public void tick() {
         boolean bl3;
         String string2;
         long l;

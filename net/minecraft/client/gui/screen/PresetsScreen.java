@@ -237,13 +237,13 @@ extends Screen {
     }
 
     private static void addPreset(Text presetName, ItemConvertible icon, RegistryKey<Biome> presetBiome, List<StructureFeature<?>> structures, boolean generateStronghold, boolean generateFeatures, boolean generateLakes, FlatChunkGeneratorLayer ... layers) {
-        PRESETS.add(new SuperflatPreset(icon.asItem(), presetName, registry -> {
+        PRESETS.add(new SuperflatPreset(icon.asItem(), presetName, biomeRegistry -> {
             HashMap<StructureFeature<?>, StructureConfig> map = Maps.newHashMap();
             for (StructureFeature structureFeature : structures) {
                 map.put(structureFeature, StructuresConfig.DEFAULT_STRUCTURES.get(structureFeature));
             }
             StructuresConfig structuresConfig = new StructuresConfig(generateStronghold ? Optional.of(StructuresConfig.DEFAULT_STRONGHOLD) : Optional.empty(), map);
-            FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, (Registry<Biome>)registry);
+            FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, (Registry<Biome>)biomeRegistry);
             if (generateFeatures) {
                 flatChunkGeneratorConfig.enableFeatures();
             }
@@ -253,7 +253,7 @@ extends Screen {
             for (int i = layers.length - 1; i >= 0; --i) {
                 flatChunkGeneratorConfig.getLayers().add(layers[i]);
             }
-            flatChunkGeneratorConfig.setBiome(() -> (Biome)registry.getOrThrow(presetBiome));
+            flatChunkGeneratorConfig.setBiome(() -> (Biome)biomeRegistry.getOrThrow(presetBiome));
             flatChunkGeneratorConfig.updateLayerBlocks();
             return flatChunkGeneratorConfig.withStructuresConfig(structuresConfig);
         }));
@@ -346,7 +346,7 @@ extends Screen {
             }
 
             @Override
-            public Text method_37006() {
+            public Text getNarration() {
                 return new TranslatableText("narrator.select", this.preset.getName());
             }
         }

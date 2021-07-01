@@ -129,21 +129,17 @@ extends BlockEntity {
             callback.accept(owner);
             return;
         }
-        userCache.findByNameAsync(owner.getName(), profile -> {
-            Runnable runnable = () -> {
-                GameProfile gameProfile2 = profile;
-                Property property = Iterables.getFirst(gameProfile2.getProperties().get("textures"), null);
-                if (property == null) {
-                    gameProfile2 = sessionService.fillProfileProperties(gameProfile2, true);
-                }
-                GameProfile gameProfile3 = gameProfile2;
-                executor.execute(() -> {
-                    userCache.add(gameProfile3);
-                    callback.accept(gameProfile3);
-                });
-            };
-            Util.getMainWorkerExecutor().execute(runnable);
-        });
+        userCache.findByNameAsync(owner.getName(), profile -> Util.getMainWorkerExecutor().execute(() -> Util.ifPresentOrElse(profile, profile -> {
+            Property property = Iterables.getFirst(profile.getProperties().get("textures"), null);
+            if (property == null) {
+                profile = sessionService.fillProfileProperties((GameProfile)profile, true);
+            }
+            GameProfile gameProfile = profile;
+            executor.execute(() -> {
+                userCache.add(gameProfile);
+                callback.accept(gameProfile);
+            });
+        }, () -> executor.execute(() -> callback.accept(owner)))));
     }
 }
 

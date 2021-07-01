@@ -109,7 +109,7 @@ extends ElementListWidget<ButtonEntry> {
         }
 
         @Override
-        public List<? extends Selectable> method_37025() {
+        public List<? extends Selectable> selectableChildren() {
             return this.buttons;
         }
     }

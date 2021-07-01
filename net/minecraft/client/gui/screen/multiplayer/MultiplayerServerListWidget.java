@@ -141,7 +141,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         }
 
         @Override
-        public Text method_37006() {
+        public Text getNarration() {
             return LiteralText.EMPTY;
         }
     }
@@ -388,7 +388,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         }
 
         @Override
-        public Text method_37006() {
+        public Text getNarration() {
             return new TranslatableText("narrator.select", this.server.name);
         }
     }
@@ -436,7 +436,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         }
 
         @Override
-        public Text method_37006() {
+        public Text getNarration() {
             return new TranslatableText("narrator.select", new LiteralText("").append(TITLE_TEXT).append(" ").append(this.server.getMotd()));
         }
     }

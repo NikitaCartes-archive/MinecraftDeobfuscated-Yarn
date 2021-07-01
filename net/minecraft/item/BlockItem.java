@@ -187,7 +187,7 @@ extends Item {
     @Override
     public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
         if (this.isIn(group)) {
-            this.getBlock().addStacksForDisplay(group, stacks);
+            this.getBlock().appendStacks(group, stacks);
         }
     }
 

@@ -2514,7 +2514,7 @@ WindowEventHandler {
                 } catch (InterruptedException interruptedException) {
                     // empty catch block
                 }
-                ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", width, height, framebuffer, text -> {});
+                ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", framebuffer, text -> {});
             }
             MutableText text2 = new LiteralText(directory.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
             TranslatableText translatableText = new TranslatableText("screenshot.success", text2);

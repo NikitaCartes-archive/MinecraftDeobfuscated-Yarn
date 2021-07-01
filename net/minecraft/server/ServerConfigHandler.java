@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.BanEntry;
@@ -251,9 +252,9 @@ public class ServerConfigHandler {
                 return null;
             }
         }
-        GameProfile gameProfile = server.getUserCache().findByName(name);
-        if (gameProfile != null && gameProfile.getId() != null) {
-            return gameProfile.getId();
+        Optional<UUID> optional = server.getUserCache().findByName(name).map(GameProfile::getId);
+        if (optional.isPresent()) {
+            return optional.get();
         }
         if (server.isSinglePlayer() || !server.isOnlineMode()) {
             return PlayerEntity.getUuidFromProfile(new GameProfile(null, name));

@@ -24,7 +24,7 @@ import org.lwjgl.glfw.GLFW;
 public class ChatScreen
 extends Screen {
     public static final int field_32237 = 7;
-    private static final Text field_33953 = new TranslatableText("chat_screen.usage");
+    private static final Text USAGE_TEXT = new TranslatableText("chat_screen.usage");
     private String chatLastMessage = "";
     private int messageHistorySize = -1;
     protected TextFieldWidget chatField;
@@ -169,23 +169,23 @@ extends Screen {
         }
     }
 
-    public void setChatFromHistory(int i) {
-        int j = this.messageHistorySize + i;
-        int k = this.client.inGameHud.getChatHud().getMessageHistory().size();
-        if ((j = MathHelper.clamp(j, 0, k)) == this.messageHistorySize) {
+    public void setChatFromHistory(int offset) {
+        int i = this.messageHistorySize + offset;
+        int j = this.client.inGameHud.getChatHud().getMessageHistory().size();
+        if ((i = MathHelper.clamp(i, 0, j)) == this.messageHistorySize) {
             return;
         }
-        if (j == k) {
-            this.messageHistorySize = k;
+        if (i == j) {
+            this.messageHistorySize = j;
             this.chatField.setText(this.chatLastMessage);
             return;
         }
-        if (this.messageHistorySize == k) {
+        if (this.messageHistorySize == j) {
             this.chatLastMessage = this.chatField.getText();
         }
-        this.chatField.setText(this.client.inGameHud.getChatHud().getMessageHistory().get(j));
+        this.chatField.setText(this.client.inGameHud.getChatHud().getMessageHistory().get(i));
         this.commandSuggestor.setWindowActive(false);
-        this.messageHistorySize = j;
+        this.messageHistorySize = i;
     }
 
     @Override
@@ -214,7 +214,7 @@ extends Screen {
     @Override
     protected void addScreenNarrations(NarrationMessageBuilder builder) {
         builder.put(NarrationPart.TITLE, this.getTitle());
-        builder.put(NarrationPart.USAGE, field_33953);
+        builder.put(NarrationPart.USAGE, USAGE_TEXT);
         String string = this.chatField.getText();
         if (!string.isEmpty()) {
             builder.nextMessage().put(NarrationPart.TITLE, (Text)new TranslatableText("chat_screen.message", string));

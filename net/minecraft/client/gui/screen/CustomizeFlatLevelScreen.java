@@ -190,7 +190,7 @@ extends Screen {
             }
 
             @Override
-            public Text method_37006() {
+            public Text getNarration() {
                 FlatChunkGeneratorLayer flatChunkGeneratorLayer = CustomizeFlatLevelScreen.this.config.getLayers().get(CustomizeFlatLevelScreen.this.config.getLayers().size() - SuperflatLayersListWidget.this.children().indexOf(this) - 1);
                 ItemStack itemStack = this.createItemStackFor(flatChunkGeneratorLayer.getBlockState());
                 if (!itemStack.isEmpty()) {

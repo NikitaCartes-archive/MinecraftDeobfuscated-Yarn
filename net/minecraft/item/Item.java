@@ -409,6 +409,11 @@ implements ItemConvertible {
         return 0;
     }
 
+    /**
+     * Appends the stacks of this item shown in the item group to the list.
+     * 
+     * @see #isIn(ItemGroup)
+     */
     public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
         if (this.isIn(group)) {
             stacks.add(new ItemStack(this));

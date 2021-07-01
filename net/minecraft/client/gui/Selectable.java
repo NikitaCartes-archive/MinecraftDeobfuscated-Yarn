@@ -12,7 +12,7 @@ public interface Selectable
 extends Narratable {
     public SelectionType getType();
 
-    default public boolean method_37303() {
+    default public boolean isNarratable() {
         return true;
     }
 

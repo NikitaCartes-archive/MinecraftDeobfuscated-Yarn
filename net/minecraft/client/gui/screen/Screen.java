@@ -575,7 +575,7 @@ implements Drawable {
     }
 
     protected void addElementNarrations(NarrationMessageBuilder builder) {
-        ImmutableList immutableList = this.selectables.stream().filter(Selectable::method_37303).collect(ImmutableList.toImmutableList());
+        ImmutableList immutableList = this.selectables.stream().filter(Selectable::isNarratable).collect(ImmutableList.toImmutableList());
         SelectedElementNarrationData selectedElementNarrationData = Screen.findSelectedElementData(immutableList, this.selected);
         if (selectedElementNarrationData != null) {
             if (selectedElementNarrationData.selectType.isFocused()) {

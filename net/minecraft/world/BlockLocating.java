@@ -14,7 +14,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 
-public class PortalUtil {
+/**
+ * A few utilities to find block positions matching certain conditions.
+ */
+public class BlockLocating {
     /**
      * Gets the largest rectangle of blocks along two axes for which all blocks meet a predicate.
      * Used for getting rectangles of Nether portal blocks.
@@ -27,19 +30,19 @@ public class PortalUtil {
         Direction direction2 = direction.getOpposite();
         Direction direction3 = Direction.get(Direction.AxisDirection.NEGATIVE, secondaryAxis);
         Direction direction4 = direction3.getOpposite();
-        int i = PortalUtil.moveWhile(predicate, mutable.set(center), direction, primaryMaxBlocks);
-        int j = PortalUtil.moveWhile(predicate, mutable.set(center), direction2, primaryMaxBlocks);
+        int i = BlockLocating.moveWhile(predicate, mutable.set(center), direction, primaryMaxBlocks);
+        int j = BlockLocating.moveWhile(predicate, mutable.set(center), direction2, primaryMaxBlocks);
         int k = i;
         IntBounds[] intBoundss = new IntBounds[k + 1 + j];
-        intBoundss[k] = new IntBounds(PortalUtil.moveWhile(predicate, mutable.set(center), direction3, secondaryMaxBlocks), PortalUtil.moveWhile(predicate, mutable.set(center), direction4, secondaryMaxBlocks));
+        intBoundss[k] = new IntBounds(BlockLocating.moveWhile(predicate, mutable.set(center), direction3, secondaryMaxBlocks), BlockLocating.moveWhile(predicate, mutable.set(center), direction4, secondaryMaxBlocks));
         int l = intBoundss[k].min;
         for (m = 1; m <= i; ++m) {
             intBounds = intBoundss[k - (m - 1)];
-            intBoundss[k - m] = new IntBounds(PortalUtil.moveWhile(predicate, mutable.set(center).move(direction, m), direction3, intBounds.min), PortalUtil.moveWhile(predicate, mutable.set(center).move(direction, m), direction4, intBounds.max));
+            intBoundss[k - m] = new IntBounds(BlockLocating.moveWhile(predicate, mutable.set(center).move(direction, m), direction3, intBounds.min), BlockLocating.moveWhile(predicate, mutable.set(center).move(direction, m), direction4, intBounds.max));
         }
         for (m = 1; m <= j; ++m) {
             intBounds = intBoundss[k + m - 1];
-            intBoundss[k + m] = new IntBounds(PortalUtil.moveWhile(predicate, mutable.set(center).move(direction2, m), direction3, intBounds.min), PortalUtil.moveWhile(predicate, mutable.set(center).move(direction2, m), direction4, intBounds.max));
+            intBoundss[k + m] = new IntBounds(BlockLocating.moveWhile(predicate, mutable.set(center).move(direction2, m), direction3, intBounds.min), BlockLocating.moveWhile(predicate, mutable.set(center).move(direction2, m), direction4, intBounds.max));
         }
         m = 0;
         int n = 0;
@@ -56,7 +59,7 @@ public class PortalUtil {
                 t = l + intBounds2.max;
                 is[r] = q >= s && q <= t ? t + 1 - q : 0;
             }
-            Pair<IntBounds, Integer> pair = PortalUtil.findLargestRectangle(is);
+            Pair<IntBounds, Integer> pair = BlockLocating.findLargestRectangle(is);
             intBounds2 = pair.getFirst();
             s = 1 + intBounds2.max - intBounds2.min;
             t = pair.getSecond();
@@ -69,9 +72,9 @@ public class PortalUtil {
         return new Rectangle(center.offset(primaryAxis, m - k).offset(secondaryAxis, n - l), o, p);
     }
 
-    private static int moveWhile(Predicate<BlockPos> predicate, BlockPos.Mutable mutable, Direction direction, int max) {
+    private static int moveWhile(Predicate<BlockPos> predicate, BlockPos.Mutable pos, Direction direction, int max) {
         int i;
-        for (i = 0; i < max && predicate.test(mutable.move(direction)); ++i) {
+        for (i = 0; i < max && predicate.test(pos.move(direction)); ++i) {
         }
         return i;
     }
@@ -127,13 +130,27 @@ public class PortalUtil {
         return new Pair<IntBounds, Integer>(new IntBounds(i, j - 1), k);
     }
 
-    public static Optional<BlockPos> method_34851(BlockView blockView, BlockPos blockPos, Block block, Direction direction, Block block2) {
+    /**
+     * Finds an end to a block column starting from {@code pos} extending in {@code
+     * direction}. Within the column, the block states must be of {@code intermediateBlock}
+     * and the ending block state, whose position is returned, must be of {@code endBlock}.
+     * 
+     * @return the end position of the block column where a {@code endBlock} lays, or
+     * an empty optional if no such column exists
+     * 
+     * @param world the world the column is in
+     * @param pos the starting position of the column
+     * @param intermediateBlock the blocks that the column must be of, excluding the end
+     * @param direction the direction which the column extends to
+     * @param endBlock the ending block of the column
+     */
+    public static Optional<BlockPos> findColumnEnd(BlockView world, BlockPos pos, Block intermediateBlock, Direction direction, Block endBlock) {
         BlockState blockState;
-        BlockPos.Mutable mutable = blockPos.mutableCopy();
+        BlockPos.Mutable mutable = pos.mutableCopy();
         do {
             mutable.move(direction);
-        } while ((blockState = blockView.getBlockState(mutable)).isOf(block));
-        if (blockState.isOf(block2)) {
+        } while ((blockState = world.getBlockState(mutable)).isOf(intermediateBlock));
+        if (blockState.isOf(endBlock)) {
             return Optional.of(mutable);
         }
         return Optional.empty();

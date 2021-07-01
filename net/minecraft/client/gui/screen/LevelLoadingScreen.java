@@ -24,8 +24,8 @@ public class LevelLoadingScreen
 extends Screen {
     private static final long field_32246 = 2000L;
     private final WorldGenerationProgressTracker progressProvider;
-    private long field_19101 = -1L;
-    private boolean field_33810;
+    private long lastNarrationTime = -1L;
+    private boolean done;
     private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = Util.make(new Object2IntOpenHashMap(), map -> {
         map.defaultReturnValue(0);
         map.put(ChunkStatus.EMPTY, 0x545454);
@@ -55,13 +55,13 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.field_33810 = true;
+        this.done = true;
         this.narrateScreenIfNarrationEnabled(true);
     }
 
     @Override
     protected void addElementNarrations(NarrationMessageBuilder builder) {
-        if (this.field_33810) {
+        if (this.done) {
             builder.put(NarrationPart.TITLE, (Text)new TranslatableText("narrator.loading.done"));
         } else {
             String string = this.getPercentage();
@@ -77,8 +77,8 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         long l = Util.getMeasuringTimeMs();
-        if (l - this.field_19101 > 2000L) {
-            this.field_19101 = l;
+        if (l - this.lastNarrationTime > 2000L) {
+            this.lastNarrationTime = l;
             this.narrateScreenIfNarrationEnabled(true);
         }
         int i = this.width / 2;

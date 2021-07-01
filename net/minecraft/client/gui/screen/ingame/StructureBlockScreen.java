@@ -133,7 +133,7 @@ extends Screen {
                 this.client.openScreen(null);
             }
         }));
-        this.addDrawableChild(CyclingButtonWidget.builder(structureBlockMode -> new TranslatableText("structure_block.mode." + structureBlockMode.asString())).values((List<StructureBlockMode>)MODES_EXCEPT_DATA, (List<StructureBlockMode>)MODES).omitKeyText().initially(this.mode).build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (button, mode) -> {
+        this.addDrawableChild(CyclingButtonWidget.builder(value -> new TranslatableText("structure_block.mode." + value.asString())).values((List<StructureBlockMode>)MODES_EXCEPT_DATA, (List<StructureBlockMode>)MODES).omitKeyText().initially(this.mode).build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (button, mode) -> {
             this.structureBlock.setMode((StructureBlockMode)mode);
             this.updateWidgets((StructureBlockMode)mode);
         }));
