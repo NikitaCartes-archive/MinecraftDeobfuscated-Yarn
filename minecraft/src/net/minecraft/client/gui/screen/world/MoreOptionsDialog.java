@@ -228,9 +228,9 @@ public class MoreOptionsDialog implements Drawable {
 						dataResult.resultOrPartial(LOGGER::error)
 							.ifPresent(
 								generatorOptions -> {
-									BooleanConsumer booleanConsumer = bl -> {
+									BooleanConsumer booleanConsumer = confirmed -> {
 										client.openScreen(parent);
-										if (bl) {
+										if (confirmed) {
 											this.importOptions(impl, generatorOptions);
 										}
 									};

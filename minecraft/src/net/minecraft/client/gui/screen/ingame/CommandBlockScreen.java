@@ -38,8 +38,8 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	protected void init() {
 		super.init();
 		this.modeButton = this.addDrawableChild(
-			CyclingButtonWidget.builder(type -> {
-					switch(type) {
+			CyclingButtonWidget.builder(value -> {
+					switch(value) {
 						case SEQUENCE:
 							return new TranslatableText("advMode.mode.sequence");
 						case AUTO:

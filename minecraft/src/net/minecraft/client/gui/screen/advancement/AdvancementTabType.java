@@ -32,18 +32,18 @@ enum AdvancementTabType {
 		return this.tabCount;
 	}
 
-	public void drawBackground(MatrixStack matrices, DrawableHelper drawableHelper, int i, int j, boolean bl, int k) {
-		int l = this.u;
-		if (k > 0) {
-			l += this.width;
+	public void drawBackground(MatrixStack matrices, DrawableHelper tab, int x, int y, boolean selected, int index) {
+		int i = this.u;
+		if (index > 0) {
+			i += this.width;
 		}
 
-		if (k == this.tabCount - 1) {
-			l += this.width;
+		if (index == this.tabCount - 1) {
+			i += this.width;
 		}
 
-		int m = bl ? this.v + this.height : this.v;
-		drawableHelper.drawTexture(matrices, i + this.getTabX(k), j + this.getTabY(k), l, m, this.width, this.height);
+		int j = selected ? this.v + this.height : this.v;
+		tab.drawTexture(matrices, x + this.getTabX(index), y + this.getTabY(index), i, j, this.width, this.height);
 	}
 
 	public void drawIcon(int x, int y, int index, ItemRenderer itemRenderer, ItemStack icon) {

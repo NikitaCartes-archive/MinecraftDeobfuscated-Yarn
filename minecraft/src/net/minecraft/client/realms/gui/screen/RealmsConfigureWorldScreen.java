@@ -238,7 +238,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			this.clicks = 0;
 		}
 
-		this.slotButtons.forEach(RealmsWorldSlotButton::method_37007);
+		this.slotButtons.forEach(RealmsWorldSlotButton::tick);
 	}
 
 	@Override

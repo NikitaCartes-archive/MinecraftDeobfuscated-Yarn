@@ -356,11 +356,7 @@ public class Keyboard {
 					}
 
 					ScreenshotRecorder.saveScreenshot(
-						this.client.runDirectory,
-						this.client.getWindow().getFramebufferWidth(),
-						this.client.getWindow().getFramebufferHeight(),
-						this.client.getFramebuffer(),
-						message -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(message))
+						this.client.runDirectory, this.client.getFramebuffer(), message -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(message))
 					);
 					return;
 				}

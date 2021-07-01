@@ -590,7 +590,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	protected void addElementNarrations(NarrationMessageBuilder builder) {
-		ImmutableList<Selectable> immutableList = (ImmutableList)this.selectables.stream().filter(Selectable::method_37303).collect(ImmutableList.toImmutableList());
+		ImmutableList<Selectable> immutableList = (ImmutableList)this.selectables.stream().filter(Selectable::isNarratable).collect(ImmutableList.toImmutableList());
 		Screen.SelectedElementNarrationData selectedElementNarrationData = findSelectedElementData(immutableList, this.selected);
 		if (selectedElementNarrationData != null) {
 			if (selectedElementNarrationData.selectType.isFocused()) {

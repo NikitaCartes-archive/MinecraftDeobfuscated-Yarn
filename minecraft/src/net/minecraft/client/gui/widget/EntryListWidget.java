@@ -51,7 +51,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	private boolean renderBackground = true;
 	private boolean renderHorizontalShadows = true;
 	@Nullable
-	private E field_33780;
+	private E hoveredEntry;
 
 	public EntryListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
 		this.client = client;
@@ -187,7 +187,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-		this.field_33780 = this.isMouseOver((double)mouseX, (double)mouseY) ? this.getEntryAtPosition((double)mouseX, (double)mouseY) : null;
+		this.hoveredEntry = this.isMouseOver((double)mouseX, (double)mouseY) ? this.getEntryAtPosition((double)mouseX, (double)mouseY) : null;
 		if (this.renderBackground) {
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -502,7 +502,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				}
 
 				int p = this.getRowLeft();
-				entry.render(matrices, j, k, p, o, n, mouseX, mouseY, Objects.equals(this.field_33780, entry), delta);
+				entry.render(matrices, j, k, p, o, n, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
 			}
 		}
 	}
@@ -532,7 +532,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		if (this.isFocused()) {
 			return Selectable.SelectionType.FOCUSED;
 		} else {
-			return this.field_33780 != null ? Selectable.SelectionType.HOVERED : Selectable.SelectionType.NONE;
+			return this.hoveredEntry != null ? Selectable.SelectionType.HOVERED : Selectable.SelectionType.NONE;
 		}
 	}
 
@@ -552,20 +552,20 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Nullable
-	protected E method_37019() {
-		return this.field_33780;
+	protected E getHoveredEntry() {
+		return this.hoveredEntry;
 	}
 
 	void setEntryParentList(EntryListWidget.Entry<E> entry) {
 		entry.parentList = this;
 	}
 
-	protected void method_37017(NarrationMessageBuilder narrationMessageBuilder, E entry) {
+	protected void appendNarrations(NarrationMessageBuilder builder, E entry) {
 		List<E> list = this.children();
 		if (list.size() > 1) {
 			int i = list.indexOf(entry);
 			if (i != -1) {
-				narrationMessageBuilder.put(NarrationPart.POSITION, new TranslatableText("narrator.position.list", i + 1, list.size()));
+				builder.put(NarrationPart.POSITION, new TranslatableText("narrator.position.list", i + 1, list.size()));
 			}
 		}
 	}

@@ -128,8 +128,8 @@ public abstract class PlayerManager {
 	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player) {
 		GameProfile gameProfile = player.getGameProfile();
 		UserCache userCache = this.server.getUserCache();
-		GameProfile gameProfile2 = userCache.getByUuid(gameProfile.getId());
-		String string = gameProfile2 == null ? gameProfile.getName() : gameProfile2.getName();
+		Optional<GameProfile> optional = userCache.getByUuid(gameProfile.getId());
+		String string = (String)optional.map(GameProfile::getName).orElse(gameProfile.getName());
 		userCache.add(gameProfile);
 		NbtCompound nbtCompound = this.loadPlayerData(player);
 		RegistryKey<World> registryKey = nbtCompound != null

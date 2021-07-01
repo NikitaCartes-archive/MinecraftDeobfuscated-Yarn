@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 public interface Selectable extends Narratable {
 	Selectable.SelectionType getType();
 
-	default boolean method_37303() {
+	default boolean isNarratable() {
 		return true;
 	}
 

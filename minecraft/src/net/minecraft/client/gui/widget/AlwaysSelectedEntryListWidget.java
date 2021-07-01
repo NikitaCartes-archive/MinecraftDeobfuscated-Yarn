@@ -36,14 +36,14 @@ public abstract class AlwaysSelectedEntryListWidget<E extends AlwaysSelectedEntr
 
 	@Override
 	public void appendNarrations(NarrationMessageBuilder builder) {
-		E entry = this.method_37019();
+		E entry = this.getHoveredEntry();
 		if (entry != null) {
-			this.method_37017(builder.nextMessage(), entry);
+			this.appendNarrations(builder.nextMessage(), entry);
 			entry.appendNarrations(builder);
 		} else {
 			E entry2 = this.getSelectedOrNull();
 			if (entry2 != null) {
-				this.method_37017(builder.nextMessage(), entry2);
+				this.appendNarrations(builder.nextMessage(), entry2);
 				entry2.appendNarrations(builder);
 			}
 		}
@@ -60,11 +60,11 @@ public abstract class AlwaysSelectedEntryListWidget<E extends AlwaysSelectedEntr
 			return false;
 		}
 
-		public abstract Text method_37006();
+		public abstract Text getNarration();
 
 		@Override
 		public void appendNarrations(NarrationMessageBuilder builder) {
-			builder.put(NarrationPart.TITLE, this.method_37006());
+			builder.put(NarrationPart.TITLE, this.getNarration());
 		}
 	}
 }

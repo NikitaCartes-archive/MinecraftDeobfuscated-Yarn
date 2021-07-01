@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -122,22 +123,18 @@ public class SkullBlockEntity extends BlockEntity {
 			&& (!owner.isComplete() || !owner.getProperties().containsKey("textures"))
 			&& userCache != null
 			&& sessionService != null) {
-			userCache.findByNameAsync(owner.getName(), profile -> {
-				Runnable runnable = () -> {
-					GameProfile gameProfile2 = profile;
-					Property property = Iterables.getFirst(profile.getProperties().get("textures"), null);
-					if (property == null) {
-						gameProfile2 = sessionService.fillProfileProperties(profile, true);
-					}
+			userCache.findByNameAsync(owner.getName(), profile -> Util.getMainWorkerExecutor().execute(() -> Util.ifPresentOrElse(profile, profilex -> {
+						Property property = Iterables.getFirst(profilex.getProperties().get("textures"), null);
+						if (property == null) {
+							profilex = sessionService.fillProfileProperties(profilex, true);
+						}
 
-					GameProfile gameProfile3 = gameProfile2;
-					executor.execute(() -> {
-						userCache.add(gameProfile3);
-						callback.accept(gameProfile3);
-					});
-				};
-				Util.getMainWorkerExecutor().execute(runnable);
-			});
+						GameProfile gameProfile = profilex;
+						executor.execute(() -> {
+							userCache.add(gameProfile);
+							callback.accept(gameProfile);
+						});
+					}, () -> executor.execute(() -> callback.accept(owner)))));
 		} else {
 			callback.accept(owner);
 		}

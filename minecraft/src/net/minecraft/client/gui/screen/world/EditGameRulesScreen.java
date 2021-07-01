@@ -183,7 +183,7 @@ public class EditGameRulesScreen extends Screen {
 		}
 
 		@Override
-		public List<? extends Selectable> method_37025() {
+		public List<? extends Selectable> selectableChildren() {
 			return this.children;
 		}
 
@@ -217,7 +217,7 @@ public class EditGameRulesScreen extends Screen {
 		}
 
 		@Override
-		public List<? extends Selectable> method_37025() {
+		public List<? extends Selectable> selectableChildren() {
 			return ImmutableList.of(new Selectable() {
 				@Override
 				public Selectable.SelectionType getType() {
@@ -240,12 +240,12 @@ public class EditGameRulesScreen extends Screen {
 			GameRules.accept(new GameRules.Visitor() {
 				@Override
 				public void visitBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
-					this.createRuleWidget(key, (text, list, string, booleanRule) -> EditGameRulesScreen.this.new BooleanRuleWidget(text, list, string, booleanRule));
+					this.createRuleWidget(key, (name, description, ruleName, rule) -> EditGameRulesScreen.this.new BooleanRuleWidget(name, description, ruleName, rule));
 				}
 
 				@Override
 				public void visitInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
-					this.createRuleWidget(key, (text, list, string, intRule) -> EditGameRulesScreen.this.new IntRuleWidget(text, list, string, intRule));
+					this.createRuleWidget(key, (name, description, ruleName, rule) -> EditGameRulesScreen.this.new IntRuleWidget(name, description, ruleName, rule));
 				}
 
 				private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, EditGameRulesScreen.RuleWidgetFactory<T> widgetFactory) {
@@ -293,7 +293,7 @@ public class EditGameRulesScreen extends Screen {
 		@Override
 		public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			super.render(matrices, mouseX, mouseY, delta);
-			EditGameRulesScreen.AbstractRuleWidget abstractRuleWidget = this.method_37019();
+			EditGameRulesScreen.AbstractRuleWidget abstractRuleWidget = this.getHoveredEntry();
 			if (abstractRuleWidget != null) {
 				EditGameRulesScreen.this.setTooltipDescription(abstractRuleWidget.description);
 			}

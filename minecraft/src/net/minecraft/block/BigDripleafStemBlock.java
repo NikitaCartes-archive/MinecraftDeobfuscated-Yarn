@@ -12,8 +12,8 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -97,7 +97,7 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Ferti
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-		Optional<BlockPos> optional = PortalUtil.method_34851(world, pos, state.getBlock(), Direction.UP, Blocks.BIG_DRIPLEAF);
+		Optional<BlockPos> optional = BlockLocating.findColumnEnd(world, pos, state.getBlock(), Direction.UP, Blocks.BIG_DRIPLEAF);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
@@ -114,7 +114,7 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Ferti
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		Optional<BlockPos> optional = PortalUtil.method_34851(world, pos, state.getBlock(), Direction.UP, Blocks.BIG_DRIPLEAF);
+		Optional<BlockPos> optional = BlockLocating.findColumnEnd(world, pos, state.getBlock(), Direction.UP, Blocks.BIG_DRIPLEAF);
 		if (optional.isPresent()) {
 			BlockPos blockPos = (BlockPos)optional.get();
 			BlockPos blockPos2 = blockPos.up();

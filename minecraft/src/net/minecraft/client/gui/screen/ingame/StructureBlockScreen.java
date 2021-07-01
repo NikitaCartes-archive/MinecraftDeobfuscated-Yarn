@@ -135,7 +135,7 @@ public class StructureBlockScreen extends Screen {
 			})
 		);
 		this.addDrawableChild(
-			CyclingButtonWidget.builder(structureBlockMode -> new TranslatableText("structure_block.mode." + structureBlockMode.asString()))
+			CyclingButtonWidget.builder(value -> new TranslatableText("structure_block.mode." + value.asString()))
 				.values(MODES_EXCEPT_DATA, MODES)
 				.omitKeyText()
 				.initially(this.mode)

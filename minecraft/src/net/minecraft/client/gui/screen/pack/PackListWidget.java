@@ -64,7 +64,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		private static final int field_32402 = 32;
 		private static final int field_32403 = 157;
 		private static final int field_32404 = 157;
-		private static final String field_32405 = "...";
+		private static final String ELLIPSIS = "...";
 		private final PackListWidget widget;
 		protected final MinecraftClient client;
 		protected final Screen screen;
@@ -102,7 +102,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			return new TranslatableText("narrator.select", this.pack.getDisplayName());
 		}
 
@@ -115,7 +115,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 			}
 
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
-			RenderSystem.setShaderTexture(0, this.pack.method_30286());
+			RenderSystem.setShaderTexture(0, this.pack.getIconId());
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			OrderedText orderedText = this.displayName;
@@ -184,9 +184,9 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 						this.pack.enable();
 					} else {
 						Text text = resourcePackCompatibility.getConfirmMessage();
-						this.client.openScreen(new ConfirmScreen(bl -> {
+						this.client.openScreen(new ConfirmScreen(confirmed -> {
 							this.client.openScreen(this.screen);
-							if (bl) {
+							if (confirmed) {
 								this.pack.enable();
 							}
 						}, PackListWidget.INCOMPATIBLE_CONFIRM, text));

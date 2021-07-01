@@ -45,8 +45,8 @@ public class ButtonWidget extends PressableWidget {
 
 	@Override
 	public void appendNarrations(NarrationMessageBuilder builder) {
-		this.method_37021(builder);
-		this.tooltipSupplier.method_37023(text -> builder.put(NarrationPart.HINT, text));
+		this.appendDefaultNarrations(builder);
+		this.tooltipSupplier.supply(text -> builder.put(NarrationPart.HINT, text));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -58,7 +58,7 @@ public class ButtonWidget extends PressableWidget {
 	public interface TooltipSupplier {
 		void onTooltip(ButtonWidget button, MatrixStack matrices, int mouseX, int mouseY);
 
-		default void method_37023(Consumer<Text> consumer) {
+		default void supply(Consumer<Text> consumer) {
 		}
 	}
 }

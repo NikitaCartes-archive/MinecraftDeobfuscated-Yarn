@@ -87,6 +87,6 @@ public class BackupPromptScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	public interface Callback {
-		void proceed(boolean bl, boolean bl2);
+		void proceed(boolean backup, boolean eraseCache);
 	}
 }

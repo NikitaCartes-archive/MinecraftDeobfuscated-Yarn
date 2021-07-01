@@ -270,7 +270,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			Text text = ScreenTexts.joinLines(
 				new LiteralText(this.mPendingInvite.worldName),
 				new LiteralText(this.mPendingInvite.worldOwnerName),

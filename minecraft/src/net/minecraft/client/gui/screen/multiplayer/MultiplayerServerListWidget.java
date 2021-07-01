@@ -170,7 +170,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			return new TranslatableText("narrator.select", new LiteralText("").append(TITLE_TEXT).append(" ").append(this.server.getMotd()));
 		}
 	}
@@ -203,7 +203,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			return LiteralText.EMPTY;
 		}
 	}
@@ -475,7 +475,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			return new TranslatableText("narrator.select", this.server.name);
 		}
 	}

@@ -169,7 +169,7 @@ public class GameModeSelectionScreen extends Screen {
 
 		@Override
 		public void appendNarrations(NarrationMessageBuilder builder) {
-			this.method_37021(builder);
+			this.appendDefaultNarrations(builder);
 		}
 
 		@Override

@@ -15,7 +15,7 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> extends EntryListWidget<E> {
-	private boolean field_33781;
+	private boolean widgetFocused;
 
 	public ElementListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
 		super(minecraftClient, i, j, k, l, m);
@@ -23,17 +23,17 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 
 	@Override
 	public boolean changeFocus(boolean lookForwards) {
-		this.field_33781 = super.changeFocus(lookForwards);
-		if (this.field_33781) {
+		this.widgetFocused = super.changeFocus(lookForwards);
+		if (this.widgetFocused) {
 			this.ensureVisible(this.getFocused());
 		}
 
-		return this.field_33781;
+		return this.widgetFocused;
 	}
 
 	@Override
 	public Selectable.SelectionType getType() {
-		return this.field_33781 ? Selectable.SelectionType.FOCUSED : super.getType();
+		return this.widgetFocused ? Selectable.SelectionType.FOCUSED : super.getType();
 	}
 
 	@Override
@@ -43,15 +43,15 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 
 	@Override
 	public void appendNarrations(NarrationMessageBuilder builder) {
-		E entry = this.method_37019();
+		E entry = this.getHoveredEntry();
 		if (entry != null) {
-			entry.method_37024(builder.nextMessage());
-			this.method_37017(builder, entry);
+			entry.appendNarrations(builder.nextMessage());
+			this.appendNarrations(builder, entry);
 		} else {
 			E entry2 = this.getFocused();
 			if (entry2 != null) {
-				entry2.method_37024(builder.nextMessage());
-				this.method_37017(builder, entry2);
+				entry2.appendNarrations(builder.nextMessage());
+				this.appendNarrations(builder, entry2);
 			}
 		}
 
@@ -63,7 +63,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 		@Nullable
 		private Element focused;
 		@Nullable
-		private Selectable field_33782;
+		private Selectable focusedSelectable;
 		private boolean dragging;
 
 		@Override
@@ -87,26 +87,24 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 			return this.focused;
 		}
 
-		public abstract List<? extends Selectable> method_37025();
+		public abstract List<? extends Selectable> selectableChildren();
 
-		void method_37024(NarrationMessageBuilder narrationMessageBuilder) {
-			List<? extends Selectable> list = this.method_37025();
-			Screen.SelectedElementNarrationData selectedElementNarrationData = Screen.findSelectedElementData(list, this.field_33782);
+		void appendNarrations(NarrationMessageBuilder builder) {
+			List<? extends Selectable> list = this.selectableChildren();
+			Screen.SelectedElementNarrationData selectedElementNarrationData = Screen.findSelectedElementData(list, this.focusedSelectable);
 			if (selectedElementNarrationData != null) {
 				if (selectedElementNarrationData.selectType.isFocused()) {
-					this.field_33782 = selectedElementNarrationData.selectable;
+					this.focusedSelectable = selectedElementNarrationData.selectable;
 				}
 
 				if (list.size() > 1) {
-					narrationMessageBuilder.put(
-						NarrationPart.POSITION, new TranslatableText("narrator.position.object_list", selectedElementNarrationData.index + 1, list.size())
-					);
+					builder.put(NarrationPart.POSITION, new TranslatableText("narrator.position.object_list", selectedElementNarrationData.index + 1, list.size()));
 					if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
-						narrationMessageBuilder.put(NarrationPart.USAGE, new TranslatableText("narration.component_list.usage"));
+						builder.put(NarrationPart.USAGE, new TranslatableText("narration.component_list.usage"));
 					}
 				}
 
-				selectedElementNarrationData.selectable.appendNarrations(narrationMessageBuilder.nextMessage());
+				selectedElementNarrationData.selectable.appendNarrations(builder.nextMessage());
 			}
 		}
 	}

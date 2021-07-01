@@ -100,9 +100,9 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = register(
 		"Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
+	public static final List<StructureFeature<?>> LAND_MODIFYING_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
 	private static final Identifier JIGSAW_ID = new Identifier("jigsaw");
-	private static final Map<Identifier, Identifier> field_25839 = ImmutableMap.<Identifier, Identifier>builder()
+	private static final Map<Identifier, Identifier> JIGSAW_STRUCTURE_PIECES = ImmutableMap.<Identifier, Identifier>builder()
 		.put(new Identifier("nvi"), JIGSAW_ID)
 		.put(new Identifier("pcp"), JIGSAW_ID)
 		.put(new Identifier("bastionremnant"), JIGSAW_ID)
@@ -158,7 +158,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 						NbtCompound nbtCompound = nbtList.getCompound(j);
 						String string2 = nbtCompound.getString("id").toLowerCase(Locale.ROOT);
 						Identifier identifier = new Identifier(string2);
-						Identifier identifier2 = (Identifier)field_25839.getOrDefault(identifier, identifier);
+						Identifier identifier2 = (Identifier)JIGSAW_STRUCTURE_PIECES.getOrDefault(identifier, identifier);
 						StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(identifier2);
 						if (structurePieceType == null) {
 							LOGGER.error("Unknown structure piece id: {}", identifier2);
@@ -370,6 +370,6 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	}
 
 	public interface StructureStartFactory<C extends FeatureConfig> {
-		StructureStart<C> create(StructureFeature<C> feature, ChunkPos pos, int i, long l);
+		StructureStart<C> create(StructureFeature<C> feature, ChunkPos pos, int references, long seed);
 	}
 }
