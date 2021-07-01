@@ -15,26 +15,26 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> {
 	final int structureStartY;
-	final boolean field_25836;
+	final boolean modifyBoundingBox;
 	final boolean surface;
 
-	public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int structureStartY, boolean bl, boolean surface) {
+	public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int structureStartY, boolean modifyBoundingBox, boolean surface) {
 		super(codec);
 		this.structureStartY = structureStartY;
-		this.field_25836 = bl;
+		this.modifyBoundingBox = modifyBoundingBox;
 		this.surface = surface;
 	}
 
 	@Override
 	public StructureFeature.StructureStartFactory<StructurePoolFeatureConfig> getStructureStartFactory() {
-		return (feature, chunkPos, i, l) -> new JigsawFeature.Start(this, chunkPos, i, l);
+		return (feature, pos, references, seed) -> new JigsawFeature.Start(this, pos, references, seed);
 	}
 
 	public static class Start extends MarginedStructureStart<StructurePoolFeatureConfig> {
 		private final JigsawFeature jigsawFeature;
 
-		public Start(JigsawFeature feature, ChunkPos chunkPos, int i, long l) {
-			super(feature, chunkPos, i, l);
+		public Start(JigsawFeature feature, ChunkPos pos, int references, long seed) {
+			super(feature, pos, references, seed);
 			this.jigsawFeature = feature;
 		}
 
@@ -49,7 +49,7 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 		) {
 			BlockPos blockPos = new BlockPos(chunkPos.getStartX(), this.jigsawFeature.structureStartY, chunkPos.getStartZ());
 			StructurePools.initDefaultPools();
-			StructurePoolBasedGenerator.method_30419(
+			StructurePoolBasedGenerator.generate(
 				dynamicRegistryManager,
 				structurePoolFeatureConfig,
 				PoolStructurePiece::new,
@@ -58,7 +58,7 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 				blockPos,
 				this,
 				this.random,
-				this.jigsawFeature.field_25836,
+				this.jigsawFeature.modifyBoundingBox,
 				this.jigsawFeature.surface,
 				heightLimitView
 			);

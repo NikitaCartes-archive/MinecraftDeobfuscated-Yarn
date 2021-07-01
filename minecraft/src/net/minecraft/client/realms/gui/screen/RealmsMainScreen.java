@@ -1491,7 +1491,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			return (Text)(this.mServerData.state == RealmsServer.State.UNINITIALIZED
 				? RealmsMainScreen.UNINITIALIZED_BUTTON_NARRATION
 				: new TranslatableText("narrator.select", this.mServerData.name));
@@ -1531,7 +1531,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			return RealmsMainScreen.TRIAL_NARRATION;
 		}
 	}

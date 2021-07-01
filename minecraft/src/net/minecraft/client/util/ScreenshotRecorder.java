@@ -39,24 +39,20 @@ public class ScreenshotRecorder {
 	private final int height;
 	private File file;
 
-	public static void saveScreenshot(File gameDirectory, int framebufferWidth, int framebufferHeight, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
-		saveScreenshot(gameDirectory, null, framebufferWidth, framebufferHeight, framebuffer, messageReceiver);
+	public static void saveScreenshot(File gameDirectory, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
+		saveScreenshot(gameDirectory, null, framebuffer, messageReceiver);
 	}
 
-	public static void saveScreenshot(
-		File gameDirectory, @Nullable String fileName, int framebufferWidth, int framebufferHeight, Framebuffer framebuffer, Consumer<Text> messageReceiver
-	) {
+	public static void saveScreenshot(File gameDirectory, @Nullable String fileName, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
 		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> saveScreenshotInner(gameDirectory, fileName, framebufferWidth, framebufferHeight, framebuffer, messageReceiver));
+			RenderSystem.recordRenderCall(() -> saveScreenshotInner(gameDirectory, fileName, framebuffer, messageReceiver));
 		} else {
-			saveScreenshotInner(gameDirectory, fileName, framebufferWidth, framebufferHeight, framebuffer, messageReceiver);
+			saveScreenshotInner(gameDirectory, fileName, framebuffer, messageReceiver);
 		}
 	}
 
-	private static void saveScreenshotInner(
-		File gameDirectory, @Nullable String fileName, int framebufferWidth, int framebufferHeight, Framebuffer framebuffer, Consumer<Text> messageReceiver
-	) {
-		NativeImage nativeImage = takeScreenshot(framebufferWidth, framebufferHeight, framebuffer);
+	private static void saveScreenshotInner(File gameDirectory, @Nullable String fileName, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
+		NativeImage nativeImage = takeScreenshot(framebuffer);
 		File file = new File(gameDirectory, "screenshots");
 		file.mkdir();
 		File file2;
@@ -75,9 +71,9 @@ public class ScreenshotRecorder {
 							.formatted(Formatting.UNDERLINE)
 							.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
 						messageReceiver.accept(new TranslatableText("screenshot.success", text));
-					} catch (Exception var7x) {
-						LOGGER.warn("Couldn't save screenshot", (Throwable)var7x);
-						messageReceiver.accept(new TranslatableText("screenshot.failure", var7x.getMessage()));
+					} catch (Exception var7) {
+						LOGGER.warn("Couldn't save screenshot", (Throwable)var7);
+						messageReceiver.accept(new TranslatableText("screenshot.failure", var7.getMessage()));
 					} finally {
 						nativeImage.close();
 					}
@@ -85,10 +81,10 @@ public class ScreenshotRecorder {
 			);
 	}
 
-	public static NativeImage takeScreenshot(int width, int height, Framebuffer framebuffer) {
-		width = framebuffer.textureWidth;
-		height = framebuffer.textureHeight;
-		NativeImage nativeImage = new NativeImage(width, height, false);
+	public static NativeImage takeScreenshot(Framebuffer framebuffer) {
+		int i = framebuffer.textureWidth;
+		int j = framebuffer.textureHeight;
+		NativeImage nativeImage = new NativeImage(i, j, false);
 		RenderSystem.bindTexture(framebuffer.getColorAttachment());
 		nativeImage.loadFromTextureImage(0, true);
 		nativeImage.mirrorVertically();

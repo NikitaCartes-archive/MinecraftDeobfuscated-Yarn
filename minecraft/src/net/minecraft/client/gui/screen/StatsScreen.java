@@ -229,7 +229,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			@Override
-			public Text method_37006() {
+			public Text getNarration() {
 				return new TranslatableText("narrator.select", ScreenTexts.joinSentences(this.killedText, this.killedByText));
 			}
 		}
@@ -276,7 +276,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			@Override
-			public Text method_37006() {
+			public Text getNarration() {
 				return new TranslatableText("narrator.select", new LiteralText("").append(this.displayName).append(" ").append(this.getFormatted()));
 			}
 		}
@@ -291,7 +291,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		protected final Comparator<StatsScreen.ItemStatsListWidget.Entry> comparator = new StatsScreen.ItemStatsListWidget.ItemComparator();
 		@Nullable
 		protected StatType<?> selectedStatType;
-		protected int field_18760;
+		protected int listOrder;
 
 		public ItemStatsListWidget(MinecraftClient client) {
 			super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
@@ -348,7 +348,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			if (this.selectedStatType != null) {
 				int i = StatsScreen.this.getColumnX(this.getHeaderIndex(this.selectedStatType)) - 36;
-				int j = this.field_18760 == 1 ? 2 : 1;
+				int j = this.listOrder == 1 ? 2 : 1;
 				StatsScreen.this.renderIcon(matrices, x + i, y + 1, 18 * j, 0);
 			}
 
@@ -410,14 +410,14 @@ public class StatsScreen extends Screen implements StatsListener {
 		@Override
 		protected void renderDecorations(MatrixStack matrices, int mouseX, int mouseY) {
 			if (mouseY >= this.top && mouseY <= this.bottom) {
-				StatsScreen.ItemStatsListWidget.Entry entry = this.method_37019();
+				StatsScreen.ItemStatsListWidget.Entry entry = this.getHoveredEntry();
 				int i = (this.width - this.getRowWidth()) / 2;
 				if (entry != null) {
 					if (mouseX < i + 40 || mouseX > i + 40 + 20) {
 						return;
 					}
 
-					Item item = entry.method_37307();
+					Item item = entry.getItem();
 					this.render(matrices, this.getText(item), mouseX, mouseY);
 				} else {
 					Text text = null;
@@ -456,12 +456,12 @@ public class StatsScreen extends Screen implements StatsListener {
 		protected void selectStatType(StatType<?> statType) {
 			if (statType != this.selectedStatType) {
 				this.selectedStatType = statType;
-				this.field_18760 = -1;
-			} else if (this.field_18760 == -1) {
-				this.field_18760 = 1;
+				this.listOrder = -1;
+			} else if (this.listOrder == -1) {
+				this.listOrder = 1;
 			} else {
 				this.selectedStatType = null;
-				this.field_18760 = 0;
+				this.listOrder = 0;
 			}
 
 			this.children().sort(this.comparator);
@@ -469,24 +469,24 @@ public class StatsScreen extends Screen implements StatsListener {
 
 		@Environment(EnvType.CLIENT)
 		class Entry extends AlwaysSelectedEntryListWidget.Entry<StatsScreen.ItemStatsListWidget.Entry> {
-			private final Item field_33830;
+			private final Item item;
 
 			Entry(Item item) {
-				this.field_33830 = item;
+				this.item = item;
 			}
 
-			public Item method_37307() {
-				return this.field_33830;
+			public Item getItem() {
+				return this.item;
 			}
 
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				StatsScreen.this.renderStatItem(matrices, x + 40, y, this.field_33830);
+				StatsScreen.this.renderStatItem(matrices, x + 40, y, this.item);
 
 				for (int i = 0; i < StatsScreen.this.itemStats.blockStatTypes.size(); i++) {
 					Stat<Block> stat;
-					if (this.field_33830 instanceof BlockItem) {
-						stat = ((StatType)StatsScreen.this.itemStats.blockStatTypes.get(i)).getOrCreateStat(((BlockItem)this.field_33830).getBlock());
+					if (this.item instanceof BlockItem) {
+						stat = ((StatType)StatsScreen.this.itemStats.blockStatTypes.get(i)).getOrCreateStat(((BlockItem)this.item).getBlock());
 					} else {
 						stat = null;
 					}
@@ -497,7 +497,7 @@ public class StatsScreen extends Screen implements StatsListener {
 				for (int i = 0; i < StatsScreen.this.itemStats.itemStatTypes.size(); i++) {
 					this.render(
 						matrices,
-						((StatType)StatsScreen.this.itemStats.itemStatTypes.get(i)).getOrCreateStat(this.field_33830),
+						((StatType)StatsScreen.this.itemStats.itemStatTypes.get(i)).getOrCreateStat(this.item),
 						x + StatsScreen.this.getColumnX(i + StatsScreen.this.itemStats.blockStatTypes.size()),
 						y,
 						index % 2 == 0
@@ -505,24 +505,24 @@ public class StatsScreen extends Screen implements StatsListener {
 				}
 			}
 
-			protected void render(MatrixStack matrices, @Nullable Stat<?> stat, int x, int y, boolean bl) {
+			protected void render(MatrixStack matrices, @Nullable Stat<?> stat, int x, int y, boolean white) {
 				String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
 				DrawableHelper.drawStringWithShadow(
-					matrices, StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, bl ? 16777215 : 9474192
+					matrices, StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, white ? 16777215 : 9474192
 				);
 			}
 
 			@Override
-			public Text method_37006() {
-				return new TranslatableText("narrator.select", this.field_33830.getName());
+			public Text getNarration() {
+				return new TranslatableText("narrator.select", this.item.getName());
 			}
 		}
 
 		@Environment(EnvType.CLIENT)
 		class ItemComparator implements Comparator<StatsScreen.ItemStatsListWidget.Entry> {
 			public int compare(StatsScreen.ItemStatsListWidget.Entry entry, StatsScreen.ItemStatsListWidget.Entry entry2) {
-				Item item = entry.method_37307();
-				Item item2 = entry2.method_37307();
+				Item item = entry.getItem();
+				Item item2 = entry2.getItem();
 				int i;
 				int j;
 				if (ItemStatsListWidget.this.selectedStatType == null) {
@@ -539,8 +539,8 @@ public class StatsScreen extends Screen implements StatsListener {
 				}
 
 				return i == j
-					? ItemStatsListWidget.this.field_18760 * Integer.compare(Item.getRawId(item), Item.getRawId(item2))
-					: ItemStatsListWidget.this.field_18760 * Integer.compare(i, j);
+					? ItemStatsListWidget.this.listOrder * Integer.compare(Item.getRawId(item), Item.getRawId(item2))
+					: ItemStatsListWidget.this.listOrder * Integer.compare(i, j);
 			}
 		}
 	}

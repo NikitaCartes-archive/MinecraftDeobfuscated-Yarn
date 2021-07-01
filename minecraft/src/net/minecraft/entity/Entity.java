@@ -95,10 +95,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.PortalUtil;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
@@ -2412,7 +2412,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 							Vec3d vec3d;
 							if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
 								axis = blockState.get(Properties.HORIZONTAL_AXIS);
-								PortalUtil.Rectangle rectangle = PortalUtil.getLargestRectangle(
+								BlockLocating.Rectangle rectangle = BlockLocating.getLargestRectangle(
 									this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState(blockPos) == blockState
 								);
 								vec3d = this.positionInPortal(axis, rectangle);
@@ -2442,11 +2442,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
+	protected Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
 		return AreaHelper.entityPosInPortal(portalRect, portalAxis, this.getPos(), this.getDimensions(this.getPose()));
 	}
 
-	protected Optional<PortalUtil.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether) {
+	protected Optional<BlockLocating.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether) {
 		return destWorld.getPortalForcer().getPortalRect(destPos, destIsNether);
 	}
 

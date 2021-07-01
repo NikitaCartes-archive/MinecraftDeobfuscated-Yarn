@@ -455,8 +455,13 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return new ItemStack(this);
 	}
 
-	public void addStacksForDisplay(ItemGroup group, DefaultedList<ItemStack> list) {
-		list.add(new ItemStack(this));
+	/**
+	 * Appends the stacks of this block shown in the item group to the list.
+	 * 
+	 * @see net.minecraft.item.BlockItem#appendStacks(ItemGroup, DefaultedList)
+	 */
+	public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
+		stacks.add(new ItemStack(this));
 	}
 
 	public float getSlipperiness() {

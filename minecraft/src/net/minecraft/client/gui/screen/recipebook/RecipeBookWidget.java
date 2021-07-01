@@ -69,14 +69,14 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	private int cachedInvChangeCount;
 	private boolean searching;
 	private boolean open;
-	private boolean field_34001;
+	private boolean narrow;
 
 	public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean narrow, AbstractRecipeScreenHandler<?> craftingScreenHandler) {
 		this.client = client;
 		this.parentWidth = parentWidth;
 		this.parentHeight = parentHeight;
 		this.craftingScreenHandler = craftingScreenHandler;
-		this.field_34001 = narrow;
+		this.narrow = narrow;
 		client.player.currentScreenHandler = craftingScreenHandler;
 		this.recipeBook = client.player.getRecipeBook();
 		this.cachedInvChangeCount = client.player.getInventory().getChangeCount();
@@ -89,7 +89,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	public void reset() {
-		this.leftOffset = this.field_34001 ? 0 : 86;
+		this.leftOffset = this.narrow ? 0 : 86;
 		int i = (this.parentWidth - 147) / 2 - this.leftOffset;
 		int j = (this.parentHeight - 166) / 2;
 		this.recipeFinder.clear();
@@ -142,15 +142,15 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		this.client.keyboard.setRepeatEvents(false);
 	}
 
-	public int findLeftEdge(int i, int j) {
-		int k;
-		if (this.isOpen() && !this.field_34001) {
-			k = 177 + (i - j - 200) / 2;
+	public int findLeftEdge(int width, int backgroundWidth) {
+		int i;
+		if (this.isOpen() && !this.narrow) {
+			i = 177 + (width - backgroundWidth - 200) / 2;
 		} else {
-			k = (i - j) / 2;
+			i = (width - backgroundWidth) / 2;
 		}
 
-		return k;
+		return i;
 	}
 
 	public void toggleOpen() {
@@ -281,17 +281,17 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 	}
 
-	public void drawTooltip(MatrixStack matrices, int i, int j, int k, int l) {
+	public void drawTooltip(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		if (this.isOpen()) {
-			this.recipesArea.drawTooltip(matrices, k, l);
+			this.recipesArea.drawTooltip(matrices, mouseX, mouseY);
 			if (this.toggleCraftableButton.isHovered()) {
 				Text text = this.getCraftableButtonText();
 				if (this.client.currentScreen != null) {
-					this.client.currentScreen.renderTooltip(matrices, text, k, l);
+					this.client.currentScreen.renderTooltip(matrices, text, mouseX, mouseY);
 				}
 			}
 
-			this.drawGhostSlotTooltip(matrices, i, j, k, l);
+			this.drawGhostSlotTooltip(matrices, x, y, mouseX, mouseY);
 		}
 	}
 
@@ -303,25 +303,25 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		return TOGGLE_CRAFTABLE_RECIPES_TEXT;
 	}
 
-	private void drawGhostSlotTooltip(MatrixStack matrices, int i, int j, int k, int l) {
+	private void drawGhostSlotTooltip(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		ItemStack itemStack = null;
 
-		for (int m = 0; m < this.ghostSlots.getSlotCount(); m++) {
-			RecipeBookGhostSlots.GhostInputSlot ghostInputSlot = this.ghostSlots.getSlot(m);
-			int n = ghostInputSlot.getX() + i;
-			int o = ghostInputSlot.getY() + j;
-			if (k >= n && l >= o && k < n + 16 && l < o + 16) {
+		for (int i = 0; i < this.ghostSlots.getSlotCount(); i++) {
+			RecipeBookGhostSlots.GhostInputSlot ghostInputSlot = this.ghostSlots.getSlot(i);
+			int j = ghostInputSlot.getX() + x;
+			int k = ghostInputSlot.getY() + y;
+			if (mouseX >= j && mouseY >= k && mouseX < j + 16 && mouseY < k + 16) {
 				itemStack = ghostInputSlot.getCurrentItemStack();
 			}
 		}
 
 		if (itemStack != null && this.client.currentScreen != null) {
-			this.client.currentScreen.renderTooltip(matrices, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
+			this.client.currentScreen.renderTooltip(matrices, this.client.currentScreen.getTooltipFromItem(itemStack), mouseX, mouseY);
 		}
 	}
 
-	public void drawGhostSlots(MatrixStack matrices, int i, int j, boolean bl, float f) {
-		this.ghostSlots.draw(matrices, this.client, i, j, bl, f);
+	public void drawGhostSlots(MatrixStack matrices, int x, int y, boolean bl, float delta) {
+		this.ghostSlots.draw(matrices, this.client, x, y, bl, delta);
 	}
 
 	@Override
@@ -382,12 +382,12 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		return bl;
 	}
 
-	public boolean isClickOutsideBounds(double d, double e, int i, int j, int k, int l, int m) {
+	public boolean isClickOutsideBounds(double mouseX, double mouseY, int x, int y, int backgroundWidth, int backgroundHeight, int button) {
 		if (!this.isOpen()) {
 			return true;
 		} else {
-			boolean bl = d < (double)i || e < (double)j || d >= (double)(i + k) || e >= (double)(j + l);
-			boolean bl2 = (double)(i - 147) < d && d < (double)i && (double)j < e && e < (double)(j + l);
+			boolean bl = mouseX < (double)x || mouseY < (double)y || mouseX >= (double)(x + backgroundWidth) || mouseY >= (double)(y + backgroundHeight);
+			boolean bl2 = (double)(x - 147) < mouseX && mouseX < (double)x && (double)y < mouseY && mouseY < (double)(y + backgroundHeight);
 			return bl && !bl2 && !this.currentTab.isHovered();
 		}
 	}
@@ -521,9 +521,9 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	@Override
 	public void appendNarrations(NarrationMessageBuilder builder) {
 		List<Selectable> list = Lists.<Selectable>newArrayList();
-		this.recipesArea.method_37083(clickableWidget -> {
-			if (clickableWidget.method_37303()) {
-				list.add(clickableWidget);
+		this.recipesArea.forEachButton(button -> {
+			if (button.isNarratable()) {
+				list.add(button);
 			}
 		});
 		list.add(this.searchField);

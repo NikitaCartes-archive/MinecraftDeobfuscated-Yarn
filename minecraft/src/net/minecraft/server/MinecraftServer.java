@@ -9,12 +9,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -24,7 +22,6 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.net.Proxy;
 import java.net.URLEncoder;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -253,7 +250,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private long timeReference = Util.getMeasuringTimeMs();
 	private long nextTickTimestamp;
 	private boolean waitingForNextTick;
-	private boolean iconFilePresent;
 	private final ResourcePackManager dataPackManager;
 	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
 	@Nullable
@@ -828,35 +824,27 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void setFavicon(ServerMetadata metadata) {
-		File file = this.getFile("server-icon.png");
-		if (!file.exists()) {
-			file = this.session.getIconFile();
+		Optional<File> optional = Optional.of(this.getFile("server-icon.png")).filter(File::isFile);
+		if (!optional.isPresent()) {
+			optional = this.session.getIconFile().map(Path::toFile).filter(File::isFile);
 		}
 
-		if (file.isFile()) {
-			ByteBuf byteBuf = Unpooled.buffer();
-
+		optional.ifPresent(file -> {
 			try {
 				BufferedImage bufferedImage = ImageIO.read(file);
 				Validate.validState(bufferedImage.getWidth() == 64, "Must be 64 pixels wide");
 				Validate.validState(bufferedImage.getHeight() == 64, "Must be 64 pixels high");
-				ImageIO.write(bufferedImage, "PNG", new ByteBufOutputStream(byteBuf));
-				ByteBuffer byteBuffer = Base64.getEncoder().encode(byteBuf.nioBuffer());
-				metadata.setFavicon("data:image/png;base64," + StandardCharsets.UTF_8.decode(byteBuffer));
-			} catch (Exception var9) {
-				LOGGER.error("Couldn't load server icon", (Throwable)var9);
-			} finally {
-				byteBuf.release();
+				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+				ImageIO.write(bufferedImage, "PNG", byteArrayOutputStream);
+				byte[] bs = Base64.getEncoder().encode(byteArrayOutputStream.toByteArray());
+				metadata.setFavicon("data:image/png;base64," + new String(bs, StandardCharsets.UTF_8));
+			} catch (Exception var5) {
+				LOGGER.error("Couldn't load server icon", (Throwable)var5);
 			}
-		}
+		});
 	}
 
-	public boolean hasIconFile() {
-		this.iconFilePresent = this.iconFilePresent || this.getIconFile().isFile();
-		return this.iconFilePresent;
-	}
-
-	public File getIconFile() {
+	public Optional<Path> getIconFile() {
 		return this.session.getIconFile();
 	}
 

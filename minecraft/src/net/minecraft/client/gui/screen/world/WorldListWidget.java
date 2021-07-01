@@ -193,7 +193,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			TranslatableText translatableText = new TranslatableText(
 				"narrator.select.world",
 				this.level.getDisplayName(),
@@ -304,8 +304,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					}
 
 					Text text = new TranslatableText(string2, this.level.getVersion(), SharedConstants.getGameVersion().getName());
-					this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
-						if (bl) {
+					this.client.openScreen(new BackupPromptScreen(this.screen, (backup, eraseCache) -> {
+						if (backup) {
 							String stringx = this.level.getName();
 
 							try (LevelStorage.Session session = this.client.getLevelStorage().createSession(stringx)) {
@@ -392,14 +392,14 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 			try {
 				LevelStorage.Session session = this.client.getLevelStorage().createSession(string);
-				this.client.openScreen(new EditWorldScreen(bl -> {
+				this.client.openScreen(new EditWorldScreen(edited -> {
 					try {
 						session.close();
 					} catch (IOException var5) {
 						WorldListWidget.LOGGER.error("Failed to unlock level {}", string, var5);
 					}
 
-					if (bl) {
+					if (edited) {
 						WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
 					}
 
@@ -429,8 +429,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					this.client
 						.openScreen(
 							new ConfirmScreen(
-								bl -> this.client
-										.openScreen((Screen)(bl ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl) : this.screen)),
+								confirmed -> this.client
+										.openScreen((Screen)(confirmed ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl) : this.screen)),
 								new TranslatableText("selectWorld.recreate.customized.title"),
 								new TranslatableText("selectWorld.recreate.customized.text"),
 								ScreenTexts.PROCEED,

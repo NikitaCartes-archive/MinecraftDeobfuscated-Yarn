@@ -480,8 +480,8 @@ public class CreateWorldScreen extends Screen {
 									() -> this.client
 											.openScreen(
 												new ConfirmScreen(
-													bl -> {
-														if (bl) {
+													confirmed -> {
+														if (confirmed) {
 															this.openPackScreen();
 														} else {
 															this.dataPackSettings = DataPackSettings.SAFE_MODE;

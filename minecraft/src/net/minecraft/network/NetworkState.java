@@ -88,10 +88,10 @@ import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -241,7 +241,7 @@ public enum NetworkState {
 					.register(LookAtS2CPacket.class, LookAtS2CPacket::new)
 					.register(PlayerPositionLookS2CPacket.class, PlayerPositionLookS2CPacket::new)
 					.register(UnlockRecipesS2CPacket.class, UnlockRecipesS2CPacket::new)
-					.register(EntityDestroyS2CPacket.class, EntityDestroyS2CPacket::new)
+					.register(EntitiesDestroyS2CPacket.class, EntitiesDestroyS2CPacket::new)
 					.register(RemoveEntityStatusEffectS2CPacket.class, RemoveEntityStatusEffectS2CPacket::new)
 					.register(ResourcePackSendS2CPacket.class, ResourcePackSendS2CPacket::new)
 					.register(PlayerRespawnS2CPacket.class, PlayerRespawnS2CPacket::new)

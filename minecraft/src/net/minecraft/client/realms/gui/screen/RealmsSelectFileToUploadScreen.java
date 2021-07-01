@@ -185,7 +185,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			Text text = ScreenTexts.joinLines(
 				new LiteralText(this.summary.getDisplayName()),
 				new LiteralText(RealmsSelectFileToUploadScreen.getLastPlayed(this.summary)),

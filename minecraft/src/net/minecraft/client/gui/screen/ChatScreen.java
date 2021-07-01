@@ -18,7 +18,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class ChatScreen extends Screen {
 	public static final int field_32237 = 7;
-	private static final Text field_33953 = new TranslatableText("chat_screen.usage");
+	private static final Text USAGE_TEXT = new TranslatableText("chat_screen.usage");
 	private String chatLastMessage = "";
 	private int messageHistorySize = -1;
 	protected TextFieldWidget chatField;
@@ -161,22 +161,22 @@ public class ChatScreen extends Screen {
 		}
 	}
 
-	public void setChatFromHistory(int i) {
-		int j = this.messageHistorySize + i;
-		int k = this.client.inGameHud.getChatHud().getMessageHistory().size();
-		j = MathHelper.clamp(j, 0, k);
-		if (j != this.messageHistorySize) {
-			if (j == k) {
-				this.messageHistorySize = k;
+	public void setChatFromHistory(int offset) {
+		int i = this.messageHistorySize + offset;
+		int j = this.client.inGameHud.getChatHud().getMessageHistory().size();
+		i = MathHelper.clamp(i, 0, j);
+		if (i != this.messageHistorySize) {
+			if (i == j) {
+				this.messageHistorySize = j;
 				this.chatField.setText(this.chatLastMessage);
 			} else {
-				if (this.messageHistorySize == k) {
+				if (this.messageHistorySize == j) {
 					this.chatLastMessage = this.chatField.getText();
 				}
 
-				this.chatField.setText((String)this.client.inGameHud.getChatHud().getMessageHistory().get(j));
+				this.chatField.setText((String)this.client.inGameHud.getChatHud().getMessageHistory().get(i));
 				this.commandSuggestor.setWindowActive(false);
-				this.messageHistorySize = j;
+				this.messageHistorySize = i;
 			}
 		}
 	}
@@ -208,7 +208,7 @@ public class ChatScreen extends Screen {
 	@Override
 	protected void addScreenNarrations(NarrationMessageBuilder builder) {
 		builder.put(NarrationPart.TITLE, this.getTitle());
-		builder.put(NarrationPart.USAGE, field_33953);
+		builder.put(NarrationPart.USAGE, USAGE_TEXT);
 		String string = this.chatField.getText();
 		if (!string.isEmpty()) {
 			builder.nextMessage().put(NarrationPart.TITLE, new TranslatableText("chat_screen.message", string));

@@ -142,7 +142,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 				}
 
 				this.drawTexture(matrices, q, r, 0, s, 14, 14);
-				this.method_22692(o, q, r);
+				this.drawBanner(o, q, r);
 			}
 		} else if (this.canApplySpecialPattern) {
 			int l = i + 60;
@@ -150,20 +150,20 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			RenderSystem.setShaderTexture(0, TEXTURE);
 			this.drawTexture(matrices, l, m, 0, this.backgroundHeight, 14, 14);
 			int n = this.handler.getSelectedPattern();
-			this.method_22692(n, l, m);
+			this.drawBanner(n, l, m);
 		}
 
 		DiffuseLighting.enableGuiDepthLighting();
 	}
 
-	private void method_22692(int i, int j, int k) {
+	private void drawBanner(int pattern, int x, int y) {
 		ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
 		NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
-		NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[i], DyeColor.WHITE).toNbt();
+		NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[pattern], DyeColor.WHITE).toNbt();
 		nbtCompound.put("Patterns", nbtList);
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.push();
-		matrixStack.translate((double)((float)j + 0.5F), (double)(k + 16), 0.0);
+		matrixStack.translate((double)((float)x + 0.5F), (double)(y + 16), 0.0);
 		matrixStack.scale(6.0F, -6.0F, 1.0F);
 		matrixStack.translate(0.5, 0.5, 0.0);
 		matrixStack.translate(0.5, 0.5, 0.5);

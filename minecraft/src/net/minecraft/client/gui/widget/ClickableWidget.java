@@ -222,7 +222,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	}
 
 	@Override
-	public boolean method_37303() {
+	public boolean isNarratable() {
 		return this.visible && this.active;
 	}
 
@@ -239,13 +239,13 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		}
 	}
 
-	protected void method_37021(NarrationMessageBuilder narrationMessageBuilder) {
-		narrationMessageBuilder.put(NarrationPart.TITLE, this.getNarrationMessage());
+	protected void appendDefaultNarrations(NarrationMessageBuilder builder) {
+		builder.put(NarrationPart.TITLE, this.getNarrationMessage());
 		if (this.active) {
 			if (this.isFocused()) {
-				narrationMessageBuilder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.focused"));
+				builder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.focused"));
 			} else {
-				narrationMessageBuilder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.hovered"));
+				builder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.hovered"));
 			}
 		}
 	}

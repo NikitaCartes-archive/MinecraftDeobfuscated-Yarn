@@ -67,8 +67,8 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("menu.sendFeedback"),
-				button -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
-						if (bl) {
+				button -> this.client.openScreen(new ConfirmChatLinkScreen(confirmed -> {
+						if (confirmed) {
 							Util.getOperatingSystem().open(string);
 						}
 
@@ -83,8 +83,8 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("menu.reportBugs"),
-				button -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
-						if (bl) {
+				button -> this.client.openScreen(new ConfirmChatLinkScreen(confirmed -> {
+						if (confirmed) {
 							Util.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
 						}
 

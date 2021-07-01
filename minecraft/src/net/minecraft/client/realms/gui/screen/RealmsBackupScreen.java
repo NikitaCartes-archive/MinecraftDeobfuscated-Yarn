@@ -396,7 +396,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 
 		@Override
-		public Text method_37006() {
+		public Text getNarration() {
 			return new TranslatableText("narrator.select", this.mBackup.lastModifiedDate.toString());
 		}
 	}

@@ -67,7 +67,7 @@ public class EditWorldScreen extends Screen {
 		this.client.keyboard.setRepeatEvents(true);
 		ButtonWidget buttonWidget = this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20, new TranslatableText("selectWorld.edit.resetIcon"), button -> {
-				FileUtils.deleteQuietly(this.storageSession.getIconFile());
+				this.storageSession.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
 				button.active = false;
 			})
 		);
@@ -106,12 +106,12 @@ public class EditWorldScreen extends Screen {
 				200,
 				20,
 				new TranslatableText("selectWorld.edit.optimize"),
-				button -> this.client.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
-						if (bl) {
+				button -> this.client.openScreen(new BackupPromptScreen(this, (backup, eraseCache) -> {
+						if (backup) {
 							backupLevel(this.storageSession);
 						}
 
-						this.client.openScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, bl2));
+						this.client.openScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, eraseCache));
 					}, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))
 			)
 		);
@@ -177,7 +177,7 @@ public class EditWorldScreen extends Screen {
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), button -> this.commit())
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, button -> this.callback.accept(false)));
-		buttonWidget.active = this.storageSession.getIconFile().isFile();
+		buttonWidget.active = this.storageSession.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])).isPresent();
 		LevelSummary levelSummary = this.storageSession.getLevelSummary();
 		String string = levelSummary == null ? "" : levelSummary.getDisplayName();
 		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, new TranslatableText("selectWorld.enterName"));

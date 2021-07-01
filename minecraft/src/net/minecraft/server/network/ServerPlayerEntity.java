@@ -125,9 +125,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
+import net.minecraft.world.BlockLocating;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.PortalUtil;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
@@ -754,13 +754,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	protected Optional<PortalUtil.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether) {
-		Optional<PortalUtil.Rectangle> optional = super.getPortalRect(destWorld, destPos, destIsNether);
+	protected Optional<BlockLocating.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether) {
+		Optional<BlockLocating.Rectangle> optional = super.getPortalRect(destWorld, destPos, destIsNether);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
 			Direction.Axis axis = (Direction.Axis)this.world.getBlockState(this.lastNetherPortalPosition).getOrEmpty(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
-			Optional<PortalUtil.Rectangle> optional2 = destWorld.getPortalForcer().createPortal(destPos, axis);
+			Optional<BlockLocating.Rectangle> optional2 = destWorld.getPortalForcer().createPortal(destPos, axis);
 			if (!optional2.isPresent()) {
 				LOGGER.error("Unable to create a portal, likely target out of worldborder");
 			}

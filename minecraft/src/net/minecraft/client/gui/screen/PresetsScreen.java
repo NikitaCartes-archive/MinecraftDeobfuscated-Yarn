@@ -253,7 +253,7 @@ public class PresetsScreen extends Screen {
 		boolean generateLakes,
 		FlatChunkGeneratorLayer... layers
 	) {
-		PRESETS.add(new PresetsScreen.SuperflatPreset(icon.asItem(), presetName, registry -> {
+		PRESETS.add(new PresetsScreen.SuperflatPreset(icon.asItem(), presetName, biomeRegistry -> {
 			Map<StructureFeature<?>, StructureConfig> map = Maps.<StructureFeature<?>, StructureConfig>newHashMap();
 
 			for (StructureFeature<?> structureFeature : structures) {
@@ -261,7 +261,7 @@ public class PresetsScreen extends Screen {
 			}
 
 			StructuresConfig structuresConfig = new StructuresConfig(generateStronghold ? Optional.of(StructuresConfig.DEFAULT_STRONGHOLD) : Optional.empty(), map);
-			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, registry);
+			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, biomeRegistry);
 			if (generateFeatures) {
 				flatChunkGeneratorConfig.enableFeatures();
 			}
@@ -274,7 +274,7 @@ public class PresetsScreen extends Screen {
 				flatChunkGeneratorConfig.getLayers().add(layers[i]);
 			}
 
-			flatChunkGeneratorConfig.setBiome(() -> registry.getOrThrow(presetBiome));
+			flatChunkGeneratorConfig.setBiome(() -> biomeRegistry.getOrThrow(presetBiome));
 			flatChunkGeneratorConfig.updateLayerBlocks();
 			return flatChunkGeneratorConfig.withStructuresConfig(structuresConfig);
 		}));
@@ -489,7 +489,7 @@ public class PresetsScreen extends Screen {
 			}
 
 			@Override
-			public Text method_37006() {
+			public Text getNarration() {
 				return new TranslatableText("narrator.select", this.preset.getName());
 			}
 		}

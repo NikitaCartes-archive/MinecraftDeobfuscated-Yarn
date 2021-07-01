@@ -51,7 +51,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		return this.state;
 	}
 
-	public void method_37007() {
+	public void tick() {
 		this.animTick++;
 		RealmsServer realmsServer = (RealmsServer)this.serverDataProvider.get();
 		if (realmsServer != null) {

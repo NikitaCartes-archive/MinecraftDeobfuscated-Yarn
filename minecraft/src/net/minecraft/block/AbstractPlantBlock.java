@@ -9,8 +9,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -69,7 +69,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 	}
 
 	private Optional<BlockPos> getStemHeadPos(BlockView world, BlockPos pos, Block block) {
-		return PortalUtil.method_34851(world, pos, block, this.growthDirection, this.getStem());
+		return BlockLocating.findColumnEnd(world, pos, block, this.growthDirection, this.getStem());
 	}
 
 	@Override

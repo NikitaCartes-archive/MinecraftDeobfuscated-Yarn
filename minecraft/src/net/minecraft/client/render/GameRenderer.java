@@ -7,6 +7,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,6 +44,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
@@ -66,7 +70,14 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final boolean field_32688 = false;
-	public static final float field_32686 = 0.05F;
+	/**
+	 * Since the camera is conceptualized as a single point, a depth of {@value}
+	 * blocks is used to define a rectangular area to be rendered.
+	 * 
+	 * @see Camera#getProjection()
+	 * @see Matrix4f#viewboxMatrix
+	 */
+	public static final float CAMERA_DEPTH = 0.05F;
 	private final MinecraftClient client;
 	private final ResourceManager resourceManager;
 	private final Random random = new Random();
@@ -82,6 +93,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	private boolean renderHand = true;
 	private boolean blockOutlineEnabled = true;
 	private long lastWorldIconUpdate;
+	private boolean hasWorldIcon;
 	private long lastWindowFocusedTime = Util.getMeasuringTimeMs();
 	private final LightmapTextureManager lightmapTextureManager;
 	private final OverlayTexture overlayTexture = new OverlayTexture();
@@ -844,13 +856,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().push("level");
 				this.renderWorld(tickDelta, startTime, new MatrixStack());
-				if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
-					this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
-					if (!this.client.getServer().hasIconFile()) {
-						this.updateWorldIcon();
-					}
-				}
-
+				this.updateWorldIcon();
 				this.client.worldRenderer.drawEntityOutlinesFramebuffer();
 				if (this.shader != null && this.shadersEnabled) {
 					RenderSystem.disableBlend();
@@ -948,10 +954,27 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	}
 
 	private void updateWorldIcon() {
-		if (this.client.worldRenderer.getCompletedChunkCount() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().hasIconFile()) {
-			NativeImage nativeImage = ScreenshotRecorder.takeScreenshot(
-				this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer()
-			);
+		if (!this.hasWorldIcon && this.client.isInSingleplayer()) {
+			long l = Util.getMeasuringTimeMs();
+			if (l - this.lastWorldIconUpdate >= 1000L) {
+				this.lastWorldIconUpdate = l;
+				IntegratedServer integratedServer = this.client.getServer();
+				if (integratedServer != null && !integratedServer.isStopped()) {
+					integratedServer.getIconFile().ifPresent(path -> {
+						if (Files.isRegularFile(path, new LinkOption[0])) {
+							this.hasWorldIcon = true;
+						} else {
+							this.updateWorldIcon(path);
+						}
+					});
+				}
+			}
+		}
+	}
+
+	private void updateWorldIcon(Path path) {
+		if (this.client.worldRenderer.getCompletedChunkCount() > 10 && this.client.worldRenderer.isTerrainRenderComplete()) {
+			NativeImage nativeImage = ScreenshotRecorder.takeScreenshot(this.client.getFramebuffer());
 			Util.getIoWorkerExecutor().execute(() -> {
 				int i = nativeImage.getWidth();
 				int j = nativeImage.getHeight();
@@ -967,7 +990,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 
 				try (NativeImage nativeImage2 = new NativeImage(64, 64, false)) {
 					nativeImage.resizeSubRectTo(k, l, i, j, nativeImage2);
-					nativeImage2.writeFile(this.client.getServer().getIconFile());
+					nativeImage2.writeFile(path);
 				} catch (IOException var16) {
 					LOGGER.warn("Couldn't save auto screenshot", (Throwable)var16);
 				} finally {
@@ -1066,6 +1089,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		this.floatingItem = null;
 		this.mapRenderer.clearStateTextures();
 		this.camera.reset();
+		this.hasWorldIcon = false;
 	}
 
 	public MapRenderer getMapRenderer() {

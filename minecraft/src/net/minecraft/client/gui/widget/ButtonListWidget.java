@@ -107,7 +107,7 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		}
 
 		@Override
-		public List<? extends Selectable> method_37025() {
+		public List<? extends Selectable> selectableChildren() {
 			return this.buttons;
 		}
 	}

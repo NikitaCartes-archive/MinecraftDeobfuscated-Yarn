@@ -22,15 +22,18 @@ public class ResourcePackOrganizer {
 	private final ResourcePackManager resourcePackManager;
 	final List<ResourcePackProfile> enabledPacks;
 	final List<ResourcePackProfile> disabledPacks;
-	final Function<ResourcePackProfile, Identifier> field_25785;
+	final Function<ResourcePackProfile, Identifier> iconIdSupplier;
 	final Runnable updateCallback;
 	private final Consumer<ResourcePackManager> applier;
 
 	public ResourcePackOrganizer(
-		Runnable updateCallback, Function<ResourcePackProfile, Identifier> function, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> applier
+		Runnable updateCallback,
+		Function<ResourcePackProfile, Identifier> iconIdSupplier,
+		ResourcePackManager resourcePackManager,
+		Consumer<ResourcePackManager> applier
 	) {
 		this.updateCallback = updateCallback;
-		this.field_25785 = function;
+		this.iconIdSupplier = iconIdSupplier;
 		this.resourcePackManager = resourcePackManager;
 		this.enabledPacks = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		Collections.reverse(this.enabledPacks);
@@ -74,8 +77,8 @@ public class ResourcePackOrganizer {
 		protected abstract List<ResourcePackProfile> getOppositeList();
 
 		@Override
-		public Identifier method_30286() {
-			return (Identifier)ResourcePackOrganizer.this.field_25785.apply(this.profile);
+		public Identifier getIconId() {
+			return (Identifier)ResourcePackOrganizer.this.iconIdSupplier.apply(this.profile);
 		}
 
 		@Override
@@ -211,7 +214,7 @@ public class ResourcePackOrganizer {
 
 	@Environment(EnvType.CLIENT)
 	public interface Pack {
-		Identifier method_30286();
+		Identifier getIconId();
 
 		ResourcePackCompatibility getCompatibility();
 

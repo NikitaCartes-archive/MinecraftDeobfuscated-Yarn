@@ -21,7 +21,7 @@ public class ConfirmScreen extends Screen {
 	protected Text noTranslated;
 	private int buttonEnableTimer;
 	protected final BooleanConsumer callback;
-	private final List<ButtonWidget> field_33808 = Lists.<ButtonWidget>newArrayList();
+	private final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
 
 	public ConfirmScreen(BooleanConsumer callback, Text title, Text message) {
 		this(callback, title, message, ScreenTexts.YES, ScreenTexts.NO);
@@ -46,17 +46,17 @@ public class ConfirmScreen extends Screen {
 		this.messageSplit = MultilineText.create(this.textRenderer, this.message, this.width - 50);
 		int i = this.messageSplit.count() * 9;
 		int j = MathHelper.clamp(90 + i + 12, this.height / 6 + 96, this.height - 24);
-		this.field_33808.clear();
-		this.method_37051(j);
+		this.buttons.clear();
+		this.addButtons(j);
 	}
 
-	protected void method_37051(int i) {
-		this.method_37052(new ButtonWidget(this.width / 2 - 155, i, 150, 20, this.yesTranslated, button -> this.callback.accept(true)));
-		this.method_37052(new ButtonWidget(this.width / 2 - 155 + 160, i, 150, 20, this.noTranslated, button -> this.callback.accept(false)));
+	protected void addButtons(int y) {
+		this.addButton(new ButtonWidget(this.width / 2 - 155, y, 150, 20, this.yesTranslated, button -> this.callback.accept(true)));
+		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, y, 150, 20, this.noTranslated, button -> this.callback.accept(false)));
 	}
 
-	protected void method_37052(ButtonWidget buttonWidget) {
-		this.field_33808.add(this.addDrawableChild(buttonWidget));
+	protected void addButton(ButtonWidget button) {
+		this.buttons.add(this.addDrawableChild(button));
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class ConfirmScreen extends Screen {
 	public void disableButtons(int ticks) {
 		this.buttonEnableTimer = ticks;
 
-		for (ButtonWidget buttonWidget : this.field_33808) {
+		for (ButtonWidget buttonWidget : this.buttons) {
 			buttonWidget.active = false;
 		}
 	}
@@ -79,7 +79,7 @@ public class ConfirmScreen extends Screen {
 	public void tick() {
 		super.tick();
 		if (--this.buttonEnableTimer == 0) {
-			for (ButtonWidget buttonWidget : this.field_33808) {
+			for (ButtonWidget buttonWidget : this.buttons) {
 				buttonWidget.active = true;
 			}
 		}

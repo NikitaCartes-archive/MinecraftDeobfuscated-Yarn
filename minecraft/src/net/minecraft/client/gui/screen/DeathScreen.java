@@ -20,7 +20,7 @@ public class DeathScreen extends Screen {
 	private final Text message;
 	private final boolean isHardcore;
 	private Text scoreText;
-	private final List<ButtonWidget> field_33809 = Lists.<ButtonWidget>newArrayList();
+	private final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
 
 	public DeathScreen(@Nullable Text message, boolean isHardcore) {
 		super(new TranslatableText(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
@@ -31,8 +31,8 @@ public class DeathScreen extends Screen {
 	@Override
 	protected void init() {
 		this.ticksSinceDeath = 0;
-		this.field_33809.clear();
-		this.field_33809
+		this.buttons.clear();
+		this.buttons
 			.add(
 				this.addDrawableChild(
 					new ButtonWidget(
@@ -48,7 +48,7 @@ public class DeathScreen extends Screen {
 					)
 				)
 			);
-		this.field_33809
+		this.buttons
 			.add(
 				this.addDrawableChild(
 					new ButtonWidget(
@@ -76,7 +76,7 @@ public class DeathScreen extends Screen {
 				)
 			);
 
-		for (ButtonWidget buttonWidget : this.field_33809) {
+		for (ButtonWidget buttonWidget : this.buttons) {
 			buttonWidget.active = false;
 		}
 
@@ -163,7 +163,7 @@ public class DeathScreen extends Screen {
 		super.tick();
 		this.ticksSinceDeath++;
 		if (this.ticksSinceDeath == 20) {
-			for (ButtonWidget buttonWidget : this.field_33809) {
+			for (ButtonWidget buttonWidget : this.buttons) {
 				buttonWidget.active = true;
 			}
 		}

@@ -102,7 +102,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 					}
 
 					@Override
-					public void method_37023(Consumer<Text> consumer) {
+					public void supply(Consumer<Text> consumer) {
 						consumer.accept(SocialInteractionsPlayerListEntry.this.hideText);
 					}
 				},
@@ -140,7 +140,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 					}
 
 					@Override
-					public void method_37023(Consumer<Text> consumer) {
+					public void supply(Consumer<Text> consumer) {
 						consumer.accept(SocialInteractionsPlayerListEntry.this.showText);
 					}
 				},
@@ -205,7 +205,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	}
 
 	@Override
-	public List<? extends Selectable> method_37025() {
+	public List<? extends Selectable> selectableChildren() {
 		return this.buttons;
 	}
 

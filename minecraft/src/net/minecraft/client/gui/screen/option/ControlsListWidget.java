@@ -89,7 +89,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		}
 
 		@Override
-		public List<? extends Selectable> method_37025() {
+		public List<? extends Selectable> selectableChildren() {
 			return ImmutableList.of(new Selectable() {
 				@Override
 				public Selectable.SelectionType getType() {
@@ -177,7 +177,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		}
 
 		@Override
-		public List<? extends Selectable> method_37025() {
+		public List<? extends Selectable> selectableChildren() {
 			return ImmutableList.of(this.editButton, this.resetButton);
 		}
 

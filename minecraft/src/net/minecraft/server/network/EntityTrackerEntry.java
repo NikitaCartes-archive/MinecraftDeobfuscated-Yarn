@@ -20,9 +20,9 @@ import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntityDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -189,7 +189,7 @@ public class EntityTrackerEntry {
 
 	public void stopTracking(ServerPlayerEntity player) {
 		this.entity.onStoppedTrackingBy(player);
-		player.networkHandler.sendPacket(new EntityDestroyS2CPacket(this.entity.getId()));
+		player.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(this.entity.getId()));
 	}
 
 	public void startTracking(ServerPlayerEntity player) {

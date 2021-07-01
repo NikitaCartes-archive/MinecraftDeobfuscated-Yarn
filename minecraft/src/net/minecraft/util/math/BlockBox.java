@@ -84,9 +84,9 @@ public class BlockBox {
 	}
 
 	/**
-	 * Creates an empty box.
+	 * Creates an all-encompassing, infinite box.
 	 */
-	public static BlockBox empty() {
+	public static BlockBox infinite() {
 		return new BlockBox(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 	}
 

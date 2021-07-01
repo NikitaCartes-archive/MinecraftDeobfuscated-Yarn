@@ -64,10 +64,10 @@ public class PackScreen extends Screen {
 	private ButtonWidget doneButton;
 	private final Map<String, Identifier> iconTextures = Maps.<String, Identifier>newHashMap();
 
-	public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> consumer, File file, Text title) {
+	public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> applier, File file, Text title) {
 		super(title);
 		this.parent = parent;
-		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::getPackIconTexture, packManager, consumer);
+		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::getPackIconTexture, packManager, applier);
 		this.file = file;
 		this.directoryWatcher = PackScreen.DirectoryWatcher.create(file);
 	}
@@ -107,7 +107,7 @@ public class PackScreen extends Screen {
 					}
 
 					@Override
-					public void method_37023(Consumer<Text> consumer) {
+					public void supply(Consumer<Text> consumer) {
 						consumer.accept(PackScreen.FOLDER_INFO);
 					}
 				}
@@ -211,8 +211,8 @@ public class PackScreen extends Screen {
 	@Override
 	public void filesDragged(List<Path> paths) {
 		String string = (String)paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
-		this.client.openScreen(new ConfirmScreen(bl -> {
-			if (bl) {
+		this.client.openScreen(new ConfirmScreen(confirmed -> {
+			if (confirmed) {
 				copyPacks(this.client, paths, this.file.toPath());
 				this.refresh();
 			}

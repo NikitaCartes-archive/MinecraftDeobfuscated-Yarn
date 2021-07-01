@@ -195,7 +195,7 @@ public class TitleScreen extends Screen {
 				}
 
 				@Override
-				public void method_37023(Consumer<Text> consumer) {
+				public void supply(Consumer<Text> consumer) {
 					consumer.accept(this.MULTIPLAYER_DISABLED_TEXT);
 				}
 			};
@@ -296,17 +296,17 @@ public class TitleScreen extends Screen {
 			RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, g);
 			if (this.isMinceraft) {
-				this.drawWithOutline(j, 30, (integer, integer2) -> {
-					this.drawTexture(matrices, integer + 0, integer2, 0, 0, 99, 44);
-					this.drawTexture(matrices, integer + 99, integer2, 129, 0, 27, 44);
-					this.drawTexture(matrices, integer + 99 + 26, integer2, 126, 0, 3, 44);
-					this.drawTexture(matrices, integer + 99 + 26 + 3, integer2, 99, 0, 26, 44);
-					this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
+				this.drawWithOutline(j, 30, (x, y) -> {
+					this.drawTexture(matrices, x + 0, y, 0, 0, 99, 44);
+					this.drawTexture(matrices, x + 99, y, 129, 0, 27, 44);
+					this.drawTexture(matrices, x + 99 + 26, y, 126, 0, 3, 44);
+					this.drawTexture(matrices, x + 99 + 26 + 3, y, 99, 0, 26, 44);
+					this.drawTexture(matrices, x + 155, y, 0, 45, 155, 44);
 				});
 			} else {
-				this.drawWithOutline(j, 30, (integer, integer2) -> {
-					this.drawTexture(matrices, integer + 0, integer2, 0, 0, 155, 44);
-					this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
+				this.drawWithOutline(j, 30, (x, y) -> {
+					this.drawTexture(matrices, x + 0, y, 0, 0, 155, 44);
+					this.drawTexture(matrices, x + 155, y, 0, 45, 155, 44);
 				});
 			}
 

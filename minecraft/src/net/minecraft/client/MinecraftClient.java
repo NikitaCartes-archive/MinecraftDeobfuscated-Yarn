@@ -2840,7 +2840,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				} catch (InterruptedException var17) {
 				}
 
-				ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", width, height, framebuffer, text -> {
+				ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", framebuffer, text -> {
 				});
 			}
 

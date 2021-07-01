@@ -91,25 +91,25 @@ public class RecipeBookResults {
 		this.prevPageButton.visible = this.pageCount > 1 && this.currentPage > 0;
 	}
 
-	public void draw(MatrixStack matrices, int i, int j, int k, int l, float f) {
+	public void draw(MatrixStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
 		if (this.pageCount > 1) {
 			String string = this.currentPage + 1 + "/" + this.pageCount;
-			int m = this.client.textRenderer.getWidth(string);
-			this.client.textRenderer.draw(matrices, string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
+			int i = this.client.textRenderer.getWidth(string);
+			this.client.textRenderer.draw(matrices, string, (float)(x - i / 2 + 73), (float)(y + 141), -1);
 		}
 
 		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-			animatedResultButton.render(matrices, k, l, f);
+			animatedResultButton.render(matrices, mouseX, mouseY, delta);
 			if (animatedResultButton.visible && animatedResultButton.isHovered()) {
 				this.hoveredResultButton = animatedResultButton;
 			}
 		}
 
-		this.prevPageButton.render(matrices, k, l, f);
-		this.nextPageButton.render(matrices, k, l, f);
-		this.alternatesWidget.render(matrices, k, l, f);
+		this.prevPageButton.render(matrices, mouseX, mouseY, delta);
+		this.nextPageButton.render(matrices, mouseX, mouseY, delta);
+		this.alternatesWidget.render(matrices, mouseX, mouseY, delta);
 	}
 
 	public void drawTooltip(MatrixStack matrices, int x, int y) {
@@ -193,7 +193,7 @@ public class RecipeBookResults {
 		return this.recipeBook;
 	}
 
-	protected void method_37083(Consumer<ClickableWidget> consumer) {
+	protected void forEachButton(Consumer<ClickableWidget> consumer) {
 		consumer.accept(this.nextPageButton);
 		consumer.accept(this.prevPageButton);
 		this.resultButtons.forEach(consumer);

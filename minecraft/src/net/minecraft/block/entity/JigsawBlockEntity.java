@@ -135,7 +135,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		);
 
 		for (PoolStructurePiece poolStructurePiece2 : list) {
-			poolStructurePiece2.generate(world, structureAccessor, chunkGenerator, random, BlockBox.empty(), blockPos, keepJigsaws);
+			poolStructurePiece2.generate(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
 		}
 	}
 

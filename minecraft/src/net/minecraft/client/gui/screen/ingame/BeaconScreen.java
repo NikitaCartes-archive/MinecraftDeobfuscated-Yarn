@@ -34,7 +34,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	static final Identifier TEXTURE = new Identifier("textures/gui/container/beacon.png");
 	private static final Text PRIMARY_POWER_TEXT = new TranslatableText("block.minecraft.beacon.primary");
 	private static final Text SECONDARY_POWER_TEXT = new TranslatableText("block.minecraft.beacon.secondary");
-	private final List<BeaconScreen.class_6392> field_33832 = Lists.<BeaconScreen.class_6392>newArrayList();
+	private final List<BeaconScreen.BeaconButtonWidget> buttons = Lists.<BeaconScreen.BeaconButtonWidget>newArrayList();
 	@Nullable
 	StatusEffect primaryEffect;
 	@Nullable
@@ -57,17 +57,17 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		});
 	}
 
-	private <T extends ClickableWidget & BeaconScreen.class_6392> void method_37076(T clickableWidget) {
-		this.addDrawableChild(clickableWidget);
-		this.field_33832.add(clickableWidget);
+	private <T extends ClickableWidget & BeaconScreen.BeaconButtonWidget> void addButton(T button) {
+		this.addDrawableChild(button);
+		this.buttons.add(button);
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		this.field_33832.clear();
-		this.method_37076(new BeaconScreen.DoneButtonWidget(this.x + 164, this.y + 107));
-		this.method_37076(new BeaconScreen.CancelButtonWidget(this.x + 190, this.y + 107));
+		this.buttons.clear();
+		this.addButton(new BeaconScreen.DoneButtonWidget(this.x + 164, this.y + 107));
+		this.addButton(new BeaconScreen.CancelButtonWidget(this.x + 190, this.y + 107));
 
 		for (int i = 0; i <= 2; i++) {
 			int j = BeaconBlockEntity.EFFECTS_BY_LEVEL[i].length;
@@ -79,7 +79,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 					this.x + 76 + l * 24 - k / 2, this.y + 22 + i * 25, statusEffect, true, i
 				);
 				effectButtonWidget.active = false;
-				this.method_37076(effectButtonWidget);
+				this.addButton(effectButtonWidget);
 			}
 		}
 
@@ -91,25 +91,25 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 			StatusEffect statusEffect = BeaconBlockEntity.EFFECTS_BY_LEVEL[3][l];
 			BeaconScreen.EffectButtonWidget effectButtonWidget = new BeaconScreen.EffectButtonWidget(this.x + 167 + l * 24 - k / 2, this.y + 47, statusEffect, false, 3);
 			effectButtonWidget.active = false;
-			this.method_37076(effectButtonWidget);
+			this.addButton(effectButtonWidget);
 		}
 
 		BeaconScreen.EffectButtonWidget effectButtonWidget2 = new BeaconScreen.LevelTwoEffectButtonWidget(
 			this.x + 167 + (j - 1) * 24 - k / 2, this.y + 47, BeaconBlockEntity.EFFECTS_BY_LEVEL[0][0]
 		);
 		effectButtonWidget2.visible = false;
-		this.method_37076(effectButtonWidget2);
+		this.addButton(effectButtonWidget2);
 	}
 
 	@Override
 	public void handledScreenTick() {
 		super.handledScreenTick();
-		this.method_37078();
+		this.tickButtons();
 	}
 
-	void method_37078() {
+	void tickButtons() {
 		int i = this.handler.getProperties();
-		this.field_33832.forEach(arg -> arg.method_37080(i));
+		this.buttons.forEach(button -> button.tick(i));
 	}
 
 	@Override
@@ -117,9 +117,9 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		drawCenteredText(matrices, this.textRenderer, PRIMARY_POWER_TEXT, 62, 10, 14737632);
 		drawCenteredText(matrices, this.textRenderer, SECONDARY_POWER_TEXT, 169, 10, 14737632);
 
-		for (BeaconScreen.class_6392 lv : this.field_33832) {
-			if (lv.method_37079()) {
-				lv.renderTooltip(matrices, mouseX - this.x, mouseY - this.y);
+		for (BeaconScreen.BeaconButtonWidget beaconButtonWidget : this.buttons) {
+			if (beaconButtonWidget.shouldRenderTooltip()) {
+				beaconButtonWidget.renderTooltip(matrices, mouseX - this.x, mouseY - this.y);
 				break;
 			}
 		}
@@ -150,7 +150,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	abstract static class BaseButtonWidget extends PressableWidget implements BeaconScreen.class_6392 {
+	abstract static class BaseButtonWidget extends PressableWidget implements BeaconScreen.BeaconButtonWidget {
 		private boolean disabled;
 
 		protected BaseButtonWidget(int x, int y) {
@@ -191,14 +191,23 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public boolean method_37079() {
+		public boolean shouldRenderTooltip() {
 			return this.hovered;
 		}
 
 		@Override
 		public void appendNarrations(NarrationMessageBuilder builder) {
-			this.method_37021(builder);
+			this.appendDefaultNarrations(builder);
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	interface BeaconButtonWidget {
+		boolean shouldRenderTooltip();
+
+		void renderTooltip(MatrixStack matrices, int mouseX, int mouseY);
+
+		void tick(int level);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -213,7 +222,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void method_37080(int i) {
+		public void tick(int level) {
 		}
 	}
 
@@ -232,7 +241,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void method_37080(int i) {
+		public void tick(int level) {
 			this.active = BeaconScreen.this.handler.hasPayment() && BeaconScreen.this.primaryEffect != null;
 		}
 	}
@@ -240,15 +249,15 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	@Environment(EnvType.CLIENT)
 	class EffectButtonWidget extends BeaconScreen.BaseButtonWidget {
 		private final boolean primary;
-		protected final int field_33833;
+		protected final int level;
 		private StatusEffect effect;
 		private Sprite sprite;
 		private Text tooltip;
 
-		public EffectButtonWidget(int x, int y, StatusEffect statusEffect, boolean primary, int i) {
+		public EffectButtonWidget(int x, int y, StatusEffect statusEffect, boolean primary, int level) {
 			super(x, y);
 			this.primary = primary;
-			this.field_33833 = i;
+			this.level = level;
 			this.init(statusEffect);
 		}
 
@@ -271,7 +280,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 					BeaconScreen.this.secondaryEffect = this.effect;
 				}
 
-				BeaconScreen.this.method_37078();
+				BeaconScreen.this.tickButtons();
 			}
 		}
 
@@ -287,8 +296,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void method_37080(int i) {
-			this.active = this.field_33833 < i;
+		public void tick(int level) {
+			this.active = this.level < level;
 			this.setDisabled(this.effect == (this.primary ? BeaconScreen.this.primaryEffect : BeaconScreen.this.secondaryEffect));
 		}
 
@@ -332,23 +341,14 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void method_37080(int i) {
+		public void tick(int level) {
 			if (BeaconScreen.this.primaryEffect != null) {
 				this.visible = true;
 				this.init(BeaconScreen.this.primaryEffect);
-				super.method_37080(i);
+				super.tick(level);
 			} else {
 				this.visible = false;
 			}
 		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	interface class_6392 {
-		boolean method_37079();
-
-		void renderTooltip(MatrixStack matrices, int mouseX, int mouseY);
-
-		void method_37080(int i);
 	}
 }

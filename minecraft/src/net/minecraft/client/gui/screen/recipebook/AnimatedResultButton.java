@@ -31,7 +31,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	private static final Text MORE_RECIPES_TEXT = new TranslatableText("gui.recipebook.moreRecipes");
 	private AbstractRecipeScreenHandler<?> craftingScreenHandler;
 	private RecipeBook recipeBook;
-	private RecipeResultCollection results;
+	private RecipeResultCollection resultCollection;
 	private float time;
 	private float bounce;
 	private int currentResultIndex;
@@ -40,15 +40,15 @@ public class AnimatedResultButton extends ClickableWidget {
 		super(0, 0, 25, 25, LiteralText.EMPTY);
 	}
 
-	public void showResultCollection(RecipeResultCollection recipeResultCollection, RecipeBookResults recipeBookResults) {
-		this.results = recipeResultCollection;
-		this.craftingScreenHandler = (AbstractRecipeScreenHandler<?>)recipeBookResults.getMinecraftClient().player.currentScreenHandler;
-		this.recipeBook = recipeBookResults.getRecipeBook();
-		List<Recipe<?>> list = recipeResultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
+	public void showResultCollection(RecipeResultCollection resultCollection, RecipeBookResults results) {
+		this.resultCollection = resultCollection;
+		this.craftingScreenHandler = (AbstractRecipeScreenHandler<?>)results.getMinecraftClient().player.currentScreenHandler;
+		this.recipeBook = results.getRecipeBook();
+		List<Recipe<?>> list = resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
 
 		for (Recipe<?> recipe : list) {
 			if (this.recipeBook.shouldDisplay(recipe)) {
-				recipeBookResults.onRecipesDisplayed(list);
+				results.onRecipesDisplayed(list);
 				this.bounce = 15.0F;
 				break;
 			}
@@ -56,7 +56,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	}
 
 	public RecipeResultCollection getResultCollection() {
-		return this.results;
+		return this.resultCollection;
 	}
 
 	public void setPos(int x, int y) {
@@ -74,12 +74,12 @@ public class AnimatedResultButton extends ClickableWidget {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int i = 29;
-		if (!this.results.hasCraftableRecipes()) {
+		if (!this.resultCollection.hasCraftableRecipes()) {
 			i += 25;
 		}
 
 		int j = 206;
-		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
+		if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
 			j += 25;
 		}
 
@@ -100,8 +100,8 @@ public class AnimatedResultButton extends ClickableWidget {
 		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
 		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput();
 		int k = 4;
-		if (this.results.hasSingleOutput() && this.getResults().size() > 1) {
-			minecraftClient.getItemRenderer().method_36542(itemStack, this.x + k + 1, this.y + k + 1, 0, 10);
+		if (this.resultCollection.hasSingleOutput() && this.getResults().size() > 1) {
+			minecraftClient.getItemRenderer().renderInGuiWithOverrides(itemStack, this.x + k + 1, this.y + k + 1, 0, 10);
 			k--;
 		}
 
@@ -113,9 +113,9 @@ public class AnimatedResultButton extends ClickableWidget {
 	}
 
 	private List<Recipe<?>> getResults() {
-		List<Recipe<?>> list = this.results.getRecipes(true);
+		List<Recipe<?>> list = this.resultCollection.getRecipes(true);
 		if (!this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)) {
-			list.addAll(this.results.getRecipes(false));
+			list.addAll(this.resultCollection.getRecipes(false));
 		}
 
 		return list;
@@ -133,7 +133,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	public List<Text> getTooltip(Screen screen) {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
 		List<Text> list = Lists.<Text>newArrayList(screen.getTooltipFromItem(itemStack));
-		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
+		if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
 			list.add(MORE_RECIPES_TEXT);
 		}
 
@@ -144,7 +144,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	public void appendNarrations(NarrationMessageBuilder builder) {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
 		builder.put(NarrationPart.TITLE, new TranslatableText("narration.recipe", itemStack.getName()));
-		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
+		if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
 			builder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.hovered"), new TranslatableText("narration.recipe.usage.more"));
 		} else {
 			builder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.hovered"));

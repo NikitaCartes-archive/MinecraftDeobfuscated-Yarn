@@ -212,7 +212,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 
 			@Override
-			public Text method_37006() {
+			public Text getNarration() {
 				FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config
 					.getLayers()
 					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - SuperflatLayersListWidget.this.children().indexOf(this) - 1);

@@ -38,7 +38,7 @@ public class PortalForcer {
 		this.world = world;
 	}
 
-	public Optional<PortalUtil.Rectangle> getPortalRect(BlockPos destPos, boolean destIsNether) {
+	public Optional<BlockLocating.Rectangle> getPortalRect(BlockPos destPos, boolean destIsNether) {
 		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 		int i = destIsNether ? 16 : 128;
 		pointOfInterestStorage.preloadChunks(this.world, destPos, i);
@@ -56,14 +56,14 @@ public class PortalForcer {
 				BlockPos blockPos = pointOfInterest.getPos();
 				this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
 				BlockState blockState = this.world.getBlockState(blockPos);
-				return PortalUtil.getLargestRectangle(
+				return BlockLocating.getLargestRectangle(
 					blockPos, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, blockPosx -> this.world.getBlockState(blockPosx) == blockState
 				);
 			}
 		);
 	}
 
-	public Optional<PortalUtil.Rectangle> createPortal(BlockPos blockPos, Direction.Axis axis) {
+	public Optional<BlockLocating.Rectangle> createPortal(BlockPos blockPos, Direction.Axis axis) {
 		Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, axis);
 		double d = -1.0;
 		BlockPos blockPos2 = null;
@@ -158,7 +158,7 @@ public class PortalForcer {
 			}
 		}
 
-		return Optional.of(new PortalUtil.Rectangle(blockPos2.toImmutable(), 2, 3));
+		return Optional.of(new BlockLocating.Rectangle(blockPos2.toImmutable(), 2, 3));
 	}
 
 	private boolean isValidPortalPos(BlockPos pos, BlockPos.Mutable temp, Direction portalDirection, int distanceOrthogonalToPortal) {

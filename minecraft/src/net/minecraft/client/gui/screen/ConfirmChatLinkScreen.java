@@ -25,7 +25,7 @@ public class ConfirmChatLinkScreen extends ConfirmScreen {
 	}
 
 	@Override
-	protected void method_37051(int i) {
+	protected void addButtons(int y) {
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 50 - 105, this.height / 6 + 96, 100, 20, this.yesTranslated, button -> this.callback.accept(true)));
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height / 6 + 96, 100, 20, copy, button -> {
 			this.copyToClipboard();

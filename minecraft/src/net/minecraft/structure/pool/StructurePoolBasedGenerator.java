@@ -36,52 +36,52 @@ import org.apache.logging.log4j.Logger;
 public class StructurePoolBasedGenerator {
 	static final Logger LOGGER = LogManager.getLogger();
 
-	public static void method_30419(
-		DynamicRegistryManager dynamicRegistryManager,
-		StructurePoolFeatureConfig structurePoolFeatureConfig,
+	public static void generate(
+		DynamicRegistryManager dynamicRegistries,
+		StructurePoolFeatureConfig config,
 		StructurePoolBasedGenerator.PieceFactory pieceFactory,
 		ChunkGenerator chunkGenerator,
 		StructureManager structureManager,
-		BlockPos blockPos,
-		StructurePiecesHolder structurePiecesHolder,
+		BlockPos pos,
+		StructurePiecesHolder children,
 		Random random,
-		boolean bl,
-		boolean bl2,
-		HeightLimitView heightLimitView
+		boolean modifyBoundingBox,
+		boolean surface,
+		HeightLimitView world
 	) {
 		StructureFeature.init();
 		List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
-		Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.STRUCTURE_POOL_KEY);
+		Registry<StructurePool> registry = dynamicRegistries.get(Registry.STRUCTURE_POOL_KEY);
 		BlockRotation blockRotation = BlockRotation.random(random);
-		StructurePool structurePool = (StructurePool)structurePoolFeatureConfig.getStartPool().get();
+		StructurePool structurePool = (StructurePool)config.getStartPool().get();
 		StructurePoolElement structurePoolElement = structurePool.getRandomElement(random);
 		if (structurePoolElement != EmptyPoolElement.INSTANCE) {
 			PoolStructurePiece poolStructurePiece = pieceFactory.create(
 				structureManager,
 				structurePoolElement,
-				blockPos,
+				pos,
 				structurePoolElement.getGroundLevelDelta(),
 				blockRotation,
-				structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation)
+				structurePoolElement.getBoundingBox(structureManager, pos, blockRotation)
 			);
 			BlockBox blockBox = poolStructurePiece.getBoundingBox();
 			int i = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
 			int j = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
 			int k;
-			if (bl2) {
-				k = blockPos.getY() + chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+			if (surface) {
+				k = pos.getY() + chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.WORLD_SURFACE_WG, world);
 			} else {
-				k = blockPos.getY();
+				k = pos.getY();
 			}
 
 			int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
 			poolStructurePiece.translate(0, k - l, 0);
 			list.add(poolStructurePiece);
-			if (structurePoolFeatureConfig.getSize() > 0) {
+			if (config.getSize() > 0) {
 				int m = 80;
 				Box box = new Box((double)(i - 80), (double)(k - 80), (double)(j - 80), (double)(i + 80 + 1), (double)(k + 80 + 1), (double)(j + 80 + 1));
 				StructurePoolBasedGenerator.StructurePoolGenerator structurePoolGenerator = new StructurePoolBasedGenerator.StructurePoolGenerator(
-					registry, structurePoolFeatureConfig.getSize(), pieceFactory, chunkGenerator, structureManager, list, random
+					registry, config.getSize(), pieceFactory, chunkGenerator, structureManager, list, random
 				);
 				structurePoolGenerator.structurePieces
 					.addLast(
@@ -101,12 +101,12 @@ public class StructurePoolBasedGenerator {
 						shapedPoolStructurePiece.pieceShape,
 						shapedPoolStructurePiece.minY,
 						shapedPoolStructurePiece.currentSize,
-						bl,
-						heightLimitView
+						modifyBoundingBox,
+						world
 					);
 				}
 
-				list.forEach(structurePiecesHolder::addPiece);
+				list.forEach(children::addPiece);
 			}
 		}
 	}
@@ -191,12 +191,14 @@ public class StructurePoolBasedGenerator {
 			this.random = random;
 		}
 
-		void generatePiece(PoolStructurePiece piece, MutableObject<VoxelShape> pieceShape, int minY, int currentSize, boolean bl, HeightLimitView world) {
+		void generatePiece(
+			PoolStructurePiece piece, MutableObject<VoxelShape> pieceShape, int minY, int currentSize, boolean modifyBoundingBox, HeightLimitView world
+		) {
 			StructurePoolElement structurePoolElement = piece.getPoolElement();
 			BlockPos blockPos = piece.getPos();
 			BlockRotation blockRotation = piece.getRotation();
 			StructurePool.Projection projection = structurePoolElement.getProjection();
-			boolean bl2 = projection == StructurePool.Projection.RIGID;
+			boolean bl = projection == StructurePool.Projection.RIGID;
 			MutableObject<VoxelShape> mutableObject = new MutableObject<>();
 			BlockBox blockBox = piece.getBoundingBox();
 			int i = blockBox.getMinY();
@@ -216,10 +218,10 @@ public class StructurePoolBasedGenerator {
 					Identifier identifier2 = ((StructurePool)optional.get()).getTerminatorsId();
 					Optional<StructurePool> optional2 = this.registry.getOrEmpty(identifier2);
 					if (optional2.isPresent() && (((StructurePool)optional2.get()).getElementCount() != 0 || Objects.equals(identifier2, StructurePools.EMPTY.getValue()))) {
-						boolean bl3 = blockBox.contains(blockPos3);
+						boolean bl2 = blockBox.contains(blockPos3);
 						MutableObject<VoxelShape> mutableObject2;
 						int l;
-						if (bl3) {
+						if (bl2) {
 							mutableObject2 = mutableObject;
 							l = i;
 							if (mutableObject.getValue() == null) {
@@ -248,7 +250,7 @@ public class StructurePoolBasedGenerator {
 								);
 								BlockBox blockBox2 = structurePoolElement2.getBoundingBox(this.structureManager, BlockPos.ORIGIN, blockRotation2);
 								int m;
-								if (bl && blockBox2.getBlockCountY() <= 16) {
+								if (modifyBoundingBox && blockBox2.getBlockCountY() <= 16) {
 									m = list2.stream().mapToInt(structureBlockInfox -> {
 										if (!blockBox2.contains(structureBlockInfox.pos.offset(JigsawBlock.getFacing(structureBlockInfox.state)))) {
 											return 0;
@@ -272,11 +274,11 @@ public class StructurePoolBasedGenerator {
 										BlockBox blockBox3 = structurePoolElement2.getBoundingBox(this.structureManager, blockPos5, blockRotation2);
 										int n = blockBox3.getMinY();
 										StructurePool.Projection projection2 = structurePoolElement2.getProjection();
-										boolean bl4 = projection2 == StructurePool.Projection.RIGID;
+										boolean bl3 = projection2 == StructurePool.Projection.RIGID;
 										int o = blockPos4.getY();
 										int p = j - o + JigsawBlock.getFacing(structureBlockInfo.state).getOffsetY();
 										int q;
-										if (bl2 && bl4) {
+										if (bl && bl3) {
 											q = i + p;
 										} else {
 											if (k == -1) {
@@ -298,7 +300,7 @@ public class StructurePoolBasedGenerator {
 											mutableObject2.setValue(VoxelShapes.combine(mutableObject2.getValue(), VoxelShapes.cuboid(Box.from(blockBox4)), BooleanBiFunction.ONLY_FIRST));
 											int s = piece.getGroundLevelDelta();
 											int t;
-											if (bl4) {
+											if (bl3) {
 												t = s - p;
 											} else {
 												t = structurePoolElement2.getGroundLevelDelta();
@@ -307,9 +309,9 @@ public class StructurePoolBasedGenerator {
 											PoolStructurePiece poolStructurePiece = this.pieceFactory
 												.create(this.structureManager, structurePoolElement2, blockPos6, t, blockRotation2, blockBox4);
 											int u;
-											if (bl2) {
+											if (bl) {
 												u = i + j;
-											} else if (bl4) {
+											} else if (bl3) {
 												u = q + o;
 											} else {
 												if (k == -1) {

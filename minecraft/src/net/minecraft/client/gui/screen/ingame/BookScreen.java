@@ -264,25 +264,25 @@ public class BookScreen extends Screen {
 
 	static List<String> readPages(NbtCompound nbt) {
 		Builder<String> builder = ImmutableList.builder();
-		method_33888(nbt, builder::add);
+		filterPages(nbt, builder::add);
 		return builder.build();
 	}
 
-	public static void method_33888(NbtCompound nbt, Consumer<String> consumer) {
+	public static void filterPages(NbtCompound nbt, Consumer<String> pageConsumer) {
 		NbtList nbtList = nbt.getList("pages", NbtElement.STRING_TYPE).copy();
 		IntFunction<String> intFunction;
 		if (MinecraftClient.getInstance().shouldFilterText() && nbt.contains("filtered_pages", NbtElement.COMPOUND_TYPE)) {
 			NbtCompound nbtCompound = nbt.getCompound("filtered_pages");
-			intFunction = ix -> {
-				String string = String.valueOf(ix);
-				return nbtCompound.contains(string) ? nbtCompound.getString(string) : nbtList.getString(ix);
+			intFunction = page -> {
+				String string = String.valueOf(page);
+				return nbtCompound.contains(string) ? nbtCompound.getString(string) : nbtList.getString(page);
 			};
 		} else {
 			intFunction = nbtList::getString;
 		}
 
 		for (int i = 0; i < nbtList.size(); i++) {
-			consumer.accept((String)intFunction.apply(i));
+			pageConsumer.accept((String)intFunction.apply(i));
 		}
 	}
 
