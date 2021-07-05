@@ -134,7 +134,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final TicketManager ticketManager;
     private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
     private final StructureManager structureManager;
-    private final File saveDir;
+    private final String saveDir;
     private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
     private final Int2ObjectMap<EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<EntityTracker>();
     private final Long2ByteMap chunkToType = new Long2ByteOpenHashMap();
@@ -144,7 +144,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     public ThreadedAnvilChunkStorage(ServerWorld world, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor executor, ThreadExecutor<Runnable> mainThreadExecutor, ChunkProvider chunkProvider, ChunkGenerator chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> persistentStateManagerFactory, int viewDistance, boolean dsync) {
         super(new File(session.getWorldDirectory(world.getRegistryKey()), "region"), dataFixer, dsync);
         this.structureManager = structureManager;
-        this.saveDir = session.getWorldDirectory(world.getRegistryKey());
+        File file = session.getWorldDirectory(world.getRegistryKey());
+        this.saveDir = file.getName();
         this.world = world;
         this.chunkGenerator = chunkGenerator;
         this.mainThreadExecutor = mainThreadExecutor;
@@ -159,7 +160,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.lightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false));
         this.ticketManager = new TicketManager(executor, mainThreadExecutor);
         this.persistentStateManagerFactory = persistentStateManagerFactory;
-        this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer, dsync, world);
+        this.pointOfInterestStorage = new PointOfInterestStorage(new File(file, "poi"), dataFixer, dsync, world);
         this.setViewDistance(viewDistance);
     }
 
@@ -342,7 +343,6 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             } while (mutableBoolean.isTrue());
             this.unloadChunks(() -> true);
             this.completeAll();
-            LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", (Object)this.saveDir.getName());
         } else {
             this.chunkHolders.values().stream().filter(ChunkHolder::isAccessible).forEach(chunkHolder -> {
                 Chunk chunk = chunkHolder.getSavingFuture().getNow(null);
@@ -964,6 +964,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     protected PointOfInterestStorage getPointOfInterestStorage() {
         return this.pointOfInterestStorage;
+    }
+
+    public String method_37476() {
+        return this.saveDir;
     }
 
     public CompletableFuture<Void> enableTickSchedulers(WorldChunk chunk) {

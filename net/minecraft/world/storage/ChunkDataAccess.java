@@ -14,7 +14,7 @@ extends AutoCloseable {
 
     public void writeChunkData(ChunkDataList<T> var1);
 
-    public void awaitAll();
+    public void awaitAll(boolean var1);
 
     @Override
     default public void close() throws IOException {

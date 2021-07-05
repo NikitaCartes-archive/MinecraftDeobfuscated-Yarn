@@ -77,17 +77,20 @@ implements AutoCloseable {
         });
     }
 
-    public CompletableFuture<Void> completeAll() {
+    public CompletableFuture<Void> completeAll(boolean bl) {
         CompletionStage completableFuture = this.run(() -> Either.left(CompletableFuture.allOf((CompletableFuture[])this.results.values().stream().map(result -> result.future).toArray(CompletableFuture[]::new)))).thenCompose(Function.identity());
-        return ((CompletableFuture)completableFuture).thenCompose(void_ -> this.run(() -> {
-            try {
-                this.storage.sync();
-                return Either.left(null);
-            } catch (Exception exception) {
-                LOGGER.warn("Failed to synchronized chunks", (Throwable)exception);
-                return Either.right(exception);
-            }
-        }));
+        if (bl) {
+            return ((CompletableFuture)completableFuture).thenCompose(void_ -> this.run(() -> {
+                try {
+                    this.storage.sync();
+                    return Either.left(null);
+                } catch (Exception exception) {
+                    LOGGER.warn("Failed to synchronize chunks", (Throwable)exception);
+                    return Either.right(exception);
+                }
+            }));
+        }
+        return ((CompletableFuture)completableFuture).thenCompose(void_ -> this.run(() -> Either.left(null)));
     }
 
     private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> task) {

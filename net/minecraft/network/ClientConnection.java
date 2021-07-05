@@ -381,12 +381,12 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         this.channel.config().setAutoRead(false);
     }
 
-    public void setCompressionThreshold(int compressionThreshold) {
+    public void setCompressionThreshold(int compressionThreshold, boolean bl) {
         if (compressionThreshold >= 0) {
             if (this.channel.pipeline().get("decompress") instanceof PacketInflater) {
-                ((PacketInflater)this.channel.pipeline().get("decompress")).setCompressionThreshold(compressionThreshold);
+                ((PacketInflater)this.channel.pipeline().get("decompress")).setCompressionThreshold(compressionThreshold, bl);
             } else {
-                this.channel.pipeline().addBefore("decoder", "decompress", new PacketInflater(compressionThreshold));
+                this.channel.pipeline().addBefore("decoder", "decompress", new PacketInflater(compressionThreshold, bl));
             }
             if (this.channel.pipeline().get("compress") instanceof PacketDeflater) {
                 ((PacketDeflater)this.channel.pipeline().get("compress")).setCompressionThreshold(compressionThreshold);

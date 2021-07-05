@@ -319,13 +319,14 @@ implements AutoCloseable {
     public void flush() {
         LongSet longSet = this.getLoadedChunks();
         while (!longSet.isEmpty()) {
-            this.dataAccess.awaitAll();
+            this.dataAccess.awaitAll(false);
             this.loadChunks();
             longSet.removeIf(pos -> {
                 boolean bl = this.trackingStatuses.get(pos) == EntityTrackingStatus.HIDDEN;
                 return bl ? this.unload(pos) : this.trySave(pos, entityLike -> {});
             });
         }
+        this.dataAccess.awaitAll(true);
     }
 
     @Override

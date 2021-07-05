@@ -142,7 +142,7 @@ implements ClientLoginPacketListener {
     @Override
     public void onCompression(LoginCompressionS2CPacket packet) {
         if (!this.connection.isLocal()) {
-            this.connection.setCompressionThreshold(packet.getCompressionThreshold());
+            this.connection.setCompressionThreshold(packet.getCompressionThreshold(), false);
         }
     }
 

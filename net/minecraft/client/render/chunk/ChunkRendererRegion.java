@@ -29,7 +29,6 @@ implements BlockRenderView {
     protected final int sizeZ;
     protected final WorldChunk[][] chunks;
     protected final BlockState[] blockStates;
-    protected final FluidState[] fluidStates;
     protected final World world;
 
     @Nullable
@@ -75,14 +74,12 @@ implements BlockRenderView {
         this.sizeY = endPos.getY() - startPos.getY() + 1;
         this.sizeZ = endPos.getZ() - startPos.getZ() + 1;
         this.blockStates = new BlockState[this.sizeX * this.sizeY * this.sizeZ];
-        this.fluidStates = new FluidState[this.sizeX * this.sizeY * this.sizeZ];
         for (BlockPos blockPos : BlockPos.iterate(startPos, endPos)) {
             int i = ChunkSectionPos.getSectionCoord(blockPos.getX()) - chunkX;
             int j = ChunkSectionPos.getSectionCoord(blockPos.getZ()) - chunkZ;
             WorldChunk worldChunk = chunks[i][j];
             int k = this.getIndex(blockPos);
             this.blockStates[k] = worldChunk.getBlockState(blockPos);
-            this.fluidStates[k] = worldChunk.getFluidState(blockPos);
         }
     }
 
@@ -104,7 +101,7 @@ implements BlockRenderView {
 
     @Override
     public FluidState getFluidState(BlockPos pos) {
-        return this.fluidStates[this.getIndex(pos)];
+        return this.blockStates[this.getIndex(pos)].getFluidState();
     }
 
     @Override

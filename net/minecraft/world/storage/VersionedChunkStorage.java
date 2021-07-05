@@ -64,7 +64,7 @@ implements AutoCloseable {
     }
 
     public void completeAll() {
-        this.worker.completeAll().join();
+        this.worker.completeAll(true).join();
     }
 
     @Override
