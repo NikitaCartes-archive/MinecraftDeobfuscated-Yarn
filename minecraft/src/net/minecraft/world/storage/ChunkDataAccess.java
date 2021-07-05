@@ -9,7 +9,7 @@ public interface ChunkDataAccess<T> extends AutoCloseable {
 
 	void writeChunkData(ChunkDataList<T> dataList);
 
-	void awaitAll();
+	void awaitAll(boolean bl);
 
 	default void close() throws IOException {
 	}
