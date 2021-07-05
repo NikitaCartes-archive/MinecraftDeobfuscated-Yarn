@@ -74,22 +74,22 @@ public class StorageIoWorker implements AutoCloseable {
 		});
 	}
 
-	public CompletableFuture<Void> completeAll() {
+	public CompletableFuture<Void> completeAll(boolean bl) {
 		CompletableFuture<Void> completableFuture = this.run(
 				() -> Either.left(
 						CompletableFuture.allOf((CompletableFuture[])this.results.values().stream().map(result -> result.future).toArray(CompletableFuture[]::new))
 					)
 			)
 			.thenCompose(Function.identity());
-		return completableFuture.thenCompose(void_ -> this.run(() -> {
+		return bl ? completableFuture.thenCompose(void_ -> this.run(() -> {
 				try {
 					this.storage.sync();
 					return Either.left(null);
-				} catch (Exception var2) {
-					LOGGER.warn("Failed to synchronized chunks", (Throwable)var2);
-					return Either.right(var2);
+				} catch (Exception var2x) {
+					LOGGER.warn("Failed to synchronize chunks", (Throwable)var2x);
+					return Either.right(var2x);
 				}
-			}));
+			})) : completableFuture.thenCompose(void_ -> this.run(() -> Either.left(null)));
 	}
 
 	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> task) {

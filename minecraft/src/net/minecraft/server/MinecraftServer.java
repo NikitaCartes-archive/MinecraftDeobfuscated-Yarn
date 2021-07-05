@@ -633,6 +633,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
 		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt());
 		this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
+		if (flush) {
+			for (ServerWorld serverWorld3 : this.getWorlds()) {
+				LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", serverWorld3.getChunkManager().threadedAnvilChunkStorage.method_37476());
+			}
+
+			LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
+		}
+
 		return bl;
 	}
 

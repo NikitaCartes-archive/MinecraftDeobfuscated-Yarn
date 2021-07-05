@@ -141,7 +141,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 				this.connection
 					.send(
 						new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()),
-						channelFuture -> this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold())
+						channelFuture -> this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold(), true)
 					);
 			}
 

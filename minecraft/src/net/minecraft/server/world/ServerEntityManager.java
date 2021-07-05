@@ -327,7 +327,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		LongSet longSet = this.getLoadedChunks();
 
 		while (!longSet.isEmpty()) {
-			this.dataAccess.awaitAll();
+			this.dataAccess.awaitAll(false);
 			this.loadChunks();
 			longSet.removeIf(pos -> {
 				boolean bl = this.trackingStatuses.get(pos) == EntityTrackingStatus.HIDDEN;
@@ -335,6 +335,8 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 				});
 			});
 		}
+
+		this.dataAccess.awaitAll(true);
 	}
 
 	public void close() throws IOException {
