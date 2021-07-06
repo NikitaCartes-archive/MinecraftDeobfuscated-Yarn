@@ -33,7 +33,7 @@ public class EnchantedBookItem extends Item {
 	}
 
 	public static NbtList getEnchantmentNbt(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		return nbtCompound != null ? nbtCompound.getList("StoredEnchantments", NbtElement.COMPOUND_TYPE) : new NbtList();
 	}
 
@@ -65,7 +65,7 @@ public class EnchantedBookItem extends Item {
 			nbtList.add(EnchantmentHelper.createNbt(identifier, entry.level));
 		}
 
-		stack.getOrCreateTag().put("StoredEnchantments", nbtList);
+		stack.getOrCreateNbt().put("StoredEnchantments", nbtList);
 	}
 
 	public static ItemStack forEnchantment(EnchantmentLevelEntry info) {

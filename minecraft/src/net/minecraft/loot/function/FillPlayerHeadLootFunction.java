@@ -41,7 +41,7 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 			Entity entity = context.get(this.entity.getParameter());
 			if (entity instanceof PlayerEntity) {
 				GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();
-				stack.getOrCreateTag().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
+				stack.getOrCreateNbt().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
 			}
 		}
 

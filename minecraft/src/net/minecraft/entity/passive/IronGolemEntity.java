@@ -11,7 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.IronGolemLookGoal;
 import net.minecraft.entity.ai.goal.IronGolemWanderAroundGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -83,9 +83,9 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new TrackIronGolemTargetGoal(this));
 		this.targetSelector.add(2, new RevengeGoal(this));
-		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+		this.targetSelector.add(3, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 		this.targetSelector
-			.add(3, new FollowTargetGoal(this, MobEntity.class, 5, false, false, entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)));
+			.add(3, new ActiveTargetGoal(this, MobEntity.class, 5, false, false, entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)));
 		this.targetSelector.add(4, new UniversalAngerGoal<>(this, false));
 	}
 

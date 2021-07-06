@@ -49,11 +49,11 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 @Environment(EnvType.CLIENT)
 public class BookEditScreen extends Screen {
-	private static final int field_32323 = 114;
-	private static final int field_32324 = 128;
+	private static final int MAX_TEXT_WIDTH = 114;
+	private static final int MAX_TEXT_HEIGHT = 128;
 	private static final int field_32325 = 250;
-	private static final int field_32326 = 192;
-	private static final int field_32327 = 192;
+	private static final int WIDTH = 192;
+	private static final int HEIGHT = 192;
 	private static final Text EDIT_TITLE_TEXT = new TranslatableText("book.editTitle");
 	private static final Text FINALIZE_WARNING_TEXT = new TranslatableText("book.finalizeWarning");
 	private static final OrderedText BLACK_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.BLACK));
@@ -95,7 +95,7 @@ public class BookEditScreen extends Screen {
 		this.player = player;
 		this.itemStack = itemStack;
 		this.hand = hand;
-		NbtCompound nbtCompound = itemStack.getTag();
+		NbtCompound nbtCompound = itemStack.getNbt();
 		if (nbtCompound != null) {
 			BookScreen.filterPages(nbtCompound, this.pages::add);
 		}
@@ -136,13 +136,13 @@ public class BookEditScreen extends Screen {
 			this.updateButtons();
 		}));
 		this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, ScreenTexts.DONE, button -> {
-			this.client.openScreen(null);
+			this.client.setScreen(null);
 			this.finalizeBook(false);
 		}));
 		this.finalizeButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, new TranslatableText("book.finalizeButton"), button -> {
 			if (this.signing) {
 				this.finalizeBook(true);
-				this.client.openScreen(null);
+				this.client.setScreen(null);
 			}
 		}));
 		this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, ScreenTexts.CANCEL, button -> {
@@ -218,12 +218,12 @@ public class BookEditScreen extends Screen {
 		NbtList nbtList = new NbtList();
 		this.pages.stream().map(NbtString::of).forEach(nbtList::add);
 		if (!this.pages.isEmpty()) {
-			this.itemStack.putSubTag("pages", nbtList);
+			this.itemStack.setSubNbt("pages", nbtList);
 		}
 
 		if (signBook) {
-			this.itemStack.putSubTag("author", NbtString.of(this.player.getGameProfile().getName()));
-			this.itemStack.putSubTag("title", NbtString.of(this.title.trim()));
+			this.itemStack.setSubNbt("author", NbtString.of(this.player.getGameProfile().getName()));
+			this.itemStack.setSubNbt("title", NbtString.of(this.title.trim()));
 		}
 	}
 
@@ -361,7 +361,7 @@ public class BookEditScreen extends Screen {
 			case 335:
 				if (!this.title.isEmpty()) {
 					this.finalizeBook(true);
-					this.client.openScreen(null);
+					this.client.setScreen(null);
 				}
 
 				return true;

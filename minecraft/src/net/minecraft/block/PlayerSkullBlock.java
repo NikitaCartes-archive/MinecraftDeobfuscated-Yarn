@@ -24,8 +24,8 @@ public class PlayerSkullBlock extends SkullBlock {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof SkullBlockEntity skullBlockEntity) {
 			GameProfile gameProfile = null;
-			if (itemStack.hasTag()) {
-				NbtCompound nbtCompound = itemStack.getTag();
+			if (itemStack.hasNbt()) {
+				NbtCompound nbtCompound = itemStack.getNbt();
 				if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 					gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
 				} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {

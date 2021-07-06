@@ -19,13 +19,13 @@ import net.minecraft.text.TranslatableText;
 public class ScoreboardObjectiveArgumentType implements ArgumentType<String> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "*", "012");
 	private static final DynamicCommandExceptionType UNKNOWN_OBJECTIVE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("arguments.objective.notFound", object)
+		name -> new TranslatableText("arguments.objective.notFound", name)
 	);
 	private static final DynamicCommandExceptionType READONLY_OBJECTIVE_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("arguments.objective.readonly", object)
+		name -> new TranslatableText("arguments.objective.readonly", name)
 	);
 	public static final DynamicCommandExceptionType LONG_NAME_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("commands.scoreboard.objectives.add.longName", object)
+		maxLength -> new TranslatableText("commands.scoreboard.objectives.add.longName", maxLength)
 	);
 
 	public static ScoreboardObjectiveArgumentType scoreboardObjective() {

@@ -8,7 +8,7 @@ import net.minecraft.nbt.NbtElement;
 
 public interface LootNbtProvider {
 	@Nullable
-	NbtElement getNbtTag(LootContext context);
+	NbtElement getNbt(LootContext context);
 
 	Set<LootContextParameter<?>> getRequiredParameters();
 

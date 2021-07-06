@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -32,7 +33,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 	private static final ModelIdentifier MAP_FRAME = new ModelIdentifier("item_frame", "map=true");
 	private static final ModelIdentifier GLOW_FRAME = new ModelIdentifier("glow_item_frame", "map=false");
 	private static final ModelIdentifier MAP_GLOW_FRAME = new ModelIdentifier("glow_item_frame", "map=true");
-	public static final int field_32932 = 5;
+	public static final int GLOW_FRAME_BLOCK_LIGHT = 5;
 	public static final int field_32933 = 30;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final ItemRenderer itemRenderer;
@@ -100,11 +101,11 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 				MapState mapState = FilledMapItem.getMapState(integer, itemFrameEntity.world);
 				matrixStack.translate(0.0, 0.0, -1.0);
 				if (mapState != null) {
-					int k = this.getLight(itemFrameEntity, 15728850, i);
+					int k = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE | 210, i);
 					this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, integer, mapState, true, k);
 				}
 			} else {
-				int l = this.getLight(itemFrameEntity, 15728880, i);
+				int l = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_LIGHT_COORDINATE, i);
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
 				this.itemRenderer
 					.renderItem(itemStack, ModelTransformation.Mode.FIXED, l, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, itemFrameEntity.getId());

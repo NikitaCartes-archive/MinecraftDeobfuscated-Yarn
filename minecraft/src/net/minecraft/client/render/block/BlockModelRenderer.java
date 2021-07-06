@@ -32,12 +32,12 @@ public class BlockModelRenderer {
 	private static final int field_32782 = 0;
 	private static final int field_32783 = 1;
 	static final Direction[] DIRECTIONS = Direction.values();
-	private final BlockColors colorMap;
-	private static final int field_32784 = 100;
-	static final ThreadLocal<BlockModelRenderer.BrightnessCache> brightnessCache = ThreadLocal.withInitial(BlockModelRenderer.BrightnessCache::new);
+	private final BlockColors colors;
+	private static final int BRIGHTNESS_CACHE_MAX_SIZE = 100;
+	static final ThreadLocal<BlockModelRenderer.BrightnessCache> BRIGHTNESS_CACHE = ThreadLocal.withInitial(BlockModelRenderer.BrightnessCache::new);
 
-	public BlockModelRenderer(BlockColors colorMap) {
-		this.colorMap = colorMap;
+	public BlockModelRenderer(BlockColors colors) {
+		this.colors = colors;
 	}
 
 	public boolean render(
@@ -204,7 +204,7 @@ public class BlockModelRenderer {
 		float g;
 		float h;
 		if (quad.hasColor()) {
-			int i = this.colorMap.getColor(state, world, pos, quad.getColorIndex());
+			int i = this.colors.getColor(state, world, pos, quad.getColorIndex());
 			f = (float)(i >> 16 & 0xFF) / 255.0F;
 			g = (float)(i >> 8 & 0xFF) / 255.0F;
 			h = (float)(i & 0xFF) / 255.0F;
@@ -343,11 +343,11 @@ public class BlockModelRenderer {
 	}
 
 	public static void enableBrightnessCache() {
-		((BlockModelRenderer.BrightnessCache)brightnessCache.get()).enable();
+		((BlockModelRenderer.BrightnessCache)BRIGHTNESS_CACHE.get()).enable();
 	}
 
 	public static void disableBrightnessCache() {
-		((BlockModelRenderer.BrightnessCache)brightnessCache.get()).disable();
+		((BlockModelRenderer.BrightnessCache)BRIGHTNESS_CACHE.get()).disable();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -362,7 +362,7 @@ public class BlockModelRenderer {
 			BlockPos blockPos = flags.get(0) ? pos.offset(direction) : pos;
 			BlockModelRenderer.NeighborData neighborData = BlockModelRenderer.NeighborData.getData(direction);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			BlockModelRenderer.BrightnessCache brightnessCache = (BlockModelRenderer.BrightnessCache)BlockModelRenderer.brightnessCache.get();
+			BlockModelRenderer.BrightnessCache brightnessCache = (BlockModelRenderer.BrightnessCache)BlockModelRenderer.BRIGHTNESS_CACHE.get();
 			mutable.set(blockPos, neighborData.faces[0]);
 			BlockState blockState = world.getBlockState(mutable);
 			int i = brightnessCache.getInt(blockState, world, mutable);
@@ -559,7 +559,7 @@ public class BlockModelRenderer {
 			this.floatCache.clear();
 		}
 
-		public int getInt(BlockState state, BlockRenderView blockRenderView, BlockPos pos) {
+		public int getInt(BlockState state, BlockRenderView world, BlockPos pos) {
 			long l = pos.asLong();
 			if (this.enabled) {
 				int i = this.intCache.get(l);
@@ -568,7 +568,7 @@ public class BlockModelRenderer {
 				}
 			}
 
-			int i = WorldRenderer.getLightmapCoordinates(blockRenderView, state, pos);
+			int i = WorldRenderer.getLightmapCoordinates(world, state, pos);
 			if (this.enabled) {
 				if (this.intCache.size() == 100) {
 					this.intCache.removeFirstInt();
@@ -929,8 +929,8 @@ public class BlockModelRenderer {
 
 		final int shape;
 
-		private NeighborOrientation(Direction direction, boolean bl) {
-			this.shape = direction.getId() + (bl ? BlockModelRenderer.DIRECTIONS.length : 0);
+		private NeighborOrientation(Direction direction, boolean flip) {
+			this.shape = direction.getId() + (flip ? BlockModelRenderer.DIRECTIONS.length : 0);
 		}
 	}
 

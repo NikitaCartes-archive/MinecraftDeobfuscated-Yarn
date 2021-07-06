@@ -20,7 +20,7 @@ public class LootPoolEntryTypes {
 	}
 
 	public static Object createGsonSerializer() {
-		return JsonSerializing.<LootPoolEntry, LootPoolEntryType>createTypeHandler(Registry.LOOT_POOL_ENTRY_TYPE, "entry", "type", LootPoolEntry::getType)
-			.createGsonSerializer();
+		return JsonSerializing.<LootPoolEntry, LootPoolEntryType>createSerializerBuilder(Registry.LOOT_POOL_ENTRY_TYPE, "entry", "type", LootPoolEntry::getType)
+			.build();
 	}
 }

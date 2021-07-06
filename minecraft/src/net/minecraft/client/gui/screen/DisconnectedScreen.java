@@ -37,7 +37,7 @@ public class DisconnectedScreen extends Screen {
 				200,
 				20,
 				new TranslatableText("gui.toMenu"),
-				button -> this.client.openScreen(this.parent)
+				button -> this.client.setScreen(this.parent)
 			)
 		);
 	}

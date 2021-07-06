@@ -12,21 +12,21 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
-public class FireworkChargeItem extends Item {
-	public FireworkChargeItem(Item.Settings settings) {
+public class FireworkStarItem extends Item {
+	public FireworkStarItem(Item.Settings settings) {
 		super(settings);
 	}
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		NbtCompound nbtCompound = stack.getSubTag("Explosion");
+		NbtCompound nbtCompound = stack.getSubNbt("Explosion");
 		if (nbtCompound != null) {
 			appendFireworkTooltip(nbtCompound, tooltip);
 		}
 	}
 
 	public static void appendFireworkTooltip(NbtCompound nbt, List<Text> tooltip) {
-		FireworkItem.Type type = FireworkItem.Type.byId(nbt.getByte("Type"));
+		FireworkRocketItem.Type type = FireworkRocketItem.Type.byId(nbt.getByte("Type"));
 		tooltip.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
 		int[] is = nbt.getIntArray("Colors");
 		if (is.length > 0) {

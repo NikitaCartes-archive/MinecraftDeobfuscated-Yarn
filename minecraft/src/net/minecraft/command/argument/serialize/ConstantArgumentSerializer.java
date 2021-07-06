@@ -13,15 +13,15 @@ public class ConstantArgumentSerializer<T extends ArgumentType<?>> implements Ar
 	}
 
 	@Override
-	public void toPacket(T argumentType, PacketByteBuf packetByteBuf) {
+	public void toPacket(T type, PacketByteBuf buf) {
 	}
 
 	@Override
-	public T fromPacket(PacketByteBuf packetByteBuf) {
+	public T fromPacket(PacketByteBuf buf) {
 		return (T)this.supplier.get();
 	}
 
 	@Override
-	public void toJson(T argumentType, JsonObject jsonObject) {
+	public void toJson(T type, JsonObject json) {
 	}
 }

@@ -13,7 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -65,8 +65,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.goalSelector.add(3, new SlimeEntity.RandomLookGoal(this));
 		this.goalSelector.add(5, new SlimeEntity.MoveGoal(this));
 		this.targetSelector
-			.add(1, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
-		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
+			.add(1, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
+		this.targetSelector.add(3, new ActiveTargetGoal(this, IronGolemEntity.class, true));
 	}
 
 	@Override

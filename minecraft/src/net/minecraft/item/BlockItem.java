@@ -29,6 +29,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+/**
+ * Represents an item corresponding to a block. Using this item places a
+ * block in the world.
+ */
 public class BlockItem extends Item {
 	public static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
 	public static final String BLOCK_STATE_TAG_KEY = "BlockStateTag";
@@ -120,7 +124,7 @@ public class BlockItem extends Item {
 
 	private BlockState placeFromTag(BlockPos pos, World world, ItemStack stack, BlockState state) {
 		BlockState blockState = state;
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null) {
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
 			StateManager<Block, BlockState> stateManager = state.getBlock().getStateManager();
@@ -165,7 +169,7 @@ public class BlockItem extends Item {
 		if (minecraftServer == null) {
 			return false;
 		} else {
-			NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+			NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
 			if (nbtCompound != null) {
 				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity != null) {
@@ -225,7 +229,7 @@ public class BlockItem extends Item {
 	@Override
 	public void onItemEntityDestroyed(ItemEntity entity) {
 		if (this.block instanceof ShulkerBoxBlock) {
-			NbtCompound nbtCompound = entity.getStack().getTag();
+			NbtCompound nbtCompound = entity.getStack().getNbt();
 			if (nbtCompound != null) {
 				NbtList nbtList = nbtCompound.getCompound("BlockEntityTag").getList("Items", NbtElement.COMPOUND_TYPE);
 				ItemUsage.spawnItemContents(entity, nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt));

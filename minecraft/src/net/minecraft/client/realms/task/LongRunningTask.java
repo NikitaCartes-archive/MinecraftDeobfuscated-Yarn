@@ -33,7 +33,7 @@ public abstract class LongRunningTask implements Errable, Runnable {
 	 */
 	public static void setScreen(Screen screen) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.execute(() -> minecraftClient.openScreen(screen));
+		minecraftClient.execute(() -> minecraftClient.setScreen(screen));
 	}
 
 	public void setScreen(RealmsLongRunningMcoTaskScreen longRunningMcoTaskScreen) {

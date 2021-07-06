@@ -36,7 +36,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 	}
 
 	public void setItem(ItemStack stack) {
-		if (!stack.isOf(Items.ENDER_EYE) || stack.hasTag()) {
+		if (!stack.isOf(Items.ENDER_EYE) || stack.hasNbt()) {
 			this.getDataTracker().set(ITEM, Util.make(stack.copy(), stackx -> stackx.setCount(1)));
 		}
 	}

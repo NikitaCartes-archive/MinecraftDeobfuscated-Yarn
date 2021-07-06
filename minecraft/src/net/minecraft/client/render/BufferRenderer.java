@@ -158,9 +158,9 @@ public class BufferRenderer {
 			}
 
 			RenderSystem.setupShaderLights(shader);
-			shader.upload();
-			GlStateManager._drawElements(drawMode.mode, vertexCount, k, 0L);
 			shader.bind();
+			GlStateManager._drawElements(drawMode.mode, vertexCount, k, 0L);
+			shader.unbind();
 			buffer.position(0);
 		}
 	}

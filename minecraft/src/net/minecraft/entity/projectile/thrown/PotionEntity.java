@@ -177,7 +177,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
 		}
 
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtElement.NUMBER_TYPE)) {
 			areaEffectCloudEntity.setColor(nbtCompound.getInt("CustomPotionColor"));
 		}

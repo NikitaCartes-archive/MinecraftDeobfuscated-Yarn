@@ -32,8 +32,10 @@ public class LootConditionTypes {
 	}
 
 	public static Object createGsonSerializer() {
-		return JsonSerializing.<LootCondition, LootConditionType>createTypeHandler(Registry.LOOT_CONDITION_TYPE, "condition", "condition", LootCondition::getType)
-			.createGsonSerializer();
+		return JsonSerializing.<LootCondition, LootConditionType>createSerializerBuilder(
+				Registry.LOOT_CONDITION_TYPE, "condition", "condition", LootCondition::getType
+			)
+			.build();
 	}
 
 	public static <T> Predicate<T> joinAnd(Predicate<T>[] predicates) {

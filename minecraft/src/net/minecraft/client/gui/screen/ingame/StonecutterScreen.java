@@ -19,15 +19,15 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/stonecutter.png");
-	private static final int field_32372 = 12;
-	private static final int field_32373 = 15;
-	private static final int field_32374 = 4;
-	private static final int field_32375 = 3;
-	private static final int field_32376 = 16;
-	private static final int field_32377 = 18;
-	private static final int field_32378 = 54;
-	private static final int field_32379 = 52;
-	private static final int field_32380 = 14;
+	private static final int SCROLLBAR_WIDTH = 12;
+	private static final int SCROLLBAR_HEIGHT = 15;
+	private static final int RECIPE_LIST_COLUMNS = 4;
+	private static final int RECIPE_LIST_ROWS = 3;
+	private static final int RECIPE_ENTRY_WIDTH = 16;
+	private static final int RECIPE_ENTRY_HEIGHT = 18;
+	private static final int SCROLLBAR_AREA_HEIGHT = 54;
+	private static final int RECIPE_LIST_OFFSET_X = 52;
+	private static final int RECIPE_LIST_OFFSET_Y = 14;
 	private float scrollAmount;
 	private boolean mouseClicked;
 	private int scrollOffset;

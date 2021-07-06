@@ -46,7 +46,7 @@ public class UnicodeTextureFont implements Font {
 
 				label90: {
 					label89:
-					try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream())) {
+					try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream())) {
 						if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
 							int k = 0;
 
@@ -141,7 +141,7 @@ public class UnicodeTextureFont implements Font {
 
 			NativeImage var3;
 			try {
-				var3 = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
+				var3 = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
 			} catch (Throwable var6) {
 				if (resource != null) {
 					try {

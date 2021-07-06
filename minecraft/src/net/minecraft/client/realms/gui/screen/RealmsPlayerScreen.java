@@ -82,7 +82,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 				this.column_width + 10,
 				20,
 				new TranslatableText("mco.configure.world.buttons.invite"),
-				button -> this.client.openScreen(new RealmsInviteScreen(this.parent, this, this.serverData))
+				button -> this.client.setScreen(new RealmsInviteScreen(this.parent, this, this.serverData))
 			)
 		);
 		this.removeButton = this.addDrawableChild(
@@ -138,9 +138,9 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	private void backButtonClicked() {
 		if (this.stateChanged) {
-			this.client.openScreen(this.parent.getNewScreen());
+			this.client.setScreen(this.parent.getNewScreen());
 		} else {
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 		}
 	}
 
@@ -196,9 +196,9 @@ public class RealmsPlayerScreen extends RealmsScreen {
 				}
 
 				this.stateChanged = true;
-				this.client.openScreen(this);
+				this.client.setScreen(this);
 			}, new LiteralText("Question"), new TranslatableText("mco.configure.world.uninvite.question").append(" '").append(playerInfo.getName()).append("' ?"));
-			this.client.openScreen(realmsConfirmScreen);
+			this.client.setScreen(realmsConfirmScreen);
 		}
 	}
 

@@ -8,9 +8,9 @@ import net.minecraft.network.PacketByteBuf;
  * Serializes an argument type to be sent to the client.
  */
 public interface ArgumentSerializer<T extends ArgumentType<?>> {
-	void toPacket(T argumentType, PacketByteBuf packetByteBuf);
+	void toPacket(T type, PacketByteBuf buf);
 
-	T fromPacket(PacketByteBuf packetByteBuf);
+	T fromPacket(PacketByteBuf buf);
 
-	void toJson(T argumentType, JsonObject jsonObject);
+	void toJson(T type, JsonObject json);
 }

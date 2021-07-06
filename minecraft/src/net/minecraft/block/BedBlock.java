@@ -82,7 +82,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 			}
 
-			if (!isOverworld(world)) {
+			if (!isBedWorking(world)) {
 				world.removeBlock(pos, false);
 				BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 				if (world.getBlockState(blockPos).isOf(this)) {
@@ -118,7 +118,13 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		}
 	}
 
-	public static boolean isOverworld(World world) {
+	/**
+	 * {@return whether the world's {@linkplain net.minecraft.world.dimension.DimensionType dimension type}
+	 * allows beds to be respawned at and slept in without exploding}
+	 * 
+	 * @see net.minecraft.world.dimension.DimensionType#isBedWorking()
+	 */
+	public static boolean isBedWorking(World world) {
 		return world.getDimension().isBedWorking();
 	}
 
@@ -229,7 +235,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, float f) {
 		Direction direction = world.getBlockState(pos).get(FACING);
 		Direction direction2 = direction.rotateYClockwise();
-		Direction direction3 = direction2.method_30928(f) ? direction2.getOpposite() : direction2;
+		Direction direction3 = direction2.pointsTo(f) ? direction2.getOpposite() : direction2;
 		if (isBed(world, pos)) {
 			return findWakeUpPosition(type, world, pos, direction, direction3);
 		} else {

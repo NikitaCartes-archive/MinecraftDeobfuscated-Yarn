@@ -19,7 +19,7 @@ public class SuspiciousStewItem extends Item {
 	}
 
 	public static void addEffectToStew(ItemStack stew, StatusEffect effect, int duration) {
-		NbtCompound nbtCompound = stew.getOrCreateTag();
+		NbtCompound nbtCompound = stew.getOrCreateNbt();
 		NbtList nbtList = nbtCompound.getList("Effects", NbtElement.LIST_TYPE);
 		NbtCompound nbtCompound2 = new NbtCompound();
 		nbtCompound2.putByte("EffectId", (byte)StatusEffect.getRawId(effect));
@@ -31,7 +31,7 @@ public class SuspiciousStewItem extends Item {
 	@Override
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 		ItemStack itemStack = super.finishUsing(stack, world, user);
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null && nbtCompound.contains("Effects", NbtElement.LIST_TYPE)) {
 			NbtList nbtList = nbtCompound.getList("Effects", NbtElement.COMPOUND_TYPE);
 

@@ -245,7 +245,7 @@ public class ServerConfigHandler {
 			Optional<UUID> optional = server.getUserCache().findByName(name).map(GameProfile::getId);
 			if (optional.isPresent()) {
 				return (UUID)optional.get();
-			} else if (!server.isSinglePlayer() && server.isOnlineMode()) {
+			} else if (!server.isSingleplayer() && server.isOnlineMode()) {
 				final List<GameProfile> list = Lists.<GameProfile>newArrayList();
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 					@Override

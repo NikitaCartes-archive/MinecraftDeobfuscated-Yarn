@@ -1065,8 +1065,8 @@ public class PacketByteBuf extends ByteBuf {
 			this.writeVarInt(Item.getRawId(item));
 			this.writeByte(stack.getCount());
 			NbtCompound nbtCompound = null;
-			if (item.isDamageable() || item.shouldSyncTagToClient()) {
-				nbtCompound = stack.getTag();
+			if (item.isDamageable() || item.isNbtSynced()) {
+				nbtCompound = stack.getNbt();
 			}
 
 			this.writeNbt(nbtCompound);
@@ -1091,7 +1091,7 @@ public class PacketByteBuf extends ByteBuf {
 			int i = this.readVarInt();
 			int j = this.readByte();
 			ItemStack itemStack = new ItemStack(Item.byRawId(i), j);
-			itemStack.setTag(this.readNbt());
+			itemStack.setNbt(this.readNbt());
 			return itemStack;
 		}
 	}

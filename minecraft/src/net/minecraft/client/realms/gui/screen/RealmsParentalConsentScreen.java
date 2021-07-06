@@ -36,7 +36,7 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 		this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - (i + 5), row(13), i, 20, text, button -> Util.getOperatingSystem().open("https://aka.ms/UpdateMojangAccount"))
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, row(13), i, 20, text2, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, row(13), i, 20, text2, button -> this.client.setScreen(this.parent)));
 		this.privacyInfoText = MultilineText.create(this.textRenderer, PRIVACY_INFO_TEXT, (int)Math.round((double)this.width * 0.9));
 	}
 

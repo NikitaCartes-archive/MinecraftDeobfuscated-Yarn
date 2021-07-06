@@ -30,7 +30,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/container/inventory.png");
 	private static final float field_32318 = 100.0F;
 	private static final int field_32319 = 500;
-	private static final int field_32320 = 250;
+	private static final int DOUBLE_CLICK_TIMEOUT = 250;
 	public static final int field_32322 = 100;
 	private static final int field_32321 = 200;
 	protected int backgroundWidth = 176;
@@ -310,7 +310,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				}
 
 				if (this.client.options.touchscreen && bl2 && this.handler.getCursorStack().isEmpty()) {
-					this.client.openScreen(null);
+					this.client.setScreen(null);
 					return true;
 				}
 

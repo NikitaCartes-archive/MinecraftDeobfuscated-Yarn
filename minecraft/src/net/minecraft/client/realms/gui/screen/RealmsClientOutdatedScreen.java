@@ -33,7 +33,7 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.BACK, button -> this.client.setScreen(this.parent)));
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 		if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER && keyCode != GLFW.GLFW_KEY_ESCAPE) {
 			return super.keyPressed(keyCode, scanCode, modifiers);
 		} else {
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 			return true;
 		}
 	}

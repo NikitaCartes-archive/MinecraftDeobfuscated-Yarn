@@ -34,7 +34,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final ReentrantLock downloadLock = new ReentrantLock();
+	private static final ReentrantLock DOWNLOAD_LOCK = new ReentrantLock();
 	private final Screen parent;
 	private final WorldDownload worldDownload;
 	private final Text downloadTitle;
@@ -84,11 +84,11 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 			if (!this.checked && this.getContentLength(this.worldDownload.downloadLink) >= 5368709120L) {
 				Text text = new TranslatableText("mco.download.confirmation.line1", SizeUnit.getUserFriendlyString(5368709120L));
 				Text text2 = new TranslatableText("mco.download.confirmation.line2");
-				this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+				this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
 					this.checked = true;
-					this.client.openScreen(this);
+					this.client.setScreen(this);
 					this.downloadSave();
-				}, RealmsLongConfirmationScreen.Type.Warning, text, text2, false));
+				}, RealmsLongConfirmationScreen.Type.WARNING, text, text2, false));
 			} else {
 				this.downloadSave();
 			}
@@ -142,7 +142,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 			this.onBack.accept(true);
 		}
 
-		this.client.openScreen(this.parent);
+		this.client.setScreen(this.parent);
 	}
 
 	@Override
@@ -230,7 +230,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		new Thread(() -> {
 			try {
 				try {
-					if (!downloadLock.tryLock(1L, TimeUnit.SECONDS)) {
+					if (!DOWNLOAD_LOCK.tryLock(1L, TimeUnit.SECONDS)) {
 						this.status = new TranslatableText("mco.download.failed");
 						return;
 					}
@@ -285,10 +285,10 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 					var10.printStackTrace();
 				}
 			} finally {
-				if (!downloadLock.isHeldByCurrentThread()) {
+				if (!DOWNLOAD_LOCK.isHeldByCurrentThread()) {
 					return;
 				} else {
-					downloadLock.unlock();
+					DOWNLOAD_LOCK.unlock();
 					this.showDots = false;
 					this.finished = true;
 				}

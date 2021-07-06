@@ -93,7 +93,7 @@ public class StructureBlockScreen extends Screen {
 
 	private void done() {
 		if (this.updateStructureBlock(StructureBlockBlockEntity.Action.UPDATE_DATA)) {
-			this.client.openScreen(null);
+			this.client.setScreen(null);
 		}
 	}
 
@@ -104,7 +104,7 @@ public class StructureBlockScreen extends Screen {
 		this.structureBlock.setIgnoreEntities(this.ignoreEntities);
 		this.structureBlock.setShowAir(this.showAir);
 		this.structureBlock.setShowBoundingBox(this.showBoundingBox);
-		this.client.openScreen(null);
+		this.client.setScreen(null);
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class StructureBlockScreen extends Screen {
 			new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.save"), button -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
 					this.updateStructureBlock(StructureBlockBlockEntity.Action.SAVE_AREA);
-					this.client.openScreen(null);
+					this.client.setScreen(null);
 				}
 			})
 		);
@@ -130,7 +130,7 @@ public class StructureBlockScreen extends Screen {
 			new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.load"), button -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.LOAD) {
 					this.updateStructureBlock(StructureBlockBlockEntity.Action.LOAD_AREA);
-					this.client.openScreen(null);
+					this.client.setScreen(null);
 				}
 			})
 		);
@@ -148,7 +148,7 @@ public class StructureBlockScreen extends Screen {
 			new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, new TranslatableText("structure_block.button.detect_size"), button -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
 					this.updateStructureBlock(StructureBlockBlockEntity.Action.SCAN_AREA);
-					this.client.openScreen(null);
+					this.client.setScreen(null);
 				}
 			})
 		);

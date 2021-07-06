@@ -12,22 +12,22 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
-public abstract class SkyProperties {
-	private static final Object2ObjectMap<Identifier, SkyProperties> BY_IDENTIFIER = Util.make(new Object2ObjectArrayMap<>(), map -> {
-		SkyProperties.Overworld overworld = new SkyProperties.Overworld();
+public abstract class DimensionEffects {
+	private static final Object2ObjectMap<Identifier, DimensionEffects> BY_IDENTIFIER = Util.make(new Object2ObjectArrayMap<>(), map -> {
+		DimensionEffects.Overworld overworld = new DimensionEffects.Overworld();
 		map.defaultReturnValue(overworld);
 		map.put(DimensionType.OVERWORLD_ID, overworld);
-		map.put(DimensionType.THE_NETHER_ID, new SkyProperties.Nether());
-		map.put(DimensionType.THE_END_ID, new SkyProperties.End());
+		map.put(DimensionType.THE_NETHER_ID, new DimensionEffects.Nether());
+		map.put(DimensionType.THE_END_ID, new DimensionEffects.End());
 	});
 	private final float[] rgba = new float[4];
 	private final float cloudsHeight;
 	private final boolean alternateSkyColor;
-	private final SkyProperties.SkyType skyType;
+	private final DimensionEffects.SkyType skyType;
 	private final boolean brightenLighting;
 	private final boolean darkened;
 
-	public SkyProperties(float cloudsHeight, boolean alternateSkyColor, SkyProperties.SkyType skyType, boolean brightenLighting, boolean darkened) {
+	public DimensionEffects(float cloudsHeight, boolean alternateSkyColor, DimensionEffects.SkyType skyType, boolean brightenLighting, boolean darkened) {
 		this.cloudsHeight = cloudsHeight;
 		this.alternateSkyColor = alternateSkyColor;
 		this.skyType = skyType;
@@ -35,8 +35,8 @@ public abstract class SkyProperties {
 		this.darkened = darkened;
 	}
 
-	public static SkyProperties byDimensionType(DimensionType dimensionType) {
-		return BY_IDENTIFIER.get(dimensionType.getSkyProperties());
+	public static DimensionEffects byDimensionType(DimensionType dimensionType) {
+		return BY_IDENTIFIER.get(dimensionType.getEffects());
 	}
 
 	/**
@@ -78,7 +78,7 @@ public abstract class SkyProperties {
 
 	public abstract boolean useThickFog(int camX, int camY);
 
-	public SkyProperties.SkyType getSkyType() {
+	public DimensionEffects.SkyType getSkyType() {
 		return this.skyType;
 	}
 
@@ -91,9 +91,9 @@ public abstract class SkyProperties {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class End extends SkyProperties {
+	public static class End extends DimensionEffects {
 		public End() {
-			super(Float.NaN, false, SkyProperties.SkyType.END, true, false);
+			super(Float.NaN, false, DimensionEffects.SkyType.END, true, false);
 		}
 
 		@Override
@@ -114,9 +114,9 @@ public abstract class SkyProperties {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Nether extends SkyProperties {
+	public static class Nether extends DimensionEffects {
 		public Nether() {
-			super(Float.NaN, true, SkyProperties.SkyType.NONE, false, true);
+			super(Float.NaN, true, DimensionEffects.SkyType.NONE, false, true);
 		}
 
 		@Override
@@ -131,11 +131,11 @@ public abstract class SkyProperties {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Overworld extends SkyProperties {
+	public static class Overworld extends DimensionEffects {
 		public static final int CLOUDS_HEIGHT = 128;
 
 		public Overworld() {
-			super(128.0F, true, SkyProperties.SkyType.NORMAL, false, false);
+			super(128.0F, true, DimensionEffects.SkyType.NORMAL, false, false);
 		}
 
 		@Override

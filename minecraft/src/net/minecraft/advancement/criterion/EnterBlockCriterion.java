@@ -47,7 +47,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 	}
 
 	public void trigger(ServerPlayerEntity player, BlockState state) {
-		this.test(player, conditions -> conditions.matches(state));
+		this.trigger(player, conditions -> conditions.matches(state));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

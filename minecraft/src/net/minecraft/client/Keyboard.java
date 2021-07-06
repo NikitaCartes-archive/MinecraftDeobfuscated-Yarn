@@ -238,7 +238,7 @@ public class Keyboard {
 					if (!this.client.player.hasPermissionLevel(2)) {
 						this.debugLog("debug.gamemodes.error");
 					} else {
-						this.client.openScreen(new GameModeSelectionScreen());
+						this.client.setScreen(new GameModeSelectionScreen());
 					}
 
 					return true;

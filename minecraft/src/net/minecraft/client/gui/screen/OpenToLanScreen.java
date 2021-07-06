@@ -37,7 +37,7 @@ public class OpenToLanScreen extends Screen {
 				.build(this.width / 2 + 5, 100, 150, 20, ALLOW_COMMANDS_TEXT, (button, allowCommands) -> this.allowCommands = allowCommands)
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("lanServer.start"), button -> {
-			this.client.openScreen(null);
+			this.client.setScreen(null);
 			int i = NetworkUtils.findLocalPort();
 			Text text;
 			if (this.client.getServer().openToLan(this.gameMode, this.allowCommands, i)) {
@@ -49,7 +49,7 @@ public class OpenToLanScreen extends Screen {
 			this.client.inGameHud.getChatHud().addMessage(text);
 			this.client.updateWindowTitle();
 		}));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
 	}
 
 	@Override

@@ -10,21 +10,21 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 
-public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
+public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	protected final Class<T> targetClass;
 	protected final int reciprocalChance;
 	protected LivingEntity targetEntity;
 	protected TargetPredicate targetPredicate;
 
-	public FollowTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility) {
+	public ActiveTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility) {
 		this(mob, targetClass, checkVisibility, false);
 	}
 
-	public FollowTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, boolean checkCanNavigate) {
+	public ActiveTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, boolean checkCanNavigate) {
 		this(mob, targetClass, 10, checkVisibility, checkCanNavigate, null);
 	}
 
-	public FollowTargetGoal(
+	public ActiveTargetGoal(
 		MobEntity mob,
 		Class<T> targetClass,
 		int reciprocalChance,

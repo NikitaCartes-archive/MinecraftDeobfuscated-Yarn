@@ -126,7 +126,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 				ProgressScreen progressScreen = new ProgressScreen(closeAfterDownload);
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
+				minecraftClient.submitAndJoin(() -> minecraftClient.setScreen(progressScreen));
 				completableFuture = NetworkUtils.downloadResourcePack(file, url, map, 104857600, progressScreen, minecraftClient.getNetworkProxy());
 			}
 
@@ -137,7 +137,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 						MinecraftClient minecraftClientxx = MinecraftClient.getInstance();
 						minecraftClientxx.execute(() -> {
 							if (!closeAfterDownload) {
-								minecraftClientx.openScreen(new SaveLevelScreen(APPLYING_PACK_TEXT));
+								minecraftClientx.setScreen(new SaveLevelScreen(APPLYING_PACK_TEXT));
 							}
 						});
 						return this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER);
@@ -150,11 +150,11 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 							delete(file);
 							MinecraftClient minecraftClientxx = MinecraftClient.getInstance();
 							minecraftClientxx.execute(
-								() -> minecraftClientx.openScreen(
+								() -> minecraftClientx.setScreen(
 										new ConfirmScreen(
 											confirmed -> {
 												if (confirmed) {
-													minecraftClientx.openScreen(null);
+													minecraftClientx.setScreen(null);
 												} else {
 													ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClientx.getNetworkHandler();
 													if (clientPlayNetworkHandler != null) {

@@ -261,7 +261,7 @@ public class MapState extends PersistentState {
 			this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
 		}
 
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null && nbtCompound.contains("Decorations", NbtElement.LIST_TYPE)) {
 			NbtList nbtList = nbtCompound.getList("Decorations", NbtElement.COMPOUND_TYPE);
 
@@ -293,11 +293,11 @@ public class MapState extends PersistentState {
 
 	public static void addDecorationsNbt(ItemStack stack, BlockPos pos, String id, MapIcon.Type type) {
 		NbtList nbtList;
-		if (stack.hasTag() && stack.getTag().contains("Decorations", NbtElement.LIST_TYPE)) {
-			nbtList = stack.getTag().getList("Decorations", NbtElement.COMPOUND_TYPE);
+		if (stack.hasNbt() && stack.getNbt().contains("Decorations", NbtElement.LIST_TYPE)) {
+			nbtList = stack.getNbt().getList("Decorations", NbtElement.COMPOUND_TYPE);
 		} else {
 			nbtList = new NbtList();
-			stack.putSubTag("Decorations", nbtList);
+			stack.setSubNbt("Decorations", nbtList);
 		}
 
 		NbtCompound nbtCompound = new NbtCompound();
@@ -308,7 +308,7 @@ public class MapState extends PersistentState {
 		nbtCompound.putDouble("rot", 180.0);
 		nbtList.add(nbtCompound);
 		if (type.hasTintColor()) {
-			NbtCompound nbtCompound2 = stack.getOrCreateSubTag("display");
+			NbtCompound nbtCompound2 = stack.getOrCreateSubNbt("display");
 			nbtCompound2.putInt("MapColor", type.getTintColor());
 		}
 	}

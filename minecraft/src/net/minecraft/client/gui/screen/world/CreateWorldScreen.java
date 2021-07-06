@@ -212,8 +212,8 @@ public class CreateWorldScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("selectWorld.gameRules"),
-				button -> this.client.openScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
-						this.client.openScreen(this);
+				button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
+						this.client.setScreen(this);
 						optional.ifPresent(gameRules -> this.gameRules = gameRules);
 					}))
 			)
@@ -384,7 +384,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	public void onCloseScreen() {
-		this.client.openScreen(this.parent);
+		this.client.setScreen(this.parent);
 		this.clearTempResources();
 	}
 
@@ -448,7 +448,7 @@ public class CreateWorldScreen extends Screen {
 	private void openPackScreen() {
 		Pair<File, ResourcePackManager> pair = this.getScannedPack();
 		if (pair != null) {
-			this.client.openScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, (File)pair.getFirst(), new TranslatableText("dataPack.title")));
+			this.client.setScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, (File)pair.getFirst(), new TranslatableText("dataPack.title")));
 		}
 	}
 
@@ -459,7 +459,7 @@ public class CreateWorldScreen extends Screen {
 		if (list.equals(this.dataPackSettings.getEnabled())) {
 			this.dataPackSettings = dataPackSettings;
 		} else {
-			this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
+			this.client.send(() -> this.client.setScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
 			ServerResourceManager.reload(
 					dataPackManager.createResourcePacks(),
 					this.moreOptionsDialog.getRegistryManager(),
@@ -480,14 +480,14 @@ public class CreateWorldScreen extends Screen {
 							this.client
 								.send(
 									() -> this.client
-											.openScreen(
+											.setScreen(
 												new ConfirmScreen(
 													confirmed -> {
 														if (confirmed) {
 															this.openPackScreen();
 														} else {
 															this.dataPackSettings = DataPackSettings.SAFE_MODE;
-															this.client.openScreen(this);
+															this.client.setScreen(this);
 														}
 													},
 													new TranslatableText("dataPack.validation.failed"),
@@ -498,7 +498,7 @@ public class CreateWorldScreen extends Screen {
 											)
 								);
 						} else {
-							this.client.send(() -> this.client.openScreen(this));
+							this.client.send(() -> this.client.setScreen(this));
 						}
 		
 						return null;

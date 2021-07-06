@@ -106,7 +106,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			commandBlockExecutor.setLastOutput(null);
 		}
 
-		this.client.openScreen(null);
+		this.client.setScreen(null);
 	}
 
 	@Override

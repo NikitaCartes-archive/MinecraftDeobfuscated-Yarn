@@ -14,9 +14,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.JumpControl;
 import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
@@ -340,8 +340,8 @@ public class RabbitEntity extends AnimalEntity {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(8.0);
 			this.goalSelector.add(4, new RabbitEntity.RabbitAttackGoal(this));
 			this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
-			this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
-			this.targetSelector.add(2, new FollowTargetGoal(this, WolfEntity.class, true));
+			this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
+			this.targetSelector.add(2, new ActiveTargetGoal(this, WolfEntity.class, true));
 			if (!this.hasCustomName()) {
 				this.setCustomName(new TranslatableText(Util.createTranslationKey("entity", KILLER_BUNNY)));
 			}

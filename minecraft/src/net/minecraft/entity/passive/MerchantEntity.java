@@ -41,7 +41,7 @@ import net.minecraft.world.World;
 public abstract class MerchantEntity extends PassiveEntity implements InventoryOwner, Npc, Merchant {
 	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(MerchantEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final int field_30599 = 300;
-	private static final int field_30600 = 8;
+	private static final int INVENTORY_SIZE = 8;
 	@Nullable
 	private PlayerEntity customer;
 	@Nullable
@@ -128,7 +128,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		this.ambientSoundChance = -this.getMinAmbientSoundDelay();
 		this.afterUsing(offer);
 		if (this.customer instanceof ServerPlayerEntity) {
-			Criteria.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, offer.getSellItem());
+			Criteria.VILLAGER_TRADE.trigger((ServerPlayerEntity)this.customer, this, offer.getSellItem());
 		}
 	}
 

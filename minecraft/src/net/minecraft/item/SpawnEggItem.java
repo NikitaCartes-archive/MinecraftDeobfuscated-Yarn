@@ -62,7 +62,7 @@ public class SpawnEggItem extends Item {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
-					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
+					EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
 					mobSpawnerLogic.setEntityId(entityType);
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
@@ -78,7 +78,7 @@ public class SpawnEggItem extends Item {
 				blockPos2 = blockPos.offset(direction);
 			}
 
-			EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
+			EntityType<?> entityType2 = this.getEntityType(itemStack.getNbt());
 			if (entityType2.spawnFromItemStack(
 					(ServerWorld)world,
 					itemStack,
@@ -111,7 +111,7 @@ public class SpawnEggItem extends Item {
 			if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 				return TypedActionResult.pass(itemStack);
 			} else if (world.canPlayerModifyAt(user, blockPos) && user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
-				EntityType<?> entityType = this.getEntityType(itemStack.getTag());
+				EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
 				if (entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
 					return TypedActionResult.pass(itemStack);
 				} else {
@@ -167,7 +167,7 @@ public class SpawnEggItem extends Item {
 	public Optional<MobEntity> spawnBaby(
 		PlayerEntity user, MobEntity entity, EntityType<? extends MobEntity> entityType, ServerWorld world, Vec3d pos, ItemStack stack
 	) {
-		if (!this.isOfSameEntityType(stack.getTag(), entityType)) {
+		if (!this.isOfSameEntityType(stack.getNbt(), entityType)) {
 			return Optional.empty();
 		} else {
 			MobEntity mobEntity;

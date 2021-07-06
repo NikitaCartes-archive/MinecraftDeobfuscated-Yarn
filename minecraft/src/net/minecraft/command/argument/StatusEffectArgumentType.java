@@ -20,15 +20,15 @@ import net.minecraft.util.registry.Registry;
 public class StatusEffectArgumentType implements ArgumentType<StatusEffect> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("spooky", "effect");
 	public static final DynamicCommandExceptionType INVALID_EFFECT_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("effect.effectNotFound", object)
+		id -> new TranslatableText("effect.effectNotFound", id)
 	);
 
 	public static StatusEffectArgumentType statusEffect() {
 		return new StatusEffectArgumentType();
 	}
 
-	public static StatusEffect getStatusEffect(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, StatusEffect.class);
+	public static StatusEffect getStatusEffect(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, StatusEffect.class);
 	}
 
 	public StatusEffect parse(StringReader stringReader) throws CommandSyntaxException {

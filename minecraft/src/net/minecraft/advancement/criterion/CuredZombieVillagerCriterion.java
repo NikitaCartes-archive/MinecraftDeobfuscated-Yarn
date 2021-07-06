@@ -29,7 +29,7 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 	public void trigger(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, zombie);
 		LootContext lootContext2 = EntityPredicate.createAdvancementEntityLootContext(player, villager);
-		this.test(player, conditions -> conditions.matches(lootContext, lootContext2));
+		this.trigger(player, conditions -> conditions.matches(lootContext, lootContext2));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

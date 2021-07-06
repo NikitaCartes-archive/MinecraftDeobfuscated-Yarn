@@ -13,9 +13,11 @@ public class LootNbtProviderTypes {
 		return Registry.register(Registry.LOOT_NBT_PROVIDER_TYPE, new Identifier(id), new LootNbtProviderType(jsonSerializer));
 	}
 
-	public static Object method_32442() {
-		return JsonSerializing.<LootNbtProvider, LootNbtProviderType>createTypeHandler(Registry.LOOT_NBT_PROVIDER_TYPE, "provider", "type", LootNbtProvider::getType)
-			.method_32385(CONTEXT, new ContextLootNbtProvider.CustomSerializer())
-			.createGsonSerializer();
+	public static Object createGsonSerializer() {
+		return JsonSerializing.<LootNbtProvider, LootNbtProviderType>createSerializerBuilder(
+				Registry.LOOT_NBT_PROVIDER_TYPE, "provider", "type", LootNbtProvider::getType
+			)
+			.elementSerializer(CONTEXT, new ContextLootNbtProvider.CustomSerializer())
+			.build();
 	}
 }

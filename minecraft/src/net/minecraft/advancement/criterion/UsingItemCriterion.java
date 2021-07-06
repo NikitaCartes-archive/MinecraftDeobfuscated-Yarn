@@ -24,8 +24,8 @@ public class UsingItemCriterion extends AbstractCriterion<UsingItemCriterion.Con
 		return new UsingItemCriterion.Conditions(extended, itemPredicate);
 	}
 
-	public void test(ServerPlayerEntity player, ItemStack stack) {
-		this.test(player, conditions -> conditions.test(stack));
+	public void trigger(ServerPlayerEntity player, ItemStack stack) {
+		this.trigger(player, conditions -> conditions.test(stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

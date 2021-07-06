@@ -91,7 +91,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		ButtonWidget buttonWidget2 = this.addDrawableChild(
 			new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, new TranslatableText("stat.mobsButton"), button -> this.selectStatList(this.mobStats))
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
 		if (this.itemStats.children().isEmpty()) {
 			buttonWidget.active = false;
 		}

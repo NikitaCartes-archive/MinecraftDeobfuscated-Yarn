@@ -32,7 +32,7 @@ public class JukeboxBlock extends BlockWithEntity {
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		super.onPlaced(world, pos, state, placer, itemStack);
-		NbtCompound nbtCompound = itemStack.getOrCreateTag();
+		NbtCompound nbtCompound = itemStack.getOrCreateNbt();
 		if (nbtCompound.contains("BlockEntityTag")) {
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockEntityTag");
 			if (nbtCompound2.contains("RecordItem")) {

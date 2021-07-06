@@ -33,7 +33,7 @@ import net.minecraft.util.registry.Registry;
 public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateArgumentType.BlockPredicate> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
 	private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("arguments.block.tag.unknown", object)
+		id -> new TranslatableText("arguments.block.tag.unknown", id)
 	);
 
 	public static BlockPredicateArgumentType blockPredicate() {
@@ -46,11 +46,11 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 			BlockPredicateArgumentType.StatePredicate statePredicate = new BlockPredicateArgumentType.StatePredicate(
 				blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData()
 			);
-			return tagManager -> statePredicate;
+			return manager -> statePredicate;
 		} else {
 			Identifier identifier = blockArgumentParser.getTagId();
-			return tagManager -> {
-				Tag<Block> tag = tagManager.getTag(Registry.BLOCK_KEY, identifier, identifierxx -> UNKNOWN_TAG_EXCEPTION.create(identifierxx.toString()));
+			return manager -> {
+				Tag<Block> tag = manager.getTag(Registry.BLOCK_KEY, identifier, id -> UNKNOWN_TAG_EXCEPTION.create(id.toString()));
 				return new BlockPredicateArgumentType.TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
 			};
 		}
@@ -81,7 +81,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 	}
 
 	public interface BlockPredicate {
-		Predicate<CachedBlockPosition> create(TagManager tagManager) throws CommandSyntaxException;
+		Predicate<CachedBlockPosition> create(TagManager manager) throws CommandSyntaxException;
 	}
 
 	static class StatePredicate implements Predicate<CachedBlockPosition> {
@@ -123,10 +123,10 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		private final NbtCompound nbt;
 		private final Map<String, String> properties;
 
-		TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable NbtCompound nbtCompound) {
+		TagPredicate(Tag<Block> tag, Map<String, String> properties, @Nullable NbtCompound nbt) {
 			this.tag = tag;
-			this.properties = map;
-			this.nbt = nbtCompound;
+			this.properties = properties;
+			this.nbt = nbt;
 		}
 
 		public boolean test(CachedBlockPosition cachedBlockPosition) {

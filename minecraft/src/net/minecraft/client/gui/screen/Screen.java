@@ -131,7 +131,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public void onClose() {
-		this.client.openScreen(null);
+		this.client.setScreen(null);
 	}
 
 	protected <T extends Element & Drawable & Selectable> T addDrawableChild(T drawableElement) {
@@ -324,7 +324,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 						if (this.client.options.chatLinksPrompt) {
 							this.clickedLink = uRI;
-							this.client.openScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
+							this.client.setScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
 						} else {
 							this.openLink(uRI);
 						}
@@ -384,7 +384,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	/**
 	 * Called when a screen should be initialized.
 	 * 
-	 * <p>This method is called when this screen is {@linkplain net.minecraft.client.MinecraftClient#openScreen(Screen) opened} or resized.
+	 * <p>This method is called when this screen is {@linkplain net.minecraft.client.MinecraftClient#setScreen(Screen) opened} or resized.
 	 */
 	protected void init() {
 	}
@@ -454,7 +454,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 
 		this.clickedLink = null;
-		this.client.openScreen(this);
+		this.client.setScreen(this);
 	}
 
 	private void openLink(URI link) {

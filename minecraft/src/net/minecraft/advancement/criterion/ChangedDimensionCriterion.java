@@ -31,7 +31,7 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 	}
 
 	public void trigger(ServerPlayerEntity player, RegistryKey<World> from, RegistryKey<World> to) {
-		this.test(player, conditions -> conditions.matches(from, to));
+		this.trigger(player, conditions -> conditions.matches(from, to));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

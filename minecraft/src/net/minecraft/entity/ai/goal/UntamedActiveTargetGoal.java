@@ -5,10 +5,10 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.TameableEntity;
 
-public class FollowTargetIfTamedGoal<T extends LivingEntity> extends FollowTargetGoal<T> {
+public class UntamedActiveTargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
 	private final TameableEntity tameable;
 
-	public FollowTargetIfTamedGoal(TameableEntity tameable, Class<T> targetClass, boolean checkVisibility, @Nullable Predicate<LivingEntity> targetPredicate) {
+	public UntamedActiveTargetGoal(TameableEntity tameable, Class<T> targetClass, boolean checkVisibility, @Nullable Predicate<LivingEntity> targetPredicate) {
 		super(tameable, targetClass, 10, checkVisibility, false, targetPredicate);
 		this.tameable = tameable;
 	}

@@ -99,7 +99,7 @@ public class BundleItem extends Item {
 
 	private static int addToBundle(ItemStack bundle, ItemStack stack) {
 		if (!stack.isEmpty() && stack.getItem().canBeNested()) {
-			NbtCompound nbtCompound = bundle.getOrCreateTag();
+			NbtCompound nbtCompound = bundle.getOrCreateNbt();
 			if (!nbtCompound.contains("Items")) {
 				nbtCompound.put("Items", new NbtList());
 			}
@@ -148,8 +148,8 @@ public class BundleItem extends Item {
 		if (stack.isOf(Items.BUNDLE)) {
 			return 4 + getBundleOccupancy(stack);
 		} else {
-			if ((stack.isOf(Items.BEEHIVE) || stack.isOf(Items.BEE_NEST)) && stack.hasTag()) {
-				NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+			if ((stack.isOf(Items.BEEHIVE) || stack.isOf(Items.BEE_NEST)) && stack.hasNbt()) {
+				NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
 				if (nbtCompound != null && !nbtCompound.getList("Bees", NbtElement.COMPOUND_TYPE).isEmpty()) {
 					return 64;
 				}
@@ -164,7 +164,7 @@ public class BundleItem extends Item {
 	}
 
 	private static Optional<ItemStack> removeFirstStack(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getOrCreateTag();
+		NbtCompound nbtCompound = stack.getOrCreateNbt();
 		if (!nbtCompound.contains("Items")) {
 			return Optional.empty();
 		} else {
@@ -177,7 +177,7 @@ public class BundleItem extends Item {
 				ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
 				nbtList.remove(0);
 				if (nbtList.isEmpty()) {
-					stack.removeSubTag("Items");
+					stack.removeSubNbt("Items");
 				}
 
 				return Optional.of(itemStack);
@@ -186,7 +186,7 @@ public class BundleItem extends Item {
 	}
 
 	private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
-		NbtCompound nbtCompound = stack.getOrCreateTag();
+		NbtCompound nbtCompound = stack.getOrCreateNbt();
 		if (!nbtCompound.contains("Items")) {
 			return false;
 		} else {
@@ -200,13 +200,13 @@ public class BundleItem extends Item {
 				}
 			}
 
-			stack.removeSubTag("Items");
+			stack.removeSubNbt("Items");
 			return true;
 		}
 	}
 
 	private static Stream<ItemStack> getBundledStacks(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound == null) {
 			return Stream.empty();
 		} else {

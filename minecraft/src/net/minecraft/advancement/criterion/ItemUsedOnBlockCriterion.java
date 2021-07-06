@@ -29,9 +29,9 @@ public class ItemUsedOnBlockCriterion extends AbstractCriterion<ItemUsedOnBlockC
 		return new ItemUsedOnBlockCriterion.Conditions(extended, locationPredicate, itemPredicate);
 	}
 
-	public void test(ServerPlayerEntity player, BlockPos pos, ItemStack stack) {
+	public void trigger(ServerPlayerEntity player, BlockPos pos, ItemStack stack) {
 		BlockState blockState = player.getServerWorld().getBlockState(pos);
-		this.test(player, conditions -> conditions.test(blockState, player.getServerWorld(), pos, stack));
+		this.trigger(player, conditions -> conditions.test(blockState, player.getServerWorld(), pos, stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

@@ -9,6 +9,10 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 
+/**
+ * A recipe that has only one input ingredient. It can be used by any type
+ * of recipe as long as its subclass implements the proper interface.
+ */
 public abstract class CuttingRecipe implements Recipe<Inventory> {
 	protected final Ingredient input;
 	protected final ItemStack output;

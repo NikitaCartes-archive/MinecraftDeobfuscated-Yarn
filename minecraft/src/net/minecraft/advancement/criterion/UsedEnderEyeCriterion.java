@@ -27,7 +27,7 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 		double d = player.getX() - (double)strongholdPos.getX();
 		double e = player.getZ() - (double)strongholdPos.getZ();
 		double f = d * d + e * e;
-		this.test(player, conditions -> conditions.matches(f));
+		this.trigger(player, conditions -> conditions.matches(f));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

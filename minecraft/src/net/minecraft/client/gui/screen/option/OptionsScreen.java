@@ -67,7 +67,7 @@ public class OptionsScreen extends Screen {
 						this.difficultyButton.x + this.difficultyButton.getWidth(),
 						this.difficultyButton.y,
 						button -> this.client
-								.openScreen(
+								.setScreen(
 									new ConfirmScreen(
 										this::lockDifficulty,
 										new TranslatableText("difficulty.lock.title"),
@@ -95,7 +95,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.skinCustomisation"),
-				button -> this.client.openScreen(new SkinOptionsScreen(this, this.settings))
+				button -> this.client.setScreen(new SkinOptionsScreen(this, this.settings))
 			)
 		);
 		this.addDrawableChild(
@@ -105,7 +105,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.sounds"),
-				button -> this.client.openScreen(new SoundOptionsScreen(this, this.settings))
+				button -> this.client.setScreen(new SoundOptionsScreen(this, this.settings))
 			)
 		);
 		this.addDrawableChild(
@@ -115,7 +115,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.video"),
-				button -> this.client.openScreen(new VideoOptionsScreen(this, this.settings))
+				button -> this.client.setScreen(new VideoOptionsScreen(this, this.settings))
 			)
 		);
 		this.addDrawableChild(
@@ -125,7 +125,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.controls"),
-				button -> this.client.openScreen(new ControlsOptionsScreen(this, this.settings))
+				button -> this.client.setScreen(new ControlsOptionsScreen(this, this.settings))
 			)
 		);
 		this.addDrawableChild(
@@ -135,7 +135,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.language"),
-				button -> this.client.openScreen(new LanguageOptionsScreen(this, this.settings, this.client.getLanguageManager()))
+				button -> this.client.setScreen(new LanguageOptionsScreen(this, this.settings, this.client.getLanguageManager()))
 			)
 		);
 		this.addDrawableChild(
@@ -145,7 +145,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.chat.title"),
-				button -> this.client.openScreen(new ChatOptionsScreen(this, this.settings))
+				button -> this.client.setScreen(new ChatOptionsScreen(this, this.settings))
 			)
 		);
 		this.addDrawableChild(
@@ -156,7 +156,7 @@ public class OptionsScreen extends Screen {
 				20,
 				new TranslatableText("options.resourcepack"),
 				button -> this.client
-						.openScreen(
+						.setScreen(
 							new PackScreen(
 								this, this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), new TranslatableText("resourcePack.title")
 							)
@@ -170,12 +170,10 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.accessibility.title"),
-				button -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.settings))
+				button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.settings))
 			)
 		);
-		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent))
-		);
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
 	}
 
 	private void refreshResourcePacks(ResourcePackManager resourcePackManager) {
@@ -200,7 +198,7 @@ public class OptionsScreen extends Screen {
 	}
 
 	private void lockDifficulty(boolean difficultyLocked) {
-		this.client.openScreen(this);
+		this.client.setScreen(this);
 		if (difficultyLocked && this.client.world != null) {
 			this.client.getNetworkHandler().sendPacket(new UpdateDifficultyLockC2SPacket(true));
 			this.lockDifficultyButton.setLocked(true);

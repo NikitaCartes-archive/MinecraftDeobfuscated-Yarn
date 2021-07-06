@@ -52,10 +52,10 @@ public class BookScreen extends Screen {
 		}
 	};
 	public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
-	protected static final int field_32331 = 114;
-	protected static final int field_32332 = 128;
-	protected static final int field_32333 = 192;
-	protected static final int field_32334 = 192;
+	protected static final int MAX_TEXT_WIDTH = 114;
+	protected static final int MAX_TEXT_HEIGHT = 128;
+	protected static final int WIDTH = 192;
+	protected static final int HEIGHT = 192;
 	private BookScreen.Contents contents;
 	private int pageIndex;
 	private List<OrderedText> cachedPage = Collections.emptyList();
@@ -109,7 +109,7 @@ public class BookScreen extends Screen {
 	}
 
 	protected void addCloseButton() {
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(null)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(null)));
 	}
 
 	protected void addPageButtons() {
@@ -233,7 +233,7 @@ public class BookScreen extends Screen {
 	}
 
 	protected void closeScreen() {
-		this.client.openScreen(null);
+		this.client.setScreen(null);
 	}
 
 	@Nullable
@@ -314,7 +314,7 @@ public class BookScreen extends Screen {
 		}
 
 		private static List<String> getPages(ItemStack stack) {
-			NbtCompound nbtCompound = stack.getTag();
+			NbtCompound nbtCompound = stack.getNbt();
 			return (List<String>)(nbtCompound != null ? BookScreen.readPages(nbtCompound) : ImmutableList.of());
 		}
 
@@ -338,7 +338,7 @@ public class BookScreen extends Screen {
 		}
 
 		private static List<String> getPages(ItemStack stack) {
-			NbtCompound nbtCompound = stack.getTag();
+			NbtCompound nbtCompound = stack.getNbt();
 			return (List<String>)(nbtCompound != null && WrittenBookItem.isValid(nbtCompound)
 				? BookScreen.readPages(nbtCompound)
 				: ImmutableList.of(Text.Serializer.toJson(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED))));

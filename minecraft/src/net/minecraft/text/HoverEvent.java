@@ -255,7 +255,7 @@ public class HoverEvent {
 		}
 
 		public ItemStackContent(ItemStack stack) {
-			this(stack.getItem(), stack.getCount(), stack.getTag() != null ? stack.getTag().copy() : null);
+			this(stack.getItem(), stack.getCount(), stack.getNbt() != null ? stack.getNbt().copy() : null);
 		}
 
 		public boolean equals(Object o) {
@@ -279,7 +279,7 @@ public class HoverEvent {
 			if (this.stack == null) {
 				this.stack = new ItemStack(this.item, this.count);
 				if (this.nbt != null) {
-					this.stack.setTag(this.nbt);
+					this.stack.setNbt(this.nbt);
 				}
 			}
 

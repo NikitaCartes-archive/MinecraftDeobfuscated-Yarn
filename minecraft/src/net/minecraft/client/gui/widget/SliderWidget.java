@@ -70,13 +70,24 @@ public abstract class SliderWidget extends ClickableWidget {
 		return false;
 	}
 
+	/**
+	 * Sets the value from mouse position.
+	 * 
+	 * <p>The value will be calculated from the position and the width of this
+	 * slider.
+	 * 
+	 * @see #setValue
+	 */
 	private void setValueFromMouse(double mouseX) {
 		this.setValue((mouseX - (double)(this.x + 4)) / (double)(this.width - 8));
 	}
 
-	private void setValue(double mouseX) {
+	/**
+	 * @param value the new value; will be clamped to {@code [0, 1]}
+	 */
+	private void setValue(double value) {
 		double d = this.value;
-		this.value = MathHelper.clamp(mouseX, 0.0, 1.0);
+		this.value = MathHelper.clamp(value, 0.0, 1.0);
 		if (d != this.value) {
 			this.applyValue();
 		}

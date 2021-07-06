@@ -20,8 +20,8 @@ public class StartedRidingCriterion extends AbstractCriterion<StartedRidingCrite
 		return new StartedRidingCriterion.Conditions(extended);
 	}
 
-	public void test(ServerPlayerEntity player) {
-		this.test(player, conditions -> true);
+	public void trigger(ServerPlayerEntity player) {
+		this.trigger(player, conditions -> true);
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

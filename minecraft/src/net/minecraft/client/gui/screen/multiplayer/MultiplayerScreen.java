@@ -74,11 +74,11 @@ public class MultiplayerScreen extends Screen {
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, new TranslatableText("selectServer.direct"), button -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
-			this.client.openScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
+			this.client.setScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
 		}));
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, new TranslatableText("selectServer.add"), button -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
-			this.client.openScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
+			this.client.setScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
 		}));
 		this.buttonEdit = this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, new TranslatableText("selectServer.edit"), button -> {
@@ -87,7 +87,7 @@ public class MultiplayerScreen extends Screen {
 					ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
 					this.selectedEntry = new ServerInfo(serverInfo.name, serverInfo.address, false);
 					this.selectedEntry.copyFrom(serverInfo);
-					this.client.openScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
+					this.client.setScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
 				}
 			})
 		);
@@ -101,13 +101,13 @@ public class MultiplayerScreen extends Screen {
 						Text text2 = new TranslatableText("selectServer.deleteWarning", string);
 						Text text3 = new TranslatableText("selectServer.deleteButton");
 						Text text4 = ScreenTexts.CANCEL;
-						this.client.openScreen(new ConfirmScreen(this::removeEntry, text, text2, text3, text4));
+						this.client.setScreen(new ConfirmScreen(this::removeEntry, text, text2, text3, text4));
 					}
 				}
 			})
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, new TranslatableText("selectServer.refresh"), button -> this.refresh()));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
 		this.updateButtonActivationStates();
 	}
 
@@ -135,7 +135,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	private void refresh() {
-		this.client.openScreen(new MultiplayerScreen(this.parent));
+		this.client.setScreen(new MultiplayerScreen(this.parent));
 	}
 
 	private void removeEntry(boolean confirmedAction) {
@@ -147,7 +147,7 @@ public class MultiplayerScreen extends Screen {
 			this.serverListWidget.setServers(this.serverList);
 		}
 
-		this.client.openScreen(this);
+		this.client.setScreen(this);
 	}
 
 	private void editEntry(boolean confirmedAction) {
@@ -161,7 +161,7 @@ public class MultiplayerScreen extends Screen {
 			this.serverListWidget.setServers(this.serverList);
 		}
 
-		this.client.openScreen(this);
+		this.client.setScreen(this);
 	}
 
 	private void addEntry(boolean confirmedAction) {
@@ -172,14 +172,14 @@ public class MultiplayerScreen extends Screen {
 			this.serverListWidget.setServers(this.serverList);
 		}
 
-		this.client.openScreen(this);
+		this.client.setScreen(this);
 	}
 
 	private void directConnect(boolean confirmedAction) {
 		if (confirmedAction) {
 			this.connect(this.selectedEntry);
 		} else {
-			this.client.openScreen(this);
+			this.client.setScreen(this);
 		}
 	}
 

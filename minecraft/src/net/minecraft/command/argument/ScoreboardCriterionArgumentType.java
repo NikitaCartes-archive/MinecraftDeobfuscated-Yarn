@@ -23,7 +23,7 @@ import net.minecraft.util.registry.Registry;
 public class ScoreboardCriterionArgumentType implements ArgumentType<ScoreboardCriterion> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar.baz", "minecraft:foo");
 	public static final DynamicCommandExceptionType INVALID_CRITERION_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("argument.criteria.invalid", object)
+		name -> new TranslatableText("argument.criteria.invalid", name)
 	);
 
 	private ScoreboardCriterionArgumentType() {
@@ -33,8 +33,8 @@ public class ScoreboardCriterionArgumentType implements ArgumentType<ScoreboardC
 		return new ScoreboardCriterionArgumentType();
 	}
 
-	public static ScoreboardCriterion getCriterion(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, ScoreboardCriterion.class);
+	public static ScoreboardCriterion getCriterion(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, ScoreboardCriterion.class);
 	}
 
 	public ScoreboardCriterion parse(StringReader stringReader) throws CommandSyntaxException {

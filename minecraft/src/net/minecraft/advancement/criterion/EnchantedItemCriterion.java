@@ -27,7 +27,7 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack, int levels) {
-		this.test(player, conditions -> conditions.matches(stack, levels));
+		this.trigger(player, conditions -> conditions.matches(stack, levels));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

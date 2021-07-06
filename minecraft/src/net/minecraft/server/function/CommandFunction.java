@@ -129,7 +129,7 @@ public class CommandFunction {
 	/**
 	 * A synthetic element to be stored in a {@link CommandFunctionManager.Entry}.
 	 * This is not present as parts of command functions, but created by {@link
-	 * CommandFunctionManager.Execution#recursiveRun}.
+	 * net.minecraft.server.function.CommandFunctionManager.Execution#recursiveRun}.
 	 */
 	public static class FunctionElement implements CommandFunction.Element {
 		private final CommandFunction.LazyContainer function;

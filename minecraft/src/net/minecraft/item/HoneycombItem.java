@@ -52,7 +52,7 @@ public class HoneycombItem extends Item {
 			PlayerEntity playerEntity = context.getPlayer();
 			ItemStack itemStack = context.getStack();
 			if (playerEntity instanceof ServerPlayerEntity) {
-				Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+				Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
 			}
 
 			itemStack.decrement(1);

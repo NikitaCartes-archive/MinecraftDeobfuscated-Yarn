@@ -82,7 +82,7 @@ public class ChatScreen extends Screen {
 		} else if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		} else if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.openScreen(null);
+			this.client.setScreen(null);
 			return true;
 		} else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
 			String string = this.chatField.getText().trim();
@@ -90,7 +90,7 @@ public class ChatScreen extends Screen {
 				this.sendMessage(string);
 			}
 
-			this.client.openScreen(null);
+			this.client.setScreen(null);
 			return true;
 		} else if (keyCode == GLFW.GLFW_KEY_UP) {
 			this.setChatFromHistory(-1);

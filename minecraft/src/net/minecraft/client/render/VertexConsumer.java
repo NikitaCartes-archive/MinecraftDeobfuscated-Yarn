@@ -67,7 +67,7 @@ public interface VertexConsumer {
 	}
 
 	default VertexConsumer light(int uv) {
-		return this.light(uv & 65535, uv >> 16 & 65535);
+		return this.light(uv & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295), uv >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295));
 	}
 
 	default VertexConsumer overlay(int uv) {

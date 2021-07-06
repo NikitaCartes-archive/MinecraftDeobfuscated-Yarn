@@ -5,10 +5,10 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 
-public class DisableableFollowTargetGoal<T extends LivingEntity> extends FollowTargetGoal<T> {
+public class ToggleableActiveTargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
 	private boolean enabled = true;
 
-	public DisableableFollowTargetGoal(
+	public ToggleableActiveTargetGoal(
 		RaiderEntity actor,
 		Class<T> targetEntityClass,
 		int reciprocalChance,

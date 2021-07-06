@@ -98,15 +98,15 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 								ScreenTexts.CANCEL,
 								this::play,
 								() -> {
-									this.client.openScreen(this);
+									this.client.setScreen(this);
 									this.play();
 								}
 							);
 							realmsResetWorldScreen.setSlot(i);
 							realmsResetWorldScreen.setResetTitle(new TranslatableText("mco.create.world.reset.title"));
-							this.client.openScreen(realmsResetWorldScreen);
+							this.client.setScreen(realmsResetWorldScreen);
 						} else {
-							this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.serverData.id, i, this::play)));
+							this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.serverData.id, i, this::play)));
 						}
 					}
 				);
@@ -114,13 +114,13 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				buttonWidget = new ButtonWidget(this.getFramePositionX(i), row(8), 80, 20, new TranslatableText("mco.brokenworld.download"), button -> {
 					Text text = new TranslatableText("mco.configure.world.restore.download.question.line1");
 					Text text2 = new TranslatableText("mco.configure.world.restore.download.question.line2");
-					this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+					this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
 						if (confirmed) {
 							this.downloadWorld(i);
 						} else {
-							this.client.openScreen(this);
+							this.client.setScreen(this);
 						}
-					}, RealmsLongConfirmationScreen.Type.Info, text, text2, true));
+					}, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
 				});
 			}
 
@@ -132,14 +132,14 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			this.addDrawableChild(buttonWidget);
 			this.addDrawableChild(new ButtonWidget(this.getFramePositionX(i), row(10), 80, 20, new TranslatableText("mco.brokenworld.reset"), button -> {
 				RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(this, this.serverData, this::play, () -> {
-					this.client.openScreen(this);
+					this.client.setScreen(this);
 					this.play();
 				});
 				if (i != this.serverData.activeSlot || this.serverData.worldType == RealmsServer.WorldType.MINIGAME) {
 					realmsResetWorldScreen.setSlot(i);
 				}
 
-				this.client.openScreen(realmsResetWorldScreen);
+				this.client.setScreen(realmsResetWorldScreen);
 			}));
 		}
 	}
@@ -214,7 +214,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	}
 
 	private void backButtonClicked() {
-		this.client.openScreen(this.parent);
+		this.client.setScreen(this.parent);
 	}
 
 	private void fetchServerData(long worldId) {
@@ -226,7 +226,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				this.addButtons();
 			} catch (RealmsServiceException var5) {
 				LOGGER.error("Couldn't get own world");
-				this.client.openScreen(new RealmsGenericErrorScreen(Text.of(var5.getMessage()), this.parent));
+				this.client.setScreen(new RealmsGenericErrorScreen(Text.of(var5.getMessage()), this.parent));
 			}
 		}).start();
 	}
@@ -238,7 +238,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 					if (this.serverData.state == RealmsServer.State.CLOSED) {
 						this.client
 							.execute(
-								() -> this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.serverData, this, this.mainScreen, true, this.client)))
+								() -> this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.serverData, this, this.mainScreen, true, this.client)))
 							);
 					} else {
 						try {
@@ -246,7 +246,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 							this.client.execute(() -> this.mainScreen.newScreen().play(realmsServer, this));
 						} catch (RealmsServiceException var3) {
 							LOGGER.error("Couldn't get own world");
-							this.client.execute(() -> this.client.openScreen(this.parent));
+							this.client.execute(() -> this.client.setScreen(this.parent));
 						}
 					}
 				}
@@ -266,14 +266,14 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 						this.clearChildren();
 						this.addButtons();
 					} else {
-						this.client.openScreen(this);
+						this.client.setScreen(this);
 					}
 				}
 			);
-			this.client.openScreen(realmsDownloadLatestWorldScreen);
+			this.client.setScreen(realmsDownloadLatestWorldScreen);
 		} catch (RealmsServiceException var5) {
 			LOGGER.error("Couldn't download world data");
-			this.client.openScreen(new RealmsGenericErrorScreen(var5, this));
+			this.client.setScreen(new RealmsGenericErrorScreen(var5, this));
 		}
 	}
 

@@ -82,7 +82,7 @@ public class RealmsConnection {
 						DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(
 							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", stringx)
 						);
-						minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
+						minecraftClient.execute(() -> minecraftClient.setScreen(disconnectedRealmsScreen));
 					}
 				}
 			})

@@ -55,9 +55,9 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		NbtElement nbtElement = this.source.getNbtTag(context);
+		NbtElement nbtElement = this.source.getNbt(context);
 		if (nbtElement != null) {
-			this.operations.forEach(operation -> operation.execute(stack::getOrCreateTag, nbtElement));
+			this.operations.forEach(operation -> operation.execute(stack::getOrCreateNbt, nbtElement));
 		}
 
 		return stack;

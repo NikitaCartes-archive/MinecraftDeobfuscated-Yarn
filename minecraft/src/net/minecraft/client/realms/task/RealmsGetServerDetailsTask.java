@@ -129,7 +129,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		};
 		return new RealmsLongConfirmationScreen(
 			booleanConsumer,
-			RealmsLongConfirmationScreen.Type.Info,
+			RealmsLongConfirmationScreen.Type.INFO,
 			new TranslatableText("mco.configure.world.resourcepack.question.line1"),
 			new TranslatableText("mco.configure.world.resourcepack.question.line2"),
 			true

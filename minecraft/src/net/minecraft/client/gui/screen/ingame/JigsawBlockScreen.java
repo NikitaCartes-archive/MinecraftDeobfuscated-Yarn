@@ -24,7 +24,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class JigsawBlockScreen extends Screen {
-	private static final int field_32344 = 7;
+	private static final int MAX_GENERATION_DEPTH = 7;
 	private static final Text JOINT_LABEL_TEXT = new TranslatableText("jigsaw_block.joint_label");
 	private static final Text POOL_TEXT = new TranslatableText("jigsaw_block.pool");
 	private static final Text NAME_TEXT = new TranslatableText("jigsaw_block.name");
@@ -57,11 +57,11 @@ public class JigsawBlockScreen extends Screen {
 
 	private void onDone() {
 		this.updateServer();
-		this.client.openScreen(null);
+		this.client.setScreen(null);
 	}
 
 	private void onCancel() {
-		this.client.openScreen(null);
+		this.client.setScreen(null);
 	}
 
 	private void updateServer() {

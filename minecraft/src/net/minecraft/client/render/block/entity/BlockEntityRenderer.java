@@ -19,7 +19,7 @@ public interface BlockEntityRenderer<T extends BlockEntity> {
 		return 64;
 	}
 
-	default boolean method_33892(T blockEntity, Vec3d vec3d) {
-		return Vec3d.ofCenter(blockEntity.getPos()).isInRange(vec3d, (double)this.getRenderDistance());
+	default boolean isInRenderDistance(T blockEntity, Vec3d pos) {
+		return Vec3d.ofCenter(blockEntity.getPos()).isInRange(pos, (double)this.getRenderDistance());
 	}
 }

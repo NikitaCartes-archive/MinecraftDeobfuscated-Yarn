@@ -4,6 +4,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -210,7 +211,7 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 			.color(red, green, blue, alpha)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(15728880)
+			.light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
 			.normal(normalMatrix, 0.0F, 1.0F, 0.0F)
 			.next();
 	}
@@ -224,7 +225,7 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 		return 256;
 	}
 
-	public boolean method_33892(BeaconBlockEntity beaconBlockEntity, Vec3d vec3d) {
+	public boolean isInRenderDistance(BeaconBlockEntity beaconBlockEntity, Vec3d vec3d) {
 		return Vec3d.ofCenter(beaconBlockEntity.getPos()).multiply(1.0, 0.0, 1.0).isInRange(vec3d.multiply(1.0, 0.0, 1.0), (double)this.getRenderDistance());
 	}
 }

@@ -13,10 +13,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
-public class FireworkEntityRenderer extends EntityRenderer<FireworkRocketEntity> {
+public class FireworkRocketEntityRenderer extends EntityRenderer<FireworkRocketEntity> {
 	private final ItemRenderer itemRenderer;
 
-	public FireworkEntityRenderer(EntityRendererFactory.Context context) {
+	public FireworkRocketEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
 		this.itemRenderer = context.getItemRenderer();
 	}

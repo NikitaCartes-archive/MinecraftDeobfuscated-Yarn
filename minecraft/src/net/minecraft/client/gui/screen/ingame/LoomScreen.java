@@ -38,15 +38,15 @@ import net.minecraft.util.math.MathHelper;
 public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
 	private static final int field_32345 = 1;
-	private static final int field_32346 = 4;
-	private static final int field_32347 = 4;
+	private static final int PATTERN_LIST_COLUMNS = 4;
+	private static final int PATTERN_LIST_ROWS = 4;
 	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT - 1 + 4 - 1) / 4;
-	private static final int field_32348 = 12;
-	private static final int field_32349 = 15;
-	private static final int field_32350 = 14;
-	private static final int field_32351 = 56;
-	private static final int field_32352 = 60;
-	private static final int field_32353 = 13;
+	private static final int SCROLLBAR_WIDTH = 12;
+	private static final int SCROLLBAR_HEIGHT = 15;
+	private static final int PATTERN_ENTRY_SIZE = 14;
+	private static final int SCROLLBAR_AREA_HEIGHT = 56;
+	private static final int PATTERN_LIST_OFFSET_X = 60;
+	private static final int PATTERN_LIST_OFFSET_Y = 13;
 	private ModelPart bannerField;
 	@Nullable
 	private List<Pair<BannerPattern, DyeColor>> bannerPatterns;
@@ -158,7 +158,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 
 	private void drawBanner(int pattern, int x, int y) {
 		ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
-		NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+		NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("BlockEntityTag");
 		NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[pattern], DyeColor.WHITE).toNbt();
 		nbtCompound.put("Patterns", nbtList);
 		MatrixStack matrixStack = new MatrixStack();
@@ -255,7 +255,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		ItemStack itemStack2 = this.handler.getBannerSlot().getStack();
 		ItemStack itemStack3 = this.handler.getDyeSlot().getStack();
 		ItemStack itemStack4 = this.handler.getPatternSlot().getStack();
-		NbtCompound nbtCompound = itemStack2.getOrCreateSubTag("BlockEntityTag");
+		NbtCompound nbtCompound = itemStack2.getOrCreateSubNbt("BlockEntityTag");
 		this.hasTooManyPatterns = nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
 			&& !itemStack2.isEmpty()
 			&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;

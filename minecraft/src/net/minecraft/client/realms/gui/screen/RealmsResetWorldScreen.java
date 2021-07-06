@@ -88,7 +88,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 40, row(14) - 10, 80, 20, this.buttonTitle, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 40, row(14) - 10, 80, 20, this.buttonTitle, button -> this.client.setScreen(this.parent)));
 		(new Thread("Realms-reset-world-fetcher") {
 			public void run() {
 				RealmsClient realmsClient = RealmsClient.createRealmsClient();
@@ -116,7 +116,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				row(0) + 10,
 				new TranslatableText("mco.reset.world.generate"),
 				NEW_WORLD_TEXTURE,
-				button -> this.client.openScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))
+				button -> this.client.setScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))
 			)
 		);
 		this.addDrawableChild(
@@ -126,7 +126,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				new TranslatableText("mco.reset.world.upload"),
 				UPLOAD_TEXTURE,
 				button -> this.client
-						.openScreen(
+						.setScreen(
 							new RealmsSelectFileToUploadScreen(this.serverData.id, this.slot != -1 ? this.slot : this.serverData.activeSlot, this, this.selectFileUploadCallback)
 						)
 			)
@@ -138,7 +138,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				new TranslatableText("mco.reset.world.template"),
 				SURVIVAL_SPAWN_TEXTURE,
 				button -> this.client
-						.openScreen(
+						.setScreen(
 							new RealmsSelectWorldTemplateScreen(
 								new TranslatableText("mco.reset.world.template"), this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates
 							)
@@ -152,7 +152,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				new TranslatableText("mco.reset.world.adventure"),
 				ADVENTURE_TEXTURE,
 				button -> this.client
-						.openScreen(
+						.setScreen(
 							new RealmsSelectWorldTemplateScreen(
 								new TranslatableText("mco.reset.world.adventure"), this::onSelectWorldTemplate, RealmsServer.WorldType.ADVENTUREMAP, this.adventureWorldTemplates
 							)
@@ -166,7 +166,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				new TranslatableText("mco.reset.world.experience"),
 				EXPERIENCE_TEXTURE,
 				button -> this.client
-						.openScreen(
+						.setScreen(
 							new RealmsSelectWorldTemplateScreen(
 								new TranslatableText("mco.reset.world.experience"), this::onSelectWorldTemplate, RealmsServer.WorldType.EXPERIENCE, this.experienceWorldTemplates
 							)
@@ -180,7 +180,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				new TranslatableText("mco.reset.world.inspiration"),
 				INSPIRATION_TEXTURE,
 				button -> this.client
-						.openScreen(
+						.setScreen(
 							new RealmsSelectWorldTemplateScreen(
 								new TranslatableText("mco.reset.world.inspiration"), this::onSelectWorldTemplate, RealmsServer.WorldType.INSPIRATION, this.inspirationWorldTemplates
 							)
@@ -202,7 +202,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -242,7 +242,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	}
 
 	private void executeLongRunningTask(LongRunningTask task) {
-		this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, task));
+		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, task));
 	}
 
 	public void switchSlot(Runnable callback) {
@@ -250,7 +250,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	}
 
 	private void onSelectWorldTemplate(@Nullable WorldTemplate template) {
-		this.client.openScreen(this);
+		this.client.setScreen(this);
 		if (template != null) {
 			this.switchSlotAndResetWorld(
 				() -> this.executeLongRunningTask(new ResettingWorldTemplateTask(template, this.serverData.id, this.resetTitle, this.resetCallback))
@@ -259,7 +259,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	}
 
 	private void onResetNormalWorld(@Nullable ResetWorldInfo info) {
-		this.client.openScreen(this);
+		this.client.setScreen(this);
 		if (info != null) {
 			this.switchSlotAndResetWorld(() -> this.executeLongRunningTask(new ResettingNormalWorldTask(info, this.serverData.id, this.resetTitle, this.resetCallback)));
 		}
