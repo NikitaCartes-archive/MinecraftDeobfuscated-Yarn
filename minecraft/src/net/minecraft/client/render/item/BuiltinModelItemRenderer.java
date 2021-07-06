@@ -92,8 +92,8 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 			Block block = ((BlockItem)item).getBlock();
 			if (block instanceof AbstractSkullBlock) {
 				GameProfile gameProfile = null;
-				if (stack.hasTag()) {
-					NbtCompound nbtCompound = stack.getTag();
+				if (stack.hasNbt()) {
+					NbtCompound nbtCompound = stack.getNbt();
 					if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
 					} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
@@ -141,7 +141,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 			}
 		} else {
 			if (stack.isOf(Items.SHIELD)) {
-				boolean bl = stack.getSubTag("BlockEntityTag") != null;
+				boolean bl = stack.getSubNbt("BlockEntityTag") != null;
 				matrices.push();
 				matrices.scale(1.0F, -1.0F, -1.0F);
 				SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;

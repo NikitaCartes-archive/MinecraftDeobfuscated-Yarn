@@ -92,7 +92,7 @@ public class HandledScreens {
 		default void open(Text name, ScreenHandlerType<T> type, MinecraftClient client, int id) {
 			U screen = this.create(type.create(id, client.player.getInventory()), client.player.getInventory(), name);
 			client.player.currentScreenHandler = screen.getScreenHandler();
-			client.openScreen(screen);
+			client.setScreen(screen);
 		}
 
 		U create(T handler, PlayerInventory playerInventory, Text title);

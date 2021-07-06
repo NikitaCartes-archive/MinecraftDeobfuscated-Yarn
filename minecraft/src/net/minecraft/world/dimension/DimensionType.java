@@ -64,7 +64,7 @@ public class DimensionType {
 						Codec.intRange(16, MAX_HEIGHT).fieldOf("height").forGetter(DimensionType::getHeight),
 						Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height").forGetter(DimensionType::getLogicalHeight),
 						Identifier.CODEC.fieldOf("infiniburn").forGetter(dimensionType -> dimensionType.infiniburn),
-						Identifier.CODEC.fieldOf("effects").orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.skyProperties),
+						Identifier.CODEC.fieldOf("effects").orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.effects),
 						Codec.FLOAT.fieldOf("ambient_light").forGetter(dimensionType -> dimensionType.ambientLight)
 					)
 					.apply(instance, DimensionType::new)
@@ -173,7 +173,7 @@ public class DimensionType {
 	private final int logicalHeight;
 	private final BiomeAccessType biomeAccessType;
 	private final Identifier infiniburn;
-	private final Identifier skyProperties;
+	private final Identifier effects;
 	private final float ambientLight;
 	private final transient float[] brightnessByLightLevel;
 
@@ -206,7 +206,7 @@ public class DimensionType {
 		int height,
 		int logicalHeight,
 		Identifier infiniburn,
-		Identifier skyProperties,
+		Identifier effects,
 		float ambientLight
 	) {
 		this(
@@ -226,7 +226,7 @@ public class DimensionType {
 			logicalHeight,
 			VoronoiBiomeAccessType.INSTANCE,
 			infiniburn,
-			skyProperties,
+			effects,
 			ambientLight
 		);
 	}
@@ -248,7 +248,7 @@ public class DimensionType {
 		int logicalHeight,
 		BiomeAccessType biomeAccessType,
 		Identifier infiniburn,
-		Identifier skyProperties,
+		Identifier effects,
 		float ambientLight
 	) {
 		DimensionType dimensionType = new DimensionType(
@@ -268,7 +268,7 @@ public class DimensionType {
 			logicalHeight,
 			biomeAccessType,
 			infiniburn,
-			skyProperties,
+			effects,
 			ambientLight
 		);
 		checkHeight(dimensionType).error().ifPresent(partialResult -> {
@@ -295,7 +295,7 @@ public class DimensionType {
 		int logicalHeight,
 		BiomeAccessType biomeAccessType,
 		Identifier infiniburn,
-		Identifier skyProperties,
+		Identifier effects,
 		float ambientLight
 	) {
 		this.fixedTime = fixedTime;
@@ -314,7 +314,7 @@ public class DimensionType {
 		this.logicalHeight = logicalHeight;
 		this.biomeAccessType = biomeAccessType;
 		this.infiniburn = infiniburn;
-		this.skyProperties = skyProperties;
+		this.effects = effects;
 		this.ambientLight = ambientLight;
 		this.brightnessByLightLevel = computeBrightnessByLightLevel(ambientLight);
 	}
@@ -499,8 +499,13 @@ public class DimensionType {
 		return (Tag<Block>)(tag != null ? tag : BlockTags.INFINIBURN_OVERWORLD);
 	}
 
-	public Identifier getSkyProperties() {
-		return this.skyProperties;
+	/**
+	 * {@return the ID of this dimension's {@linkplain net.minecraft.client.render.DimensionEffects effects}}
+	 * 
+	 * @see net.minecraft.client.render.DimensionEffects#byDimensionType(DimensionType)
+	 */
+	public Identifier getEffects() {
+		return this.effects;
 	}
 
 	public boolean equals(DimensionType dimensionType) {
@@ -523,6 +528,6 @@ public class DimensionType {
 				&& this.fixedTime.equals(dimensionType.fixedTime)
 				&& this.biomeAccessType.equals(dimensionType.biomeAccessType)
 				&& this.infiniburn.equals(dimensionType.infiniburn)
-				&& this.skyProperties.equals(dimensionType.skyProperties);
+				&& this.effects.equals(dimensionType.effects);
 	}
 }

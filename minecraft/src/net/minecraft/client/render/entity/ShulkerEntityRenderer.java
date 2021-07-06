@@ -52,11 +52,11 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	public Identifier getTexture(ShulkerEntity shulkerEntity) {
-		return method_37105(shulkerEntity.getColor());
+		return getTexture(shulkerEntity.getColor());
 	}
 
-	public static Identifier method_37105(@Nullable DyeColor dyeColor) {
-		return dyeColor == null ? TEXTURE : COLORED_TEXTURES[dyeColor.getId()];
+	public static Identifier getTexture(@Nullable DyeColor shulkerColor) {
+		return shulkerColor == null ? TEXTURE : COLORED_TEXTURES[shulkerColor.getId()];
 	}
 
 	protected void setupTransforms(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {

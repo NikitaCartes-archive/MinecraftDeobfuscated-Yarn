@@ -29,7 +29,7 @@ public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Con
 
 	public void trigger(ServerPlayerEntity player, Entity projectile, Vec3d hitPos, int signalStrength) {
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, projectile);
-		this.test(player, conditions -> conditions.test(lootContext, hitPos, signalStrength));
+		this.trigger(player, conditions -> conditions.test(lootContext, hitPos, signalStrength));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

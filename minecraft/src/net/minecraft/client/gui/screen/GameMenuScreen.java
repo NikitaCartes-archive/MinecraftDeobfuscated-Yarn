@@ -36,7 +36,7 @@ public class GameMenuScreen extends Screen {
 		int i = -16;
 		int j = 98;
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, new TranslatableText("menu.returnToGame"), button -> {
-			this.client.openScreen(null);
+			this.client.setScreen(null);
 			this.client.mouse.lockCursor();
 		}));
 		this.addDrawableChild(
@@ -46,7 +46,7 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("gui.advancements"),
-				button -> this.client.openScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))
+				button -> this.client.setScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))
 			)
 		);
 		this.addDrawableChild(
@@ -56,7 +56,7 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("gui.stats"),
-				button -> this.client.openScreen(new StatsScreen(this, this.client.player.getStatHandler()))
+				button -> this.client.setScreen(new StatsScreen(this, this.client.player.getStatHandler()))
 			)
 		);
 		String string = SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game";
@@ -67,12 +67,12 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("menu.sendFeedback"),
-				button -> this.client.openScreen(new ConfirmChatLinkScreen(confirmed -> {
+				button -> this.client.setScreen(new ConfirmChatLinkScreen(confirmed -> {
 						if (confirmed) {
 							Util.getOperatingSystem().open(string);
 						}
 
-						this.client.openScreen(this);
+						this.client.setScreen(this);
 					}, string, true))
 			)
 		);
@@ -83,12 +83,12 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("menu.reportBugs"),
-				button -> this.client.openScreen(new ConfirmChatLinkScreen(confirmed -> {
+				button -> this.client.setScreen(new ConfirmChatLinkScreen(confirmed -> {
 						if (confirmed) {
 							Util.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
 						}
 
-						this.client.openScreen(this);
+						this.client.setScreen(this);
 					}, "https://aka.ms/snapshotbugs?ref=game", true))
 			)
 		);
@@ -99,17 +99,12 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("menu.options"),
-				button -> this.client.openScreen(new OptionsScreen(this, this.client.options))
+				button -> this.client.setScreen(new OptionsScreen(this, this.client.options))
 			)
 		);
 		ButtonWidget buttonWidget = this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 + 4,
-				this.height / 4 + 96 + -16,
-				98,
-				20,
-				new TranslatableText("menu.shareToLan"),
-				button -> this.client.openScreen(new OpenToLanScreen(this))
+				this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))
 			)
 		);
 		buttonWidget.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
@@ -127,11 +122,11 @@ public class GameMenuScreen extends Screen {
 
 			TitleScreen titleScreen = new TitleScreen();
 			if (bl) {
-				this.client.openScreen(titleScreen);
+				this.client.setScreen(titleScreen);
 			} else if (bl2) {
-				this.client.openScreen(new RealmsMainScreen(titleScreen));
+				this.client.setScreen(new RealmsMainScreen(titleScreen));
 			} else {
-				this.client.openScreen(new MultiplayerScreen(titleScreen));
+				this.client.setScreen(new MultiplayerScreen(titleScreen));
 			}
 		}));
 	}

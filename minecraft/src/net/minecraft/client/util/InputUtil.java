@@ -32,121 +32,121 @@ public class InputUtil {
 	@Nullable
 	private static final MethodHandle GLFW_RAW_MOUSE_MOTION_SUPPORTED_HANDLE;
 	private static final int GLFW_RAW_MOUSE_MOTION;
-	public static final int field_31940 = 48;
-	public static final int field_31985 = 49;
-	public static final int field_32007 = 50;
-	public static final int field_32008 = 51;
-	public static final int field_32009 = 52;
-	public static final int field_32010 = 53;
-	public static final int field_32011 = 54;
-	public static final int field_32012 = 55;
-	public static final int field_32013 = 56;
-	public static final int field_32014 = 57;
-	public static final int field_32015 = 65;
-	public static final int field_32016 = 66;
-	public static final int field_32017 = 67;
-	public static final int field_32018 = 68;
-	public static final int field_32019 = 69;
-	public static final int field_32020 = 70;
-	public static final int field_32021 = 71;
-	public static final int field_32022 = 72;
-	public static final int field_32023 = 73;
-	public static final int field_32024 = 74;
-	public static final int field_32025 = 75;
-	public static final int field_32026 = 76;
-	public static final int field_32027 = 77;
-	public static final int field_32028 = 78;
-	public static final int field_32029 = 79;
-	public static final int field_32030 = 80;
-	public static final int field_31906 = 81;
-	public static final int field_31907 = 82;
-	public static final int field_31908 = 83;
-	public static final int field_31909 = 84;
-	public static final int field_31910 = 85;
-	public static final int field_31911 = 86;
-	public static final int field_31912 = 87;
-	public static final int field_31913 = 88;
-	public static final int field_31914 = 89;
-	public static final int field_31915 = 90;
-	public static final int field_31916 = 290;
-	public static final int field_31917 = 291;
-	public static final int field_31918 = 292;
-	public static final int field_31919 = 293;
-	public static final int field_31920 = 294;
-	public static final int field_31921 = 295;
-	public static final int field_31922 = 296;
-	public static final int field_31923 = 297;
-	public static final int field_31924 = 298;
-	public static final int field_31925 = 299;
-	public static final int field_31926 = 300;
-	public static final int field_31927 = 301;
-	public static final int field_31928 = 302;
-	public static final int field_31929 = 303;
-	public static final int field_31930 = 304;
-	public static final int field_31931 = 305;
-	public static final int field_31959 = 306;
-	public static final int field_31960 = 307;
-	public static final int field_31961 = 308;
-	public static final int field_31962 = 309;
-	public static final int field_31963 = 310;
-	public static final int field_31964 = 311;
-	public static final int field_31965 = 312;
-	public static final int field_31966 = 313;
-	public static final int field_31967 = 314;
-	public static final int field_31968 = 282;
-	public static final int field_31969 = 320;
-	public static final int field_31970 = 321;
-	public static final int field_31971 = 322;
-	public static final int field_31972 = 323;
-	public static final int field_31973 = 324;
-	public static final int field_31974 = 325;
-	public static final int field_31975 = 326;
-	public static final int field_31976 = 327;
-	public static final int field_31977 = 328;
-	public static final int field_31978 = 329;
-	public static final int field_31979 = 330;
-	public static final int field_31980 = 335;
-	public static final int field_31981 = 336;
-	public static final int field_31982 = 264;
-	public static final int field_31983 = 263;
-	public static final int field_31984 = 262;
-	public static final int field_31932 = 265;
-	public static final int field_31933 = 334;
-	public static final int field_31934 = 39;
-	public static final int field_31935 = 92;
-	public static final int field_31936 = 44;
-	public static final int field_31937 = 61;
-	public static final int field_31938 = 96;
-	public static final int field_31939 = 91;
-	public static final int field_31941 = 45;
-	public static final int field_31942 = 332;
-	public static final int field_31943 = 46;
-	public static final int field_31944 = 93;
-	public static final int field_31945 = 59;
-	public static final int field_31946 = 47;
-	public static final int field_31947 = 32;
-	public static final int field_31948 = 258;
-	public static final int field_31949 = 342;
-	public static final int field_31950 = 341;
-	public static final int field_31951 = 340;
-	public static final int field_31952 = 343;
-	public static final int field_31953 = 346;
-	public static final int field_31954 = 345;
-	public static final int field_31955 = 344;
-	public static final int field_31956 = 347;
-	public static final int field_31957 = 257;
-	public static final int field_31958 = 256;
-	public static final int field_31986 = 259;
-	public static final int field_31987 = 261;
-	public static final int field_31988 = 269;
-	public static final int field_31989 = 268;
-	public static final int field_31990 = 260;
-	public static final int field_31991 = 267;
-	public static final int field_31992 = 266;
-	public static final int field_31993 = 280;
-	public static final int field_31994 = 284;
-	public static final int field_31995 = 281;
-	public static final int field_31996 = 283;
+	public static final int GLFW_KEY_0 = 48;
+	public static final int GLFW_KEY_1 = 49;
+	public static final int GLFW_KEY_2 = 50;
+	public static final int GLFW_KEY_3 = 51;
+	public static final int GLFW_KEY_4 = 52;
+	public static final int GLFW_KEY_5 = 53;
+	public static final int GLFW_KEY_6 = 54;
+	public static final int GLFW_KEY_7 = 55;
+	public static final int GLFW_KEY_8 = 56;
+	public static final int GLFW_KEY_9 = 57;
+	public static final int GLFW_KEY_A = 65;
+	public static final int GLFW_KEY_B = 66;
+	public static final int GLFW_KEY_C = 67;
+	public static final int GLFW_KEY_D = 68;
+	public static final int GLFW_KEY_E = 69;
+	public static final int GLFW_KEY_F = 70;
+	public static final int GLFW_KEY_G = 71;
+	public static final int GLFW_KEY_H = 72;
+	public static final int GLFW_KEY_I = 73;
+	public static final int GLFW_KEY_J = 74;
+	public static final int GLFW_KEY_K = 75;
+	public static final int GLFW_KEY_L = 76;
+	public static final int GLFW_KEY_M = 77;
+	public static final int GLFW_KEY_N = 78;
+	public static final int GLFW_KEY_O = 79;
+	public static final int GLFW_KEY_P = 80;
+	public static final int GLFW_KEY_Q = 81;
+	public static final int GLFW_KEY_R = 82;
+	public static final int GLFW_KEY_S = 83;
+	public static final int GLFW_KEY_T = 84;
+	public static final int GLFW_KEY_U = 85;
+	public static final int GLFW_KEY_V = 86;
+	public static final int GLFW_KEY_W = 87;
+	public static final int GLFW_KEY_X = 88;
+	public static final int GLFW_KEY_Y = 89;
+	public static final int GLFW_KEY_Z = 90;
+	public static final int GLFW_KEY_F1 = 290;
+	public static final int GLFW_KEY_F2 = 291;
+	public static final int GLFW_KEY_F3 = 292;
+	public static final int GLFW_KEY_F4 = 293;
+	public static final int GLFW_KEY_F5 = 294;
+	public static final int GLFW_KEY_F6 = 295;
+	public static final int GLFW_KEY_F7 = 296;
+	public static final int GLFW_KEY_F8 = 297;
+	public static final int GLFW_KEY_F9 = 298;
+	public static final int GLFW_KEY_F10 = 299;
+	public static final int GLFW_KEY_F11 = 300;
+	public static final int GLFW_KEY_F12 = 301;
+	public static final int GLFW_KEY_F13 = 302;
+	public static final int GLFW_KEY_F14 = 303;
+	public static final int GLFW_KEY_F15 = 304;
+	public static final int GLFW_KEY_F16 = 305;
+	public static final int GLFW_KEY_F17 = 306;
+	public static final int GLFW_KEY_F18 = 307;
+	public static final int GLFW_KEY_F19 = 308;
+	public static final int GLFW_KEY_F20 = 309;
+	public static final int GLFW_KEY_F21 = 310;
+	public static final int GLFW_KEY_F22 = 311;
+	public static final int GLFW_KEY_F23 = 312;
+	public static final int GLFW_KEY_F24 = 313;
+	public static final int GLFW_KEY_F25 = 314;
+	public static final int GLFW_KEY_NUM_LOCK = 282;
+	public static final int GLFW_KEY_KP_0 = 320;
+	public static final int GLFW_KEY_KP_1 = 321;
+	public static final int GLFW_KEY_KP_2 = 322;
+	public static final int GLFW_KEY_KP_3 = 323;
+	public static final int GLFW_KEY_KP_4 = 324;
+	public static final int GLFW_KEY_KP_5 = 325;
+	public static final int GLFW_KEY_KP_6 = 326;
+	public static final int GLFW_KEY_KP_7 = 327;
+	public static final int GLFW_KEY_KP_8 = 328;
+	public static final int GLFW_KEY_KP_9 = 329;
+	public static final int GLFW_KEY_KP_DECIMAL = 330;
+	public static final int GLFW_KEY_KP_ENTER = 335;
+	public static final int GLFW_KEY_KP_EQUAL = 336;
+	public static final int GLFW_KEY_DOWN = 264;
+	public static final int GLFW_KEY_LEFT = 263;
+	public static final int GLFW_KEY_RIGHT = 262;
+	public static final int GLFW_KEY_UP = 265;
+	public static final int GLFW_KEY_KP_ADD = 334;
+	public static final int GLFW_KEY_APOSTROPHE = 39;
+	public static final int GLFW_KEY_BACKSLASH = 92;
+	public static final int GLFW_KEY_COMMA = 44;
+	public static final int GLFW_KEY_EQUAL = 61;
+	public static final int GLFW_KEY_GRAVE_ACCENT = 96;
+	public static final int GLFW_KEY_LEFT_BRACKET = 91;
+	public static final int GLFW_KEY_MINUS = 45;
+	public static final int GLFW_KEY_KP_MULTIPLY = 332;
+	public static final int GLFW_KEY_PERIOD = 46;
+	public static final int GLFW_KEY_RIGHT_BRACKET = 93;
+	public static final int GLFW_KEY_SEMICOLON = 59;
+	public static final int GLFW_KEY_SLASH = 47;
+	public static final int GLFW_KEY_SPACE = 32;
+	public static final int GLFW_KEY_TAB = 258;
+	public static final int GLFW_KEY_LEFT_ALT = 342;
+	public static final int GLFW_KEY_LEFT_CONTROL = 341;
+	public static final int GLFW_KEY_LEFT_SHIFT = 340;
+	public static final int GLFW_KEY_LEFT_SUPER = 343;
+	public static final int GLFW_KEY_RIGHT_ALT = 346;
+	public static final int GLFW_KEY_RIGHT_CONTROL = 345;
+	public static final int GLFW_KEY_RIGHT_SHIFT = 344;
+	public static final int GLFW_KEY_RIGHT_SUPER = 347;
+	public static final int GLFW_KEY_ENTER = 257;
+	public static final int GLFW_KEY_ESCAPE = 256;
+	public static final int GLFW_KEY_BACKSPACE = 259;
+	public static final int GLFW_KEY_DELETE = 261;
+	public static final int GLFW_KEY_END = 269;
+	public static final int GLFW_KEY_HOME = 268;
+	public static final int GLFW_KEY_INSERT = 260;
+	public static final int GLFW_KEY_PAGE_DOWN = 267;
+	public static final int GLFW_KEY_PAGE_UP = 266;
+	public static final int GLFW_KEY_CAPS_LOCK = 280;
+	public static final int GLFW_KEY_PAUSE = 284;
+	public static final int GLFW_KEY_SCROLL_LOCK = 281;
+	public static final int GLFW_KEY_PRINT_SCREEN = 283;
 	public static final int field_31997 = 1;
 	public static final int field_31998 = 0;
 	public static final int field_31999 = 2;
@@ -154,9 +154,9 @@ public class InputUtil {
 	public static final int field_32001 = 2;
 	public static final int field_32002 = 1;
 	public static final int field_32003 = 2;
-	public static final int field_32004 = 208897;
-	public static final int field_32005 = 212995;
-	public static final int field_32006 = 212993;
+	public static final int GLFW_CURSOR = 208897;
+	public static final int GLFW_CURSOR_DISABLED = 212995;
+	public static final int GLFW_CURSOR_NORMAL = 212993;
 	public static final InputUtil.Key UNKNOWN_KEY;
 
 	public static InputUtil.Key fromKeyCode(int keyCode, int scanCode) {
@@ -200,9 +200,9 @@ public class InputUtil {
 		GLFW.glfwSetDropCallback(handle, gLFWDropCallbackI);
 	}
 
-	public static void setCursorParameters(long handler, int i, double d, double e) {
-		GLFW.glfwSetCursorPos(handler, d, e);
-		GLFW.glfwSetInputMode(handler, 208897, i);
+	public static void setCursorParameters(long handler, int inputModeValue, double x, double y) {
+		GLFW.glfwSetCursorPos(handler, x, y);
+		GLFW.glfwSetInputMode(handler, 208897, inputModeValue);
 	}
 
 	public static boolean isRawMouseMotionSupported() {
@@ -301,17 +301,19 @@ public class InputUtil {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		KEYSYM("key.keyboard", (integer, string) -> {
-			String string2 = GLFW.glfwGetKeyName(integer, -1);
-			return (Text)(string2 != null ? new LiteralText(string2) : new TranslatableText(string));
+		KEYSYM("key.keyboard", (keyCode, translationKey) -> {
+			String string = GLFW.glfwGetKeyName(keyCode, -1);
+			return (Text)(string != null ? new LiteralText(string) : new TranslatableText(translationKey));
 		}),
-		SCANCODE("scancode", (integer, string) -> {
-			String string2 = GLFW.glfwGetKeyName(-1, integer);
-			return (Text)(string2 != null ? new LiteralText(string2) : new TranslatableText(string));
+		SCANCODE("scancode", (scanCode, translationKey) -> {
+			String string = GLFW.glfwGetKeyName(-1, scanCode);
+			return (Text)(string != null ? new LiteralText(string) : new TranslatableText(translationKey));
 		}),
 		MOUSE(
 			"key.mouse",
-			(integer, string) -> Language.getInstance().hasTranslation(string) ? new TranslatableText(string) : new TranslatableText("key.mouse", integer + 1)
+			(buttonCode, translationKey) -> Language.getInstance().hasTranslation(translationKey)
+					? new TranslatableText(translationKey)
+					: new TranslatableText("key.mouse", buttonCode + 1)
 		);
 
 		private final Int2ObjectMap<InputUtil.Key> map = new Int2ObjectOpenHashMap<>();

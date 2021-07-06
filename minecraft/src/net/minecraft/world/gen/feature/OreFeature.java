@@ -135,7 +135,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 											if (!bitSet.get(ac)) {
 												bitSet.set(ac);
 												mutable.set(t, v, aa);
-												if (structureWorldAccess.method_37368(mutable)) {
+												if (structureWorldAccess.isValidForSetBlock(mutable)) {
 													ChunkSection chunkSection = chunkSectionCache.getSection(mutable);
 													if (chunkSection != WorldChunk.EMPTY_SECTION) {
 														int ad = ChunkSectionPos.getLocalCoord(t);

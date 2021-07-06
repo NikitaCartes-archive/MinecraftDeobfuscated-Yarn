@@ -6,6 +6,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
+/**
+ * The recipe type allows matching recipes more efficiently by only checking
+ * recipes under a given type.
+ * 
+ * @param <T> the common supertype of recipes within a recipe type
+ */
 public interface RecipeType<T extends Recipe<?>> {
 	RecipeType<CraftingRecipe> CRAFTING = register("crafting");
 	RecipeType<SmeltingRecipe> SMELTING = register("smelting");
@@ -23,7 +29,17 @@ public interface RecipeType<T extends Recipe<?>> {
 		});
 	}
 
-	default <C extends Inventory> Optional<T> get(Recipe<C> recipe, World world, C inventory) {
+	/**
+	 * {@return the given {@code recipe} if it matches, otherwise empty}
+	 * 
+	 * <p>This utility method casts the {@code recipe} from {@code Recipe<C>} to
+	 * {@code T} conveniently.
+	 * 
+	 * @param recipe the recipe to match and cast
+	 * @param world the input world
+	 * @param inventory the input inventory
+	 */
+	default <C extends Inventory> Optional<T> match(Recipe<C> recipe, World world, C inventory) {
 		return recipe.matches(inventory, world) ? Optional.of(recipe) : Optional.empty();
 	}
 }

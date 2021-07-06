@@ -14,11 +14,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> {
-	private static final float field_32487 = 2.1816616F;
-	private static final float field_32488 = (float) (Math.PI / 3);
-	private static final float field_32489 = (float) (Math.PI / 4);
-	private static final float field_32490 = (float) (Math.PI / 6);
-	private static final float field_32491 = (float) (Math.PI / 12);
+	private static final float EATING_GRASS_ANIMATION_HEAD_BASE_PITCH = 2.1816616F;
+	private static final float ANGRY_ANIMATION_FRONT_LEG_PITCH_MULTIPLIER = (float) (Math.PI / 3);
+	private static final float ANGRY_ANIMATION_BODY_PITCH_MULTIPLIER = (float) (Math.PI / 4);
+	private static final float HEAD_TAIL_BASE_PITCH = (float) (Math.PI / 6);
+	private static final float ANGRY_ANIMATION_HIND_LEG_PITCH_MULTIPLIER = (float) (Math.PI / 12);
 	/**
 	 * The key of the model part containing the head model parts, whose value is {@value}.
 	 */

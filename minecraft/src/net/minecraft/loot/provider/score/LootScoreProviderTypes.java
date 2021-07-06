@@ -13,11 +13,11 @@ public class LootScoreProviderTypes {
 		return Registry.register(Registry.LOOT_SCORE_PROVIDER_TYPE, new Identifier(id), new LootScoreProviderType(jsonSerializer));
 	}
 
-	public static Object method_32478() {
-		return JsonSerializing.<LootScoreProvider, LootScoreProviderType>createTypeHandler(
+	public static Object createGsonSerializer() {
+		return JsonSerializing.<LootScoreProvider, LootScoreProviderType>createSerializerBuilder(
 				Registry.LOOT_SCORE_PROVIDER_TYPE, "provider", "type", LootScoreProvider::getType
 			)
-			.method_32385(CONTEXT, new ContextLootScoreProvider.CustomSerializer())
-			.createGsonSerializer();
+			.elementSerializer(CONTEXT, new ContextLootScoreProvider.CustomSerializer())
+			.build();
 	}
 }

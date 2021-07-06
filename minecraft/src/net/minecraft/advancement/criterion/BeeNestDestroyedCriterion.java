@@ -43,8 +43,8 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		}
 	}
 
-	public void test(ServerPlayerEntity player, BlockState state, ItemStack stack, int beeCount) {
-		this.test(player, conditions -> conditions.test(state, stack, beeCount));
+	public void trigger(ServerPlayerEntity player, BlockState state, ItemStack stack, int beeCount) {
+		this.trigger(player, conditions -> conditions.test(state, stack, beeCount));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

@@ -51,7 +51,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		if (!this.method_14839(world, boundingBox, 0)) {
+		if (!this.adjustToAverageHeight(world, boundingBox, 0)) {
 			return false;
 		} else {
 			this.fillWithOutline(world, boundingBox, 1, 1, 1, 5, 1, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);

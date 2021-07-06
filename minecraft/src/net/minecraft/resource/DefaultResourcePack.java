@@ -40,7 +40,7 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 	public static Path resourcePath;
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static Class<?> resourceClass;
-	private static final Map<ResourceType, Path> typeToFileSystem = Util.make(() -> {
+	private static final Map<ResourceType, Path> TYPE_TO_FILE_SYSTEM = Util.make(() -> {
 		synchronized (DefaultResourcePack.class) {
 			Builder<ResourceType, Path> builder = ImmutableMap.builder();
 
@@ -148,7 +148,7 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 		}
 
 		try {
-			Path path = (Path)typeToFileSystem.get(type);
+			Path path = (Path)TYPE_TO_FILE_SYSTEM.get(type);
 			if (path != null) {
 				getIdentifiers(set, maxDepth, namespace, path, prefix, pathFilter);
 			} else {

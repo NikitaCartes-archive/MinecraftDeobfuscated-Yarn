@@ -58,7 +58,7 @@ public class ConnectScreen extends Screen {
 		ConnectScreen connectScreen = new ConnectScreen(screen);
 		client.disconnect();
 		client.setCurrentServerEntry(info);
-		client.openScreen(connectScreen);
+		client.setScreen(connectScreen);
 		connectScreen.connect(client, address);
 	}
 
@@ -79,7 +79,7 @@ public class ConnectScreen extends Screen {
 					}
 
 					if (!optional.isPresent()) {
-						client.execute(() -> client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, ConnectScreen.BLOCKED_HOST_TEXT)));
+						client.execute(() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, ConnectScreen.BLOCKED_HOST_TEXT)));
 						return;
 					}
 
@@ -99,7 +99,7 @@ public class ConnectScreen extends Screen {
 						? var4.toString()
 						: var4.toString().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "");
 					client.execute(
-						() -> client.openScreen(
+						() -> client.setScreen(
 								new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string))
 							)
 					);
@@ -138,7 +138,7 @@ public class ConnectScreen extends Screen {
 				this.connection.disconnect(new TranslatableText("connect.aborted"));
 			}
 
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 		}));
 	}
 

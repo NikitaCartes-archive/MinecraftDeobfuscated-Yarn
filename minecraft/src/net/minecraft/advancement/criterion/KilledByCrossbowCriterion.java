@@ -42,7 +42,7 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 			list.add(EntityPredicate.createAdvancementEntityLootContext(player, entity));
 		}
 
-		this.test(player, conditions -> conditions.matches(list, set.size()));
+		this.trigger(player, conditions -> conditions.matches(list, set.size()));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

@@ -1,8 +1,8 @@
 package net.minecraft.entity.effect;
 
 public class InstantStatusEffect extends StatusEffect {
-	public InstantStatusEffect(StatusEffectType statusEffectType, int i) {
-		super(statusEffectType, i);
+	public InstantStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
+		super(statusEffectCategory, i);
 	}
 
 	@Override

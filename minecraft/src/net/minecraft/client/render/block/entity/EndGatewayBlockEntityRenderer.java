@@ -40,7 +40,7 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 	}
 
 	@Override
-	protected float method_35793() {
+	protected float getBottomYOffset() {
 		return 0.0F;
 	}
 

@@ -24,7 +24,7 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 	}
 
 	public void trigger(ServerPlayerEntity player, int level) {
-		this.test(player, conditions -> conditions.matches(level));
+		this.trigger(player, conditions -> conditions.matches(level));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

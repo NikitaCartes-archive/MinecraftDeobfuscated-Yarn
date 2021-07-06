@@ -33,7 +33,7 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 		this.textHeight = this.lines.count() * 9;
 		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 2 + this.textHeight / 2 + 9, 200, 20, ScreenTexts.BACK, button -> minecraftClient.openScreen(this.parent)
+				this.width / 2 - 100, this.height / 2 + this.textHeight / 2 + 9, 200, 20, ScreenTexts.BACK, button -> minecraftClient.setScreen(this.parent)
 			)
 		);
 	}
@@ -45,7 +45,7 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 
 	@Override
 	public void onClose() {
-		MinecraftClient.getInstance().openScreen(this.parent);
+		MinecraftClient.getInstance().setScreen(this.parent);
 	}
 
 	@Override

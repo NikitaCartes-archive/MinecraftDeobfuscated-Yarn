@@ -106,12 +106,12 @@ public class EditWorldScreen extends Screen {
 				200,
 				20,
 				new TranslatableText("selectWorld.edit.optimize"),
-				button -> this.client.openScreen(new BackupPromptScreen(this, (backup, eraseCache) -> {
+				button -> this.client.setScreen(new BackupPromptScreen(this, (backup, eraseCache) -> {
 						if (backup) {
 							backupLevel(this.storageSession);
 						}
 
-						this.client.openScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, eraseCache));
+						this.client.setScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, eraseCache));
 					}, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))
 			)
 		);

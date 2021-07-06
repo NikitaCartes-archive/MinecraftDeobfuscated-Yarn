@@ -33,7 +33,12 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	private static final int SCHEDULED_TICK_DELAY = 8;
-	public static final int field_31190 = 128;
+	/**
+	 * The maximum distance that lightning rods can redirect lightning from.
+	 * 
+	 * @see net.minecraft.server.world.ServerWorld#getLightningRodPos(BlockPos)
+	 */
+	public static final int MAX_REDIRECT_DISTANCE = 128;
 	private static final int field_31191 = 200;
 
 	public LightningRodBlock(AbstractBlock.Settings settings) {

@@ -335,7 +335,7 @@ public class LootCommand {
 		return first.isOf(second.getItem())
 			&& first.getDamage() == second.getDamage()
 			&& first.getCount() <= first.getMaxCount()
-			&& Objects.equals(first.getTag(), second.getTag());
+			&& Objects.equals(first.getNbt(), second.getNbt());
 	}
 
 	private static int executeGive(Collection<ServerPlayerEntity> players, List<ItemStack> stacks, LootCommand.FeedbackMessage messageSender) throws CommandSyntaxException {

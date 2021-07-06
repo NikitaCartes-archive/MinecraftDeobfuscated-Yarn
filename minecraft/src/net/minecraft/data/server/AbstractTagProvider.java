@@ -120,7 +120,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			return this;
 		}
 
-		public AbstractTagProvider.ObjectBuilder<T> add(Identifier id) {
+		public AbstractTagProvider.ObjectBuilder<T> addOptional(Identifier id) {
 			this.builder.addOptional(id, this.source);
 			return this;
 		}
@@ -130,7 +130,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			return this;
 		}
 
-		public AbstractTagProvider.ObjectBuilder<T> addTag(Identifier id) {
+		public AbstractTagProvider.ObjectBuilder<T> addOptionalTag(Identifier id) {
 			this.builder.addOptionalTag(id, this.source);
 			return this;
 		}

@@ -234,7 +234,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Nullable
 	private KeyPair keyPair;
 	@Nullable
-	private String userName;
+	private String singlePlayerName;
 	private boolean demo;
 	private String resourcePackUrl = "";
 	private String resourcePackHash = "";
@@ -1076,16 +1076,54 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.serverPort = serverPort;
 	}
 
-	public String getUserName() {
-		return this.userName;
+	/**
+	 * {@return the name of the single player of this server} This may be
+	 * {@code null} for non-singleplayer servers.
+	 * 
+	 * <p>In vanilla, outside of integrated servers, this is used to
+	 * determine to whom the {@code Player} NBT from {@code level.dat} applies.
+	 * 
+	 * @see #setSinglePlayerName(String)
+	 * @see #isSingleplayer()
+	 */
+	public String getSinglePlayerName() {
+		return this.singlePlayerName;
 	}
 
-	public void setServerName(String serverName) {
-		this.userName = serverName;
+	/**
+	 * Sets the name of the single player of this server.
+	 * 
+	 * <p>This is called by vanilla when setting up this server. The
+	 * {@code singlePlayerName} is the client's player name for integrated
+	 * servers and specified by the {@code --singleplayer <singlePlayerName>}
+	 * command-line argument or {@code null} for dedicated servers.
+	 * 
+	 * @see #getSinglePlayerName()
+	 * @see #isSingleplayer()
+	 * 
+	 * @param singlePlayerName the single player's name, or {@code null} for non-singleplayer servers
+	 */
+	public void setSinglePlayerName(String singlePlayerName) {
+		this.singlePlayerName = singlePlayerName;
 	}
 
-	public boolean isSinglePlayer() {
-		return this.userName != null;
+	/**
+	 * {@return whether this server is a singleplayer server} A {@index singleplayer}
+	 * server has a "single player" to whom the player data in the {@code level.dat}
+	 * applies. Otherwise, the player data is not applied to anyone. Hence, it is
+	 * necessary to properly load some single-player save games.
+	 * 
+	 * <p>All vanilla integrated servers and dedicated servers launched with the argument
+	 * {@code --singleplayer <singlePlayerName>} are singleplayer servers.
+	 * 
+	 * <p>A dedicated singleplayer server always turns online mode off, regardless of the
+	 * content of {@code server.properties}.
+	 * 
+	 * @see #getSinglePlayerName
+	 * @see #setSinglePlayerName
+	 */
+	public boolean isSingleplayer() {
+		return this.singlePlayerName != null;
 	}
 
 	protected void generateKeyPair() {
@@ -1184,7 +1222,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	@Override
 	public void addInitialSnooperInfo(Snooper snooper) {
-		snooper.addInitialInfo("singleplayer", this.isSinglePlayer());
+		snooper.addInitialInfo("singleplayer", this.isSingleplayer());
 		snooper.addInitialInfo("server_brand", this.getServerModName());
 		snooper.addInitialInfo("gui_supported", GraphicsEnvironment.isHeadless() ? "headless" : "supported");
 		snooper.addInitialInfo("dedicated", this.isDedicated());
@@ -1206,12 +1244,27 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public abstract int getRateLimit();
 
 	/**
-	 * Checks whether this Minecraft server should require all connected players are using a licensed Minecraft account when connecting to this server.
+	 * {@return whether this Minecraft server authenticates players logging in with the
+	 * {@linkplain #getSessionService() Minecraft Session Service}} If this server is
+	 * {@linkplain #isSingleplayer() singleplayer}, such as integrated servers, it will
+	 * accept unauthenticated players; otherwise, it disconnects such players.
+	 * 
+	 * @see net.minecraft.server.network.ServerLoginNetworkHandler
 	 */
 	public boolean isOnlineMode() {
 		return this.onlineMode;
 	}
 
+	/**
+	 * Sets whether this server is in the online mode, or whether it
+	 * authenticates connecting players with the Minecraft Session Service.
+	 * 
+	 * <p>This is called by individual server implementations on their setup.
+	 * 
+	 * @see #isOnlineMode()
+	 * 
+	 * @param onlineMode whether the server will be in online mode
+	 */
 	public void setOnlineMode(boolean onlineMode) {
 		this.onlineMode = onlineMode;
 	}
@@ -1598,7 +1651,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				return operatorEntry.getPermissionLevel();
 			} else if (this.isHost(profile)) {
 				return 4;
-			} else if (this.isSinglePlayer()) {
+			} else if (this.isSingleplayer()) {
 				return this.getPlayerManager().areCheatsAllowed() ? 4 : 0;
 			} else {
 				return this.getOpPermissionLevel();

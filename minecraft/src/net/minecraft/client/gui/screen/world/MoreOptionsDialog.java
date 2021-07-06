@@ -141,7 +141,7 @@ public class MoreOptionsDialog implements Drawable {
 		this.customizeTypeButton = parent.addDrawableChild(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), button -> {
 			GeneratorType.ScreenProvider screenProvider = (GeneratorType.ScreenProvider)GeneratorType.SCREEN_PROVIDERS.get(this.generatorType);
 			if (screenProvider != null) {
-				client.openScreen(screenProvider.createEditScreen(parent, this.generatorOptions));
+				client.setScreen(screenProvider.createEditScreen(parent, this.generatorOptions));
 			}
 		}));
 		this.customizeTypeButton.visible = false;
@@ -186,7 +186,7 @@ public class MoreOptionsDialog implements Drawable {
 							return;
 						}
 
-						RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+						RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 						JsonParser jsonParser = new JsonParser();
 
 						DataResult<GeneratorOptions> dataResult;
@@ -229,7 +229,7 @@ public class MoreOptionsDialog implements Drawable {
 							.ifPresent(
 								generatorOptions -> {
 									BooleanConsumer booleanConsumer = confirmed -> {
-										client.openScreen(parent);
+										client.setScreen(parent);
 										if (confirmed) {
 											this.importOptions(impl, generatorOptions);
 										}
@@ -237,7 +237,7 @@ public class MoreOptionsDialog implements Drawable {
 									if (lifecycle == Lifecycle.stable()) {
 										this.importOptions(impl, generatorOptions);
 									} else if (lifecycle == Lifecycle.experimental()) {
-										client.openScreen(
+										client.setScreen(
 											new ConfirmScreen(
 												booleanConsumer,
 												new TranslatableText("selectWorld.import_worldgen_settings.experimental.title"),
@@ -245,7 +245,7 @@ public class MoreOptionsDialog implements Drawable {
 											)
 										);
 									} else {
-										client.openScreen(
+										client.setScreen(
 											new ConfirmScreen(
 												booleanConsumer,
 												new TranslatableText("selectWorld.import_worldgen_settings.deprecated.title"),
@@ -364,7 +364,7 @@ public class MoreOptionsDialog implements Drawable {
 	void loadDatapacks(ServerResourceManager serverResourceManager) {
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 		RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, this.registryManager);
-		RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+		RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
 			.encodeStart(registryReadingOps, this.generatorOptions)
 			.flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));

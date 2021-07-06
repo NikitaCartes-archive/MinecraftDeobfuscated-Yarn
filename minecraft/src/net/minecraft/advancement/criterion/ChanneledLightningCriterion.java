@@ -32,7 +32,7 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 		List<LootContext> list = (List<LootContext>)victims.stream()
 			.map(entity -> EntityPredicate.createAdvancementEntityLootContext(player, entity))
 			.collect(Collectors.toList());
-		this.test(player, conditions -> conditions.matches(list));
+		this.trigger(player, conditions -> conditions.matches(list));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

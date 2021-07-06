@@ -23,7 +23,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FireworkItem extends Item {
+public class FireworkRocketItem extends Item {
 	public static final String FIREWORKS_KEY = "Fireworks";
 	public static final String EXPLOSION_KEY = "Explosion";
 	public static final String EXPLOSIONS_KEY = "Explosions";
@@ -35,7 +35,7 @@ public class FireworkItem extends Item {
 	public static final String FADE_COLORS_KEY = "FadeColors";
 	public static final double field_30884 = 0.15;
 
-	public FireworkItem(Item.Settings settings) {
+	public FireworkRocketItem(Item.Settings settings) {
 		super(settings);
 	}
 
@@ -83,7 +83,7 @@ public class FireworkItem extends Item {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		NbtCompound nbtCompound = stack.getSubTag("Fireworks");
+		NbtCompound nbtCompound = stack.getSubNbt("Fireworks");
 		if (nbtCompound != null) {
 			if (nbtCompound.contains("Flight", NbtElement.NUMBER_TYPE)) {
 				tooltip.add(
@@ -96,7 +96,7 @@ public class FireworkItem extends Item {
 				for (int i = 0; i < nbtList.size(); i++) {
 					NbtCompound nbtCompound2 = nbtList.getCompound(i);
 					List<Text> list = Lists.<Text>newArrayList();
-					FireworkChargeItem.appendFireworkTooltip(nbtCompound2, list);
+					FireworkStarItem.appendFireworkTooltip(nbtCompound2, list);
 					if (!list.isEmpty()) {
 						for (int j = 1; j < list.size(); j++) {
 							list.set(j, new LiteralText("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
@@ -112,7 +112,7 @@ public class FireworkItem extends Item {
 	@Override
 	public ItemStack getDefaultStack() {
 		ItemStack itemStack = new ItemStack(this);
-		itemStack.getOrCreateTag().putByte("Flight", (byte)1);
+		itemStack.getOrCreateNbt().putByte("Flight", (byte)1);
 		return itemStack;
 	}
 
@@ -123,9 +123,9 @@ public class FireworkItem extends Item {
 		CREEPER(3, "creeper"),
 		BURST(4, "burst");
 
-		private static final FireworkItem.Type[] TYPES = (FireworkItem.Type[])Arrays.stream(values())
+		private static final FireworkRocketItem.Type[] TYPES = (FireworkRocketItem.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(type -> type.id))
-			.toArray(FireworkItem.Type[]::new);
+			.toArray(FireworkRocketItem.Type[]::new);
 		private final int id;
 		private final String name;
 
@@ -142,7 +142,7 @@ public class FireworkItem extends Item {
 			return this.name;
 		}
 
-		public static FireworkItem.Type byId(int id) {
+		public static FireworkRocketItem.Type byId(int id) {
 			return id >= 0 && id < TYPES.length ? TYPES[id] : SMALL_BALL;
 		}
 	}

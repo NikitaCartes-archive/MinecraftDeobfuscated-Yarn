@@ -16,7 +16,7 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> extends EntityRenderer<T> {
-	private static final float field_32943 = 12.25F;
+	private static final float MIN_DISTANCE = 12.25F;
 	private final ItemRenderer itemRenderer;
 	private final float scale;
 	private final boolean lit;

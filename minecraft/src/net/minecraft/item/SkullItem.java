@@ -19,9 +19,9 @@ public class SkullItem extends WallStandingBlockItem {
 
 	@Override
 	public Text getName(ItemStack stack) {
-		if (stack.isOf(Items.PLAYER_HEAD) && stack.hasTag()) {
+		if (stack.isOf(Items.PLAYER_HEAD) && stack.hasNbt()) {
 			String string = null;
-			NbtCompound nbtCompound = stack.getTag();
+			NbtCompound nbtCompound = stack.getNbt();
 			if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE)) {
 				string = nbtCompound.getString("SkullOwner");
 			} else if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {

@@ -206,7 +206,7 @@ public class ItemEntity extends Entity {
 		} else if (stack2.getCount() + stack1.getCount() > stack2.getMaxCount()) {
 			return false;
 		} else {
-			return stack2.hasTag() ^ stack1.hasTag() ? false : !stack2.hasTag() || stack2.getTag().equals(stack1.getTag());
+			return stack2.hasNbt() ^ stack1.hasNbt() ? false : !stack2.hasNbt() || stack2.getNbt().equals(stack1.getNbt());
 		}
 	}
 

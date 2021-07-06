@@ -98,11 +98,11 @@ public class RealmsBackupScreen extends RealmsScreen {
 		);
 		this.changesButton = this.addDrawableChild(
 			new ButtonWidget(this.width - 135, row(5), 120, 20, new TranslatableText("mco.backup.changes.tooltip"), button -> {
-				this.client.openScreen(new RealmsBackupInfoScreen(this, (Backup)this.backups.get(this.selectedBackup)));
+				this.client.setScreen(new RealmsBackupInfoScreen(this, (Backup)this.backups.get(this.selectedBackup)));
 				this.selectedBackup = -1;
 			})
 		);
-		this.addDrawableChild(new ButtonWidget(this.width - 100, this.height - 35, 85, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width - 100, this.height - 35, 85, 20, ScreenTexts.BACK, button -> this.client.setScreen(this.parent)));
 		this.addSelectableChild(this.backupObjectSelectionList);
 		this.focusOn(this.backupObjectSelectionList);
 		this.updateButtonStates();
@@ -154,7 +154,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -169,32 +169,32 @@ public class RealmsBackupScreen extends RealmsScreen {
 			String string2 = RealmsUtil.convertToAgePresentation(date);
 			Text text = new TranslatableText("mco.configure.world.restore.question.line1", string, string2);
 			Text text2 = new TranslatableText("mco.configure.world.restore.question.line2");
-			this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+			this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
 				if (confirmed) {
 					this.restore();
 				} else {
 					this.selectedBackup = -1;
-					this.client.openScreen(this);
+					this.client.setScreen(this);
 				}
-			}, RealmsLongConfirmationScreen.Type.Warning, text, text2, true));
+			}, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
 		}
 	}
 
 	private void downloadClicked() {
 		Text text = new TranslatableText("mco.configure.world.restore.download.question.line1");
 		Text text2 = new TranslatableText("mco.configure.world.restore.download.question.line2");
-		this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+		this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
 			if (confirmed) {
 				this.downloadWorldData();
 			} else {
-				this.client.openScreen(this);
+				this.client.setScreen(this);
 			}
-		}, RealmsLongConfirmationScreen.Type.Info, text, text2, true));
+		}, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
 	}
 
 	private void downloadWorldData() {
 		this.client
-			.openScreen(
+			.setScreen(
 				new RealmsLongRunningMcoTaskScreen(
 					this.parent.getNewScreen(),
 					new DownloadTask(
@@ -210,7 +210,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	private void restore() {
 		Backup backup = (Backup)this.backups.get(this.selectedBackup);
 		this.selectedBackup = -1;
-		this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent.getNewScreen(), new RestoreTask(backup, this.serverData.id, this.parent)));
+		this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent.getNewScreen(), new RestoreTask(backup, this.serverData.id, this.parent)));
 	}
 
 	@Override
@@ -306,7 +306,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 				if (!((Backup)RealmsBackupScreen.this.backups.get(selectionIndex)).changeList.isEmpty()) {
 					RealmsBackupScreen.this.selectedBackup = -1;
 					RealmsBackupScreen.lastScrollPosition = (int)this.getScrollAmount();
-					this.client.openScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, (Backup)RealmsBackupScreen.this.backups.get(selectionIndex)));
+					this.client.setScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, (Backup)RealmsBackupScreen.this.backups.get(selectionIndex)));
 				}
 			} else if (mouseX >= (double)k && mouseX < (double)(k + 13) && mouseY >= (double)l && mouseY < (double)(l + 15)) {
 				RealmsBackupScreen.lastScrollPosition = (int)this.getScrollAmount();

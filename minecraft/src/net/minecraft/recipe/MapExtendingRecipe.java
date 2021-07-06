@@ -72,7 +72,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 
 		itemStack = itemStack.copy();
 		itemStack.setCount(1);
-		itemStack.getOrCreateTag().putInt("map_scale_direction", 1);
+		itemStack.getOrCreateNbt().putInt("map_scale_direction", 1);
 		return itemStack;
 	}
 

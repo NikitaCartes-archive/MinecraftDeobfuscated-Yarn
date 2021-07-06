@@ -26,7 +26,7 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 
 	public void trigger(ServerPlayerEntity player, Entity entity) {
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
-		this.test(player, conditions -> conditions.matches(lootContext));
+		this.trigger(player, conditions -> conditions.matches(lootContext));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

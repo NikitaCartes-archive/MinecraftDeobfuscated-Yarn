@@ -151,17 +151,17 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	}
 
 	public static boolean isCharged(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		return nbtCompound != null && nbtCompound.getBoolean("Charged");
 	}
 
 	public static void setCharged(ItemStack stack, boolean charged) {
-		NbtCompound nbtCompound = stack.getOrCreateTag();
+		NbtCompound nbtCompound = stack.getOrCreateNbt();
 		nbtCompound.putBoolean("Charged", charged);
 	}
 
 	private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
-		NbtCompound nbtCompound = crossbow.getOrCreateTag();
+		NbtCompound nbtCompound = crossbow.getOrCreateNbt();
 		NbtList nbtList;
 		if (nbtCompound.contains("ChargedProjectiles", NbtElement.LIST_TYPE)) {
 			nbtList = nbtCompound.getList("ChargedProjectiles", NbtElement.COMPOUND_TYPE);
@@ -177,7 +177,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 
 	private static List<ItemStack> getProjectiles(ItemStack crossbow) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
-		NbtCompound nbtCompound = crossbow.getTag();
+		NbtCompound nbtCompound = crossbow.getNbt();
 		if (nbtCompound != null && nbtCompound.contains("ChargedProjectiles", NbtElement.LIST_TYPE)) {
 			NbtList nbtList = nbtCompound.getList("ChargedProjectiles", NbtElement.COMPOUND_TYPE);
 			if (nbtList != null) {
@@ -192,7 +192,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	}
 
 	private static void clearProjectiles(ItemStack crossbow) {
-		NbtCompound nbtCompound = crossbow.getTag();
+		NbtCompound nbtCompound = crossbow.getNbt();
 		if (nbtCompound != null) {
 			NbtList nbtList = nbtCompound.getList("ChargedProjectiles", NbtElement.LIST_TYPE);
 			nbtList.clear();

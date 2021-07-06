@@ -10,24 +10,24 @@ public interface DyeableItem {
 	int DEFAULT_COLOR = 10511680;
 
 	default boolean hasColor(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubTag("display");
+		NbtCompound nbtCompound = stack.getSubNbt("display");
 		return nbtCompound != null && nbtCompound.contains("color", NbtElement.NUMBER_TYPE);
 	}
 
 	default int getColor(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubTag("display");
+		NbtCompound nbtCompound = stack.getSubNbt("display");
 		return nbtCompound != null && nbtCompound.contains("color", NbtElement.NUMBER_TYPE) ? nbtCompound.getInt("color") : 10511680;
 	}
 
 	default void removeColor(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubTag("display");
+		NbtCompound nbtCompound = stack.getSubNbt("display");
 		if (nbtCompound != null && nbtCompound.contains("color")) {
 			nbtCompound.remove("color");
 		}
 	}
 
 	default void setColor(ItemStack stack, int color) {
-		stack.getOrCreateSubTag("display").putInt("color", color);
+		stack.getOrCreateSubNbt("display").putInt("color", color);
 	}
 
 	static ItemStack blendAndSetColor(ItemStack stack, List<DyeItem> colors) {

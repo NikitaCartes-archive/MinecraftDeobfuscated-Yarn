@@ -96,7 +96,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 				this.parent.switchSlot(() -> {
 					if (!this.uploadStarted) {
 						this.uploadStarted = true;
-						this.client.openScreen(this);
+						this.client.setScreen(this);
 						this.upload();
 					}
 				});
@@ -115,7 +115,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 
 	private void onCancel() {
 		this.cancelled = true;
-		this.client.openScreen(this.parent);
+		this.client.setScreen(this.parent);
 	}
 
 	@Override

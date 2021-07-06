@@ -25,7 +25,7 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 	) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ);
 		this.blockPos = blockPos;
-		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(state));
+		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(state));
 		this.gravityStrength = 1.0F;
 		this.colorRed = 0.6F;
 		this.colorGreen = 0.6F;

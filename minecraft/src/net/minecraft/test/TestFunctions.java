@@ -20,7 +20,7 @@ import net.minecraft.util.BlockRotation;
 
 public class TestFunctions {
 	private static final Collection<TestFunction> TEST_FUNCTIONS = Lists.<TestFunction>newArrayList();
-	private static final Set<String> testClasses = Sets.<String>newHashSet();
+	private static final Set<String> TEST_CLASSES = Sets.<String>newHashSet();
 	private static final Map<String, Consumer<ServerWorld>> BEFORE_BATCH_CONSUMERS = Maps.<String, Consumer<ServerWorld>>newHashMap();
 	private static final Map<String, Consumer<ServerWorld>> AFTER_BATCH_CONSUMERS = Maps.<String, Consumer<ServerWorld>>newHashMap();
 	private static final Collection<TestFunction> FAILED_TEST_FUNCTIONS = Sets.<TestFunction>newHashSet();
@@ -34,13 +34,13 @@ public class TestFunctions {
 		GameTest gameTest = (GameTest)method.getAnnotation(GameTest.class);
 		if (gameTest != null) {
 			TEST_FUNCTIONS.add(getTestFunction(method));
-			testClasses.add(string);
+			TEST_CLASSES.add(string);
 		}
 
 		CustomTestProvider customTestProvider = (CustomTestProvider)method.getAnnotation(CustomTestProvider.class);
 		if (customTestProvider != null) {
 			TEST_FUNCTIONS.addAll(getCustomTestFunctions(method));
-			testClasses.add(string);
+			TEST_CLASSES.add(string);
 		}
 
 		registerBatchConsumers(method, BeforeBatch.class, BeforeBatch::batchId, BEFORE_BATCH_CONSUMERS);
@@ -69,20 +69,20 @@ public class TestFunctions {
 	}
 
 	public static Collection<String> getTestClasses() {
-		return testClasses;
+		return TEST_CLASSES;
 	}
 
 	public static boolean testClassExists(String testClass) {
-		return testClasses.contains(testClass);
-	}
-
-	@Nullable
-	public static Consumer<ServerWorld> getAfterBatchConsumer(String batchId) {
-		return (Consumer<ServerWorld>)BEFORE_BATCH_CONSUMERS.get(batchId);
+		return TEST_CLASSES.contains(testClass);
 	}
 
 	@Nullable
 	public static Consumer<ServerWorld> getBeforeBatchConsumer(String batchId) {
+		return (Consumer<ServerWorld>)BEFORE_BATCH_CONSUMERS.get(batchId);
+	}
+
+	@Nullable
+	public static Consumer<ServerWorld> getAfterBatchConsumer(String batchId) {
 		return (Consumer<ServerWorld>)AFTER_BATCH_CONSUMERS.get(batchId);
 	}
 

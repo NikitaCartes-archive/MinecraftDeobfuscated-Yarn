@@ -345,7 +345,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		} else if (first.getDamage() != second.getDamage()) {
 			return false;
 		} else {
-			return first.getCount() > first.getMaxCount() ? false : ItemStack.areTagsEqual(first, second);
+			return first.getCount() > first.getMaxCount() ? false : ItemStack.areNbtEqual(first, second);
 		}
 	}
 

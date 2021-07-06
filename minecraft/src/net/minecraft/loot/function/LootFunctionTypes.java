@@ -39,8 +39,8 @@ public class LootFunctionTypes {
 	}
 
 	public static Object createGsonSerializer() {
-		return JsonSerializing.<LootFunction, LootFunctionType>createTypeHandler(Registry.LOOT_FUNCTION_TYPE, "function", "function", LootFunction::getType)
-			.createGsonSerializer();
+		return JsonSerializing.<LootFunction, LootFunctionType>createSerializerBuilder(Registry.LOOT_FUNCTION_TYPE, "function", "function", LootFunction::getType)
+			.build();
 	}
 
 	public static BiFunction<ItemStack, LootContext, ItemStack> join(BiFunction<ItemStack, LootContext, ItemStack>[] lootFunctions) {

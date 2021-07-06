@@ -76,12 +76,81 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Represents a stack of items.
+ * 
+ * <h2 id="nbt-operations">NBT operations</h2>
+ * 
+ * <h3>NBT serialization</h3>
+ * 
+ * An Item Stack can be serialized with {@link #writeNbt(NbtCompound)}, and deserialized with {@link #fromNbt(NbtCompound)}.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Serialized NBT Structure</caption>
+ * <tr>
+ *   <th>Key</th><th>Type</th><th>Purpose</th>
+ * </tr>
+ * <tr>
+ *   <td>{@code id}</td><td>{@link net.minecraft.nbt.NbtString}</td><td>The identifier of the item.</td>
+ * </tr>
+ * <tr>
+ *   <td>{@code Count}</td><td>{@link net.minecraft.nbt.NbtByte}</td><td>The count of items in the stack.</td>
+ * </tr>
+ * <tr>
+ *   <td>{@code tag}</td><td>{@link NbtCompound}</td><td>The item stack's custom NBT.</td>
+ * </tr>
+ * </table>
+ * </div>
+ * 
+ * <h3>Custom NBT</h3>
+ * 
+ * The item stack's custom NBT may be used to store extra information,
+ * like the block entity data for shulker boxes,
+ * or the damage of a damageable item, etc.
+ * <p>
+ * Various methods are available to interact with the custom NBT, some methods might refer to a "sub NBT",
+ * a sub NBT is a child element of the custom NBT.
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Custom NBT operations</caption>
+ * <tr>
+ *   <th>Category</th><th>Method</th><th>Summary</th>
+ * </tr>
+ * <tr>
+ *   <td>Custom NBT</td><td>{@link #hasNbt()}</td><td>Returns whether the item stack has custom NBT.</td>
+ * </tr>
+ * <tr>
+ *   <td>Custom NBT</td><td>{@link #getNbt()}</td><td>Returns the custom NBT of the item stack.</td>
+ * </tr>
+ * <tr>
+ *   <td>Custom NBT</td><td>{@link #getOrCreateNbt()}</td><td>Returns the custom NBT of the item stack, or creates one if absent.</td>
+ * </tr>
+ * <tr>
+ *   <td>Custom NBT</td><td>{@link #setNbt(NbtCompound)}</td><td>Sets the custom NBT of the item stack.</td>
+ * </tr>
+ * <tr>
+ *   <td>Sub Custom NBT</td><td>{@link #getSubNbt(String)}</td><td>Returns the sub NBT compound at the specified key.</td>
+ * </tr>
+ * <tr>
+ *   <td>Sub Custom NBT</td><td>{@link #getOrCreateSubNbt(String)}</td><td>Returns the sub NBT compound at the specified key, or create one if absent.</td>
+ * </tr>
+ * <tr>
+ *   <td>Sub Custom NBT</td><td>{@link #removeSubNbt(String)}</td><td>Removes the sub NBT element at the specified key.</td>
+ * </tr>
+ * <tr>
+ *   <td>Sub Custom NBT</td><td>{@link #setSubNbt(String, NbtElement)}</td><td>Sets the sub NBT element at the specified key.</td>
+ * </tr>
+ * </table>
+ * </div>
+ */
 public final class ItemStack {
 	public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Registry.ITEM.fieldOf("id").forGetter(stack -> stack.item),
 					Codec.INT.fieldOf("Count").forGetter(stack -> stack.count),
-					NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.tag))
+					NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.nbt))
 				)
 				.apply(instance, ItemStack::new)
 	);
@@ -90,13 +159,37 @@ public final class ItemStack {
 	public static final DecimalFormat MODIFIER_FORMAT = Util.make(
 		new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
 	);
+	/**
+	 * The key of the enchantments in an item stack's custom NBT, whose value is {@value}.
+	 */
 	public static final String ENCHANTMENTS_KEY = "Enchantments";
+	/**
+	 * The key of the display NBT in an item stack's custom NBT, whose value is {@value}.
+	 */
 	public static final String DISPLAY_KEY = "display";
+	/**
+	 * The key of the item stack's name in the {@linkplain #DISPLAY_KEY display NBT}, whose value is {@value}.
+	 */
 	public static final String NAME_KEY = "Name";
+	/**
+	 * The key of the item stack's lore in the {@linkplain #DISPLAY_KEY display NBT}, whose value is {@value}.
+	 */
 	public static final String LORE_KEY = "Lore";
+	/**
+	 * The key of the damage in an item stack's custom NBT, whose value is {@value}.
+	 */
 	public static final String DAMAGE_KEY = "Damage";
+	/**
+	 * The key of the item's color in the {@linkplain #DISPLAY_KEY display NBT}, whose value is {@value}.
+	 */
 	public static final String COLOR_KEY = "color";
+	/**
+	 * The key of the unbreakable boolean in an item stack's custom NBT, whose value is {@value}.
+	 */
 	private static final String UNBREAKABLE_KEY = "Unbreakable";
+	/**
+	 * The key of the repair cost in an item stack's custom NBT, whose value is {@value}.
+	 */
 	private static final String REPAIR_COST_KEY = "RepairCost";
 	private static final String CAN_DESTROY_KEY = "CanDestroy";
 	private static final String CAN_PLACE_ON_KEY = "CanPlaceOn";
@@ -107,7 +200,14 @@ public final class ItemStack {
 	private int cooldown;
 	@Deprecated
 	private final Item item;
-	private NbtCompound tag;
+	/**
+	 * Repesents the item stack's custom NBT.
+	 * <p>
+	 * Stored at the key {@code tag} in the serialized item stack NBT.
+	 * 
+	 * @see <a href="nbt-operations">Item Stack NBT Operations</a>
+	 */
+	private NbtCompound nbt;
 	private boolean empty;
 	private Entity holder;
 	private CachedBlockPosition lastDestroyPos;
@@ -123,9 +223,9 @@ public final class ItemStack {
 		this(item, 1);
 	}
 
-	private ItemStack(ItemConvertible item, int count, Optional<NbtCompound> tag) {
+	private ItemStack(ItemConvertible item, int count, Optional<NbtCompound> nbt) {
 		this(item, count);
-		tag.ifPresent(this::setTag);
+		nbt.ifPresent(this::setNbt);
 	}
 
 	public ItemStack(ItemConvertible item, int count) {
@@ -143,12 +243,12 @@ public final class ItemStack {
 		this.empty = this.isEmpty();
 	}
 
-	private ItemStack(NbtCompound tag) {
-		this.item = Registry.ITEM.get(new Identifier(tag.getString("id")));
-		this.count = tag.getByte("Count");
-		if (tag.contains("tag", NbtElement.COMPOUND_TYPE)) {
-			this.tag = tag.getCompound("tag");
-			this.getItem().postProcessNbt(this.tag);
+	private ItemStack(NbtCompound nbt) {
+		this.item = Registry.ITEM.get(new Identifier(nbt.getString("id")));
+		this.count = nbt.getByte("Count");
+		if (nbt.contains("tag", NbtElement.COMPOUND_TYPE)) {
+			this.nbt = nbt.getCompound("tag");
+			this.getItem().postProcessNbt(this.nbt);
 		}
 
 		if (this.getItem().isDamageable()) {
@@ -158,6 +258,11 @@ public final class ItemStack {
 		this.updateEmptyState();
 	}
 
+	/**
+	 * Deserializes an item stack from NBT.
+	 * 
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 */
 	public static ItemStack fromNbt(NbtCompound nbt) {
 		try {
 			return new ItemStack(nbt);
@@ -167,6 +272,9 @@ public final class ItemStack {
 		}
 	}
 
+	/**
+	 * {@return whether this item stack is empty}
+	 */
 	public boolean isEmpty() {
 		if (this == EMPTY) {
 			return true;
@@ -224,12 +332,20 @@ public final class ItemStack {
 		return this.getItem().finishUsing(this, world, user);
 	}
 
+	/**
+	 * Writes the serialized item stack into the given {@link NbtCompound}.
+	 * 
+	 * @return the written NBT compound
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 * 
+	 * @param nbt the NBT compound to write to
+	 */
 	public NbtCompound writeNbt(NbtCompound nbt) {
 		Identifier identifier = Registry.ITEM.getId(this.getItem());
 		nbt.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
 		nbt.putByte("Count", (byte)this.count);
-		if (this.tag != null) {
-			nbt.put("tag", this.tag.copy());
+		if (this.nbt != null) {
+			nbt.put("tag", this.nbt.copy());
 		}
 
 		return nbt;
@@ -245,7 +361,7 @@ public final class ItemStack {
 
 	public boolean isDamageable() {
 		if (!this.empty && this.getItem().getMaxDamage() > 0) {
-			NbtCompound nbtCompound = this.getTag();
+			NbtCompound nbtCompound = this.getNbt();
 			return nbtCompound == null || !nbtCompound.getBoolean("Unbreakable");
 		} else {
 			return false;
@@ -257,11 +373,11 @@ public final class ItemStack {
 	}
 
 	public int getDamage() {
-		return this.tag == null ? 0 : this.tag.getInt("Damage");
+		return this.nbt == null ? 0 : this.nbt.getInt("Damage");
 	}
 
 	public void setDamage(int damage) {
-		this.getOrCreateTag().putInt("Damage", Math.max(0, damage));
+		this.getOrCreateNbt().putInt("Damage", Math.max(0, damage));
 	}
 
 	public int getMaxDamage() {
@@ -319,10 +435,16 @@ public final class ItemStack {
 		return this.item.isItemBarVisible(this);
 	}
 
+	/**
+	 * {@return the length of the filled section of the durability bar in pixels (out of 13)}
+	 */
 	public int getItemBarStep() {
 		return this.item.getItemBarStep(this);
 	}
 
+	/**
+	 * {@return the color of the filled section of the durability bar}
+	 */
 	public int getItemBarColor() {
 		return this.item.getItemBarColor(this);
 	}
@@ -366,27 +488,33 @@ public final class ItemStack {
 		return this.getItem().useOnEntity(this, user, entity, hand);
 	}
 
+	/**
+	 * Creates and returns a copy of this item stack.
+	 */
 	public ItemStack copy() {
 		if (this.isEmpty()) {
 			return EMPTY;
 		} else {
 			ItemStack itemStack = new ItemStack(this.getItem(), this.count);
 			itemStack.setCooldown(this.getCooldown());
-			if (this.tag != null) {
-				itemStack.tag = this.tag.copy();
+			if (this.nbt != null) {
+				itemStack.nbt = this.nbt.copy();
 			}
 
 			return itemStack;
 		}
 	}
 
-	public static boolean areTagsEqual(ItemStack left, ItemStack right) {
+	/**
+	 * {@return whether the given item stacks have equivalent custom NBT}
+	 */
+	public static boolean areNbtEqual(ItemStack left, ItemStack right) {
 		if (left.isEmpty() && right.isEmpty()) {
 			return true;
 		} else if (left.isEmpty() || right.isEmpty()) {
 			return false;
 		} else {
-			return left.tag == null && right.tag != null ? false : left.tag == null || left.tag.equals(right.tag);
+			return left.nbt == null && right.nbt != null ? false : left.nbt == null || left.nbt.equals(right.nbt);
 		}
 	}
 
@@ -404,7 +532,7 @@ public final class ItemStack {
 		} else if (!this.isOf(stack.getItem())) {
 			return false;
 		} else {
-			return this.tag == null && stack.tag != null ? false : this.tag == null || this.tag.equals(stack.tag);
+			return this.nbt == null && stack.nbt != null ? false : this.nbt == null || this.nbt.equals(stack.nbt);
 		}
 	}
 
@@ -433,7 +561,7 @@ public final class ItemStack {
 	}
 
 	public static boolean canCombine(ItemStack stack, ItemStack otherStack) {
-		return stack.isOf(otherStack.getItem()) && areTagsEqual(stack, otherStack);
+		return stack.isOf(otherStack.getItem()) && areNbtEqual(stack, otherStack);
 	}
 
 	public String getTranslationKey() {
@@ -475,64 +603,103 @@ public final class ItemStack {
 		return this.getItem().isUsedOnRelease(this);
 	}
 
-	public boolean hasTag() {
-		return !this.empty && this.tag != null && !this.tag.isEmpty();
+	/**
+	 * {@return whether this item stack has custom NBT}
+	 * 
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 */
+	public boolean hasNbt() {
+		return !this.empty && this.nbt != null && !this.nbt.isEmpty();
 	}
 
+	/**
+	 * {@return the custom NBT of this item stack, may be {@code null}}
+	 * 
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 */
 	@Nullable
-	public NbtCompound getTag() {
-		return this.tag;
+	public NbtCompound getNbt() {
+		return this.nbt;
 	}
 
-	public NbtCompound getOrCreateTag() {
-		if (this.tag == null) {
-			this.setTag(new NbtCompound());
+	/**
+	 * Returns the custom NBT of this item stack, or creates the custom NBT if the item stack did not have a custom NBT previously.
+	 * 
+	 * @return the custom NBT of this item stack
+	 * 
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 */
+	public NbtCompound getOrCreateNbt() {
+		if (this.nbt == null) {
+			this.setNbt(new NbtCompound());
 		}
 
-		return this.tag;
+		return this.nbt;
 	}
 
-	public NbtCompound getOrCreateSubTag(String key) {
-		if (this.tag != null && this.tag.contains(key, NbtElement.COMPOUND_TYPE)) {
-			return this.tag.getCompound(key);
+	/**
+	 * {@return the compound NBT at the specified key in this item stack's NBT, or a new compound if absent}
+	 * 
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 */
+	public NbtCompound getOrCreateSubNbt(String key) {
+		if (this.nbt != null && this.nbt.contains(key, NbtElement.COMPOUND_TYPE)) {
+			return this.nbt.getCompound(key);
 		} else {
 			NbtCompound nbtCompound = new NbtCompound();
-			this.putSubTag(key, nbtCompound);
+			this.setSubNbt(key, nbtCompound);
 			return nbtCompound;
 		}
 	}
 
+	/**
+	 * {@return the NBT compound at the specified key in this item stack's custom NBT, may be {@code null}}
+	 * 
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 */
 	@Nullable
-	public NbtCompound getSubTag(String key) {
-		return this.tag != null && this.tag.contains(key, NbtElement.COMPOUND_TYPE) ? this.tag.getCompound(key) : null;
+	public NbtCompound getSubNbt(String key) {
+		return this.nbt != null && this.nbt.contains(key, NbtElement.COMPOUND_TYPE) ? this.nbt.getCompound(key) : null;
 	}
 
-	public void removeSubTag(String key) {
-		if (this.tag != null && this.tag.contains(key)) {
-			this.tag.remove(key);
-			if (this.tag.isEmpty()) {
-				this.tag = null;
+	/**
+	 * Removes the sub NBT element at the specified key in this item stack's custom NBT.
+	 * 
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 */
+	public void removeSubNbt(String key) {
+		if (this.nbt != null && this.nbt.contains(key)) {
+			this.nbt.remove(key);
+			if (this.nbt.isEmpty()) {
+				this.nbt = null;
 			}
 		}
 	}
 
 	public NbtList getEnchantments() {
-		return this.tag != null ? this.tag.getList("Enchantments", NbtElement.COMPOUND_TYPE) : new NbtList();
+		return this.nbt != null ? this.nbt.getList("Enchantments", NbtElement.COMPOUND_TYPE) : new NbtList();
 	}
 
-	public void setTag(@Nullable NbtCompound tag) {
-		this.tag = tag;
+	/**
+	 * Sets the custom NBT of this item stack.
+	 * 
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 * 
+	 * @param nbt the custom NBT compound, may be {@code null} to reset
+	 */
+	public void setNbt(@Nullable NbtCompound nbt) {
+		this.nbt = nbt;
 		if (this.getItem().isDamageable()) {
 			this.setDamage(this.getDamage());
 		}
 
-		if (tag != null) {
-			this.getItem().postProcessNbt(tag);
+		if (nbt != null) {
+			this.getItem().postProcessNbt(nbt);
 		}
 	}
 
 	public Text getName() {
-		NbtCompound nbtCompound = this.getSubTag("display");
+		NbtCompound nbtCompound = this.getSubNbt("display");
 		if (nbtCompound != null && nbtCompound.contains("Name", NbtElement.STRING_TYPE)) {
 			try {
 				Text text = Text.Serializer.fromJson(nbtCompound.getString("Name"));
@@ -550,7 +717,7 @@ public final class ItemStack {
 	}
 
 	public ItemStack setCustomName(@Nullable Text name) {
-		NbtCompound nbtCompound = this.getOrCreateSubTag("display");
+		NbtCompound nbtCompound = this.getOrCreateSubNbt("display");
 		if (name != null) {
 			nbtCompound.putString("Name", Text.Serializer.toJson(name));
 		} else {
@@ -561,21 +728,21 @@ public final class ItemStack {
 	}
 
 	public void removeCustomName() {
-		NbtCompound nbtCompound = this.getSubTag("display");
+		NbtCompound nbtCompound = this.getSubNbt("display");
 		if (nbtCompound != null) {
 			nbtCompound.remove("Name");
 			if (nbtCompound.isEmpty()) {
-				this.removeSubTag("display");
+				this.removeSubNbt("display");
 			}
 		}
 
-		if (this.tag != null && this.tag.isEmpty()) {
-			this.tag = null;
+		if (this.nbt != null && this.nbt.isEmpty()) {
+			this.nbt = null;
 		}
 	}
 
 	public boolean hasCustomName() {
-		NbtCompound nbtCompound = this.getSubTag("display");
+		NbtCompound nbtCompound = this.getSubNbt("display");
 		return nbtCompound != null && nbtCompound.contains("Name", NbtElement.STRING_TYPE);
 	}
 
@@ -599,13 +766,13 @@ public final class ItemStack {
 			this.getItem().appendTooltip(this, player == null ? null : player.world, list, context);
 		}
 
-		if (this.hasTag()) {
+		if (this.hasNbt()) {
 			if (isSectionVisible(i, ItemStack.TooltipSection.ENCHANTMENTS)) {
 				appendEnchantments(list, this.getEnchantments());
 			}
 
-			if (this.tag.contains("display", NbtElement.COMPOUND_TYPE)) {
-				NbtCompound nbtCompound = this.tag.getCompound("display");
+			if (this.nbt.contains("display", NbtElement.COMPOUND_TYPE)) {
+				NbtCompound nbtCompound = this.nbt.getCompound("display");
 				if (isSectionVisible(i, ItemStack.TooltipSection.DYE) && nbtCompound.contains("color", NbtElement.NUMBER_TYPE)) {
 					if (context.isAdvanced()) {
 						list.add(new TranslatableText("item.color", String.format("#%06X", nbtCompound.getInt("color"))).formatted(Formatting.GRAY));
@@ -702,13 +869,13 @@ public final class ItemStack {
 			}
 		}
 
-		if (this.hasTag()) {
-			if (isSectionVisible(i, ItemStack.TooltipSection.UNBREAKABLE) && this.tag.getBoolean("Unbreakable")) {
+		if (this.hasNbt()) {
+			if (isSectionVisible(i, ItemStack.TooltipSection.UNBREAKABLE) && this.nbt.getBoolean("Unbreakable")) {
 				list.add(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
 			}
 
-			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_DESTROY) && this.tag.contains("CanDestroy", NbtElement.LIST_TYPE)) {
-				NbtList nbtList2 = this.tag.getList("CanDestroy", NbtElement.STRING_TYPE);
+			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_DESTROY) && this.nbt.contains("CanDestroy", NbtElement.LIST_TYPE)) {
+				NbtList nbtList2 = this.nbt.getList("CanDestroy", NbtElement.STRING_TYPE);
 				if (!nbtList2.isEmpty()) {
 					list.add(LiteralText.EMPTY);
 					list.add(new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
@@ -719,8 +886,8 @@ public final class ItemStack {
 				}
 			}
 
-			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_PLACE) && this.tag.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
-				NbtList nbtList2 = this.tag.getList("CanPlaceOn", NbtElement.STRING_TYPE);
+			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_PLACE) && this.nbt.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
+				NbtList nbtList2 = this.nbt.getList("CanPlaceOn", NbtElement.STRING_TYPE);
 				if (!nbtList2.isEmpty()) {
 					list.add(LiteralText.EMPTY);
 					list.add(new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
@@ -738,8 +905,8 @@ public final class ItemStack {
 			}
 
 			list.add(new LiteralText(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
-			if (this.hasTag()) {
-				list.add(new TranslatableText("item.nbt_tags", this.tag.getKeys().size()).formatted(Formatting.DARK_GRAY));
+			if (this.hasNbt()) {
+				list.add(new TranslatableText("item.nbt_tags", this.nbt.getKeys().size()).formatted(Formatting.DARK_GRAY));
 			}
 		}
 
@@ -754,11 +921,11 @@ public final class ItemStack {
 	}
 
 	private int getHideFlags() {
-		return this.hasTag() && this.tag.contains("HideFlags", NbtElement.NUMBER_TYPE) ? this.tag.getInt("HideFlags") : 0;
+		return this.hasNbt() && this.nbt.contains("HideFlags", NbtElement.NUMBER_TYPE) ? this.nbt.getInt("HideFlags") : 0;
 	}
 
 	public void addHideFlag(ItemStack.TooltipSection tooltipSection) {
-		NbtCompound nbtCompound = this.getOrCreateTag();
+		NbtCompound nbtCompound = this.getOrCreateNbt();
 		nbtCompound.putInt("HideFlags", nbtCompound.getInt("HideFlags") | tooltipSection.getFlag());
 	}
 
@@ -810,23 +977,31 @@ public final class ItemStack {
 	}
 
 	public void addEnchantment(Enchantment enchantment, int level) {
-		this.getOrCreateTag();
-		if (!this.tag.contains("Enchantments", NbtElement.LIST_TYPE)) {
-			this.tag.put("Enchantments", new NbtList());
+		this.getOrCreateNbt();
+		if (!this.nbt.contains("Enchantments", NbtElement.LIST_TYPE)) {
+			this.nbt.put("Enchantments", new NbtList());
 		}
 
-		NbtList nbtList = this.tag.getList("Enchantments", NbtElement.COMPOUND_TYPE);
+		NbtList nbtList = this.nbt.getList("Enchantments", NbtElement.COMPOUND_TYPE);
 		nbtList.add(EnchantmentHelper.createNbt(EnchantmentHelper.getEnchantmentId(enchantment), (byte)level));
 	}
 
 	public boolean hasEnchantments() {
-		return this.tag != null && this.tag.contains("Enchantments", NbtElement.LIST_TYPE)
-			? !this.tag.getList("Enchantments", NbtElement.COMPOUND_TYPE).isEmpty()
+		return this.nbt != null && this.nbt.contains("Enchantments", NbtElement.LIST_TYPE)
+			? !this.nbt.getList("Enchantments", NbtElement.COMPOUND_TYPE).isEmpty()
 			: false;
 	}
 
-	public void putSubTag(String key, NbtElement tag) {
-		this.getOrCreateTag().put(key, tag);
+	/**
+	 * Sets the given NBT element in the item stack's custom NBT at the specified key.
+	 * 
+	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
+	 * 
+	 * @param key the key where to put the given {@link NbtElement}
+	 * @param element the NBT element to put
+	 */
+	public void setSubNbt(String key, NbtElement element) {
+		this.getOrCreateNbt().put(key, element);
 	}
 
 	public boolean isInFrame() {
@@ -848,18 +1023,18 @@ public final class ItemStack {
 	}
 
 	public int getRepairCost() {
-		return this.hasTag() && this.tag.contains("RepairCost", NbtElement.INT_TYPE) ? this.tag.getInt("RepairCost") : 0;
+		return this.hasNbt() && this.nbt.contains("RepairCost", NbtElement.INT_TYPE) ? this.nbt.getInt("RepairCost") : 0;
 	}
 
 	public void setRepairCost(int repairCost) {
-		this.getOrCreateTag().putInt("RepairCost", repairCost);
+		this.getOrCreateNbt().putInt("RepairCost", repairCost);
 	}
 
 	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
 		Multimap<EntityAttribute, EntityAttributeModifier> multimap;
-		if (this.hasTag() && this.tag.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
+		if (this.hasNbt() && this.nbt.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
 			multimap = HashMultimap.create();
-			NbtList nbtList = this.tag.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
+			NbtList nbtList = this.nbt.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
 
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound = nbtList.getCompound(i);
@@ -883,12 +1058,12 @@ public final class ItemStack {
 	}
 
 	public void addAttributeModifier(EntityAttribute attribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
-		this.getOrCreateTag();
-		if (!this.tag.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
-			this.tag.put("AttributeModifiers", new NbtList());
+		this.getOrCreateNbt();
+		if (!this.nbt.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
+			this.nbt.put("AttributeModifiers", new NbtList());
 		}
 
-		NbtList nbtList = this.tag.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
+		NbtList nbtList = this.nbt.getList("AttributeModifiers", NbtElement.COMPOUND_TYPE);
 		NbtCompound nbtCompound = modifier.toNbt();
 		nbtCompound.putString("AttributeName", Registry.ATTRIBUTE.getId(attribute).toString());
 		if (slot != null) {
@@ -930,8 +1105,8 @@ public final class ItemStack {
 			return this.lastDestroyResult;
 		} else {
 			this.lastDestroyPos = pos;
-			if (this.hasTag() && this.tag.contains("CanDestroy", NbtElement.LIST_TYPE)) {
-				NbtList nbtList = this.tag.getList("CanDestroy", NbtElement.STRING_TYPE);
+			if (this.hasNbt() && this.nbt.contains("CanDestroy", NbtElement.LIST_TYPE)) {
+				NbtList nbtList = this.nbt.getList("CanDestroy", NbtElement.STRING_TYPE);
 
 				for (int i = 0; i < nbtList.size(); i++) {
 					String string = nbtList.getString(i);
@@ -957,8 +1132,8 @@ public final class ItemStack {
 			return this.lastPlaceOnResult;
 		} else {
 			this.lastPlaceOnPos = pos;
-			if (this.hasTag() && this.tag.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
-				NbtList nbtList = this.tag.getList("CanPlaceOn", NbtElement.STRING_TYPE);
+			if (this.hasNbt() && this.nbt.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
+				NbtList nbtList = this.nbt.getList("CanPlaceOn", NbtElement.STRING_TYPE);
 
 				for (int i = 0; i < nbtList.size(); i++) {
 					String string = nbtList.getString(i);
@@ -987,19 +1162,37 @@ public final class ItemStack {
 		this.cooldown = cooldown;
 	}
 
+	/**
+	 * {@return the count of items in this item stack}
+	 */
 	public int getCount() {
 		return this.empty ? 0 : this.count;
 	}
 
+	/**
+	 * Sets the count of items in this item stack.
+	 * 
+	 * @param count the count of items
+	 */
 	public void setCount(int count) {
 		this.count = count;
 		this.updateEmptyState();
 	}
 
+	/**
+	 * Increments the count of items in this item stack.
+	 * 
+	 * @param amount the amount to increment
+	 */
 	public void increment(int amount) {
 		this.setCount(this.count + amount);
 	}
 
+	/**
+	 * Decrements the count of items in this item stack.
+	 * 
+	 * @param amount the amount to decrement
+	 */
 	public void decrement(int amount) {
 		this.increment(-amount);
 	}

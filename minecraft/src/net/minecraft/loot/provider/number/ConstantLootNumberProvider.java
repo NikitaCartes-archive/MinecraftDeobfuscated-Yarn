@@ -43,7 +43,7 @@ public final class ConstantLootNumberProvider implements LootNumberProvider {
 		return this.value != 0.0F ? Float.floatToIntBits(this.value) : 0;
 	}
 
-	public static class CustomSerializer implements JsonSerializing.CustomSerializer<ConstantLootNumberProvider> {
+	public static class CustomSerializer implements JsonSerializing.ElementSerializer<ConstantLootNumberProvider> {
 		public JsonElement toJson(ConstantLootNumberProvider constantLootNumberProvider, JsonSerializationContext jsonSerializationContext) {
 			return new JsonPrimitive(constantLootNumberProvider.value);
 		}

@@ -31,7 +31,7 @@ public class GameOptionsScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.client.openScreen(this.parent);
+		this.client.setScreen(this.parent);
 	}
 
 	public static List<OrderedText> getHoveredButtonTooltip(ButtonListWidget buttonList, int mouseX, int mouseY) {

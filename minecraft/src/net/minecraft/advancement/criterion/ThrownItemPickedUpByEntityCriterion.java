@@ -29,7 +29,7 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack, Entity entity) {
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
-		this.test(player, conditions -> conditions.test(player, stack, lootContext));
+		this.trigger(player, conditions -> conditions.test(player, stack, lootContext));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

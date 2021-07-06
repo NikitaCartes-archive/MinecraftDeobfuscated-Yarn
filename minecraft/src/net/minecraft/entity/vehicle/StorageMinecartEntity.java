@@ -193,7 +193,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		if (this.lootTableId != null && this.world.getServer() != null) {
 			LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
 			if (player instanceof ServerPlayerEntity) {
-				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test((ServerPlayerEntity)player, this.lootTableId);
+				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, this.lootTableId);
 			}
 
 			this.lootTableId = null;

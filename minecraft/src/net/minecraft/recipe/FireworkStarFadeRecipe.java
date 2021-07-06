@@ -59,7 +59,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		}
 
 		if (itemStack != null && !list.isEmpty()) {
-			itemStack.getOrCreateSubTag("Explosion").putIntArray("FadeColors", list);
+			itemStack.getOrCreateSubNbt("Explosion").putIntArray("FadeColors", list);
 			return itemStack;
 		} else {
 			return ItemStack.EMPTY;

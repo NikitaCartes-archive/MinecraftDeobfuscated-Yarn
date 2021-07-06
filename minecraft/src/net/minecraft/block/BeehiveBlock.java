@@ -83,7 +83,7 @@ public class BeehiveBlock extends BlockWithEntity {
 				this.angerNearbyBees(world, pos);
 			}
 
-			Criteria.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state, stack, beehiveBlockEntity.getBeeCount());
+			Criteria.BEE_NEST_DESTROYED.trigger((ServerPlayerEntity)player, state, stack, beehiveBlockEntity.getBeeCount());
 		}
 	}
 
@@ -261,12 +261,12 @@ public class BeehiveBlock extends BlockWithEntity {
 				if (bl) {
 					NbtCompound nbtCompound = new NbtCompound();
 					nbtCompound.put("Bees", beehiveBlockEntity.getBees());
-					itemStack.putSubTag("BlockEntityTag", nbtCompound);
+					itemStack.setSubNbt("BlockEntityTag", nbtCompound);
 				}
 
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putInt("honey_level", i);
-				itemStack.putSubTag("BlockStateTag", nbtCompound);
+				itemStack.setSubNbt("BlockStateTag", nbtCompound);
 				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);

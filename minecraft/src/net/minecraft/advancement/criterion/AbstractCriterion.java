@@ -45,7 +45,7 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 		return this.conditionsFromJson(jsonObject, extended, advancementEntityPredicateDeserializer);
 	}
 
-	protected void test(ServerPlayerEntity player, Predicate<T> tester) {
+	protected void trigger(ServerPlayerEntity player, Predicate<T> predicate) {
 		PlayerAdvancementTracker playerAdvancementTracker = player.getAdvancementTracker();
 		Set<Criterion.ConditionsContainer<T>> set = (Set<Criterion.ConditionsContainer<T>>)this.progressions.get(playerAdvancementTracker);
 		if (set != null && !set.isEmpty()) {
@@ -54,7 +54,7 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 
 			for (Criterion.ConditionsContainer<T> conditionsContainer : set) {
 				T abstractCriterionConditions = conditionsContainer.getConditions();
-				if (tester.test(abstractCriterionConditions) && abstractCriterionConditions.getPlayerPredicate().test(lootContext)) {
+				if (predicate.test(abstractCriterionConditions) && abstractCriterionConditions.getPlayerPredicate().test(lootContext)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<T>>newArrayList();
 					}

@@ -77,7 +77,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
 			this.client.options.write();
 			this.client.getWindow().applyVideoMode();
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 		}));
 	}
 
@@ -120,14 +120,14 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 				}
 
 				this.client
-					.openScreen(new DialogScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new DialogScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, buttonx -> {
+					.setScreen(new DialogScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new DialogScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, buttonx -> {
 						this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
 						MinecraftClient.getInstance().worldRenderer.reload();
 						this.warningManager.acceptAfterWarnings();
-						this.client.openScreen(this);
+						this.client.setScreen(this);
 					}), new DialogScreen.ChoiceButton(GRAPHICS_WARNING_CANCEL_TEXT, buttonx -> {
 						this.warningManager.cancelAfterWarnings();
-						this.client.openScreen(this);
+						this.client.setScreen(this);
 					}))));
 			}
 

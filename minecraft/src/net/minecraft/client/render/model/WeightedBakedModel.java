@@ -55,8 +55,8 @@ public class WeightedBakedModel implements BakedModel {
 	}
 
 	@Override
-	public Sprite getSprite() {
-		return this.defaultModel.getSprite();
+	public Sprite getParticleSprite() {
+		return this.defaultModel.getParticleSprite();
 	}
 
 	@Override

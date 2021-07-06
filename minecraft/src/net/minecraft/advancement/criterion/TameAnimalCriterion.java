@@ -26,7 +26,7 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 
 	public void trigger(ServerPlayerEntity player, AnimalEntity entity) {
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
-		this.test(player, conditions -> conditions.matches(lootContext));
+		this.trigger(player, conditions -> conditions.matches(lootContext));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

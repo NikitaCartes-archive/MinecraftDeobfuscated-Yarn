@@ -67,7 +67,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	}
 
 	public static int getCustomPotionColor(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		return nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtElement.NUMBER_TYPE) ? nbtCompound.getInt("CustomPotionColor") : -1;
 	}
 
@@ -206,7 +206,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 			PotionUtil.setPotion(itemStack, this.potion);
 			PotionUtil.setCustomPotionEffects(itemStack, this.effects);
 			if (this.colorSet) {
-				itemStack.getOrCreateTag().putInt("CustomPotionColor", this.getColor());
+				itemStack.getOrCreateNbt().putInt("CustomPotionColor", this.getColor());
 			}
 
 			return itemStack;

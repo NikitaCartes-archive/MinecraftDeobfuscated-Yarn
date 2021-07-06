@@ -1995,7 +1995,7 @@ public abstract class LivingEntity extends Entity {
 	public abstract void equipStack(EquipmentSlot slot, ItemStack stack);
 
 	protected void processEquippedStack(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null) {
 			stack.getItem().postProcessNbt(nbtCompound);
 		}
@@ -2104,6 +2104,15 @@ public abstract class LivingEntity extends Entity {
 		return false;
 	}
 
+	/**
+	 * Allows you to do certain speed and velocity calculations. This is useful for custom vehicle behavior, or custom entity movement. This is not to be confused with AI.
+	 * 
+	 * <p>See vanilla examples of {@linkplain net.minecraft.entity.passive.HorseBaseEntity#travel
+	 * custom horse vehicle} and {@linkplain net.minecraft.entity.mob.FlyingEntity#travel
+	 * flying entities}.
+	 * 
+	 * @param movementInput represents the sidewaysSpeed, upwardSpeed, and forwardSpeed of the entity in that order
+	 */
 	public void travel(Vec3d movementInput) {
 		if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
 			double d = 0.08;
@@ -2216,7 +2225,7 @@ public abstract class LivingEntity extends Entity {
 				BlockPos blockPos = this.getVelocityAffectingPos();
 				float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
 				float fxx = this.onGround ? p * 0.91F : 0.91F;
-				Vec3d vec3d6 = this.method_26318(movementInput, p);
+				Vec3d vec3d6 = this.applyMovementInput(movementInput, p);
 				double q = vec3d6.y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
@@ -2256,17 +2265,17 @@ public abstract class LivingEntity extends Entity {
 		entity.limbAngle = entity.limbAngle + entity.limbDistance;
 	}
 
-	public Vec3d method_26318(Vec3d vec3d, float f) {
-		this.updateVelocity(this.getMovementSpeed(f), vec3d);
+	public Vec3d applyMovementInput(Vec3d movementInput, float slipperiness) {
+		this.updateVelocity(this.getMovementSpeed(slipperiness), movementInput);
 		this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
 		this.move(MovementType.SELF, this.getVelocity());
-		Vec3d vec3d2 = this.getVelocity();
+		Vec3d vec3d = this.getVelocity();
 		if ((this.horizontalCollision || this.jumping)
 			&& (this.isClimbing() || this.getBlockStateAtPos().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
-			vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
+			vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
 		}
 
-		return vec3d2;
+		return vec3d;
 	}
 
 	public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {

@@ -40,7 +40,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			this.entries.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(defaultedList::add), context)));
 			NbtCompound nbtCompound = new NbtCompound();
 			Inventories.writeNbt(nbtCompound, defaultedList);
-			NbtCompound nbtCompound2 = stack.getOrCreateTag();
+			NbtCompound nbtCompound2 = stack.getOrCreateNbt();
 			nbtCompound2.put("BlockEntityTag", nbtCompound.copyFrom(nbtCompound2.getCompound("BlockEntityTag")));
 			return stack;
 		}

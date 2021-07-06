@@ -282,7 +282,7 @@ public class TradeOffer {
 			}
 
 			return ItemStack.areItemsEqualIgnoreDamage(itemStack, sample)
-				&& (!sample.hasTag() || itemStack.hasTag() && NbtHelper.matches(sample.getTag(), itemStack.getTag(), false));
+				&& (!sample.hasNbt() || itemStack.hasNbt() && NbtHelper.matches(sample.getNbt(), itemStack.getNbt(), false));
 		}
 	}
 

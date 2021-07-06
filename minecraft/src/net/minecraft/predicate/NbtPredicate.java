@@ -25,7 +25,7 @@ public class NbtPredicate {
 	}
 
 	public boolean test(ItemStack stack) {
-		return this == ANY ? true : this.test(stack.getTag());
+		return this == ANY ? true : this.test(stack.getNbt());
 	}
 
 	public boolean test(Entity entity) {

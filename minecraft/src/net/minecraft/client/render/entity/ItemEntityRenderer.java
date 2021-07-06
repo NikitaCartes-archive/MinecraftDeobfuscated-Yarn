@@ -20,10 +20,10 @@ import net.minecraft.util.math.Vec3f;
 @Environment(EnvType.CLIENT)
 public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 	private static final float field_32924 = 0.15F;
-	private static final int field_32925 = 48;
-	private static final int field_32926 = 32;
-	private static final int field_32927 = 16;
-	private static final int field_32928 = 1;
+	private static final int MAX_COUNT_FOR_4_ITEMS_RENDERED = 48;
+	private static final int MAX_COUNT_FOR_3_ITEMS_RENDERED = 32;
+	private static final int MAX_COUNT_FOR_2_ITEMS_RENDERED = 16;
+	private static final int MAX_COUNT_FOR_1_ITEM_RENDERED = 1;
 	private static final float field_32929 = 0.0F;
 	private static final float field_32930 = 0.0F;
 	private static final float field_32931 = 0.09375F;

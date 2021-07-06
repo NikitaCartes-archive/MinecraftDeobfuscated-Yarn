@@ -130,8 +130,8 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	public static final int BLUE_BABY_CHANCE = 1200;
 	private static final int MAX_AIR = 6000;
 	public static final String VARIANT_KEY = "Variant";
-	private static final int field_33485 = 1800;
-	private static final int field_34005 = 2400;
+	private static final int HYDRATION_BY_POTION = 1800;
+	private static final int MAX_REGENERATION_BUFF_DURATION = 2400;
 	private final Map<String, Vec3f> modelAngles = Maps.<String, Vec3f>newHashMap();
 	private static final int BUFF_DURATION = 100;
 
@@ -195,7 +195,9 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 					bl = true;
 				}
 			} else {
-				entityData = new AxolotlEntity.AxolotlData(AxolotlEntity.Variant.getRandomAll(this.world.random), AxolotlEntity.Variant.getRandomAll(this.world.random));
+				entityData = new AxolotlEntity.AxolotlData(
+					AxolotlEntity.Variant.getRandomNatural(this.world.random), AxolotlEntity.Variant.getRandomNatural(this.world.random)
+				);
 			}
 
 			this.setVariant(((AxolotlEntity.AxolotlData)entityData).getRandomVariant(this.world.random));
@@ -295,7 +297,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		if (axolotlEntity != null) {
 			AxolotlEntity.Variant variant;
 			if (shouldBabyBeDifferent(this.random)) {
-				variant = AxolotlEntity.Variant.getRandomNatural(this.random);
+				variant = AxolotlEntity.Variant.getRandomUnnatural(this.random);
 			} else {
 				variant = this.random.nextBoolean() ? this.getVariant() : ((AxolotlEntity)entity).getVariant();
 			}
@@ -399,7 +401,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	@Override
 	public void copyDataToStack(ItemStack stack) {
 		Bucketable.copyDataToStack(this, stack);
-		NbtCompound nbtCompound = stack.getOrCreateTag();
+		NbtCompound nbtCompound = stack.getOrCreateNbt();
 		nbtCompound.putInt("Variant", this.getVariant().getId());
 		nbtCompound.putInt("Age", this.getBreedingAge());
 		Brain<?> brain = this.getBrain();
@@ -638,17 +640,17 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 			return this.name;
 		}
 
-		public static AxolotlEntity.Variant getRandomAll(Random random) {
+		public static AxolotlEntity.Variant getRandomNatural(Random random) {
 			return getRandom(random, true);
 		}
 
-		public static AxolotlEntity.Variant getRandomNatural(Random random) {
+		public static AxolotlEntity.Variant getRandomUnnatural(Random random) {
 			return getRandom(random, false);
 		}
 
-		private static AxolotlEntity.Variant getRandom(Random random, boolean includeUnnatural) {
+		private static AxolotlEntity.Variant getRandom(Random random, boolean natural) {
 			AxolotlEntity.Variant[] variants = (AxolotlEntity.Variant[])Arrays.stream(VARIANTS)
-				.filter(variant -> variant.natural == includeUnnatural)
+				.filter(variant -> variant.natural == natural)
 				.toArray(AxolotlEntity.Variant[]::new);
 			return Util.getRandom(variants, random);
 		}

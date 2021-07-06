@@ -45,7 +45,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack craft(CraftingInventory craftingInventory) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
-		NbtCompound nbtCompound = itemStack.getOrCreateSubTag("Fireworks");
+		NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("Fireworks");
 		NbtList nbtList = new NbtList();
 		int i = 0;
 
@@ -55,7 +55,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 				if (DURATION_MODIFIER.test(itemStack2)) {
 					i++;
 				} else if (FIREWORK_STAR.test(itemStack2)) {
-					NbtCompound nbtCompound2 = itemStack2.getSubTag("Explosion");
+					NbtCompound nbtCompound2 = itemStack2.getSubNbt("Explosion");
 					if (nbtCompound2 != null) {
 						nbtList.add(nbtCompound2);
 					}

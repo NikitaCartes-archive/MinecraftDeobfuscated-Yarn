@@ -128,7 +128,7 @@ public class LightningEntity extends Entity {
 						);
 
 					for (ServerPlayerEntity serverPlayerEntity : ((ServerWorld)this.world).getPlayers(serverPlayerEntityx -> serverPlayerEntityx.distanceTo(this) < 256.0F)) {
-						Criteria.LIGHTNING_STRIKE.test(serverPlayerEntity, this, list);
+						Criteria.LIGHTNING_STRIKE.trigger(serverPlayerEntity, this, list);
 					}
 				}
 

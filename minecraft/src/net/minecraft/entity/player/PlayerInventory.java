@@ -223,8 +223,8 @@ public class PlayerInventory implements Inventory, Nameable {
 		ItemStack itemStack = this.getStack(slot);
 		if (itemStack.isEmpty()) {
 			itemStack = new ItemStack(item, 0);
-			if (stack.hasTag()) {
-				itemStack.setTag(stack.getTag().copy());
+			if (stack.hasNbt()) {
+				itemStack.setNbt(stack.getNbt().copy());
 			}
 
 			this.setStack(slot, itemStack);

@@ -28,10 +28,10 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	static final Logger LOGGER = LogManager.getLogger();
-	private static final Text subscriptionTitle = new TranslatableText("mco.configure.world.subscription.title");
-	private static final Text subscriptionStartLabelText = new TranslatableText("mco.configure.world.subscription.start");
-	private static final Text timeLeftLabelText = new TranslatableText("mco.configure.world.subscription.timeleft");
-	private static final Text daysLeftLabelText = new TranslatableText("mco.configure.world.subscription.recurring.daysleft");
+	private static final Text SUBSCRIPTION_TITLE = new TranslatableText("mco.configure.world.subscription.title");
+	private static final Text SUBSCRIPTION_START_LABEL_TEXT = new TranslatableText("mco.configure.world.subscription.start");
+	private static final Text TIME_LEFT_LABEL_TEXT = new TranslatableText("mco.configure.world.subscription.timeleft");
+	private static final Text DAYS_LEFT_LABEL_TEXT = new TranslatableText("mco.configure.world.subscription.recurring.daysleft");
 	private static final Text EXPIRED_TEXT = new TranslatableText("mco.configure.world.subscription.expired");
 	private static final Text EXPIRES_IN_LESS_THAN_A_DAY_TEXT = new TranslatableText("mco.configure.world.subscription.less_than_a_day");
 	private static final Text MONTH_TEXT = new TranslatableText("mco.configure.world.subscription.month");
@@ -76,19 +76,19 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				}
 			)
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.BACK, button -> this.client.setScreen(this.parent)));
 		if (this.serverData.expired) {
 			this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.delete.button"), button -> {
 				Text text = new TranslatableText("mco.configure.world.delete.question.line1");
 				Text text2 = new TranslatableText("mco.configure.world.delete.question.line2");
-				this.client.openScreen(new RealmsLongConfirmationScreen(this::onDeletionConfirmed, RealmsLongConfirmationScreen.Type.Warning, text, text2, true));
+				this.client.setScreen(new RealmsLongConfirmationScreen(this::onDeletionConfirmed, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
 			}));
 		}
 	}
 
 	@Override
 	public Text getNarratedTitle() {
-		return ScreenTexts.joinLines(subscriptionTitle, subscriptionStartLabelText, this.startDate, timeLeftLabelText, this.daysLeft);
+		return ScreenTexts.joinLines(SUBSCRIPTION_TITLE, SUBSCRIPTION_START_LABEL_TEXT, this.startDate, TIME_LEFT_LABEL_TEXT, this.daysLeft);
 	}
 
 	private void onDeletionConfirmed(boolean delete) {
@@ -103,12 +103,12 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 						RealmsSubscriptionInfoScreen.LOGGER.error(var2);
 					}
 
-					RealmsSubscriptionInfoScreen.this.client.execute(() -> RealmsSubscriptionInfoScreen.this.client.openScreen(RealmsSubscriptionInfoScreen.this.mainScreen));
+					RealmsSubscriptionInfoScreen.this.client.execute(() -> RealmsSubscriptionInfoScreen.this.client.setScreen(RealmsSubscriptionInfoScreen.this.mainScreen));
 				}
 			}).start();
 		}
 
-		this.client.openScreen(this);
+		this.client.setScreen(this);
 	}
 
 	private void getSubscription(long worldId) {
@@ -121,7 +121,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 			this.type = subscription.type;
 		} catch (RealmsServiceException var5) {
 			LOGGER.error("Couldn't get subscription");
-			this.client.openScreen(new RealmsGenericErrorScreen(var5, this.parent));
+			this.client.setScreen(new RealmsGenericErrorScreen(var5, this.parent));
 		}
 	}
 
@@ -139,7 +139,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -150,13 +150,13 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		int i = this.width / 2 - 100;
-		drawCenteredText(matrices, this.textRenderer, subscriptionTitle, this.width / 2, 17, 16777215);
-		this.textRenderer.draw(matrices, subscriptionStartLabelText, (float)i, (float)row(0), 10526880);
+		drawCenteredText(matrices, this.textRenderer, SUBSCRIPTION_TITLE, this.width / 2, 17, 16777215);
+		this.textRenderer.draw(matrices, SUBSCRIPTION_START_LABEL_TEXT, (float)i, (float)row(0), 10526880);
 		this.textRenderer.draw(matrices, this.startDate, (float)i, (float)row(1), 16777215);
 		if (this.type == Subscription.SubscriptionType.NORMAL) {
-			this.textRenderer.draw(matrices, timeLeftLabelText, (float)i, (float)row(3), 10526880);
+			this.textRenderer.draw(matrices, TIME_LEFT_LABEL_TEXT, (float)i, (float)row(3), 10526880);
 		} else if (this.type == Subscription.SubscriptionType.RECURRING) {
-			this.textRenderer.draw(matrices, daysLeftLabelText, (float)i, (float)row(3), 10526880);
+			this.textRenderer.draw(matrices, DAYS_LEFT_LABEL_TEXT, (float)i, (float)row(3), 10526880);
 		}
 
 		this.textRenderer.draw(matrices, this.daysLeft, (float)i, (float)row(4), 16777215);

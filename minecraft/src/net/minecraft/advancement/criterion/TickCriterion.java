@@ -21,7 +21,7 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 	}
 
 	public void trigger(ServerPlayerEntity player) {
-		this.test(player, conditions -> true);
+		this.trigger(player, conditions -> true);
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

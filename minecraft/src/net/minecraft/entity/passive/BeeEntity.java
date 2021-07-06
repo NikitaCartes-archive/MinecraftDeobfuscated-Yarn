@@ -34,9 +34,9 @@ import net.minecraft.entity.ai.NoPenaltySolidTargeting;
 import net.minecraft.entity.ai.NoWaterTargeting;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.control.LookControl;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -97,7 +97,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	private static final int NEAR_TARGET_FLAG = 2;
 	private static final int HAS_STUNG_FLAG = 4;
 	private static final int HAS_NECTAR_FLAG = 8;
-	private static final int field_30284 = 1200;
+	private static final int MAX_LIFETIME_AFTER_STINGING = 1200;
 	/**
 	 * A bee will start moving to a flower once this time in ticks has passed from a pollination.
 	 */
@@ -668,7 +668,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		return pos.isWithinDistance(this.getBlockPos(), (double)distance);
 	}
 
-	static class BeeFollowTargetGoal extends FollowTargetGoal<PlayerEntity> {
+	static class BeeFollowTargetGoal extends ActiveTargetGoal<PlayerEntity> {
 		BeeFollowTargetGoal(BeeEntity bee) {
 			super(bee, PlayerEntity.class, 10, true, false, bee::shouldAngerAt);
 		}
@@ -732,7 +732,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	class BeeWanderAroundGoal extends Goal {
-		private static final int field_30309 = 22;
+		private static final int MAX_DISTANCE = 22;
 
 		BeeWanderAroundGoal() {
 			this.setControls(EnumSet.of(Goal.Control.MOVE));

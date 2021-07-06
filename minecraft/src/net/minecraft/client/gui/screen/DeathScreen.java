@@ -43,7 +43,7 @@ public class DeathScreen extends Screen {
 						this.isHardcore ? new TranslatableText("deathScreen.spectate") : new TranslatableText("deathScreen.respawn"),
 						button -> {
 							this.client.player.requestRespawn();
-							this.client.openScreen(null);
+							this.client.setScreen(null);
 						}
 					)
 				)
@@ -68,7 +68,7 @@ public class DeathScreen extends Screen {
 									new TranslatableText("deathScreen.titleScreen"),
 									new TranslatableText("deathScreen.respawn")
 								);
-								this.client.openScreen(confirmScreen);
+								this.client.setScreen(confirmScreen);
 								confirmScreen.disableButtons(20);
 							}
 						}
@@ -95,7 +95,7 @@ public class DeathScreen extends Screen {
 			this.quitLevel();
 		} else {
 			this.client.player.requestRespawn();
-			this.client.openScreen(null);
+			this.client.setScreen(null);
 		}
 	}
 
@@ -105,7 +105,7 @@ public class DeathScreen extends Screen {
 		}
 
 		this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
-		this.client.openScreen(new TitleScreen());
+		this.client.setScreen(new TitleScreen());
 	}
 
 	@Override

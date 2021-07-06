@@ -156,7 +156,7 @@ public class Main {
 			}
 
 			serverResourceManager.loadRegistryTags();
-			RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+			RegistryOps<NbtElement> registryOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 			serverPropertiesLoader.getPropertiesHandler().method_37371(impl);
 			SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
 			if (saveProperties == null) {
@@ -204,7 +204,7 @@ public class Main {
 						userCache,
 						WorldGenerationProgressLogger::new
 					);
-					minecraftDedicatedServerx.setServerName(optionSet.valueOf(optionSpec9));
+					minecraftDedicatedServerx.setSinglePlayerName(optionSet.valueOf(optionSpec9));
 					minecraftDedicatedServerx.setServerPort(optionSet.valueOf(optionSpec12));
 					minecraftDedicatedServerx.setDemo(optionSet.has(optionSpec3));
 					minecraftDedicatedServerx.setServerId(optionSet.valueOf(optionSpec13));

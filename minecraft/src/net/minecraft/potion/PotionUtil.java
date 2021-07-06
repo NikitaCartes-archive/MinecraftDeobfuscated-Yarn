@@ -32,7 +32,7 @@ public class PotionUtil {
 	private static final Text NONE_TEXT = new TranslatableText("effect.none").formatted(Formatting.GRAY);
 
 	public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
-		return getPotionEffects(stack.getTag());
+		return getPotionEffects(stack.getNbt());
 	}
 
 	public static List<StatusEffectInstance> getPotionEffects(Potion potion, Collection<StatusEffectInstance> custom) {
@@ -50,7 +50,7 @@ public class PotionUtil {
 	}
 
 	public static List<StatusEffectInstance> getCustomPotionEffects(ItemStack stack) {
-		return getCustomPotionEffects(stack.getTag());
+		return getCustomPotionEffects(stack.getNbt());
 	}
 
 	public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable NbtCompound nbt) {
@@ -74,7 +74,7 @@ public class PotionUtil {
 	}
 
 	public static int getColor(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtElement.NUMBER_TYPE)) {
 			return nbtCompound.getInt("CustomPotionColor");
 		} else {
@@ -119,7 +119,7 @@ public class PotionUtil {
 	}
 
 	public static Potion getPotion(ItemStack stack) {
-		return getPotion(stack.getTag());
+		return getPotion(stack.getNbt());
 	}
 
 	public static Potion getPotion(@Nullable NbtCompound compound) {
@@ -129,9 +129,9 @@ public class PotionUtil {
 	public static ItemStack setPotion(ItemStack stack, Potion potion) {
 		Identifier identifier = Registry.POTION.getId(potion);
 		if (potion == Potions.EMPTY) {
-			stack.removeSubTag("Potion");
+			stack.removeSubNbt("Potion");
 		} else {
-			stack.getOrCreateTag().putString("Potion", identifier.toString());
+			stack.getOrCreateNbt().putString("Potion", identifier.toString());
 		}
 
 		return stack;
@@ -141,7 +141,7 @@ public class PotionUtil {
 		if (effects.isEmpty()) {
 			return stack;
 		} else {
-			NbtCompound nbtCompound = stack.getOrCreateTag();
+			NbtCompound nbtCompound = stack.getOrCreateNbt();
 			NbtList nbtList = nbtCompound.getList("CustomPotionEffects", NbtElement.LIST_TYPE);
 
 			for (StatusEffectInstance statusEffectInstance : effects) {
@@ -183,7 +183,7 @@ public class PotionUtil {
 					mutableText = new TranslatableText("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, f));
 				}
 
-				list.add(mutableText.formatted(statusEffect.getType().getFormatting()));
+				list.add(mutableText.formatted(statusEffect.getCategory().getFormatting()));
 			}
 		}
 

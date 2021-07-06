@@ -31,9 +31,9 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBlockEntity> {
-	private static final int field_32817 = 20;
-	private static final int field_32818 = 40;
-	private static final int field_32819 = 16;
+	private static final int WIDTH = 20;
+	private static final int HEIGHT = 40;
+	private static final int ROTATIONS = 16;
 	public static final String BANNER = "flag";
 	private static final String PILLAR = "pole";
 	private static final String CROSSBAR = "bar";

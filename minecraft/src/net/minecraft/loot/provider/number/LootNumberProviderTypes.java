@@ -15,12 +15,12 @@ public class LootNumberProviderTypes {
 		return Registry.register(Registry.LOOT_NUMBER_PROVIDER_TYPE, new Identifier(id), new LootNumberProviderType(jsonSerializer));
 	}
 
-	public static Object method_32455() {
-		return JsonSerializing.<LootNumberProvider, LootNumberProviderType>createTypeHandler(
+	public static Object createGsonSerializer() {
+		return JsonSerializing.<LootNumberProvider, LootNumberProviderType>createSerializerBuilder(
 				Registry.LOOT_NUMBER_PROVIDER_TYPE, "provider", "type", LootNumberProvider::getType
 			)
-			.method_32385(CONSTANT, new ConstantLootNumberProvider.CustomSerializer())
-			.method_33409(UNIFORM)
-			.createGsonSerializer();
+			.elementSerializer(CONSTANT, new ConstantLootNumberProvider.CustomSerializer())
+			.defaultType(UNIFORM)
+			.build();
 	}
 }

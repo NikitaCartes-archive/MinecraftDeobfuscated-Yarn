@@ -49,9 +49,9 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		this.life = 0;
 		this.setPosition(x, y, z);
 		int i = 1;
-		if (!stack.isEmpty() && stack.hasTag()) {
+		if (!stack.isEmpty() && stack.hasNbt()) {
 			this.dataTracker.set(ITEM, stack.copy());
-			i += stack.getOrCreateSubTag("Fireworks").getByte("Flight");
+			i += stack.getOrCreateSubNbt("Fireworks").getByte("Flight");
 		}
 
 		this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
@@ -195,7 +195,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	private boolean hasExplosionEffects() {
 		ItemStack itemStack = this.dataTracker.get(ITEM);
-		NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+		NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
 		NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtElement.COMPOUND_TYPE) : null;
 		return nbtList != null && !nbtList.isEmpty();
 	}
@@ -203,7 +203,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	private void explode() {
 		float f = 0.0F;
 		ItemStack itemStack = this.dataTracker.get(ITEM);
-		NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+		NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
 		NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtElement.COMPOUND_TYPE) : null;
 		if (nbtList != null && !nbtList.isEmpty()) {
 			f = 5.0F + (float)(nbtList.size() * 2);
@@ -257,7 +257,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 				}
 			} else {
 				ItemStack itemStack = this.dataTracker.get(ITEM);
-				NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+				NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
 				Vec3d vec3d = this.getVelocity();
 				this.world.addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, nbtCompound);
 			}

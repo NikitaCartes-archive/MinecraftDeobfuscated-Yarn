@@ -23,8 +23,8 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 		return new PlayerGeneratesContainerLootCriterion.Conditions(extended, identifier);
 	}
 
-	public void test(ServerPlayerEntity player, Identifier id) {
-		this.test(player, conditions -> conditions.test(id));
+	public void trigger(ServerPlayerEntity player, Identifier id) {
+		this.trigger(player, conditions -> conditions.test(id));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

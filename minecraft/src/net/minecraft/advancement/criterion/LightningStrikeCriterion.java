@@ -28,12 +28,12 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 		return new LightningStrikeCriterion.Conditions(extended, extended2, extended3);
 	}
 
-	public void test(ServerPlayerEntity player, LightningEntity lightning, List<Entity> bystanders) {
+	public void trigger(ServerPlayerEntity player, LightningEntity lightning, List<Entity> bystanders) {
 		List<LootContext> list = (List<LootContext>)bystanders.stream()
 			.map(bystander -> EntityPredicate.createAdvancementEntityLootContext(player, bystander))
 			.collect(Collectors.toList());
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, lightning);
-		this.test(player, conditions -> conditions.test(lootContext, list));
+		this.trigger(player, conditions -> conditions.test(lootContext, list));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

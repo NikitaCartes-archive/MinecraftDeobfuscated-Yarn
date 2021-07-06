@@ -52,8 +52,8 @@ public class TestUtil {
 			.flatMap(
 				entry -> {
 					String string = (String)entry.getKey();
-					Consumer<ServerWorld> consumer = TestFunctions.getAfterBatchConsumer(string);
-					Consumer<ServerWorld> consumer2 = TestFunctions.getBeforeBatchConsumer(string);
+					Consumer<ServerWorld> consumer = TestFunctions.getBeforeBatchConsumer(string);
+					Consumer<ServerWorld> consumer2 = TestFunctions.getAfterBatchConsumer(string);
 					MutableInt mutableInt = new MutableInt();
 					Collection<TestFunction> collection = (Collection<TestFunction>)entry.getValue();
 					return Streams.stream(Iterables.partition(collection, 100))

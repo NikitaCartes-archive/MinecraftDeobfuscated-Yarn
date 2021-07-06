@@ -27,7 +27,7 @@ public class DatapackFailureScreen extends Screen {
 			)
 		);
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, new TranslatableText("gui.toTitle"), button -> this.client.openScreen(null))
+			new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, new TranslatableText("gui.toTitle"), button -> this.client.setScreen(null))
 		);
 	}
 

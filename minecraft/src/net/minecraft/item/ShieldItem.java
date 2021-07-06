@@ -25,7 +25,7 @@ public class ShieldItem extends Item {
 
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		return stack.getSubTag("BlockEntityTag") != null ? this.getTranslationKey() + "." + getColor(stack).getName() : super.getTranslationKey(stack);
+		return stack.getSubNbt("BlockEntityTag") != null ? this.getTranslationKey() + "." + getColor(stack).getName() : super.getTranslationKey(stack);
 	}
 
 	@Override
@@ -56,6 +56,6 @@ public class ShieldItem extends Item {
 	}
 
 	public static DyeColor getColor(ItemStack stack) {
-		return DyeColor.byId(stack.getOrCreateSubTag("BlockEntityTag").getInt("Base"));
+		return DyeColor.byId(stack.getOrCreateSubNbt("BlockEntityTag").getInt("Base"));
 	}
 }

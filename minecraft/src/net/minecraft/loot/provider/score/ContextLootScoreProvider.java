@@ -42,7 +42,7 @@ public class ContextLootScoreProvider implements LootScoreProvider {
 		return ImmutableSet.of(this.target.getParameter());
 	}
 
-	public static class CustomSerializer implements JsonSerializing.CustomSerializer<ContextLootScoreProvider> {
+	public static class CustomSerializer implements JsonSerializing.ElementSerializer<ContextLootScoreProvider> {
 		public JsonElement toJson(ContextLootScoreProvider contextLootScoreProvider, JsonSerializationContext jsonSerializationContext) {
 			return jsonSerializationContext.serialize(contextLootScoreProvider.target);
 		}

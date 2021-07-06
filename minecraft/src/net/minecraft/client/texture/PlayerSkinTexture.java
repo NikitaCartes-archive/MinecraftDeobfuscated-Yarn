@@ -189,7 +189,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 	private static void stripColor(NativeImage image, int x1, int y1, int x2, int y2) {
 		for (int i = x1; i < x2; i++) {
 			for (int j = y1; j < y2; j++) {
-				int k = image.getPixelColor(i, j);
+				int k = image.getColor(i, j);
 				if ((k >> 24 & 0xFF) < 128) {
 					return;
 				}
@@ -198,7 +198,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 
 		for (int i = x1; i < x2; i++) {
 			for (int jx = y1; jx < y2; jx++) {
-				image.setPixelColor(i, jx, image.getPixelColor(i, jx) & 16777215);
+				image.setColor(i, jx, image.getColor(i, jx) & 16777215);
 			}
 		}
 	}
@@ -206,7 +206,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 	private static void stripAlpha(NativeImage image, int x1, int y1, int x2, int y2) {
 		for (int i = x1; i < x2; i++) {
 			for (int j = y1; j < y2; j++) {
-				image.setPixelColor(i, j, image.getPixelColor(i, j) | 0xFF000000);
+				image.setColor(i, j, image.getColor(i, j) | 0xFF000000);
 			}
 		}
 	}

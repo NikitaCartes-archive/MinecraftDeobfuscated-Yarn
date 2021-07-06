@@ -32,7 +32,7 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 		}
 
 		this.addDrawableChild(Option.SUBTITLES.createButton(this.gameOptions, this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
 	}
 
 	@Override

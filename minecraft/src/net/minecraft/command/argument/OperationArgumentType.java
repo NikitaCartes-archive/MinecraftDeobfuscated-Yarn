@@ -25,8 +25,8 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 		return new OperationArgumentType();
 	}
 
-	public static OperationArgumentType.Operation getOperation(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, OperationArgumentType.Operation.class);
+	public static OperationArgumentType.Operation getOperation(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, OperationArgumentType.Operation.class);
 	}
 
 	public OperationArgumentType.Operation parse(StringReader stringReader) throws CommandSyntaxException {
@@ -53,38 +53,38 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 		return EXAMPLES;
 	}
 
-	private static OperationArgumentType.Operation getOperator(String string) throws CommandSyntaxException {
-		return (OperationArgumentType.Operation)(string.equals("><") ? (scoreboardPlayerScore, scoreboardPlayerScore2) -> {
-			int i = scoreboardPlayerScore.getScore();
-			scoreboardPlayerScore.setScore(scoreboardPlayerScore2.getScore());
-			scoreboardPlayerScore2.setScore(i);
-		} : getIntOperator(string));
+	private static OperationArgumentType.Operation getOperator(String operator) throws CommandSyntaxException {
+		return (OperationArgumentType.Operation)(operator.equals("><") ? (a, b) -> {
+			int i = a.getScore();
+			a.setScore(b.getScore());
+			b.setScore(i);
+		} : getIntOperator(operator));
 	}
 
-	private static OperationArgumentType.IntOperator getIntOperator(String string) throws CommandSyntaxException {
-		switch (string) {
+	private static OperationArgumentType.IntOperator getIntOperator(String operator) throws CommandSyntaxException {
+		switch (operator) {
 			case "=":
-				return (i, j) -> j;
+				return (a, b) -> b;
 			case "+=":
-				return (i, j) -> i + j;
+				return (a, b) -> a + b;
 			case "-=":
-				return (i, j) -> i - j;
+				return (a, b) -> a - b;
 			case "*=":
-				return (i, j) -> i * j;
+				return (a, b) -> a * b;
 			case "/=":
-				return (i, j) -> {
-					if (j == 0) {
+				return (a, b) -> {
+					if (b == 0) {
 						throw DIVISION_ZERO_EXCEPTION.create();
 					} else {
-						return MathHelper.floorDiv(i, j);
+						return MathHelper.floorDiv(a, b);
 					}
 				};
 			case "%=":
-				return (i, j) -> {
-					if (j == 0) {
+				return (a, b) -> {
+					if (b == 0) {
 						throw DIVISION_ZERO_EXCEPTION.create();
 					} else {
-						return MathHelper.floorMod(i, j);
+						return MathHelper.floorMod(a, b);
 					}
 				};
 			case "<":
@@ -98,7 +98,7 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 
 	@FunctionalInterface
 	interface IntOperator extends OperationArgumentType.Operation {
-		int apply(int i, int j) throws CommandSyntaxException;
+		int apply(int a, int b) throws CommandSyntaxException;
 
 		@Override
 		default void apply(ScoreboardPlayerScore scoreboardPlayerScore, ScoreboardPlayerScore scoreboardPlayerScore2) throws CommandSyntaxException {
@@ -108,6 +108,6 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 
 	@FunctionalInterface
 	public interface Operation {
-		void apply(ScoreboardPlayerScore scoreboardPlayerScore, ScoreboardPlayerScore scoreboardPlayerScore2) throws CommandSyntaxException;
+		void apply(ScoreboardPlayerScore a, ScoreboardPlayerScore b) throws CommandSyntaxException;
 	}
 }

@@ -1305,8 +1305,8 @@ public class Items {
 	);
 	public static final Item NETHER_STAR = register("nether_star", new NetherStarItem(new Item.Settings().group(ItemGroup.MATERIALS).rarity(Rarity.UNCOMMON)));
 	public static final Item PUMPKIN_PIE = register("pumpkin_pie", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.PUMPKIN_PIE)));
-	public static final Item FIREWORK_ROCKET = register("firework_rocket", new FireworkItem(new Item.Settings().group(ItemGroup.MISC)));
-	public static final Item FIREWORK_STAR = register("firework_star", new FireworkChargeItem(new Item.Settings().group(ItemGroup.MISC)));
+	public static final Item FIREWORK_ROCKET = register("firework_rocket", new FireworkRocketItem(new Item.Settings().group(ItemGroup.MISC)));
+	public static final Item FIREWORK_STAR = register("firework_star", new FireworkStarItem(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item ENCHANTED_BOOK = register("enchanted_book", new EnchantedBookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)));
 	public static final Item NETHER_BRICK = register("nether_brick", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item PRISMARINE_SHARD = register("prismarine_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));

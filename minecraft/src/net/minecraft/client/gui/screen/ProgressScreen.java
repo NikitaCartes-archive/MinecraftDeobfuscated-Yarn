@@ -61,7 +61,7 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.done) {
 			if (this.closeAfterFinished) {
-				this.client.openScreen(null);
+				this.client.setScreen(null);
 			}
 		} else {
 			this.renderBackground(matrices);

@@ -29,13 +29,13 @@ public class ItemStackArgument implements Predicate<ItemStack> {
 	}
 
 	public boolean test(ItemStack itemStack) {
-		return itemStack.isOf(this.item) && NbtHelper.matches(this.nbt, itemStack.getTag(), true);
+		return itemStack.isOf(this.item) && NbtHelper.matches(this.nbt, itemStack.getNbt(), true);
 	}
 
 	public ItemStack createStack(int amount, boolean checkOverstack) throws CommandSyntaxException {
 		ItemStack itemStack = new ItemStack(this.item, amount);
 		if (this.nbt != null) {
-			itemStack.setTag(this.nbt);
+			itemStack.setNbt(this.nbt);
 		}
 
 		if (checkOverstack && amount > itemStack.getMaxCount()) {

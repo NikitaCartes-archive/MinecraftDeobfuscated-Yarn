@@ -80,7 +80,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			})
 		);
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 50, this.height - 32, 100, 20, ScreenTexts.DONE, button -> this.client.openScreen(new RealmsMainScreen(this.parent)))
+			new ButtonWidget(this.width / 2 - 50, this.height - 32, 100, 20, ScreenTexts.DONE, button -> this.client.setScreen(new RealmsMainScreen(this.parent)))
 		);
 		this.rejectButton = this.addDrawableChild(
 			new ButtonWidget(this.width / 2 + 74, this.height - 32, 100, 20, new TranslatableText("mco.invites.button.reject"), button -> {
@@ -95,7 +95,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.openScreen(new RealmsMainScreen(this.parent));
+			this.client.setScreen(new RealmsMainScreen(this.parent));
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);

@@ -28,6 +28,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
+/**
+ * Contains all the minecraft blocks.
+ */
 public class Blocks {
 	public static final Block AIR = register("air", new AirBlock(AbstractBlock.Settings.of(Material.AIR).noCollision().dropsNothing().air()));
 	public static final Block STONE = register(

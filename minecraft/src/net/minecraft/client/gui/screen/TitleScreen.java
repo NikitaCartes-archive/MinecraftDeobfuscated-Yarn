@@ -134,7 +134,7 @@ public class TitleScreen extends Screen {
 				ButtonWidget.WIDGETS_TEXTURE,
 				256,
 				256,
-				button -> this.client.openScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())),
+				button -> this.client.setScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())),
 				new TranslatableText("narrator.button.language")
 			)
 		);
@@ -145,7 +145,7 @@ public class TitleScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("menu.options"),
-				button -> this.client.openScreen(new OptionsScreen(this, this.client.options))
+				button -> this.client.setScreen(new OptionsScreen(this, this.client.options))
 			)
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, new TranslatableText("menu.quit"), button -> this.client.scheduleStop()));
@@ -161,7 +161,7 @@ public class TitleScreen extends Screen {
 				ACCESSIBILITY_ICON_TEXTURE,
 				32,
 				64,
-				button -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.client.options)),
+				button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)),
 				new TranslatableText("narrator.button.accessibility")
 			)
 		);
@@ -177,7 +177,7 @@ public class TitleScreen extends Screen {
 
 	private void initWidgetsNormal(int y, int spacingY) {
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> this.client.openScreen(new SelectWorldScreen(this)))
+			new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this)))
 		);
 		boolean bl = this.client.isMultiplayerEnabled();
 		ButtonWidget.TooltipSupplier tooltipSupplier = bl
@@ -201,7 +201,7 @@ public class TitleScreen extends Screen {
 			};
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.multiplayer"), button -> {
 			Screen screen = (Screen)(this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this));
-			this.client.openScreen(screen);
+			this.client.setScreen(screen);
 		}, tooltipSupplier)).active = bl;
 		this.addDrawableChild(
 				new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, new TranslatableText("menu.online"), button -> this.switchToRealms(), tooltipSupplier)
@@ -233,7 +233,7 @@ public class TitleScreen extends Screen {
 						LevelSummary levelSummary = session.getLevelSummary();
 						if (levelSummary != null) {
 							this.client
-								.openScreen(
+								.setScreen(
 									new ConfirmScreen(
 										this::onDemoDeletionConfirmed,
 										new TranslatableText("selectWorld.deleteQuestion"),
@@ -269,7 +269,7 @@ public class TitleScreen extends Screen {
 	}
 
 	private void switchToRealms() {
-		this.client.openScreen(new RealmsMainScreen(this));
+		this.client.setScreen(new RealmsMainScreen(this));
 	}
 
 	@Override
@@ -364,7 +364,7 @@ public class TitleScreen extends Screen {
 				&& mouseX < (double)(this.copyrightTextX + this.copyrightTextWidth)
 				&& mouseY > (double)(this.height - 10)
 				&& mouseY < (double)this.height) {
-				this.client.openScreen(new CreditsScreen(false, Runnables.doNothing()));
+				this.client.setScreen(new CreditsScreen(false, Runnables.doNothing()));
 			}
 
 			return false;
@@ -388,6 +388,6 @@ public class TitleScreen extends Screen {
 			}
 		}
 
-		this.client.openScreen(this);
+		this.client.setScreen(this);
 	}
 }

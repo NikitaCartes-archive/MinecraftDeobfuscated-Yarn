@@ -26,9 +26,9 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 	private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "dd12be42-52a9-4a91-a8a1-11c01849e498", "@e");
 	public static final SimpleCommandExceptionType UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.player.unknown"));
 
-	public static Collection<GameProfile> getProfileArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<GameProfileArgumentType.GameProfileArgument>getArgument(string, GameProfileArgumentType.GameProfileArgument.class)
-			.getNames(commandContext.getSource());
+	public static Collection<GameProfile> getProfileArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+		return context.<GameProfileArgumentType.GameProfileArgument>getArgument(name, GameProfileArgumentType.GameProfileArgument.class)
+			.getNames(context.getSource());
 	}
 
 	public static GameProfileArgumentType gameProfile() {
@@ -52,8 +52,8 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 			}
 
 			String string = stringReader.getString().substring(i, stringReader.getCursor());
-			return serverCommandSource -> {
-				Optional<GameProfile> optional = serverCommandSource.getServer().getUserCache().findByName(string);
+			return source -> {
+				Optional<GameProfile> optional = source.getServer().getUserCache().findByName(string);
 				return Collections.singleton((GameProfile)optional.orElseThrow(UNKNOWN_PLAYER_EXCEPTION::create));
 			};
 		}
@@ -72,7 +72,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 			}
 
 			return entitySelectorReader.listSuggestions(
-				builder, suggestionsBuilder -> CommandSource.suggestMatching(((CommandSource)context.getSource()).getPlayerNames(), suggestionsBuilder)
+				builder, builderx -> CommandSource.suggestMatching(((CommandSource)context.getSource()).getPlayerNames(), builderx)
 			);
 		} else {
 			return Suggestions.empty();
@@ -86,14 +86,14 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 
 	@FunctionalInterface
 	public interface GameProfileArgument {
-		Collection<GameProfile> getNames(ServerCommandSource serverCommandSource) throws CommandSyntaxException;
+		Collection<GameProfile> getNames(ServerCommandSource source) throws CommandSyntaxException;
 	}
 
 	public static class SelectorBacked implements GameProfileArgumentType.GameProfileArgument {
 		private final EntitySelector selector;
 
-		public SelectorBacked(EntitySelector entitySelector) {
-			this.selector = entitySelector;
+		public SelectorBacked(EntitySelector selector) {
+			this.selector = selector;
 		}
 
 		@Override

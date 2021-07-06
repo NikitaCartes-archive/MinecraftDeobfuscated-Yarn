@@ -46,7 +46,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 	protected ItemStack process(ItemStack stack, LootContext context) {
 		BlockState blockState = context.get(LootContextParameters.BLOCK_STATE);
 		if (blockState != null) {
-			NbtCompound nbtCompound = stack.getOrCreateTag();
+			NbtCompound nbtCompound = stack.getOrCreateNbt();
 			NbtCompound nbtCompound2;
 			if (nbtCompound.contains("BlockStateTag", NbtElement.COMPOUND_TYPE)) {
 				nbtCompound2 = nbtCompound.getCompound("BlockStateTag");

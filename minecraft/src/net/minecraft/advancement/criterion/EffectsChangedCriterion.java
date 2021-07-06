@@ -30,7 +30,7 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 
 	public void trigger(ServerPlayerEntity player, @Nullable Entity source) {
 		LootContext lootContext = source != null ? EntityPredicate.createAdvancementEntityLootContext(player, source) : null;
-		this.test(player, conditions -> conditions.matches(player, lootContext));
+		this.trigger(player, conditions -> conditions.matches(player, lootContext));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

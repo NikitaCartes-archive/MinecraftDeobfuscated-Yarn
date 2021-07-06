@@ -84,16 +84,16 @@ public class TaskExecutor<T> implements SampleableExecutor, MessageListener<T>, 
 
 	public void run() {
 		try {
-			this.runWhile(i -> i == 0);
+			this.runWhile(runCount -> runCount == 0);
 		} finally {
 			this.pause();
 			this.execute();
 		}
 	}
 
-	public void method_37477() {
+	public void awaitAll() {
 		try {
-			this.runWhile(i -> true);
+			this.runWhile(runCount -> true);
 		} finally {
 			this.pause();
 			this.execute();
@@ -120,6 +120,9 @@ public class TaskExecutor<T> implements SampleableExecutor, MessageListener<T>, 
 		}
 	}
 
+	/**
+	 * @param condition checks whether to run another task given the run task count
+	 */
 	private int runWhile(Int2BooleanFunction condition) {
 		int i = 0;
 

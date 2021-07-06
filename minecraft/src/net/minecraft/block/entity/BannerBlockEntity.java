@@ -45,7 +45,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	@Nullable
 	public static NbtList getPatternListTag(ItemStack stack) {
 		NbtList nbtList = null;
-		NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+		NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
 		if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
 			nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).copy();
 		}
@@ -114,7 +114,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	public static int getPatternCount(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+		NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
 		return nbtCompound != null && nbtCompound.contains("Patterns") ? nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() : 0;
 	}
 
@@ -144,13 +144,13 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	public static void loadFromItemStack(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+		NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
 		if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
 			NbtList nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
 			if (!nbtList.isEmpty()) {
 				nbtList.remove(nbtList.size() - 1);
 				if (nbtList.isEmpty()) {
-					stack.removeSubTag("BlockEntityTag");
+					stack.removeSubNbt("BlockEntityTag");
 				}
 			}
 		}
@@ -159,7 +159,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public ItemStack getPickStack() {
 		ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.baseColor));
 		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-			itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.copy());
+			itemStack.getOrCreateSubNbt("BlockEntityTag").put("Patterns", this.patternListTag.copy());
 		}
 
 		if (this.customName != null) {

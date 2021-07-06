@@ -23,7 +23,7 @@ public class IntegratedPlayerManager extends PlayerManager {
 
 	@Override
 	protected void savePlayerData(ServerPlayerEntity player) {
-		if (player.getName().getString().equals(this.getServer().getUserName())) {
+		if (player.getName().getString().equals(this.getServer().getSinglePlayerName())) {
 			this.userData = player.writeNbt(new NbtCompound());
 		}
 
@@ -32,7 +32,7 @@ public class IntegratedPlayerManager extends PlayerManager {
 
 	@Override
 	public Text checkCanJoin(SocketAddress address, GameProfile profile) {
-		return (Text)(profile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(profile.getName()) != null
+		return (Text)(profile.getName().equalsIgnoreCase(this.getServer().getSinglePlayerName()) && this.getPlayer(profile.getName()) != null
 			? new TranslatableText("multiplayer.disconnect.name_taken")
 			: super.checkCanJoin(address, profile));
 	}

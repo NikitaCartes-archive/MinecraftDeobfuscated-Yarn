@@ -22,7 +22,7 @@ import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class ItemColors {
-	private static final int field_32165 = -1;
+	private static final int NO_COLOR = -1;
 	private final IdList<ItemColorProvider> providers = new IdList<>(32);
 
 	public static ItemColors create(BlockColors blockColors) {
@@ -40,7 +40,7 @@ public class ItemColors {
 			if (tintIndex != 1) {
 				return -1;
 			} else {
-				NbtCompound nbtCompound = stack.getSubTag("Explosion");
+				NbtCompound nbtCompound = stack.getSubNbt("Explosion");
 				int[] is = nbtCompound != null && nbtCompound.contains("Colors", NbtElement.INT_ARRAY_TYPE) ? nbtCompound.getIntArray("Colors") : null;
 				if (is != null && is.length != 0) {
 					if (is.length == 1) {
@@ -94,14 +94,14 @@ public class ItemColors {
 		return itemColors;
 	}
 
-	public int getColorMultiplier(ItemStack item, int tintIndex) {
+	public int getColor(ItemStack item, int tintIndex) {
 		ItemColorProvider itemColorProvider = this.providers.get(Registry.ITEM.getRawId(item.getItem()));
 		return itemColorProvider == null ? -1 : itemColorProvider.getColor(item, tintIndex);
 	}
 
-	public void register(ItemColorProvider mapper, ItemConvertible... items) {
+	public void register(ItemColorProvider provider, ItemConvertible... items) {
 		for (ItemConvertible itemConvertible : items) {
-			this.providers.set(mapper, Item.getRawId(itemConvertible.asItem()));
+			this.providers.set(provider, Item.getRawId(itemConvertible.asItem()));
 		}
 	}
 }

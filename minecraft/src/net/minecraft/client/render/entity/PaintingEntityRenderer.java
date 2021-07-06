@@ -35,7 +35,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		matrixStack.scale(0.0625F, 0.0625F, 0.0625F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.getTexture(paintingEntity)));
 		PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
-		this.method_4074(
+		this.renderPainting(
 			matrixStack,
 			vertexConsumer,
 			paintingEntity,
@@ -52,98 +52,111 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlas().getId();
 	}
 
-	private void method_4074(MatrixStack matrixStack, VertexConsumer vertexConsumer, PaintingEntity paintingEntity, int i, int j, Sprite sprite, Sprite sprite2) {
-		MatrixStack.Entry entry = matrixStack.peek();
+	private void renderPainting(
+		MatrixStack matrices, VertexConsumer vertexConsumer, PaintingEntity entity, int width, int height, Sprite paintingSprite, Sprite backSprite
+	) {
+		MatrixStack.Entry entry = matrices.peek();
 		Matrix4f matrix4f = entry.getModel();
 		Matrix3f matrix3f = entry.getNormal();
-		float f = (float)(-i) / 2.0F;
-		float g = (float)(-j) / 2.0F;
+		float f = (float)(-width) / 2.0F;
+		float g = (float)(-height) / 2.0F;
 		float h = 0.5F;
-		float k = sprite2.getMinU();
-		float l = sprite2.getMaxU();
-		float m = sprite2.getMinV();
-		float n = sprite2.getMaxV();
-		float o = sprite2.getMinU();
-		float p = sprite2.getMaxU();
-		float q = sprite2.getMinV();
-		float r = sprite2.getFrameV(1.0);
-		float s = sprite2.getMinU();
-		float t = sprite2.getFrameU(1.0);
-		float u = sprite2.getMinV();
-		float v = sprite2.getMaxV();
-		int w = i / 16;
-		int x = j / 16;
-		double d = 16.0 / (double)w;
-		double e = 16.0 / (double)x;
+		float i = backSprite.getMinU();
+		float j = backSprite.getMaxU();
+		float k = backSprite.getMinV();
+		float l = backSprite.getMaxV();
+		float m = backSprite.getMinU();
+		float n = backSprite.getMaxU();
+		float o = backSprite.getMinV();
+		float p = backSprite.getFrameV(1.0);
+		float q = backSprite.getMinU();
+		float r = backSprite.getFrameU(1.0);
+		float s = backSprite.getMinV();
+		float t = backSprite.getMaxV();
+		int u = width / 16;
+		int v = height / 16;
+		double d = 16.0 / (double)u;
+		double e = 16.0 / (double)v;
 
-		for (int y = 0; y < w; y++) {
-			for (int z = 0; z < x; z++) {
-				float aa = f + (float)((y + 1) * 16);
-				float ab = f + (float)(y * 16);
-				float ac = g + (float)((z + 1) * 16);
-				float ad = g + (float)(z * 16);
-				int ae = paintingEntity.getBlockX();
-				int af = MathHelper.floor(paintingEntity.getY() + (double)((ac + ad) / 2.0F / 16.0F));
-				int ag = paintingEntity.getBlockZ();
-				Direction direction = paintingEntity.getHorizontalFacing();
+		for (int w = 0; w < u; w++) {
+			for (int x = 0; x < v; x++) {
+				float y = f + (float)((w + 1) * 16);
+				float z = f + (float)(w * 16);
+				float aa = g + (float)((x + 1) * 16);
+				float ab = g + (float)(x * 16);
+				int ac = entity.getBlockX();
+				int ad = MathHelper.floor(entity.getY() + (double)((aa + ab) / 2.0F / 16.0F));
+				int ae = entity.getBlockZ();
+				Direction direction = entity.getHorizontalFacing();
 				if (direction == Direction.NORTH) {
-					ae = MathHelper.floor(paintingEntity.getX() + (double)((aa + ab) / 2.0F / 16.0F));
+					ac = MathHelper.floor(entity.getX() + (double)((y + z) / 2.0F / 16.0F));
 				}
 
 				if (direction == Direction.WEST) {
-					ag = MathHelper.floor(paintingEntity.getZ() - (double)((aa + ab) / 2.0F / 16.0F));
+					ae = MathHelper.floor(entity.getZ() - (double)((y + z) / 2.0F / 16.0F));
 				}
 
 				if (direction == Direction.SOUTH) {
-					ae = MathHelper.floor(paintingEntity.getX() - (double)((aa + ab) / 2.0F / 16.0F));
+					ac = MathHelper.floor(entity.getX() - (double)((y + z) / 2.0F / 16.0F));
 				}
 
 				if (direction == Direction.EAST) {
-					ag = MathHelper.floor(paintingEntity.getZ() + (double)((aa + ab) / 2.0F / 16.0F));
+					ae = MathHelper.floor(entity.getZ() + (double)((y + z) / 2.0F / 16.0F));
 				}
 
-				int ah = WorldRenderer.getLightmapCoordinates(paintingEntity.world, new BlockPos(ae, af, ag));
-				float ai = sprite.getFrameU(d * (double)(w - y));
-				float aj = sprite.getFrameU(d * (double)(w - (y + 1)));
-				float ak = sprite.getFrameV(e * (double)(x - z));
-				float al = sprite.getFrameV(e * (double)(x - (z + 1)));
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, aj, ak, -0.5F, 0, 0, -1, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, ai, ak, -0.5F, 0, 0, -1, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, ai, al, -0.5F, 0, 0, -1, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, aj, al, -0.5F, 0, 0, -1, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, k, m, 0.5F, 0, 0, 1, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, l, m, 0.5F, 0, 0, 1, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, l, n, 0.5F, 0, 0, 1, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, k, n, 0.5F, 0, 0, 1, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, o, q, -0.5F, 0, 1, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, p, q, -0.5F, 0, 1, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, p, r, 0.5F, 0, 1, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, o, r, 0.5F, 0, 1, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, o, q, 0.5F, 0, -1, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, p, q, 0.5F, 0, -1, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, p, r, -0.5F, 0, -1, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, o, r, -0.5F, 0, -1, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, t, u, 0.5F, -1, 0, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, t, v, 0.5F, -1, 0, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ad, s, v, -0.5F, -1, 0, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, aa, ac, s, u, -0.5F, -1, 0, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, t, u, -0.5F, 1, 0, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, t, v, -0.5F, 1, 0, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ad, s, v, 0.5F, 1, 0, 0, ah);
-				this.method_23188(matrix4f, matrix3f, vertexConsumer, ab, ac, s, u, 0.5F, 1, 0, 0, ah);
+				int af = WorldRenderer.getLightmapCoordinates(entity.world, new BlockPos(ac, ad, ae));
+				float ag = paintingSprite.getFrameU(d * (double)(u - w));
+				float ah = paintingSprite.getFrameU(d * (double)(u - (w + 1)));
+				float ai = paintingSprite.getFrameV(e * (double)(v - x));
+				float aj = paintingSprite.getFrameV(e * (double)(v - (x + 1)));
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, ah, ai, -0.5F, 0, 0, -1, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, ag, ai, -0.5F, 0, 0, -1, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, ag, aj, -0.5F, 0, 0, -1, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, ah, aj, -0.5F, 0, 0, -1, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, i, k, 0.5F, 0, 0, 1, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, j, k, 0.5F, 0, 0, 1, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, j, l, 0.5F, 0, 0, 1, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, i, l, 0.5F, 0, 0, 1, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, m, o, -0.5F, 0, 1, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, n, o, -0.5F, 0, 1, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, n, p, 0.5F, 0, 1, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, m, p, 0.5F, 0, 1, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, m, o, 0.5F, 0, -1, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, n, o, 0.5F, 0, -1, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, n, p, -0.5F, 0, -1, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, m, p, -0.5F, 0, -1, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, r, s, 0.5F, -1, 0, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, r, t, 0.5F, -1, 0, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, q, t, -0.5F, -1, 0, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, q, s, -0.5F, -1, 0, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, r, s, -0.5F, 1, 0, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, r, t, -0.5F, 1, 0, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, q, t, 0.5F, 1, 0, 0, af);
+				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, q, s, 0.5F, 1, 0, 0, af);
 			}
 		}
 	}
 
-	private void method_23188(
-		Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, int k, int l, int m, int n
+	private void vertex(
+		Matrix4f modelMatrix,
+		Matrix3f normalMatrix,
+		VertexConsumer vertexConsumer,
+		float x,
+		float y,
+		float u,
+		float v,
+		float z,
+		int normalX,
+		int normalY,
+		int normalZ,
+		int light
 	) {
-		vertexConsumer.vertex(matrix4f, f, g, j)
+		vertexConsumer.vertex(modelMatrix, x, y, z)
 			.color(255, 255, 255, 255)
-			.texture(h, i)
+			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(n)
-			.normal(matrix3f, (float)k, (float)l, (float)m)
+			.light(light)
+			.normal(normalMatrix, (float)normalX, (float)normalY, (float)normalZ)
 			.next();
 	}
 }

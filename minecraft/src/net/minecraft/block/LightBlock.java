@@ -90,7 +90,7 @@ public class LightBlock extends Block implements Waterloggable {
 		if ((Integer)state.get(LEVEL_15) != 15) {
 			NbtCompound nbtCompound = new NbtCompound();
 			nbtCompound.putString(LEVEL_15.getName(), String.valueOf(state.get(LEVEL_15)));
-			itemStack.putSubTag("BlockStateTag", nbtCompound);
+			itemStack.setSubNbt("BlockStateTag", nbtCompound);
 		}
 
 		return itemStack;

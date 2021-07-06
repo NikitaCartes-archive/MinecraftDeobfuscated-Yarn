@@ -1822,7 +1822,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.vehicle.addPassenger(this);
 				entity.streamIntoPassengers()
 					.filter(entityx -> entityx instanceof ServerPlayerEntity)
-					.forEach(entityx -> Criteria.STARTED_RIDING.test((ServerPlayerEntity)entityx));
+					.forEach(entityx -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)entityx));
 				return true;
 			} else {
 				return false;

@@ -10,6 +10,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
@@ -54,12 +55,12 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloader 
 		this.crosshairTarget = crosshairTarget;
 	}
 
-	public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
+	public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumers) {
 		BlockEntityRenderer<E> blockEntityRenderer = this.get(blockEntity);
 		if (blockEntityRenderer != null) {
 			if (blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState())) {
-				if (blockEntityRenderer.method_33892(blockEntity, this.camera.getPos())) {
-					runReported(blockEntity, () -> render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider));
+				if (blockEntityRenderer.isInRenderDistance(blockEntity, this.camera.getPos())) {
+					runReported(blockEntity, () -> render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumers));
 				}
 			}
 		}
@@ -73,7 +74,7 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloader 
 		if (world != null) {
 			i = WorldRenderer.getLightmapCoordinates(world, blockEntity.getPos());
 		} else {
-			i = 15728880;
+			i = LightmapTextureManager.MAX_LIGHT_COORDINATE;
 		}
 
 		renderer.render(blockEntity, tickDelta, matrices, vertexConsumers, i, OverlayTexture.DEFAULT_UV);

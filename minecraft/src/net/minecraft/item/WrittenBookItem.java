@@ -56,17 +56,17 @@ public class WrittenBookItem extends Item {
 	}
 
 	public static int getGeneration(ItemStack stack) {
-		return stack.getTag().getInt("generation");
+		return stack.getNbt().getInt("generation");
 	}
 
 	public static int getPageCount(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		return nbtCompound != null ? nbtCompound.getList("pages", NbtElement.STRING_TYPE).size() : 0;
 	}
 
 	@Override
 	public Text getName(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getTag();
+		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null) {
 			String string = nbtCompound.getString("title");
 			if (!ChatUtil.isEmpty(string)) {
@@ -79,8 +79,8 @@ public class WrittenBookItem extends Item {
 
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		if (stack.hasTag()) {
-			NbtCompound nbtCompound = stack.getTag();
+		if (stack.hasNbt()) {
+			NbtCompound nbtCompound = stack.getNbt();
 			String string = nbtCompound.getString("author");
 			if (!ChatUtil.isEmpty(string)) {
 				tooltip.add(new TranslatableText("book.byAuthor", string).formatted(Formatting.GRAY));
@@ -113,7 +113,7 @@ public class WrittenBookItem extends Item {
 	}
 
 	public static boolean resolve(ItemStack book, @Nullable ServerCommandSource commandSource, @Nullable PlayerEntity player) {
-		NbtCompound nbtCompound = book.getTag();
+		NbtCompound nbtCompound = book.getNbt();
 		if (nbtCompound != null && !nbtCompound.getBoolean("resolved")) {
 			nbtCompound.putBoolean("resolved", true);
 			if (!isValid(nbtCompound)) {

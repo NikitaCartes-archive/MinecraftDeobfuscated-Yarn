@@ -20,7 +20,7 @@ public class OperatorList extends ServerConfigList<GameProfile, OperatorEntry> {
 		return (String[])this.values().stream().map(ServerConfigEntry::getKey).filter(Objects::nonNull).map(GameProfile::getName).toArray(String[]::new);
 	}
 
-	public boolean isOp(GameProfile profile) {
+	public boolean canBypassPlayerLimit(GameProfile profile) {
 		OperatorEntry operatorEntry = this.get(profile);
 		return operatorEntry != null ? operatorEntry.canBypassPlayerLimit() : false;
 	}

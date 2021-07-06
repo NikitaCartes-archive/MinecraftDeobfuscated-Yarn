@@ -29,7 +29,7 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 
 	public void trigger(ServerPlayerEntity player, Entity entity, DamageSource damage, float dealt, float taken, boolean blocked) {
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
-		this.test(player, conditions -> conditions.matches(player, lootContext, damage, dealt, taken, blocked));
+		this.trigger(player, conditions -> conditions.matches(player, lootContext, damage, dealt, taken, blocked));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

@@ -60,7 +60,7 @@ public class SelectWorldScreen extends Screen {
 		);
 		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), button -> this.client.openScreen(CreateWorldScreen.create(this))
+				this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), button -> this.client.setScreen(CreateWorldScreen.create(this))
 			)
 		);
 		this.editButton = this.addDrawableChild(
@@ -93,7 +93,7 @@ public class SelectWorldScreen extends Screen {
 				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)
 			)
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
 		this.worldSelected(false);
 		this.setInitialFocus(this.searchBox);
 	}
@@ -105,7 +105,7 @@ public class SelectWorldScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.client.openScreen(this.parent);
+		this.client.setScreen(this.parent);
 	}
 
 	@Override

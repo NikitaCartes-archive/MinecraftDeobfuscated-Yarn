@@ -387,12 +387,25 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.channel.config().setAutoRead(false);
 	}
 
-	public void setCompressionThreshold(int compressionThreshold, boolean bl) {
+	/**
+	 * Sets the compression threshold of this connection.
+	 * 
+	 * <p>Packets over the threshold in size will be written as a {@code 0}
+	 * byte followed by contents, while compressed ones will be written as
+	 * a var int for the decompressed size followed by the compressed contents.
+	 * 
+	 * <p>The connections on the two sides must have the same compression
+	 * threshold, or compression errors may result.
+	 * 
+	 * @param compressionThreshold the compression threshold, in number of bytes
+	 * @param rejectsBadPackets whether this connection may abort if a compressed packet with a bad size is received
+	 */
+	public void setCompressionThreshold(int compressionThreshold, boolean rejectsBadPackets) {
 		if (compressionThreshold >= 0) {
 			if (this.channel.pipeline().get("decompress") instanceof PacketInflater) {
-				((PacketInflater)this.channel.pipeline().get("decompress")).setCompressionThreshold(compressionThreshold, bl);
+				((PacketInflater)this.channel.pipeline().get("decompress")).setCompressionThreshold(compressionThreshold, rejectsBadPackets);
 			} else {
-				this.channel.pipeline().addBefore("decoder", "decompress", new PacketInflater(compressionThreshold, bl));
+				this.channel.pipeline().addBefore("decoder", "decompress", new PacketInflater(compressionThreshold, rejectsBadPackets));
 			}
 
 			if (this.channel.pipeline().get("compress") instanceof PacketDeflater) {

@@ -25,15 +25,15 @@ public class ItemModels {
 		this.modelManager = modelManager;
 	}
 
-	public Sprite getSprite(ItemConvertible item) {
-		return this.getSprite(new ItemStack(item));
+	public Sprite getModelParticleSprite(ItemConvertible item) {
+		return this.getModelParticleSprite(new ItemStack(item));
 	}
 
-	public Sprite getSprite(ItemStack stack) {
+	public Sprite getModelParticleSprite(ItemStack stack) {
 		BakedModel bakedModel = this.getModel(stack);
 		return bakedModel == this.modelManager.getMissingModel() && stack.getItem() instanceof BlockItem
-			? this.modelManager.getBlockModels().getSprite(((BlockItem)stack.getItem()).getBlock().getDefaultState())
-			: bakedModel.getSprite();
+			? this.modelManager.getBlockModels().getModelParticleSprite(((BlockItem)stack.getItem()).getBlock().getDefaultState())
+			: bakedModel.getParticleSprite();
 	}
 
 	public BakedModel getModel(ItemStack stack) {

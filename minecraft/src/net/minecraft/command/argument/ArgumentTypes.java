@@ -24,8 +24,8 @@ import org.apache.logging.log4j.Logger;
 
 public class ArgumentTypes {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Map<Class<?>, ArgumentTypes.Entry<?>> classMap = Maps.<Class<?>, ArgumentTypes.Entry<?>>newHashMap();
-	private static final Map<Identifier, ArgumentTypes.Entry<?>> idMap = Maps.<Identifier, ArgumentTypes.Entry<?>>newHashMap();
+	private static final Map<Class<?>, ArgumentTypes.Entry<?>> CLASS_MAP = Maps.<Class<?>, ArgumentTypes.Entry<?>>newHashMap();
+	private static final Map<Identifier, ArgumentTypes.Entry<?>> ID_MAP = Maps.<Identifier, ArgumentTypes.Entry<?>>newHashMap();
 
 	/**
 	 * Registers an argument type's serializer.
@@ -34,14 +34,14 @@ public class ArgumentTypes {
 	 */
 	public static <T extends ArgumentType<?>> void register(String id, Class<T> class_, ArgumentSerializer<T> argumentSerializer) {
 		Identifier identifier = new Identifier(id);
-		if (classMap.containsKey(class_)) {
+		if (CLASS_MAP.containsKey(class_)) {
 			throw new IllegalArgumentException("Class " + class_.getName() + " already has a serializer!");
-		} else if (idMap.containsKey(identifier)) {
+		} else if (ID_MAP.containsKey(identifier)) {
 			throw new IllegalArgumentException("'" + identifier + "' is already a registered serializer!");
 		} else {
 			ArgumentTypes.Entry<T> entry = new ArgumentTypes.Entry<>(class_, argumentSerializer, identifier);
-			classMap.put(class_, entry);
-			idMap.put(identifier, entry);
+			CLASS_MAP.put(class_, entry);
+			ID_MAP.put(identifier, entry);
 		}
 	}
 
@@ -93,12 +93,12 @@ public class ArgumentTypes {
 
 	@Nullable
 	private static ArgumentTypes.Entry<?> byId(Identifier id) {
-		return (ArgumentTypes.Entry<?>)idMap.get(id);
+		return (ArgumentTypes.Entry<?>)ID_MAP.get(id);
 	}
 
 	@Nullable
 	private static ArgumentTypes.Entry<?> byClass(ArgumentType<?> argumentType) {
-		return (ArgumentTypes.Entry<?>)classMap.get(argumentType.getClass());
+		return (ArgumentTypes.Entry<?>)CLASS_MAP.get(argumentType.getClass());
 	}
 
 	public static <T extends ArgumentType<?>> void toPacket(PacketByteBuf packetByteBuf, T argumentType) {

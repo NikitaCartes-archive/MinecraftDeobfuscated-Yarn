@@ -49,9 +49,9 @@ import net.minecraft.util.math.Vec2f;
 @Environment(EnvType.CLIENT)
 public class CommandSuggestor {
 	private static final Pattern BACKSLASH_S_PATTERN = Pattern.compile("(\\s+)");
-	private static final Style ERROR_FORMATTING = Style.EMPTY.withColor(Formatting.RED);
-	private static final Style INFO_FORMATTING = Style.EMPTY.withColor(Formatting.GRAY);
-	private static final List<Style> HIGHLIGHT_FORMATTINGS = (List<Style>)Stream.of(
+	private static final Style ERROR_STYLE = Style.EMPTY.withColor(Formatting.RED);
+	private static final Style INFO_STYLE = Style.EMPTY.withColor(Formatting.GRAY);
+	private static final List<Style> HIGHLIGHT_STYLES = (List<Style>)Stream.of(
 			Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD
 		)
 		.map(Style.EMPTY::withColor)
@@ -307,7 +307,7 @@ public class CommandSuggestor {
 		CommandContextBuilder<CommandSource> commandContextBuilder = parse.getContext().getLastChild();
 
 		for (ParsedArgument<CommandSource, ?> parsedArgument : commandContextBuilder.getArguments().values()) {
-			if (++j >= HIGHLIGHT_FORMATTINGS.size()) {
+			if (++j >= HIGHLIGHT_STYLES.size()) {
 				j = 0;
 			}
 
@@ -318,8 +318,8 @@ public class CommandSuggestor {
 
 			int l = Math.min(parsedArgument.getRange().getEnd() - firstCharacterIndex, original.length());
 			if (l > 0) {
-				list.add(OrderedText.styledForwardsVisitedString(original.substring(i, k), INFO_FORMATTING));
-				list.add(OrderedText.styledForwardsVisitedString(original.substring(k, l), (Style)HIGHLIGHT_FORMATTINGS.get(j)));
+				list.add(OrderedText.styledForwardsVisitedString(original.substring(i, k), INFO_STYLE));
+				list.add(OrderedText.styledForwardsVisitedString(original.substring(k, l), (Style)HIGHLIGHT_STYLES.get(j)));
 				i = l;
 			}
 		}
@@ -328,13 +328,13 @@ public class CommandSuggestor {
 			int m = Math.max(parse.getReader().getCursor() - firstCharacterIndex, 0);
 			if (m < original.length()) {
 				int n = Math.min(m + parse.getReader().getRemainingLength(), original.length());
-				list.add(OrderedText.styledForwardsVisitedString(original.substring(i, m), INFO_FORMATTING));
-				list.add(OrderedText.styledForwardsVisitedString(original.substring(m, n), ERROR_FORMATTING));
+				list.add(OrderedText.styledForwardsVisitedString(original.substring(i, m), INFO_STYLE));
+				list.add(OrderedText.styledForwardsVisitedString(original.substring(m, n), ERROR_STYLE));
 				i = n;
 			}
 		}
 
-		list.add(OrderedText.styledForwardsVisitedString(original.substring(i), INFO_FORMATTING));
+		list.add(OrderedText.styledForwardsVisitedString(original.substring(i), INFO_STYLE));
 		return OrderedText.concat(list);
 	}
 

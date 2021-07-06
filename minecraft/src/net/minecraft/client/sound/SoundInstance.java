@@ -19,7 +19,7 @@ public interface SoundInstance {
 
 	boolean isRepeatable();
 
-	boolean isLooping();
+	boolean isRelative();
 
 	int getRepeatDelay();
 

@@ -75,7 +75,7 @@ public class IntegratedServer extends MinecraftServer {
 			userCache,
 			worldGenerationProgressListenerFactory
 		);
-		this.setServerName(client.getSession().getUsername());
+		this.setSinglePlayerName(client.getSession().getUsername());
 		this.setDemo(client.isDemo());
 		this.setPlayerManager(new IntegratedPlayerManager(this, this.registryManager, this.saveHandler));
 		this.client = client;
@@ -89,7 +89,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.setFlightEnabled(true);
 		this.generateKeyPair();
 		this.loadWorld();
-		this.setMotd(this.getUserName() + " - " + this.getSaveProperties().getLevelName());
+		this.setMotd(this.getSinglePlayerName() + " - " + this.getSaveProperties().getLevelName());
 		return true;
 	}
 
@@ -280,7 +280,7 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public boolean isHost(GameProfile profile) {
-		return profile.getName().equalsIgnoreCase(this.getUserName());
+		return profile.getName().equalsIgnoreCase(this.getSinglePlayerName());
 	}
 
 	@Override

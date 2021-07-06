@@ -1588,7 +1588,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	protected void tickItemStackUsage(ItemStack stack) {
-		Criteria.USING_ITEM.test(this, stack);
+		Criteria.USING_ITEM.trigger(this, stack);
 		super.tickItemStackUsage(stack);
 	}
 

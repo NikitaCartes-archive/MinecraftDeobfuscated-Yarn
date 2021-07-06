@@ -57,10 +57,10 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private static final String CUSTOM_CREATIVE_LOCK_KEY = "CustomCreativeLock";
 	private static final int field_32337 = 5;
 	private static final int field_32338 = 9;
-	private static final int field_32339 = 28;
-	private static final int field_32340 = 32;
-	private static final int field_32341 = 12;
-	private static final int field_32342 = 15;
+	private static final int TAB_WIDTH = 28;
+	private static final int TAB_HEIGHT = 32;
+	private static final int SCROLLBAR_WIDTH = 12;
+	private static final int SCROLLBAR_HEIGHT = 15;
 	static final SimpleInventory INVENTORY = new SimpleInventory(45);
 	private static final Text DELETE_ITEM_SLOT_TEXT = new TranslatableText("inventory.binSlot");
 	private static final int WHITE = 16777215;
@@ -89,7 +89,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	public void handledScreenTick() {
 		super.handledScreenTick();
 		if (!this.client.interactionManager.hasCreativeInventory()) {
-			this.client.openScreen(new InventoryScreen(this.client.player));
+			this.client.setScreen(new InventoryScreen(this.client.player));
 		} else if (this.searchBox != null) {
 			this.searchBox.tick();
 		}
@@ -182,7 +182,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					return;
 				}
 
-				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && itemStack.isItemEqualIgnoreDamage(itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2)) {
+				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && itemStack.isItemEqualIgnoreDamage(itemStack2) && ItemStack.areNbtEqual(itemStack, itemStack2)) {
 					if (button == 0) {
 						if (bl) {
 							itemStack.setCount(itemStack.getMaxCount());
@@ -260,7 +260,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			this.listener = new CreativeInventoryListener(this.client);
 			this.client.player.playerScreenHandler.addListener(this.listener);
 		} else {
-			this.client.openScreen(new InventoryScreen(this.client.player));
+			this.client.setScreen(new InventoryScreen(this.client.player));
 		}
 	}
 
@@ -448,7 +448,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					for (int k = 0; k < 9; k++) {
 						if (k == j) {
 							ItemStack itemStack = new ItemStack(Items.PAPER);
-							itemStack.getOrCreateSubTag("CustomCreativeLock");
+							itemStack.getOrCreateSubNbt("CustomCreativeLock");
 							Text text = this.client.options.keysHotbar[j].getBoundKeyLocalizedText();
 							Text text2 = this.client.options.keySaveToolbarActivator.getBoundKeyLocalizedText();
 							itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", text2, text));
@@ -943,7 +943,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		@Override
 		public boolean canTakeItems(PlayerEntity playerEntity) {
-			return super.canTakeItems(playerEntity) && this.hasStack() ? this.getStack().getSubTag("CustomCreativeLock") == null : !this.hasStack();
+			return super.canTakeItems(playerEntity) && this.hasStack() ? this.getStack().getSubNbt("CustomCreativeLock") == null : !this.hasStack();
 		}
 	}
 }

@@ -990,7 +990,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 
 				try (NativeImage nativeImage2 = new NativeImage(64, 64, false)) {
 					nativeImage.resizeSubRectTo(k, l, i, j, nativeImage2);
-					nativeImage2.writeFile(path);
+					nativeImage2.writeTo(path);
 				} catch (IOException var16) {
 					LOGGER.warn("Couldn't save auto screenshot", (Throwable)var16);
 				} finally {
@@ -1128,7 +1128,11 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
-			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate, 0);
+			this.client
+				.getItemRenderer()
+				.renderItem(
+					this.floatingItem, ModelTransformation.Mode.FIXED, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, matrixStack, immediate, 0
+				);
 			matrixStack.pop();
 			immediate.draw();
 			RenderSystem.enableCull();

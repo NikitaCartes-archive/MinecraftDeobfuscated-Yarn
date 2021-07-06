@@ -27,9 +27,9 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 		return new PlayerInteractedWithEntityCriterion.Conditions(extended, itemPredicate, extended2);
 	}
 
-	public void test(ServerPlayerEntity player, ItemStack stack, Entity entity) {
+	public void trigger(ServerPlayerEntity player, ItemStack stack, Entity entity) {
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
-		this.test(player, conditions -> conditions.test(stack, lootContext));
+		this.trigger(player, conditions -> conditions.test(stack, lootContext));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

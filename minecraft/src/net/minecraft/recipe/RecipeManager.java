@@ -33,10 +33,19 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * A recipe manager allows easier use of recipes, such as finding matches and
+ * remainders. It is also integrated with a recipe loader, which loads recipes
+ * from data packs' JSON files.
+ */
 public class RecipeManager extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private static final Logger LOGGER = LogManager.getLogger();
 	private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes = ImmutableMap.of();
+	/**
+	 * This isn't quite indicating an errored state; its value is only set to
+	 * {@code false} and is never {@code true}, and isn't used anywhere.
+	 */
 	private boolean errored;
 
 	public RecipeManager() {
@@ -64,27 +73,64 @@ public class RecipeManager extends JsonDataLoader {
 		LOGGER.info("Loaded {} recipes", map2.size());
 	}
 
-	public boolean method_35227() {
+	/**
+	 * {@return the {@link #errored} field} This is unused in vanilla and will only
+	 * return {@code false} without mods.
+	 */
+	public boolean isErrored() {
 		return this.errored;
 	}
 
+	/**
+	 * {@return a recipe of the given {@code type} that match the given
+	 * {@code inventory} and {@code world}}
+	 * 
+	 * <p>If there are multiple matching recipes, the result is arbitrary,
+	 * but this method will return the same result unless the recipes in this
+	 * manager are updated.
+	 * 
+	 * @param type the desired recipe type
+	 * @param inventory the input inventory
+	 * @param world the input world
+	 */
 	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> type, C inventory, World world) {
-		return this.getAllOfType(type).values().stream().flatMap(recipe -> Util.stream(type.get(recipe, world, inventory))).findFirst();
+		return this.getAllOfType(type).values().stream().flatMap(recipe -> Util.stream(type.match(recipe, world, inventory))).findFirst();
 	}
 
 	/**
-	 * Creates a list of all recipes of the given type.
-	 * Modifications to the returned list do not affect the manager.
+	 * Creates a list of all recipes of the given {@code type}. The list has an
+	 * arbitrary order.
+	 * 
+	 * <p>This list does not update with this manager. Modifications to
+	 * the returned list do not affect this manager.
+	 * 
+	 * @return the created list of recipes of the given {@code type}
+	 * 
+	 * @param type the desired recipe type
 	 */
-	public <C extends Inventory, T extends Recipe<C>> List<T> listAllOfType(RecipeType<T> recipeType) {
-		return (List<T>)this.getAllOfType(recipeType).values().stream().map(recipe -> recipe).collect(Collectors.toList());
+	public <C extends Inventory, T extends Recipe<C>> List<T> listAllOfType(RecipeType<T> type) {
+		return (List<T>)this.getAllOfType(type).values().stream().map(recipe -> recipe).collect(Collectors.toList());
 	}
 
+	/**
+	 * Creates a list of all recipes of the given {@code type} that match the
+	 * given {@code inventory} and {@code world}. The list is ordered by the
+	 * translation key of the output item stack of each recipe.
+	 * 
+	 * <p>This list does not update with this manager. Modifications to
+	 * the returned list do not affect this manager.
+	 * 
+	 * @return the created list of matching recipes
+	 * 
+	 * @param type the desired recipe type
+	 * @param inventory the input inventory
+	 * @param world the input world
+	 */
 	public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> type, C inventory, World world) {
 		return (List<T>)this.getAllOfType(type)
 			.values()
 			.stream()
-			.flatMap(recipe -> Util.stream(type.get(recipe, world, inventory)))
+			.flatMap(recipe -> Util.stream(type.match(recipe, world, inventory)))
 			.sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey()))
 			.collect(Collectors.toList());
 	}
@@ -93,8 +139,23 @@ public class RecipeManager extends JsonDataLoader {
 		return (Map<Identifier, Recipe<C>>)this.recipes.getOrDefault(type, Collections.emptyMap());
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> recipeType, C inventory, World world) {
-		Optional<T> optional = this.getFirstMatch(recipeType, inventory, world);
+	/**
+	 * {@return the remainder of a recipe of the given {@code type} that match
+	 * the given {@code inventory} and {@code world}, or a shallow copy of the
+	 * {@code inventory}}
+	 * 
+	 * <p>This retrieves the {@linkplain Recipe#getRemainder(Inventory)
+	 * remainders} of {@link #getFirstMatch(RecipeType, Inventory, World)
+	 * getFirstMatch(type, inventory, world)} if the match exists.
+	 * 
+	 * @see Recipe#getRemainder(Inventory)
+	 * 
+	 * @param type the desired recipe type
+	 * @param inventory the input inventory
+	 * @param world the input world
+	 */
+	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> type, C inventory, World world) {
+		Optional<T> optional = this.getFirstMatch(type, inventory, world);
 		if (optional.isPresent()) {
 			return ((Recipe)optional.get()).getRemainder(inventory);
 		} else {
@@ -108,18 +169,53 @@ public class RecipeManager extends JsonDataLoader {
 		}
 	}
 
+	/**
+	 * {@return a recipe with the given {@code id}, or empty if there is no such recipe}
+	 * 
+	 * @param id the ID of the desired recipe
+	 */
 	public Optional<? extends Recipe<?>> get(Identifier id) {
 		return this.recipes.values().stream().map(map -> (Recipe)map.get(id)).filter(Objects::nonNull).findFirst();
 	}
 
+	/**
+	 * {@return all recipes in this manager}
+	 * 
+	 * <p>The returned set does not update with the manager. Modifications to the
+	 * returned set does not affect this manager.
+	 */
 	public Collection<Recipe<?>> values() {
 		return (Collection<Recipe<?>>)this.recipes.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toSet());
 	}
 
+	/**
+	 * {@return a stream of IDs of recipes in this manager}
+	 * 
+	 * <p>The returned stream does not update after {@link #setRecipes(Iterable)}
+	 * call.
+	 * 
+	 * @apiNote This is used by the command sources to suggest recipe IDs for command
+	 * arguments.
+	 */
 	public Stream<Identifier> keys() {
 		return this.recipes.values().stream().flatMap(map -> map.keySet().stream());
 	}
 
+	/**
+	 * Reads a recipe from a JSON object.
+	 * 
+	 * @implNote Even though a recipe's {@linkplain Recipe#getSerializer() serializer}
+	 * is stored in a {@code type} field in the JSON format and referred so in this
+	 * method, its registry has key {@code minecraft:root/minecraft:recipe_serializer}
+	 * and is thus named.
+	 * 
+	 * @throws com.google.gson.JsonParseException if the recipe JSON is invalid
+	 * @return the read recipe
+	 * @see RecipeSerializer#read
+	 * 
+	 * @param id the recipe's ID
+	 * @param json the recipe JSON
+	 */
 	public static Recipe<?> deserialize(Identifier id, JsonObject json) {
 		String string = JsonHelper.getString(json, "type");
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
@@ -128,11 +224,17 @@ public class RecipeManager extends JsonDataLoader {
 			.read(id, json);
 	}
 
+	/**
+	 * Sets the recipes for this recipe manager. Used by the client to set the server
+	 * side recipes.
+	 * 
+	 * @param recipes the recipes to set
+	 */
 	public void setRecipes(Iterable<Recipe<?>> recipes) {
 		this.errored = false;
 		Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map = Maps.<RecipeType<?>, Map<Identifier, Recipe<?>>>newHashMap();
 		recipes.forEach(recipe -> {
-			Map<Identifier, Recipe<?>> map2 = (Map<Identifier, Recipe<?>>)map.computeIfAbsent(recipe.getType(), recipeType -> Maps.newHashMap());
+			Map<Identifier, Recipe<?>> map2 = (Map<Identifier, Recipe<?>>)map.computeIfAbsent(recipe.getType(), t -> Maps.newHashMap());
 			Recipe<?> recipe2 = (Recipe<?>)map2.put(recipe.getId(), recipe);
 			if (recipe2 != null) {
 				throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.getId());

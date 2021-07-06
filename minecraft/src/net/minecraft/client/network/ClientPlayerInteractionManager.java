@@ -249,7 +249,7 @@ public class ClientPlayerInteractionManager {
 		boolean bl = this.selectedStack.isEmpty() && itemStack.isEmpty();
 		if (!this.selectedStack.isEmpty() && !itemStack.isEmpty()) {
 			bl = itemStack.isOf(this.selectedStack.getItem())
-				&& ItemStack.areTagsEqual(itemStack, this.selectedStack)
+				&& ItemStack.areNbtEqual(itemStack, this.selectedStack)
 				&& (itemStack.isDamageable() || itemStack.getDamage() == this.selectedStack.getDamage());
 		}
 

@@ -64,15 +64,15 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	@Nullable
 	private NbtList getLoreForMerge(ItemStack stack, boolean otherLoreExists) {
 		NbtCompound nbtCompound;
-		if (stack.hasTag()) {
-			nbtCompound = stack.getTag();
+		if (stack.hasNbt()) {
+			nbtCompound = stack.getNbt();
 		} else {
 			if (!otherLoreExists) {
 				return null;
 			}
 
 			nbtCompound = new NbtCompound();
-			stack.setTag(nbtCompound);
+			stack.setNbt(nbtCompound);
 		}
 
 		NbtCompound nbtCompound2;

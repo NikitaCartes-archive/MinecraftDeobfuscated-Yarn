@@ -33,7 +33,7 @@ public class InGameOverlayRenderer {
 		if (!playerEntity.noClip) {
 			BlockState blockState = getInWallBlockState(playerEntity);
 			if (blockState != null) {
-				renderInWallOverlay(client.getBlockRenderManager().getModels().getSprite(blockState), matrices);
+				renderInWallOverlay(client.getBlockRenderManager().getModels().getModelParticleSprite(blockState), matrices);
 			}
 		}
 

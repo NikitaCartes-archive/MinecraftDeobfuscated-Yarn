@@ -12,7 +12,7 @@ import net.minecraft.server.world.ServerWorld;
  * replaces that of individual tasks, so that it is more efficient than the goal
  * system.
  * 
- * @see Brain#sensors
+ * @see net.minecraft.entity.ai.brain.Brain#sensors
  */
 public abstract class Sensor<E extends LivingEntity> {
 	private static final Random RANDOM = new Random();

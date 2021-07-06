@@ -409,7 +409,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		ItemStack itemStack = this.inventory.get(slot);
-		boolean bl = !stack.isEmpty() && stack.isItemEqualIgnoreDamage(itemStack) && ItemStack.areTagsEqual(stack, itemStack);
+		boolean bl = !stack.isEmpty() && stack.isItemEqualIgnoreDamage(itemStack) && ItemStack.areNbtEqual(stack, itemStack);
 		this.inventory.set(slot, stack);
 		if (stack.getCount() > this.getMaxCountPerStack()) {
 			stack.setCount(this.getMaxCountPerStack());

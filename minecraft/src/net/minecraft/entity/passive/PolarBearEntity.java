@@ -14,9 +14,9 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -85,9 +85,9 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(7, new LookAroundGoal(this));
 		this.targetSelector.add(1, new PolarBearEntity.PolarBearRevengeGoal());
-		this.targetSelector.add(2, new PolarBearEntity.FollowPlayersGoal());
-		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
-		this.targetSelector.add(4, new FollowTargetGoal(this, FoxEntity.class, 10, true, true, null));
+		this.targetSelector.add(2, new PolarBearEntity.ProtectBabiesGoal());
+		this.targetSelector.add(3, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+		this.targetSelector.add(4, new ActiveTargetGoal(this, FoxEntity.class, 10, true, true, null));
 		this.targetSelector.add(5, new UniversalAngerGoal<>(this, false));
 	}
 
@@ -290,35 +290,6 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		}
 	}
 
-	class FollowPlayersGoal extends FollowTargetGoal<PlayerEntity> {
-		public FollowPlayersGoal() {
-			super(PolarBearEntity.this, PlayerEntity.class, 20, true, true, null);
-		}
-
-		@Override
-		public boolean canStart() {
-			if (PolarBearEntity.this.isBaby()) {
-				return false;
-			} else {
-				if (super.canStart()) {
-					for (PolarBearEntity polarBearEntity : PolarBearEntity.this.world
-						.getNonSpectatingEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
-						if (polarBearEntity.isBaby()) {
-							return true;
-						}
-					}
-				}
-
-				return false;
-			}
-		}
-
-		@Override
-		protected double getFollowRange() {
-			return super.getFollowRange() * 0.5;
-		}
-	}
-
 	class PolarBearEscapeDangerGoal extends EscapeDangerGoal {
 		public PolarBearEscapeDangerGoal() {
 			super(PolarBearEntity.this, 2.0);
@@ -349,6 +320,35 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 			if (mob instanceof PolarBearEntity && !mob.isBaby()) {
 				super.setMobEntityTarget(mob, target);
 			}
+		}
+	}
+
+	class ProtectBabiesGoal extends ActiveTargetGoal<PlayerEntity> {
+		public ProtectBabiesGoal() {
+			super(PolarBearEntity.this, PlayerEntity.class, 20, true, true, null);
+		}
+
+		@Override
+		public boolean canStart() {
+			if (PolarBearEntity.this.isBaby()) {
+				return false;
+			} else {
+				if (super.canStart()) {
+					for (PolarBearEntity polarBearEntity : PolarBearEntity.this.world
+						.getNonSpectatingEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
+						if (polarBearEntity.isBaby()) {
+							return true;
+						}
+					}
+				}
+
+				return false;
+			}
+		}
+
+		@Override
+		protected double getFollowRange() {
+			return super.getFollowRange() * 0.5;
 		}
 	}
 }

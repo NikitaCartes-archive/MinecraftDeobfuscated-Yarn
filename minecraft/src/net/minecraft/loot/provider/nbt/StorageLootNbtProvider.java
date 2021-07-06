@@ -27,7 +27,7 @@ public class StorageLootNbtProvider implements LootNbtProvider {
 
 	@Nullable
 	@Override
-	public NbtElement getNbtTag(LootContext context) {
+	public NbtElement getNbt(LootContext context) {
 		return context.getWorld().getServer().getDataCommandStorage().get(this.source);
 	}
 

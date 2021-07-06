@@ -45,7 +45,7 @@ public class DecorationItem extends Item {
 				abstractDecorationEntity = new GlowItemFrameEntity(world, blockPos2, direction);
 			}
 
-			NbtCompound nbtCompound = itemStack.getTag();
+			NbtCompound nbtCompound = itemStack.getNbt();
 			if (nbtCompound != null) {
 				EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, nbtCompound);
 			}

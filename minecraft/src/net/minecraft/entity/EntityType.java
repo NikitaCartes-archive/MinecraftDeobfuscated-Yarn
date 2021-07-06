@@ -654,7 +654,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	) {
 		return this.spawn(
 			world,
-			stack == null ? null : stack.getTag(),
+			stack == null ? null : stack.getNbt(),
 			stack != null && stack.hasCustomName() ? stack.getName() : null,
 			player,
 			pos,

@@ -318,7 +318,7 @@ public class ServerPlayerInteractionManager {
 			if (!bl2) {
 				ActionResult actionResult = blockState.onUse(world, player, hand, hitResult);
 				if (actionResult.isAccepted()) {
-					Criteria.ITEM_USED_ON_BLOCK.test(player, blockPos, itemStack);
+					Criteria.ITEM_USED_ON_BLOCK.trigger(player, blockPos, itemStack);
 					return actionResult;
 				}
 			}
@@ -335,7 +335,7 @@ public class ServerPlayerInteractionManager {
 				}
 
 				if (actionResult2.isAccepted()) {
-					Criteria.ITEM_USED_ON_BLOCK.test(player, blockPos, itemStack);
+					Criteria.ITEM_USED_ON_BLOCK.trigger(player, blockPos, itemStack);
 				}
 
 				return actionResult2;

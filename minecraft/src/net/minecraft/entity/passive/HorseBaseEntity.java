@@ -1028,13 +1028,13 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Nullable
-	private Vec3d method_27930(Vec3d vec3d, LivingEntity livingEntity) {
-		double d = this.getX() + vec3d.x;
+	private Vec3d locateSafeDismountingPos(Vec3d offset, LivingEntity passenger) {
+		double d = this.getX() + offset.x;
 		double e = this.getBoundingBox().minY;
-		double f = this.getZ() + vec3d.z;
+		double f = this.getZ() + offset.z;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (EntityPose entityPose : livingEntity.getPoses()) {
+		for (EntityPose entityPose : passenger.getPoses()) {
 			mutable.set(d, e, f);
 			double g = this.getBoundingBox().maxY + 0.75;
 
@@ -1045,11 +1045,11 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 				}
 
 				if (Dismounting.canDismountInBlock(h)) {
-					Box box = livingEntity.getBoundingBox(entityPose);
-					Vec3d vec3d2 = new Vec3d(d, (double)mutable.getY() + h, f);
-					if (Dismounting.canPlaceEntityAt(this.world, livingEntity, box.offset(vec3d2))) {
-						livingEntity.setPose(entityPose);
-						return vec3d2;
+					Box box = passenger.getBoundingBox(entityPose);
+					Vec3d vec3d = new Vec3d(d, (double)mutable.getY() + h, f);
+					if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d))) {
+						passenger.setPose(entityPose);
+						return vec3d;
 					}
 				}
 
@@ -1065,14 +1065,14 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		Vec3d vec3d = getPassengerDismountOffset(
 			(double)this.getWidth(), (double)passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.RIGHT ? 90.0F : -90.0F)
 		);
-		Vec3d vec3d2 = this.method_27930(vec3d, passenger);
+		Vec3d vec3d2 = this.locateSafeDismountingPos(vec3d, passenger);
 		if (vec3d2 != null) {
 			return vec3d2;
 		} else {
 			Vec3d vec3d3 = getPassengerDismountOffset(
 				(double)this.getWidth(), (double)passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.LEFT ? 90.0F : -90.0F)
 			);
-			Vec3d vec3d4 = this.method_27930(vec3d3, passenger);
+			Vec3d vec3d4 = this.locateSafeDismountingPos(vec3d3, passenger);
 			return vec3d4 != null ? vec3d4 : this.getPos();
 		}
 	}
@@ -1093,7 +1093,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
-	public boolean method_33338(Inventory inventory) {
+	public boolean areInventoriesDifferent(Inventory inventory) {
 		return this.items != inventory;
 	}
 }

@@ -38,7 +38,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 				nbtCompound.putLong("LootTableSeed", this.seed);
 			}
 
-			stack.getOrCreateTag().put("BlockEntityTag", nbtCompound);
+			stack.getOrCreateNbt().put("BlockEntityTag", nbtCompound);
 			return stack;
 		}
 	}

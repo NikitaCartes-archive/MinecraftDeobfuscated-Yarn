@@ -84,7 +84,7 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 				blockState,
 				world,
 				bedBlockEntity.getPos(),
-				(worldAccess, blockPos) -> false
+				(worldx, pos) -> false
 			);
 			int k = propertySource.apply(new LightmapCoordinatesRetriever<>()).get(i);
 			this.renderPart(
@@ -106,7 +106,7 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 	private void renderPart(
 		MatrixStack matrix,
 		VertexConsumerProvider vertexConsumers,
-		ModelPart modelPart,
+		ModelPart part,
 		Direction direction,
 		SpriteIdentifier sprite,
 		int light,
@@ -120,7 +120,7 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 		matrix.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F + direction.asRotation()));
 		matrix.translate(-0.5, -0.5, -0.5);
 		VertexConsumer vertexConsumer = sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid);
-		modelPart.render(matrix, vertexConsumer, light, overlay);
+		part.render(matrix, vertexConsumer, light, overlay);
 		matrix.pop();
 	}
 }

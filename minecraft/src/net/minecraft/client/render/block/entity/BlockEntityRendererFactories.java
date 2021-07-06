@@ -20,11 +20,11 @@ public class BlockEntityRendererFactories {
 
 	public static Map<BlockEntityType<?>, BlockEntityRenderer<?>> reload(BlockEntityRendererFactory.Context args) {
 		Builder<BlockEntityType<?>, BlockEntityRenderer<?>> builder = ImmutableMap.builder();
-		FACTORIES.forEach((blockEntityType, blockEntityRendererFactory) -> {
+		FACTORIES.forEach((type, factory) -> {
 			try {
-				builder.put(blockEntityType, blockEntityRendererFactory.create(args));
+				builder.put(type, factory.create(args));
 			} catch (Exception var5) {
-				throw new IllegalStateException("Failed to create model for " + Registry.BLOCK_ENTITY_TYPE.getId(blockEntityType), var5);
+				throw new IllegalStateException("Failed to create model for " + Registry.BLOCK_ENTITY_TYPE.getId(type), var5);
 			}
 		});
 		return builder.build();

@@ -46,7 +46,7 @@ public class RealmsTermsScreen extends RealmsScreen {
 		int i = this.width / 4 - 2;
 		this.addDrawableChild(new ButtonWidget(this.width / 4, row(12), i, 20, new TranslatableText("mco.terms.buttons.agree"), button -> this.agreedToTos()));
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 + 4, row(12), i, 20, new TranslatableText("mco.terms.buttons.disagree"), button -> this.client.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 + 4, row(12), i, 20, new TranslatableText("mco.terms.buttons.disagree"), button -> this.client.setScreen(this.parent))
 		);
 	}
 
@@ -58,7 +58,7 @@ public class RealmsTermsScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -71,7 +71,7 @@ public class RealmsTermsScreen extends RealmsScreen {
 		try {
 			realmsClient.agreeToTos();
 			this.client
-				.openScreen(
+				.setScreen(
 					new RealmsLongRunningMcoTaskScreen(this.parent, new RealmsGetServerDetailsTask(this.mainScreen, this.parent, this.realmsServer, new ReentrantLock()))
 				);
 		} catch (RealmsServiceException var3) {

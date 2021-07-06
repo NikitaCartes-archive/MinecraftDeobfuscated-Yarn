@@ -43,15 +43,15 @@ public class AccessibilityOptionsScreen extends NarratorOptionsScreen {
 				150,
 				20,
 				new TranslatableText("options.accessibility.link"),
-				button -> this.client.openScreen(new ConfirmChatLinkScreen(openInBrowser -> {
+				button -> this.client.setScreen(new ConfirmChatLinkScreen(openInBrowser -> {
 						if (openInBrowser) {
 							Util.getOperatingSystem().open("https://aka.ms/MinecraftJavaAccessibility");
 						}
 
-						this.client.openScreen(this);
+						this.client.setScreen(this);
 					}, "https://aka.ms/MinecraftJavaAccessibility", true))
 			)
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
 	}
 }

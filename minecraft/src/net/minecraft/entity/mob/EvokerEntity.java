@@ -9,8 +9,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -56,9 +56,9 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
-		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
-		this.targetSelector.add(3, new FollowTargetGoal(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
-		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, false));
+		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
+		this.targetSelector.add(3, new ActiveTargetGoal(this, MerchantEntity.class, false).setMaxTimeWithoutVisibility(300));
+		this.targetSelector.add(3, new ActiveTargetGoal(this, IronGolemEntity.class, false));
 	}
 
 	public static DefaultAttributeContainer.Builder createEvokerAttributes() {

@@ -48,7 +48,7 @@ public class EntityBucketItem extends BucketItem {
 
 	private void spawnEntity(ServerWorld world, ItemStack stack, BlockPos pos) {
 		if (this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false) instanceof Bucketable bucketable) {
-			bucketable.copyDataFromNbt(stack.getOrCreateTag());
+			bucketable.copyDataFromNbt(stack.getOrCreateNbt());
 			bucketable.setFromBucket(true);
 		}
 	}
@@ -56,7 +56,7 @@ public class EntityBucketItem extends BucketItem {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		if (this.entityType == EntityType.TROPICAL_FISH) {
-			NbtCompound nbtCompound = stack.getTag();
+			NbtCompound nbtCompound = stack.getNbt();
 			if (nbtCompound != null && nbtCompound.contains("BucketVariantTag", NbtElement.INT_TYPE)) {
 				int i = nbtCompound.getInt("BucketVariantTag");
 				Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};

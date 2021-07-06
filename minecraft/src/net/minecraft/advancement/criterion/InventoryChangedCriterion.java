@@ -59,7 +59,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 	}
 
 	private void trigger(ServerPlayerEntity player, PlayerInventory inventory, ItemStack stack, int full, int empty, int occupied) {
-		this.test(player, conditions -> conditions.matches(inventory, stack, full, empty, occupied));
+		this.trigger(player, conditions -> conditions.matches(inventory, stack, full, empty, occupied));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -149,7 +149,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 
 						ItemStack itemStack = inventory.getStack(k);
 						if (!itemStack.isEmpty()) {
-							list.removeIf(itemPredicate -> itemPredicate.test(itemStack));
+							list.removeIf(item -> item.test(itemStack));
 						}
 					}
 

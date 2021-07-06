@@ -55,7 +55,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 
 	public void trigger(ServerPlayerEntity player, BlockPos blockPos, ItemStack stack) {
 		BlockState blockState = player.getServerWorld().getBlockState(blockPos);
-		this.test(player, conditions -> conditions.matches(blockState, blockPos, player.getServerWorld(), stack));
+		this.trigger(player, conditions -> conditions.matches(blockState, blockPos, player.getServerWorld(), stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

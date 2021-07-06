@@ -29,7 +29,7 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
-		this.test(player, conditions -> conditions.matches(stack));
+		this.trigger(player, conditions -> conditions.matches(stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

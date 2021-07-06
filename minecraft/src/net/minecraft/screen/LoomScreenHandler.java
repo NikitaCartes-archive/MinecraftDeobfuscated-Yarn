@@ -143,7 +143,7 @@ public class LoomScreenHandler extends ScreenHandler {
 				&& this.selectedPattern.get() > 0
 				&& (this.selectedPattern.get() < BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
-				NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+				NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("BlockEntityTag");
 				boolean bl = nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
 					&& !itemStack.isEmpty()
 					&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
@@ -235,7 +235,7 @@ public class LoomScreenHandler extends ScreenHandler {
 				itemStack3.setCount(1);
 				BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
 				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-				NbtCompound nbtCompound = itemStack3.getOrCreateSubTag("BlockEntityTag");
+				NbtCompound nbtCompound = itemStack3.getOrCreateSubNbt("BlockEntityTag");
 				NbtList nbtList;
 				if (nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
 					nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);

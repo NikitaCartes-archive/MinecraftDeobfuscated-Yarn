@@ -11,7 +11,7 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
@@ -46,7 +46,7 @@ public class SilverfishEntity extends HostileEntity {
 		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
 		this.goalSelector.add(5, new SilverfishEntity.WanderAndInfestGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
-		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
+		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 	}
 
 	@Override

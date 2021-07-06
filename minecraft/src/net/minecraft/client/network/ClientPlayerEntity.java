@@ -321,7 +321,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	public void closeScreen() {
 		super.closeHandledScreen();
-		this.client.openScreen(null);
+		this.client.setScreen(null);
 	}
 
 	public void updateHealth(float health) {
@@ -559,33 +559,33 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void openEditSignScreen(SignBlockEntity sign) {
-		this.client.openScreen(new SignEditScreen(sign, this.client.shouldFilterText()));
+		this.client.setScreen(new SignEditScreen(sign, this.client.shouldFilterText()));
 	}
 
 	@Override
 	public void openCommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {
-		this.client.openScreen(new MinecartCommandBlockScreen(commandBlockExecutor));
+		this.client.setScreen(new MinecartCommandBlockScreen(commandBlockExecutor));
 	}
 
 	@Override
 	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
-		this.client.openScreen(new CommandBlockScreen(commandBlock));
+		this.client.setScreen(new CommandBlockScreen(commandBlock));
 	}
 
 	@Override
 	public void openStructureBlockScreen(StructureBlockBlockEntity structureBlock) {
-		this.client.openScreen(new StructureBlockScreen(structureBlock));
+		this.client.setScreen(new StructureBlockScreen(structureBlock));
 	}
 
 	@Override
 	public void openJigsawScreen(JigsawBlockEntity jigsaw) {
-		this.client.openScreen(new JigsawBlockScreen(jigsaw));
+		this.client.setScreen(new JigsawBlockScreen(jigsaw));
 	}
 
 	@Override
 	public void useBook(ItemStack book, Hand hand) {
 		if (book.isOf(Items.WRITABLE_BOOK)) {
-			this.client.openScreen(new BookEditScreen(this, book, hand));
+			this.client.setScreen(new BookEditScreen(this, book, hand));
 		}
 	}
 
@@ -834,7 +834,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 					this.closeHandledScreen();
 				}
 
-				this.client.openScreen(null);
+				this.client.setScreen(null);
 			}
 
 			if (this.nextNauseaStrength == 0.0F) {

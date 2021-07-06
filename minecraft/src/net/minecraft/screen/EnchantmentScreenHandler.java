@@ -177,9 +177,9 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					boolean bl = itemStack.isOf(Items.BOOK);
 					if (bl) {
 						itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
-						NbtCompound nbtCompound = itemStack.getTag();
+						NbtCompound nbtCompound = itemStack.getNbt();
 						if (nbtCompound != null) {
-							itemStack3.setTag(nbtCompound.copy());
+							itemStack3.setNbt(nbtCompound.copy());
 						}
 
 						this.inventory.setStack(0, itemStack3);

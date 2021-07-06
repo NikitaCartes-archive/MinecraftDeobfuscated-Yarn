@@ -55,9 +55,9 @@ import net.minecraft.util.math.MathHelper;
 public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> implements ModelWithArms, ModelWithHead {
 	public static final float field_32505 = 0.25F;
 	public static final float field_32506 = 0.5F;
-	private static final float field_32503 = (float) (Math.PI / 12);
-	private static final float field_32504 = 1.9198622F;
-	private static final float field_32507 = (float) (Math.PI / 12);
+	private static final float SPYGLASS_ARM_YAW_OFFSET = (float) (Math.PI / 12);
+	private static final float SPYGLASS_ARM_PITCH_OFFSET = 1.9198622F;
+	private static final float SPYGLASS_SNEAKING_ARM_PITCH_OFFSET = (float) (Math.PI / 12);
 	public final ModelPart head;
 	public final ModelPart hat;
 	public final ModelPart body;

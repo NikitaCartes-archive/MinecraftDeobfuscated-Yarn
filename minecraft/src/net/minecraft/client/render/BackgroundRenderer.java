@@ -72,7 +72,7 @@ public class BackgroundRenderer {
 		} else {
 			float t = 0.25F + 0.75F * (float)i / 32.0F;
 			t = 1.0F - (float)Math.pow((double)t, 0.25);
-			Vec3d vec3d = world.method_23777(camera.getPos(), tickDelta);
+			Vec3d vec3d = world.getSkyColor(camera.getPos(), tickDelta);
 			float u = (float)vec3d.x;
 			float v = (float)vec3d.y;
 			float w = (float)vec3d.z;
@@ -80,7 +80,7 @@ public class BackgroundRenderer {
 			BiomeAccess biomeAccess = world.getBiomeAccess();
 			Vec3d vec3d2 = camera.getPos().subtract(2.0, 2.0, 2.0).multiply(0.25);
 			Vec3d vec3d3 = CubicSampler.sampleColor(
-				vec3d2, (ix, jx, k) -> world.getSkyProperties().adjustFogColor(Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(ix, jx, k).getFogColor()), x)
+				vec3d2, (ix, jx, k) -> world.getDimensionEffects().adjustFogColor(Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(ix, jx, k).getFogColor()), x)
 			);
 			red = (float)vec3d3.getX();
 			green = (float)vec3d3.getY();
@@ -94,7 +94,7 @@ public class BackgroundRenderer {
 				}
 
 				if (r > 0.0F) {
-					float[] fs = world.getSkyProperties().getFogColorOverride(world.getSkyAngle(tickDelta), tickDelta);
+					float[] fs = world.getDimensionEffects().getFogColorOverride(world.getSkyAngle(tickDelta), tickDelta);
 					if (fs != null) {
 						r *= fs[3];
 						red = red * (1.0F - r) + fs[0] * r;

@@ -36,7 +36,7 @@ public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalC
 	}
 
 	public void trigger(ServerPlayerEntity player) {
-		this.test(player, conditions -> conditions.matches(player.getServerWorld(), player.getX(), player.getY(), player.getZ()));
+		this.trigger(player, conditions -> conditions.matches(player.getServerWorld(), player.getX(), player.getY(), player.getZ()));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

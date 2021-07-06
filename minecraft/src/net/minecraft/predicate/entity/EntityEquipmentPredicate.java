@@ -17,7 +17,7 @@ public class EntityEquipmentPredicate {
 		ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY
 	);
 	public static final EntityEquipmentPredicate OMINOUS_BANNER_ON_HEAD = new EntityEquipmentPredicate(
-		ItemPredicate.Builder.create().items(Items.WHITE_BANNER).nbt(Raid.getOminousBanner().getTag()).build(),
+		ItemPredicate.Builder.create().items(Items.WHITE_BANNER).nbt(Raid.getOminousBanner().getNbt()).build(),
 		ItemPredicate.ANY,
 		ItemPredicate.ANY,
 		ItemPredicate.ANY,

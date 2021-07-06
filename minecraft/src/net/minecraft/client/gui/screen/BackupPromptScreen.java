@@ -55,7 +55,7 @@ public class BackupPromptScreen extends Screen {
 				button -> this.callback.proceed(false, this.eraseCacheCheckbox.isChecked())
 			)
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
 		this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, new TranslatableText("selectWorld.backupEraseCache"), false);
 		if (this.showEraseCacheCheckbox) {
 			this.addDrawableChild(this.eraseCacheCheckbox);
@@ -78,7 +78,7 @@ public class BackupPromptScreen extends Screen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);

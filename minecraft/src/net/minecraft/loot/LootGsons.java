@@ -20,9 +20,9 @@ public class LootGsons {
 	public static GsonBuilder getConditionGsonBuilder() {
 		return new GsonBuilder()
 			.registerTypeAdapter(BoundedIntUnaryOperator.class, new BoundedIntUnaryOperator.Serializer())
-			.registerTypeHierarchyAdapter(LootNumberProvider.class, LootNumberProviderTypes.method_32455())
+			.registerTypeHierarchyAdapter(LootNumberProvider.class, LootNumberProviderTypes.createGsonSerializer())
 			.registerTypeHierarchyAdapter(LootCondition.class, LootConditionTypes.createGsonSerializer())
-			.registerTypeHierarchyAdapter(LootScoreProvider.class, LootScoreProviderTypes.method_32478())
+			.registerTypeHierarchyAdapter(LootScoreProvider.class, LootScoreProviderTypes.createGsonSerializer())
 			.registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer());
 	}
 
@@ -30,7 +30,7 @@ public class LootGsons {
 		return getConditionGsonBuilder()
 			.registerTypeHierarchyAdapter(LootPoolEntry.class, LootPoolEntryTypes.createGsonSerializer())
 			.registerTypeHierarchyAdapter(LootFunction.class, LootFunctionTypes.createGsonSerializer())
-			.registerTypeHierarchyAdapter(LootNbtProvider.class, LootNbtProviderTypes.method_32442());
+			.registerTypeHierarchyAdapter(LootNbtProvider.class, LootNbtProviderTypes.createGsonSerializer());
 	}
 
 	public static GsonBuilder getTableGsonBuilder() {

@@ -40,7 +40,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	public void init() {
 		this.client.keyboard.setRepeatEvents(true);
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20, ScreenTexts.BACK, button -> this.client.setScreen(this.parent))
 		);
 		this.backupInfoList = new RealmsBackupInfoScreen.BackupInfoList(this.client);
 		this.addSelectableChild(this.backupInfoList);
@@ -55,7 +55,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.openScreen(this.parent);
+			this.client.setScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);

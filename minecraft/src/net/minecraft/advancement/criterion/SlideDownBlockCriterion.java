@@ -46,8 +46,8 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 		}
 	}
 
-	public void test(ServerPlayerEntity player, BlockState state) {
-		this.test(player, conditions -> conditions.test(state));
+	public void trigger(ServerPlayerEntity player, BlockState state) {
+		this.trigger(player, conditions -> conditions.test(state));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

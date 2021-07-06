@@ -32,9 +32,9 @@ public class SmithingRecipe implements Recipe<Inventory> {
 	@Override
 	public ItemStack craft(Inventory inventory) {
 		ItemStack itemStack = this.result.copy();
-		NbtCompound nbtCompound = inventory.getStack(0).getTag();
+		NbtCompound nbtCompound = inventory.getStack(0).getNbt();
 		if (nbtCompound != null) {
-			itemStack.setTag(nbtCompound.copy());
+			itemStack.setNbt(nbtCompound.copy());
 		}
 
 		return itemStack;
@@ -76,7 +76,7 @@ public class SmithingRecipe implements Recipe<Inventory> {
 
 	@Override
 	public boolean isEmpty() {
-		return Stream.of(this.base, this.addition).anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);
+		return Stream.of(this.base, this.addition).anyMatch(ingredient -> ingredient.getMatchingStacks().length == 0);
 	}
 
 	public static class Serializer implements RecipeSerializer<SmithingRecipe> {

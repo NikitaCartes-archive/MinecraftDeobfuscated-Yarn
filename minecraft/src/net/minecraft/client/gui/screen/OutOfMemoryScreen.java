@@ -17,7 +17,7 @@ public class OutOfMemoryScreen extends Screen {
 	protected void init() {
 		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslatableText("gui.toTitle"), button -> this.client.openScreen(new TitleScreen())
+				this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslatableText("gui.toTitle"), button -> this.client.setScreen(new TitleScreen())
 			)
 		);
 		this.addDrawableChild(

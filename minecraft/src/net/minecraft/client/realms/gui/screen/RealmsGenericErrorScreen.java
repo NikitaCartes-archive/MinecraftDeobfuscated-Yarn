@@ -59,7 +59,7 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), button -> this.client.openScreen(this.parent)));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), button -> this.client.setScreen(this.parent)));
 	}
 
 	@Override

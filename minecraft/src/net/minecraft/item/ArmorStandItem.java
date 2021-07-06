@@ -37,7 +37,7 @@ public class ArmorStandItem extends Item {
 			if (world.isSpaceEmpty(null, box, entity -> true) && world.getOtherEntities(null, box).isEmpty()) {
 				if (world instanceof ServerWorld serverWorld) {
 					ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND
-						.create(serverWorld, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
+						.create(serverWorld, itemStack.getNbt(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
 					if (armorStandEntity == null) {
 						return ActionResult.FAIL;
 					}

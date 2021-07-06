@@ -25,7 +25,7 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 	}
 
 	public void trigger(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
-		this.test(player, conditions -> conditions.matches(player, source, dealt, taken, blocked));
+		this.trigger(player, conditions -> conditions.matches(player, source, dealt, taken, blocked));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

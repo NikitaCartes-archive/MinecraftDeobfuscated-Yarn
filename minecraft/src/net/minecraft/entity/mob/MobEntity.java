@@ -621,10 +621,10 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean prefersNewDamageableItem(ItemStack newStack, ItemStack oldStack) {
-		if (newStack.getDamage() >= oldStack.getDamage() && (!newStack.hasTag() || oldStack.hasTag())) {
-			return newStack.hasTag() && oldStack.hasTag()
-				? newStack.getTag().getKeys().stream().anyMatch(string -> !string.equals("Damage"))
-					&& !oldStack.getTag().getKeys().stream().anyMatch(string -> !string.equals("Damage"))
+		if (newStack.getDamage() >= oldStack.getDamage() && (!newStack.hasNbt() || oldStack.hasNbt())) {
+			return newStack.hasNbt() && oldStack.hasNbt()
+				? newStack.getNbt().getKeys().stream().anyMatch(string -> !string.equals("Damage"))
+					&& !oldStack.getNbt().getKeys().stream().anyMatch(string -> !string.equals("Damage"))
 				: false;
 		} else {
 			return true;

@@ -37,7 +37,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		this.entries = (Ingredient.Entry[])entries.toArray(Ingredient.Entry[]::new);
 	}
 
-	public ItemStack[] getMatchingStacksClient() {
+	public ItemStack[] getMatchingStacks() {
 		this.cacheMatchingStacks();
 		return this.matchingStacks;
 	}

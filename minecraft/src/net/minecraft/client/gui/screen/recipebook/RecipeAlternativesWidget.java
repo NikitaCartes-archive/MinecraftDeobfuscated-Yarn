@@ -224,7 +224,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 
 		@Override
 		public void acceptAlignedInput(Iterator<Ingredient> inputs, int slot, int amount, int gridX, int gridY) {
-			ItemStack[] itemStacks = ((Ingredient)inputs.next()).getMatchingStacksClient();
+			ItemStack[] itemStacks = ((Ingredient)inputs.next()).getMatchingStacks();
 			if (itemStacks.length != 0) {
 				this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(3 + gridY * 7, 3 + gridX * 7, itemStacks));
 			}
@@ -286,7 +286,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 
 		@Override
 		protected void alignRecipe(Recipe<?> recipe) {
-			ItemStack[] itemStacks = recipe.getIngredients().get(0).getMatchingStacksClient();
+			ItemStack[] itemStacks = recipe.getIngredients().get(0).getMatchingStacks();
 			this.slots.add(new RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot(10, 10, itemStacks));
 		}
 	}

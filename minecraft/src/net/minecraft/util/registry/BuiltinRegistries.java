@@ -26,6 +26,13 @@ import org.apache.logging.log4j.Logger;
 /**
  * Stores a few hardcoded registries with builtin values for datapack-loadable registries,
  * from which a registry tracker can create a new dynamic registry.
+ * 
+ * <p>Note that these registries do not contain the actual entries that the server has,
+ * for that you will need to access it from {@link net.minecraft.util.registry.DynamicRegistryManager}.
+ * 
+ * @see net.minecraft.server.MinecraftServer#getRegistryManager()
+ * @see net.minecraft.client.network.ClientPlayNetworkHandler#getRegistryManager()
+ * @see net.minecraft.util.registry.DynamicRegistryManager#get(RegistryKey)
  */
 public class BuiltinRegistries {
 	protected static final Logger LOGGER = LogManager.getLogger();

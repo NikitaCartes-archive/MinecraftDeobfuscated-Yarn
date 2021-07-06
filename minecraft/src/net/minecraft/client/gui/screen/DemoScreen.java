@@ -29,7 +29,7 @@ public class DemoScreen extends Screen {
 			Util.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
 		}));
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, new TranslatableText("demo.help.later"), button -> {
-			this.client.openScreen(null);
+			this.client.setScreen(null);
 			this.client.mouse.lockCursor();
 		}));
 		GameOptions gameOptions = this.client.options;

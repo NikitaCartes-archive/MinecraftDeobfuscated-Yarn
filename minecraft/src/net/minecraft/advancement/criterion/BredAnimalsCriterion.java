@@ -32,7 +32,7 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, parent);
 		LootContext lootContext2 = EntityPredicate.createAdvancementEntityLootContext(player, partner);
 		LootContext lootContext3 = child != null ? EntityPredicate.createAdvancementEntityLootContext(player, child) : null;
-		this.test(player, conditions -> conditions.matches(lootContext, lootContext2, lootContext3));
+		this.trigger(player, conditions -> conditions.matches(lootContext, lootContext2, lootContext3));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

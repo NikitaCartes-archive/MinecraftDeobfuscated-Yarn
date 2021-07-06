@@ -28,7 +28,7 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 	}
 
 	public void setItem(ItemStack stack) {
-		if (!stack.isOf(Items.FIRE_CHARGE) || stack.hasTag()) {
+		if (!stack.isOf(Items.FIRE_CHARGE) || stack.hasNbt()) {
 			this.getDataTracker().set(ITEM, Util.make(stack.copy(), stackx -> stackx.setCount(1)));
 		}
 	}

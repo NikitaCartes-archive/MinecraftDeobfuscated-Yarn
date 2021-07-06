@@ -28,7 +28,7 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack, int durability) {
-		this.test(player, conditions -> conditions.matches(stack, durability));
+		this.trigger(player, conditions -> conditions.matches(stack, durability));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

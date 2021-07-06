@@ -87,7 +87,7 @@ public class ModelPredicateProviderRegistry {
 					? ((PlayerEntity)entity).getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0F)
 					: 0.0F
 		);
-		registerCustomModelData((stack, world, entity, seed) -> stack.hasTag() ? (float)stack.getTag().getInt("CustomModelData") : 0.0F);
+		registerCustomModelData((stack, world, entity, seed) -> stack.hasNbt() ? (float)stack.getNbt().getInt("CustomModelData") : 0.0F);
 		register(Items.BOW, new Identifier("pull"), (stack, world, entity, seed) -> {
 			if (entity == null) {
 				return 0.0F;
@@ -162,7 +162,7 @@ public class ModelPredicateProviderRegistry {
 							;
 						}
 
-						BlockPos blockPos = CompassItem.hasLodestone(itemStack) ? this.getLodestonePos(clientWorldx, itemStack.getOrCreateTag()) : this.getSpawnPos(clientWorldx);
+						BlockPos blockPos = CompassItem.hasLodestone(itemStack) ? this.getLodestonePos(clientWorldx, itemStack.getOrCreateNbt()) : this.getSpawnPos(clientWorldx);
 						long l = clientWorldx.getTime();
 						if (blockPos != null
 							&& !(entity.getPos().squaredDistanceTo((double)blockPos.getX() + 0.5, entity.getPos().getY(), (double)blockPos.getZ() + 0.5) < 1.0E-5F)) {
@@ -284,7 +284,7 @@ public class ModelPredicateProviderRegistry {
 			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
 		register(Items.LIGHT, new Identifier("level"), (stack, world, entity, seed) -> {
-			NbtCompound nbtCompound = stack.getSubTag("BlockStateTag");
+			NbtCompound nbtCompound = stack.getSubNbt("BlockStateTag");
 
 			try {
 				if (nbtCompound != null) {

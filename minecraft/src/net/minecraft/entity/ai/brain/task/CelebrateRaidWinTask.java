@@ -7,7 +7,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
-import net.minecraft.item.FireworkItem;
+import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -61,14 +61,14 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 	private ItemStack createFirework(DyeColor color, int flight) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 1);
 		ItemStack itemStack2 = new ItemStack(Items.FIREWORK_STAR);
-		NbtCompound nbtCompound = itemStack2.getOrCreateSubTag("Explosion");
+		NbtCompound nbtCompound = itemStack2.getOrCreateSubNbt("Explosion");
 		List<Integer> list = Lists.<Integer>newArrayList();
 		list.add(color.getFireworkColor());
 		nbtCompound.putIntArray("Colors", list);
-		nbtCompound.putByte("Type", (byte)FireworkItem.Type.BURST.getId());
-		NbtCompound nbtCompound2 = itemStack.getOrCreateSubTag("Fireworks");
+		nbtCompound.putByte("Type", (byte)FireworkRocketItem.Type.BURST.getId());
+		NbtCompound nbtCompound2 = itemStack.getOrCreateSubNbt("Fireworks");
 		NbtList nbtList = new NbtList();
-		NbtCompound nbtCompound3 = itemStack2.getSubTag("Explosion");
+		NbtCompound nbtCompound3 = itemStack2.getSubNbt("Explosion");
 		if (nbtCompound3 != null) {
 			nbtList.add(nbtCompound3);
 		}

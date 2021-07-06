@@ -591,7 +591,7 @@ public class Raid {
 
 	public static ItemStack getOminousBanner() {
 		ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
-		NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+		NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("BlockEntityTag");
 		NbtList nbtList = new BannerPattern.Patterns()
 			.add(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN)
 			.add(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)

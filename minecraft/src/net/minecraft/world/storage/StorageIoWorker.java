@@ -74,14 +74,14 @@ public class StorageIoWorker implements AutoCloseable {
 		});
 	}
 
-	public CompletableFuture<Void> completeAll(boolean bl) {
+	public CompletableFuture<Void> completeAll(boolean sync) {
 		CompletableFuture<Void> completableFuture = this.run(
 				() -> Either.left(
 						CompletableFuture.allOf((CompletableFuture[])this.results.values().stream().map(result -> result.future).toArray(CompletableFuture[]::new))
 					)
 			)
 			.thenCompose(Function.identity());
-		return bl ? completableFuture.thenCompose(void_ -> this.run(() -> {
+		return sync ? completableFuture.thenCompose(void_ -> this.run(() -> {
 				try {
 					this.storage.sync();
 					return Either.left(null);

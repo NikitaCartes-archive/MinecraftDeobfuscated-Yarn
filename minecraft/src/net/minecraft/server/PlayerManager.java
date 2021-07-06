@@ -321,7 +321,7 @@ public abstract class PlayerManager {
 	public NbtCompound loadPlayerData(ServerPlayerEntity player) {
 		NbtCompound nbtCompound = this.server.getSaveProperties().getPlayerData();
 		NbtCompound nbtCompound2;
-		if (player.getName().getString().equals(this.server.getUserName()) && nbtCompound != null) {
+		if (player.getName().getString().equals(this.server.getSinglePlayerName()) && nbtCompound != null) {
 			nbtCompound2 = nbtCompound;
 			player.readNbt(nbtCompound);
 			LOGGER.debug("loading single player");
@@ -583,7 +583,7 @@ public abstract class PlayerManager {
 	}
 
 	public void addToOperators(GameProfile profile) {
-		this.ops.add(new OperatorEntry(profile, this.server.getOpPermissionLevel(), this.ops.isOp(profile)));
+		this.ops.add(new OperatorEntry(profile, this.server.getOpPermissionLevel(), this.ops.canBypassPlayerLimit(profile)));
 		ServerPlayerEntity serverPlayerEntity = this.getPlayer(profile.getId());
 		if (serverPlayerEntity != null) {
 			this.sendCommandTree(serverPlayerEntity);
