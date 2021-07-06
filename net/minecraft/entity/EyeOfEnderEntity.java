@@ -45,7 +45,7 @@ implements FlyingItemEntity {
     }
 
     public void setItem(ItemStack stack2) {
-        if (!stack2.isOf(Items.ENDER_EYE) || stack2.hasTag()) {
+        if (!stack2.isOf(Items.ENDER_EYE) || stack2.hasNbt()) {
             this.getDataTracker().set(ITEM, Util.make(stack2.copy(), stack -> stack.setCount(1)));
         }
     }

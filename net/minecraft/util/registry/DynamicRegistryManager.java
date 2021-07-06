@@ -113,7 +113,7 @@ public abstract class DynamicRegistryManager {
         for (Info<?> info : INFOS.values()) {
             DynamicRegistryManager.method_31141(impl, impl2, info);
         }
-        RegistryOps.method_36575(JsonOps.INSTANCE, impl2, impl);
+        RegistryOps.ofLoaded(JsonOps.INSTANCE, impl2, (DynamicRegistryManager)impl);
         return impl;
     }
 

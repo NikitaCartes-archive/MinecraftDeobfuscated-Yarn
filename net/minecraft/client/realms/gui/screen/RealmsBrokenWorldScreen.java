@@ -89,25 +89,25 @@ extends RealmsScreen {
             ButtonWidget buttonWidget = bl ? new ButtonWidget(this.getFramePositionX(i), RealmsBrokenWorldScreen.row(8), 80, 20, new TranslatableText("mco.brokenworld.play"), button -> {
                 if (this.serverData.slots.get((Object)Integer.valueOf((int)i)).empty) {
                     RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(this, this.serverData, new TranslatableText("mco.configure.world.switch.slot"), new TranslatableText("mco.configure.world.switch.slot.subtitle"), 0xA0A0A0, ScreenTexts.CANCEL, this::play, () -> {
-                        this.client.openScreen(this);
+                        this.client.setScreen(this);
                         this.play();
                     });
                     realmsResetWorldScreen.setSlot(i);
                     realmsResetWorldScreen.setResetTitle(new TranslatableText("mco.create.world.reset.title"));
-                    this.client.openScreen(realmsResetWorldScreen);
+                    this.client.setScreen(realmsResetWorldScreen);
                 } else {
-                    this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.serverData.id, i, this::play)));
+                    this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.serverData.id, i, this::play)));
                 }
             }) : new ButtonWidget(this.getFramePositionX(i), RealmsBrokenWorldScreen.row(8), 80, 20, new TranslatableText("mco.brokenworld.download"), button -> {
                 TranslatableText text = new TranslatableText("mco.configure.world.restore.download.question.line1");
                 TranslatableText text2 = new TranslatableText("mco.configure.world.restore.download.question.line2");
-                this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+                this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
                     if (confirmed) {
                         this.downloadWorld(i);
                     } else {
-                        this.client.openScreen(this);
+                        this.client.setScreen(this);
                     }
-                }, RealmsLongConfirmationScreen.Type.Info, text, text2, true));
+                }, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
             });
             if (this.slotsThatHasBeenDownloaded.contains(i)) {
                 buttonWidget.active = false;
@@ -116,13 +116,13 @@ extends RealmsScreen {
             this.addDrawableChild(buttonWidget);
             this.addDrawableChild(new ButtonWidget(this.getFramePositionX(i), RealmsBrokenWorldScreen.row(10), 80, 20, new TranslatableText("mco.brokenworld.reset"), button -> {
                 RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(this, this.serverData, this::play, () -> {
-                    this.client.openScreen(this);
+                    this.client.setScreen(this);
                     this.play();
                 });
                 if (i != this.serverData.activeSlot || this.serverData.worldType == RealmsServer.WorldType.MINIGAME) {
                     realmsResetWorldScreen.setSlot(i);
                 }
-                this.client.openScreen(realmsResetWorldScreen);
+                this.client.setScreen(realmsResetWorldScreen);
             }));
         }
     }
@@ -171,7 +171,7 @@ extends RealmsScreen {
     }
 
     private void backButtonClicked() {
-        this.client.openScreen(this.parent);
+        this.client.setScreen(this.parent);
     }
 
     private void fetchServerData(long worldId) {
@@ -182,7 +182,7 @@ extends RealmsScreen {
                 this.addButtons();
             } catch (RealmsServiceException realmsServiceException) {
                 LOGGER.error("Couldn't get own world");
-                this.client.openScreen(new RealmsGenericErrorScreen(Text.of(realmsServiceException.getMessage()), this.parent));
+                this.client.setScreen(new RealmsGenericErrorScreen(Text.of(realmsServiceException.getMessage()), this.parent));
             }
         }).start();
     }
@@ -191,14 +191,14 @@ extends RealmsScreen {
         new Thread(() -> {
             RealmsClient realmsClient = RealmsClient.createRealmsClient();
             if (this.serverData.state == RealmsServer.State.CLOSED) {
-                this.client.execute(() -> this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.serverData, this, this.mainScreen, true, this.client))));
+                this.client.execute(() -> this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.serverData, this, this.mainScreen, true, this.client))));
             } else {
                 try {
                     RealmsServer realmsServer = realmsClient.getOwnWorld(this.serverId);
                     this.client.execute(() -> this.mainScreen.newScreen().play(realmsServer, this));
                 } catch (RealmsServiceException realmsServiceException) {
                     LOGGER.error("Couldn't get own world");
-                    this.client.execute(() -> this.client.openScreen(this.parent));
+                    this.client.execute(() -> this.client.setScreen(this.parent));
                 }
             }
         }).start();
@@ -214,13 +214,13 @@ extends RealmsScreen {
                     this.clearChildren();
                     this.addButtons();
                 } else {
-                    this.client.openScreen(this);
+                    this.client.setScreen(this);
                 }
             });
-            this.client.openScreen(realmsDownloadLatestWorldScreen);
+            this.client.setScreen(realmsDownloadLatestWorldScreen);
         } catch (RealmsServiceException realmsServiceException) {
             LOGGER.error("Couldn't download world data");
-            this.client.openScreen(new RealmsGenericErrorScreen(realmsServiceException, (Screen)this));
+            this.client.setScreen(new RealmsGenericErrorScreen(realmsServiceException, (Screen)this));
         }
     }
 

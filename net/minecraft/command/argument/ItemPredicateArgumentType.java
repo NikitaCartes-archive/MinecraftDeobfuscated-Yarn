@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 public class ItemPredicateArgumentType
 implements ArgumentType<ItemPredicateArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
-    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.item.tag.unknown", object));
+    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("arguments.item.tag.unknown", id));
 
     public static ItemPredicateArgumentType itemPredicate() {
         return new ItemPredicateArgumentType();
@@ -41,11 +41,11 @@ implements ArgumentType<ItemPredicateArgument> {
         ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
         if (itemStringReader.getItem() != null) {
             ItemPredicate itemPredicate = new ItemPredicate(itemStringReader.getItem(), itemStringReader.getNbt());
-            return commandContext -> itemPredicate;
+            return context -> itemPredicate;
         }
         Identifier identifier = itemStringReader.getId();
-        return commandContext -> {
-            Tag<Item> tag = ((ServerCommandSource)commandContext.getSource()).getServer().getTagManager().getTag(Registry.ITEM_KEY, identifier, identifier -> UNKNOWN_TAG_EXCEPTION.create(identifier.toString()));
+        return context -> {
+            Tag<Item> tag = ((ServerCommandSource)context.getSource()).getServer().getTagManager().getTag(Registry.ITEM_KEY, identifier, id -> UNKNOWN_TAG_EXCEPTION.create(id.toString()));
             return new TagPredicate(tag, itemStringReader.getNbt());
         };
     }
@@ -73,8 +73,8 @@ implements ArgumentType<ItemPredicateArgument> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 
     static class ItemPredicate
@@ -90,7 +90,7 @@ implements ArgumentType<ItemPredicateArgument> {
 
         @Override
         public boolean test(ItemStack itemStack) {
-            return itemStack.isOf(this.item) && NbtHelper.matches(this.nbt, itemStack.getTag(), true);
+            return itemStack.isOf(this.item) && NbtHelper.matches(this.nbt, itemStack.getNbt(), true);
         }
 
         @Override
@@ -116,7 +116,7 @@ implements ArgumentType<ItemPredicateArgument> {
 
         @Override
         public boolean test(ItemStack itemStack) {
-            return itemStack.isIn(this.tag) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
+            return itemStack.isIn(this.tag) && NbtHelper.matches(this.compound, itemStack.getNbt(), true);
         }
 
         @Override

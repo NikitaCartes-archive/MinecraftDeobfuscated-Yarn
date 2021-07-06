@@ -38,13 +38,13 @@ implements ChunkDataAccess<Entity> {
     private final ServerWorld world;
     private final StorageIoWorker dataLoadWorker;
     private final LongSet emptyChunks = new LongOpenHashSet();
-    private final TaskExecutor<Runnable> field_34056;
+    private final TaskExecutor<Runnable> taskExecutor;
     protected final DataFixer dataFixer;
 
     public EntityChunkDataAccess(ServerWorld world, File chunkFile, DataFixer dataFixer, boolean dsync, Executor executor) {
         this.world = world;
         this.dataFixer = dataFixer;
-        this.field_34056 = TaskExecutor.create(executor, "entity-deserializer");
+        this.taskExecutor = TaskExecutor.create(executor, "entity-deserializer");
         this.dataLoadWorker = new StorageIoWorker(chunkFile, dsync, "entities");
     }
 
@@ -53,24 +53,24 @@ implements ChunkDataAccess<Entity> {
         if (this.emptyChunks.contains(pos.toLong())) {
             return CompletableFuture.completedFuture(EntityChunkDataAccess.emptyDataList(pos));
         }
-        return this.dataLoadWorker.readChunkData(pos).thenApplyAsync(nbtCompound -> {
-            if (nbtCompound == null) {
+        return this.dataLoadWorker.readChunkData(pos).thenApplyAsync(compound -> {
+            if (compound == null) {
                 this.emptyChunks.add(pos.toLong());
                 return EntityChunkDataAccess.emptyDataList(pos);
             }
             try {
-                ChunkPos chunkPos2 = EntityChunkDataAccess.getChunkPos(nbtCompound);
+                ChunkPos chunkPos2 = EntityChunkDataAccess.getChunkPos(compound);
                 if (!Objects.equals(pos, chunkPos2)) {
                     LOGGER.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", (Object)pos, (Object)pos, (Object)chunkPos2);
                 }
             } catch (Exception exception) {
                 LOGGER.warn("Failed to parse chunk {} position info", (Object)pos, (Object)exception);
             }
-            NbtCompound nbtCompound2 = this.fixChunkData((NbtCompound)nbtCompound);
-            NbtList nbtList = nbtCompound2.getList(ENTITIES_KEY, 10);
+            NbtCompound nbtCompound = this.fixChunkData((NbtCompound)compound);
+            NbtList nbtList = nbtCompound.getList(ENTITIES_KEY, 10);
             List list = EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
             return new ChunkDataList(pos, list);
-        }, this.field_34056::send);
+        }, this.taskExecutor::send);
     }
 
     private static ChunkPos getChunkPos(NbtCompound chunkTag) {
@@ -106,17 +106,17 @@ implements ChunkDataAccess<Entity> {
         nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
         nbtCompound.put(ENTITIES_KEY, nbtList);
         EntityChunkDataAccess.putChunkPos(nbtCompound, chunkPos);
-        this.dataLoadWorker.setResult(chunkPos, nbtCompound).exceptionally(throwable -> {
-            LOGGER.error("Failed to store chunk {}", (Object)chunkPos, throwable);
+        this.dataLoadWorker.setResult(chunkPos, nbtCompound).exceptionally(ex -> {
+            LOGGER.error("Failed to store chunk {}", (Object)chunkPos, ex);
             return null;
         });
         this.emptyChunks.remove(chunkPos.toLong());
     }
 
     @Override
-    public void awaitAll(boolean bl) {
-        this.dataLoadWorker.completeAll(bl).join();
-        this.field_34056.method_37477();
+    public void awaitAll(boolean sync) {
+        this.dataLoadWorker.completeAll(sync).join();
+        this.taskExecutor.awaitAll();
     }
 
     private NbtCompound fixChunkData(NbtCompound chunkTag) {

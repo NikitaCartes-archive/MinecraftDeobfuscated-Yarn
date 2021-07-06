@@ -57,7 +57,7 @@ extends MovingSoundInstance {
             return;
         }
         float f = (float)this.minecart.getVelocity().horizontalLength();
-        this.volume = f >= 0.01f ? MathHelper.method_37166(0.0f, 0.75f, f) : 0.0f;
+        this.volume = f >= 0.01f ? MathHelper.clampedLerp(0.0f, 0.75f, f) : 0.0f;
     }
 }
 

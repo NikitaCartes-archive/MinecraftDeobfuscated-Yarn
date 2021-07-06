@@ -256,7 +256,7 @@ public class ServerConfigHandler {
         if (optional.isPresent()) {
             return optional.get();
         }
-        if (server.isSinglePlayer() || !server.isOnlineMode()) {
+        if (server.isSingleplayer() || !server.isOnlineMode()) {
             return PlayerEntity.getUuidFromProfile(new GameProfile(null, name));
         }
         final ArrayList list = Lists.newArrayList();

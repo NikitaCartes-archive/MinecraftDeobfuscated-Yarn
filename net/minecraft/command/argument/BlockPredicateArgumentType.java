@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 public class BlockPredicateArgumentType
 implements ArgumentType<BlockPredicate> {
     private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
-    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.block.tag.unknown", object));
+    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("arguments.block.tag.unknown", id));
 
     public static BlockPredicateArgumentType blockPredicate() {
         return new BlockPredicateArgumentType();
@@ -47,11 +47,11 @@ implements ArgumentType<BlockPredicate> {
         BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
         if (blockArgumentParser.getBlockState() != null) {
             StatePredicate statePredicate = new StatePredicate(blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData());
-            return tagManager -> statePredicate;
+            return manager -> statePredicate;
         }
         Identifier identifier = blockArgumentParser.getTagId();
-        return tagManager -> {
-            Tag<Block> tag = tagManager.getTag(Registry.BLOCK_KEY, identifier, identifier -> UNKNOWN_TAG_EXCEPTION.create(identifier.toString()));
+        return manager -> {
+            Tag<Block> tag = manager.getTag(Registry.BLOCK_KEY, identifier, id -> UNKNOWN_TAG_EXCEPTION.create(id.toString()));
             return new TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
         };
     }
@@ -79,8 +79,8 @@ implements ArgumentType<BlockPredicate> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 
     static class StatePredicate
@@ -114,8 +114,8 @@ implements ArgumentType<BlockPredicate> {
         }
 
         @Override
-        public /* synthetic */ boolean test(Object object) {
-            return this.test((CachedBlockPosition)object);
+        public /* synthetic */ boolean test(Object context) {
+            return this.test((CachedBlockPosition)context);
         }
     }
 
@@ -130,10 +130,10 @@ implements ArgumentType<BlockPredicate> {
         private final NbtCompound nbt;
         private final Map<String, String> properties;
 
-        TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable NbtCompound nbtCompound) {
+        TagPredicate(Tag<Block> tag, Map<String, String> properties, @Nullable NbtCompound nbt) {
             this.tag = tag;
-            this.properties = map;
-            this.nbt = nbtCompound;
+            this.properties = properties;
+            this.nbt = nbt;
         }
 
         @Override
@@ -162,8 +162,8 @@ implements ArgumentType<BlockPredicate> {
         }
 
         @Override
-        public /* synthetic */ boolean test(Object object) {
-            return this.test((CachedBlockPosition)object);
+        public /* synthetic */ boolean test(Object context) {
+            return this.test((CachedBlockPosition)context);
         }
     }
 }

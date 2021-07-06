@@ -49,8 +49,8 @@ extends AbstractCriterion<Conditions> {
         return null;
     }
 
-    public void test(ServerPlayerEntity player, BlockState state) {
-        this.test(player, (T conditions) -> conditions.test(state));
+    public void trigger(ServerPlayerEntity player, BlockState state) {
+        this.trigger(player, (T conditions) -> conditions.test(state));
     }
 
     @Override

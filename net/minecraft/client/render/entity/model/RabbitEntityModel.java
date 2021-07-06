@@ -70,8 +70,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class RabbitEntityModel<T extends RabbitEntity>
 extends EntityModel<T> {
-    private static final float field_32542 = 50.0f;
-    private static final float field_32543 = -40.0f;
+    private static final float HAUNCH_JUMP_PITCH_MULTIPLIER = 50.0f;
+    private static final float FRONT_LEGS_JUMP_PITCH_MULTIPLIER = -40.0f;
     /**
      * The key of the left haunch model part, whose value is {@value}.
      */
@@ -93,7 +93,7 @@ extends EntityModel<T> {
     private final ModelPart tail;
     private final ModelPart nose;
     private float jumpProgress;
-    private static final float field_32546 = 0.6f;
+    private static final float SCALE = 0.6f;
 
     public RabbitEntityModel(ModelPart root) {
         this.leftHindLeg = root.getChild(EntityModelPartNames.LEFT_HIND_FOOT);

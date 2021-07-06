@@ -13,49 +13,51 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 /**
- * Handles the viewer count for chest-like block entities.
+ * Handles the viewer count for container block entities, like chests,
+ * ender chests, and barrels.
  */
-public abstract class ChestStateManager {
-    private static final int field_31339 = 5;
+public abstract class ViewerCountManager {
+    private static final int SCHEDULE_TICK_DELAY = 5;
     private int viewerCount;
 
     /**
-     * Run when this chest is opened (when the viewer count becomes nonzero).
+     * Run when this container is opened (when the viewer count becomes nonzero).
      */
-    protected abstract void onChestOpened(World var1, BlockPos var2, BlockState var3);
+    protected abstract void onContainerOpen(World var1, BlockPos var2, BlockState var3);
 
     /**
-     * Run when this chest closes (when the viewer count reaches zero).
+     * Run when this container closes (when the viewer count reaches zero).
      */
-    protected abstract void onChestClosed(World var1, BlockPos var2, BlockState var3);
+    protected abstract void onContainerClose(World var1, BlockPos var2, BlockState var3);
 
     /**
-     * Run when a player interacts with this chest.
+     * Called when the viewer count updates, such as when a player interact with this container
+     * or when {@linkplain #updateViewerCount distance-based checks} are run.
      */
-    protected abstract void onInteracted(World var1, BlockPos var2, BlockState var3, int var4, int var5);
+    protected abstract void onViewerCountUpdate(World var1, BlockPos var2, BlockState var3, int var4, int var5);
 
     /**
-     * Determines whether the given player is currently viewing this chest.
+     * Determines whether the given player is currently viewing this container.
      */
     protected abstract boolean isPlayerViewing(PlayerEntity var1);
 
-    public void openChest(PlayerEntity player, World world, BlockPos pos, BlockState state) {
+    public void openContainer(PlayerEntity player, World world, BlockPos pos, BlockState state) {
         int i;
         if ((i = this.viewerCount++) == 0) {
-            this.onChestOpened(world, pos, state);
+            this.onContainerOpen(world, pos, state);
             world.emitGameEvent((Entity)player, GameEvent.CONTAINER_OPEN, pos);
-            ChestStateManager.scheduleBlockTick(world, pos, state);
+            ViewerCountManager.scheduleBlockTick(world, pos, state);
         }
-        this.onInteracted(world, pos, state, i, this.viewerCount);
+        this.onViewerCountUpdate(world, pos, state, i, this.viewerCount);
     }
 
-    public void closeChest(PlayerEntity player, World world, BlockPos pos, BlockState state) {
+    public void closeContainer(PlayerEntity player, World world, BlockPos pos, BlockState state) {
         int i = this.viewerCount--;
         if (this.viewerCount == 0) {
-            this.onChestClosed(world, pos, state);
+            this.onContainerClose(world, pos, state);
             world.emitGameEvent((Entity)player, GameEvent.CONTAINER_CLOSE, pos);
         }
-        this.onInteracted(world, pos, state, i, this.viewerCount);
+        this.onViewerCountUpdate(world, pos, state, i, this.viewerCount);
     }
 
     private int getInRangeViewerCount(World world, BlockPos pos) {
@@ -75,17 +77,17 @@ public abstract class ChestStateManager {
             boolean bl = i != 0;
             boolean bl3 = bl2 = j != 0;
             if (bl && !bl2) {
-                this.onChestOpened(world, pos, state);
+                this.onContainerOpen(world, pos, state);
                 world.emitGameEvent(null, GameEvent.CONTAINER_OPEN, pos);
             } else if (!bl) {
-                this.onChestClosed(world, pos, state);
+                this.onContainerClose(world, pos, state);
                 world.emitGameEvent(null, GameEvent.CONTAINER_CLOSE, pos);
             }
             this.viewerCount = i;
         }
-        this.onInteracted(world, pos, state, j, i);
+        this.onViewerCountUpdate(world, pos, state, j, i);
         if (i > 0) {
-            ChestStateManager.scheduleBlockTick(world, pos, state);
+            ViewerCountManager.scheduleBlockTick(world, pos, state);
         }
     }
 

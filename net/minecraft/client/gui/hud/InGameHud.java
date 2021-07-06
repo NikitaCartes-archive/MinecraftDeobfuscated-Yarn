@@ -993,7 +993,7 @@ extends DrawableHelper {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, nauseaStrength);
         RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.NETHER_PORTAL.getDefaultState());
+        Sprite sprite = this.client.getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
         float f = sprite.getMinU();
         float g = sprite.getMinV();
         float h = sprite.getMaxU();

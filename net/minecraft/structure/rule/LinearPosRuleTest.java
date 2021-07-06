@@ -35,7 +35,7 @@ extends PosRuleTest {
     public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
         int i = blockPos2.getManhattanDistance(pivot);
         float f = random.nextFloat();
-        return (double)f <= MathHelper.clampedLerp(this.minChance, this.maxChance, MathHelper.getLerpProgress(i, this.minDistance, this.maxDistance));
+        return (double)f <= MathHelper.clampedLerp((double)this.minChance, (double)this.maxChance, MathHelper.getLerpProgress(i, this.minDistance, this.maxDistance));
     }
 
     @Override

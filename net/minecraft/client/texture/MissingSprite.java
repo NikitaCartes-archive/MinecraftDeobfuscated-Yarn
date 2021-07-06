@@ -68,10 +68,10 @@ extends Sprite {
             for (int k = 0; k < 16; ++k) {
                 for (int l = 0; l < 16; ++l) {
                     if (k < 8 ^ l < 8) {
-                        nativeImage.setPixelColor(l, k, -524040);
+                        nativeImage.setColor(l, k, -524040);
                         continue;
                     }
-                    nativeImage.setPixelColor(l, k, -16777216);
+                    nativeImage.setColor(l, k, -16777216);
                 }
             }
             nativeImage.untrack();

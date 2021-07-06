@@ -68,7 +68,7 @@ extends Item {
         BlockState blockState = world.getBlockState(blockPos);
         if (blockState.isOf(Blocks.SPAWNER) && (blockEntity = world.getBlockEntity(blockPos)) instanceof MobSpawnerBlockEntity) {
             MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
-            EntityType<?> entityType = this.getEntityType(itemStack.getTag());
+            EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
             mobSpawnerLogic.setEntityId(entityType);
             blockEntity.markDirty();
             world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
@@ -76,7 +76,7 @@ extends Item {
             return ActionResult.CONSUME;
         }
         BlockPos blockPos2 = blockState.getCollisionShape(world, blockPos).isEmpty() ? blockPos : blockPos.offset(direction);
-        EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
+        EntityType<?> entityType2 = this.getEntityType(itemStack.getNbt());
         if (entityType2.spawnFromItemStack((ServerWorld)world, itemStack, context.getPlayer(), blockPos2, SpawnReason.SPAWN_EGG, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP) != null) {
             itemStack.decrement(1);
             world.emitGameEvent((Entity)context.getPlayer(), GameEvent.ENTITY_PLACE, blockPos);
@@ -102,7 +102,7 @@ extends Item {
         if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
             return TypedActionResult.fail(itemStack);
         }
-        EntityType<?> entityType = this.getEntityType(itemStack.getTag());
+        EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
         if (entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
             return TypedActionResult.pass(itemStack);
         }
@@ -147,7 +147,7 @@ extends Item {
     }
 
     public Optional<MobEntity> spawnBaby(PlayerEntity user, MobEntity entity, EntityType<? extends MobEntity> entityType, ServerWorld world, Vec3d pos, ItemStack stack) {
-        if (!this.isOfSameEntityType(stack.getTag(), entityType)) {
+        if (!this.isOfSameEntityType(stack.getNbt(), entityType)) {
             return Optional.empty();
         }
         MobEntity mobEntity = entity instanceof PassiveEntity ? ((PassiveEntity)entity).createChild(world, (PassiveEntity)entity) : entityType.create(world);

@@ -61,7 +61,7 @@ extends AnimalEntity {
     public static final int FALL_DAMAGE_SUBTRACTOR = 10;
     public static final double SCREAMING_CHANCE = 0.02;
     private static final TrackedData<Boolean> SCREAMING = DataTracker.registerData(GoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private boolean field_33487;
+    private boolean preparingRam;
     private int field_33488;
 
     public GoatEntity(EntityType<? extends GoatEntity> entityType, World world) {
@@ -225,9 +225,9 @@ extends AnimalEntity {
     @Override
     public void handleStatus(byte status) {
         if (status == 58) {
-            this.field_33487 = true;
+            this.preparingRam = true;
         } else if (status == 59) {
-            this.field_33487 = false;
+            this.preparingRam = false;
         } else {
             super.handleStatus(status);
         }
@@ -235,7 +235,7 @@ extends AnimalEntity {
 
     @Override
     public void tickMovement() {
-        this.field_33488 = this.field_33487 ? ++this.field_33488 : (this.field_33488 -= 2);
+        this.field_33488 = this.preparingRam ? ++this.field_33488 : (this.field_33488 -= 2);
         this.field_33488 = MathHelper.clamp(this.field_33488, 0, 20);
         super.tickMovement();
     }
@@ -254,7 +254,7 @@ extends AnimalEntity {
         this.dataTracker.set(SCREAMING, screaming);
     }
 
-    public float method_36283() {
+    public float getHeadPitch() {
         return (float)this.field_33488 / 20.0f * 30.0f * ((float)Math.PI / 180);
     }
 

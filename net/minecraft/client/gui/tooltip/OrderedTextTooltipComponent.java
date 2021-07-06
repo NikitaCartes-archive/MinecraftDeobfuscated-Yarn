@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.text.OrderedText;
 import net.minecraft.util.math.Matrix4f;
@@ -32,7 +33,7 @@ implements TooltipComponent {
 
     @Override
     public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix4f, VertexConsumerProvider.Immediate immediate) {
-        textRenderer.draw(this.text, (float)x, (float)y, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
+        textRenderer.draw(this.text, (float)x, (float)y, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
     }
 }
 

@@ -47,7 +47,7 @@ implements Font {
             int j = i * 256;
             Identifier identifier = this.getImageId(j);
             try (Resource resource = this.resourceManager.getResource(identifier);
-                 NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());){
+                 NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());){
                 if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
                     for (int k = 0; k < 256; ++k) {
                         byte b = sizes[j + k];
@@ -104,7 +104,7 @@ implements Font {
         block8: {
             Resource resource = this.resourceManager.getResource(glyphId);
             try {
-                nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
+                nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
                 if (resource == null) break block8;
             } catch (Throwable throwable) {
                 try {

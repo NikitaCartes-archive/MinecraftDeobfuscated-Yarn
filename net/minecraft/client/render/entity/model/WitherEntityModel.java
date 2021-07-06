@@ -66,8 +66,8 @@ extends SinglePartEntityModel<T> {
      * The key of the left head model part, whose value is {@value}.
      */
     private static final String LEFT_HEAD = "left_head";
-    private static final float field_32575 = 0.065f;
-    private static final float field_32576 = 0.265f;
+    private static final float RIBCAGE_PITCH_OFFSET = 0.065f;
+    private static final float TAIL_PITCH_OFFSET = 0.265f;
     private final ModelPart root;
     private final ModelPart centerHead;
     private final ModelPart rightHead;

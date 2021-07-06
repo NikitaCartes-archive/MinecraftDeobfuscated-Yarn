@@ -50,7 +50,7 @@ extends Item {
         } else {
             return ActionResult.success(world.isClient);
         }
-        NbtCompound nbtCompound = itemStack.getTag();
+        NbtCompound nbtCompound = itemStack.getNbt();
         if (nbtCompound != null) {
             EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, nbtCompound);
         }

@@ -325,7 +325,15 @@ ServerPlayPacketListener {
         this.player.updateInput(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
     }
 
-    private static boolean validateVehicleMove(double x, double y, double z, float yaw, float pitch) {
+    /**
+     * {@return whether this movement is invalid}
+     * 
+     * @implNote This method is used to determine
+     * whether players sending {@linkplain PlayerMoveC2SPacket player}
+     * and {@linkplain VehicleMoveC2SPacket vehicle} movement packets
+     * to the server should be kicked.
+     */
+    private static boolean isMovementInvalid(double x, double y, double z, float yaw, float pitch) {
         return Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z) || !Floats.isFinite(pitch) || !Floats.isFinite(yaw);
     }
 
@@ -340,7 +348,7 @@ ServerPlayPacketListener {
     @Override
     public void onVehicleMove(VehicleMoveC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-        if (ServerPlayNetworkHandler.validateVehicleMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch())) {
+        if (ServerPlayNetworkHandler.isMovementInvalid(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch())) {
             this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_vehicle_movement"));
             return;
         }
@@ -684,16 +692,16 @@ ServerPlayPacketListener {
             return;
         }
         ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
-        NbtCompound nbtCompound = itemStack.getTag();
+        NbtCompound nbtCompound = itemStack.getNbt();
         if (nbtCompound != null) {
-            itemStack2.setTag(nbtCompound.copy());
+            itemStack2.setNbt(nbtCompound.copy());
         }
-        itemStack2.putSubTag("author", NbtString.of(this.player.getName().getString()));
+        itemStack2.setSubNbt("author", NbtString.of(this.player.getName().getString()));
         if (this.player.shouldFilterText()) {
-            itemStack2.putSubTag("title", NbtString.of(title.getFiltered()));
+            itemStack2.setSubNbt("title", NbtString.of(title.getFiltered()));
         } else {
-            itemStack2.putSubTag("filtered_title", NbtString.of(title.getFiltered()));
-            itemStack2.putSubTag("title", NbtString.of(title.getRaw()));
+            itemStack2.setSubNbt("filtered_title", NbtString.of(title.getFiltered()));
+            itemStack2.setSubNbt("title", NbtString.of(title.getRaw()));
         }
         this.setTextToBook(pages, string -> Text.Serializer.toJson(new LiteralText((String)string)), itemStack2);
         this.player.getInventory().setStack(slotId, itemStack2);
@@ -715,10 +723,10 @@ ServerPlayPacketListener {
                 nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(string2));
             }
             if (!nbtCompound.isEmpty()) {
-                book.putSubTag("filtered_pages", nbtCompound);
+                book.setSubNbt("filtered_pages", nbtCompound);
             }
         }
-        book.putSubTag("pages", nbtList);
+        book.setSubNbt("pages", nbtList);
     }
 
     @Override
@@ -749,7 +757,7 @@ ServerPlayPacketListener {
     public void onPlayerMove(PlayerMoveC2SPacket packet) {
         boolean bl;
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-        if (ServerPlayNetworkHandler.validateVehicleMove(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0), packet.getYaw(0.0f), packet.getPitch(0.0f))) {
+        if (ServerPlayNetworkHandler.isMovementInvalid(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0), packet.getYaw(0.0f), packet.getPitch(0.0f))) {
             this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_player_movement"));
             return;
         }
@@ -1181,7 +1189,7 @@ ServerPlayPacketListener {
                         ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(hand).copy();
                         ActionResult actionResult = action.run(ServerPlayNetworkHandler.this.player, entity, hand);
                         if (actionResult.isAccepted()) {
-                            Criteria.PLAYER_INTERACTED_WITH_ENTITY.test(ServerPlayNetworkHandler.this.player, itemStack, entity);
+                            Criteria.PLAYER_INTERACTED_WITH_ENTITY.trigger(ServerPlayNetworkHandler.this.player, itemStack, entity);
                             if (actionResult.shouldSwingHand()) {
                                 ServerPlayNetworkHandler.this.player.swingHand(hand, true);
                             }
@@ -1300,13 +1308,13 @@ ServerPlayPacketListener {
             BlockEntity blockEntity;
             boolean bl = packet.getSlot() < 0;
             ItemStack itemStack = packet.getItemStack();
-            NbtCompound nbtCompound = itemStack.getSubTag("BlockEntityTag");
+            NbtCompound nbtCompound = itemStack.getSubNbt("BlockEntityTag");
             if (!itemStack.isEmpty() && nbtCompound != null && nbtCompound.contains("x") && nbtCompound.contains("y") && nbtCompound.contains("z") && (blockEntity = this.player.world.getBlockEntity(blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z")))) != null) {
                 NbtCompound nbtCompound2 = blockEntity.writeNbt(new NbtCompound());
                 nbtCompound2.remove("x");
                 nbtCompound2.remove("y");
                 nbtCompound2.remove("z");
-                itemStack.putSubTag("BlockEntityTag", nbtCompound2);
+                itemStack.setSubNbt("BlockEntityTag", nbtCompound2);
             }
             boolean bl2 = packet.getSlot() >= 1 && packet.getSlot() <= 45;
             boolean bl4 = bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= 64 && !itemStack.isEmpty();

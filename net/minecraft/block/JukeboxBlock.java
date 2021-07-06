@@ -42,7 +42,7 @@ extends BlockWithEntity {
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         NbtCompound nbtCompound2;
         super.onPlaced(world, pos, state, placer, itemStack);
-        NbtCompound nbtCompound = itemStack.getOrCreateTag();
+        NbtCompound nbtCompound = itemStack.getOrCreateNbt();
         if (nbtCompound.contains("BlockEntityTag") && (nbtCompound2 = nbtCompound.getCompound("BlockEntityTag")).contains("RecordItem")) {
             world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), Block.NOTIFY_LISTENERS);
         }

@@ -46,12 +46,13 @@ import org.jetbrains.annotations.Nullable;
  * server thread simultaneously.
  * 
  * @implSpec The vanilla implementation is created by a handshake network
- * handler. It first receives a hello packet from the client. If it's in
- * online mode, it goes through an additional authentication process. Then
- * it optionally sends a network compression packet next. Finally, when it
- * can accept the player (no player UUID conflicts), it will accept the
- * player by sending a login success packet and then transitions the
- * connection's packet listener to a server play network handler.
+ * handler. It first receives a hello packet from the client. If it is in
+ * {@linkplain MinecraftServer#isOnlineMode() online mode}, it goes through
+ * an additional authentication process. Then it optionally sends a network
+ * compression packet. Finally, when it can accept the player (no player
+ * UUID conflicts), it will accept the player by sending a login success
+ * packet and then transitions the connection's packet listener to a {@link
+ * ServerPlayNetworkHandler}.
  */
 public class ServerLoginNetworkHandler
 implements ServerLoginPacketListener {
@@ -215,7 +216,7 @@ implements ServerLoginPacketListener {
                     if (ServerLoginNetworkHandler.this.profile != null) {
                         LOGGER.info("UUID of player {} is {}", (Object)ServerLoginNetworkHandler.this.profile.getName(), (Object)ServerLoginNetworkHandler.this.profile.getId());
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
-                    } else if (ServerLoginNetworkHandler.this.server.isSinglePlayer()) {
+                    } else if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
                         LOGGER.warn("Failed to verify username but will let them in anyway!");
                         ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
@@ -224,7 +225,7 @@ implements ServerLoginPacketListener {
                         LOGGER.error("Username '{}' tried to join with an invalid session", (Object)gameProfile.getName());
                     }
                 } catch (AuthenticationUnavailableException authenticationUnavailableException) {
-                    if (ServerLoginNetworkHandler.this.server.isSinglePlayer()) {
+                    if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
                         LOGGER.warn("Authentication servers are down but will let them in anyway!");
                         ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;

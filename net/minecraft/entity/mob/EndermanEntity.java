@@ -17,7 +17,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -98,7 +98,7 @@ implements Angerable {
         this.goalSelector.add(11, new PickUpBlockGoal(this));
         this.targetSelector.add(1, new TeleportTowardsPlayerGoal(this, this::shouldAngerAt));
         this.targetSelector.add(2, new RevengeGoal(this, new Class[0]));
-        this.targetSelector.add(3, new FollowTargetGoal<EndermiteEntity>(this, EndermiteEntity.class, true, false));
+        this.targetSelector.add(3, new ActiveTargetGoal<EndermiteEntity>(this, EndermiteEntity.class, true, false));
         this.targetSelector.add(4, new UniversalAngerGoal<EndermanEntity>(this, false));
     }
 
@@ -473,7 +473,7 @@ implements Angerable {
     }
 
     static class TeleportTowardsPlayerGoal
-    extends FollowTargetGoal<PlayerEntity> {
+    extends ActiveTargetGoal<PlayerEntity> {
         private final EndermanEntity enderman;
         private PlayerEntity targetPlayer;
         private int lookAtPlayerWarmup;

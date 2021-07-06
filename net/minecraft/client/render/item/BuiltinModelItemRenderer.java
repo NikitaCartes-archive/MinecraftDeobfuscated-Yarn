@@ -94,8 +94,8 @@ implements SynchronousResourceReloader {
             Block block = ((BlockItem)item).getBlock();
             if (block instanceof AbstractSkullBlock) {
                 GameProfile gameProfile2 = null;
-                if (stack.hasTag()) {
-                    NbtCompound nbtCompound = stack.getTag();
+                if (stack.hasNbt()) {
+                    NbtCompound nbtCompound = stack.getNbt();
                     if (nbtCompound.contains("SkullOwner", 10)) {
                         gameProfile2 = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
                     } else if (nbtCompound.contains("SkullOwner", 8) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
@@ -135,7 +135,7 @@ implements SynchronousResourceReloader {
             return;
         }
         if (stack.isOf(Items.SHIELD)) {
-            boolean bl = stack.getSubTag("BlockEntityTag") != null;
+            boolean bl = stack.getSubNbt("BlockEntityTag") != null;
             matrices.push();
             matrices.scale(1.0f, -1.0f, -1.0f);
             SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;

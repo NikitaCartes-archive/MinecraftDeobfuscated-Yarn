@@ -34,7 +34,7 @@ implements FlyingItemEntity {
     }
 
     public void setItem(ItemStack stack2) {
-        if (!stack2.isOf(Items.FIRE_CHARGE) || stack2.hasTag()) {
+        if (!stack2.isOf(Items.FIRE_CHARGE) || stack2.hasNbt()) {
             this.getDataTracker().set(ITEM, Util.make(stack2.copy(), stack -> stack.setCount(1)));
         }
     }

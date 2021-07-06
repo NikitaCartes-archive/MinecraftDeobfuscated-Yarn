@@ -65,7 +65,7 @@ extends Screen {
         ConnectScreen connectScreen = new ConnectScreen(screen);
         client.disconnect();
         client.setCurrentServerEntry(info);
-        client.openScreen(connectScreen);
+        client.setScreen(connectScreen);
         connectScreen.connect(client, address);
     }
 
@@ -85,7 +85,7 @@ extends Screen {
                         return;
                     }
                     if (!optional.isPresent()) {
-                        client.execute(() -> client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, BLOCKED_HOST_TEXT)));
+                        client.execute(() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, BLOCKED_HOST_TEXT)));
                         return;
                     }
                     inetSocketAddress = optional.get();
@@ -99,7 +99,7 @@ extends Screen {
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)exception);
                     String string = inetSocketAddress == null ? exception.toString() : exception.toString().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "");
-                    client.execute(() -> client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string))));
+                    client.execute(() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string))));
                 }
             }
         };
@@ -134,7 +134,7 @@ extends Screen {
             if (this.connection != null) {
                 this.connection.disconnect(new TranslatableText("connect.aborted"));
             }
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
         }));
     }
 

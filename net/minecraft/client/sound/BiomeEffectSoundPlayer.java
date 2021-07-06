@@ -109,7 +109,7 @@ implements ClientPlayerTickable {
             this.repeat = true;
             this.repeatDelay = 0;
             this.volume = 1.0f;
-            this.looping = true;
+            this.relative = true;
         }
 
         @Override

@@ -102,7 +102,7 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
         }
     }
 
-    private void renderInvisibleBlocks(StructureBlockBlockEntity entity, VertexConsumer vertices, BlockPos pos, MatrixStack matrixStack) {
+    private void renderInvisibleBlocks(StructureBlockBlockEntity entity, VertexConsumer vertices, BlockPos pos, MatrixStack matrices) {
         World blockView = entity.getWorld();
         BlockPos blockPos = entity.getPos();
         BlockPos blockPos2 = blockPos.add(pos);
@@ -123,19 +123,19 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
             double i = (float)(blockPos3.getY() - blockPos.getY()) + 0.55f + f;
             double j = (float)(blockPos3.getZ() - blockPos.getZ()) + 0.55f + f;
             if (bl) {
-                WorldRenderer.drawBox(matrixStack, vertices, d, e, g, h, i, j, 0.5f, 0.5f, 1.0f, 1.0f, 0.5f, 0.5f, 1.0f);
+                WorldRenderer.drawBox(matrices, vertices, d, e, g, h, i, j, 0.5f, 0.5f, 1.0f, 1.0f, 0.5f, 0.5f, 1.0f);
                 continue;
             }
             if (bl2) {
-                WorldRenderer.drawBox(matrixStack, vertices, d, e, g, h, i, j, 1.0f, 0.75f, 0.75f, 1.0f, 1.0f, 0.75f, 0.75f);
+                WorldRenderer.drawBox(matrices, vertices, d, e, g, h, i, j, 1.0f, 0.75f, 0.75f, 1.0f, 1.0f, 0.75f, 0.75f);
                 continue;
             }
             if (bl3) {
-                WorldRenderer.drawBox(matrixStack, vertices, d, e, g, h, i, j, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f);
+                WorldRenderer.drawBox(matrices, vertices, d, e, g, h, i, j, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f);
                 continue;
             }
             if (!bl4) continue;
-            WorldRenderer.drawBox(matrixStack, vertices, d, e, g, h, i, j, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f);
+            WorldRenderer.drawBox(matrices, vertices, d, e, g, h, i, j, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f);
         }
     }
 

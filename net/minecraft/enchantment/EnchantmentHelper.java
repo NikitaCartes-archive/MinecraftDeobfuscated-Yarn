@@ -131,9 +131,9 @@ public class EnchantmentHelper {
             EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment, i));
         }
         if (nbtList.isEmpty()) {
-            stack.removeSubTag("Enchantments");
+            stack.removeSubNbt("Enchantments");
         } else if (!stack.isOf(Items.ENCHANTED_BOOK)) {
-            stack.putSubTag("Enchantments", nbtList);
+            stack.setSubNbt("Enchantments", nbtList);
         }
     }
 

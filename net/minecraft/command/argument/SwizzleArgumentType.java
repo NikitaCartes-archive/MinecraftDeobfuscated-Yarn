@@ -24,8 +24,8 @@ implements ArgumentType<EnumSet<Direction.Axis>> {
         return new SwizzleArgumentType();
     }
 
-    public static EnumSet<Direction.Axis> getSwizzle(CommandContext<ServerCommandSource> commandContext, String string) {
-        return commandContext.getArgument(string, EnumSet.class);
+    public static EnumSet<Direction.Axis> getSwizzle(CommandContext<ServerCommandSource> context, String name) {
+        return context.getArgument(name, EnumSet.class);
     }
 
     @Override
@@ -53,8 +53,8 @@ implements ArgumentType<EnumSet<Direction.Axis>> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 }
 

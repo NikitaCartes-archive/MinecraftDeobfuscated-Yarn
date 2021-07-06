@@ -135,14 +135,14 @@ public final class Material {
     private final boolean replaceable;
     private final boolean solid;
 
-    public Material(MapColor color, boolean liquid, boolean solid, boolean blocksMovement, boolean blocksLight, boolean breakByHand, boolean burnable, PistonBehavior pistonBehavior) {
+    public Material(MapColor color, boolean liquid, boolean solid, boolean blocksMovement, boolean blocksLight, boolean burnable, boolean replaceable, PistonBehavior pistonBehavior) {
         this.color = color;
         this.liquid = liquid;
         this.solid = solid;
         this.blocksMovement = blocksMovement;
         this.blocksLight = blocksLight;
-        this.burnable = breakByHand;
-        this.replaceable = burnable;
+        this.burnable = burnable;
+        this.replaceable = replaceable;
         this.pistonBehavior = pistonBehavior;
     }
 

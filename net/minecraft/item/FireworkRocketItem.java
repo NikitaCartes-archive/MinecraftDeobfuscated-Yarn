@@ -11,7 +11,7 @@ import java.util.List;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
-import net.minecraft.item.FireworkChargeItem;
+import net.minecraft.item.FireworkStarItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -30,7 +30,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class FireworkItem
+public class FireworkRocketItem
 extends Item {
     public static final String FIREWORKS_KEY = "Fireworks";
     public static final String EXPLOSION_KEY = "Explosion";
@@ -43,7 +43,7 @@ extends Item {
     public static final String FADE_COLORS_KEY = "FadeColors";
     public static final double field_30884 = 0.15;
 
-    public FireworkItem(Item.Settings settings) {
+    public FireworkRocketItem(Item.Settings settings) {
         super(settings);
     }
 
@@ -81,7 +81,7 @@ extends Item {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         NbtList nbtList;
-        NbtCompound nbtCompound = stack.getSubTag(FIREWORKS_KEY);
+        NbtCompound nbtCompound = stack.getSubNbt(FIREWORKS_KEY);
         if (nbtCompound == null) {
             return;
         }
@@ -92,7 +92,7 @@ extends Item {
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(i);
                 ArrayList<Text> list = Lists.newArrayList();
-                FireworkChargeItem.appendFireworkTooltip(nbtCompound2, list);
+                FireworkStarItem.appendFireworkTooltip(nbtCompound2, list);
                 if (list.isEmpty()) continue;
                 for (int j = 1; j < list.size(); ++j) {
                     list.set(j, new LiteralText("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
@@ -105,7 +105,7 @@ extends Item {
     @Override
     public ItemStack getDefaultStack() {
         ItemStack itemStack = new ItemStack(this);
-        itemStack.getOrCreateTag().putByte(FLIGHT_KEY, (byte)1);
+        itemStack.getOrCreateNbt().putByte(FLIGHT_KEY, (byte)1);
         return itemStack;
     }
 

@@ -91,7 +91,7 @@ implements BlockEntityProvider {
         if (state.get(PART) != BedPart.HEAD && !(state = world.getBlockState(pos = pos.offset(state.get(FACING)))).isOf(this)) {
             return ActionResult.CONSUME;
         }
-        if (!BedBlock.isOverworld(world)) {
+        if (!BedBlock.isBedWorking(world)) {
             world.removeBlock(pos, false);
             BlockPos blockPos = pos.offset(state.get(FACING).getOpposite());
             if (world.getBlockState(blockPos).isOf(this)) {
@@ -114,7 +114,13 @@ implements BlockEntityProvider {
         return ActionResult.SUCCESS;
     }
 
-    public static boolean isOverworld(World world) {
+    /**
+     * {@return whether the world's {@linkplain net.minecraft.world.dimension.DimensionType dimension type}
+     * allows beds to be respawned at and slept in without exploding}
+     * 
+     * @see net.minecraft.world.dimension.DimensionType#isBedWorking()
+     */
+    public static boolean isBedWorking(World world) {
         return world.getDimension().isBedWorking();
     }
 
@@ -226,7 +232,7 @@ implements BlockEntityProvider {
         Direction direction3;
         Direction direction = world.getBlockState(pos).get(FACING);
         Direction direction2 = direction.rotateYClockwise();
-        Direction direction4 = direction3 = direction2.method_30928(f) ? direction2.getOpposite() : direction2;
+        Direction direction4 = direction3 = direction2.pointsTo(f) ? direction2.getOpposite() : direction2;
         if (BedBlock.isBed(world, pos)) {
             return BedBlock.findWakeUpPosition(type, world, pos, direction, direction3);
         }

@@ -40,7 +40,7 @@ extends SpecialCraftingRecipe {
             }
             return false;
         }
-        return !itemStack.isEmpty() && itemStack.hasTag() && i > 0;
+        return !itemStack.isEmpty() && itemStack.hasNbt() && i > 0;
     }
 
     @Override
@@ -63,13 +63,13 @@ extends SpecialCraftingRecipe {
             }
             return ItemStack.EMPTY;
         }
-        if (itemStack.isEmpty() || !itemStack.hasTag() || i < 1 || WrittenBookItem.getGeneration(itemStack) >= 2) {
+        if (itemStack.isEmpty() || !itemStack.hasNbt() || i < 1 || WrittenBookItem.getGeneration(itemStack) >= 2) {
             return ItemStack.EMPTY;
         }
         ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK, i);
-        NbtCompound nbtCompound = itemStack.getTag().copy();
+        NbtCompound nbtCompound = itemStack.getNbt().copy();
         nbtCompound.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
-        itemStack3.setTag(nbtCompound);
+        itemStack3.setNbt(nbtCompound);
         return itemStack3;
     }
 

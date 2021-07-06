@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TestFunctions {
     private static final Collection<TestFunction> TEST_FUNCTIONS = Lists.newArrayList();
-    private static final Set<String> testClasses = Sets.newHashSet();
+    private static final Set<String> TEST_CLASSES = Sets.newHashSet();
     private static final Map<String, Consumer<ServerWorld>> BEFORE_BATCH_CONSUMERS = Maps.newHashMap();
     private static final Map<String, Consumer<ServerWorld>> AFTER_BATCH_CONSUMERS = Maps.newHashMap();
     private static final Collection<TestFunction> FAILED_TEST_FUNCTIONS = Sets.newHashSet();
@@ -44,11 +44,11 @@ public class TestFunctions {
         GameTest gameTest = method.getAnnotation(GameTest.class);
         if (gameTest != null) {
             TEST_FUNCTIONS.add(TestFunctions.getTestFunction(method));
-            testClasses.add(string);
+            TEST_CLASSES.add(string);
         }
         if ((customTestProvider = method.getAnnotation(CustomTestProvider.class)) != null) {
             TEST_FUNCTIONS.addAll(TestFunctions.getCustomTestFunctions(method));
-            testClasses.add(string);
+            TEST_CLASSES.add(string);
         }
         TestFunctions.registerBatchConsumers(method, BeforeBatch.class, BeforeBatch::batchId, BEFORE_BATCH_CONSUMERS);
         TestFunctions.registerBatchConsumers(method, AfterBatch.class, AfterBatch::batchId, AFTER_BATCH_CONSUMERS);
@@ -72,20 +72,20 @@ public class TestFunctions {
     }
 
     public static Collection<String> getTestClasses() {
-        return testClasses;
+        return TEST_CLASSES;
     }
 
     public static boolean testClassExists(String testClass) {
-        return testClasses.contains(testClass);
-    }
-
-    @Nullable
-    public static Consumer<ServerWorld> getAfterBatchConsumer(String batchId) {
-        return BEFORE_BATCH_CONSUMERS.get(batchId);
+        return TEST_CLASSES.contains(testClass);
     }
 
     @Nullable
     public static Consumer<ServerWorld> getBeforeBatchConsumer(String batchId) {
+        return BEFORE_BATCH_CONSUMERS.get(batchId);
+    }
+
+    @Nullable
+    public static Consumer<ServerWorld> getAfterBatchConsumer(String batchId) {
         return AFTER_BATCH_CONSUMERS.get(batchId);
     }
 

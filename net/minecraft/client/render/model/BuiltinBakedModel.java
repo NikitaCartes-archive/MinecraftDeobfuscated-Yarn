@@ -58,7 +58,7 @@ implements BakedModel {
     }
 
     @Override
-    public Sprite getSprite() {
+    public Sprite getParticleSprite() {
         return this.sprite;
     }
 

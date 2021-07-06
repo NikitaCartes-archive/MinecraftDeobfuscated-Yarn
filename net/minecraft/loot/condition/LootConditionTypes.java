@@ -52,7 +52,7 @@ public class LootConditionTypes {
     }
 
     public static Object createGsonSerializer() {
-        return JsonSerializing.createTypeHandler(Registry.LOOT_CONDITION_TYPE, "condition", "condition", LootCondition::getType).createGsonSerializer();
+        return JsonSerializing.createSerializerBuilder(Registry.LOOT_CONDITION_TYPE, "condition", "condition", LootCondition::getType).build();
     }
 
     public static <T> Predicate<T> joinAnd(Predicate<T>[] predicates2) {

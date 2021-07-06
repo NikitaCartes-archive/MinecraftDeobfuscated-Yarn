@@ -82,7 +82,7 @@ extends SpecialCraftingRecipe {
                 defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
                 continue;
             }
-            if (!itemStack.hasTag() || BannerBlockEntity.getPatternCount(itemStack) <= 0) continue;
+            if (!itemStack.hasNbt() || BannerBlockEntity.getPatternCount(itemStack) <= 0) continue;
             ItemStack itemStack2 = itemStack.copy();
             itemStack2.setCount(1);
             defaultedList.set(i, itemStack2);

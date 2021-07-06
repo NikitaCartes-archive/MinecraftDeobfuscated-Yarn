@@ -49,7 +49,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.translate(-0.5, -0.5, -0.5);
-        this.method_37314(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
+        this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
         matrixStack.pop();
         matrixStack.push();
         matrixStack.translate(0.2f, -0.35f, 0.5);
@@ -58,7 +58,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.translate(-0.5, -0.5, -0.5);
-        this.method_37314(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
+        this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
         matrixStack.pop();
         matrixStack.push();
         ((CowEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
@@ -66,15 +66,15 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-78.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.translate(-0.5, -0.5, -0.5);
-        this.method_37314(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
+        this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
         matrixStack.pop();
     }
 
-    private void method_37314(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, boolean bl, BlockRenderManager blockRenderManager, BlockState blockState, int j, BakedModel bakedModel) {
-        if (bl) {
-            blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)), blockState, bakedModel, 0.0f, 0.0f, 0.0f, i, j);
+    private void renderMushroom(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, boolean renderAsModel, BlockRenderManager blockRenderManager, BlockState mushroomState, int overlay, BakedModel mushroomModel) {
+        if (renderAsModel) {
+            blockRenderManager.getModelRenderer().render(matrices.peek(), vertexConsumers.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)), mushroomState, mushroomModel, 0.0f, 0.0f, 0.0f, light, overlay);
         } else {
-            blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, j);
+            blockRenderManager.renderBlockAsEntity(mushroomState, matrices, vertexConsumers, light, overlay);
         }
     }
 }

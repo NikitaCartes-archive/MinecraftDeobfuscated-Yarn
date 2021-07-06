@@ -29,7 +29,7 @@ implements ArgumentType<PosArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0 0 0", "~ ~ ~", "^ ^ ^", "^1 ^ ^-5", "~0.5 ~1 ~-5");
     public static final SimpleCommandExceptionType UNLOADED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.unloaded"));
     public static final SimpleCommandExceptionType OUT_OF_WORLD_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.outofworld"));
-    public static final SimpleCommandExceptionType field_29499 = new SimpleCommandExceptionType(new TranslatableText("argument.pos.outofbounds"));
+    public static final SimpleCommandExceptionType OUT_OF_BOUNDS_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.outofbounds"));
 
     public static BlockPosArgumentType blockPos() {
         return new BlockPosArgumentType();
@@ -49,7 +49,7 @@ implements ArgumentType<PosArgument> {
     public static BlockPos getBlockPos(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         BlockPos blockPos = context.getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
         if (!World.isValid(blockPos)) {
-            throw field_29499.create();
+            throw OUT_OF_BOUNDS_EXCEPTION.create();
         }
         return blockPos;
     }
@@ -78,8 +78,8 @@ implements ArgumentType<PosArgument> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 }
 

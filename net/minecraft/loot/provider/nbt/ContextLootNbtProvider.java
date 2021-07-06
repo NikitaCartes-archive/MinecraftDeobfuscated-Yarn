@@ -83,7 +83,7 @@ implements LootNbtProvider {
 
     @Override
     @Nullable
-    public NbtElement getNbtTag(LootContext context) {
+    public NbtElement getNbt(LootContext context) {
         return this.target.getNbt(context);
     }
 
@@ -96,7 +96,7 @@ implements LootNbtProvider {
         return new ContextLootNbtProvider(ContextLootNbtProvider.getTarget(target));
     }
 
-    static ContextLootNbtProvider setTarget(String target) {
+    static ContextLootNbtProvider fromTarget(String target) {
         if (target.equals(BLOCK_ENTITY_TARGET_NAME)) {
             return new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
         }
@@ -114,7 +114,7 @@ implements LootNbtProvider {
     }
 
     public static class CustomSerializer
-    implements JsonSerializing.CustomSerializer<ContextLootNbtProvider> {
+    implements JsonSerializing.ElementSerializer<ContextLootNbtProvider> {
         @Override
         public JsonElement toJson(ContextLootNbtProvider contextLootNbtProvider, JsonSerializationContext jsonSerializationContext) {
             return new JsonPrimitive(contextLootNbtProvider.target.getName());
@@ -123,7 +123,7 @@ implements LootNbtProvider {
         @Override
         public ContextLootNbtProvider fromJson(JsonElement jsonElement, JsonDeserializationContext jsonDeserializationContext) {
             String string = jsonElement.getAsString();
-            return ContextLootNbtProvider.setTarget(string);
+            return ContextLootNbtProvider.fromTarget(string);
         }
 
         @Override
@@ -142,7 +142,7 @@ implements LootNbtProvider {
         @Override
         public ContextLootNbtProvider fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             String string = JsonHelper.getString(jsonObject, "target");
-            return ContextLootNbtProvider.setTarget(string);
+            return ContextLootNbtProvider.fromTarget(string);
         }
 
         @Override

@@ -17,8 +17,8 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class ConfirmChatLinkScreen
 extends ConfirmScreen {
-    private static final Text copy = new TranslatableText("chat.copy");
-    private static final Text warning = new TranslatableText("chat.link.warning");
+    private static final Text COPY = new TranslatableText("chat.copy");
+    private static final Text WARNING = new TranslatableText("chat.link.warning");
     private final String link;
     private final boolean drawWarning;
 
@@ -33,7 +33,7 @@ extends ConfirmScreen {
     @Override
     protected void addButtons(int y) {
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 50 - 105, this.height / 6 + 96, 100, 20, this.yesTranslated, button -> this.callback.accept(true)));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height / 6 + 96, 100, 20, copy, button -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height / 6 + 96, 100, 20, COPY, button -> {
             this.copyToClipboard();
             this.callback.accept(false);
         }));
@@ -48,7 +48,7 @@ extends ConfirmScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
         if (this.drawWarning) {
-            ConfirmChatLinkScreen.drawCenteredText(matrices, this.textRenderer, warning, this.width / 2, 110, 0xFFCCCC);
+            ConfirmChatLinkScreen.drawCenteredText(matrices, this.textRenderer, WARNING, this.width / 2, 110, 0xFFCCCC);
         }
     }
 }

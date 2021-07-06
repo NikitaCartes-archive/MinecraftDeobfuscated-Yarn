@@ -51,7 +51,7 @@ extends LongRunningTask {
                     if (this.join) {
                         this.mainScreen.play(this.serverData, this.returnScreen);
                     } else {
-                        this.client.openScreen(this.returnScreen);
+                        this.client.setScreen(this.returnScreen);
                     }
                 });
                 break;

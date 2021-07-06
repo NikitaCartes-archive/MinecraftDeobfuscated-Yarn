@@ -44,7 +44,7 @@ extends ConditionalLootFunction {
         if (this.seed != 0L) {
             nbtCompound.putLong("LootTableSeed", this.seed);
         }
-        stack.getOrCreateTag().put("BlockEntityTag", nbtCompound);
+        stack.getOrCreateNbt().put("BlockEntityTag", nbtCompound);
         return stack;
     }
 

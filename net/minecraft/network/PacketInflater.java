@@ -21,11 +21,11 @@ extends ByteToMessageDecoder {
     public static final int MAXIMUM_PACKET_SIZE = 0x800000;
     private final Inflater inflater;
     private int compressionThreshold;
-    private boolean field_34058;
+    private boolean rejectsBadPackets;
 
-    public PacketInflater(int compressionThreshold, boolean bl) {
+    public PacketInflater(int compressionThreshold, boolean rejectsBadPackets) {
         this.compressionThreshold = compressionThreshold;
-        this.field_34058 = bl;
+        this.rejectsBadPackets = rejectsBadPackets;
         this.inflater = new Inflater();
     }
 
@@ -40,7 +40,7 @@ extends ByteToMessageDecoder {
             list.add(packetByteBuf.readBytes(packetByteBuf.readableBytes()));
             return;
         }
-        if (this.field_34058) {
+        if (this.rejectsBadPackets) {
             if (i < this.compressionThreshold) {
                 throw new DecoderException("Badly compressed packet - size of " + i + " is below server threshold of " + this.compressionThreshold);
             }
@@ -57,9 +57,9 @@ extends ByteToMessageDecoder {
         this.inflater.reset();
     }
 
-    public void setCompressionThreshold(int compressionThreshold, boolean bl) {
+    public void setCompressionThreshold(int compressionThreshold, boolean rejectsBadPackets) {
         this.compressionThreshold = compressionThreshold;
-        this.field_34058 = bl;
+        this.rejectsBadPackets = rejectsBadPackets;
     }
 }
 

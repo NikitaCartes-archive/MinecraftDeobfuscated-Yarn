@@ -59,7 +59,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlayerAdvancementTracker {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int field_33383 = 2;
+    private static final int MAX_VISIBLE_CHILDREN = 2;
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)AdvancementProgress.class), new AdvancementProgress.Serializer()).registerTypeAdapter((Type)((Object)Identifier.class), new Identifier.Serializer()).setPrettyPrinting().create();
     private static final TypeToken<Map<Identifier, AdvancementProgress>> JSON_TYPE = new TypeToken<Map<Identifier, AdvancementProgress>>(){};
     private final DataFixer dataFixer;

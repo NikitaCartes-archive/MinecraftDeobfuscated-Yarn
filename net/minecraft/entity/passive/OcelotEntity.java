@@ -12,10 +12,10 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
@@ -58,9 +58,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class OcelotEntity
 extends AnimalEntity {
-    public static final double field_30340 = 0.6;
-    public static final double field_30341 = 0.8;
-    public static final double field_30342 = 1.33;
+    public static final double CROUCHING_SPEED = 0.6;
+    public static final double NORMAL_SPEED = 0.8;
+    public static final double SPRINTING_SPEED = 1.33;
     private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
     private static final TrackedData<Boolean> TRUSTING = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private FleeGoal<PlayerEntity> fleeGoal;
@@ -108,8 +108,8 @@ extends AnimalEntity {
         this.goalSelector.add(9, new AnimalMateGoal(this, 0.8));
         this.goalSelector.add(10, new WanderAroundFarGoal((PathAwareEntity)this, 0.8, 1.0000001E-5f));
         this.goalSelector.add(11, new LookAtEntityGoal(this, PlayerEntity.class, 10.0f));
-        this.targetSelector.add(1, new FollowTargetGoal<ChickenEntity>((MobEntity)this, ChickenEntity.class, false));
-        this.targetSelector.add(1, new FollowTargetGoal<TurtleEntity>(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
+        this.targetSelector.add(1, new ActiveTargetGoal<ChickenEntity>((MobEntity)this, ChickenEntity.class, false));
+        this.targetSelector.add(1, new ActiveTargetGoal<TurtleEntity>(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
     }
 
     @Override

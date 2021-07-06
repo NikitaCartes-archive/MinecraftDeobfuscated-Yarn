@@ -53,14 +53,14 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
 
     @Override
     public Identifier getTexture(ShulkerEntity shulkerEntity) {
-        return ShulkerEntityRenderer.method_37105(shulkerEntity.getColor());
+        return ShulkerEntityRenderer.getTexture(shulkerEntity.getColor());
     }
 
-    public static Identifier method_37105(@Nullable DyeColor dyeColor) {
-        if (dyeColor == null) {
+    public static Identifier getTexture(@Nullable DyeColor shulkerColor) {
+        if (shulkerColor == null) {
             return TEXTURE;
         }
-        return COLORED_TEXTURES[dyeColor.getId()];
+        return COLORED_TEXTURES[shulkerColor.getId()];
     }
 
     @Override

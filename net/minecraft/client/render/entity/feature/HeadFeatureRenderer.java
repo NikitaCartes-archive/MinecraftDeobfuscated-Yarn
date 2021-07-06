@@ -81,7 +81,7 @@ extends FeatureRenderer<T, M> {
                 matrixStack.translate(0.0, 0.0625, 0.0);
             }
             GameProfile gameProfile = null;
-            if (itemStack.hasTag() && (nbtCompound = itemStack.getTag()).contains("SkullOwner", 10)) {
+            if (itemStack.hasNbt() && (nbtCompound = itemStack.getNbt()).contains("SkullOwner", 10)) {
                 gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
             }
             matrixStack.translate(-0.5, 0.0, -0.5);

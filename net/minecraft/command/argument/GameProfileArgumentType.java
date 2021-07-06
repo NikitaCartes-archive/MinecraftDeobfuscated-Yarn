@@ -32,8 +32,8 @@ implements ArgumentType<GameProfileArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "dd12be42-52a9-4a91-a8a1-11c01849e498", "@e");
     public static final SimpleCommandExceptionType UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.player.unknown"));
 
-    public static Collection<GameProfile> getProfileArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-        return commandContext.getArgument(string, GameProfileArgument.class).getNames(commandContext.getSource());
+    public static Collection<GameProfile> getProfileArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        return context.getArgument(name, GameProfileArgument.class).getNames(context.getSource());
     }
 
     public static GameProfileArgumentType gameProfile() {
@@ -55,24 +55,24 @@ implements ArgumentType<GameProfileArgument> {
             stringReader.skip();
         }
         String string = stringReader.getString().substring(i, stringReader.getCursor());
-        return serverCommandSource -> {
-            Optional<GameProfile> optional = serverCommandSource.getServer().getUserCache().findByName(string);
+        return source -> {
+            Optional<GameProfile> optional = source.getServer().getUserCache().findByName(string);
             return Collections.singleton(optional.orElseThrow(UNKNOWN_PLAYER_EXCEPTION::create));
         };
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder2) {
         if (context.getSource() instanceof CommandSource) {
-            StringReader stringReader = new StringReader(builder.getInput());
-            stringReader.setCursor(builder.getStart());
+            StringReader stringReader = new StringReader(builder2.getInput());
+            stringReader.setCursor(builder2.getStart());
             EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
             try {
                 entitySelectorReader.read();
             } catch (CommandSyntaxException commandSyntaxException) {
                 // empty catch block
             }
-            return entitySelectorReader.listSuggestions(builder, (SuggestionsBuilder suggestionsBuilder) -> CommandSource.suggestMatching(((CommandSource)context.getSource()).getPlayerNames(), suggestionsBuilder));
+            return entitySelectorReader.listSuggestions(builder2, (SuggestionsBuilder builder) -> CommandSource.suggestMatching(((CommandSource)context.getSource()).getPlayerNames(), builder));
         }
         return Suggestions.empty();
     }
@@ -83,8 +83,8 @@ implements ArgumentType<GameProfileArgument> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 
     @FunctionalInterface
@@ -96,8 +96,8 @@ implements ArgumentType<GameProfileArgument> {
     implements GameProfileArgument {
         private final EntitySelector selector;
 
-        public SelectorBacked(EntitySelector entitySelector) {
-            this.selector = entitySelector;
+        public SelectorBacked(EntitySelector selector) {
+            this.selector = selector;
         }
 
         @Override

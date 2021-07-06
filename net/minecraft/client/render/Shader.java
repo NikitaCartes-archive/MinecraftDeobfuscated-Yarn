@@ -297,7 +297,7 @@ AutoCloseable {
         GlProgramManager.deleteProgram(this);
     }
 
-    public void bind() {
+    public void unbind() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlProgramManager.useProgram(0);
         activeShaderId = -1;
@@ -311,7 +311,7 @@ AutoCloseable {
         GlStateManager._activeTexture(i);
     }
 
-    public void upload() {
+    public void bind() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         this.dirty = false;
         activeShader = this;

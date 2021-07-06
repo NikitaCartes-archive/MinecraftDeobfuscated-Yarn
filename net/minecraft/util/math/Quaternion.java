@@ -56,31 +56,31 @@ public final class Quaternion {
         this.w = other.w;
     }
 
-    public static Quaternion method_35821(float f, float g, float h) {
+    public static Quaternion fromEulerYxz(float x, float y, float z) {
         Quaternion quaternion = IDENTITY.copy();
-        quaternion.hamiltonProduct(new Quaternion(0.0f, (float)Math.sin(f / 2.0f), 0.0f, (float)Math.cos(f / 2.0f)));
-        quaternion.hamiltonProduct(new Quaternion((float)Math.sin(g / 2.0f), 0.0f, 0.0f, (float)Math.cos(g / 2.0f)));
-        quaternion.hamiltonProduct(new Quaternion(0.0f, 0.0f, (float)Math.sin(h / 2.0f), (float)Math.cos(h / 2.0f)));
+        quaternion.hamiltonProduct(new Quaternion(0.0f, (float)Math.sin(x / 2.0f), 0.0f, (float)Math.cos(x / 2.0f)));
+        quaternion.hamiltonProduct(new Quaternion((float)Math.sin(y / 2.0f), 0.0f, 0.0f, (float)Math.cos(y / 2.0f)));
+        quaternion.hamiltonProduct(new Quaternion(0.0f, 0.0f, (float)Math.sin(z / 2.0f), (float)Math.cos(z / 2.0f)));
         return quaternion;
     }
 
-    public static Quaternion method_35823(Vec3f vec3f) {
-        return Quaternion.method_35825((float)Math.toRadians(vec3f.getX()), (float)Math.toRadians(vec3f.getY()), (float)Math.toRadians(vec3f.getZ()));
+    public static Quaternion fromEulerXyzDegrees(Vec3f vec3f) {
+        return Quaternion.fromEulerXyz((float)Math.toRadians(vec3f.getX()), (float)Math.toRadians(vec3f.getY()), (float)Math.toRadians(vec3f.getZ()));
     }
 
-    public static Quaternion method_35826(Vec3f vec3f) {
-        return Quaternion.method_35825(vec3f.getX(), vec3f.getY(), vec3f.getZ());
+    public static Quaternion fromEulerXyz(Vec3f vec3f) {
+        return Quaternion.fromEulerXyz(vec3f.getX(), vec3f.getY(), vec3f.getZ());
     }
 
-    public static Quaternion method_35825(float f, float g, float h) {
+    public static Quaternion fromEulerXyz(float x, float y, float z) {
         Quaternion quaternion = IDENTITY.copy();
-        quaternion.hamiltonProduct(new Quaternion((float)Math.sin(f / 2.0f), 0.0f, 0.0f, (float)Math.cos(f / 2.0f)));
-        quaternion.hamiltonProduct(new Quaternion(0.0f, (float)Math.sin(g / 2.0f), 0.0f, (float)Math.cos(g / 2.0f)));
-        quaternion.hamiltonProduct(new Quaternion(0.0f, 0.0f, (float)Math.sin(h / 2.0f), (float)Math.cos(h / 2.0f)));
+        quaternion.hamiltonProduct(new Quaternion((float)Math.sin(x / 2.0f), 0.0f, 0.0f, (float)Math.cos(x / 2.0f)));
+        quaternion.hamiltonProduct(new Quaternion(0.0f, (float)Math.sin(y / 2.0f), 0.0f, (float)Math.cos(y / 2.0f)));
+        quaternion.hamiltonProduct(new Quaternion(0.0f, 0.0f, (float)Math.sin(z / 2.0f), (float)Math.cos(z / 2.0f)));
         return quaternion;
     }
 
-    public Vec3f method_35820() {
+    public Vec3f toEulerYxz() {
         float f = this.getW() * this.getW();
         float g = this.getX() * this.getX();
         float h = this.getY() * this.getY();
@@ -94,12 +94,12 @@ public final class Quaternion {
         return new Vec3f((float)Math.atan2(2.0f * this.getY() * this.getZ() + 2.0f * this.getX() * this.getW(), f - g - h + i), l, (float)Math.atan2(2.0f * this.getX() * this.getY() + 2.0f * this.getW() * this.getZ(), f + g - h - i));
     }
 
-    public Vec3f method_35824() {
-        Vec3f vec3f = this.method_35820();
+    public Vec3f toEulerYxzDegrees() {
+        Vec3f vec3f = this.toEulerYxz();
         return new Vec3f((float)Math.toDegrees(vec3f.getX()), (float)Math.toDegrees(vec3f.getY()), (float)Math.toDegrees(vec3f.getZ()));
     }
 
-    public Vec3f method_35827() {
+    public Vec3f toEulerXyz() {
         float f = this.getW() * this.getW();
         float g = this.getX() * this.getX();
         float h = this.getY() * this.getY();
@@ -113,8 +113,8 @@ public final class Quaternion {
         return new Vec3f(l, (float)Math.atan2(2.0f * this.getX() * this.getZ() + 2.0f * this.getY() * this.getW(), f - g - h + i), (float)Math.atan2(2.0f * this.getX() * this.getY() + 2.0f * this.getW() * this.getZ(), f - g + h - i));
     }
 
-    public Vec3f method_35828() {
-        Vec3f vec3f = this.method_35827();
+    public Vec3f toEulerXyzDegrees() {
+        Vec3f vec3f = this.toEulerXyz();
         return new Vec3f((float)Math.toDegrees(vec3f.getX()), (float)Math.toDegrees(vec3f.getY()), (float)Math.toDegrees(vec3f.getZ()));
     }
 

@@ -29,8 +29,8 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(extended, itemPredicate);
     }
 
-    public void test(ServerPlayerEntity player, ItemStack stack) {
-        this.test(player, (T conditions) -> conditions.test(stack));
+    public void trigger(ServerPlayerEntity player, ItemStack stack) {
+        this.trigger(player, (T conditions) -> conditions.test(stack));
     }
 
     @Override

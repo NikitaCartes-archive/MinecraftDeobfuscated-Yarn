@@ -69,7 +69,7 @@ extends NetworkSyncedItem {
 
     @Nullable
     public static Integer getMapId(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         return nbtCompound != null && nbtCompound.contains(MAP_KEY, 99) ? Integer.valueOf(nbtCompound.getInt(MAP_KEY)) : null;
     }
 
@@ -81,7 +81,7 @@ extends NetworkSyncedItem {
     }
 
     private static void setMapId(ItemStack stack, int id) {
-        stack.getOrCreateTag().putInt(MAP_KEY, id);
+        stack.getOrCreateNbt().putInt(MAP_KEY, id);
     }
 
     private static void createMapState(ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
@@ -316,7 +316,7 @@ extends NetworkSyncedItem {
 
     @Override
     public void onCraft(ItemStack stack, World world, PlayerEntity player) {
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null && nbtCompound.contains("map_scale_direction", 99)) {
             FilledMapItem.scale(stack, world, nbtCompound.getInt("map_scale_direction"));
             nbtCompound.remove("map_scale_direction");
@@ -366,7 +366,7 @@ extends NetworkSyncedItem {
     }
 
     public static int getMapColor(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubTag("display");
+        NbtCompound nbtCompound = stack.getSubNbt("display");
         if (nbtCompound != null && nbtCompound.contains("MapColor", 99)) {
             int i = nbtCompound.getInt("MapColor");
             return 0xFF000000 | i & 0xFFFFFF;

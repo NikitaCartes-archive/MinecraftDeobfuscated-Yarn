@@ -117,8 +117,8 @@ Bucketable {
     public static final int BLUE_BABY_CHANCE = 1200;
     private static final int MAX_AIR = 6000;
     public static final String VARIANT_KEY = "Variant";
-    private static final int field_33485 = 1800;
-    private static final int field_34005 = 2400;
+    private static final int HYDRATION_BY_POTION = 1800;
+    private static final int MAX_REGENERATION_BUFF_DURATION = 2400;
     private final Map<String, Vec3f> modelAngles = Maps.newHashMap();
     private static final int BUFF_DURATION = 100;
 
@@ -181,7 +181,7 @@ Bucketable {
                 bl = true;
             }
         } else {
-            entityData = new AxolotlData(Variant.getRandomAll(this.world.random), Variant.getRandomAll(this.world.random));
+            entityData = new AxolotlData(Variant.getRandomNatural(this.world.random), Variant.getRandomNatural(this.world.random));
         }
         this.setVariant(((AxolotlData)entityData).getRandomVariant(this.world.random));
         if (bl) {
@@ -276,7 +276,7 @@ Bucketable {
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         AxolotlEntity axolotlEntity = EntityType.AXOLOTL.create(world);
         if (axolotlEntity != null) {
-            Variant variant = AxolotlEntity.shouldBabyBeDifferent(this.random) ? Variant.getRandomNatural(this.random) : (this.random.nextBoolean() ? this.getVariant() : ((AxolotlEntity)entity).getVariant());
+            Variant variant = AxolotlEntity.shouldBabyBeDifferent(this.random) ? Variant.getRandomUnnatural(this.random) : (this.random.nextBoolean() ? this.getVariant() : ((AxolotlEntity)entity).getVariant());
             axolotlEntity.setVariant(variant);
             axolotlEntity.setPersistent();
         }
@@ -363,7 +363,7 @@ Bucketable {
     @Override
     public void copyDataToStack(ItemStack stack) {
         Bucketable.copyDataToStack(this, stack);
-        NbtCompound nbtCompound = stack.getOrCreateTag();
+        NbtCompound nbtCompound = stack.getOrCreateNbt();
         nbtCompound.putInt(VARIANT_KEY, this.getVariant().getId());
         nbtCompound.putInt("Age", this.getBreedingAge());
         Brain<AxolotlEntity> brain = this.getBrain();
@@ -561,16 +561,16 @@ Bucketable {
             return this.name;
         }
 
-        public static Variant getRandomAll(Random random) {
+        public static Variant getRandomNatural(Random random) {
             return Variant.getRandom(random, true);
         }
 
-        public static Variant getRandomNatural(Random random) {
+        public static Variant getRandomUnnatural(Random random) {
             return Variant.getRandom(random, false);
         }
 
-        private static Variant getRandom(Random random, boolean includeUnnatural) {
-            Variant[] variants = (Variant[])Arrays.stream(VARIANTS).filter(variant -> variant.natural == includeUnnatural).toArray(Variant[]::new);
+        private static Variant getRandom(Random random, boolean natural) {
+            Variant[] variants = (Variant[])Arrays.stream(VARIANTS).filter(variant -> variant.natural == natural).toArray(Variant[]::new);
             return Util.getRandom(variants, random);
         }
 

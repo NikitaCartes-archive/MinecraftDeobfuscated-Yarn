@@ -53,7 +53,7 @@ implements Nameable {
     @Nullable
     public static NbtList getPatternListTag(ItemStack stack) {
         NbtList nbtList = null;
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+        NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
         if (nbtCompound != null && nbtCompound.contains(PATTERNS_KEY, 9)) {
             nbtList = nbtCompound.getList(PATTERNS_KEY, 10).copy();
         }
@@ -121,7 +121,7 @@ implements Nameable {
     }
 
     public static int getPatternCount(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+        NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
         if (nbtCompound != null && nbtCompound.contains(PATTERNS_KEY)) {
             return nbtCompound.getList(PATTERNS_KEY, 10).size();
         }
@@ -151,7 +151,7 @@ implements Nameable {
     }
 
     public static void loadFromItemStack(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+        NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
         if (nbtCompound == null || !nbtCompound.contains(PATTERNS_KEY, 9)) {
             return;
         }
@@ -161,14 +161,14 @@ implements Nameable {
         }
         nbtList.remove(nbtList.size() - 1);
         if (nbtList.isEmpty()) {
-            stack.removeSubTag("BlockEntityTag");
+            stack.removeSubNbt("BlockEntityTag");
         }
     }
 
     public ItemStack getPickStack() {
         ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.baseColor));
         if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-            itemStack.getOrCreateSubTag("BlockEntityTag").put(PATTERNS_KEY, this.patternListTag.copy());
+            itemStack.getOrCreateSubNbt("BlockEntityTag").put(PATTERNS_KEY, this.patternListTag.copy());
         }
         if (this.customName != null) {
             itemStack.setCustomName(this.customName);

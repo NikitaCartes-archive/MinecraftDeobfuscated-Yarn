@@ -12,6 +12,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
@@ -60,7 +61,7 @@ implements SynchronousResourceReloader {
         this.crosshairTarget = crosshairTarget;
     }
 
-    public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
+    public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumers) {
         BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);
         if (blockEntityRenderer == null) {
             return;
@@ -68,15 +69,15 @@ implements SynchronousResourceReloader {
         if (!blockEntity.hasWorld() || !blockEntity.getType().supports(blockEntity.getCachedState())) {
             return;
         }
-        if (!blockEntityRenderer.method_33892(blockEntity, this.camera.getPos())) {
+        if (!blockEntityRenderer.isInRenderDistance(blockEntity, this.camera.getPos())) {
             return;
         }
-        BlockEntityRenderDispatcher.runReported(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider));
+        BlockEntityRenderDispatcher.runReported(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumers));
     }
 
     private static <T extends BlockEntity> void render(BlockEntityRenderer<T> renderer, T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
         World world = blockEntity.getWorld();
-        int i = world != null ? WorldRenderer.getLightmapCoordinates(world, blockEntity.getPos()) : 0xF000F0;
+        int i = world != null ? WorldRenderer.getLightmapCoordinates(world, blockEntity.getPos()) : LightmapTextureManager.MAX_LIGHT_COORDINATE;
         renderer.render(blockEntity, tickDelta, matrices, vertexConsumers, i, OverlayTexture.DEFAULT_UV);
     }
 

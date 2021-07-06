@@ -68,8 +68,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class ArgumentTypes {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Map<Class<?>, Entry<?>> classMap = Maps.newHashMap();
-    private static final Map<Identifier, Entry<?>> idMap = Maps.newHashMap();
+    private static final Map<Class<?>, Entry<?>> CLASS_MAP = Maps.newHashMap();
+    private static final Map<Identifier, Entry<?>> ID_MAP = Maps.newHashMap();
 
     /**
      * Registers an argument type's serializer.
@@ -78,15 +78,15 @@ public class ArgumentTypes {
      */
     public static <T extends ArgumentType<?>> void register(String id, Class<T> class_, ArgumentSerializer<T> argumentSerializer) {
         Identifier identifier = new Identifier(id);
-        if (classMap.containsKey(class_)) {
+        if (CLASS_MAP.containsKey(class_)) {
             throw new IllegalArgumentException("Class " + class_.getName() + " already has a serializer!");
         }
-        if (idMap.containsKey(identifier)) {
+        if (ID_MAP.containsKey(identifier)) {
             throw new IllegalArgumentException("'" + identifier + "' is already a registered serializer!");
         }
         Entry<T> entry = new Entry<T>(class_, argumentSerializer, identifier);
-        classMap.put(class_, entry);
-        idMap.put(identifier, entry);
+        CLASS_MAP.put(class_, entry);
+        ID_MAP.put(identifier, entry);
     }
 
     public static void register() {
@@ -137,12 +137,12 @@ public class ArgumentTypes {
 
     @Nullable
     private static Entry<?> byId(Identifier id) {
-        return idMap.get(id);
+        return ID_MAP.get(id);
     }
 
     @Nullable
     private static Entry<?> byClass(ArgumentType<?> argumentType) {
-        return classMap.get(argumentType.getClass());
+        return CLASS_MAP.get(argumentType.getClass());
     }
 
     public static <T extends ArgumentType<?>> void toPacket(PacketByteBuf packetByteBuf, T argumentType) {

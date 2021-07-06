@@ -29,7 +29,7 @@ import org.lwjgl.opengl.KHRDebug;
 public class GlDebug {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int DEBUG_MESSAGE_QUEUE_SIZE = 10;
-    private static final Queue<DebugMessage> debugMessages = EvictingQueue.create(10);
+    private static final Queue<DebugMessage> DEBUG_MESSAGES = EvictingQueue.create(10);
     @Nullable
     private static volatile DebugMessage lastDebugMessage;
     private static final List<Integer> KHR_VERBOSITY_LEVELS;
@@ -115,12 +115,12 @@ public class GlDebug {
     private static void info(int source, int type, int id, int severity, int messageLength, long message, long l) {
         DebugMessage debugMessage;
         String string = GLDebugMessageCallback.getMessage(messageLength, message);
-        Queue<DebugMessage> queue = debugMessages;
+        Queue<DebugMessage> queue = DEBUG_MESSAGES;
         synchronized (queue) {
             debugMessage = lastDebugMessage;
             if (debugMessage == null || !debugMessage.equals(source, type, id, severity, string)) {
                 debugMessage = new DebugMessage(source, type, id, severity, string);
-                debugMessages.add(debugMessage);
+                DEBUG_MESSAGES.add(debugMessage);
                 lastDebugMessage = debugMessage;
             } else {
                 ++debugMessage.count;
@@ -133,10 +133,10 @@ public class GlDebug {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     public static List<String> collectDebugMessages() {
-        Queue<DebugMessage> queue = debugMessages;
+        Queue<DebugMessage> queue = DEBUG_MESSAGES;
         synchronized (queue) {
-            ArrayList<String> list = Lists.newArrayListWithCapacity(debugMessages.size());
-            for (DebugMessage debugMessage : debugMessages) {
+            ArrayList<String> list = Lists.newArrayListWithCapacity(DEBUG_MESSAGES.size());
+            for (DebugMessage debugMessage : DEBUG_MESSAGES) {
                 list.add(debugMessage + " x " + debugMessage.count);
             }
             return list;

@@ -92,16 +92,16 @@ Runnable {
     @Override
     public void run() {
         try {
-            this.runWhile(i -> i == 0);
+            this.runWhile(runCount -> runCount == 0);
         } finally {
             this.pause();
             this.execute();
         }
     }
 
-    public void method_37477() {
+    public void awaitAll() {
         try {
-            this.runWhile(i -> true);
+            this.runWhile(runCount -> true);
         } finally {
             this.pause();
             this.execute();
@@ -128,6 +128,9 @@ Runnable {
         }
     }
 
+    /**
+     * @param condition checks whether to run another task given the run task count
+     */
     private int runWhile(Int2BooleanFunction condition) {
         int i = 0;
         while (condition.get(i) && this.runNext()) {

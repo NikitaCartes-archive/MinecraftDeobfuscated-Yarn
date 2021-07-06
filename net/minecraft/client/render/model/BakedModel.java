@@ -34,7 +34,12 @@ public interface BakedModel {
 
     public boolean isBuiltin();
 
-    public Sprite getSprite();
+    /**
+     * {@return a texture that represents the model}
+     * <p>
+     * This is primarily used in particles. For example, block break particles use this sprite.
+     */
+    public Sprite getParticleSprite();
 
     public ModelTransformation getTransformation();
 

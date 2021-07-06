@@ -171,9 +171,9 @@ implements AutoCloseable {
         this.bindVertexArray();
         this.bind();
         this.getElementFormat().startDrawing();
-        shader.upload();
-        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.vertexFormat.count);
         shader.bind();
+        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.vertexFormat.count);
+        shader.unbind();
         this.getElementFormat().endDrawing();
         VertexBuffer.unbind();
         VertexBuffer.unbindVertexArray();

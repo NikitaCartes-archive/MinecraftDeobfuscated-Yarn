@@ -105,7 +105,7 @@ extends Entity {
                 if (this.world instanceof ServerWorld) {
                     list = this.world.getOtherEntities(this, new Box(this.getX() - 15.0, this.getY() - 15.0, this.getZ() - 15.0, this.getX() + 15.0, this.getY() + 6.0 + 15.0, this.getZ() + 15.0), entity -> entity.isAlive() && !this.struckEntities.contains(entity));
                     for (ServerPlayerEntity serverPlayerEntity2 : ((ServerWorld)this.world).getPlayers(serverPlayerEntity -> serverPlayerEntity.distanceTo(this) < 256.0f)) {
-                        Criteria.LIGHTNING_STRIKE.test(serverPlayerEntity2, this, list);
+                        Criteria.LIGHTNING_STRIKE.trigger(serverPlayerEntity2, this, list);
                     }
                 }
                 this.discard();

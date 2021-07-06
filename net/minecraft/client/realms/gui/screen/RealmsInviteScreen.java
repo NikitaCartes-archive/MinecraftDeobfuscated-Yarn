@@ -55,7 +55,7 @@ extends RealmsScreen {
         this.addSelectableChild(this.nameWidget);
         this.setInitialFocus(this.nameWidget);
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsInviteScreen.row(10), 200, 20, new TranslatableText("mco.configure.world.buttons.invite"), button -> this.onInvite()));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsInviteScreen.row(12), 200, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsInviteScreen.row(12), 200, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
     }
 
     @Override
@@ -73,7 +73,7 @@ extends RealmsScreen {
             RealmsServer realmsServer = realmsClient.invite(this.serverData.id, this.nameWidget.getText().trim());
             if (realmsServer != null) {
                 this.serverData.players = realmsServer.players;
-                this.client.openScreen(new RealmsPlayerScreen(this.configureScreen, this.serverData));
+                this.client.setScreen(new RealmsPlayerScreen(this.configureScreen, this.serverData));
             } else {
                 this.showError(PLAYER_ERROR_TEXT);
             }
@@ -91,7 +91,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

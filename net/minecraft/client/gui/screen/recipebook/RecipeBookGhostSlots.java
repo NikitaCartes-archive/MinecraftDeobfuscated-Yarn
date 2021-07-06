@@ -98,7 +98,7 @@ public class RecipeBookGhostSlots {
         }
 
         public ItemStack getCurrentItemStack() {
-            ItemStack[] itemStacks = this.ingredient.getMatchingStacksClient();
+            ItemStack[] itemStacks = this.ingredient.getMatchingStacks();
             if (itemStacks.length == 0) {
                 return ItemStack.EMPTY;
             }

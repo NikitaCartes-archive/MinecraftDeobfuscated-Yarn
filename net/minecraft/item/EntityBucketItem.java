@@ -56,7 +56,7 @@ extends BucketItem {
         Entity entity = this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false);
         if (entity instanceof Bucketable) {
             Bucketable bucketable = (Bucketable)((Object)entity);
-            bucketable.copyDataFromNbt(stack.getOrCreateTag());
+            bucketable.copyDataFromNbt(stack.getOrCreateNbt());
             bucketable.setFromBucket(true);
         }
     }
@@ -64,7 +64,7 @@ extends BucketItem {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         NbtCompound nbtCompound;
-        if (this.entityType == EntityType.TROPICAL_FISH && (nbtCompound = stack.getTag()) != null && nbtCompound.contains("BucketVariantTag", 3)) {
+        if (this.entityType == EntityType.TROPICAL_FISH && (nbtCompound = stack.getNbt()) != null && nbtCompound.contains("BucketVariantTag", 3)) {
             int i = nbtCompound.getInt("BucketVariantTag");
             Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
             String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);

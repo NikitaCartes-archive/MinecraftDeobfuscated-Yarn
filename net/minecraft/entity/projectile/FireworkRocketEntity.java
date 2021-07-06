@@ -53,9 +53,9 @@ implements FlyingItemEntity {
         this.life = 0;
         this.setPosition(x, y, z);
         int i = 1;
-        if (!stack.isEmpty() && stack.hasTag()) {
+        if (!stack.isEmpty() && stack.hasNbt()) {
             this.dataTracker.set(ITEM, stack.copy());
-            i += stack.getOrCreateSubTag("Fireworks").getByte("Flight");
+            i += stack.getOrCreateSubNbt("Fireworks").getByte("Flight");
         }
         this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
         this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
@@ -177,7 +177,7 @@ implements FlyingItemEntity {
 
     private boolean hasExplosionEffects() {
         ItemStack itemStack = this.dataTracker.get(ITEM);
-        NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+        NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
         NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", 10) : null;
         return nbtList != null && !nbtList.isEmpty();
     }
@@ -186,7 +186,7 @@ implements FlyingItemEntity {
         NbtList nbtList;
         float f = 0.0f;
         ItemStack itemStack = this.dataTracker.get(ITEM);
-        NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+        NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
         NbtList nbtList2 = nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", 10) : null;
         if (nbtList != null && !nbtList.isEmpty()) {
             f = 5.0f + (float)(nbtList.size() * 2);
@@ -232,7 +232,7 @@ implements FlyingItemEntity {
                 }
             } else {
                 ItemStack itemStack = this.dataTracker.get(ITEM);
-                NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+                NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
                 Vec3d vec3d = this.getVelocity();
                 this.world.addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, nbtCompound);
             }

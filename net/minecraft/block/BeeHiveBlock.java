@@ -94,7 +94,7 @@ extends BlockWithEntity {
                 world.updateComparators(pos, this);
                 this.angerNearbyBees(world, pos);
             }
-            Criteria.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state, stack, beehiveBlockEntity.getBeeCount());
+            Criteria.BEE_NEST_DESTROYED.trigger((ServerPlayerEntity)player, state, stack, beehiveBlockEntity.getBeeCount());
         }
     }
 
@@ -258,11 +258,11 @@ extends BlockWithEntity {
                 if (bl) {
                     nbtCompound = new NbtCompound();
                     nbtCompound.put("Bees", beehiveBlockEntity.getBees());
-                    itemStack.putSubTag("BlockEntityTag", nbtCompound);
+                    itemStack.setSubNbt("BlockEntityTag", nbtCompound);
                 }
                 nbtCompound = new NbtCompound();
                 nbtCompound.putInt("honey_level", i);
-                itemStack.putSubTag("BlockStateTag", nbtCompound);
+                itemStack.setSubNbt("BlockStateTag", nbtCompound);
                 ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), itemStack);
                 itemEntity.setToDefaultPickupDelay();
                 world.spawnEntity(itemEntity);

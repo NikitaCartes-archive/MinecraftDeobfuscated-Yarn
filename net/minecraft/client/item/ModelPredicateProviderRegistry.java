@@ -85,7 +85,7 @@ public class ModelPredicateProviderRegistry {
     static {
         ModelPredicateProviderRegistry.register(new Identifier("lefthanded"), (stack, world, entity, seed) -> entity == null || entity.getMainArm() == Arm.RIGHT ? 0.0f : 1.0f);
         ModelPredicateProviderRegistry.register(new Identifier("cooldown"), (stack, world, entity, seed) -> entity instanceof PlayerEntity ? ((PlayerEntity)entity).getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0f) : 0.0f);
-        ModelPredicateProviderRegistry.registerCustomModelData((stack, world, entity, seed) -> stack.hasTag() ? (float)stack.getTag().getInt(CUSTOM_MODEL_DATA_KEY) : 0.0f);
+        ModelPredicateProviderRegistry.registerCustomModelData((stack, world, entity, seed) -> stack.hasNbt() ? (float)stack.getNbt().getInt(CUSTOM_MODEL_DATA_KEY) : 0.0f);
         ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pull"), (stack, world, entity, seed) -> {
             if (entity == null) {
                 return 0.0f;
@@ -147,7 +147,7 @@ public class ModelPredicateProviderRegistry {
                 if (clientWorld == null && entity.world instanceof ClientWorld) {
                     clientWorld = (ClientWorld)entity.world;
                 }
-                BlockPos blockPos = CompassItem.hasLodestone(itemStack) ? this.getLodestonePos(clientWorld, itemStack.getOrCreateTag()) : this.getSpawnPos(clientWorld);
+                BlockPos blockPos = CompassItem.hasLodestone(itemStack) ? this.getLodestonePos(clientWorld, itemStack.getOrCreateNbt()) : this.getSpawnPos(clientWorld);
                 long l = clientWorld.getTime();
                 if (blockPos == null || entity.getPos().squaredDistanceTo((double)blockPos.getX() + 0.5, entity.getPos().getY(), (double)blockPos.getZ() + 0.5) < (double)1.0E-5f) {
                     if (this.aimlessInterpolator.shouldUpdate(l)) {
@@ -242,7 +242,7 @@ public class ModelPredicateProviderRegistry {
         ModelPredicateProviderRegistry.register(Items.SHIELD, new Identifier("blocking"), (stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0f : 0.0f);
         ModelPredicateProviderRegistry.register(Items.TRIDENT, new Identifier("throwing"), (stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0f : 0.0f);
         ModelPredicateProviderRegistry.register(Items.LIGHT, new Identifier("level"), (stack, world, entity, seed) -> {
-            NbtCompound nbtCompound = stack.getSubTag("BlockStateTag");
+            NbtCompound nbtCompound = stack.getSubNbt("BlockStateTag");
             try {
                 NbtElement nbtElement;
                 if (nbtCompound != null && (nbtElement = nbtCompound.get(LightBlock.LEVEL_15.getName())) != null) {

@@ -33,7 +33,7 @@ public interface Bucketable {
 
     @Deprecated
     public static void copyDataToStack(MobEntity entity, ItemStack stack) {
-        NbtCompound nbtCompound = stack.getOrCreateTag();
+        NbtCompound nbtCompound = stack.getOrCreateNbt();
         if (entity.hasCustomName()) {
             stack.setCustomName(entity.getCustomName());
         }

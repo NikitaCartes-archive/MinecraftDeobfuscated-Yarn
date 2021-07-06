@@ -27,6 +27,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.GameMode;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
@@ -39,10 +40,10 @@ extends Screen {
     private static final int field_32313 = 5;
     private static final int field_32314 = 31;
     private static final int field_32315 = 5;
-    private static final int UI_WIDTH = GameMode.values().length * 31 - 5;
+    private static final int UI_WIDTH = GameModeSelection.values().length * 31 - 5;
     private static final Text SELECT_NEXT_TEXT = new TranslatableText("debug.gamemodes.select_next", new TranslatableText("debug.gamemodes.press_f4").formatted(Formatting.AQUA));
-    private final Optional<GameMode> currentGameMode;
-    private Optional<GameMode> gameMode = Optional.empty();
+    private final Optional<GameModeSelection> currentGameMode;
+    private Optional<GameModeSelection> gameMode = Optional.empty();
     private int lastMouseX;
     private int lastMouseY;
     private boolean mouseUsedForSelection;
@@ -50,25 +51,25 @@ extends Screen {
 
     public GameModeSelectionScreen() {
         super(NarratorManager.EMPTY);
-        this.currentGameMode = GameMode.of(this.getPreviousGameMode());
+        this.currentGameMode = GameModeSelection.of(this.getPreviousGameMode());
     }
 
-    private net.minecraft.world.GameMode getPreviousGameMode() {
+    private GameMode getPreviousGameMode() {
         ClientPlayerInteractionManager clientPlayerInteractionManager = MinecraftClient.getInstance().interactionManager;
-        net.minecraft.world.GameMode gameMode = clientPlayerInteractionManager.getPreviousGameMode();
+        GameMode gameMode = clientPlayerInteractionManager.getPreviousGameMode();
         if (gameMode != null) {
             return gameMode;
         }
-        return clientPlayerInteractionManager.getCurrentGameMode() == net.minecraft.world.GameMode.CREATIVE ? net.minecraft.world.GameMode.SURVIVAL : net.minecraft.world.GameMode.CREATIVE;
+        return clientPlayerInteractionManager.getCurrentGameMode() == GameMode.CREATIVE ? GameMode.SURVIVAL : GameMode.CREATIVE;
     }
 
     @Override
     protected void init() {
         super.init();
-        this.gameMode = this.currentGameMode.isPresent() ? this.currentGameMode : GameMode.of(this.client.interactionManager.getCurrentGameMode());
-        for (int i = 0; i < GameMode.VALUES.length; ++i) {
-            GameMode gameMode = GameMode.VALUES[i];
-            this.gameModeButtons.add(new ButtonWidget(gameMode, this.width / 2 - UI_WIDTH / 2 + i * 31, this.height / 2 - 31));
+        this.gameMode = this.currentGameMode.isPresent() ? this.currentGameMode : GameModeSelection.of(this.client.interactionManager.getCurrentGameMode());
+        for (int i = 0; i < GameModeSelection.VALUES.length; ++i) {
+            GameModeSelection gameModeSelection = GameModeSelection.VALUES[i];
+            this.gameModeButtons.add(new ButtonWidget(gameModeSelection, this.width / 2 - UI_WIDTH / 2 + i * 31, this.height / 2 - 31));
         }
     }
 
@@ -106,21 +107,21 @@ extends Screen {
         GameModeSelectionScreen.apply(this.client, this.gameMode);
     }
 
-    private static void apply(MinecraftClient client, Optional<GameMode> gameMode) {
+    private static void apply(MinecraftClient client, Optional<GameModeSelection> gameMode) {
         if (client.interactionManager == null || client.player == null || !gameMode.isPresent()) {
             return;
         }
-        Optional<GameMode> optional = GameMode.of(client.interactionManager.getCurrentGameMode());
-        GameMode gameMode2 = gameMode.get();
-        if (optional.isPresent() && client.player.hasPermissionLevel(2) && gameMode2 != optional.get()) {
-            client.player.sendChatMessage(gameMode2.getCommand());
+        Optional<GameModeSelection> optional = GameModeSelection.of(client.interactionManager.getCurrentGameMode());
+        GameModeSelection gameModeSelection = gameMode.get();
+        if (optional.isPresent() && client.player.hasPermissionLevel(2) && gameModeSelection != optional.get()) {
+            client.player.sendChatMessage(gameModeSelection.getCommand());
         }
     }
 
     private boolean checkForClose() {
         if (!InputUtil.isKeyPressed(this.client.getWindow().getHandle(), GLFW.GLFW_KEY_F3)) {
             this.apply();
-            this.client.openScreen(null);
+            this.client.setScreen(null);
             return true;
         }
         return false;
@@ -142,20 +143,20 @@ extends Screen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static enum GameMode {
+    static enum GameModeSelection {
         CREATIVE(new TranslatableText("gameMode.creative"), "/gamemode creative", new ItemStack(Blocks.GRASS_BLOCK)),
         SURVIVAL(new TranslatableText("gameMode.survival"), "/gamemode survival", new ItemStack(Items.IRON_SWORD)),
         ADVENTURE(new TranslatableText("gameMode.adventure"), "/gamemode adventure", new ItemStack(Items.MAP)),
         SPECTATOR(new TranslatableText("gameMode.spectator"), "/gamemode spectator", new ItemStack(Items.ENDER_EYE));
 
-        protected static final GameMode[] VALUES;
+        protected static final GameModeSelection[] VALUES;
         private static final int field_32317 = 16;
         protected static final int field_32316 = 5;
         final Text text;
         final String command;
         final ItemStack icon;
 
-        private GameMode(Text text, String command, ItemStack icon) {
+        private GameModeSelection(Text text, String command, ItemStack icon) {
             this.text = text;
             this.command = command;
             this.icon = icon;
@@ -173,7 +174,7 @@ extends Screen {
             return this.command;
         }
 
-        Optional<GameMode> next() {
+        Optional<GameModeSelection> next() {
             switch (this) {
                 case CREATIVE: {
                     return Optional.of(SURVIVAL);
@@ -188,7 +189,7 @@ extends Screen {
             return Optional.of(CREATIVE);
         }
 
-        static Optional<GameMode> of(net.minecraft.world.GameMode gameMode) {
+        static Optional<GameModeSelection> of(GameMode gameMode) {
             switch (gameMode) {
                 case SPECTATOR: {
                     return Optional.of(SPECTATOR);
@@ -207,17 +208,17 @@ extends Screen {
         }
 
         static {
-            VALUES = GameMode.values();
+            VALUES = GameModeSelection.values();
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     public class ButtonWidget
     extends ClickableWidget {
-        final GameMode gameMode;
+        final GameModeSelection gameMode;
         private boolean selected;
 
-        public ButtonWidget(GameMode gameMode, int x, int y) {
+        public ButtonWidget(GameModeSelection gameMode, int x, int y) {
             super(x, y, 26, 26, gameMode.getText());
             this.gameMode = gameMode;
         }

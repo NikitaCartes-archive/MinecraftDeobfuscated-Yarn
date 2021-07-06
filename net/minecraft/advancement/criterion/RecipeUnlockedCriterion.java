@@ -29,8 +29,9 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(extended, identifier);
     }
 
+    @Override
     public void trigger(ServerPlayerEntity player, Recipe<?> recipe) {
-        this.test(player, conditions -> conditions.matches(recipe));
+        ((AbstractCriterion)this).trigger(player, (T conditions) -> conditions.matches(recipe));
     }
 
     public static Conditions create(Identifier id) {

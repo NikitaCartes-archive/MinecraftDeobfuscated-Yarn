@@ -183,8 +183,8 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                         this.pack.enable();
                     } else {
                         Text text = resourcePackCompatibility.getConfirmMessage();
-                        this.client.openScreen(new ConfirmScreen(confirmed -> {
-                            this.client.openScreen(this.screen);
+                        this.client.setScreen(new ConfirmScreen(confirmed -> {
+                            this.client.setScreen(this.screen);
                             if (confirmed) {
                                 this.pack.enable();
                             }

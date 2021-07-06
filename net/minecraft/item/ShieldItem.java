@@ -33,7 +33,7 @@ extends Item {
 
     @Override
     public String getTranslationKey(ItemStack stack) {
-        if (stack.getSubTag("BlockEntityTag") != null) {
+        if (stack.getSubNbt("BlockEntityTag") != null) {
             return this.getTranslationKey() + "." + ShieldItem.getColor(stack).getName();
         }
         return super.getTranslationKey(stack);
@@ -67,7 +67,7 @@ extends Item {
     }
 
     public static DyeColor getColor(ItemStack stack) {
-        return DyeColor.byId(stack.getOrCreateSubTag("BlockEntityTag").getInt(BASE_KEY));
+        return DyeColor.byId(stack.getOrCreateSubNbt("BlockEntityTag").getInt(BASE_KEY));
     }
 }
 

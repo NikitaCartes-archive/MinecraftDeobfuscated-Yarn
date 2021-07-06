@@ -32,7 +32,7 @@ extends AbstractCriterion<Conditions> {
         double d = player.getX() - (double)strongholdPos.getX();
         double e = player.getZ() - (double)strongholdPos.getZ();
         double f = d * d + e * e;
-        this.test(player, conditions -> conditions.matches(f));
+        this.trigger(player, (T conditions) -> conditions.matches(f));
     }
 
     @Override

@@ -83,11 +83,11 @@ extends EntityRenderer<LightningEntity> {
         }
     }
 
-    private static void drawBranch(Matrix4f matrix, VertexConsumer buffer, float f, float g, int i, float h, float j, float red, float green, float blue, float k, float l, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-        buffer.vertex(matrix, f + (bl ? l : -l), i * 16, g + (bl2 ? l : -l)).color(red, green, blue, 0.3f).next();
-        buffer.vertex(matrix, h + (bl ? k : -k), (i + 1) * 16, j + (bl2 ? k : -k)).color(red, green, blue, 0.3f).next();
-        buffer.vertex(matrix, h + (bl3 ? k : -k), (i + 1) * 16, j + (bl4 ? k : -k)).color(red, green, blue, 0.3f).next();
-        buffer.vertex(matrix, f + (bl3 ? l : -l), i * 16, g + (bl4 ? l : -l)).color(red, green, blue, 0.3f).next();
+    private static void drawBranch(Matrix4f matrix, VertexConsumer buffer, float x1, float z1, int y, float x2, float z2, float red, float green, float blue, float offset2, float offset1, boolean shiftEast1, boolean shiftSouth1, boolean shiftEast2, boolean shiftSouth2) {
+        buffer.vertex(matrix, x1 + (shiftEast1 ? offset1 : -offset1), y * 16, z1 + (shiftSouth1 ? offset1 : -offset1)).color(red, green, blue, 0.3f).next();
+        buffer.vertex(matrix, x2 + (shiftEast1 ? offset2 : -offset2), (y + 1) * 16, z2 + (shiftSouth1 ? offset2 : -offset2)).color(red, green, blue, 0.3f).next();
+        buffer.vertex(matrix, x2 + (shiftEast2 ? offset2 : -offset2), (y + 1) * 16, z2 + (shiftSouth2 ? offset2 : -offset2)).color(red, green, blue, 0.3f).next();
+        buffer.vertex(matrix, x1 + (shiftEast2 ? offset1 : -offset1), y * 16, z1 + (shiftSouth2 ? offset1 : -offset1)).color(red, green, blue, 0.3f).next();
     }
 
     @Override

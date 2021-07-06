@@ -34,7 +34,7 @@ extends ConditionalLootFunction {
 
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
-        stack.getOrCreateTag().copyFrom(this.nbt);
+        stack.getOrCreateNbt().copyFrom(this.nbt);
         return stack;
     }
 

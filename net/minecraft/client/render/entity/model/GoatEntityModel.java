@@ -82,7 +82,7 @@ extends QuadrupedEntityModel<T> {
         this.head.getChild((String)EntityModelPartNames.LEFT_HORN).visible = !((PassiveEntity)goatEntity).isBaby();
         this.head.getChild((String)EntityModelPartNames.RIGHT_HORN).visible = !((PassiveEntity)goatEntity).isBaby();
         super.setAngles(goatEntity, f, g, h, i, j);
-        float k = ((GoatEntity)goatEntity).method_36283();
+        float k = ((GoatEntity)goatEntity).getHeadPitch();
         if (k != 0.0f) {
             this.head.pitch = k;
         }

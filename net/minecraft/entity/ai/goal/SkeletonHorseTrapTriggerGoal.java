@@ -79,7 +79,7 @@ extends Goal {
     }
 
     private ItemStack removeEnchantments(ItemStack stack) {
-        stack.removeSubTag("Enchantments");
+        stack.removeSubNbt("Enchantments");
         return stack;
     }
 }

@@ -40,7 +40,7 @@ implements Vanishable {
     }
 
     public static boolean hasLodestone(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         return nbtCompound != null && (nbtCompound.contains(LODESTONE_DIMENSION_KEY) || nbtCompound.contains(LODESTONE_POS_KEY));
     }
 
@@ -60,7 +60,7 @@ implements Vanishable {
         }
         if (CompassItem.hasLodestone(stack)) {
             BlockPos blockPos;
-            NbtCompound nbtCompound = stack.getOrCreateTag();
+            NbtCompound nbtCompound = stack.getOrCreateNbt();
             if (nbtCompound.contains(LODESTONE_TRACKED_KEY) && !nbtCompound.getBoolean(LODESTONE_TRACKED_KEY)) {
                 return;
             }
@@ -82,11 +82,11 @@ implements Vanishable {
             ItemStack itemStack = context.getStack();
             boolean bl2 = bl = !playerEntity.getAbilities().creativeMode && itemStack.getCount() == 1;
             if (bl) {
-                this.writeNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
+                this.writeNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateNbt());
             } else {
                 ItemStack itemStack2 = new ItemStack(Items.COMPASS, 1);
-                NbtCompound nbtCompound = itemStack.hasTag() ? itemStack.getTag().copy() : new NbtCompound();
-                itemStack2.setTag(nbtCompound);
+                NbtCompound nbtCompound = itemStack.hasNbt() ? itemStack.getNbt().copy() : new NbtCompound();
+                itemStack2.setNbt(nbtCompound);
                 if (!playerEntity.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }

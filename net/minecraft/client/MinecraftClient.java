@@ -447,9 +447,9 @@ WindowEventHandler {
     /**
      * The Minecraft client's currently open screen.
      * This field should only be used to get the current screen.
-     * For changing the screen use {@link MinecraftClient#openScreen(Screen)}
+     * For changing the screen, use {@link MinecraftClient#setScreen(Screen)}.
      * 
-     * @see MinecraftClient#openScreen(Screen)
+     * @see MinecraftClient#setScreen(Screen)
      */
     @Nullable
     public Screen currentScreen;
@@ -629,7 +629,7 @@ WindowEventHandler {
         if (string != null) {
             ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null);
         } else {
-            this.openScreen(new TitleScreen(true));
+            this.setScreen(new TitleScreen(true));
         }
     }
 
@@ -724,7 +724,7 @@ WindowEventHandler {
                         throw outOfMemoryError;
                     }
                     this.cleanUpAfterCrash();
-                    this.openScreen(new OutOfMemoryScreen());
+                    this.setScreen(new OutOfMemoryScreen());
                     System.gc();
                     LOGGER.fatal("Out of memory", (Throwable)outOfMemoryError);
                     bl = true;
@@ -853,10 +853,10 @@ WindowEventHandler {
                 bl = true;
             }
         }
-        Sprite sprite = bakedModel.getSprite();
+        Sprite sprite = bakedModel.getParticleSprite();
         for (Block block2 : Registry.BLOCK) {
             for (BlockState blockState2 : block2.getStateManager().getStates()) {
-                Sprite sprite2 = blockModels.getSprite(blockState2);
+                Sprite sprite2 = blockModels.getModelParticleSprite(blockState2);
                 if (blockState2.isAir() || sprite2 != sprite) continue;
                 LOGGER.debug("Missing particle icon for: {}", (Object)blockState2);
                 bl = true;
@@ -888,18 +888,25 @@ WindowEventHandler {
         if (!chatRestriction.allowsChat(this.isInSingleplayer())) {
             this.inGameHud.setOverlayMessage(chatRestriction.getDescription(), false);
         } else {
-            this.openScreen(new ChatScreen(text));
+            this.setScreen(new ChatScreen(text));
         }
     }
 
     /**
-     * Opens a new screen, changing the current screen if needed.
+     * Sets the current screen to a new screen.
      * 
-     * <p>If the screen being opened is {@code null} and the client is not in game, the title screen will be opened.
-     * If the currently opened screen is {@code null} and player is dead then the death screen will be opened.
-     * Otherwise the currently open screen will be closed.
+     * <p>If the screen being opened is {@code null}:
+     * <ul>
+     * <li>if the client is not in game, the title screen will be opened</li>
+     * <li>if the {@linkplain #player} is dead, the death screen will be opened</li>
+     * </ul>
+     * 
+     * <p>If there is an open screen when the current screen is changed, {@link Screen#removed()}
+     * will be called on it to notify it of the closing.
+     * 
+     * @param screen the new screen, or {@code null} to just close the previous screen
      */
-    public void openScreen(@Nullable Screen screen) {
+    public void setScreen(@Nullable Screen screen) {
         if (SharedConstants.isDevelopment && Thread.currentThread() != this.thread) {
             LOGGER.error("setScreen called from non-game thread");
         }
@@ -1365,10 +1372,10 @@ WindowEventHandler {
         }
         boolean bl2 = bl = this.isIntegratedServerRunning() && !this.server.isRemote();
         if (bl) {
-            this.openScreen(new GameMenuScreen(!pause));
+            this.setScreen(new GameMenuScreen(!pause));
             this.soundManager.pauseAll();
         } else {
-            this.openScreen(new GameMenuScreen(true));
+            this.setScreen(new GameMenuScreen(true));
         }
     }
 
@@ -1510,12 +1517,12 @@ WindowEventHandler {
         }
         if (this.currentScreen == null && this.player != null) {
             if (this.player.isDead() && !(this.currentScreen instanceof DeathScreen)) {
-                this.openScreen(null);
+                this.setScreen(null);
             } else if (this.player.isSleeping() && this.world != null) {
-                this.openScreen(new SleepingChatScreen());
+                this.setScreen(new SleepingChatScreen());
             }
         } else if (this.currentScreen != null && this.currentScreen instanceof SleepingChatScreen && !this.player.isSleeping()) {
-            this.openScreen(null);
+            this.setScreen(null);
         }
         if (this.currentScreen != null) {
             this.attackCooldown = 10000;
@@ -1637,7 +1644,7 @@ WindowEventHandler {
                 this.tutorialManager.remove(this.socialInteractionsToast);
                 this.socialInteractionsToast = null;
             }
-            this.openScreen(new SocialInteractionsScreen());
+            this.setScreen(new SocialInteractionsScreen());
         }
         while (this.options.keyInventory.wasPressed()) {
             if (this.interactionManager.hasRidingInventory()) {
@@ -1645,10 +1652,10 @@ WindowEventHandler {
                 continue;
             }
             this.tutorialManager.onInventoryOpened();
-            this.openScreen(new InventoryScreen(this.player));
+            this.setScreen(new InventoryScreen(this.player));
         }
         while (this.options.keyAdvancements.wasPressed()) {
-            this.openScreen(new AdvancementsScreen(this.player.networkHandler.getAdvancementHandler()));
+            this.setScreen(new AdvancementsScreen(this.player.networkHandler.getAdvancementHandler()));
         }
         while (this.options.keySwapHands.wasPressed()) {
             if (this.player.isSpectator()) continue;
@@ -1701,7 +1708,7 @@ WindowEventHandler {
     }
 
     public static SaveProperties createSaveProperties(LevelStorage.Session session, DynamicRegistryManager.Impl registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings) {
-        RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, resourceManager, registryTracker);
+        RegistryOps<NbtElement> registryOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, resourceManager, (DynamicRegistryManager)registryTracker);
         SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings);
         if (saveProperties == null) {
             throw new IllegalStateException("Failed to load world");
@@ -1716,7 +1723,7 @@ WindowEventHandler {
     public void createWorld(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
         this.startIntegratedServer(worldName, registryTracker, session -> levelInfo.getDataPackSettings(), (session, registryManager, resourceManager, dataPackSettings) -> {
             RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, registryTracker);
-            RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, resourceManager, registryTracker);
+            RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, resourceManager, (DynamicRegistryManager)registryTracker);
             DataResult dataResult = GeneratorOptions.CODEC.encodeStart(registryReadingOps, generatorOptions).setLifecycle(Lifecycle.stable()).flatMap(json -> GeneratorOptions.CODEC.parse(registryOps, json));
             GeneratorOptions generatorOptions2 = dataResult.resultOrPartial(Util.addPrefix("Error reading worldgen settings after loading data packs: ", LOGGER::error)).orElse(generatorOptions);
             return new LevelProperties(levelInfo, generatorOptions2, dataResult.lifecycle());
@@ -1732,14 +1739,14 @@ WindowEventHandler {
         } catch (IOException iOException) {
             LOGGER.warn("Failed to read level {} data", (Object)worldName, (Object)iOException);
             SystemToast.addWorldAccessFailureToast(this, worldName);
-            this.openScreen(null);
+            this.setScreen(null);
             return;
         }
         try {
             integratedResourceManager = this.createIntegratedResourceManager(registryTracker, dataPackSettingsGetter, savePropertiesGetter, safeMode, session);
         } catch (Exception exception) {
             LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)exception);
-            this.openScreen(new DatapackFailureScreen(() -> this.startIntegratedServer(worldName, registryTracker, dataPackSettingsGetter, savePropertiesGetter, true, worldLoadAction)));
+            this.setScreen(new DatapackFailureScreen(() -> this.startIntegratedServer(worldName, registryTracker, dataPackSettingsGetter, savePropertiesGetter, true, worldLoadAction)));
             try {
                 session.close();
             } catch (IOException iOException2) {
@@ -1791,7 +1798,7 @@ WindowEventHandler {
             Thread.yield();
         }
         LevelLoadingScreen levelLoadingScreen = new LevelLoadingScreen(this.worldGenProgressTracker.get());
-        this.openScreen(levelLoadingScreen);
+        this.setScreen(levelLoadingScreen);
         this.profiler.push("waitForServer");
         while (!this.server.isLoading()) {
             levelLoadingScreen.tick();
@@ -1825,18 +1832,18 @@ WindowEventHandler {
                 text = new TranslatableText("selectWorld.backupQuestion.experimental");
                 text2 = new TranslatableText("selectWorld.backupWarning.experimental");
             }
-            this.openScreen(new BackupPromptScreen(null, (shouldBackup, eraseCache) -> {
+            this.setScreen(new BackupPromptScreen(null, (shouldBackup, eraseCache) -> {
                 if (shouldBackup) {
                     EditWorldScreen.onBackupConfirm(this.levelStorage, levelName);
                 }
                 onConfirm.run();
             }, text, text2, false));
         } else {
-            this.openScreen(new ConfirmScreen(bl -> {
+            this.setScreen(new ConfirmScreen(bl -> {
                 if (bl) {
                     onConfirm.run();
                 } else {
-                    this.openScreen(null);
+                    this.setScreen(null);
                     try (LevelStorage.Session session = this.levelStorage.createSession(levelName);){
                         session.deleteSessionLock();
                     } catch (IOException iOException) {
@@ -1923,14 +1930,14 @@ WindowEventHandler {
         this.soundManager.stopAll();
         this.cameraEntity = null;
         this.integratedServerConnection = null;
-        this.openScreen(screen);
+        this.setScreen(screen);
         this.render(false);
         this.profiler.pop();
     }
 
     public void method_29970(Screen screen) {
         this.profiler.push("forcedTick");
-        this.openScreen(screen);
+        this.setScreen(screen);
         this.render(false);
         this.profiler.pop();
     }
@@ -2063,15 +2070,15 @@ WindowEventHandler {
         NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
         if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
             NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
-            stack.getOrCreateTag().put("SkullOwner", nbtCompound2);
+            stack.getOrCreateNbt().put("SkullOwner", nbtCompound2);
             return stack;
         }
-        stack.putSubTag("BlockEntityTag", nbtCompound);
+        stack.setSubNbt("BlockEntityTag", nbtCompound);
         NbtCompound nbtCompound2 = new NbtCompound();
         NbtList nbtList = new NbtList();
         nbtList.add(NbtString.of("\"(+NBT)\""));
         nbtCompound2.put("Lore", nbtList);
-        stack.putSubTag("display", nbtCompound2);
+        stack.setSubNbt("display", nbtCompound2);
         return stack;
     }
 

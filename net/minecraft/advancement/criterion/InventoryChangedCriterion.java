@@ -60,7 +60,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     private void trigger(ServerPlayerEntity player, PlayerInventory inventory, ItemStack stack, int full, int empty, int occupied) {
-        this.test(player, conditions -> conditions.matches(inventory, stack, full, empty, occupied));
+        this.trigger(player, conditions -> conditions.matches(inventory, stack, full, empty, occupied));
     }
 
     @Override
@@ -140,7 +140,7 @@ extends AbstractCriterion<Conditions> {
                 }
                 ItemStack itemStack = inventory.getStack(k);
                 if (itemStack.isEmpty()) continue;
-                list.removeIf(itemPredicate -> itemPredicate.test(itemStack));
+                list.removeIf(item -> item.test(itemStack));
             }
             return list.isEmpty();
         }

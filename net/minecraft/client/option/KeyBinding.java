@@ -20,9 +20,9 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public class KeyBinding
 implements Comparable<KeyBinding> {
-    private static final Map<String, KeyBinding> keysById = Maps.newHashMap();
-    private static final Map<InputUtil.Key, KeyBinding> keyToBindings = Maps.newHashMap();
-    private static final Set<String> keyCategories = Sets.newHashSet();
+    private static final Map<String, KeyBinding> KEYS_BY_ID = Maps.newHashMap();
+    private static final Map<InputUtil.Key, KeyBinding> KEY_TO_BINDINGS = Maps.newHashMap();
+    private static final Set<String> KEY_CATEGORIES = Sets.newHashSet();
     public static final String MOVEMENT_CATEGORY = "key.categories.movement";
     public static final String MISC_CATEGORY = "key.categories.misc";
     public static final String MULTIPLAYER_CATEGORY = "key.categories.multiplayer";
@@ -30,7 +30,7 @@ implements Comparable<KeyBinding> {
     public static final String INVENTORY_CATEGORY = "key.categories.inventory";
     public static final String UI_CATEGORY = "key.categories.ui";
     public static final String CREATIVE_CATEGORY = "key.categories.creative";
-    private static final Map<String, Integer> categoryOrderMap = Util.make(Maps.newHashMap(), map -> {
+    private static final Map<String, Integer> CATEGORY_ORDER_MAP = Util.make(Maps.newHashMap(), map -> {
         map.put(MOVEMENT_CATEGORY, 1);
         map.put(GAMEPLAY_CATEGORY, 2);
         map.put(INVENTORY_CATEGORY, 3);
@@ -47,36 +47,36 @@ implements Comparable<KeyBinding> {
     private int timesPressed;
 
     public static void onKeyPressed(InputUtil.Key key) {
-        KeyBinding keyBinding = keyToBindings.get(key);
+        KeyBinding keyBinding = KEY_TO_BINDINGS.get(key);
         if (keyBinding != null) {
             ++keyBinding.timesPressed;
         }
     }
 
     public static void setKeyPressed(InputUtil.Key key, boolean pressed) {
-        KeyBinding keyBinding = keyToBindings.get(key);
+        KeyBinding keyBinding = KEY_TO_BINDINGS.get(key);
         if (keyBinding != null) {
             keyBinding.setPressed(pressed);
         }
     }
 
     public static void updatePressedStates() {
-        for (KeyBinding keyBinding : keysById.values()) {
+        for (KeyBinding keyBinding : KEYS_BY_ID.values()) {
             if (keyBinding.boundKey.getCategory() != InputUtil.Type.KEYSYM || keyBinding.boundKey.getCode() == InputUtil.UNKNOWN_KEY.getCode()) continue;
             keyBinding.setPressed(InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), keyBinding.boundKey.getCode()));
         }
     }
 
     public static void unpressAll() {
-        for (KeyBinding keyBinding : keysById.values()) {
+        for (KeyBinding keyBinding : KEYS_BY_ID.values()) {
             keyBinding.reset();
         }
     }
 
     public static void updateKeysByCode() {
-        keyToBindings.clear();
-        for (KeyBinding keyBinding : keysById.values()) {
-            keyToBindings.put(keyBinding.boundKey, keyBinding);
+        KEY_TO_BINDINGS.clear();
+        for (KeyBinding keyBinding : KEYS_BY_ID.values()) {
+            KEY_TO_BINDINGS.put(keyBinding.boundKey, keyBinding);
         }
     }
 
@@ -88,9 +88,9 @@ implements Comparable<KeyBinding> {
         this.translationKey = translationKey;
         this.defaultKey = this.boundKey = type.createFromCode(code);
         this.category = category;
-        keysById.put(translationKey, this);
-        keyToBindings.put(this.boundKey, this);
-        keyCategories.add(category);
+        KEYS_BY_ID.put(translationKey, this);
+        KEY_TO_BINDINGS.put(this.boundKey, this);
+        KEY_CATEGORIES.add(category);
     }
 
     /**
@@ -159,11 +159,11 @@ implements Comparable<KeyBinding> {
         if (this.category.equals(keyBinding.category)) {
             return I18n.translate(this.translationKey, new Object[0]).compareTo(I18n.translate(keyBinding.translationKey, new Object[0]));
         }
-        return categoryOrderMap.get(this.category).compareTo(categoryOrderMap.get(keyBinding.category));
+        return CATEGORY_ORDER_MAP.get(this.category).compareTo(CATEGORY_ORDER_MAP.get(keyBinding.category));
     }
 
     public static Supplier<Text> getLocalizedName(String id) {
-        KeyBinding keyBinding = keysById.get(id);
+        KeyBinding keyBinding = KEYS_BY_ID.get(id);
         if (keyBinding == null) {
             return () -> new TranslatableText(id);
         }

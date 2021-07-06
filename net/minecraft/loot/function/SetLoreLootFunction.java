@@ -71,11 +71,11 @@ extends ConditionalLootFunction {
     private NbtList getLoreForMerge(ItemStack stack, boolean otherLoreExists) {
         NbtCompound nbtCompound2;
         NbtCompound nbtCompound;
-        if (stack.hasTag()) {
-            nbtCompound = stack.getTag();
+        if (stack.hasNbt()) {
+            nbtCompound = stack.getNbt();
         } else if (otherLoreExists) {
             nbtCompound = new NbtCompound();
-            stack.setTag(nbtCompound);
+            stack.setNbt(nbtCompound);
         } else {
             return null;
         }

@@ -40,7 +40,7 @@ extends Item {
     }
 
     public static NbtList getEnchantmentNbt(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null) {
             return nbtCompound.getList(STORED_ENCHANTMENTS_KEY, 10);
         }
@@ -70,7 +70,7 @@ extends Item {
         if (bl) {
             nbtList.add(EnchantmentHelper.createNbt(identifier, entry.level));
         }
-        stack.getOrCreateTag().put(STORED_ENCHANTMENTS_KEY, nbtList);
+        stack.getOrCreateNbt().put(STORED_ENCHANTMENTS_KEY, nbtList);
     }
 
     public static ItemStack forEnchantment(EnchantmentLevelEntry info) {

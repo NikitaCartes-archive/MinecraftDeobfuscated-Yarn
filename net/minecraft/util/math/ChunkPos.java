@@ -46,8 +46,8 @@ public class ChunkPos {
         return (long)chunkX & 0xFFFFFFFFL | ((long)chunkZ & 0xFFFFFFFFL) << 32;
     }
 
-    public static long method_37232(BlockPos blockPos) {
-        return ChunkPos.toLong(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+    public static long toLong(BlockPos pos) {
+        return ChunkPos.toLong(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
     }
 
     public static int getPackedX(long pos) {

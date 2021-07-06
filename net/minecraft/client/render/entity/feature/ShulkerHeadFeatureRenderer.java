@@ -26,7 +26,7 @@ extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, ShulkerEntity shulkerEntity, float f, float g, float h, float j, float k, float l) {
-        Identifier identifier = ShulkerEntityRenderer.method_37105(shulkerEntity.getColor());
+        Identifier identifier = ShulkerEntityRenderer.getTexture(shulkerEntity.getColor());
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(identifier));
         ((ShulkerEntityModel)this.getContextModel()).getHead().render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(shulkerEntity, 0.0f));
     }

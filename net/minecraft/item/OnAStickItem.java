@@ -38,7 +38,7 @@ extends Item {
             itemStack.damage(this.damagePerUse, user, p -> p.sendToolBreakStatus(hand));
             if (itemStack.isEmpty()) {
                 ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
-                itemStack2.setTag(itemStack.getTag());
+                itemStack2.setNbt(itemStack.getNbt());
                 return TypedActionResult.success(itemStack2);
             }
             return TypedActionResult.success(itemStack);

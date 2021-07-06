@@ -18,16 +18,16 @@ implements ArgumentSerializer<T> {
     }
 
     @Override
-    public void toPacket(T argumentType, PacketByteBuf packetByteBuf) {
+    public void toPacket(T type, PacketByteBuf buf) {
     }
 
     @Override
-    public T fromPacket(PacketByteBuf packetByteBuf) {
+    public T fromPacket(PacketByteBuf buf) {
         return (T)((ArgumentType)this.supplier.get());
     }
 
     @Override
-    public void toJson(T argumentType, JsonObject jsonObject) {
+    public void toJson(T type, JsonObject json) {
     }
 }
 

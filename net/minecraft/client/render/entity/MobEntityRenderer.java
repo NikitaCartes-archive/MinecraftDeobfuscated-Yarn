@@ -26,7 +26,7 @@ import net.minecraft.world.LightType;
 @Environment(value=EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>>
 extends LivingEntityRenderer<T, M> {
-    public static final int field_32940 = 24;
+    public static final int LEASH_PIECE_COUNT = 24;
 
     public MobEntityRenderer(EntityRendererFactory.Context context, M entityModel, float f) {
         super(context, entityModel, f);
@@ -56,10 +56,10 @@ extends LivingEntityRenderer<T, M> {
         if (entity == null) {
             return;
         }
-        this.method_4073(mobEntity, g, matrixStack, vertexConsumerProvider, entity);
+        this.renderLeash(mobEntity, g, matrixStack, vertexConsumerProvider, entity);
     }
 
-    private <E extends Entity> void method_4073(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider provider, E holdingEntity) {
+    private <E extends Entity> void renderLeash(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider provider, E holdingEntity) {
         int u;
         matrices.push();
         Vec3d vec3d = holdingEntity.method_30951(tickDelta);
@@ -87,28 +87,28 @@ extends LivingEntityRenderer<T, M> {
         int s = ((MobEntity)entity).world.getLightLevel(LightType.SKY, blockPos);
         int t = ((MobEntity)entity).world.getLightLevel(LightType.SKY, blockPos2);
         for (u = 0; u <= 24; ++u) {
-            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025f, 0.025f, o, p, u, false);
+            MobEntityRenderer.renderLeashPiece(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025f, 0.025f, o, p, u, false);
         }
         for (u = 24; u >= 0; --u) {
-            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025f, 0.0f, o, p, u, true);
+            MobEntityRenderer.renderLeashPiece(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025f, 0.0f, o, p, u, true);
         }
         matrices.pop();
     }
 
-    private static void method_23187(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, int l, float m, float n, float o, float p, int q, boolean bl) {
-        float r = (float)q / 24.0f;
-        int s = (int)MathHelper.lerp(r, i, j);
-        int t = (int)MathHelper.lerp(r, k, l);
-        int u = LightmapTextureManager.pack(s, t);
-        float v = q % 2 == (bl ? 1 : 0) ? 0.7f : 1.0f;
-        float w = 0.5f * v;
-        float x = 0.4f * v;
-        float y = 0.3f * v;
-        float z = f * r;
-        float aa = g > 0.0f ? g * r * r : g - g * (1.0f - r) * (1.0f - r);
-        float ab = h * r;
-        vertexConsumer.vertex(matrix4f, z - o, aa + n, ab + p).color(w, x, y, 1.0f).light(u).next();
-        vertexConsumer.vertex(matrix4f, z + o, aa + m - n, ab - p).color(w, x, y, 1.0f).light(u).next();
+    private static void renderLeashPiece(VertexConsumer vertexConsumer, Matrix4f modelMatrix, float f, float g, float h, int leashedEntityBlockLight, int holdingEntityBlockLight, int leashedEntitySkyLight, int holdingEntitySkyLight, float i, float j, float k, float l, int pieceIndex, boolean isLeashKnot) {
+        float m = (float)pieceIndex / 24.0f;
+        int n = (int)MathHelper.lerp(m, leashedEntityBlockLight, holdingEntityBlockLight);
+        int o = (int)MathHelper.lerp(m, leashedEntitySkyLight, holdingEntitySkyLight);
+        int p = LightmapTextureManager.pack(n, o);
+        float q = pieceIndex % 2 == (isLeashKnot ? 1 : 0) ? 0.7f : 1.0f;
+        float r = 0.5f * q;
+        float s = 0.4f * q;
+        float t = 0.3f * q;
+        float u = f * m;
+        float v = g > 0.0f ? g * m * m : g - g * (1.0f - m) * (1.0f - m);
+        float w = h * m;
+        vertexConsumer.vertex(modelMatrix, u - k, v + j, w + l).color(r, s, t, 1.0f).light(p).next();
+        vertexConsumer.vertex(modelMatrix, u + k, v + i - j, w - l).color(r, s, t, 1.0f).light(p).next();
     }
 }
 

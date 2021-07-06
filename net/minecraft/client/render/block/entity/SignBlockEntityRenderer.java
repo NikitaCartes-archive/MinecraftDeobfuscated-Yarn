@@ -47,8 +47,8 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class SignBlockEntityRenderer
 implements BlockEntityRenderer<SignBlockEntity> {
-    public static final int field_32828 = 90;
-    private static final int field_32829 = 10;
+    public static final int MAX_TEXT_WIDTH = 90;
+    private static final int TEXT_HEIGHT = 10;
     private static final String STICK = "stick";
     private static final int GLOWING_BLACK_COLOR = -988212;
     private static final int RENDER_DISTANCE = MathHelper.square(16);
@@ -139,7 +139,7 @@ implements BlockEntityRenderer<SignBlockEntity> {
         if (i == DyeColor.BLACK.getSignColor() && sign.isGlowingText()) {
             return -988212;
         }
-        return NativeImage.getAbgrColor(0, l, k, j);
+        return NativeImage.packColor(0, l, k, j);
     }
 
     public static SignType getSignType(Block block) {

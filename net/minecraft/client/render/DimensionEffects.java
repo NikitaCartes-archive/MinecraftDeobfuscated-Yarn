@@ -15,8 +15,8 @@ import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public abstract class SkyProperties {
-    private static final Object2ObjectMap<Identifier, SkyProperties> BY_IDENTIFIER = Util.make(new Object2ObjectArrayMap(), map -> {
+public abstract class DimensionEffects {
+    private static final Object2ObjectMap<Identifier, DimensionEffects> BY_IDENTIFIER = Util.make(new Object2ObjectArrayMap(), map -> {
         Overworld overworld = new Overworld();
         map.defaultReturnValue(overworld);
         map.put(DimensionType.OVERWORLD_ID, overworld);
@@ -30,7 +30,7 @@ public abstract class SkyProperties {
     private final boolean brightenLighting;
     private final boolean darkened;
 
-    public SkyProperties(float cloudsHeight, boolean alternateSkyColor, SkyType skyType, boolean brightenLighting, boolean darkened) {
+    public DimensionEffects(float cloudsHeight, boolean alternateSkyColor, SkyType skyType, boolean brightenLighting, boolean darkened) {
         this.cloudsHeight = cloudsHeight;
         this.alternateSkyColor = alternateSkyColor;
         this.skyType = skyType;
@@ -38,8 +38,8 @@ public abstract class SkyProperties {
         this.darkened = darkened;
     }
 
-    public static SkyProperties byDimensionType(DimensionType dimensionType) {
-        return (SkyProperties)BY_IDENTIFIER.get(dimensionType.getSkyProperties());
+    public static DimensionEffects byDimensionType(DimensionType dimensionType) {
+        return (DimensionEffects)BY_IDENTIFIER.get(dimensionType.getEffects());
     }
 
     /**
@@ -102,7 +102,7 @@ public abstract class SkyProperties {
 
     @Environment(value=EnvType.CLIENT)
     public static class Overworld
-    extends SkyProperties {
+    extends DimensionEffects {
         public static final int CLOUDS_HEIGHT = 128;
 
         public Overworld() {
@@ -122,7 +122,7 @@ public abstract class SkyProperties {
 
     @Environment(value=EnvType.CLIENT)
     public static class Nether
-    extends SkyProperties {
+    extends DimensionEffects {
         public Nether() {
             super(Float.NaN, true, SkyType.NONE, false, true);
         }
@@ -140,7 +140,7 @@ public abstract class SkyProperties {
 
     @Environment(value=EnvType.CLIENT)
     public static class End
-    extends SkyProperties {
+    extends DimensionEffects {
         public End() {
             super(Float.NaN, false, SkyType.END, true, false);
         }

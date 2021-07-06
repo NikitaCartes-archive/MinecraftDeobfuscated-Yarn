@@ -21,7 +21,7 @@ import net.minecraft.text.TranslatableText;
 public class ScoreboardSlotArgumentType
 implements ArgumentType<Integer> {
     private static final Collection<String> EXAMPLES = Arrays.asList("sidebar", "foo.bar");
-    public static final DynamicCommandExceptionType INVALID_SLOT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.scoreboardDisplaySlot.invalid", object));
+    public static final DynamicCommandExceptionType INVALID_SLOT_EXCEPTION = new DynamicCommandExceptionType(name -> new TranslatableText("argument.scoreboardDisplaySlot.invalid", name));
 
     private ScoreboardSlotArgumentType() {
     }
@@ -55,8 +55,8 @@ implements ArgumentType<Integer> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 }
 

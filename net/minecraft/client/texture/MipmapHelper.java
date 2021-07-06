@@ -28,7 +28,7 @@ public class MipmapHelper {
             boolean bl = false;
             block0: for (i = 0; i < image.getWidth(); ++i) {
                 for (int j = 0; j < image.getHeight(); ++j) {
-                    if (image.getPixelColor(i, j) >> 24 != 0) continue;
+                    if (image.getColor(i, j) >> 24 != 0) continue;
                     bl = true;
                     break block0;
                 }
@@ -40,7 +40,7 @@ public class MipmapHelper {
                 int l = nativeImage2.getHeight();
                 for (int m = 0; m < k; ++m) {
                     for (int n = 0; n < l; ++n) {
-                        nativeImage2.setPixelColor(m, n, MipmapHelper.blend(nativeImage.getPixelColor(m * 2 + 0, n * 2 + 0), nativeImage.getPixelColor(m * 2 + 1, n * 2 + 0), nativeImage.getPixelColor(m * 2 + 0, n * 2 + 1), nativeImage.getPixelColor(m * 2 + 1, n * 2 + 1), bl));
+                        nativeImage2.setColor(m, n, MipmapHelper.blend(nativeImage.getColor(m * 2 + 0, n * 2 + 0), nativeImage.getColor(m * 2 + 1, n * 2 + 0), nativeImage.getColor(m * 2 + 0, n * 2 + 1), nativeImage.getColor(m * 2 + 1, n * 2 + 1), bl));
                     }
                 }
                 nativeImages[i] = nativeImage2;

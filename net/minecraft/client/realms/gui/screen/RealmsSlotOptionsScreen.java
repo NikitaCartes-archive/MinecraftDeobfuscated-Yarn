@@ -74,7 +74,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -167,7 +167,7 @@ extends RealmsScreen {
             cyclingButtonWidget3.active = false;
         }
         this.addDrawableChild(new ButtonWidget(this.column1_x, RealmsSlotOptionsScreen.row(13), this.column2_x, 20, new TranslatableText("mco.configure.world.buttons.done"), button -> this.saveSettings()));
-        this.addDrawableChild(new ButtonWidget(i, RealmsSlotOptionsScreen.row(13), this.column2_x, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(i, RealmsSlotOptionsScreen.row(13), this.column2_x, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
         this.addSelectableChild(this.nameEdit);
     }
 

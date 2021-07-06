@@ -33,10 +33,10 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(extended, extended2, extended3);
     }
 
-    public void test(ServerPlayerEntity player, LightningEntity lightning, List<Entity> bystanders) {
+    public void trigger(ServerPlayerEntity player, LightningEntity lightning, List<Entity> bystanders) {
         List list = bystanders.stream().map(bystander -> EntityPredicate.createAdvancementEntityLootContext(player, bystander)).collect(Collectors.toList());
         LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, lightning);
-        this.test(player, conditions -> conditions.test(lootContext, list));
+        this.trigger(player, conditions -> conditions.test(lootContext, list));
     }
 
     @Override

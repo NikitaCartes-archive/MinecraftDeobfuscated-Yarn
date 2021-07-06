@@ -38,6 +38,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(extended, extendeds, intRange);
     }
 
+    @Override
     public void trigger(ServerPlayerEntity player, Collection<Entity> piercingKilledEntities) {
         ArrayList<LootContext> list = Lists.newArrayList();
         HashSet<EntityType<?>> set = Sets.newHashSet();
@@ -45,7 +46,7 @@ extends AbstractCriterion<Conditions> {
             set.add(entity.getType());
             list.add(EntityPredicate.createAdvancementEntityLootContext(player, entity));
         }
-        this.test(player, conditions -> conditions.matches(list, set.size()));
+        this.trigger(player, (T conditions) -> conditions.matches(list, set.size()));
     }
 
     @Override

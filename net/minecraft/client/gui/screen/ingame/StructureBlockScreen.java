@@ -96,7 +96,7 @@ extends Screen {
 
     private void done() {
         if (this.updateStructureBlock(StructureBlockBlockEntity.Action.UPDATE_DATA)) {
-            this.client.openScreen(null);
+            this.client.setScreen(null);
         }
     }
 
@@ -107,7 +107,7 @@ extends Screen {
         this.structureBlock.setIgnoreEntities(this.ignoreEntities);
         this.structureBlock.setShowAir(this.showAir);
         this.structureBlock.setShowBoundingBox(this.showBoundingBox);
-        this.client.openScreen(null);
+        this.client.setScreen(null);
     }
 
     @Override
@@ -124,13 +124,13 @@ extends Screen {
         this.buttonSave = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.save"), button -> {
             if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
                 this.updateStructureBlock(StructureBlockBlockEntity.Action.SAVE_AREA);
-                this.client.openScreen(null);
+                this.client.setScreen(null);
             }
         }));
         this.buttonLoad = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.load"), button -> {
             if (this.structureBlock.getMode() == StructureBlockMode.LOAD) {
                 this.updateStructureBlock(StructureBlockBlockEntity.Action.LOAD_AREA);
-                this.client.openScreen(null);
+                this.client.setScreen(null);
             }
         }));
         this.addDrawableChild(CyclingButtonWidget.builder(value -> new TranslatableText("structure_block.mode." + value.asString())).values((List<StructureBlockMode>)MODES_EXCEPT_DATA, (List<StructureBlockMode>)MODES).omitKeyText().initially(this.mode).build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (button, mode) -> {
@@ -140,7 +140,7 @@ extends Screen {
         this.buttonDetect = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, new TranslatableText("structure_block.button.detect_size"), button -> {
             if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
                 this.updateStructureBlock(StructureBlockBlockEntity.Action.SCAN_AREA);
-                this.client.openScreen(null);
+                this.client.setScreen(null);
             }
         }));
         this.buttonEntities = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(!this.structureBlock.shouldIgnoreEntities()).omitKeyText().build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (button, includeEntities) -> this.structureBlock.setIgnoreEntities(includeEntities == false)));

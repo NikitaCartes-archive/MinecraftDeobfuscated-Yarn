@@ -32,7 +32,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity player, Vec3d startPos, int duration) {
-        this.test(player, conditions -> conditions.matches(player, startPos, duration));
+        this.trigger(player, conditions -> conditions.matches(player, startPos, duration));
     }
 
     @Override

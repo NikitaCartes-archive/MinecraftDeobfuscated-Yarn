@@ -157,7 +157,7 @@ public class TestCommand {
             tests.add(gameTestState);
             gameTestState.addListener(new Listener(world, tests));
         }
-        TestCommand.setWorld(testFunction, world);
+        TestCommand.beforeBatch(testFunction, world);
         Box box = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
         BlockPos blockPos = new BlockPos(box.minX, box.minY, box.minZ);
         TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
@@ -191,15 +191,15 @@ public class TestCommand {
         int i = source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), i, blockPos.getZ() + 3);
         TestUtil.clearDebugMarkers(serverWorld);
-        TestCommand.setWorld(testFunction, serverWorld);
+        TestCommand.beforeBatch(testFunction, serverWorld);
         BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
         GameTestState gameTestState = new GameTestState(testFunction, blockRotation, serverWorld);
         TestUtil.startTest(gameTestState, blockPos2, TestManager.INSTANCE);
         return 1;
     }
 
-    private static void setWorld(TestFunction testFunction, ServerWorld world) {
-        Consumer<ServerWorld> consumer = TestFunctions.getAfterBatchConsumer(testFunction.getBatchId());
+    private static void beforeBatch(TestFunction testFunction, ServerWorld world) {
+        Consumer<ServerWorld> consumer = TestFunctions.getBeforeBatchConsumer(testFunction.getBatchId());
         if (consumer != null) {
             consumer.accept(world);
         }

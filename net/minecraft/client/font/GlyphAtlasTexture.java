@@ -30,7 +30,7 @@ extends AbstractTexture {
         this.id = id;
         this.hasColor = hasColor;
         this.rootSlot = new Slot(0, 0, 256, 256);
-        TextureUtil.prepareImage(hasColor ? NativeImage.GLFormat.ABGR : NativeImage.GLFormat.RED, this.getGlId(), 256, 256);
+        TextureUtil.prepareImage(hasColor ? NativeImage.InternalFormat.RGBA : NativeImage.InternalFormat.RED, this.getGlId(), 256, 256);
         this.textLayer = hasColor ? RenderLayer.getText(id) : RenderLayer.getTextIntensity(id);
         this.seeThroughTextLayer = hasColor ? RenderLayer.getTextSeeThrough(id) : RenderLayer.getTextIntensitySeeThrough(id);
         this.polygonOffsetTextLayer = hasColor ? RenderLayer.getTextPolygonOffset(id) : RenderLayer.getTextIntensityPolygonOffset(id);

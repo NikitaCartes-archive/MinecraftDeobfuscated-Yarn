@@ -288,7 +288,7 @@ public class Mouse {
         this.x = this.client.getWindow().getWidth() / 2;
         this.y = this.client.getWindow().getHeight() / 2;
         InputUtil.setCursorParameters(this.client.getWindow().getHandle(), 212995, this.x, this.y);
-        this.client.openScreen(null);
+        this.client.setScreen(null);
         this.client.attackCooldown = 10000;
         this.hasResolutionChanged = true;
     }

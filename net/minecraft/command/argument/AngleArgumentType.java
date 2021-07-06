@@ -49,17 +49,17 @@ implements ArgumentType<Angle> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 
     public static final class Angle {
         private final float angle;
         private final boolean relative;
 
-        Angle(float f, boolean bl) {
-            this.angle = f;
-            this.relative = bl;
+        Angle(float angle, boolean relative) {
+            this.angle = angle;
+            this.relative = relative;
         }
 
         public float getAngle(ServerCommandSource source) {

@@ -30,6 +30,10 @@ extends IntProvider {
         this.max = max;
     }
 
+    /**
+     * @param min the minimum value, inclusive
+     * @param max the maximum value, inclusive
+     */
     public static UniformIntProvider create(int min, int max) {
         return new UniformIntProvider(min, max);
     }

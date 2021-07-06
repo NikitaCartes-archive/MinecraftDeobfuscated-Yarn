@@ -68,7 +68,7 @@ extends Item {
             DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".empty", string));
             return false;
         }
-        NbtCompound nbtCompound = stack.getOrCreateSubTag("DebugProperty");
+        NbtCompound nbtCompound = stack.getOrCreateSubNbt("DebugProperty");
         String string2 = nbtCompound.getString(string);
         Property<?> property = stateManager.getProperty(string2);
         if (update) {

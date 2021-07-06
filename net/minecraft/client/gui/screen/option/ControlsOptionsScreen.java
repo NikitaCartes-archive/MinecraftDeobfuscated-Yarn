@@ -34,7 +34,7 @@ extends GameOptionsScreen {
 
     @Override
     protected void init() {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, 18, 150, 20, new TranslatableText("options.mouse_settings"), button -> this.client.openScreen(new MouseOptionsScreen(this, this.gameOptions))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, 18, 150, 20, new TranslatableText("options.mouse_settings"), button -> this.client.setScreen(new MouseOptionsScreen(this, this.gameOptions))));
         this.addDrawableChild(Option.AUTO_JUMP.createButton(this.gameOptions, this.width / 2 - 155 + 160, 18, 150));
         this.keyBindingListWidget = new ControlsListWidget(this, this.client);
         this.addSelectableChild(this.keyBindingListWidget);
@@ -44,7 +44,7 @@ extends GameOptionsScreen {
             }
             KeyBinding.updateKeysByCode();
         }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
     }
 
     @Override

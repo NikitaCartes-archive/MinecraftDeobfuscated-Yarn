@@ -33,7 +33,7 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        NbtCompound nbtCompound = itemStack.getTag();
+        NbtCompound nbtCompound = itemStack.getNbt();
         if (!user.getAbilities().creativeMode) {
             user.setStackInHand(hand, ItemStack.EMPTY);
         }

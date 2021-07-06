@@ -60,7 +60,7 @@ implements ParticleEffect {
 
     @Override
     public String asString() {
-        return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getItem(), this.stack.getTag()).asString();
+        return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getItem(), this.stack.getNbt()).asString();
     }
 
     public ParticleType<ItemStackParticleEffect> getType() {

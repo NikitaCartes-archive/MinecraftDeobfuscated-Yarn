@@ -53,7 +53,7 @@ implements Criterion<T> {
         return this.conditionsFromJson(jsonObject, extended, advancementEntityPredicateDeserializer);
     }
 
-    protected void test(ServerPlayerEntity player, Predicate<T> tester) {
+    protected void trigger(ServerPlayerEntity player, Predicate<T> predicate) {
         PlayerAdvancementTracker playerAdvancementTracker = player.getAdvancementTracker();
         Set<Criterion.ConditionsContainer<T>> set = this.progressions.get(playerAdvancementTracker);
         if (set == null || set.isEmpty()) {
@@ -63,7 +63,7 @@ implements Criterion<T> {
         ArrayList<Criterion.ConditionsContainer<T>> list = null;
         for (Criterion.ConditionsContainer<T> conditionsContainer : set) {
             AbstractCriterionConditions abstractCriterionConditions = (AbstractCriterionConditions)conditionsContainer.getConditions();
-            if (!tester.test(abstractCriterionConditions) || !abstractCriterionConditions.getPlayerPredicate().test(lootContext)) continue;
+            if (!predicate.test(abstractCriterionConditions) || !abstractCriterionConditions.getPlayerPredicate().test(lootContext)) continue;
             if (list == null) {
                 list = Lists.newArrayList();
             }

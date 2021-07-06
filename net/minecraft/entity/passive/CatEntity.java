@@ -22,13 +22,13 @@ import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.CatSitOnBlockGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
-import net.minecraft.entity.ai.goal.FollowTargetIfTamedGoal;
 import net.minecraft.entity.ai.goal.GoToBedAndSleepGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.UntamedActiveTargetGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -79,9 +79,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CatEntity
 extends TameableEntity {
-    public static final double field_30310 = 0.6;
-    public static final double field_30311 = 0.8;
-    public static final double field_30312 = 1.33;
+    public static final double CROUCHING_SPEED = 0.6;
+    public static final double NORMAL_SPEED = 0.8;
+    public static final double SPRINTING_SPEED = 1.33;
     private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
     private static final TrackedData<Integer> CAT_TYPE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> IN_SLEEPING_POSE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -181,8 +181,8 @@ extends TameableEntity {
         this.goalSelector.add(10, new AnimalMateGoal(this, 0.8));
         this.goalSelector.add(11, new WanderAroundFarGoal((PathAwareEntity)this, 0.8, 1.0000001E-5f));
         this.goalSelector.add(12, new LookAtEntityGoal(this, PlayerEntity.class, 10.0f));
-        this.targetSelector.add(1, new FollowTargetIfTamedGoal<RabbitEntity>(this, RabbitEntity.class, false, null));
-        this.targetSelector.add(1, new FollowTargetIfTamedGoal<TurtleEntity>(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
+        this.targetSelector.add(1, new UntamedActiveTargetGoal<RabbitEntity>(this, RabbitEntity.class, false, null));
+        this.targetSelector.add(1, new UntamedActiveTargetGoal<TurtleEntity>(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
     }
 
     public int getCatType() {

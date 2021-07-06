@@ -66,10 +66,10 @@ implements BlockEntityRenderer<BedBlockEntity> {
     @Override
     public void render(BedBlockEntity bedBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         SpriteIdentifier spriteIdentifier = TexturedRenderLayers.BED_TEXTURES[bedBlockEntity.getColor().getId()];
-        World world = bedBlockEntity.getWorld();
-        if (world != null) {
+        World world2 = bedBlockEntity.getWorld();
+        if (world2 != null) {
             BlockState blockState = bedBlockEntity.getCachedState();
-            DoubleBlockProperties.PropertySource<BedBlockEntity> propertySource = DoubleBlockProperties.toPropertySource(BlockEntityType.BED, BedBlock::getBedPart, BedBlock::getOppositePartDirection, ChestBlock.FACING, blockState, world, bedBlockEntity.getPos(), (worldAccess, blockPos) -> false);
+            DoubleBlockProperties.PropertySource<BedBlockEntity> propertySource = DoubleBlockProperties.toPropertySource(BlockEntityType.BED, BedBlock::getBedPart, BedBlock::getOppositePartDirection, ChestBlock.FACING, blockState, world2, bedBlockEntity.getPos(), (world, pos) -> false);
             int k = ((Int2IntFunction)propertySource.apply(new LightmapCoordinatesRetriever())).get(i);
             this.renderPart(matrixStack, vertexConsumerProvider, blockState.get(BedBlock.PART) == BedPart.HEAD ? this.bedHead : this.bedFoot, blockState.get(BedBlock.FACING), spriteIdentifier, k, j, false);
         } else {
@@ -78,7 +78,7 @@ implements BlockEntityRenderer<BedBlockEntity> {
         }
     }
 
-    private void renderPart(MatrixStack matrix, VertexConsumerProvider vertexConsumers, ModelPart modelPart, Direction direction, SpriteIdentifier sprite, int light, int overlay, boolean isFoot) {
+    private void renderPart(MatrixStack matrix, VertexConsumerProvider vertexConsumers, ModelPart part, Direction direction, SpriteIdentifier sprite, int light, int overlay, boolean isFoot) {
         matrix.push();
         matrix.translate(0.0, 0.5625, isFoot ? -1.0 : 0.0);
         matrix.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
@@ -86,7 +86,7 @@ implements BlockEntityRenderer<BedBlockEntity> {
         matrix.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f + direction.asRotation()));
         matrix.translate(-0.5, -0.5, -0.5);
         VertexConsumer vertexConsumer = sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid);
-        modelPart.render(matrix, vertexConsumer, light, overlay);
+        part.render(matrix, vertexConsumer, light, overlay);
         matrix.pop();
     }
 }

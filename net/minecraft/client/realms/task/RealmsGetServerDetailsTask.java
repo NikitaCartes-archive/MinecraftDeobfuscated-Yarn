@@ -120,7 +120,7 @@ extends LongRunningTask {
                 }
             }
         };
-        return new RealmsLongConfirmationScreen(booleanConsumer, RealmsLongConfirmationScreen.Type.Info, new TranslatableText("mco.configure.world.resourcepack.question.line1"), new TranslatableText("mco.configure.world.resourcepack.question.line2"), true);
+        return new RealmsLongConfirmationScreen(booleanConsumer, RealmsLongConfirmationScreen.Type.INFO, new TranslatableText("mco.configure.world.resourcepack.question.line1"), new TranslatableText("mco.configure.world.resourcepack.question.line2"), true);
     }
 
     private CompletableFuture<?> downloadResourcePack(RealmsServerAddress address) {

@@ -55,7 +55,7 @@ extends ConditionalLootFunction {
         BlockState blockState = context.get(LootContextParameters.BLOCK_STATE);
         if (blockState != null) {
             NbtCompound nbtCompound2;
-            NbtCompound nbtCompound = stack.getOrCreateTag();
+            NbtCompound nbtCompound = stack.getOrCreateNbt();
             if (nbtCompound.contains("BlockStateTag", 10)) {
                 nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
             } else {

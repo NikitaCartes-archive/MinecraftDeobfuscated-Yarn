@@ -103,7 +103,7 @@ extends Item {
         if (stack.isEmpty() || !stack.getItem().canBeNested()) {
             return 0;
         }
-        NbtCompound nbtCompound = bundle.getOrCreateTag();
+        NbtCompound nbtCompound = bundle.getOrCreateNbt();
         if (!nbtCompound.contains(ITEMS_KEY)) {
             nbtCompound.put(ITEMS_KEY, new NbtList());
         }
@@ -144,7 +144,7 @@ extends Item {
         if (stack.isOf(Items.BUNDLE)) {
             return 4 + BundleItem.getBundleOccupancy(stack);
         }
-        if ((stack.isOf(Items.BEEHIVE) || stack.isOf(Items.BEE_NEST)) && stack.hasTag() && (nbtCompound = stack.getSubTag("BlockEntityTag")) != null && !nbtCompound.getList("Bees", 10).isEmpty()) {
+        if ((stack.isOf(Items.BEEHIVE) || stack.isOf(Items.BEE_NEST)) && stack.hasNbt() && (nbtCompound = stack.getSubNbt("BlockEntityTag")) != null && !nbtCompound.getList("Bees", 10).isEmpty()) {
             return 64;
         }
         return 64 / stack.getMaxCount();
@@ -155,7 +155,7 @@ extends Item {
     }
 
     private static Optional<ItemStack> removeFirstStack(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getOrCreateTag();
+        NbtCompound nbtCompound = stack.getOrCreateNbt();
         if (!nbtCompound.contains(ITEMS_KEY)) {
             return Optional.empty();
         }
@@ -168,13 +168,13 @@ extends Item {
         ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
         nbtList.remove(0);
         if (nbtList.isEmpty()) {
-            stack.removeSubTag(ITEMS_KEY);
+            stack.removeSubNbt(ITEMS_KEY);
         }
         return Optional.of(itemStack);
     }
 
     private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
-        NbtCompound nbtCompound = stack.getOrCreateTag();
+        NbtCompound nbtCompound = stack.getOrCreateNbt();
         if (!nbtCompound.contains(ITEMS_KEY)) {
             return false;
         }
@@ -186,12 +186,12 @@ extends Item {
                 player.dropItem(itemStack, true);
             }
         }
-        stack.removeSubTag(ITEMS_KEY);
+        stack.removeSubNbt(ITEMS_KEY);
         return true;
     }
 
     private static Stream<ItemStack> getBundledStacks(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound == null) {
             return Stream.empty();
         }

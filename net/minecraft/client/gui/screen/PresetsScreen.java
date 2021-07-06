@@ -184,9 +184,9 @@ extends Screen {
         this.selectPresetButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), button -> {
             FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.parsePresetString(registry, this.customPresetField.getText(), this.config);
             this.parent.setConfig(flatChunkGeneratorConfig);
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
         }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
         this.updateSelectButton(this.listWidget.getSelectedOrNull() != null);
     }
 
@@ -204,7 +204,7 @@ extends Screen {
 
     @Override
     public void onClose() {
-        this.client.openScreen(this.parent);
+        this.client.setScreen(this.parent);
     }
 
     @Override

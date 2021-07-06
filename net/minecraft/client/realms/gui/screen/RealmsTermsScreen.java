@@ -51,7 +51,7 @@ extends RealmsScreen {
         this.client.keyboard.setRepeatEvents(true);
         int i = this.width / 4 - 2;
         this.addDrawableChild(new ButtonWidget(this.width / 4, RealmsTermsScreen.row(12), i, 20, new TranslatableText("mco.terms.buttons.agree"), button -> this.agreedToTos()));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, RealmsTermsScreen.row(12), i, 20, new TranslatableText("mco.terms.buttons.disagree"), button -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, RealmsTermsScreen.row(12), i, 20, new TranslatableText("mco.terms.buttons.disagree"), button -> this.client.setScreen(this.parent)));
     }
 
     @Override
@@ -62,7 +62,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -72,7 +72,7 @@ extends RealmsScreen {
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         try {
             realmsClient.agreeToTos();
-            this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new RealmsGetServerDetailsTask(this.mainScreen, this.parent, this.realmsServer, new ReentrantLock())));
+            this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new RealmsGetServerDetailsTask(this.mainScreen, this.parent, this.realmsServer, new ReentrantLock())));
         } catch (RealmsServiceException realmsServiceException) {
             LOGGER.error("Couldn't agree to TOS");
         }

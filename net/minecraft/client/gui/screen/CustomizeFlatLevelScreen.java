@@ -81,17 +81,17 @@ extends Screen {
             this.updateRemoveLayerButton();
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, new TranslatableText("createWorld.customize.presets"), button -> {
-            this.client.openScreen(new PresetsScreen(this));
+            this.client.setScreen(new PresetsScreen(this));
             this.config.updateLayerBlocks();
             this.updateRemoveLayerButton();
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, button -> {
             this.configConsumer.accept(this.config);
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
             this.config.updateLayerBlocks();
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> {
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
             this.config.updateLayerBlocks();
         }));
         this.config.updateLayerBlocks();
@@ -108,7 +108,7 @@ extends Screen {
 
     @Override
     public void onClose() {
-        this.client.openScreen(this.parent);
+        this.client.setScreen(this.parent);
     }
 
     @Override

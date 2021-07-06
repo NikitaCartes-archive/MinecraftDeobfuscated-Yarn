@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -69,8 +70,8 @@ extends HostileEntity {
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         this.goalSelector.add(6, new LookAroundGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this, new Class[0]));
-        this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class));
-        this.targetSelector.add(3, new FollowTargetGoal<IronGolemEntity>(this, IronGolemEntity.class));
+        this.targetSelector.add(2, new TargetGoal<PlayerEntity>(this, PlayerEntity.class));
+        this.targetSelector.add(3, new TargetGoal<IronGolemEntity>(this, IronGolemEntity.class));
     }
 
     @Override
@@ -211,9 +212,9 @@ extends HostileEntity {
         }
     }
 
-    static class FollowTargetGoal<T extends LivingEntity>
-    extends net.minecraft.entity.ai.goal.FollowTargetGoal<T> {
-        public FollowTargetGoal(SpiderEntity spider, Class<T> targetEntityClass) {
+    static class TargetGoal<T extends LivingEntity>
+    extends ActiveTargetGoal<T> {
+        public TargetGoal(SpiderEntity spider, Class<T> targetEntityClass) {
             super((MobEntity)spider, targetEntityClass, true);
         }
 

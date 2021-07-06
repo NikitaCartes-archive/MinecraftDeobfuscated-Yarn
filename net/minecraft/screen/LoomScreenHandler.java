@@ -151,7 +151,7 @@ extends ScreenHandler {
             this.selectedPattern.set(0);
         } else if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
             boolean bl;
-            NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+            NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("BlockEntityTag");
             boolean bl2 = bl = nbtCompound.contains("Patterns", 9) && !itemStack.isEmpty() && nbtCompound.getList("Patterns", 10).size() >= 6;
             if (bl) {
                 this.selectedPattern.set(0);
@@ -212,7 +212,7 @@ extends ScreenHandler {
                 itemStack3.setCount(1);
                 BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
                 DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-                NbtCompound nbtCompound = itemStack3.getOrCreateSubTag("BlockEntityTag");
+                NbtCompound nbtCompound = itemStack3.getOrCreateSubNbt("BlockEntityTag");
                 if (nbtCompound.contains("Patterns", 9)) {
                     nbtList = nbtCompound.getList("Patterns", 10);
                 } else {

@@ -31,7 +31,7 @@ public class NbtPredicate {
         if (this == ANY) {
             return true;
         }
-        return this.test(stack.getTag());
+        return this.test(stack.getNbt());
     }
 
     public boolean test(Entity entity) {

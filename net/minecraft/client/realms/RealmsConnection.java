@@ -75,7 +75,7 @@ public class RealmsConnection {
                         string3 = string3.replaceAll(string2, "");
                     }
                     DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string3));
-                    minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
+                    minecraftClient.execute(() -> minecraftClient.setScreen(disconnectedRealmsScreen));
                 }
             }
         }.start();

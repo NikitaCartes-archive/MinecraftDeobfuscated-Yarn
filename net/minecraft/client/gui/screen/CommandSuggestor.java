@@ -53,9 +53,9 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class CommandSuggestor {
     private static final Pattern BACKSLASH_S_PATTERN = Pattern.compile("(\\s+)");
-    private static final Style ERROR_FORMATTING = Style.EMPTY.withColor(Formatting.RED);
-    private static final Style INFO_FORMATTING = Style.EMPTY.withColor(Formatting.GRAY);
-    private static final List<Style> HIGHLIGHT_FORMATTINGS = Stream.of(Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD).map(Style.EMPTY::withColor).collect(ImmutableList.toImmutableList());
+    private static final Style ERROR_STYLE = Style.EMPTY.withColor(Formatting.RED);
+    private static final Style INFO_STYLE = Style.EMPTY.withColor(Formatting.GRAY);
+    private static final List<Style> HIGHLIGHT_STYLES = Stream.of(Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD).map(Style.EMPTY::withColor).collect(ImmutableList.toImmutableList());
     final MinecraftClient client;
     final Screen owner;
     final TextFieldWidget textField;
@@ -283,23 +283,23 @@ public class CommandSuggestor {
         CommandContextBuilder<CommandSource> commandContextBuilder = parse.getContext().getLastChild();
         for (ParsedArgument<CommandSource, ?> parsedArgument : commandContextBuilder.getArguments().values()) {
             int k;
-            if (++j >= HIGHLIGHT_FORMATTINGS.size()) {
+            if (++j >= HIGHLIGHT_STYLES.size()) {
                 j = 0;
             }
             if ((k = Math.max(parsedArgument.getRange().getStart() - firstCharacterIndex, 0)) >= original.length()) break;
             int l = Math.min(parsedArgument.getRange().getEnd() - firstCharacterIndex, original.length());
             if (l <= 0) continue;
-            list.add(OrderedText.styledForwardsVisitedString(original.substring(i, k), INFO_FORMATTING));
-            list.add(OrderedText.styledForwardsVisitedString(original.substring(k, l), HIGHLIGHT_FORMATTINGS.get(j)));
+            list.add(OrderedText.styledForwardsVisitedString(original.substring(i, k), INFO_STYLE));
+            list.add(OrderedText.styledForwardsVisitedString(original.substring(k, l), HIGHLIGHT_STYLES.get(j)));
             i = l;
         }
         if (parse.getReader().canRead() && (m = Math.max(parse.getReader().getCursor() - firstCharacterIndex, 0)) < original.length()) {
             int n = Math.min(m + parse.getReader().getRemainingLength(), original.length());
-            list.add(OrderedText.styledForwardsVisitedString(original.substring(i, m), INFO_FORMATTING));
-            list.add(OrderedText.styledForwardsVisitedString(original.substring(m, n), ERROR_FORMATTING));
+            list.add(OrderedText.styledForwardsVisitedString(original.substring(i, m), INFO_STYLE));
+            list.add(OrderedText.styledForwardsVisitedString(original.substring(m, n), ERROR_STYLE));
             i = n;
         }
-        list.add(OrderedText.styledForwardsVisitedString(original.substring(i), INFO_FORMATTING));
+        list.add(OrderedText.styledForwardsVisitedString(original.substring(i), INFO_STYLE));
         return OrderedText.concat(list);
     }
 

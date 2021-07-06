@@ -66,7 +66,7 @@ import org.jetbrains.annotations.Nullable;
 public class SheepEntity
 extends AnimalEntity
 implements Shearable {
-    private static final int field_30371 = 40;
+    private static final int MAX_GRASS_TIMER = 40;
     private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final Map<DyeColor, ItemConvertible> DROPS = Util.make(Maps.newEnumMap(DyeColor.class), map -> {
         map.put(DyeColor.WHITE, Blocks.WHITE_WOOL);

@@ -23,10 +23,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class ItemStringReader {
     public static final SimpleCommandExceptionType TAG_DISALLOWED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.item.tag.disallowed"));
-    public static final DynamicCommandExceptionType ID_INVALID_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.item.id.invalid", object));
-    private static final char field_33066 = '{';
-    private static final char field_33067 = '#';
-    private static final BiFunction<SuggestionsBuilder, TagGroup<Item>, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = (suggestionsBuilder, tagGroup) -> suggestionsBuilder.buildFuture();
+    public static final DynamicCommandExceptionType ID_INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("argument.item.id.invalid", id));
+    private static final char LEFT_CURLY_BRACKET = '{';
+    private static final char HASH_SIGN = '#';
+    private static final BiFunction<SuggestionsBuilder, TagGroup<Item>, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = (builder, group) -> builder.buildFuture();
     private final StringReader reader;
     private final boolean allowTag;
     private Item item;
@@ -92,26 +92,26 @@ public class ItemStringReader {
         return this;
     }
 
-    private CompletableFuture<Suggestions> suggestItem(SuggestionsBuilder suggestionsBuilder, TagGroup<Item> tagGroup) {
-        if (suggestionsBuilder.getRemaining().isEmpty()) {
-            suggestionsBuilder.suggest(String.valueOf('{'));
+    private CompletableFuture<Suggestions> suggestItem(SuggestionsBuilder builder, TagGroup<Item> group) {
+        if (builder.getRemaining().isEmpty()) {
+            builder.suggest(String.valueOf('{'));
         }
-        return suggestionsBuilder.buildFuture();
+        return builder.buildFuture();
     }
 
-    private CompletableFuture<Suggestions> suggestTag(SuggestionsBuilder suggestionsBuilder, TagGroup<Item> tagGroup) {
-        return CommandSource.suggestIdentifiers(tagGroup.getTagIds(), suggestionsBuilder.createOffset(this.cursor));
+    private CompletableFuture<Suggestions> suggestTag(SuggestionsBuilder builder, TagGroup<Item> group) {
+        return CommandSource.suggestIdentifiers(group.getTagIds(), builder.createOffset(this.cursor));
     }
 
-    private CompletableFuture<Suggestions> suggestAny(SuggestionsBuilder suggestionsBuilder, TagGroup<Item> tagGroup) {
+    private CompletableFuture<Suggestions> suggestAny(SuggestionsBuilder builder, TagGroup<Item> group) {
         if (this.allowTag) {
-            CommandSource.suggestIdentifiers(tagGroup.getTagIds(), suggestionsBuilder, String.valueOf('#'));
+            CommandSource.suggestIdentifiers(group.getTagIds(), builder, String.valueOf('#'));
         }
-        return CommandSource.suggestIdentifiers(Registry.ITEM.getIds(), suggestionsBuilder);
+        return CommandSource.suggestIdentifiers(Registry.ITEM.getIds(), builder);
     }
 
-    public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder, TagGroup<Item> tagGroup) {
-        return this.suggestions.apply(builder.createOffset(this.reader.getCursor()), tagGroup);
+    public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder, TagGroup<Item> group) {
+        return this.suggestions.apply(builder.createOffset(this.reader.getCursor()), group);
     }
 }
 

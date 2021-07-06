@@ -38,6 +38,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents an item corresponding to a block. Using this item places a
+ * block in the world.
+ */
 public class BlockItem
 extends Item {
     public static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
@@ -118,7 +122,7 @@ extends Item {
 
     private BlockState placeFromTag(BlockPos pos, World world, ItemStack stack, BlockState state) {
         BlockState blockState = state;
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null) {
             NbtCompound nbtCompound2 = nbtCompound.getCompound(BLOCK_STATE_TAG_KEY);
             StateManager<Block, BlockState> stateManager = blockState.getBlock().getStateManager();
@@ -159,7 +163,7 @@ extends Item {
         if (minecraftServer == null) {
             return false;
         }
-        NbtCompound nbtCompound = stack.getSubTag(BLOCK_ENTITY_TAG_KEY);
+        NbtCompound nbtCompound = stack.getSubNbt(BLOCK_ENTITY_TAG_KEY);
         if (nbtCompound != null && (blockEntity = world.getBlockEntity(pos)) != null) {
             if (!(world.isClient || !blockEntity.copyItemDataRequiresOperator() || player != null && player.isCreativeLevelTwoOp())) {
                 return false;
@@ -213,7 +217,7 @@ extends Item {
     @Override
     public void onItemEntityDestroyed(ItemEntity entity) {
         NbtCompound nbtCompound;
-        if (this.block instanceof ShulkerBoxBlock && (nbtCompound = entity.getStack().getTag()) != null) {
+        if (this.block instanceof ShulkerBoxBlock && (nbtCompound = entity.getStack().getNbt()) != null) {
             NbtList nbtList = nbtCompound.getCompound(BLOCK_ENTITY_TAG_KEY).getList("Items", 10);
             ItemUsage.spawnItemContents(entity, nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt));
         }

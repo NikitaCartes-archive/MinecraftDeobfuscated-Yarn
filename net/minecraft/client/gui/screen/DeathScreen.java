@@ -42,7 +42,7 @@ extends Screen {
         this.buttons.clear();
         this.buttons.add(this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, this.isHardcore ? new TranslatableText("deathScreen.spectate") : new TranslatableText("deathScreen.respawn"), button -> {
             this.client.player.requestRespawn();
-            this.client.openScreen(null);
+            this.client.setScreen(null);
         })));
         this.buttons.add(this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, 200, 20, new TranslatableText("deathScreen.titleScreen"), button -> {
             if (this.isHardcore) {
@@ -50,7 +50,7 @@ extends Screen {
                 return;
             }
             ConfirmScreen confirmScreen = new ConfirmScreen(this::onConfirmQuit, new TranslatableText("deathScreen.quit.confirm"), LiteralText.EMPTY, new TranslatableText("deathScreen.titleScreen"), new TranslatableText("deathScreen.respawn"));
-            this.client.openScreen(confirmScreen);
+            this.client.setScreen(confirmScreen);
             confirmScreen.disableButtons(20);
         })));
         for (ButtonWidget buttonWidget : this.buttons) {
@@ -69,7 +69,7 @@ extends Screen {
             this.quitLevel();
         } else {
             this.client.player.requestRespawn();
-            this.client.openScreen(null);
+            this.client.setScreen(null);
         }
     }
 
@@ -78,7 +78,7 @@ extends Screen {
             this.client.world.disconnect();
         }
         this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
-        this.client.openScreen(new TitleScreen());
+        this.client.setScreen(new TitleScreen());
     }
 
     @Override

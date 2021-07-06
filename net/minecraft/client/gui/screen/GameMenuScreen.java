@@ -45,26 +45,26 @@ extends Screen {
         int i = -16;
         int j = 98;
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, new TranslatableText("menu.returnToGame"), button -> {
-            this.client.openScreen(null);
+            this.client.setScreen(null);
             this.client.mouse.lockCursor();
         }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 48 + -16, 98, 20, new TranslatableText("gui.advancements"), button -> this.client.openScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 48 + -16, 98, 20, new TranslatableText("gui.stats"), button -> this.client.openScreen(new StatsScreen(this, this.client.player.getStatHandler()))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 48 + -16, 98, 20, new TranslatableText("gui.advancements"), button -> this.client.setScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 48 + -16, 98, 20, new TranslatableText("gui.stats"), button -> this.client.setScreen(new StatsScreen(this, this.client.player.getStatHandler()))));
         String string = SharedConstants.getGameVersion().isStable() ? JAVA_FEEDBACK_URL : SNAPSHOT_FEEDBACK_URL;
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.sendFeedback"), button -> this.client.openScreen(new ConfirmChatLinkScreen(confirmed -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.sendFeedback"), button -> this.client.setScreen(new ConfirmChatLinkScreen(confirmed -> {
             if (confirmed) {
                 Util.getOperatingSystem().open(string);
             }
-            this.client.openScreen(this);
+            this.client.setScreen(this);
         }, string, true))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.reportBugs"), button -> this.client.openScreen(new ConfirmChatLinkScreen(confirmed -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 72 + -16, 98, 20, new TranslatableText("menu.reportBugs"), button -> this.client.setScreen(new ConfirmChatLinkScreen(confirmed -> {
             if (confirmed) {
                 Util.getOperatingSystem().open(SNAPSHOT_BUGS_URL);
             }
-            this.client.openScreen(this);
+            this.client.setScreen(this);
         }, SNAPSHOT_BUGS_URL, true))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.options"), button -> this.client.openScreen(new OptionsScreen(this, this.client.options))));
-        ButtonWidget buttonWidget = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.shareToLan"), button -> this.client.openScreen(new OpenToLanScreen(this))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))));
+        ButtonWidget buttonWidget = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))));
         buttonWidget.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
         TranslatableText text = this.client.isInSingleplayer() ? new TranslatableText("menu.returnToMenu") : new TranslatableText("menu.disconnect");
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, text, button -> {
@@ -79,11 +79,11 @@ extends Screen {
             }
             TitleScreen titleScreen = new TitleScreen();
             if (bl) {
-                this.client.openScreen(titleScreen);
+                this.client.setScreen(titleScreen);
             } else if (bl2) {
-                this.client.openScreen(new RealmsMainScreen(titleScreen));
+                this.client.setScreen(new RealmsMainScreen(titleScreen));
             } else {
-                this.client.openScreen(new MultiplayerScreen(titleScreen));
+                this.client.setScreen(new MultiplayerScreen(titleScreen));
             }
         }));
     }

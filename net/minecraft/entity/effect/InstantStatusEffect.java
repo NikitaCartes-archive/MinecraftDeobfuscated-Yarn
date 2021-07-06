@@ -4,12 +4,12 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.effect.StatusEffectCategory;
 
 public class InstantStatusEffect
 extends StatusEffect {
-    public InstantStatusEffect(StatusEffectType statusEffectType, int i) {
-        super(statusEffectType, i);
+    public InstantStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
+        super(statusEffectCategory, i);
     }
 
     @Override

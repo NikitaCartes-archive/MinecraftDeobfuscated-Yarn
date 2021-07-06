@@ -37,7 +37,7 @@ extends SpecialCraftingRecipe {
                 if (!itemStack.isEmpty()) {
                     return false;
                 }
-                if (itemStack3.getSubTag("BlockEntityTag") != null) {
+                if (itemStack3.getSubNbt("BlockEntityTag") != null) {
                     return false;
                 }
                 itemStack = itemStack3;
@@ -65,10 +65,10 @@ extends SpecialCraftingRecipe {
         if (itemStack2.isEmpty()) {
             return itemStack2;
         }
-        NbtCompound nbtCompound = itemStack.getSubTag("BlockEntityTag");
+        NbtCompound nbtCompound = itemStack.getSubNbt("BlockEntityTag");
         NbtCompound nbtCompound2 = nbtCompound == null ? new NbtCompound() : nbtCompound.copy();
         nbtCompound2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
-        itemStack2.putSubTag("BlockEntityTag", nbtCompound2);
+        itemStack2.setSubNbt("BlockEntityTag", nbtCompound2);
         return itemStack2;
     }
 

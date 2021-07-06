@@ -117,7 +117,7 @@ public class AdvancementDisplay {
         if (json.has("nbt")) {
             try {
                 NbtCompound nbtCompound = StringNbtReader.parse(JsonHelper.asString(json.get("nbt"), "nbt"));
-                itemStack.setTag(nbtCompound);
+                itemStack.setNbt(nbtCompound);
             } catch (CommandSyntaxException commandSyntaxException) {
                 throw new JsonSyntaxException("Invalid nbt tag: " + commandSyntaxException.getMessage());
             }
@@ -180,8 +180,8 @@ public class AdvancementDisplay {
     private JsonObject iconToJson() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("item", Registry.ITEM.getId(this.icon.getItem()).toString());
-        if (this.icon.hasTag()) {
-            jsonObject.addProperty("nbt", this.icon.getTag().toString());
+        if (this.icon.hasNbt()) {
+            jsonObject.addProperty("nbt", this.icon.getNbt().toString());
         }
         return jsonObject;
     }

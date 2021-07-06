@@ -31,16 +31,16 @@ import net.minecraft.text.TranslatableText;
 
 public class ScoreHolderArgumentType
 implements ArgumentType<ScoreHolder> {
-    public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder2) -> {
-        StringReader stringReader = new StringReader(suggestionsBuilder2.getInput());
-        stringReader.setCursor(suggestionsBuilder2.getStart());
+    public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder2) -> {
+        StringReader stringReader = new StringReader(builder2.getInput());
+        stringReader.setCursor(builder2.getStart());
         EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
         try {
             entitySelectorReader.read();
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return entitySelectorReader.listSuggestions(suggestionsBuilder2, (SuggestionsBuilder suggestionsBuilder) -> CommandSource.suggestMatching(((ServerCommandSource)commandContext.getSource()).getPlayerNames(), suggestionsBuilder));
+        return entitySelectorReader.listSuggestions(builder2, (SuggestionsBuilder builder) -> CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getPlayerNames(), builder));
     };
     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "*", "@e");
     private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.scoreHolder.empty"));
@@ -113,8 +113,8 @@ implements ArgumentType<ScoreHolder> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 
     @FunctionalInterface
@@ -126,8 +126,8 @@ implements ArgumentType<ScoreHolder> {
     implements ScoreHolder {
         private final EntitySelector selector;
 
-        public SelectorScoreHolder(EntitySelector entitySelector) {
-            this.selector = entitySelector;
+        public SelectorScoreHolder(EntitySelector selector) {
+            this.selector = selector;
         }
 
         @Override
@@ -168,8 +168,8 @@ implements ArgumentType<ScoreHolder> {
         }
 
         @Override
-        public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-            return this.fromPacket(packetByteBuf);
+        public /* synthetic */ ArgumentType fromPacket(PacketByteBuf buf) {
+            return this.fromPacket(buf);
         }
     }
 }

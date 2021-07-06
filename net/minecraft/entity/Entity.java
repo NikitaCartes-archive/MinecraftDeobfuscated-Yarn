@@ -1742,7 +1742,7 @@ CommandOutput {
         this.setPose(EntityPose.STANDING);
         this.vehicle = entity2;
         this.vehicle.addPassenger(this);
-        entity2.streamIntoPassengers().filter(entity -> entity instanceof ServerPlayerEntity).forEach(entity -> Criteria.STARTED_RIDING.test((ServerPlayerEntity)entity));
+        entity2.streamIntoPassengers().filter(entity -> entity instanceof ServerPlayerEntity).forEach(entity -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)entity));
         return true;
     }
 

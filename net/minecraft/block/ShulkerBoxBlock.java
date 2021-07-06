@@ -134,7 +134,7 @@ extends BlockWithEntity {
                 ItemStack itemStack = ShulkerBoxBlock.getItemStack(this.getColor());
                 NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
                 if (!nbtCompound.isEmpty()) {
-                    itemStack.putSubTag("BlockEntityTag", nbtCompound);
+                    itemStack.setSubNbt("BlockEntityTag", nbtCompound);
                 }
                 if (shulkerBoxBlockEntity.hasCustomName()) {
                     itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
@@ -186,7 +186,7 @@ extends BlockWithEntity {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
         super.appendTooltip(stack, world, tooltip, options);
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+        NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
         if (nbtCompound != null) {
             if (nbtCompound.contains("LootTable", 8)) {
                 tooltip.add(new LiteralText("???????"));
@@ -242,7 +242,7 @@ extends BlockWithEntity {
         ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)world.getBlockEntity(pos);
         NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
         if (!nbtCompound.isEmpty()) {
-            itemStack.putSubTag("BlockEntityTag", nbtCompound);
+            itemStack.setSubNbt("BlockEntityTag", nbtCompound);
         }
         return itemStack;
     }

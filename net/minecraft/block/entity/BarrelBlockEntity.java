@@ -7,8 +7,8 @@ import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ChestStateManager;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.entity.ViewerCountManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -30,22 +30,22 @@ import net.minecraft.world.World;
 public class BarrelBlockEntity
 extends LootableContainerBlockEntity {
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
-    private ChestStateManager stateManager = new ChestStateManager(){
+    private ViewerCountManager stateManager = new ViewerCountManager(){
 
         @Override
-        protected void onChestOpened(World world, BlockPos pos, BlockState state) {
+        protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
             BarrelBlockEntity.this.playSound(state, SoundEvents.BLOCK_BARREL_OPEN);
             BarrelBlockEntity.this.setOpen(state, true);
         }
 
         @Override
-        protected void onChestClosed(World world, BlockPos pos, BlockState state) {
+        protected void onContainerClose(World world, BlockPos pos, BlockState state) {
             BarrelBlockEntity.this.playSound(state, SoundEvents.BLOCK_BARREL_CLOSE);
             BarrelBlockEntity.this.setOpen(state, false);
         }
 
         @Override
-        protected void onInteracted(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+        protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
         }
 
         @Override
@@ -108,14 +108,14 @@ extends LootableContainerBlockEntity {
     @Override
     public void onOpen(PlayerEntity player) {
         if (!this.removed && !player.isSpectator()) {
-            this.stateManager.openChest(player, this.getWorld(), this.getPos(), this.getCachedState());
+            this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
 
     @Override
     public void onClose(PlayerEntity player) {
         if (!this.removed && !player.isSpectator()) {
-            this.stateManager.closeChest(player, this.getWorld(), this.getPos(), this.getCachedState());
+            this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
 

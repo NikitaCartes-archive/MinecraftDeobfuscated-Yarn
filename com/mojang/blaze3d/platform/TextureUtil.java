@@ -51,18 +51,18 @@ public class TextureUtil {
     }
 
     public static void prepareImage(int id, int width, int height) {
-        TextureUtil.prepareImage(NativeImage.GLFormat.ABGR, id, 0, width, height);
+        TextureUtil.prepareImage(NativeImage.InternalFormat.RGBA, id, 0, width, height);
     }
 
-    public static void prepareImage(NativeImage.GLFormat internalFormat, int id, int width, int height) {
+    public static void prepareImage(NativeImage.InternalFormat internalFormat, int id, int width, int height) {
         TextureUtil.prepareImage(internalFormat, id, 0, width, height);
     }
 
     public static void prepareImage(int id, int maxLevel, int width, int height) {
-        TextureUtil.prepareImage(NativeImage.GLFormat.ABGR, id, maxLevel, width, height);
+        TextureUtil.prepareImage(NativeImage.InternalFormat.RGBA, id, maxLevel, width, height);
     }
 
-    public static void prepareImage(NativeImage.GLFormat internalFormat, int id, int maxLevel, int width, int height) {
+    public static void prepareImage(NativeImage.InternalFormat internalFormat, int id, int maxLevel, int width, int height) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         TextureUtil.bind(id);
         if (maxLevel >= 0) {
@@ -72,7 +72,7 @@ public class TextureUtil {
             GlStateManager._texParameter(3553, 34049, 0.0f);
         }
         for (int i = 0; i <= maxLevel; ++i) {
-            GlStateManager._texImage2D(3553, i, internalFormat.getGlConstant(), width >> i, height >> i, 0, 6408, 5121, null);
+            GlStateManager._texImage2D(3553, i, internalFormat.getValue(), width >> i, height >> i, 0, 6408, 5121, null);
         }
     }
 
@@ -131,7 +131,7 @@ public class TextureUtil {
             int o = l >> m;
             try (NativeImage nativeImage = new NativeImage(n, o, false);){
                 nativeImage.loadFromTextureImage(m, false);
-                nativeImage.method_35622(string2);
+                nativeImage.writeTo(string2);
                 LOGGER.debug("Exported png to: {}", (Object)new File(string2).getAbsolutePath());
                 continue;
             } catch (IOException iOException) {

@@ -172,8 +172,8 @@ extends Screen {
             this.cheatsEnabled = cheatsEnabled;
         }));
         this.dataPacksButton = this.addDrawableChild(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.openPackScreen()));
-        this.gameRulesButton = this.addDrawableChild(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), button -> this.client.openScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
-            this.client.openScreen(this);
+        this.gameRulesButton = this.addDrawableChild(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
+            this.client.setScreen(this);
             optional.ifPresent(gameRules -> {
                 this.gameRules = gameRules;
             });
@@ -322,7 +322,7 @@ extends Screen {
     }
 
     public void onCloseScreen() {
-        this.client.openScreen(this.parent);
+        this.client.setScreen(this.parent);
         this.clearTempResources();
     }
 
@@ -381,7 +381,7 @@ extends Screen {
     private void openPackScreen() {
         Pair<File, ResourcePackManager> pair = this.getScannedPack();
         if (pair != null) {
-            this.client.openScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), new TranslatableText("dataPack.title")));
+            this.client.setScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), new TranslatableText("dataPack.title")));
         }
     }
 
@@ -393,7 +393,7 @@ extends Screen {
             this.dataPackSettings = dataPackSettings;
             return;
         }
-        this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
+        this.client.send(() -> this.client.setScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
         ((CompletableFuture)ServerResourceManager.reload(dataPackManager.createResourcePacks(), this.moreOptionsDialog.getRegistryManager(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), this.client).thenAcceptAsync(serverResourceManager -> {
             this.dataPackSettings = dataPackSettings;
             this.moreOptionsDialog.loadDatapacks((ServerResourceManager)serverResourceManager);
@@ -401,16 +401,16 @@ extends Screen {
         }, (Executor)this.client)).handle((void_, throwable) -> {
             if (throwable != null) {
                 LOGGER.warn("Failed to validate datapack", (Throwable)throwable);
-                this.client.send(() -> this.client.openScreen(new ConfirmScreen(confirmed -> {
+                this.client.send(() -> this.client.setScreen(new ConfirmScreen(confirmed -> {
                     if (confirmed) {
                         this.openPackScreen();
                     } else {
                         this.dataPackSettings = DataPackSettings.SAFE_MODE;
-                        this.client.openScreen(this);
+                        this.client.setScreen(this);
                     }
                 }, new TranslatableText("dataPack.validation.failed"), LiteralText.EMPTY, new TranslatableText("dataPack.validation.back"), new TranslatableText("dataPack.validation.reset"))));
             } else {
-                this.client.send(() -> this.client.openScreen(this));
+                this.client.send(() -> this.client.setScreen(this));
             }
             return null;
         });

@@ -31,8 +31,8 @@ extends SkullBlock {
         if (blockEntity instanceof SkullBlockEntity) {
             SkullBlockEntity skullBlockEntity = (SkullBlockEntity)blockEntity;
             GameProfile gameProfile = null;
-            if (itemStack.hasTag()) {
-                NbtCompound nbtCompound = itemStack.getTag();
+            if (itemStack.hasNbt()) {
+                NbtCompound nbtCompound = itemStack.getNbt();
                 if (nbtCompound.contains("SkullOwner", 10)) {
                     gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
                 } else if (nbtCompound.contains("SkullOwner", 8) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {

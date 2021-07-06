@@ -25,8 +25,8 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(extended);
     }
 
-    public void test(ServerPlayerEntity player) {
-        this.test(player, conditions -> true);
+    public void trigger(ServerPlayerEntity player) {
+        this.trigger(player, conditions -> true);
     }
 
     @Override

@@ -99,7 +99,7 @@ extends Screen {
         if (!commandBlockExecutor.isTrackingOutput()) {
             commandBlockExecutor.setLastOutput(null);
         }
-        this.client.openScreen(null);
+        this.client.setScreen(null);
     }
 
     @Override

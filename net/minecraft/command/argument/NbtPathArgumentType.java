@@ -35,12 +35,12 @@ public class NbtPathArgumentType
 implements ArgumentType<NbtPath> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar", "foo[0]", "[0]", "[]", "{foo=bar}");
     public static final SimpleCommandExceptionType INVALID_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.nbtpath.node.invalid"));
-    public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("arguments.nbtpath.nothing_found", object));
-    private static final char field_32182 = '[';
-    private static final char field_32183 = ']';
-    private static final char field_32184 = '{';
-    private static final char field_32185 = '}';
-    private static final char field_32186 = '\"';
+    public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(path -> new TranslatableText("arguments.nbtpath.nothing_found", path));
+    private static final char LEFT_SQUARE_BRACKET = '[';
+    private static final char RIGHT_SQUARE_BRACKET = ']';
+    private static final char LEFT_CURLY_BRACKET = '{';
+    private static final char RIGHT_CURLY_BRACKET = '}';
+    private static final char DOUBLE_QUOTE = '\"';
 
     public static NbtPathArgumentType nbtPath() {
         return new NbtPathArgumentType();
@@ -186,7 +186,7 @@ implements ArgumentType<NbtPath> {
         }
 
         private static int forEach(List<NbtElement> elements, Function<NbtElement, Integer> operation) {
-            return elements.stream().map(operation).reduce(0, (integer, integer2) -> integer + integer2);
+            return elements.stream().map(operation).reduce(0, (a, b) -> a + b);
         }
 
         public int put(NbtElement element, NbtElement source) throws CommandSyntaxException {
@@ -196,7 +196,7 @@ implements ArgumentType<NbtPath> {
         public int put(NbtElement element, Supplier<NbtElement> source) throws CommandSyntaxException {
             List<NbtElement> list = this.getTerminals(element);
             PathNode pathNode = this.nodes[this.nodes.length - 1];
-            return NbtPath.forEach(list, nbtElement -> pathNode.set((NbtElement)nbtElement, source));
+            return NbtPath.forEach(list, nbt -> pathNode.set((NbtElement)nbt, source));
         }
 
         public int remove(NbtElement element) {
@@ -305,8 +305,8 @@ implements ArgumentType<NbtPath> {
             MutableBoolean mutableBoolean = new MutableBoolean();
             if (current instanceof NbtList) {
                 NbtList nbtList = (NbtList)current;
-                nbtList.stream().filter(this.predicate).forEach(nbtElement -> {
-                    results.add((NbtElement)nbtElement);
+                nbtList.stream().filter(this.predicate).forEach(nbt -> {
+                    results.add((NbtElement)nbt);
                     mutableBoolean.setTrue();
                 });
                 if (mutableBoolean.isFalse()) {

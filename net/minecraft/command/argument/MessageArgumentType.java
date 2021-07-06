@@ -62,8 +62,8 @@ implements ArgumentType<MessageFormat> {
             return this.selectors;
         }
 
-        public Text format(ServerCommandSource source, boolean bl) throws CommandSyntaxException {
-            if (this.selectors.length == 0 || !bl) {
+        public Text format(ServerCommandSource source, boolean canUseSelectors) throws CommandSyntaxException {
+            if (this.selectors.length == 0 || !canUseSelectors) {
                 return new LiteralText(this.contents);
             }
             LiteralText mutableText = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
@@ -84,9 +84,9 @@ implements ArgumentType<MessageFormat> {
             return mutableText;
         }
 
-        public static MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
+        public static MessageFormat parse(StringReader reader, boolean canUseSelectors) throws CommandSyntaxException {
             String string = reader.getString().substring(reader.getCursor(), reader.getTotalLength());
-            if (!bl) {
+            if (!canUseSelectors) {
                 reader.setCursor(reader.getTotalLength());
                 return new MessageFormat(string, new MessageSelector[0]);
             }

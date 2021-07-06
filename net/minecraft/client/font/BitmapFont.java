@@ -160,7 +160,7 @@ implements Font {
             block10: {
                 Resource resource = manager.getResource(this.filename);
                 try {
-                    NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
+                    NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
                     int i = nativeImage.getWidth();
                     int j = nativeImage.getHeight();
                     int k = i / this.chars.get(0).length;
@@ -204,7 +204,7 @@ implements Font {
                 int j = charPosX * characterWidth + i;
                 for (int k = 0; k < characterHeight; ++k) {
                     int l = charPosY * characterHeight + k;
-                    if (image.getPixelOpacity(j, l) == 0) continue;
+                    if (image.getOpacity(j, l) == 0) continue;
                     return i + 1;
                 }
             }

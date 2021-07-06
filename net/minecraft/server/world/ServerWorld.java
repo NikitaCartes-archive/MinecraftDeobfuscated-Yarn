@@ -204,7 +204,7 @@ implements StructureWorldAccess {
         this.initWeatherGradients();
         this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
         this.raidManager = this.getPersistentStateManager().getOrCreate(nbtCompound -> RaidManager.fromNbt(this, nbtCompound), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
-        if (!server.isSinglePlayer()) {
+        if (!server.isSingleplayer()) {
             properties.setGameMode(server.getDefaultGameMode());
         }
         this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions());
@@ -493,11 +493,11 @@ implements StructureWorldAccess {
         return this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE) <= 100;
     }
 
-    private void handleSleeping() {
+    private void sendSleepingStatus() {
         if (!this.isSleepingEnabled()) {
             return;
         }
-        if (this.getServer().isSinglePlayer() && !this.getServer().isRemote()) {
+        if (this.getServer().isSingleplayer() && !this.getServer().isRemote()) {
             return;
         }
         int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
@@ -509,7 +509,7 @@ implements StructureWorldAccess {
 
     public void updateSleepingPlayers() {
         if (!this.players.isEmpty() && this.sleepManager.update(this.players)) {
-            this.handleSleeping();
+            this.sendSleepingStatus();
         }
     }
 
@@ -726,13 +726,13 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        this.server.getPlayerManager().sendToAround(player, x, y, z, volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch));
+    public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+        this.server.getPlayerManager().sendToAround(except, x, y, z, volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch));
     }
 
     @Override
-    public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        this.server.getPlayerManager().sendToAround(player, entity.getX(), entity.getY(), entity.getZ(), volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.getRegistryKey(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch));
+    public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+        this.server.getPlayerManager().sendToAround(except, entity.getX(), entity.getY(), entity.getZ(), volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.getRegistryKey(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch));
     }
 
     @Override
@@ -1222,7 +1222,7 @@ implements StructureWorldAccess {
     }
 
     public boolean method_37117(BlockPos blockPos) {
-        long l = ChunkPos.method_37232(blockPos);
+        long l = ChunkPos.toLong(blockPos);
         return this.chunkManager.isTickingFutureReady(l) && this.method_37116(l);
     }
 

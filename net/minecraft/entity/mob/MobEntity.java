@@ -590,11 +590,11 @@ extends LivingEntity {
     }
 
     public boolean prefersNewDamageableItem(ItemStack newStack, ItemStack oldStack) {
-        if (newStack.getDamage() < oldStack.getDamage() || newStack.hasTag() && !oldStack.hasTag()) {
+        if (newStack.getDamage() < oldStack.getDamage() || newStack.hasNbt() && !oldStack.hasNbt()) {
             return true;
         }
-        if (newStack.hasTag() && oldStack.hasTag()) {
-            return newStack.getTag().getKeys().stream().anyMatch(string -> !string.equals("Damage")) && !oldStack.getTag().getKeys().stream().anyMatch(string -> !string.equals("Damage"));
+        if (newStack.hasNbt() && oldStack.hasNbt()) {
+            return newStack.getNbt().getKeys().stream().anyMatch(string -> !string.equals("Damage")) && !oldStack.getNbt().getKeys().stream().anyMatch(string -> !string.equals("Damage"));
         }
         return false;
     }

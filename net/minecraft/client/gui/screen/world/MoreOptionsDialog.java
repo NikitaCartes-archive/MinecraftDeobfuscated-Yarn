@@ -120,7 +120,7 @@ implements Drawable {
         this.customizeTypeButton = parent.addDrawableChild(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), button -> {
             GeneratorType.ScreenProvider screenProvider = GeneratorType.SCREEN_PROVIDERS.get(this.generatorType);
             if (screenProvider != null) {
-                client.openScreen(screenProvider.createEditScreen(parent, this.generatorOptions));
+                client.setScreen(screenProvider.createEditScreen(parent, this.generatorOptions));
             }
         }));
         this.customizeTypeButton.visible = false;
@@ -150,7 +150,7 @@ implements Drawable {
                 resourcePackManager.close();
                 return;
             }
-            RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+            RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), (DynamicRegistryManager)impl);
             JsonParser jsonParser = new JsonParser();
             try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(string, new String[0]));){
                 JsonElement jsonElement = jsonParser.parse(bufferedReader);
@@ -169,7 +169,7 @@ implements Drawable {
             Lifecycle lifecycle = dataResult.lifecycle();
             dataResult.resultOrPartial(LOGGER::error).ifPresent(generatorOptions -> {
                 BooleanConsumer booleanConsumer = confirmed -> {
-                    client.openScreen(parent);
+                    client.setScreen(parent);
                     if (confirmed) {
                         this.importOptions(impl, (GeneratorOptions)generatorOptions);
                     }
@@ -177,9 +177,9 @@ implements Drawable {
                 if (lifecycle == Lifecycle.stable()) {
                     this.importOptions(impl, (GeneratorOptions)generatorOptions);
                 } else if (lifecycle == Lifecycle.experimental()) {
-                    client.openScreen(new ConfirmScreen(booleanConsumer, new TranslatableText("selectWorld.import_worldgen_settings.experimental.title"), new TranslatableText("selectWorld.import_worldgen_settings.experimental.question")));
+                    client.setScreen(new ConfirmScreen(booleanConsumer, new TranslatableText("selectWorld.import_worldgen_settings.experimental.title"), new TranslatableText("selectWorld.import_worldgen_settings.experimental.question")));
                 } else {
-                    client.openScreen(new ConfirmScreen(booleanConsumer, new TranslatableText("selectWorld.import_worldgen_settings.deprecated.title"), new TranslatableText("selectWorld.import_worldgen_settings.deprecated.question")));
+                    client.setScreen(new ConfirmScreen(booleanConsumer, new TranslatableText("selectWorld.import_worldgen_settings.deprecated.title"), new TranslatableText("selectWorld.import_worldgen_settings.deprecated.question")));
                 }
             });
         }));
@@ -279,7 +279,7 @@ implements Drawable {
     void loadDatapacks(ServerResourceManager serverResourceManager) {
         DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
         RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, this.registryManager);
-        RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+        RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), (DynamicRegistryManager)impl);
         DataResult dataResult = GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.generatorOptions).flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));
         dataResult.resultOrPartial(Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error)).ifPresent(generatorOptions -> {
             this.generatorOptions = generatorOptions;

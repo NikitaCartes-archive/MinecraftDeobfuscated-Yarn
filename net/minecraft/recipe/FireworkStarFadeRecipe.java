@@ -65,7 +65,7 @@ extends SpecialCraftingRecipe {
         if (itemStack == null || list.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        itemStack.getOrCreateSubTag("Explosion").putIntArray("FadeColors", list);
+        itemStack.getOrCreateSubNbt("Explosion").putIntArray("FadeColors", list);
         return itemStack;
     }
 

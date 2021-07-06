@@ -33,9 +33,10 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(extended, extendeds);
     }
 
+    @Override
     public void trigger(ServerPlayerEntity player, Collection<? extends Entity> victims) {
         List list = victims.stream().map(entity -> EntityPredicate.createAdvancementEntityLootContext(player, entity)).collect(Collectors.toList());
-        this.test(player, conditions -> conditions.matches(list));
+        this.trigger(player, (T conditions) -> conditions.matches(list));
     }
 
     @Override

@@ -74,21 +74,30 @@ implements StructureWorldAccess {
     private final ChunkPos upperCorner;
     private final StructureAccessor structureAccessor;
     private final ChunkStatus field_33754;
-    private final int field_33755;
+    /**
+     * The number of neighboring chunks which can be accessed for block
+     * placement.
+     * 
+     * <p>A value of {@code 0} means that only this chunk is accessible. A
+     * positive value means that the given amount of neighbors are accessible
+     * in each direction. A negative value means that this region shouldn't be
+     * used for block placement.
+     */
+    private final int placementRadius;
     @Nullable
     private Supplier<String> field_33756;
 
-    public ChunkRegion(ServerWorld world, List<Chunk> list, ChunkStatus chunkStatus, int i) {
+    public ChunkRegion(ServerWorld world, List<Chunk> list, ChunkStatus chunkStatus, int placementRadius) {
         this.field_33754 = chunkStatus;
-        this.field_33755 = i;
-        int j = MathHelper.floor(Math.sqrt(list.size()));
-        if (j * j != list.size()) {
+        this.placementRadius = placementRadius;
+        int i = MathHelper.floor(Math.sqrt(list.size()));
+        if (i * i != list.size()) {
             throw Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
         }
         ChunkPos chunkPos = list.get(list.size() / 2).getPos();
         this.chunks = list;
         this.centerPos = chunkPos;
-        this.width = j;
+        this.width = i;
         this.world = world;
         this.seed = world.getSeed();
         this.levelProperties = world.getLevelProperties();
@@ -228,13 +237,13 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public boolean method_37368(BlockPos blockPos) {
-        int i = ChunkSectionPos.getSectionCoord(blockPos.getX());
-        int j = ChunkSectionPos.getSectionCoord(blockPos.getZ());
+    public boolean isValidForSetBlock(BlockPos pos) {
+        int i = ChunkSectionPos.getSectionCoord(pos.getX());
+        int j = ChunkSectionPos.getSectionCoord(pos.getZ());
         int k = Math.abs(this.centerPos.x - i);
         int l = Math.abs(this.centerPos.z - j);
-        if (k > this.field_33755 || l > this.field_33755) {
-            Util.error("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + blockPos + ", status: " + this.field_33754 + (String)(this.field_33756 == null ? "" : ", currently generating: " + this.field_33756.get()));
+        if (k > this.placementRadius || l > this.placementRadius) {
+            Util.error("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + pos + ", status: " + this.field_33754 + (String)(this.field_33756 == null ? "" : ", currently generating: " + this.field_33756.get()));
             return false;
         }
         return true;
@@ -242,7 +251,7 @@ implements StructureWorldAccess {
 
     @Override
     public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-        if (!this.method_37368(pos)) {
+        if (!this.isValidForSetBlock(pos)) {
             return false;
         }
         Chunk chunk = this.getChunk(pos);

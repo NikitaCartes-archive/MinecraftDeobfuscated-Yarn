@@ -67,9 +67,9 @@ implements ModelWithArms,
 ModelWithHead {
     public static final float field_32505 = 0.25f;
     public static final float field_32506 = 0.5f;
-    private static final float field_32503 = 0.2617994f;
-    private static final float field_32504 = 1.9198622f;
-    private static final float field_32507 = 0.2617994f;
+    private static final float SPYGLASS_ARM_YAW_OFFSET = 0.2617994f;
+    private static final float SPYGLASS_ARM_PITCH_OFFSET = 1.9198622f;
+    private static final float SPYGLASS_SNEAKING_ARM_PITCH_OFFSET = 0.2617994f;
     public final ModelPart head;
     public final ModelPart hat;
     public final ModelPart body;

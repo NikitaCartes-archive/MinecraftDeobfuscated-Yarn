@@ -27,10 +27,10 @@ import org.jetbrains.annotations.Nullable;
 public class EntityAnchorArgumentType
 implements ArgumentType<EntityAnchor> {
     private static final Collection<String> EXAMPLES = Arrays.asList("eyes", "feet");
-    private static final DynamicCommandExceptionType INVALID_ANCHOR_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.anchor.invalid", object));
+    private static final DynamicCommandExceptionType INVALID_ANCHOR_EXCEPTION = new DynamicCommandExceptionType(name -> new TranslatableText("argument.anchor.invalid", name));
 
-    public static EntityAnchor getEntityAnchor(CommandContext<ServerCommandSource> commandContext, String string) {
-        return commandContext.getArgument(string, EntityAnchor.class);
+    public static EntityAnchor getEntityAnchor(CommandContext<ServerCommandSource> context, String name) {
+        return context.getArgument(name, EntityAnchor.class);
     }
 
     public static EntityAnchorArgumentType entityAnchor() {
@@ -51,7 +51,7 @@ implements ArgumentType<EntityAnchor> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(EntityAnchor.anchors.keySet(), builder);
+        return CommandSource.suggestMatching(EntityAnchor.ANCHORS.keySet(), builder);
     }
 
     @Override
@@ -60,15 +60,15 @@ implements ArgumentType<EntityAnchor> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 
     public static enum EntityAnchor {
-        FEET("feet", (vec3d, entity) -> vec3d),
-        EYES("eyes", (vec3d, entity) -> new Vec3d(vec3d.x, vec3d.y + (double)entity.getStandingEyeHeight(), vec3d.z));
+        FEET("feet", (pos, entity) -> pos),
+        EYES("eyes", (pos, entity) -> new Vec3d(pos.x, pos.y + (double)entity.getStandingEyeHeight(), pos.z));
 
-        static final Map<String, EntityAnchor> anchors;
+        static final Map<String, EntityAnchor> ANCHORS;
         private final String id;
         private final BiFunction<Vec3d, Entity, Vec3d> offset;
 
@@ -79,25 +79,25 @@ implements ArgumentType<EntityAnchor> {
 
         @Nullable
         public static EntityAnchor fromId(String id) {
-            return anchors.get(id);
+            return ANCHORS.get(id);
         }
 
         public Vec3d positionAt(Entity entity) {
             return this.offset.apply(entity.getPos(), entity);
         }
 
-        public Vec3d positionAt(ServerCommandSource serverCommandSource) {
-            Entity entity = serverCommandSource.getEntity();
+        public Vec3d positionAt(ServerCommandSource source) {
+            Entity entity = source.getEntity();
             if (entity == null) {
-                return serverCommandSource.getPosition();
+                return source.getPosition();
             }
-            return this.offset.apply(serverCommandSource.getPosition(), entity);
+            return this.offset.apply(source.getPosition(), entity);
         }
 
         static {
-            anchors = Util.make(Maps.newHashMap(), hashMap -> {
+            ANCHORS = Util.make(Maps.newHashMap(), map -> {
                 for (EntityAnchor entityAnchor : EntityAnchor.values()) {
-                    hashMap.put(entityAnchor.id, entityAnchor);
+                    map.put(entityAnchor.id, entityAnchor);
                 }
             });
         }

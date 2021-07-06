@@ -204,10 +204,10 @@ extends Entity {
         if (stack2.getCount() + stack1.getCount() > stack2.getMaxCount()) {
             return false;
         }
-        if (stack2.hasTag() ^ stack1.hasTag()) {
+        if (stack2.hasNbt() ^ stack1.hasNbt()) {
             return false;
         }
-        return !stack2.hasTag() || stack2.getTag().equals(stack1.getTag());
+        return !stack2.hasNbt() || stack2.getNbt().equals(stack1.getNbt());
     }
 
     public static ItemStack merge(ItemStack stack1, ItemStack stack2, int maxCount) {

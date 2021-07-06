@@ -138,8 +138,8 @@ extends CompositeEntityModel<BoatEntity> {
 
     private static void setPaddleAngle(BoatEntity entity, int sigma, ModelPart part, float angle) {
         float f = entity.interpolatePaddlePhase(sigma, angle);
-        part.pitch = MathHelper.method_37166(-1.0471976f, -0.2617994f, (MathHelper.sin(-f) + 1.0f) / 2.0f);
-        part.yaw = MathHelper.method_37166(-0.7853982f, 0.7853982f, (MathHelper.sin(-f + 1.0f) + 1.0f) / 2.0f);
+        part.pitch = MathHelper.clampedLerp(-1.0471976f, -0.2617994f, (MathHelper.sin(-f) + 1.0f) / 2.0f);
+        part.yaw = MathHelper.clampedLerp(-0.7853982f, 0.7853982f, (MathHelper.sin(-f + 1.0f) + 1.0f) / 2.0f);
         if (sigma == 1) {
             part.yaw = (float)Math.PI - part.yaw;
         }

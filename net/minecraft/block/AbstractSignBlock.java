@@ -97,7 +97,7 @@ implements Waterloggable {
                     world.playSound(null, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);
                     bl6 = signBlockEntity.setGlowingText(true);
                     if (player instanceof ServerPlayerEntity) {
-                        Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)player, pos, itemStack);
+                        Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)player, pos, itemStack);
                     }
                 } else if (bl3) {
                     world.playSound(null, pos, SoundEvents.ITEM_INK_SAC_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);

@@ -27,13 +27,13 @@ extends NarratorOptionsScreen {
 
     @Override
     protected void initFooter() {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableText("options.accessibility.link"), button -> this.client.openScreen(new ConfirmChatLinkScreen(openInBrowser -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableText("options.accessibility.link"), button -> this.client.setScreen(new ConfirmChatLinkScreen(openInBrowser -> {
             if (openInBrowser) {
                 Util.getOperatingSystem().open(GUIDE_URL);
             }
-            this.client.openScreen(this);
+            this.client.setScreen(this);
         }, GUIDE_URL, true))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, button -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
     }
 }
 

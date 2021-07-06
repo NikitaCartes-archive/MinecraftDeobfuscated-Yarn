@@ -93,7 +93,7 @@ implements ClientAdvancementManager.Listener {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.client.options.keyAdvancements.matchesKey(keyCode, scanCode)) {
-            this.client.openScreen(null);
+            this.client.setScreen(null);
             this.client.mouse.lockCursor();
             return true;
         }

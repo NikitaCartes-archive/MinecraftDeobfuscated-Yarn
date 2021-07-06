@@ -50,7 +50,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 
 public class EntitySelectorOptions {
-    private static final Map<String, SelectorOption> options = Maps.newHashMap();
+    private static final Map<String, SelectorOption> OPTIONS = Maps.newHashMap();
     public static final DynamicCommandExceptionType UNKNOWN_OPTION_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.entity.options.unknown", object));
     public static final DynamicCommandExceptionType INAPPLICABLE_OPTION_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.entity.options.inapplicable", object));
     public static final SimpleCommandExceptionType NEGATIVE_DISTANCE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.options.distance.negative"));
@@ -61,11 +61,11 @@ public class EntitySelectorOptions {
     public static final DynamicCommandExceptionType INVALID_TYPE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.entity.options.type.invalid", object));
 
     private static void putOption(String id, SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
-        options.put(id, new SelectorOption(handler, condition, description));
+        OPTIONS.put(id, new SelectorOption(handler, condition, description));
     }
 
     public static void register() {
-        if (!options.isEmpty()) {
+        if (!OPTIONS.isEmpty()) {
             return;
         }
         EntitySelectorOptions.putOption("name", entitySelectorReader -> {
@@ -406,7 +406,7 @@ public class EntitySelectorOptions {
     }
 
     public static SelectorHandler getHandler(EntitySelectorReader reader, String option, int restoreCursor) throws CommandSyntaxException {
-        SelectorOption selectorOption = options.get(option);
+        SelectorOption selectorOption = OPTIONS.get(option);
         if (selectorOption != null) {
             if (selectorOption.condition.test(reader)) {
                 return selectorOption.handler;
@@ -419,7 +419,7 @@ public class EntitySelectorOptions {
 
     public static void suggestOptions(EntitySelectorReader reader, SuggestionsBuilder suggestionBuilder) {
         String string = suggestionBuilder.getRemaining().toLowerCase(Locale.ROOT);
-        for (Map.Entry<String, SelectorOption> entry : options.entrySet()) {
+        for (Map.Entry<String, SelectorOption> entry : OPTIONS.entrySet()) {
             if (!entry.getValue().condition.test(reader) || !entry.getKey().toLowerCase(Locale.ROOT).startsWith(string)) continue;
             suggestionBuilder.suggest(entry.getKey() + "=", (Message)entry.getValue().description);
         }

@@ -32,7 +32,7 @@ extends WallStandingBlockItem {
     }
 
     public static void appendBannerTooltip(ItemStack stack, List<Text> tooltip) {
-        NbtCompound nbtCompound = stack.getSubTag("BlockEntityTag");
+        NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
         if (nbtCompound == null || !nbtCompound.contains("Patterns")) {
             return;
         }

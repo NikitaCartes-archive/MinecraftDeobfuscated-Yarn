@@ -54,7 +54,7 @@ public class SoundSystem {
     private static final float field_33023 = 0.0f;
     private static final float field_33024 = 1.0f;
     private static final int field_33025 = 20;
-    private static final Set<Identifier> unknownSounds = Sets.newHashSet();
+    private static final Set<Identifier> UNKNOWN_SOUNDS = Sets.newHashSet();
     public static final String FOR_THE_DEBUG = "FOR THE DEBUG!";
     private final SoundManager loader;
     private final GameOptions settings;
@@ -81,12 +81,12 @@ public class SoundSystem {
     }
 
     public void reloadSounds() {
-        unknownSounds.clear();
+        UNKNOWN_SOUNDS.clear();
         for (SoundEvent soundEvent : Registry.SOUND_EVENT) {
             Identifier identifier = soundEvent.getId();
             if (this.loader.get(identifier) != null) continue;
             LOGGER.warn("Missing sound for event: {}", (Object)Registry.SOUND_EVENT.getId(soundEvent));
-            unknownSounds.add(identifier);
+            UNKNOWN_SOUNDS.add(identifier);
         }
         this.stop();
         this.start();
@@ -277,14 +277,14 @@ public class SoundSystem {
         WeightedSoundSet weightedSoundSet = sound.getSoundSet(this.loader);
         Identifier identifier = sound.getId();
         if (weightedSoundSet == null) {
-            if (unknownSounds.add(identifier)) {
+            if (UNKNOWN_SOUNDS.add(identifier)) {
                 LOGGER.warn(MARKER, "Unable to play unknown soundEvent: {}", (Object)identifier);
             }
             return;
         }
         Sound sound2 = sound.getSound();
         if (sound2 == SoundManager.MISSING_SOUND) {
-            if (unknownSounds.add(identifier)) {
+            if (UNKNOWN_SOUNDS.add(identifier)) {
                 LOGGER.warn(MARKER, "Unable to play empty soundEvent: {}", (Object)identifier);
             }
             return;
@@ -295,7 +295,7 @@ public class SoundSystem {
         float h = this.getAdjustedVolume(sound);
         float i = this.getAdjustedPitch(sound);
         SoundInstance.AttenuationType attenuationType = sound.getAttenuationType();
-        boolean bl = sound.isLooping();
+        boolean bl = sound.isRelative();
         if (h == 0.0f && !sound.shouldAlwaysPlay()) {
             LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", (Object)sound2.getIdentifier());
             return;

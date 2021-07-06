@@ -38,7 +38,7 @@ extends ConditionalLootFunction {
     @Override
     protected ItemStack process(ItemStack stack, LootContext context) {
         NbtList nbtList2;
-        NbtCompound nbtCompound = stack.getOrCreateSubTag("BlockEntityTag");
+        NbtCompound nbtCompound = stack.getOrCreateSubNbt("BlockEntityTag");
         BannerPattern.Patterns patterns = new BannerPattern.Patterns();
         this.patterns.forEach(patterns::add);
         NbtList nbtList = patterns.toNbt();

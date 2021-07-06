@@ -34,7 +34,7 @@ implements LootNbtProvider {
 
     @Override
     @Nullable
-    public NbtElement getNbtTag(LootContext context) {
+    public NbtElement getNbt(LootContext context) {
         return context.getWorld().getServer().getDataCommandStorage().get(this.source);
     }
 

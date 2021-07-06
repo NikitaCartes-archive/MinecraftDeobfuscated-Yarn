@@ -5,12 +5,12 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.raid.RaiderEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class RaidGoal<T extends LivingEntity>
-extends FollowTargetGoal<T> {
+extends ActiveTargetGoal<T> {
     private static final int MAX_COOLDOWN = 200;
     private int cooldown = 0;
 

@@ -8,7 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestLidAnimator;
-import net.minecraft.block.entity.ChestStateManager;
+import net.minecraft.block.entity.ViewerCountManager;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -20,20 +20,20 @@ public class EnderChestBlockEntity
 extends BlockEntity
 implements ChestAnimationProgress {
     private final ChestLidAnimator lidAnimator = new ChestLidAnimator();
-    private final ChestStateManager stateManager = new ChestStateManager(){
+    private final ViewerCountManager stateManager = new ViewerCountManager(){
 
         @Override
-        protected void onChestOpened(World world, BlockPos pos, BlockState state) {
+        protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
             world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_ENDER_CHEST_OPEN, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.1f + 0.9f);
         }
 
         @Override
-        protected void onChestClosed(World world, BlockPos pos, BlockState state) {
+        protected void onContainerClose(World world, BlockPos pos, BlockState state) {
             world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_ENDER_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.1f + 0.9f);
         }
 
         @Override
-        protected void onInteracted(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+        protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
             world.addSyncedBlockEvent(EnderChestBlockEntity.this.pos, Blocks.ENDER_CHEST, 1, newViewerCount);
         }
 
@@ -62,13 +62,13 @@ implements ChestAnimationProgress {
 
     public void onOpen(PlayerEntity player) {
         if (!this.removed && !player.isSpectator()) {
-            this.stateManager.openChest(player, this.getWorld(), this.getPos(), this.getCachedState());
+            this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
 
     public void onClose(PlayerEntity player) {
         if (!this.removed && !player.isSpectator()) {
-            this.stateManager.closeChest(player, this.getWorld(), this.getPos(), this.getCachedState());
+            this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
 

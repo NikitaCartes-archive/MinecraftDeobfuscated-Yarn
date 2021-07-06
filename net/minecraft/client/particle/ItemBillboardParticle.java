@@ -21,7 +21,7 @@ public class ItemBillboardParticle
 extends SpriteBillboardParticle {
     ItemBillboardParticle(ClientWorld clientWorld, double d, double e, double f, ItemConvertible itemConvertible) {
         super(clientWorld, d, e, f);
-        this.setSprite(MinecraftClient.getInstance().getItemRenderer().getModels().getSprite(itemConvertible));
+        this.setSprite(MinecraftClient.getInstance().getItemRenderer().getModels().getModelParticleSprite(itemConvertible));
         this.gravityStrength = 0.0f;
         this.maxAge = 80;
         this.collidesWithWorld = false;

@@ -56,8 +56,8 @@ public class TestUtil {
         Map<String, List<TestFunction>> map = testFunctions.stream().collect(Collectors.groupingBy(TestFunction::getBatchId));
         return map.entrySet().stream().flatMap(entry -> {
             String string = (String)entry.getKey();
-            Consumer<ServerWorld> consumer = TestFunctions.getAfterBatchConsumer(string);
-            Consumer<ServerWorld> consumer2 = TestFunctions.getBeforeBatchConsumer(string);
+            Consumer<ServerWorld> consumer = TestFunctions.getBeforeBatchConsumer(string);
+            Consumer<ServerWorld> consumer2 = TestFunctions.getAfterBatchConsumer(string);
             MutableInt mutableInt = new MutableInt();
             Collection collection = (Collection)entry.getValue();
             return Streams.stream(Iterables.partition(collection, 100)).map(testFunctions -> new GameTestBatch(string + ":" + mutableInt.incrementAndGet(), ImmutableList.copyOf(testFunctions), consumer, consumer2));

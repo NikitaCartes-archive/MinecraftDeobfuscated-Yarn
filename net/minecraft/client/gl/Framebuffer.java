@@ -237,7 +237,7 @@ public abstract class Framebuffer {
         if (shader.projectionMat != null) {
             shader.projectionMat.set(matrix4f);
         }
-        shader.upload();
+        shader.bind();
         float f = width;
         float g = height;
         float h = (float)this.viewportWidth / (float)this.textureWidth;
@@ -251,7 +251,7 @@ public abstract class Framebuffer {
         bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0f, i).color(255, 255, 255, 255).next();
         bufferBuilder.end();
         BufferRenderer.postDraw(bufferBuilder);
-        shader.bind();
+        shader.unbind();
         GlStateManager._depthMask(true);
         GlStateManager._colorMask(true, true, true, true);
     }

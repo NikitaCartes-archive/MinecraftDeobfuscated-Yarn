@@ -82,7 +82,7 @@ extends Screen {
     @Override
     public void onClose() {
         this.organizer.apply();
-        this.client.openScreen(this.parent);
+        this.client.setScreen(this.parent);
         this.closeDirectoryWatcher();
     }
 
@@ -191,12 +191,12 @@ extends Screen {
     @Override
     public void filesDragged(List<Path> paths) {
         String string = paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
-        this.client.openScreen(new ConfirmScreen(confirmed -> {
+        this.client.setScreen(new ConfirmScreen(confirmed -> {
             if (confirmed) {
                 PackScreen.copyPacks(this.client, paths, this.file.toPath());
                 this.refresh();
             }
-            this.client.openScreen(this);
+            this.client.setScreen(this);
         }, new TranslatableText("pack.dropConfirm"), new LiteralText(string)));
     }
 

@@ -51,7 +51,7 @@ implements LootScoreProvider {
     }
 
     public static class CustomSerializer
-    implements JsonSerializing.CustomSerializer<ContextLootScoreProvider> {
+    implements JsonSerializing.ElementSerializer<ContextLootScoreProvider> {
         @Override
         public JsonElement toJson(ContextLootScoreProvider contextLootScoreProvider, JsonSerializationContext jsonSerializationContext) {
             return jsonSerializationContext.serialize((Object)contextLootScoreProvider.target);

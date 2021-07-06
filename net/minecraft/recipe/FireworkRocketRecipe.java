@@ -47,7 +47,7 @@ extends SpecialCraftingRecipe {
     @Override
     public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
-        NbtCompound nbtCompound = itemStack.getOrCreateSubTag("Fireworks");
+        NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("Fireworks");
         NbtList nbtList = new NbtList();
         int i = 0;
         for (int j = 0; j < craftingInventory.size(); ++j) {
@@ -58,7 +58,7 @@ extends SpecialCraftingRecipe {
                 ++i;
                 continue;
             }
-            if (!FIREWORK_STAR.test(itemStack2) || (nbtCompound2 = itemStack2.getSubTag("Explosion")) == null) continue;
+            if (!FIREWORK_STAR.test(itemStack2) || (nbtCompound2 = itemStack2.getSubNbt("Explosion")) == null) continue;
             nbtList.add(nbtCompound2);
         }
         nbtCompound.putByte("Flight", (byte)i);

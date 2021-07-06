@@ -12,6 +12,10 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public interface BlockColorProvider {
+    /**
+     * {@return the color of the block state for the specified tint index,
+     * or -1 if not tinted}
+     */
     public int getColor(BlockState var1, @Nullable BlockRenderView var2, @Nullable BlockPos var3, int var4);
 }
 

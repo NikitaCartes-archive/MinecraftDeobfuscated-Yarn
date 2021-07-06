@@ -97,7 +97,7 @@ implements DataProvider {
             return this;
         }
 
-        public ObjectBuilder<T> add(Identifier id) {
+        public ObjectBuilder<T> addOptional(Identifier id) {
             this.builder.addOptional(id, this.source);
             return this;
         }
@@ -107,7 +107,7 @@ implements DataProvider {
             return this;
         }
 
-        public ObjectBuilder<T> addTag(Identifier id) {
+        public ObjectBuilder<T> addOptionalTag(Identifier id) {
             this.builder.addOptionalTag(id, this.source);
             return this;
         }

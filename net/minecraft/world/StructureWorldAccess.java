@@ -16,7 +16,11 @@ extends ServerWorldAccess {
 
     public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos var1, StructureFeature<?> var2);
 
-    default public boolean method_37368(BlockPos blockPos) {
+    /**
+     * {@return {@code true} if the given position is an accessible position
+     * for the {@code setBlockState} function}
+     */
+    default public boolean isValidForSetBlock(BlockPos pos) {
         return true;
     }
 }

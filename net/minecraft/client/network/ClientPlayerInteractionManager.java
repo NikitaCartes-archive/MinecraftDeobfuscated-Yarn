@@ -243,7 +243,7 @@ public class ClientPlayerInteractionManager {
         ItemStack itemStack = this.client.player.getMainHandStack();
         boolean bl2 = bl = this.selectedStack.isEmpty() && itemStack.isEmpty();
         if (!this.selectedStack.isEmpty() && !itemStack.isEmpty()) {
-            bl = itemStack.isOf(this.selectedStack.getItem()) && ItemStack.areTagsEqual(itemStack, this.selectedStack) && (itemStack.isDamageable() || itemStack.getDamage() == this.selectedStack.getDamage());
+            bl = itemStack.isOf(this.selectedStack.getItem()) && ItemStack.areNbtEqual(itemStack, this.selectedStack) && (itemStack.isDamageable() || itemStack.getDamage() == this.selectedStack.getDamage());
         }
         return pos.equals(this.currentBreakingPos) && bl;
     }

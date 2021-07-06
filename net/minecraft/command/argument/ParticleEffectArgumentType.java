@@ -24,7 +24,7 @@ import net.minecraft.util.registry.Registry;
 public class ParticleEffectArgumentType
 implements ArgumentType<ParticleEffect> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "particle with options");
-    public static final DynamicCommandExceptionType UNKNOWN_PARTICLE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("particle.notFound", object));
+    public static final DynamicCommandExceptionType UNKNOWN_PARTICLE_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("particle.notFound", id));
 
     public static ParticleEffectArgumentType particleEffect() {
         return new ParticleEffectArgumentType();
@@ -60,8 +60,8 @@ implements ArgumentType<ParticleEffect> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 }
 

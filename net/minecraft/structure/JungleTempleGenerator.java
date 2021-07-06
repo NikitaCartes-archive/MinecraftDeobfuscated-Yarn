@@ -63,7 +63,7 @@ extends StructurePieceWithDimensions {
     public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
         int k;
         int i;
-        if (!this.method_14839(world, boundingBox, 0)) {
+        if (!this.adjustToAverageHeight(world, boundingBox, 0)) {
             return false;
         }
         this.fillWithOutline(world, boundingBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, false, random, COBBLESTONE_RANDOMIZER);

@@ -16,6 +16,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferVertexConsumer;
 import net.minecraft.client.render.FixedColorVertexConsumer;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormatElement;
@@ -310,8 +311,8 @@ implements BufferVertexConsumer {
             } else {
                 i = 24;
             }
-            this.putShort(i + 0, (short)(light & 0xFFFF));
-            this.putShort(i + 2, (short)(light >> 16 & 0xFFFF));
+            this.putShort(i + 0, (short)(light & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xFF0F)));
+            this.putShort(i + 2, (short)(light >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xFF0F)));
             this.putByte(i + 4, BufferVertexConsumer.packByte(normalX));
             this.putByte(i + 5, BufferVertexConsumer.packByte(normalY));
             this.putByte(i + 6, BufferVertexConsumer.packByte(normalZ));

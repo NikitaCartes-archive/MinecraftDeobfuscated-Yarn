@@ -36,7 +36,7 @@ public class InGameOverlayRenderer {
         BlockState blockState;
         ClientPlayerEntity playerEntity = client.player;
         if (!playerEntity.noClip && (blockState = InGameOverlayRenderer.getInWallBlockState(playerEntity)) != null) {
-            InGameOverlayRenderer.renderInWallOverlay(client.getBlockRenderManager().getModels().getSprite(blockState), matrices);
+            InGameOverlayRenderer.renderInWallOverlay(client.getBlockRenderManager().getModels().getModelParticleSprite(blockState), matrices);
         }
         if (!client.player.isSpectator()) {
             if (client.player.isSubmergedIn(FluidTags.WATER)) {

@@ -17,9 +17,9 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -94,9 +94,9 @@ implements Angerable {
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0f));
         this.goalSelector.add(7, new LookAroundGoal(this));
         this.targetSelector.add(1, new PolarBearRevengeGoal());
-        this.targetSelector.add(2, new FollowPlayersGoal());
-        this.targetSelector.add(3, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
-        this.targetSelector.add(4, new FollowTargetGoal<FoxEntity>(this, FoxEntity.class, 10, true, true, null));
+        this.targetSelector.add(2, new ProtectBabiesGoal());
+        this.targetSelector.add(3, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+        this.targetSelector.add(4, new ActiveTargetGoal<FoxEntity>(this, FoxEntity.class, 10, true, true, null));
         this.targetSelector.add(5, new UniversalAngerGoal<PolarBearEntity>(this, false));
     }
 
@@ -325,9 +325,9 @@ implements Angerable {
         }
     }
 
-    class FollowPlayersGoal
-    extends FollowTargetGoal<PlayerEntity> {
-        public FollowPlayersGoal() {
+    class ProtectBabiesGoal
+    extends ActiveTargetGoal<PlayerEntity> {
+        public ProtectBabiesGoal() {
             super(PolarBearEntity.this, PlayerEntity.class, 20, true, true, null);
         }
 

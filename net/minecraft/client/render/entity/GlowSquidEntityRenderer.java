@@ -29,7 +29,7 @@ extends SquidEntityRenderer<GlowSquidEntity> {
 
     @Override
     protected int getBlockLight(GlowSquidEntity glowSquidEntity, BlockPos blockPos) {
-        int i = (int)MathHelper.method_37166(0.0f, 15.0f, 1.0f - (float)glowSquidEntity.getDarkTicksRemaining() / 10.0f);
+        int i = (int)MathHelper.clampedLerp(0.0f, 15.0f, 1.0f - (float)glowSquidEntity.getDarkTicksRemaining() / 10.0f);
         if (i == 15) {
             return 15;
         }

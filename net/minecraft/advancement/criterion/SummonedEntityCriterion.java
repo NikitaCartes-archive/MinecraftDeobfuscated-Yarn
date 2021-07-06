@@ -31,7 +31,7 @@ extends AbstractCriterion<Conditions> {
 
     public void trigger(ServerPlayerEntity player, Entity entity) {
         LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
-        this.test(player, conditions -> conditions.matches(lootContext));
+        this.trigger(player, (T conditions) -> conditions.matches(lootContext));
     }
 
     @Override

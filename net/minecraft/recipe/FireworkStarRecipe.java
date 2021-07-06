@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.FireworkItem;
+import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -26,16 +26,16 @@ extends SpecialCraftingRecipe {
     private static final Ingredient TYPE_MODIFIER = Ingredient.ofItems(Items.FIRE_CHARGE, Items.FEATHER, Items.GOLD_NUGGET, Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, Items.CREEPER_HEAD, Items.PLAYER_HEAD, Items.DRAGON_HEAD, Items.ZOMBIE_HEAD);
     private static final Ingredient TRAIL_MODIFIER = Ingredient.ofItems(Items.DIAMOND);
     private static final Ingredient FLICKER_MODIFIER = Ingredient.ofItems(Items.GLOWSTONE_DUST);
-    private static final Map<Item, FireworkItem.Type> TYPE_MODIFIER_MAP = Util.make(Maps.newHashMap(), hashMap -> {
-        hashMap.put(Items.FIRE_CHARGE, FireworkItem.Type.LARGE_BALL);
-        hashMap.put(Items.FEATHER, FireworkItem.Type.BURST);
-        hashMap.put(Items.GOLD_NUGGET, FireworkItem.Type.STAR);
-        hashMap.put(Items.SKELETON_SKULL, FireworkItem.Type.CREEPER);
-        hashMap.put(Items.WITHER_SKELETON_SKULL, FireworkItem.Type.CREEPER);
-        hashMap.put(Items.CREEPER_HEAD, FireworkItem.Type.CREEPER);
-        hashMap.put(Items.PLAYER_HEAD, FireworkItem.Type.CREEPER);
-        hashMap.put(Items.DRAGON_HEAD, FireworkItem.Type.CREEPER);
-        hashMap.put(Items.ZOMBIE_HEAD, FireworkItem.Type.CREEPER);
+    private static final Map<Item, FireworkRocketItem.Type> TYPE_MODIFIER_MAP = Util.make(Maps.newHashMap(), hashMap -> {
+        hashMap.put(Items.FIRE_CHARGE, FireworkRocketItem.Type.LARGE_BALL);
+        hashMap.put(Items.FEATHER, FireworkRocketItem.Type.BURST);
+        hashMap.put(Items.GOLD_NUGGET, FireworkRocketItem.Type.STAR);
+        hashMap.put(Items.SKELETON_SKULL, FireworkRocketItem.Type.CREEPER);
+        hashMap.put(Items.WITHER_SKELETON_SKULL, FireworkRocketItem.Type.CREEPER);
+        hashMap.put(Items.CREEPER_HEAD, FireworkRocketItem.Type.CREEPER);
+        hashMap.put(Items.PLAYER_HEAD, FireworkRocketItem.Type.CREEPER);
+        hashMap.put(Items.DRAGON_HEAD, FireworkRocketItem.Type.CREEPER);
+        hashMap.put(Items.ZOMBIE_HEAD, FireworkRocketItem.Type.CREEPER);
     });
     private static final Ingredient GUNPOWDER = Ingredient.ofItems(Items.GUNPOWDER);
 
@@ -93,8 +93,8 @@ extends SpecialCraftingRecipe {
     @Override
     public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_STAR);
-        NbtCompound nbtCompound = itemStack.getOrCreateSubTag("Explosion");
-        FireworkItem.Type type = FireworkItem.Type.SMALL_BALL;
+        NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("Explosion");
+        FireworkRocketItem.Type type = FireworkRocketItem.Type.SMALL_BALL;
         ArrayList<Integer> list = Lists.newArrayList();
         for (int i = 0; i < craftingInventory.size(); ++i) {
             ItemStack itemStack2 = craftingInventory.getStack(i);

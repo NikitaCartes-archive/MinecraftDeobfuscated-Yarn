@@ -374,7 +374,7 @@ implements Chunk {
             return false;
         }
         if (this.world instanceof ServerWorld) {
-            return this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.method_37232(pos));
+            return this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.toLong(pos));
         }
         return true;
     }

@@ -47,7 +47,7 @@ extends ConditionalLootFunction {
         Entity entity;
         if (stack.isOf(Items.PLAYER_HEAD) && (entity = context.get(this.entity.getParameter())) instanceof PlayerEntity) {
             GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();
-            stack.getOrCreateTag().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
+            stack.getOrCreateNbt().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
         }
         return stack;
     }

@@ -49,7 +49,7 @@ implements RecipeBookProvider {
     @Override
     public void handledScreenTick() {
         if (this.client.interactionManager.hasCreativeInventory()) {
-            this.client.openScreen(new CreativeInventoryScreen(this.client.player));
+            this.client.setScreen(new CreativeInventoryScreen(this.client.player));
             return;
         }
         this.recipeBook.update();
@@ -58,7 +58,7 @@ implements RecipeBookProvider {
     @Override
     protected void init() {
         if (this.client.interactionManager.hasCreativeInventory()) {
-            this.client.openScreen(new CreativeInventoryScreen(this.client.player));
+            this.client.setScreen(new CreativeInventoryScreen(this.client.player));
             return;
         }
         super.init();

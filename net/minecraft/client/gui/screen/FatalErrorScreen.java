@@ -24,7 +24,7 @@ extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 140, 200, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(null)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 140, 200, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(null)));
     }
 
     @Override

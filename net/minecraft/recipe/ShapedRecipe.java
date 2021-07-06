@@ -199,7 +199,7 @@ implements CraftingRecipe {
     @Override
     public boolean isEmpty() {
         DefaultedList<Ingredient> defaultedList = this.getIngredients();
-        return defaultedList.isEmpty() || defaultedList.stream().filter(ingredient -> !ingredient.isEmpty()).anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);
+        return defaultedList.isEmpty() || defaultedList.stream().filter(ingredient -> !ingredient.isEmpty()).anyMatch(ingredient -> ingredient.getMatchingStacks().length == 0);
     }
 
     private static int findFirstSymbol(String line) {

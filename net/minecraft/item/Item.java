@@ -274,11 +274,11 @@ implements ItemConvertible {
     }
 
     /**
-     * Checks if an item should have its NBT data stored in {@link ItemStack#tag} sent to the client.
+     * Checks if an item should have its NBT data stored in {@link ItemStack#nbt} sent to the client.
      * 
      * <p>If an item is damageable, this method is ignored and data is always synced to client.
      */
-    public boolean shouldSyncTagToClient() {
+    public boolean isNbtSynced() {
         return true;
     }
 

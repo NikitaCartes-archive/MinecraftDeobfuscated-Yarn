@@ -30,7 +30,13 @@ import net.minecraft.world.World;
 
 public class HoeItem
 extends MiningToolItem {
-    protected static final Map<Block, Pair<Predicate<ItemUsageContext>, Consumer<ItemUsageContext>>> TILLED_BLOCKS = Maps.newHashMap(ImmutableMap.of(Blocks.GRASS_BLOCK, Pair.of(HoeItem::usagePredicate, HoeItem.getTillingConsumer(Blocks.FARMLAND.getDefaultState())), Blocks.DIRT_PATH, Pair.of(HoeItem::usagePredicate, HoeItem.getTillingConsumer(Blocks.FARMLAND.getDefaultState())), Blocks.DIRT, Pair.of(HoeItem::usagePredicate, HoeItem.getTillingConsumer(Blocks.FARMLAND.getDefaultState())), Blocks.COARSE_DIRT, Pair.of(HoeItem::usagePredicate, HoeItem.getTillingConsumer(Blocks.DIRT.getDefaultState())), Blocks.ROOTED_DIRT, Pair.of(itemUsageContext -> true, HoeItem.getTillingConsumer(Blocks.DIRT.getDefaultState(), Items.HANGING_ROOTS))));
+    /**
+     * A map of input blocks to predicate-consumer action pairs.
+     * 
+     * <p>Tilling works so that if the predicate succeeds, the consumer (the real action)
+     * is executed, and the hoe is damaged.
+     */
+    protected static final Map<Block, Pair<Predicate<ItemUsageContext>, Consumer<ItemUsageContext>>> TILLING_ACTIONS = Maps.newHashMap(ImmutableMap.of(Blocks.GRASS_BLOCK, Pair.of(HoeItem::canTillFarmland, HoeItem.createTillAction(Blocks.FARMLAND.getDefaultState())), Blocks.DIRT_PATH, Pair.of(HoeItem::canTillFarmland, HoeItem.createTillAction(Blocks.FARMLAND.getDefaultState())), Blocks.DIRT, Pair.of(HoeItem::canTillFarmland, HoeItem.createTillAction(Blocks.FARMLAND.getDefaultState())), Blocks.COARSE_DIRT, Pair.of(HoeItem::canTillFarmland, HoeItem.createTillAction(Blocks.DIRT.getDefaultState())), Blocks.ROOTED_DIRT, Pair.of(itemUsageContext -> true, HoeItem.createTillAndDropAction(Blocks.DIRT.getDefaultState(), Items.HANGING_ROOTS))));
 
     protected HoeItem(ToolMaterial material, int attackDamage, float attackSpeed, Item.Settings settings) {
         super(attackDamage, attackSpeed, material, BlockTags.HOE_MINEABLE, settings);
@@ -40,7 +46,7 @@ extends MiningToolItem {
     public ActionResult useOnBlock(ItemUsageContext context) {
         BlockPos blockPos;
         World world = context.getWorld();
-        Pair<Predicate<ItemUsageContext>, Consumer<ItemUsageContext>> pair = TILLED_BLOCKS.get(world.getBlockState(blockPos = context.getBlockPos()).getBlock());
+        Pair<Predicate<ItemUsageContext>, Consumer<ItemUsageContext>> pair = TILLING_ACTIONS.get(world.getBlockState(blockPos = context.getBlockPos()).getBlock());
         if (pair == null) {
             return ActionResult.PASS;
         }
@@ -60,18 +66,33 @@ extends MiningToolItem {
         return ActionResult.PASS;
     }
 
-    public static Consumer<ItemUsageContext> getTillingConsumer(BlockState state) {
-        return context -> context.getWorld().setBlockState(context.getBlockPos(), state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+    /**
+     * {@return a tilling action that sets a block state}
+     * 
+     * @param result the tilled block state
+     */
+    public static Consumer<ItemUsageContext> createTillAction(BlockState result) {
+        return context -> context.getWorld().setBlockState(context.getBlockPos(), result, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
     }
 
-    public static Consumer<ItemUsageContext> getTillingConsumer(BlockState state, ItemConvertible dropItem) {
+    /**
+     * {@return a tilling action that sets a block state and drops an item}
+     * 
+     * @param result the tilled block state
+     * @param droppedItem the item to drop
+     */
+    public static Consumer<ItemUsageContext> createTillAndDropAction(BlockState result, ItemConvertible droppedItem) {
         return context -> {
-            context.getWorld().setBlockState(context.getBlockPos(), state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
-            Block.dropStack(context.getWorld(), context.getBlockPos(), context.getSide(), new ItemStack(dropItem));
+            context.getWorld().setBlockState(context.getBlockPos(), result, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+            Block.dropStack(context.getWorld(), context.getBlockPos(), context.getSide(), new ItemStack(droppedItem));
         };
     }
 
-    public static boolean usagePredicate(ItemUsageContext context) {
+    /**
+     * {@return whether the used block can be tilled into farmland}
+     * This method is used as the tilling predicate for most vanilla blocks except rooted dirt.
+     */
+    public static boolean canTillFarmland(ItemUsageContext context) {
         return context.getSide() != Direction.DOWN && context.getWorld().getBlockState(context.getBlockPos().up()).isAir();
     }
 }

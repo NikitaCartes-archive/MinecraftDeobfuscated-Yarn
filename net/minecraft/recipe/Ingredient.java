@@ -43,7 +43,7 @@ implements Predicate<ItemStack> {
         this.entries = (Entry[])entries.toArray(Entry[]::new);
     }
 
-    public ItemStack[] getMatchingStacksClient() {
+    public ItemStack[] getMatchingStacks() {
         this.cacheMatchingStacks();
         return this.matchingStacks;
     }

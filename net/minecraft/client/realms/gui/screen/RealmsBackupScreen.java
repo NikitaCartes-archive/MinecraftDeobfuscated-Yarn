@@ -99,10 +99,10 @@ extends RealmsScreen {
         this.downloadButton = this.addDrawableChild(new ButtonWidget(this.width - 135, RealmsBackupScreen.row(1), 120, 20, new TranslatableText("mco.backup.button.download"), button -> this.downloadClicked()));
         this.restoreButton = this.addDrawableChild(new ButtonWidget(this.width - 135, RealmsBackupScreen.row(3), 120, 20, new TranslatableText("mco.backup.button.restore"), button -> this.restoreClicked(this.selectedBackup)));
         this.changesButton = this.addDrawableChild(new ButtonWidget(this.width - 135, RealmsBackupScreen.row(5), 120, 20, new TranslatableText("mco.backup.changes.tooltip"), button -> {
-            this.client.openScreen(new RealmsBackupInfoScreen(this, this.backups.get(this.selectedBackup)));
+            this.client.setScreen(new RealmsBackupInfoScreen(this, this.backups.get(this.selectedBackup)));
             this.selectedBackup = -1;
         }));
-        this.addDrawableChild(new ButtonWidget(this.width - 100, this.height - 35, 85, 20, ScreenTexts.BACK, button -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width - 100, this.height - 35, 85, 20, ScreenTexts.BACK, button -> this.client.setScreen(this.parent)));
         this.addSelectableChild(this.backupObjectSelectionList);
         this.focusOn(this.backupObjectSelectionList);
         this.updateButtonStates();
@@ -159,7 +159,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -173,37 +173,37 @@ extends RealmsScreen {
             String string2 = RealmsUtil.convertToAgePresentation(date);
             TranslatableText text = new TranslatableText("mco.configure.world.restore.question.line1", string, string2);
             TranslatableText text2 = new TranslatableText("mco.configure.world.restore.question.line2");
-            this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+            this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
                 if (confirmed) {
                     this.restore();
                 } else {
                     this.selectedBackup = -1;
-                    this.client.openScreen(this);
+                    this.client.setScreen(this);
                 }
-            }, RealmsLongConfirmationScreen.Type.Warning, text, text2, true));
+            }, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
         }
     }
 
     private void downloadClicked() {
         TranslatableText text = new TranslatableText("mco.configure.world.restore.download.question.line1");
         TranslatableText text2 = new TranslatableText("mco.configure.world.restore.download.question.line2");
-        this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+        this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
             if (confirmed) {
                 this.downloadWorldData();
             } else {
-                this.client.openScreen(this);
+                this.client.setScreen(this);
             }
-        }, RealmsLongConfirmationScreen.Type.Info, text, text2, true));
+        }, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
     }
 
     private void downloadWorldData() {
-        this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent.getNewScreen(), new DownloadTask(this.serverData.id, this.slotId, this.serverData.name + " (" + this.serverData.slots.get(this.serverData.activeSlot).getSlotName(this.serverData.activeSlot) + ")", this)));
+        this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent.getNewScreen(), new DownloadTask(this.serverData.id, this.slotId, this.serverData.name + " (" + this.serverData.slots.get(this.serverData.activeSlot).getSlotName(this.serverData.activeSlot) + ")", this)));
     }
 
     private void restore() {
         Backup backup = this.backups.get(this.selectedBackup);
         this.selectedBackup = -1;
-        this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent.getNewScreen(), new RestoreTask(backup, this.serverData.id, this.parent)));
+        this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent.getNewScreen(), new RestoreTask(backup, this.serverData.id, this.parent)));
     }
 
     @Override
@@ -299,7 +299,7 @@ extends RealmsScreen {
                 if (!RealmsBackupScreen.this.backups.get((int)selectionIndex).changeList.isEmpty()) {
                     RealmsBackupScreen.this.selectedBackup = -1;
                     lastScrollPosition = (int)this.getScrollAmount();
-                    this.client.openScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, RealmsBackupScreen.this.backups.get(selectionIndex)));
+                    this.client.setScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, RealmsBackupScreen.this.backups.get(selectionIndex)));
                 }
             } else if (mouseX >= (double)k && mouseX < (double)(k + 13) && mouseY >= (double)l && mouseY < (double)(l + 15)) {
                 lastScrollPosition = (int)this.getScrollAmount();

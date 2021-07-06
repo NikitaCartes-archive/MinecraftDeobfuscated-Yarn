@@ -69,8 +69,8 @@ extends RealmsScreen {
 
     @Environment(value=EnvType.CLIENT)
     public static enum Type {
-        Warning("Warning!", 0xFF0000),
-        Info("Info!", 8226750);
+        WARNING("Warning!", 0xFF0000),
+        INFO("Info!", 8226750);
 
         public final int colorCode;
         public final Text text;

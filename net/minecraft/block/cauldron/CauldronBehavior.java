@@ -46,8 +46,8 @@ public interface CauldronBehavior {
         }
         if (!world.isClient) {
             ItemStack itemStack = new ItemStack(Blocks.SHULKER_BOX);
-            if (stack.hasTag()) {
-                itemStack.setTag(stack.getTag().copy());
+            if (stack.hasNbt()) {
+                itemStack.setNbt(stack.getNbt().copy());
             }
             player.setStackInHand(hand, itemStack);
             player.incrementStat(Stats.CLEAN_SHULKER_BOX);

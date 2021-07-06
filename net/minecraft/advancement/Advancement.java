@@ -205,8 +205,8 @@ public class Advancement {
             return this;
         }
 
-        public Task method_34884(String[][] strings) {
-            this.requirements = strings;
+        public Task requirements(String[][] requirements) {
+            this.requirements = requirements;
             return this;
         }
 

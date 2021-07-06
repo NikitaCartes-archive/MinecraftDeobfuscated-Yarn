@@ -24,8 +24,8 @@ public class LootNumberProviderTypes {
         return Registry.register(Registry.LOOT_NUMBER_PROVIDER_TYPE, new Identifier(id), new LootNumberProviderType(jsonSerializer));
     }
 
-    public static Object method_32455() {
-        return JsonSerializing.createTypeHandler(Registry.LOOT_NUMBER_PROVIDER_TYPE, "provider", "type", LootNumberProvider::getType).method_32385(CONSTANT, new ConstantLootNumberProvider.CustomSerializer()).method_33409(UNIFORM).createGsonSerializer();
+    public static Object createGsonSerializer() {
+        return JsonSerializing.createSerializerBuilder(Registry.LOOT_NUMBER_PROVIDER_TYPE, "provider", "type", LootNumberProvider::getType).elementSerializer(CONSTANT, new ConstantLootNumberProvider.CustomSerializer()).defaultType(UNIFORM).build();
     }
 }
 

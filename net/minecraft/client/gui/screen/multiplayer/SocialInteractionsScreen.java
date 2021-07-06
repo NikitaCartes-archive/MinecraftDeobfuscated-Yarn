@@ -124,11 +124,11 @@ extends Screen {
         this.allTabButton = this.addDrawableChild(new ButtonWidget(j, 45, i, 20, ALL_TAB_TITLE, button -> this.setCurrentTab(Tab.ALL)));
         this.hiddenTabButton = this.addDrawableChild(new ButtonWidget((j + k - i) / 2 + 1, 45, i, 20, HIDDEN_TAB_TITLE, button -> this.setCurrentTab(Tab.HIDDEN)));
         this.blockedTabButton = this.addDrawableChild(new ButtonWidget(k - i + 1, 45, i, 20, BLOCKED_TAB_TITLE, button -> this.setCurrentTab(Tab.BLOCKED)));
-        this.blockingButton = this.addDrawableChild(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
+        this.blockingButton = this.addDrawableChild(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmChatLinkScreen(bl -> {
             if (bl) {
                 Util.getOperatingSystem().open(BLOCKING_URL);
             }
-            this.client.openScreen(this);
+            this.client.setScreen(this);
         }, BLOCKING_URL, true))));
         String string = this.searchBox != null ? this.searchBox.getText() : "";
         this.searchBox = new TextFieldWidget(this.textRenderer, this.method_31362() + 28, 78, 196, 16, SEARCH_TEXT){
@@ -244,7 +244,7 @@ extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (!this.searchBox.isFocused() && this.client.options.keySocialInteractions.matchesKey(keyCode, scanCode)) {
-            this.client.openScreen(null);
+            this.client.setScreen(null);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

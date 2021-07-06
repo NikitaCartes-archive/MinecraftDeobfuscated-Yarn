@@ -33,12 +33,12 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.DiveJumpingGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.EscapeSunlightGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
@@ -119,7 +119,7 @@ extends AnimalEntity {
     };
     static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
     private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaky() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test((Entity)entity);
-    private static final int field_30335 = 600;
+    private static final int EATING_DURATION = 600;
     private Goal followChickenAndRabbitGoal;
     private Goal followBabyTurtleGoal;
     private Goal followFishGoal;
@@ -149,9 +149,9 @@ extends AnimalEntity {
 
     @Override
     protected void initGoals() {
-        this.followChickenAndRabbitGoal = new FollowTargetGoal<AnimalEntity>(this, AnimalEntity.class, 10, false, false, entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity);
-        this.followBabyTurtleGoal = new FollowTargetGoal<TurtleEntity>(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER);
-        this.followFishGoal = new FollowTargetGoal<FishEntity>(this, FishEntity.class, 20, false, false, entity -> entity instanceof SchoolingFishEntity);
+        this.followChickenAndRabbitGoal = new ActiveTargetGoal<AnimalEntity>(this, AnimalEntity.class, 10, false, false, entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity);
+        this.followBabyTurtleGoal = new ActiveTargetGoal<TurtleEntity>(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER);
+        this.followFishGoal = new ActiveTargetGoal<FishEntity>(this, FishEntity.class, 20, false, false, entity -> entity instanceof SchoolingFishEntity);
         this.goalSelector.add(0, new FoxSwimGoal());
         this.goalSelector.add(1, new StopWanderingGoal());
         this.goalSelector.add(2, new EscapeWhenNotAggressiveGoal(2.2));
@@ -1286,7 +1286,7 @@ extends AnimalEntity {
     }
 
     class DefendFriendGoal
-    extends FollowTargetGoal<LivingEntity> {
+    extends ActiveTargetGoal<LivingEntity> {
         @Nullable
         private LivingEntity offender;
         private LivingEntity friend;

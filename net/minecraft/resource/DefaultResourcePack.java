@@ -52,7 +52,7 @@ ResourceFactory {
     public static Path resourcePath;
     private static final Logger LOGGER;
     public static Class<?> resourceClass;
-    private static final Map<ResourceType, Path> typeToFileSystem;
+    private static final Map<ResourceType, Path> TYPE_TO_FILE_SYSTEM;
     public final PackResourceMetadata metadata;
     public final Set<String> namespaces;
 
@@ -123,7 +123,7 @@ ResourceFactory {
             }
         }
         try {
-            Path path = typeToFileSystem.get((Object)type);
+            Path path = TYPE_TO_FILE_SYSTEM.get((Object)type);
             if (path != null) {
                 DefaultResourcePack.getIdentifiers(set, maxDepth, namespace, path, prefix, pathFilter);
             } else {
@@ -276,7 +276,7 @@ ResourceFactory {
 
     static {
         LOGGER = LogManager.getLogger();
-        typeToFileSystem = Util.make(() -> {
+        TYPE_TO_FILE_SYSTEM = Util.make(() -> {
             Class<DefaultResourcePack> clazz = DefaultResourcePack.class;
             synchronized (DefaultResourcePack.class) {
                 ImmutableMap.Builder<ResourceType, Path> builder = ImmutableMap.builder();

@@ -39,13 +39,13 @@ extends Screen {
             this.allowCommands = allowCommands;
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("lanServer.start"), button -> {
-            this.client.openScreen(null);
+            this.client.setScreen(null);
             int i = NetworkUtils.findLocalPort();
             TranslatableText text = this.client.getServer().openToLan(this.gameMode, this.allowCommands, i) ? new TranslatableText("commands.publish.started", i) : new TranslatableText("commands.publish.failed");
             this.client.inGameHud.getChatHud().addMessage(text);
             this.client.updateWindowTitle();
         }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
     }
 
     @Override

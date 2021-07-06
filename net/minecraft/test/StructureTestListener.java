@@ -160,7 +160,7 @@ implements TestListener {
         }
         stringBuffer.append("-------------------\n");
         nbtList.add(NbtString.of(stringBuffer + output));
-        itemStack.putSubTag("pages", nbtList);
+        itemStack.setSubNbt("pages", nbtList);
         return itemStack;
     }
 

@@ -91,7 +91,7 @@ extends Screen {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            this.client.openScreen(null);
+            this.client.setScreen(null);
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
@@ -99,7 +99,7 @@ extends Screen {
             if (!string.isEmpty()) {
                 this.sendMessage(string);
             }
-            this.client.openScreen(null);
+            this.client.setScreen(null);
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_UP) {

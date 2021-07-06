@@ -28,8 +28,8 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(extended, identifier);
     }
 
-    public void test(ServerPlayerEntity player, Identifier id) {
-        this.test(player, (T conditions) -> conditions.test(id));
+    public void trigger(ServerPlayerEntity player, Identifier id) {
+        this.trigger(player, (T conditions) -> conditions.test(id));
     }
 
     @Override

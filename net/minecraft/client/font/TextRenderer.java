@@ -18,6 +18,7 @@ import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.font.TextVisitFactory;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -129,14 +130,14 @@ public class TextRenderer {
             return 0;
         }
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 0xF000F0, mirror);
+        int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, mirror);
         immediate.draw();
         return i;
     }
 
     private int draw(OrderedText text, float x, float y, int color, Matrix4f matrix, boolean shadow) {
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        int i = this.draw(text, x, y, color, shadow, matrix, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
+        int i = this.draw(text, x, y, color, shadow, matrix, (VertexConsumerProvider)immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
         immediate.draw();
         return i;
     }
@@ -402,9 +403,9 @@ public class TextRenderer {
             TextColor textColor = style.getColor();
             if (textColor != null) {
                 int k = textColor.getRgb();
-                g = (float)(k >> 16 & 0xFF) / 255.0f * this.brightnessMultiplier;
-                h = (float)(k >> 8 & 0xFF) / 255.0f * this.brightnessMultiplier;
-                l = (float)(k & 0xFF) / 255.0f * this.brightnessMultiplier;
+                g = (float)(k >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF)) / 255.0f * this.brightnessMultiplier;
+                h = (float)(k >> 8 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF)) / 255.0f * this.brightnessMultiplier;
+                l = (float)(k & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF)) / 255.0f * this.brightnessMultiplier;
             } else {
                 g = this.red;
                 h = this.green;

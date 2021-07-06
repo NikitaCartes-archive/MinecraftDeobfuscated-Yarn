@@ -29,7 +29,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity player, int level) {
-        this.test(player, conditions -> conditions.matches(level));
+        this.trigger(player, conditions -> conditions.matches(level));
     }
 
     @Override

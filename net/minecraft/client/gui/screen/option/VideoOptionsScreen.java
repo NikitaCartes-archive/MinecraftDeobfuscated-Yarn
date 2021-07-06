@@ -62,7 +62,7 @@ extends GameOptionsScreen {
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
             this.client.options.write();
             this.client.getWindow().applyVideoMode();
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
         }));
     }
 
@@ -99,14 +99,14 @@ extends GameOptionsScreen {
                     list.add(NEWLINE_TEXT);
                     list.add(new TranslatableText("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
                 }
-                this.client.openScreen(new DialogScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new DialogScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, button -> {
+                this.client.setScreen(new DialogScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new DialogScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, button -> {
                     this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
                     MinecraftClient.getInstance().worldRenderer.reload();
                     this.warningManager.acceptAfterWarnings();
-                    this.client.openScreen(this);
+                    this.client.setScreen(this);
                 }), new DialogScreen.ChoiceButton(GRAPHICS_WARNING_CANCEL_TEXT, button -> {
                     this.warningManager.cancelAfterWarnings();
-                    this.client.openScreen(this);
+                    this.client.setScreen(this);
                 }))));
             }
             return true;

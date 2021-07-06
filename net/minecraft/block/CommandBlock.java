@@ -155,7 +155,7 @@ implements OperatorBlock {
             commandBlockExecutor.setCustomName(itemStack.getName());
         }
         if (!world.isClient) {
-            if (itemStack.getSubTag("BlockEntityTag") == null) {
+            if (itemStack.getSubNbt("BlockEntityTag") == null) {
                 commandBlockExecutor.setTrackingOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
                 commandBlockBlockEntity.setAuto(this.auto);
             }

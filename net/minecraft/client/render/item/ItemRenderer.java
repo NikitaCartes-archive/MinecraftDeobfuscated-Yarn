@@ -22,6 +22,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
@@ -74,10 +75,10 @@ implements SynchronousResourceReloader {
     public float zOffset;
     private final ItemModels models;
     private final TextureManager textureManager;
-    private final ItemColors colorMap;
+    private final ItemColors colors;
     private final BuiltinModelItemRenderer builtinModelItemRenderer;
 
-    public ItemRenderer(TextureManager manager, BakedModelManager bakery, ItemColors colorMap, BuiltinModelItemRenderer builtinModelItemRenderer) {
+    public ItemRenderer(TextureManager manager, BakedModelManager bakery, ItemColors colors, BuiltinModelItemRenderer builtinModelItemRenderer) {
         this.textureManager = manager;
         this.models = new ItemModels(bakery);
         this.builtinModelItemRenderer = builtinModelItemRenderer;
@@ -85,7 +86,7 @@ implements SynchronousResourceReloader {
             if (WITHOUT_MODELS.contains(item)) continue;
             this.models.putModel(item, new ModelIdentifier(Registry.ITEM.getId(item), "inventory"));
         }
-        this.colorMap = colorMap;
+        this.colors = colors;
     }
 
     public ItemModels getModels() {
@@ -182,7 +183,7 @@ implements SynchronousResourceReloader {
         for (BakedQuad bakedQuad : quads) {
             int i = -1;
             if (bl && bakedQuad.hasColor()) {
-                i = this.colorMap.getColorMultiplier(stack, bakedQuad.getColorIndex());
+                i = this.colors.getColor(stack, bakedQuad.getColorIndex());
             }
             float f = (float)(i >> 16 & 0xFF) / 255.0f;
             float g = (float)(i >> 8 & 0xFF) / 255.0f;
@@ -234,7 +235,7 @@ implements SynchronousResourceReloader {
         if (bl) {
             DiffuseLighting.disableGuiDepthLighting();
         }
-        this.renderItem(stack, ModelTransformation.Mode.GUI, false, matrixStack2, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, model);
+        this.renderItem(stack, ModelTransformation.Mode.GUI, false, matrixStack2, immediate, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, model);
         immediate.draw();
         RenderSystem.enableDepthTest();
         if (bl) {
@@ -293,7 +294,7 @@ implements SynchronousResourceReloader {
             CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
             crashReportSection.add("Item Type", () -> String.valueOf(itemStack.getItem()));
             crashReportSection.add("Item Damage", () -> String.valueOf(itemStack.getDamage()));
-            crashReportSection.add("Item NBT", () -> String.valueOf(itemStack.getTag()));
+            crashReportSection.add("Item NBT", () -> String.valueOf(itemStack.getNbt()));
             crashReportSection.add("Item Foil", () -> String.valueOf(itemStack.hasGlint()));
             throw new CrashException(crashReport);
         }
@@ -323,7 +324,7 @@ implements SynchronousResourceReloader {
             String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
             matrixStack.translate(0.0, 0.0, this.zOffset + 200.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrixStack.peek().getModel(), (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
+            renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrixStack.peek().getModel(), (VertexConsumerProvider)immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
             immediate.draw();
         }
         if (stack.isItemBarVisible()) {

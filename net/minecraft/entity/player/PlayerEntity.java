@@ -1210,7 +1210,7 @@ extends LivingEntity {
             }
             return optional;
         }
-        if (block instanceof BedBlock && BedBlock.isOverworld(world)) {
+        if (block instanceof BedBlock && BedBlock.isBedWorking(world)) {
             return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, f);
         }
         if (!bl) {

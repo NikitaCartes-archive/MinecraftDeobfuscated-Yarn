@@ -10,18 +10,18 @@ import net.fabricmc.api.Environment;
 
 @Environment(value=EnvType.CLIENT)
 public class UploadTokenCache {
-    private static final Long2ObjectMap<String> tokenCache = new Long2ObjectOpenHashMap<String>();
+    private static final Long2ObjectMap<String> TOKEN_CACHE = new Long2ObjectOpenHashMap<String>();
 
     public static String get(long worldId) {
-        return (String)tokenCache.get(worldId);
+        return (String)TOKEN_CACHE.get(worldId);
     }
 
     public static void invalidate(long world) {
-        tokenCache.remove(world);
+        TOKEN_CACHE.remove(world);
     }
 
     public static void put(long wid, String token) {
-        tokenCache.put(wid, token);
+        TOKEN_CACHE.put(wid, token);
     }
 }
 

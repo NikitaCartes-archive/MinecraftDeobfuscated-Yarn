@@ -168,7 +168,7 @@ implements FlyingItemEntity {
         for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(stack)) {
             areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
         }
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", 99)) {
             areaEffectCloudEntity.setColor(nbtCompound.getInt("CustomPotionColor"));
         }

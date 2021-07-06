@@ -81,7 +81,7 @@ extends RealmsScreen {
         for (PlayerInfo playerInfo : this.serverData.players) {
             this.invitedObjectSelectionList.addEntry(playerInfo);
         }
-        this.addDrawableChild(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(1), this.column_width + 10, 20, new TranslatableText("mco.configure.world.buttons.invite"), button -> this.client.openScreen(new RealmsInviteScreen(this.parent, this, this.serverData))));
+        this.addDrawableChild(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(1), this.column_width + 10, 20, new TranslatableText("mco.configure.world.buttons.invite"), button -> this.client.setScreen(new RealmsInviteScreen(this.parent, this, this.serverData))));
         this.removeButton = this.addDrawableChild(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(7), this.column_width + 10, 20, new TranslatableText("mco.configure.world.invites.remove.tooltip"), button -> this.uninvite(this.player)));
         this.opdeopButton = this.addDrawableChild(new ButtonWidget(this.column2_x, RealmsPlayerScreen.row(9), this.column_width + 10, 20, new TranslatableText("mco.configure.world.invites.ops.tooltip"), button -> {
             if (this.serverData.players.get(this.player).isOperator()) {
@@ -119,9 +119,9 @@ extends RealmsScreen {
 
     private void backButtonClicked() {
         if (this.stateChanged) {
-            this.client.openScreen(this.parent.getNewScreen());
+            this.client.setScreen(this.parent.getNewScreen());
         } else {
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
         }
     }
 
@@ -172,9 +172,9 @@ extends RealmsScreen {
                     this.updateButtonStates();
                 }
                 this.stateChanged = true;
-                this.client.openScreen(this);
+                this.client.setScreen(this);
             }, new LiteralText("Question"), new TranslatableText("mco.configure.world.uninvite.question").append(" '").append(playerInfo.getName()).append("' ?"));
-            this.client.openScreen(realmsConfirmScreen);
+            this.client.setScreen(realmsConfirmScreen);
         }
     }
 

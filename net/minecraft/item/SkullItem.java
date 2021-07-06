@@ -26,10 +26,10 @@ extends WallStandingBlockItem {
 
     @Override
     public Text getName(ItemStack stack) {
-        if (stack.isOf(Items.PLAYER_HEAD) && stack.hasTag()) {
+        if (stack.isOf(Items.PLAYER_HEAD) && stack.hasNbt()) {
             NbtCompound nbtCompound2;
             String string = null;
-            NbtCompound nbtCompound = stack.getTag();
+            NbtCompound nbtCompound = stack.getNbt();
             if (nbtCompound.contains(SKULL_OWNER_KEY, 8)) {
                 string = nbtCompound.getString(SKULL_OWNER_KEY);
             } else if (nbtCompound.contains(SKULL_OWNER_KEY, 10) && (nbtCompound2 = nbtCompound.getCompound(SKULL_OWNER_KEY)).contains("Name", 8)) {

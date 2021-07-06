@@ -13,10 +13,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.FormCaravanGoal;
 import net.minecraft.entity.ai.goal.HorseBondWithPlayerGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -60,8 +60,8 @@ import org.jetbrains.annotations.Nullable;
 public class LlamaEntity
 extends AbstractDonkeyEntity
 implements RangedAttackMob {
-    private static final int field_30425 = 5;
-    private static final int field_30426 = 4;
+    private static final int MAX_STRENGTH = 5;
+    private static final int VARIANTS = 4;
     private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
     private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -498,7 +498,7 @@ implements RangedAttackMob {
     }
 
     static class ChaseWolvesGoal
-    extends FollowTargetGoal<WolfEntity> {
+    extends ActiveTargetGoal<WolfEntity> {
         public ChaseWolvesGoal(LlamaEntity llama) {
             super(llama, WolfEntity.class, 16, false, true, wolf -> !((WolfEntity)wolf).isTamed());
         }

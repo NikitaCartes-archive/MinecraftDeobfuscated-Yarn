@@ -329,7 +329,7 @@ implements Hopper {
         if (first.getCount() > first.getMaxCount()) {
             return false;
         }
-        return ItemStack.areTagsEqual(first, second);
+        return ItemStack.areNbtEqual(first, second);
     }
 
     @Override

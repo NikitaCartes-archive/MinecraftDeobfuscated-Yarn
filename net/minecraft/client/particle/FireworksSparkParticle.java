@@ -17,7 +17,7 @@ import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.FireworkItem;
+import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.DefaultParticleType;
@@ -192,7 +192,7 @@ public class FireworksSparkParticle {
                 } else {
                     for (int i = 0; i < this.explosions.size(); ++i) {
                         NbtCompound nbtCompound = this.explosions.getCompound(i);
-                        if (FireworkItem.Type.byId(nbtCompound.getByte("Type")) != FireworkItem.Type.LARGE_BALL) continue;
+                        if (FireworkRocketItem.Type.byId(nbtCompound.getByte("Type")) != FireworkRocketItem.Type.LARGE_BALL) continue;
                         bl2 = true;
                         break;
                     }
@@ -203,7 +203,7 @@ public class FireworksSparkParticle {
             if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
                 int j = this.age / 2;
                 NbtCompound nbtCompound2 = this.explosions.getCompound(j);
-                FireworkItem.Type type = FireworkItem.Type.byId(nbtCompound2.getByte("Type"));
+                FireworkRocketItem.Type type = FireworkRocketItem.Type.byId(nbtCompound2.getByte("Type"));
                 boolean bl3 = nbtCompound2.getBoolean("Trail");
                 boolean bl4 = nbtCompound2.getBoolean("Flicker");
                 int[] is = nbtCompound2.getIntArray("Colors");

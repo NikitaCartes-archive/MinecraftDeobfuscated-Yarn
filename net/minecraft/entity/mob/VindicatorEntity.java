@@ -18,7 +18,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.NavigationConditions;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -66,14 +66,14 @@ extends IllagerEntity {
         super.initGoals();
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new BreakDoorGoal(this));
-        this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this));
+        this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this, this));
         this.goalSelector.add(3, new RaiderEntity.PatrolApproachGoal(this, this, 10.0f));
         this.goalSelector.add(4, new AttackGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
-        this.targetSelector.add(3, new FollowTargetGoal<MerchantEntity>((MobEntity)this, MerchantEntity.class, true));
-        this.targetSelector.add(3, new FollowTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, true));
-        this.targetSelector.add(4, new FollowEntityGoal(this));
+        this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
+        this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>((MobEntity)this, MerchantEntity.class, true));
+        this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, true));
+        this.targetSelector.add(4, new TargetGoal(this));
         this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
         this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f, 1.0f));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0f));
@@ -235,9 +235,9 @@ extends IllagerEntity {
         }
     }
 
-    static class FollowEntityGoal
-    extends FollowTargetGoal<LivingEntity> {
-        public FollowEntityGoal(VindicatorEntity vindicator) {
+    static class TargetGoal
+    extends ActiveTargetGoal<LivingEntity> {
+        public TargetGoal(VindicatorEntity vindicator) {
             super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::isMobOrPlayer);
         }
 

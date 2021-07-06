@@ -540,7 +540,7 @@ public class Raid {
 
     public static ItemStack getOminousBanner() {
         ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
-        NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+        NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("BlockEntityTag");
         NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN).add(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY).add(BannerPattern.STRIPE_CENTER, DyeColor.GRAY).add(BannerPattern.BORDER, DyeColor.LIGHT_GRAY).add(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK).add(BannerPattern.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY).add(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY).add(BannerPattern.BORDER, DyeColor.BLACK).toNbt();
         nbtCompound.put("Patterns", nbtList);
         itemStack.addHideFlag(ItemStack.TooltipSection.ADDITIONAL);

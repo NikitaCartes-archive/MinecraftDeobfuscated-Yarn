@@ -55,7 +55,7 @@ extends AbstractSoundInstance {
         this(sound.getId(), category, volume, pitch, repeat, repeatDelay, attenuationType, x, y, z, false);
     }
 
-    public PositionedSoundInstance(Identifier id, SoundCategory category, float volume, float pitch, boolean repeat, int repeatDelay, SoundInstance.AttenuationType attenuationType, double x, double y, double z, boolean looping) {
+    public PositionedSoundInstance(Identifier id, SoundCategory category, float volume, float pitch, boolean repeat, int repeatDelay, SoundInstance.AttenuationType attenuationType, double x, double y, double z, boolean relative) {
         super(id, category);
         this.volume = volume;
         this.pitch = pitch;
@@ -65,7 +65,7 @@ extends AbstractSoundInstance {
         this.repeat = repeat;
         this.repeatDelay = repeatDelay;
         this.attenuationType = attenuationType;
-        this.looping = looping;
+        this.relative = relative;
     }
 }
 

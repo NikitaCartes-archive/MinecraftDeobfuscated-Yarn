@@ -55,7 +55,7 @@ extends MinecraftServer {
 
     public IntegratedServer(Thread serverThread, MinecraftClient client, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, ResourcePackManager dataPackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super(serverThread, registryManager, session, saveProperties, dataPackManager, client.getNetworkProxy(), client.getDataFixer(), serverResourceManager, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
-        this.setServerName(client.getSession().getUsername());
+        this.setSinglePlayerName(client.getSession().getUsername());
         this.setDemo(client.isDemo());
         this.setPlayerManager(new IntegratedPlayerManager(this, this.registryManager, this.saveHandler));
         this.client = client;
@@ -69,7 +69,7 @@ extends MinecraftServer {
         this.setFlightEnabled(true);
         this.generateKeyPair();
         this.loadWorld();
-        this.setMotd(this.getUserName() + " - " + this.getSaveProperties().getLevelName());
+        this.setMotd(this.getSinglePlayerName() + " - " + this.getSaveProperties().getLevelName());
         return true;
     }
 
@@ -255,7 +255,7 @@ extends MinecraftServer {
 
     @Override
     public boolean isHost(GameProfile profile) {
-        return profile.getName().equalsIgnoreCase(this.getUserName());
+        return profile.getName().equalsIgnoreCase(this.getSinglePlayerName());
     }
 
     @Override

@@ -70,7 +70,7 @@ extends PersistentProjectileEntity {
     }
 
     public static int getCustomPotionColor(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", 99)) {
             return nbtCompound.getInt("CustomPotionColor");
         }
@@ -195,7 +195,7 @@ extends PersistentProjectileEntity {
         PotionUtil.setPotion(itemStack, this.potion);
         PotionUtil.setCustomPotionEffects(itemStack, this.effects);
         if (this.colorSet) {
-            itemStack.getOrCreateTag().putInt("CustomPotionColor", this.getColor());
+            itemStack.getOrCreateNbt().putInt("CustomPotionColor", this.getColor());
         }
         return itemStack;
     }

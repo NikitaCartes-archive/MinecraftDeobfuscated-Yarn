@@ -141,7 +141,7 @@ public class Main {
                 return;
             }
             serverResourceManager.loadRegistryTags();
-            RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+            RegistryOps<NbtElement> registryOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), (DynamicRegistryManager)impl);
             serverPropertiesLoader.getPropertiesHandler().method_37371(impl);
             SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
             if (saveProperties == null) {
@@ -165,7 +165,7 @@ public class Main {
             final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(serverThread -> {
                 boolean bl;
                 MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)serverThread, impl, session, resourcePackManager, serverResourceManager, saveProperties2, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
-                minecraftDedicatedServer.setServerName((String)optionSet.valueOf(optionSpec9));
+                minecraftDedicatedServer.setSinglePlayerName((String)optionSet.valueOf(optionSpec9));
                 minecraftDedicatedServer.setServerPort((Integer)optionSet.valueOf(optionSpec12));
                 minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
                 minecraftDedicatedServer.setServerId((String)optionSet.valueOf(optionSpec13));

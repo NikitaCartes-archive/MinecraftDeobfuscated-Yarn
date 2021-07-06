@@ -215,7 +215,7 @@ extends PersistentState {
             this.addIcon(MapIcon.Type.FRAME, player.world, "frame-" + itemFrameEntity.getId(), blockPos.getX(), blockPos.getZ(), itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, null);
             this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
         }
-        if ((nbtCompound = stack.getTag()) != null && nbtCompound.contains("Decorations", 9)) {
+        if ((nbtCompound = stack.getNbt()) != null && nbtCompound.contains("Decorations", 9)) {
             NbtList nbtList = nbtCompound.getList("Decorations", 10);
             for (int j = 0; j < nbtList.size(); ++j) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(j);
@@ -235,11 +235,11 @@ extends PersistentState {
 
     public static void addDecorationsNbt(ItemStack stack, BlockPos pos, String id, MapIcon.Type type) {
         NbtList nbtList;
-        if (stack.hasTag() && stack.getTag().contains("Decorations", 9)) {
-            nbtList = stack.getTag().getList("Decorations", 10);
+        if (stack.hasNbt() && stack.getNbt().contains("Decorations", 9)) {
+            nbtList = stack.getNbt().getList("Decorations", 10);
         } else {
             nbtList = new NbtList();
-            stack.putSubTag("Decorations", nbtList);
+            stack.setSubNbt("Decorations", nbtList);
         }
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.putByte("type", type.getId());
@@ -249,7 +249,7 @@ extends PersistentState {
         nbtCompound.putDouble("rot", 180.0);
         nbtList.add(nbtCompound);
         if (type.hasTintColor()) {
-            NbtCompound nbtCompound2 = stack.getOrCreateSubTag("display");
+            NbtCompound nbtCompound2 = stack.getOrCreateSubNbt("display");
             nbtCompound2.putInt("MapColor", type.getTintColor());
         }
     }

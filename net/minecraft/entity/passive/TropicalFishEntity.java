@@ -100,7 +100,7 @@ extends SchoolingFishEntity {
     @Override
     public void copyDataToStack(ItemStack stack) {
         super.copyDataToStack(stack);
-        NbtCompound nbtCompound = stack.getOrCreateTag();
+        NbtCompound nbtCompound = stack.getOrCreateNbt();
         nbtCompound.putInt(BUCKET_VARIANT_TAG_KEY, this.getVariant());
     }
 
@@ -255,12 +255,12 @@ extends SchoolingFishEntity {
         final int baseColor;
         final int patternColor;
 
-        TropicalFishData(TropicalFishEntity tropicalFishEntity, int i, int j, int k, int l) {
-            super(tropicalFishEntity);
-            this.shape = i;
-            this.pattern = j;
-            this.baseColor = k;
-            this.patternColor = l;
+        TropicalFishData(TropicalFishEntity leader, int shape, int pattern, int baseColor, int patternColor) {
+            super(leader);
+            this.shape = shape;
+            this.pattern = pattern;
+            this.baseColor = baseColor;
+            this.patternColor = patternColor;
         }
     }
 }

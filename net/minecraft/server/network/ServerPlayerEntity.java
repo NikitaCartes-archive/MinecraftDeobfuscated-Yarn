@@ -1098,7 +1098,7 @@ extends PlayerEntity {
         if (effect.getEffectType() == StatusEffects.LEVITATION) {
             this.levitationStartPos = null;
         }
-        Criteria.EFFECTS_CHANGED.trigger(this, null);
+        Criteria.EFFECTS_CHANGED.trigger(this, (Entity)null);
     }
 
     @Override
@@ -1486,7 +1486,7 @@ extends PlayerEntity {
 
     @Override
     protected void tickItemStackUsage(ItemStack stack) {
-        Criteria.USING_ITEM.test(this, stack);
+        Criteria.USING_ITEM.trigger(this, stack);
         super.tickItemStackUsage(stack);
     }
 

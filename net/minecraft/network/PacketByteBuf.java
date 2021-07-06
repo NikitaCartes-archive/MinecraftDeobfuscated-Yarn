@@ -1041,8 +1041,8 @@ extends ByteBuf {
             this.writeVarInt(Item.getRawId(item));
             this.writeByte(stack.getCount());
             NbtCompound nbtCompound = null;
-            if (item.isDamageable() || item.shouldSyncTagToClient()) {
-                nbtCompound = stack.getTag();
+            if (item.isDamageable() || item.isNbtSynced()) {
+                nbtCompound = stack.getNbt();
             }
             this.writeNbt(nbtCompound);
         }
@@ -1065,7 +1065,7 @@ extends ByteBuf {
         int i = this.readVarInt();
         byte j = this.readByte();
         ItemStack itemStack = new ItemStack(Item.byRawId(i), j);
-        itemStack.setTag(this.readNbt());
+        itemStack.setNbt(this.readNbt());
         return itemStack;
     }
 

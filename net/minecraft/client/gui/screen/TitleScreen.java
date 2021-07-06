@@ -124,10 +124,10 @@ extends Screen {
         } else {
             this.initWidgetsNormal(j, 24);
         }
-        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, j + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, button -> this.client.openScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager())), new TranslatableText("narrator.button.language")));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, new TranslatableText("menu.options"), button -> this.client.openScreen(new OptionsScreen(this, this.client.options))));
+        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, j + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, button -> this.client.setScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager())), new TranslatableText("narrator.button.language")));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, new TranslatableText("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, new TranslatableText("menu.quit"), button -> this.client.scheduleStop()));
-        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, button -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.client.options)), new TranslatableText("narrator.button.accessibility")));
+        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), new TranslatableText("narrator.button.accessibility")));
         this.client.setConnectedToRealms(false);
         if (this.client.options.realmsNotifications && this.realmsNotificationGui == null) {
             this.realmsNotificationGui = new RealmsNotificationsScreen();
@@ -138,7 +138,7 @@ extends Screen {
     }
 
     private void initWidgetsNormal(int y, int spacingY) {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> this.client.openScreen(new SelectWorldScreen(this))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this))));
         boolean bl = this.client.isMultiplayerEnabled();
         ButtonWidget.TooltipSupplier tooltipSupplier = bl ? ButtonWidget.EMPTY : new ButtonWidget.TooltipSupplier(){
             private final Text MULTIPLAYER_DISABLED_TEXT = new TranslatableText("title.multiplayer.disabled");
@@ -174,7 +174,7 @@ extends Screen {
             try (LevelStorage.Session session = levelStorage.createSession(DEMO_WORLD_NAME);){
                 LevelSummary levelSummary = session.getLevelSummary();
                 if (levelSummary != null) {
-                    this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", levelSummary.getDisplayName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
+                    this.client.setScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", levelSummary.getDisplayName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
                 }
             } catch (IOException iOException) {
                 SystemToast.addWorldAccessFailureToast(this.client, DEMO_WORLD_NAME);
@@ -213,7 +213,7 @@ extends Screen {
     }
 
     private void switchToRealms() {
-        this.client.openScreen(new RealmsMainScreen(this));
+        this.client.setScreen(new RealmsMainScreen(this));
     }
 
     @Override
@@ -295,7 +295,7 @@ extends Screen {
             return true;
         }
         if (mouseX > (double)this.copyrightTextX && mouseX < (double)(this.copyrightTextX + this.copyrightTextWidth) && mouseY > (double)(this.height - 10) && mouseY < (double)this.height) {
-            this.client.openScreen(new CreditsScreen(false, Runnables.doNothing()));
+            this.client.setScreen(new CreditsScreen(false, Runnables.doNothing()));
         }
         return false;
     }
@@ -316,7 +316,7 @@ extends Screen {
                 LOGGER.warn("Failed to delete demo world", (Throwable)iOException);
             }
         }
-        this.client.openScreen(this);
+        this.client.setScreen(this);
     }
 
     private /* synthetic */ void method_19859(ButtonWidget button) {
@@ -325,7 +325,7 @@ extends Screen {
 
     private /* synthetic */ void method_19860(ButtonWidget button) {
         Screen screen = this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this);
-        this.client.openScreen(screen);
+        this.client.setScreen(screen);
     }
 }
 

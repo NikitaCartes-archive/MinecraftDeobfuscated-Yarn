@@ -134,7 +134,7 @@ extends PlayerManager {
 
     @Override
     public boolean canBypassPlayerLimit(GameProfile profile) {
-        return this.getOpList().isOp(profile);
+        return this.getOpList().canBypassPlayerLimit(profile);
     }
 
     @Override

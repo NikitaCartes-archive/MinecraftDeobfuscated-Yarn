@@ -12,6 +12,7 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.model.ModelLoader;
@@ -36,9 +37,9 @@ public class FluidRenderer {
     private Sprite waterOverlaySprite;
 
     protected void onResourceReload() {
-        this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.LAVA.getDefaultState()).getSprite();
+        this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.LAVA.getDefaultState()).getParticleSprite();
         this.lavaSprites[1] = ModelLoader.LAVA_FLOW.getSprite();
-        this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getSprite();
+        this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
         this.waterSprites[1] = ModelLoader.WATER_FLOW.getSprite();
         this.waterOverlaySprite = ModelLoader.WATER_OVERLAY.getSprite();
     }
@@ -68,8 +69,8 @@ public class FluidRenderer {
         return FluidRenderer.isSideCovered(world, direction.getOpposite(), 1.0f, pos, state);
     }
 
-    public static boolean method_29708(BlockRenderView blockRenderView, BlockPos blockPos, FluidState fluidState, BlockState blockState, Direction direction) {
-        return !FluidRenderer.isOppositeSideCovered(blockRenderView, blockPos, blockState, direction) && !FluidRenderer.isSameFluid(blockRenderView, blockPos, direction, fluidState);
+    public static boolean method_29708(BlockRenderView world, BlockPos pos, FluidState state, BlockState blockState, Direction direction) {
+        return !FluidRenderer.isOppositeSideCovered(world, pos, blockState, direction) && !FluidRenderer.isSameFluid(world, pos, direction, state);
     }
 
     public boolean render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state) {
@@ -275,10 +276,10 @@ public class FluidRenderer {
     private int getLight(BlockRenderView world, BlockPos pos) {
         int i = WorldRenderer.getLightmapCoordinates(world, pos);
         int j = WorldRenderer.getLightmapCoordinates(world, pos.up());
-        int k = i & 0xFF;
-        int l = j & 0xFF;
-        int m = i >> 16 & 0xFF;
-        int n = j >> 16 & 0xFF;
+        int k = i & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF);
+        int l = j & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF);
+        int m = i >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF);
+        int n = j >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF);
         return (k > l ? k : l) | (m > n ? m : n) << 16;
     }
 

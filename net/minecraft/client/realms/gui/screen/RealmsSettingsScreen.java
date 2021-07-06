@@ -47,19 +47,19 @@ extends RealmsScreen {
         this.client.keyboard.setRepeatEvents(true);
         int i = this.width / 2 - 106;
         this.doneButton = this.addDrawableChild(new ButtonWidget(i - 2, RealmsSettingsScreen.row(12), 106, 20, new TranslatableText("mco.configure.world.buttons.done"), button -> this.save()));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, RealmsSettingsScreen.row(12), 106, 20, ScreenTexts.CANCEL, button -> this.client.openScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, RealmsSettingsScreen.row(12), 106, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
         String string = this.serverData.state == RealmsServer.State.OPEN ? "mco.configure.world.buttons.close" : "mco.configure.world.buttons.open";
         ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 - 53, RealmsSettingsScreen.row(0), 106, 20, new TranslatableText(string), button -> {
             if (this.serverData.state == RealmsServer.State.OPEN) {
                 TranslatableText text = new TranslatableText("mco.configure.world.close.question.line1");
                 TranslatableText text2 = new TranslatableText("mco.configure.world.close.question.line2");
-                this.client.openScreen(new RealmsLongConfirmationScreen(confirmed -> {
+                this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
                     if (confirmed) {
                         this.parent.closeTheWorld(this);
                     } else {
-                        this.client.openScreen(this);
+                        this.client.setScreen(this);
                     }
-                }, RealmsLongConfirmationScreen.Type.Info, text, text2, true));
+                }, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
             } else {
                 this.parent.openTheWorld(false, this);
             }
@@ -84,7 +84,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

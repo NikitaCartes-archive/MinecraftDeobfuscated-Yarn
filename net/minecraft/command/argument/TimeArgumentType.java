@@ -23,7 +23,7 @@ public class TimeArgumentType
 implements ArgumentType<Integer> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0d", "0s", "0t", "0");
     private static final SimpleCommandExceptionType INVALID_UNIT_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.time.invalid_unit"));
-    private static final DynamicCommandExceptionType INVALID_COUNT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.time.invalid_tick_count", object));
+    private static final DynamicCommandExceptionType INVALID_COUNT_EXCEPTION = new DynamicCommandExceptionType(time -> new TranslatableText("argument.time.invalid_tick_count", time));
     private static final Object2IntMap<String> UNITS = new Object2IntOpenHashMap<String>();
 
     public static TimeArgumentType time() {
@@ -62,8 +62,8 @@ implements ArgumentType<Integer> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 
     static {

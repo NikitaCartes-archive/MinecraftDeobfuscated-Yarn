@@ -128,7 +128,7 @@ implements ResourcePackProvider {
                 ProgressScreen progressScreen = new ProgressScreen(closeAfterDownload);
                 Map<String, String> map = ClientBuiltinResourcePackProvider.getDownloadHeaders();
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
-                minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
+                minecraftClient.submitAndJoin(() -> minecraftClient.setScreen(progressScreen));
                 completableFuture = NetworkUtils.downloadResourcePack(file, url, map, 0x6400000, progressScreen, minecraftClient.getNetworkProxy());
             }
             CompletableFuture<?> completableFuture2 = this.downloadTask = ((CompletableFuture)completableFuture.thenCompose(object -> {
@@ -138,7 +138,7 @@ implements ResourcePackProvider {
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.execute(() -> {
                     if (!closeAfterDownload) {
-                        minecraftClient.openScreen(new SaveLevelScreen(APPLYING_PACK_TEXT));
+                        minecraftClient.setScreen(new SaveLevelScreen(APPLYING_PACK_TEXT));
                     }
                 });
                 return this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER);
@@ -147,9 +147,9 @@ implements ResourcePackProvider {
                     LOGGER.warn("Pack application failed: {}, deleting file {}", (Object)throwable.getMessage(), (Object)file);
                     ClientBuiltinResourcePackProvider.delete(file);
                     MinecraftClient minecraftClient = MinecraftClient.getInstance();
-                    minecraftClient.execute(() -> minecraftClient.openScreen(new ConfirmScreen(confirmed -> {
+                    minecraftClient.execute(() -> minecraftClient.setScreen(new ConfirmScreen(confirmed -> {
                         if (confirmed) {
-                            minecraftClient.openScreen(null);
+                            minecraftClient.setScreen(null);
                         } else {
                             ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClient.getNetworkHandler();
                             if (clientPlayNetworkHandler != null) {

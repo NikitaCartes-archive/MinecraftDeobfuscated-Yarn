@@ -53,11 +53,11 @@ extends MinecraftServer {
     private static final int field_33157 = 20;
     private final List<GameTestBatch> batches;
     private final BlockPos pos;
-    private static final GameRules gameRules = Util.make(new GameRules(), gameRules -> {
+    private static final GameRules GAME_RULES = Util.make(new GameRules(), gameRules -> {
         gameRules.get(GameRules.DO_MOB_SPAWNING).set(false, null);
         gameRules.get(GameRules.DO_WEATHER_CYCLE).set(false, null);
     });
-    private static final LevelInfo testLevel = new LevelInfo("Test Level", GameMode.CREATIVE, false, Difficulty.NORMAL, true, TestServer.gameRules, DataPackSettings.SAFE_MODE);
+    private static final LevelInfo TEST_LEVEL = new LevelInfo("Test Level", GameMode.CREATIVE, false, Difficulty.NORMAL, true, GAME_RULES, DataPackSettings.SAFE_MODE);
     @Nullable
     private TestSet testSet;
 
@@ -66,7 +66,7 @@ extends MinecraftServer {
     }
 
     private TestServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, ServerResourceManager serverResourceManager, Collection<GameTestBatch> batches, BlockPos pos, DynamicRegistryManager.Impl registryManager, Registry<Biome> biomeRegistry, Registry<DimensionType> dimensionTypeRegistry) {
-        super(serverThread, registryManager, session, new LevelProperties(testLevel, new GeneratorOptions(0L, false, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(dimensionTypeRegistry, DimensionType.createDefaultDimensionOptions(dimensionTypeRegistry, biomeRegistry, registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY), 0L), new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry)))), Lifecycle.stable()), dataPackManager, Proxy.NO_PROXY, Schemas.getFixer(), serverResourceManager, null, null, null, WorldGenerationProgressLogger::new);
+        super(serverThread, registryManager, session, new LevelProperties(TEST_LEVEL, new GeneratorOptions(0L, false, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(dimensionTypeRegistry, DimensionType.createDefaultDimensionOptions(dimensionTypeRegistry, biomeRegistry, registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY), 0L), new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry)))), Lifecycle.stable()), dataPackManager, Proxy.NO_PROXY, Schemas.getFixer(), serverResourceManager, null, null, null, WorldGenerationProgressLogger::new);
         this.batches = Lists.newArrayList(batches);
         this.pos = pos;
         if (batches.isEmpty()) {

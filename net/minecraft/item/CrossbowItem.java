@@ -149,17 +149,17 @@ implements Vanishable {
     }
 
     public static boolean isCharged(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         return nbtCompound != null && nbtCompound.getBoolean(CHARGED_KEY);
     }
 
     public static void setCharged(ItemStack stack, boolean charged) {
-        NbtCompound nbtCompound = stack.getOrCreateTag();
+        NbtCompound nbtCompound = stack.getOrCreateNbt();
         nbtCompound.putBoolean(CHARGED_KEY, charged);
     }
 
     private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
-        NbtCompound nbtCompound = crossbow.getOrCreateTag();
+        NbtCompound nbtCompound = crossbow.getOrCreateNbt();
         NbtList nbtList = nbtCompound.contains(CHARGED_PROJECTILES_KEY, 9) ? nbtCompound.getList(CHARGED_PROJECTILES_KEY, 10) : new NbtList();
         NbtCompound nbtCompound2 = new NbtCompound();
         projectile.writeNbt(nbtCompound2);
@@ -170,7 +170,7 @@ implements Vanishable {
     private static List<ItemStack> getProjectiles(ItemStack crossbow) {
         NbtList nbtList;
         ArrayList<ItemStack> list = Lists.newArrayList();
-        NbtCompound nbtCompound = crossbow.getTag();
+        NbtCompound nbtCompound = crossbow.getNbt();
         if (nbtCompound != null && nbtCompound.contains(CHARGED_PROJECTILES_KEY, 9) && (nbtList = nbtCompound.getList(CHARGED_PROJECTILES_KEY, 10)) != null) {
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(i);
@@ -181,7 +181,7 @@ implements Vanishable {
     }
 
     private static void clearProjectiles(ItemStack crossbow) {
-        NbtCompound nbtCompound = crossbow.getTag();
+        NbtCompound nbtCompound = crossbow.getNbt();
         if (nbtCompound != null) {
             NbtList nbtList = nbtCompound.getList(CHARGED_PROJECTILES_KEY, 9);
             nbtList.clear();

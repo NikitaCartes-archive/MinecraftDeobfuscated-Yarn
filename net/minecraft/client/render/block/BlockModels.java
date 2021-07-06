@@ -26,8 +26,8 @@ public class BlockModels {
         this.modelManager = modelManager;
     }
 
-    public Sprite getSprite(BlockState state) {
-        return this.getModel(state).getSprite();
+    public Sprite getModelParticleSprite(BlockState state) {
+        return this.getModel(state).getParticleSprite();
     }
 
     public BakedModel getModel(BlockState state) {
@@ -71,8 +71,8 @@ public class BlockModels {
         return stringBuilder.toString();
     }
 
-    private static <T extends Comparable<T>> String propertyValueToString(Property<T> property, Comparable<?> comparable) {
-        return property.name(comparable);
+    private static <T extends Comparable<T>> String propertyValueToString(Property<T> property, Comparable<?> value) {
+        return property.name(value);
     }
 }
 

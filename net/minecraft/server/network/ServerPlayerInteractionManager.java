@@ -294,7 +294,7 @@ public class ServerPlayerInteractionManager {
         boolean bl2 = player.shouldCancelInteraction() && bl;
         ItemStack itemStack = stack.copy();
         if (!bl2 && (actionResult = blockState.onUse(world, player, hand, hitResult)).isAccepted()) {
-            Criteria.ITEM_USED_ON_BLOCK.test(player, blockPos, itemStack);
+            Criteria.ITEM_USED_ON_BLOCK.trigger(player, blockPos, itemStack);
             return actionResult;
         }
         if (stack.isEmpty() || player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
@@ -309,7 +309,7 @@ public class ServerPlayerInteractionManager {
             actionResult2 = stack.useOnBlock(itemUsageContext);
         }
         if (actionResult2.isAccepted()) {
-            Criteria.ITEM_USED_ON_BLOCK.test(player, blockPos, itemStack);
+            Criteria.ITEM_USED_ON_BLOCK.trigger(player, blockPos, itemStack);
         }
         return actionResult2;
     }

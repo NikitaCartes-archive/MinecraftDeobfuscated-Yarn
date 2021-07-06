@@ -35,7 +35,7 @@ public class PotionUtil {
     private static final Text NONE_TEXT = new TranslatableText("effect.none").formatted(Formatting.GRAY);
 
     public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
-        return PotionUtil.getPotionEffects(stack.getTag());
+        return PotionUtil.getPotionEffects(stack.getNbt());
     }
 
     public static List<StatusEffectInstance> getPotionEffects(Potion potion, Collection<StatusEffectInstance> custom) {
@@ -53,7 +53,7 @@ public class PotionUtil {
     }
 
     public static List<StatusEffectInstance> getCustomPotionEffects(ItemStack stack) {
-        return PotionUtil.getCustomPotionEffects(stack.getTag());
+        return PotionUtil.getCustomPotionEffects(stack.getNbt());
     }
 
     public static List<StatusEffectInstance> getCustomPotionEffects(@Nullable NbtCompound nbt) {
@@ -75,7 +75,7 @@ public class PotionUtil {
     }
 
     public static int getColor(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getTag();
+        NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null && nbtCompound.contains(CUSTOM_POTION_COLOR_KEY, 99)) {
             return nbtCompound.getInt(CUSTOM_POTION_COLOR_KEY);
         }
@@ -114,7 +114,7 @@ public class PotionUtil {
     }
 
     public static Potion getPotion(ItemStack stack) {
-        return PotionUtil.getPotion(stack.getTag());
+        return PotionUtil.getPotion(stack.getNbt());
     }
 
     public static Potion getPotion(@Nullable NbtCompound compound) {
@@ -127,9 +127,9 @@ public class PotionUtil {
     public static ItemStack setPotion(ItemStack stack, Potion potion) {
         Identifier identifier = Registry.POTION.getId(potion);
         if (potion == Potions.EMPTY) {
-            stack.removeSubTag(POTION_KEY);
+            stack.removeSubNbt(POTION_KEY);
         } else {
-            stack.getOrCreateTag().putString(POTION_KEY, identifier.toString());
+            stack.getOrCreateNbt().putString(POTION_KEY, identifier.toString());
         }
         return stack;
     }
@@ -138,7 +138,7 @@ public class PotionUtil {
         if (effects.isEmpty()) {
             return stack;
         }
-        NbtCompound nbtCompound = stack.getOrCreateTag();
+        NbtCompound nbtCompound = stack.getOrCreateNbt();
         NbtList nbtList = nbtCompound.getList(CUSTOM_POTION_EFFECTS_KEY, 9);
         for (StatusEffectInstance statusEffectInstance : effects) {
             nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
@@ -170,7 +170,7 @@ public class PotionUtil {
                 if (statusEffectInstance.getDuration() > 20) {
                     mutableText = new TranslatableText("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, f));
                 }
-                list.add(mutableText.formatted(statusEffect.getType().getFormatting()));
+                list.add(mutableText.formatted(statusEffect.getCategory().getFormatting()));
             }
         }
         if (!list3.isEmpty()) {

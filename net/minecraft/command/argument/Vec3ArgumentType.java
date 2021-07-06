@@ -46,8 +46,8 @@ implements ArgumentType<PosArgument> {
         return context.getArgument(name, PosArgument.class).toAbsolutePos(context.getSource());
     }
 
-    public static PosArgument getPosArgument(CommandContext<ServerCommandSource> commandContext, String string) {
-        return commandContext.getArgument(string, PosArgument.class);
+    public static PosArgument getPosArgument(CommandContext<ServerCommandSource> context, String name) {
+        return context.getArgument(name, PosArgument.class);
     }
 
     @Override
@@ -74,8 +74,8 @@ implements ArgumentType<PosArgument> {
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 }
 

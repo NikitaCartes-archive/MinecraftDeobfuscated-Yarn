@@ -389,7 +389,7 @@ extends Entity {
 
     public float interpolatePaddlePhase(int paddle, float tickDelta) {
         if (this.isPaddleMoving(paddle)) {
-            return (float)MathHelper.clampedLerp((double)this.paddlePhases[paddle] - (double)0.3926991f, this.paddlePhases[paddle], tickDelta);
+            return (float)MathHelper.clampedLerp((double)this.paddlePhases[paddle] - (double)0.3926991f, (double)this.paddlePhases[paddle], (double)tickDelta);
         }
         return 0.0f;
     }

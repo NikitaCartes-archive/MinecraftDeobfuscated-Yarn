@@ -22,7 +22,7 @@ import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.particle.FireworksSparkParticle;
-import net.minecraft.client.render.SkyProperties;
+import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.EntityTrackingSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -99,7 +99,7 @@ extends World {
     private final ClientPlayNetworkHandler netHandler;
     private final WorldRenderer worldRenderer;
     private final Properties clientWorldProperties;
-    private final SkyProperties skyProperties;
+    private final DimensionEffects dimensionEffects;
     private final MinecraftClient client = MinecraftClient.getInstance();
     final List<AbstractClientPlayerEntity> players = Lists.newArrayList();
     private Scoreboard scoreboard = new Scoreboard();
@@ -119,14 +119,14 @@ extends World {
         this.chunkManager = new ClientChunkManager(this, loadDistance);
         this.clientWorldProperties = properties;
         this.worldRenderer = worldRenderer;
-        this.skyProperties = SkyProperties.byDimensionType(dimensionType);
+        this.dimensionEffects = DimensionEffects.byDimensionType(dimensionType);
         this.setSpawnPos(new BlockPos(8, 64, 8), 0.0f);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
     }
 
-    public SkyProperties getSkyProperties() {
-        return this.skyProperties;
+    public DimensionEffects getDimensionEffects() {
+        return this.dimensionEffects;
     }
 
     public void tick(BooleanSupplier shouldKeepTicking) {
@@ -359,15 +359,15 @@ extends World {
     }
 
     @Override
-    public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        if (player == this.client.player) {
+    public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+        if (except == this.client.player) {
             this.playSound(x, y, z, sound, category, volume, pitch, false);
         }
     }
 
     @Override
-    public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        if (player == this.client.player) {
+    public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+        if (except == this.client.player) {
             this.client.getSoundManager().play(new EntityTrackingSoundInstance(sound, category, volume, pitch, entity));
         }
     }
@@ -531,7 +531,7 @@ extends World {
         return h * 0.8f + 0.2f;
     }
 
-    public Vec3d method_23777(Vec3d vec3d, float f) {
+    public Vec3d getSkyColor(Vec3d vec3d, float f) {
         float n;
         float m;
         float g = this.getSkyAngle(f);
@@ -619,7 +619,7 @@ extends World {
 
     @Override
     public float getBrightness(Direction direction, boolean shaded) {
-        boolean bl = this.getSkyProperties().isDarkened();
+        boolean bl = this.getDimensionEffects().isDarkened();
         if (!shaded) {
             return bl ? 0.9f : 1.0f;
         }

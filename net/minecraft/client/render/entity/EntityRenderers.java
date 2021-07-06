@@ -38,7 +38,7 @@ import net.minecraft.client.render.entity.EvokerEntityRenderer;
 import net.minecraft.client.render.entity.EvokerFangsEntityRenderer;
 import net.minecraft.client.render.entity.ExperienceOrbEntityRenderer;
 import net.minecraft.client.render.entity.FallingBlockEntityRenderer;
-import net.minecraft.client.render.entity.FireworkEntityRenderer;
+import net.minecraft.client.render.entity.FireworkRocketEntityRenderer;
 import net.minecraft.client.render.entity.FishingBobberEntityRenderer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.render.entity.FoxEntityRenderer;
@@ -119,16 +119,16 @@ import org.apache.logging.log4j.Logger;
 public class EntityRenderers {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String DEFAULT = "default";
-    private static final Map<EntityType<?>, EntityRendererFactory<?>> rendererFactories = Maps.newHashMap();
-    private static final Map<String, EntityRendererFactory<AbstractClientPlayerEntity>> playerRendererFactories = ImmutableMap.of("default", context -> new PlayerEntityRenderer(context, false), "slim", context -> new PlayerEntityRenderer(context, true));
+    private static final Map<EntityType<?>, EntityRendererFactory<?>> RENDERER_FACTORIES = Maps.newHashMap();
+    private static final Map<String, EntityRendererFactory<AbstractClientPlayerEntity>> PLAYER_RENDERER_FACTORIES = ImmutableMap.of("default", context -> new PlayerEntityRenderer(context, false), "slim", context -> new PlayerEntityRenderer(context, true));
 
     private static <T extends Entity> void register(EntityType<? extends T> type, EntityRendererFactory<T> factory) {
-        rendererFactories.put(type, factory);
+        RENDERER_FACTORIES.put(type, factory);
     }
 
     public static Map<EntityType<?>, EntityRenderer<?>> reloadEntityRenderers(EntityRendererFactory.Context ctx) {
         ImmutableMap.Builder builder = ImmutableMap.builder();
-        rendererFactories.forEach((entityType, entityRendererFactory) -> {
+        RENDERER_FACTORIES.forEach((entityType, entityRendererFactory) -> {
             try {
                 builder.put(entityType, entityRendererFactory.create(ctx));
             } catch (Exception exception) {
@@ -140,7 +140,7 @@ public class EntityRenderers {
 
     public static Map<String, EntityRenderer<? extends PlayerEntity>> reloadPlayerRenderers(EntityRendererFactory.Context ctx) {
         ImmutableMap.Builder builder = ImmutableMap.builder();
-        playerRendererFactories.forEach((string, entityRendererFactory) -> {
+        PLAYER_RENDERER_FACTORIES.forEach((string, entityRendererFactory) -> {
             try {
                 builder.put(string, entityRendererFactory.create(ctx));
             } catch (Exception exception) {
@@ -153,7 +153,7 @@ public class EntityRenderers {
     public static boolean isMissingRendererFactories() {
         boolean bl = true;
         for (EntityType entityType : Registry.ENTITY_TYPE) {
-            if (entityType == EntityType.PLAYER || rendererFactories.containsKey(entityType)) continue;
+            if (entityType == EntityType.PLAYER || RENDERER_FACTORIES.containsKey(entityType)) continue;
             LOGGER.warn("No renderer registered for {}", (Object)Registry.ENTITY_TYPE.getId(entityType));
             bl = false;
         }
@@ -195,7 +195,7 @@ public class EntityRenderers {
         EntityRenderers.register(EntityType.EYE_OF_ENDER, context -> new FlyingItemEntityRenderer(context, 1.0f, true));
         EntityRenderers.register(EntityType.FALLING_BLOCK, FallingBlockEntityRenderer::new);
         EntityRenderers.register(EntityType.FIREBALL, context -> new FlyingItemEntityRenderer(context, 3.0f, true));
-        EntityRenderers.register(EntityType.FIREWORK_ROCKET, FireworkEntityRenderer::new);
+        EntityRenderers.register(EntityType.FIREWORK_ROCKET, FireworkRocketEntityRenderer::new);
         EntityRenderers.register(EntityType.FISHING_BOBBER, FishingBobberEntityRenderer::new);
         EntityRenderers.register(EntityType.FOX, FoxEntityRenderer::new);
         EntityRenderers.register(EntityType.FURNACE_MINECART, context -> new MinecartEntityRenderer(context, EntityModelLayers.FURNACE_MINECART));

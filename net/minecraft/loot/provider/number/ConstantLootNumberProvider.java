@@ -53,7 +53,7 @@ implements LootNumberProvider {
     }
 
     public static class CustomSerializer
-    implements JsonSerializing.CustomSerializer<ConstantLootNumberProvider> {
+    implements JsonSerializing.ElementSerializer<ConstantLootNumberProvider> {
         @Override
         public JsonElement toJson(ConstantLootNumberProvider constantLootNumberProvider, JsonSerializationContext jsonSerializationContext) {
             return new JsonPrimitive(Float.valueOf(constantLootNumberProvider.value));

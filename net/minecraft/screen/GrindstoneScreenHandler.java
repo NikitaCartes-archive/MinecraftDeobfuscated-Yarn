@@ -195,12 +195,12 @@ extends ScreenHandler {
 
     private ItemStack grind(ItemStack item, int damage, int amount) {
         ItemStack itemStack = item.copy();
-        itemStack.removeSubTag("Enchantments");
-        itemStack.removeSubTag("StoredEnchantments");
+        itemStack.removeSubNbt("Enchantments");
+        itemStack.removeSubNbt("StoredEnchantments");
         if (damage > 0) {
             itemStack.setDamage(damage);
         } else {
-            itemStack.removeSubTag("Damage");
+            itemStack.removeSubNbt("Damage");
         }
         itemStack.setCount(amount);
         Map<Enchantment, Integer> map = EnchantmentHelper.get(item).entrySet().stream().filter(entry -> ((Enchantment)entry.getKey()).isCursed()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

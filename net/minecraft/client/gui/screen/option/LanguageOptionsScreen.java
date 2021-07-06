@@ -46,7 +46,7 @@ extends GameOptionsScreen {
                 this.client.reloadResources();
                 this.gameOptions.write();
             }
-            this.client.openScreen(this.parent);
+            this.client.setScreen(this.parent);
         }));
         super.init();
     }

@@ -56,6 +56,7 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.BuiltChunkStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.render.FpsSmoother;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.GameRenderer;
@@ -66,7 +67,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.Shader;
-import net.minecraft.client.render.SkyProperties;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -936,7 +936,7 @@ AutoCloseable {
         BackgroundRenderer.setFogBlack();
         RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
         float g = gameRenderer.getViewDistance();
-        boolean bl22 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
+        boolean bl22 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
         profiler.swap("sky");
         RenderSystem.setShader(GameRenderer::getPositionShader);
         this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl22));
@@ -958,7 +958,7 @@ AutoCloseable {
         this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f, matrix4f);
         this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f, matrix4f);
         this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f, matrix4f);
-        if (this.world.getSkyProperties().isDarkened()) {
+        if (this.world.getDimensionEffects().isDarkened()) {
             DiffuseLighting.enableForLevel(matrices.peek().getModel());
         } else {
             DiffuseLighting.disableForLevel(matrices.peek().getModel());
@@ -1243,7 +1243,7 @@ AutoCloseable {
             shader.gameTime.set(RenderSystem.getShaderGameTime());
         }
         RenderSystem.setupShaderLights(shader);
-        shader.upload();
+        shader.bind();
         GlUniform glUniform = shader.chunkOffset;
         boolean bl2 = false;
         while (bl ? objectListIterator.hasNext() : objectListIterator.hasPrevious()) {
@@ -1262,7 +1262,7 @@ AutoCloseable {
         if (glUniform != null) {
             glUniform.set(Vec3f.ZERO);
         }
-        shader.bind();
+        shader.unbind();
         if (bl2) {
             vertexFormat.endDrawing();
         }
@@ -1512,15 +1512,15 @@ AutoCloseable {
         float l;
         float j;
         runnable.run();
-        if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.END) {
+        if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
             this.renderEndSky(matrices);
             return;
         }
-        if (this.client.world.getSkyProperties().getSkyType() != SkyProperties.SkyType.NORMAL) {
+        if (this.client.world.getDimensionEffects().getSkyType() != DimensionEffects.SkyType.NORMAL) {
             return;
         }
         RenderSystem.disableTexture();
-        Vec3d vec3d = this.world.method_23777(this.client.gameRenderer.getCamera().getPos(), f);
+        Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.getCamera().getPos(), f);
         float g = (float)vec3d.x;
         float h = (float)vec3d.y;
         float i = (float)vec3d.z;
@@ -1532,7 +1532,7 @@ AutoCloseable {
         this.lightSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        float[] fs = this.world.getSkyProperties().getFogColorOverride(this.world.getSkyAngle(f), f);
+        float[] fs = this.world.getDimensionEffects().getFogColorOverride(this.world.getSkyAngle(f), f);
         if (fs != null) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.disableTexture();
@@ -1613,7 +1613,7 @@ AutoCloseable {
             this.darkSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
             matrices.pop();
         }
-        if (this.world.getSkyProperties().isAlternateSkyColor()) {
+        if (this.world.getDimensionEffects().isAlternateSkyColor()) {
             RenderSystem.setShaderColor(g * 0.2f + 0.04f, h * 0.2f + 0.04f, i * 0.6f + 0.1f, 1.0f);
         } else {
             RenderSystem.setShaderColor(g, h, i, 1.0f);
@@ -1623,7 +1623,7 @@ AutoCloseable {
     }
 
     public void renderClouds(MatrixStack matrices, Matrix4f matrix4f, float f, double d, double e, double g) {
-        float h = this.world.getSkyProperties().getCloudsHeight();
+        float h = this.world.getDimensionEffects().getCloudsHeight();
         if (Float.isNaN(h)) {
             return;
         }

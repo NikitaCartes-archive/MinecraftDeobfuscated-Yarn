@@ -119,7 +119,7 @@ extends Screen {
 
     private void close() {
         this.finishAction.run();
-        this.client.openScreen(null);
+        this.client.setScreen(null);
     }
 
     /*

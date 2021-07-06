@@ -116,7 +116,7 @@ extends Feature<OreFeatureConfig> {
                             if (!(u * u + w * w + ab * ab < 1.0) || structureWorldAccess.isOutOfHeightLimit(v) || bitSet.get(ac = t - x + (v - y) * horizontalSize + (aa - z) * horizontalSize * verticalSize)) continue;
                             bitSet.set(ac);
                             mutable.set(t, v, aa);
-                            if (!structureWorldAccess.method_37368(mutable) || (chunkSection = chunkSectionCache.getSection(mutable)) == WorldChunk.EMPTY_SECTION) continue;
+                            if (!structureWorldAccess.isValidForSetBlock(mutable) || (chunkSection = chunkSectionCache.getSection(mutable)) == WorldChunk.EMPTY_SECTION) continue;
                             int ad = ChunkSectionPos.getLocalCoord(t);
                             int ae = ChunkSectionPos.getLocalCoord(v);
                             int af = ChunkSectionPos.getLocalCoord(aa);
