@@ -387,31 +387,18 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.channel.config().setAutoRead(false);
 	}
 
-	/**
-	 * Sets the compression threshold of this connection.
-	 * 
-	 * <p>Packets over the threshold in size will be written as a {@code 0}
-	 * byte followed by contents, while compressed ones will be written as
-	 * a var int for the decompressed size followed by the compressed contents.
-	 * 
-	 * <p>The connections on the two sides must have the same compression
-	 * threshold, or compression errors may result.
-	 * 
-	 * @param compressionThreshold the compression threshold, in number of bytes
-	 * @param rejectsBadPackets whether this connection may abort if a compressed packet with a bad size is received
-	 */
-	public void setCompressionThreshold(int compressionThreshold, boolean rejectsBadPackets) {
-		if (compressionThreshold >= 0) {
+	public void method_10760(int i) {
+		if (i >= 0) {
 			if (this.channel.pipeline().get("decompress") instanceof PacketInflater) {
-				((PacketInflater)this.channel.pipeline().get("decompress")).setCompressionThreshold(compressionThreshold, rejectsBadPackets);
+				((PacketInflater)this.channel.pipeline().get("decompress")).method_10739(i);
 			} else {
-				this.channel.pipeline().addBefore("decoder", "decompress", new PacketInflater(compressionThreshold, rejectsBadPackets));
+				this.channel.pipeline().addBefore("decoder", "decompress", new PacketInflater(i));
 			}
 
 			if (this.channel.pipeline().get("compress") instanceof PacketDeflater) {
-				((PacketDeflater)this.channel.pipeline().get("compress")).setCompressionThreshold(compressionThreshold);
+				((PacketDeflater)this.channel.pipeline().get("compress")).setCompressionThreshold(i);
 			} else {
-				this.channel.pipeline().addBefore("encoder", "compress", new PacketDeflater(compressionThreshold));
+				this.channel.pipeline().addBefore("encoder", "compress", new PacketDeflater(i));
 			}
 		} else {
 			if (this.channel.pipeline().get("decompress") instanceof PacketInflater) {

@@ -63,34 +63,34 @@ public class Main {
 	) {
 		DataGenerator dataGenerator = new DataGenerator(output, inputs);
 		if (includeClient || includeServer) {
-			dataGenerator.addProvider(new SnbtProvider(dataGenerator).addWriter(new StructureValidatorProvider()));
+			dataGenerator.install(new SnbtProvider(dataGenerator).addWriter(new StructureValidatorProvider()));
 		}
 
 		if (includeClient) {
-			dataGenerator.addProvider(new BlockStateDefinitionProvider(dataGenerator));
+			dataGenerator.install(new BlockStateDefinitionProvider(dataGenerator));
 		}
 
 		if (includeServer) {
-			dataGenerator.addProvider(new FluidTagsProvider(dataGenerator));
+			dataGenerator.install(new FluidTagsProvider(dataGenerator));
 			BlockTagsProvider blockTagsProvider = new BlockTagsProvider(dataGenerator);
-			dataGenerator.addProvider(blockTagsProvider);
-			dataGenerator.addProvider(new ItemTagsProvider(dataGenerator, blockTagsProvider));
-			dataGenerator.addProvider(new EntityTypeTagsProvider(dataGenerator));
-			dataGenerator.addProvider(new RecipesProvider(dataGenerator));
-			dataGenerator.addProvider(new AdvancementsProvider(dataGenerator));
-			dataGenerator.addProvider(new LootTablesProvider(dataGenerator));
-			dataGenerator.addProvider(new GameEventTagsProvider(dataGenerator));
+			dataGenerator.install(blockTagsProvider);
+			dataGenerator.install(new ItemTagsProvider(dataGenerator, blockTagsProvider));
+			dataGenerator.install(new EntityTypeTagsProvider(dataGenerator));
+			dataGenerator.install(new RecipesProvider(dataGenerator));
+			dataGenerator.install(new AdvancementsProvider(dataGenerator));
+			dataGenerator.install(new LootTablesProvider(dataGenerator));
+			dataGenerator.install(new GameEventTagsProvider(dataGenerator));
 		}
 
 		if (includeDev) {
-			dataGenerator.addProvider(new NbtProvider(dataGenerator));
+			dataGenerator.install(new NbtProvider(dataGenerator));
 		}
 
 		if (includeReports) {
-			dataGenerator.addProvider(new BlockListProvider(dataGenerator));
-			dataGenerator.addProvider(new RegistryDumpProvider(dataGenerator));
-			dataGenerator.addProvider(new CommandSyntaxProvider(dataGenerator));
-			dataGenerator.addProvider(new BiomeListProvider(dataGenerator));
+			dataGenerator.install(new BlockListProvider(dataGenerator));
+			dataGenerator.install(new RegistryDumpProvider(dataGenerator));
+			dataGenerator.install(new CommandSyntaxProvider(dataGenerator));
+			dataGenerator.install(new BiomeListProvider(dataGenerator));
 		}
 
 		return dataGenerator;

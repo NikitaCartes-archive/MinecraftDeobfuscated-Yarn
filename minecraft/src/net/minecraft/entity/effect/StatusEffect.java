@@ -20,7 +20,7 @@ import net.minecraft.util.registry.Registry;
 
 public class StatusEffect {
 	private final Map<EntityAttribute, EntityAttributeModifier> attributeModifiers = Maps.<EntityAttribute, EntityAttributeModifier>newHashMap();
-	private final StatusEffectCategory category;
+	private final StatusEffectType type;
 	private final int color;
 	@Nullable
 	private String translationKey;
@@ -34,8 +34,8 @@ public class StatusEffect {
 		return Registry.STATUS_EFFECT.getRawId(type);
 	}
 
-	protected StatusEffect(StatusEffectCategory category, int color) {
-		this.category = category;
+	protected StatusEffect(StatusEffectType type, int color) {
+		this.type = type;
 		this.color = color;
 	}
 
@@ -130,8 +130,8 @@ public class StatusEffect {
 		return new TranslatableText(this.getTranslationKey());
 	}
 
-	public StatusEffectCategory getCategory() {
-		return this.category;
+	public StatusEffectType getType() {
+		return this.type;
 	}
 
 	public int getColor() {
@@ -180,6 +180,6 @@ public class StatusEffect {
 	}
 
 	public boolean isBeneficial() {
-		return this.category == StatusEffectCategory.BENEFICIAL;
+		return this.type == StatusEffectType.BENEFICIAL;
 	}
 }

@@ -9,8 +9,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
@@ -28,6 +28,7 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class BlockEntityRenderDispatcher implements SynchronousResourceReloader {
 	private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = ImmutableMap.of();
+	private final BufferBuilder field_20988 = new BufferBuilder(256);
 	private final TextRenderer textRenderer;
 	private final EntityModelLoader entityModelLoader;
 	public World world;
@@ -74,7 +75,7 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloader 
 		if (world != null) {
 			i = WorldRenderer.getLightmapCoordinates(world, blockEntity.getPos());
 		} else {
-			i = LightmapTextureManager.MAX_LIGHT_COORDINATE;
+			i = 15728880;
 		}
 
 		renderer.render(blockEntity, tickDelta, matrices, vertexConsumers, i, OverlayTexture.DEFAULT_UV);

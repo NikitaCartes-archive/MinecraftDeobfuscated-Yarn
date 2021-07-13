@@ -95,15 +95,6 @@ public class TaskExecutor<T> implements SampleableExecutor, MessageListener<T>, 
 		}
 	}
 
-	public void awaitAll() {
-		try {
-			this.runWhile(runCount -> true);
-		} finally {
-			this.pause();
-			this.execute();
-		}
-	}
-
 	@Override
 	public void send(T message) {
 		this.queue.add(message);

@@ -199,6 +199,10 @@ public abstract class Carver<C extends CarverConfig> {
 				return false;
 			} else {
 				chunk.setBlockState(pos, blockState3, false);
+				if (sampler.needsFluidTick() && !blockState3.getFluidState().isEmpty()) {
+					chunk.getFluidTickScheduler().schedule(pos, blockState3.getFluidState().getFluid(), 0);
+				}
+
 				if (foundSurface.isTrue()) {
 					downPos.set(pos, Direction.DOWN);
 					if (chunk.getBlockState(downPos).isOf(Blocks.DIRT)) {

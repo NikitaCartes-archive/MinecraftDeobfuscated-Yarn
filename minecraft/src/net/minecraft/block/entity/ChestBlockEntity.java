@@ -28,19 +28,19 @@ import net.minecraft.world.World;
 public class ChestBlockEntity extends LootableContainerBlockEntity implements ChestAnimationProgress {
 	private static final int field_31332 = 1;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
-	private final ViewerCountManager stateManager = new ViewerCountManager() {
+	private final ChestStateManager stateManager = new ChestStateManager() {
 		@Override
-		protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
+		protected void onChestOpened(World world, BlockPos pos, BlockState state) {
 			ChestBlockEntity.playSound(world, pos, state, SoundEvents.BLOCK_CHEST_OPEN);
 		}
 
 		@Override
-		protected void onContainerClose(World world, BlockPos pos, BlockState state) {
+		protected void onChestClosed(World world, BlockPos pos, BlockState state) {
 			ChestBlockEntity.playSound(world, pos, state, SoundEvents.BLOCK_CHEST_CLOSE);
 		}
 
 		@Override
-		protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+		protected void onInteracted(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 			ChestBlockEntity.this.onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
 		}
 
@@ -126,14 +126,14 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	@Override
 	public void onOpen(PlayerEntity player) {
 		if (!this.removed && !player.isSpectator()) {
-			this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
+			this.stateManager.openChest(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 
 	@Override
 	public void onClose(PlayerEntity player) {
 		if (!this.removed && !player.isSpectator()) {
-			this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
+			this.stateManager.closeChest(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 

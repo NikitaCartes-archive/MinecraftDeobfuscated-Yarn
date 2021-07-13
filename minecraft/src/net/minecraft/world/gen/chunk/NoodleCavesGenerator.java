@@ -7,7 +7,7 @@ import net.minecraft.world.gen.NoiseHelper;
 import net.minecraft.world.gen.SimpleRandom;
 
 public class NoodleCavesGenerator {
-	private static final int MAX_Y = 30;
+	private static final int MAX_Y = 130;
 	private static final double WEIGHT_NOISE_FACTOR = 1.5;
 	private static final double HORIZONTAL_WEIGHT_NOISE_SCALE = 2.6666666666666665;
 	private static final double VERTICAL_WEIGHT_NOISE_SCALE = 2.6666666666666665;
@@ -54,7 +54,7 @@ public class NoodleCavesGenerator {
 			int n = l * 8;
 			int o = z * 4;
 			double d;
-			if (n < 38) {
+			if (n < 138) {
 				d = NoiseHelper.lerpFromProgress(sampler, (double)m * horizontalScale, (double)n * verticalScale, (double)o * horizontalScale, -1.0, 1.0);
 			} else {
 				d = 1.0;
@@ -67,7 +67,7 @@ public class NoodleCavesGenerator {
 	public double sampleWeight(
 		double weight, int x, int y, int z, double frequencyNoise, double weightReducingNoise, double firstWeightNoise, double secondWeightNoise, int minY
 	) {
-		if (y > 30 || y < minY + 4) {
+		if (y > 130 || y < minY + 4) {
 			return weight;
 		} else if (weight < 0.0) {
 			return weight;

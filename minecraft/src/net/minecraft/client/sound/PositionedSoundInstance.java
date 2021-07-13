@@ -71,7 +71,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		double x,
 		double y,
 		double z,
-		boolean relative
+		boolean looping
 	) {
 		super(id, category);
 		this.volume = volume;
@@ -82,6 +82,6 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		this.repeat = repeat;
 		this.repeatDelay = repeatDelay;
 		this.attenuationType = attenuationType;
-		this.relative = relative;
+		this.looping = looping;
 	}
 }

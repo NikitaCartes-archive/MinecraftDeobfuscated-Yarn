@@ -71,9 +71,9 @@ public class PandaEntity extends AnimalEntity {
 	private static final int PLAYING_FLAG = 4;
 	private static final int SCARED_FLAG = 8;
 	private static final int LYING_ON_BACK_FLAG = 16;
-	private static final int EATING_ANIMATION_INTERVAL = 5;
-	public static final int MAIN_GENE_MUTATION_CHANCE = 32;
-	private static final int HIDDEN_GENE_MUTATION_CHANCE = 32;
+	private static final int field_30348 = 5;
+	public static final int field_30343 = 32;
+	private static final int field_30349 = 32;
 	boolean shouldGetRevenge;
 	boolean shouldAttack;
 	public int playingTicks;

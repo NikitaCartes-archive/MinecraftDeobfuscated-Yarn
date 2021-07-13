@@ -20,7 +20,6 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
@@ -283,9 +282,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 			DiffuseLighting.disableGuiDepthLighting();
 		}
 
-		this.renderItem(
-			stack, ModelTransformation.Mode.GUI, false, matrixStack2, immediate, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, model
-		);
+		this.renderItem(stack, ModelTransformation.Mode.GUI, false, matrixStack2, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
 		immediate.draw();
 		RenderSystem.enableDepthTest();
 		if (bl) {
@@ -373,16 +370,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 				matrixStack.translate(0.0, 0.0, (double)(this.zOffset + 200.0F));
 				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 				renderer.draw(
-					string,
-					(float)(x + 19 - 2 - renderer.getWidth(string)),
-					(float)(y + 6 + 3),
-					16777215,
-					true,
-					matrixStack.peek().getModel(),
-					immediate,
-					false,
-					0,
-					LightmapTextureManager.MAX_LIGHT_COORDINATE
+					string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 16777215, true, matrixStack.peek().getModel(), immediate, false, 0, 15728880
 				);
 				immediate.draw();
 			}

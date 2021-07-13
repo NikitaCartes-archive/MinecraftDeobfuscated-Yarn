@@ -62,7 +62,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		if (!this.adjustToAverageHeight(world, boundingBox, 0)) {
+		if (!this.method_14839(world, boundingBox, 0)) {
 			return false;
 		} else {
 			this.fillWithOutline(world, boundingBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, false, random, COBBLESTONE_RANDOMIZER);

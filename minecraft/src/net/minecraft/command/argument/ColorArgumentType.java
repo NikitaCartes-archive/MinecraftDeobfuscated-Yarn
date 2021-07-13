@@ -18,7 +18,7 @@ import net.minecraft.util.Formatting;
 public class ColorArgumentType implements ArgumentType<Formatting> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("red", "green");
 	public static final DynamicCommandExceptionType INVALID_COLOR_EXCEPTION = new DynamicCommandExceptionType(
-		color -> new TranslatableText("argument.color.invalid", color)
+		object -> new TranslatableText("argument.color.invalid", object)
 	);
 
 	private ColorArgumentType() {

@@ -32,7 +32,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	private final LongRunningTask task;
 	private final int buttonLength = 212;
 	private ButtonWidget cancelButton;
-	public static final String[] SYMBOLS = new String[]{
+	public static final String[] symbols = new String[]{
 		"▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃",
 		"_ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄",
 		"_ _ ▃ ▄ ▅ ▆ ▇ █ ▇ ▆ ▅",
@@ -103,7 +103,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16777215);
 		Text text = this.errorMessage;
 		if (text == null) {
-			drawCenteredText(matrices, this.textRenderer, SYMBOLS[this.animTicks % SYMBOLS.length], this.width / 2, row(8), 8421504);
+			drawCenteredText(matrices, this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, row(8), 8421504);
 		} else {
 			drawCenteredText(matrices, this.textRenderer, text, this.width / 2, row(8), 16711680);
 		}

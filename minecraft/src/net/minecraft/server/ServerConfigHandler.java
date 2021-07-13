@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
@@ -242,10 +241,10 @@ public class ServerConfigHandler {
 	@Nullable
 	public static UUID getPlayerUuidByName(MinecraftServer server, String name) {
 		if (!ChatUtil.isEmpty(name) && name.length() <= 16) {
-			Optional<UUID> optional = server.getUserCache().findByName(name).map(GameProfile::getId);
-			if (optional.isPresent()) {
-				return (UUID)optional.get();
-			} else if (!server.isSingleplayer() && server.isOnlineMode()) {
+			GameProfile gameProfile = server.getUserCache().method_14515(name);
+			if (gameProfile != null && gameProfile.getId() != null) {
+				return gameProfile.getId();
+			} else if (!server.isSinglePlayer() && server.isOnlineMode()) {
 				final List<GameProfile> list = Lists.<GameProfile>newArrayList();
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 					@Override

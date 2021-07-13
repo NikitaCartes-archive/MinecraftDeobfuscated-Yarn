@@ -116,7 +116,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 			this.repeat = true;
 			this.repeatDelay = 0;
 			this.volume = 1.0F;
-			this.relative = true;
+			this.looping = true;
 		}
 
 		@Override

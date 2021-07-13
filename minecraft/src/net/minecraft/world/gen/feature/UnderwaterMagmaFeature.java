@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.CaveSurface;
@@ -28,6 +29,13 @@ public class UnderwaterMagmaFeature extends Feature<UnderwaterMagmaFeatureConfig
 		BlockPos blockPos = context.getOrigin();
 		UnderwaterMagmaFeatureConfig underwaterMagmaFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
+		if (context.getConfig().field_34242 > 0) {
+			int i = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX(), blockPos.getZ());
+			if (blockPos.getY() >= i - context.getConfig().field_34242) {
+				return false;
+			}
+		}
+
 		OptionalInt optionalInt = getFloorHeight(structureWorldAccess, blockPos, underwaterMagmaFeatureConfig);
 		if (!optionalInt.isPresent()) {
 			return false;

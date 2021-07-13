@@ -13,10 +13,10 @@ public class DamageEnchantment extends Enchantment {
 	public static final int ALL_INDEX = 0;
 	public static final int UNDEAD_INDEX = 1;
 	public static final int ARTHROPODS_INDEX = 2;
-	private static final String[] TYPE_NAMES = new String[]{"all", "undead", "arthropods"};
-	private static final int[] BASE_POWERS = new int[]{1, 5, 5};
-	private static final int[] POWERS_PER_LEVEL = new int[]{11, 8, 8};
-	private static final int[] MIN_MAX_POWER_DIFFERENCES = new int[]{20, 20, 20};
+	private static final String[] typeNames = new String[]{"all", "undead", "arthropods"};
+	private static final int[] basePowers = new int[]{1, 5, 5};
+	private static final int[] powersPerLevel = new int[]{11, 8, 8};
+	private static final int[] minMaxPowerDifferences = new int[]{20, 20, 20};
 	public final int typeIndex;
 
 	public DamageEnchantment(Enchantment.Rarity weight, int typeIndex, EquipmentSlot... slots) {
@@ -26,12 +26,12 @@ public class DamageEnchantment extends Enchantment {
 
 	@Override
 	public int getMinPower(int level) {
-		return BASE_POWERS[this.typeIndex] + (level - 1) * POWERS_PER_LEVEL[this.typeIndex];
+		return basePowers[this.typeIndex] + (level - 1) * powersPerLevel[this.typeIndex];
 	}
 
 	@Override
 	public int getMaxPower(int level) {
-		return this.getMinPower(level) + MIN_MAX_POWER_DIFFERENCES[this.typeIndex];
+		return this.getMinPower(level) + minMaxPowerDifferences[this.typeIndex];
 	}
 
 	@Override

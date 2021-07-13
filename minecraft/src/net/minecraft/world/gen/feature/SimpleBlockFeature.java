@@ -28,7 +28,8 @@ public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
 						return false;
 					}
 
-					TallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);
+					TallPlantBlock tallPlantBlock = (TallPlantBlock)blockState.getBlock();
+					tallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);
 				} else {
 					structureWorldAccess.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS);
 				}

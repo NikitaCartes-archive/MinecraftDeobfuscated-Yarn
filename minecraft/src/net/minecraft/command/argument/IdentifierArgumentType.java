@@ -23,17 +23,19 @@ import net.minecraft.util.registry.Registry;
 public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 	private static final DynamicCommandExceptionType UNKNOWN_ADVANCEMENT_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("advancement.advancementNotFound", id)
+		object -> new TranslatableText("advancement.advancementNotFound", object)
 	);
-	private static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("recipe.notFound", id));
+	private static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(
+		object -> new TranslatableText("recipe.notFound", object)
+	);
 	private static final DynamicCommandExceptionType UNKNOWN_PREDICATE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("predicate.unknown", id)
+		object -> new TranslatableText("predicate.unknown", object)
 	);
 	private static final DynamicCommandExceptionType UNKNOWN_ATTRIBUTE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("attribute.unknown", id)
+		object -> new TranslatableText("attribute.unknown", object)
 	);
 	private static final DynamicCommandExceptionType UNKNOWN_ITEM_MODIFIER_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("item_modifier.unknown", id)
+		object -> new TranslatableText("item_modifier.unknown", object)
 	);
 
 	public static IdentifierArgumentType identifier() {

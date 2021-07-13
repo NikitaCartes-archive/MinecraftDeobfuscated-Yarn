@@ -191,12 +191,20 @@ public interface AquiferSampler {
 						double al = Math.max(0.0, f);
 						double am = Math.max(0.0, g);
 						double an = 2.0 * ak * Math.max(ah, Math.max(ai * al, aj * am));
-						d = Math.max(0.0, an);
+						float ao = 0.5F;
+						if (y <= fluidLevel.y
+							&& y <= fluidLevel2.y
+							&& fluidLevel.y != fluidLevel2.y
+							&& Math.abs(this.edgeDensityNoise.sample((double)((float)x * 0.5F), (double)((float)y * 0.5F), (double)((float)z * 0.5F))) < 0.3) {
+							d = 1.0;
+						} else {
+							d = Math.max(0.0, an);
+						}
 					} else {
 						d = 0.0;
 					}
 
-					blockState = y >= fluidLevel.y ? Blocks.AIR.getDefaultState() : fluidLevel.state;
+					blockState = y > fluidLevel.y ? Blocks.AIR.getDefaultState() : fluidLevel.state;
 				}
 
 				if (weight + d <= 0.0) {
@@ -226,10 +234,12 @@ public interface AquiferSampler {
 		private double calculateDensity(int y, double noise, AquiferSampler.Impl.FluidLevel first, AquiferSampler.Impl.FluidLevel second) {
 			if (y <= first.y && y <= second.y && first.state != second.state) {
 				return 1.0;
+			} else if (y > Math.max(first.y, second.y) + 1) {
+				return 0.0;
 			} else {
 				int i = Math.abs(first.y - second.y);
 				double d = 0.5 * (double)(first.y + second.y);
-				double e = Math.abs(d - (double)y - 0.5);
+				double e = Math.abs(d - (double)y + 0.5);
 				return 0.5 * (double)i * noise - e;
 			}
 		}
@@ -265,11 +275,11 @@ public interface AquiferSampler {
 		}
 
 		private AquiferSampler.Impl.FluidLevel getFluidLevel(int x, int y, int z) {
-			int i = this.settings.getSeaLevel();
-			if (y > 30) {
+			int i = this.settings.getSeaLevel() - 1;
+			int j = this.columnSampler.method_37766(x, y, z);
+			if (j < i && y > j - 8) {
 				return new AquiferSampler.Impl.FluidLevel(i, Blocks.WATER.getDefaultState());
 			} else {
-				int j = 64;
 				int k = -10;
 				int l = 40;
 				double d = this.fluidLevelNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40) / 1.4, (double)Math.floorDiv(z, 64)) * 30.0 + -10.0;
@@ -285,7 +295,7 @@ public interface AquiferSampler {
 					bl = Math.abs(e) > 0.22F;
 				}
 
-				return new AquiferSampler.Impl.FluidLevel(Math.min(56, n), bl ? Blocks.LAVA.getDefaultState() : Blocks.WATER.getDefaultState());
+				return new AquiferSampler.Impl.FluidLevel(Math.min(j - 8, n), bl ? Blocks.LAVA.getDefaultState() : Blocks.WATER.getDefaultState());
 			}
 		}
 

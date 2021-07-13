@@ -4,7 +4,6 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -211,7 +210,7 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 			.color(red, green, blue, alpha)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
+			.light(15728880)
 			.normal(normalMatrix, 0.0F, 1.0F, 0.0F)
 			.next();
 	}

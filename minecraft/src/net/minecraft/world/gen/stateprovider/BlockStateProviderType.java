@@ -14,6 +14,7 @@ public class BlockStateProviderType<P extends BlockStateProvider> {
 	public static final BlockStateProviderType<ForestFlowerBlockStateProvider> FOREST_FLOWER_PROVIDER = register(
 		"forest_flower_provider", ForestFlowerBlockStateProvider.CODEC
 	);
+	public static final BlockStateProviderType<MeadowFlowerProvider> MEADOW_FLOWER_PROVIDER = register("meadow_flower_provider", MeadowFlowerProvider.CODEC);
 	public static final BlockStateProviderType<PillarBlockStateProvider> ROTATED_BLOCK_PROVIDER = register(
 		"rotated_block_provider", PillarBlockStateProvider.CODEC
 	);

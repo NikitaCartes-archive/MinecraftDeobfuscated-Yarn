@@ -66,7 +66,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 	}
 
 	public void completeAll() {
-		this.worker.completeAll(true).join();
+		this.worker.method_23698().join();
 	}
 
 	public void close() throws IOException {

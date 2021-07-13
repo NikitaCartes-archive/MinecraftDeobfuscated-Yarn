@@ -10,7 +10,6 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.screen.slot.SlotActionType;
 
 public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
-	private static final int MAX_MODIFIED_STACKS = 128;
 	private final int syncId;
 	private final int revision;
 	private final int slot;
@@ -36,7 +35,7 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.button = buf.readByte();
 		this.actionType = buf.readEnumConstant(SlotActionType.class);
 		this.modifiedStacks = Int2ObjectMaps.unmodifiable(
-			buf.readMap(PacketByteBuf.getMaxValidator(Int2ObjectOpenHashMap::new, 128), bufx -> Integer.valueOf(bufx.readShort()), PacketByteBuf::readItemStack)
+			buf.readMap(Int2ObjectOpenHashMap::new, bufx -> Integer.valueOf(bufx.readShort()), PacketByteBuf::readItemStack)
 		);
 		this.stack = buf.readItemStack();
 	}

@@ -10,7 +10,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -121,7 +120,7 @@ public class TextRenderer {
 			return 0;
 		} else {
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, mirror);
+			int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 15728880, mirror);
 			immediate.draw();
 			return i;
 		}
@@ -129,7 +128,7 @@ public class TextRenderer {
 
 	private int draw(OrderedText text, float x, float y, int color, Matrix4f matrix, boolean shadow) {
 		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-		int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+		int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 15728880);
 		immediate.draw();
 		return i;
 	}
@@ -508,9 +507,9 @@ public class TextRenderer {
 			float l;
 			if (textColor != null) {
 				int k = textColor.getRgb();
-				g = (float)(k >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15)) / 255.0F * this.brightnessMultiplier;
-				h = (float)(k >> 8 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15)) / 255.0F * this.brightnessMultiplier;
-				l = (float)(k & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15)) / 255.0F * this.brightnessMultiplier;
+				g = (float)(k >> 16 & 0xFF) / 255.0F * this.brightnessMultiplier;
+				h = (float)(k >> 8 & 0xFF) / 255.0F * this.brightnessMultiplier;
+				l = (float)(k & 0xFF) / 255.0F * this.brightnessMultiplier;
 			} else {
 				g = this.red;
 				h = this.green;

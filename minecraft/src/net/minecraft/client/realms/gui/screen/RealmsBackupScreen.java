@@ -184,7 +184,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 					this.selectedBackup = -1;
 					this.client.setScreen(this);
 				}
-			}, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
+			}, RealmsLongConfirmationScreen.Type.Warning, text, text2, true));
 		}
 	}
 
@@ -197,7 +197,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 			} else {
 				this.client.setScreen(this);
 			}
-		}, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
+		}, RealmsLongConfirmationScreen.Type.Info, text, text2, true));
 	}
 
 	private void downloadWorldData() {

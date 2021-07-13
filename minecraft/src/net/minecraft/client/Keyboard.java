@@ -355,8 +355,12 @@ public class Keyboard {
 					if (Screen.hasControlDown()) {
 					}
 
-					ScreenshotRecorder.saveScreenshot(
-						this.client.runDirectory, this.client.getFramebuffer(), message -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(message))
+					ScreenshotRecorder.method_1659(
+						this.client.runDirectory,
+						this.client.getWindow().getFramebufferWidth(),
+						this.client.getWindow().getFramebufferHeight(),
+						this.client.getFramebuffer(),
+						message -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(message))
 					);
 					return;
 				}

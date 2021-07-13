@@ -12,7 +12,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
@@ -140,6 +139,12 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	}
 
 	@Override
+	public void copyDataFromNbt(NbtCompound nbt) {
+		super.copyDataFromNbt(nbt);
+		this.setVariant(nbt.getInt("BucketVariantTag"));
+	}
+
+	@Override
 	public ItemStack getBucketItem() {
 		return new ItemStack(Items.TROPICAL_FISH_BUCKET);
 	}
@@ -206,8 +211,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-		if (spawnReason == SpawnReason.BUCKET && entityNbt != null && entityNbt.contains("BucketVariantTag", NbtElement.INT_TYPE)) {
-			this.setVariant(entityNbt.getInt("BucketVariantTag"));
+		if (spawnReason == SpawnReason.BUCKET) {
 			return entityData;
 		} else {
 			int i;
@@ -245,12 +249,12 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		final int baseColor;
 		final int patternColor;
 
-		TropicalFishData(TropicalFishEntity leader, int shape, int pattern, int baseColor, int patternColor) {
-			super(leader);
-			this.shape = shape;
-			this.pattern = pattern;
-			this.baseColor = baseColor;
-			this.patternColor = patternColor;
+		TropicalFishData(TropicalFishEntity tropicalFishEntity, int i, int j, int k, int l) {
+			super(tropicalFishEntity);
+			this.shape = i;
+			this.pattern = j;
+			this.baseColor = k;
+			this.patternColor = l;
 		}
 	}
 

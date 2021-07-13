@@ -9,18 +9,15 @@ import java.util.List;
 import java.util.zip.Inflater;
 
 public class PacketInflater extends ByteToMessageDecoder {
-	public static final int field_34057 = 2097152;
 	/**
 	 * The maximum size allowed for a compressed packet. Has value {@value}.
 	 */
-	public static final int MAXIMUM_PACKET_SIZE = 8388608;
+	public static final int MAXIMUM_PACKET_SIZE = 2097152;
 	private final Inflater inflater;
 	private int compressionThreshold;
-	private boolean rejectsBadPackets;
 
-	public PacketInflater(int compressionThreshold, boolean rejectsBadPackets) {
-		this.compressionThreshold = compressionThreshold;
-		this.rejectsBadPackets = rejectsBadPackets;
+	public PacketInflater(int i) {
+		this.compressionThreshold = i;
 		this.inflater = new Inflater();
 	}
 
@@ -32,14 +29,12 @@ public class PacketInflater extends ByteToMessageDecoder {
 			if (i == 0) {
 				list.add(packetByteBuf.readBytes(packetByteBuf.readableBytes()));
 			} else {
-				if (this.rejectsBadPackets) {
-					if (i < this.compressionThreshold) {
-						throw new DecoderException("Badly compressed packet - size of " + i + " is below server threshold of " + this.compressionThreshold);
-					}
+				if (i < this.compressionThreshold) {
+					throw new DecoderException("Badly compressed packet - size of " + i + " is below server threshold of " + this.compressionThreshold);
+				}
 
-					if (i > 8388608) {
-						throw new DecoderException("Badly compressed packet - size of " + i + " is larger than protocol maximum of 8388608");
-					}
+				if (i > 2097152) {
+					throw new DecoderException("Badly compressed packet - size of " + i + " is larger than protocol maximum of 2097152");
 				}
 
 				byte[] bs = new byte[packetByteBuf.readableBytes()];
@@ -53,8 +48,11 @@ public class PacketInflater extends ByteToMessageDecoder {
 		}
 	}
 
-	public void setCompressionThreshold(int compressionThreshold, boolean rejectsBadPackets) {
-		this.compressionThreshold = compressionThreshold;
-		this.rejectsBadPackets = rejectsBadPackets;
+	public int method_36119() {
+		return this.compressionThreshold;
+	}
+
+	public void method_10739(int i) {
+		this.compressionThreshold = i;
 	}
 }

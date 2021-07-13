@@ -41,7 +41,7 @@ import net.minecraft.world.World;
 public abstract class MerchantEntity extends PassiveEntity implements InventoryOwner, Npc, Merchant {
 	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(MerchantEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final int field_30599 = 300;
-	private static final int INVENTORY_SIZE = 8;
+	private static final int field_30600 = 8;
 	@Nullable
 	private PlayerEntity customer;
 	@Nullable

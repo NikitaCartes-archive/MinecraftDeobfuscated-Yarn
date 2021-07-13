@@ -1,8 +1,8 @@
 package net.minecraft.world.level.storage;
 
-import com.mojang.bridge.game.GameVersion;
 import java.io.File;
 import javax.annotation.Nullable;
+import net.minecraft.GameVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -92,13 +92,13 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	public boolean isFutureLevel() {
-		return this.versionInfo.getVersionId() > SharedConstants.getGameVersion().getWorldVersion();
+		return this.versionInfo.getVersion().getId() > SharedConstants.getGameVersion().getSaveVersion().getId();
 	}
 
 	public LevelSummary.ConversionWarning getConversionWarning() {
 		GameVersion gameVersion = SharedConstants.getGameVersion();
-		int i = gameVersion.getWorldVersion();
-		int j = this.versionInfo.getVersionId();
+		int i = gameVersion.getSaveVersion().getId();
+		int j = this.versionInfo.getVersion().getId();
 		if (!gameVersion.isStable() && j < i) {
 			return LevelSummary.ConversionWarning.UPGRADE_TO_SNAPSHOT;
 		} else {
@@ -116,13 +116,17 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	 * <p>This includes world versions {@code 2692} and earlier (21w05b and earlier).
 	 */
 	public boolean isPreWorldHeightChangeVersion() {
-		int i = this.versionInfo.getVersionId();
-		boolean bl = i > 2692 && i <= 2706;
-		return bl;
+		boolean bl = this.versionInfo.getVersion().hasOldWorldHeight();
+		boolean bl2 = SharedConstants.getGameVersion().getSaveVersion().hasOldWorldHeight();
+		return bl != bl2;
 	}
 
 	public boolean isUnavailable() {
-		return this.isLocked() || this.isPreWorldHeightChangeVersion();
+		if (this.isLocked()) {
+			return true;
+		} else {
+			return !this.versionInfo.getVersion().isAvailableTo(SharedConstants.getGameVersion().getSaveVersion());
+		}
 	}
 
 	public Text getDetails() {
@@ -138,6 +142,8 @@ public class LevelSummary implements Comparable<LevelSummary> {
 			return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
 		} else if (this.isPreWorldHeightChangeVersion()) {
 			return new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
+		} else if (!this.versionInfo.getVersion().hasSameSeries(SharedConstants.getGameVersion().getSaveVersion())) {
+			return new TranslatableText("selectWorld.incompatible_series").formatted(Formatting.RED);
 		} else if (this.requiresConversion()) {
 			return new TranslatableText("selectWorld.conversion");
 		} else {

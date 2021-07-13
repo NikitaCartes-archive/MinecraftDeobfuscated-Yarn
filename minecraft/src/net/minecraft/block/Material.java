@@ -194,8 +194,8 @@ public final class Material {
 		boolean solid,
 		boolean blocksMovement,
 		boolean blocksLight,
+		boolean breakByHand,
 		boolean burnable,
-		boolean replaceable,
 		PistonBehavior pistonBehavior
 	) {
 		this.color = color;
@@ -203,8 +203,8 @@ public final class Material {
 		this.solid = solid;
 		this.blocksMovement = blocksMovement;
 		this.blocksLight = blocksLight;
-		this.burnable = burnable;
-		this.replaceable = replaceable;
+		this.burnable = breakByHand;
+		this.replaceable = burnable;
 		this.pistonBehavior = pistonBehavior;
 	}
 

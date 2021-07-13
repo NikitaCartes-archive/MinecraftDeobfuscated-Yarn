@@ -64,7 +64,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 		if (!this.offers.isEmpty()) {
 			this.refreshShownOffer(villagerEntity);
 		} else {
-			holdNothing(villagerEntity);
+			villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			this.ticksLeft = Math.min(this.ticksLeft, 40);
 		}
 
@@ -74,7 +74,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	public void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		super.finishRunning(serverWorld, villagerEntity, l);
 		villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
-		holdNothing(villagerEntity);
+		villagerEntity.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		this.customerHeldStack = null;
 	}
 
@@ -97,7 +97,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	}
 
 	private void holdOffer(VillagerEntity villager) {
-		holdOffer(villager, (ItemStack)this.offers.get(0));
+		villager.equipStack(EquipmentSlot.MAINHAND, (ItemStack)this.offers.get(0));
 	}
 
 	private void loadPossibleOffers(VillagerEntity villager) {
@@ -111,16 +111,6 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private boolean isPossible(TradeOffer offer) {
 		return ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, offer.getAdjustedFirstBuyItem())
 			|| ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, offer.getSecondBuyItem());
-	}
-
-	private static void holdNothing(VillagerEntity villager) {
-		villager.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-		villager.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.085F);
-	}
-
-	private static void holdOffer(VillagerEntity villager, ItemStack stack) {
-		villager.equipStack(EquipmentSlot.MAINHAND, stack);
-		villager.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
 	}
 
 	private LivingEntity findPotentialCustomer(VillagerEntity villager) {
@@ -138,7 +128,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 				this.offerIndex = 0;
 			}
 
-			holdOffer(villager, (ItemStack)this.offers.get(this.offerIndex));
+			villager.equipStack(EquipmentSlot.MAINHAND, (ItemStack)this.offers.get(this.offerIndex));
 		}
 	}
 }

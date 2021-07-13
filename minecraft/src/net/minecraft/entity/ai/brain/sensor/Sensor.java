@@ -26,13 +26,6 @@ public abstract class Sensor<E extends LivingEntity> {
 	private static final TargetPredicate ATTACKABLE_TARGET_PREDICATE_IGNORE_DISTANCE_SCALING = TargetPredicate.createAttackable()
 		.setBaseMaxDistance(16.0)
 		.ignoreDistanceScalingFactor();
-	private static final TargetPredicate ATTACKABLE_TARGET_PREDICATE_IGNORE_VISIBILITY = TargetPredicate.createAttackable()
-		.setBaseMaxDistance(16.0)
-		.ignoreVisibility();
-	private static final TargetPredicate ATTACKABLE_TARGET_PREDICATE_IGNORE_VISIBILITY_OR_DISTANCE_SCALING = TargetPredicate.createAttackable()
-		.setBaseMaxDistance(16.0)
-		.ignoreVisibility()
-		.ignoreDistanceScalingFactor();
 	private final int senseInterval;
 	private long lastSenseTime;
 
@@ -66,11 +59,5 @@ public abstract class Sensor<E extends LivingEntity> {
 		return entity.getBrain().hasMemoryModuleWithValue(MemoryModuleType.ATTACK_TARGET, target)
 			? ATTACKABLE_TARGET_PREDICATE_IGNORE_DISTANCE_SCALING.test(entity, target)
 			: ATTACKABLE_TARGET_PREDICATE.test(entity, target);
-	}
-
-	public static boolean testAttackableTargetPredicateIgnoreVisibility(LivingEntity entity, LivingEntity target) {
-		return entity.getBrain().hasMemoryModuleWithValue(MemoryModuleType.ATTACK_TARGET, target)
-			? ATTACKABLE_TARGET_PREDICATE_IGNORE_VISIBILITY_OR_DISTANCE_SCALING.test(entity, target)
-			: ATTACKABLE_TARGET_PREDICATE_IGNORE_VISIBILITY.test(entity, target);
 	}
 }

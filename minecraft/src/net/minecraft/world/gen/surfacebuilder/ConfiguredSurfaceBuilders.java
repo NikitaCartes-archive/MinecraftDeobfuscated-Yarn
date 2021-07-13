@@ -61,6 +61,16 @@ public class ConfiguredSurfaceBuilders {
 	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> WOODED_BADLANDS = register(
 		"wooded_badlands", SurfaceBuilder.WOODED_BADLANDS.withConfig(SurfaceBuilder.BADLANDS_CONFIG)
 	);
+	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> GROVE = register("grove", SurfaceBuilder.GROVE.withConfig(SurfaceBuilder.SNOW_CONFIG));
+	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> SNOWCAPPED_PEAKS = register(
+		"snowcapped_peaks", SurfaceBuilder.SNOWCAPPED_PEAKS.withConfig(SurfaceBuilder.SNOW_CONFIG)
+	);
+	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> LOFTY_PEAKS = register(
+		"lofty_peaks", SurfaceBuilder.LOFTY_PEAKS.withConfig(SurfaceBuilder.LOFTY_PEAKS_CONFIG)
+	);
+	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> SNOWY_SLOPES = register(
+		"snowy_slopes", SurfaceBuilder.SNOWY_SLOPES.withConfig(SurfaceBuilder.SNOW_CONFIG)
+	);
 
 	private static <SC extends SurfaceConfig> ConfiguredSurfaceBuilder<SC> register(String id, ConfiguredSurfaceBuilder<SC> configuredSurfaceBuilder) {
 		return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_SURFACE_BUILDER, id, configuredSurfaceBuilder);

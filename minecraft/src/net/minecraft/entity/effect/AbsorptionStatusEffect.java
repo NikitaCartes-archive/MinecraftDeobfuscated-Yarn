@@ -4,8 +4,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 
 public class AbsorptionStatusEffect extends StatusEffect {
-	protected AbsorptionStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
-		super(statusEffectCategory, i);
+	protected AbsorptionStatusEffect(StatusEffectType statusEffectType, int i) {
+		super(statusEffectType, i);
 	}
 
 	@Override
