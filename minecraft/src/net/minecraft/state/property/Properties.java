@@ -221,35 +221,35 @@ public class Properties {
 	 */
 	public static final EnumProperty<Attachment> ATTACHMENT = EnumProperty.of("attachment", Attachment.class);
 	/**
-	 * A property that specifies how a wall extends from the center post to the east.
+	 * A property that specifies how a wall extends from the center post to the east.‌
 	 */
 	public static final EnumProperty<WallShape> EAST_WALL_SHAPE = EnumProperty.of("east", WallShape.class);
 	/**
-	 * A property that specifies how a wall extends from the center post to the north.
+	 * A property that specifies how a wall extends from the center post to the north.‌
 	 */
 	public static final EnumProperty<WallShape> NORTH_WALL_SHAPE = EnumProperty.of("north", WallShape.class);
 	/**
-	 * A property that specifies how a wall extends from the center post to the south.
+	 * A property that specifies how a wall extends from the center post to the south.‌
 	 */
 	public static final EnumProperty<WallShape> SOUTH_WALL_SHAPE = EnumProperty.of("south", WallShape.class);
 	/**
-	 * A property that specifies how a wall extends from the center post to the west.
+	 * A property that specifies how a wall extends from the center post to the west.‌
 	 */
 	public static final EnumProperty<WallShape> WEST_WALL_SHAPE = EnumProperty.of("west", WallShape.class);
 	/**
-	 * A property that specifies how redstone wire attaches to the east.
+	 * A property that specifies how redstone wire attaches to the east.‌
 	 */
 	public static final EnumProperty<WireConnection> EAST_WIRE_CONNECTION = EnumProperty.of("east", WireConnection.class);
 	/**
-	 * A property that specifies how redstone wire attaches to the north.
+	 * A property that specifies how redstone wire attaches to the north.‌
 	 */
 	public static final EnumProperty<WireConnection> NORTH_WIRE_CONNECTION = EnumProperty.of("north", WireConnection.class);
 	/**
-	 * A property that specifies how redstone wire attaches to the south.
+	 * A property that specifies how redstone wire attaches to the south.‌
 	 */
 	public static final EnumProperty<WireConnection> SOUTH_WIRE_CONNECTION = EnumProperty.of("south", WireConnection.class);
 	/**
-	 * A property that specifies how redstone wire attaches to the west.
+	 * A property that specifies how redstone wire attaches to the west.‌
 	 */
 	public static final EnumProperty<WireConnection> WEST_WIRE_CONNECTION = EnumProperty.of("west", WireConnection.class);
 	/**

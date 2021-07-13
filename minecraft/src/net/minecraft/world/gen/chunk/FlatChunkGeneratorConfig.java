@@ -190,8 +190,6 @@ public class FlatChunkGeneratorConfig {
 		return new Biome.Builder()
 			.precipitation(biome.getPrecipitation())
 			.category(biome.getCategory())
-			.depth(biome.getDepth())
-			.scale(biome.getScale())
 			.temperature(biome.getTemperature())
 			.downfall(biome.getDownfall())
 			.effects(biome.getEffects())

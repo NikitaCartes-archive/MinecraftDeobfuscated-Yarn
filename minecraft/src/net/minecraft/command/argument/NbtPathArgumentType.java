@@ -33,13 +33,13 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		new TranslatableText("arguments.nbtpath.node.invalid")
 	);
 	public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(
-		path -> new TranslatableText("arguments.nbtpath.nothing_found", path)
+		object -> new TranslatableText("arguments.nbtpath.nothing_found", object)
 	);
-	private static final char LEFT_SQUARE_BRACKET = '[';
-	private static final char RIGHT_SQUARE_BRACKET = ']';
-	private static final char LEFT_CURLY_BRACKET = '{';
-	private static final char RIGHT_CURLY_BRACKET = '}';
-	private static final char DOUBLE_QUOTE = '"';
+	private static final char field_32182 = '[';
+	private static final char field_32183 = ']';
+	private static final char field_32184 = '{';
+	private static final char field_32185 = '}';
+	private static final char field_32186 = '"';
 
 	public static NbtPathArgumentType nbtPath() {
 		return new NbtPathArgumentType();
@@ -244,8 +244,8 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		public void getOrInit(NbtElement current, Supplier<NbtElement> source, List<NbtElement> results) {
 			MutableBoolean mutableBoolean = new MutableBoolean();
 			if (current instanceof NbtList nbtList) {
-				nbtList.stream().filter(this.predicate).forEach(nbt -> {
-					results.add(nbt);
+				nbtList.stream().filter(this.predicate).forEach(nbtElement -> {
+					results.add(nbtElement);
 					mutableBoolean.setTrue();
 				});
 				if (mutableBoolean.isFalse()) {
@@ -586,7 +586,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		}
 
 		private static int forEach(List<NbtElement> elements, Function<NbtElement, Integer> operation) {
-			return (Integer)elements.stream().map(operation).reduce(0, (a, b) -> a + b);
+			return (Integer)elements.stream().map(operation).reduce(0, (integer, integer2) -> integer + integer2);
 		}
 
 		public int put(NbtElement element, NbtElement source) throws CommandSyntaxException {
@@ -596,7 +596,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		public int put(NbtElement element, Supplier<NbtElement> source) throws CommandSyntaxException {
 			List<NbtElement> list = this.getTerminals(element);
 			NbtPathArgumentType.PathNode pathNode = this.nodes[this.nodes.length - 1];
-			return forEach(list, nbt -> pathNode.set(nbt, source));
+			return forEach(list, nbtElement -> pathNode.set(nbtElement, source));
 		}
 
 		public int remove(NbtElement element) {

@@ -1029,7 +1029,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		BackgroundRenderer.setFogBlack();
 		RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
 		float g = gameRenderer.getViewDistance();
-		boolean bl2 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
+		boolean bl2 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		profiler.swap("sky");
 		RenderSystem.setShader(GameRenderer::getPositionShader);
@@ -1058,7 +1058,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f, matrix4f);
 		this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f, matrix4f);
 		this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f, matrix4f);
-		if (this.world.getDimensionEffects().isDarkened()) {
+		if (this.world.getSkyProperties().isDarkened()) {
 			DiffuseLighting.enableForLevel(matrices.peek().getModel());
 		} else {
 			DiffuseLighting.disableForLevel(matrices.peek().getModel());
@@ -1714,11 +1714,11 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	public void renderSky(MatrixStack matrices, Matrix4f matrix4f, float f, Runnable runnable) {
 		runnable.run();
-		if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
+		if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.END) {
 			this.renderEndSky(matrices);
-		} else if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.NORMAL) {
+		} else if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.NORMAL) {
 			RenderSystem.disableTexture();
-			Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.getCamera().getPos(), f);
+			Vec3d vec3d = this.world.method_23777(this.client.gameRenderer.getCamera().getPos(), f);
 			float g = (float)vec3d.x;
 			float h = (float)vec3d.y;
 			float i = (float)vec3d.z;
@@ -1730,7 +1730,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.lightSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			float[] fs = this.world.getDimensionEffects().getFogColorOverride(this.world.getSkyAngle(f), f);
+			float[] fs = this.world.getSkyProperties().getFogColorOverride(this.world.getSkyAngle(f), f);
 			if (fs != null) {
 				RenderSystem.setShader(GameRenderer::getPositionColorShader);
 				RenderSystem.disableTexture();
@@ -1816,7 +1816,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				matrices.pop();
 			}
 
-			if (this.world.getDimensionEffects().isAlternateSkyColor()) {
+			if (this.world.getSkyProperties().isAlternateSkyColor()) {
 				RenderSystem.setShaderColor(g * 0.2F + 0.04F, h * 0.2F + 0.04F, i * 0.6F + 0.1F, 1.0F);
 			} else {
 				RenderSystem.setShaderColor(g, h, i, 1.0F);
@@ -1828,7 +1828,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	public void renderClouds(MatrixStack matrices, Matrix4f matrix4f, float f, double d, double e, double g) {
-		float h = this.world.getDimensionEffects().getCloudsHeight();
+		float h = this.world.getSkyProperties().getCloudsHeight();
 		if (!Float.isNaN(h)) {
 			RenderSystem.disableCull();
 			RenderSystem.enableBlend();

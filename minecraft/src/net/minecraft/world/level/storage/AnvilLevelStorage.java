@@ -26,7 +26,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
-import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.storage.RegionFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,7 +56,7 @@ public class AnvilLevelStorage {
 		int i = list.size() + list2.size() + list3.size();
 		LOGGER.info("Total conversion count is {}", i);
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-		RegistryOps<NbtElement> registryOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, ResourceManager.Empty.INSTANCE, impl);
+		RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, ResourceManager.Empty.INSTANCE, impl);
 		SaveProperties saveProperties = storageSession.readLevelProperties(registryOps, DataPackSettings.SAFE_MODE);
 		long l = saveProperties != null ? saveProperties.getGeneratorOptions().getSeed() : 0L;
 		Registry<Biome> registry = impl.get(Registry.BIOME_KEY);
@@ -64,7 +64,7 @@ public class AnvilLevelStorage {
 		if (saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld()) {
 			biomeSource = new FixedBiomeSource(registry.getOrThrow(BiomeKeys.PLAINS));
 		} else {
-			biomeSource = new VanillaLayeredBiomeSource(l, false, false, registry);
+			biomeSource = MultiNoiseBiomeSource.method_35242(registry, l);
 		}
 
 		convertRegions(impl, new File(file, "region"), list, biomeSource, 0, i, progressListener);

@@ -340,7 +340,7 @@ public class TurtleEntity extends AnimalEntity {
 		private final double speed;
 		private boolean noPath;
 		private int homeReachingTryTicks;
-		private static final int MAX_TRY_TICKS = 600;
+		private static final int field_30384 = 600;
 
 		GoHomeGoal(TurtleEntity turtle, double speed) {
 			this.turtle = turtle;
@@ -658,9 +658,9 @@ public class TurtleEntity extends AnimalEntity {
 		private static final int field_30385 = 1200;
 		private final TurtleEntity turtle;
 
-		WanderInWaterGoal(TurtleEntity turtle, double speed) {
-			super(turtle, turtle.isBaby() ? 2.0 : speed, 24);
-			this.turtle = turtle;
+		WanderInWaterGoal(TurtleEntity turtleEntity, double d) {
+			super(turtleEntity, turtleEntity.isBaby() ? 2.0 : d, 24);
+			this.turtle = turtleEntity;
 			this.lowestY = -1;
 		}
 
@@ -692,9 +692,9 @@ public class TurtleEntity extends AnimalEntity {
 	static class WanderOnLandGoal extends WanderAroundGoal {
 		private final TurtleEntity turtle;
 
-		WanderOnLandGoal(TurtleEntity turtle, double speed, int chance) {
-			super(turtle, speed, chance);
-			this.turtle = turtle;
+		WanderOnLandGoal(TurtleEntity turtleEntity, double d, int i) {
+			super(turtleEntity, d, i);
+			this.turtle = turtleEntity;
 		}
 
 		@Override

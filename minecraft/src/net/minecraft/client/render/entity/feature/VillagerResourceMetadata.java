@@ -26,7 +26,7 @@ public class VillagerResourceMetadata {
 		PARTIAL("partial"),
 		FULL("full");
 
-		private static final Map<String, VillagerResourceMetadata.HatType> BY_NAME = (Map<String, VillagerResourceMetadata.HatType>)Arrays.stream(values())
+		private static final Map<String, VillagerResourceMetadata.HatType> byName = (Map<String, VillagerResourceMetadata.HatType>)Arrays.stream(values())
 			.collect(Collectors.toMap(VillagerResourceMetadata.HatType::getName, hatType -> hatType));
 		private final String name;
 
@@ -39,7 +39,7 @@ public class VillagerResourceMetadata {
 		}
 
 		public static VillagerResourceMetadata.HatType from(String name) {
-			return (VillagerResourceMetadata.HatType)BY_NAME.getOrDefault(name, NONE);
+			return (VillagerResourceMetadata.HatType)byName.getOrDefault(name, NONE);
 		}
 	}
 }

@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -139,7 +138,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			.color(red, green, blue, 255)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
+			.light(15728880)
 			.normal(normalMatrix, 0.0F, 1.0F, 0.0F)
 			.next();
 	}

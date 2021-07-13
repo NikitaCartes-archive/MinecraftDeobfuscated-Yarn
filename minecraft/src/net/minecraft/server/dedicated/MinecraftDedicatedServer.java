@@ -138,7 +138,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 		LOGGER.info("Loading properties");
 		ServerPropertiesHandler serverPropertiesHandler = this.propertiesLoader.getPropertiesHandler();
-		if (this.isSingleplayer()) {
+		if (this.isSinglePlayer()) {
 			this.setServerIp("127.0.0.1");
 		} else {
 			this.setOnlineMode(serverPropertiesHandler.onlineMode);

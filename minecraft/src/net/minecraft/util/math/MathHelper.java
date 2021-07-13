@@ -1,8 +1,10 @@
 package net.minecraft.util.math;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.IntPredicate;
+import net.minecraft.class_6468;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -10,20 +12,17 @@ public class MathHelper {
 	private static final int field_29850 = 1024;
 	private static final float field_29851 = 1024.0F;
 	private static final long field_29852 = 61440L;
-	private static final long HALF_PI_RADIANS_SINE_TABLE_INDEX = 16384L;
+	private static final long field_29853 = 16384L;
 	private static final long field_29854 = -4611686018427387904L;
 	private static final long field_29855 = Long.MIN_VALUE;
-	public static final float PI = (float) Math.PI;
-	public static final float HALF_PI = (float) (Math.PI / 2);
-	/**
-	 * Tau is equal to {@code 2 * PI}.
-	 */
-	public static final float TAU = (float) (Math.PI * 2);
-	public static final float RADIANS_PER_DEGREE = (float) (Math.PI / 180.0);
-	public static final float DEGREES_PER_RADIAN = 180.0F / (float)Math.PI;
-	public static final float EPSILON = 1.0E-5F;
+	public static final float field_29844 = (float) Math.PI;
+	public static final float field_29845 = (float) (Math.PI / 2);
+	public static final float field_29846 = (float) (Math.PI * 2);
+	public static final float field_29847 = (float) (Math.PI / 180.0);
+	public static final float field_29848 = 180.0F / (float)Math.PI;
+	public static final float field_29849 = 1.0E-5F;
 	public static final float SQUARE_ROOT_OF_TWO = sqrt(2.0F);
-	private static final float DEGREES_TO_SINE_TABLE_INDEX = 10430.378F;
+	private static final float field_29856 = 10430.378F;
 	private static final float[] SINE_TABLE = Util.make(new float[65536], sineTable -> {
 		for (int ix = 0; ix < sineTable.length; ix++) {
 			sineTable[ix] = (float)Math.sin((double)ix * Math.PI * 2.0 / 65536.0);
@@ -71,8 +70,8 @@ public class MathHelper {
 		return value < (double)l ? l - 1L : l;
 	}
 
-	public static int absFloor(double value) {
-		return (int)(value >= 0.0 ? value : -value + 1.0);
+	public static int method_34953(double d) {
+		return (int)(d >= 0.0 ? d : -d + 1.0);
 	}
 
 	public static float abs(float value) {
@@ -141,11 +140,11 @@ public class MathHelper {
 		}
 	}
 
-	public static float clampedLerp(float start, float end, float delta) {
-		if (delta < 0.0F) {
-			return start;
+	public static float method_37166(float f, float g, float h) {
+		if (h < 0.0F) {
+			return f;
 		} else {
-			return delta > 1.0F ? end : lerp(delta, start, end);
+			return h > 1.0F ? g : lerp(h, f, g);
 		}
 	}
 
@@ -165,14 +164,6 @@ public class MathHelper {
 		return Math.floorDiv(dividend, divisor);
 	}
 
-	/**
-	 * {@return a random, uniformly distributed integer value in {@code
-	 * [min, max]}} If the range is empty (i.e. {@code max < min}), it
-	 * returns {@code min}.
-	 * 
-	 * @param min the minimum value, inclusive
-	 * @param max the maximum value, inclusive
-	 */
 	public static int nextInt(Random random, int min, int max) {
 		return min >= max ? min : random.nextInt(max - min + 1) + min;
 	}
@@ -302,8 +293,8 @@ public class MathHelper {
 		return NumberUtils.toInt(string, fallback);
 	}
 
-	public static int parseInt(String string, int fallback, int min) {
-		return Math.max(min, parseInt(string, fallback));
+	public static int method_34949(String string, int i, int j) {
+		return Math.max(j, parseInt(string, i));
 	}
 
 	public static double parseDouble(String string, double fallback) {
@@ -314,8 +305,8 @@ public class MathHelper {
 		}
 	}
 
-	public static double parseDouble(String string, double fallback, double min) {
-		return Math.max(min, parseDouble(string, fallback));
+	public static double method_34948(String string, double d, double e) {
+		return Math.max(e, parseDouble(string, d));
 	}
 
 	public static int smallestEncompassingPowerOfTwo(int value) {
@@ -350,27 +341,27 @@ public class MathHelper {
 		return (i << 8) + b;
 	}
 
-	public static int multiplyColors(int a, int b) {
-		int i = (a & 0xFF0000) >> 16;
-		int j = (b & 0xFF0000) >> 16;
-		int k = (a & 0xFF00) >> 8;
-		int l = (b & 0xFF00) >> 8;
-		int m = (a & 0xFF) >> 0;
-		int n = (b & 0xFF) >> 0;
-		int o = (int)((float)i * (float)j / 255.0F);
-		int p = (int)((float)k * (float)l / 255.0F);
-		int q = (int)((float)m * (float)n / 255.0F);
-		return a & 0xFF000000 | o << 16 | p << 8 | q;
+	public static int method_34952(int i, int j) {
+		int k = (i & 0xFF0000) >> 16;
+		int l = (j & 0xFF0000) >> 16;
+		int m = (i & 0xFF00) >> 8;
+		int n = (j & 0xFF00) >> 8;
+		int o = (i & 0xFF) >> 0;
+		int p = (j & 0xFF) >> 0;
+		int q = (int)((float)k * (float)l / 255.0F);
+		int r = (int)((float)m * (float)n / 255.0F);
+		int s = (int)((float)o * (float)p / 255.0F);
+		return i & 0xFF000000 | q << 16 | r << 8 | s;
 	}
 
-	public static int multiplyColors(int color, float r, float g, float b) {
-		int i = (color & 0xFF0000) >> 16;
-		int j = (color & 0xFF00) >> 8;
-		int k = (color & 0xFF) >> 0;
-		int l = (int)((float)i * r);
-		int m = (int)((float)j * g);
-		int n = (int)((float)k * b);
-		return color & 0xFF000000 | l << 16 | m << 8 | n;
+	public static int method_34943(int i, float f, float g, float h) {
+		int j = (i & 0xFF0000) >> 16;
+		int k = (i & 0xFF00) >> 8;
+		int l = (i & 0xFF) >> 0;
+		int m = (int)((float)j * f);
+		int n = (int)((float)k * g);
+		int o = (int)((float)l * h);
+		return i & 0xFF000000 | m << 16 | n << 8 | o;
 	}
 
 	public static float fractionalPart(float value) {
@@ -424,6 +415,10 @@ public class MathHelper {
 	 */
 	public static double getLerpProgress(double value, double start, double end) {
 		return (value - start) / (end - start);
+	}
+
+	public static float method_37491(float f, float g, float h) {
+		return (f - g) / (h - g);
 	}
 
 	public static boolean method_34945(Vec3d vec3d, Vec3d vec3d2, Box box) {
@@ -596,12 +591,12 @@ public class MathHelper {
 		return value ^ value >>> 16;
 	}
 
-	public static long murmurHash(long value) {
-		value ^= value >>> 33;
-		value *= -49064778989728563L;
-		value ^= value >>> 33;
-		value *= -4265267296055464877L;
-		return value ^ value >>> 33;
+	public static long method_34944(long l) {
+		l ^= l >>> 33;
+		l *= -49064778989728563L;
+		l ^= l >>> 33;
+		l *= -4265267296055464877L;
+		return l ^ l >>> 33;
 	}
 
 	public static double[] getCumulativeDistribution(double... values) {
@@ -814,8 +809,16 @@ public class MathHelper {
 		return clampedLerp(start, end, getLerpProgress(lerpValue, lerpStart, lerpEnd));
 	}
 
+	public static float method_37484(float f, float g, float h, float i, float j) {
+		return method_37166(i, j, method_37491(f, g, h));
+	}
+
 	public static double lerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
 		return lerp(getLerpProgress(lerpValue, lerpStart, lerpEnd), start, end);
+	}
+
+	public static float method_37490(float f, float g, float h, float i, float j) {
+		return lerp(method_37491(f, g, h), i, j);
 	}
 
 	public static double method_34957(double d) {
@@ -830,16 +833,6 @@ public class MathHelper {
 		return (value + divisor - 1) / divisor * divisor;
 	}
 
-	/**
-	 * {@return a random, uniformly distributed integer value in {@code
-	 * [min, max]}}
-	 * 
-	 * @throws IllegalArgumentException if the range is empty (i.e. {@code
-	 * max < min})
-	 * 
-	 * @param min the minimum value, inclusive
-	 * @param max the maximum value, inclusive
-	 */
 	public static int nextBetween(Random random, int min, int max) {
 		return random.nextInt(max - min + 1) + min;
 	}
@@ -854,6 +847,29 @@ public class MathHelper {
 
 	public static double magnitude(int x, double y, int z) {
 		return Math.sqrt((double)(x * x) + y * y + (double)(z * z));
+	}
+
+	public static <C> class_6468<C> method_37487(float f, float[] fs, List<class_6468<C>> list, float[] gs) {
+		int i = binarySearch(0, fs.length, ix -> f < fs[ix]) - 1;
+		int j = fs.length - 1;
+		if (i < 0) {
+			return object -> ((class_6468)list.get(0)).apply(object) + gs[0] * (f - fs[0]);
+		} else if (i == j) {
+			return object -> ((class_6468)list.get(j)).apply(object) + gs[j] * (f - fs[j]);
+		} else {
+			float g = fs[i];
+			float h = fs[i + 1];
+			float k = (f - g) / (h - g);
+			class_6468<C> lv = (class_6468<C>)list.get(i);
+			class_6468<C> lv2 = (class_6468<C>)list.get(i + 1);
+			float l = gs[i];
+			float m = gs[i + 1];
+			return lv.method_37749(lv2, (kx, lx) -> {
+				float mx = l * (h - g) - (lx - kx);
+				float n = -m * (h - g) + (lx - kx);
+				return lerp(k, kx, lx) + k * (1.0F - k) * lerp(k, mx, n);
+			});
+		}
 	}
 
 	static {

@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 
-public class RaidGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
+public class RaidGoal<T extends LivingEntity> extends FollowTargetGoal<T> {
 	private static final int MAX_COOLDOWN = 200;
 	private int cooldown = 0;
 

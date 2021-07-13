@@ -7,8 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * {@code BeforeBatch} methods are ran before the batch specified has started.
- * 
- * <p>{@code BeforeBatch} methods must take 1 parameter of {@link net.minecraft.server.world.ServerWorld}.
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

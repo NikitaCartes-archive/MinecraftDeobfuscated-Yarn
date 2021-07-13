@@ -1,7 +1,7 @@
 package net.minecraft.server.world;
 
 import com.mojang.datafixers.util.Either;
-import it.unimi.dsi.fastutil.shorts.ShortArraySet;
+import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.ShortSet;
 import java.util.BitSet;
 import java.util.List;
@@ -168,7 +168,7 @@ public class ChunkHolder {
 			int i = this.world.getSectionIndex(pos.getY());
 			if (this.blockUpdatesBySection[i] == null) {
 				this.pendingBlockUpdates = true;
-				this.blockUpdatesBySection[i] = new ShortArraySet();
+				this.blockUpdatesBySection[i] = new ShortOpenHashSet();
 			}
 
 			this.blockUpdatesBySection[i].add(ChunkSectionPos.packLocal(pos));

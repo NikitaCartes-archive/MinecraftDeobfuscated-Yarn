@@ -21,7 +21,6 @@ import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.thread.TaskExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,13 +31,13 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 	private final ServerWorld world;
 	private final StorageIoWorker dataLoadWorker;
 	private final LongSet emptyChunks = new LongOpenHashSet();
-	private final TaskExecutor<Runnable> taskExecutor;
+	private final Executor field_27236;
 	protected final DataFixer dataFixer;
 
 	public EntityChunkDataAccess(ServerWorld world, File chunkFile, DataFixer dataFixer, boolean dsync, Executor executor) {
 		this.world = world;
 		this.dataFixer = dataFixer;
-		this.taskExecutor = TaskExecutor.create(executor, "entity-deserializer");
+		this.field_27236 = executor;
 		this.dataLoadWorker = new StorageIoWorker(chunkFile, dsync, "entities");
 	}
 
@@ -65,7 +64,7 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 					List<Entity> list = (List<Entity>)EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
 					return new ChunkDataList(pos, list);
 				}
-			}, this.taskExecutor::send);
+			}, this.field_27236);
 	}
 
 	private static ChunkPos getChunkPos(NbtCompound chunkTag) {
@@ -109,9 +108,8 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 	}
 
 	@Override
-	public void awaitAll(boolean sync) {
-		this.dataLoadWorker.completeAll(sync).join();
-		this.taskExecutor.awaitAll();
+	public void method_31758() {
+		this.dataLoadWorker.method_23698().join();
 	}
 
 	private NbtCompound fixChunkData(NbtCompound chunkTag) {

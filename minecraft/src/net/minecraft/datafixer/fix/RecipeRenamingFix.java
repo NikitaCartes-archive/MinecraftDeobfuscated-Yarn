@@ -5,7 +5,7 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Map;
 
 public class RecipeRenamingFix extends RecipeRenameFix {
-	private static final Map<String, String> RECIPES = ImmutableMap.<String, String>builder()
+	private static final Map<String, String> recipes = ImmutableMap.<String, String>builder()
 		.put("minecraft:acacia_bark", "minecraft:acacia_wood")
 		.put("minecraft:birch_bark", "minecraft:birch_wood")
 		.put("minecraft:dark_oak_bark", "minecraft:dark_oak_wood")
@@ -15,6 +15,6 @@ public class RecipeRenamingFix extends RecipeRenameFix {
 		.build();
 
 	public RecipeRenamingFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "Recipes renamening fix", string -> (String)RECIPES.getOrDefault(string, string));
+		super(outputSchema, changesType, "Recipes renamening fix", string -> (String)recipes.getOrDefault(string, string));
 	}
 }

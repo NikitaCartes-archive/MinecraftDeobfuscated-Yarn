@@ -7,9 +7,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,7 +41,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
-import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
@@ -93,7 +89,6 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	private boolean renderHand = true;
 	private boolean blockOutlineEnabled = true;
 	private long lastWorldIconUpdate;
-	private boolean hasWorldIcon;
 	private long lastWindowFocusedTime = Util.getMeasuringTimeMs();
 	private final LightmapTextureManager lightmapTextureManager;
 	private final OverlayTexture overlayTexture = new OverlayTexture();
@@ -856,7 +851,13 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().push("level");
 				this.renderWorld(tickDelta, startTime, new MatrixStack());
-				this.updateWorldIcon();
+				if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
+					this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
+					if (!this.client.getServer().method_3771()) {
+						this.method_3176();
+					}
+				}
+
 				this.client.worldRenderer.drawEntityOutlinesFramebuffer();
 				if (this.shader != null && this.shadersEnabled) {
 					RenderSystem.disableBlend();
@@ -953,28 +954,11 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		}
 	}
 
-	private void updateWorldIcon() {
-		if (!this.hasWorldIcon && this.client.isInSingleplayer()) {
-			long l = Util.getMeasuringTimeMs();
-			if (l - this.lastWorldIconUpdate >= 1000L) {
-				this.lastWorldIconUpdate = l;
-				IntegratedServer integratedServer = this.client.getServer();
-				if (integratedServer != null && !integratedServer.isStopped()) {
-					integratedServer.getIconFile().ifPresent(path -> {
-						if (Files.isRegularFile(path, new LinkOption[0])) {
-							this.hasWorldIcon = true;
-						} else {
-							this.updateWorldIcon(path);
-						}
-					});
-				}
-			}
-		}
-	}
-
-	private void updateWorldIcon(Path path) {
-		if (this.client.worldRenderer.getCompletedChunkCount() > 10 && this.client.worldRenderer.isTerrainRenderComplete()) {
-			NativeImage nativeImage = ScreenshotRecorder.takeScreenshot(this.client.getFramebuffer());
+	private void method_3176() {
+		if (this.client.worldRenderer.getCompletedChunkCount() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().method_3771()) {
+			NativeImage nativeImage = ScreenshotRecorder.method_1663(
+				this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer()
+			);
 			Util.getIoWorkerExecutor().execute(() -> {
 				int i = nativeImage.getWidth();
 				int j = nativeImage.getHeight();
@@ -990,7 +974,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 
 				try (NativeImage nativeImage2 = new NativeImage(64, 64, false)) {
 					nativeImage.resizeSubRectTo(k, l, i, j, nativeImage2);
-					nativeImage2.writeTo(path);
+					nativeImage2.writeFile(this.client.getServer().method_3725());
 				} catch (IOException var16) {
 					LOGGER.warn("Couldn't save auto screenshot", (Throwable)var16);
 				} finally {
@@ -1089,7 +1073,6 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		this.floatingItem = null;
 		this.mapRenderer.clearStateTextures();
 		this.camera.reset();
-		this.hasWorldIcon = false;
 	}
 
 	public MapRenderer getMapRenderer() {
@@ -1128,11 +1111,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
-			this.client
-				.getItemRenderer()
-				.renderItem(
-					this.floatingItem, ModelTransformation.Mode.FIXED, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, matrixStack, immediate, 0
-				);
+			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate, 0);
 			matrixStack.pop();
 			immediate.draw();
 			RenderSystem.enableCull();

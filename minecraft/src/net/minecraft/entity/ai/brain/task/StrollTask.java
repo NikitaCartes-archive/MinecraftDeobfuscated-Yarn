@@ -17,30 +17,16 @@ public class StrollTask extends Task<PathAwareEntity> {
 	private final float speed;
 	protected final int horizontalRadius;
 	protected final int verticalRadius;
-	private final boolean strollInsideWater;
 
 	public StrollTask(float speed) {
-		this(speed, true);
-	}
-
-	public StrollTask(float speed, boolean strollInsideWater) {
-		this(speed, 10, 7, strollInsideWater);
+		this(speed, 10, 7);
 	}
 
 	public StrollTask(float speed, int horizontalRadius, int verticalRadius) {
-		this(speed, horizontalRadius, verticalRadius, true);
-	}
-
-	public StrollTask(float speed, int horizontalRadius, int verticalRadius, boolean strollInsideWater) {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
 		this.speed = speed;
 		this.horizontalRadius = horizontalRadius;
 		this.verticalRadius = verticalRadius;
-		this.strollInsideWater = strollInsideWater;
-	}
-
-	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
-		return this.strollInsideWater || !pathAwareEntity.isInsideWaterOrBubbleColumn();
 	}
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {

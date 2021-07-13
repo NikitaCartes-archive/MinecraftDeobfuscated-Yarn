@@ -363,7 +363,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 							this.client.setScreen(this);
 						}
 					},
-					RealmsLongConfirmationScreen.Type.INFO,
+					RealmsLongConfirmationScreen.Type.Info,
 					text,
 					text2,
 					true
@@ -396,7 +396,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 							this.client.setScreen(this);
 						}
 					},
-					RealmsLongConfirmationScreen.Type.INFO,
+					RealmsLongConfirmationScreen.Type.Info,
 					text,
 					text2,
 					true

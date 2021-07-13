@@ -54,8 +54,8 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 			return this.selectors;
 		}
 
-		public Text format(ServerCommandSource source, boolean canUseSelectors) throws CommandSyntaxException {
-			if (this.selectors.length != 0 && canUseSelectors) {
+		public Text format(ServerCommandSource source, boolean bl) throws CommandSyntaxException {
+			if (this.selectors.length != 0 && bl) {
 				MutableText mutableText = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
 				int i = this.selectors[0].getStart();
 
@@ -82,9 +82,9 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 			}
 		}
 
-		public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean canUseSelectors) throws CommandSyntaxException {
+		public static MessageArgumentType.MessageFormat parse(StringReader reader, boolean bl) throws CommandSyntaxException {
 			String string = reader.getString().substring(reader.getCursor(), reader.getTotalLength());
-			if (!canUseSelectors) {
+			if (!bl) {
 				reader.setCursor(reader.getTotalLength());
 				return new MessageArgumentType.MessageFormat(string, new MessageArgumentType.MessageSelector[0]);
 			} else {

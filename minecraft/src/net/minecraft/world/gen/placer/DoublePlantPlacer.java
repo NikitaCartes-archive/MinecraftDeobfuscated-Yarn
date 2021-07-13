@@ -19,6 +19,6 @@ public class DoublePlantPlacer extends BlockPlacer {
 
 	@Override
 	public void generate(WorldAccess world, BlockPos pos, BlockState state, Random random) {
-		TallPlantBlock.placeAt(world, state, pos, 2);
+		((TallPlantBlock)state.getBlock()).placeAt(world, state, pos, 2);
 	}
 }

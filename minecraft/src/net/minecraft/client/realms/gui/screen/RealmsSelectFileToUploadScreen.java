@@ -27,8 +27,8 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	static final Text WORLD_LANG = new TranslatableText("selectWorld.world");
-	static final Text CONVERSION_LANG = new TranslatableText("selectWorld.conversion");
+	static final Text worldLang = new TranslatableText("selectWorld.world");
+	static final Text conversionLang = new TranslatableText("selectWorld.conversion");
 	static final Text HARDCORE_TEXT = new TranslatableText("mco.upload.hardcore").formatted(Formatting.DARK_RED);
 	static final Text CHEATS_TEXT = new TranslatableText("selectWorld.cheats");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
@@ -143,7 +143,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			this.displayName = summary.getDisplayName();
 			this.nameAndLastPlayed = summary.getName() + " (" + RealmsSelectFileToUploadScreen.getLastPlayed(summary) + ")";
 			if (summary.requiresConversion()) {
-				this.details = RealmsSelectFileToUploadScreen.CONVERSION_LANG;
+				this.details = RealmsSelectFileToUploadScreen.conversionLang;
 			} else {
 				Text text;
 				if (summary.isHardcore()) {
@@ -174,7 +174,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		protected void renderItem(MatrixStack matrices, int index, int x, int y) {
 			String string;
 			if (this.displayName.isEmpty()) {
-				string = RealmsSelectFileToUploadScreen.WORLD_LANG + " " + (index + 1);
+				string = RealmsSelectFileToUploadScreen.worldLang + " " + (index + 1);
 			} else {
 				string = this.displayName;
 			}

@@ -25,6 +25,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 	protected final int sizeZ;
 	protected final WorldChunk[][] chunks;
 	protected final BlockState[] blockStates;
+	protected final FluidState[] field_4485;
 	protected final World world;
 
 	@Nullable
@@ -74,6 +75,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 		this.sizeY = endPos.getY() - startPos.getY() + 1;
 		this.sizeZ = endPos.getZ() - startPos.getZ() + 1;
 		this.blockStates = new BlockState[this.sizeX * this.sizeY * this.sizeZ];
+		this.field_4485 = new FluidState[this.sizeX * this.sizeY * this.sizeZ];
 
 		for (BlockPos blockPos : BlockPos.iterate(startPos, endPos)) {
 			int i = ChunkSectionPos.getSectionCoord(blockPos.getX()) - chunkX;
@@ -81,6 +83,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 			WorldChunk worldChunk = chunks[i][j];
 			int k = this.getIndex(blockPos);
 			this.blockStates[k] = worldChunk.getBlockState(blockPos);
+			this.field_4485[k] = worldChunk.getFluidState(blockPos);
 		}
 	}
 
@@ -102,7 +105,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
-		return this.blockStates[this.getIndex(pos)].getFluidState();
+		return this.field_4485[this.getIndex(pos)];
 	}
 
 	@Override

@@ -52,8 +52,7 @@ public class TallPlantBlock extends PlantBlock {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-		BlockPos blockPos = pos.up();
-		world.setBlockState(blockPos, withWaterloggedState(world, blockPos, this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)), Block.NOTIFY_ALL);
+		world.setBlockState(pos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), Block.NOTIFY_ALL);
 	}
 
 	@Override
@@ -66,14 +65,9 @@ public class TallPlantBlock extends PlantBlock {
 		}
 	}
 
-	public static void placeAt(WorldAccess world, BlockState state, BlockPos pos, int flags) {
-		BlockPos blockPos = pos.up();
-		world.setBlockState(pos, withWaterloggedState(world, pos, state.with(HALF, DoubleBlockHalf.LOWER)), flags);
-		world.setBlockState(blockPos, withWaterloggedState(world, blockPos, state.with(HALF, DoubleBlockHalf.UPPER)), flags);
-	}
-
-	public static BlockState withWaterloggedState(WorldView world, BlockPos pos, BlockState state) {
-		return state.contains(Properties.WATERLOGGED) ? state.with(Properties.WATERLOGGED, Boolean.valueOf(world.isWater(pos))) : state;
+	public void placeAt(WorldAccess state, BlockState pos, BlockPos flags, int i) {
+		state.setBlockState(flags, pos.with(HALF, DoubleBlockHalf.LOWER), i);
+		state.setBlockState(flags.up(), pos.with(HALF, DoubleBlockHalf.UPPER), i);
 	}
 
 	@Override

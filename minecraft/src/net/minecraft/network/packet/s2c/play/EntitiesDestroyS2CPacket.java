@@ -1,36 +1,30 @@
 package net.minecraft.network.packet.s2c.play;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntitiesDestroyS2CPacket implements Packet<ClientPlayPacketListener> {
-	private final IntList entityIds;
+	private final int field_33690;
 
-	public EntitiesDestroyS2CPacket(IntList entityIds) {
-		this.entityIds = new IntArrayList(entityIds);
-	}
-
-	public EntitiesDestroyS2CPacket(int... entityIds) {
-		this.entityIds = new IntArrayList(entityIds);
+	public EntitiesDestroyS2CPacket(int i) {
+		this.field_33690 = i;
 	}
 
 	public EntitiesDestroyS2CPacket(PacketByteBuf buf) {
-		this.entityIds = buf.readIntList();
+		this.field_33690 = buf.readVarInt();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeIntList(this.entityIds);
+		buf.writeVarInt(this.field_33690);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onEntitiesDestroy(this);
 	}
 
-	public IntList getEntityIds() {
-		return this.entityIds;
+	public int method_36548() {
+		return this.field_33690;
 	}
 }

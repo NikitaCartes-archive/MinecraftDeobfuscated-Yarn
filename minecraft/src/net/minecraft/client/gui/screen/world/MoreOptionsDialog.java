@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -58,10 +57,8 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 public class MoreOptionsDialog implements Drawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Text CUSTOM_TEXT = new TranslatableText("generator.custom");
-	private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.amplified.info");
 	private static final Text MAP_FEATURES_INFO_TEXT = new TranslatableText("selectWorld.mapFeatures.info");
 	private static final Text SELECT_SETTINGS_FILE_TEXT = new TranslatableText("selectWorld.import_worldgen_settings.select_file");
-	private MultilineText generatorInfoText = MultilineText.EMPTY;
 	private TextRenderer textRenderer;
 	private int parentWidth;
 	private TextFieldWidget seedTextField;
@@ -110,11 +107,7 @@ public class MoreOptionsDialog implements Drawable {
 		this.mapTypeButton = parent.addDrawableChild(
 			CyclingButtonWidget.<GeneratorType>builder(GeneratorType::getTranslationKey)
 				.values((List<GeneratorType>)GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES)
-				.narration(
-					button -> button.getValue() == GeneratorType.AMPLIFIED
-							? ScreenTexts.joinSentences(button.getGenericNarrationMessage(), AMPLIFIED_INFO_TEXT)
-							: button.getGenericNarrationMessage()
-				)
+				.narration(CyclingButtonWidget::getGenericNarrationMessage)
 				.build(
 					j,
 					100,
@@ -186,7 +179,7 @@ public class MoreOptionsDialog implements Drawable {
 							return;
 						}
 
-						RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+						RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 						JsonParser jsonParser = new JsonParser();
 
 						DataResult<GeneratorOptions> dataResult;
@@ -260,7 +253,6 @@ public class MoreOptionsDialog implements Drawable {
 			)
 		);
 		this.importSettingsButton.visible = false;
-		this.generatorInfoText = MultilineText.create(textRenderer, AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
 	}
 
 	private void importOptions(DynamicRegistryManager.Impl registryManager, GeneratorOptions generatorOptions) {
@@ -283,9 +275,6 @@ public class MoreOptionsDialog implements Drawable {
 		}
 
 		this.seedTextField.render(matrices, mouseX, mouseY, delta);
-		if (this.generatorType.equals(Optional.of(GeneratorType.AMPLIFIED))) {
-			this.generatorInfoText.drawWithShadow(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, 9, 10526880);
-		}
 	}
 
 	public void setGeneratorOptions(GeneratorOptions generatorOptions) {
@@ -364,7 +353,7 @@ public class MoreOptionsDialog implements Drawable {
 	void loadDatapacks(ServerResourceManager serverResourceManager) {
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 		RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, this.registryManager);
-		RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+		RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
 			.encodeStart(registryReadingOps, this.generatorOptions)
 			.flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));

@@ -18,6 +18,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.profiling.jfr.event.worldgen.ChunkGenerationEvent;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
@@ -49,7 +51,7 @@ public class ChunkStatus {
 		0,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(targetStatus, executor, world, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
+		(targetStatus, executor, world, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk, bl) -> {
 			if (!chunk.getStatus().isAtLeast(targetStatus)) {
 				if (world.getServer().getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
 					chunkGenerator.setStructureStarts(world.getRegistryManager(), world.getStructureAccessor(), chunk, structureManager, world.getSeed());
@@ -88,8 +90,10 @@ public class ChunkStatus {
 		8,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(chunkStatus, executor, world, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
-			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
+		(chunkStatus, executor, world, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk, bl) -> {
+			if (!bl && chunk.getStatus().isAtLeast(chunkStatus)) {
+				return CompletableFuture.completedFuture(Either.left(chunk));
+			} else {
 				ChunkRegion chunkRegion = new ChunkRegion(world, list, chunkStatus, 0);
 				return chunkGenerator.populateNoise(executor, world.getStructureAccessor().forRegion(chunkRegion), chunk).thenApply(chunkx -> {
 					if (chunkx instanceof ProtoChunk) {
@@ -98,8 +102,6 @@ public class ChunkStatus {
 
 					return Either.left(chunkx);
 				});
-			} else {
-				return CompletableFuture.completedFuture(Either.left(chunk));
 			}
 		}
 	);
@@ -137,15 +139,22 @@ public class ChunkStatus {
 		8,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(status, executor, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
+		(status, executor, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk, bl) -> {
 			ProtoChunk protoChunk = (ProtoChunk)chunk;
 			protoChunk.setLightingProvider(serverLightingProvider);
-			if (!chunk.getStatus().isAtLeast(status)) {
+			if (bl || !chunk.getStatus().isAtLeast(status)) {
 				Heightmap.populateHeightmaps(
-					chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE)
+					chunk,
+					EnumSet.of(
+						Heightmap.Type.MOTION_BLOCKING,
+						Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
+						Heightmap.Type.OCEAN_FLOOR,
+						Heightmap.Type.WORLD_SURFACE,
+						Heightmap.Type.WORLD_SURFACE_IGNORE_SNOW
+					)
 				);
 				ChunkRegion chunkRegion = new ChunkRegion(serverWorld, list, status, 1);
-				chunkGenerator.generateFeatures(chunkRegion, serverWorld.getStructureAccessor().forRegion(chunkRegion));
+				chunkGenerator.generateFeatures(chunkRegion, chunk.getPos(), serverWorld.getStructureAccessor().forRegion(chunkRegion));
 				protoChunk.setStatus(status);
 			}
 
@@ -158,7 +167,7 @@ public class ChunkStatus {
 		1,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(targetStatus, executor, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> getLightingFuture(
+		(targetStatus, executor, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk, bl) -> getLightingFuture(
 				targetStatus, serverLightingProvider, chunk
 			),
 		(status, world, structureManager, lightingProvider, function, chunk) -> getLightingFuture(status, lightingProvider, chunk)
@@ -181,12 +190,10 @@ public class ChunkStatus {
 		0,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.LEVELCHUNK,
-		(targetStatus, executor, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(
+		(targetStatus, executor, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk, bl) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(
 				chunk
 			),
-		(status, world, structureManager, lightingProvider, convertCallback, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)convertCallback.apply(
-				chunk
-			)
+		(status, world, structureManager, lightingProvider, function, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(chunk)
 	);
 	private static final List<ChunkStatus> DISTANCE_TO_STATUS = ImmutableList.of(
 		FULL,
@@ -337,10 +344,29 @@ public class ChunkStatus {
 		StructureManager structureManager,
 		ServerLightingProvider lightingProvider,
 		Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
-		List<Chunk> list
+		List<Chunk> list,
+		boolean bl
 	) {
-		return this.generationTask
-			.doWork(this, executor, world, chunkGenerator, structureManager, lightingProvider, function, list, (Chunk)list.get(list.size() / 2));
+		Chunk chunk = (Chunk)list.get(list.size() / 2);
+		ChunkGenerationEvent chunkGenerationEvent = new ChunkGenerationEvent();
+		if (chunkGenerationEvent.isEnabled()) {
+			ChunkPos chunkPos = chunk.getPos();
+			chunkGenerationEvent.targetStatus = this.id;
+			chunkGenerationEvent.level = world.getRegistryKey().toString();
+			chunkGenerationEvent.chunkPosX = chunkPos.x;
+			chunkGenerationEvent.chunkPosZ = chunkPos.z;
+			chunkGenerationEvent.centerBlockPosX = chunkPos.getCenterX();
+			chunkGenerationEvent.centerBlockPosZ = chunkPos.getCenterZ();
+			chunkGenerationEvent.begin();
+		}
+
+		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.generationTask
+			.doWork(this, executor, world, chunkGenerator, structureManager, lightingProvider, function, list, chunk, bl);
+		return chunkGenerationEvent.shouldCommit() ? completableFuture.thenApply(either -> {
+			either.ifLeft(chunkx -> chunkGenerationEvent.success = true);
+			chunkGenerationEvent.commit();
+			return either;
+		}) : completableFuture;
 	}
 
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> runLoadTask(
@@ -397,7 +423,6 @@ public class ChunkStatus {
 	interface GenerationTask {
 		/**
 		 * @param targetStatus the status the chunk will be set to after the task is completed
-		 * @param convertCallback will be invoked by statuses which have some special convert logic (e.g. the FULL status to convert the chunk to a full chunk)
 		 */
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus targetStatus,
@@ -406,9 +431,10 @@ public class ChunkStatus {
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ServerLightingProvider lightingProvider,
-			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> convertCallback,
+			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 			List<Chunk> list,
-			Chunk chunk
+			Chunk chunk,
+			boolean bl
 		);
 	}
 
@@ -416,15 +442,12 @@ public class ChunkStatus {
 	 * A task called when a chunk is loaded but does not need to be generated.
 	 */
 	interface LoadTask {
-		/**
-		 * @param convertCallback will be invoked by statuses which have some special convert logic (e.g. the FULL status to convert the chunk to a full chunk)
-		 */
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus targetStatus,
 			ServerWorld world,
 			StructureManager structureManager,
 			ServerLightingProvider lightingProvider,
-			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> convertCallback,
+			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 			Chunk chunk
 		);
 	}
@@ -440,9 +463,10 @@ public class ChunkStatus {
 			ServerLightingProvider serverLightingProvider,
 			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 			List<Chunk> list,
-			Chunk chunk
+			Chunk chunk,
+			boolean bl
 		) {
-			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
+			if (bl || !chunk.getStatus().isAtLeast(chunkStatus)) {
 				this.doWork(chunkStatus, serverWorld, chunkGenerator, list, chunk);
 				if (chunk instanceof ProtoChunk) {
 					((ProtoChunk)chunk).setStatus(chunkStatus);

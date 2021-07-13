@@ -12,7 +12,7 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ChunkStructuresTemplateRenameFix extends DataFix {
-	private static final ImmutableMap<String, Pair<String, ImmutableMap<String, String>>> STRUCTURES = ImmutableMap.<String, Pair<String, ImmutableMap<String, String>>>builder()
+	private static final ImmutableMap<String, Pair<String, ImmutableMap<String, String>>> structures = ImmutableMap.<String, Pair<String, ImmutableMap<String, String>>>builder()
 		.put(
 			"EndCity",
 			Pair.of(
@@ -140,8 +140,8 @@ public class ChunkStructuresTemplateRenameFix extends DataFix {
 
 	private Dynamic<?> method_15671(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
 		String string = dynamic.get("id").asString("");
-		if (STRUCTURES.containsKey(string)) {
-			Pair<String, ImmutableMap<String, String>> pair = STRUCTURES.get(string);
+		if (structures.containsKey(string)) {
+			Pair<String, ImmutableMap<String, String>> pair = structures.get(string);
 			if (pair.getFirst().equals(dynamic2.get("id").asString(""))) {
 				String string2 = dynamic2.get("Template").asString("");
 				dynamic2 = dynamic2.set("Template", dynamic2.createString(pair.getSecond().getOrDefault(string2, string2)));

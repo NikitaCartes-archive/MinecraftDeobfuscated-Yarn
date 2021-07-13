@@ -1362,10 +1362,6 @@ public abstract class LivingEntity extends Entity {
 				this.wakeUp();
 			}
 
-			if (!this.world.isClient && this.hasCustomName()) {
-				LOGGER.info("Named entity {} died: {}", this, this.getDamageTracker().getDeathMessage().getString());
-			}
-
 			this.dead = true;
 			this.getDamageTracker().update();
 			if (this.world instanceof ServerWorld) {
@@ -2225,7 +2221,7 @@ public abstract class LivingEntity extends Entity {
 				BlockPos blockPos = this.getVelocityAffectingPos();
 				float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
 				float fxx = this.onGround ? p * 0.91F : 0.91F;
-				Vec3d vec3d6 = this.applyMovementInput(movementInput, p);
+				Vec3d vec3d6 = this.method_26318(movementInput, p);
 				double q = vec3d6.y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
@@ -2265,17 +2261,17 @@ public abstract class LivingEntity extends Entity {
 		entity.limbAngle = entity.limbAngle + entity.limbDistance;
 	}
 
-	public Vec3d applyMovementInput(Vec3d movementInput, float slipperiness) {
-		this.updateVelocity(this.getMovementSpeed(slipperiness), movementInput);
+	public Vec3d method_26318(Vec3d vec3d, float f) {
+		this.updateVelocity(this.getMovementSpeed(f), vec3d);
 		this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
 		this.move(MovementType.SELF, this.getVelocity());
-		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d2 = this.getVelocity();
 		if ((this.horizontalCollision || this.jumping)
 			&& (this.isClimbing() || this.getBlockStateAtPos().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
-			vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
+			vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
 		}
 
-		return vec3d;
+		return vec3d2;
 	}
 
 	public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {

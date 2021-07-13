@@ -16,6 +16,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
@@ -66,6 +67,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	);
 	private static final BlockState AIR = Blocks.AIR.getDefaultState();
 	private static final BlockState[] EMPTY = new BlockState[0];
+	private static final int field_34238 = 16;
 	private final int verticalNoiseResolution;
 	private final int horizontalNoiseResolution;
 	final int noiseSizeX;
@@ -289,27 +291,31 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		ChunkPos chunkPos = chunk.getPos();
 		int i = chunkPos.x;
 		int j = chunkPos.z;
-		ChunkRandom chunkRandom = new ChunkRandom();
-		chunkRandom.setTerrainSeed(i, j);
-		ChunkPos chunkPos2 = chunk.getPos();
-		int k = chunkPos2.getStartX();
-		int l = chunkPos2.getStartZ();
-		double d = 0.0625;
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		if (!SharedConstants.method_37481(chunkPos.getStartX(), chunkPos.getStartZ())) {
+			ChunkRandom chunkRandom = new ChunkRandom();
+			chunkRandom.setTerrainSeed(i, j);
+			ChunkPos chunkPos2 = chunk.getPos();
+			int k = chunkPos2.getStartX();
+			int l = chunkPos2.getStartZ();
+			double d = 0.0625;
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int m = 0; m < 16; m++) {
-			for (int n = 0; n < 16; n++) {
-				int o = k + m;
-				int p = l + n;
-				int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
-				double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625) * 15.0;
-				int r = ((ChunkGeneratorSettings)this.settings.get()).getMinSurfaceLevel();
-				region.getBiome(mutable.set(k + m, q, l + n))
-					.buildSurface(chunkRandom, chunk, o, p, q, e, this.defaultBlock, this.defaultFluid, this.getSeaLevel(), r, region.getSeed());
+			for (int m = 0; m < 16; m++) {
+				for (int n = 0; n < 16; n++) {
+					int o = k + m;
+					int p = l + n;
+					int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
+					double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625) * 15.0;
+					mutable.set(k + m, -64, l + n);
+					int r = this.noiseColumnSampler.method_37766(mutable.getX(), mutable.getY(), mutable.getZ());
+					int s = r - 16;
+					Biome biome = region.getBiome(mutable.setY(r));
+					biome.buildSurface(chunkRandom, chunk, o, p, q, e, this.defaultBlock, this.defaultFluid, this.getSeaLevel(), s, region.getSeed());
+				}
 			}
-		}
 
-		this.buildBedrock(chunk, chunkRandom);
+			this.buildBedrock(chunk, chunkRandom);
+		}
 	}
 
 	private void buildBedrock(Chunk chunk, Random random) {
@@ -434,7 +440,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 								BlockState blockState = this.getBlockState(
 									structureWeightSampler, aquiferSampler, (BlockSource)doubleFunction.apply(f), (WeightSampler)doubleFunction2.apply(f), v, r, y, g
 								);
-								if (blockState != AIR) {
+								if (blockState != AIR && !SharedConstants.method_37481(v, y)) {
 									if (blockState.getLuminance() != 0 && chunk instanceof ProtoChunk) {
 										mutable.set(v, r, y);
 										((ProtoChunk)chunk).addLightSource(mutable);

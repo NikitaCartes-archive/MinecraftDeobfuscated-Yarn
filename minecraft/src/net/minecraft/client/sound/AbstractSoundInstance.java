@@ -19,7 +19,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected boolean repeat;
 	protected int repeatDelay;
 	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.LINEAR;
-	protected boolean relative;
+	protected boolean looping;
 
 	protected AbstractSoundInstance(SoundEvent sound, SoundCategory category) {
 		this(sound.getId(), category);
@@ -98,8 +98,8 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	}
 
 	@Override
-	public boolean isRelative() {
-		return this.relative;
+	public boolean isLooping() {
+		return this.looping;
 	}
 
 	public String toString() {

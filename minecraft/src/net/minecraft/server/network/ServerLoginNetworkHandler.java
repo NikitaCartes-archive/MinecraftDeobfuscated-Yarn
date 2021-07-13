@@ -42,13 +42,12 @@ import org.apache.logging.log4j.Logger;
  * server thread simultaneously.
  * 
  * @implSpec The vanilla implementation is created by a handshake network
- * handler. It first receives a hello packet from the client. If it is in
- * {@linkplain MinecraftServer#isOnlineMode() online mode}, it goes through
- * an additional authentication process. Then it optionally sends a network
- * compression packet. Finally, when it can accept the player (no player
- * UUID conflicts), it will accept the player by sending a login success
- * packet and then transitions the connection's packet listener to a {@link
- * ServerPlayNetworkHandler}.
+ * handler. It first receives a hello packet from the client. If it's in
+ * online mode, it goes through an additional authentication process. Then
+ * it optionally sends a network compression packet next. Finally, when it
+ * can accept the player (no player UUID conflicts), it will accept the
+ * player by sending a login success packet and then transitions the
+ * connection's packet listener to a server play network handler.
  */
 public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private static final AtomicInteger NEXT_AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
@@ -142,7 +141,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 				this.connection
 					.send(
 						new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()),
-						channelFuture -> this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold(), true)
+						channelFuture -> this.connection.method_10760(this.server.getNetworkCompressionThreshold())
 					);
 			}
 
@@ -223,7 +222,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 						ServerLoginNetworkHandler.LOGGER
 							.info("UUID of player {} is {}", ServerLoginNetworkHandler.this.profile.getName(), ServerLoginNetworkHandler.this.profile.getId());
 						ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
-					} else if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
+					} else if (ServerLoginNetworkHandler.this.server.isSinglePlayer()) {
 						ServerLoginNetworkHandler.LOGGER.warn("Failed to verify username but will let them in anyway!");
 						ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
 						ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
@@ -232,7 +231,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 						ServerLoginNetworkHandler.LOGGER.error("Username '{}' tried to join with an invalid session", gameProfile.getName());
 					}
 				} catch (AuthenticationUnavailableException var3) {
-					if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
+					if (ServerLoginNetworkHandler.this.server.isSinglePlayer()) {
 						ServerLoginNetworkHandler.LOGGER.warn("Authentication servers are down but will let them in anyway!");
 						ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
 						ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;

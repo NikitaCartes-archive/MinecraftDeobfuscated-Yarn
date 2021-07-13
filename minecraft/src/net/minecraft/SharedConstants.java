@@ -1,6 +1,5 @@
 package net.minecraft;
 
-import com.mojang.bridge.game.GameVersion;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
@@ -10,17 +9,19 @@ import net.minecraft.command.TranslatableBuiltInExceptions;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean IS_DEVELOPMENT_VERSION = false;
+	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2730;
+	public static final int WORLD_VERSION = 2825;
 	@Deprecated
-	public static final String VERSION_NAME = "1.17.1";
+	public static final String field_34062 = "ccpreview";
 	@Deprecated
-	public static final String RELEASE_TARGET = "1.17.1";
+	public static final String VERSION_NAME = "1.18-experimental-1";
+	@Deprecated
+	public static final String RELEASE_TARGET = "1.18";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 756;
 	@Deprecated
-	public static final int field_29736 = 40;
+	public static final int field_29736 = 41;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2678;
 	private static final int field_29708 = 30;
 	@Deprecated
@@ -28,11 +29,11 @@ public class SharedConstants {
 	@Deprecated
 	public static final int field_29739 = 7;
 	public static final String DATA_VERSION_KEY = "DataVersion";
-	public static final boolean field_33711 = false;
-	public static final boolean field_33712 = false;
-	public static final boolean field_29741 = false;
-	public static final boolean field_29742 = false;
-	public static final boolean field_33556 = false;
+	public static final boolean field_33711 = true;
+	public static final boolean field_33712 = true;
+	public static final boolean field_29741 = true;
+	public static final boolean field_29742 = true;
+	public static final boolean field_33556 = true;
 	public static final boolean field_29743 = false;
 	public static final boolean field_29744 = false;
 	public static final boolean field_29745 = false;
@@ -78,6 +79,9 @@ public class SharedConstants {
 	public static final boolean field_33554 = false;
 	public static final boolean field_29701 = false;
 	public static final boolean field_29710 = false;
+	public static final boolean field_34059 = false;
+	public static final boolean field_34060 = false;
+	public static boolean field_34061 = false;
 	public static final boolean field_29711 = false;
 	public static final boolean field_29712 = false;
 	public static final boolean field_29713 = false;
@@ -134,10 +138,10 @@ public class SharedConstants {
 		return stringBuilder.toString();
 	}
 
-	public static void setGameVersion(GameVersion version) {
-		if (gameVersion == null) {
-			gameVersion = version;
-		} else if (version != gameVersion) {
+	public static void setGameVersion(GameVersion gameVersion) {
+		if (SharedConstants.gameVersion == null) {
+			SharedConstants.gameVersion = gameVersion;
+		} else if (gameVersion != SharedConstants.gameVersion) {
 			throw new IllegalStateException("Cannot override the current game version!");
 		}
 	}
@@ -157,7 +161,11 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 756;
+		return 1073741865;
+	}
+
+	public static boolean method_37481(int i, int j) {
+		return !field_34061 ? false : i > 8192 || i < 0 || j > 1024 || j < 0;
 	}
 
 	static {

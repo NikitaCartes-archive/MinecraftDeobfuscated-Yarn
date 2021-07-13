@@ -109,35 +109,35 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 				float ah = paintingSprite.getFrameU(d * (double)(u - (w + 1)));
 				float ai = paintingSprite.getFrameV(e * (double)(v - x));
 				float aj = paintingSprite.getFrameV(e * (double)(v - (x + 1)));
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, ah, ai, -0.5F, 0, 0, -1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, ag, ai, -0.5F, 0, 0, -1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, ag, aj, -0.5F, 0, 0, -1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, ah, aj, -0.5F, 0, 0, -1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, i, k, 0.5F, 0, 0, 1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, j, k, 0.5F, 0, 0, 1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, j, l, 0.5F, 0, 0, 1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, i, l, 0.5F, 0, 0, 1, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, m, o, -0.5F, 0, 1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, n, o, -0.5F, 0, 1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, n, p, 0.5F, 0, 1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, m, p, 0.5F, 0, 1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, m, o, 0.5F, 0, -1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, n, o, 0.5F, 0, -1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, n, p, -0.5F, 0, -1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, m, p, -0.5F, 0, -1, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, r, s, 0.5F, -1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, r, t, 0.5F, -1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, ab, q, t, -0.5F, -1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, y, aa, q, s, -0.5F, -1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, r, s, -0.5F, 1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, r, t, -0.5F, 1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, ab, q, t, 0.5F, 1, 0, 0, af);
-				this.vertex(matrix4f, matrix3f, vertexConsumer, z, aa, q, s, 0.5F, 1, 0, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, ab, ah, ai, -0.5F, 0, 0, -1, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, ab, ag, ai, -0.5F, 0, 0, -1, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, aa, ag, aj, -0.5F, 0, 0, -1, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, aa, ah, aj, -0.5F, 0, 0, -1, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, aa, i, k, 0.5F, 0, 0, 1, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, aa, j, k, 0.5F, 0, 0, 1, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, ab, j, l, 0.5F, 0, 0, 1, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, ab, i, l, 0.5F, 0, 0, 1, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, aa, m, o, -0.5F, 0, 1, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, aa, n, o, -0.5F, 0, 1, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, aa, n, p, 0.5F, 0, 1, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, aa, m, p, 0.5F, 0, 1, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, ab, m, o, 0.5F, 0, -1, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, ab, n, o, 0.5F, 0, -1, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, ab, n, p, -0.5F, 0, -1, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, ab, m, p, -0.5F, 0, -1, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, aa, r, s, 0.5F, -1, 0, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, ab, r, t, 0.5F, -1, 0, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, ab, q, t, -0.5F, -1, 0, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, y, aa, q, s, -0.5F, -1, 0, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, aa, r, s, -0.5F, 1, 0, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, ab, r, t, -0.5F, 1, 0, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, ab, q, t, 0.5F, 1, 0, 0, af);
+				this.method_23188(matrix4f, matrix3f, vertexConsumer, z, aa, q, s, 0.5F, 1, 0, 0, af);
 			}
 		}
 	}
 
-	private void vertex(
+	private void method_23188(
 		Matrix4f modelMatrix,
 		Matrix3f normalMatrix,
 		VertexConsumer vertexConsumer,

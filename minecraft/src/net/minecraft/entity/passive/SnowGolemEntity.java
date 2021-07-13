@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Shearable;
 import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
@@ -42,7 +42,7 @@ import net.minecraft.world.event.GameEvent;
 public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAttackMob {
 	private static final TrackedData<Byte> SNOW_GOLEM_FLAGS = DataTracker.registerData(SnowGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final byte HAS_PUMPKIN_FLAG = 16;
-	private static final float EYE_HEIGHT = 1.7F;
+	private static final float field_30374 = 1.7F;
 
 	public SnowGolemEntity(EntityType<? extends SnowGolemEntity> entityType, World world) {
 		super(entityType, world);
@@ -54,7 +54,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		this.goalSelector.add(2, new WanderAroundFarGoal(this, 1.0, 1.0000001E-5F));
 		this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(4, new LookAroundGoal(this));
-		this.targetSelector.add(1, new ActiveTargetGoal(this, MobEntity.class, 10, true, false, livingEntity -> livingEntity instanceof Monster));
+		this.targetSelector.add(1, new FollowTargetGoal(this, MobEntity.class, 10, true, false, livingEntity -> livingEntity instanceof Monster));
 	}
 
 	public static DefaultAttributeContainer.Builder createSnowGolemAttributes() {

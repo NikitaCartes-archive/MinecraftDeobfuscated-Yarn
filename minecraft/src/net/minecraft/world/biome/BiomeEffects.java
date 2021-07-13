@@ -266,8 +266,8 @@ public class BiomeEffects {
 
 		public abstract int getModifiedGrassColor(double x, double z, int color);
 
-		GrassColorModifier(String string2) {
-			this.name = string2;
+		GrassColorModifier(String name) {
+			this.name = name;
 		}
 
 		public String getName() {

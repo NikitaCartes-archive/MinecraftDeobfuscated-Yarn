@@ -20,42 +20,44 @@ import net.minecraft.util.Util;
 
 public class ItemSlotArgumentType implements ArgumentType<Integer> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("container.5", "12", "weapon");
-	private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(name -> new TranslatableText("slot.unknown", name));
-	private static final Map<String, Integer> SLOT_NAMES_TO_SLOT_COMMAND_ID = Util.make(Maps.<String, Integer>newHashMap(), map -> {
+	private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(
+		object -> new TranslatableText("slot.unknown", object)
+	);
+	private static final Map<String, Integer> slotNamesToSlotCommandId = Util.make(Maps.<String, Integer>newHashMap(), hashMap -> {
 		for (int i = 0; i < 54; i++) {
-			map.put("container." + i, i);
+			hashMap.put("container." + i, i);
 		}
 
 		for (int i = 0; i < 9; i++) {
-			map.put("hotbar." + i, i);
+			hashMap.put("hotbar." + i, i);
 		}
 
 		for (int i = 0; i < 27; i++) {
-			map.put("inventory." + i, 9 + i);
+			hashMap.put("inventory." + i, 9 + i);
 		}
 
 		for (int i = 0; i < 27; i++) {
-			map.put("enderchest." + i, 200 + i);
+			hashMap.put("enderchest." + i, 200 + i);
 		}
 
 		for (int i = 0; i < 8; i++) {
-			map.put("villager." + i, 300 + i);
+			hashMap.put("villager." + i, 300 + i);
 		}
 
 		for (int i = 0; i < 15; i++) {
-			map.put("horse." + i, 500 + i);
+			hashMap.put("horse." + i, 500 + i);
 		}
 
-		map.put("weapon", EquipmentSlot.MAINHAND.getOffsetEntitySlotId(98));
-		map.put("weapon.mainhand", EquipmentSlot.MAINHAND.getOffsetEntitySlotId(98));
-		map.put("weapon.offhand", EquipmentSlot.OFFHAND.getOffsetEntitySlotId(98));
-		map.put("armor.head", EquipmentSlot.HEAD.getOffsetEntitySlotId(100));
-		map.put("armor.chest", EquipmentSlot.CHEST.getOffsetEntitySlotId(100));
-		map.put("armor.legs", EquipmentSlot.LEGS.getOffsetEntitySlotId(100));
-		map.put("armor.feet", EquipmentSlot.FEET.getOffsetEntitySlotId(100));
-		map.put("horse.saddle", 400);
-		map.put("horse.armor", 401);
-		map.put("horse.chest", 499);
+		hashMap.put("weapon", EquipmentSlot.MAINHAND.getOffsetEntitySlotId(98));
+		hashMap.put("weapon.mainhand", EquipmentSlot.MAINHAND.getOffsetEntitySlotId(98));
+		hashMap.put("weapon.offhand", EquipmentSlot.OFFHAND.getOffsetEntitySlotId(98));
+		hashMap.put("armor.head", EquipmentSlot.HEAD.getOffsetEntitySlotId(100));
+		hashMap.put("armor.chest", EquipmentSlot.CHEST.getOffsetEntitySlotId(100));
+		hashMap.put("armor.legs", EquipmentSlot.LEGS.getOffsetEntitySlotId(100));
+		hashMap.put("armor.feet", EquipmentSlot.FEET.getOffsetEntitySlotId(100));
+		hashMap.put("horse.saddle", 400);
+		hashMap.put("horse.armor", 401);
+		hashMap.put("horse.chest", 499);
 	});
 
 	public static ItemSlotArgumentType itemSlot() {
@@ -68,16 +70,16 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 
 	public Integer parse(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
-		if (!SLOT_NAMES_TO_SLOT_COMMAND_ID.containsKey(string)) {
+		if (!slotNamesToSlotCommandId.containsKey(string)) {
 			throw UNKNOWN_SLOT_EXCEPTION.create(string);
 		} else {
-			return (Integer)SLOT_NAMES_TO_SLOT_COMMAND_ID.get(string);
+			return (Integer)slotNamesToSlotCommandId.get(string);
 		}
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return CommandSource.suggestMatching(SLOT_NAMES_TO_SLOT_COMMAND_ID.keySet(), builder);
+		return CommandSource.suggestMatching(slotNamesToSlotCommandId.keySet(), builder);
 	}
 
 	@Override

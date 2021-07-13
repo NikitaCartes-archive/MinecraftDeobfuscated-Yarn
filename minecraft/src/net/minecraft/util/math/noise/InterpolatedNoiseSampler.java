@@ -1,6 +1,5 @@
 package net.minecraft.util.math.noise;
 
-import java.util.stream.IntStream;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.WorldGenRandom;
 
@@ -19,9 +18,9 @@ public class InterpolatedNoiseSampler {
 
 	public InterpolatedNoiseSampler(WorldGenRandom random) {
 		this(
-			new OctavePerlinNoiseSampler(random, IntStream.rangeClosed(-15, 0)),
-			new OctavePerlinNoiseSampler(random, IntStream.rangeClosed(-15, 0)),
-			new OctavePerlinNoiseSampler(random, IntStream.rangeClosed(-7, 0))
+			OctavePerlinNoiseSampler.create(random, -15, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+			OctavePerlinNoiseSampler.create(random, -15, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+			OctavePerlinNoiseSampler.create(random, -7, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0)
 		);
 	}
 

@@ -24,11 +24,11 @@ import net.minecraft.util.math.Vec3d;
 public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgumentType.EntityAnchor> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("eyes", "feet");
 	private static final DynamicCommandExceptionType INVALID_ANCHOR_EXCEPTION = new DynamicCommandExceptionType(
-		name -> new TranslatableText("argument.anchor.invalid", name)
+		object -> new TranslatableText("argument.anchor.invalid", object)
 	);
 
-	public static EntityAnchorArgumentType.EntityAnchor getEntityAnchor(CommandContext<ServerCommandSource> context, String name) {
-		return context.getArgument(name, EntityAnchorArgumentType.EntityAnchor.class);
+	public static EntityAnchorArgumentType.EntityAnchor getEntityAnchor(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, EntityAnchorArgumentType.EntityAnchor.class);
 	}
 
 	public static EntityAnchorArgumentType entityAnchor() {
@@ -49,7 +49,7 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return CommandSource.suggestMatching(EntityAnchorArgumentType.EntityAnchor.ANCHORS.keySet(), builder);
+		return CommandSource.suggestMatching(EntityAnchorArgumentType.EntityAnchor.anchors.keySet(), builder);
 	}
 
 	@Override
@@ -58,13 +58,13 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 	}
 
 	public static enum EntityAnchor {
-		FEET("feet", (pos, entity) -> pos),
-		EYES("eyes", (pos, entity) -> new Vec3d(pos.x, pos.y + (double)entity.getStandingEyeHeight(), pos.z));
+		FEET("feet", (vec3d, entity) -> vec3d),
+		EYES("eyes", (vec3d, entity) -> new Vec3d(vec3d.x, vec3d.y + (double)entity.getStandingEyeHeight(), vec3d.z));
 
-		static final Map<String, EntityAnchorArgumentType.EntityAnchor> ANCHORS = Util.make(
-			Maps.<String, EntityAnchorArgumentType.EntityAnchor>newHashMap(), map -> {
+		static final Map<String, EntityAnchorArgumentType.EntityAnchor> anchors = Util.make(
+			Maps.<String, EntityAnchorArgumentType.EntityAnchor>newHashMap(), hashMap -> {
 				for (EntityAnchorArgumentType.EntityAnchor entityAnchor : values()) {
-					map.put(entityAnchor.id, entityAnchor);
+					hashMap.put(entityAnchor.id, entityAnchor);
 				}
 			}
 		);
@@ -78,16 +78,16 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 
 		@Nullable
 		public static EntityAnchorArgumentType.EntityAnchor fromId(String id) {
-			return (EntityAnchorArgumentType.EntityAnchor)ANCHORS.get(id);
+			return (EntityAnchorArgumentType.EntityAnchor)anchors.get(id);
 		}
 
 		public Vec3d positionAt(Entity entity) {
 			return (Vec3d)this.offset.apply(entity.getPos(), entity);
 		}
 
-		public Vec3d positionAt(ServerCommandSource source) {
-			Entity entity = source.getEntity();
-			return entity == null ? source.getPosition() : (Vec3d)this.offset.apply(source.getPosition(), entity);
+		public Vec3d positionAt(ServerCommandSource serverCommandSource) {
+			Entity entity = serverCommandSource.getEntity();
+			return entity == null ? serverCommandSource.getPosition() : (Vec3d)this.offset.apply(serverCommandSource.getPosition(), entity);
 		}
 	}
 }

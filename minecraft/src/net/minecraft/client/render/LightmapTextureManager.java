@@ -52,7 +52,7 @@ public class LightmapTextureManager implements AutoCloseable {
 
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < 16; j++) {
-				this.image.setColor(j, i, -1);
+				this.image.setPixelColor(j, i, -1);
 			}
 		}
 
@@ -117,7 +117,7 @@ public class LightmapTextureManager implements AutoCloseable {
 						float p = n * ((n * 0.6F + 0.4F) * 0.6F + 0.4F);
 						float q = n * (n * n * 0.6F + 0.4F);
 						vec3f2.set(n, p, q);
-						if (clientWorld.getDimensionEffects().shouldBrightenLighting()) {
+						if (clientWorld.getSkyProperties().shouldBrightenLighting()) {
 							vec3f2.lerp(new Vec3f(0.99F, 1.12F, 1.0F), 0.25F);
 						} else {
 							Vec3f vec3f3 = vec3f.copy();
@@ -154,7 +154,7 @@ public class LightmapTextureManager implements AutoCloseable {
 						int u = (int)vec3f2.getX();
 						int v = (int)vec3f2.getY();
 						int w = (int)vec3f2.getZ();
-						this.image.setColor(l, k, 0xFF000000 | w << 16 | v << 8 | u);
+						this.image.setPixelColor(l, k, 0xFF000000 | w << 16 | v << 8 | u);
 					}
 				}
 
@@ -189,10 +189,10 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public static int getBlockLightCoordinates(int light) {
-		return light >> 4 & (MAX_BLOCK_LIGHT_COORDINATE | 65295);
+		return light >> 4 & 65535;
 	}
 
 	public static int getSkyLightCoordinates(int light) {
-		return light >> 20 & (MAX_BLOCK_LIGHT_COORDINATE | 65295);
+		return light >> 20 & 65535;
 	}
 }

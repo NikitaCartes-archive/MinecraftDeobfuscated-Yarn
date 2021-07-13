@@ -10,7 +10,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class AzaleaBlock extends PlantBlock implements Fertilizable {
-	private static final AzaleaSaplingGenerator GENERATOR = new AzaleaSaplingGenerator();
+	private static final AzaleaSaplingGenerator generator = new AzaleaSaplingGenerator();
 	private static final VoxelShape SHAPE = VoxelShapes.union(
 		Block.createCuboidShape(0.0, 8.0, 0.0, 16.0, 16.0, 16.0), Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 8.0, 10.0)
 	);
@@ -41,6 +41,6 @@ public class AzaleaBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		GENERATOR.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
+		generator.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
 	}
 }

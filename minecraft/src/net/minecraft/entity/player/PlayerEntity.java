@@ -1370,7 +1370,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 
 			return optional;
-		} else if (block instanceof BedBlock && BedBlock.isBedWorking(world)) {
+		} else if (block instanceof BedBlock && BedBlock.isOverworld(world)) {
 			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, f);
 		} else if (!bl) {
 			return Optional.empty();

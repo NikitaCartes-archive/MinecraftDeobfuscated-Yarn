@@ -414,7 +414,6 @@ public abstract class Option {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			if (minecraftClient.getWindow() != null) {
 				minecraftClient.initFont(forceUnicodeFont);
-				minecraftClient.onResolutionChanged();
 			}
 		}
 	);

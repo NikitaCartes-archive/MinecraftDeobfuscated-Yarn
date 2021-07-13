@@ -16,7 +16,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.control.LookControl;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -593,7 +593,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
-	class SearchForPlayerGoal extends ActiveTargetGoal<PlayerEntity> {
+	class SearchForPlayerGoal extends FollowTargetGoal<PlayerEntity> {
 		public SearchForPlayerGoal(ShulkerEntity shulker) {
 			super(shulker, PlayerEntity.class, true);
 		}
@@ -616,7 +616,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
-	static class SearchForTargetGoal extends ActiveTargetGoal<LivingEntity> {
+	static class SearchForTargetGoal extends FollowTargetGoal<LivingEntity> {
 		public SearchForTargetGoal(ShulkerEntity shulker) {
 			super(shulker, LivingEntity.class, 10, true, false, entity -> entity instanceof Monster);
 		}

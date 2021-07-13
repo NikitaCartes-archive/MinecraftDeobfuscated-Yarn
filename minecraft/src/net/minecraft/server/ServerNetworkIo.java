@@ -181,6 +181,10 @@ public class ServerNetworkIo {
 		return this.server;
 	}
 
+	public List<ClientConnection> method_37482() {
+		return this.connections;
+	}
+
 	/**
 	 * A channel in-bound handler that only forwards received messages to the next
 	 * channel in-bound handler in the channel pipeline after a random delay between

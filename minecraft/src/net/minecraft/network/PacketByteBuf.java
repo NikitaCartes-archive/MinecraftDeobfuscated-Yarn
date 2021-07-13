@@ -260,16 +260,6 @@ public class PacketByteBuf extends ByteBuf {
 		this.writeNbt((NbtCompound)dataResult.result().get());
 	}
 
-	public static <T> IntFunction<T> getMaxValidator(IntFunction<T> applier, int max) {
-		return value -> {
-			if (value > max) {
-				throw new DecoderException("Value " + value + " is larger than limit " + max);
-			} else {
-				return applier.apply(value);
-			}
-		};
-	}
-
 	/**
 	 * Reads a collection from this buf. The collection is stored as a leading
 	 * {@linkplain #readVarInt() var int} size followed by the entries

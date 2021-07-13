@@ -273,10 +273,6 @@ public abstract class ScreenHandler {
 	}
 
 	public void setPreviousTrackedSlot(int slot, ItemStack stack) {
-		this.previousTrackedStacks.set(slot, stack.copy());
-	}
-
-	public void setPreviousTrackedSlotMutable(int slot, ItemStack stack) {
 		this.previousTrackedStacks.set(slot, stack);
 	}
 

@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Arrays;
+import net.minecraft.class_4298;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -161,25 +162,10 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 					l = ChunkSectionPos.offset(l, Direction.UP);
 				}
 
-				return copy(chunkNibbleArray2);
+				return new ChunkNibbleArray(new class_4298(chunkNibbleArray2, 0).asByteArray());
 			} else {
 				return new ChunkNibbleArray();
 			}
-		}
-	}
-
-	private static ChunkNibbleArray copy(ChunkNibbleArray source) {
-		if (source.isUninitialized()) {
-			return new ChunkNibbleArray();
-		} else {
-			byte[] bs = source.asByteArray();
-			byte[] cs = new byte[2048];
-
-			for (int i = 0; i < 16; i++) {
-				System.arraycopy(bs, 0, cs, i * 128, 128);
-			}
-
-			return new ChunkNibbleArray(cs);
 		}
 	}
 

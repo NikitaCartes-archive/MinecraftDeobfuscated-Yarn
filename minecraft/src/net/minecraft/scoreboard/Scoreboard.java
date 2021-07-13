@@ -174,7 +174,6 @@ public class Scoreboard {
 		return this.objectiveSlots[slot];
 	}
 
-	@Nullable
 	public Team getTeam(String name) {
 		return (Team)this.teams.get(name);
 	}

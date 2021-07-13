@@ -1,6 +1,7 @@
 package net.minecraft.server.network;
 
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
@@ -50,15 +51,19 @@ public class SpawnLocating {
 
 	@Nullable
 	public static BlockPos findServerSpawnPoint(ServerWorld world, ChunkPos chunkPos, boolean validSpawnNeeded) {
-		for (int i = chunkPos.getStartX(); i <= chunkPos.getEndX(); i++) {
-			for (int j = chunkPos.getStartZ(); j <= chunkPos.getEndZ(); j++) {
-				BlockPos blockPos = findOverworldSpawn(world, i, j, validSpawnNeeded);
-				if (blockPos != null) {
-					return blockPos;
+		if (SharedConstants.method_37481(chunkPos.getStartX(), chunkPos.getStartZ())) {
+			return null;
+		} else {
+			for (int i = chunkPos.getStartX(); i <= chunkPos.getEndX(); i++) {
+				for (int j = chunkPos.getStartZ(); j <= chunkPos.getEndZ(); j++) {
+					BlockPos blockPos = findOverworldSpawn(world, i, j, validSpawnNeeded);
+					if (blockPos != null) {
+						return blockPos;
+					}
 				}
 			}
-		}
 
-		return null;
+			return null;
+		}
 	}
 }

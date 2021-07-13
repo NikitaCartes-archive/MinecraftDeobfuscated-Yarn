@@ -38,27 +38,10 @@ import org.lwjgl.system.MemoryUtil;
 @Environment(EnvType.CLIENT)
 public final class NativeImage implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	/**
-	 * The bit offset of the alpha data in the {@linkplain Format#RGBA RGBA} format.
-	 * Is {@value}. Notice the alpha data in {@linkplain Format#LUMINANCE_ALPHA
-	 * luminance-alpha} format has a different offset of {@code 8}.
-	 */
-	private static final int ALPHA_OFFSET = 24;
-	/**
-	 * The bit offset of the blue data in the {@linkplain Format#RGBA RGBA} or the
-	 * {@linkplain Format#RGB RGB} formats. Is {@value}.
-	 */
-	private static final int BLUE_OFFSET = 16;
-	/**
-	 * The bit offset of the green data in the {@linkplain Format#RGBA RGBA} or the
-	 * {@linkplain Format#RGB RGB} formats. Is {@value}.
-	 */
-	private static final int GREEN_OFFSET = 8;
-	/**
-	 * The bit offset of the red data in the {@linkplain Format#RGBA RGBA} or the
-	 * {@linkplain Format#RGB RGB} formats. Is {@value}.
-	 */
-	private static final int RED_OFFSET = 0;
+	private static final int field_32031 = 24;
+	private static final int field_32032 = 16;
+	private static final int field_32033 = 8;
+	private static final int field_32034 = 0;
 	private static final Set<StandardOpenOption> WRITE_TO_FILE_OPEN_OPTIONS = EnumSet.of(
 		StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
 	);
@@ -70,7 +53,7 @@ public final class NativeImage implements AutoCloseable {
 	private final long sizeBytes;
 
 	public NativeImage(int width, int height, boolean useStb) {
-		this(NativeImage.Format.RGBA, width, height, useStb);
+		this(NativeImage.Format.ABGR, width, height, useStb);
 	}
 
 	public NativeImage(NativeImage.Format format, int width, int height, boolean useStb) {
@@ -111,34 +94,34 @@ public final class NativeImage implements AutoCloseable {
 		return x < 0 || x >= this.width || y < 0 || y >= this.height;
 	}
 
-	public static NativeImage read(InputStream stream) throws IOException {
-		return read(NativeImage.Format.RGBA, stream);
+	public static NativeImage read(InputStream inputStream) throws IOException {
+		return read(NativeImage.Format.ABGR, inputStream);
 	}
 
-	public static NativeImage read(@Nullable NativeImage.Format format, InputStream stream) throws IOException {
+	public static NativeImage read(@Nullable NativeImage.Format format, InputStream inputStream) throws IOException {
 		ByteBuffer byteBuffer = null;
 
 		NativeImage var3;
 		try {
-			byteBuffer = TextureUtil.readResource(stream);
+			byteBuffer = TextureUtil.readResource(inputStream);
 			byteBuffer.rewind();
 			var3 = read(format, byteBuffer);
 		} finally {
 			MemoryUtil.memFree(byteBuffer);
-			IOUtils.closeQuietly(stream);
+			IOUtils.closeQuietly(inputStream);
 		}
 
 		return var3;
 	}
 
-	public static NativeImage read(ByteBuffer buffer) throws IOException {
-		return read(NativeImage.Format.RGBA, buffer);
+	public static NativeImage read(ByteBuffer byteBuffer) throws IOException {
+		return read(NativeImage.Format.ABGR, byteBuffer);
 	}
 
-	public static NativeImage read(@Nullable NativeImage.Format format, ByteBuffer buffer) throws IOException {
+	public static NativeImage read(@Nullable NativeImage.Format format, ByteBuffer byteBuffer) throws IOException {
 		if (format != null && !format.isWriteable()) {
 			throw new UnsupportedOperationException("Don't know how to read format " + format);
-		} else if (MemoryUtil.memAddress(buffer) == 0L) {
+		} else if (MemoryUtil.memAddress(byteBuffer) == 0L) {
 			throw new IllegalArgumentException("Invalid buffer");
 		} else {
 			NativeImage var7;
@@ -146,13 +129,13 @@ public final class NativeImage implements AutoCloseable {
 				IntBuffer intBuffer = memoryStack.mallocInt(1);
 				IntBuffer intBuffer2 = memoryStack.mallocInt(1);
 				IntBuffer intBuffer3 = memoryStack.mallocInt(1);
-				ByteBuffer byteBuffer = STBImage.stbi_load_from_memory(buffer, intBuffer, intBuffer2, intBuffer3, format == null ? 0 : format.channelCount);
-				if (byteBuffer == null) {
+				ByteBuffer byteBuffer2 = STBImage.stbi_load_from_memory(byteBuffer, intBuffer, intBuffer2, intBuffer3, format == null ? 0 : format.channelCount);
+				if (byteBuffer2 == null) {
 					throw new IOException("Could not load image: " + STBImage.stbi_failure_reason());
 				}
 
 				var7 = new NativeImage(
-					format == null ? NativeImage.Format.fromGl(intBuffer3.get(0)) : format, intBuffer.get(0), intBuffer2.get(0), true, MemoryUtil.memAddress(byteBuffer)
+					format == null ? NativeImage.Format.getFormat(intBuffer3.get(0)) : format, intBuffer.get(0), intBuffer2.get(0), true, MemoryUtil.memAddress(byteBuffer2)
 				);
 			}
 
@@ -203,15 +186,12 @@ public final class NativeImage implements AutoCloseable {
 
 	/**
 	 * Gets the color of a pixel on this native image.
-	 * The color returned by this method will be in a big-endian (from biggest
-	 * to smallest bits) ABGR format, or little-endian RGBA.
+	 * The color returned by this method will be in a ABGR format.
 	 * 
-	 * @throws IllegalArgumentException when this native image's format is not
-	 * {@linkplain Format#RGBA little-endian RGBA}, or the coordinate is out-of-bounds
-	 * @return the color, with red at smallest and alpha at biggest bits
+	 * <p>This is only supported when this native image's format is {@link NativeImage.Format#ABGR ABGR}.
 	 */
-	public int getColor(int x, int y) {
-		if (this.format != NativeImage.Format.RGBA) {
+	public int getPixelColor(int x, int y) {
+		if (this.format != NativeImage.Format.ABGR) {
 			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (this.isOutOfBounds(x, y)) {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
@@ -224,16 +204,12 @@ public final class NativeImage implements AutoCloseable {
 
 	/**
 	 * Sets the color of a pixel on this native image.
-	 * The color to be set by this method will be in a big-endian (from biggest
-	 * to smallest bits) ABGR format, or little-endian RGBA.
+	 * The color to be set using this method should be in a ABGR format.
 	 * 
-	 * @throws IllegalArgumentException when this native image's format is not
-	 * {@linkplain Format#RGBA little-endian RGBA}, or the coordinate is out-of-bounds
-	 * 
-	 * @param color the color, with red at smallest and alpha at biggest bits
+	 * <p>This is only supported when this native image's format is {@link NativeImage.Format#ABGR ABGR}
 	 */
-	public void setColor(int x, int y, int color) {
-		if (this.format != NativeImage.Format.RGBA) {
+	public void setPixelColor(int x, int y, int color) {
+		if (this.format != NativeImage.Format.ABGR) {
 			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (this.isOutOfBounds(x, y)) {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
@@ -244,7 +220,7 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void setLuminance(int x, int y, byte luminance) {
+	public void setPixelLuminance(int x, int y, byte luminance) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		if (!this.format.hasLuminance()) {
 			throw new IllegalArgumentException(String.format("setPixelLuminance only works on image with luminance; have %s", this.format));
@@ -252,7 +228,7 @@ public final class NativeImage implements AutoCloseable {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
 			this.checkAllocated();
-			long l = ((long)x + (long)y * (long)this.width) * (long)this.format.getChannelCount() + (long)(this.format.getLuminanceOffset() / 8);
+			long l = ((long)x + (long)y * (long)this.width) * (long)this.format.getChannelCount() + (long)(this.format.getLuminanceChannelOffset() / 8);
 			MemoryUtil.memPutByte(this.pointer + l, luminance);
 		}
 	}
@@ -264,7 +240,7 @@ public final class NativeImage implements AutoCloseable {
 		} else if (this.isOutOfBounds(x, y)) {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
-			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getRedChannelOffset() / 8;
+			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getRedOrLuminanceOffset() / 8;
 			return MemoryUtil.memGetByte(this.pointer + (long)i);
 		}
 	}
@@ -276,7 +252,7 @@ public final class NativeImage implements AutoCloseable {
 		} else if (this.isOutOfBounds(x, y)) {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
-			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getGreenChannelOffset() / 8;
+			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getGreenOrLuminanceOffset() / 8;
 			return MemoryUtil.memGetByte(this.pointer + (long)i);
 		}
 	}
@@ -288,27 +264,27 @@ public final class NativeImage implements AutoCloseable {
 		} else if (this.isOutOfBounds(x, y)) {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
-			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getBlueChannelOffset() / 8;
+			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getBlueOrLuminanceOffset() / 8;
 			return MemoryUtil.memGetByte(this.pointer + (long)i);
 		}
 	}
 
-	public byte getOpacity(int x, int y) {
+	public byte getPixelOpacity(int x, int y) {
 		if (!this.format.hasOpacityChannel()) {
 			throw new IllegalArgumentException(String.format("no luminance or alpha in %s", this.format));
 		} else if (this.isOutOfBounds(x, y)) {
 			throw new IllegalArgumentException(String.format("(%s, %s) outside of image bounds (%s, %s)", x, y, this.width, this.height));
 		} else {
-			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getOpacityChannelOffset() / 8;
+			int i = (x + y * this.width) * this.format.getChannelCount() + this.format.getOpacityOffset() / 8;
 			return MemoryUtil.memGetByte(this.pointer + (long)i);
 		}
 	}
 
-	public void blend(int x, int y, int color) {
-		if (this.format != NativeImage.Format.RGBA) {
+	public void blendPixel(int x, int y, int color) {
+		if (this.format != NativeImage.Format.ABGR) {
 			throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
 		} else {
-			int i = this.getColor(x, y);
+			int i = this.getPixelColor(x, y);
 			float f = (float)getAlpha(color) / 255.0F;
 			float g = (float)getBlue(color) / 255.0F;
 			float h = (float)getGreen(color) / 255.0F;
@@ -342,13 +318,13 @@ public final class NativeImage implements AutoCloseable {
 			int v = (int)(r * 255.0F);
 			int w = (int)(s * 255.0F);
 			int z = (int)(t * 255.0F);
-			this.setColor(x, y, packColor(u, v, w, z));
+			this.setPixelColor(x, y, getAbgrColor(u, v, w, z));
 		}
 	}
 
 	@Deprecated
 	public int[] makePixelArray() {
-		if (this.format != NativeImage.Format.RGBA) {
+		if (this.format != NativeImage.Format.ABGR) {
 			throw new UnsupportedOperationException("can only call makePixelArray for RGBA images.");
 		} else {
 			this.checkAllocated();
@@ -356,7 +332,7 @@ public final class NativeImage implements AutoCloseable {
 
 			for (int i = 0; i < this.getHeight(); i++) {
 				for (int j = 0; j < this.getWidth(); j++) {
-					int k = this.getColor(j, i);
+					int k = this.getPixelColor(j, i);
 					int l = getAlpha(k);
 					int m = getBlue(k);
 					int n = getGreen(k);
@@ -425,7 +401,7 @@ public final class NativeImage implements AutoCloseable {
 		GlStateManager._pixelStore(3316, unpackSkipPixels);
 		GlStateManager._pixelStore(3315, unpackSkipRows);
 		this.format.setUnpackAlignment();
-		GlStateManager._texSubImage2D(3553, level, offsetX, offsetY, width, height, this.format.toGl(), 5121, this.pointer);
+		GlStateManager._texSubImage2D(3553, level, offsetX, offsetY, width, height, this.format.getPixelDataFormat(), 5121, this.pointer);
 		if (clamp) {
 			GlStateManager._texParameter(3553, 10242, 33071);
 			GlStateManager._texParameter(3553, 10243, 33071);
@@ -440,17 +416,17 @@ public final class NativeImage implements AutoCloseable {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		this.checkAllocated();
 		this.format.setPackAlignment();
-		GlStateManager._getTexImage(3553, level, this.format.toGl(), 5121, this.pointer);
-		if (removeAlpha && this.format.hasAlpha()) {
+		GlStateManager._getTexImage(3553, level, this.format.getPixelDataFormat(), 5121, this.pointer);
+		if (removeAlpha && this.format.hasAlphaChannel()) {
 			for (int i = 0; i < this.getHeight(); i++) {
 				for (int j = 0; j < this.getWidth(); j++) {
-					this.setColor(j, i, this.getColor(j, i) | 255 << this.format.getAlphaOffset());
+					this.setPixelColor(j, i, this.getPixelColor(j, i) | 255 << this.format.getAlphaChannelOffset());
 				}
 			}
 		}
 	}
 
-	public void readDepthComponent(float unused) {
+	public void method_35620(float f) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		if (this.format.getChannelCount() != 1) {
 			throw new IllegalStateException("Depth buffer must be stored in NativeImage with 1 component.");
@@ -461,22 +437,18 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	/**
-	 * Use {@code upload} to upload this image to GL so it can be used later. This
-	 * method is not used in vanilla, and its side effects are not yet known.
-	 */
-	public void drawPixels() {
+	public void method_35627() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		this.format.setUnpackAlignment();
-		GlStateManager._glDrawPixels(this.width, this.height, this.format.toGl(), 5121, this.pointer);
+		GlStateManager._glDrawPixels(this.width, this.height, this.format.getPixelDataFormat(), 5121, this.pointer);
 	}
 
-	public void writeTo(String path) throws IOException {
-		this.writeTo(FileSystems.getDefault().getPath(path));
+	public void method_35622(String string) throws IOException {
+		this.writeFile(FileSystems.getDefault().getPath(string));
 	}
 
-	public void writeTo(File path) throws IOException {
-		this.writeTo(path.toPath());
+	public void writeFile(File file) throws IOException {
+		this.writeFile(file.toPath());
 	}
 
 	public void makeGlyphBitmapSubpixel(
@@ -504,7 +476,7 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void writeTo(Path path) throws IOException {
+	public void writeFile(Path path) throws IOException {
 		if (!this.format.isWriteable()) {
 			throw new UnsupportedOperationException("Don't know how to write format " + this.format);
 		} else {
@@ -575,8 +547,8 @@ public final class NativeImage implements AutoCloseable {
 		return var3;
 	}
 
-	private boolean write(WritableByteChannel channel) throws IOException {
-		NativeImage.WriteCallback writeCallback = new NativeImage.WriteCallback(channel);
+	private boolean write(WritableByteChannel writableByteChannel) throws IOException {
+		NativeImage.WriteCallback writeCallback = new NativeImage.WriteCallback(writableByteChannel);
 
 		boolean var4;
 		try {
@@ -623,7 +595,7 @@ public final class NativeImage implements AutoCloseable {
 	public void fillRect(int x, int y, int width, int height, int color) {
 		for (int i = y; i < y + height; i++) {
 			for (int j = x; j < x + width; j++) {
-				this.setColor(j, i, color);
+				this.setPixelColor(j, i, color);
 			}
 		}
 	}
@@ -633,8 +605,8 @@ public final class NativeImage implements AutoCloseable {
 			for (int j = 0; j < width; j++) {
 				int k = flipX ? width - 1 - j : j;
 				int l = flipY ? height - 1 - i : i;
-				int m = this.getColor(x + j, y + i);
-				this.setColor(x + translateX + k, y + translateY + l, m);
+				int m = this.getPixelColor(x + j, y + i);
+				this.setPixelColor(x + translateX + k, y + translateY + l, m);
 			}
 		}
 	}
@@ -712,34 +684,21 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	/**
-	 * The resulting color of this operation is stored as RGBA from least to most
-	 * significant bits, or from smallest to biggest bits.
+	 * The resulting color of this operation is stored as least to most significant bits.
 	 */
-	public static int packColor(int alpha, int blue, int green, int red) {
+	public static int getAbgrColor(int alpha, int blue, int green, int red) {
 		return (alpha & 0xFF) << 24 | (blue & 0xFF) << 16 | (green & 0xFF) << 8 | (red & 0xFF) << 0;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Format {
-		/**
-		 * The format stores RGBA in little endian order, so it's ABGR from the biggest to
-		 * the smallest bits.
-		 */
-		RGBA(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
-		/**
-		 * The format stores RGB in little endian order, so it's BGR from the biggest to
-		 * the smallest bits.
-		 */
-		RGB(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
-		/**
-		 * The format stores luminance and alpha in little endian order, so it's alpha then
-		 * luminance from the biggest to the smallest bits.
-		 */
+		ABGR(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
+		BGR(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
 		LUMINANCE_ALPHA(2, 33319, false, false, false, true, true, 255, 255, 255, 0, 8, true),
 		LUMINANCE(1, 6403, false, false, false, true, false, 0, 0, 0, 0, 255, true);
 
 		final int channelCount;
-		private final int glFormat;
+		private final int pixelDataFormat;
 		private final boolean hasRed;
 		private final boolean hasGreen;
 		private final boolean hasBlue;
@@ -748,12 +707,12 @@ public final class NativeImage implements AutoCloseable {
 		private final int redOffset;
 		private final int greenOffset;
 		private final int blueOffset;
-		private final int luminanceOffset;
-		private final int alphaOffset;
+		private final int luminanceChannelOffset;
+		private final int alphaChannelOffset;
 		private final boolean writeable;
 
 		private Format(
-			int channelCount,
+			int channels,
 			int glFormat,
 			boolean hasRed,
 			boolean hasGreen,
@@ -767,8 +726,8 @@ public final class NativeImage implements AutoCloseable {
 			int alphaOffset,
 			boolean writeable
 		) {
-			this.channelCount = channelCount;
-			this.glFormat = glFormat;
+			this.channelCount = channels;
+			this.pixelDataFormat = glFormat;
 			this.hasRed = hasRed;
 			this.hasGreen = hasGreen;
 			this.hasBlue = hasBlue;
@@ -777,8 +736,8 @@ public final class NativeImage implements AutoCloseable {
 			this.redOffset = redOffset;
 			this.greenOffset = greenOffset;
 			this.blueOffset = blueOffset;
-			this.luminanceOffset = luminanceOffset;
-			this.alphaOffset = alphaOffset;
+			this.luminanceChannelOffset = luminanceOffset;
+			this.alphaChannelOffset = alphaOffset;
 			this.writeable = writeable;
 		}
 
@@ -796,8 +755,8 @@ public final class NativeImage implements AutoCloseable {
 			GlStateManager._pixelStore(3317, this.getChannelCount());
 		}
 
-		public int toGl() {
-			return this.glFormat;
+		public int getPixelDataFormat() {
+			return this.pixelDataFormat;
 		}
 
 		public boolean hasRed() {
@@ -816,7 +775,7 @@ public final class NativeImage implements AutoCloseable {
 			return this.hasLuminance;
 		}
 
-		public boolean hasAlpha() {
+		public boolean hasAlphaChannel() {
 			return this.hasAlpha;
 		}
 
@@ -832,12 +791,12 @@ public final class NativeImage implements AutoCloseable {
 			return this.blueOffset;
 		}
 
-		public int getLuminanceOffset() {
-			return this.luminanceOffset;
+		public int getLuminanceChannelOffset() {
+			return this.luminanceChannelOffset;
 		}
 
-		public int getAlphaOffset() {
-			return this.alphaOffset;
+		public int getAlphaChannelOffset() {
+			return this.alphaChannelOffset;
 		}
 
 		public boolean hasRedChannel() {
@@ -856,67 +815,56 @@ public final class NativeImage implements AutoCloseable {
 			return this.hasLuminance || this.hasAlpha;
 		}
 
-		public int getRedChannelOffset() {
-			return this.hasLuminance ? this.luminanceOffset : this.redOffset;
+		public int getRedOrLuminanceOffset() {
+			return this.hasLuminance ? this.luminanceChannelOffset : this.redOffset;
 		}
 
-		public int getGreenChannelOffset() {
-			return this.hasLuminance ? this.luminanceOffset : this.greenOffset;
+		public int getGreenOrLuminanceOffset() {
+			return this.hasLuminance ? this.luminanceChannelOffset : this.greenOffset;
 		}
 
-		public int getBlueChannelOffset() {
-			return this.hasLuminance ? this.luminanceOffset : this.blueOffset;
+		public int getBlueOrLuminanceOffset() {
+			return this.hasLuminance ? this.luminanceChannelOffset : this.blueOffset;
 		}
 
-		/**
-		 * @apiNote For luminance-alpha format, this would return the luminance offset
-		 * than the alpha offset.
-		 */
-		public int getOpacityChannelOffset() {
-			return this.hasLuminance ? this.luminanceOffset : this.alphaOffset;
+		public int getOpacityOffset() {
+			return this.hasLuminance ? this.luminanceChannelOffset : this.alphaChannelOffset;
 		}
 
 		public boolean isWriteable() {
 			return this.writeable;
 		}
 
-		static NativeImage.Format fromGl(int glFormat) {
+		static NativeImage.Format getFormat(int glFormat) {
 			switch (glFormat) {
 				case 1:
 					return LUMINANCE;
 				case 2:
 					return LUMINANCE_ALPHA;
 				case 3:
-					return RGB;
+					return BGR;
 				case 4:
 				default:
-					return RGBA;
+					return ABGR;
 			}
 		}
 	}
 
-	/**
-	 * Represents the internal formats sent to {@code glTexImage2D}, representing the
-	 * number of color channels present in an image to prepare.
-	 * 
-	 * @see <a href="http://docs.gl/gl4/glTexImage2D#idm2352">Base Internal Formats</a>
-	 * @see com.mojang.blaze3d.platform.TextureUtil#prepareImage(InternalFormat, int, int, int, int)
-	 */
 	@Environment(EnvType.CLIENT)
-	public static enum InternalFormat {
-		RGBA(6408),
-		RGB(6407),
+	public static enum GLFormat {
+		ABGR(6408),
+		BGR(6407),
 		RG(33319),
 		RED(6403);
 
-		private final int value;
+		private final int glConstant;
 
-		private InternalFormat(int value) {
-			this.value = value;
+		private GLFormat(int glConstant) {
+			this.glConstant = glConstant;
 		}
 
-		public int getValue() {
-			return this.value;
+		public int getGlConstant() {
+			return this.glConstant;
 		}
 	}
 
@@ -926,8 +874,8 @@ public final class NativeImage implements AutoCloseable {
 		@Nullable
 		private IOException exception;
 
-		WriteCallback(WritableByteChannel channel) {
-			this.channel = channel;
+		WriteCallback(WritableByteChannel writableByteChannel) {
+			this.channel = writableByteChannel;
 		}
 
 		@Override

@@ -20,7 +20,7 @@ public class TimeArgumentType implements ArgumentType<Integer> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("0d", "0s", "0t", "0");
 	private static final SimpleCommandExceptionType INVALID_UNIT_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.time.invalid_unit"));
 	private static final DynamicCommandExceptionType INVALID_COUNT_EXCEPTION = new DynamicCommandExceptionType(
-		time -> new TranslatableText("argument.time.invalid_tick_count", time)
+		object -> new TranslatableText("argument.time.invalid_tick_count", object)
 	);
 	private static final Object2IntMap<String> UNITS = new Object2IntOpenHashMap<>();
 

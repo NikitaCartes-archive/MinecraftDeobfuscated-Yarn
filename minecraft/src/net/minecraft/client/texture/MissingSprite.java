@@ -26,9 +26,9 @@ public final class MissingSprite extends Sprite {
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
 				if (k < 8 ^ l < 8) {
-					nativeImage.setColor(l, k, -524040);
+					nativeImage.setPixelColor(l, k, -524040);
 				} else {
-					nativeImage.setColor(l, k, -16777216);
+					nativeImage.setPixelColor(l, k, -16777216);
 				}
 			}
 		}

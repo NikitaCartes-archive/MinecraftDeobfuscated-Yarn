@@ -19,15 +19,13 @@ import net.minecraft.client.MinecraftClient;
 
 @Environment(EnvType.CLIENT)
 public class RealmsUtil {
-	private static final YggdrasilAuthenticationService AUTHENTICATION_SERVICE = new YggdrasilAuthenticationService(
-		MinecraftClient.getInstance().getNetworkProxy()
-	);
-	static final MinecraftSessionService SESSION_SERVICE = AUTHENTICATION_SERVICE.createMinecraftSessionService();
+	private static final YggdrasilAuthenticationService authenticationService = new YggdrasilAuthenticationService(MinecraftClient.getInstance().getNetworkProxy());
+	static final MinecraftSessionService sessionService = authenticationService.createMinecraftSessionService();
 	public static LoadingCache<String, GameProfile> gameProfileCache = CacheBuilder.newBuilder()
 		.expireAfterWrite(60L, TimeUnit.MINUTES)
 		.build(new CacheLoader<String, GameProfile>() {
 			public GameProfile load(String string) throws Exception {
-				GameProfile gameProfile = RealmsUtil.SESSION_SERVICE.fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(string), null), false);
+				GameProfile gameProfile = RealmsUtil.sessionService.fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(string), null), false);
 				if (gameProfile == null) {
 					throw new Exception("Couldn't get profile");
 				} else {
@@ -47,7 +45,7 @@ public class RealmsUtil {
 	public static Map<Type, MinecraftProfileTexture> getTextures(String uuid) {
 		try {
 			GameProfile gameProfile = gameProfileCache.get(uuid);
-			return SESSION_SERVICE.getTextures(gameProfile, false);
+			return sessionService.getTextures(gameProfile, false);
 		} catch (Exception var2) {
 			return Maps.<Type, MinecraftProfileTexture>newHashMap();
 		}

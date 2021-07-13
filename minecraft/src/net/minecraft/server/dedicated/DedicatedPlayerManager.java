@@ -126,6 +126,6 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	@Override
 	public boolean canBypassPlayerLimit(GameProfile profile) {
-		return this.getOpList().canBypassPlayerLimit(profile);
+		return this.getOpList().isOp(profile);
 	}
 }

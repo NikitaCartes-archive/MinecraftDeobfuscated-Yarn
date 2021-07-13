@@ -4,10 +4,9 @@ import javax.annotation.Nullable;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 
-public final class ChunkNibbleArray {
-	public static final int COPY_TIMES = 16;
-	public static final int COPY_BLOCK_SIZE = 128;
+public class ChunkNibbleArray {
 	public static final int BYTES_LENGTH = 2048;
+	public static final int COPY_BLOCK_SIZE = 128;
 	private static final int field_31405 = 4;
 	@Nullable
 	protected byte[] bytes;
@@ -18,7 +17,7 @@ public final class ChunkNibbleArray {
 	public ChunkNibbleArray(byte[] bytes) {
 		this.bytes = bytes;
 		if (bytes.length != 2048) {
-			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException("DataLayer should be 2048 bytes not: " + bytes.length));
+			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException("ChunkNibbleArrays should be 2048 bytes not: " + bytes.length));
 		}
 	}
 
@@ -27,24 +26,23 @@ public final class ChunkNibbleArray {
 	}
 
 	public int get(int x, int y, int z) {
-		return this.get(getIndex(x, y, z));
+		return this.get(this.getIndex(x, y, z));
 	}
 
 	public void set(int x, int y, int z, int value) {
-		this.set(getIndex(x, y, z), value);
+		this.set(this.getIndex(x, y, z), value);
 	}
 
-	private static int getIndex(int i, int x, int y) {
-		return x << 8 | y << 4 | i;
+	protected int getIndex(int x, int y, int z) {
+		return y << 8 | z << 4 | x;
 	}
 
 	private int get(int index) {
 		if (this.bytes == null) {
 			return 0;
 		} else {
-			int i = divideByTwo(index);
-			int j = isOdd(index);
-			return this.bytes[i] >> 4 * j & 15;
+			int i = this.divideByTwo(index);
+			return this.method_12143(index) ? this.bytes[i] & 15 : this.bytes[i] >> 4 & 15;
 		}
 	}
 
@@ -53,19 +51,20 @@ public final class ChunkNibbleArray {
 			this.bytes = new byte[2048];
 		}
 
-		int i = divideByTwo(index);
-		int j = isOdd(index);
-		int k = ~(15 << 4 * j);
-		int l = (value & 15) << 4 * j;
-		this.bytes[i] = (byte)(this.bytes[i] & k | l);
+		int i = this.divideByTwo(index);
+		if (this.method_12143(index)) {
+			this.bytes[i] = (byte)(this.bytes[i] & 240 | value & 15);
+		} else {
+			this.bytes[i] = (byte)(this.bytes[i] & 15 | (value & 15) << 4);
+		}
 	}
 
-	private static int isOdd(int i) {
-		return i & 1;
+	private boolean method_12143(int i) {
+		return (i & 1) == 0;
 	}
 
-	private static int divideByTwo(int i) {
-		return i >> 1;
+	private int divideByTwo(int n) {
+		return n >> 1;
 	}
 
 	public byte[] asByteArray() {

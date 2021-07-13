@@ -6,7 +6,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
@@ -91,57 +90,26 @@ public class NoiseColumnSampler {
 				e = 1.0;
 			}
 		} else {
-			float f = 0.0F;
-			float g = 0.0F;
-			float h = 0.0F;
-			int i = 2;
-			int j = seaLevel;
-			float k = this.biomeSource.getBiomeForNoiseGen(x, seaLevel, z).getDepth();
-
-			for (int l = -2; l <= 2; l++) {
-				for (int m = -2; m <= 2; m++) {
-					Biome biome = this.biomeSource.getBiomeForNoiseGen(x + l, j, z + m);
-					float n = biome.getDepth();
-					float o = biome.getScale();
-					float p;
-					float q;
-					if (config.isAmplified() && n > 0.0F) {
-						p = 1.0F + n * 2.0F;
-						q = 1.0F + o * 4.0F;
-					} else {
-						p = n;
-						q = o;
-					}
-
-					float r = n > k ? 0.5F : 1.0F;
-					float s = r * BIOME_WEIGHT_TABLE[l + 2 + (m + 2) * 5] / (p + 2.0F);
-					f += q * s;
-					g += p * s;
-					h += s;
-				}
-			}
-
-			float t = g / h;
-			float u = f / h;
-			double v = (double)(t * 0.5F - 0.125F);
-			double w = (double)(u * 0.9F + 0.1F);
-			d = v * 0.265625;
-			e = 96.0 / w;
+			int i = x * this.horizontalNoiseResolution >> 2;
+			int j = z * this.horizontalNoiseResolution >> 2;
+			double[] ds = this.biomeSource.method_37612(i, j);
+			d = ds[0];
+			e = ds[1];
 		}
 
-		double y = 684.412 * config.getSampling().getXZScale();
-		double aa = 684.412 * config.getSampling().getYScale();
-		double ab = y / config.getSampling().getXZFactor();
-		double ac = aa / config.getSampling().getYFactor();
-		double v = config.hasRandomDensityOffset() ? this.getDensityNoise(x, z) : 0.0;
+		double f = 684.412 * config.getSampling().getXZScale();
+		double g = 684.412 * config.getSampling().getYScale();
+		double h = f / config.getSampling().getXZFactor();
+		double k = g / config.getSampling().getYFactor();
 
-		for (int ad = 0; ad <= noiseSizeY; ad++) {
-			int ae = ad + minY;
-			double af = this.noise.sample(x, ae, z, y, aa, ab, ac);
-			double ag = this.getOffset(ae, d, e, v) + af;
-			ag = this.field_33653.sample(ag, ae * this.verticalNoiseResolution, z * this.horizontalNoiseResolution, x * this.horizontalNoiseResolution);
-			ag = this.applySlides(ag, ae);
-			buffer[ad] = ag;
+		for (int l = 0; l <= noiseSizeY; l++) {
+			int m = l + minY;
+			double n = (double)(m * this.verticalNoiseResolution);
+			double o = this.noise.sample(x, m, z, f, g, h, k);
+			double p = this.getOffset(n, d, e, 0.0) + o;
+			p = this.field_33653.sample(p, x * this.horizontalNoiseResolution, m * this.verticalNoiseResolution, z * this.horizontalNoiseResolution);
+			p = this.applySlides(p, m);
+			buffer[l] = p;
 		}
 	}
 
@@ -149,11 +117,19 @@ public class NoiseColumnSampler {
 	 * Calculates an offset for the noise.
 	 * <p>For example in the overworld, this makes lower y values solid while making higher y values air.
 	 */
-	private double getOffset(int y, double depth, double scale, double randomDensityOffset) {
-		double d = 1.0 - (double)y * 2.0 / 32.0 + randomDensityOffset;
-		double e = d * this.densityFactor + this.densityOffset;
-		double f = (e + depth) * scale;
-		return f * (double)(f > 0.0 ? 4 : 1);
+	private double getOffset(double d, double e, double f, double g) {
+		double h = method_37765(this.densityFactor, this.densityOffset, d, g);
+		double i = (h + e) * f;
+		return i * (double)(i > 0.0 ? 4 : 1);
+	}
+
+	public static double method_37764(double d, double e, double f) {
+		return method_37765(d, e, f, 0.0);
+	}
+
+	public static double method_37765(double d, double e, double f, double g) {
+		double h = 1.0 - f / 128.0 + g;
+		return h * d + e;
 	}
 
 	/**
@@ -189,5 +165,43 @@ public class NoiseColumnSampler {
 
 		double f = e * 24.575625 - 2.0;
 		return f < 0.0 ? f * 0.009486607142857142 : Math.min(f, 1.0) * 0.006640625;
+	}
+
+	public int method_37766(int i, int j, int k) {
+		int l = Math.floorDiv(i, this.horizontalNoiseResolution);
+		int m = Math.floorDiv(k, this.horizontalNoiseResolution);
+		int n = MathHelper.floorDiv(this.config.getMinimumY(), this.verticalNoiseResolution);
+		int o = MathHelper.floorDiv(this.config.getHeight(), this.verticalNoiseResolution);
+		int p = 2;
+		int q = 1;
+		int r = Integer.MAX_VALUE;
+
+		for (int s = l - 2; s <= l + 2; s += 2) {
+			for (int t = m - 2; t <= m + 2; t += 2) {
+				int u = s * this.horizontalNoiseResolution >> 2;
+				int v = t * this.horizontalNoiseResolution >> 2;
+				double[] ds = this.biomeSource.method_37612(u, v);
+				double d = ds[0];
+				double e = ds[1];
+
+				for (int w = n; w <= n + o; w++) {
+					int x = w - n;
+					double f = (double)(w * this.verticalNoiseResolution);
+					double g = -90.0;
+					double h = this.getOffset(f, d, e, 0.0) + -90.0;
+					double y = this.applySlides(h, x);
+					if (this.method_37763(y)) {
+						r = Math.min(w * this.verticalNoiseResolution, r);
+						break;
+					}
+				}
+			}
+		}
+
+		return r;
+	}
+
+	private boolean method_37763(double d) {
+		return d < 50.0;
 	}
 }

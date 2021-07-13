@@ -140,7 +140,7 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		int j = (int)((double)NativeImage.getRed(i) * 0.4);
 		int k = (int)((double)NativeImage.getGreen(i) * 0.4);
 		int l = (int)((double)NativeImage.getBlue(i) * 0.4);
-		return i == DyeColor.BLACK.getSignColor() && sign.isGlowingText() ? -988212 : NativeImage.packColor(0, l, k, j);
+		return i == DyeColor.BLACK.getSignColor() && sign.isGlowingText() ? -988212 : NativeImage.getAbgrColor(0, l, k, j);
 	}
 
 	public static SignType getSignType(Block block) {

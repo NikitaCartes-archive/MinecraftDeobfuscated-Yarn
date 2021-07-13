@@ -38,29 +38,29 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		nbt.putInt("HPos", this.hPos);
 	}
 
-	protected boolean adjustToAverageHeight(WorldAccess world, BlockBox boundingBox, int deltaY) {
+	protected boolean method_14839(WorldAccess world, BlockBox boundingBox, int i) {
 		if (this.hPos >= 0) {
 			return true;
 		} else {
-			int i = 0;
 			int j = 0;
+			int k = 0;
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (int k = this.boundingBox.getMinZ(); k <= this.boundingBox.getMaxZ(); k++) {
-				for (int l = this.boundingBox.getMinX(); l <= this.boundingBox.getMaxX(); l++) {
-					mutable.set(l, 64, k);
+			for (int l = this.boundingBox.getMinZ(); l <= this.boundingBox.getMaxZ(); l++) {
+				for (int m = this.boundingBox.getMinX(); m <= this.boundingBox.getMaxX(); m++) {
+					mutable.set(m, 64, l);
 					if (boundingBox.contains(mutable)) {
-						i += world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
-						j++;
+						j += world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
+						k++;
 					}
 				}
 			}
 
-			if (j == 0) {
+			if (k == 0) {
 				return false;
 			} else {
-				this.hPos = i / j;
-				this.boundingBox.move(0, this.hPos - this.boundingBox.getMinY() + deltaY, 0);
+				this.hPos = j / k;
+				this.boundingBox.move(0, this.hPos - this.boundingBox.getMinY() + i, 0);
 				return true;
 			}
 		}

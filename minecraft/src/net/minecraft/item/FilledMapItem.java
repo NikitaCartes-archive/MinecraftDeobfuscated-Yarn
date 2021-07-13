@@ -214,7 +214,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	private static boolean hasPositiveDepth(Biome[] biomes, int scale, int x, int z) {
-		return biomes[x * scale + z * scale * 128 * scale].getDepth() >= 0.0F;
+		return true;
 	}
 
 	public static void fillExplorationMap(ServerWorld world, ItemStack map) {
@@ -271,25 +271,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 							int o = 3;
 							MapColor mapColor = MapColor.CLEAR;
-							if (biome.getDepth() < 0.0F) {
-								mapColor = MapColor.ORANGE;
-								if (n > 7 && m % 2 == 0) {
-									o = (l + (int)(MathHelper.sin((float)m + 0.0F) * 7.0F)) / 8 % 5;
-									if (o == 3) {
-										o = 1;
-									} else if (o == 4) {
-										o = 0;
-									}
-								} else if (n > 7) {
-									mapColor = MapColor.CLEAR;
-								} else if (n > 5) {
-									o = 1;
-								} else if (n > 3) {
-									o = 0;
-								} else if (n > 1) {
-									o = 0;
-								}
-							} else if (n > 0) {
+							if (n > 0) {
 								mapColor = MapColor.BROWN;
 								if (n > 3) {
 									o = 1;

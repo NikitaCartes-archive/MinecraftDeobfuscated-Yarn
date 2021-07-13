@@ -119,7 +119,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final ThreadedAnvilChunkStorage.TicketManager ticketManager;
 	private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
 	private final StructureManager structureManager;
-	private final String saveDir;
+	private final File field_17707;
 	private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
 	private final Int2ObjectMap<ThreadedAnvilChunkStorage.EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<>();
 	private final Long2ByteMap chunkToType = new Long2ByteOpenHashMap();
@@ -143,8 +143,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	) {
 		super(new File(session.getWorldDirectory(world.getRegistryKey()), "region"), dataFixer, dsync);
 		this.structureManager = structureManager;
-		File file = session.getWorldDirectory(world.getRegistryKey());
-		this.saveDir = file.getName();
+		this.field_17707 = session.getWorldDirectory(world.getRegistryKey());
 		this.world = world;
 		this.chunkGenerator = chunkGenerator;
 		this.mainThreadExecutor = mainThreadExecutor;
@@ -161,7 +160,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(executor, mainThreadExecutor);
 		this.persistentStateManagerFactory = persistentStateManagerFactory;
-		this.pointOfInterestStorage = new PointOfInterestStorage(new File(file, "poi"), dataFixer, dsync, world);
+		this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.field_17707, "poi"), dataFixer, dsync, world);
 		this.setViewDistance(viewDistance);
 	}
 
@@ -363,6 +362,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 			this.unloadChunks(() -> true);
 			this.completeAll();
+			LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", this.field_17707.getName());
 		} else {
 			this.chunkHolders.values().stream().filter(ChunkHolder::isAccessible).forEach(chunkHolder -> {
 				Chunk chunk = (Chunk)chunkHolder.getSavingFuture().getNow(null);
@@ -451,7 +451,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			return this.loadChunk(chunkPos);
 		} else {
 			if (requiredStatus == ChunkStatus.LIGHT) {
-				this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.LIGHT), chunkPos);
+				this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), chunkPos);
 			}
 
 			Optional<Chunk> optional = ((Either)holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
@@ -519,7 +519,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					list -> {
 						try {
 							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = requiredStatus.runGenerationTask(
-								executor, this.world, this.chunkGenerator, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), list
+								executor, this.world, this.chunkGenerator, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), list, false
 							);
 							this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
 							return completableFuturex;
@@ -546,7 +546,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.mainThreadExecutor
 			.send(
 				Util.debugRunnable(
-					(Runnable)(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.LIGHT), pos)),
+					(Runnable)(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), pos)),
 					(Supplier<String>)(() -> "release light ticket " + pos)
 				)
 			);
@@ -1059,10 +1059,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	protected PointOfInterestStorage getPointOfInterestStorage() {
 		return this.pointOfInterestStorage;
-	}
-
-	public String method_37476() {
-		return this.saveDir;
 	}
 
 	public CompletableFuture<Void> enableTickSchedulers(WorldChunk chunk) {

@@ -40,6 +40,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Formatting;
@@ -61,6 +62,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 
@@ -312,7 +314,10 @@ public class DebugHud extends DrawableHelper {
 
 			ServerWorld serverWorld = this.getServerWorld();
 			if (serverWorld != null) {
-				SpawnHelper.Info info = serverWorld.getChunkManager().getSpawnInfo();
+				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+				BiomeSource biomeSource = serverChunkManager.getChunkGenerator().getBiomeSource();
+				biomeSource.method_37617(list, blockPos);
+				SpawnHelper.Info info = serverChunkManager.getSpawnInfo();
 				if (info != null) {
 					Object2IntMap<SpawnGroup> object2IntMap = info.getGroupToCount();
 					int m = info.getSpawningChunkCount();

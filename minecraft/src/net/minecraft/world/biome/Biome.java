@@ -6,7 +6,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,27 +27,16 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryElementCodec;
-import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.LightType;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,8 +47,6 @@ public final class Biome {
 		instance -> instance.group(
 					Biome.Weather.CODEC.forGetter(biome -> biome.weather),
 					Biome.Category.CODEC.fieldOf("category").forGetter(biome -> biome.category),
-					Codec.FLOAT.fieldOf("depth").forGetter(biome -> biome.depth),
-					Codec.FLOAT.fieldOf("scale").forGetter(biome -> biome.scale),
 					BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects),
 					GenerationSettings.CODEC.forGetter(biome -> biome.generationSettings),
 					SpawnSettings.CODEC.forGetter(biome -> biome.spawnSettings)
@@ -71,22 +57,12 @@ public final class Biome {
 		instance -> instance.group(
 					Biome.Weather.CODEC.forGetter(biome -> biome.weather),
 					Biome.Category.CODEC.fieldOf("category").forGetter(biome -> biome.category),
-					Codec.FLOAT.fieldOf("depth").forGetter(biome -> biome.depth),
-					Codec.FLOAT.fieldOf("scale").forGetter(biome -> biome.scale),
 					BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects)
 				)
-				.apply(
-					instance,
-					(weather, category, float_, float2, biomeEffects) -> new Biome(
-							weather, category, float_, float2, biomeEffects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE
-						)
-				)
+				.apply(instance, (weather, category, biomeEffects) -> new Biome(weather, category, biomeEffects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE))
 	);
 	public static final Codec<Supplier<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
 	public static final Codec<List<Supplier<Biome>>> field_26750 = RegistryElementCodec.method_31194(Registry.BIOME_KEY, CODEC);
-	private final Map<Integer, List<StructureFeature<?>>> structures = (Map<Integer, List<StructureFeature<?>>>)Registry.STRUCTURE_FEATURE
-		.stream()
-		.collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
 	private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(1234L), ImmutableList.of(0));
 	static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), ImmutableList.of(-2, -1, 0));
 	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(2345L), ImmutableList.of(0));
@@ -94,8 +70,6 @@ public final class Biome {
 	private final Biome.Weather weather;
 	private final GenerationSettings generationSettings;
 	private final SpawnSettings spawnSettings;
-	private final float depth;
-	private final float scale;
 	private final Biome.Category category;
 	private final BiomeEffects effects;
 	private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
@@ -108,21 +82,11 @@ public final class Biome {
 			return long2FloatLinkedOpenHashMap;
 		}));
 
-	Biome(
-		Biome.Weather weather,
-		Biome.Category category,
-		float depth,
-		float scale,
-		BiomeEffects effects,
-		GenerationSettings generationSettings,
-		SpawnSettings spawnSettings
-	) {
+	Biome(Biome.Weather weather, Biome.Category category, BiomeEffects effects, GenerationSettings generationSettings, SpawnSettings spawnSettings) {
 		this.weather = weather;
 		this.generationSettings = generationSettings;
 		this.spawnSettings = spawnSettings;
 		this.category = category;
-		this.depth = depth;
-		this.scale = scale;
 		this.effects = effects;
 	}
 
@@ -219,68 +183,6 @@ public final class Biome {
 		return this.generationSettings;
 	}
 
-	public void generateFeatureStep(
-		StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos origin
-	) {
-		List<List<Supplier<ConfiguredFeature<?, ?>>>> list = this.generationSettings.getFeatures();
-		Registry<ConfiguredFeature<?, ?>> registry = region.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY);
-		Registry<StructureFeature<?>> registry2 = region.getRegistryManager().get(Registry.STRUCTURE_FEATURE_KEY);
-		int i = GenerationStep.Feature.values().length;
-
-		for (int j = 0; j < i; j++) {
-			int k = 0;
-			if (structureAccessor.shouldGenerateStructures()) {
-				for (StructureFeature<?> structureFeature : (List)this.structures.getOrDefault(j, Collections.emptyList())) {
-					random.setDecoratorSeed(populationSeed, k, j);
-					int l = ChunkSectionPos.getSectionCoord(origin.getX());
-					int m = ChunkSectionPos.getSectionCoord(origin.getZ());
-					int n = ChunkSectionPos.getBlockCoord(l);
-					int o = ChunkSectionPos.getBlockCoord(m);
-					Supplier<String> supplier = () -> (String)registry2.getKey(structureFeature).map(Object::toString).orElseGet(structureFeature::toString);
-
-					try {
-						int p = region.getBottomY() + 1;
-						int q = region.getTopY() - 1;
-						region.method_36972(supplier);
-						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature)
-							.forEach(
-								structureStart -> structureStart.generateStructure(
-										region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, q, o + 15), new ChunkPos(l, m)
-									)
-							);
-					} catch (Exception var24) {
-						CrashReport crashReport = CrashReport.create(var24, "Feature placement");
-						crashReport.addElement("Feature").add("Description", supplier::get);
-						throw new CrashException(crashReport);
-					}
-
-					k++;
-				}
-			}
-
-			if (list.size() > j) {
-				for (Supplier<ConfiguredFeature<?, ?>> supplier2 : (List)list.get(j)) {
-					ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)supplier2.get();
-					Supplier<String> supplier3 = () -> (String)registry.getKey(configuredFeature).map(Object::toString).orElseGet(configuredFeature::toString);
-					random.setDecoratorSeed(populationSeed, k, j);
-
-					try {
-						region.method_36972(supplier3);
-						configuredFeature.generate(region, chunkGenerator, random, origin);
-					} catch (Exception var25) {
-						CrashReport crashReport2 = CrashReport.create(var25, "Feature placement");
-						crashReport2.addElement("Feature").add("Description", supplier3::get);
-						throw new CrashException(crashReport2);
-					}
-
-					k++;
-				}
-			}
-		}
-
-		region.method_36972(null);
-	}
-
 	public int getFogColor() {
 		return this.effects.getFogColor();
 	}
@@ -307,23 +209,15 @@ public final class Biome {
 	}
 
 	public void buildSurface(
-		Random random, Chunk chunk, int x, int z, int worldHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, int i, long l
+		Random random, Chunk chunk, int x, int z, int worldHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, int i, long seed
 	) {
 		ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder = (ConfiguredSurfaceBuilder<?>)this.generationSettings.getSurfaceBuilder().get();
-		configuredSurfaceBuilder.initSeed(l);
-		configuredSurfaceBuilder.generate(random, chunk, this, x, z, worldHeight, noise, defaultBlock, defaultFluid, seaLevel, i, l);
-	}
-
-	public final float getDepth() {
-		return this.depth;
+		configuredSurfaceBuilder.initSeed(seed);
+		configuredSurfaceBuilder.generate(random, chunk, this, x, z, worldHeight, noise, defaultBlock, defaultFluid, seaLevel, i, seed);
 	}
 
 	public final float getDownfall() {
 		return this.weather.downfall;
-	}
-
-	public final float getScale() {
-		return this.scale;
 	}
 
 	public final float getTemperature() {
@@ -377,10 +271,6 @@ public final class Biome {
 		@Nullable
 		private Biome.Category category;
 		@Nullable
-		private Float depth;
-		@Nullable
-		private Float scale;
-		@Nullable
 		private Float temperature;
 		private Biome.TemperatureModifier temperatureModifier = Biome.TemperatureModifier.NONE;
 		@Nullable
@@ -399,16 +289,6 @@ public final class Biome {
 
 		public Biome.Builder category(Biome.Category category) {
 			this.category = category;
-			return this;
-		}
-
-		public Biome.Builder depth(float depth) {
-			this.depth = depth;
-			return this;
-		}
-
-		public Biome.Builder scale(float scale) {
-			this.scale = scale;
 			return this;
 		}
 
@@ -445,8 +325,6 @@ public final class Biome {
 		public Biome build() {
 			if (this.precipitation != null
 				&& this.category != null
-				&& this.depth != null
-				&& this.scale != null
 				&& this.temperature != null
 				&& this.downfall != null
 				&& this.specialEffects != null
@@ -455,8 +333,6 @@ public final class Biome {
 				return new Biome(
 					new Biome.Weather(this.precipitation, this.temperature, this.temperatureModifier, this.downfall),
 					this.category,
-					this.depth,
-					this.scale,
 					this.specialEffects,
 					this.generationSettings,
 					this.spawnSettings
@@ -471,10 +347,6 @@ public final class Biome {
 				+ this.precipitation
 				+ ",\nbiomeCategory="
 				+ this.category
-				+ ",\ndepth="
-				+ this.depth
-				+ ",\nscale="
-				+ this.scale
 				+ ",\ntemperature="
 				+ this.temperature
 				+ ",\ntemperatureModifier="
@@ -531,98 +403,6 @@ public final class Biome {
 		@Override
 		public String asString() {
 			return this.name;
-		}
-	}
-
-	/**
-	 * Represents a point in a multi-dimensional cartesian plane. Mixed-noise
-	 * biome generator picks the closest noise point from its selected point
-	 * and choose the biome associated to that closest point. Another factor,
-	 * rarity potential, favors larger differences in values instead, contrary
-	 * to other point values.
-	 */
-	public static class MixedNoisePoint {
-		public static final Codec<Biome.MixedNoisePoint> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codec.floatRange(-2.0F, 2.0F).fieldOf("temperature").forGetter(mixedNoisePoint -> mixedNoisePoint.temperature),
-						Codec.floatRange(-2.0F, 2.0F).fieldOf("humidity").forGetter(mixedNoisePoint -> mixedNoisePoint.humidity),
-						Codec.floatRange(-2.0F, 2.0F).fieldOf("altitude").forGetter(mixedNoisePoint -> mixedNoisePoint.altitude),
-						Codec.floatRange(-2.0F, 2.0F).fieldOf("weirdness").forGetter(mixedNoisePoint -> mixedNoisePoint.weirdness),
-						Codec.floatRange(0.0F, 1.0F).fieldOf("offset").forGetter(mixedNoisePoint -> mixedNoisePoint.weight)
-					)
-					.apply(instance, Biome.MixedNoisePoint::new)
-		);
-		private final float temperature;
-		private final float humidity;
-		private final float altitude;
-		private final float weirdness;
-		/**
-		 * This value awards another point with value farthest from this one; i.e.
-		 * unlike other points where closer distance is better, for this value the
-		 * farther the better. The result of the different values can be
-		 * approximately modeled by a hyperbola weight=cosh(peak-1) as used by the
-		 * mixed-noise generator.
-		 */
-		private final float weight;
-
-		public MixedNoisePoint(float temperature, float humidity, float altitude, float weirdness, float weight) {
-			this.temperature = temperature;
-			this.humidity = humidity;
-			this.altitude = altitude;
-			this.weirdness = weirdness;
-			this.weight = weight;
-		}
-
-		public String toString() {
-			return "temp: " + this.temperature + ", hum: " + this.humidity + ", alt: " + this.altitude + ", weird: " + this.weirdness + ", offset: " + this.weight;
-		}
-
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			} else if (o != null && this.getClass() == o.getClass()) {
-				Biome.MixedNoisePoint mixedNoisePoint = (Biome.MixedNoisePoint)o;
-				if (Float.compare(mixedNoisePoint.temperature, this.temperature) != 0) {
-					return false;
-				} else if (Float.compare(mixedNoisePoint.humidity, this.humidity) != 0) {
-					return false;
-				} else {
-					return Float.compare(mixedNoisePoint.altitude, this.altitude) != 0 ? false : Float.compare(mixedNoisePoint.weirdness, this.weirdness) == 0;
-				}
-			} else {
-				return false;
-			}
-		}
-
-		public int hashCode() {
-			int i = this.temperature != 0.0F ? Float.floatToIntBits(this.temperature) : 0;
-			i = 31 * i + (this.humidity != 0.0F ? Float.floatToIntBits(this.humidity) : 0);
-			i = 31 * i + (this.altitude != 0.0F ? Float.floatToIntBits(this.altitude) : 0);
-			return 31 * i + (this.weirdness != 0.0F ? Float.floatToIntBits(this.weirdness) : 0);
-		}
-
-		/**
-		 * Calculates the distance from this noise point to another one. The
-		 * distance is a squared distance in a multi-dimensional cartesian plane
-		 * from a mathematical point of view, with a special parameter that
-		 * reduces the calculated distance.
-		 * 
-		 * <p>For most fields except weight, smaller difference between
-		 * two points' fields will lead to smaller distance. For weight,
-		 * larger differences lead to smaller distance.
-		 * 
-		 * <p>This distance is used by the mixed-noise biome layer source. The
-		 * layer source calculates an arbitrary noise point, and selects the
-		 * biome that offers a closest point to its arbitrary point.
-		 * 
-		 * @param other the other noise point
-		 */
-		public float calculateDistanceTo(Biome.MixedNoisePoint other) {
-			return (this.temperature - other.temperature) * (this.temperature - other.temperature)
-				+ (this.humidity - other.humidity) * (this.humidity - other.humidity)
-				+ (this.altitude - other.altitude) * (this.altitude - other.altitude)
-				+ (this.weirdness - other.weirdness) * (this.weirdness - other.weirdness)
-				+ (this.weight - other.weight) * (this.weight - other.weight);
 		}
 	}
 
@@ -687,8 +467,8 @@ public final class Biome {
 
 		public abstract float getModifiedTemperature(BlockPos pos, float temperature);
 
-		TemperatureModifier(String string2) {
-			this.name = string2;
+		TemperatureModifier(String name) {
+			this.name = name;
 		}
 
 		public String getName() {
@@ -720,11 +500,11 @@ public final class Biome {
 		final Biome.TemperatureModifier temperatureModifier;
 		final float downfall;
 
-		Weather(Biome.Precipitation precipitation, float f, Biome.TemperatureModifier temperatureModifier, float g) {
+		Weather(Biome.Precipitation precipitation, float temperature, Biome.TemperatureModifier temperatureModifier, float downfall) {
 			this.precipitation = precipitation;
-			this.temperature = f;
+			this.temperature = temperature;
 			this.temperatureModifier = temperatureModifier;
-			this.downfall = g;
+			this.downfall = downfall;
 		}
 	}
 }

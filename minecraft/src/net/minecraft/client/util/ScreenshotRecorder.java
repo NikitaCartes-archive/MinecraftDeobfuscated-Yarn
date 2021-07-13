@@ -39,41 +39,41 @@ public class ScreenshotRecorder {
 	private final int height;
 	private File file;
 
-	public static void saveScreenshot(File gameDirectory, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
-		saveScreenshot(gameDirectory, null, framebuffer, messageReceiver);
+	public static void method_1659(File file, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
+		method_22690(file, null, i, j, framebuffer, consumer);
 	}
 
-	public static void saveScreenshot(File gameDirectory, @Nullable String fileName, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
+	public static void method_22690(File file, @Nullable String string, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
 		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> saveScreenshotInner(gameDirectory, fileName, framebuffer, messageReceiver));
+			RenderSystem.recordRenderCall(() -> method_1662(file, string, i, j, framebuffer, consumer));
 		} else {
-			saveScreenshotInner(gameDirectory, fileName, framebuffer, messageReceiver);
+			method_1662(file, string, i, j, framebuffer, consumer);
 		}
 	}
 
-	private static void saveScreenshotInner(File gameDirectory, @Nullable String fileName, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
-		NativeImage nativeImage = takeScreenshot(framebuffer);
-		File file = new File(gameDirectory, "screenshots");
-		file.mkdir();
-		File file2;
-		if (fileName == null) {
-			file2 = getScreenshotFilename(file);
+	private static void method_1662(File file, @Nullable String string, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
+		NativeImage nativeImage = method_1663(i, j, framebuffer);
+		File file2 = new File(file, "screenshots");
+		file2.mkdir();
+		File file3;
+		if (string == null) {
+			file3 = getScreenshotFilename(file2);
 		} else {
-			file2 = new File(file, fileName);
+			file3 = new File(file2, string);
 		}
 
 		Util.getIoWorkerExecutor()
 			.execute(
 				() -> {
 					try {
-						nativeImage.writeTo(file2);
-						Text text = new LiteralText(file2.getName())
+						nativeImage.writeFile(file3);
+						Text text = new LiteralText(file3.getName())
 							.formatted(Formatting.UNDERLINE)
-							.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
-						messageReceiver.accept(new TranslatableText("screenshot.success", text));
-					} catch (Exception var7) {
-						LOGGER.warn("Couldn't save screenshot", (Throwable)var7);
-						messageReceiver.accept(new TranslatableText("screenshot.failure", var7.getMessage()));
+							.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file3.getAbsolutePath())));
+						consumer.accept(new TranslatableText("screenshot.success", text));
+					} catch (Exception var7x) {
+						LOGGER.warn("Couldn't save screenshot", (Throwable)var7x);
+						consumer.accept(new TranslatableText("screenshot.failure", var7x.getMessage()));
 					} finally {
 						nativeImage.close();
 					}
@@ -81,9 +81,9 @@ public class ScreenshotRecorder {
 			);
 	}
 
-	public static NativeImage takeScreenshot(Framebuffer framebuffer) {
-		int i = framebuffer.textureWidth;
-		int j = framebuffer.textureHeight;
+	public static NativeImage method_1663(int i, int j, Framebuffer framebuffer) {
+		i = framebuffer.textureWidth;
+		j = framebuffer.textureHeight;
 		NativeImage nativeImage = new NativeImage(i, j, false);
 		RenderSystem.bindTexture(framebuffer.getColorAttachment());
 		nativeImage.loadFromTextureImage(0, true);

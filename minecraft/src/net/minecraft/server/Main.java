@@ -43,6 +43,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiling.jfr.JfrProfiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
@@ -77,7 +78,8 @@ public class Main {
 		OptionSpec<String> optionSpec11 = optionParser.accepts("world").withRequiredArg();
 		OptionSpec<Integer> optionSpec12 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(-1);
 		OptionSpec<String> optionSpec13 = optionParser.accepts("serverId").withRequiredArg();
-		OptionSpec<String> optionSpec14 = optionParser.nonOptions();
+		OptionSpec<File> optionSpec14 = optionParser.accepts("jfrProfile").withOptionalArg().ofType(File.class);
+		OptionSpec<String> optionSpec15 = optionParser.nonOptions();
 
 		try {
 			OptionSet optionSet = optionParser.parse(args);
@@ -87,6 +89,14 @@ public class Main {
 			}
 
 			CrashReport.initCrashReport();
+			if (optionSet.has(optionSpec14)) {
+				if (optionSet.hasArgument(optionSpec14)) {
+					JfrProfiler.start(optionSpec14.value(optionSet).toPath(), JfrProfiler.InstanceType.SERVER);
+				} else {
+					JfrProfiler.start(JfrProfiler.InstanceType.SERVER);
+				}
+			}
+
 			Bootstrap.initialize();
 			Bootstrap.logMissing();
 			Util.startTimerHack();
@@ -147,16 +157,16 @@ public class Main {
 			ServerResourceManager serverResourceManager;
 			try {
 				serverResourceManager = (ServerResourceManager)completableFuture.get();
-			} catch (Exception var42) {
+			} catch (Exception var43) {
 				LOGGER.warn(
-					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var42
+					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var43
 				);
 				resourcePackManager.close();
 				return;
 			}
 
 			serverResourceManager.loadRegistryTags();
-			RegistryOps<NbtElement> registryOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+			RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 			serverPropertiesLoader.getPropertiesHandler().method_37371(impl);
 			SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
 			if (saveProperties == null) {
@@ -204,11 +214,11 @@ public class Main {
 						userCache,
 						WorldGenerationProgressLogger::new
 					);
-					minecraftDedicatedServerx.setSinglePlayerName(optionSet.valueOf(optionSpec9));
+					minecraftDedicatedServerx.setServerName(optionSet.valueOf(optionSpec9));
 					minecraftDedicatedServerx.setServerPort(optionSet.valueOf(optionSpec12));
 					minecraftDedicatedServerx.setDemo(optionSet.has(optionSpec3));
 					minecraftDedicatedServerx.setServerId(optionSet.valueOf(optionSpec13));
-					boolean blx = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec14).contains("nogui");
+					boolean blx = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec15).contains("nogui");
 					if (blx && !GraphicsEnvironment.isHeadless()) {
 						minecraftDedicatedServerx.createGui();
 					}
@@ -223,8 +233,8 @@ public class Main {
 			};
 			thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 			Runtime.getRuntime().addShutdownHook(thread);
-		} catch (Exception var43) {
-			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var43);
+		} catch (Exception var44) {
+			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var44);
 		}
 	}
 

@@ -12,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.GlowLichenBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -29,6 +30,13 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 		if (!isAirOrWater(structureWorldAccess.getBlockState(blockPos))) {
 			return false;
 		} else {
+			if (context.getConfig().field_34241 > 0) {
+				int i = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX(), blockPos.getZ());
+				if (blockPos.getY() >= i - context.getConfig().field_34241) {
+					return false;
+				}
+			}
+
 			List<Direction> list = shuffleDirections(glowLichenFeatureConfig, random);
 			if (generate(structureWorldAccess, blockPos, structureWorldAccess.getBlockState(blockPos), glowLichenFeatureConfig, random, list)) {
 				return true;
@@ -39,7 +47,7 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 					mutable.set(blockPos);
 					List<Direction> list2 = shuffleDirections(glowLichenFeatureConfig, random, direction.getOpposite());
 
-					for (int i = 0; i < glowLichenFeatureConfig.searchRange; i++) {
+					for (int j = 0; j < glowLichenFeatureConfig.searchRange; j++) {
 						mutable.set(blockPos, direction);
 						BlockState blockState = structureWorldAccess.getBlockState(mutable);
 						if (!isAirOrWater(blockState) && !blockState.isOf(Blocks.GLOW_LICHEN)) {

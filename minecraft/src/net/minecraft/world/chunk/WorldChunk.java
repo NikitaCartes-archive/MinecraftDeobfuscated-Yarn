@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -19,6 +20,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -342,7 +344,17 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public int sampleHeightmap(Heightmap.Type type, int x, int z) {
-		return ((Heightmap)this.heightmaps.get(type)).get(x & 15, z & 15) - 1;
+		Heightmap heightmap = (Heightmap)this.heightmaps.get(type);
+		if (heightmap == null) {
+			if (SharedConstants.isDevelopment) {
+				LOGGER.error("Unprimed heightmap: " + type + " " + x + " " + z);
+			}
+
+			Heightmap.populateHeightmaps(this, EnumSet.of(type));
+			heightmap = (Heightmap)this.heightmaps.get(type);
+		}
+
+		return heightmap.get(x & 15, z & 15) - 1;
 	}
 
 	@Override
@@ -422,7 +434,7 @@ public class WorldChunk implements Chunk {
 		} else {
 			return !(this.world instanceof ServerWorld)
 				? true
-				: this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.toLong(pos));
+				: this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.method_37232(pos));
 		}
 	}
 

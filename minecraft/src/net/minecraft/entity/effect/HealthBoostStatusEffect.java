@@ -4,8 +4,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 
 public class HealthBoostStatusEffect extends StatusEffect {
-	public HealthBoostStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
-		super(statusEffectCategory, i);
+	public HealthBoostStatusEffect(StatusEffectType statusEffectType, int i) {
+		super(statusEffectType, i);
 	}
 
 	@Override

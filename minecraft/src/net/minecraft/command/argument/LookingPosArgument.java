@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class LookingPosArgument implements PosArgument {
-	public static final char CARET = '^';
+	public static final char field_32941 = '^';
 	private final double x;
 	private final double y;
 	private final double z;

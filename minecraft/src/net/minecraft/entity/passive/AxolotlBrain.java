@@ -10,7 +10,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.AquaticStrollTask;
@@ -38,9 +37,7 @@ import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.world.World;
 
 /**
  * Represents the definition of an {@linkplain AxolotlEntity axolotl entity} brain.
@@ -93,11 +90,11 @@ import net.minecraft.world.World;
  */
 public class AxolotlBrain {
 	private static final UniformIntProvider WALK_TOWARD_ADULT_RANGE = UniformIntProvider.create(5, 16);
-	private static final float BREEDING_SPEED = 0.2F;
-	private static final float ON_LAND_SPEED = 0.15F;
-	private static final float IDLE_SPEED = 0.5F;
-	private static final float TARGET_APPROACHING_SPEED = 0.6F;
-	private static final float ADULT_FOLLOWING_SPEED = 0.6F;
+	private static final float field_30394 = 0.2F;
+	private static final float field_30395 = 0.15F;
+	private static final float field_30396 = 0.5F;
+	private static final float field_30397 = 0.6F;
+	private static final float field_30398 = 0.6F;
 
 	protected static Brain<?> create(Brain<AxolotlEntity> brain) {
 		addCoreActivities(brain);
@@ -125,7 +122,7 @@ public class AxolotlBrain {
 			0,
 			ImmutableList.of(
 				new ForgetAttackTargetTask<>(AxolotlEntity::appreciatePlayer),
-				new RangedApproachTask(AxolotlBrain::getTargetApproachingSpeed),
+				new RangedApproachTask(AxolotlBrain::method_33242),
 				new MeleeAttackTask(20),
 				new ForgetTask(AxolotlBrain::hasBreedTarget, MemoryModuleType.ATTACK_TARGET)
 			),
@@ -153,8 +150,7 @@ public class AxolotlBrain {
 					2,
 					new RandomTask<>(
 						ImmutableList.of(
-							Pair.of(new TemptTask(AxolotlBrain::getTemptedSpeed), 1),
-							Pair.of(new WalkTowardClosestAdultTask<>(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::getAdultFollowingSpeed), 1)
+							Pair.of(new TemptTask(AxolotlBrain::method_33248), 1), Pair.of(new WalkTowardClosestAdultTask<>(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::method_33245), 1)
 						)
 					)
 				),
@@ -169,8 +165,8 @@ public class AxolotlBrain {
 						CompositeTask.RunMode.TRY_ALL,
 						ImmutableList.of(
 							Pair.of(new AquaticStrollTask(0.5F), 2),
-							Pair.of(new StrollTask(0.15F, false), 2),
-							Pair.of(new GoTowardsLookTarget(AxolotlBrain::canGoToLookTarget, AxolotlBrain::getTemptedSpeed, 3), 3),
+							Pair.of(new StrollTask(0.15F), 2),
+							Pair.of(new GoTowardsLookTarget(AxolotlBrain::method_33248, 3), 3),
 							Pair.of(new ConditionalTask<>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5),
 							Pair.of(new ConditionalTask<>(Entity::isOnGround, new WaitTask(200, 400)), 5)
 						)
@@ -178,17 +174,6 @@ public class AxolotlBrain {
 				)
 			)
 		);
-	}
-
-	private static boolean canGoToLookTarget(LivingEntity entity) {
-		World world = entity.world;
-		Optional<LookTarget> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.LOOK_TARGET);
-		if (optional.isPresent()) {
-			BlockPos blockPos = ((LookTarget)optional.get()).getBlockPos();
-			return world.isWater(blockPos) == entity.isInsideWaterOrBubbleColumn();
-		} else {
-			return false;
-		}
 	}
 
 	public static void updateActivities(AxolotlEntity axolotl) {
@@ -202,24 +187,15 @@ public class AxolotlBrain {
 		}
 	}
 
-	/**
-	 * {@return the axolotl's speed when approaching the attack target}
-	 */
-	private static float getTargetApproachingSpeed(LivingEntity entity) {
+	private static float method_33242(LivingEntity entity) {
 		return entity.isInsideWaterOrBubbleColumn() ? 0.6F : 0.15F;
 	}
 
-	/**
-	 * {@return the axolotl's speed when a baby axolotl is following an adult}
-	 */
-	private static float getAdultFollowingSpeed(LivingEntity entity) {
+	private static float method_33245(LivingEntity entity) {
 		return entity.isInsideWaterOrBubbleColumn() ? 0.6F : 0.15F;
 	}
 
-	/**
-	 * {@return the axolotl's speed when the axolotl is being tempted}
-	 */
-	private static float getTemptedSpeed(LivingEntity entity) {
+	private static float method_33248(LivingEntity entity) {
 		return entity.isInsideWaterOrBubbleColumn() ? 0.5F : 0.15F;
 	}
 

@@ -20,7 +20,7 @@ public class NoiseCaveSampler implements WeightSampler {
 	private final DoublePerlinNoiseSampler tunnelFalloffNoise;
 	private final DoublePerlinNoiseSampler offsetNoise;
 	private final DoublePerlinNoiseSampler offsetScaleNoise;
-	private final DoublePerlinNoiseSampler field_28842;
+	private final DoublePerlinNoiseSampler field_34235;
 	private final DoublePerlinNoiseSampler caveDensityNoise;
 	private static final int field_31463 = 128;
 	private static final int field_31464 = 170;
@@ -40,7 +40,7 @@ public class NoiseCaveSampler implements WeightSampler {
 		this.tunnelFalloffNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 1.0);
 		this.offsetNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -5, 1.0);
 		this.offsetScaleNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 1.0);
-		this.field_28842 = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 1.0, 1.0, 1.0);
+		this.field_34235 = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -7, 0.4, 0.5, 1.0);
 		this.terrainAdditionNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 1.0);
 		this.caveDensityNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 0.5, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 2.0, 0.0);
 	}
@@ -48,33 +48,32 @@ public class NoiseCaveSampler implements WeightSampler {
 	@Override
 	public double sample(double weight, int x, int y, int z) {
 		boolean bl = weight < 170.0;
-		double d = this.getTunnelOffsetNoise(z, x, y);
-		double e = this.getTunnelNoise(z, x, y);
+		double d = this.method_37760(x, y, z);
+		double e = this.getTunnelOffsetNoise(x, y, z);
+		double f = this.getTunnelNoise(x, y, z);
 		if (bl) {
-			return Math.min(weight, (e + d) * 128.0 * 5.0);
+			double g = Math.min(d, f + e);
+			return Math.min(weight, g * 128.0 * 5.0);
 		} else {
-			double f = this.caveDensityNoise.sample((double)z, (double)x / 1.5, (double)y);
-			double g = MathHelper.clamp(f + 0.25, -1.0, 1.0);
-			double h = (double)((float)(30 - x) / 8.0F);
-			double i = g + MathHelper.clampedLerp(0.5, 0.0, h);
-			double j = this.getTerrainAdditionNoise(z, x, y);
-			double k = this.getCaveNoise(z, x, y);
-			double l = i + j;
-			double m = Math.min(l, Math.min(e, k) + d);
-			double n = Math.max(m, this.getPillarNoise(z, x, y));
-			return 128.0 * MathHelper.clamp(n, -1.0, 1.0);
+			double g = this.caveDensityNoise.sample((double)x, (double)y / 1.5, (double)z);
+			double h = MathHelper.clamp(g + 0.25, -1.0, 1.0);
+			double i = (weight - 170.0) / 100.0;
+			double j = h + MathHelper.clampedLerp(0.5, 0.0, i);
+			double k = this.getTerrainAdditionNoise(x, y, z);
+			double l = this.getCaveNoise(x, y, z);
+			double m = j + k;
+			double n = Math.min(f, l) + e;
+			double o = this.method_37759(m, d, n);
+			double p = Math.max(o, this.getPillarNoise(x, y, z));
+			return 128.0 * MathHelper.clamp(p, -1.0, 1.0);
 		}
 	}
 
-	private double method_35325(double d, int i, int j, int k) {
-		double e = this.field_28842.sample((double)(i * 2), (double)j, (double)(k * 2));
-		e = NoiseHelper.method_35479(e, 1.0);
-		int l = 0;
-		double f = (double)(j - 0) / 40.0;
-		e += MathHelper.clampedLerp(0.5, d, f);
-		double g = 3.0;
-		e = 4.0 * e + 3.0;
-		return Math.min(d, e);
+	private double method_37760(int i, int j, int k) {
+		double d = 0.75;
+		double e = 0.5;
+		double f = 0.37;
+		return this.field_34235.sample((double)i * 0.75, (double)j * 0.5, (double)k * 0.75) + 0.37;
 	}
 
 	private double getPillarNoise(int x, int y, int z) {
@@ -138,6 +137,10 @@ public class NoiseCaveSampler implements WeightSampler {
 
 	private static double sample(DoublePerlinNoiseSampler sampler, double x, double y, double z, double scale) {
 		return sampler.sample(x / scale, y / scale, z / scale);
+	}
+
+	private double method_37759(double d, double e, double f) {
+		return Math.min(Math.min(d, e), f);
 	}
 
 	static final class CaveScaler {

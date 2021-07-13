@@ -57,7 +57,7 @@ public class BiomeAccess {
 
 		default Biome getBiomeForNoiseGen(ChunkPos chunkPos) {
 			return this.getBiomeForNoiseGen(
-				BiomeCoords.fromChunk(chunkPos.x) + BiomeAccess.CHUNK_CENTER_OFFSET, 0, BiomeCoords.fromChunk(chunkPos.z) + BiomeAccess.CHUNK_CENTER_OFFSET
+				BiomeCoords.fromChunk(chunkPos.x) + BiomeAccess.CHUNK_CENTER_OFFSET, -16, BiomeCoords.fromChunk(chunkPos.z) + BiomeAccess.CHUNK_CENTER_OFFSET
 			);
 		}
 	}

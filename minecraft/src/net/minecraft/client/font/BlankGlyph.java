@@ -11,11 +11,11 @@ public enum BlankGlyph implements RenderableGlyph {
 
 	private static final int field_32228 = 5;
 	private static final int field_32229 = 8;
-	private static final NativeImage IMAGE = Util.make(new NativeImage(NativeImage.Format.RGBA, 5, 8, false), nativeImage -> {
+	private static final NativeImage IMAGE = Util.make(new NativeImage(NativeImage.Format.ABGR, 5, 8, false), nativeImage -> {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 5; j++) {
 				boolean bl = j == 0 || j + 1 == 5 || i == 0 || i + 1 == 8;
-				nativeImage.setColor(j, i, bl ? -1 : 0);
+				nativeImage.setPixelColor(j, i, bl ? -1 : 0);
 			}
 		}
 

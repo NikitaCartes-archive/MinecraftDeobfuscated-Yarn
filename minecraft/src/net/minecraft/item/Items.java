@@ -1542,7 +1542,7 @@ public class Items {
 	public static final Item POINTED_DRIPSTONE = register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
 
 	private static <T> Optional<T> createEmptyOptional(T of) {
-		return Optional.empty();
+		return Optional.of(of);
 	}
 
 	private static Item register(Block block) {

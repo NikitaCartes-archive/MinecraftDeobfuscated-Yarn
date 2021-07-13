@@ -16,7 +16,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.NavigationConditions;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -63,10 +63,10 @@ public class VindicatorEntity extends IllagerEntity {
 		this.goalSelector.add(3, new RaiderEntity.PatrolApproachGoal(this, 10.0F));
 		this.goalSelector.add(4, new VindicatorEntity.AttackGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
-		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(3, new ActiveTargetGoal(this, MerchantEntity.class, true));
-		this.targetSelector.add(3, new ActiveTargetGoal(this, IronGolemEntity.class, true));
-		this.targetSelector.add(4, new VindicatorEntity.TargetGoal(this));
+		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
+		this.targetSelector.add(3, new FollowTargetGoal(this, MerchantEntity.class, true));
+		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
+		this.targetSelector.add(4, new VindicatorEntity.FollowEntityGoal(this));
 		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
 		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
@@ -233,8 +233,8 @@ public class VindicatorEntity extends IllagerEntity {
 		}
 	}
 
-	static class TargetGoal extends ActiveTargetGoal<LivingEntity> {
-		public TargetGoal(VindicatorEntity vindicator) {
+	static class FollowEntityGoal extends FollowTargetGoal<LivingEntity> {
+		public FollowEntityGoal(VindicatorEntity vindicator) {
 			super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::isMobOrPlayer);
 		}
 

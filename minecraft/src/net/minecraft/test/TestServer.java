@@ -43,12 +43,12 @@ public class TestServer extends MinecraftServer {
 	private static final int field_33157 = 20;
 	private final List<GameTestBatch> batches;
 	private final BlockPos pos;
-	private static final GameRules GAME_RULES = Util.make(new GameRules(), gameRules -> {
+	private static final GameRules gameRules = Util.make(new GameRules(), gameRules -> {
 		gameRules.get(GameRules.DO_MOB_SPAWNING).set(false, null);
 		gameRules.get(GameRules.DO_WEATHER_CYCLE).set(false, null);
 	});
-	private static final LevelInfo TEST_LEVEL = new LevelInfo(
-		"Test Level", GameMode.CREATIVE, false, Difficulty.NORMAL, true, GAME_RULES, DataPackSettings.SAFE_MODE
+	private static final LevelInfo testLevel = new LevelInfo(
+		"Test Level", GameMode.CREATIVE, false, Difficulty.NORMAL, true, gameRules, DataPackSettings.SAFE_MODE
 	);
 	@Nullable
 	private TestSet testSet;
@@ -91,7 +91,7 @@ public class TestServer extends MinecraftServer {
 			registryManager,
 			session,
 			new LevelProperties(
-				TEST_LEVEL,
+				testLevel,
 				new GeneratorOptions(
 					0L,
 					false,

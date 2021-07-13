@@ -13,7 +13,6 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
@@ -268,7 +267,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			.color(255, 255, 255, 255)
 			.texture(u, v)
 			.overlay(0, 10)
-			.light(LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE)
+			.light(240)
 			.normal(entry.getNormal(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}
@@ -343,7 +342,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			.color(1.0F, 1.0F, 1.0F, alpha)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
+			.light(15728880)
 			.normal(entry.getNormal(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}

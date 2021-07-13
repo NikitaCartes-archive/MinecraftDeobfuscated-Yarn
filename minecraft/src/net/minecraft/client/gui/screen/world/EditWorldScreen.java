@@ -67,7 +67,7 @@ public class EditWorldScreen extends Screen {
 		this.client.keyboard.setRepeatEvents(true);
 		ButtonWidget buttonWidget = this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20, new TranslatableText("selectWorld.edit.resetIcon"), button -> {
-				this.storageSession.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
+				FileUtils.deleteQuietly(this.storageSession.method_27014());
 				button.active = false;
 			})
 		);
@@ -177,7 +177,7 @@ public class EditWorldScreen extends Screen {
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), button -> this.commit())
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, button -> this.callback.accept(false)));
-		buttonWidget.active = this.storageSession.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])).isPresent();
+		buttonWidget.active = this.storageSession.method_27014().isFile();
 		LevelSummary levelSummary = this.storageSession.getLevelSummary();
 		String string = levelSummary == null ? "" : levelSummary.getDisplayName();
 		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, new TranslatableText("selectWorld.enterName"));

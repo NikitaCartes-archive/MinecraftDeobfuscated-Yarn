@@ -38,8 +38,8 @@ public class TestClassArgumentType implements ArgumentType<String> {
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return CommandSource.suggestMatching(TestFunctions.getTestClasses().stream(), builder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+		return CommandSource.suggestMatching(TestFunctions.getTestClasses().stream(), suggestionsBuilder);
 	}
 
 	@Override

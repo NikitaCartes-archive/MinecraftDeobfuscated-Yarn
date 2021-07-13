@@ -13,7 +13,7 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 
 public class AlphaChunkIo {
 	private static final int field_31416 = 7;
-	private static final HeightLimitView WORLD = new HeightLimitView() {
+	private static final HeightLimitView world = new HeightLimitView() {
 		@Override
 		public int getBottomY() {
 			return 0;
@@ -108,7 +108,7 @@ public class AlphaChunkIo {
 		}
 
 		nbt.put("Sections", nbtList);
-		nbt.putIntArray("Biomes", new BiomeArray(impl.get(Registry.BIOME_KEY), WORLD, new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).toIntArray());
+		nbt.putIntArray("Biomes", new BiomeArray(impl.get(Registry.BIOME_KEY), world, new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).toIntArray());
 		nbt.put("Entities", alphaChunk.entities);
 		nbt.put("TileEntities", alphaChunk.blockEntities);
 		if (alphaChunk.blockTicks != null) {

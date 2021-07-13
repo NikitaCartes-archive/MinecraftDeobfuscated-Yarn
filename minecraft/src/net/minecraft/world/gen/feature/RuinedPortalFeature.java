@@ -48,7 +48,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 	private static final float field_31508 = 0.8F;
 	private static final float field_31509 = 0.8F;
 	private static final float field_31510 = 0.5F;
-	private static final int field_31511 = 15;
+	private static final int field_34240 = 15;
 
 	public RuinedPortalFeature(Codec<RuinedPortalFeatureConfig> codec) {
 		super(codec);
@@ -73,25 +73,26 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 		BlockBox box,
 		HeightLimitView world
 	) {
-		int i;
+		int i = world.getBottomY() + 15;
+		int j;
 		if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER) {
 			if (airPocket) {
-				i = MathHelper.nextBetween(random, 32, 100);
+				j = MathHelper.nextBetween(random, 32, 100);
 			} else if (random.nextFloat() < 0.5F) {
-				i = MathHelper.nextBetween(random, 27, 29);
+				j = MathHelper.nextBetween(random, 27, 29);
 			} else {
-				i = MathHelper.nextBetween(random, 29, 100);
+				j = MathHelper.nextBetween(random, 29, 100);
 			}
 		} else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN) {
-			int j = height - blockCountY;
-			i = choosePlacementHeight(random, 70, j);
+			int k = height - blockCountY;
+			j = choosePlacementHeight(random, 70, k);
 		} else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.UNDERGROUND) {
-			int j = height - blockCountY;
-			i = choosePlacementHeight(random, 15, j);
+			int k = height - blockCountY;
+			j = choosePlacementHeight(random, i, k);
 		} else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED) {
-			i = height - blockCountY + MathHelper.nextBetween(random, 2, 8);
+			j = height - blockCountY + MathHelper.nextBetween(random, 2, 8);
 		} else {
-			i = height;
+			j = height;
 		}
 
 		List<BlockPos> list = ImmutableList.of(
@@ -108,22 +109,22 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			: Heightmap.Type.WORLD_SURFACE_WG;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		int k;
-		for (k = i; k > 15; k--) {
-			int l = 0;
-			mutable.set(0, k, 0);
+		int l;
+		for (l = j; l > i; l--) {
+			int m = 0;
+			mutable.set(0, l, 0);
 
 			for (VerticalBlockSample verticalBlockSample : list2) {
 				BlockState blockState = verticalBlockSample.getState(mutable);
 				if (type.getBlockPredicate().test(blockState)) {
-					if (++l == 3) {
-						return k;
+					if (++m == 3) {
+						return l;
 					}
 				}
 			}
 		}
 
-		return k;
+		return l;
 	}
 
 	private static int choosePlacementHeight(Random random, int min, int max) {

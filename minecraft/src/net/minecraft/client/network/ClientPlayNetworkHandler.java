@@ -529,7 +529,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onEntitiesDestroy(EntitiesDestroyS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		packet.getEntityIds().forEach(entityId -> this.world.removeEntity(entityId, Entity.RemovalReason.DISCARDED));
+		int i = packet.method_36548();
+		this.world.removeEntity(i, Entity.RemovalReason.DISCARDED);
 	}
 
 	@Override
@@ -2017,15 +2018,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			team = scoreboard.addTeam(packet.getTeamName());
 		} else {
 			team = scoreboard.getTeam(packet.getTeamName());
-			if (team == null) {
-				LOGGER.warn(
-					"Received packet for unknown team {}: team action: {}, player action: {}",
-					packet.getTeamName(),
-					packet.getTeamOperation(),
-					packet.getPlayerListOperation()
-				);
-				return;
-			}
 		}
 
 		Optional<TeamS2CPacket.SerializableTeam> optional = packet.getTeam();

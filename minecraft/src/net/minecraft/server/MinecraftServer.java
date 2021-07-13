@@ -9,10 +9,13 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.datafixers.util.Either;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -22,6 +25,7 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.net.Proxy;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +54,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
+import jdk.jfr.FlightRecorder;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
@@ -114,6 +119,10 @@ import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.RecordDumper;
 import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
+import net.minecraft.util.profiling.jfr.JfrProfileRecorder;
+import net.minecraft.util.profiling.jfr.JfrProfiler;
+import net.minecraft.util.profiling.jfr.event.ticking.ServerTickTimeEvent;
+import net.minecraft.util.profiling.jfr.event.worldgen.WorldLoadFinishedEvent;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -234,7 +243,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Nullable
 	private KeyPair keyPair;
 	@Nullable
-	private String singlePlayerName;
+	private String userName;
 	private boolean demo;
 	private String resourcePackUrl = "";
 	private String resourcePackHash = "";
@@ -250,6 +259,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private long timeReference = Util.getMeasuringTimeMs();
 	private long nextTickTimestamp;
 	private boolean waitingForNextTick;
+	private boolean field_4577;
 	private final ResourcePackManager dataPackManager;
 	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
 	@Nullable
@@ -360,12 +370,42 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	protected void loadWorld() {
+		if (!JfrProfiler.isProfiling()) {
+		}
+
+		boolean bl = false;
+		if (bl) {
+			JfrProfiler.start(JfrProfiler.InstanceType.get(this));
+		}
+
+		WorldLoadFinishedEvent worldLoadFinishedEvent = Util.make(new WorldLoadFinishedEvent(), worldLoadFinishedEventx -> {
+			if (worldLoadFinishedEventx.isEnabled()) {
+				worldLoadFinishedEventx.begin();
+			}
+		});
 		this.loadWorldResourcePack();
 		this.saveProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldGenerationProgressListener);
 		this.updateDifficulty();
 		this.prepareStartRegion(worldGenerationProgressListener);
+		if (worldLoadFinishedEvent.shouldCommit()) {
+			worldLoadFinishedEvent.commit();
+		}
+
+		if (bl) {
+			Either<Path, IllegalStateException> either = JfrProfiler.stop();
+			either.ifLeft(path -> {
+				LOGGER.info("Dumped flight recorder profiling to {}", path);
+
+				try {
+					LOGGER.info(JfrProfileRecorder.readProfile(path).collect());
+				} catch (IOException var2x) {
+					LOGGER.warn("Failed to collect JFR stats", (Throwable)var2x);
+				}
+			});
+			either.ifRight(illegalStateException -> LOGGER.warn("Failed dumping profiling", (Throwable)illegalStateException));
+		}
 	}
 
 	protected void updateDifficulty() {
@@ -483,7 +523,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			boolean bl = false;
 
 			for (Block block : BlockTags.VALID_SPAWN.values()) {
-				if (biomeSource.getTopMaterials().contains(block.getDefaultState())) {
+				if (biomeSource.method_37614(block.getDefaultState())) {
 					bl = true;
 					break;
 				}
@@ -633,14 +673,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
 		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt());
 		this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
-		if (flush) {
-			for (ServerWorld serverWorld3 : this.getWorlds()) {
-				LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", serverWorld3.getChunkManager().threadedAnvilChunkStorage.method_37476());
-			}
-
-			LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
-		}
-
 		return bl;
 	}
 
@@ -724,6 +756,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.metadata.setDescription(new LiteralText(this.motd));
 				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
 				this.setFavicon(this.metadata);
+				this.method_37807();
 
 				while (this.running) {
 					long l = Util.getMeasuringTimeMs() - this.timeReference;
@@ -786,6 +819,18 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
+	private void method_37807() {
+		FlightRecorder.addPeriodicEvent(ServerTickTimeEvent.class, () -> {
+			ServerTickTimeEvent serverTickTimeEvent = ServerTickTimeEvent.EVENT;
+			serverTickTimeEvent.averageTickMs = this.getTickTime();
+			if (serverTickTimeEvent.shouldCommit()) {
+				serverTickTimeEvent.commit();
+			}
+
+			serverTickTimeEvent.reset();
+		});
+	}
+
 	private boolean shouldKeepTicking() {
 		return this.hasRunningTasks() || Util.getMeasuringTimeMs() < (this.waitingForNextTick ? this.nextTickTimestamp : this.timeReference);
 	}
@@ -832,28 +877,36 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void setFavicon(ServerMetadata metadata) {
-		Optional<File> optional = Optional.of(this.getFile("server-icon.png")).filter(File::isFile);
-		if (!optional.isPresent()) {
-			optional = this.session.getIconFile().map(Path::toFile).filter(File::isFile);
+		File file = this.getFile("server-icon.png");
+		if (!file.exists()) {
+			file = this.session.method_27014();
 		}
 
-		optional.ifPresent(file -> {
+		if (file.isFile()) {
+			ByteBuf byteBuf = Unpooled.buffer();
+
 			try {
 				BufferedImage bufferedImage = ImageIO.read(file);
 				Validate.validState(bufferedImage.getWidth() == 64, "Must be 64 pixels wide");
 				Validate.validState(bufferedImage.getHeight() == 64, "Must be 64 pixels high");
-				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-				ImageIO.write(bufferedImage, "PNG", byteArrayOutputStream);
-				byte[] bs = Base64.getEncoder().encode(byteArrayOutputStream.toByteArray());
-				metadata.setFavicon("data:image/png;base64," + new String(bs, StandardCharsets.UTF_8));
-			} catch (Exception var5) {
-				LOGGER.error("Couldn't load server icon", (Throwable)var5);
+				ImageIO.write(bufferedImage, "PNG", new ByteBufOutputStream(byteBuf));
+				ByteBuffer byteBuffer = Base64.getEncoder().encode(byteBuf.nioBuffer());
+				metadata.setFavicon("data:image/png;base64," + StandardCharsets.UTF_8.decode(byteBuffer));
+			} catch (Exception var9) {
+				LOGGER.error("Couldn't load server icon", (Throwable)var9);
+			} finally {
+				byteBuf.release();
 			}
-		});
+		}
 	}
 
-	public Optional<Path> getIconFile() {
-		return this.session.getIconFile();
+	public boolean method_3771() {
+		this.field_4577 = this.field_4577 || this.method_3725().isFile();
+		return this.field_4577;
+	}
+
+	public File method_3725() {
+		return this.session.method_27014();
 	}
 
 	public File getRunDirectory() {
@@ -1076,54 +1129,16 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.serverPort = serverPort;
 	}
 
-	/**
-	 * {@return the name of the single player of this server} This may be
-	 * {@code null} for non-singleplayer servers.
-	 * 
-	 * <p>In vanilla, outside of integrated servers, this is used to
-	 * determine to whom the {@code Player} NBT from {@code level.dat} applies.
-	 * 
-	 * @see #setSinglePlayerName(String)
-	 * @see #isSingleplayer()
-	 */
-	public String getSinglePlayerName() {
-		return this.singlePlayerName;
+	public String getUserName() {
+		return this.userName;
 	}
 
-	/**
-	 * Sets the name of the single player of this server.
-	 * 
-	 * <p>This is called by vanilla when setting up this server. The
-	 * {@code singlePlayerName} is the client's player name for integrated
-	 * servers and specified by the {@code --singleplayer <singlePlayerName>}
-	 * command-line argument or {@code null} for dedicated servers.
-	 * 
-	 * @see #getSinglePlayerName()
-	 * @see #isSingleplayer()
-	 * 
-	 * @param singlePlayerName the single player's name, or {@code null} for non-singleplayer servers
-	 */
-	public void setSinglePlayerName(String singlePlayerName) {
-		this.singlePlayerName = singlePlayerName;
+	public void setServerName(String serverName) {
+		this.userName = serverName;
 	}
 
-	/**
-	 * {@return whether this server is a singleplayer server} A {@index singleplayer}
-	 * server has a "single player" to whom the player data in the {@code level.dat}
-	 * applies. Otherwise, the player data is not applied to anyone. Hence, it is
-	 * necessary to properly load some single-player save games.
-	 * 
-	 * <p>All vanilla integrated servers and dedicated servers launched with the argument
-	 * {@code --singleplayer <singlePlayerName>} are singleplayer servers.
-	 * 
-	 * <p>A dedicated singleplayer server always turns online mode off, regardless of the
-	 * content of {@code server.properties}.
-	 * 
-	 * @see #getSinglePlayerName
-	 * @see #setSinglePlayerName
-	 */
-	public boolean isSingleplayer() {
-		return this.singlePlayerName != null;
+	public boolean isSinglePlayer() {
+		return this.userName != null;
 	}
 
 	protected void generateKeyPair() {
@@ -1222,7 +1237,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	@Override
 	public void addInitialSnooperInfo(Snooper snooper) {
-		snooper.addInitialInfo("singleplayer", this.isSingleplayer());
+		snooper.addInitialInfo("singleplayer", this.isSinglePlayer());
 		snooper.addInitialInfo("server_brand", this.getServerModName());
 		snooper.addInitialInfo("gui_supported", GraphicsEnvironment.isHeadless() ? "headless" : "supported");
 		snooper.addInitialInfo("dedicated", this.isDedicated());
@@ -1244,27 +1259,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public abstract int getRateLimit();
 
 	/**
-	 * {@return whether this Minecraft server authenticates players logging in with the
-	 * {@linkplain #getSessionService() Minecraft Session Service}} If this server is
-	 * {@linkplain #isSingleplayer() singleplayer}, such as integrated servers, it will
-	 * accept unauthenticated players; otherwise, it disconnects such players.
-	 * 
-	 * @see net.minecraft.server.network.ServerLoginNetworkHandler
+	 * Checks whether this Minecraft server should require all connected players are using a licensed Minecraft account when connecting to this server.
 	 */
 	public boolean isOnlineMode() {
 		return this.onlineMode;
 	}
 
-	/**
-	 * Sets whether this server is in the online mode, or whether it
-	 * authenticates connecting players with the Minecraft Session Service.
-	 * 
-	 * <p>This is called by individual server implementations on their setup.
-	 * 
-	 * @see #isOnlineMode()
-	 * 
-	 * @param onlineMode whether the server will be in online mode
-	 */
 	public void setOnlineMode(boolean onlineMode) {
 		this.onlineMode = onlineMode;
 	}
@@ -1651,7 +1651,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				return operatorEntry.getPermissionLevel();
 			} else if (this.isHost(profile)) {
 				return 4;
-			} else if (this.isSingleplayer()) {
+			} else if (this.isSinglePlayer()) {
 				return this.getPlayerManager().areCheatsAllowed() ? 4 : 0;
 			} else {
 				return this.getOpPermissionLevel();

@@ -62,23 +62,6 @@ import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * Represents a block that can be placed in a world.
- * 
- * <p>There is exactly one instance for every type of block. Every stone
- * block for example in a world shares the same block instance. Each block
- * instance is registered under {@link net.minecraft.util.registry.Registry#BLOCK}.
- * See {@link Blocks} for examples of block instances.
- * 
- * <p>An item corresponding to a block is not automatically created. You
- * may create your own {@link net.minecraft.item.BlockItem} and register it
- * under {@link net.minecraft.util.registry.Registry#ITEM}.
- * 
- * <p>The translation key for the block name is determined by {@link
- * #getTranslationKey}.
- * 
- * @see <a href="https://minecraft.fandom.com/wiki/Model">Model - Official Minecraft Wiki</a>
- */
 public class Block extends AbstractBlock implements ItemConvertible {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
@@ -452,14 +435,6 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return new TranslatableText(this.getTranslationKey());
 	}
 
-	/**
-	 * {@return the translation key for the name of this block}
-	 * 
-	 * <p>By default, it returns {@code block.namespace.path} where {@code
-	 * namespace} and {@code path} are of the identifier used for registering
-	 * this block, but {@code /} in {@code path} is replaced with {@code .}.
-	 * If the block is not registered, it returns {@code block.unregistered_sadface}.
-	 */
 	public String getTranslationKey() {
 		if (this.translationKey == null) {
 			this.translationKey = Util.createTranslationKey("block", Registry.BLOCK.getId(this));

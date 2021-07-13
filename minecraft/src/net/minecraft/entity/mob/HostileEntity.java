@@ -85,6 +85,8 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
 		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
 			return false;
+		} else if (world.getLightLevel(LightType.BLOCK, pos) > 0) {
+			return false;
 		} else {
 			int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
 			return i <= random.nextInt(8);

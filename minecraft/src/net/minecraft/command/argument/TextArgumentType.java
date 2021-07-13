@@ -15,7 +15,7 @@ import net.minecraft.text.TranslatableText;
 public class TextArgumentType implements ArgumentType<Text> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("\"hello world\"", "\"\"", "\"{\"text\":\"hello world\"}", "[\"\"]");
 	public static final DynamicCommandExceptionType INVALID_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(
-		text -> new TranslatableText("argument.component.invalid", text)
+		object -> new TranslatableText("argument.component.invalid", object)
 	);
 
 	private TextArgumentType() {

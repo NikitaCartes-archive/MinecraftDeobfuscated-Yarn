@@ -64,30 +64,21 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final ChunkPos upperCorner;
 	private final StructureAccessor structureAccessor;
 	private final ChunkStatus field_33754;
-	/**
-	 * The number of neighboring chunks which can be accessed for block
-	 * placement.
-	 * 
-	 * <p>A value of {@code 0} means that only this chunk is accessible. A
-	 * positive value means that the given amount of neighbors are accessible
-	 * in each direction. A negative value means that this region shouldn't be
-	 * used for block placement.
-	 */
-	private final int placementRadius;
+	private final int field_33755;
 	@Nullable
 	private Supplier<String> field_33756;
 
-	public ChunkRegion(ServerWorld world, List<Chunk> list, ChunkStatus chunkStatus, int placementRadius) {
+	public ChunkRegion(ServerWorld world, List<Chunk> list, ChunkStatus chunkStatus, int i) {
 		this.field_33754 = chunkStatus;
-		this.placementRadius = placementRadius;
-		int i = MathHelper.floor(Math.sqrt((double)list.size()));
-		if (i * i != list.size()) {
+		this.field_33755 = i;
+		int j = MathHelper.floor(Math.sqrt((double)list.size()));
+		if (j * j != list.size()) {
 			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
 		} else {
 			ChunkPos chunkPos = ((Chunk)list.get(list.size() / 2)).getPos();
 			this.chunks = list;
 			this.centerPos = chunkPos;
-			this.width = i;
+			this.width = j;
 			this.world = world;
 			this.seed = world.getSeed();
 			this.levelProperties = world.getLevelProperties();
@@ -104,6 +95,7 @@ public class ChunkRegion implements StructureWorldAccess {
 		return this.centerPos;
 	}
 
+	@Override
 	public void method_36972(@Nullable Supplier<String> supplier) {
 		this.field_33756 = supplier;
 	}
@@ -240,12 +232,12 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public boolean isValidForSetBlock(BlockPos pos) {
-		int i = ChunkSectionPos.getSectionCoord(pos.getX());
-		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
+	public boolean method_37368(BlockPos blockPos) {
+		int i = ChunkSectionPos.getSectionCoord(blockPos.getX());
+		int j = ChunkSectionPos.getSectionCoord(blockPos.getZ());
 		int k = Math.abs(this.centerPos.x - i);
 		int l = Math.abs(this.centerPos.z - j);
-		if (k <= this.placementRadius && l <= this.placementRadius) {
+		if (k <= this.field_33755 && l <= this.field_33755) {
 			return true;
 		} else {
 			Util.error(
@@ -254,7 +246,7 @@ public class ChunkRegion implements StructureWorldAccess {
 					+ ", "
 					+ j
 					+ "], pos: "
-					+ pos
+					+ blockPos
 					+ ", status: "
 					+ this.field_33754
 					+ (this.field_33756 == null ? "" : ", currently generating: " + (String)this.field_33756.get())
@@ -265,7 +257,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-		if (!this.isValidForSetBlock(pos)) {
+		if (!this.method_37368(pos)) {
 			return false;
 		} else {
 			Chunk chunk = this.getChunk(pos);

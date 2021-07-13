@@ -3,14 +3,19 @@ package net.minecraft.world.gen.chunk;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
@@ -22,6 +27,7 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -47,6 +53,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -217,21 +224,81 @@ public abstract class ChunkGenerator {
 		}
 	}
 
-	public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
-		ChunkPos chunkPos = region.getCenterPos();
-		int i = chunkPos.getStartX();
-		int j = chunkPos.getStartZ();
-		BlockPos blockPos = new BlockPos(i, region.getBottomY(), j);
-		Biome biome = this.populationSource.getBiomeForNoiseGen(chunkPos);
-		ChunkRandom chunkRandom = new ChunkRandom();
-		long l = chunkRandom.setPopulationSeed(region.getSeed(), i, j);
+	public void generateFeatures(StructureWorldAccess world, ChunkPos pos, StructureAccessor structureAccessor) {
+		int i = pos.x;
+		int j = pos.z;
+		int k = pos.getStartX();
+		int l = pos.getStartZ();
+		if (!SharedConstants.method_37481(k, l)) {
+			BlockPos blockPos = new BlockPos(k, world.getBottomY(), l);
+			Map<Integer, List<StructureFeature<?>>> map = (Map<Integer, List<StructureFeature<?>>>)Registry.STRUCTURE_FEATURE
+				.stream()
+				.collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
+			List<List<ConfiguredFeature<?, ?>>> list = this.populationSource.method_37619();
+			ChunkRandom chunkRandom = new ChunkRandom();
+			long m = chunkRandom.setPopulationSeed(world.getSeed(), k, l);
 
-		try {
-			biome.generateFeatureStep(accessor, this, region, l, chunkRandom, blockPos);
-		} catch (Exception var13) {
-			CrashReport crashReport = CrashReport.create(var13, "Biome decoration");
-			crashReport.addElement("Generation").add("CenterX", chunkPos.x).add("CenterZ", chunkPos.z).add("Seed", l).add("Biome", biome);
-			throw new CrashException(crashReport);
+			try {
+				Registry<ConfiguredFeature<?, ?>> registry = world.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY);
+				Registry<StructureFeature<?>> registry2 = world.getRegistryManager().get(Registry.STRUCTURE_FEATURE_KEY);
+				int n = Math.max(GenerationStep.Feature.values().length, list.size());
+
+				for (int o = 0; o < n; o++) {
+					int p = 0;
+					if (structureAccessor.shouldGenerateStructures()) {
+						for (StructureFeature<?> structureFeature : (List)map.getOrDefault(o, Collections.emptyList())) {
+							chunkRandom.setDecoratorSeed(m, p, o);
+							int q = ChunkSectionPos.getSectionCoord(blockPos.getX());
+							int r = ChunkSectionPos.getSectionCoord(blockPos.getZ());
+							int s = ChunkSectionPos.getBlockCoord(q);
+							int t = ChunkSectionPos.getBlockCoord(r);
+							Supplier<String> supplier = () -> (String)registry2.getKey(structureFeature).map(Object::toString).orElseGet(structureFeature::toString);
+
+							try {
+								int u = world.getBottomY() + 1;
+								int v = world.getTopY() - 1;
+								world.method_36972(supplier);
+								structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), structureFeature)
+									.forEach(
+										structureStart -> structureStart.generateStructure(
+												world, structureAccessor, this, chunkRandom, new BlockBox(s, u, t, s + 15, v, t + 15), new ChunkPos(q, r)
+											)
+									);
+							} catch (Exception var29) {
+								CrashReport crashReport = CrashReport.create(var29, "Feature placement");
+								crashReport.addElement("Feature").add("Description", supplier::get);
+								throw new CrashException(crashReport);
+							}
+
+							p++;
+						}
+					}
+
+					if (list.size() > o) {
+						for (ConfiguredFeature<?, ?> configuredFeature : (List)list.get(o)) {
+							Supplier<String> supplier2 = () -> (String)registry.getKey(configuredFeature).map(Object::toString).orElseGet(configuredFeature::toString);
+							chunkRandom.setDecoratorSeed(m, p, o);
+
+							try {
+								world.method_36972(supplier2);
+								configuredFeature.method_37767(Optional.of(configuredFeature), world, this, chunkRandom, blockPos);
+							} catch (Exception var30) {
+								CrashReport crashReport2 = CrashReport.create(var30, "Feature placement");
+								crashReport2.addElement("Feature").add("Description", supplier2::get);
+								throw new CrashException(crashReport2);
+							}
+
+							p++;
+						}
+					}
+				}
+
+				world.method_36972(null);
+			} catch (Exception var31) {
+				CrashReport crashReport3 = CrashReport.create(var31, "Biome decoration");
+				crashReport3.addElement("Generation").add("CenterX", i).add("CenterZ", j).add("Seed", m);
+				throw new CrashException(crashReport3);
+			}
 		}
 	}
 
@@ -256,7 +323,7 @@ public abstract class ChunkGenerator {
 	}
 
 	public int getWorldHeight() {
-		return 256;
+		return 384;
 	}
 
 	public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {

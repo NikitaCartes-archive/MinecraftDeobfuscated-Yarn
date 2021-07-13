@@ -65,8 +65,8 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		WARNING("Warning!", 16711680),
-		INFO("Info!", 8226750);
+		Warning("Warning!", 16711680),
+		Info("Info!", 8226750);
 
 		public final int colorCode;
 		public final Text text;

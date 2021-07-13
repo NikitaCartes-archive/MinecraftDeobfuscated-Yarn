@@ -11,7 +11,6 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -63,8 +62,8 @@ public class SpiderEntity extends HostileEntity {
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this));
-		this.targetSelector.add(2, new SpiderEntity.TargetGoal(this, PlayerEntity.class));
-		this.targetSelector.add(3, new SpiderEntity.TargetGoal(this, IronGolemEntity.class));
+		this.targetSelector.add(2, new SpiderEntity.FollowTargetGoal(this, PlayerEntity.class));
+		this.targetSelector.add(3, new SpiderEntity.FollowTargetGoal(this, IronGolemEntity.class));
 	}
 
 	@Override
@@ -214,6 +213,18 @@ public class SpiderEntity extends HostileEntity {
 		}
 	}
 
+	static class FollowTargetGoal<T extends LivingEntity> extends net.minecraft.entity.ai.goal.FollowTargetGoal<T> {
+		public FollowTargetGoal(SpiderEntity spider, Class<T> targetEntityClass) {
+			super(spider, targetEntityClass, true);
+		}
+
+		@Override
+		public boolean canStart() {
+			float f = this.mob.getBrightnessAtEyes();
+			return f >= 0.5F ? false : super.canStart();
+		}
+	}
+
 	public static class SpiderData implements EntityData {
 		public StatusEffect effect;
 
@@ -228,18 +239,6 @@ public class SpiderEntity extends HostileEntity {
 			} else if (i <= 4) {
 				this.effect = StatusEffects.INVISIBILITY;
 			}
-		}
-	}
-
-	static class TargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
-		public TargetGoal(SpiderEntity spider, Class<T> targetEntityClass) {
-			super(spider, targetEntityClass, true);
-		}
-
-		@Override
-		public boolean canStart() {
-			float f = this.mob.getBrightnessAtEyes();
-			return f >= 0.5F ? false : super.canStart();
 		}
 	}
 }

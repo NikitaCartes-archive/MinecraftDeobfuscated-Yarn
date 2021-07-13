@@ -130,8 +130,8 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	public static final int BLUE_BABY_CHANCE = 1200;
 	private static final int MAX_AIR = 6000;
 	public static final String VARIANT_KEY = "Variant";
-	private static final int HYDRATION_BY_POTION = 1800;
-	private static final int MAX_REGENERATION_BUFF_DURATION = 2400;
+	private static final int field_33485 = 1800;
+	private static final int field_34005 = 2400;
 	private final Map<String, Vec3f> modelAngles = Maps.<String, Vec3f>newHashMap();
 	private static final int BUFF_DURATION = 100;
 

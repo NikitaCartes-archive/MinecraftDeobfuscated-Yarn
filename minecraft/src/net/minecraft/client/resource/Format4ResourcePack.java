@@ -155,7 +155,7 @@ public class Format4ResourcePack implements ResourcePack {
 
 							for (int j = 88 * i; j < 200 * i; j++) {
 								for (int k = 56 * i; k < 112 * i; k++) {
-									nativeImage.setColor(k, j, 0);
+									nativeImage.setPixelColor(k, j, 0);
 								}
 							}
 
@@ -206,9 +206,9 @@ public class Format4ResourcePack implements ResourcePack {
 
 					for (int l = top * k; l < bottom * k; l++) {
 						for (int m = left * k; m < right * k; m++) {
-							int n = NativeImage.getRed(nativeImage2.getColor(m, l));
-							int o = nativeImage.getColor(m, l);
-							nativeImage3.setColor(m, l, NativeImage.packColor(n, NativeImage.getBlue(o), NativeImage.getGreen(o), NativeImage.getRed(o)));
+							int n = NativeImage.getRed(nativeImage2.getPixelColor(m, l));
+							int o = nativeImage.getPixelColor(m, l);
+							nativeImage3.setPixelColor(m, l, NativeImage.getAbgrColor(n, NativeImage.getBlue(o), NativeImage.getGreen(o), NativeImage.getRed(o)));
 						}
 					}
 
@@ -376,7 +376,7 @@ public class Format4ResourcePack implements ResourcePack {
 
 		for (int i = 0; i < bottom; i++) {
 			for (int j = 0; j < right; j++) {
-				target.setColor(left + j, top + i, source.getColor(sourceLeft + (mirrorX ? right - 1 - j : j), sourceTop + (mirrorY ? bottom - 1 - i : i)));
+				target.setPixelColor(left + j, top + i, source.getPixelColor(sourceLeft + (mirrorX ? right - 1 - j : j), sourceTop + (mirrorY ? bottom - 1 - i : i)));
 			}
 		}
 	}

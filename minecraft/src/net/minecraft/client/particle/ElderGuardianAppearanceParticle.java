@@ -21,7 +21,7 @@ import net.minecraft.util.math.Vec3f;
 @Environment(EnvType.CLIENT)
 public class ElderGuardianAppearanceParticle extends Particle {
 	private final Model model;
-	private final RenderLayer layer = RenderLayer.getEntityTranslucent(ElderGuardianEntityRenderer.TEXTURE);
+	private final RenderLayer LAYER = RenderLayer.getEntityTranslucent(ElderGuardianEntityRenderer.TEXTURE);
 
 	ElderGuardianAppearanceParticle(ClientWorld clientWorld, double d, double e, double f) {
 		super(clientWorld, d, e, f);
@@ -45,7 +45,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		matrixStack.translate(0.0, -1.101F, 1.5);
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		VertexConsumer vertexConsumer2 = immediate.getBuffer(this.layer);
+		VertexConsumer vertexConsumer2 = immediate.getBuffer(this.LAYER);
 		this.model.render(matrixStack, vertexConsumer2, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, g);
 		immediate.draw();
 	}

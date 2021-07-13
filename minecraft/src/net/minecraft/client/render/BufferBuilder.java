@@ -57,7 +57,9 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			int i = this.buffer.capacity();
 			int j = i + roundBufferSize(size);
 			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", i, j);
-			ByteBuffer byteBuffer = GlAllocationUtils.resizeByteBuffer(this.buffer, j);
+			ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(j);
+			this.buffer.position(0);
+			byteBuffer.put(this.buffer);
 			byteBuffer.rewind();
 			this.buffer = byteBuffer;
 		}
@@ -320,8 +322,8 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 				i = 24;
 			}
 
-			this.putShort(i + 0, (short)(light & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295)));
-			this.putShort(i + 2, (short)(light >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295)));
+			this.putShort(i + 0, (short)(light & 65535));
+			this.putShort(i + 2, (short)(light >> 16 & 65535));
 			this.putByte(i + 4, BufferVertexConsumer.packByte(normalX));
 			this.putByte(i + 5, BufferVertexConsumer.packByte(normalY));
 			this.putByte(i + 6, BufferVertexConsumer.packByte(normalZ));

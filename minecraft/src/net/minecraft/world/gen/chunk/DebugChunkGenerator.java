@@ -18,6 +18,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -71,18 +72,19 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
+	public void generateFeatures(StructureWorldAccess world, ChunkPos pos, StructureAccessor structureAccessor) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		ChunkPos chunkPos = region.getCenterPos();
+		int i = pos.x;
+		int j = pos.z;
 
-		for (int i = 0; i < 16; i++) {
-			for (int j = 0; j < 16; j++) {
-				int k = ChunkSectionPos.getOffsetPos(chunkPos.x, i);
-				int l = ChunkSectionPos.getOffsetPos(chunkPos.z, j);
-				region.setBlockState(mutable.set(k, 60, l), BARRIER, Block.NOTIFY_LISTENERS);
-				BlockState blockState = getBlockState(k, l);
+		for (int k = 0; k < 16; k++) {
+			for (int l = 0; l < 16; l++) {
+				int m = ChunkSectionPos.getOffsetPos(i, k);
+				int n = ChunkSectionPos.getOffsetPos(j, l);
+				world.setBlockState(mutable.set(m, 60, n), BARRIER, Block.NOTIFY_LISTENERS);
+				BlockState blockState = getBlockState(m, n);
 				if (blockState != null) {
-					region.setBlockState(mutable.set(k, 70, l), blockState, Block.NOTIFY_LISTENERS);
+					world.setBlockState(mutable.set(m, 70, n), blockState, Block.NOTIFY_LISTENERS);
 				}
 			}
 		}

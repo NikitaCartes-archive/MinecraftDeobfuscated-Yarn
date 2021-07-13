@@ -435,16 +435,10 @@ public final class ItemStack {
 		return this.item.isItemBarVisible(this);
 	}
 
-	/**
-	 * {@return the length of the filled section of the durability bar in pixels (out of 13)}
-	 */
 	public int getItemBarStep() {
 		return this.item.getItemBarStep(this);
 	}
 
-	/**
-	 * {@return the color of the filled section of the durability bar}
-	 */
 	public int getItemBarColor() {
 		return this.item.getItemBarColor(this);
 	}

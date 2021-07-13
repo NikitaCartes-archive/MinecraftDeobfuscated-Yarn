@@ -91,7 +91,7 @@ public interface Element {
 	 * 
 	 * @param mouseX the X coordinate of the mouse
 	 * @param mouseY the Y coordinate of the mouse
-	 * @param amount value is {@code < 0} if scrolled down, {@code > 0} if scrolled up
+	 * @param amount value is {@code > 1} if scrolled down, {@code < 1} if scrolled up
 	 */
 	default boolean mouseScrolled(double mouseX, double mouseY, double amount) {
 		return false;

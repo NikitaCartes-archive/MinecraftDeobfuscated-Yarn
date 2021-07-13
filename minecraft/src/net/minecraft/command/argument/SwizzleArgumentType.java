@@ -20,8 +20,8 @@ public class SwizzleArgumentType implements ArgumentType<EnumSet<Direction.Axis>
 		return new SwizzleArgumentType();
 	}
 
-	public static EnumSet<Direction.Axis> getSwizzle(CommandContext<ServerCommandSource> context, String name) {
-		return context.getArgument(name, EnumSet.class);
+	public static EnumSet<Direction.Axis> getSwizzle(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, EnumSet.class);
 	}
 
 	public EnumSet<Direction.Axis> parse(StringReader stringReader) throws CommandSyntaxException {

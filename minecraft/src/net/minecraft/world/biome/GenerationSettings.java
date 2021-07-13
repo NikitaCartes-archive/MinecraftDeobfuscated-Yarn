@@ -12,8 +12,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
@@ -69,6 +71,7 @@ public class GenerationSettings {
 	private final List<List<Supplier<ConfiguredFeature<?, ?>>>> features;
 	private final List<Supplier<ConfiguredStructureFeature<?, ?>>> structureFeatures;
 	private final List<ConfiguredFeature<?, ?>> flowerFeatures;
+	private final Set<ConfiguredFeature<?, ?>> field_34161;
 
 	GenerationSettings(
 		Supplier<ConfiguredSurfaceBuilder<?>> surfaceBuilder,
@@ -86,6 +89,7 @@ public class GenerationSettings {
 			.flatMap(ConfiguredFeature::getDecoratedFeatures)
 			.filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER)
 			.collect(ImmutableList.toImmutableList());
+		this.field_34161 = (Set<ConfiguredFeature<?, ?>>)features.stream().flatMap(Collection::stream).map(Supplier::get).collect(Collectors.toSet());
 	}
 
 	public List<Supplier<ConfiguredCarver<?>>> getCarversForStep(GenerationStep.Carver carverStep) {
@@ -129,6 +133,10 @@ public class GenerationSettings {
 
 	public SurfaceConfig getSurfaceConfig() {
 		return ((ConfiguredSurfaceBuilder)this.surfaceBuilder.get()).getConfig();
+	}
+
+	public boolean method_37611(ConfiguredFeature<?, ?> configuredFeature) {
+		return this.field_34161.contains(configuredFeature);
 	}
 
 	public static class Builder {

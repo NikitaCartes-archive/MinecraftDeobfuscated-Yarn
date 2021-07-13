@@ -54,15 +54,15 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		MatrixStack.Entry entry = matrixStack.peek();
 		Matrix4f matrix4f = entry.getModel();
 		Matrix3f matrix3f = entry.getNormal();
-		vertex(vertexConsumer, matrix4f, matrix3f, -0.5F, -0.25F, s, 255, u, h, m, i);
-		vertex(vertexConsumer, matrix4f, matrix3f, 0.5F, -0.25F, s, 255, u, k, m, i);
-		vertex(vertexConsumer, matrix4f, matrix3f, 0.5F, 0.75F, s, 255, u, k, l, i);
-		vertex(vertexConsumer, matrix4f, matrix3f, -0.5F, 0.75F, s, 255, u, h, l, i);
+		method_23171(vertexConsumer, matrix4f, matrix3f, -0.5F, -0.25F, s, 255, u, h, m, i);
+		method_23171(vertexConsumer, matrix4f, matrix3f, 0.5F, -0.25F, s, 255, u, k, m, i);
+		method_23171(vertexConsumer, matrix4f, matrix3f, 0.5F, 0.75F, s, 255, u, k, l, i);
+		method_23171(vertexConsumer, matrix4f, matrix3f, -0.5F, 0.75F, s, 255, u, h, l, i);
 		matrixStack.pop();
 		super.render(experienceOrbEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	private static void vertex(
+	private static void method_23171(
 		VertexConsumer vertexConsumer, Matrix4f modelMatrix, Matrix3f normalMatrix, float x, float y, int red, int green, int blue, float u, float v, int light
 	) {
 		vertexConsumer.vertex(modelMatrix, x, y, 0.0F)

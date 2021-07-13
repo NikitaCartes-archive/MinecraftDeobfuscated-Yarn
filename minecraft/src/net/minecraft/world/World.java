@@ -402,17 +402,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.playSound(player, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch);
 	}
 
-	/**
-	 * @param except the player that should not receive the sound, or {@code null}
-	 */
 	public abstract void playSound(
-		@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch
+		@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch
 	);
 
-	/**
-	 * @param except the player that should not receive the sound, or {@code null}
-	 */
-	public abstract void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch);
+	public abstract void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
 	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
 	}

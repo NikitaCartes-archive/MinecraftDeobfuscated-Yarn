@@ -1923,7 +1923,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static SaveProperties createSaveProperties(
 		LevelStorage.Session session, DynamicRegistryManager.Impl registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings
 	) {
-		RegistryOps<NbtElement> registryOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, resourceManager, registryTracker);
+		RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, resourceManager, registryTracker);
 		SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings);
 		if (saveProperties == null) {
 			throw new IllegalStateException("Failed to load world");
@@ -1950,7 +1950,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			session -> levelInfo.getDataPackSettings(),
 			(session, registryManager, resourceManager, dataPackSettings) -> {
 				RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, registryTracker);
-				RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, resourceManager, registryTracker);
+				RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, resourceManager, registryTracker);
 				DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
 					.encodeStart(registryReadingOps, generatorOptions)
 					.setLifecycle(Lifecycle.stable())
@@ -2847,7 +2847,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				} catch (InterruptedException var17) {
 				}
 
-				ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", framebuffer, text -> {
+				ScreenshotRecorder.method_22690(directory, "panorama_" + l + ".png", width, height, framebuffer, text -> {
 				});
 			}
 

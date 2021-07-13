@@ -53,6 +53,10 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
 	}
 
+	public static boolean method_37770(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SNOW_BLOCK));
+	}
+
 	private static boolean isReplaceablePlant(TestableWorld world, BlockPos pos) {
 		return world.testBlockState(pos, state -> {
 			Material material = state.getMaterial();
@@ -65,7 +69,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 	}
 
 	public static boolean canReplace(TestableWorld world, BlockPos pos) {
-		return isAirOrLeaves(world, pos) || isReplaceablePlant(world, pos) || isWater(world, pos);
+		return method_37770(world, pos) || isAirOrLeaves(world, pos) || isReplaceablePlant(world, pos) || isWater(world, pos);
 	}
 
 	private boolean generate(

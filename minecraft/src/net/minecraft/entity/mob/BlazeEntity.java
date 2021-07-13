@@ -3,7 +3,7 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -52,7 +52,7 @@ public class BlazeEntity extends HostileEntity {
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
-		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
+		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}
 
 	public static DefaultAttributeContainer.Builder createBlazeAttributes() {

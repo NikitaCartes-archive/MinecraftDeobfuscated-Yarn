@@ -18,8 +18,6 @@ import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -31,26 +29,6 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 	@Override
 	protected boolean isUniformDistribution() {
 		return false;
-	}
-
-	protected boolean shouldStartAt(
-		ChunkGenerator chunkGenerator,
-		BiomeSource biomeSource,
-		long l,
-		ChunkRandom chunkRandom,
-		ChunkPos chunkPos,
-		Biome biome,
-		ChunkPos chunkPos2,
-		DefaultFeatureConfig defaultFeatureConfig,
-		HeightLimitView heightLimitView
-	) {
-		for (Biome biome2 : biomeSource.getBiomesInArea(chunkPos.getOffsetX(9), chunkGenerator.getSeaLevel(), chunkPos.getOffsetZ(9), 32)) {
-			if (!biome2.getGenerationSettings().hasStructureFeature(this)) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	@Override

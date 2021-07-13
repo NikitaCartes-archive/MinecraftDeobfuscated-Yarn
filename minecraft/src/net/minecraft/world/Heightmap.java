@@ -25,7 +25,8 @@ import org.apache.logging.log4j.Logger;
 public class Heightmap {
 	private static final Logger LOGGER = LogManager.getLogger();
 	static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
-	static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
+	static final Predicate<BlockState> NOT_SNOW = state -> !state.isOf(Blocks.SNOW_BLOCK) && !state.isOf(Blocks.SNOW);
+	static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().blocksMovement();
 	private final PackedIntegerArray storage;
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;
@@ -145,6 +146,9 @@ public class Heightmap {
 	public static enum Type implements StringIdentifiable {
 		WORLD_SURFACE_WG("WORLD_SURFACE_WG", Heightmap.Purpose.WORLDGEN, Heightmap.NOT_AIR),
 		WORLD_SURFACE("WORLD_SURFACE", Heightmap.Purpose.CLIENT, Heightmap.NOT_AIR),
+		WORLD_SURFACE_IGNORE_SNOW(
+			"WORLD_SURFACE_IGNORE_SNOW", Heightmap.Purpose.LIVE_WORLD, blockState -> Heightmap.NOT_AIR.test(blockState) && Heightmap.NOT_SNOW.test(blockState)
+		),
 		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Purpose.WORLDGEN, Heightmap.SUFFOCATES),
 		OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.Purpose.LIVE_WORLD, Heightmap.SUFFOCATES),
 		MOTION_BLOCKING("MOTION_BLOCKING", Heightmap.Purpose.CLIENT, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()),

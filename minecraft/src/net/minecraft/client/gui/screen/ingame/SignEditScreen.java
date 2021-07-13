@@ -16,7 +16,6 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.TexturedRenderLayers;
@@ -141,7 +140,7 @@ public class SignEditScreen extends Screen {
 		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.signType);
 		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.model::getLayer);
 		this.model.stick.visible = bl;
-		this.model.root.render(matrices, vertexConsumer, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+		this.model.root.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);
 		matrices.pop();
 		float h = 0.010416667F;
 		matrices.translate(0.0, 0.33333334F, 0.046666667F);
@@ -160,14 +159,12 @@ public class SignEditScreen extends Screen {
 				}
 
 				float n = (float)(-this.client.textRenderer.getWidth(string) / 2);
-				this.client
-					.textRenderer
-					.draw(string, n, (float)(m * 10 - this.text.length * 5), i, false, matrix4f, immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, false);
+				this.client.textRenderer.draw(string, n, (float)(m * 10 - this.text.length * 5), i, false, matrix4f, immediate, false, 0, 15728880, false);
 				if (m == this.currentRow && j >= 0 && bl2) {
 					int o = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
 					int p = o - this.client.textRenderer.getWidth(string) / 2;
 					if (j >= string.length()) {
-						this.client.textRenderer.draw("_", (float)p, (float)l, i, false, matrix4f, immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, false);
+						this.client.textRenderer.draw("_", (float)p, (float)l, i, false, matrix4f, immediate, false, 0, 15728880, false);
 					}
 				}
 			}

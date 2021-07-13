@@ -54,7 +54,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 					} else {
 						this.client.setScreen(this);
 					}
-				}, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
+				}, RealmsLongConfirmationScreen.Type.Info, text, text2, true));
 			} else {
 				this.parent.openTheWorld(false, this);
 			}

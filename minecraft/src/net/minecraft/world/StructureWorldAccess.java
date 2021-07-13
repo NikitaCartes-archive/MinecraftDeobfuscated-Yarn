@@ -1,6 +1,8 @@
 package net.minecraft.world;
 
+import java.util.function.Supplier;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -11,11 +13,10 @@ public interface StructureWorldAccess extends ServerWorldAccess {
 
 	Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature);
 
-	/**
-	 * {@return {@code true} if the given position is an accessible position
-	 * for the {@code setBlockState} function}
-	 */
-	default boolean isValidForSetBlock(BlockPos pos) {
+	default boolean method_37368(BlockPos blockPos) {
 		return true;
+	}
+
+	default void method_36972(@Nullable Supplier<String> supplier) {
 	}
 }

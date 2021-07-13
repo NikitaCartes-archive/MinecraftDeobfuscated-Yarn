@@ -26,7 +26,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -122,7 +122,7 @@ public class GeneratorOptions {
 		Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed
 	) {
 		return new NoiseChunkGenerator(
-			new VanillaLayeredBiomeSource(seed, false, false, biomeRegistry), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.OVERWORLD)
+			MultiNoiseBiomeSource.method_35242(biomeRegistry, seed), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.OVERWORLD)
 		);
 	}
 
@@ -257,28 +257,6 @@ public class GeneratorOptions {
 				);
 			case "debug_all_block_states":
 				return new GeneratorOptions(l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, new DebugChunkGenerator(registry2)));
-			case "amplified":
-				return new GeneratorOptions(
-					l,
-					bl,
-					false,
-					getRegistryWithReplacedOverworldGenerator(
-						registry,
-						simpleRegistry,
-						new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false, registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.AMPLIFIED))
-					)
-				);
-			case "largebiomes":
-				return new GeneratorOptions(
-					l,
-					bl,
-					false,
-					getRegistryWithReplacedOverworldGenerator(
-						registry,
-						simpleRegistry,
-						new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, true, registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.OVERWORLD))
-					)
-				);
 			default:
 				return new GeneratorOptions(
 					l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, createOverworldGenerator(registry2, registry3, l))

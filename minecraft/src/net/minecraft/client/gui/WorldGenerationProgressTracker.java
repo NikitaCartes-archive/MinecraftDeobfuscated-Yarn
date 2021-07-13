@@ -48,6 +48,7 @@ public class WorldGenerationProgressTracker implements WorldGenerationProgressLi
 	public void start() {
 		this.running = true;
 		this.chunkStatuses.clear();
+		this.progressLogger.start();
 	}
 
 	@Override
