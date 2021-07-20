@@ -36,7 +36,7 @@ public abstract class GeneratorType {
 		@Override
 		protected ChunkGenerator getChunkGenerator(Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed) {
 			return new NoiseChunkGenerator(
-				MultiNoiseBiomeSource.method_35242(biomeRegistry, seed), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.OVERWORLD)
+				MultiNoiseBiomeSource.createVanillaSource(biomeRegistry, seed), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.OVERWORLD)
 			);
 		}
 	};

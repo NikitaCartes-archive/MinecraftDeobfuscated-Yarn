@@ -48,16 +48,16 @@ public class BiomeAccess {
 		return this.storage.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
-	public Biome getBiomeForNoiseGen(ChunkPos chunkPos) {
-		return this.storage.getBiomeForNoiseGen(chunkPos);
+	public Biome getBiomeForNoiseGen(ChunkPos chunkPos, int i) {
+		return this.storage.getBiomeForNoiseGen(chunkPos, i);
 	}
 
 	public interface Storage {
 		Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ);
 
-		default Biome getBiomeForNoiseGen(ChunkPos chunkPos) {
+		default Biome getBiomeForNoiseGen(ChunkPos chunkPos, int i) {
 			return this.getBiomeForNoiseGen(
-				BiomeCoords.fromChunk(chunkPos.x) + BiomeAccess.CHUNK_CENTER_OFFSET, -16, BiomeCoords.fromChunk(chunkPos.z) + BiomeAccess.CHUNK_CENTER_OFFSET
+				BiomeCoords.fromChunk(chunkPos.x) + BiomeAccess.CHUNK_CENTER_OFFSET, i / 4, BiomeCoords.fromChunk(chunkPos.z) + BiomeAccess.CHUNK_CENTER_OFFSET
 			);
 		}
 	}

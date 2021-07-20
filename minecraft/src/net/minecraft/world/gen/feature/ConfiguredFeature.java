@@ -53,10 +53,8 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
 		return this.feature.generate(new FeatureContext<>(Optional.empty(), world, chunkGenerator, random, origin, this.config));
 	}
 
-	public boolean method_37767(
-		Optional<ConfiguredFeature<?, ?>> optional, StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos
-	) {
-		return this.feature.generate(new FeatureContext<>(optional, structureWorldAccess, chunkGenerator, random, blockPos, this.config));
+	public boolean generate(Optional<ConfiguredFeature<?, ?>> feature, StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos origin) {
+		return this.feature.generate(new FeatureContext<>(feature, world, chunkGenerator, random, origin, this.config));
 	}
 
 	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {

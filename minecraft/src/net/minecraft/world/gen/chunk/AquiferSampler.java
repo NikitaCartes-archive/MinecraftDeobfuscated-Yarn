@@ -276,7 +276,7 @@ public interface AquiferSampler {
 
 		private AquiferSampler.Impl.FluidLevel getFluidLevel(int x, int y, int z) {
 			int i = this.settings.getSeaLevel() - 1;
-			int j = this.columnSampler.method_37766(x, y, z);
+			int j = this.columnSampler.method_37766(x, z);
 			if (j < i && y > j - 8) {
 				return new AquiferSampler.Impl.FluidLevel(i, Blocks.WATER.getDefaultState());
 			} else {

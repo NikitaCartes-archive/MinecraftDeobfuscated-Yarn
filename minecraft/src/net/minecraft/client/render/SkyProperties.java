@@ -132,10 +132,10 @@ public abstract class SkyProperties {
 
 	@Environment(EnvType.CLIENT)
 	public static class Overworld extends SkyProperties {
-		public static final int CLOUDS_HEIGHT = 128;
+		public static final int CLOUDS_HEIGHT = 192;
 
 		public Overworld() {
-			super(128.0F, true, SkyProperties.SkyType.NORMAL, false, false);
+			super(192.0F, true, SkyProperties.SkyType.NORMAL, false, false);
 		}
 
 		@Override

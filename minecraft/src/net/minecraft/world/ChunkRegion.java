@@ -63,30 +63,30 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final ChunkPos lowerCorner;
 	private final ChunkPos upperCorner;
 	private final StructureAccessor structureAccessor;
-	private final ChunkStatus field_33754;
-	private final int field_33755;
+	private final ChunkStatus status;
+	private final int size;
 	@Nullable
 	private Supplier<String> field_33756;
 
-	public ChunkRegion(ServerWorld world, List<Chunk> list, ChunkStatus chunkStatus, int i) {
-		this.field_33754 = chunkStatus;
-		this.field_33755 = i;
-		int j = MathHelper.floor(Math.sqrt((double)list.size()));
-		if (j * j != list.size()) {
+	public ChunkRegion(ServerWorld world, List<Chunk> chunks, ChunkStatus status, int size) {
+		this.status = status;
+		this.size = size;
+		int i = MathHelper.floor(Math.sqrt((double)chunks.size()));
+		if (i * i != chunks.size()) {
 			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
 		} else {
-			ChunkPos chunkPos = ((Chunk)list.get(list.size() / 2)).getPos();
-			this.chunks = list;
+			ChunkPos chunkPos = ((Chunk)chunks.get(chunks.size() / 2)).getPos();
+			this.chunks = chunks;
 			this.centerPos = chunkPos;
-			this.width = j;
+			this.width = i;
 			this.world = world;
 			this.seed = world.getSeed();
 			this.levelProperties = world.getLevelProperties();
 			this.random = world.getRandom();
 			this.dimension = world.getDimension();
 			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.getDimension().getBiomeAccessType());
-			this.lowerCorner = ((Chunk)list.get(0)).getPos();
-			this.upperCorner = ((Chunk)list.get(list.size() - 1)).getPos();
+			this.lowerCorner = ((Chunk)chunks.get(0)).getPos();
+			this.upperCorner = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
 			this.structureAccessor = world.getStructureAccessor().forRegion(this);
 		}
 	}
@@ -232,12 +232,12 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public boolean method_37368(BlockPos blockPos) {
-		int i = ChunkSectionPos.getSectionCoord(blockPos.getX());
-		int j = ChunkSectionPos.getSectionCoord(blockPos.getZ());
+	public boolean canSetBlockStateAt(BlockPos pos) {
+		int i = ChunkSectionPos.getSectionCoord(pos.getX());
+		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
 		int k = Math.abs(this.centerPos.x - i);
 		int l = Math.abs(this.centerPos.z - j);
-		if (k <= this.field_33755 && l <= this.field_33755) {
+		if (k <= this.size && l <= this.size) {
 			return true;
 		} else {
 			Util.error(
@@ -246,9 +246,9 @@ public class ChunkRegion implements StructureWorldAccess {
 					+ ", "
 					+ j
 					+ "], pos: "
-					+ blockPos
+					+ pos
 					+ ", status: "
-					+ this.field_33754
+					+ this.status
 					+ (this.field_33756 == null ? "" : ", currently generating: " + (String)this.field_33756.get())
 			);
 			return false;
@@ -257,7 +257,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
-		if (!this.method_37368(pos)) {
+		if (!this.canSetBlockStateAt(pos)) {
 			return false;
 		} else {
 			Chunk chunk = this.getChunk(pos);

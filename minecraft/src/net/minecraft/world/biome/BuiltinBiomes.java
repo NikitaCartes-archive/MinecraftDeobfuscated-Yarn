@@ -23,7 +23,7 @@ public abstract class BuiltinBiomes {
 	static {
 		register(0, BiomeKeys.OCEAN, DefaultBiomeCreator.createNormalOcean(false));
 		register(2, BiomeKeys.DESERT, DefaultBiomeCreator.createDesert(true, true, true));
-		register(3, BiomeKeys.MOUNTAINS, DefaultBiomeCreator.createMountains(ConfiguredSurfaceBuilders.MOUNTAIN, false));
+		register(3, BiomeKeys.EXTREME_HILLS, DefaultBiomeCreator.createMountains(ConfiguredSurfaceBuilders.MOUNTAIN, false));
 		register(4, BiomeKeys.FOREST, DefaultBiomeCreator.createNormalForest());
 		register(5, BiomeKeys.TAIGA, DefaultBiomeCreator.createTaiga(false, false, true, false));
 		register(6, BiomeKeys.SWAMP, DefaultBiomeCreator.createSwamp(false));
@@ -61,7 +61,7 @@ public abstract class BuiltinBiomes {
 		register(49, BiomeKeys.DEEP_COLD_OCEAN, DefaultBiomeCreator.createColdOcean(true));
 		register(50, BiomeKeys.DEEP_FROZEN_OCEAN, DefaultBiomeCreator.createFrozenOcean(true));
 		register(129, BiomeKeys.SUNFLOWER_PLAINS, DefaultBiomeCreator.createPlains(true));
-		register(131, BiomeKeys.GRAVELLY_MOUNTAINS, DefaultBiomeCreator.createMountains(ConfiguredSurfaceBuilders.GRAVELLY_MOUNTAIN, false));
+		register(131, BiomeKeys.GRAVELLY_HILLS, DefaultBiomeCreator.createMountains(ConfiguredSurfaceBuilders.GRAVELLY_MOUNTAIN, false));
 		register(132, BiomeKeys.FLOWER_FOREST, DefaultBiomeCreator.createFlowerForest());
 		register(140, BiomeKeys.ICE_SPIKES, DefaultBiomeCreator.createSnowyTundra(true, false));
 		register(155, BiomeKeys.TALL_BIRCH_FOREST, DefaultBiomeCreator.createBirchForest(true));

@@ -64,7 +64,7 @@ public class AnvilLevelStorage {
 		if (saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld()) {
 			biomeSource = new FixedBiomeSource(registry.getOrThrow(BiomeKeys.PLAINS));
 		} else {
-			biomeSource = MultiNoiseBiomeSource.method_35242(registry, l);
+			biomeSource = MultiNoiseBiomeSource.createVanillaSource(registry, l);
 		}
 
 		convertRegions(impl, new File(file, "region"), list, biomeSource, 0, i, progressListener);

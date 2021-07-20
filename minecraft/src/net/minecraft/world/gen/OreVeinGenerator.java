@@ -12,7 +12,7 @@ public class OreVeinGenerator {
 	private static final float field_33588 = 1.0F;
 	private static final float ORE_PLACEMENT_NOISE_SCALE = 4.0F;
 	private static final float ORE_PLACEMENT_NOISE_THRESHOLD = 0.08F;
-	private static final float FREQUENCY_NOISE_THRESHOLD = 0.5F;
+	private static final float FREQUENCY_NOISE_THRESHOLD = 0.4F;
 	private static final double ORE_FREQUENCY_NOISE_SCALE = 1.5;
 	private static final int field_33695 = 20;
 	private static final double field_33696 = 0.2;
@@ -82,7 +82,7 @@ public class OreVeinGenerator {
 		} else if (random.nextFloat() > 0.7F) {
 			return blockState;
 		} else if (this.shouldPlaceOreBlock(firstOrePlacementNoise, secondOrePlacementNoise)) {
-			double d = MathHelper.clampedLerpFromProgress(Math.abs(oreFrequencyNoise), 0.5, 0.6F, 0.1F, 0.3F);
+			double d = MathHelper.clampedLerpFromProgress(Math.abs(oreFrequencyNoise), 0.4F, 0.6F, 0.1F, 0.3F);
 			if ((double)random.nextFloat() < d && this.oreChanceNoiseSampler.sample((double)x, (double)y, (double)z) > -0.3F) {
 				return random.nextFloat() < 0.02F ? veinType.rawBlock : veinType.ore;
 			} else {
@@ -107,7 +107,7 @@ public class OreVeinGenerator {
 		if (j >= 0 && i >= 0) {
 			int k = Math.min(i, j);
 			double d = MathHelper.clampedLerpFromProgress((double)k, 0.0, 20.0, -0.2, 0.0);
-			return Math.abs(oreFrequencyNoise) + d < 0.5 ? null : veinType;
+			return Math.abs(oreFrequencyNoise) + d < 0.4F ? null : veinType;
 		} else {
 			return null;
 		}
