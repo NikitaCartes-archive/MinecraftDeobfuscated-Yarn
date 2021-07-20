@@ -24,16 +24,16 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 		ChunkGenerator chunkGenerator = context.getGenerator();
 		Random random = context.getRandom();
 		ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)decoratedFeatureConfig.feature.get();
-		decoratedFeatureConfig.decorator.getPositions(new DecoratorContext(structureWorldAccess, chunkGenerator), random, context.getOrigin()).forEach(blockPos -> {
+		decoratedFeatureConfig.decorator.getPositions(new DecoratorContext(structureWorldAccess, chunkGenerator), random, context.getOrigin()).forEach(origin -> {
 			Optional<ConfiguredFeature<?, ?>> optional = context.getFeature();
 			if (optional.isPresent() && !(configuredFeature.getFeature() instanceof DecoratedFeature)) {
-				Biome biome = structureWorldAccess.getBiome(blockPos);
-				if (!biome.getGenerationSettings().method_37611((ConfiguredFeature<?, ?>)optional.get())) {
+				Biome biome = structureWorldAccess.getBiome(origin);
+				if (!biome.getGenerationSettings().isFeatureAllowed((ConfiguredFeature<?, ?>)optional.get())) {
 					return;
 				}
 			}
 
-			if (configuredFeature.method_37767(optional, structureWorldAccess, chunkGenerator, random, blockPos)) {
+			if (configuredFeature.generate(optional, structureWorldAccess, chunkGenerator, random, origin)) {
 				mutableBoolean.setTrue();
 			}
 		});

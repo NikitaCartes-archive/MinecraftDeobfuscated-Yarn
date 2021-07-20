@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.IntPredicate;
-import net.minecraft.class_6468;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.ToFloatFunction;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class MathHelper {
@@ -849,25 +849,25 @@ public class MathHelper {
 		return Math.sqrt((double)(x * x) + y * y + (double)(z * z));
 	}
 
-	public static <C> class_6468<C> method_37487(float f, float[] fs, List<class_6468<C>> list, float[] gs) {
-		int i = binarySearch(0, fs.length, ix -> f < fs[ix]) - 1;
-		int j = fs.length - 1;
+	public static <C> ToFloatFunction<C> getSplineFunction(float x, float[] locations, List<ToFloatFunction<C>> values, float[] derivatives) {
+		int i = binarySearch(0, locations.length, ix -> x < locations[ix]) - 1;
+		int j = locations.length - 1;
 		if (i < 0) {
-			return object -> ((class_6468)list.get(0)).apply(object) + gs[0] * (f - fs[0]);
+			return object -> ((ToFloatFunction)values.get(0)).apply(object) + derivatives[0] * (x - locations[0]);
 		} else if (i == j) {
-			return object -> ((class_6468)list.get(j)).apply(object) + gs[j] * (f - fs[j]);
+			return object -> ((ToFloatFunction)values.get(j)).apply(object) + derivatives[j] * (x - locations[j]);
 		} else {
-			float g = fs[i];
-			float h = fs[i + 1];
-			float k = (f - g) / (h - g);
-			class_6468<C> lv = (class_6468<C>)list.get(i);
-			class_6468<C> lv2 = (class_6468<C>)list.get(i + 1);
-			float l = gs[i];
-			float m = gs[i + 1];
-			return lv.method_37749(lv2, (kx, lx) -> {
-				float mx = l * (h - g) - (lx - kx);
-				float n = -m * (h - g) + (lx - kx);
-				return lerp(k, kx, lx) + k * (1.0F - k) * lerp(k, mx, n);
+			float f = locations[i];
+			float g = locations[i + 1];
+			float h = (x - f) / (g - f);
+			ToFloatFunction<C> toFloatFunction = (ToFloatFunction<C>)values.get(i);
+			ToFloatFunction<C> toFloatFunction2 = (ToFloatFunction<C>)values.get(i + 1);
+			float k = derivatives[i];
+			float l = derivatives[i + 1];
+			return toFloatFunction.combine(toFloatFunction2, (kx, lx) -> {
+				float m = k * (g - f) - (lx - kx);
+				float n = -l * (g - f) + (lx - kx);
+				return lerp(h, kx, lx) + h * (1.0F - h) * lerp(h, m, n);
 			});
 		}
 	}

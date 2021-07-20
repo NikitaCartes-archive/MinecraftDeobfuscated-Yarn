@@ -8,6 +8,8 @@ import net.minecraft.util.collection.Weighted;
 public class MobSpawnerEntry extends Weighted.Absent {
 	public static final int DEFAULT_WEIGHT = 1;
 	public static final String DEFAULT_ENTITY_ID = "minecraft:pig";
+	public static final String CUSTOM_SPAWN_RULES_KEY = "CustomeSpawnRules";
+	public static final String BLOCK_LIGHT_LIMIT_KEY = "BlockLightLimit";
 	private final NbtCompound entityNbt;
 
 	public MobSpawnerEntry() {

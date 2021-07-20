@@ -29,34 +29,34 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 	@Override
 	protected int getLight(long blockPos) {
-		return this.method_31931(blockPos, false);
+		return this.getLight(blockPos, false);
 	}
 
-	protected int method_31931(long l, boolean bl) {
-		long m = ChunkSectionPos.fromBlockPos(l);
-		int i = ChunkSectionPos.unpackY(m);
-		SkyLightStorage.Data data = bl ? this.storage : this.uncachedStorage;
-		int j = data.columnToTopSection.get(ChunkSectionPos.withZeroY(m));
+	protected int getLight(long blockPos, boolean cached) {
+		long l = ChunkSectionPos.fromBlockPos(blockPos);
+		int i = ChunkSectionPos.unpackY(l);
+		SkyLightStorage.Data data = cached ? this.storage : this.uncachedStorage;
+		int j = data.columnToTopSection.get(ChunkSectionPos.withZeroY(l));
 		if (j != data.minSectionY && i < j) {
-			ChunkNibbleArray chunkNibbleArray = this.getLightSection(data, m);
+			ChunkNibbleArray chunkNibbleArray = this.getLightSection(data, l);
 			if (chunkNibbleArray == null) {
-				for (l = BlockPos.removeChunkSectionLocalY(l); chunkNibbleArray == null; chunkNibbleArray = this.getLightSection(data, m)) {
+				for (blockPos = BlockPos.removeChunkSectionLocalY(blockPos); chunkNibbleArray == null; chunkNibbleArray = this.getLightSection(data, l)) {
 					if (++i >= j) {
 						return 15;
 					}
 
-					l = BlockPos.add(l, 0, 16, 0);
-					m = ChunkSectionPos.offset(m, Direction.UP);
+					blockPos = BlockPos.add(blockPos, 0, 16, 0);
+					l = ChunkSectionPos.offset(l, Direction.UP);
 				}
 			}
 
 			return chunkNibbleArray.get(
-				ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(l)),
-				ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(l)),
-				ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(l))
+				ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)),
+				ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)),
+				ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos))
 			);
 		} else {
-			return bl && !this.isSectionEnabled(m) ? 0 : 15;
+			return cached && !this.isSectionEnabled(l) ? 0 : 15;
 		}
 	}
 

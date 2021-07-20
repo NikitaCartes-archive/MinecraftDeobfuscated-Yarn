@@ -226,7 +226,8 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 						int o = j + i * m;
 						int p = k + i * n;
 						ChunkPos chunkPos = this.getStartChunk(config, worldSeed, chunkRandom, o, p);
-						boolean bl3 = world.getBiomeAccess().getBiomeForNoiseGen(chunkPos).getGenerationSettings().hasStructureFeature(this);
+						int q = -64;
+						boolean bl3 = world.getBiomeAccess().getBiomeForNoiseGen(chunkPos, -64).getGenerationSettings().hasStructureFeature(this);
 						if (bl3) {
 							Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
 							StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk), this, chunk);

@@ -49,58 +49,73 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		Random random,
 		Chunk chunk,
 		Biome biome,
-		int i,
-		int j,
-		int k,
-		double d,
-		BlockState blockState,
-		BlockState blockState2,
+		int x,
+		int z,
+		int height,
+		double noise,
+		BlockState defaultBlock,
+		BlockState defaultFluid,
 		BlockState fluidBlock,
 		BlockState topBlock,
 		BlockState underBlock,
-		int l
+		int i
 	) {
-		int m = Integer.MIN_VALUE;
+		int j = Integer.MIN_VALUE;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int n = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
-		BlockState blockState3 = topBlock;
-		int o = -1;
+		int k = (int)(noise / 3.0 + 3.0 + random.nextDouble() * 0.25);
+		BlockState blockState = topBlock;
+		int l = -1;
 
-		for (int p = k; p >= l; p--) {
-			mutable.set(i, p, j);
-			BlockState blockState4 = chunk.getBlockState(mutable);
-			if (blockState4.isAir()) {
-				o = -1;
-				m = Integer.MIN_VALUE;
-			} else if (!blockState4.isOf(blockState.getBlock())) {
-				m = Math.max(p, m);
-			} else if (o == -1) {
-				o = n;
-				BlockState blockState5;
-				if (p >= m + 2) {
-					blockState5 = fluidBlock;
-				} else if (p >= m - 1) {
+		for (int m = height; m >= i; m--) {
+			mutable.set(x, m, z);
+			BlockState blockState2 = chunk.getBlockState(mutable);
+			if (blockState2.isAir()) {
+				l = -1;
+				j = Integer.MIN_VALUE;
+			} else if (!blockState2.isOf(defaultBlock.getBlock())) {
+				j = Math.max(m, j);
+			} else if (l == -1) {
+				l = k;
+				BlockState blockState3;
+				if (m >= j + 2) {
+					blockState3 = fluidBlock;
+				} else if (m >= j - 1) {
+					blockState = topBlock;
+					blockState3 = fluidBlock;
+				} else if (m >= j - 4) {
+					blockState = topBlock;
 					blockState3 = topBlock;
-					blockState5 = fluidBlock;
-				} else if (p >= m - 4) {
-					blockState3 = topBlock;
-					blockState5 = topBlock;
-				} else if (p >= m - (7 + n)) {
-					blockState5 = blockState3;
-				} else {
+				} else if (m >= j - (7 + k)) {
 					blockState3 = blockState;
-					blockState5 = underBlock;
+				} else {
+					blockState = defaultBlock;
+					blockState3 = underBlock;
 				}
 
-				chunk.setBlockState(mutable, blockState5, false);
-			} else if (o > 0) {
-				o--;
-				chunk.setBlockState(mutable, blockState3, false);
-				if (o == 0 && blockState3.isOf(Blocks.SAND) && n > 1) {
-					o = random.nextInt(4) + Math.max(0, p - m);
-					blockState3 = blockState3.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
+				chunk.setBlockState(mutable, getSturdyBlockState(blockState3, chunk, mutable), false);
+			} else if (l > 0) {
+				l--;
+				chunk.setBlockState(mutable, getSturdyBlockState(blockState, chunk, mutable), false);
+				if (l == 0 && blockState.isOf(Blocks.SAND) && k > 1) {
+					l = random.nextInt(4) + Math.max(0, m - j);
+					blockState = blockState.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
 				}
 			}
 		}
+	}
+
+	private static BlockState getSturdyBlockState(BlockState state, Chunk chunk, BlockPos pos) {
+		if (state.isOf(Blocks.SAND) && isPosAboveAirOrFluid(chunk, pos)) {
+			return Blocks.SANDSTONE.getDefaultState();
+		} else if (state.isOf(Blocks.RED_SAND) && isPosAboveAirOrFluid(chunk, pos)) {
+			return Blocks.RED_SANDSTONE.getDefaultState();
+		} else {
+			return state.isOf(Blocks.GRAVEL) && isPosAboveAirOrFluid(chunk, pos) ? Blocks.STONE.getDefaultState() : state;
+		}
+	}
+
+	private static boolean isPosAboveAirOrFluid(Chunk chunk, BlockPos pos) {
+		BlockState blockState = chunk.getBlockState(pos.down());
+		return blockState.isAir() || !blockState.getFluidState().isEmpty();
 	}
 }

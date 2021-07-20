@@ -11,17 +11,17 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2825;
+	public static final int WORLD_VERSION = 2826;
 	@Deprecated
 	public static final String field_34062 = "ccpreview";
 	@Deprecated
-	public static final String VERSION_NAME = "1.18-experimental-1";
+	public static final String VERSION_NAME = "1.18-experimental-2";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.18";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 756;
 	@Deprecated
-	public static final int field_29736 = 41;
+	public static final int field_29736 = 42;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2678;
 	private static final int field_29708 = 30;
 	@Deprecated
@@ -81,7 +81,7 @@ public class SharedConstants {
 	public static final boolean field_29710 = false;
 	public static final boolean field_34059 = false;
 	public static final boolean field_34060 = false;
-	public static boolean field_34061 = false;
+	public static boolean DEBUG_BIOME_SOURCE = false;
 	public static final boolean field_29711 = false;
 	public static final boolean field_29712 = false;
 	public static final boolean field_29713 = false;
@@ -161,11 +161,11 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741865;
+		return 1073741866;
 	}
 
-	public static boolean method_37481(int i, int j) {
-		return !field_34061 ? false : i > 8192 || i < 0 || j > 1024 || j < 0;
+	public static boolean method_37481(int x, int z) {
+		return !DEBUG_BIOME_SOURCE ? false : x > 8192 || x < 0 || z > 1024 || z < 0;
 	}
 
 	static {

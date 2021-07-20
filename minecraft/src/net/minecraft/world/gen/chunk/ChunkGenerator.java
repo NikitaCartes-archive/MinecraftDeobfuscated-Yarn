@@ -281,7 +281,7 @@ public abstract class ChunkGenerator {
 
 							try {
 								world.method_36972(supplier2);
-								configuredFeature.method_37767(Optional.of(configuredFeature), world, this, chunkRandom, blockPos);
+								configuredFeature.generate(Optional.of(configuredFeature), world, this, chunkRandom, blockPos);
 							} catch (Exception var30) {
 								CrashReport crashReport2 = CrashReport.create(var30, "Feature placement");
 								crashReport2.addElement("Feature").add("Description", supplier2::get);
@@ -336,12 +336,18 @@ public abstract class ChunkGenerator {
 	public void setStructureStarts(
 		DynamicRegistryManager registryManager, StructureAccessor accessor, Chunk chunk, StructureManager structureManager, long worldSeed
 	) {
-		Biome biome = this.populationSource.getBiomeForNoiseGen(chunk.getPos());
+		ChunkPos chunkPos = chunk.getPos();
+		int i = this.method_37828(chunkPos);
+		Biome biome = this.populationSource.getBiomeForNoiseGen(chunkPos, i);
 		this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, registryManager, accessor, chunk, structureManager, worldSeed, biome);
 
 		for (Supplier<ConfiguredStructureFeature<?, ?>> supplier : biome.getGenerationSettings().getStructureFeatures()) {
 			this.setStructureStart((ConfiguredStructureFeature<?, ?>)supplier.get(), registryManager, accessor, chunk, structureManager, worldSeed, biome);
 		}
+	}
+
+	protected int method_37828(ChunkPos chunkPos) {
+		return -64;
 	}
 
 	private void setStructureStart(

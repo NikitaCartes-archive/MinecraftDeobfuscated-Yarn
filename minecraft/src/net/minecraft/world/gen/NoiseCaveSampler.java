@@ -23,7 +23,7 @@ public class NoiseCaveSampler implements WeightSampler {
 	private final DoublePerlinNoiseSampler field_34235;
 	private final DoublePerlinNoiseSampler caveDensityNoise;
 	private static final int field_31463 = 128;
-	private static final int field_31464 = 170;
+	private static final int field_31464 = 200;
 
 	public NoiseCaveSampler(WorldGenRandom random, int minY) {
 		this.minY = minY;
@@ -47,7 +47,7 @@ public class NoiseCaveSampler implements WeightSampler {
 
 	@Override
 	public double sample(double weight, int x, int y, int z) {
-		boolean bl = weight < 170.0;
+		boolean bl = weight < 200.0;
 		double d = this.method_37760(x, y, z);
 		double e = this.getTunnelOffsetNoise(x, y, z);
 		double f = this.getTunnelNoise(x, y, z);
@@ -56,8 +56,8 @@ public class NoiseCaveSampler implements WeightSampler {
 			return Math.min(weight, g * 128.0 * 5.0);
 		} else {
 			double g = this.caveDensityNoise.sample((double)x, (double)y / 1.5, (double)z);
-			double h = MathHelper.clamp(g + 0.25, -1.0, 1.0);
-			double i = (weight - 170.0) / 100.0;
+			double h = MathHelper.clamp(g + 0.27, -1.0, 1.0);
+			double i = (weight - 200.0) / 100.0;
 			double j = h + MathHelper.clampedLerp(0.5, 0.0, i);
 			double k = this.getTerrainAdditionNoise(x, y, z);
 			double l = this.getCaveNoise(x, y, z);
@@ -73,7 +73,11 @@ public class NoiseCaveSampler implements WeightSampler {
 		double d = 0.75;
 		double e = 0.5;
 		double f = 0.37;
-		return this.field_34235.sample((double)i * 0.75, (double)j * 0.5, (double)k * 0.75) + 0.37;
+		double g = this.field_34235.sample((double)i * 0.75, (double)j * 0.5, (double)k * 0.75) + 0.37;
+		int l = -10;
+		double h = (double)(j - -10) / 40.0;
+		double m = 0.3;
+		return g + MathHelper.clampedLerp(0.3, 0.0, h);
 	}
 
 	private double getPillarNoise(int x, int y, int z) {

@@ -1511,6 +1511,23 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> SUPER_BIRCH_BEES_05 = register(
+		"super_birch_bees_05",
+		Feature.TREE
+			.configure(
+				new TreeFeatureConfig.Builder(
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LOG),
+						new StraightTrunkPlacer(5, 2, 6),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LEAVES),
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_SAPLING),
+						new BlobFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0), 3),
+						new TwoLayersFeatureSize(1, 0, 1)
+					)
+					.ignoreVines()
+					.decorators(ImmutableList.of(ConfiguredFeatures.Decorators.field_34286))
+					.build()
+			)
+	);
 	public static final ConfiguredFeature<TreeFeatureConfig, ?> SWAMP_OAK = register(
 		"swamp_oak",
 		Feature.TREE
@@ -1586,6 +1603,9 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<TreeFeatureConfig, ?> FANCY_OAK_BEES_005 = register(
 		"fancy_oak_bees_005", Feature.TREE.configure(FANCY_OAK.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.MORE_BEEHIVES_TREES)))
+	);
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> FANCY_OAK_BEES_05 = register(
+		"fancy_oak_bees_05", Feature.TREE.configure(FANCY_OAK.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.field_34286)))
 	);
 	public static final ConfiguredFeature<?, ?> FLOWER_WARM = register(
 		"flower_warm",
@@ -1742,6 +1762,13 @@ public class ConfiguredFeatures {
 			.configure(new RandomFeatureConfig(ImmutableList.of(BIRCH_BEES_002.withChance(0.2F), FANCY_OAK_BEES_002.withChance(0.1F)), OAK_BEES_002))
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_OCEAN_FLOOR_NO_WATER)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(6, 0.1F, 1)))
+	);
+	public static final ConfiguredFeature<?, ?> MEADOW_TREES = register(
+		"meadow_trees",
+		Feature.RANDOM_SELECTOR
+			.configure(new RandomFeatureConfig(ImmutableList.of(FANCY_OAK_BEES_05.withChance(0.5F)), SUPER_BIRCH_BEES_05))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_OCEAN_FLOOR_NO_WATER)
+			.applyChance(100)
 	);
 	public static final ConfiguredFeature<?, ?> TAIGA_VEGETATION = register(
 		"taiga_vegetation",
@@ -2270,6 +2297,7 @@ public class ConfiguredFeatures {
 		public static final BeehiveTreeDecorator VERY_RARE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.002F);
 		public static final BeehiveTreeDecorator REGULAR_BEEHIVES_TREES = new BeehiveTreeDecorator(0.02F);
 		public static final BeehiveTreeDecorator MORE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.05F);
+		public static final BeehiveTreeDecorator field_34286 = new BeehiveTreeDecorator(0.5F);
 		public static final ConfiguredDecorator<HeightmapDecoratorConfig> HEIGHTMAP = Decorator.HEIGHTMAP
 			.configure(new HeightmapDecoratorConfig(Heightmap.Type.MOTION_BLOCKING));
 		public static final ConfiguredDecorator<HeightmapDecoratorConfig> TOP_SOLID_HEIGHTMAP = Decorator.HEIGHTMAP

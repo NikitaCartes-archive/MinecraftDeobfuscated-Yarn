@@ -276,6 +276,11 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			);
 	}
 
+	@Override
+	protected int method_37828(ChunkPos chunkPos) {
+		return this.noiseColumnSampler.method_37766(chunkPos.getCenterX(), chunkPos.getCenterZ());
+	}
+
 	protected BlockState getBlockState(
 		StructureWeightSampler structures, AquiferSampler aquiferSampler, BlockSource blockInterpolator, WeightSampler weightSampler, int i, int j, int k, double d
 	) {
@@ -307,7 +312,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 					int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
 					double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625) * 15.0;
 					mutable.set(k + m, -64, l + n);
-					int r = this.noiseColumnSampler.method_37766(mutable.getX(), mutable.getY(), mutable.getZ());
+					int r = this.noiseColumnSampler.method_37766(mutable.getX(), mutable.getZ());
 					int s = r - 16;
 					Biome biome = region.getBiome(mutable.setY(r));
 					biome.buildSurface(chunkRandom, chunk, o, p, q, e, this.defaultBlock, this.defaultFluid, this.getSeaLevel(), s, region.getSeed());

@@ -71,7 +71,7 @@ public class GenerationSettings {
 	private final List<List<Supplier<ConfiguredFeature<?, ?>>>> features;
 	private final List<Supplier<ConfiguredStructureFeature<?, ?>>> structureFeatures;
 	private final List<ConfiguredFeature<?, ?>> flowerFeatures;
-	private final Set<ConfiguredFeature<?, ?>> field_34161;
+	private final Set<ConfiguredFeature<?, ?>> allowedFeatures;
 
 	GenerationSettings(
 		Supplier<ConfiguredSurfaceBuilder<?>> surfaceBuilder,
@@ -89,7 +89,7 @@ public class GenerationSettings {
 			.flatMap(ConfiguredFeature::getDecoratedFeatures)
 			.filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER)
 			.collect(ImmutableList.toImmutableList());
-		this.field_34161 = (Set<ConfiguredFeature<?, ?>>)features.stream().flatMap(Collection::stream).map(Supplier::get).collect(Collectors.toSet());
+		this.allowedFeatures = (Set<ConfiguredFeature<?, ?>>)features.stream().flatMap(Collection::stream).map(Supplier::get).collect(Collectors.toSet());
 	}
 
 	public List<Supplier<ConfiguredCarver<?>>> getCarversForStep(GenerationStep.Carver carverStep) {
@@ -135,8 +135,8 @@ public class GenerationSettings {
 		return ((ConfiguredSurfaceBuilder)this.surfaceBuilder.get()).getConfig();
 	}
 
-	public boolean method_37611(ConfiguredFeature<?, ?> configuredFeature) {
-		return this.field_34161.contains(configuredFeature);
+	public boolean isFeatureAllowed(ConfiguredFeature<?, ?> feature) {
+		return this.allowedFeatures.contains(feature);
 	}
 
 	public static class Builder {

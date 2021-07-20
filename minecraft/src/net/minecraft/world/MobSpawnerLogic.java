@@ -63,6 +63,13 @@ public abstract class MobSpawnerLogic {
 		this.spawnEntry.getEntityNbt().putString("id", Registry.ENTITY_TYPE.getId(type).toString());
 	}
 
+	public void setEntityAndLightLimit(EntityType<?> type, int lightLimit) {
+		this.setEntityId(type);
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putInt("BlockLightLimit", lightLimit);
+		this.spawnEntry.getEntityNbt().put("CustomeSpawnRules", nbtCompound);
+	}
+
 	private boolean isPlayerInRange(World world, BlockPos pos) {
 		return world.isPlayerInRange((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, (double)this.requiredPlayerRange);
 	}
@@ -109,8 +116,22 @@ public abstract class MobSpawnerLogic {
 					double d = j >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
 					double e = j >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + world.random.nextInt(3) - 1);
 					double f = j >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-					if (world.isSpaceEmpty(((EntityType)optional.get()).createSimpleBoundingBox(d, e, f))
-						&& SpawnRestriction.canSpawn((EntityType)optional.get(), world, SpawnReason.SPAWNER, new BlockPos(d, e, f), world.getRandom())) {
+					if (world.isSpaceEmpty(((EntityType)optional.get()).createSimpleBoundingBox(d, e, f))) {
+						BlockPos blockPos = new BlockPos(d, e, f);
+						if (nbtCompound.contains("CustomeSpawnRules", NbtElement.COMPOUND_TYPE)) {
+							if (!((EntityType)optional.get()).getSpawnGroup().isPeaceful() && world.getDifficulty() == Difficulty.PEACEFUL) {
+								continue;
+							}
+
+							NbtCompound nbtCompound2 = nbtCompound.getCompound("CustomeSpawnRules");
+							if (nbtCompound2.contains("BlockLightLimit", NbtElement.NUMBER_TYPE)
+								&& world.getLightLevel(LightType.BLOCK, blockPos) > nbtCompound2.getInt("BlockLightLimit")) {
+								continue;
+							}
+						} else if (!SpawnRestriction.canSpawn((EntityType)optional.get(), world, SpawnReason.SPAWNER, blockPos, world.getRandom())) {
+							continue;
+						}
+
 						Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, entityx -> {
 							entityx.refreshPositionAndAngles(d, e, f, entityx.getYaw(), entityx.getPitch());
 							return entityx;

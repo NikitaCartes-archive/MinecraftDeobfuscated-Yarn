@@ -397,7 +397,7 @@ public class MineshaftGenerator {
 							world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
 							BlockEntity blockEntity = world.getBlockEntity(blockPos);
 							if (blockEntity instanceof MobSpawnerBlockEntity) {
-								((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.CAVE_SPIDER);
+								((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityAndLightLimit(EntityType.CAVE_SPIDER, 11);
 							}
 						}
 					}

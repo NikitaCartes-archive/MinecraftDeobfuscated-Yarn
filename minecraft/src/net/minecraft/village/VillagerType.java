@@ -56,10 +56,10 @@ public final class VillagerType {
 		map.put(BiomeKeys.GIANT_SPRUCE_TAIGA_HILLS, TAIGA);
 		map.put(BiomeKeys.GIANT_TREE_TAIGA, TAIGA);
 		map.put(BiomeKeys.GIANT_TREE_TAIGA_HILLS, TAIGA);
-		map.put(BiomeKeys.GRAVELLY_MOUNTAINS, TAIGA);
+		map.put(BiomeKeys.GRAVELLY_HILLS, TAIGA);
 		map.put(BiomeKeys.MODIFIED_GRAVELLY_MOUNTAINS, TAIGA);
 		map.put(BiomeKeys.MOUNTAIN_EDGE, TAIGA);
-		map.put(BiomeKeys.MOUNTAINS, TAIGA);
+		map.put(BiomeKeys.EXTREME_HILLS, TAIGA);
 		map.put(BiomeKeys.TAIGA, TAIGA);
 		map.put(BiomeKeys.TAIGA_HILLS, TAIGA);
 		map.put(BiomeKeys.TAIGA_MOUNTAINS, TAIGA);

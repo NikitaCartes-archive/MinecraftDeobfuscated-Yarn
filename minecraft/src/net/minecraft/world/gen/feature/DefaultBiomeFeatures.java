@@ -263,6 +263,7 @@ public class DefaultBiomeFeatures {
 	public static void addMeadowFlowers(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_GRASS_PLAIN);
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FLOWER_MEADOW);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.MEADOW_TREES);
 	}
 
 	public static void addExtraDefaultFlowers(GenerationSettings.Builder builder) {

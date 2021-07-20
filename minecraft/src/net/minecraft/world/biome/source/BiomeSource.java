@@ -173,7 +173,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		int p = o;
 
 		while (p <= l) {
-			for (int q = SharedConstants.field_34061 ? 0 : -p; q <= p; q += i) {
+			for (int q = SharedConstants.DEBUG_BIOME_SOURCE ? 0 : -p; q <= p; q += i) {
 				boolean bl2 = Math.abs(q) == p;
 
 				for (int r = -p; r <= p; r += i) {
@@ -213,7 +213,11 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		return this.topMaterials.contains(blockState);
 	}
 
-	public double[] method_37612(int i, int j) {
+	/**
+	 * {@return an array containing an {@code offset} and a {@code factor} value
+	 * for terrain generation}
+	 */
+	public double[] getTerrainParameters(int x, int z) {
 		double d = 0.03;
 		double e = 342.8571468713332;
 		return new double[]{0.03, 342.8571468713332};
@@ -223,7 +227,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		return this.field_34162;
 	}
 
-	public void method_37617(List<String> list, BlockPos blockPos) {
+	public void addDebugInfo(List<String> info, BlockPos pos) {
 	}
 
 	static {

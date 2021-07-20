@@ -26,7 +26,7 @@ public class Heightmap {
 	private static final Logger LOGGER = LogManager.getLogger();
 	static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
 	static final Predicate<BlockState> NOT_SNOW = state -> !state.isOf(Blocks.SNOW_BLOCK) && !state.isOf(Blocks.SNOW);
-	static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().blocksMovement();
+	static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
 	private final PackedIntegerArray storage;
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;

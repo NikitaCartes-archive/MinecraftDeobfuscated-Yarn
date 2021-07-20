@@ -67,7 +67,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		BiomeKeys.JUNGLE_HILLS,
 		BiomeKeys.JUNGLE_EDGE,
 		BiomeKeys.MUSHROOM_FIELD_SHORE,
-		BiomeKeys.MOUNTAINS,
+		BiomeKeys.EXTREME_HILLS,
 		BiomeKeys.DESERT_HILLS,
 		BiomeKeys.JUNGLE,
 		BiomeKeys.BEACH,

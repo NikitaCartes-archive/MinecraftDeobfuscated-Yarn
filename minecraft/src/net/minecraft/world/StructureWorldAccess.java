@@ -13,7 +13,7 @@ public interface StructureWorldAccess extends ServerWorldAccess {
 
 	Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature);
 
-	default boolean method_37368(BlockPos blockPos) {
+	default boolean canSetBlockStateAt(BlockPos pos) {
 		return true;
 	}
 

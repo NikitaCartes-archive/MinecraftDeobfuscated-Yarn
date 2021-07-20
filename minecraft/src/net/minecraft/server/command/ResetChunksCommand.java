@@ -42,7 +42,7 @@ public class ResetChunksCommand {
 		ServerWorld serverWorld = source.getWorld();
 		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 		Vec3d vec3d = source.getPosition();
-		class_6466.method_37730();
+		class_6466.init();
 		ChunkPos chunkPos = new ChunkPos(MathHelper.floor(vec3d.getX() / 16.0), MathHelper.floor(vec3d.getZ() / 16.0));
 
 		for (int i = chunkPos.z - radius; i <= chunkPos.z + radius; i++) {

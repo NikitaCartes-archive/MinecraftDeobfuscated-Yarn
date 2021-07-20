@@ -316,7 +316,7 @@ public class DebugHud extends DrawableHelper {
 			if (serverWorld != null) {
 				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 				BiomeSource biomeSource = serverChunkManager.getChunkGenerator().getBiomeSource();
-				biomeSource.method_37617(list, blockPos);
+				biomeSource.addDebugInfo(list, blockPos);
 				SpawnHelper.Info info = serverChunkManager.getSpawnInfo();
 				if (info != null) {
 					Object2IntMap<SpawnGroup> object2IntMap = info.getGroupToCount();

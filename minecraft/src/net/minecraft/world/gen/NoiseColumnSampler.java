@@ -44,7 +44,7 @@ public class NoiseColumnSampler {
 	private final double bottomSlideOffset;
 	private final double densityFactor;
 	private final double densityOffset;
-	private final WeightSampler field_33653;
+	private final WeightSampler weightSampler;
 
 	public NoiseColumnSampler(
 		BiomeSource biomeSource,
@@ -73,7 +73,7 @@ public class NoiseColumnSampler {
 		this.bottomSlideOffset = (double)config.getBottomSlide().getOffset();
 		this.densityFactor = config.getDensityFactor();
 		this.densityOffset = config.getDensityOffset();
-		this.field_33653 = weightSampler;
+		this.weightSampler = weightSampler;
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class NoiseColumnSampler {
 		} else {
 			int i = x * this.horizontalNoiseResolution >> 2;
 			int j = z * this.horizontalNoiseResolution >> 2;
-			double[] ds = this.biomeSource.method_37612(i, j);
+			double[] ds = this.biomeSource.getTerrainParameters(i, j);
 			d = ds[0];
 			e = ds[1];
 		}
@@ -107,7 +107,7 @@ public class NoiseColumnSampler {
 			double n = (double)(m * this.verticalNoiseResolution);
 			double o = this.noise.sample(x, m, z, f, g, h, k);
 			double p = this.getOffset(n, d, e, 0.0) + o;
-			p = this.field_33653.sample(p, x * this.horizontalNoiseResolution, m * this.verticalNoiseResolution, z * this.horizontalNoiseResolution);
+			p = this.weightSampler.sample(p, x * this.horizontalNoiseResolution, m * this.verticalNoiseResolution, z * this.horizontalNoiseResolution);
 			p = this.applySlides(p, m);
 			buffer[l] = p;
 		}
@@ -117,19 +117,19 @@ public class NoiseColumnSampler {
 	 * Calculates an offset for the noise.
 	 * <p>For example in the overworld, this makes lower y values solid while making higher y values air.
 	 */
-	private double getOffset(double d, double e, double f, double g) {
-		double h = method_37765(this.densityFactor, this.densityOffset, d, g);
-		double i = (h + e) * f;
-		return i * (double)(i > 0.0 ? 4 : 1);
+	private double getOffset(double verticalNoiseResolution, double offset, double factor, double d) {
+		double e = getDepth(this.densityFactor, this.densityOffset, verticalNoiseResolution, d);
+		double f = (e + offset) * factor;
+		return f * (double)(f > 0.0 ? 4 : 1);
 	}
 
-	public static double method_37764(double d, double e, double f) {
-		return method_37765(d, e, f, 0.0);
+	public static double getDepth(double densityFactor, double densityOffset, double height) {
+		return getDepth(densityFactor, densityOffset, height, 0.0);
 	}
 
-	public static double method_37765(double d, double e, double f, double g) {
-		double h = 1.0 - f / 128.0 + g;
-		return h * d + e;
+	public static double getDepth(double densityFactor, double densityOffset, double height, double offset) {
+		double d = 1.0 - height / 128.0 + offset;
+		return d * densityFactor + densityOffset;
 	}
 
 	/**
@@ -167,38 +167,38 @@ public class NoiseColumnSampler {
 		return f < 0.0 ? f * 0.009486607142857142 : Math.min(f, 1.0) * 0.006640625;
 	}
 
-	public int method_37766(int i, int j, int k) {
-		int l = Math.floorDiv(i, this.horizontalNoiseResolution);
-		int m = Math.floorDiv(k, this.horizontalNoiseResolution);
-		int n = MathHelper.floorDiv(this.config.getMinimumY(), this.verticalNoiseResolution);
-		int o = MathHelper.floorDiv(this.config.getHeight(), this.verticalNoiseResolution);
-		int p = 2;
-		int q = 1;
-		int r = Integer.MAX_VALUE;
+	public int method_37766(int i, int j) {
+		int k = Math.floorDiv(i, this.horizontalNoiseResolution);
+		int l = Math.floorDiv(j, this.horizontalNoiseResolution);
+		int m = MathHelper.floorDiv(this.config.getMinimumY(), this.verticalNoiseResolution);
+		int n = MathHelper.floorDiv(this.config.getHeight(), this.verticalNoiseResolution);
+		int o = 2;
+		int p = 1;
+		int q = Integer.MAX_VALUE;
 
-		for (int s = l - 2; s <= l + 2; s += 2) {
-			for (int t = m - 2; t <= m + 2; t += 2) {
+		for (int r = k - 2; r <= k + 2; r += 2) {
+			for (int s = l - 2; s <= l + 2; s += 2) {
+				int t = r * this.horizontalNoiseResolution >> 2;
 				int u = s * this.horizontalNoiseResolution >> 2;
-				int v = t * this.horizontalNoiseResolution >> 2;
-				double[] ds = this.biomeSource.method_37612(u, v);
+				double[] ds = this.biomeSource.getTerrainParameters(t, u);
 				double d = ds[0];
 				double e = ds[1];
 
-				for (int w = n; w <= n + o; w++) {
-					int x = w - n;
-					double f = (double)(w * this.verticalNoiseResolution);
+				for (int v = m; v <= m + n; v++) {
+					int w = v - m;
+					double f = (double)(v * this.verticalNoiseResolution);
 					double g = -90.0;
 					double h = this.getOffset(f, d, e, 0.0) + -90.0;
-					double y = this.applySlides(h, x);
-					if (this.method_37763(y)) {
-						r = Math.min(w * this.verticalNoiseResolution, r);
+					double x = this.applySlides(h, w);
+					if (this.method_37763(x)) {
+						q = Math.min(v * this.verticalNoiseResolution, q);
 						break;
 					}
 				}
 			}
 		}
 
-		return r;
+		return q;
 	}
 
 	private boolean method_37763(double d) {

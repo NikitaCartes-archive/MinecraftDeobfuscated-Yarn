@@ -296,7 +296,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.tunnelers_dream"),
 			Blocks.STONE,
-			BiomeKeys.MOUNTAINS,
+			BiomeKeys.EXTREME_HILLS,
 			Arrays.asList(StructureFeature.MINESHAFT),
 			true,
 			true,

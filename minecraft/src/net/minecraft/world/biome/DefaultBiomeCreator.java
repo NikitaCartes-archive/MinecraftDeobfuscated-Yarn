@@ -215,7 +215,7 @@ public class DefaultBiomeCreator {
 			.build();
 	}
 
-	public static Biome createMountains(ConfiguredSurfaceBuilder<TernarySurfaceConfig> surfaceBuilder, boolean bl) {
+	public static Biome createMountains(ConfiguredSurfaceBuilder<TernarySurfaceConfig> surfaceBuilder, boolean extraTrees) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addFarmAnimals(builder);
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.LLAMA, 5, 4, 6));
@@ -230,7 +230,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addMineables(builder2);
 		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
-		if (bl) {
+		if (extraTrees) {
 			DefaultBiomeFeatures.addExtraMountainTrees(builder2);
 		} else {
 			DefaultBiomeFeatures.addMountainTrees(builder2);
@@ -1367,8 +1367,10 @@ public class DefaultBiomeCreator {
 	public static Biome composeMeadowSettings() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
-		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.DONKEY, 8, 4, 4))
-			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
+		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.DONKEY, 1, 1, 2))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 2, 2, 6))
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.SHEEP, 2, 2, 4));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
 		DefaultBiomeFeatures.addLandCarvers(builder);
@@ -1381,6 +1383,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addMeadowFlowers(builder);
 		DefaultBiomeFeatures.addSprings(builder);
+		DefaultBiomeFeatures.addEmeraldOre(builder);
+		DefaultBiomeFeatures.addInfestedStone(builder);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.RAIN)
@@ -1399,6 +1403,7 @@ public class DefaultBiomeCreator {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.SNOWCAPPED_PEAKS);
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
 		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 4, 6));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
 		DefaultBiomeFeatures.addLandCarvers(builder);
@@ -1409,6 +1414,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addSprings(builder);
+		DefaultBiomeFeatures.addEmeraldOre(builder);
+		DefaultBiomeFeatures.addInfestedStone(builder);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.SNOW)
@@ -1427,6 +1434,7 @@ public class DefaultBiomeCreator {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.LOFTY_PEAKS);
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
 		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 4, 6));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
 		DefaultBiomeFeatures.addLandCarvers(builder);
@@ -1437,6 +1445,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addSprings(builder);
+		DefaultBiomeFeatures.addEmeraldOre(builder);
+		DefaultBiomeFeatures.addInfestedStone(builder);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.SNOW)
@@ -1456,6 +1466,7 @@ public class DefaultBiomeCreator {
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
 		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 4, 6));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
 		DefaultBiomeFeatures.addLandCarvers(builder);
@@ -1467,6 +1478,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addDefaultVegetation(builder);
 		DefaultBiomeFeatures.addSprings(builder);
+		DefaultBiomeFeatures.addEmeraldOre(builder);
+		DefaultBiomeFeatures.addInfestedStone(builder);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.SNOW)
@@ -1488,6 +1501,7 @@ public class DefaultBiomeCreator {
 		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 4))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder);
@@ -1500,6 +1514,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addTaigaTrees(builder);
 		DefaultBiomeFeatures.addDefaultVegetation(builder);
 		DefaultBiomeFeatures.addSprings(builder);
+		DefaultBiomeFeatures.addEmeraldOre(builder);
+		DefaultBiomeFeatures.addInfestedStone(builder);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.SNOW)

@@ -21,7 +21,6 @@ public class MeadowFlowerProvider extends BlockStateProvider {
 		Blocks.DANDELION.getDefaultState(),
 		Blocks.CORNFLOWER.getDefaultState(),
 		Blocks.OXEYE_DAISY.getDefaultState(),
-		Blocks.BLUE_ORCHID.getDefaultState(),
 		Blocks.GRASS.getDefaultState()
 	};
 	public static final int field_34245 = 1;
