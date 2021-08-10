@@ -34,7 +34,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final ReentrantLock downloadLock = new ReentrantLock();
+	private static final ReentrantLock DOWNLOAD_LOCK = new ReentrantLock();
 	private final Screen parent;
 	private final WorldDownload worldDownload;
 	private final Text downloadTitle;
@@ -88,7 +88,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 					this.checked = true;
 					this.client.setScreen(this);
 					this.downloadSave();
-				}, RealmsLongConfirmationScreen.Type.Warning, text, text2, false));
+				}, RealmsLongConfirmationScreen.Type.WARNING, text, text2, false));
 			} else {
 				this.downloadSave();
 			}
@@ -230,7 +230,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		new Thread(() -> {
 			try {
 				try {
-					if (!downloadLock.tryLock(1L, TimeUnit.SECONDS)) {
+					if (!DOWNLOAD_LOCK.tryLock(1L, TimeUnit.SECONDS)) {
 						this.status = new TranslatableText("mco.download.failed");
 						return;
 					}
@@ -285,10 +285,10 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 					var10.printStackTrace();
 				}
 			} finally {
-				if (!downloadLock.isHeldByCurrentThread()) {
+				if (!DOWNLOAD_LOCK.isHeldByCurrentThread()) {
 					return;
 				} else {
-					downloadLock.unlock();
+					DOWNLOAD_LOCK.unlock();
 					this.showDots = false;
 					this.finished = true;
 				}

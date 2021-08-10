@@ -9,6 +9,7 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.model.ModelLoader;
@@ -280,10 +281,10 @@ public class FluidRenderer {
 	private int getLight(BlockRenderView world, BlockPos pos) {
 		int i = WorldRenderer.getLightmapCoordinates(world, pos);
 		int j = WorldRenderer.getLightmapCoordinates(world, pos.up());
-		int k = i & 0xFF;
-		int l = j & 0xFF;
-		int m = i >> 16 & 0xFF;
-		int n = j >> 16 & 0xFF;
+		int k = i & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15);
+		int l = j & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15);
+		int m = i >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15);
+		int n = j >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15);
 		return (k > l ? k : l) | (m > n ? m : n) << 16;
 	}
 

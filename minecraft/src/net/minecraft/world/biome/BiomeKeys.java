@@ -91,6 +91,7 @@ public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> SNOWY_SLOPES = register("snowy_slopes");
 	public static final RegistryKey<Biome> SNOWCAPPED_PEAKS = register("snowcapped_peaks");
 	public static final RegistryKey<Biome> LOFTY_PEAKS = register("lofty_peaks");
+	public static final RegistryKey<Biome> STONY_PEAKS = register("stony_peaks");
 
 	private static RegistryKey<Biome> register(String name) {
 		return RegistryKey.of(Registry.BIOME_KEY, new Identifier(name));

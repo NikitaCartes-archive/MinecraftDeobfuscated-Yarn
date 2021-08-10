@@ -11,6 +11,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
@@ -75,7 +76,7 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloader 
 		if (world != null) {
 			i = WorldRenderer.getLightmapCoordinates(world, blockEntity.getPos());
 		} else {
-			i = 15728880;
+			i = LightmapTextureManager.MAX_LIGHT_COORDINATE;
 		}
 
 		renderer.render(blockEntity, tickDelta, matrices, vertexConsumers, i, OverlayTexture.DEFAULT_UV);

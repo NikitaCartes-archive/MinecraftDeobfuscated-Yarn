@@ -56,8 +56,8 @@ public class TestFunction {
 		this.duration = duration;
 	}
 
-	public void start(TestContext parameter) {
-		this.starter.accept(parameter);
+	public void start(TestContext context) {
+		this.starter.accept(context);
 	}
 
 	public String getStructurePath() {

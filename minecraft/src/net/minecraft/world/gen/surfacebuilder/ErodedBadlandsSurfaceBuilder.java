@@ -62,6 +62,18 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 
 		for(int t = Math.max(k, (int)e + 1); t >= m; --t) {
 			mutable.set(p, t, q);
+			BlockState blockState7 = chunk.getBlockState(mutable);
+			if (blockState7.isOf(blockState.getBlock())) {
+				break;
+			}
+
+			if (blockState7.isOf(Blocks.WATER)) {
+				return;
+			}
+		}
+
+		for(int t = Math.max(k, (int)e + 1); t >= m; --t) {
+			mutable.set(p, t, q);
 			if (chunk.getBlockState(mutable).isAir() && t < (int)e) {
 				chunk.setBlockState(mutable, blockState, false);
 			}
@@ -86,7 +98,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 
 					s = r + Math.max(0, t - l);
 					if (t >= l - 1) {
-						if (t > l + 3 + r) {
+						if (t > l + 10 + r) {
 							BlockState blockState8;
 							if (t < 64 || t > 127) {
 								blockState8 = ORANGE_TERRACOTTA;

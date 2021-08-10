@@ -34,7 +34,7 @@ public class BlockModelRenderer {
 	static final Direction[] DIRECTIONS = Direction.values();
 	private final BlockColors colors;
 	private static final int BRIGHTNESS_CACHE_MAX_SIZE = 100;
-	static final ThreadLocal<BlockModelRenderer.BrightnessCache> brightnessCache = ThreadLocal.withInitial(BlockModelRenderer.BrightnessCache::new);
+	static final ThreadLocal<BlockModelRenderer.BrightnessCache> BRIGHTNESS_CACHE = ThreadLocal.withInitial(BlockModelRenderer.BrightnessCache::new);
 
 	public BlockModelRenderer(BlockColors colors) {
 		this.colors = colors;
@@ -343,11 +343,11 @@ public class BlockModelRenderer {
 	}
 
 	public static void enableBrightnessCache() {
-		((BlockModelRenderer.BrightnessCache)brightnessCache.get()).enable();
+		((BlockModelRenderer.BrightnessCache)BRIGHTNESS_CACHE.get()).enable();
 	}
 
 	public static void disableBrightnessCache() {
-		((BlockModelRenderer.BrightnessCache)brightnessCache.get()).disable();
+		((BlockModelRenderer.BrightnessCache)BRIGHTNESS_CACHE.get()).disable();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -362,7 +362,7 @@ public class BlockModelRenderer {
 			BlockPos blockPos = flags.get(0) ? pos.offset(direction) : pos;
 			BlockModelRenderer.NeighborData neighborData = BlockModelRenderer.NeighborData.getData(direction);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			BlockModelRenderer.BrightnessCache brightnessCache = (BlockModelRenderer.BrightnessCache)BlockModelRenderer.brightnessCache.get();
+			BlockModelRenderer.BrightnessCache brightnessCache = (BlockModelRenderer.BrightnessCache)BlockModelRenderer.BRIGHTNESS_CACHE.get();
 			mutable.set(blockPos, neighborData.faces[0]);
 			BlockState blockState = world.getBlockState(mutable);
 			int i = brightnessCache.getInt(blockState, world, mutable);

@@ -13,7 +13,11 @@ public interface StructureWorldAccess extends ServerWorldAccess {
 
 	Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature);
 
-	default boolean canSetBlockStateAt(BlockPos pos) {
+	/**
+	 * {@return {@code true} if the given position is an accessible position
+	 * for the {@code setBlockState} function}
+	 */
+	default boolean isValidForSetBlock(BlockPos pos) {
 		return true;
 	}
 

@@ -84,7 +84,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 
 						r = q + Math.max(0, t - l);
 						if (t >= l - 1) {
-							if (t <= l + 3 + q) {
+							if (t <= l + 10 + q) {
 								chunk.setBlockState(mutable, blockState5, false);
 								bl2 = true;
 							} else {

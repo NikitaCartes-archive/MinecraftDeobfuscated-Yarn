@@ -123,7 +123,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		}
 
 		this.edgeDensityNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -3, 1.0);
-		this.fluidLevelNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -3, 1.0, 0.0, 2.0);
+		this.fluidLevelNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -3, 0.2, 2.0, 1.0);
 		this.fluidTypeNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -1, 1.0, 0.0);
 		WeightSampler weightSampler;
 		if (chunkGeneratorSettings.hasNoiseCaves()) {
@@ -315,7 +315,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 					mutable.set(k + m, -64, l + n);
 					int r = this.noiseColumnSampler.method_37766(mutable.getX(), mutable.getZ());
 					int s = r - 16;
-					Biome biome = region.getBiome(mutable.setY(r));
+					Biome biome = region.getBiome(mutable.setY(q));
 					biome.buildSurface(chunkRandom, chunk, o, p, q, e, this.defaultBlock, this.defaultFluid, this.getSeaLevel(), s, region.getSeed());
 				}
 			}

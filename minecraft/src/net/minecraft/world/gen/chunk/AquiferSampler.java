@@ -276,26 +276,36 @@ public interface AquiferSampler {
 
 		private AquiferSampler.Impl.FluidLevel getFluidLevel(int x, int y, int z) {
 			int i = this.settings.getSeaLevel() - 1;
-			int j = this.columnSampler.method_37766(x, z);
+			NoiseColumnSampler.class_6483 lv = this.columnSampler.method_37849(x, z);
+			int j = lv.field_34307;
+			boolean bl = lv.field_34308;
 			if (j < i && y > j - 8) {
 				return new AquiferSampler.Impl.FluidLevel(i, Blocks.WATER.getDefaultState());
 			} else {
-				int k = -10;
-				int l = 40;
-				double d = this.fluidLevelNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40) / 1.4, (double)Math.floorDiv(z, 64)) * 30.0 + -10.0;
-				boolean bl = false;
-				if (Math.abs(d) > 8.0) {
-					d *= 4.0;
-				}
+				int k = 40;
+				int l = Math.floorDiv(y, 40) * 40 + 20;
+				if (l == 60 && bl) {
+					return new AquiferSampler.Impl.FluidLevel(i, Blocks.WATER.getDefaultState());
+				} else {
+					int m = -20;
+					double d = this.fluidLevelNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40), (double)Math.floorDiv(z, 64)) * 50.0 + -20.0;
+					boolean bl2 = false;
+					if (d > 4.0) {
+						d *= 4.0;
+					}
 
-				int m = Math.floorDiv(y, 40) * 40 + 20;
-				int n = m + MathHelper.floor(d);
-				if (m == -20) {
-					double e = this.fluidTypeNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40) / 1.4, (double)Math.floorDiv(z, 64));
-					bl = Math.abs(e) > 0.22F;
-				}
+					if (d < -10.0) {
+						d = -40.0;
+					}
 
-				return new AquiferSampler.Impl.FluidLevel(Math.min(j - 8, n), bl ? Blocks.LAVA.getDefaultState() : Blocks.WATER.getDefaultState());
+					int n = l + MathHelper.floor(d);
+					if (l == -20) {
+						double e = this.fluidTypeNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40) / 1.4, (double)Math.floorDiv(z, 64));
+						bl2 = Math.abs(e) > 0.22F;
+					}
+
+					return new AquiferSampler.Impl.FluidLevel(Math.min(j - 8, n), bl2 ? Blocks.LAVA.getDefaultState() : Blocks.WATER.getDefaultState());
+				}
 			}
 		}
 

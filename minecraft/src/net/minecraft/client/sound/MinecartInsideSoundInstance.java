@@ -49,7 +49,7 @@ public class MinecartInsideSoundInstance extends MovingSoundInstance {
 		} else {
 			float f = (float)this.minecart.getVelocity().horizontalLength();
 			if (f >= 0.01F) {
-				this.volume = MathHelper.method_37166(0.0F, 0.75F, f);
+				this.volume = MathHelper.clampedLerp(0.0F, 0.75F, f);
 			} else {
 				this.volume = 0.0F;
 			}

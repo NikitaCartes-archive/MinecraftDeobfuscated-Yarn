@@ -14,7 +14,7 @@ import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ChunkStatusFix2 extends DataFix {
-	private static final Map<String, String> statusMap = ImmutableMap.builder()
+	private static final Map<String, String> STATUS_MAP = ImmutableMap.builder()
 		.put("structure_references", "empty")
 		.put("biomes", "empty")
 		.put("base", "surface")
@@ -40,7 +40,7 @@ public class ChunkStatusFix2 extends DataFix {
 			"ChunkStatusFix2", type, this.getOutputSchema().getType(TypeReferences.CHUNK), typed -> typed.updateTyped(opticFinder, typedx -> {
 					Dynamic<?> dynamic = typedx.get(DSL.remainderFinder());
 					String string = dynamic.get("Status").asString("empty");
-					String string2 = (String)statusMap.getOrDefault(string, "empty");
+					String string2 = (String)STATUS_MAP.getOrDefault(string, "empty");
 					return Objects.equals(string, string2) ? typedx : typedx.set(DSL.remainderFinder(), dynamic.set("Status", dynamic.createString(string2)));
 				})
 		);

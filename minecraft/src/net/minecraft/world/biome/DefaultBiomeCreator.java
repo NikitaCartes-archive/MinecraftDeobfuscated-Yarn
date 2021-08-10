@@ -1391,6 +1391,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
+		builder.structureFeature(ConfiguredStructureFeatures.VILLAGE_PLAINS);
+		builder.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		DefaultBiomeFeatures.addLandCarvers(builder);
 		DefaultBiomeFeatures.addDefaultLakes(builder);
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
@@ -1406,7 +1408,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addFrozenTopLayer(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.RAIN)
-			.category(Biome.Category.PLAINS)
+			.category(Biome.Category.MOUNTAIN)
 			.temperature(0.5F)
 			.downfall(0.8F)
 			.effects(
@@ -1420,10 +1422,11 @@ public class DefaultBiomeCreator {
 	public static Biome composeSnowcappedPeaksSettings() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.SNOWCAPPED_PEAKS);
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
-		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 4, 6));
+		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 1, 3));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
+		builder.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		DefaultBiomeFeatures.addLandCarvers(builder);
 		DefaultBiomeFeatures.addDefaultLakes(builder);
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
@@ -1437,7 +1440,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addFrozenTopLayer(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.SNOW)
-			.category(Biome.Category.PLAINS)
+			.category(Biome.Category.MOUNTAIN)
 			.temperature(-0.7F)
 			.downfall(0.9F)
 			.effects(
@@ -1451,10 +1454,11 @@ public class DefaultBiomeCreator {
 	public static Biome composeLoftyPeaksSettings() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.LOFTY_PEAKS);
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
-		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 4, 6));
+		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 1, 3));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
+		builder.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		DefaultBiomeFeatures.addLandCarvers(builder);
 		DefaultBiomeFeatures.addDefaultLakes(builder);
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
@@ -1468,7 +1472,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addFrozenTopLayer(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.SNOW)
-			.category(Biome.Category.PLAINS)
+			.category(Biome.Category.MOUNTAIN)
 			.temperature(-0.7F)
 			.downfall(0.9F)
 			.effects(
@@ -1479,14 +1483,47 @@ public class DefaultBiomeCreator {
 			.build();
 	}
 
+	public static Biome method_37853() {
+		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.STONY_PEAKS);
+		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
+		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 1, 3));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
+		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
+		builder.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
+		DefaultBiomeFeatures.addLandCarvers(builder);
+		DefaultBiomeFeatures.addDefaultLakes(builder);
+		DefaultBiomeFeatures.addAmethystGeodes(builder);
+		DefaultBiomeFeatures.addDungeons(builder);
+		DefaultBiomeFeatures.addMineables(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
+		DefaultBiomeFeatures.addDefaultDisks(builder);
+		DefaultBiomeFeatures.addSprings(builder);
+		DefaultBiomeFeatures.addEmeraldOre(builder);
+		DefaultBiomeFeatures.addInfestedStone(builder);
+		return new Biome.Builder()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.MOUNTAIN)
+			.temperature(1.0F)
+			.downfall(0.3F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.2F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder2.build())
+			.generationSettings(builder.build())
+			.build();
+	}
+
 	public static Biome composeSnowySlopesSettings() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.SNOWY_SLOPES);
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
 		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3))
-			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 4, 6));
+			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 1, 3));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
+		builder.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
+		builder.structureFeature(ConfiguredStructureFeatures.IGLOO);
 		DefaultBiomeFeatures.addLandCarvers(builder);
 		DefaultBiomeFeatures.addDefaultLakes(builder);
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
@@ -1501,7 +1538,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addFrozenTopLayer(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.SNOW)
-			.category(Biome.Category.PLAINS)
+			.category(Biome.Category.MOUNTAIN)
 			.temperature(-0.3F)
 			.downfall(0.9F)
 			.effects(
@@ -1522,6 +1559,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
 		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		builder.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		DefaultBiomeFeatures.addLandCarvers(builder);
 		DefaultBiomeFeatures.addDefaultLakes(builder);
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
@@ -1627,5 +1665,9 @@ public class DefaultBiomeCreator {
 
 	public static Biome createLoftyPeaks() {
 		return composeLoftyPeaksSettings();
+	}
+
+	public static Biome method_37854() {
+		return method_37853();
 	}
 }

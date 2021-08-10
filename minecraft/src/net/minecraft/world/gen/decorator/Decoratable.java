@@ -50,10 +50,18 @@ public interface Decoratable<R> {
 		return this.repeat(UniformIntProvider.create(0, maxCount));
 	}
 
+	/**
+	 * @param min the minimum offset, inclusive
+	 * @param max the maximum offset, inclusive
+	 */
 	default R uniformRange(YOffset min, YOffset max) {
 		return this.range(new RangeDecoratorConfig(UniformHeightProvider.create(min, max)));
 	}
 
+	/**
+	 * @param min the minimum offset, inclusive
+	 * @param max the maximum offset, inclusive
+	 */
 	default R triangleRange(YOffset min, YOffset max) {
 		return this.range(new RangeDecoratorConfig(TrapezoidHeightProvider.create(min, max)));
 	}
