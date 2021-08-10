@@ -351,7 +351,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 	}
 
 	public boolean method_37254(BlockPos blockPos) {
-		return this.trackingStatuses.get(ChunkPos.method_37232(blockPos)).shouldTick();
+		return this.trackingStatuses.get(ChunkPos.toLong(blockPos)).shouldTick();
 	}
 
 	public boolean method_37253(ChunkPos chunkPos) {

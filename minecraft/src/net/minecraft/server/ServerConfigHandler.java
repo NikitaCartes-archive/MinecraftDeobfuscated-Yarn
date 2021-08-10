@@ -244,7 +244,7 @@ public class ServerConfigHandler {
 			GameProfile gameProfile = server.getUserCache().method_14515(name);
 			if (gameProfile != null && gameProfile.getId() != null) {
 				return gameProfile.getId();
-			} else if (!server.isSinglePlayer() && server.isOnlineMode()) {
+			} else if (!server.isSingleplayer() && server.isOnlineMode()) {
 				final List<GameProfile> list = Lists.<GameProfile>newArrayList();
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 					@Override

@@ -213,14 +213,10 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		return this.topMaterials.contains(blockState);
 	}
 
-	/**
-	 * {@return an array containing an {@code offset} and a {@code factor} value
-	 * for terrain generation}
-	 */
-	public double[] getTerrainParameters(int x, int z) {
+	public BiomeSource.class_6482 method_37845(int i, int j) {
 		double d = 0.03;
 		double e = 342.8571468713332;
-		return new double[]{0.03, 342.8571468713332};
+		return new BiomeSource.class_6482(0.03, 342.8571468713332, false);
 	}
 
 	public List<List<ConfiguredFeature<?, ?>>> method_37619() {
@@ -235,5 +231,17 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.CODEC);
 		Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.CODEC);
 		Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
+	}
+
+	public static class class_6482 {
+		public final double field_34300;
+		public final double field_34301;
+		public final boolean field_34302;
+
+		class_6482(double d, double e, boolean bl) {
+			this.field_34300 = d;
+			this.field_34301 = e;
+			this.field_34302 = bl;
+		}
 	}
 }

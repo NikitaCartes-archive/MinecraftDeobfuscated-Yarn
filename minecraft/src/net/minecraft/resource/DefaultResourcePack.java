@@ -38,7 +38,7 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 	public static Path resourcePath;
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static Class<?> resourceClass;
-	private static final Map<ResourceType, FileSystem> typeToFileSystem = Util.make(Maps.<ResourceType, FileSystem>newHashMap(), hashMap -> {
+	private static final Map<ResourceType, FileSystem> TYPE_TO_FILE_SYSTEM = Util.make(Maps.<ResourceType, FileSystem>newHashMap(), hashMap -> {
 		synchronized (DefaultResourcePack.class) {
 			for (ResourceType resourceType : ResourceType.values()) {
 				URL uRL = DefaultResourcePack.class.getResource("/" + resourceType.getDirectory() + "/.mcassetsroot");
@@ -146,7 +146,7 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 				Path path = Paths.get(uRL2.toURI());
 				getIdentifiers(set, maxDepth, namespace, path, prefix, pathFilter);
 			} else if ("jar".equals(uRI.getScheme())) {
-				Path path2 = ((FileSystem)typeToFileSystem.get(type)).getPath("/" + type.getDirectory());
+				Path path2 = ((FileSystem)TYPE_TO_FILE_SYSTEM.get(type)).getPath("/" + type.getDirectory());
 				getIdentifiers(set, maxDepth, "minecraft", path2, prefix, pathFilter);
 			} else {
 				LOGGER.error("Unsupported scheme {} trying to list vanilla resources (NYI?)", uRI);

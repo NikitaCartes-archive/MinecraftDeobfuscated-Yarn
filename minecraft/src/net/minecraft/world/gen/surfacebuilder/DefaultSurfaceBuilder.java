@@ -92,10 +92,10 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 					blockState3 = underBlock;
 				}
 
-				chunk.setBlockState(mutable, getSturdyBlockState(blockState3, chunk, mutable), false);
+				chunk.setBlockState(mutable, method_37850(blockState3, chunk, mutable, j), false);
 			} else if (l > 0) {
 				l--;
-				chunk.setBlockState(mutable, getSturdyBlockState(blockState, chunk, mutable), false);
+				chunk.setBlockState(mutable, method_37850(blockState, chunk, mutable, j), false);
 				if (l == 0 && blockState.isOf(Blocks.SAND) && k > 1) {
 					l = random.nextInt(4) + Math.max(0, m - j);
 					blockState = blockState.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
@@ -104,13 +104,15 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		}
 	}
 
-	private static BlockState getSturdyBlockState(BlockState state, Chunk chunk, BlockPos pos) {
-		if (state.isOf(Blocks.SAND) && isPosAboveAirOrFluid(chunk, pos)) {
+	private static BlockState method_37850(BlockState blockState, Chunk chunk, BlockPos blockPos, int i) {
+		if (blockPos.getY() <= i && blockState.isOf(Blocks.GRASS_BLOCK)) {
+			return Blocks.DIRT.getDefaultState();
+		} else if (blockState.isOf(Blocks.SAND) && isPosAboveAirOrFluid(chunk, blockPos)) {
 			return Blocks.SANDSTONE.getDefaultState();
-		} else if (state.isOf(Blocks.RED_SAND) && isPosAboveAirOrFluid(chunk, pos)) {
+		} else if (blockState.isOf(Blocks.RED_SAND) && isPosAboveAirOrFluid(chunk, blockPos)) {
 			return Blocks.RED_SANDSTONE.getDefaultState();
 		} else {
-			return state.isOf(Blocks.GRAVEL) && isPosAboveAirOrFluid(chunk, pos) ? Blocks.STONE.getDefaultState() : state;
+			return blockState.isOf(Blocks.GRAVEL) && isPosAboveAirOrFluid(chunk, blockPos) ? Blocks.STONE.getDefaultState() : blockState;
 		}
 	}
 

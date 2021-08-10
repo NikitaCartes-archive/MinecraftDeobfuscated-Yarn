@@ -80,6 +80,7 @@ public abstract class BuiltinBiomes {
 		register(179, BiomeKeys.SNOWY_SLOPES, DefaultBiomeCreator.createSnowySlopes());
 		register(180, BiomeKeys.SNOWCAPPED_PEAKS, DefaultBiomeCreator.createSnowcappedPeaks());
 		register(181, BiomeKeys.LOFTY_PEAKS, DefaultBiomeCreator.createLoftyPeaks());
+		register(182, BiomeKeys.STONY_PEAKS, DefaultBiomeCreator.method_37854());
 		register(13, BiomeKeys.SNOWY_MOUNTAINS, DefaultBiomeCreator.createSnowyTundra(false, true));
 		register(15, BiomeKeys.MUSHROOM_FIELD_SHORE, DefaultBiomeCreator.createMushroomFields());
 		register(17, BiomeKeys.DESERT_HILLS, DefaultBiomeCreator.createDesert(false, true, false));

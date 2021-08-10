@@ -23,9 +23,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 
 public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgumentType.ScoreHolder> {
-	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
-		StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
-		stringReader.setCursor(suggestionsBuilder.getStart());
+	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
+		StringReader stringReader = new StringReader(builder.getInput());
+		stringReader.setCursor(builder.getStart());
 		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 
 		try {
@@ -33,9 +33,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		} catch (CommandSyntaxException var5) {
 		}
 
-		return entitySelectorReader.listSuggestions(
-			suggestionsBuilder, suggestionsBuilderx -> CommandSource.suggestMatching(commandContext.getSource().getPlayerNames(), suggestionsBuilderx)
-		);
+		return entitySelectorReader.listSuggestions(builder, builderx -> CommandSource.suggestMatching(context.getSource().getPlayerNames(), builderx));
 	};
 	private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "*", "@e");
 	private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(
@@ -124,8 +122,8 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	public static class SelectorScoreHolder implements ScoreHolderArgumentType.ScoreHolder {
 		private final EntitySelector selector;
 
-		public SelectorScoreHolder(EntitySelector entitySelector) {
-			this.selector = entitySelector;
+		public SelectorScoreHolder(EntitySelector selector) {
+			this.selector = selector;
 		}
 
 		@Override

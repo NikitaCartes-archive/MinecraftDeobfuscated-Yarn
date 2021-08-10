@@ -20,18 +20,18 @@ import org.apache.logging.log4j.Logger;
 public class EntityRenderers {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final String DEFAULT = "default";
-	private static final Map<EntityType<?>, EntityRendererFactory<?>> rendererFactories = Maps.<EntityType<?>, EntityRendererFactory<?>>newHashMap();
-	private static final Map<String, EntityRendererFactory<AbstractClientPlayerEntity>> playerRendererFactories = ImmutableMap.of(
+	private static final Map<EntityType<?>, EntityRendererFactory<?>> RENDERER_FACTORIES = Maps.<EntityType<?>, EntityRendererFactory<?>>newHashMap();
+	private static final Map<String, EntityRendererFactory<AbstractClientPlayerEntity>> PLAYER_RENDERER_FACTORIES = ImmutableMap.of(
 		"default", context -> new PlayerEntityRenderer(context, false), "slim", context -> new PlayerEntityRenderer(context, true)
 	);
 
 	private static <T extends Entity> void register(EntityType<? extends T> type, EntityRendererFactory<T> factory) {
-		rendererFactories.put(type, factory);
+		RENDERER_FACTORIES.put(type, factory);
 	}
 
 	public static Map<EntityType<?>, EntityRenderer<?>> reloadEntityRenderers(EntityRendererFactory.Context ctx) {
 		Builder<EntityType<?>, EntityRenderer<?>> builder = ImmutableMap.builder();
-		rendererFactories.forEach((entityType, entityRendererFactory) -> {
+		RENDERER_FACTORIES.forEach((entityType, entityRendererFactory) -> {
 			try {
 				builder.put(entityType, entityRendererFactory.create(ctx));
 			} catch (Exception var5) {
@@ -43,7 +43,7 @@ public class EntityRenderers {
 
 	public static Map<String, EntityRenderer<? extends PlayerEntity>> reloadPlayerRenderers(EntityRendererFactory.Context ctx) {
 		Builder<String, EntityRenderer<? extends PlayerEntity>> builder = ImmutableMap.builder();
-		playerRendererFactories.forEach((string, entityRendererFactory) -> {
+		PLAYER_RENDERER_FACTORIES.forEach((string, entityRendererFactory) -> {
 			try {
 				builder.put(string, entityRendererFactory.create(ctx));
 			} catch (Exception var5) {
@@ -57,7 +57,7 @@ public class EntityRenderers {
 		boolean bl = true;
 
 		for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-			if (entityType != EntityType.PLAYER && !rendererFactories.containsKey(entityType)) {
+			if (entityType != EntityType.PLAYER && !RENDERER_FACTORIES.containsKey(entityType)) {
 				LOGGER.warn("No renderer registered for {}", Registry.ENTITY_TYPE.getId(entityType));
 				bl = false;
 			}

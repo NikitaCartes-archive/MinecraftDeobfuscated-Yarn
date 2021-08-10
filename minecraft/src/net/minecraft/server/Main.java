@@ -214,7 +214,7 @@ public class Main {
 						userCache,
 						WorldGenerationProgressLogger::new
 					);
-					minecraftDedicatedServerx.setServerName(optionSet.valueOf(optionSpec9));
+					minecraftDedicatedServerx.setSinglePlayerName(optionSet.valueOf(optionSpec9));
 					minecraftDedicatedServerx.setServerPort(optionSet.valueOf(optionSpec12));
 					minecraftDedicatedServerx.setDemo(optionSet.has(optionSpec3));
 					minecraftDedicatedServerx.setServerId(optionSet.valueOf(optionSpec13));

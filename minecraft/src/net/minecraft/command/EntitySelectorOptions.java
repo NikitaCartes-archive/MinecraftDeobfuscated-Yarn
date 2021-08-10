@@ -43,7 +43,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 
 public class EntitySelectorOptions {
-	private static final Map<String, EntitySelectorOptions.SelectorOption> options = Maps.<String, EntitySelectorOptions.SelectorOption>newHashMap();
+	private static final Map<String, EntitySelectorOptions.SelectorOption> OPTIONS = Maps.<String, EntitySelectorOptions.SelectorOption>newHashMap();
 	public static final DynamicCommandExceptionType UNKNOWN_OPTION_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("argument.entity.options.unknown", object)
 	);
@@ -70,11 +70,11 @@ public class EntitySelectorOptions {
 	);
 
 	private static void putOption(String id, EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
-		options.put(id, new EntitySelectorOptions.SelectorOption(handler, condition, description));
+		OPTIONS.put(id, new EntitySelectorOptions.SelectorOption(handler, condition, description));
 	}
 
 	public static void register() {
-		if (options.isEmpty()) {
+		if (OPTIONS.isEmpty()) {
 			putOption("name", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
 				boolean bl = entitySelectorReader.readNegationCharacter();
@@ -500,7 +500,7 @@ public class EntitySelectorOptions {
 	}
 
 	public static EntitySelectorOptions.SelectorHandler getHandler(EntitySelectorReader reader, String option, int restoreCursor) throws CommandSyntaxException {
-		EntitySelectorOptions.SelectorOption selectorOption = (EntitySelectorOptions.SelectorOption)options.get(option);
+		EntitySelectorOptions.SelectorOption selectorOption = (EntitySelectorOptions.SelectorOption)OPTIONS.get(option);
 		if (selectorOption != null) {
 			if (selectorOption.condition.test(reader)) {
 				return selectorOption.handler;
@@ -516,7 +516,7 @@ public class EntitySelectorOptions {
 	public static void suggestOptions(EntitySelectorReader reader, SuggestionsBuilder suggestionBuilder) {
 		String string = suggestionBuilder.getRemaining().toLowerCase(Locale.ROOT);
 
-		for (Entry<String, EntitySelectorOptions.SelectorOption> entry : options.entrySet()) {
+		for (Entry<String, EntitySelectorOptions.SelectorOption> entry : OPTIONS.entrySet()) {
 			if (((EntitySelectorOptions.SelectorOption)entry.getValue()).condition.test(reader) && ((String)entry.getKey()).toLowerCase(Locale.ROOT).startsWith(string)) {
 				suggestionBuilder.suggest((String)entry.getKey() + "=", ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
 			}

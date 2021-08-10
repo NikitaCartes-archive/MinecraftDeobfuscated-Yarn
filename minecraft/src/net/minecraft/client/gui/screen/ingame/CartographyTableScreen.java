@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -110,7 +111,7 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 			matrices.translate((double)x, (double)y, 1.0);
 			matrices.scale(scale, scale, 1.0F);
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			this.client.gameRenderer.getMapRenderer().draw(matrices, immediate, mapId, mapState, true, 15728880);
+			this.client.gameRenderer.getMapRenderer().draw(matrices, immediate, mapId, mapState, true, LightmapTextureManager.MAX_LIGHT_COORDINATE);
 			immediate.draw();
 			matrices.pop();
 		}

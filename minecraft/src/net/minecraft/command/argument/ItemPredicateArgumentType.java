@@ -26,7 +26,7 @@ import net.minecraft.util.registry.Registry;
 public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemPredicateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
 	private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("arguments.item.tag.unknown", object)
+		id -> new TranslatableText("arguments.item.tag.unknown", id)
 	);
 
 	public static ItemPredicateArgumentType itemPredicate() {
@@ -37,14 +37,11 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
 		if (itemStringReader.getItem() != null) {
 			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(itemStringReader.getItem(), itemStringReader.getNbt());
-			return commandContext -> itemPredicate;
+			return context -> itemPredicate;
 		} else {
 			Identifier identifier = itemStringReader.getId();
-			return commandContext -> {
-				Tag<Item> tag = commandContext.getSource()
-					.getServer()
-					.getTagManager()
-					.getTag(Registry.ITEM_KEY, identifier, identifierxx -> UNKNOWN_TAG_EXCEPTION.create(identifierxx.toString()));
+			return context -> {
+				Tag<Item> tag = context.getSource().getServer().getTagManager().getTag(Registry.ITEM_KEY, identifier, id -> UNKNOWN_TAG_EXCEPTION.create(id.toString()));
 				return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.getNbt());
 			};
 		}
@@ -89,7 +86,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	}
 
 	public interface ItemPredicateArgument {
-		Predicate<ItemStack> create(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
+		Predicate<ItemStack> create(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
 	}
 
 	static class TagPredicate implements Predicate<ItemStack> {

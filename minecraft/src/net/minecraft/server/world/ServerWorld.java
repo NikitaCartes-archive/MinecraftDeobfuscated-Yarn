@@ -218,7 +218,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
 		this.raidManager = this.getPersistentStateManager()
 			.getOrCreate(nbtCompound -> RaidManager.fromNbt(this, nbtCompound), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
-		if (!server.isSinglePlayer()) {
+		if (!server.isSingleplayer()) {
 			properties.setGameMode(server.getDefaultGameMode());
 		}
 
@@ -570,7 +570,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	private void handleSleeping() {
 		if (this.isSleepingEnabled()) {
-			if (!this.getServer().isSinglePlayer() || this.getServer().isRemote()) {
+			if (!this.getServer().isSingleplayer() || this.getServer().isRemote()) {
 				int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
 				Text text;
 				if (this.sleepManager.canSkipNight(i)) {
@@ -1498,7 +1498,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public boolean method_37117(BlockPos blockPos) {
-		long l = ChunkPos.method_37232(blockPos);
+		long l = ChunkPos.toLong(blockPos);
 		return this.chunkManager.isTickingFutureReady(l) && this.method_37116(l);
 	}
 

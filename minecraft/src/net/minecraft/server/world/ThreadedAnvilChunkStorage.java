@@ -19,6 +19,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -78,6 +79,7 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.entity.EntityLike;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -793,6 +795,16 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			: this.playerChunkWatchingManager
 				.getPlayersWatchingChunk(l)
 				.noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0);
+	}
+
+	public List<EntityLike> method_37832(ChunkPos chunkPos) {
+		long l = chunkPos.toLong();
+		return !this.ticketManager.method_20800(l)
+			? Collections.emptyList()
+			: (List)this.playerChunkWatchingManager
+				.getPlayersWatchingChunk(l)
+				.filter(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0)
+				.collect(Collectors.toList());
 	}
 
 	private boolean doesNotGenerateChunks(ServerPlayerEntity player) {

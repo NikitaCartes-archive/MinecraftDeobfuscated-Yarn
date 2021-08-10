@@ -25,7 +25,7 @@ import org.lwjgl.opengl.KHRDebug;
 public class GlDebug {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int DEBUG_MESSAGE_QUEUE_SIZE = 10;
-	private static final Queue<GlDebug.DebugMessage> debugMessages = EvictingQueue.create(10);
+	private static final Queue<GlDebug.DebugMessage> DEBUG_MESSAGES = EvictingQueue.create(10);
 	@Nullable
 	private static volatile GlDebug.DebugMessage lastDebugMessage;
 	private static final List<Integer> KHR_VERBOSITY_LEVELS = ImmutableList.of(37190, 37191, 37192, 33387);
@@ -94,13 +94,13 @@ public class GlDebug {
 	private static void info(int source, int type, int id, int severity, int messageLength, long message, long l) {
 		String string = GLDebugMessageCallback.getMessage(messageLength, message);
 		GlDebug.DebugMessage debugMessage;
-		synchronized (debugMessages) {
+		synchronized (DEBUG_MESSAGES) {
 			debugMessage = lastDebugMessage;
 			if (debugMessage != null && debugMessage.equals(source, type, id, severity, string)) {
 				debugMessage.count++;
 			} else {
 				debugMessage = new GlDebug.DebugMessage(source, type, id, severity, string);
-				debugMessages.add(debugMessage);
+				DEBUG_MESSAGES.add(debugMessage);
 				lastDebugMessage = debugMessage;
 			}
 		}
@@ -109,10 +109,10 @@ public class GlDebug {
 	}
 
 	public static List<String> collectDebugMessages() {
-		synchronized (debugMessages) {
-			List<String> list = Lists.<String>newArrayListWithCapacity(debugMessages.size());
+		synchronized (DEBUG_MESSAGES) {
+			List<String> list = Lists.<String>newArrayListWithCapacity(DEBUG_MESSAGES.size());
 
-			for (GlDebug.DebugMessage debugMessage : debugMessages) {
+			for (GlDebug.DebugMessage debugMessage : DEBUG_MESSAGES) {
 				list.add(debugMessage + " x " + debugMessage.count);
 			}
 

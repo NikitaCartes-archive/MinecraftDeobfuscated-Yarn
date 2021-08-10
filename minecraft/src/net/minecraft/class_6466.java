@@ -6,6 +6,9 @@ import net.minecraft.util.math.Spline;
 
 public final class class_6466 {
 	public static final float field_34228 = 0.015F;
+	public static final float field_34304 = -0.2F;
+	public static final float field_34305 = -0.05F;
+	public static final float field_34306 = 0.15F;
 	static ToFloatFunction<class_6466.TerrainNoisePoint> offsetSpline;
 	static ToFloatFunction<class_6466.TerrainNoisePoint> factorSpline;
 
@@ -41,8 +44,8 @@ public final class class_6466 {
 			.add(-0.19F, 505.0F, 0.0F)
 			.add(-0.15F, buildErosionFactorSpline("erosionCoast", 800.0F, true, "ridgeCoast-OldMountains"), 0.0F)
 			.add(-0.1F, buildErosionFactorSpline("erosionInland", 700.0F, true, "ridgeInland-OldMountains"), 0.0F)
-			.add(0.03F, buildErosionFactorSpline("erosionMidInland", 650.0F, true, "ridgeInland-OldMountains"), 0.0F)
-			.add(0.06F, buildErosionFactorSpline("erosionFarInland", 600.0F, false, "ridgeInland-OldMountains"), 0.0F)
+			.add(0.03F, buildErosionFactorSpline("erosionMidInland", 650.0F, true, "ridgeMidInland-OldMountains"), 0.0F)
+			.add(0.06F, buildErosionFactorSpline("erosionFarInland", 600.0F, false, "ridgeFarInland-OldMountains"), 0.0F)
 			.build()
 			.getThis();
 	}
@@ -59,12 +62,12 @@ public final class class_6466 {
 		Spline<class_6466.TerrainNoisePoint> spline = Spline.builder(class_6466.TerrainNoisePoint::getWeirdnessNoise)
 			.setName(weirdnessName)
 			.add(0.45F, value, 0.0F)
-			.add(0.6F, 175.0F, 0.0F)
+			.add(0.7F, 175.0F, 0.0F)
 			.build();
 		if (addShatteredRidges) {
 			Spline<class_6466.TerrainNoisePoint> spline2 = Spline.builder(class_6466.TerrainNoisePoint::getWeirdnessNoise)
 				.setName("ridgesShattered")
-				.add(-0.72F, value, 0.0F)
+				.add(-0.9F, value, 0.0F)
 				.add(-0.69F, 80.0F, 0.0F)
 				.build();
 			builder.add(0.051F, spline, 0.0F).add(0.45F, spline, 0.0F).add(0.51F, spline2, 0.0F).add(0.59F, spline2, 0.0F).add(0.65F, spline, 0.0F);
@@ -208,6 +211,14 @@ public final class class_6466 {
 
 	public class_6466.TerrainNoisePoint createTerrainNoisePoint(float continentalnessNoise, float erosionNoise, float weirdnessNoise) {
 		return new class_6466.TerrainNoisePoint(continentalnessNoise, erosionNoise, method_37731(weirdnessNoise));
+	}
+
+	public static boolean method_37848(float f, float g) {
+		if (f < -0.2F) {
+			return false;
+		} else {
+			return f < -0.05F ? true : Math.abs(g) < 0.15F;
+		}
 	}
 
 	public static float method_37731(float weirdness) {

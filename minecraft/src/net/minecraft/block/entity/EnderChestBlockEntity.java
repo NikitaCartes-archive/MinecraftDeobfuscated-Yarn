@@ -11,9 +11,9 @@ import net.minecraft.world.World;
 
 public class EnderChestBlockEntity extends BlockEntity implements ChestAnimationProgress {
 	private final ChestLidAnimator lidAnimator = new ChestLidAnimator();
-	private final ChestStateManager stateManager = new ChestStateManager() {
+	private final ViewerCountManager stateManager = new ViewerCountManager() {
 		@Override
-		protected void onChestOpened(World world, BlockPos pos, BlockState state) {
+		protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
 			world.playSound(
 				null,
 				(double)pos.getX() + 0.5,
@@ -27,7 +27,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 		}
 
 		@Override
-		protected void onChestClosed(World world, BlockPos pos, BlockState state) {
+		protected void onContainerClose(World world, BlockPos pos, BlockState state) {
 			world.playSound(
 				null,
 				(double)pos.getX() + 0.5,
@@ -41,7 +41,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 		}
 
 		@Override
-		protected void onInteracted(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+		protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 			world.addSyncedBlockEvent(EnderChestBlockEntity.this.pos, Blocks.ENDER_CHEST, 1, newViewerCount);
 		}
 
@@ -71,13 +71,13 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 
 	public void onOpen(PlayerEntity player) {
 		if (!this.removed && !player.isSpectator()) {
-			this.stateManager.openChest(player, this.getWorld(), this.getPos(), this.getCachedState());
+			this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 
 	public void onClose(PlayerEntity player) {
 		if (!this.removed && !player.isSpectator()) {
-			this.stateManager.closeChest(player, this.getWorld(), this.getPos(), this.getCachedState());
+			this.stateManager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 

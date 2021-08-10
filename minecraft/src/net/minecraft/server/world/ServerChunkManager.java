@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.class_6480;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -354,7 +355,9 @@ public class ServerChunkManager extends ChunkManager {
 			boolean bl3 = worldProperties.getTime() % 400L == 0L;
 			this.world.getProfiler().push("naturalSpawnCount");
 			int j = this.ticketManager.getSpawningChunkCount();
-			SpawnHelper.Info info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded);
+			SpawnHelper.Info info = SpawnHelper.setupSpawn(
+				j, this.world.iterateEntities(), this::ifChunkLoaded, new class_6480(this.threadedAnvilChunkStorage, this.world)
+			);
 			this.spawnInfo = info;
 			this.world.getProfiler().pop();
 			List<ChunkHolder> list = Lists.<ChunkHolder>newArrayList(this.threadedAnvilChunkStorage.entryIterator());

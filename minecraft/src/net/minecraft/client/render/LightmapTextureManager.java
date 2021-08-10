@@ -189,10 +189,10 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public static int getBlockLightCoordinates(int light) {
-		return light >> 4 & 65535;
+		return light >> 4 & (MAX_BLOCK_LIGHT_COORDINATE | 65295);
 	}
 
 	public static int getSkyLightCoordinates(int light) {
-		return light >> 20 & 65535;
+		return light >> 20 & (MAX_BLOCK_LIGHT_COORDINATE | 65295);
 	}
 }

@@ -92,9 +92,9 @@ public class NoiseColumnSampler {
 		} else {
 			int i = x * this.horizontalNoiseResolution >> 2;
 			int j = z * this.horizontalNoiseResolution >> 2;
-			double[] ds = this.biomeSource.getTerrainParameters(i, j);
-			d = ds[0];
-			e = ds[1];
+			BiomeSource.class_6482 lv = this.biomeSource.method_37845(i, j);
+			d = lv.field_34300;
+			e = lv.field_34301;
 		}
 
 		double f = 684.412 * config.getSampling().getXZScale();
@@ -167,28 +167,32 @@ public class NoiseColumnSampler {
 		return f < 0.0 ? f * 0.009486607142857142 : Math.min(f, 1.0) * 0.006640625;
 	}
 
-	public int method_37766(int i, int j) {
+	public NoiseColumnSampler.class_6483 method_37849(int i, int j) {
 		int k = Math.floorDiv(i, this.horizontalNoiseResolution);
 		int l = Math.floorDiv(j, this.horizontalNoiseResolution);
 		int m = MathHelper.floorDiv(this.config.getMinimumY(), this.verticalNoiseResolution);
 		int n = MathHelper.floorDiv(this.config.getHeight(), this.verticalNoiseResolution);
 		int o = 2;
 		int p = 1;
+		boolean bl = false;
 		int q = Integer.MAX_VALUE;
 
 		for (int r = k - 2; r <= k + 2; r += 2) {
 			for (int s = l - 2; s <= l + 2; s += 2) {
 				int t = r * this.horizontalNoiseResolution >> 2;
 				int u = s * this.horizontalNoiseResolution >> 2;
-				double[] ds = this.biomeSource.getTerrainParameters(t, u);
-				double d = ds[0];
-				double e = ds[1];
+				BiomeSource.class_6482 lv = this.biomeSource.method_37845(t, u);
+				double d = lv.field_34300;
+				double e = lv.field_34301;
+				if (lv.field_34302) {
+					bl = true;
+				}
 
 				for (int v = m; v <= m + n; v++) {
 					int w = v - m;
 					double f = (double)(v * this.verticalNoiseResolution);
-					double g = -90.0;
-					double h = this.getOffset(f, d, e, 0.0) + -90.0;
+					double g = -70.0;
+					double h = this.getOffset(f, d, e, 0.0) + -70.0;
 					double x = this.applySlides(h, w);
 					if (this.method_37763(x)) {
 						q = Math.min(v * this.verticalNoiseResolution, q);
@@ -198,10 +202,24 @@ public class NoiseColumnSampler {
 			}
 		}
 
-		return q;
+		return new NoiseColumnSampler.class_6483(q, bl);
+	}
+
+	public int method_37766(int i, int j) {
+		return this.method_37849(i, j).field_34307;
 	}
 
 	private boolean method_37763(double d) {
 		return d < 50.0;
+	}
+
+	public static class class_6483 {
+		public final int field_34307;
+		public final boolean field_34308;
+
+		class_6483(int i, boolean bl) {
+			this.field_34307 = i;
+			this.field_34308 = bl;
+		}
 	}
 }

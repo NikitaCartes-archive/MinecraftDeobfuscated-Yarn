@@ -139,9 +139,9 @@ public enum Direction implements StringIdentifiable {
 	public static Direction getLookDirectionForAxis(Entity entity, Direction.Axis axis) {
 		switch (axis) {
 			case X:
-				return EAST.method_30928(entity.getYaw(1.0F)) ? EAST : WEST;
+				return EAST.pointsTo(entity.getYaw(1.0F)) ? EAST : WEST;
 			case Z:
-				return SOUTH.method_30928(entity.getYaw(1.0F)) ? SOUTH : NORTH;
+				return SOUTH.pointsTo(entity.getYaw(1.0F)) ? SOUTH : NORTH;
 			case Y:
 			default:
 				return entity.getPitch(1.0F) < 0.0F ? UP : DOWN;
@@ -409,11 +409,18 @@ public enum Direction implements StringIdentifiable {
 		return this.vector;
 	}
 
-	public boolean method_30928(float f) {
-		float g = f * (float) (Math.PI / 180.0);
-		float h = -MathHelper.sin(g);
-		float i = MathHelper.cos(g);
-		return (float)this.vector.getX() * h + (float)this.vector.getZ() * i > 0.0F;
+	/**
+	 * {@return whether the given yaw points to the direction}
+	 * 
+	 * @implNote This returns whether the yaw can make an acute angle with the direction.
+	 * 
+	 * <p>This always returns {@code false} for vertical directions.
+	 */
+	public boolean pointsTo(float yaw) {
+		float f = yaw * (float) (Math.PI / 180.0);
+		float g = -MathHelper.sin(f);
+		float h = MathHelper.cos(f);
+		return (float)this.vector.getX() * g + (float)this.vector.getZ() * h > 0.0F;
 	}
 
 	public static enum Axis implements StringIdentifiable, Predicate<Direction> {
@@ -457,8 +464,8 @@ public enum Direction implements StringIdentifiable {
 			.collect(Collectors.toMap(Direction.Axis::getName, axis -> axis));
 		private final String name;
 
-		Axis(String string2) {
-			this.name = string2;
+		Axis(String name) {
+			this.name = name;
 		}
 
 		@Nullable

@@ -2,6 +2,7 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.minecraft.class_6484;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.registry.Registry;
@@ -50,7 +51,9 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	public static final TernarySurfaceConfig WARPED_NYLIUM_CONFIG = new TernarySurfaceConfig(WARPED_NYLIUM, NETHERRACK, WARPED_WART_BLOCK);
 	public static final TernarySurfaceConfig BASALT_DELTA_CONFIG = new TernarySurfaceConfig(BLACKSTONE, BASALT, MAGMA_BLOCK);
 	public static final TernarySurfaceConfig SNOW_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, DIRT, GRAVEL);
+	public static final TernarySurfaceConfig field_34310 = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, GRAVEL);
 	public static final TernarySurfaceConfig LOFTY_PEAKS_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, STONE, STONE);
+	public static final TernarySurfaceConfig field_34311 = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, STONE);
 	public static final SurfaceBuilder<TernarySurfaceConfig> DEFAULT = register("default", new DefaultSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	public static final SurfaceBuilder<TernarySurfaceConfig> MOUNTAIN = register("mountain", new MountainSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	public static final SurfaceBuilder<TernarySurfaceConfig> SHATTERED_SAVANNA = register(
@@ -84,6 +87,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = register("nope", new NopeSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	public static final SurfaceBuilder<TernarySurfaceConfig> SNOWY_SLOPES = register("snowy_slopes", new SnowySlopesSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	public static final SurfaceBuilder<TernarySurfaceConfig> LOFTY_PEAKS = register("lofty_peaks", new LoftyPeaksSurfaceBuilder(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> STONY_PEAKS = register("stony_peaks", new class_6484(TernarySurfaceConfig.CODEC));
 	private final Codec<ConfiguredSurfaceBuilder<C>> codec;
 
 	private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String id, F surfaceBuilder) {

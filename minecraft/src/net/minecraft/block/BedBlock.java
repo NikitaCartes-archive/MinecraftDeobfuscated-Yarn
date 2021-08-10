@@ -229,7 +229,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, float f) {
 		Direction direction = world.getBlockState(pos).get(FACING);
 		Direction direction2 = direction.rotateYClockwise();
-		Direction direction3 = direction2.method_30928(f) ? direction2.getOpposite() : direction2;
+		Direction direction3 = direction2.pointsTo(f) ? direction2.getOpposite() : direction2;
 		if (isBed(world, pos)) {
 			return findWakeUpPosition(type, world, pos, direction, direction3);
 		} else {

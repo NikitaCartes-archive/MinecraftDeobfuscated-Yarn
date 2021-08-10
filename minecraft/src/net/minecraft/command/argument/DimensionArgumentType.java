@@ -22,10 +22,10 @@ import net.minecraft.world.World;
 
 public class DimensionArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = (Collection<String>)Stream.of(World.OVERWORLD, World.NETHER)
-		.map(registryKey -> registryKey.getValue().toString())
+		.map(key -> key.getValue().toString())
 		.collect(Collectors.toList());
 	private static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("argument.dimension.invalid", object)
+		id -> new TranslatableText("argument.dimension.invalid", id)
 	);
 
 	public Identifier parse(StringReader stringReader) throws CommandSyntaxException {

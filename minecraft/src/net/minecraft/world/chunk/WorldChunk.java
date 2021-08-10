@@ -434,7 +434,7 @@ public class WorldChunk implements Chunk {
 		} else {
 			return !(this.world instanceof ServerWorld)
 				? true
-				: this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.method_37232(pos));
+				: this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.toLong(pos));
 		}
 	}
 
