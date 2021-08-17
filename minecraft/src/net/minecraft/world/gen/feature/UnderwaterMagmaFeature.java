@@ -29,9 +29,9 @@ public class UnderwaterMagmaFeature extends Feature<UnderwaterMagmaFeatureConfig
 		BlockPos blockPos = context.getOrigin();
 		UnderwaterMagmaFeatureConfig underwaterMagmaFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
-		if (context.getConfig().field_34242 > 0) {
+		if (context.getConfig().minDistanceBelowSurface > 0) {
 			int i = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX(), blockPos.getZ());
-			if (blockPos.getY() >= i - context.getConfig().field_34242) {
+			if (blockPos.getY() >= i - context.getConfig().minDistanceBelowSurface) {
 				return false;
 			}
 		}

@@ -16,6 +16,8 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DesertTempleGenerator extends StructurePieceWithDimensions {
+	public static final int field_34314 = 21;
+	public static final int field_34315 = 21;
 	private final boolean[] hasPlacedChest = new boolean[4];
 
 	public DesertTempleGenerator(Random random, int x, int z) {
@@ -49,7 +51,7 @@ public class DesertTempleGenerator extends StructurePieceWithDimensions {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		if (!this.method_14839(world, boundingBox, 0)) {
+		if (!this.method_37865(world, boundingBox, -random.nextInt(3))) {
 			return false;
 		} else {
 			this.fillWithOutline(

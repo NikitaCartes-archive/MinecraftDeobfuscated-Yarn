@@ -797,13 +797,13 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				.noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0);
 	}
 
-	public List<EntityLike> method_37832(ChunkPos chunkPos) {
+	public List<EntityLike> getMobSpawnablePlayers(ChunkPos chunkPos) {
 		long l = chunkPos.toLong();
 		return !this.ticketManager.method_20800(l)
 			? Collections.emptyList()
 			: (List)this.playerChunkWatchingManager
 				.getPlayersWatchingChunk(l)
-				.filter(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0)
+				.filter(player -> !player.isSpectator() && getSquaredDistance(chunkPos, player) < 16384.0)
 				.collect(Collectors.toList());
 	}
 
