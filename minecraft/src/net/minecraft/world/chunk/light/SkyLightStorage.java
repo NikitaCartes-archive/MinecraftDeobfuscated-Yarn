@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Arrays;
-import net.minecraft.class_4298;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -14,6 +13,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
+import net.minecraft.world.chunk.GridNibbleArray;
 
 public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	private static final Direction[] LIGHT_REDUCTION_DIRECTIONS = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
@@ -162,7 +162,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 					l = ChunkSectionPos.offset(l, Direction.UP);
 				}
 
-				return new ChunkNibbleArray(new class_4298(chunkNibbleArray2, 0).asByteArray());
+				return new ChunkNibbleArray(new GridNibbleArray(chunkNibbleArray2, 0).asByteArray());
 			} else {
 				return new ChunkNibbleArray();
 			}

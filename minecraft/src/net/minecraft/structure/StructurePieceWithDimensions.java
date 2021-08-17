@@ -65,4 +65,34 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 			}
 		}
 	}
+
+	protected boolean method_37865(WorldAccess worldAccess, BlockBox blockBox, int i) {
+		if (this.boundingBox.getMinZ() < -982 && this.boundingBox.getMaxX() > -982 && this.boundingBox.getMinZ() < -1140 && this.boundingBox.getMaxZ() > -1140) {
+			System.out.println();
+		}
+
+		if (this.hPos >= 0) {
+			return true;
+		} else {
+			int j = worldAccess.getTopY();
+			int k = 0;
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+			for (int l = this.boundingBox.getMinZ(); l <= this.boundingBox.getMaxZ(); l++) {
+				for (int m = this.boundingBox.getMinX(); m <= this.boundingBox.getMaxX(); m++) {
+					mutable.set(m, 0, l);
+					j = Math.min(j, worldAccess.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY());
+					k++;
+				}
+			}
+
+			if (k == 0) {
+				return false;
+			} else {
+				this.hPos = j;
+				this.boundingBox.move(0, this.hPos - this.boundingBox.getMinY() + i, 0);
+				return true;
+			}
+		}
+	}
 }

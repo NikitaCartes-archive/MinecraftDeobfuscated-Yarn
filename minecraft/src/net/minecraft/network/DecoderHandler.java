@@ -24,20 +24,23 @@ public class DecoderHandler extends ByteToMessageDecoder {
 	protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
 		int i = byteBuf.readableBytes();
 		if (i != 0) {
+			int j = byteBuf.readerIndex();
 			PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf);
-			int j = packetByteBuf.readVarInt();
-			Packet<?> packet = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getPacketHandler(this.side, j, packetByteBuf);
+			int k = packetByteBuf.readVarInt();
+			Packet<?> packet = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getPacketHandler(this.side, k, packetByteBuf);
+			int l = byteBuf.readerIndex() - j;
 			if (packet == null) {
-				throw new IOException("Bad packet id " + j);
+				throw new IOException("Bad packet id " + k);
 			} else {
 				PacketReceivedEvent packetReceivedEvent = (PacketReceivedEvent)PacketReceivedEvent.EVENT.get();
 				if (packetReceivedEvent.isEnabled() && packetReceivedEvent.shouldCommit()) {
 					packetReceivedEvent.packetName = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId()
 						+ "/"
-						+ j
+						+ k
 						+ " ("
 						+ packet.getClass().getSimpleName()
 						+ ")";
+					packetReceivedEvent.bytes = l;
 					packetReceivedEvent.commit();
 					packetReceivedEvent.reset();
 				}
@@ -47,19 +50,19 @@ public class DecoderHandler extends ByteToMessageDecoder {
 						"Packet "
 							+ channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId()
 							+ "/"
-							+ j
+							+ k
 							+ " ("
 							+ packet.getClass().getSimpleName()
 							+ ") was larger than I expected, found "
 							+ packetByteBuf.readableBytes()
 							+ " bytes extra whilst reading packet "
-							+ j
+							+ k
 					);
 				} else {
 					list.add(packet);
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug(
-							MARKER, " IN: [{}:{}] {}", channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), j, packet.getClass().getName()
+							MARKER, " IN: [{}:{}] {}", channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), k, packet.getClass().getName()
 						);
 					}
 				}

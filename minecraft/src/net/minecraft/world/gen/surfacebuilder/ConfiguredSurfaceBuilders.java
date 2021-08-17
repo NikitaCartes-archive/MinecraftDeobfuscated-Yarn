@@ -63,7 +63,7 @@ public class ConfiguredSurfaceBuilders {
 	);
 	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> GROVE = register("grove", SurfaceBuilder.GROVE.withConfig(SurfaceBuilder.SNOW_CONFIG));
 	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> SNOWCAPPED_PEAKS = register(
-		"snowcapped_peaks", SurfaceBuilder.SNOWCAPPED_PEAKS.withConfig(SurfaceBuilder.field_34311)
+		"snowcapped_peaks", SurfaceBuilder.SNOWCAPPED_PEAKS.withConfig(SurfaceBuilder.SNOWCAPPED_PEAKS_CONFIG)
 	);
 	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> LOFTY_PEAKS = register(
 		"lofty_peaks", SurfaceBuilder.LOFTY_PEAKS.withConfig(SurfaceBuilder.LOFTY_PEAKS_CONFIG)
@@ -72,7 +72,10 @@ public class ConfiguredSurfaceBuilders {
 		"stony_peaks", SurfaceBuilder.STONY_PEAKS.withConfig(SurfaceBuilder.STONE_CONFIG)
 	);
 	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> SNOWY_SLOPES = register(
-		"snowy_slopes", SurfaceBuilder.SNOWY_SLOPES.withConfig(SurfaceBuilder.field_34310)
+		"snowy_slopes", SurfaceBuilder.SNOWY_SLOPES.withConfig(SurfaceBuilder.SNOWY_SLOPES_CONFIG)
+	);
+	public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> STONE_SHORE = register(
+		"stone_shore", SurfaceBuilder.STONE_SHORE.withConfig(SurfaceBuilder.STONE_CONFIG)
 	);
 
 	private static <SC extends SurfaceConfig> ConfiguredSurfaceBuilder<SC> register(String id, ConfiguredSurfaceBuilder<SC> configuredSurfaceBuilder) {

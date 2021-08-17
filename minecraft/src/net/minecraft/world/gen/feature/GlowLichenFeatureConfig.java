@@ -14,7 +14,10 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 	public static final Codec<GlowLichenFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.intRange(1, 64).fieldOf("search_range").orElse(10).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.searchRange),
-					Codec.intRange(0, 128).fieldOf("min_distance_below_surface").orElse(0).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.field_34241),
+					Codec.intRange(0, 128)
+						.fieldOf("min_distance_below_surface")
+						.orElse(0)
+						.forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.minDistanceBelowSurface),
 					Codec.BOOL.fieldOf("can_place_on_floor").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnFloor),
 					Codec.BOOL.fieldOf("can_place_on_ceiling").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnCeiling),
 					Codec.BOOL.fieldOf("can_place_on_wall").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnWalls),
@@ -24,7 +27,7 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 				.apply(instance, GlowLichenFeatureConfig::new)
 	);
 	public final int searchRange;
-	public final int field_34241;
+	public final int minDistanceBelowSurface;
 	public final boolean placeOnFloor;
 	public final boolean placeOnCeiling;
 	public final boolean placeOnWalls;
@@ -32,28 +35,36 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 	public final List<BlockState> canPlaceOn;
 	public final List<Direction> directions;
 
-	public GlowLichenFeatureConfig(int searchRange, int i, boolean bl, boolean bl2, boolean bl3, float f, List<BlockState> list) {
+	public GlowLichenFeatureConfig(
+		int searchRange,
+		int minDistanceBelowSurface,
+		boolean placeOnFloor,
+		boolean placeOnCeiling,
+		boolean placeOnWalls,
+		float spreadChance,
+		List<BlockState> canPlaceOn
+	) {
 		this.searchRange = searchRange;
-		this.field_34241 = i;
-		this.placeOnFloor = bl;
-		this.placeOnCeiling = bl2;
-		this.placeOnWalls = bl3;
-		this.spreadChance = f;
-		this.canPlaceOn = list;
-		List<Direction> list2 = Lists.<Direction>newArrayList();
-		if (bl2) {
-			list2.add(Direction.UP);
+		this.minDistanceBelowSurface = minDistanceBelowSurface;
+		this.placeOnFloor = placeOnFloor;
+		this.placeOnCeiling = placeOnCeiling;
+		this.placeOnWalls = placeOnWalls;
+		this.spreadChance = spreadChance;
+		this.canPlaceOn = canPlaceOn;
+		List<Direction> list = Lists.<Direction>newArrayList();
+		if (placeOnCeiling) {
+			list.add(Direction.UP);
 		}
 
-		if (bl) {
-			list2.add(Direction.DOWN);
+		if (placeOnFloor) {
+			list.add(Direction.DOWN);
 		}
 
-		if (bl3) {
-			Direction.Type.HORIZONTAL.forEach(list2::add);
+		if (placeOnWalls) {
+			Direction.Type.HORIZONTAL.forEach(list::add);
 		}
 
-		this.directions = Collections.unmodifiableList(list2);
+		this.directions = Collections.unmodifiableList(list);
 	}
 
 	public boolean canGrowOn(Block block) {

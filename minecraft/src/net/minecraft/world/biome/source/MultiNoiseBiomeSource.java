@@ -181,9 +181,9 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	public static MultiNoiseBiomeSource createVanillaSource(Registry<Biome> biomeRegistry, long seed) {
 		ImmutableList<Pair<MultiNoiseUtil.NoiseHypercube, Supplier<Biome>>> immutableList = createVanillaBiomeEntries(biomeRegistry);
 		MultiNoiseBiomeSource.NoiseParameters noiseParameters = new MultiNoiseBiomeSource.NoiseParameters(-9, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0);
-		MultiNoiseBiomeSource.NoiseParameters noiseParameters2 = new MultiNoiseBiomeSource.NoiseParameters(-7, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+		MultiNoiseBiomeSource.NoiseParameters noiseParameters2 = new MultiNoiseBiomeSource.NoiseParameters(-7, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0);
 		MultiNoiseBiomeSource.NoiseParameters noiseParameters3 = new MultiNoiseBiomeSource.NoiseParameters(-9, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0);
-		MultiNoiseBiomeSource.NoiseParameters noiseParameters4 = new MultiNoiseBiomeSource.NoiseParameters(-9, 1.0, 1.0, 0.0, 1.0, 1.0);
+		MultiNoiseBiomeSource.NoiseParameters noiseParameters4 = new MultiNoiseBiomeSource.NoiseParameters(-9, 1.0, 1.0, 0.0, 1.0, 0.0);
 		MultiNoiseBiomeSource.NoiseParameters noiseParameters5 = new MultiNoiseBiomeSource.NoiseParameters(-7, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0);
 		return new MultiNoiseBiomeSource(
 			seed,
@@ -343,14 +343,21 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 				+ " W: "
 				+ decimalFormat.format(h)
 		);
+		VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
 		info.add(
-			"Terrain PV: "
-				+ decimalFormat.format(l)
-				+ " O: "
-				+ decimalFormat.format(lv.field_34300)
-				+ " F: "
-				+ decimalFormat.format(lv.field_34301)
-				+ (lv.field_34302 ? " coast" : "")
+			"Biome builder PV: "
+				+ VanillaBiomeParameters.method_37855(l)
+				+ " C: "
+				+ vanillaBiomeParameters.method_37858(d)
+				+ " E: "
+				+ vanillaBiomeParameters.method_37860(e)
+				+ " T: "
+				+ vanillaBiomeParameters.method_37861(f)
+				+ " H: "
+				+ vanillaBiomeParameters.method_37863(g)
+		);
+		info.add(
+			"Terrain PV: " + decimalFormat.format(l) + " O: " + decimalFormat.format(lv.field_34300) + " F: " + (int)lv.field_34301 + (lv.field_34302 ? " coast" : "")
 		);
 	}
 

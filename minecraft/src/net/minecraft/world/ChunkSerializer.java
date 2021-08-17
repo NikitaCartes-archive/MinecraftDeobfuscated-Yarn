@@ -52,7 +52,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ChunkSerializer {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final String field_31413 = "UpgradeData";
+	public static final String UPGRADE_DATA_KEY = "UpgradeData";
 
 	public static ProtoChunk deserialize(ServerWorld world, StructureManager structureManager, PointOfInterestStorage poiStorage, ChunkPos pos, NbtCompound nbt) {
 		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
@@ -387,19 +387,19 @@ public class ChunkSerializer {
 	}
 
 	private static NbtCompound writeStructures(
-		ServerWorld world, ChunkPos chunkPos, Map<StructureFeature<?>, StructureStart<?>> map, Map<StructureFeature<?>, LongSet> map2
+		ServerWorld world, ChunkPos pos, Map<StructureFeature<?>, StructureStart<?>> starts, Map<StructureFeature<?>, LongSet> references
 	) {
 		NbtCompound nbtCompound = new NbtCompound();
 		NbtCompound nbtCompound2 = new NbtCompound();
 
-		for (Entry<StructureFeature<?>, StructureStart<?>> entry : map.entrySet()) {
-			nbtCompound2.put(((StructureFeature)entry.getKey()).getName(), ((StructureStart)entry.getValue()).toNbt(world, chunkPos));
+		for (Entry<StructureFeature<?>, StructureStart<?>> entry : starts.entrySet()) {
+			nbtCompound2.put(((StructureFeature)entry.getKey()).getName(), ((StructureStart)entry.getValue()).toNbt(world, pos));
 		}
 
 		nbtCompound.put("Starts", nbtCompound2);
 		NbtCompound nbtCompound3 = new NbtCompound();
 
-		for (Entry<StructureFeature<?>, LongSet> entry2 : map2.entrySet()) {
+		for (Entry<StructureFeature<?>, LongSet> entry2 : references.entrySet()) {
 			nbtCompound3.put(((StructureFeature)entry2.getKey()).getName(), new NbtLongArray((LongSet)entry2.getValue()));
 		}
 
@@ -407,7 +407,7 @@ public class ChunkSerializer {
 		return nbtCompound;
 	}
 
-	private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(ServerWorld serverWorld, NbtCompound nbt, long worldSeed) {
+	private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(ServerWorld world, NbtCompound nbt, long worldSeed) {
 		Map<StructureFeature<?>, StructureStart<?>> map = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
 		NbtCompound nbtCompound = nbt.getCompound("Starts");
 
@@ -417,7 +417,7 @@ public class ChunkSerializer {
 			if (structureFeature == null) {
 				LOGGER.error("Unknown structure start: {}", string2);
 			} else {
-				StructureStart<?> structureStart = StructureFeature.readStructureStart(serverWorld, nbtCompound.getCompound(string), worldSeed);
+				StructureStart<?> structureStart = StructureFeature.readStructureStart(world, nbtCompound.getCompound(string), worldSeed);
 				if (structureStart != null) {
 					map.put(structureFeature, structureStart);
 				}

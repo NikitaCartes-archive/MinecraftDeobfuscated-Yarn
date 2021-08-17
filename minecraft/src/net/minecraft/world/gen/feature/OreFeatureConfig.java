@@ -64,9 +64,9 @@ public class OreFeatureConfig implements FeatureConfig {
 		public final RuleTest target;
 		public final BlockState state;
 
-		Target(RuleTest ruleTest, BlockState blockState) {
-			this.target = ruleTest;
-			this.state = blockState;
+		Target(RuleTest target, BlockState state) {
+			this.target = target;
+			this.state = state;
 		}
 	}
 }

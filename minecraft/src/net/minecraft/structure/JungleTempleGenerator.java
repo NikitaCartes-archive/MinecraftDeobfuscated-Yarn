@@ -25,6 +25,8 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class JungleTempleGenerator extends StructurePieceWithDimensions {
+	public static final int field_34316 = 12;
+	public static final int field_34317 = 15;
 	private boolean placedMainChest;
 	private boolean placedHiddenChest;
 	private boolean placedTrap1;

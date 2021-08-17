@@ -2,7 +2,7 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_6484;
+import net.minecraft.class_6485;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.registry.Registry;
@@ -17,6 +17,10 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	private static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
 	private static final BlockState PODZOL = Blocks.PODZOL.getDefaultState();
 	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
+	private static final BlockState field_34327 = Blocks.GRANITE.getDefaultState();
+	private static final BlockState field_34328 = Blocks.DIORITE.getDefaultState();
+	private static final BlockState field_34325 = Blocks.CALCITE.getDefaultState();
+	private static final BlockState field_34326 = Blocks.ANDESITE.getDefaultState();
 	private static final BlockState STONE = Blocks.STONE.getDefaultState();
 	private static final BlockState COARSE_DIRT = Blocks.COARSE_DIRT.getDefaultState();
 	private static final BlockState SAND = Blocks.SAND.getDefaultState();
@@ -36,6 +40,10 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	private static final BlockState SNOW_BLOCK = Blocks.SNOW_BLOCK.getDefaultState();
 	public static final TernarySurfaceConfig PODZOL_CONFIG = new TernarySurfaceConfig(PODZOL, DIRT, GRAVEL);
 	public static final TernarySurfaceConfig GRAVEL_CONFIG = new TernarySurfaceConfig(GRAVEL, GRAVEL, GRAVEL);
+	public static final TernarySurfaceConfig field_34329 = new TernarySurfaceConfig(field_34327, field_34327, field_34327);
+	public static final TernarySurfaceConfig field_34330 = new TernarySurfaceConfig(field_34326, field_34326, field_34326);
+	public static final TernarySurfaceConfig field_34331 = new TernarySurfaceConfig(field_34328, field_34328, field_34328);
+	public static final TernarySurfaceConfig field_34332 = new TernarySurfaceConfig(field_34325, field_34325, field_34325);
 	public static final TernarySurfaceConfig GRASS_CONFIG = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, GRAVEL);
 	public static final TernarySurfaceConfig STONE_CONFIG = new TernarySurfaceConfig(STONE, STONE, GRAVEL);
 	public static final TernarySurfaceConfig COARSE_DIRT_CONFIG = new TernarySurfaceConfig(COARSE_DIRT, DIRT, GRAVEL);
@@ -51,9 +59,9 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	public static final TernarySurfaceConfig WARPED_NYLIUM_CONFIG = new TernarySurfaceConfig(WARPED_NYLIUM, NETHERRACK, WARPED_WART_BLOCK);
 	public static final TernarySurfaceConfig BASALT_DELTA_CONFIG = new TernarySurfaceConfig(BLACKSTONE, BASALT, MAGMA_BLOCK);
 	public static final TernarySurfaceConfig SNOW_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig field_34310 = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, GRAVEL);
+	public static final TernarySurfaceConfig SNOWY_SLOPES_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, GRAVEL);
 	public static final TernarySurfaceConfig LOFTY_PEAKS_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, STONE, STONE);
-	public static final TernarySurfaceConfig field_34311 = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, STONE);
+	public static final TernarySurfaceConfig SNOWCAPPED_PEAKS_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, STONE);
 	public static final SurfaceBuilder<TernarySurfaceConfig> DEFAULT = register("default", new DefaultSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	public static final SurfaceBuilder<TernarySurfaceConfig> MOUNTAIN = register("mountain", new MountainSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	public static final SurfaceBuilder<TernarySurfaceConfig> SHATTERED_SAVANNA = register(
@@ -87,7 +95,8 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = register("nope", new NopeSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	public static final SurfaceBuilder<TernarySurfaceConfig> SNOWY_SLOPES = register("snowy_slopes", new SnowySlopesSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	public static final SurfaceBuilder<TernarySurfaceConfig> LOFTY_PEAKS = register("lofty_peaks", new LoftyPeaksSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> STONY_PEAKS = register("stony_peaks", new class_6484(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> STONE_SHORE = register("stone_shore", new class_6485(TernarySurfaceConfig.CODEC));
+	public static final SurfaceBuilder<TernarySurfaceConfig> STONY_PEAKS = register("stony_peaks", new StonyPeaksSurfaceBuilder(TernarySurfaceConfig.CODEC));
 	private final Codec<ConfiguredSurfaceBuilder<C>> codec;
 
 	private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String id, F surfaceBuilder) {

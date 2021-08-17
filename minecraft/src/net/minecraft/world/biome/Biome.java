@@ -108,9 +108,9 @@ public final class Biome {
 
 	private float computeTemperature(BlockPos pos) {
 		float f = this.weather.temperatureModifier.getModifiedTemperature(pos, this.getTemperature());
-		if (pos.getY() > 64) {
-			float g = (float)(TEMPERATURE_NOISE.sample((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 4.0);
-			return f - (g + (float)pos.getY() - 64.0F) * 0.05F / 30.0F;
+		if (pos.getY() > 80) {
+			float g = (float)(TEMPERATURE_NOISE.sample((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F), false) * 8.0);
+			return f - (g + (float)pos.getY() - 80.0F) * 0.05F / 40.0F;
 		} else {
 			return f;
 		}

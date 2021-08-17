@@ -74,13 +74,13 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Override
-	public void setColumnEnabled(ChunkPos chunkPos, boolean bl) {
+	public void setColumnEnabled(ChunkPos pos, boolean retainData) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.setColumnEnabled(chunkPos, bl);
+			this.blockLightProvider.setColumnEnabled(pos, retainData);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.setColumnEnabled(chunkPos, bl);
+			this.skyLightProvider.setColumnEnabled(pos, retainData);
 		}
 	}
 

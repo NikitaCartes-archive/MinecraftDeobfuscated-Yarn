@@ -26,6 +26,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
@@ -353,6 +354,16 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	}
 
 	public abstract StructureFeature.StructureStartFactory<C> getStructureStartFactory();
+
+	protected static int method_37864(ChunkGenerator chunkGenerator, int i, int j, ChunkPos chunkPos, HeightLimitView heightLimitView) {
+		int k = chunkPos.getStartX();
+		int l = chunkPos.getStartZ();
+		int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+		int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+		int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+		int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+		return Math.min(Math.min(m, n), Math.min(o, p));
+	}
 
 	public String getName() {
 		return (String)STRUCTURES.inverse().get(this);

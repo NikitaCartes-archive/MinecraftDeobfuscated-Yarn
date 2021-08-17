@@ -17,10 +17,10 @@ public final class class_6466 {
 	}
 
 	public static void init() {
-		Spline<class_6466.TerrainNoisePoint> spline = method_37736("beachSpline", -0.15F, -0.05F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F);
-		Spline<class_6466.TerrainNoisePoint> spline2 = method_37736("lowSpline", -0.1F, -0.1F, 0.03F, 0.1F, 0.1F, 0.01F, -0.03F);
-		Spline<class_6466.TerrainNoisePoint> spline3 = method_37736("midSpline", -0.1F, -0.1F, 0.03F, 0.1F, 0.7F, 0.01F, -0.03F);
-		Spline<class_6466.TerrainNoisePoint> spline4 = method_37736("highSpline", -0.1F, 0.3F, 0.03F, 0.1F, 1.0F, 0.01F, 0.01F);
+		Spline<class_6466.TerrainNoisePoint> spline = method_37736("beachSpline", -0.15F, -0.05F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false);
+		Spline<class_6466.TerrainNoisePoint> spline2 = method_37736("lowSpline", -0.1F, -0.1F, 0.03F, 0.1F, 0.1F, 0.01F, -0.03F, false, false);
+		Spline<class_6466.TerrainNoisePoint> spline3 = method_37736("midSpline", -0.1F, -0.1F, 0.03F, 0.1F, 0.7F, 0.01F, -0.03F, true, true);
+		Spline<class_6466.TerrainNoisePoint> spline4 = method_37736("highSpline", -0.1F, 0.3F, 0.03F, 0.1F, 1.0F, 0.01F, 0.01F, true, true);
 		float f = -0.51F;
 		float g = -0.4F;
 		float h = 0.1F;
@@ -61,8 +61,8 @@ public final class class_6466 {
 			.add(0.05F, value, 0.0F);
 		Spline<class_6466.TerrainNoisePoint> spline = Spline.builder(class_6466.TerrainNoisePoint::getWeirdnessNoise)
 			.setName(weirdnessName)
-			.add(0.45F, value, 0.0F)
-			.add(0.7F, 175.0F, 0.0F)
+			.add(-0.7F, value, 0.0F)
+			.add(-0.15F, 175.0F, 0.0F)
 			.build();
 		if (addShatteredRidges) {
 			Spline<class_6466.TerrainNoisePoint> spline2 = Spline.builder(class_6466.TerrainNoisePoint::getWeirdnessNoise)
@@ -70,9 +70,9 @@ public final class class_6466 {
 				.add(-0.9F, value, 0.0F)
 				.add(-0.69F, 80.0F, 0.0F)
 				.build();
-			builder.add(0.051F, spline, 0.0F).add(0.45F, spline, 0.0F).add(0.51F, spline2, 0.0F).add(0.59F, spline2, 0.0F).add(0.65F, spline, 0.0F);
+			builder.add(0.35F, value, 0.0F).add(0.48F, spline2, 0.0F).add(0.52F, spline2, 0.0F).add(0.62F, value, 0.0F);
 		} else {
-			builder.add(0.051F, spline, 0.0F);
+			builder.add(0.4F, value, 0.0F).add(0.45F, spline, 0.0F).add(0.55F, spline, 0.0F).add(0.58F, value, 0.0F);
 		}
 
 		return builder.build();
@@ -97,7 +97,7 @@ public final class class_6466 {
 		return (g - f) / (i - h);
 	}
 
-	private static Spline<class_6466.TerrainNoisePoint> method_37740(float f) {
+	private static Spline<class_6466.TerrainNoisePoint> method_37740(float f, boolean bl) {
 		Spline.Builder<class_6466.TerrainNoisePoint> builder = Spline.builder(class_6466.TerrainNoisePoint::getWeirdnessNoise)
 			.setName(String.format("M-spline for continentalness: %.02f", f));
 		float g = -0.7F;
@@ -123,7 +123,13 @@ public final class class_6466 {
 			builder.add(1.0F, k, s);
 		} else {
 			float n = method_37733(i, k, -1.0F, 1.0F);
-			builder.add(-1.0F, i, n);
+			if (bl) {
+				builder.add(-1.0F, Math.max(0.2F, i), 0.0F);
+				builder.add(0.0F, MathHelper.lerp(0.5F, i, k), n);
+			} else {
+				builder.add(-1.0F, i, n);
+			}
+
 			builder.add(1.0F, k, n);
 		}
 
@@ -161,31 +167,38 @@ public final class class_6466 {
 		return j / (0.46082947F * i) - 1.17F;
 	}
 
-	public static Spline<class_6466.TerrainNoisePoint> method_37736(String name, float f, float g, float h, float i, float j, float k, float l) {
+	public static Spline<class_6466.TerrainNoisePoint> method_37736(
+		String name, float f, float g, float h, float i, float j, float k, float l, boolean bl, boolean bl2
+	) {
 		float m = 0.6F;
 		float n = 1.5F;
 		float o = 0.5F;
 		float p = 0.5F;
 		float q = 1.2F;
-		Spline<class_6466.TerrainNoisePoint> spline = method_37740(MathHelper.lerp(j, 0.6F, 2.0F));
-		Spline<class_6466.TerrainNoisePoint> spline2 = method_37740(MathHelper.lerp(j, 0.6F, 1.0F));
-		Spline<class_6466.TerrainNoisePoint> spline3 = method_37740(j);
+		Spline<class_6466.TerrainNoisePoint> spline = method_37740(MathHelper.lerp(j, 0.6F, 2.0F), bl2);
+		Spline<class_6466.TerrainNoisePoint> spline2 = method_37740(MathHelper.lerp(j, 0.6F, 1.0F), bl2);
+		Spline<class_6466.TerrainNoisePoint> spline3 = method_37740(j, bl2);
 		Spline<class_6466.TerrainNoisePoint> spline4 = method_37735(
-			name + "-widePlateau", MathHelper.lerp(0.5F, f, g), 0.5F * j, MathHelper.lerp(0.5F, 0.5F, 0.5F) * j, 0.5F * j, 0.6F * j
+			name + "-widePlateau", f - 0.2F, 0.5F * j, MathHelper.lerp(0.5F, 0.5F, 0.5F) * j, 0.5F * j, 0.6F * j
 		);
 		Spline<class_6466.TerrainNoisePoint> spline5 = method_37735(name + "-narrowPlateau", f, k * j, h * j, 0.5F * j, 0.6F * j);
 		Spline<class_6466.TerrainNoisePoint> spline6 = method_37735(name + "-plains", f, k, k, h, i);
-		Spline<class_6466.TerrainNoisePoint> spline7 = method_37735(name + "-swamps", f, l, l, h, i);
-		return Spline.builder(class_6466.TerrainNoisePoint::getErosionNoise)
+		Spline<class_6466.TerrainNoisePoint> spline7 = method_37735(name + "-extremeHills", f, k, i + 0.07F, i + 0.07F, i + 0.1F);
+		Spline<class_6466.TerrainNoisePoint> spline8 = method_37735(name + "-swamps", MathHelper.lerp(0.5F, f, l), l, l, h, i);
+		Spline.Builder<class_6466.TerrainNoisePoint> builder = Spline.builder(class_6466.TerrainNoisePoint::getErosionNoise)
 			.setName(name)
 			.add(-0.9F, spline, 0.0F)
 			.add(-0.7F, spline2, 0.0F)
 			.add(-0.4F, spline3, 0.0F)
 			.add(-0.35F, spline4, 0.0F)
 			.add(-0.1F, spline5, 0.0F)
-			.add(0.2F, spline6, 0.0F)
-			.add(1.0F, spline7, 0.0F)
-			.build();
+			.add(0.2F, spline6, 0.0F);
+		if (bl) {
+			builder.add(0.4F, spline6, 0.0F).add(0.45F, spline7, 0.0F).add(0.55F, spline7, 0.0F).add(0.58F, spline6, 0.0F);
+		}
+
+		builder.add(0.7F, spline8, 0.0F);
+		return builder.build();
 	}
 
 	private static Spline<class_6466.TerrainNoisePoint> method_37735(String name, float f, float g, float h, float i, float j) {

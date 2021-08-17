@@ -9,7 +9,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_6480;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -56,12 +55,14 @@ public final class SpawnHelper {
 	private static final SpawnGroup[] SPAWNABLE_GROUPS = (SpawnGroup[])Stream.of(SpawnGroup.values())
 		.filter(spawnGroup -> spawnGroup != SpawnGroup.MISC)
 		.toArray(SpawnGroup[]::new);
-	private static final float field_34296 = 0.24F;
+	private static final float SUCCESSFUL_SPAWN_CHANCE = 0.24F;
 
 	private SpawnHelper() {
 	}
 
-	public static SpawnHelper.Info setupSpawn(int spawningChunkCount, Iterable<Entity> entities, SpawnHelper.ChunkSource chunkSource, class_6480 arg) {
+	public static SpawnHelper.Info setupSpawn(
+		int spawningChunkCount, Iterable<Entity> entities, SpawnHelper.ChunkSource chunkSource, SpawnDensityCapper spawnDensityCapper
+	) {
 		GravityField gravityField = new GravityField();
 		Object2IntOpenHashMap<SpawnGroup> object2IntOpenHashMap = new Object2IntOpenHashMap<>();
 
@@ -81,7 +82,7 @@ public final class SpawnHelper {
 					}
 
 					if (entity instanceof MobEntity) {
-						arg.method_37835(l, spawnGroup);
+						spawnDensityCapper.increaseDensity(l, spawnGroup);
 					}
 
 					object2IntOpenHashMap.addTo(spawnGroup, 1);
@@ -89,7 +90,7 @@ public final class SpawnHelper {
 			}
 		}
 
-		return new SpawnHelper.Info(spawningChunkCount, object2IntOpenHashMap, gravityField, arg);
+		return new SpawnHelper.Info(spawningChunkCount, object2IntOpenHashMap, gravityField, spawnDensityCapper);
 	}
 
 	static Biome getBiomeDirectly(BlockPos pos, Chunk chunk) {
@@ -119,7 +120,7 @@ public final class SpawnHelper {
 			if (!bl || chunkSection != WorldChunk.EMPTY_SECTION && !chunkSection.isEmpty()) {
 				bl = false;
 				if (!(world.getRandom().nextFloat() > 0.24F)) {
-					BlockPos blockPos = method_37843(world, chunk, i);
+					BlockPos blockPos = getRandomPosInChunkSection(world, chunk, i);
 					spawnEntitiesInChunk(group, world, chunk, blockPos, checker, runner);
 				}
 			}
@@ -290,25 +291,25 @@ public final class SpawnHelper {
 	}
 
 	private static Pool<SpawnSettings.SpawnEntry> getSpawnEntries(
-		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos blockPos, @Nullable Biome biome
+		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos pos, @Nullable Biome biome
 	) {
-		return method_37844(blockPos, world, spawnGroup, structureAccessor)
+		return shouldUseNetherFortressSpawns(pos, world, spawnGroup, structureAccessor)
 			? StructureFeature.FORTRESS.getMonsterSpawns()
-			: chunkGenerator.getEntitySpawnList(biome != null ? biome : world.getBiome(blockPos), structureAccessor, spawnGroup, blockPos);
+			: chunkGenerator.getEntitySpawnList(biome != null ? biome : world.getBiome(pos), structureAccessor, spawnGroup, pos);
 	}
 
-	public static boolean method_37844(BlockPos blockPos, ServerWorld serverWorld, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
+	public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
 		return spawnGroup == SpawnGroup.MONSTER
-			&& serverWorld.getBlockState(blockPos.down()).isOf(Blocks.NETHER_BRICKS)
-			&& structureAccessor.getStructureAt(blockPos, false, StructureFeature.FORTRESS).hasChildren();
+			&& world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)
+			&& structureAccessor.getStructureAt(pos, false, StructureFeature.FORTRESS).hasChildren();
 	}
 
-	private static BlockPos method_37843(World world, WorldChunk worldChunk, int i) {
-		ChunkPos chunkPos = worldChunk.getPos();
-		int j = chunkPos.getStartX() + world.random.nextInt(16);
-		int k = chunkPos.getStartZ() + world.random.nextInt(16);
-		int l = i + world.random.nextInt(16) + 1;
-		return new BlockPos(j, l, k);
+	private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk, int minY) {
+		ChunkPos chunkPos = chunk.getPos();
+		int i = chunkPos.getStartX() + world.random.nextInt(16);
+		int j = chunkPos.getStartZ() + world.random.nextInt(16);
+		int k = minY + world.random.nextInt(16) + 1;
+		return new BlockPos(i, k, j);
 	}
 
 	public static boolean isClearForSpawn(BlockView blockView, BlockPos pos, BlockState state, FluidState fluidState, EntityType<?> entityType) {
@@ -449,30 +450,30 @@ public final class SpawnHelper {
 		private final Object2IntOpenHashMap<SpawnGroup> groupToCount;
 		private final GravityField densityField;
 		private final Object2IntMap<SpawnGroup> groupToCountView;
-		private final class_6480 field_34297;
+		private final SpawnDensityCapper densityCapper;
 		@Nullable
 		private BlockPos cachedPos;
 		@Nullable
 		private EntityType<?> cachedEntityType;
 		private double cachedDensityMass;
 		@Nullable
-		private Biome field_34298;
+		private Biome cachedBiome;
 
-		Info(int spawningChunkCount, Object2IntOpenHashMap<SpawnGroup> object2IntOpenHashMap, GravityField densityField, class_6480 arg) {
+		Info(int spawningChunkCount, Object2IntOpenHashMap<SpawnGroup> groupToCount, GravityField densityField, SpawnDensityCapper densityCapper) {
 			this.spawningChunkCount = spawningChunkCount;
-			this.groupToCount = object2IntOpenHashMap;
+			this.groupToCount = groupToCount;
 			this.densityField = densityField;
-			this.field_34297 = arg;
-			this.groupToCountView = Object2IntMaps.unmodifiable(object2IntOpenHashMap);
+			this.densityCapper = densityCapper;
+			this.groupToCountView = Object2IntMaps.unmodifiable(groupToCount);
 		}
 
 		/**
 		 * @see SpawnHelper.Checker#test(EntityType, BlockPos, Chunk)
 		 */
-		private boolean test(EntityType<?> type, BlockPos blockPos, Chunk chunk) {
-			this.cachedPos = blockPos;
+		private boolean test(EntityType<?> type, BlockPos pos, Chunk chunk) {
+			this.cachedPos = pos;
 			this.cachedEntityType = type;
-			Biome biome = this.field_34298 = SpawnHelper.getBiomeDirectly(blockPos, chunk);
+			Biome biome = this.cachedBiome = SpawnHelper.getBiomeDirectly(pos, chunk);
 			SpawnSettings.SpawnDensity spawnDensity = biome.getSpawnSettings().getSpawnDensity(type);
 			if (spawnDensity == null) {
 				this.cachedDensityMass = 0.0;
@@ -480,7 +481,7 @@ public final class SpawnHelper {
 			} else {
 				double d = spawnDensity.getMass();
 				this.cachedDensityMass = d;
-				double e = this.densityField.calculate(blockPos, d);
+				double e = this.densityField.calculate(pos, d);
 				return e <= spawnDensity.getGravityLimit();
 			}
 		}
@@ -494,7 +495,7 @@ public final class SpawnHelper {
 			double d;
 			if (blockPos.equals(this.cachedPos) && entityType == this.cachedEntityType) {
 				d = this.cachedDensityMass;
-				Biome biome = this.field_34298;
+				Biome biome = this.cachedBiome;
 			} else {
 				Biome biome = SpawnHelper.getBiomeDirectly(blockPos, chunk);
 				SpawnSettings.SpawnDensity spawnDensity = biome.getSpawnSettings().getSpawnDensity(entityType);
@@ -508,7 +509,7 @@ public final class SpawnHelper {
 			this.densityField.addPoint(blockPos, d);
 			SpawnGroup spawnGroup = entityType.getSpawnGroup();
 			this.groupToCount.addTo(spawnGroup, 1);
-			this.field_34297.method_37835(new ChunkPos(blockPos).toLong(), spawnGroup);
+			this.densityCapper.increaseDensity(new ChunkPos(blockPos).toLong(), spawnGroup);
 		}
 
 		public int getSpawningChunkCount() {
@@ -520,7 +521,7 @@ public final class SpawnHelper {
 		}
 
 		boolean isBelowCap(SpawnGroup spawnGroup, ChunkPos chunkPos) {
-			if (!this.field_34297.method_37836(spawnGroup, chunkPos)) {
+			if (!this.densityCapper.canSpawn(spawnGroup, chunkPos)) {
 				return false;
 			} else {
 				int i = spawnGroup.getCapacity() * this.spawningChunkCount / SpawnHelper.CHUNK_AREA;

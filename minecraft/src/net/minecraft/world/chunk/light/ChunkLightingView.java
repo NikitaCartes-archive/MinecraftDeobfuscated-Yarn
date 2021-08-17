@@ -49,7 +49,7 @@ public interface ChunkLightingView extends LightingView {
 		}
 
 		@Override
-		public void setColumnEnabled(ChunkPos chunkPos, boolean bl) {
+		public void setColumnEnabled(ChunkPos pos, boolean retainData) {
 		}
 	}
 }

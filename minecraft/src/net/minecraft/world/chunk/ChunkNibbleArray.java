@@ -4,10 +4,20 @@ import javax.annotation.Nullable;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 
+/**
+ * A chunk nibble array is an array of nibbles for each block position in
+ * a chunk. It is most often used to store light data.
+ * 
+ * <p>A {@index nibble} is 4 bits, storing an integer from {@code 0} to
+ * {@code 15}. It takes half the space of a byte.
+ * 
+ * <p>The nibbles are stored in an X-Z-Y major order; in the backing array,
+ * the indices increases by first increasing X, then Z, and finally Y.
+ */
 public class ChunkNibbleArray {
 	public static final int BYTES_LENGTH = 2048;
 	public static final int COPY_BLOCK_SIZE = 128;
-	private static final int field_31405 = 4;
+	private static final int NIBBLE_BITS = 4;
 	@Nullable
 	protected byte[] bytes;
 
@@ -25,10 +35,19 @@ public class ChunkNibbleArray {
 		this.bytes = new byte[size];
 	}
 
+	/**
+	 * {@return the integer value of a nibble, in {@code [0, 15]}}
+	 */
 	public int get(int x, int y, int z) {
 		return this.get(this.getIndex(x, y, z));
 	}
 
+	/**
+	 * Sets the value of a nibble.
+	 * 
+	 * <p>If the {@code value} has bits outside of the lowest 4 set to {@code 1},
+	 * (value is outside of {@code [0, 15]), the extraneous bits are discarded.
+	 */
 	public void set(int x, int y, int z, int value) {
 		this.set(this.getIndex(x, y, z), value);
 	}
@@ -41,8 +60,8 @@ public class ChunkNibbleArray {
 		if (this.bytes == null) {
 			return 0;
 		} else {
-			int i = this.divideByTwo(index);
-			return this.method_12143(index) ? this.bytes[i] & 15 : this.bytes[i] >> 4 & 15;
+			int i = this.getArrayIndex(index);
+			return this.occupiesSmallerBits(index) ? this.bytes[i] & 15 : this.bytes[i] >> 4 & 15;
 		}
 	}
 
@@ -51,19 +70,25 @@ public class ChunkNibbleArray {
 			this.bytes = new byte[2048];
 		}
 
-		int i = this.divideByTwo(index);
-		if (this.method_12143(index)) {
+		int i = this.getArrayIndex(index);
+		if (this.occupiesSmallerBits(index)) {
 			this.bytes[i] = (byte)(this.bytes[i] & 240 | value & 15);
 		} else {
 			this.bytes[i] = (byte)(this.bytes[i] & 15 | (value & 15) << 4);
 		}
 	}
 
-	private boolean method_12143(int i) {
-		return (i & 1) == 0;
+	/**
+	 * {@return if the nibble at {@code n} is stored in the less
+	 * significant (smaller) 4 bits of the byte in the backing array}
+	 * 
+	 * @param n the index of the nibble, not the array index
+	 */
+	private boolean occupiesSmallerBits(int n) {
+		return (n & 1) == 0;
 	}
 
-	private int divideByTwo(int n) {
+	private int getArrayIndex(int n) {
 		return n >> 1;
 	}
 
@@ -96,13 +121,21 @@ public class ChunkNibbleArray {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * {@return a hexademical string representation of the {@code y=0} level of
+	 * this array}
+	 * 
+	 * <p>It is useful for debugging the grid nibble array.
+	 * 
+	 * @param unused unused
+	 */
 	@Debug
-	public String method_35320(int i) {
+	public String bottomToString(int unused) {
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (int j = 0; j < 256; j++) {
-			stringBuilder.append(Integer.toHexString(this.get(j)));
-			if ((j & 15) == 15) {
+		for (int i = 0; i < 256; i++) {
+			stringBuilder.append(Integer.toHexString(this.get(i)));
+			if ((i & 15) == 15) {
 				stringBuilder.append("\n");
 			}
 		}

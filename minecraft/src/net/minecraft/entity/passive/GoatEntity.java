@@ -285,10 +285,8 @@ public class GoatEntity extends AnimalEntity {
 		return new GoatEntity.GoatNavigation(this, world);
 	}
 
-	public static boolean method_37833(
-		EntityType<? extends AnimalEntity> entityType, WorldAccess worldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random
-	) {
-		BlockState blockState = worldAccess.getBlockState(blockPos.down());
+	public static boolean canSpawn(EntityType<? extends AnimalEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		BlockState blockState = world.getBlockState(pos.down());
 		return (
 				blockState.isOf(Blocks.STONE)
 					|| blockState.isOf(Blocks.SNOW)
@@ -297,7 +295,7 @@ public class GoatEntity extends AnimalEntity {
 					|| blockState.isOf(Blocks.PACKED_ICE)
 					|| blockState.isOf(Blocks.GRAVEL)
 			)
-			&& worldAccess.getBaseLightLevel(blockPos, 0) > 8;
+			&& world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	static class GoatNavigation extends MobNavigation {

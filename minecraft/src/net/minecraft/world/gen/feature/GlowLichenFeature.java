@@ -30,9 +30,9 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 		if (!isAirOrWater(structureWorldAccess.getBlockState(blockPos))) {
 			return false;
 		} else {
-			if (context.getConfig().field_34241 > 0) {
+			if (context.getConfig().minDistanceBelowSurface > 0) {
 				int i = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX(), blockPos.getZ());
-				if (blockPos.getY() >= i - context.getConfig().field_34241) {
+				if (blockPos.getY() >= i - context.getConfig().minDistanceBelowSurface) {
 					return false;
 				}
 			}

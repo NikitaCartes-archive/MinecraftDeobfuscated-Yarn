@@ -51,9 +51,12 @@ public class DefaultBiomeFeatures {
 	public static void addMineables(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_DIRT);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_GRAVEL);
-		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_GRANITE);
-		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_DIORITE);
-		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_ANDESITE);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_GRANITE_UPPER);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_GRANITE_LOWER);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_DIORITE_UPPER);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_DIORITE_LOWER);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_ANDESITE_UPPER);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_ANDESITE_LOWER);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_TUFF);
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PROTOTYPE_GLOW_LICHEN);
 	}
@@ -64,7 +67,11 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SMALL_DRIPSTONE);
 	}
 
-	public static void addDefaultOres(GenerationSettings.Builder builder) {
+	public static void method_37868(GenerationSettings.Builder builder) {
+		addDefaultOres(builder, false);
+	}
+
+	public static void addDefaultOres(GenerationSettings.Builder builder, boolean bl) {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_COAL_UPPER);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_COAL_LOWER);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_IRON_UPPER);
@@ -77,7 +84,7 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_DIAMOND_LARGE);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_LAPIS);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_LAPIS_BURIED);
-		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_COPPER);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, bl ? ConfiguredFeatures.PROTOTYPE_ORE_COPPER_LARGE : ConfiguredFeatures.PROTOTYPE_ORE_COPPER);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_UNDERWATER_MAGMA);
 	}
 
