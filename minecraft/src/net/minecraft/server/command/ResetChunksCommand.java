@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Unit;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.class_6466;
 import net.minecraft.class_6469;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -21,6 +20,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.thread.TaskExecutor;
+import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ReadOnlyChunk;
@@ -42,7 +42,7 @@ public class ResetChunksCommand {
 		ServerWorld serverWorld = source.getWorld();
 		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 		Vec3d vec3d = source.getPosition();
-		class_6466.init();
+		VanillaTerrainParameters.init();
 		ChunkPos chunkPos = new ChunkPos(MathHelper.floor(vec3d.getX() / 16.0), MathHelper.floor(vec3d.getZ() / 16.0));
 
 		for (int i = chunkPos.z - radius; i <= chunkPos.z + radius; i++) {

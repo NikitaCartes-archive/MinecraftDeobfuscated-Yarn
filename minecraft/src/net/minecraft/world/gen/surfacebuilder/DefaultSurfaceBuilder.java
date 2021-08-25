@@ -104,19 +104,19 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		}
 	}
 
-	private static BlockState method_37850(BlockState blockState, Chunk chunk, BlockPos blockPos, int i) {
-		if (blockPos.getY() <= i && blockState.isOf(Blocks.GRASS_BLOCK)) {
+	private static BlockState method_37850(BlockState state, Chunk chunk, BlockPos pos, int i) {
+		if (pos.getY() <= i && state.isOf(Blocks.GRASS_BLOCK)) {
 			return Blocks.DIRT.getDefaultState();
-		} else if (blockState.isOf(Blocks.SAND) && isPosAboveAirOrFluid(chunk, blockPos)) {
+		} else if (state.isOf(Blocks.SAND) && isAboveAirOrFluid(chunk, pos)) {
 			return Blocks.SANDSTONE.getDefaultState();
-		} else if (blockState.isOf(Blocks.RED_SAND) && isPosAboveAirOrFluid(chunk, blockPos)) {
+		} else if (state.isOf(Blocks.RED_SAND) && isAboveAirOrFluid(chunk, pos)) {
 			return Blocks.RED_SANDSTONE.getDefaultState();
 		} else {
-			return blockState.isOf(Blocks.GRAVEL) && isPosAboveAirOrFluid(chunk, blockPos) ? Blocks.STONE.getDefaultState() : blockState;
+			return state.isOf(Blocks.GRAVEL) && isAboveAirOrFluid(chunk, pos) ? Blocks.STONE.getDefaultState() : state;
 		}
 	}
 
-	private static boolean isPosAboveAirOrFluid(Chunk chunk, BlockPos pos) {
+	private static boolean isAboveAirOrFluid(Chunk chunk, BlockPos pos) {
 		BlockState blockState = chunk.getBlockState(pos.down());
 		return blockState.isAir() || !blockState.getFluidState().isEmpty();
 	}

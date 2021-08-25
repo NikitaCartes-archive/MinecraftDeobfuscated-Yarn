@@ -1,9 +1,8 @@
 package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_6485;
 
-public class StonyPeaksSurfaceBuilder extends class_6485 {
+public class StonyPeaksSurfaceBuilder extends StoneSurfaceBuilder {
 	private static final float field_34318 = 0.025F;
 
 	public StonyPeaksSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
@@ -11,16 +10,16 @@ public class StonyPeaksSurfaceBuilder extends class_6485 {
 	}
 
 	@Override
-	protected TernarySurfaceConfig method_37866(double d) {
+	protected TernarySurfaceConfig getLayerBlockConfig(double noise) {
 		TernarySurfaceConfig ternarySurfaceConfig;
-		if (d < -0.025F) {
-			ternarySurfaceConfig = SurfaceBuilder.field_34332;
-		} else if (d < 0.0) {
-			ternarySurfaceConfig = SurfaceBuilder.field_34330;
-		} else if (d < 0.025F) {
+		if (noise < -0.025F) {
+			ternarySurfaceConfig = SurfaceBuilder.CACLCITE_CONFIG;
+		} else if (noise < 0.0) {
+			ternarySurfaceConfig = SurfaceBuilder.ANDESITE_CONFIG;
+		} else if (noise < 0.025F) {
 			ternarySurfaceConfig = SurfaceBuilder.GRAVEL_CONFIG;
 		} else {
-			ternarySurfaceConfig = SurfaceBuilder.field_34329;
+			ternarySurfaceConfig = SurfaceBuilder.GRANITE_CONFIG;
 		}
 
 		return ternarySurfaceConfig;

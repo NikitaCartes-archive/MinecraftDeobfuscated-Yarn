@@ -8,13 +8,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
 
-public abstract class StructurePieceWithDimensions extends StructurePiece {
+public abstract class ShiftableStructurePiece extends StructurePiece {
 	protected final int width;
 	protected final int height;
 	protected final int depth;
 	protected int hPos = -1;
 
-	protected StructurePieceWithDimensions(StructurePieceType type, int x, int y, int z, int width, int height, int depth, Direction orientation) {
+	protected ShiftableStructurePiece(StructurePieceType type, int x, int y, int z, int width, int height, int depth, Direction orientation) {
 		super(type, 0, StructurePiece.createBox(x, y, z, orientation, width, height, depth));
 		this.width = width;
 		this.height = height;
@@ -22,7 +22,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		this.setOrientation(orientation);
 	}
 
-	protected StructurePieceWithDimensions(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+	protected ShiftableStructurePiece(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
 		super(structurePieceType, nbtCompound);
 		this.width = nbtCompound.getInt("Width");
 		this.height = nbtCompound.getInt("Height");
@@ -38,35 +38,35 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		nbt.putInt("HPos", this.hPos);
 	}
 
-	protected boolean method_14839(WorldAccess world, BlockBox boundingBox, int i) {
+	protected boolean adjustToAverageHeight(WorldAccess world, BlockBox boundingBox, int deltaY) {
 		if (this.hPos >= 0) {
 			return true;
 		} else {
+			int i = 0;
 			int j = 0;
-			int k = 0;
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (int l = this.boundingBox.getMinZ(); l <= this.boundingBox.getMaxZ(); l++) {
-				for (int m = this.boundingBox.getMinX(); m <= this.boundingBox.getMaxX(); m++) {
-					mutable.set(m, 64, l);
+			for (int k = this.boundingBox.getMinZ(); k <= this.boundingBox.getMaxZ(); k++) {
+				for (int l = this.boundingBox.getMinX(); l <= this.boundingBox.getMaxX(); l++) {
+					mutable.set(l, 64, k);
 					if (boundingBox.contains(mutable)) {
-						j += world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
-						k++;
+						i += world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
+						j++;
 					}
 				}
 			}
 
-			if (k == 0) {
+			if (j == 0) {
 				return false;
 			} else {
-				this.hPos = j / k;
-				this.boundingBox.move(0, this.hPos - this.boundingBox.getMinY() + i, 0);
+				this.hPos = i / j;
+				this.boundingBox.move(0, this.hPos - this.boundingBox.getMinY() + deltaY, 0);
 				return true;
 			}
 		}
 	}
 
-	protected boolean method_37865(WorldAccess worldAccess, BlockBox blockBox, int i) {
+	protected boolean adjustToMinHeight(WorldAccess world, BlockBox boundingBox, int deltaY) {
 		if (this.boundingBox.getMinZ() < -982 && this.boundingBox.getMaxX() > -982 && this.boundingBox.getMinZ() < -1140 && this.boundingBox.getMaxZ() > -1140) {
 			System.out.println();
 		}
@@ -74,23 +74,23 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		if (this.hPos >= 0) {
 			return true;
 		} else {
-			int j = worldAccess.getTopY();
-			int k = 0;
+			int i = world.getTopY();
+			int j = 0;
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (int l = this.boundingBox.getMinZ(); l <= this.boundingBox.getMaxZ(); l++) {
-				for (int m = this.boundingBox.getMinX(); m <= this.boundingBox.getMaxX(); m++) {
-					mutable.set(m, 0, l);
-					j = Math.min(j, worldAccess.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY());
-					k++;
+			for (int k = this.boundingBox.getMinZ(); k <= this.boundingBox.getMaxZ(); k++) {
+				for (int l = this.boundingBox.getMinX(); l <= this.boundingBox.getMaxX(); l++) {
+					mutable.set(l, 0, k);
+					i = Math.min(i, world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY());
+					j++;
 				}
 			}
 
-			if (k == 0) {
+			if (j == 0) {
 				return false;
 			} else {
-				this.hPos = j;
-				this.boundingBox.move(0, this.hPos - this.boundingBox.getMinY() + i, 0);
+				this.hPos = i;
+				this.boundingBox.move(0, this.hPos - this.boundingBox.getMinY() + deltaY, 0);
 				return true;
 			}
 		}

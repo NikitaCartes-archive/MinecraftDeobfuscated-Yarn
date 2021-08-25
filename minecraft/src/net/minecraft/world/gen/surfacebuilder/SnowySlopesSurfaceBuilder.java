@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
-public class SnowySlopesSurfaceBuilder extends NewMountainSurfaceBuilder {
-	private final NewMountainSurfaceBuilder.class_6474 field_34260 = new NewMountainSurfaceBuilder.class_6474(
+public class SnowySlopesSurfaceBuilder extends AbstractMountainSurfaceBuilder {
+	private final AbstractMountainSurfaceBuilder.SteepSlopeBlockConfig STEEP_SLOPE_BLOCK_CONFIG = new AbstractMountainSurfaceBuilder.SteepSlopeBlockConfig(
 		Blocks.STONE.getDefaultState(), true, false, false, true
 	);
 
@@ -16,17 +16,17 @@ public class SnowySlopesSurfaceBuilder extends NewMountainSurfaceBuilder {
 
 	@Nullable
 	@Override
-	protected NewMountainSurfaceBuilder.class_6474 method_37775() {
-		return this.field_34260;
+	protected AbstractMountainSurfaceBuilder.SteepSlopeBlockConfig getSteepSlopeBlockConfig() {
+		return this.STEEP_SLOPE_BLOCK_CONFIG;
 	}
 
 	@Override
 	protected BlockState getTopMaterial(TernarySurfaceConfig config, int x, int z) {
-		return this.method_37778(0.1, x, z, Blocks.SNOW_BLOCK.getDefaultState(), Blocks.POWDER_SNOW.getDefaultState(), 0.35, 0.6);
+		return this.getBlockFromNoise(0.1, x, z, Blocks.SNOW_BLOCK.getDefaultState(), Blocks.POWDER_SNOW.getDefaultState(), 0.35, 0.6);
 	}
 
 	@Override
 	protected BlockState getUnderMaterial(TernarySurfaceConfig config, int x, int z) {
-		return this.method_37778(0.1, x, z, Blocks.SNOW_BLOCK.getDefaultState(), Blocks.POWDER_SNOW.getDefaultState(), 0.45, 0.58);
+		return this.getBlockFromNoise(0.1, x, z, Blocks.SNOW_BLOCK.getDefaultState(), Blocks.POWDER_SNOW.getDefaultState(), 0.45, 0.58);
 	}
 }

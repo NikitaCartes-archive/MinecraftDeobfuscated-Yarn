@@ -213,10 +213,11 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		return this.topMaterials.contains(blockState);
 	}
 
-	public BiomeSource.class_6482 method_37845(int i, int j) {
+	public BiomeSource.TerrainParameters getTerrainParameters(int x, int z) {
 		double d = 0.03;
 		double e = 342.8571468713332;
-		return new BiomeSource.class_6482(0.03, 342.8571468713332, false);
+		float f = 0.0F;
+		return new BiomeSource.TerrainParameters(0.03, 342.8571468713332, false, 0.0F);
 	}
 
 	public List<List<ConfiguredFeature<?, ?>>> method_37619() {
@@ -233,15 +234,17 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
 	}
 
-	public static class class_6482 {
-		public final double field_34300;
-		public final double field_34301;
-		public final boolean field_34302;
+	public static class TerrainParameters {
+		public final double offset;
+		public final double factor;
+		public final boolean coast;
+		public final float field_34341;
 
-		class_6482(double d, double e, boolean bl) {
-			this.field_34300 = d;
-			this.field_34301 = e;
-			this.field_34302 = bl;
+		TerrainParameters(double d, double e, boolean bl, float f) {
+			this.offset = d;
+			this.factor = e;
+			this.coast = bl;
+			this.field_34341 = f;
 		}
 	}
 }

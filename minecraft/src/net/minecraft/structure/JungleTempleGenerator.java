@@ -24,7 +24,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class JungleTempleGenerator extends StructurePieceWithDimensions {
+public class JungleTempleGenerator extends ShiftableStructurePiece {
 	public static final int field_34316 = 12;
 	public static final int field_34317 = 15;
 	private boolean placedMainChest;
@@ -64,7 +64,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		if (!this.method_14839(world, boundingBox, 0)) {
+		if (!this.adjustToAverageHeight(world, boundingBox, 0)) {
 			return false;
 		} else {
 			this.fillWithOutline(world, boundingBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, false, random, COBBLESTONE_RANDOMIZER);

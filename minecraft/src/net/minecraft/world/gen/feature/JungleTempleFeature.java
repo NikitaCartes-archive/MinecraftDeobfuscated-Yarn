@@ -34,7 +34,7 @@ public class JungleTempleFeature extends StructureFeature<DefaultFeatureConfig> 
 			DefaultFeatureConfig defaultFeatureConfig,
 			HeightLimitView heightLimitView
 		) {
-			if (StructureFeature.method_37864(chunkGenerator, 12, 15, chunkPos, heightLimitView) >= chunkGenerator.getSeaLevel()) {
+			if (StructureFeature.getLowestCornerInGroundHeight(chunkGenerator, 12, 15, chunkPos, heightLimitView) >= chunkGenerator.getSeaLevel()) {
 				JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
 				this.addPiece(jungleTempleGenerator);
 			}

@@ -315,7 +315,7 @@ public class ConfiguredFeatures {
 			.configure(new SingleStateFeatureConfig(ConfiguredFeatures.States.WATER_BLOCK))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_TOP)
 			.spreadHorizontally()
-			.applyChance(16)
+			.applyChance(32)
 	);
 	public static final ConfiguredFeature<?, ?> LAKE_LAVA = register(
 		"lake_lava",
@@ -489,7 +489,19 @@ public class ConfiguredFeatures {
 					true,
 					4,
 					1,
-					ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DEEPSLATE, Blocks.TUFF)
+					ImmutableSet.of(
+						Blocks.STONE,
+						Blocks.GRANITE,
+						Blocks.DIORITE,
+						Blocks.ANDESITE,
+						Blocks.DEEPSLATE,
+						Blocks.TUFF,
+						Blocks.CALCITE,
+						Blocks.DIRT,
+						Blocks.SNOW_BLOCK,
+						Blocks.POWDER_SNOW,
+						Blocks.PACKED_ICE
+					)
 				)
 			)
 			.uniformRange(YOffset.getBottom(), YOffset.getTop())
@@ -1818,7 +1830,7 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> TREES_SWAMP = register(
 		"trees_swamp",
 		SWAMP_OAK.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_OCEAN_FLOOR)
-			.decorate(Decorator.WATER_DEPTH_THRESHOLD.configure(new WaterDepthThresholdDecoratorConfig(1)))
+			.decorate(Decorator.WATER_DEPTH_THRESHOLD.configure(new WaterDepthThresholdDecoratorConfig(2)))
 			.spreadHorizontally()
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
 	);

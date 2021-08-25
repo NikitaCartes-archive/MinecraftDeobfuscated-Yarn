@@ -38,7 +38,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.DirectBiomeAccessType;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -55,7 +54,6 @@ public final class SpawnHelper {
 	private static final SpawnGroup[] SPAWNABLE_GROUPS = (SpawnGroup[])Stream.of(SpawnGroup.values())
 		.filter(spawnGroup -> spawnGroup != SpawnGroup.MISC)
 		.toArray(SpawnGroup[]::new);
-	private static final float SUCCESSFUL_SPAWN_CHANCE = 0.24F;
 
 	private SpawnHelper() {
 	}
@@ -113,17 +111,9 @@ public final class SpawnHelper {
 	}
 
 	public static void spawnEntitiesInChunk(SpawnGroup group, ServerWorld world, WorldChunk chunk, SpawnHelper.Checker checker, SpawnHelper.Runner runner) {
-		boolean bl = true;
-
-		for (int i = world.getTopY() - 16; i >= world.getBottomY(); i -= 16) {
-			ChunkSection chunkSection = chunk.getSectionArray()[chunk.getSectionIndex(i)];
-			if (!bl || chunkSection != WorldChunk.EMPTY_SECTION && !chunkSection.isEmpty()) {
-				bl = false;
-				if (!(world.getRandom().nextFloat() > 0.24F)) {
-					BlockPos blockPos = getRandomPosInChunkSection(world, chunk, i);
-					spawnEntitiesInChunk(group, world, chunk, blockPos, checker, runner);
-				}
-			}
+		BlockPos blockPos = getRandomPosInChunkSection(world, chunk);
+		if (blockPos.getY() >= world.getBottomY() + 1) {
+			spawnEntitiesInChunk(group, world, chunk, blockPos, checker, runner);
 		}
 	}
 
@@ -134,72 +124,63 @@ public final class SpawnHelper {
 	}
 
 	public static void spawnEntitiesInChunk(SpawnGroup group, ServerWorld world, Chunk chunk, BlockPos pos, SpawnHelper.Checker checker, SpawnHelper.Runner runner) {
-		int i = pos.getX();
-		int j = pos.getY();
-		int k = pos.getZ();
-		int l = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i, k);
-		if (j <= l + 1) {
-			StructureAccessor structureAccessor = world.getStructureAccessor();
-			ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
-			BlockState blockState = chunk.getBlockState(pos);
-			if (!blockState.isSolidBlock(chunk, pos)) {
-				BlockPos.Mutable mutable = new BlockPos.Mutable();
-				int m = 0;
+		StructureAccessor structureAccessor = world.getStructureAccessor();
+		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
+		int i = pos.getY();
+		BlockState blockState = chunk.getBlockState(pos);
+		if (!blockState.isSolidBlock(chunk, pos)) {
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+			int j = 0;
 
-				for (int n = 0; n < 3; n++) {
-					int o = i;
-					int p = k;
-					int q = 6;
-					SpawnSettings.SpawnEntry spawnEntry = null;
-					EntityData entityData = null;
-					int r = 1;
-					int s = 0;
+			for (int k = 0; k < 3; k++) {
+				int l = pos.getX();
+				int m = pos.getZ();
+				int n = 6;
+				SpawnSettings.SpawnEntry spawnEntry = null;
+				EntityData entityData = null;
+				int o = MathHelper.ceil(world.random.nextFloat() * 4.0F);
+				int p = 0;
 
-					for (int t = 0; t < r; t++) {
-						o += world.random.nextInt(6) - world.random.nextInt(6);
-						p += world.random.nextInt(6) - world.random.nextInt(6);
-						mutable.set(o, j, p);
-						double d = (double)o + 0.5;
-						double e = (double)p + 0.5;
-						PlayerEntity playerEntity = world.getClosestPlayer(d, (double)j, e, -1.0, false);
-						if (playerEntity == null) {
-							break;
-						}
+				for (int q = 0; q < o; q++) {
+					l += world.random.nextInt(6) - world.random.nextInt(6);
+					m += world.random.nextInt(6) - world.random.nextInt(6);
+					mutable.set(l, i, m);
+					double d = (double)l + 0.5;
+					double e = (double)m + 0.5;
+					PlayerEntity playerEntity = world.getClosestPlayer(d, (double)i, e, -1.0, false);
+					if (playerEntity != null) {
+						double f = playerEntity.squaredDistanceTo(d, (double)i, e);
+						if (isAcceptableSpawnPosition(world, chunk, mutable, f)) {
+							if (spawnEntry == null) {
+								Optional<SpawnSettings.SpawnEntry> optional = pickRandomSpawnEntry(world, structureAccessor, chunkGenerator, group, world.random, mutable);
+								if (!optional.isPresent()) {
+									break;
+								}
 
-						double f = playerEntity.squaredDistanceTo(d, (double)j, e);
-						if (!isAcceptableSpawnPosition(world, chunk, mutable, f)) {
-							break;
-						}
-
-						if (spawnEntry == null) {
-							Optional<SpawnSettings.SpawnEntry> optional = pickRandomSpawnEntry(world, structureAccessor, chunkGenerator, group, world.random, mutable);
-							if (!optional.isPresent()) {
-								break;
+								spawnEntry = (SpawnSettings.SpawnEntry)optional.get();
+								o = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
 							}
 
-							spawnEntry = (SpawnSettings.SpawnEntry)optional.get();
-							r = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
-						}
-
-						if (canSpawn(world, group, structureAccessor, chunkGenerator, spawnEntry, mutable, f) && checker.test(spawnEntry.type, mutable, chunk)) {
-							MobEntity mobEntity = createMob(world, spawnEntry.type);
-							if (mobEntity == null) {
-								return;
-							}
-
-							mobEntity.refreshPositionAndAngles(d, (double)j, e, world.random.nextFloat() * 360.0F, 0.0F);
-							if (isValidSpawn(world, mobEntity, f)) {
-								entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.NATURAL, entityData, null);
-								m++;
-								s++;
-								world.spawnEntityAndPassengers(mobEntity);
-								runner.run(mobEntity, chunk);
-								if (m >= mobEntity.getLimitPerChunk()) {
+							if (canSpawn(world, group, structureAccessor, chunkGenerator, spawnEntry, mutable, f) && checker.test(spawnEntry.type, mutable, chunk)) {
+								MobEntity mobEntity = createMob(world, spawnEntry.type);
+								if (mobEntity == null) {
 									return;
 								}
 
-								if (mobEntity.spawnsTooManyForEachTry(s)) {
-									break;
+								mobEntity.refreshPositionAndAngles(d, (double)i, e, world.random.nextFloat() * 360.0F, 0.0F);
+								if (isValidSpawn(world, mobEntity, f)) {
+									entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.NATURAL, entityData, null);
+									j++;
+									p++;
+									world.spawnEntityAndPassengers(mobEntity);
+									runner.run(mobEntity, chunk);
+									if (j >= mobEntity.getLimitPerChunk()) {
+										return;
+									}
+
+									if (mobEntity.spawnsTooManyForEachTry(p)) {
+										break;
+									}
 								}
 							}
 						}
@@ -304,12 +285,13 @@ public final class SpawnHelper {
 			&& structureAccessor.getStructureAt(pos, false, StructureFeature.FORTRESS).hasChildren();
 	}
 
-	private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk, int minY) {
+	private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
 		int i = chunkPos.getStartX() + world.random.nextInt(16);
 		int j = chunkPos.getStartZ() + world.random.nextInt(16);
-		int k = minY + world.random.nextInt(16) + 1;
-		return new BlockPos(i, k, j);
+		int k = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i, j) + 1;
+		int l = MathHelper.nextBetween(world.random, world.getBottomY(), k);
+		return new BlockPos(i, l, j);
 	}
 
 	public static boolean isClearForSpawn(BlockView blockView, BlockPos pos, BlockState state, FluidState fluidState, EntityType<?> entityType) {

@@ -20,7 +20,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class SwampHutGenerator extends StructurePieceWithDimensions {
+public class SwampHutGenerator extends ShiftableStructurePiece {
 	private boolean hasWitch;
 	private boolean hasCat;
 
@@ -51,7 +51,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		if (!this.method_14839(world, boundingBox, 0)) {
+		if (!this.adjustToAverageHeight(world, boundingBox, 0)) {
 			return false;
 		} else {
 			this.fillWithOutline(world, boundingBox, 1, 1, 1, 5, 1, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
