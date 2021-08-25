@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
-public class LoftyPeaksSurfaceBuilder extends NewMountainSurfaceBuilder {
-	private final NewMountainSurfaceBuilder.class_6474 field_34251 = new NewMountainSurfaceBuilder.class_6474(
+public class LoftyPeaksSurfaceBuilder extends AbstractMountainSurfaceBuilder {
+	private final AbstractMountainSurfaceBuilder.SteepSlopeBlockConfig STEEP_SLOPE_BLOCK_CONFIG = new AbstractMountainSurfaceBuilder.SteepSlopeBlockConfig(
 		Blocks.STONE.getDefaultState(), true, false, false, true
 	);
 
@@ -16,8 +16,8 @@ public class LoftyPeaksSurfaceBuilder extends NewMountainSurfaceBuilder {
 
 	@Nullable
 	@Override
-	protected NewMountainSurfaceBuilder.class_6474 method_37775() {
-		return this.field_34251;
+	protected AbstractMountainSurfaceBuilder.SteepSlopeBlockConfig getSteepSlopeBlockConfig() {
+		return this.STEEP_SLOPE_BLOCK_CONFIG;
 	}
 
 	@Override

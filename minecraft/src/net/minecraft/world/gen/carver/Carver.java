@@ -70,6 +70,7 @@ public abstract class Carver<C extends CarverConfig> {
 		Blocks.SNOW,
 		Blocks.PACKED_ICE,
 		Blocks.DEEPSLATE,
+		Blocks.CALCITE,
 		Blocks.TUFF,
 		Blocks.GRANITE,
 		Blocks.IRON_ORE,
@@ -260,7 +261,8 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	protected boolean canCarveBlock(BlockState state, BlockState stateAbove) {
-		return this.canAlwaysCarveBlock(state) || (state.isOf(Blocks.SAND) || state.isOf(Blocks.GRAVEL)) && !stateAbove.getFluidState().isIn(FluidTags.WATER);
+		return this.canAlwaysCarveBlock(state)
+			|| (state.isOf(Blocks.SAND) || state.isOf(Blocks.RED_SAND) || state.isOf(Blocks.GRAVEL)) && !stateAbove.getFluidState().isIn(FluidTags.WATER);
 	}
 
 	protected boolean isRegionUncarvable(Chunk chunk, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {

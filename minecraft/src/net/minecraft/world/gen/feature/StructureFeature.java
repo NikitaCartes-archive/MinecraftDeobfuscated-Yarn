@@ -355,14 +355,14 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 
 	public abstract StructureFeature.StructureStartFactory<C> getStructureStartFactory();
 
-	protected static int method_37864(ChunkGenerator chunkGenerator, int i, int j, ChunkPos chunkPos, HeightLimitView heightLimitView) {
-		int k = chunkPos.getStartX();
-		int l = chunkPos.getStartZ();
-		int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
-		int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
-		int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
-		int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
-		return Math.min(Math.min(m, n), Math.min(o, p));
+	protected static int getLowestCornerInGroundHeight(ChunkGenerator generator, int deltaX, int deltaZ, ChunkPos chunkPos, HeightLimitView world) {
+		int i = chunkPos.getStartX();
+		int j = chunkPos.getStartZ();
+		int k = generator.getHeightInGround(i, j, Heightmap.Type.WORLD_SURFACE_WG, world);
+		int l = generator.getHeightInGround(i, j + deltaZ, Heightmap.Type.WORLD_SURFACE_WG, world);
+		int m = generator.getHeightInGround(i + deltaX, j, Heightmap.Type.WORLD_SURFACE_WG, world);
+		int n = generator.getHeightInGround(i + deltaX, j + deltaZ, Heightmap.Type.WORLD_SURFACE_WG, world);
+		return Math.min(Math.min(k, l), Math.min(m, n));
 	}
 
 	public String getName() {

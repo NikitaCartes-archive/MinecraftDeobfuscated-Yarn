@@ -48,7 +48,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addMossyRocks(builder2);
 		DefaultBiomeFeatures.addLargeFerns(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, spruce ? ConfiguredFeatures.TREES_GIANT_SPRUCE : ConfiguredFeatures.TREES_GIANT);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
@@ -90,7 +90,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addForestFlowers(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (tall) {
 			DefaultBiomeFeatures.addTallBirchTrees(builder2);
@@ -185,7 +185,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (bamboo) {
 			DefaultBiomeFeatures.addBambooJungleTrees(builder2);
@@ -239,7 +239,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (extraTrees) {
 			DefaultBiomeFeatures.addExtraMountainTrees(builder2);
@@ -292,7 +292,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
 		DefaultBiomeFeatures.addDefaultGrass(builder2);
@@ -339,7 +339,7 @@ public class DefaultBiomeCreator {
 		}
 
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addPlainsFeatures(builder2);
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
@@ -425,7 +425,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addMushroomFieldsFeatures(builder2);
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
@@ -455,7 +455,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
 		builder2.structureFeature(mountains ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
-		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDesertLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		if (!shattered) {
@@ -463,7 +463,7 @@ public class DefaultBiomeCreator {
 		}
 
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (shattered) {
 			DefaultBiomeFeatures.addExtraSavannaTrees(builder2);
@@ -524,11 +524,11 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addBadlandsUndergroundStructures(builder2);
 		builder2.structureFeature(mountains ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
-		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDesertLakes(builder2);
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addExtraGoldOre(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (plateau) {
@@ -621,7 +621,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
 		DefaultBiomeFeatures.addDungeons(builder);
 		DefaultBiomeFeatures.addMineables(builder);
-		DefaultBiomeFeatures.method_37868(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addWaterBiomeOakTrees(builder);
 		DefaultBiomeFeatures.addDefaultFlowers(builder);
@@ -722,7 +722,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addBlueIce(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addWaterBiomeOakTrees(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
@@ -760,7 +760,7 @@ public class DefaultBiomeCreator {
 		}
 
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (flower) {
 			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FOREST_FLOWER_TREES);
@@ -838,7 +838,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addLargeFerns(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addTaigaTrees(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
@@ -889,7 +889,7 @@ public class DefaultBiomeCreator {
 		);
 		DefaultBiomeFeatures.addForestFlowers(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
 		DefaultBiomeFeatures.addForestGrass(builder2);
@@ -935,7 +935,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addClayDisk(builder2);
 		DefaultBiomeFeatures.addSwampFeatures(builder2);
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
@@ -992,7 +992,7 @@ public class DefaultBiomeCreator {
 		}
 
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addSnowySpruceTrees(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
@@ -1027,7 +1027,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addWaterBiomeOakTrees(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
@@ -1081,7 +1081,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder2);
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addDefaultFlowers(builder2);
 		DefaultBiomeFeatures.addDefaultGrass(builder2);
@@ -1394,7 +1394,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDungeons(builder);
 		DefaultBiomeFeatures.addPlainsTallGrass(builder);
 		DefaultBiomeFeatures.addMineables(builder);
-		DefaultBiomeFeatures.method_37868(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addMeadowFlowers(builder);
 		DefaultBiomeFeatures.addSprings(builder);
@@ -1427,7 +1427,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
 		DefaultBiomeFeatures.addDungeons(builder);
 		DefaultBiomeFeatures.addMineables(builder);
-		DefaultBiomeFeatures.method_37868(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addSprings(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
@@ -1459,7 +1459,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
 		DefaultBiomeFeatures.addDungeons(builder);
 		DefaultBiomeFeatures.addMineables(builder);
-		DefaultBiomeFeatures.method_37868(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addSprings(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
@@ -1491,7 +1491,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
 		DefaultBiomeFeatures.addDungeons(builder);
 		DefaultBiomeFeatures.addMineables(builder);
-		DefaultBiomeFeatures.method_37868(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addSprings(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
@@ -1524,7 +1524,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
 		DefaultBiomeFeatures.addDungeons(builder);
 		DefaultBiomeFeatures.addMineables(builder);
-		DefaultBiomeFeatures.method_37868(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addDefaultVegetation(builder);
 		DefaultBiomeFeatures.addSprings(builder);
@@ -1560,7 +1560,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addAmethystGeodes(builder);
 		DefaultBiomeFeatures.addDungeons(builder);
 		DefaultBiomeFeatures.addMineables(builder);
-		DefaultBiomeFeatures.method_37868(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addTaigaTrees(builder);
 		DefaultBiomeFeatures.addDefaultVegetation(builder);
@@ -1594,9 +1594,10 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDungeons(builder2);
 		DefaultBiomeFeatures.addPlainsTallGrass(builder2);
 		DefaultBiomeFeatures.addMineables(builder2);
-		DefaultBiomeFeatures.method_37868(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
 		DefaultBiomeFeatures.addClayOre(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addLushCavesDecoration(builder2);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.RAIN)
@@ -1612,7 +1613,7 @@ public class DefaultBiomeCreator {
 	public static Biome createDripstoneCaves() {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
-		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.STONE);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
 		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(builder2);

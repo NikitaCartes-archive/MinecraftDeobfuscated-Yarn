@@ -15,7 +15,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class DesertTempleGenerator extends StructurePieceWithDimensions {
+public class DesertTempleGenerator extends ShiftableStructurePiece {
 	public static final int field_34314 = 21;
 	public static final int field_34315 = 21;
 	private final boolean[] hasPlacedChest = new boolean[4];
@@ -51,7 +51,7 @@ public class DesertTempleGenerator extends StructurePieceWithDimensions {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		if (!this.method_37865(world, boundingBox, -random.nextInt(3))) {
+		if (!this.adjustToMinHeight(world, boundingBox, -random.nextInt(3))) {
 			return false;
 		} else {
 			this.fillWithOutline(

@@ -34,7 +34,7 @@ public class DesertPyramidFeature extends StructureFeature<DefaultFeatureConfig>
 			DefaultFeatureConfig defaultFeatureConfig,
 			HeightLimitView heightLimitView
 		) {
-			if (StructureFeature.method_37864(chunkGenerator, 21, 21, chunkPos, heightLimitView) >= chunkGenerator.getSeaLevel()) {
+			if (StructureFeature.getLowestCornerInGroundHeight(chunkGenerator, 21, 21, chunkPos, heightLimitView) >= chunkGenerator.getSeaLevel()) {
 				DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
 				this.addPiece(desertTempleGenerator);
 			}

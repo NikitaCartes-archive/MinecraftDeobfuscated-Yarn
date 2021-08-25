@@ -67,11 +67,11 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SMALL_DRIPSTONE);
 	}
 
-	public static void method_37868(GenerationSettings.Builder builder) {
+	public static void addDefaultOres(GenerationSettings.Builder builder) {
 		addDefaultOres(builder, false);
 	}
 
-	public static void addDefaultOres(GenerationSettings.Builder builder, boolean bl) {
+	public static void addDefaultOres(GenerationSettings.Builder builder, boolean largeCopperOreBlob) {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_COAL_UPPER);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_COAL_LOWER);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_IRON_UPPER);
@@ -84,7 +84,9 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_DIAMOND_LARGE);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_LAPIS);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_ORE_LAPIS_BURIED);
-		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, bl ? ConfiguredFeatures.PROTOTYPE_ORE_COPPER_LARGE : ConfiguredFeatures.PROTOTYPE_ORE_COPPER);
+		builder.feature(
+			GenerationStep.Feature.UNDERGROUND_ORES, largeCopperOreBlob ? ConfiguredFeatures.PROTOTYPE_ORE_COPPER_LARGE : ConfiguredFeatures.PROTOTYPE_ORE_COPPER
+		);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.PROTOTYPE_UNDERWATER_MAGMA);
 	}
 
