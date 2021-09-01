@@ -183,7 +183,7 @@ public class PotionUtil {
 					mutableText = new TranslatableText("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, f));
 				}
 
-				list.add(mutableText.formatted(statusEffect.getType().getFormatting()));
+				list.add(mutableText.formatted(statusEffect.getCategory().getFormatting()));
 			}
 		}
 

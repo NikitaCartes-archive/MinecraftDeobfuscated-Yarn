@@ -46,7 +46,7 @@ public class ChunkNibbleArray {
 	 * Sets the value of a nibble.
 	 * 
 	 * <p>If the {@code value} has bits outside of the lowest 4 set to {@code 1},
-	 * (value is outside of {@code [0, 15]), the extraneous bits are discarded.
+	 * (value is outside of {@code [0, 15]}), the extraneous bits are discarded.
 	 */
 	public void set(int x, int y, int z, int value) {
 		this.set(this.getIndex(x, y, z), value);

@@ -6,7 +6,6 @@ import net.minecraft.util.math.Spline;
 
 public final class VanillaTerrainParameters {
 	public static final float OFFSET_VALUE_OFFSET = 0.015F;
-	public static final float field_34304 = -0.2F;
 	public static final float field_34305 = -0.05F;
 	public static final float field_34306 = 0.15F;
 	static ToFloatFunction<VanillaTerrainParameters.TerrainNoisePoint> offsetSpline;
@@ -280,11 +279,7 @@ public final class VanillaTerrainParameters {
 	}
 
 	public static boolean method_37848(float f, float g) {
-		if (f < -0.2F) {
-			return false;
-		} else {
-			return f < -0.05F ? true : Math.abs(g) < 0.15F;
-		}
+		return f < -0.05F ? true : Math.abs(g) < 0.15F;
 	}
 
 	public static float getNormalizedWeirdness(float weirdness) {

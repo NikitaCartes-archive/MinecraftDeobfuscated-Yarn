@@ -4,7 +4,7 @@ package net.minecraft.world.chunk;
  * A specialized chunk nibble array that ignores the Y parameters and only
  * stores the nibbles for a 16 &times; 16 horizontal chunk slice.
  * 
- * <p>When it is {@linkplain #toByteArray() converted to a byte array}, it
+ * <p>When it is {@linkplain #asByteArray() converted to a byte array}, it
  * fills each Y-level of the returned array with the same nibbles it stores.
  */
 public class GridNibbleArray extends ChunkNibbleArray {

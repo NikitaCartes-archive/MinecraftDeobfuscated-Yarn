@@ -48,18 +48,18 @@ public class TextureUtil {
 	}
 
 	public static void prepareImage(int id, int width, int height) {
-		prepareImage(NativeImage.GLFormat.ABGR, id, 0, width, height);
+		prepareImage(NativeImage.InternalFormat.RGBA, id, 0, width, height);
 	}
 
-	public static void prepareImage(NativeImage.GLFormat internalFormat, int id, int width, int height) {
+	public static void prepareImage(NativeImage.InternalFormat internalFormat, int id, int width, int height) {
 		prepareImage(internalFormat, id, 0, width, height);
 	}
 
 	public static void prepareImage(int id, int maxLevel, int width, int height) {
-		prepareImage(NativeImage.GLFormat.ABGR, id, maxLevel, width, height);
+		prepareImage(NativeImage.InternalFormat.RGBA, id, maxLevel, width, height);
 	}
 
-	public static void prepareImage(NativeImage.GLFormat internalFormat, int id, int maxLevel, int width, int height) {
+	public static void prepareImage(NativeImage.InternalFormat internalFormat, int id, int maxLevel, int width, int height) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		bind(id);
 		if (maxLevel >= 0) {
@@ -70,7 +70,7 @@ public class TextureUtil {
 		}
 
 		for (int i = 0; i <= maxLevel; i++) {
-			GlStateManager._texImage2D(3553, i, internalFormat.getGlConstant(), width >> i, height >> i, 0, 6408, 5121, null);
+			GlStateManager._texImage2D(3553, i, internalFormat.getValue(), width >> i, height >> i, 0, 6408, 5121, null);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class TextureUtil {
 
 			try (NativeImage nativeImage = new NativeImage(n, o, false)) {
 				nativeImage.loadFromTextureImage(m, false);
-				nativeImage.method_35622(string2);
+				nativeImage.writeTo(string2);
 				LOGGER.debug("Exported png to: {}", new File(string2).getAbsolutePath());
 			} catch (IOException var14) {
 				LOGGER.debug("Unable to write: ", (Throwable)var14);

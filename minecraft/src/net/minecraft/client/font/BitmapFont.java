@@ -158,7 +158,7 @@ public class BitmapFont implements Font {
 
 				BitmapFont var22;
 				try {
-					NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
+					NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
 					int i = nativeImage.getWidth();
 					int j = nativeImage.getHeight();
 					int k = i / ((int[])this.chars.get(0)).length;
@@ -213,7 +213,7 @@ public class BitmapFont implements Font {
 
 				for (int k = 0; k < characterHeight; k++) {
 					int l = charPosY * characterHeight + k;
-					if (image.getPixelOpacity(j, l) != 0) {
+					if (image.getOpacity(j, l) != 0) {
 						return i + 1;
 					}
 				}

@@ -8,7 +8,7 @@ public class SaveVersion {
 	private final int id;
 	private final String series;
 	/**
-	 * The default series of a version, {@value}, if a series is not specified.
+	 * The default series of a version, {@code main}, if a series is not specified.
 	 */
 	public static String MAIN_SERIES = "main";
 
@@ -29,6 +29,9 @@ public class SaveVersion {
 	 * {@return the series of this version}
 	 * 
 	 * <p>This is stored in the {@code Series} field within {@code level.dat}.
+	 * 
+	 * <p>Known values include {@code main} for the main series and
+	 * {@code ccpreview} for the caves and cliffs experimental snapshots.
 	 */
 	public String getSeries() {
 		return this.series;

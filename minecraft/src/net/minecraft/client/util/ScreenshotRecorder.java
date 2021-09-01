@@ -66,7 +66,7 @@ public class ScreenshotRecorder {
 			.execute(
 				() -> {
 					try {
-						nativeImage.writeFile(file3);
+						nativeImage.writeTo(file3);
 						Text text = new LiteralText(file3.getName())
 							.formatted(Formatting.UNDERLINE)
 							.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file3.getAbsolutePath())));

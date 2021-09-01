@@ -506,7 +506,7 @@ public class ConfiguredFeatures {
 			)
 			.uniformRange(YOffset.getBottom(), YOffset.getTop())
 			.spreadHorizontally()
-			.repeat(50)
+			.repeat(40)
 	);
 	public static final ConfiguredFeature<?, ?> PILE_HAY = register(
 		"pile_hay", Feature.BLOCK_PILE.configure(new BlockPileFeatureConfig(new PillarBlockStateProvider(Blocks.HAY_BLOCK)))
@@ -1250,10 +1250,10 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> PROTOTYPE_UNDERWATER_MAGMA = register(
 		"prototype_underwater_magma",
 		Feature.UNDERWATER_MAGMA
-			.configure(new UnderwaterMagmaFeatureConfig(5, 5, 1, 0.5F))
+			.configure(new UnderwaterMagmaFeatureConfig(1, 5, 1, 0.5F))
 			.spreadHorizontally()
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_120)
-			.repeat(UniformIntProvider.create(12, 25))
+			.repeat(UniformIntProvider.create(18, 30))
 	);
 	public static final ConfiguredFeature<?, ?> GLOW_LICHEN = register(
 		"glow_lichen",

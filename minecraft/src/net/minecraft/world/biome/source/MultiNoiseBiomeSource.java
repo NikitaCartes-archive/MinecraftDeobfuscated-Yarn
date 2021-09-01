@@ -370,7 +370,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 				+ (int)terrainParameters.factor
 				+ " P: "
 				+ (int)terrainParameters.field_34341
-				+ (terrainParameters.coast ? " coast" : "")
+				+ (terrainParameters.coast ? " nearWater" : "")
 		);
 	}
 

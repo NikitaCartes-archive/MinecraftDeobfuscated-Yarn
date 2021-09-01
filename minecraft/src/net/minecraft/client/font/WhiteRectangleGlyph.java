@@ -11,7 +11,7 @@ public enum WhiteRectangleGlyph implements RenderableGlyph {
 
 	private static final int field_32230 = 5;
 	private static final int field_32231 = 8;
-	private static final NativeImage IMAGE = Util.make(new NativeImage(NativeImage.Format.ABGR, 5, 8, false), nativeImage -> {
+	private static final NativeImage IMAGE = Util.make(new NativeImage(NativeImage.Format.RGBA, 5, 8, false), nativeImage -> {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 5; j++) {
 				if (j != 0 && j + 1 != 5 && i != 0 && i + 1 != 8) {
@@ -20,7 +20,7 @@ public enum WhiteRectangleGlyph implements RenderableGlyph {
 					boolean var10000 = true;
 				}
 
-				nativeImage.setPixelColor(j, i, -1);
+				nativeImage.setColor(j, i, -1);
 			}
 		}
 
