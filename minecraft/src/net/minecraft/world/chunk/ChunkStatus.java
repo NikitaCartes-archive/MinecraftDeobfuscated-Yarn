@@ -193,7 +193,9 @@ public class ChunkStatus {
 		(targetStatus, executor, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk, bl) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(
 				chunk
 			),
-		(status, world, structureManager, lightingProvider, function, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(chunk)
+		(status, world, structureManager, lightingProvider, convertCallback, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)convertCallback.apply(
+				chunk
+			)
 	);
 	private static final List<ChunkStatus> DISTANCE_TO_STATUS = ImmutableList.of(
 		FULL,
@@ -423,6 +425,7 @@ public class ChunkStatus {
 	interface GenerationTask {
 		/**
 		 * @param targetStatus the status the chunk will be set to after the task is completed
+		 * @param convertCallback will be invoked by statuses which have some special convert logic (e.g. the FULL status to convert the chunk to a full chunk)
 		 */
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus targetStatus,
@@ -431,7 +434,7 @@ public class ChunkStatus {
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ServerLightingProvider lightingProvider,
-			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
+			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> convertCallback,
 			List<Chunk> list,
 			Chunk chunk,
 			boolean bl
@@ -442,12 +445,15 @@ public class ChunkStatus {
 	 * A task called when a chunk is loaded but does not need to be generated.
 	 */
 	interface LoadTask {
+		/**
+		 * @param convertCallback will be invoked by statuses which have some special convert logic (e.g. the FULL status to convert the chunk to a full chunk)
+		 */
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus targetStatus,
 			ServerWorld world,
 			StructureManager structureManager,
 			ServerLightingProvider lightingProvider,
-			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
+			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> convertCallback,
 			Chunk chunk
 		);
 	}

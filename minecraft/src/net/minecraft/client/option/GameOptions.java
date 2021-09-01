@@ -129,29 +129,136 @@ public class GameOptions {
 	public boolean sprintToggled;
 	public boolean skipMultiplayerWarning;
 	public boolean hideMatchedNames = true;
+	/**
+	 * A key binding for moving forward.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_W the W key} by default.
+	 */
 	public final KeyBinding keyForward = new KeyBinding("key.forward", GLFW.GLFW_KEY_W, "key.categories.movement");
+	/**
+	 * A key binding for moving left.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_A the A key} by default.
+	 */
 	public final KeyBinding keyLeft = new KeyBinding("key.left", GLFW.GLFW_KEY_A, "key.categories.movement");
+	/**
+	 * A key binding for moving backward.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_S the S key} by default.
+	 */
 	public final KeyBinding keyBack = new KeyBinding("key.back", GLFW.GLFW_KEY_S, "key.categories.movement");
+	/**
+	 * A key binding for moving right.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_D the D key} by default.
+	 */
 	public final KeyBinding keyRight = new KeyBinding("key.right", GLFW.GLFW_KEY_D, "key.categories.movement");
+	/**
+	 * A key binding for jumping.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_SPACE the space key} by default.
+	 */
 	public final KeyBinding keyJump = new KeyBinding("key.jump", GLFW.GLFW_KEY_SPACE, "key.categories.movement");
+	/**
+	 * A key binding for sneaking.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_LEFT_SHIFT the left shift key} by default.
+	 */
 	public final KeyBinding keySneak = new StickyKeyBinding("key.sneak", GLFW.GLFW_KEY_LEFT_SHIFT, "key.categories.movement", () -> this.sneakToggled);
+	/**
+	 * A key binding for sprinting.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_LEFT_CONTROL the left control key} by default.
+	 */
 	public final KeyBinding keySprint = new StickyKeyBinding("key.sprint", GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.movement", () -> this.sprintToggled);
+	/**
+	 * A key binding for opening {@linkplain net.minecraft.client.gui.screen.ingame.InventoryScreen the inventory screen}.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_E the E key} by default.
+	 */
 	public final KeyBinding keyInventory = new KeyBinding("key.inventory", GLFW.GLFW_KEY_E, "key.categories.inventory");
+	/**
+	 * A key binding for swapping the items in the selected slot and the off hand.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_F the F key} by default.
+	 * 
+	 * <p>The selected slot is the slot the mouse is over when in a screen.
+	 * Otherwise, it is the main hand.
+	 */
 	public final KeyBinding keySwapHands = new KeyBinding("key.swapOffhand", GLFW.GLFW_KEY_F, "key.categories.inventory");
+	/**
+	 * A key binding for dropping the item in the selected slot.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_Q the Q key} by default.
+	 * 
+	 * <p>The selected slot is the slot the mouse is over when in a screen.
+	 * Otherwise, it is the main hand.
+	 */
 	public final KeyBinding keyDrop = new KeyBinding("key.drop", GLFW.GLFW_KEY_Q, "key.categories.inventory");
+	/**
+	 * A key binding for using an item, such as placing a block.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_MOUSE_BUTTON_RIGHT the right mouse button} by default.
+	 */
 	public final KeyBinding keyUse = new KeyBinding("key.use", InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_RIGHT, "key.categories.gameplay");
+	/**
+	 * A key binding for attacking an entity or breaking a block.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_MOUSE_BUTTON_LEFT the left mouse button} by default.
+	 */
 	public final KeyBinding keyAttack = new KeyBinding("key.attack", InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_LEFT, "key.categories.gameplay");
+	/**
+	 * A key binding for holding an item corresponding to the {@linkplain net.minecraft.entity.Entity#getPickBlockStack() entity}
+	 * or {@linkplain net.minecraft.block.Block#getPickStack(net.minecraft.world.BlockView,
+	 * net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState) block} the player is looking at.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_MOUSE_BUTTON_MIDDLE the middle mouse button} by default.
+	 */
 	public final KeyBinding keyPickItem = new KeyBinding("key.pickItem", InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.categories.gameplay");
+	/**
+	 * A key binding for opening {@linkplain net.minecraft.client.gui.screen.ChatScreen the chat screen}.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_T the T key} by default.
+	 */
 	public final KeyBinding keyChat = new KeyBinding("key.chat", GLFW.GLFW_KEY_T, "key.categories.multiplayer");
+	/**
+	 * A key binding for displaying {@linkplain net.minecraft.client.gui.hud.PlayerListHud the player list}.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_TAB the tab key} by default.
+	 */
 	public final KeyBinding keyPlayerList = new KeyBinding("key.playerlist", GLFW.GLFW_KEY_TAB, "key.categories.multiplayer");
+	/**
+	 * A key binding for opening {@linkplain net.minecraft.client.gui.screen.ChatScreen
+	 * the chat screen} with the {@code /} already typed.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_SLASH the slash key} by default.
+	 */
 	public final KeyBinding keyCommand = new KeyBinding("key.command", GLFW.GLFW_KEY_SLASH, "key.categories.multiplayer");
+	/**
+	 * A key binding for opening {@linkplain net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen the social interactions screen}.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_P the P key} by default.
+	 */
 	public final KeyBinding keySocialInteractions = new KeyBinding("key.socialInteractions", GLFW.GLFW_KEY_P, "key.categories.multiplayer");
+	/**
+	 * A key binding for taking a screenshot.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_F2 the F2 key} by default.
+	 */
 	public final KeyBinding keyScreenshot = new KeyBinding("key.screenshot", GLFW.GLFW_KEY_F2, "key.categories.misc");
+	/**
+	 * A key binding for toggling perspective.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_F5 the F5 key} by default.
+	 */
 	public final KeyBinding keyTogglePerspective = new KeyBinding("key.togglePerspective", GLFW.GLFW_KEY_F5, "key.categories.misc");
+	/**
+	 * A key binding for toggling smooth camera.
+	 * Not bound to any keys by default.
+	 */
 	public final KeyBinding keySmoothCamera = new KeyBinding("key.smoothCamera", InputUtil.UNKNOWN_KEY.getCode(), "key.categories.misc");
+	/**
+	 * A key binding for toggling fullscreen.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_F11 the F11 key} by default.
+	 */
 	public final KeyBinding keyFullscreen = new KeyBinding("key.fullscreen", GLFW.GLFW_KEY_F11, "key.categories.misc");
+	/**
+	 * A key binding for highlighting players in {@linkplain net.minecraft.world.GameMode#SPECTATOR spectator mode}.
+	 * Not bound to any keys by default.
+	 */
 	public final KeyBinding keySpectatorOutlines = new KeyBinding("key.spectatorOutlines", InputUtil.UNKNOWN_KEY.getCode(), "key.categories.misc");
+	/**
+	 * A key binding for opening {@linkplain net.minecraft.client.gui.screen.advancement.AdvancementsScreen the advancements screen}.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_L the L key} by default.
+	 */
 	public final KeyBinding keyAdvancements = new KeyBinding("key.advancements", GLFW.GLFW_KEY_L, "key.categories.misc");
+	/**
+	 * Key bindings for selecting hotbar slots.
+	 * Bound to the corresponding number keys (from {@linkplain
+	 * org.lwjgl.glfw.GLFW#GLFW_KEY_1 the 1 key} to {@linkplain
+	 * org.lwjgl.glfw.GLFW#GLFW_KEY_9 the 9 key}) by default.
+	 */
 	public final KeyBinding[] keysHotbar = new KeyBinding[]{
 		new KeyBinding("key.hotbar.1", GLFW.GLFW_KEY_1, "key.categories.inventory"),
 		new KeyBinding("key.hotbar.2", GLFW.GLFW_KEY_2, "key.categories.inventory"),
@@ -163,8 +270,23 @@ public class GameOptions {
 		new KeyBinding("key.hotbar.8", GLFW.GLFW_KEY_8, "key.categories.inventory"),
 		new KeyBinding("key.hotbar.9", GLFW.GLFW_KEY_9, "key.categories.inventory")
 	};
+	/**
+	 * A key binding for saving the hotbar items in {@linkplain net.minecraft.world.GameMode#CREATIVE creative mode}.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_C the C key} by default.
+	 */
 	public final KeyBinding keySaveToolbarActivator = new KeyBinding("key.saveToolbarActivator", GLFW.GLFW_KEY_C, "key.categories.creative");
+	/**
+	 * A key binding for loading the hotbar items in {@linkplain net.minecraft.world.GameMode#CREATIVE creative mode}.
+	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_X the X key} by default.
+	 */
 	public final KeyBinding keyLoadToolbarActivator = new KeyBinding("key.loadToolbarActivator", GLFW.GLFW_KEY_X, "key.categories.creative");
+	/**
+	 * An array of all key bindings.
+	 * 
+	 * <p>Key bindings in this array are shown and can be configured in
+	 * {@linkplain net.minecraft.client.gui.screen.option.ControlsOptionsScreen
+	 * the controls options screen}.
+	 */
 	public final KeyBinding[] keysAll = ArrayUtils.addAll(
 		new KeyBinding[]{
 			this.keyAttack,

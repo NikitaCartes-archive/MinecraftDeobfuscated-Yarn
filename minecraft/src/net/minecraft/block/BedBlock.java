@@ -82,7 +82,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 			}
 
-			if (!isOverworld(world)) {
+			if (!isBedWorking(world)) {
 				world.removeBlock(pos, false);
 				BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 				if (world.getBlockState(blockPos).isOf(this)) {
@@ -118,7 +118,13 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		}
 	}
 
-	public static boolean isOverworld(World world) {
+	/**
+	 * {@return whether the world's {@linkplain net.minecraft.world.dimension.DimensionType dimension type}
+	 * allows beds to be respawned at and slept in without exploding}
+	 * 
+	 * @see net.minecraft.world.dimension.DimensionType#isBedWorking()
+	 */
+	public static boolean isBedWorking(World world) {
 		return world.getDimension().isBedWorking();
 	}
 

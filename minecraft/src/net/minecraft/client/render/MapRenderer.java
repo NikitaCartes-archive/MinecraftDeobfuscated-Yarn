@@ -74,9 +74,9 @@ public class MapRenderer implements AutoCloseable {
 					int k = j + i * 128;
 					int l = this.state.colors[k] & 255;
 					if (l / 4 == 0) {
-						this.texture.getImage().setPixelColor(j, i, 0);
+						this.texture.getImage().setColor(j, i, 0);
 					} else {
-						this.texture.getImage().setPixelColor(j, i, MapColor.COLORS[l / 4].getRenderColor(l & 3));
+						this.texture.getImage().setColor(j, i, MapColor.COLORS[l / 4].getRenderColor(l & 3));
 					}
 				}
 			}

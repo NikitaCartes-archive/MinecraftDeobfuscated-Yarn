@@ -290,12 +290,24 @@ public interface AquiferSampler {
 					int m = -20;
 					double d = this.fluidLevelNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40), (double)Math.floorDiv(z, 64)) * 50.0 + -20.0;
 					boolean bl2 = false;
-					if (d > 4.0) {
-						d *= 4.0;
-					}
+					if (bl && l >= j - 30 && l < i) {
+						if (d > -12.0) {
+							return new AquiferSampler.Impl.FluidLevel(i, Blocks.WATER.getDefaultState());
+						}
 
-					if (d < -10.0) {
+						if (d > -20.0) {
+							return new AquiferSampler.Impl.FluidLevel(j - 12 + (int)d, Blocks.WATER.getDefaultState());
+						}
+
 						d = -40.0;
+					} else {
+						if (d > 4.0) {
+							d *= 4.0;
+						}
+
+						if (d < -10.0) {
+							d = -40.0;
+						}
 					}
 
 					int n = l + MathHelper.floor(d);
@@ -304,7 +316,8 @@ public interface AquiferSampler {
 						bl2 = Math.abs(e) > 0.22F;
 					}
 
-					return new AquiferSampler.Impl.FluidLevel(Math.min(j - 8, n), bl2 ? Blocks.LAVA.getDefaultState() : Blocks.WATER.getDefaultState());
+					int o = Math.max(i, j - 8);
+					return new AquiferSampler.Impl.FluidLevel(Math.min(o, n), bl2 ? Blocks.LAVA.getDefaultState() : Blocks.WATER.getDefaultState());
 				}
 			}
 		}

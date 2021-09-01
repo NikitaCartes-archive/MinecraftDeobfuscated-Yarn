@@ -14,7 +14,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
@@ -71,6 +70,9 @@ public abstract class Carver<C extends CarverConfig> {
 		Blocks.PACKED_ICE,
 		Blocks.DEEPSLATE,
 		Blocks.CALCITE,
+		Blocks.SAND,
+		Blocks.RED_SAND,
+		Blocks.GRAVEL,
 		Blocks.TUFF,
 		Blocks.GRANITE,
 		Blocks.IRON_ORE,
@@ -192,7 +194,7 @@ public abstract class Carver<C extends CarverConfig> {
 			foundSurface.setTrue();
 		}
 
-		if (!this.canCarveBlock(blockState, blockState2) && !isDebug(config)) {
+		if (!this.canAlwaysCarveBlock(blockState) && !isDebug(config)) {
 			return false;
 		} else {
 			BlockState blockState3 = this.getState(context, config, pos, sampler);
@@ -258,11 +260,6 @@ public abstract class Carver<C extends CarverConfig> {
 
 	protected boolean canAlwaysCarveBlock(BlockState state) {
 		return this.alwaysCarvableBlocks.contains(state.getBlock());
-	}
-
-	protected boolean canCarveBlock(BlockState state, BlockState stateAbove) {
-		return this.canAlwaysCarveBlock(state)
-			|| (state.isOf(Blocks.SAND) || state.isOf(Blocks.RED_SAND) || state.isOf(Blocks.GRAVEL)) && !stateAbove.getFluidState().isIn(FluidTags.WATER);
 	}
 
 	protected boolean isRegionUncarvable(Chunk chunk, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
