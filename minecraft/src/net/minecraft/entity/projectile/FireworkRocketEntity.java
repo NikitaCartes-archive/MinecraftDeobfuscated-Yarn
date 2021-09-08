@@ -112,13 +112,13 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 			if (this.shooter != null) {
 				if (this.shooter.isFallFlying()) {
 					Vec3d vec3d = this.shooter.getRotationVector();
-					double d = 1.5;
+					double d = 1.25;
 					double e = 0.1;
 					Vec3d vec3d2 = this.shooter.getVelocity();
 					this.shooter
 						.setVelocity(
 							vec3d2.add(
-								vec3d.x * 0.1 + (vec3d.x * 1.5 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.5 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.5 - vec3d2.z) * 0.5
+								vec3d.x * 0.1 + (vec3d.x * 1.25 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.25 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.25 - vec3d2.z) * 0.5
 							)
 						);
 				}

@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Unit;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.class_6469;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerChunkManager;
@@ -24,6 +23,7 @@ import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ReadOnlyChunk;
+import net.minecraft.world.chunk.RegeneratingChunk;
 import net.minecraft.world.chunk.WorldChunk;
 
 public class ResetChunksCommand {
@@ -77,9 +77,9 @@ public class ResetChunksCommand {
 							Chunk chunk = serverChunkManager.getChunk(q, p, chunkStatus.getPrevious(), true);
 							Chunk chunk2;
 							if (chunk instanceof ReadOnlyChunk) {
-								chunk2 = new class_6469(((ReadOnlyChunk)chunk).getWrappedChunk());
+								chunk2 = new RegeneratingChunk(((ReadOnlyChunk)chunk).getWrappedChunk());
 							} else if (chunk instanceof WorldChunk) {
-								chunk2 = new class_6469((WorldChunk)chunk);
+								chunk2 = new RegeneratingChunk((WorldChunk)chunk);
 							} else {
 								chunk2 = chunk;
 							}

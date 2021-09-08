@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -70,6 +71,7 @@ public class FireworkRocketItem extends Item {
 				world.spawnEntity(fireworkRocketEntity);
 				if (!user.getAbilities().creativeMode) {
 					itemStack.decrement(1);
+					user.getEquippedStack(EquipmentSlot.CHEST).damage(3, user, player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
 				}
 
 				user.incrementStat(Stats.USED.getOrCreateStat(this));

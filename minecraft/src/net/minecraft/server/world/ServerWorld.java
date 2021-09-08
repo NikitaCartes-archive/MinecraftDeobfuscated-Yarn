@@ -811,20 +811,20 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+	public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				player, x, y, z, volume > 1.0F ? (double)(16.0F * volume) : 16.0, this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch)
+				except, x, y, z, volume > 1.0F ? (double)(16.0F * volume) : 16.0, this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch)
 			);
 	}
 
 	@Override
-	public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				player,
+				except,
 				entity.getX(),
 				entity.getY(),
 				entity.getZ(),

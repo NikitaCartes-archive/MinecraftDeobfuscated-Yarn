@@ -53,8 +53,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob {
-	private static final int field_30425 = 5;
-	private static final int field_30426 = 4;
+	private static final int MAX_STRENGTH = 5;
+	private static final int VARIANTS = 4;
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
 	private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);

@@ -139,9 +139,9 @@ public class ChunkStatus {
 		8,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(status, executor, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk, bl) -> {
+		(status, executor, serverWorld, chunkGenerator, structureManager, lightingProvider, function, list, chunk, bl) -> {
 			ProtoChunk protoChunk = (ProtoChunk)chunk;
-			protoChunk.setLightingProvider(serverLightingProvider);
+			protoChunk.setLightingProvider(lightingProvider);
 			if (bl || !chunk.getStatus().isAtLeast(status)) {
 				Heightmap.populateHeightmaps(
 					chunk,
@@ -342,14 +342,14 @@ public class ChunkStatus {
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> runGenerationTask(
 		Executor executor,
 		ServerWorld world,
-		ChunkGenerator chunkGenerator,
+		ChunkGenerator generator,
 		StructureManager structureManager,
 		ServerLightingProvider lightingProvider,
-		Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
-		List<Chunk> list,
+		Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> fullChunkConverter,
+		List<Chunk> chunks,
 		boolean bl
 	) {
-		Chunk chunk = (Chunk)list.get(list.size() / 2);
+		Chunk chunk = (Chunk)chunks.get(chunks.size() / 2);
 		ChunkGenerationEvent chunkGenerationEvent = new ChunkGenerationEvent();
 		if (chunkGenerationEvent.isEnabled()) {
 			ChunkPos chunkPos = chunk.getPos();
@@ -363,7 +363,7 @@ public class ChunkStatus {
 		}
 
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.generationTask
-			.doWork(this, executor, world, chunkGenerator, structureManager, lightingProvider, function, list, chunk, bl);
+			.doWork(this, executor, world, generator, structureManager, lightingProvider, fullChunkConverter, chunks, chunk, bl);
 		return chunkGenerationEvent.shouldCommit() ? completableFuture.thenApply(either -> {
 			either.ifLeft(chunkx -> chunkGenerationEvent.success = true);
 			chunkGenerationEvent.commit();
@@ -425,16 +425,16 @@ public class ChunkStatus {
 	interface GenerationTask {
 		/**
 		 * @param targetStatus the status the chunk will be set to after the task is completed
-		 * @param convertCallback will be invoked by statuses which have some special convert logic (e.g. the FULL status to convert the chunk to a full chunk)
+		 * @param fullChunkConverter a function that can convert a raw chunk to a full chunk
 		 */
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus targetStatus,
 			Executor executor,
 			ServerWorld world,
-			ChunkGenerator chunkGenerator,
+			ChunkGenerator generator,
 			StructureManager structureManager,
 			ServerLightingProvider lightingProvider,
-			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> convertCallback,
+			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> fullChunkConverter,
 			List<Chunk> list,
 			Chunk chunk,
 			boolean bl
@@ -446,14 +446,14 @@ public class ChunkStatus {
 	 */
 	interface LoadTask {
 		/**
-		 * @param convertCallback will be invoked by statuses which have some special convert logic (e.g. the FULL status to convert the chunk to a full chunk)
+		 * @param fullChunkConverter a function that can convert a raw chunk to a full chunk
 		 */
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus targetStatus,
 			ServerWorld world,
 			StructureManager structureManager,
 			ServerLightingProvider lightingProvider,
-			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> convertCallback,
+			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> fullChunkConverter,
 			Chunk chunk
 		);
 	}

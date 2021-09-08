@@ -33,27 +33,27 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class GoatBrain {
-	public static final int field_33490 = 20;
-	public static final int field_33491 = 7;
+	public static final int PREPARE_RAM_DURATION = 20;
+	public static final int MAX_RAM_TARGET_DISTANCE = 7;
 	private static final UniformIntProvider WALKING_SPEED = UniformIntProvider.create(5, 16);
 	private static final float BREEDING_WALK_SPEED = 1.0F;
 	private static final float FOLLOWING_TARGET_WALK_SPEED = 1.0F;
 	private static final float TEMPTED_WALK_SPEED = 1.25F;
 	private static final float FOLLOW_ADULT_WALK_SPEED = 1.25F;
 	private static final float NORMAL_WALK_SPEED = 2.0F;
-	private static final float field_33498 = 1.25F;
+	private static final float PREPARING_RAM_WALK_SPEED = 1.25F;
 	private static final UniformIntProvider LONG_JUMP_COOLDOWN_RANGE = UniformIntProvider.create(600, 1200);
-	public static final int field_33492 = 5;
-	public static final int field_33493 = 5;
-	public static final float field_33494 = 1.5F;
+	public static final int LONG_JUMP_VERTICAL_RANGE = 5;
+	public static final int LONG_JUMP_HORIZONTAL_RANGE = 5;
+	public static final float LONG_JUMP_MAX_RANGE = 1.5F;
 	private static final UniformIntProvider RAM_COOLDOWN_RANGE = UniformIntProvider.create(600, 6000);
 	private static final UniformIntProvider SCREAMING_RAM_COOLDOWN_RANGE = UniformIntProvider.create(100, 300);
 	private static final TargetPredicate RAM_TARGET_PREDICATE = TargetPredicate.createAttackable()
-		.setPredicate(livingEntity -> !livingEntity.getType().equals(EntityType.GOAT) && livingEntity.world.getWorldBorder().contains(livingEntity.getBoundingBox()));
-	private static final float field_33501 = 3.0F;
-	public static final int field_33495 = 4;
-	public static final float field_33496 = 2.5F;
-	public static final float field_33497 = 1.0F;
+		.setPredicate(entity -> !entity.getType().equals(EntityType.GOAT) && entity.world.getWorldBorder().contains(entity.getBoundingBox()));
+	private static final float RAM_SPEED = 3.0F;
+	public static final int MIN_RAM_TARGET_DISTANCE = 4;
+	public static final float ADULT_RAM_STRENGTH_MULTIPLIER = 2.5F;
+	public static final float BABY_RAM_STRENGTH_MULTIPLIER = 1.0F;
 
 	protected static void resetLongJumpCooldown(GoatEntity goat) {
 		goat.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, LONG_JUMP_COOLDOWN_RANGE.get(goat.world.random));
@@ -93,7 +93,7 @@ public class GoatBrain {
 			ImmutableList.of(
 				Pair.of(0, new TimeLimitedTask<>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(0, new BreedTask(EntityType.GOAT, 1.0F)),
-				Pair.of(1, new TemptTask(livingEntity -> 1.25F)),
+				Pair.of(1, new TemptTask(goat -> 1.25F)),
 				Pair.of(2, new WalkTowardClosestAdultTask<>(WALKING_SPEED, 1.25F)),
 				Pair.of(
 					3, new RandomTask<>(ImmutableList.of(Pair.of(new StrollTask(1.0F), 2), Pair.of(new GoTowardsLookTarget(1.0F, 3), 2), Pair.of(new WaitTask(30, 60), 1)))
@@ -113,11 +113,7 @@ public class GoatBrain {
 				Pair.of(
 					1,
 					new LongJumpTask<>(
-						LONG_JUMP_COOLDOWN_RANGE,
-						5,
-						5,
-						1.5F,
-						goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_LONG_JUMP : SoundEvents.ENTITY_GOAT_LONG_JUMP
+						LONG_JUMP_COOLDOWN_RANGE, 5, 5, 1.5F, goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_LONG_JUMP : SoundEvents.ENTITY_GOAT_LONG_JUMP
 					)
 				)
 			),
@@ -141,19 +137,19 @@ public class GoatBrain {
 						RAM_TARGET_PREDICATE,
 						3.0F,
 						goat -> goat.isBaby() ? 1.0 : 2.5,
-						goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT
+						goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT
 					)
 				),
 				Pair.of(
 					1,
 					new PrepareRamTask<>(
-						goatEntity -> goatEntity.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE.getMin() : RAM_COOLDOWN_RANGE.getMin(),
+						goat -> goat.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE.getMin() : RAM_COOLDOWN_RANGE.getMin(),
 						4,
 						7,
 						1.25F,
 						RAM_TARGET_PREDICATE,
 						20,
-						goatEntity -> goatEntity.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_PREPARE_RAM : SoundEvents.ENTITY_GOAT_PREPARE_RAM
+						goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_PREPARE_RAM : SoundEvents.ENTITY_GOAT_PREPARE_RAM
 					)
 				)
 			),

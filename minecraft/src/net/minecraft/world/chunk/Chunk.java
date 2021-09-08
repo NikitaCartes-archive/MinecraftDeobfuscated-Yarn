@@ -83,7 +83,7 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	int sampleHeightmap(Heightmap.Type type, int x, int z);
 
-	BlockPos method_35319(Heightmap.Type type);
+	BlockPos sampleMaxHeightMap(Heightmap.Type type);
 
 	ChunkPos getPos();
 

@@ -385,15 +385,15 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		if (player == this.client.player) {
+	public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		if (except == this.client.player) {
 			this.playSound(x, y, z, sound, category, volume, pitch, false);
 		}
 	}
 
 	@Override
-	public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		if (player == this.client.player) {
+	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		if (except == this.client.player) {
 			this.client.getSoundManager().play(new EntityTrackingSoundInstance(sound, category, volume, pitch, entity));
 		}
 	}

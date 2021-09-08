@@ -284,7 +284,7 @@ public class SoundSystem {
 						float h = this.getAdjustedVolume(sound);
 						float i = this.getAdjustedPitch(sound);
 						SoundInstance.AttenuationType attenuationType = sound.getAttenuationType();
-						boolean bl = sound.isLooping();
+						boolean bl = sound.isRelative();
 						if (h == 0.0F && !sound.shouldAlwaysPlay()) {
 							LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound2.getIdentifier());
 						} else {

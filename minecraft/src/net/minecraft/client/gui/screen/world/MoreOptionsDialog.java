@@ -179,7 +179,7 @@ public class MoreOptionsDialog implements Drawable {
 							return;
 						}
 
-						RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+						RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 						JsonParser jsonParser = new JsonParser();
 
 						DataResult<GeneratorOptions> dataResult;
@@ -353,7 +353,7 @@ public class MoreOptionsDialog implements Drawable {
 	void loadDatapacks(ServerResourceManager serverResourceManager) {
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 		RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, this.registryManager);
-		RegistryOps<JsonElement> registryOps = RegistryOps.method_36574(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+		RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
 			.encodeStart(registryReadingOps, this.generatorOptions)
 			.flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));

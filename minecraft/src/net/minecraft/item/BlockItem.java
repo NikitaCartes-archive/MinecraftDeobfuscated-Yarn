@@ -29,6 +29,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+/**
+ * Represents an item corresponding to a block. Using this item places a
+ * block in the world.
+ */
 public class BlockItem extends Item {
 	public static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
 	public static final String BLOCK_STATE_TAG_KEY = "BlockStateTag";

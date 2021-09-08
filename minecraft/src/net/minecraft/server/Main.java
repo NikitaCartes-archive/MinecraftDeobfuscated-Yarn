@@ -166,7 +166,7 @@ public class Main {
 			}
 
 			serverResourceManager.loadRegistryTags();
-			RegistryOps<NbtElement> registryOps = RegistryOps.method_36574(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+			RegistryOps<NbtElement> registryOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 			serverPropertiesLoader.getPropertiesHandler().method_37371(impl);
 			SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
 			if (saveProperties == null) {

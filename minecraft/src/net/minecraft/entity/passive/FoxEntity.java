@@ -102,7 +102,7 @@ public class FoxEntity extends AnimalEntity {
 			: livingEntity.getAttacking() != null && livingEntity.getLastAttackTime() < livingEntity.age + 600;
 	static final Predicate<Entity> CHICKEN_AND_RABBIT_FILTER = entity -> entity instanceof ChickenEntity || entity instanceof RabbitEntity;
 	private static final Predicate<Entity> NOTICEABLE_PLAYER_FILTER = entity -> !entity.isSneaky() && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity);
-	private static final int field_30335 = 600;
+	private static final int EATING_DURATION = 600;
 	private Goal followChickenAndRabbitGoal;
 	private Goal followBabyTurtleGoal;
 	private Goal followFishGoal;

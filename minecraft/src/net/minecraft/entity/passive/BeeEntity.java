@@ -97,7 +97,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	private static final int NEAR_TARGET_FLAG = 2;
 	private static final int HAS_STUNG_FLAG = 4;
 	private static final int HAS_NECTAR_FLAG = 8;
-	private static final int field_30284 = 1200;
+	private static final int MAX_LIFETIME_AFTER_STINGING = 1200;
 	/**
 	 * A bee will start moving to a flower once this time in ticks has passed from a pollination.
 	 */
@@ -732,7 +732,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	class BeeWanderAroundGoal extends Goal {
-		private static final int field_30309 = 22;
+		private static final int MAX_DISTANCE = 22;
 
 		BeeWanderAroundGoal() {
 			this.setControls(EnumSet.of(Goal.Control.MOVE));

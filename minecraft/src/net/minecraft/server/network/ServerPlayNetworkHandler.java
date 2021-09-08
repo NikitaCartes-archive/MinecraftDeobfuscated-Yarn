@@ -322,7 +322,15 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		this.player.updateInput(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
 	}
 
-	private static boolean validateVehicleMove(double x, double y, double z, float yaw, float pitch) {
+	/**
+	 * {@return whether this movement is invalid}
+	 * 
+	 * @implNote This method is used to determine
+	 * whether players sending {@linkplain PlayerMoveC2SPacket player}
+	 * and {@linkplain VehicleMoveC2SPacket vehicle} movement packets
+	 * to the server should be kicked.
+	 */
+	private static boolean isMovementInvalid(double x, double y, double z, float yaw, float pitch) {
 		return Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z) || !Floats.isFinite(pitch) || !Floats.isFinite(yaw);
 	}
 
@@ -337,7 +345,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onVehicleMove(VehicleMoveC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		if (validateVehicleMove(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch())) {
+		if (isMovementInvalid(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch())) {
 			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_vehicle_movement"));
 		} else {
 			Entity entity = this.player.getRootVehicle();
@@ -760,7 +768,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onPlayerMove(PlayerMoveC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		if (validateVehicleMove(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0), packet.getYaw(0.0F), packet.getPitch(0.0F))) {
+		if (isMovementInvalid(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0), packet.getYaw(0.0F), packet.getPitch(0.0F))) {
 			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_player_movement"));
 		} else {
 			ServerWorld serverWorld = this.player.getServerWorld();
