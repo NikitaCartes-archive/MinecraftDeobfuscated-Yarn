@@ -50,9 +50,9 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class OcelotEntity extends AnimalEntity {
-	public static final double field_30340 = 0.6;
-	public static final double field_30341 = 0.8;
-	public static final double field_30342 = 1.33;
+	public static final double CROUCHING_SPEED = 0.6;
+	public static final double NORMAL_SPEED = 0.8;
+	public static final double SPRINTING_SPEED = 1.33;
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
 	private static final TrackedData<Boolean> TRUSTING = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private OcelotEntity.FleeGoal<PlayerEntity> fleeGoal;

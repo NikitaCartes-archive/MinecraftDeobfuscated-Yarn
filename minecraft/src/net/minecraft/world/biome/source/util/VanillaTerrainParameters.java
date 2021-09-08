@@ -83,38 +83,59 @@ public final class VanillaTerrainParameters {
 	private static Spline<VanillaTerrainParameters.TerrainNoisePoint> buildErosionFactorSpline(
 		String erosionName, float value, boolean addShatteredRidges, String weirdnessName
 	) {
+		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline = Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::method_37872)
+			.setName("-base")
+			.add(-0.2F, 800.0F, 0.0F)
+			.add(0.2F, value, 0.0F)
+			.build();
 		Spline.Builder<VanillaTerrainParameters.TerrainNoisePoint> builder = Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::getErosionNoise)
 			.setName(erosionName)
-			.add(-0.6F, value, 0.0F)
-			.add(-0.5F, 342.0F, 0.0F)
-			.add(-0.35F, value, 0.0F)
-			.add(-0.25F, value, 0.0F)
-			.add(-0.1F, 342.0F, 0.0F)
-			.add(0.03F, value, 0.0F);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline = Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::getWeirdnessNoise)
-			.setName(weirdnessName)
-			.add(-0.7F, value, 0.0F)
-			.add(-0.15F, 175.0F, 0.0F)
-			.build();
+			.add(-0.6F, spline, 0.0F)
+			.add(
+				-0.5F,
+				Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::method_37872)
+					.setName(erosionName + "-variation-1")
+					.add(-0.05F, 800.0F, 0.0F)
+					.add(0.05F, 342.0F, 0.0F)
+					.build(),
+				0.0F
+			)
+			.add(-0.35F, spline, 0.0F)
+			.add(-0.25F, spline, 0.0F)
+			.add(
+				-0.1F,
+				Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::method_37872)
+					.setName(erosionName + "-variation-2")
+					.add(-0.05F, 342.0F, 0.0F)
+					.add(0.05F, 800.0F, 0.0F)
+					.build(),
+				0.0F
+			)
+			.add(0.03F, spline, 0.0F);
 		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline2 = Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::getWeirdnessNoise)
 			.setName(weirdnessName)
-			.add(0.45F, value, 0.0F)
+			.add(-0.7F, spline, 0.0F)
+			.add(-0.15F, 175.0F, 0.0F)
+			.build();
+		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline3 = Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::getWeirdnessNoise)
+			.setName(weirdnessName)
+			.add(0.45F, spline, 0.0F)
 			.add(0.7F, 200.0F, 0.0F)
 			.build();
 		if (addShatteredRidges) {
-			Spline<VanillaTerrainParameters.TerrainNoisePoint> spline3 = Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::method_37872)
+			Spline<VanillaTerrainParameters.TerrainNoisePoint> spline4 = Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::method_37872)
 				.setName("weirdnessShattered")
 				.add(0.0F, value, 0.0F)
 				.add(0.1F, 80.0F, 0.0F)
 				.build();
-			Spline<VanillaTerrainParameters.TerrainNoisePoint> spline4 = Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::getWeirdnessNoise)
+			Spline<VanillaTerrainParameters.TerrainNoisePoint> spline5 = Spline.builder(VanillaTerrainParameters.TerrainNoisePoint::getWeirdnessNoise)
 				.setName("ridgesShattered")
 				.add(-0.9F, value, 0.0F)
-				.add(-0.69F, spline3, 0.0F)
+				.add(-0.69F, spline4, 0.0F)
 				.build();
-			builder.add(0.35F, value, 0.0F).add(0.45F, spline4, 0.0F).add(0.55F, spline4, 0.0F).add(0.62F, value, 0.0F);
+			builder.add(0.35F, value, 0.0F).add(0.45F, spline5, 0.0F).add(0.55F, spline5, 0.0F).add(0.62F, value, 0.0F);
 		} else {
-			builder.add(0.05F, spline2, 0.0F).add(0.4F, spline2, 0.0F).add(0.45F, spline, 0.0F).add(0.55F, spline, 0.0F).add(0.58F, value, 0.0F);
+			builder.add(0.05F, spline3, 0.0F).add(0.4F, spline3, 0.0F).add(0.45F, spline2, 0.0F).add(0.55F, spline2, 0.0F).add(0.58F, value, 0.0F);
 		}
 
 		return builder.build();

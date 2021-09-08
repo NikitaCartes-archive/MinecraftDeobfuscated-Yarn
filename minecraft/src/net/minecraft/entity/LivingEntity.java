@@ -2698,11 +2698,6 @@ public abstract class LivingEntity extends Entity {
 				bl = true;
 				int i = this.roll + 1;
 				if (!this.world.isClient && i % 10 == 0) {
-					int j = i / 10;
-					if (j % 2 == 0) {
-						itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
-					}
-
 					this.emitGameEvent(GameEvent.ELYTRA_FREE_FALL);
 				}
 			} else {

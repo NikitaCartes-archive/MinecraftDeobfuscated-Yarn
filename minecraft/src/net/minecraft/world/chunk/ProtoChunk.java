@@ -300,7 +300,7 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public BlockPos method_35319(Heightmap.Type type) {
+	public BlockPos sampleMaxHeightMap(Heightmap.Type type) {
 		int i = this.getBottomY();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 

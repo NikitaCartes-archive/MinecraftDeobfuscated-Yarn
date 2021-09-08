@@ -169,7 +169,7 @@ public class MathHelper {
 
 	/**
 	 * {@return a random, uniformly distributed integer value in {@code
-	 * [min, max]} If the range is empty (i.e. {@code max < min}), it
+	 * [min, max]}} If the range is empty (i.e. {@code max < min}), it
 	 * returns {@code min}.
 	 * 
 	 * @param min the minimum value, inclusive
@@ -846,7 +846,7 @@ public class MathHelper {
 
 	/**
 	 * {@return a random, uniformly distributed integer value in {@code
-	 * [min, max]}
+	 * [min, max]}}
 	 * 
 	 * @throws IllegalArgumentException if the range is empty (i.e. {@code
 	 * max < min})

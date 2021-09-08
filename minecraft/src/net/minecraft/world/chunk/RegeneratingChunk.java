@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.world.chunk;
 
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Map;
@@ -18,66 +18,67 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeArray;
-import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.ProtoChunk;
-import net.minecraft.world.chunk.UpgradeData;
-import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.feature.StructureFeature;
 
-public class class_6469 extends ProtoChunk {
-	private final WorldChunk field_34234;
+/**
+ * A regenerating world chunk represented as a proto chunk. Necessary since
+ * in {@link ChunkStatus}, the generation tasks assume the provided chunks
+ * are proto chunks and perform unchecked casts. Used by {@link
+ * net.minecraft.server.command.ResetChunksCommand /resetchunks} command.
+ */
+public class RegeneratingChunk extends ProtoChunk {
+	private final WorldChunk delegate;
 
-	public class_6469(WorldChunk worldChunk) {
-		super(worldChunk.getPos(), UpgradeData.NO_UPGRADE_DATA, worldChunk.getWorld());
-		this.field_34234 = worldChunk;
+	public RegeneratingChunk(WorldChunk delegate) {
+		super(delegate.getPos(), UpgradeData.NO_UPGRADE_DATA, delegate.getWorld());
+		this.delegate = delegate;
 	}
 
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		return this.field_34234.getBlockEntity(pos);
+		return this.delegate.getBlockEntity(pos);
 	}
 
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
-		return this.field_34234.getBlockState(pos);
+		return this.delegate.getBlockState(pos);
 	}
 
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
-		return this.field_34234.getFluidState(pos);
+		return this.delegate.getFluidState(pos);
 	}
 
 	@Override
 	public int getMaxLightLevel() {
-		return this.field_34234.getMaxLightLevel();
+		return this.delegate.getMaxLightLevel();
 	}
 
 	@Override
 	public ChunkSection getSection(int yIndex) {
-		return this.field_34234.getSection(yIndex);
+		return this.delegate.getSection(yIndex);
 	}
 
 	@Nullable
 	@Override
 	public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
-		return this.field_34234.setBlockState(pos, state, moved);
+		return this.delegate.setBlockState(pos, state, moved);
 	}
 
 	@Override
 	public void setBlockEntity(BlockEntity blockEntity) {
-		this.field_34234.setBlockEntity(blockEntity);
+		this.delegate.setBlockEntity(blockEntity);
 	}
 
 	@Override
 	public void addEntity(Entity entity) {
-		this.field_34234.addEntity(entity);
+		this.delegate.addEntity(entity);
 	}
 
 	@Override
 	public ChunkSection[] getSectionArray() {
-		return this.field_34234.getSectionArray();
+		return this.delegate.getSectionArray();
 	}
 
 	@Override
@@ -85,11 +86,11 @@ public class class_6469 extends ProtoChunk {
 		super.setHeightmap(type, heightmap);
 	}
 
-	private Heightmap.Type method_37758(Heightmap.Type type) {
-		if (type == Heightmap.Type.WORLD_SURFACE_WG) {
+	private Heightmap.Type convertHeightmapType(Heightmap.Type desiredType) {
+		if (desiredType == Heightmap.Type.WORLD_SURFACE_WG) {
 			return Heightmap.Type.WORLD_SURFACE;
 		} else {
-			return type == Heightmap.Type.OCEAN_FLOOR_WG ? Heightmap.Type.OCEAN_FLOOR : type;
+			return desiredType == Heightmap.Type.OCEAN_FLOOR_WG ? Heightmap.Type.OCEAN_FLOOR : desiredType;
 		}
 	}
 
@@ -99,19 +100,19 @@ public class class_6469 extends ProtoChunk {
 	}
 
 	@Override
-	public BlockPos method_35319(Heightmap.Type type) {
-		return super.method_35319(type);
+	public BlockPos sampleMaxHeightMap(Heightmap.Type type) {
+		return super.sampleMaxHeightMap(type);
 	}
 
 	@Override
 	public ChunkPos getPos() {
-		return this.field_34234.getPos();
+		return this.delegate.getPos();
 	}
 
 	@Nullable
 	@Override
 	public StructureStart<?> getStructureStart(StructureFeature<?> structure) {
-		return this.field_34234.getStructureStart(structure);
+		return this.delegate.getStructureStart(structure);
 	}
 
 	@Override
@@ -120,7 +121,7 @@ public class class_6469 extends ProtoChunk {
 
 	@Override
 	public Map<StructureFeature<?>, StructureStart<?>> getStructureStarts() {
-		return this.field_34234.getStructureStarts();
+		return this.delegate.getStructureStarts();
 	}
 
 	@Override
@@ -129,7 +130,7 @@ public class class_6469 extends ProtoChunk {
 
 	@Override
 	public LongSet getStructureReferences(StructureFeature<?> structure) {
-		return this.field_34234.getStructureReferences(structure);
+		return this.delegate.getStructureReferences(structure);
 	}
 
 	@Override
@@ -138,7 +139,7 @@ public class class_6469 extends ProtoChunk {
 
 	@Override
 	public Map<StructureFeature<?>, LongSet> getStructureReferences() {
-		return this.field_34234.getStructureReferences();
+		return this.delegate.getStructureReferences();
 	}
 
 	@Override
@@ -147,7 +148,7 @@ public class class_6469 extends ProtoChunk {
 
 	@Override
 	public BiomeArray getBiomeArray() {
-		return this.field_34234.getBiomeArray();
+		return this.delegate.getBiomeArray();
 	}
 
 	@Override
@@ -161,7 +162,7 @@ public class class_6469 extends ProtoChunk {
 
 	@Override
 	public ChunkStatus getStatus() {
-		return this.field_34234.getStatus();
+		return this.delegate.getStatus();
 	}
 
 	@Override
@@ -179,37 +180,37 @@ public class class_6469 extends ProtoChunk {
 	@Nullable
 	@Override
 	public NbtCompound getBlockEntityNbt(BlockPos pos) {
-		return this.field_34234.getBlockEntityNbt(pos);
+		return this.delegate.getBlockEntityNbt(pos);
 	}
 
 	@Nullable
 	@Override
 	public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
-		return this.field_34234.getPackedBlockEntityNbt(pos);
+		return this.delegate.getPackedBlockEntityNbt(pos);
 	}
 
 	@Override
 	public Stream<BlockPos> getLightSourcesStream() {
-		return this.field_34234.getLightSourcesStream();
+		return this.delegate.getLightSourcesStream();
 	}
 
 	@Override
 	public ChunkTickScheduler<Block> getBlockTickScheduler() {
-		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), this.getPos(), this.field_34234.getWorld());
+		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), this.getPos(), this.delegate.getWorld());
 	}
 
 	@Override
 	public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
-		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, this.getPos(), this.field_34234.getWorld());
+		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, this.getPos(), this.delegate.getWorld());
 	}
 
 	@Override
 	public boolean isLightOn() {
-		return this.field_34234.isLightOn();
+		return this.delegate.isLightOn();
 	}
 
 	@Override
 	public void setLightOn(boolean lightOn) {
-		this.field_34234.setLightOn(lightOn);
+		this.delegate.setLightOn(lightOn);
 	}
 }

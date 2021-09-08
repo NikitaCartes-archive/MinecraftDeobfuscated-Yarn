@@ -97,8 +97,8 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public BlockPos method_35319(Heightmap.Type type) {
-		return this.wrapped.method_35319(this.transformHeightmapType(type));
+	public BlockPos sampleMaxHeightMap(Heightmap.Type type) {
+		return this.wrapped.sampleMaxHeightMap(this.transformHeightmapType(type));
 	}
 
 	@Override
