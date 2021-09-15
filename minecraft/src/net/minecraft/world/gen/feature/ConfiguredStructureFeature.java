@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -12,9 +13,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
 	public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE
@@ -43,10 +44,10 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 		StructureManager structureManager,
 		long worldSeed,
 		ChunkPos chunkPos,
-		Biome biome,
-		int referenceCount,
+		int i,
 		StructureConfig structureConfig,
-		HeightLimitView heightLimitView
+		HeightLimitView heightLimitView,
+		Predicate<Biome> predicate
 	) {
 		return this.feature
 			.tryPlaceStart(
@@ -56,12 +57,12 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 				structureManager,
 				worldSeed,
 				chunkPos,
-				biome,
-				referenceCount,
+				i,
 				new ChunkRandom(),
 				structureConfig,
 				this.config,
-				heightLimitView
+				heightLimitView,
+				predicate
 			);
 	}
 }

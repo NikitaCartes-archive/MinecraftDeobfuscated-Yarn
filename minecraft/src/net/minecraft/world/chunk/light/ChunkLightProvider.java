@@ -223,9 +223,9 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	}
 
 	@Override
-	public void setColumnEnabled(ChunkPos chunkPos, boolean bl) {
-		long l = ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
-		this.lightStorage.setColumnEnabled(l, bl);
+	public void setColumnEnabled(ChunkPos pos, boolean retainData) {
+		long l = ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(pos.x, 0, pos.z));
+		this.lightStorage.setColumnEnabled(l, retainData);
 	}
 
 	public void setRetainColumn(ChunkPos pos, boolean retainData) {

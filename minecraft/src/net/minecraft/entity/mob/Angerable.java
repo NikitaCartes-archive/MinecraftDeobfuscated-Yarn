@@ -56,7 +56,10 @@ public interface Angerable {
 		}
 	}
 
-	default void tickAngerLogic(ServerWorld world, boolean bl) {
+	/**
+	 * @param angerPersistent if {@code true}, the anger time will not decrease for a player target
+	 */
+	default void tickAngerLogic(ServerWorld world, boolean angerPersistent) {
 		LivingEntity livingEntity = this.getTarget();
 		UUID uUID = this.getAngryAt();
 		if ((livingEntity == null || livingEntity.isDead()) && uUID != null && world.getEntity(uUID) instanceof MobEntity) {
@@ -67,7 +70,7 @@ public interface Angerable {
 				this.chooseRandomAngerTime();
 			}
 
-			if (this.getAngerTime() > 0 && (livingEntity == null || livingEntity.getType() != EntityType.PLAYER || !bl)) {
+			if (this.getAngerTime() > 0 && (livingEntity == null || livingEntity.getType() != EntityType.PLAYER || !angerPersistent)) {
 				this.setAngerTime(this.getAngerTime() - 1);
 				if (this.getAngerTime() == 0) {
 					this.stopAnger();
@@ -76,11 +79,11 @@ public interface Angerable {
 		}
 	}
 
-	default boolean shouldAngerAt(LivingEntity livingEntity) {
-		if (!this.canTarget(livingEntity)) {
+	default boolean shouldAngerAt(LivingEntity entity) {
+		if (!this.canTarget(entity)) {
 			return false;
 		} else {
-			return livingEntity.getType() == EntityType.PLAYER && this.isUniversallyAngry(livingEntity.world) ? true : livingEntity.getUuid().equals(this.getAngryAt());
+			return entity.getType() == EntityType.PLAYER && this.isUniversallyAngry(entity.world) ? true : entity.getUuid().equals(this.getAngryAt());
 		}
 	}
 
@@ -121,7 +124,7 @@ public interface Angerable {
 
 	void setTarget(@Nullable LivingEntity target);
 
-	boolean canTarget(LivingEntity livingEntity);
+	boolean canTarget(LivingEntity target);
 
 	@Nullable
 	LivingEntity getTarget();

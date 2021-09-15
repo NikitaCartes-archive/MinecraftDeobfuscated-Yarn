@@ -5,12 +5,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.HeightLimitView;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class PillagerOutpostFeature extends JigsawFeature {
 	private static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
@@ -30,7 +29,6 @@ public class PillagerOutpostFeature extends JigsawFeature {
 		long l,
 		ChunkRandom chunkRandom,
 		ChunkPos chunkPos,
-		Biome biome,
 		ChunkPos chunkPos2,
 		StructurePoolFeatureConfig structurePoolFeatureConfig,
 		HeightLimitView heightLimitView

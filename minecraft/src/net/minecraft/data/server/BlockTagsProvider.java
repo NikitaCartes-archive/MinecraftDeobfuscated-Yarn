@@ -1252,7 +1252,10 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.LIGHTNING_ROD
 			);
 		this.getOrCreateTagBuilder(BlockTags.FEATURES_CANNOT_REPLACE).add(Blocks.BEDROCK, Blocks.SPAWNER, Blocks.CHEST, Blocks.END_PORTAL_FRAME);
-		this.getOrCreateTagBuilder(BlockTags.LAVA_POOL_STONE_REPLACEABLES).addTag(BlockTags.FEATURES_CANNOT_REPLACE).addTag(BlockTags.LEAVES).addTag(BlockTags.LOGS);
+		this.getOrCreateTagBuilder(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE)
+			.addTag(BlockTags.FEATURES_CANNOT_REPLACE)
+			.addTag(BlockTags.LEAVES)
+			.addTag(BlockTags.LOGS);
 		this.getOrCreateTagBuilder(BlockTags.GEODE_INVALID_BLOCKS).add(Blocks.BEDROCK, Blocks.WATER, Blocks.LAVA, Blocks.ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE);
 	}
 

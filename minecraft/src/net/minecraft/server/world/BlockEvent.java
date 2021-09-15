@@ -1,9 +1,10 @@
 package net.minecraft.server.world;
 
+import java.lang.runtime.ObjectMethods;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 
-public class BlockEvent {
+public final class BlockEvent extends Record {
 	private final BlockPos pos;
 	private final Block block;
 	private final int type;
@@ -16,39 +17,33 @@ public class BlockEvent {
 		this.data = data;
 	}
 
-	public BlockPos getPos() {
+	public final String toString() {
+		return ObjectMethods.bootstrap<"toString",BlockEvent,"pos;block;paramA;paramB",BlockEvent::pos,BlockEvent::block,BlockEvent::type,BlockEvent::data>(this);
+	}
+
+	public final int hashCode() {
+		return ObjectMethods.bootstrap<"hashCode",BlockEvent,"pos;block;paramA;paramB",BlockEvent::pos,BlockEvent::block,BlockEvent::type,BlockEvent::data>(this);
+	}
+
+	public final boolean equals(Object object) {
+		return ObjectMethods.bootstrap<"equals",BlockEvent,"pos;block;paramA;paramB",BlockEvent::pos,BlockEvent::block,BlockEvent::type,BlockEvent::data>(
+			this, object
+		);
+	}
+
+	public BlockPos pos() {
 		return this.pos;
 	}
 
-	public Block getBlock() {
+	public Block block() {
 		return this.block;
 	}
 
-	public int getType() {
+	public int type() {
 		return this.type;
 	}
 
-	public int getData() {
+	public int data() {
 		return this.data;
-	}
-
-	public boolean equals(Object o) {
-		if (!(o instanceof BlockEvent)) {
-			return false;
-		} else {
-			BlockEvent blockEvent = (BlockEvent)o;
-			return this.pos.equals(blockEvent.pos) && this.type == blockEvent.type && this.data == blockEvent.data && this.block == blockEvent.block;
-		}
-	}
-
-	public int hashCode() {
-		int i = this.pos.hashCode();
-		i = 31 * i + this.block.hashCode();
-		i = 31 * i + this.type;
-		return 31 * i + this.data;
-	}
-
-	public String toString() {
-		return "TE(" + this.pos + ")," + this.type + "," + this.data + "," + this.block;
 	}
 }

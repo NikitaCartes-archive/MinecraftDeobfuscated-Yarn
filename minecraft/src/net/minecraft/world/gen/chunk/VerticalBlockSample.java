@@ -1,10 +1,10 @@
 package net.minecraft.world.gen.chunk;
 
+import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
 
-public final class VerticalBlockSample {
+public final class VerticalBlockSample implements class_6557 {
 	private final int startY;
 	private final BlockState[] states;
 
@@ -13,8 +13,19 @@ public final class VerticalBlockSample {
 		this.states = states;
 	}
 
-	public BlockState getState(BlockPos pos) {
-		int i = pos.getY() - this.startY;
-		return i >= 0 && i < this.states.length ? this.states[i] : Blocks.AIR.getDefaultState();
+	@Override
+	public BlockState getState(int i) {
+		int j = i - this.startY;
+		return j >= 0 && j < this.states.length ? this.states[j] : Blocks.AIR.getDefaultState();
+	}
+
+	@Override
+	public void method_38092(int i, BlockState blockState) {
+		int j = i - this.startY;
+		if (j >= 0 && j < this.states.length) {
+			this.states[j] = blockState;
+		} else {
+			throw new IllegalArgumentException("Outside of column height: " + i);
+		}
 	}
 }

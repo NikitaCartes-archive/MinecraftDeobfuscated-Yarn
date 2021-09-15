@@ -57,7 +57,7 @@ public class PistonBlockEntity extends BlockEntity {
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		return this.writeNbt(new NbtCompound());
+		return this.createNbt();
 	}
 
 	public boolean isExtending() {
@@ -328,14 +328,13 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		nbt.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
 		nbt.putInt("facing", this.facing.getId());
 		nbt.putFloat("progress", this.lastProgress);
 		nbt.putBoolean("extending", this.extending);
 		nbt.putBoolean("source", this.source);
-		return nbt;
 	}
 
 	public VoxelShape getCollisionShape(BlockView world, BlockPos pos) {

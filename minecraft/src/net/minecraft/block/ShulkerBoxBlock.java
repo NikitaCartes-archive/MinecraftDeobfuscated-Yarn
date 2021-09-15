@@ -16,6 +16,7 @@ import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -123,11 +124,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
 			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
 				ItemStack itemStack = getItemStack(this.getColor());
-				NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
-				if (!nbtCompound.isEmpty()) {
-					itemStack.setSubNbt("BlockEntityTag", nbtCompound);
-				}
-
+				blockEntity.setStackNbt(itemStack);
 				if (shulkerBoxBlockEntity.hasCustomName()) {
 					itemStack.setCustomName(shulkerBoxBlockEntity.getCustomName());
 				}
@@ -182,7 +179,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 		super.appendTooltip(stack, world, tooltip, options);
-		NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		if (nbtCompound != null) {
 			if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
 				tooltip.add(new LiteralText("???????"));
@@ -239,12 +236,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		ItemStack itemStack = super.getPickStack(world, pos, state);
-		ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)world.getBlockEntity(pos);
-		NbtCompound nbtCompound = shulkerBoxBlockEntity.writeInventoryNbt(new NbtCompound());
-		if (!nbtCompound.isEmpty()) {
-			itemStack.setSubNbt("BlockEntityTag", nbtCompound);
-		}
-
+		world.getBlockEntity(pos, BlockEntityType.SHULKER_BOX).ifPresent(shulkerBoxBlockEntity -> shulkerBoxBlockEntity.setStackNbt(itemStack));
 		return itemStack;
 	}
 

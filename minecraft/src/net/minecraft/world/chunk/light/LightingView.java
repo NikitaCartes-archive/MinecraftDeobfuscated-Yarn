@@ -19,5 +19,5 @@ public interface LightingView {
 
 	void setSectionStatus(ChunkSectionPos pos, boolean notReady);
 
-	void setColumnEnabled(ChunkPos chunkPos, boolean bl);
+	void setColumnEnabled(ChunkPos pos, boolean retainData);
 }

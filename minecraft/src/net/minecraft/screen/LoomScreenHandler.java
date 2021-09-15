@@ -2,12 +2,14 @@ package net.minecraft.screen;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.BannerPatternItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -145,8 +147,9 @@ public class LoomScreenHandler extends ScreenHandler {
 				&& this.selectedPattern.get() > 0
 				&& (this.selectedPattern.get() < BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
-				NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("BlockEntityTag");
-				boolean bl = nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
+				NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
+				boolean bl = nbtCompound != null
+					&& nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
 					&& !itemStack.isEmpty()
 					&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
 				if (bl) {
@@ -237,12 +240,16 @@ public class LoomScreenHandler extends ScreenHandler {
 				itemStack3.setCount(1);
 				BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
 				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-				NbtCompound nbtCompound = itemStack3.getOrCreateSubNbt("BlockEntityTag");
+				NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack3);
 				NbtList nbtList;
-				if (nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
+				if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
 					nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
 				} else {
 					nbtList = new NbtList();
+					if (nbtCompound == null) {
+						nbtCompound = new NbtCompound();
+					}
+
 					nbtCompound.put("Patterns", nbtList);
 				}
 
@@ -250,6 +257,7 @@ public class LoomScreenHandler extends ScreenHandler {
 				nbtCompound2.putString("Pattern", bannerPattern.getId());
 				nbtCompound2.putInt("Color", dyeColor.getId());
 				nbtList.add(nbtCompound2);
+				BlockItem.setBlockEntityNbt(itemStack3, BlockEntityType.BANNER, nbtCompound);
 			}
 
 			if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {

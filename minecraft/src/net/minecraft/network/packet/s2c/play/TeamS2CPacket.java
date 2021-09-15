@@ -79,7 +79,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public TeamS2CPacket(PacketByteBuf buf) {
-		this.teamName = buf.readString(16);
+		this.teamName = buf.readString();
 		this.packetType = buf.readByte();
 		if (containsTeamInfo(this.packetType)) {
 			this.team = Optional.of(new TeamS2CPacket.SerializableTeam(buf));

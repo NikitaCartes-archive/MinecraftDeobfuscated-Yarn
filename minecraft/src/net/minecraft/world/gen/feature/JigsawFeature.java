@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.function.Predicate;
 import net.minecraft.structure.MarginedStructureStart;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructureManager;
@@ -43,9 +44,9 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ChunkPos chunkPos,
-			Biome biome,
 			StructurePoolFeatureConfig structurePoolFeatureConfig,
-			HeightLimitView heightLimitView
+			HeightLimitView heightLimitView,
+			Predicate<Biome> predicate
 		) {
 			BlockPos blockPos = new BlockPos(chunkPos.getStartX(), this.jigsawFeature.structureStartY, chunkPos.getStartZ());
 			StructurePools.initDefaultPools();
@@ -60,7 +61,8 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 				this.random,
 				this.jigsawFeature.modifyBoundingBox,
 				this.jigsawFeature.surface,
-				heightLimitView
+				heightLimitView,
+				predicate
 			);
 		}
 	}

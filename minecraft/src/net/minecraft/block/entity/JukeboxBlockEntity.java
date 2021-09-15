@@ -23,13 +23,11 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		if (!this.getRecord().isEmpty()) {
 			nbt.put("RecordItem", this.getRecord().writeNbt(new NbtCompound()));
 		}
-
-		return nbt;
 	}
 
 	public ItemStack getRecord() {

@@ -1,6 +1,8 @@
 package net.minecraft.world;
 
+import java.util.function.Supplier;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -17,5 +19,8 @@ public interface StructureWorldAccess extends ServerWorldAccess {
 	 */
 	default boolean isValidForSetBlock(BlockPos pos) {
 		return true;
+	}
+
+	default void method_36972(@Nullable Supplier<String> supplier) {
 	}
 }

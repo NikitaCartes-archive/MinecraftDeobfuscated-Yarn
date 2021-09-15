@@ -26,7 +26,7 @@ public class BannerItem extends WallStandingBlockItem {
 	}
 
 	public static void appendBannerTooltip(ItemStack stack, List<Text> tooltip) {
-		NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		if (nbtCompound != null && nbtCompound.contains("Patterns")) {
 			NbtList nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
 

@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -49,7 +50,11 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
 	}
 
 	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos origin) {
-		return this.feature.generate(new FeatureContext<>(world, chunkGenerator, random, origin, this.config));
+		return this.feature.generate(new FeatureContext<>(Optional.empty(), world, chunkGenerator, random, origin, this.config));
+	}
+
+	public boolean generate(Optional<ConfiguredFeature<?, ?>> feature, StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos origin) {
+		return this.feature.generate(new FeatureContext<>(feature, world, chunkGenerator, random, origin, this.config));
 	}
 
 	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -15,9 +16,10 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final int field_31502 = 10387313;
@@ -37,7 +39,6 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		long l,
 		ChunkRandom chunkRandom,
 		ChunkPos chunkPos,
-		Biome biome,
 		ChunkPos chunkPos2,
 		DefaultFeatureConfig defaultFeatureConfig,
 		HeightLimitView heightLimitView
@@ -83,17 +84,21 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ChunkPos chunkPos,
-			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig,
-			HeightLimitView heightLimitView
+			HeightLimitView heightLimitView,
+			Predicate<Biome> predicate
 		) {
 			BlockRotation blockRotation = BlockRotation.random(this.random);
 			int i = EndCityFeature.getGenerationHeight(chunkPos, chunkGenerator, heightLimitView);
 			if (i >= 60) {
 				BlockPos blockPos = chunkPos.getCenterAtY(i);
-				List<StructurePiece> list = Lists.<StructurePiece>newArrayList();
-				EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
-				list.forEach(this::addPiece);
+				if (predicate.test(
+					chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()))
+				)) {
+					List<StructurePiece> list = Lists.<StructurePiece>newArrayList();
+					EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
+					list.forEach(this::addPiece);
+				}
 			}
 		}
 	}

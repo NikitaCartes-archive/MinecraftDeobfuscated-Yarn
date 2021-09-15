@@ -1,7 +1,7 @@
 package net.minecraft.util.math.noise;
 
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.WorldGenRandom;
+import net.minecraft.world.gen.random.AbstractRandom;
 
 public final class PerlinNoiseSampler {
 	private static final float field_31701 = 1.0E-7F;
@@ -10,7 +10,7 @@ public final class PerlinNoiseSampler {
 	public final double originY;
 	public final double originZ;
 
-	public PerlinNoiseSampler(WorldGenRandom random) {
+	public PerlinNoiseSampler(AbstractRandom random) {
 		this.originX = random.nextDouble() * 256.0;
 		this.originY = random.nextDouble() * 256.0;
 		this.originZ = random.nextDouble() * 256.0;

@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -45,7 +46,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	@Nullable
 	public static NbtList getPatternListTag(ItemStack stack) {
 		NbtList nbtList = null;
-		NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
 			nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).copy();
 		}
@@ -77,7 +78,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		if (this.patternListTag != null) {
 			nbt.put("Patterns", this.patternListTag);
@@ -86,8 +87,6 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		if (this.customName != null) {
 			nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
-
-		return nbt;
 	}
 
 	@Override
@@ -102,19 +101,17 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		this.patternListTagRead = true;
 	}
 
-	@Nullable
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.BANNER, this.toInitialChunkDataNbt());
+		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		return this.writeNbt(new NbtCompound());
+		return this.createNbt();
 	}
 
 	public static int getPatternCount(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		return nbtCompound != null && nbtCompound.contains("Patterns") ? nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() : 0;
 	}
 
@@ -144,14 +141,16 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	public static void loadFromItemStack(ItemStack stack) {
-		NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
 			NbtList nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
 			if (!nbtList.isEmpty()) {
 				nbtList.remove(nbtList.size() - 1);
 				if (nbtList.isEmpty()) {
-					stack.removeSubNbt("BlockEntityTag");
+					nbtCompound.remove("Patterns");
 				}
+
+				BlockItem.setBlockEntityNbt(stack, BlockEntityType.BANNER, nbtCompound);
 			}
 		}
 	}
@@ -159,7 +158,9 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public ItemStack getPickStack() {
 		ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.baseColor));
 		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-			itemStack.getOrCreateSubNbt("BlockEntityTag").put("Patterns", this.patternListTag.copy());
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.put("Patterns", this.patternListTag.copy());
+			BlockItem.setBlockEntityNbt(itemStack, this.getType(), nbtCompound);
 		}
 
 		if (this.customName != null) {

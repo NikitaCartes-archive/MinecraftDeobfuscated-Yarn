@@ -28,7 +28,8 @@ public class GenerationShapeConfig {
 						Codec.BOOL
 							.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
 							.forGetter(GenerationShapeConfig::hasIslandNoiseOverride),
-						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::isAmplified)
+						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::isAmplified),
+						Codec.BOOL.optionalFieldOf("use_legacy_random", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::method_38413)
 					)
 					.apply(instance, GenerationShapeConfig::new)
 		)
@@ -46,6 +47,7 @@ public class GenerationShapeConfig {
 	private final boolean randomDensityOffset;
 	private final boolean islandNoiseOverride;
 	private final boolean amplified;
+	private final boolean field_34687;
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
 		if (config.getMinimumY() + config.getHeight() > DimensionType.MAX_COLUMN_HEIGHT + 1) {
@@ -70,7 +72,8 @@ public class GenerationShapeConfig {
 		boolean simplexSurfaceNoise,
 		boolean randomDensityOffset,
 		boolean islandNoiseOverride,
-		boolean amplified
+		boolean amplified,
+		boolean bl
 	) {
 		this.minimumY = minimumY;
 		this.height = height;
@@ -85,6 +88,7 @@ public class GenerationShapeConfig {
 		this.randomDensityOffset = randomDensityOffset;
 		this.islandNoiseOverride = islandNoiseOverride;
 		this.amplified = amplified;
+		this.field_34687 = bl;
 	}
 
 	public static GenerationShapeConfig create(
@@ -100,7 +104,8 @@ public class GenerationShapeConfig {
 		boolean simplexSurfaceNoise,
 		boolean randomDensityOffset,
 		boolean islandNoiseOverride,
-		boolean amplified
+		boolean amplified,
+		boolean bl
 	) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(
 			minimumY,
@@ -115,7 +120,8 @@ public class GenerationShapeConfig {
 			simplexSurfaceNoise,
 			randomDensityOffset,
 			islandNoiseOverride,
-			amplified
+			amplified,
+			bl
 		);
 		checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
 			throw new IllegalStateException(partialResult.message());
@@ -177,5 +183,9 @@ public class GenerationShapeConfig {
 	@Deprecated
 	public boolean isAmplified() {
 		return this.amplified;
+	}
+
+	public boolean method_38413() {
+		return this.field_34687;
 	}
 }

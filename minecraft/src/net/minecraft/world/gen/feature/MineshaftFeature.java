@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -16,9 +17,10 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	public MineshaftFeature(Codec<MineshaftFeatureConfig> codec) {
@@ -31,7 +33,6 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		long l,
 		ChunkRandom chunkRandom,
 		ChunkPos chunkPos,
-		Biome biome,
 		ChunkPos chunkPos2,
 		MineshaftFeatureConfig mineshaftFeatureConfig,
 		HeightLimitView heightLimitView
@@ -56,22 +57,26 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ChunkPos chunkPos,
-			Biome biome,
 			MineshaftFeatureConfig mineshaftFeatureConfig,
-			HeightLimitView heightLimitView
+			HeightLimitView heightLimitView,
+			Predicate<Biome> predicate
 		) {
-			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
-				0, this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), mineshaftFeatureConfig.type
-			);
-			this.addPiece(mineshaftRoom);
-			mineshaftRoom.fillOpenings(mineshaftRoom, this, this.random);
-			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
-				int i = -5;
-				BlockBox blockBox = this.setBoundingBoxFromChildren();
-				int j = chunkGenerator.getSeaLevel() - blockBox.getMaxY() + blockBox.getBlockCountY() / 2 - -5;
-				this.translateUpward(j);
-			} else {
-				this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);
+			if (predicate.test(
+				chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos.getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(chunkPos.getCenterZ()))
+			)) {
+				MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
+					0, this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), mineshaftFeatureConfig.type
+				);
+				this.addPiece(mineshaftRoom);
+				mineshaftRoom.fillOpenings(mineshaftRoom, this, this.random);
+				if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
+					int i = -5;
+					BlockBox blockBox = this.setBoundingBoxFromChildren();
+					int j = chunkGenerator.getSeaLevel() - blockBox.getMaxY() + blockBox.getBlockCountY() / 2 - -5;
+					this.translateUpward(j);
+				} else {
+					this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);
+				}
 			}
 		}
 	}

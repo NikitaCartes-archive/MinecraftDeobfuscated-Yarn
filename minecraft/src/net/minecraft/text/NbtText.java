@@ -144,7 +144,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 				if (serverWorld.canSetBlock(blockPos)) {
 					BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 					if (blockEntity != null) {
-						return Stream.of(blockEntity.writeNbt(new NbtCompound()));
+						return Stream.of(blockEntity.createNbtWithIdentifyingData());
 					}
 				}
 			}

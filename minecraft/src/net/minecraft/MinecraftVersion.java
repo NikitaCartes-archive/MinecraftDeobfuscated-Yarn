@@ -2,7 +2,6 @@ package net.minecraft;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.bridge.game.GameVersion;
 import com.mojang.bridge.game.PackType;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,11 +15,11 @@ import org.apache.logging.log4j.Logger;
 
 public class MinecraftVersion implements GameVersion {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final GameVersion GAME_VERSION = new MinecraftVersion();
+	public static final GameVersion CURRENT = new MinecraftVersion();
 	private final String id;
 	private final String name;
 	private final boolean stable;
-	private final int worldVersion;
+	private final SaveVersion saveVersion;
 	private final int protocolVersion;
 	private final int resourcePackVersion;
 	private final int dataPackVersion;
@@ -29,14 +28,14 @@ public class MinecraftVersion implements GameVersion {
 
 	private MinecraftVersion() {
 		this.id = UUID.randomUUID().toString().replaceAll("-", "");
-		this.name = "1.17.1";
-		this.stable = true;
-		this.worldVersion = 2730;
+		this.name = "21w37a";
+		this.stable = false;
+		this.saveVersion = new SaveVersion(2834, "main");
 		this.protocolVersion = SharedConstants.getProtocolVersion();
 		this.resourcePackVersion = 7;
-		this.dataPackVersion = 7;
+		this.dataPackVersion = 8;
 		this.buildTime = new Date();
-		this.releaseTarget = "1.17.1";
+		this.releaseTarget = "1.18";
 	}
 
 	private MinecraftVersion(JsonObject json) {
@@ -44,7 +43,7 @@ public class MinecraftVersion implements GameVersion {
 		this.name = JsonHelper.getString(json, "name");
 		this.releaseTarget = JsonHelper.getString(json, "release_target");
 		this.stable = JsonHelper.getBoolean(json, "stable");
-		this.worldVersion = JsonHelper.getInt(json, "world_version");
+		this.saveVersion = new SaveVersion(JsonHelper.getInt(json, "world_version"), JsonHelper.getString(json, "series_id", SaveVersion.MAIN_SERIES));
 		this.protocolVersion = JsonHelper.getInt(json, "protocol_version");
 		JsonObject jsonObject = JsonHelper.getObject(json, "pack_version");
 		this.resourcePackVersion = JsonHelper.getInt(jsonObject, "resource");
@@ -62,7 +61,7 @@ public class MinecraftVersion implements GameVersion {
 				try {
 					if (inputStream == null) {
 						LOGGER.warn("Missing version information!");
-						var9 = GAME_VERSION;
+						var9 = CURRENT;
 						break label63;
 					}
 
@@ -126,8 +125,8 @@ public class MinecraftVersion implements GameVersion {
 	}
 
 	@Override
-	public int getWorldVersion() {
-		return this.worldVersion;
+	public SaveVersion getSaveVersion() {
+		return this.saveVersion;
 	}
 
 	@Override

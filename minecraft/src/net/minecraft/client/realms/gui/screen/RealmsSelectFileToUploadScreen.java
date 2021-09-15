@@ -28,7 +28,6 @@ import org.lwjgl.glfw.GLFW;
 public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	static final Text WORLD_LANG = new TranslatableText("selectWorld.world");
-	static final Text CONVERSION_LANG = new TranslatableText("selectWorld.conversion");
 	static final Text HARDCORE_TEXT = new TranslatableText("mco.upload.hardcore").formatted(Formatting.DARK_RED);
 	static final Text CHEATS_TEXT = new TranslatableText("selectWorld.cheats");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
@@ -50,7 +49,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	}
 
 	private void loadLevelList() throws Exception {
-		this.levelList = (List)this.client.getLevelStorage().getLevelList().stream().sorted((a, b) -> {
+		this.levelList = (List)this.client.getLevelStorage().getLevelList().stream().filter(a -> !a.requiresConversion() && !a.isLocked()).sorted((a, b) -> {
 			if (a.getLastPlayed() < b.getLastPlayed()) {
 				return 1;
 			} else {
@@ -142,22 +141,18 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			this.summary = summary;
 			this.displayName = summary.getDisplayName();
 			this.nameAndLastPlayed = summary.getName() + " (" + RealmsSelectFileToUploadScreen.getLastPlayed(summary) + ")";
-			if (summary.requiresConversion()) {
-				this.details = RealmsSelectFileToUploadScreen.CONVERSION_LANG;
+			Text text;
+			if (summary.isHardcore()) {
+				text = RealmsSelectFileToUploadScreen.HARDCORE_TEXT;
 			} else {
-				Text text;
-				if (summary.isHardcore()) {
-					text = RealmsSelectFileToUploadScreen.HARDCORE_TEXT;
-				} else {
-					text = RealmsSelectFileToUploadScreen.getGameModeName(summary);
-				}
-
-				if (summary.hasCheats()) {
-					text = text.shallowCopy().append(", ").append(RealmsSelectFileToUploadScreen.CHEATS_TEXT);
-				}
-
-				this.details = text;
+				text = RealmsSelectFileToUploadScreen.getGameModeName(summary);
 			}
+
+			if (summary.hasCheats()) {
+				text = text.shallowCopy().append(", ").append(RealmsSelectFileToUploadScreen.CHEATS_TEXT);
+			}
+
+			this.details = text;
 		}
 
 		@Override

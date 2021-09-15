@@ -115,6 +115,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 
 	protected abstract void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox);
 
+	@Deprecated
 	@Override
 	public void translate(int x, int y, int z) {
 		super.translate(x, y, z);

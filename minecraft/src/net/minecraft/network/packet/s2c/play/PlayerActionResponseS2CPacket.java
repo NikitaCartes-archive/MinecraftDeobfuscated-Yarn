@@ -1,5 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
+import java.lang.runtime.ObjectMethods;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.Packet;
@@ -10,25 +11,27 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PlayerActionResponseS2CPacket implements Packet<ClientPlayPacketListener> {
-	private static final Logger LOGGER = LogManager.getLogger();
+public final class PlayerActionResponseS2CPacket extends Record implements Packet<ClientPlayPacketListener> {
 	private final BlockPos pos;
 	private final BlockState state;
 	private final PlayerActionC2SPacket.Action action;
 	private final boolean approved;
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public PlayerActionResponseS2CPacket(BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved, String reason) {
-		this.pos = pos.toImmutable();
-		this.state = state;
+		this(pos, state, action, approved);
+	}
+
+	public PlayerActionResponseS2CPacket(BlockPos blockPos, BlockState blockState, PlayerActionC2SPacket.Action action, boolean bl) {
+		blockPos = blockPos.toImmutable();
+		this.pos = blockPos;
+		this.state = blockState;
 		this.action = action;
-		this.approved = approved;
+		this.approved = bl;
 	}
 
 	public PlayerActionResponseS2CPacket(PacketByteBuf buf) {
-		this.pos = buf.readBlockPos();
-		this.state = Block.STATE_IDS.get(buf.readVarInt());
-		this.action = buf.readEnumConstant(PlayerActionC2SPacket.Action.class);
-		this.approved = buf.readBoolean();
+		this(buf.readBlockPos(), Block.STATE_IDS.get(buf.readVarInt()), buf.readEnumConstant(PlayerActionC2SPacket.Action.class), buf.readBoolean());
 	}
 
 	@Override
@@ -43,19 +46,37 @@ public class PlayerActionResponseS2CPacket implements Packet<ClientPlayPacketLis
 		clientPlayPacketListener.onPlayerActionResponse(this);
 	}
 
-	public BlockState getBlockState() {
-		return this.state;
+	public final String toString() {
+		return ObjectMethods.bootstrap<"toString",PlayerActionResponseS2CPacket,"pos;state;action;allGood",PlayerActionResponseS2CPacket::pos,PlayerActionResponseS2CPacket::state,PlayerActionResponseS2CPacket::action,PlayerActionResponseS2CPacket::approved>(
+			this
+		);
 	}
 
-	public BlockPos getBlockPos() {
+	public final int hashCode() {
+		return ObjectMethods.bootstrap<"hashCode",PlayerActionResponseS2CPacket,"pos;state;action;allGood",PlayerActionResponseS2CPacket::pos,PlayerActionResponseS2CPacket::state,PlayerActionResponseS2CPacket::action,PlayerActionResponseS2CPacket::approved>(
+			this
+		);
+	}
+
+	public final boolean equals(Object object) {
+		return ObjectMethods.bootstrap<"equals",PlayerActionResponseS2CPacket,"pos;state;action;allGood",PlayerActionResponseS2CPacket::pos,PlayerActionResponseS2CPacket::state,PlayerActionResponseS2CPacket::action,PlayerActionResponseS2CPacket::approved>(
+			this, object
+		);
+	}
+
+	public BlockPos pos() {
 		return this.pos;
 	}
 
-	public boolean isApproved() {
-		return this.approved;
+	public BlockState state() {
+		return this.state;
 	}
 
-	public PlayerActionC2SPacket.Action getAction() {
+	public PlayerActionC2SPacket.Action action() {
 		return this.action;
+	}
+
+	public boolean approved() {
+		return this.approved;
 	}
 }

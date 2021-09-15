@@ -1,12 +1,19 @@
 package net.minecraft.block;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Represents the surface color of a block when rendered from the {@link net.minecraft.client.render.MapRenderer}.
  * Color names refer to a material or an object which refers to their vanilla Minecraft textures, not their real-world counterparts, eg. "emerald green".
  * Names are in the form of either <i>blockReference_baseColor</i> or <i>color</i>.
+ * 
+ * <p>When the map is rendered, the {@link MapColor.Brightness#brightness} value is added to the
+ * base color. The "rendered color" is internally represented as a byte; the first six bits
+ * indicate the base color, and the last two bits indicate the brightness. This value is returned
+ * from {@link MapColor#getRenderColorByte} and is passed to {@link MapColor#getRenderColor}.
  */
 public class MapColor {
-	public static final MapColor[] COLORS = new MapColor[64];
+	private static final MapColor[] COLORS = new MapColor[64];
 	public static final MapColor CLEAR = new MapColor(0, 0);
 	public static final MapColor PALE_GREEN = new MapColor(1, 8368696);
 	public static final MapColor PALE_YELLOW = new MapColor(2, 16247203);
@@ -82,27 +89,59 @@ public class MapColor {
 		}
 	}
 
-	public int getRenderColor(int shade) {
-		int i = 220;
-		if (shade == 3) {
-			i = 135;
+	public int getRenderColor(MapColor.Brightness brightness) {
+		if (this == CLEAR) {
+			return 0;
+		} else {
+			int i = brightness.brightness;
+			int j = (this.color >> 16 & 0xFF) * i / 255;
+			int k = (this.color >> 8 & 0xFF) * i / 255;
+			int l = (this.color & 0xFF) * i / 255;
+			return 0xFF000000 | l << 16 | k << 8 | j;
+		}
+	}
+
+	public static MapColor get(int id) {
+		Preconditions.checkPositionIndex(id, COLORS.length, "material id");
+		return getUnchecked(id);
+	}
+
+	private static MapColor getUnchecked(int id) {
+		MapColor mapColor = COLORS[id];
+		return mapColor != null ? mapColor : CLEAR;
+	}
+
+	public static int getRenderColor(int colorByte) {
+		int i = colorByte & 0xFF;
+		return getUnchecked(i >> 2).getRenderColor(MapColor.Brightness.get(i & 3));
+	}
+
+	public byte getRenderColorByte(MapColor.Brightness brightness) {
+		return (byte)(this.id << 2 | brightness.id & 3);
+	}
+
+	public static enum Brightness {
+		LOW(0, 180),
+		NORMAL(1, 220),
+		HIGH(2, 255),
+		LOWEST(3, 135);
+
+		private static final MapColor.Brightness[] VALUES = new MapColor.Brightness[]{LOW, NORMAL, HIGH, LOWEST};
+		public final int id;
+		public final int brightness;
+
+		private Brightness(int id, int brightness) {
+			this.id = id;
+			this.brightness = brightness;
 		}
 
-		if (shade == 2) {
-			i = 255;
+		public static MapColor.Brightness validateAndGet(int id) {
+			Preconditions.checkPositionIndex(id, VALUES.length, "brightness id");
+			return get(id);
 		}
 
-		if (shade == 1) {
-			i = 220;
+		static MapColor.Brightness get(int id) {
+			return VALUES[id];
 		}
-
-		if (shade == 0) {
-			i = 180;
-		}
-
-		int j = (this.color >> 16 & 0xFF) * i / 255;
-		int k = (this.color >> 8 & 0xFF) * i / 255;
-		int l = (this.color & 0xFF) * i / 255;
-		return 0xFF000000 | l << 16 | k << 8 | j;
 	}
 }

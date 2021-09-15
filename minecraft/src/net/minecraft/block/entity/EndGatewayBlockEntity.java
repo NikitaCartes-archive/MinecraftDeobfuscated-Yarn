@@ -49,7 +49,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		nbt.putLong("Age", this.age);
 		if (this.exitPortalPos != null) {
@@ -57,10 +57,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		}
 
 		if (this.exactTeleport) {
-			nbt.putBoolean("ExactTeleport", this.exactTeleport);
+			nbt.putBoolean("ExactTeleport", true);
 		}
-
-		return nbt;
 	}
 
 	@Override
@@ -126,15 +124,13 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		return 1.0F - MathHelper.clamp(((float)this.teleportCooldown - tickDelta) / 40.0F, 0.0F, 1.0F);
 	}
 
-	@Nullable
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.END_GATEWAY, this.toInitialChunkDataNbt());
+		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		return this.writeNbt(new NbtCompound());
+		return this.createNbt();
 	}
 
 	private static void startTeleportCooldown(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {

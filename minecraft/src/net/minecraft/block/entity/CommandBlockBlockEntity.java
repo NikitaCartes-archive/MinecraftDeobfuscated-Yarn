@@ -64,13 +64,12 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		this.commandExecutor.writeNbt(nbt);
 		nbt.putBoolean("powered", this.isPowered());
 		nbt.putBoolean("conditionMet", this.isConditionMet());
 		nbt.putBoolean("auto", this.isAuto());
-		return nbt;
 	}
 
 	@Override
@@ -83,12 +82,10 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Nullable
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		if (this.needsUpdatePacket()) {
 			this.setNeedsUpdatePacket(false);
-			NbtCompound nbtCompound = this.writeNbt(new NbtCompound());
-			return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.COMMAND_BLOCK, nbtCompound);
+			return BlockEntityUpdateS2CPacket.create(this);
 		} else {
 			return null;
 		}

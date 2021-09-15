@@ -70,10 +70,10 @@ public class StateManager<O, S extends State<O, S>> {
 	private static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> method_30040(
 		MapCodec<S> mapCodec, Supplier<S> supplier, String string, Property<T> property
 	) {
-		return Codec.mapPair(mapCodec, property.getValueCodec().fieldOf(string).setPartial(() -> property.createValue((State<?, ?>)supplier.get())))
+		return Codec.<S, S>mapPair(mapCodec, property.getValueCodec().fieldOf(string).setPartial(() -> property.createValue((State<?, ?>)supplier.get())))
 			.xmap(
-				pair -> (State)((State)pair.getFirst()).with(property, ((Property.Value)pair.getSecond()).getValue()),
-				state -> Pair.of(state, property.createValue(state))
+				pair -> (State)((State)pair.getFirst()).with(property, ((Property.Value)pair.getSecond()).value()),
+				state -> Pair.of(state, (S)property.createValue(state))
 			);
 	}
 

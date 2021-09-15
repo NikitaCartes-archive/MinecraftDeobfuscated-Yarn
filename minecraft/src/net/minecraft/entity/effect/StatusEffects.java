@@ -99,7 +99,7 @@ public class StatusEffects {
 		@Override
 		public void applyUpdateEffect(LivingEntity entity, int amplifier) {
 			if (entity instanceof ServerPlayerEntity serverPlayerEntity && !entity.isSpectator()) {
-				ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
+				ServerWorld serverWorld = serverPlayerEntity.getWorld();
 				if (serverWorld.getDifficulty() == Difficulty.PEACEFUL) {
 					return;
 				}

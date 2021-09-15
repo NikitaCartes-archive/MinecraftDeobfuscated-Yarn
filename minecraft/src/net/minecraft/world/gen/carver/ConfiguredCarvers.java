@@ -32,12 +32,29 @@ public class ConfiguredCarvers {
 		Carver.CAVE
 			.configure(
 				new CaveCarverConfig(
-					0.33333334F,
-					UniformHeightProvider.create(YOffset.aboveBottom(8), YOffset.fixed(126)),
+					0.15F,
+					UniformHeightProvider.create(YOffset.aboveBottom(8), YOffset.fixed(180)),
 					UniformFloatProvider.create(0.1F, 0.9F),
 					YOffset.aboveBottom(8),
-					false,
+					true,
 					CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState()),
+					UniformFloatProvider.create(0.7F, 1.4F),
+					UniformFloatProvider.create(0.8F, 1.3F),
+					UniformFloatProvider.create(-1.0F, -0.4F)
+				)
+			)
+	);
+	public static final ConfiguredCarver<CaveCarverConfig> PROTOTYPE_CAVE_EXTRA_UNDERGROUND = register(
+		"prototype_cave_extra_underground",
+		Carver.CAVE
+			.configure(
+				new CaveCarverConfig(
+					0.07F,
+					UniformHeightProvider.create(YOffset.aboveBottom(8), YOffset.fixed(47)),
+					UniformFloatProvider.create(0.1F, 0.9F),
+					YOffset.aboveBottom(8),
+					true,
+					CarverDebugConfig.create(false, Blocks.OAK_BUTTON.getDefaultState()),
 					UniformFloatProvider.create(0.7F, 1.4F),
 					UniformFloatProvider.create(0.8F, 1.3F),
 					UniformFloatProvider.create(-1.0F, -0.4F)
@@ -67,11 +84,11 @@ public class ConfiguredCarvers {
 		Carver.RAVINE
 			.configure(
 				new RavineCarverConfig(
-					0.02F,
+					0.01F,
 					UniformHeightProvider.create(YOffset.fixed(10), YOffset.fixed(67)),
 					ConstantFloatProvider.create(3.0F),
 					YOffset.aboveBottom(8),
-					false,
+					true,
 					CarverDebugConfig.create(false, Blocks.WARPED_BUTTON.getDefaultState()),
 					UniformFloatProvider.create(-0.125F, 0.125F),
 					new RavineCarverConfig.Shape(
@@ -145,24 +162,6 @@ public class ConfiguredCarvers {
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(-0.7F)
-				)
-			)
-	);
-	public static final ConfiguredCarver<RavineCarverConfig> PROTOTYPE_CREVICE = register(
-		"prototype_crevice",
-		Carver.RAVINE
-			.configure(
-				new RavineCarverConfig(
-					0.00125F,
-					UniformHeightProvider.create(YOffset.fixed(40), YOffset.fixed(80)),
-					UniformFloatProvider.create(6.0F, 8.0F),
-					YOffset.aboveBottom(8),
-					false,
-					CarverDebugConfig.create(false, Blocks.OAK_BUTTON.getDefaultState()),
-					UniformFloatProvider.create(-0.125F, 0.125F),
-					new RavineCarverConfig.Shape(
-						UniformFloatProvider.create(0.5F, 1.0F), UniformFloatProvider.create(0.0F, 1.0F), 6, UniformFloatProvider.create(0.25F, 1.0F), 0.0F, 5.0F
-					)
 				)
 			)
 	);

@@ -55,9 +55,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	@Override
 	default Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		Chunk chunk = this.getChunk(BiomeCoords.toChunk(biomeX), BiomeCoords.toChunk(biomeZ), ChunkStatus.BIOMES, false);
-		return chunk != null && chunk.getBiomeArray() != null
-			? chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ)
-			: this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
+		return chunk != null ? chunk.getBiomeForNoiseGen(biomeX, biomeY, biomeZ) : this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
 	}
 
 	Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ);

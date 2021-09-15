@@ -1,6 +1,7 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Sets;
+import java.lang.runtime.ObjectMethods;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -14,10 +15,8 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
-	private static final int field_33334 = 8;
+public final class GameJoinS2CPacket extends Record implements Packet {
 	private final int playerEntityId;
-	private final long sha256Seed;
 	private final boolean hardcore;
 	private final GameMode gameMode;
 	@Nullable
@@ -26,6 +25,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final DynamicRegistryManager.Impl registryManager;
 	private final DimensionType dimensionType;
 	private final RegistryKey<World> dimensionId;
+	private final long sha256Seed;
 	private final int maxPlayers;
 	private final int viewDistance;
 	private final boolean reducedDebugInfo;
@@ -33,16 +33,36 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final boolean debugWorld;
 	private final boolean flatWorld;
 
+	public GameJoinS2CPacket(PacketByteBuf buf) {
+		this(
+			buf.readInt(),
+			buf.readBoolean(),
+			GameMode.byId(buf.readByte()),
+			GameMode.getOrNull(buf.readByte()),
+			buf.readCollection(Sets::newHashSetWithExpectedSize, b -> RegistryKey.of(Registry.WORLD_KEY, b.readIdentifier())),
+			buf.decode(DynamicRegistryManager.Impl.CODEC),
+			(DimensionType)((Supplier)buf.decode(DimensionType.REGISTRY_CODEC)).get(),
+			RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier()),
+			buf.readLong(),
+			buf.readVarInt(),
+			buf.readVarInt(),
+			buf.readBoolean(),
+			buf.readBoolean(),
+			buf.readBoolean(),
+			buf.readBoolean()
+		);
+	}
+
 	public GameJoinS2CPacket(
 		int playerEntityId,
-		GameMode gameMode,
-		@Nullable GameMode previousGameMode,
-		long sha256Seed,
-		boolean hardcore,
-		Set<RegistryKey<World>> dimensionIds,
-		DynamicRegistryManager.Impl registryManager,
+		boolean bl,
+		GameMode previousGameMode,
+		@Nullable GameMode gameMode,
+		Set<RegistryKey<World>> set,
+		DynamicRegistryManager.Impl impl,
 		DimensionType dimensionType,
-		RegistryKey<World> dimensionId,
+		RegistryKey<World> registryKey,
+		long l,
 		int maxPlayers,
 		int chunkLoadDistance,
 		boolean reducedDebugInfo,
@@ -51,38 +71,20 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		boolean flatWorld
 	) {
 		this.playerEntityId = playerEntityId;
-		this.dimensionIds = dimensionIds;
-		this.registryManager = registryManager;
+		this.hardcore = bl;
+		this.gameMode = previousGameMode;
+		this.previousGameMode = gameMode;
+		this.dimensionIds = set;
+		this.registryManager = impl;
 		this.dimensionType = dimensionType;
-		this.dimensionId = dimensionId;
-		this.sha256Seed = sha256Seed;
-		this.gameMode = gameMode;
-		this.previousGameMode = previousGameMode;
+		this.dimensionId = registryKey;
+		this.sha256Seed = l;
 		this.maxPlayers = maxPlayers;
-		this.hardcore = hardcore;
 		this.viewDistance = chunkLoadDistance;
 		this.reducedDebugInfo = reducedDebugInfo;
 		this.showDeathScreen = showDeathScreen;
 		this.debugWorld = debugWorld;
 		this.flatWorld = flatWorld;
-	}
-
-	public GameJoinS2CPacket(PacketByteBuf buf) {
-		this.playerEntityId = buf.readInt();
-		this.hardcore = buf.readBoolean();
-		this.gameMode = GameMode.byId(buf.readByte());
-		this.previousGameMode = GameMode.getOrNull(buf.readByte());
-		this.dimensionIds = buf.readCollection(Sets::newHashSetWithExpectedSize, b -> RegistryKey.of(Registry.WORLD_KEY, b.readIdentifier()));
-		this.registryManager = buf.decode(DynamicRegistryManager.Impl.CODEC);
-		this.dimensionType = (DimensionType)((Supplier)buf.decode(DimensionType.REGISTRY_CODEC)).get();
-		this.dimensionId = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
-		this.sha256Seed = buf.readLong();
-		this.maxPlayers = buf.readVarInt();
-		this.viewDistance = buf.readVarInt();
-		this.reducedDebugInfo = buf.readBoolean();
-		this.showDeathScreen = buf.readBoolean();
-		this.debugWorld = buf.readBoolean();
-		this.flatWorld = buf.readBoolean();
 	}
 
 	@Override
@@ -108,64 +110,82 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onGameJoin(this);
 	}
 
-	public int getEntityId() {
+	public final String toString() {
+		return ObjectMethods.bootstrap<"toString",GameJoinS2CPacket,"playerId;hardcore;gameType;previousGameType;levels;registryHolder;dimensionType;dimension;seed;maxPlayers;chunkRadius;reducedDebugInfo;showDeathScreen;isDebug;isFlat",GameJoinS2CPacket::playerEntityId,GameJoinS2CPacket::hardcore,GameJoinS2CPacket::gameMode,GameJoinS2CPacket::previousGameMode,GameJoinS2CPacket::dimensionIds,GameJoinS2CPacket::registryManager,GameJoinS2CPacket::dimensionType,GameJoinS2CPacket::dimensionId,GameJoinS2CPacket::sha256Seed,GameJoinS2CPacket::maxPlayers,GameJoinS2CPacket::viewDistance,GameJoinS2CPacket::reducedDebugInfo,GameJoinS2CPacket::showDeathScreen,GameJoinS2CPacket::debugWorld,GameJoinS2CPacket::flatWorld>(
+			this
+		);
+	}
+
+	public final int hashCode() {
+		return ObjectMethods.bootstrap<"hashCode",GameJoinS2CPacket,"playerId;hardcore;gameType;previousGameType;levels;registryHolder;dimensionType;dimension;seed;maxPlayers;chunkRadius;reducedDebugInfo;showDeathScreen;isDebug;isFlat",GameJoinS2CPacket::playerEntityId,GameJoinS2CPacket::hardcore,GameJoinS2CPacket::gameMode,GameJoinS2CPacket::previousGameMode,GameJoinS2CPacket::dimensionIds,GameJoinS2CPacket::registryManager,GameJoinS2CPacket::dimensionType,GameJoinS2CPacket::dimensionId,GameJoinS2CPacket::sha256Seed,GameJoinS2CPacket::maxPlayers,GameJoinS2CPacket::viewDistance,GameJoinS2CPacket::reducedDebugInfo,GameJoinS2CPacket::showDeathScreen,GameJoinS2CPacket::debugWorld,GameJoinS2CPacket::flatWorld>(
+			this
+		);
+	}
+
+	public final boolean equals(Object object) {
+		return ObjectMethods.bootstrap<"equals",GameJoinS2CPacket,"playerId;hardcore;gameType;previousGameType;levels;registryHolder;dimensionType;dimension;seed;maxPlayers;chunkRadius;reducedDebugInfo;showDeathScreen;isDebug;isFlat",GameJoinS2CPacket::playerEntityId,GameJoinS2CPacket::hardcore,GameJoinS2CPacket::gameMode,GameJoinS2CPacket::previousGameMode,GameJoinS2CPacket::dimensionIds,GameJoinS2CPacket::registryManager,GameJoinS2CPacket::dimensionType,GameJoinS2CPacket::dimensionId,GameJoinS2CPacket::sha256Seed,GameJoinS2CPacket::maxPlayers,GameJoinS2CPacket::viewDistance,GameJoinS2CPacket::reducedDebugInfo,GameJoinS2CPacket::showDeathScreen,GameJoinS2CPacket::debugWorld,GameJoinS2CPacket::flatWorld>(
+			this, object
+		);
+	}
+
+	public int playerEntityId() {
 		return this.playerEntityId;
 	}
 
-	public long getSha256Seed() {
-		return this.sha256Seed;
-	}
-
-	public boolean isHardcore() {
+	public boolean hardcore() {
 		return this.hardcore;
 	}
 
-	public GameMode getGameMode() {
+	public GameMode gameMode() {
 		return this.gameMode;
 	}
 
 	@Nullable
-	public GameMode getPreviousGameMode() {
+	public GameMode previousGameMode() {
 		return this.previousGameMode;
 	}
 
-	public Set<RegistryKey<World>> getDimensionIds() {
+	public Set<RegistryKey<World>> dimensionIds() {
 		return this.dimensionIds;
 	}
 
-	public DynamicRegistryManager getRegistryManager() {
+	public DynamicRegistryManager.Impl registryManager() {
 		return this.registryManager;
 	}
 
-	public DimensionType getDimensionType() {
+	public DimensionType dimensionType() {
 		return this.dimensionType;
 	}
 
-	public RegistryKey<World> getDimensionId() {
+	public RegistryKey<World> dimensionId() {
 		return this.dimensionId;
 	}
 
-	public int getMaxPlayers() {
+	public long sha256Seed() {
+		return this.sha256Seed;
+	}
+
+	public int maxPlayers() {
 		return this.maxPlayers;
 	}
 
-	public int getViewDistance() {
+	public int viewDistance() {
 		return this.viewDistance;
 	}
 
-	public boolean hasReducedDebugInfo() {
+	public boolean reducedDebugInfo() {
 		return this.reducedDebugInfo;
 	}
 
-	public boolean showsDeathScreen() {
+	public boolean showDeathScreen() {
 		return this.showDeathScreen;
 	}
 
-	public boolean isDebugWorld() {
+	public boolean debugWorld() {
 		return this.debugWorld;
 	}
 
-	public boolean isFlatWorld() {
+	public boolean flatWorld() {
 		return this.flatWorld;
 	}
 }

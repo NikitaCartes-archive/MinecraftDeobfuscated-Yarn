@@ -57,8 +57,8 @@ public class DripstoneClusterFeatureConfig implements FeatureConfig {
 		FloatProvider density,
 		FloatProvider wetness,
 		float wetnessMean,
-		int i,
-		int j
+		int maxDistanceFromCenterAffectingChanceOfDripstoneColumn,
+		int maxDistanceFromCenterAffectingHeightBias
 	) {
 		this.floorToCeilingSearchRange = floorToCeilingSearchRange;
 		this.height = height;
@@ -69,7 +69,7 @@ public class DripstoneClusterFeatureConfig implements FeatureConfig {
 		this.density = density;
 		this.wetness = wetness;
 		this.chanceOfDripstoneColumnAtMaxDistanceFromCenter = wetnessMean;
-		this.maxDistanceFromCenterAffectingChanceOfDripstoneColumn = i;
-		this.maxDistanceFromCenterAffectingHeightBias = j;
+		this.maxDistanceFromCenterAffectingChanceOfDripstoneColumn = maxDistanceFromCenterAffectingChanceOfDripstoneColumn;
+		this.maxDistanceFromCenterAffectingHeightBias = maxDistanceFromCenterAffectingHeightBias;
 	}
 }

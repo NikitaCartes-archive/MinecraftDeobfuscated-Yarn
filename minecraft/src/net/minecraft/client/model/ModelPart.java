@@ -115,18 +115,18 @@ public final class ModelPart {
 		}
 	}
 
-	public void rotate(MatrixStack matrix) {
-		matrix.translate((double)(this.pivotX / 16.0F), (double)(this.pivotY / 16.0F), (double)(this.pivotZ / 16.0F));
+	public void rotate(MatrixStack matrices) {
+		matrices.translate((double)(this.pivotX / 16.0F), (double)(this.pivotY / 16.0F), (double)(this.pivotZ / 16.0F));
 		if (this.roll != 0.0F) {
-			matrix.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(this.roll));
+			matrices.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(this.roll));
 		}
 
 		if (this.yaw != 0.0F) {
-			matrix.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
+			matrices.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
 		}
 
 		if (this.pitch != 0.0F) {
-			matrix.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.pitch));
+			matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.pitch));
 		}
 	}
 

@@ -222,14 +222,12 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		if (!this.getBook().isEmpty()) {
 			nbt.put("Book", this.getBook().writeNbt(new NbtCompound()));
 			nbt.putInt("Page", this.currentPage);
 		}
-
-		return nbt;
 	}
 
 	@Override

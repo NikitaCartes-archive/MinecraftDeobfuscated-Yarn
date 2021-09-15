@@ -140,6 +140,7 @@ public class BlockBox {
 		}
 	}
 
+	@Deprecated
 	public BlockBox encompass(BlockBox box) {
 		this.minX = Math.min(this.minX, box.minX);
 		this.minY = Math.min(this.minY, box.minY);
@@ -157,6 +158,7 @@ public class BlockBox {
 	 * 
 	 * @param pos the pos to encompass
 	 */
+	@Deprecated
 	public BlockBox encompass(BlockPos pos) {
 		this.minX = Math.min(this.minX, pos.getX());
 		this.minY = Math.min(this.minY, pos.getY());
@@ -167,16 +169,7 @@ public class BlockBox {
 		return this;
 	}
 
-	public BlockBox expand(int offset) {
-		this.minX -= offset;
-		this.minY -= offset;
-		this.minZ -= offset;
-		this.maxX += offset;
-		this.maxY += offset;
-		this.maxZ += offset;
-		return this;
-	}
-
+	@Deprecated
 	public BlockBox move(int dx, int dy, int dz) {
 		this.minX += dx;
 		this.minY += dy;
@@ -187,6 +180,7 @@ public class BlockBox {
 		return this;
 	}
 
+	@Deprecated
 	public BlockBox move(Vec3i vec) {
 		return this.move(vec.getX(), vec.getY(), vec.getZ());
 	}
@@ -200,6 +194,12 @@ public class BlockBox {
 	 */
 	public BlockBox offset(int x, int y, int z) {
 		return new BlockBox(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
+	}
+
+	public BlockBox expand(int offset) {
+		return new BlockBox(
+			this.getMinX() - offset, this.getMinY() - offset, this.getMinZ() - offset, this.getMaxX() + offset, this.getMaxY() + offset, this.getMaxZ() + offset
+		);
 	}
 
 	public boolean contains(Vec3i vec) {

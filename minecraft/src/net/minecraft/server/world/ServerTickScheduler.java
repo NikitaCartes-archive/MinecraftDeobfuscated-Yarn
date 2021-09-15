@@ -56,9 +56,9 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 			Iterator<ScheduledTick<T>> iterator = this.scheduledTickActionsInOrder.iterator();
 			this.world.getProfiler().push("cleaning");
 
-			while(i > 0 && iterator.hasNext()) {
+			while(iterator.hasNext()) {
 				ScheduledTick<T> scheduledTick = (ScheduledTick)iterator.next();
-				if (scheduledTick.time > this.world.getTime()) {
+				if (i-- == 0 || scheduledTick.time > this.world.getTime()) {
 					break;
 				}
 
@@ -66,7 +66,6 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 					iterator.remove();
 					this.scheduledTickActions.remove(scheduledTick);
 					this.currentTickActions.add(scheduledTick);
-					--i;
 				}
 			}
 
@@ -74,18 +73,15 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 
 			ScheduledTick<T> scheduledTick;
 			while((scheduledTick = (ScheduledTick)this.currentTickActions.poll()) != null) {
-				if (this.world.method_37117(scheduledTick.pos)) {
-					try {
-						this.consumedTickActions.add(scheduledTick);
-						this.tickConsumer.accept(scheduledTick);
-					} catch (Throwable var7) {
-						CrashReport crashReport = CrashReport.create(var7, "Exception while ticking");
-						CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
-						CrashReportSection.addBlockInfo(crashReportSection, this.world, scheduledTick.pos, null);
-						throw new CrashException(crashReport);
-					}
-				} else {
-					this.schedule(scheduledTick.pos, scheduledTick.getObject(), 0);
+				this.consumedTickActions.add(scheduledTick);
+
+				try {
+					this.tickConsumer.accept(scheduledTick);
+				} catch (Throwable var7) {
+					CrashReport crashReport = CrashReport.create(var7, "Exception while ticking");
+					CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
+					CrashReportSection.addBlockInfo(crashReportSection, this.world, scheduledTick.pos, null);
+					throw new CrashException(crashReport);
 				}
 			}
 

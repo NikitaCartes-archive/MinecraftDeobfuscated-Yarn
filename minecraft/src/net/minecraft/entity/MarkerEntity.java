@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.world.World;
@@ -42,5 +43,10 @@ public class MarkerEntity extends Entity {
 	@Override
 	protected void addPassenger(Entity passenger) {
 		passenger.stopRiding();
+	}
+
+	@Override
+	public PistonBehavior getPistonBehavior() {
+		return PistonBehavior.IGNORE;
 	}
 }

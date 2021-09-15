@@ -14,15 +14,15 @@ import net.minecraft.state.property.Property;
  */
 public final class PropertiesMap {
 	private static final PropertiesMap EMPTY = new PropertiesMap(ImmutableList.of());
-	private static final Comparator<Property.Value<?>> COMPARATOR = Comparator.comparing(value -> value.getProperty().getName());
+	private static final Comparator<Property.Value<?>> COMPARATOR = Comparator.comparing(value -> value.property().getName());
 	private final List<Property.Value<?>> values;
 
 	public PropertiesMap withValue(Property.Value<?> value) {
-		return new PropertiesMap(ImmutableList.<Property.Value<?>>builder().addAll(this.values).add(value).build());
+		return new PropertiesMap(ImmutableList.builder().addAll(this.values).add(value).build());
 	}
 
 	public PropertiesMap copyOf(PropertiesMap propertiesMap) {
-		return new PropertiesMap(ImmutableList.<Property.Value<?>>builder().addAll(this.values).addAll(propertiesMap.values).build());
+		return new PropertiesMap(ImmutableList.builder().addAll(this.values).addAll(propertiesMap.values).build());
 	}
 
 	private PropertiesMap(List<Property.Value<?>> values) {

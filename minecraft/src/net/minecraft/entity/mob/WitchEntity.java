@@ -9,13 +9,13 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.ai.goal.DisableableFollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.RaidGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.ToggleableActiveTargetGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -50,7 +50,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	private static final TrackedData<Boolean> DRINKING = DataTracker.registerData(WitchEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int drinkTimeLeft;
 	private RaidGoal<RaiderEntity> raidGoal;
-	private ToggleableActiveTargetGoal<PlayerEntity> attackPlayerGoal;
+	private DisableableFollowTargetGoal<PlayerEntity> attackPlayerGoal;
 
 	public WitchEntity(EntityType<? extends WitchEntity> entityType, World world) {
 		super(entityType, world);
@@ -60,7 +60,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	protected void initGoals() {
 		super.initGoals();
 		this.raidGoal = new RaidGoal<>(this, RaiderEntity.class, true, entity -> entity != null && this.hasActiveRaid() && entity.getType() != EntityType.WITCH);
-		this.attackPlayerGoal = new ToggleableActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, null);
+		this.attackPlayerGoal = new DisableableFollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, null);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 60, 10.0F));
 		this.goalSelector.add(2, new WanderAroundFarGoal(this, 1.0));

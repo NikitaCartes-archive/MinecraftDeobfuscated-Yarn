@@ -242,8 +242,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		levelNbt.putBoolean("WasModded", this.modded);
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("Name", SharedConstants.getGameVersion().getName());
-		nbtCompound.putInt("Id", SharedConstants.getGameVersion().getWorldVersion());
+		nbtCompound.putInt("Id", SharedConstants.getGameVersion().getSaveVersion().getId());
 		nbtCompound.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
+		nbtCompound.putString("Series", SharedConstants.getGameVersion().getSaveVersion().getSeries());
 		levelNbt.put("Version", nbtCompound);
 		levelNbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 		RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, registryManager);

@@ -45,23 +45,23 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 		return this.models;
 	}
 
-	public void renderDamage(BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrix, VertexConsumer vertexConsumer) {
+	public void renderDamage(BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer) {
 		if (state.getRenderType() == BlockRenderType.MODEL) {
 			BakedModel bakedModel = this.models.getModel(state);
 			long l = state.getRenderingSeed(pos);
-			this.blockModelRenderer.render(world, bakedModel, state, pos, matrix, vertexConsumer, true, this.random, l, OverlayTexture.DEFAULT_UV);
+			this.blockModelRenderer.render(world, bakedModel, state, pos, matrices, vertexConsumer, true, this.random, l, OverlayTexture.DEFAULT_UV);
 		}
 	}
 
 	public boolean renderBlock(
-		BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrix, VertexConsumer vertexConsumer, boolean cull, Random random
+		BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random
 	) {
 		try {
 			BlockRenderType blockRenderType = state.getRenderType();
 			return blockRenderType != BlockRenderType.MODEL
 				? false
 				: this.blockModelRenderer
-					.render(world, this.getModel(state), state, pos, matrix, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
+					.render(world, this.getModel(state), state, pos, matrices, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
 		} catch (Throwable var11) {
 			CrashReport crashReport = CrashReport.create(var11, "Tesselating block in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");

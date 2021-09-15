@@ -45,7 +45,7 @@ public class BuiltinRegistries {
 	public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = addRegistry(Registry.CONFIGURED_CARVER_KEY, () -> ConfiguredCarvers.CAVE);
 	public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = addRegistry(Registry.CONFIGURED_FEATURE_KEY, () -> ConfiguredFeatures.OAK);
 	public static final Registry<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE = addRegistry(
-		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, () -> ConfiguredStructureFeatures.MINESHAFT
+		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeatures::getDefault
 	);
 	public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = addRegistry(
 		Registry.STRUCTURE_PROCESSOR_LIST_KEY, () -> StructureProcessorLists.ZOMBIE_PLAINS
@@ -81,8 +81,8 @@ public class BuiltinRegistries {
 		return ((MutableRegistry)registry).add(RegistryKey.of(registry.getKey(), id), object, Lifecycle.stable());
 	}
 
-	public static <V, T extends V> T set(Registry<V> registry, int rawId, RegistryKey<V> key, T object) {
-		return ((MutableRegistry)registry).set(rawId, key, object, Lifecycle.stable());
+	public static <V, T extends V> T set(Registry<V> registry, RegistryKey<V> registryKey, T object) {
+		return ((MutableRegistry)registry).add(registryKey, object, Lifecycle.stable());
 	}
 
 	public static void init() {

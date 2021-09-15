@@ -23,13 +23,12 @@ public class ScheduledTick<T> {
 		this.priority = priority;
 	}
 
-	public boolean equals(Object o) {
-		if (!(o instanceof ScheduledTick)) {
-			return false;
-		} else {
-			ScheduledTick<?> scheduledTick = (ScheduledTick)o;
-			return this.pos.equals(scheduledTick.pos) && this.object == scheduledTick.object;
+	public boolean equals(Object object) {
+		if (object instanceof ScheduledTick scheduledTick && this.pos.equals(scheduledTick.pos) && this.object == scheduledTick.object) {
+			return true;
 		}
+
+		return false;
 	}
 
 	public int hashCode() {

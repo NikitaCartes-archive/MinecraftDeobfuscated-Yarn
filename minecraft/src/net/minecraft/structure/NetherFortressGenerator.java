@@ -27,6 +27,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class NetherFortressGenerator {
 	private static final int field_31557 = 30;
 	private static final int field_31558 = 10;
+	public static final int field_34730 = 64;
 	static final NetherFortressGenerator.PieceData[] ALL_BRIDGE_PIECES = new NetherFortressGenerator.PieceData[]{
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.Bridge.class, 30, 0, true),
 		new NetherFortressGenerator.PieceData(NetherFortressGenerator.BridgeCrossing.class, 10, 4),

@@ -164,14 +164,14 @@ public abstract class PlayerManager {
 		serverPlayNetworkHandler.sendPacket(
 			new GameJoinS2CPacket(
 				player.getId(),
+				worldProperties.isHardcore(),
 				player.interactionManager.getGameMode(),
 				player.interactionManager.getPreviousGameMode(),
-				BiomeAccess.hashSeed(serverWorld2.getSeed()),
-				worldProperties.isHardcore(),
 				this.server.getWorldRegistryKeys(),
 				this.registryManager,
 				serverWorld2.getDimension(),
 				serverWorld2.getRegistryKey(),
+				BiomeAccess.hashSeed(serverWorld2.getSeed()),
 				this.getMaxPlayerCount(),
 				this.viewDistance,
 				bl2,
@@ -346,7 +346,7 @@ public abstract class PlayerManager {
 	}
 
 	public void remove(ServerPlayerEntity player) {
-		ServerWorld serverWorld = player.getServerWorld();
+		ServerWorld serverWorld = player.getWorld();
 		player.incrementStat(Stats.LEAVE_GAME);
 		this.savePlayerData(player);
 		if (player.hasVehicle()) {
@@ -424,7 +424,7 @@ public abstract class PlayerManager {
 
 	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
 		this.players.remove(player);
-		player.getServerWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
+		player.getWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
 		BlockPos blockPos = player.getSpawnPointPosition();
 		float f = player.getSpawnAngle();
 		boolean bl = player.isSpawnPointSet();
@@ -478,11 +478,11 @@ public abstract class PlayerManager {
 				new PlayerRespawnS2CPacket(
 					serverPlayerEntity.world.getDimension(),
 					serverPlayerEntity.world.getRegistryKey(),
-					BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()),
+					BiomeAccess.hashSeed(serverPlayerEntity.getWorld().getSeed()),
 					serverPlayerEntity.interactionManager.getGameMode(),
 					serverPlayerEntity.interactionManager.getPreviousGameMode(),
-					serverPlayerEntity.getServerWorld().isDebugWorld(),
-					serverPlayerEntity.getServerWorld().isFlat(),
+					serverPlayerEntity.getWorld().isDebugWorld(),
+					serverPlayerEntity.getWorld().isFlat(),
 					alive
 				)
 			);

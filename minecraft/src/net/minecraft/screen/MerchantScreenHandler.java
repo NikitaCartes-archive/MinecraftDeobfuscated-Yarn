@@ -151,11 +151,9 @@ public class MerchantScreenHandler extends ScreenHandler {
 	}
 
 	private void playYesSound() {
-		if (!this.merchant.getMerchantWorld().isClient) {
+		if (!this.merchant.isClient()) {
 			Entity entity = (Entity)this.merchant;
-			this.merchant
-				.getMerchantWorld()
-				.playSound(entity.getX(), entity.getY(), entity.getZ(), this.merchant.getYesSound(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
+			entity.getWorld().playSound(entity.getX(), entity.getY(), entity.getZ(), this.merchant.getYesSound(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
 		}
 	}
 
@@ -163,7 +161,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 	public void close(PlayerEntity player) {
 		super.close(player);
 		this.merchant.setCurrentCustomer(null);
-		if (!this.merchant.getMerchantWorld().isClient) {
+		if (!this.merchant.isClient()) {
 			if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
 				ItemStack itemStack = this.merchantInventory.removeStack(0);
 				if (!itemStack.isEmpty()) {
