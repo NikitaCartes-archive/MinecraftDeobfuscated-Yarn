@@ -24,12 +24,12 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
 public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Entry> {
-	final ControlsOptionsScreen parent;
+	final KeybindsScreen parent;
 	int maxKeyNameLength;
 
-	public ControlsListWidget(ControlsOptionsScreen parent, MinecraftClient client) {
-		super(client, parent.width + 45, parent.height, 43, parent.height - 32, 20);
-		this.parent = parent;
+	public ControlsListWidget(KeybindsScreen keybindsScreen, MinecraftClient client) {
+		super(client, keybindsScreen.width + 45, keybindsScreen.height, 20, keybindsScreen.height - 32, 20);
+		this.parent = keybindsScreen;
 		KeyBinding[] keyBindings = ArrayUtils.clone(client.options.keysAll);
 		Arrays.sort(keyBindings);
 		String string = null;
@@ -118,7 +118,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		KeyBindingEntry(KeyBinding binding, Text bindingName) {
 			this.binding = binding;
 			this.bindingName = bindingName;
-			this.editButton = new ButtonWidget(0, 0, 75, 20, bindingName, button -> ControlsListWidget.this.parent.focusedBinding = binding) {
+			this.editButton = new ButtonWidget(0, 0, 75, 20, bindingName, button -> ControlsListWidget.this.parent.selectedKeyBinding = binding) {
 				@Override
 				protected MutableText getNarrationMessage() {
 					return binding.isUnbound()
@@ -139,7 +139,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			boolean bl = ControlsListWidget.this.parent.focusedBinding == this.binding;
+			boolean bl = ControlsListWidget.this.parent.selectedKeyBinding == this.binding;
 			float var10003 = (float)(x + 90 - ControlsListWidget.this.maxKeyNameLength);
 			ControlsListWidget.this.client.textRenderer.draw(matrices, this.bindingName, var10003, (float)(y + entryHeight / 2 - 9 / 2), 16777215);
 			this.resetButton.x = x + 190;

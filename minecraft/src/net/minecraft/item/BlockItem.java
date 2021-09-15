@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,7 +35,7 @@ import net.minecraft.world.event.GameEvent;
  * block in the world.
  */
 public class BlockItem extends Item {
-	public static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
+	private static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
 	public static final String BLOCK_STATE_TAG_KEY = "BlockStateTag";
 	@Deprecated
 	private final Block block;
@@ -169,7 +170,7 @@ public class BlockItem extends Item {
 		if (minecraftServer == null) {
 			return false;
 		} else {
-			NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+			NbtCompound nbtCompound = getBlockEntityNbt(stack);
 			if (nbtCompound != null) {
 				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity != null) {
@@ -177,12 +178,9 @@ public class BlockItem extends Item {
 						return false;
 					}
 
-					NbtCompound nbtCompound2 = blockEntity.writeNbt(new NbtCompound());
+					NbtCompound nbtCompound2 = blockEntity.createNbt();
 					NbtCompound nbtCompound3 = nbtCompound2.copy();
 					nbtCompound2.copyFrom(nbtCompound);
-					nbtCompound2.putInt("x", pos.getX());
-					nbtCompound2.putInt("y", pos.getY());
-					nbtCompound2.putInt("z", pos.getZ());
 					if (!nbtCompound2.equals(nbtCompound3)) {
 						blockEntity.readNbt(nbtCompound2);
 						blockEntity.markDirty();
@@ -229,11 +227,26 @@ public class BlockItem extends Item {
 	@Override
 	public void onItemEntityDestroyed(ItemEntity entity) {
 		if (this.block instanceof ShulkerBoxBlock) {
-			NbtCompound nbtCompound = entity.getStack().getNbt();
-			if (nbtCompound != null) {
-				NbtList nbtList = nbtCompound.getCompound("BlockEntityTag").getList("Items", NbtElement.COMPOUND_TYPE);
+			ItemStack itemStack = entity.getStack();
+			NbtCompound nbtCompound = getBlockEntityNbt(itemStack);
+			if (nbtCompound != null && nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
+				NbtList nbtList = nbtCompound.getList("Items", NbtElement.COMPOUND_TYPE);
 				ItemUsage.spawnItemContents(entity, nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt));
 			}
+		}
+	}
+
+	@Nullable
+	public static NbtCompound getBlockEntityNbt(ItemStack stack) {
+		return stack.getSubNbt("BlockEntityTag");
+	}
+
+	public static void setBlockEntityNbt(ItemStack stack, BlockEntityType<?> blockEntityType, NbtCompound tag) {
+		if (tag.isEmpty()) {
+			stack.removeSubNbt("BlockEntityTag");
+		} else {
+			BlockEntity.writeIdToNbt(tag, blockEntityType);
+			stack.setSubNbt("BlockEntityTag", tag);
 		}
 	}
 }

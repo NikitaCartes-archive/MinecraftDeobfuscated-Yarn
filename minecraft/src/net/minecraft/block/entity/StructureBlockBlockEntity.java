@@ -57,7 +57,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		nbt.putString("name", this.getStructureName());
 		nbt.putString("author", this.author);
@@ -77,7 +77,6 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		nbt.putBoolean("showboundingbox", this.showBoundingBox);
 		nbt.putFloat("integrity", this.integrity);
 		nbt.putLong("seed", this.seed);
-		return nbt;
 	}
 
 	@Override
@@ -137,15 +136,13 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 	}
 
-	@Nullable
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.STRUCTURE, this.toInitialChunkDataNbt());
+		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		return this.writeNbt(new NbtCompound());
+		return this.createNbt();
 	}
 
 	public boolean openScreen(PlayerEntity player) {

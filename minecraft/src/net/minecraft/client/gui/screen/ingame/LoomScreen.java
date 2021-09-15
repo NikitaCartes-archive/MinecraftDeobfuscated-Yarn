@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.DiffuseLighting;
@@ -21,6 +22,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BannerItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -157,10 +159,11 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	}
 
 	private void drawBanner(int pattern, int x, int y) {
-		ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
-		NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("BlockEntityTag");
+		NbtCompound nbtCompound = new NbtCompound();
 		NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[pattern], DyeColor.WHITE).toNbt();
 		nbtCompound.put("Patterns", nbtList);
+		ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
+		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BANNER, nbtCompound);
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.push();
 		matrixStack.translate((double)((float)x + 0.5F), (double)(y + 16), 0.0);
@@ -255,8 +258,9 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		ItemStack itemStack2 = this.handler.getBannerSlot().getStack();
 		ItemStack itemStack3 = this.handler.getDyeSlot().getStack();
 		ItemStack itemStack4 = this.handler.getPatternSlot().getStack();
-		NbtCompound nbtCompound = itemStack2.getOrCreateSubNbt("BlockEntityTag");
-		this.hasTooManyPatterns = nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
+		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack2);
+		this.hasTooManyPatterns = nbtCompound != null
+			&& nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
 			&& !itemStack2.isEmpty()
 			&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
 		if (this.hasTooManyPatterns) {

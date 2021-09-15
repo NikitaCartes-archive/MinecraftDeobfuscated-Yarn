@@ -9,7 +9,8 @@ import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class TheEndBiomeSource extends BiomeSource {
 	public static final Codec<TheEndBiomeSource> CODEC = RecordCodecBuilder.create(
@@ -70,13 +71,13 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		int i = biomeX >> 2;
-		int j = biomeZ >> 2;
-		if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
+	public Biome method_38109(int i, int j, int k, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+		int l = i >> 2;
+		int m = k >> 2;
+		if ((long)l * (long)l + (long)m * (long)m <= 4096L) {
 			return this.centerBiome;
 		} else {
-			float f = getNoiseAt(this.noise, i * 2 + 1, j * 2 + 1);
+			float f = getNoiseAt(this.noise, l * 2 + 1, m * 2 + 1);
 			if (f > 40.0F) {
 				return this.highlandsBiome;
 			} else if (f >= 0.0F) {

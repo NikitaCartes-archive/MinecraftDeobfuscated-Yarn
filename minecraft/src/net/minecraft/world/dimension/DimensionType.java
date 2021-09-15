@@ -24,11 +24,8 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeAccessType;
-import net.minecraft.world.biome.source.HorizontalVoronoiBiomeAccessType;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
-import net.minecraft.world.biome.source.VoronoiBiomeAccessType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
@@ -64,7 +61,7 @@ public class DimensionType {
 						Codec.intRange(16, MAX_HEIGHT).fieldOf("height").forGetter(DimensionType::getHeight),
 						Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height").forGetter(DimensionType::getLogicalHeight),
 						Identifier.CODEC.fieldOf("infiniburn").forGetter(dimensionType -> dimensionType.infiniburn),
-						Identifier.CODEC.fieldOf("effects").orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.effects),
+						Identifier.CODEC.fieldOf("effects").orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.skyProperties),
 						Codec.FLOAT.fieldOf("ambient_light").forGetter(dimensionType -> dimensionType.ambientLight)
 					)
 					.apply(instance, DimensionType::new)
@@ -87,10 +84,9 @@ public class DimensionType {
 		true,
 		false,
 		true,
-		0,
-		256,
-		256,
-		HorizontalVoronoiBiomeAccessType.INSTANCE,
+		-64,
+		384,
+		384,
 		BlockTags.INFINIBURN_OVERWORLD.getId(),
 		OVERWORLD_ID,
 		0.0F
@@ -110,30 +106,12 @@ public class DimensionType {
 		0,
 		256,
 		128,
-		VoronoiBiomeAccessType.INSTANCE,
 		BlockTags.INFINIBURN_NETHER.getId(),
 		THE_NETHER_ID,
 		0.1F
 	);
 	protected static final DimensionType THE_END = create(
-		OptionalLong.of(6000L),
-		false,
-		false,
-		false,
-		false,
-		1.0,
-		true,
-		false,
-		false,
-		false,
-		true,
-		0,
-		256,
-		256,
-		VoronoiBiomeAccessType.INSTANCE,
-		BlockTags.INFINIBURN_END.getId(),
-		THE_END_ID,
-		0.0F
+		OptionalLong.of(6000L), false, false, false, false, 1.0, true, false, false, false, true, 0, 256, 256, BlockTags.INFINIBURN_END.getId(), THE_END_ID, 0.0F
 	);
 	public static final RegistryKey<DimensionType> OVERWORLD_CAVES_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld_caves"));
 	protected static final DimensionType OVERWORLD_CAVES = create(
@@ -148,10 +126,9 @@ public class DimensionType {
 		true,
 		false,
 		true,
-		0,
-		256,
-		256,
-		HorizontalVoronoiBiomeAccessType.INSTANCE,
+		-64,
+		384,
+		384,
 		BlockTags.INFINIBURN_OVERWORLD.getId(),
 		OVERWORLD_ID,
 		0.0F
@@ -171,9 +148,8 @@ public class DimensionType {
 	private final int minimumY;
 	private final int height;
 	private final int logicalHeight;
-	private final BiomeAccessType biomeAccessType;
 	private final Identifier infiniburn;
-	private final Identifier effects;
+	private final Identifier skyProperties;
 	private final float ambientLight;
 	private final transient float[] brightnessByLightLevel;
 
@@ -206,7 +182,7 @@ public class DimensionType {
 		int height,
 		int logicalHeight,
 		Identifier infiniburn,
-		Identifier effects,
+		Identifier skyProperties,
 		float ambientLight
 	) {
 		this(
@@ -224,9 +200,8 @@ public class DimensionType {
 			minimumY,
 			height,
 			logicalHeight,
-			VoronoiBiomeAccessType.INSTANCE,
 			infiniburn,
-			effects,
+			skyProperties,
 			ambientLight
 		);
 	}
@@ -246,10 +221,9 @@ public class DimensionType {
 		int minimumY,
 		int height,
 		int logicalHeight,
-		BiomeAccessType biomeAccessType,
+		Identifier identifier,
 		Identifier infiniburn,
-		Identifier effects,
-		float ambientLight
+		float f
 	) {
 		DimensionType dimensionType = new DimensionType(
 			fixedTime,
@@ -266,10 +240,9 @@ public class DimensionType {
 			minimumY,
 			height,
 			logicalHeight,
-			biomeAccessType,
+			identifier,
 			infiniburn,
-			effects,
-			ambientLight
+			f
 		);
 		checkHeight(dimensionType).error().ifPresent(partialResult -> {
 			throw new IllegalStateException(partialResult.message());
@@ -293,10 +266,9 @@ public class DimensionType {
 		int minimumY,
 		int height,
 		int logicalHeight,
-		BiomeAccessType biomeAccessType,
+		Identifier identifier,
 		Identifier infiniburn,
-		Identifier effects,
-		float ambientLight
+		float f
 	) {
 		this.fixedTime = fixedTime;
 		this.hasSkyLight = hasSkylight;
@@ -312,11 +284,10 @@ public class DimensionType {
 		this.minimumY = minimumY;
 		this.height = height;
 		this.logicalHeight = logicalHeight;
-		this.biomeAccessType = biomeAccessType;
-		this.infiniburn = infiniburn;
-		this.effects = effects;
-		this.ambientLight = ambientLight;
-		this.brightnessByLightLevel = computeBrightnessByLightLevel(ambientLight);
+		this.infiniburn = identifier;
+		this.skyProperties = infiniburn;
+		this.ambientLight = f;
+		this.brightnessByLightLevel = computeBrightnessByLightLevel(f);
 	}
 
 	private static float[] computeBrightnessByLightLevel(float ambientLight) {
@@ -367,9 +338,7 @@ public class DimensionType {
 
 	private static ChunkGenerator createNetherGenerator(Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed) {
 		return new NoiseChunkGenerator(
-			MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(biomeRegistry, seed),
-			seed,
-			() -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.NETHER)
+			MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(biomeRegistry), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.NETHER)
 		);
 	}
 
@@ -465,10 +434,6 @@ public class DimensionType {
 		return this.hasEnderDragonFight;
 	}
 
-	public BiomeAccessType getBiomeAccessType() {
-		return this.biomeAccessType;
-	}
-
 	public boolean hasFixedTime() {
 		return this.fixedTime.isPresent();
 	}
@@ -499,13 +464,8 @@ public class DimensionType {
 		return (Tag<Block>)(tag != null ? tag : BlockTags.INFINIBURN_OVERWORLD);
 	}
 
-	/**
-	 * {@return the ID of this dimension's {@linkplain net.minecraft.client.render.DimensionEffects effects}}
-	 * 
-	 * @see net.minecraft.client.render.DimensionEffects#byDimensionType(DimensionType)
-	 */
-	public Identifier getEffects() {
-		return this.effects;
+	public Identifier getSkyProperties() {
+		return this.skyProperties;
 	}
 
 	public boolean equals(DimensionType dimensionType) {
@@ -526,8 +486,7 @@ public class DimensionType {
 				&& this.logicalHeight == dimensionType.logicalHeight
 				&& Float.compare(dimensionType.ambientLight, this.ambientLight) == 0
 				&& this.fixedTime.equals(dimensionType.fixedTime)
-				&& this.biomeAccessType.equals(dimensionType.biomeAccessType)
 				&& this.infiniburn.equals(dimensionType.infiniburn)
-				&& this.effects.equals(dimensionType.effects);
+				&& this.skyProperties.equals(dimensionType.skyProperties);
 	}
 }

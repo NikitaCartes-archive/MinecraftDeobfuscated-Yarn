@@ -20,7 +20,7 @@ public class StructureConfig {
 					.apply(instance, StructureConfig::new)
 		)
 		.comapFlatMap(
-			config -> config.spacing <= config.separation ? DataResult.error("Spacing has to be smaller than separation") : DataResult.success(config),
+			config -> config.spacing <= config.separation ? DataResult.error("Spacing has to be larger than separation") : DataResult.success(config),
 			Function.identity()
 		);
 	/**

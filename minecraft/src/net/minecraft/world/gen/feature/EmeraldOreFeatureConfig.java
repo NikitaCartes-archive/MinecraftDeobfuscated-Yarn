@@ -9,16 +9,16 @@ import net.minecraft.structure.rule.BlockStateMatchRuleTest;
 
 public class EmeraldOreFeatureConfig implements FeatureConfig {
 	public static final Codec<EmeraldOreFeatureConfig> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Codec.list(OreFeatureConfig.Target.CODEC).fieldOf("targets").forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.target))
+		instance -> instance.group(Codec.list(OreFeatureConfig.Target.CODEC).fieldOf("targets").forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.targets))
 				.apply(instance, EmeraldOreFeatureConfig::new)
 	);
-	public final List<OreFeatureConfig.Target> target;
+	public final List<OreFeatureConfig.Target> targets;
 
 	public EmeraldOreFeatureConfig(BlockState target, BlockState state) {
 		this(ImmutableList.of(OreFeatureConfig.createTarget(new BlockStateMatchRuleTest(target), state)));
 	}
 
-	public EmeraldOreFeatureConfig(List<OreFeatureConfig.Target> list) {
-		this.target = list;
+	public EmeraldOreFeatureConfig(List<OreFeatureConfig.Target> targets) {
+		this.targets = targets;
 	}
 }

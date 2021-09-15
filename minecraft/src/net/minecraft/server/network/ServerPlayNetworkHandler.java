@@ -297,7 +297,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	}
 
 	private <T, R> void filterText(T text, Consumer<R> consumer, BiFunction<TextStream, T, CompletableFuture<R>> backingFilterer) {
-		ThreadExecutor<?> threadExecutor = this.player.getServerWorld().getServer();
+		ThreadExecutor<?> threadExecutor = this.player.getWorld().getServer();
 		Consumer<R> consumer2 = object -> {
 			if (this.getConnection().isOpen()) {
 				consumer.accept(object);
@@ -318,7 +318,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onPlayerInput(PlayerInputC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateInput(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
 	}
 
@@ -344,13 +344,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onVehicleMove(VehicleMoveC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (isMovementInvalid(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch())) {
 			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_vehicle_movement"));
 		} else {
 			Entity entity = this.player.getRootVehicle();
 			if (entity != this.player && entity.getPrimaryPassenger() == this.player && entity == this.topmostRiddenEntity) {
-				ServerWorld serverWorld = this.player.getServerWorld();
+				ServerWorld serverWorld = this.player.getWorld();
 				double d = entity.getX();
 				double e = entity.getY();
 				double f = entity.getZ();
@@ -397,7 +397,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					return;
 				}
 
-				this.player.getServerWorld().getChunkManager().updatePosition(this.player);
+				this.player.getWorld().getChunkManager().updatePosition(this.player);
 				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
 				this.vehicleFloating = m >= -0.03125 && !this.server.isFlightEnabled() && this.isEntityOnAir(entity);
 				this.updatedRiddenX = entity.getX();
@@ -413,7 +413,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onTeleportConfirm(TeleportConfirmC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (packet.getTeleportId() == this.requestedTeleportId) {
 			this.player
 				.updatePositionAndAngles(
@@ -432,19 +432,19 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onRecipeBookData(RecipeBookDataC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.server.getRecipeManager().get(packet.getRecipeId()).ifPresent(this.player.getRecipeBook()::onRecipeDisplayed);
 	}
 
 	@Override
 	public void onRecipeCategoryOptions(RecipeCategoryOptionsC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.getRecipeBook().setCategoryOptions(packet.getCategory(), packet.isGuiOpen(), packet.isFilteringCraftable());
 	}
 
 	@Override
 	public void onAdvancementTab(AdvancementTabC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (packet.getAction() == AdvancementTabC2SPacket.Action.OPENED_TAB) {
 			Identifier identifier = packet.getTabToOpen();
 			Advancement advancement = this.server.getAdvancementLoader().get(identifier);
@@ -456,7 +456,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onRequestCommandCompletions(RequestCommandCompletionsC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		StringReader stringReader = new StringReader(packet.getPartialCommand());
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
@@ -472,7 +472,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled"), Util.NIL_UUID);
 		} else if (!this.player.isCreativeLevelTwoOp()) {
@@ -526,7 +526,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled"), Util.NIL_UUID);
 		} else if (!this.player.isCreativeLevelTwoOp()) {
@@ -548,7 +548,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onPickFromInventory(PickFromInventoryC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.getInventory().swapSlotWithHotbar(packet.getSlot());
 		this.player
 			.networkHandler
@@ -563,7 +563,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onRenameItem(RenameItemC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.currentScreenHandler instanceof AnvilScreenHandler anvilScreenHandler) {
 			String string = SharedConstants.stripInvalidChars(packet.getName());
 			if (string.length() <= 50) {
@@ -574,7 +574,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onUpdateBeacon(UpdateBeaconC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.currentScreenHandler instanceof BeaconScreenHandler) {
 			((BeaconScreenHandler)this.player.currentScreenHandler).setEffects(packet.getPrimaryEffectId(), packet.getSecondaryEffectId());
 		}
@@ -582,7 +582,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onStructureBlockUpdate(UpdateStructureBlockC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.isCreativeLevelTwoOp()) {
 			BlockPos blockPos = packet.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
@@ -610,7 +610,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					} else if (packet.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
 						if (!structureBlockBlockEntity.isStructureAvailable()) {
 							this.player.sendMessage(new TranslatableText("structure_block.load_not_found", string), false);
-						} else if (structureBlockBlockEntity.loadStructure(this.player.getServerWorld())) {
+						} else if (structureBlockBlockEntity.loadStructure(this.player.getWorld())) {
 							this.player.sendMessage(new TranslatableText("structure_block.load_success", string), false);
 						} else {
 							this.player.sendMessage(new TranslatableText("structure_block.load_prepare", string), false);
@@ -634,7 +634,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onJigsawUpdate(UpdateJigsawC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.isCreativeLevelTwoOp()) {
 			BlockPos blockPos = packet.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
@@ -652,18 +652,18 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onJigsawGenerating(JigsawGeneratingC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.isCreativeLevelTwoOp()) {
 			BlockPos blockPos = packet.getPos();
 			if (this.player.world.getBlockEntity(blockPos) instanceof JigsawBlockEntity jigsawBlockEntity) {
-				jigsawBlockEntity.generate(this.player.getServerWorld(), packet.getMaxDepth(), packet.shouldKeepJigsaws());
+				jigsawBlockEntity.generate(this.player.getWorld(), packet.getMaxDepth(), packet.shouldKeepJigsaws());
 			}
 		}
 	}
 
 	@Override
 	public void onMerchantTradeSelect(SelectMerchantTradeC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		int i = packet.getTradeId();
 		if (this.player.currentScreenHandler instanceof MerchantScreenHandler merchantScreenHandler) {
 			merchantScreenHandler.setRecipeIndex(i);
@@ -745,9 +745,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onQueryEntityNbt(QueryEntityNbtC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.hasPermissionLevel(2)) {
-			Entity entity = this.player.getServerWorld().getEntityById(packet.getEntityId());
+			Entity entity = this.player.getWorld().getEntityById(packet.getEntityId());
 			if (entity != null) {
 				NbtCompound nbtCompound = entity.writeNbt(new NbtCompound());
 				this.player.networkHandler.sendPacket(new NbtQueryResponseS2CPacket(packet.getTransactionId(), nbtCompound));
@@ -757,21 +757,21 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onQueryBlockNbt(QueryBlockNbtC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.hasPermissionLevel(2)) {
-			BlockEntity blockEntity = this.player.getServerWorld().getBlockEntity(packet.getPos());
-			NbtCompound nbtCompound = blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : null;
+			BlockEntity blockEntity = this.player.getWorld().getBlockEntity(packet.getPos());
+			NbtCompound nbtCompound = blockEntity != null ? blockEntity.createNbt() : null;
 			this.player.networkHandler.sendPacket(new NbtQueryResponseS2CPacket(packet.getTransactionId(), nbtCompound));
 		}
 	}
 
 	@Override
 	public void onPlayerMove(PlayerMoveC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (isMovementInvalid(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0), packet.getYaw(0.0F), packet.getPitch(0.0F))) {
 			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_player_movement"));
 		} else {
-			ServerWorld serverWorld = this.player.getServerWorld();
+			ServerWorld serverWorld = this.player.getWorld();
 			if (!this.player.notInAnyWorld) {
 				if (this.ticks == 0) {
 					this.syncWithPlayerPosition();
@@ -791,7 +791,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					float h = MathHelper.wrapDegrees(packet.getPitch(this.player.getPitch()));
 					if (this.player.hasVehicle()) {
 						this.player.updatePositionAndAngles(this.player.getX(), this.player.getY(), this.player.getZ(), g, h);
-						this.player.getServerWorld().getChunkManager().updatePosition(this.player);
+						this.player.getWorld().getChunkManager().updatePosition(this.player);
 					} else {
 						double i = this.player.getX();
 						double j = this.player.getY();
@@ -815,7 +815,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 							}
 
 							if (!this.player.isInTeleportationState()
-								&& (!this.player.getServerWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !this.player.isFallFlying())) {
+								&& (!this.player.getWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !this.player.isFallFlying())) {
 								float s = this.player.isFallFlying() ? 300.0F : 100.0F;
 								if (q - p > (double)(s * (float)r) && !this.isHost()) {
 									LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), m, n, o);
@@ -863,7 +863,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 									&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
 									&& !this.player.isFallFlying()
 									&& this.isEntityOnAir(this.player);
-								this.player.getServerWorld().getChunkManager().updatePosition(this.player);
+								this.player.getWorld().getChunkManager().updatePosition(this.player);
 								this.player.handleFall(this.player.getY() - l, packet.isOnGround());
 								this.player.setOnGround(packet.isOnGround());
 								if (bl) {
@@ -922,7 +922,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onPlayerAction(PlayerActionC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		BlockPos blockPos = packet.getPos();
 		this.player.updateLastActionTime();
 		PlayerActionC2SPacket.Action action = packet.getAction();
@@ -977,8 +977,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		ServerWorld serverWorld = this.player.getServerWorld();
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		ServerWorld serverWorld = this.player.getWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		BlockHitResult blockHitResult = packet.getBlockHitResult();
@@ -1009,8 +1009,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onPlayerInteractItem(PlayerInteractItemC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		ServerWorld serverWorld = this.player.getServerWorld();
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		ServerWorld serverWorld = this.player.getWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		this.player.updateLastActionTime();
@@ -1024,7 +1024,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onSpectatorTeleport(SpectatorTeleportC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.isSpectator()) {
 			for (ServerWorld serverWorld : this.server.getWorlds()) {
 				Entity entity = packet.getTarget(serverWorld);
@@ -1038,7 +1038,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (packet.getStatus() == ResourcePackStatusC2SPacket.Status.DECLINED && this.server.requireResourcePack()) {
 			LOGGER.info("Disconnecting {} due to resource pack rejection", this.player.getName());
 			this.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
@@ -1047,7 +1047,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onBoatPaddleState(BoatPaddleStateC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		Entity entity = this.player.getVehicle();
 		if (entity instanceof BoatEntity) {
 			((BoatEntity)entity).setPaddleMovings(packet.isLeftPaddling(), packet.isRightPaddling());
@@ -1094,7 +1094,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (packet.getSelectedSlot() >= 0 && packet.getSelectedSlot() < PlayerInventory.getHotbarSize()) {
 			if (this.player.getInventory().selectedSlot != packet.getSelectedSlot() && this.player.getActiveHand() == Hand.MAIN_HAND) {
 				this.player.clearActiveItem();
@@ -1119,7 +1119,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		}
 
 		if (string.startsWith("/")) {
-			NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+			NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 			this.handleMessage(TextStream.Message.permitted(string));
 		} else {
 			this.filterText(string, this::handleMessage);
@@ -1156,14 +1156,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onHandSwing(HandSwingC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateLastActionTime();
 		this.player.swingHand(packet.getHand());
 	}
 
 	@Override
 	public void onClientCommand(ClientCommandC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateLastActionTime();
 		switch (packet.getMode()) {
 			case PRESS_SHIFT_KEY:
@@ -1216,8 +1216,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		ServerWorld serverWorld = this.player.getServerWorld();
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		ServerWorld serverWorld = this.player.getWorld();
 		final Entity entity = packet.getEntity(serverWorld);
 		this.player.updateLastActionTime();
 		this.player.setSneaking(packet.isPlayerSneaking());
@@ -1267,7 +1267,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onClientStatus(ClientStatusC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateLastActionTime();
 		ClientStatusC2SPacket.Mode mode = packet.getMode();
 		switch (mode) {
@@ -1284,7 +1284,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					this.player = this.server.getPlayerManager().respawnPlayer(this.player, false);
 					if (this.server.isHardcore()) {
 						this.player.changeGameMode(GameMode.SPECTATOR);
-						this.player.getServerWorld().getGameRules().get(GameRules.SPECTATORS_GENERATE_CHUNKS).set(false, this.server);
+						this.player.getWorld().getGameRules().get(GameRules.SPECTATORS_GENERATE_CHUNKS).set(false, this.server);
 					}
 				}
 				break;
@@ -1295,13 +1295,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onCloseHandledScreen(CloseHandledScreenC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.closeScreenHandler();
 	}
 
 	@Override
 	public void onClickSlot(ClickSlotC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateLastActionTime();
 		if (this.player.currentScreenHandler.syncId == packet.getSyncId()) {
 			if (this.player.isSpectator()) {
@@ -1328,7 +1328,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onCraftRequest(CraftRequestC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateLastActionTime();
 		if (!this.player.isSpectator()
 			&& this.player.currentScreenHandler.syncId == packet.getSyncId()
@@ -1342,7 +1342,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onButtonClick(ButtonClickC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateLastActionTime();
 		if (this.player.currentScreenHandler.syncId == packet.getSyncId() && !this.player.isSpectator()) {
 			this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId());
@@ -1352,20 +1352,16 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onCreativeInventoryAction(CreativeInventoryActionC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.interactionManager.isCreative()) {
 			boolean bl = packet.getSlot() < 0;
 			ItemStack itemStack = packet.getItemStack();
-			NbtCompound nbtCompound = itemStack.getSubNbt("BlockEntityTag");
+			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
 			if (!itemStack.isEmpty() && nbtCompound != null && nbtCompound.contains("x") && nbtCompound.contains("y") && nbtCompound.contains("z")) {
-				BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
+				BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
 				BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					NbtCompound nbtCompound2 = blockEntity.writeNbt(new NbtCompound());
-					nbtCompound2.remove("x");
-					nbtCompound2.remove("y");
-					nbtCompound2.remove("z");
-					itemStack.setSubNbt("BlockEntityTag", nbtCompound2);
+					blockEntity.setStackNbt(itemStack);
 				}
 			}
 
@@ -1389,7 +1385,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	private void onSignUpdate(UpdateSignC2SPacket packet, List<TextStream.Message> signText) {
 		this.player.updateLastActionTime();
-		ServerWorld serverWorld = this.player.getServerWorld();
+		ServerWorld serverWorld = this.player.getWorld();
 		BlockPos blockPos = packet.getPos();
 		if (serverWorld.isChunkLoaded(blockPos)) {
 			BlockState blockState = serverWorld.getBlockState(blockPos);
@@ -1429,13 +1425,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onPlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().allowFlying;
 	}
 
 	@Override
 	public void onClientSettings(ClientSettingsC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.setClientSettings(packet);
 	}
 
@@ -1445,7 +1441,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onUpdateDifficulty(UpdateDifficultyC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.hasPermissionLevel(2) || this.isHost()) {
 			this.server.setDifficulty(packet.getDifficulty(), false);
 		}
@@ -1453,7 +1449,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (this.player.hasPermissionLevel(2) || this.isHost()) {
 			this.server.setDifficultyLocked(packet.isDifficultyLocked());
 		}

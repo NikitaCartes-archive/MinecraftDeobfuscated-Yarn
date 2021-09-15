@@ -28,23 +28,14 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6603;
+import net.minecraft.class_6606;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BannerBlockEntity;
-import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.block.entity.BedBlockEntity;
-import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
-import net.minecraft.block.entity.ConduitBlockEntity;
-import net.minecraft.block.entity.EndGatewayBlockEntity;
-import net.minecraft.block.entity.JigsawBlockEntity;
-import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -276,9 +267,9 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
 import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.ChunkNibbleArray;
+import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
@@ -342,19 +333,19 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			RequiredTagListRegistry.clearAllTags();
 		}
 
-		List<RegistryKey<World>> list = Lists.<RegistryKey<World>>newArrayList(packet.getDimensionIds());
+		List<RegistryKey<World>> list = Lists.<RegistryKey<World>>newArrayList(packet.dimensionIds());
 		Collections.shuffle(list);
 		this.worldKeys = Sets.<RegistryKey<World>>newLinkedHashSet(list);
-		this.registryManager = packet.getRegistryManager();
-		RegistryKey<World> registryKey = packet.getDimensionId();
-		DimensionType dimensionType = packet.getDimensionType();
-		this.chunkLoadDistance = packet.getViewDistance();
-		boolean bl = packet.isDebugWorld();
-		boolean bl2 = packet.isFlatWorld();
-		ClientWorld.Properties properties = new ClientWorld.Properties(Difficulty.NORMAL, packet.isHardcore(), bl2);
+		this.registryManager = packet.registryManager();
+		RegistryKey<World> registryKey = packet.dimensionId();
+		DimensionType dimensionType = packet.dimensionType();
+		this.chunkLoadDistance = packet.viewDistance();
+		boolean bl = packet.debugWorld();
+		boolean bl2 = packet.flatWorld();
+		ClientWorld.Properties properties = new ClientWorld.Properties(Difficulty.NORMAL, packet.hardcore(), bl2);
 		this.worldProperties = properties;
 		this.world = new ClientWorld(
-			this, properties, registryKey, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed()
+			this, properties, registryKey, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.sha256Seed()
 		);
 		this.client.joinWorld(this.world);
 		if (this.client.player == null) {
@@ -367,16 +358,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 		this.client.debugRenderer.reset();
 		this.client.player.init();
-		int i = packet.getEntityId();
+		int i = packet.playerEntityId();
 		this.client.player.setId(i);
 		this.world.addPlayer(i, this.client.player);
 		this.client.player.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(this.client.player);
 		this.client.cameraEntity = this.client.player;
 		this.client.setScreen(new DownloadingTerrainScreen());
-		this.client.player.setReducedDebugInfo(packet.hasReducedDebugInfo());
-		this.client.player.setShowsDeathScreen(packet.showsDeathScreen());
-		this.client.interactionManager.setGameModes(packet.getGameMode(), packet.getPreviousGameMode());
+		this.client.player.setReducedDebugInfo(packet.reducedDebugInfo());
+		this.client.player.setShowsDeathScreen(packet.showDeathScreen());
+		this.client.interactionManager.setGameModes(packet.gameMode(), packet.previousGameMode());
+		this.client.options.setServerViewDistance(packet.viewDistance());
 		this.client.options.sendClientSettings();
 		this.connection
 			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
@@ -615,25 +607,35 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onChunkData(ChunkDataS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		int i = packet.getX();
-		int j = packet.getZ();
-		BiomeArray biomeArray = new BiomeArray(this.registryManager.get(Registry.BIOME_KEY), this.world, packet.getBiomeArray());
-		WorldChunk worldChunk = this.world
-			.getChunkManager()
-			.loadChunkFromPacket(i, j, biomeArray, packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
+		this.method_38539(packet.getX(), packet.getZ(), packet.method_38598());
+		this.method_38540(packet.getX(), packet.getZ(), packet.method_38599());
+	}
 
-		for (int k = this.world.getBottomSectionCoord(); k < this.world.getTopSectionCoord(); k++) {
-			this.world.scheduleBlockRenders(i, k, j);
-		}
+	private void method_38539(int i, int j, class_6603 arg) {
+		this.world.getChunkManager().loadChunkFromPacket(i, j, arg.method_38586(), arg.method_38594(), arg.method_38587(i, j));
+	}
 
-		if (worldChunk != null) {
-			for (NbtCompound nbtCompound : packet.getBlockEntityTagList()) {
-				BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
-				BlockEntity blockEntity = worldChunk.getBlockEntity(blockPos, WorldChunk.CreationType.IMMEDIATE);
-				if (blockEntity != null) {
-					blockEntity.readNbt(nbtCompound);
-				}
+	private void method_38540(int i, int j, class_6606 arg) {
+		this.world.enqueueChunkUpdate(() -> {
+			this.method_38543(i, j, arg);
+			WorldChunk worldChunk = this.world.getChunkManager().getWorldChunk(i, j, false);
+			if (worldChunk != null) {
+				this.method_38541(worldChunk, i, j);
 			}
+		});
+	}
+
+	private void method_38541(WorldChunk worldChunk, int i, int j) {
+		LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
+		ChunkSection[] chunkSections = worldChunk.getSectionArray();
+		ChunkPos chunkPos = worldChunk.getPos();
+		lightingProvider.setColumnEnabled(chunkPos, true);
+
+		for (int k = 0; k < chunkSections.length; k++) {
+			ChunkSection chunkSection = chunkSections[k];
+			int l = this.world.sectionIndexToCoord(k);
+			lightingProvider.setSectionStatus(ChunkSectionPos.from(chunkPos, l), chunkSection.isEmpty());
+			this.world.scheduleBlockRenders(i, l, j);
 		}
 	}
 
@@ -644,14 +646,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int j = packet.getZ();
 		ClientChunkManager clientChunkManager = this.world.getChunkManager();
 		clientChunkManager.unload(i, j);
-		LightingProvider lightingProvider = clientChunkManager.getLightingProvider();
+		this.method_38544(packet);
+	}
 
-		for (int k = this.world.getBottomSectionCoord(); k < this.world.getTopSectionCoord(); k++) {
-			this.world.scheduleBlockRenders(i, k, j);
-			lightingProvider.setSectionStatus(ChunkSectionPos.from(i, k, j), true);
-		}
+	private void method_38544(UnloadChunkS2CPacket unloadChunkS2CPacket) {
+		this.world.enqueueChunkUpdate(() -> {
+			LightingProvider lightingProvider = this.world.getLightingProvider();
 
-		lightingProvider.setColumnEnabled(new ChunkPos(i, j), false);
+			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
+				this.world.scheduleBlockRenders(unloadChunkS2CPacket.getX(), i, unloadChunkS2CPacket.getZ());
+				lightingProvider.setSectionStatus(ChunkSectionPos.from(unloadChunkS2CPacket.getX(), i, unloadChunkS2CPacket.getZ()), true);
+			}
+
+			lightingProvider.setColumnEnabled(new ChunkPos(unloadChunkS2CPacket.getX(), unloadChunkS2CPacket.getZ()), false);
+		});
 	}
 
 	@Override
@@ -1034,28 +1042,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onBlockEntityUpdate(BlockEntityUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		BlockPos blockPos = packet.getPos();
-		BlockEntity blockEntity = this.client.world.getBlockEntity(blockPos);
-		int i = packet.getBlockEntityType();
-		boolean bl = i == BlockEntityUpdateS2CPacket.COMMAND_BLOCK && blockEntity instanceof CommandBlockBlockEntity;
-		if (i == BlockEntityUpdateS2CPacket.MOB_SPAWNER && blockEntity instanceof MobSpawnerBlockEntity
-			|| bl
-			|| i == BlockEntityUpdateS2CPacket.BEACON && blockEntity instanceof BeaconBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.SKULL && blockEntity instanceof SkullBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.BANNER && blockEntity instanceof BannerBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.STRUCTURE && blockEntity instanceof StructureBlockBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.END_GATEWAY && blockEntity instanceof EndGatewayBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.SIGN && blockEntity instanceof SignBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.BED && blockEntity instanceof BedBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.CONDUIT && blockEntity instanceof ConduitBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.JIGSAW && blockEntity instanceof JigsawBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.CAMPFIRE && blockEntity instanceof CampfireBlockEntity
-			|| i == BlockEntityUpdateS2CPacket.BEEHIVE && blockEntity instanceof BeehiveBlockEntity) {
-			blockEntity.readNbt(packet.getNbt());
-		}
+		this.client.world.getBlockEntity(blockPos, packet.getBlockEntityType()).ifPresent(blockEntity -> {
+			NbtCompound nbtCompound = packet.getNbt();
+			if (nbtCompound != null) {
+				blockEntity.readNbt(nbtCompound);
+			}
 
-		if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
-			((CommandBlockScreen)this.client.currentScreen).updateCommandBlock();
-		}
+			if (blockEntity instanceof CommandBlockBlockEntity && this.client.currentScreen instanceof CommandBlockScreen) {
+				((CommandBlockScreen)this.client.currentScreen).updateCommandBlock();
+			}
+		});
 	}
 
 	@Override
@@ -2146,15 +2142,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		int i = packet.getChunkX();
 		int j = packet.getChunkZ();
+		class_6606 lv = packet.method_38600();
+		this.world.enqueueChunkUpdate(() -> this.method_38543(i, j, lv));
+	}
+
+	private void method_38543(int i, int j, class_6606 arg) {
 		LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
-		BitSet bitSet = packet.getSkyLightMask();
-		BitSet bitSet2 = packet.getFilledSkyLightMask();
-		Iterator<byte[]> iterator = packet.getSkyLightUpdates().iterator();
-		this.updateLighting(i, j, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator, packet.isNotEdge());
-		BitSet bitSet3 = packet.getBlockLightMask();
-		BitSet bitSet4 = packet.getFilledBlockLightMask();
-		Iterator<byte[]> iterator2 = packet.getBlockLightUpdates().iterator();
-		this.updateLighting(i, j, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, packet.isNotEdge());
+		BitSet bitSet = arg.method_38601();
+		BitSet bitSet2 = arg.method_38604();
+		Iterator<byte[]> iterator = arg.method_38606().iterator();
+		this.updateLighting(i, j, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator, arg.method_38611());
+		BitSet bitSet3 = arg.method_38608();
+		BitSet bitSet4 = arg.method_38609();
+		Iterator<byte[]> iterator2 = arg.method_38610().iterator();
+		this.updateLighting(i, j, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, arg.method_38611());
 	}
 
 	@Override
@@ -2174,6 +2175,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onChunkLoadDistance(ChunkLoadDistanceS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.chunkLoadDistance = packet.getDistance();
+		this.client.options.setServerViewDistance(this.chunkLoadDistance);
 		this.world.getChunkManager().updateLoadDistance(packet.getDistance());
 	}
 
@@ -2186,7 +2188,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onPlayerActionResponse(PlayerActionResponseS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.interactionManager.processPlayerActionResponse(this.world, packet.getBlockPos(), packet.getBlockState(), packet.getAction(), packet.isApproved());
+		this.client.interactionManager.processPlayerActionResponse(this.world, packet.pos(), packet.state(), packet.action(), packet.approved());
 	}
 
 	private void updateLighting(

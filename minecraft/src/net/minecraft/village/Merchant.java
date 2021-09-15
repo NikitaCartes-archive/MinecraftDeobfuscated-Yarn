@@ -8,7 +8,6 @@ import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
-import net.minecraft.world.World;
 
 public interface Merchant {
 	void setCurrentCustomer(@Nullable PlayerEntity customer);
@@ -23,8 +22,6 @@ public interface Merchant {
 	void trade(TradeOffer offer);
 
 	void onSellingItem(ItemStack stack);
-
-	World getMerchantWorld();
 
 	int getExperience();
 
@@ -49,4 +46,6 @@ public interface Merchant {
 			}
 		}
 	}
+
+	boolean isClient();
 }

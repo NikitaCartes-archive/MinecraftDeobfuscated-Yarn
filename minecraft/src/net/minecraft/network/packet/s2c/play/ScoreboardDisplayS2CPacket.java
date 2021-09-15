@@ -22,7 +22,7 @@ public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListen
 
 	public ScoreboardDisplayS2CPacket(PacketByteBuf buf) {
 		this.slot = buf.readByte();
-		this.name = buf.readString(16);
+		this.name = buf.readString();
 	}
 
 	@Override

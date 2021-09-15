@@ -323,6 +323,9 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		}
 	}
 
+	/**
+	 * A target goal on players when this polar bear is near a baby polar bear.
+	 */
 	class ProtectBabiesGoal extends ActiveTargetGoal<PlayerEntity> {
 		public ProtectBabiesGoal() {
 			super(PolarBearEntity.this, PlayerEntity.class, 20, true, true, null);

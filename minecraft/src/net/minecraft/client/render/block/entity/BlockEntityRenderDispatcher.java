@@ -55,12 +55,12 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloader 
 		this.crosshairTarget = crosshairTarget;
 	}
 
-	public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumers) {
+	public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
 		BlockEntityRenderer<E> blockEntityRenderer = this.get(blockEntity);
 		if (blockEntityRenderer != null) {
 			if (blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState())) {
 				if (blockEntityRenderer.isInRenderDistance(blockEntity, this.camera.getPos())) {
-					runReported(blockEntity, () -> render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumers));
+					runReported(blockEntity, () -> render(blockEntityRenderer, blockEntity, tickDelta, matrices, vertexConsumers));
 				}
 			}
 		}

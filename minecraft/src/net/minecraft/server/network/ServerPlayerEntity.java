@@ -48,7 +48,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
@@ -429,7 +428,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (entity != this) {
 			if (entity.isAlive()) {
 				this.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
-				this.getServerWorld().getChunkManager().updatePosition(this);
+				this.getWorld().getChunkManager().updatePosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
 				}
@@ -672,11 +671,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public Entity moveToWorld(ServerWorld destination) {
 		this.inTeleportationState = true;
-		ServerWorld serverWorld = this.getServerWorld();
+		ServerWorld serverWorld = this.getWorld();
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		if (registryKey == World.END && destination.getRegistryKey() == World.OVERWORLD) {
 			this.detach();
-			this.getServerWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
+			this.getWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
 			if (!this.notInAnyWorld) {
 				this.notInAnyWorld = true;
 				this.networkHandler
@@ -792,11 +791,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	private void sendBlockEntityUpdate(BlockEntity blockEntity) {
-		if (blockEntity != null) {
-			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.toUpdatePacket();
-			if (blockEntityUpdateS2CPacket != null) {
-				this.networkHandler.sendPacket(blockEntityUpdateS2CPacket);
-			}
+		Packet<?> packet = blockEntity.toUpdatePacket();
+		if (packet != null) {
+			this.networkHandler.sendPacket(packet);
 		}
 	}
 
@@ -841,7 +838,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 					this.incrementStat(Stats.SLEEP_IN_BED);
 					Criteria.SLEPT_IN_BED.trigger(this);
 				});
-				if (!this.getServerWorld().isSleepingEnabled()) {
+				if (!this.getWorld().isSleepingEnabled()) {
 					this.sendMessage(new TranslatableText("sleep.not_possible"), true);
 				}
 
@@ -874,7 +871,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void wakeUp(boolean bl, boolean updateSleepingPlayers) {
 		if (this.isSleeping()) {
-			this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, EntityAnimationS2CPacket.WAKE_UP));
+			this.getWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, EntityAnimationS2CPacket.WAKE_UP));
 		}
 
 		super.wakeUp(bl, updateSleepingPlayers);
@@ -1197,12 +1194,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void addCritParticles(Entity target) {
-		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.CRIT));
+		this.getWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.CRIT));
 	}
 
 	@Override
 	public void addEnchantedHitParticles(Entity target) {
-		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.ENCHANTED_HIT));
+		this.getWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.ENCHANTED_HIT));
 	}
 
 	@Override
@@ -1213,7 +1210,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public ServerWorld getServerWorld() {
+	public ServerWorld getWorld() {
 		return (ServerWorld)this.world;
 	}
 
@@ -1397,7 +1394,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (targetWorld == this.world) {
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 		} else {
-			ServerWorld serverWorld = this.getServerWorld();
+			ServerWorld serverWorld = this.getWorld();
 			WorldProperties worldProperties = targetWorld.getLevelProperties();
 			this.networkHandler
 				.sendPacket(
@@ -1462,8 +1459,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public void sendInitialChunkPackets(ChunkPos chunkPos, Packet<?> chunkDataPacket, Packet<?> lightUpdatePacket) {
-		this.networkHandler.sendPacket(lightUpdatePacket);
+	public void sendInitialChunkPackets(ChunkPos chunkPos, Packet<?> chunkDataPacket) {
 		this.networkHandler.sendPacket(chunkDataPacket);
 	}
 

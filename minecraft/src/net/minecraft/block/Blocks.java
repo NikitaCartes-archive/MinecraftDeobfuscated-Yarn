@@ -966,7 +966,8 @@ public class Blocks {
 		"nether_wart", new NetherWartBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.RED).noCollision().ticksRandomly().sounds(BlockSoundGroup.NETHER_WART))
 	);
 	public static final Block ENCHANTING_TABLE = register(
-		"enchanting_table", new EnchantingTableBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.RED).requiresTool().strength(5.0F, 1200.0F))
+		"enchanting_table",
+		new EnchantingTableBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.RED).requiresTool().luminance(state -> 7).strength(5.0F, 1200.0F))
 	);
 	public static final Block BREWING_STAND = register(
 		"brewing_stand", new BrewingStandBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(0.5F).luminance(state -> 1).nonOpaque())
@@ -1802,7 +1803,7 @@ public class Blocks {
 	public static final Block END_GATEWAY = register(
 		"end_gateway",
 		new EndGatewayBlock(
-			AbstractBlock.Settings.of(Material.PORTAL, MapColor.BLACK).noCollision().luminance(state -> 15).strength(-1.0F, 3600000.0F).dropsNothing()
+			AbstractBlock.Settings.of(Material.PORTAL, MapColor.BLACK).noCollision().luminance(blockStatex -> 15).strength(-1.0F, 3600000.0F).dropsNothing()
 		)
 	);
 	public static final Block REPEATING_COMMAND_BLOCK = register(
@@ -2310,7 +2311,7 @@ public class Blocks {
 		"blue_ice", new TransparentBlock(AbstractBlock.Settings.of(Material.DENSE_ICE).strength(2.8F).slipperiness(0.989F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block CONDUIT = register(
-		"conduit", new ConduitBlock(AbstractBlock.Settings.of(Material.GLASS, MapColor.DIAMOND_BLUE).strength(3.0F).luminance(blockStatex -> 15).nonOpaque())
+		"conduit", new ConduitBlock(AbstractBlock.Settings.of(Material.GLASS, MapColor.DIAMOND_BLUE).strength(3.0F).luminance(state -> 15).nonOpaque())
 	);
 	public static final Block BAMBOO_SAPLING = register(
 		"bamboo_sapling",
@@ -2434,7 +2435,9 @@ public class Blocks {
 	);
 	public static final Block SOUL_LANTERN = register(
 		"soul_lantern",
-		new LanternBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(3.5F).sounds(BlockSoundGroup.LANTERN).luminance(state -> 10).nonOpaque())
+		new LanternBlock(
+			AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(3.5F).sounds(BlockSoundGroup.LANTERN).luminance(blockStatex -> 10).nonOpaque()
+		)
 	);
 	public static final Block CAMPFIRE = register(
 		"campfire",
@@ -2515,7 +2518,7 @@ public class Blocks {
 	);
 	public static final Block SHROOMLIGHT = register(
 		"shroomlight",
-		new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.RED).strength(1.0F).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(blockStatex -> 15))
+		new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.RED).strength(1.0F).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(state -> 15))
 	);
 	public static final Block WEEPING_VINES = register(
 		"weeping_vines",
@@ -2993,7 +2996,7 @@ public class Blocks {
 	);
 	public static final Block MEDIUM_AMETHYST_BUD = register(
 		"medium_amethyst_bud",
-		new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(state -> 2))
+		new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(blockStatex -> 2))
 	);
 	public static final Block SMALL_AMETHYST_BUD = register(
 		"small_amethyst_bud",

@@ -10,25 +10,27 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PlayerActionResponseS2CPacket implements Packet<ClientPlayPacketListener> {
-	private static final Logger LOGGER = LogManager.getLogger();
+public record PlayerActionResponseS2CPacket() implements Packet<ClientPlayPacketListener> {
 	private final BlockPos pos;
 	private final BlockState state;
 	private final PlayerActionC2SPacket.Action action;
 	private final boolean approved;
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public PlayerActionResponseS2CPacket(BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved, String reason) {
-		this.pos = pos.toImmutable();
-		this.state = state;
+		this(pos, state, action, approved);
+	}
+
+	public PlayerActionResponseS2CPacket(BlockPos blockPos, BlockState blockState, PlayerActionC2SPacket.Action action, boolean bl) {
+		blockPos = blockPos.toImmutable();
+		this.pos = blockPos;
+		this.state = blockState;
 		this.action = action;
-		this.approved = approved;
+		this.approved = bl;
 	}
 
 	public PlayerActionResponseS2CPacket(PacketByteBuf buf) {
-		this.pos = buf.readBlockPos();
-		this.state = Block.STATE_IDS.get(buf.readVarInt());
-		this.action = buf.readEnumConstant(PlayerActionC2SPacket.Action.class);
-		this.approved = buf.readBoolean();
+		this(buf.readBlockPos(), Block.STATE_IDS.get(buf.readVarInt()), buf.readEnumConstant(PlayerActionC2SPacket.Action.class), buf.readBoolean());
 	}
 
 	@Override
@@ -41,21 +43,5 @@ public class PlayerActionResponseS2CPacket implements Packet<ClientPlayPacketLis
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onPlayerActionResponse(this);
-	}
-
-	public BlockState getBlockState() {
-		return this.state;
-	}
-
-	public BlockPos getBlockPos() {
-		return this.pos;
-	}
-
-	public boolean isApproved() {
-		return this.approved;
-	}
-
-	public PlayerActionC2SPacket.Action getAction() {
-		return this.action;
 	}
 }

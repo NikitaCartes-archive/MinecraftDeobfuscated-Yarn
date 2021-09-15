@@ -9,6 +9,16 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.scoreboard.AbstractTeam;
 
+/**
+ * A goal that maintains the target of a mob entity. If the goal stops,
+ * such as because the target is not valid, the target is removed from
+ * the owner mob.
+ * 
+ * <p>Compared to other goals, this goal and its subclasses are added
+ * to the {@linkplain MobEntity#targetSelector target} than the regular
+ * goal selector, and should use the {@link Goal.Control#TARGET}
+ * control if it sets the owner's target.
+ */
 public abstract class TrackTargetGoal extends Goal {
 	private static final int UNSET = 0;
 	private static final int CAN_TRACK = 1;

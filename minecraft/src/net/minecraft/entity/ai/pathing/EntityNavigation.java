@@ -214,12 +214,14 @@ public abstract class EntityNavigation {
 			DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.nodeReachProximity);
 			if (!this.isIdle()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
-				BlockPos blockPos = new BlockPos(vec3d);
-				this.entity
-					.getMoveControl()
-					.moveTo(vec3d.x, this.world.getBlockState(blockPos.down()).isAir() ? vec3d.y : LandPathNodeMaker.getFeetY(this.world, blockPos), vec3d.z, this.speed);
+				this.entity.getMoveControl().moveTo(vec3d.x, this.adjustTargetY(vec3d), vec3d.z, this.speed);
 			}
 		}
+	}
+
+	protected double adjustTargetY(Vec3d pos) {
+		BlockPos blockPos = new BlockPos(pos);
+		return this.world.getBlockState(blockPos.down()).isAir() ? pos.y : LandPathNodeMaker.getFeetY(this.world, blockPos);
 	}
 
 	protected void continueFollowingPath() {
@@ -244,6 +246,8 @@ public abstract class EntityNavigation {
 			Vec3d vec3d = Vec3d.ofBottomCenter(this.currentPath.getCurrentNodePos());
 			if (!currentPos.isInRange(vec3d, 2.0)) {
 				return false;
+			} else if (this.canPathDirectlyThrough(currentPos, this.currentPath.getNodePosition(this.entity))) {
+				return true;
 			} else {
 				Vec3d vec3d2 = Vec3d.ofBottomCenter(this.currentPath.getNodePos(this.currentPath.getCurrentNodeIndex() + 1));
 				Vec3d vec3d3 = vec3d2.subtract(vec3d);
@@ -338,7 +342,9 @@ public abstract class EntityNavigation {
 		}
 	}
 
-	protected abstract boolean canPathDirectlyThrough(Vec3d origin, Vec3d target, int sizeX, int sizeY, int sizeZ);
+	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
+		return false;
+	}
 
 	public boolean isValidPosition(BlockPos pos) {
 		BlockPos blockPos = pos.down();

@@ -229,7 +229,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		nbt.putShort("BurnTime", (short)this.burnTime);
 		nbt.putShort("CookTime", (short)this.cookTime);
@@ -238,7 +238,6 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		NbtCompound nbtCompound = new NbtCompound();
 		this.recipesUsed.forEach((identifier, integer) -> nbtCompound.putInt(identifier.toString(), integer));
 		nbt.put("RecipesUsed", nbtCompound);
-		return nbt;
 	}
 
 	public static void tick(World world, BlockPos pos, BlockState state, AbstractFurnaceBlockEntity blockEntity) {
@@ -465,7 +464,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	public void dropExperienceForRecipesUsed(ServerPlayerEntity player) {
-		List<Recipe<?>> list = this.getRecipesUsedAndDropExperience(player.getServerWorld(), player.getPos());
+		List<Recipe<?>> list = this.getRecipesUsedAndDropExperience(player.getWorld(), player.getPos());
 		player.unlockRecipes(list);
 		this.recipesUsed.clear();
 	}

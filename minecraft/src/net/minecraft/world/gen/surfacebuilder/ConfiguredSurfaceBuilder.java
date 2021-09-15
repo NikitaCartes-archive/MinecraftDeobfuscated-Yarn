@@ -3,11 +3,11 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.function.Supplier;
+import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
 
 public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
 	public static final Codec<ConfiguredSurfaceBuilder<?>> CODEC = Registry.SURFACE_BUILDER
@@ -23,7 +23,7 @@ public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
 
 	public void generate(
 		Random random,
-		Chunk chunk,
+		class_6557 chunk,
 		Biome biome,
 		int x,
 		int z,
@@ -33,9 +33,9 @@ public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
 		BlockState defaultFluid,
 		int seaLevel,
 		int i,
-		long l
+		long seed
 	) {
-		this.surfaceBuilder.generate(random, chunk, biome, x, z, height, noise, defaultBlock, defaultFluid, seaLevel, i, l, this.config);
+		this.surfaceBuilder.generate(random, chunk, biome, x, z, height, noise, defaultBlock, defaultFluid, seaLevel, i, seed, this.config);
 	}
 
 	public void initSeed(long seed) {

@@ -13,6 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -178,9 +179,7 @@ public class PlayerListHud extends DrawableHelper {
 				GameProfile gameProfile = playerListEntry2.getProfile();
 				if (bl) {
 					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
-					boolean bl2 = playerEntity != null
-						&& playerEntity.isPartVisible(PlayerModelPart.CAPE)
-						&& ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
+					boolean bl2 = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
 					RenderSystem.setShaderTexture(0, playerListEntry2.getSkinTexture());
 					int y = 8 + (bl2 ? 8 : 0);
 					int z = 8 * (bl2 ? -1 : 1);

@@ -160,10 +160,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private int idleTimeout;
 	private final PortalForcer portalForcer;
 	private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<>(
-		this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, this::tickBlock
+		this, block -> block.getDefaultState().isAir(), Registry.BLOCK::getId, this::tickBlock
 	);
 	private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<>(
-		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, this::tickFluid
+		this, fluid -> fluid == Fluids.EMPTY, Registry.FLUID::getId, this::tickFluid
 	);
 	final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<>();
 	protected final RaidManager raidManager;
@@ -242,7 +242,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
+		return this.getChunkManager().getChunkGenerator().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
 	public StructureAccessor getStructureAccessor() {
@@ -501,7 +501,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		profiler.swap("tickBlocks");
 		if (randomTickSpeed > 0) {
 			for (ChunkSection chunkSection : chunk.getSectionArray()) {
-				if (chunkSection != WorldChunk.EMPTY_SECTION && chunkSection.hasRandomTicks()) {
+				if (chunkSection.hasRandomTicks()) {
 					int k = chunkSection.getYOffset();
 
 					for (int l = 0; l < randomTickSpeed; l++) {
@@ -568,6 +568,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE) <= 100;
 	}
 
+	/**
+	 * Sends sleeping status action bar messages to players in this world.
+	 */
 	private void sendSleepingStatus() {
 		if (this.isSleepingEnabled()) {
 			if (!this.getServer().isSingleplayer() || this.getServer().isRemote()) {
@@ -789,7 +792,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public void unloadEntities(WorldChunk chunk) {
-		chunk.removeAllBlockEntities();
+		chunk.method_38289();
 	}
 
 	public void removePlayer(ServerPlayerEntity player, Entity.RemovalReason reason) {
@@ -924,20 +927,20 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					.getPlayerManager()
 					.sendToAround(
 						null,
-						(double)blockEvent.getPos().getX(),
-						(double)blockEvent.getPos().getY(),
-						(double)blockEvent.getPos().getZ(),
+						(double)blockEvent.pos().getX(),
+						(double)blockEvent.pos().getY(),
+						(double)blockEvent.pos().getZ(),
 						64.0,
 						this.getRegistryKey(),
-						new BlockEventS2CPacket(blockEvent.getPos(), blockEvent.getBlock(), blockEvent.getType(), blockEvent.getData())
+						new BlockEventS2CPacket(blockEvent.pos(), blockEvent.block(), blockEvent.type(), blockEvent.data())
 					);
 			}
 		}
 	}
 
 	private boolean processBlockEvent(BlockEvent event) {
-		BlockState blockState = this.getBlockState(event.getPos());
-		return blockState.isOf(event.getBlock()) ? blockState.onSyncedBlockEvent(this, event.getPos(), event.getType(), event.getData()) : false;
+		BlockState blockState = this.getBlockState(event.pos());
+		return blockState.isOf(event.block()) ? blockState.onSyncedBlockEvent(this, event.pos(), event.type(), event.data()) : false;
 	}
 
 	public ServerTickScheduler<Block> getBlockTickScheduler() {
@@ -993,7 +996,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	private boolean sendToPlayerIfNearby(ServerPlayerEntity player, boolean force, double x, double y, double z, Packet<?> packet) {
-		if (player.getServerWorld() != this) {
+		if (player.getWorld() != this) {
 			return false;
 		} else {
 			BlockPos blockPos = player.getBlockPos();
@@ -1036,7 +1039,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return this.getChunkManager()
 			.getChunkGenerator()
 			.getBiomeSource()
-			.locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, i, biome2 -> biome2 == biome, this.random, true);
+			.locateBiome(
+				pos.getX(), pos.getY(), pos.getZ(), radius, i, biome2 -> biome2 == biome, this.random, true, this.getChunkManager().getChunkGenerator().method_38276()
+			);
 	}
 
 	@Override
@@ -1371,7 +1376,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@VisibleForTesting
 	public void clearUpdatesInArea(BlockBox box) {
-		this.syncedBlockEventQueue.removeIf(blockEvent -> box.contains(blockEvent.getPos()));
+		this.syncedBlockEventQueue.removeIf(blockEvent -> box.contains(blockEvent.pos()));
 	}
 
 	@Override
@@ -1499,7 +1504,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public boolean method_37117(BlockPos blockPos) {
 		long l = ChunkPos.toLong(blockPos);
-		return this.chunkManager.isTickingFutureReady(l) && this.method_37116(l);
+		return this.method_37116(l) && this.chunkManager.isTickingFutureReady(l);
 	}
 
 	public boolean method_37118(BlockPos blockPos) {

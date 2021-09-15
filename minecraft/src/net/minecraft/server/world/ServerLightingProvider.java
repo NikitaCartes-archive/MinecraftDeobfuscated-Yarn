@@ -98,12 +98,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void setColumnEnabled(ChunkPos chunkPos, boolean bl) {
+	public void setColumnEnabled(ChunkPos pos, boolean retainData) {
 		this.enqueue(
-			chunkPos.x,
-			chunkPos.z,
+			pos.x,
+			pos.z,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable((Runnable)(() -> super.setColumnEnabled(chunkPos, bl)), (Supplier<String>)(() -> "enableLight " + chunkPos + " " + bl))
+			Util.debugRunnable((Runnable)(() -> super.setColumnEnabled(pos, retainData)), (Supplier<String>)(() -> "enableLight " + pos + " " + retainData))
 		);
 	}
 
@@ -150,7 +150,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 			for (int i = 0; i < chunk.countVerticalSections(); i++) {
 				ChunkSection chunkSection = chunkSections[i];
-				if (!ChunkSection.isEmpty(chunkSection)) {
+				if (!chunkSection.isEmpty()) {
 					int j = this.world.sectionIndexToCoord(i);
 					super.setSectionStatus(ChunkSectionPos.from(chunkPos, j), false);
 				}

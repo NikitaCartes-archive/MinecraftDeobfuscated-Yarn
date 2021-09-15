@@ -75,7 +75,7 @@ public class StateManager<O, S extends State<O, S>> {
 	) {
 		return Codec.mapPair(mapCodec, property.getValueCodec().fieldOf(string).setPartial(() -> property.createValue((State<?, ?>)supplier.get())))
 			.xmap(
-				pair -> (State)((State)pair.getFirst()).with(property, ((Property.Value)pair.getSecond()).getValue()), state -> Pair.of(state, property.createValue(state))
+				pair -> (State)((State)pair.getFirst()).with(property, ((Property.Value)pair.getSecond()).value()), state -> Pair.of(state, property.createValue(state))
 			);
 	}
 

@@ -187,8 +187,8 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		int i = radiusX - Math.abs(localX);
 		int j = radiusZ - Math.abs(localZ);
 		int k = Math.min(i, j);
-		return MathHelper.clampedLerpFromProgress(
-			(double)k, 0.0, (double)config.maxDistanceFromCenterAffectingChanceOfDripstoneColumn, (double)config.chanceOfDripstoneColumnAtMaxDistanceFromCenter, 1.0
+		return (double)MathHelper.clampedLerpFromProgress(
+			(float)k, 0.0F, (float)config.maxDistanceFromCenterAffectingChanceOfDripstoneColumn, config.chanceOfDripstoneColumnAtMaxDistanceFromCenter, 1.0F
 		);
 	}
 

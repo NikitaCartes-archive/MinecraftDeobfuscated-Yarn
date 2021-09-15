@@ -3,16 +3,13 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 	protected long seed;
 	private OctavePerlinNoiseSampler surfaceNoise;
 
@@ -22,7 +19,7 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 
 	public void generate(
 		Random random,
-		Chunk chunk,
+		class_6557 arg,
 		Biome biome,
 		int i,
 		int j,
@@ -35,28 +32,23 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 		long n,
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
-		int o = l;
-		int p = i & 15;
-		int q = j & 15;
 		double e = this.surfaceNoise.sample((double)i * 0.1, (double)l, (double)j * 0.1);
 		boolean bl = e > 0.15 + random.nextDouble() * 0.35;
 		double f = this.surfaceNoise.sample((double)i * 0.1, 109.0, (double)j * 0.1);
 		boolean bl2 = f > 0.25 + random.nextDouble() * 0.9;
-		int r = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int s = -1;
+		int o = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+		int p = -1;
 		BlockState blockState3 = ternarySurfaceConfig.getUnderMaterial();
 
-		for (int t = 127; t >= m; t--) {
-			mutable.set(p, t, q);
+		for (int q = 127; q >= m; q--) {
 			BlockState blockState4 = ternarySurfaceConfig.getTopMaterial();
-			BlockState blockState5 = chunk.getBlockState(mutable);
+			BlockState blockState5 = arg.getState(q);
 			if (blockState5.isAir()) {
-				s = -1;
+				p = -1;
 			} else if (blockState5.isOf(blockState.getBlock())) {
-				if (s == -1) {
+				if (p == -1) {
 					boolean bl3 = false;
-					if (r <= 0) {
+					if (o <= 0) {
 						bl3 = true;
 						blockState3 = ternarySurfaceConfig.getUnderMaterial();
 					}
@@ -67,19 +59,19 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 						blockState4 = ternarySurfaceConfig.getUnderwaterMaterial();
 					}
 
-					if (t < o && bl3) {
+					if (q < l && bl3) {
 						blockState4 = blockState2;
 					}
 
-					s = r;
-					if (t >= o - 1) {
-						chunk.setBlockState(mutable, blockState4, false);
+					p = o;
+					if (q >= l - 1) {
+						arg.method_38092(q, blockState4);
 					} else {
-						chunk.setBlockState(mutable, blockState3, false);
+						arg.method_38092(q, blockState3);
 					}
-				} else if (s > 0) {
-					s--;
-					chunk.setBlockState(mutable, blockState3, false);
+				} else if (p > 0) {
+					p--;
+					arg.method_38092(q, blockState3);
 				}
 			}
 		}

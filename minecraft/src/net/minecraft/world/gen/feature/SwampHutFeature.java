@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -9,6 +10,7 @@ import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -46,12 +48,14 @@ public class SwampHutFeature extends StructureFeature<DefaultFeatureConfig> {
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ChunkPos chunkPos,
-			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig,
-			HeightLimitView heightLimitView
+			HeightLimitView heightLimitView,
+			Predicate<Biome> predicate
 		) {
-			SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
-			this.addPiece(swampHutGenerator);
+			if (StructureFeature.checkBiome(chunkGenerator, heightLimitView, predicate, Heightmap.Type.WORLD_SURFACE_WG, chunkPos.getCenterX(), chunkPos.getCenterZ())) {
+				SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
+				this.addPiece(swampHutGenerator);
+			}
 		}
 	}
 }

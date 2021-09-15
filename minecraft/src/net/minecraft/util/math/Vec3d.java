@@ -433,6 +433,13 @@ public class Vec3d implements Position {
 		return axis.choose(this.x, this.y, this.z);
 	}
 
+	public Vec3d withAxis(Direction.Axis axis, double value) {
+		double d = axis == Direction.Axis.X ? value : this.x;
+		double e = axis == Direction.Axis.Y ? value : this.y;
+		double f = axis == Direction.Axis.Z ? value : this.z;
+		return new Vec3d(d, e, f);
+	}
+
 	@Override
 	public final double getX() {
 		return this.x;

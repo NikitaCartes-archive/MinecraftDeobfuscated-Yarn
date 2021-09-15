@@ -171,6 +171,7 @@ import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -1691,14 +1692,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.textureManager.tick();
 		}
 
-		if (this.currentScreen == null && this.player != null) {
-			if (this.player.isDead() && !(this.currentScreen instanceof DeathScreen)) {
-				this.setScreen(null);
-			} else if (this.player.isSleeping() && this.world != null) {
-				this.setScreen(new SleepingChatScreen());
+		if (this.currentScreen != null || this.player == null) {
+			if (this.currentScreen instanceof SleepingChatScreen sleepingChatScreen && !this.player.isSleeping()) {
+				sleepingChatScreen.closeChatIfEmpty();
 			}
-		} else if (this.currentScreen != null && this.currentScreen instanceof SleepingChatScreen && !this.player.isSleeping()) {
+		} else if (this.player.isDead() && !(this.currentScreen instanceof DeathScreen)) {
 			this.setScreen(null);
+		} else if (this.player.isSleeping() && this.world != null) {
+			this.setScreen(new SleepingChatScreen());
 		}
 
 		if (this.currentScreen != null) {
@@ -1911,7 +1912,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public static DataPackSettings loadDataPackSettings(LevelStorage.Session storageSession) {
-		MinecraftServer.convertLevel(storageSession);
 		DataPackSettings dataPackSettings = storageSession.getDataPackSettings();
 		if (dataPackSettings == null) {
 			throw new IllegalStateException("Failed to load data pack config");
@@ -2374,13 +2374,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private ItemStack addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-		NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+		NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
 		if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
 			stack.getOrCreateNbt().put("SkullOwner", nbtCompound2);
 			return stack;
 		} else {
-			stack.setSubNbt("BlockEntityTag", nbtCompound);
+			BlockItem.setBlockEntityNbt(stack, blockEntity.getType(), nbtCompound);
 			NbtCompound nbtCompound2 = new NbtCompound();
 			NbtList nbtList = new NbtList();
 			nbtList.add(NbtString.of("\"(+NBT)\""));

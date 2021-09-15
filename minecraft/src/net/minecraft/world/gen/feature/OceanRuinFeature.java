@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.structure.OceanRuinGenerator;
@@ -14,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -67,13 +69,15 @@ public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ChunkPos chunkPos,
-			Biome biome,
 			OceanRuinFeatureConfig oceanRuinFeatureConfig,
-			HeightLimitView heightLimitView
+			HeightLimitView heightLimitView,
+			Predicate<Biome> predicate
 		) {
-			BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 90, chunkPos.getStartZ());
-			BlockRotation blockRotation = BlockRotation.random(this.random);
-			OceanRuinGenerator.addPieces(structureManager, blockPos, blockRotation, this, this.random, oceanRuinFeatureConfig);
+			if (OceanRuinFeature.checkBiome(chunkGenerator, heightLimitView, predicate, Heightmap.Type.OCEAN_FLOOR_WG, chunkPos.getCenterX(), chunkPos.getCenterZ())) {
+				BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 90, chunkPos.getStartZ());
+				BlockRotation blockRotation = BlockRotation.random(this.random);
+				OceanRuinGenerator.addPieces(structureManager, blockPos, blockRotation, this, this.random, oceanRuinFeatureConfig);
+			}
 		}
 	}
 }

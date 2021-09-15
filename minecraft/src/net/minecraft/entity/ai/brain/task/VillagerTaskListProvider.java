@@ -242,6 +242,7 @@ public class VillagerTaskListProvider {
 					Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
 					Pair.of(new FollowMobTask(SpawnGroup.CREATURE, 8.0F), 1),
 					Pair.of(new FollowMobTask(SpawnGroup.WATER_CREATURE, 8.0F), 1),
+					Pair.of(new FollowMobTask(SpawnGroup.AXOLOTLS, 8.0F), 1),
 					Pair.of(new FollowMobTask(SpawnGroup.UNDERGROUND_WATER_CREATURE, 8.0F), 1),
 					Pair.of(new FollowMobTask(SpawnGroup.WATER_AMBIENT, 8.0F), 1),
 					Pair.of(new FollowMobTask(SpawnGroup.MONSTER, 8.0F), 1),

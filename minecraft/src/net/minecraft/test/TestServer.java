@@ -127,8 +127,8 @@ public class TestServer extends MinecraftServer {
 		this.loadWorld();
 		ServerWorld serverWorld = this.getOverworld();
 		serverWorld.setSpawnPos(this.pos, 0.0F);
-		serverWorld.getLevelProperties().setRaining(false);
-		serverWorld.getLevelProperties().setRaining(false);
+		int i = 20000000;
+		serverWorld.setWeather(20000000, 20000000, false, false);
 		return true;
 	}
 
@@ -183,7 +183,7 @@ public class TestServer extends MinecraftServer {
 	}
 
 	private void runTestBatches(ServerWorld world) {
-		Collection<GameTestState> collection = TestUtil.runTestBatches(this.batches, new BlockPos(0, 4, 0), BlockRotation.NONE, world, TestManager.INSTANCE, 8);
+		Collection<GameTestState> collection = TestUtil.runTestBatches(this.batches, new BlockPos(0, -60, 0), BlockRotation.NONE, world, TestManager.INSTANCE, 8);
 		this.testSet = new TestSet(collection);
 		LOGGER.info("{} tests are now running!", this.testSet.getTestCount());
 	}

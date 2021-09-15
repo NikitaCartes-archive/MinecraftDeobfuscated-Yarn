@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import jdk.jfr.FlightRecorder;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
@@ -114,6 +115,10 @@ public class CommandManager {
 		TriggerCommand.register(this.dispatcher);
 		WeatherCommand.register(this.dispatcher);
 		WorldBorderCommand.register(this.dispatcher);
+		if (FlightRecorder.isAvailable()) {
+			JfrCommand.register(this.dispatcher);
+		}
+
 		if (SharedConstants.isDevelopment) {
 			TestCommand.register(this.dispatcher);
 		}

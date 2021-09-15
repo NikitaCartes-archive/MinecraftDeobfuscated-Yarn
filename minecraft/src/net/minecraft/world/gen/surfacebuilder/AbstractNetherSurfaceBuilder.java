@@ -7,13 +7,11 @@ import com.mojang.serialization.Codec;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.Map.Entry;
+import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	private long seed;
@@ -27,7 +25,7 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 
 	public void generate(
 		Random random,
-		Chunk chunk,
+		class_6557 arg,
 		Biome biome,
 		int i,
 		int j,
@@ -41,10 +39,8 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
 		int o = l + 1;
-		int p = i & 15;
-		int q = j & 15;
-		int r = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
-		int s = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+		int p = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		double e = 0.03125;
 		boolean bl = this.shoreNoise.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) * 75.0 + random.nextDouble() > 0.0;
 		BlockState blockState3 = (BlockState)((Entry)this.underLavaNoises
@@ -59,34 +55,23 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 				.max(Comparator.comparing(entry -> ((OctavePerlinNoiseSampler)entry.getValue()).sample((double)i, (double)l, (double)j)))
 				.get())
 			.getKey();
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		BlockState blockState5 = chunk.getBlockState(mutable.set(p, 128, q));
+		BlockState blockState5 = arg.getState(128);
 
-		for (int t = 127; t >= m; t--) {
-			mutable.set(p, t, q);
-			BlockState blockState6 = chunk.getBlockState(mutable);
+		for (int r = 127; r >= m; r--) {
+			BlockState blockState6 = arg.getState(r);
 			if (blockState5.isOf(blockState.getBlock()) && (blockState6.isAir() || blockState6 == blockState2)) {
-				for (int u = 0; u < r; u++) {
-					mutable.move(Direction.UP);
-					if (!chunk.getBlockState(mutable).isOf(blockState.getBlock())) {
-						break;
-					}
-
-					chunk.setBlockState(mutable, blockState3, false);
+				for (int s = 0; s < p && arg.getState(r + s).isOf(blockState.getBlock()); s++) {
+					arg.method_38092(r + s, blockState3);
 				}
-
-				mutable.set(p, t, q);
 			}
 
 			if ((blockState5.isAir() || blockState5 == blockState2) && blockState6.isOf(blockState.getBlock())) {
-				for (int u = 0; u < s && chunk.getBlockState(mutable).isOf(blockState.getBlock()); u++) {
-					if (bl && t >= o - 4 && t <= o + 1) {
-						chunk.setBlockState(mutable, this.getLavaShoreState(), false);
+				for (int s = 0; s < q && arg.getState(r - s).isOf(blockState.getBlock()); s++) {
+					if (bl && r >= o - 4 && r <= o + 1) {
+						arg.method_38092(r - s, this.getLavaShoreState());
 					} else {
-						chunk.setBlockState(mutable, blockState4, false);
+						arg.method_38092(r - s, blockState4);
 					}
-
-					mutable.move(Direction.DOWN);
 				}
 			}
 

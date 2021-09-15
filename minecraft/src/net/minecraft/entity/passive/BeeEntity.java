@@ -189,7 +189,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		this.goalSelector.add(8, new BeeEntity.BeeWanderAroundGoal());
 		this.goalSelector.add(9, new SwimGoal(this));
 		this.targetSelector.add(1, new BeeEntity.BeeRevengeGoal(this).setGroupRevenge(new Class[0]));
-		this.targetSelector.add(2, new BeeEntity.BeeFollowTargetGoal(this));
+		this.targetSelector.add(2, new BeeEntity.StingTargetGoal(this));
 		this.targetSelector.add(3, new UniversalAngerGoal<>(this, true));
 	}
 
@@ -666,33 +666,6 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	boolean isWithinDistance(BlockPos pos, int distance) {
 		return pos.isWithinDistance(this.getBlockPos(), (double)distance);
-	}
-
-	static class BeeFollowTargetGoal extends ActiveTargetGoal<PlayerEntity> {
-		BeeFollowTargetGoal(BeeEntity bee) {
-			super(bee, PlayerEntity.class, 10, true, false, bee::shouldAngerAt);
-		}
-
-		@Override
-		public boolean canStart() {
-			return this.canSting() && super.canStart();
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			boolean bl = this.canSting();
-			if (bl && this.mob.getTarget() != null) {
-				return super.shouldContinue();
-			} else {
-				this.target = null;
-				return false;
-			}
-		}
-
-		private boolean canSting() {
-			BeeEntity beeEntity = (BeeEntity)this.mob;
-			return beeEntity.hasAngerTime() && !beeEntity.hasStung();
-		}
 	}
 
 	class BeeLookControl extends LookControl {
@@ -1291,6 +1264,33 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		@Override
 		public boolean shouldContinue() {
 			return super.shouldContinue() && BeeEntity.this.hasAngerTime() && !BeeEntity.this.hasStung();
+		}
+	}
+
+	static class StingTargetGoal extends ActiveTargetGoal<PlayerEntity> {
+		StingTargetGoal(BeeEntity bee) {
+			super(bee, PlayerEntity.class, 10, true, false, bee::shouldAngerAt);
+		}
+
+		@Override
+		public boolean canStart() {
+			return this.canSting() && super.canStart();
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			boolean bl = this.canSting();
+			if (bl && this.mob.getTarget() != null) {
+				return super.shouldContinue();
+			} else {
+				this.target = null;
+				return false;
+			}
+		}
+
+		private boolean canSting() {
+			BeeEntity beeEntity = (BeeEntity)this.mob;
+			return beeEntity.hasAngerTime() && !beeEntity.hasStung();
 		}
 	}
 }

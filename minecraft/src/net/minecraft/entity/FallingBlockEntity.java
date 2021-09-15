@@ -158,19 +158,16 @@ public class FallingBlockEntity extends Entity {
 									if (this.blockEntityData != null && this.block.hasBlockEntity()) {
 										BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 										if (blockEntity != null) {
-											NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+											NbtCompound nbtCompound = blockEntity.createNbt();
 
 											for (String string : this.blockEntityData.getKeys()) {
-												NbtElement nbtElement = this.blockEntityData.get(string);
-												if (!"x".equals(string) && !"y".equals(string) && !"z".equals(string)) {
-													nbtCompound.put(string, nbtElement.copy());
-												}
+												nbtCompound.put(string, this.blockEntityData.get(string).copy());
 											}
 
 											try {
 												blockEntity.readNbt(nbtCompound);
-											} catch (Exception var16) {
-												LOGGER.error("Failed to load block entity from falling block", (Throwable)var16);
+											} catch (Exception var15) {
+												LOGGER.error("Failed to load block entity from falling block", (Throwable)var15);
 											}
 
 											blockEntity.markDirty();
@@ -286,10 +283,6 @@ public class FallingBlockEntity extends Entity {
 		if (this.block.isAir()) {
 			this.block = Blocks.SAND.getDefaultState();
 		}
-	}
-
-	public World getWorldClient() {
-		return this.world;
 	}
 
 	public void setHurtEntities(float fallHurtAmount, int fallHurtMax) {

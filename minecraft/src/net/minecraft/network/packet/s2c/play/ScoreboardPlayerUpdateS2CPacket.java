@@ -26,9 +26,9 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	}
 
 	public ScoreboardPlayerUpdateS2CPacket(PacketByteBuf buf) {
-		this.playerName = buf.readString(40);
+		this.playerName = buf.readString();
 		this.mode = buf.readEnumConstant(ServerScoreboard.UpdateMode.class);
-		String string = buf.readString(16);
+		String string = buf.readString();
 		this.objectiveName = Objects.equals(string, "") ? null : string;
 		if (this.mode != ServerScoreboard.UpdateMode.REMOVE) {
 			this.score = buf.readVarInt();

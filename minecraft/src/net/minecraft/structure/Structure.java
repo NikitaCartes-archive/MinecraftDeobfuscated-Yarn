@@ -98,11 +98,7 @@ public class Structure {
 					BlockEntity blockEntity = world.getBlockEntity(blockPos4);
 					Structure.StructureBlockInfo structureBlockInfo;
 					if (blockEntity != null) {
-						NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
-						nbtCompound.remove("x");
-						nbtCompound.remove("y");
-						nbtCompound.remove("z");
-						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, nbtCompound.copy());
+						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, blockEntity.createNbtWithId());
 					} else {
 						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, null);
 					}
@@ -245,9 +241,6 @@ public class Structure {
 							if (structureBlockInfo.nbt != null) {
 								BlockEntity blockEntity = world.getBlockEntity(blockPos);
 								if (blockEntity != null) {
-									structureBlockInfo.nbt.putInt("x", blockPos.getX());
-									structureBlockInfo.nbt.putInt("y", blockPos.getY());
-									structureBlockInfo.nbt.putInt("z", blockPos.getZ());
 									if (blockEntity instanceof LootableContainerBlockEntity) {
 										structureBlockInfo.nbt.putLong("LootTableSeed", random.nextLong());
 									}

@@ -43,6 +43,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiling.jfr.JfrProfiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
@@ -77,7 +78,8 @@ public class Main {
 		OptionSpec<String> optionSpec11 = optionParser.accepts("world").withRequiredArg();
 		OptionSpec<Integer> optionSpec12 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(-1);
 		OptionSpec<String> optionSpec13 = optionParser.accepts("serverId").withRequiredArg();
-		OptionSpec<String> optionSpec14 = optionParser.nonOptions();
+		OptionSpec<Void> optionSpec14 = optionParser.accepts("jfrProfile");
+		OptionSpec<String> optionSpec15 = optionParser.nonOptions();
 
 		try {
 			OptionSet optionSet = optionParser.parse(args);
@@ -87,6 +89,10 @@ public class Main {
 			}
 
 			CrashReport.initCrashReport();
+			if (optionSet.has(optionSpec14)) {
+				JfrProfiler.start(JfrProfiler.InstanceType.SERVER);
+			}
+
 			Bootstrap.initialize();
 			Bootstrap.logMissing();
 			Util.startTimerHack();
@@ -114,11 +120,22 @@ public class Main {
 			String string = (String)Optional.ofNullable(optionSet.valueOf(optionSpec11)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
-			MinecraftServer.convertLevel(session);
 			LevelSummary levelSummary = session.getLevelSummary();
-			if (levelSummary != null && levelSummary.isPreWorldHeightChangeVersion()) {
-				LOGGER.info("Loading of worlds with extended height is disabled.");
-				return;
+			if (levelSummary != null) {
+				if (levelSummary.hasIncompatibleWorldHeight()) {
+					LOGGER.info("Loading of worlds with extended height is disabled.");
+					return;
+				}
+
+				if (levelSummary.requiresConversion()) {
+					LOGGER.info("This world must be opened in an older version (like 1.6.4) to be safely converted");
+					return;
+				}
+
+				if (!levelSummary.isVersionAvailable()) {
+					LOGGER.info("This world was created by an incompatible version.");
+					return;
+				}
 			}
 
 			DataPackSettings dataPackSettings = session.getDataPackSettings();
@@ -147,9 +164,9 @@ public class Main {
 			ServerResourceManager serverResourceManager;
 			try {
 				serverResourceManager = (ServerResourceManager)completableFuture.get();
-			} catch (Exception var42) {
+			} catch (Exception var43) {
 				LOGGER.warn(
-					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var42
+					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var43
 				);
 				resourcePackManager.close();
 				return;
@@ -208,7 +225,7 @@ public class Main {
 					minecraftDedicatedServerx.setServerPort(optionSet.valueOf(optionSpec12));
 					minecraftDedicatedServerx.setDemo(optionSet.has(optionSpec3));
 					minecraftDedicatedServerx.setServerId(optionSet.valueOf(optionSpec13));
-					boolean blx = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec14).contains("nogui");
+					boolean blx = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec15).contains("nogui");
 					if (blx && !GraphicsEnvironment.isHeadless()) {
 						minecraftDedicatedServerx.createGui();
 					}
@@ -223,8 +240,8 @@ public class Main {
 			};
 			thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 			Runtime.getRuntime().addShutdownHook(thread);
-		} catch (Exception var43) {
-			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var43);
+		} catch (Exception var44) {
+			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var44);
 		}
 	}
 

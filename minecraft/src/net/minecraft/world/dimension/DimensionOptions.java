@@ -15,6 +15,7 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -109,13 +110,18 @@ public final class DimensionOptions {
 					return false;
 				} else {
 					MultiNoiseBiomeSource multiNoiseBiomeSource = (MultiNoiseBiomeSource)noiseChunkGenerator.getBiomeSource();
-					if (!multiNoiseBiomeSource.matchesInstance(seed)) {
-						return false;
-					} else if (!(noiseChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {
+					if (!multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSource.Preset.NETHER)) {
 						return false;
 					} else {
-						TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)noiseChunkGenerator2.getBiomeSource();
-						return theEndBiomeSource.matches(seed);
+						BiomeSource biomeSource = ((DimensionOptions)entry.getValue()).getChunkGenerator().getBiomeSource();
+						if (biomeSource instanceof MultiNoiseBiomeSource && !((MultiNoiseBiomeSource)biomeSource).matchesInstance(MultiNoiseBiomeSource.Preset.OVERWORLD)) {
+							return false;
+						} else if (!(noiseChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {
+							return false;
+						} else {
+							TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)noiseChunkGenerator2.getBiomeSource();
+							return theEndBiomeSource.matches(seed);
+						}
 					}
 				}
 			} else {

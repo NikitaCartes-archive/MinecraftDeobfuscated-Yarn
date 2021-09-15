@@ -130,7 +130,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 
 		this.thread = Thread.currentThread();
-		this.biomeAccess = new BiomeAccess(this, seed, dimensionType.getBiomeAccessType());
+		this.biomeAccess = new BiomeAccess(this, seed);
 		this.debugWorld = debugWorld;
 	}
 
@@ -623,7 +623,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public void markDirty(BlockPos pos) {
 		if (this.isChunkLoaded(pos)) {
-			this.getWorldChunk(pos).markDirty();
+			this.getWorldChunk(pos).setShouldSave(true);
 		}
 	}
 

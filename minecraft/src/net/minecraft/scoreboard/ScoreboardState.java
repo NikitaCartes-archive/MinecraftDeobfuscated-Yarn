@@ -34,10 +34,6 @@ public class ScoreboardState extends PersistentState {
 		for (int i = 0; i < nbt.size(); i++) {
 			NbtCompound nbtCompound = nbt.getCompound(i);
 			String string = nbtCompound.getString("Name");
-			if (string.length() > 16) {
-				string = string.substring(0, 16);
-			}
-
 			Team team = this.scoreboard.addTeam(string);
 			Text text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
 			if (text != null) {
@@ -116,10 +112,6 @@ public class ScoreboardState extends PersistentState {
 			NbtCompound nbtCompound = nbt.getCompound(i);
 			ScoreboardCriterion.getOrCreateStatCriterion(nbtCompound.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
 				String string = nbtCompound.getString("Name");
-				if (string.length() > 16) {
-					string = string.substring(0, 16);
-				}
-
 				Text text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
 				ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(nbtCompound.getString("RenderType"));
 				this.scoreboard.addObjective(string, scoreboardCriterion, text, renderType);

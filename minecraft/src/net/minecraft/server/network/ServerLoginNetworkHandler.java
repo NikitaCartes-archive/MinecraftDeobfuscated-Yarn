@@ -158,6 +158,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 					this.addToServer(serverPlayerEntity2);
 				}
 			} catch (Exception var5) {
+				LOGGER.error("Couldn't place player in world", (Throwable)var5);
 				Text text2 = new TranslatableText("multiplayer.disconnect.invalid_player_data");
 				this.connection.send(new DisconnectS2CPacket(text2));
 				this.connection.disconnect(text2);

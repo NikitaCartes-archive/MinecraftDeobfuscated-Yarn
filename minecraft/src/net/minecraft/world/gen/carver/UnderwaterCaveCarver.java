@@ -79,11 +79,12 @@ public class UnderwaterCaveCarver extends CaveCarver {
 	}
 
 	protected static boolean carve(Carver<?> carver, Chunk chunk, Random random, BlockPos.Mutable pos, BlockPos.Mutable downPos, AquiferSampler sampler) {
-		if (sampler.apply(Carver.STONE_SOURCE, pos.getX(), pos.getY(), pos.getZ(), Double.NEGATIVE_INFINITY).isAir()) {
+		BlockState blockState = sampler.apply(pos.getX(), pos.getY(), pos.getZ(), 0.0, Double.NEGATIVE_INFINITY);
+		if (blockState != null && blockState.isAir()) {
 			return false;
 		} else {
-			BlockState blockState = chunk.getBlockState(pos);
-			if (!carver.canAlwaysCarveBlock(blockState)) {
+			BlockState blockState2 = chunk.getBlockState(pos);
+			if (!carver.canAlwaysCarveBlock(blockState2)) {
 				return false;
 			} else if (pos.getY() == 10) {
 				float f = random.nextFloat();

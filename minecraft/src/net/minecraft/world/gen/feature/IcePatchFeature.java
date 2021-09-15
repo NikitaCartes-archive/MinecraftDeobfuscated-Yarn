@@ -27,6 +27,8 @@ public class IcePatchFeature extends DiskFeature {
 
 		return !structureWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)
 			? false
-			: super.generate(new FeatureContext<>(structureWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig));
+			: super.generate(
+				new FeatureContext<>(context.getFeature(), structureWorldAccess, context.getGenerator(), context.getRandom(), blockPos, context.getConfig())
+			);
 	}
 }

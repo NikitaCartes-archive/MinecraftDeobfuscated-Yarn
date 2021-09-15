@@ -10,8 +10,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 
+/**
+ * A target goal that finds a target by entity class when the goal starts.
+ */
 public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	protected final Class<T> targetClass;
+	/**
+	 * The reciprocal of chance to actually search for a target on every tick
+	 * when this goal is not started. This is also the average number of ticks
+	 * between each search (as in a poisson distribution).
+	 */
 	protected final int reciprocalChance;
 	protected LivingEntity targetEntity;
 	protected TargetPredicate targetPredicate;

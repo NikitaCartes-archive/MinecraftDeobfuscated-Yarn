@@ -53,7 +53,7 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		this.logic.writeNbt(this.world, this.getBlockPos(), nbt);
+		this.logic.writeNbt(nbt);
 	}
 
 	@Override

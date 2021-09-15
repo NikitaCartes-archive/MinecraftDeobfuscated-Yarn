@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import java.io.IOException;
+import net.minecraft.util.profiling.jfr.event.network.PacketSentEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -42,13 +43,20 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 					int j = packetByteBuf.writerIndex() - i;
 					if (j > 8388608) {
 						throw new IllegalArgumentException("Packet too big (is " + j + ", should be less than 8388608): " + packet);
-					}
-				} catch (Throwable var9) {
-					LOGGER.error(var9);
-					if (packet.isWritingErrorSkippable()) {
-						throw new PacketEncoderException(var9);
 					} else {
-						throw var9;
+						if (PacketSentEvent.TYPE.isEnabled()) {
+							int k = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId();
+							String string = "%d/%d (%s)".formatted(k, integer, packet.getClass().getSimpleName());
+							PacketSentEvent packetSentEvent = new PacketSentEvent(string, channelHandlerContext.channel().remoteAddress(), j);
+							packetSentEvent.commit();
+						}
+					}
+				} catch (Throwable var12) {
+					LOGGER.error(var12);
+					if (packet.isWritingErrorSkippable()) {
+						throw new PacketEncoderException(var12);
+					} else {
+						throw var12;
 					}
 				}
 			}

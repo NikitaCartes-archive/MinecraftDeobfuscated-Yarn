@@ -18,10 +18,12 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
@@ -63,27 +65,22 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void buildSurface(ChunkRegion region, Chunk chunk) {
+	public void buildSurface(ChunkRegion region, StructureAccessor structureAccessor, Chunk chunk) {
 	}
 
 	@Override
-	public void carve(long seed, BiomeAccess access, Chunk chunk, GenerationStep.Carver carver) {
-	}
-
-	@Override
-	public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
+	public void generateFeatures(StructureWorldAccess world, ChunkPos pos, StructureAccessor structureAccessor) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		ChunkPos chunkPos = region.getCenterPos();
+		int i = pos.x;
+		int j = pos.z;
 
-		for (int i = 0; i < 16; i++) {
-			for (int j = 0; j < 16; j++) {
-				int k = ChunkSectionPos.getOffsetPos(chunkPos.x, i);
-				int l = ChunkSectionPos.getOffsetPos(chunkPos.z, j);
-				region.setBlockState(mutable.set(k, 60, l), BARRIER, Block.NOTIFY_LISTENERS);
-				BlockState blockState = getBlockState(k, l);
-				if (blockState != null) {
-					region.setBlockState(mutable.set(k, 70, l), blockState, Block.NOTIFY_LISTENERS);
-				}
+		for (int k = 0; k < 16; k++) {
+			for (int l = 0; l < 16; l++) {
+				int m = ChunkSectionPos.getOffsetPos(i, k);
+				int n = ChunkSectionPos.getOffsetPos(j, l);
+				world.setBlockState(mutable.set(m, 60, n), BARRIER, Block.NOTIFY_LISTENERS);
+				BlockState blockState = getBlockState(m, n);
+				world.setBlockState(mutable.set(m, 70, n), blockState, Block.NOTIFY_LISTENERS);
 			}
 		}
 	}
@@ -117,5 +114,33 @@ public class DebugChunkGenerator extends ChunkGenerator {
 		}
 
 		return blockState;
+	}
+
+	@Override
+	public MultiNoiseUtil.MultiNoiseSampler method_38276() {
+		return (i, j, k) -> MultiNoiseUtil.createNoiseValuePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+	}
+
+	@Override
+	public void carve(ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carver) {
+	}
+
+	@Override
+	public void populateEntities(ChunkRegion region) {
+	}
+
+	@Override
+	public int getMinimumY() {
+		return 0;
+	}
+
+	@Override
+	public int getWorldHeight() {
+		return 384;
+	}
+
+	@Override
+	public int getSeaLevel() {
+		return 63;
 	}
 }

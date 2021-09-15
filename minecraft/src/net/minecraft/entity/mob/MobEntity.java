@@ -53,6 +53,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -1247,7 +1248,7 @@ public abstract class MobEntity extends LivingEntity {
 			} else if (this.leashNbt.contains("X", NbtElement.NUMBER_TYPE)
 				&& this.leashNbt.contains("Y", NbtElement.NUMBER_TYPE)
 				&& this.leashNbt.contains("Z", NbtElement.NUMBER_TYPE)) {
-				BlockPos blockPos = new BlockPos(this.leashNbt.getInt("X"), this.leashNbt.getInt("Y"), this.leashNbt.getInt("Z"));
+				BlockPos blockPos = NbtHelper.toBlockPos(this.leashNbt);
 				this.attachLeash(LeashKnotEntity.getOrCreate(this.world, blockPos), true);
 				return;
 			}

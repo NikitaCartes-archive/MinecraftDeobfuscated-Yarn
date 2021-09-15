@@ -4,14 +4,21 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 
 public class FlatChunkGenerator extends ChunkGenerator {
@@ -41,12 +48,17 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void buildSurface(ChunkRegion region, Chunk chunk) {
+	public void buildSurface(ChunkRegion region, StructureAccessor structureAccessor, Chunk chunk) {
 	}
 
 	@Override
 	public int getSpawnHeight(HeightLimitView world) {
 		return world.getBottomY() + Math.min(world.getHeight(), this.config.getLayerBlocks().size());
+	}
+
+	@Override
+	protected boolean method_38274(Registry<Biome> registry, Predicate<RegistryKey<Biome>> predicate, Biome biome) {
+		return registry.getKey(this.config.getBiome()).filter(predicate).isPresent();
 	}
 
 	@Override
@@ -99,5 +111,33 @@ public class FlatChunkGenerator extends ChunkGenerator {
 				.map(state -> state == null ? Blocks.AIR.getDefaultState() : state)
 				.toArray(BlockState[]::new)
 		);
+	}
+
+	@Override
+	public MultiNoiseUtil.MultiNoiseSampler method_38276() {
+		return (i, j, k) -> MultiNoiseUtil.createNoiseValuePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+	}
+
+	@Override
+	public void carve(ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carver) {
+	}
+
+	@Override
+	public void populateEntities(ChunkRegion region) {
+	}
+
+	@Override
+	public int getMinimumY() {
+		return 0;
+	}
+
+	@Override
+	public int getWorldHeight() {
+		return 384;
+	}
+
+	@Override
+	public int getSeaLevel() {
+		return 63;
 	}
 }

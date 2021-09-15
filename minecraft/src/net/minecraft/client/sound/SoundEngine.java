@@ -1,8 +1,10 @@
 package net.minecraft.client.sound;
 
 import com.google.common.collect.Sets;
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Collections;
+import java.util.List;
+import java.util.OptionalLong;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -16,11 +18,11 @@ import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
+import org.lwjgl.openal.ALUtil;
 import org.lwjgl.system.MemoryStack;
 
 @Environment(EnvType.CLIENT)
 public class SoundEngine {
-	private static final int field_31896 = 3;
 	static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_31897 = 30;
 	private long devicePointer;
@@ -55,8 +57,8 @@ public class SoundEngine {
 	private SoundEngine.SourceSet staticSources = EMPTY_SOURCE_SET;
 	private final SoundListener listener = new SoundListener();
 
-	public void init() {
-		this.devicePointer = openDevice();
+	public void init(@Nullable String deviceSpecifier) {
+		this.devicePointer = openDeviceOrFallback(deviceSpecifier);
 		ALCCapabilities aLCCapabilities = ALC.createCapabilities(this.devicePointer);
 		if (AlUtil.checkAlcErrors(this.devicePointer, "Get capabilities")) {
 			throw new IllegalStateException("Failed to get OpenAL capabilities");
@@ -117,15 +119,35 @@ public class SoundEngine {
 		return 30;
 	}
 
-	private static long openDevice() {
-		for (int i = 0; i < 3; i++) {
-			long l = ALC10.alcOpenDevice((ByteBuffer)null);
-			if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {
-				return l;
-			}
+	@Nullable
+	public static String findAvailableDeviceSpecifier() {
+		return !ALC10.alcIsExtensionPresent(0L, "ALC_ENUMERATE_ALL_EXT") ? null : ALC10.alcGetString(0L, 4115);
+	}
+
+	private static long openDeviceOrFallback(@Nullable String deviceSpecifier) {
+		OptionalLong optionalLong = OptionalLong.empty();
+		if (deviceSpecifier != null) {
+			optionalLong = openDevice(deviceSpecifier);
 		}
 
-		throw new IllegalStateException("Failed to open OpenAL device");
+		if (optionalLong.isEmpty()) {
+			optionalLong = openDevice(findAvailableDeviceSpecifier());
+		}
+
+		if (optionalLong.isEmpty()) {
+			optionalLong = openDevice(null);
+		}
+
+		if (optionalLong.isEmpty()) {
+			throw new IllegalStateException("Failed to open OpenAL device");
+		} else {
+			return optionalLong.getAsLong();
+		}
+	}
+
+	private static OptionalLong openDevice(@Nullable String deviceSpecifier) {
+		long l = ALC10.alcOpenDevice(deviceSpecifier);
+		return l != 0L && !AlUtil.checkAlcErrors(l, "Open device") ? OptionalLong.of(l) : OptionalLong.empty();
 	}
 
 	public void close() {
@@ -160,6 +182,11 @@ public class SoundEngine {
 			this.staticSources.getSourceCount(),
 			this.staticSources.getMaxSourceCount()
 		);
+	}
+
+	public List<String> getSoundDevices() {
+		List<String> list = ALUtil.getStringList(0L, 4115);
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Environment(EnvType.CLIENT)

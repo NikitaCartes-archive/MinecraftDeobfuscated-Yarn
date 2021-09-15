@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -1740,9 +1741,21 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		if (this.noClip) {
 			return false;
 		} else {
+			Vec3d vec3d = this.getEyePos();
 			float f = this.dimensions.width * 0.8F;
-			Box box = Box.of(this.getEyePos(), (double)f, 1.0E-6, (double)f);
-			return this.world.getBlockCollisions(this, box, (state, pos) -> state.shouldSuffocate(this.world, pos)).findAny().isPresent();
+			Box box = Box.of(vec3d, (double)f, 1.0E-6, (double)f);
+			return this.world
+				.getStatesInBox(box)
+				.filter(Predicate.not(AbstractBlock.AbstractBlockState::isAir))
+				.anyMatch(
+					blockState -> {
+						BlockPos blockPos = new BlockPos(vec3d);
+						return blockState.shouldSuffocate(this.world, blockPos)
+							&& VoxelShapes.matchesAnywhere(
+								blockState.getCollisionShape(this.world, blockPos).offset(vec3d.x, vec3d.y, vec3d.z), VoxelShapes.cuboid(box), BooleanBiFunction.AND
+							);
+					}
+				);
 		}
 	}
 
@@ -3242,6 +3255,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public boolean canModifyAt(World world, BlockPos pos) {
 		return true;
+	}
+
+	public World getWorld() {
+		return this.world;
 	}
 
 	/**

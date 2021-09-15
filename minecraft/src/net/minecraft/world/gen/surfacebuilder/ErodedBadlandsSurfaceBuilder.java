@@ -2,11 +2,10 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
 
 public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
@@ -20,7 +19,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	@Override
 	public void generate(
 		Random random,
-		Chunk chunk,
+		class_6557 arg,
 		Biome biome,
 		int i,
 		int j,
@@ -47,62 +46,69 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 			e += 64.0;
 		}
 
-		int p = i & 15;
-		int q = j & 15;
 		BlockState blockState3 = WHITE_TERRACOTTA;
 		SurfaceConfig surfaceConfig = biome.getGenerationSettings().getSurfaceConfig();
 		BlockState blockState4 = surfaceConfig.getUnderMaterial();
 		BlockState blockState5 = surfaceConfig.getTopMaterial();
 		BlockState blockState6 = blockState4;
-		int r = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+		int p = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
-		int s = -1;
+		int q = -1;
 		boolean bl2 = false;
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int t = Math.max(k, (int)e + 1); t >= m; t--) {
-			mutable.set(p, t, q);
-			if (chunk.getBlockState(mutable).isAir() && t < (int)e) {
-				chunk.setBlockState(mutable, blockState, false);
+		for (int r = Math.max(k, (int)e + 1); r >= m; r--) {
+			BlockState blockState7 = arg.getState(r);
+			if (blockState7.isOf(blockState.getBlock())) {
+				break;
 			}
 
-			BlockState blockState7 = chunk.getBlockState(mutable);
-			if (blockState7.isAir()) {
-				s = -1;
-			} else if (blockState7.isOf(blockState.getBlock())) {
-				if (s == -1) {
+			if (blockState7.isOf(Blocks.WATER)) {
+				return;
+			}
+		}
+
+		for (int r = Math.max(k, (int)e + 1); r >= m; r--) {
+			if (arg.getState(r).isAir() && r < (int)e) {
+				arg.method_38092(r, blockState);
+			}
+
+			BlockState blockState7x = arg.getState(r);
+			if (blockState7x.isAir()) {
+				q = -1;
+			} else if (blockState7x.isOf(blockState.getBlock())) {
+				if (q == -1) {
 					bl2 = false;
-					if (r <= 0) {
+					if (p <= 0) {
 						blockState3 = Blocks.AIR.getDefaultState();
 						blockState6 = blockState;
-					} else if (t >= l - 4 && t <= l + 1) {
+					} else if (r >= l - 4 && r <= l + 1) {
 						blockState3 = WHITE_TERRACOTTA;
 						blockState6 = blockState4;
 					}
 
-					if (t < l && (blockState3 == null || blockState3.isAir())) {
+					if (r < l && (blockState3 == null || blockState3.isAir())) {
 						blockState3 = blockState2;
 					}
 
-					s = r + Math.max(0, t - l);
-					if (t >= l - 1) {
-						if (t > l + 3 + r) {
+					q = p + Math.max(0, r - l);
+					if (r >= l - 1) {
+						if (r > l + 10 + p) {
 							BlockState blockState8;
-							if (t < 64 || t > 127) {
+							if (r < 64 || r > 159) {
 								blockState8 = ORANGE_TERRACOTTA;
 							} else if (bl) {
 								blockState8 = TERRACOTTA;
 							} else {
-								blockState8 = this.calculateLayerBlockState(i, t, j);
+								blockState8 = this.calculateLayerBlockState(i, r, j);
 							}
 
-							chunk.setBlockState(mutable, blockState8, false);
+							arg.method_38092(r, blockState8);
 						} else {
-							chunk.setBlockState(mutable, blockState5, false);
+							arg.method_38092(r, blockState5);
 							bl2 = true;
 						}
 					} else {
-						chunk.setBlockState(mutable, blockState6, false);
+						arg.method_38092(r, blockState6);
 						if (blockState6.isOf(Blocks.WHITE_TERRACOTTA)
 							|| blockState6.isOf(Blocks.ORANGE_TERRACOTTA)
 							|| blockState6.isOf(Blocks.MAGENTA_TERRACOTTA)
@@ -119,15 +125,15 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 							|| blockState6.isOf(Blocks.GREEN_TERRACOTTA)
 							|| blockState6.isOf(Blocks.RED_TERRACOTTA)
 							|| blockState6.isOf(Blocks.BLACK_TERRACOTTA)) {
-							chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
+							arg.method_38092(r, ORANGE_TERRACOTTA);
 						}
 					}
-				} else if (s > 0) {
-					s--;
+				} else if (q > 0) {
+					q--;
 					if (bl2) {
-						chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
+						arg.method_38092(r, ORANGE_TERRACOTTA);
 					} else {
-						chunk.setBlockState(mutable, this.calculateLayerBlockState(i, t, j), false);
+						arg.method_38092(r, this.calculateLayerBlockState(i, r, j));
 					}
 				}
 			}

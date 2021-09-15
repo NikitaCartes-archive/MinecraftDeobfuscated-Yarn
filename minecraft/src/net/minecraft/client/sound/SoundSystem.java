@@ -40,6 +40,8 @@ public class SoundSystem {
 	private static final int field_33025 = 20;
 	private static final Set<Identifier> UNKNOWN_SOUNDS = Sets.<Identifier>newHashSet();
 	public static final String FOR_THE_DEBUG = "FOR THE DEBUG!";
+	public static final String OPENAL_SOFT_ON = "OpenAL Soft on ";
+	public static final int OPENAL_SOFT_ON_LENGTH = "OpenAL Soft on ".length();
 	private final SoundManager loader;
 	private final GameOptions settings;
 	private boolean started;
@@ -82,7 +84,7 @@ public class SoundSystem {
 	private synchronized void start() {
 		if (!this.started) {
 			try {
-				this.soundEngine.init();
+				this.soundEngine.init("".equals(this.settings.soundDevice) ? null : this.settings.soundDevice);
 				this.listener.init();
 				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.MASTER));
 				this.soundLoader.loadStatic(this.preloadedSounds).thenRun(this.preloadedSounds::clear);
@@ -416,5 +418,9 @@ public class SoundSystem {
 
 	public String getDebugString() {
 		return this.soundEngine.getDebugString();
+	}
+
+	public List<String> getSoundDevices() {
+		return this.soundEngine.getSoundDevices();
 	}
 }

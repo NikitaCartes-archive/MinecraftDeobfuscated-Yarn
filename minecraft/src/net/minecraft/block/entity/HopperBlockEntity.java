@@ -54,14 +54,13 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		if (!this.serializeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inventory);
 		}
 
 		nbt.putInt("TransferCooldown", this.transferCooldown);
-		return nbt;
 	}
 
 	@Override

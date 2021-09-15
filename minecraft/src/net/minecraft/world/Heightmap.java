@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_6490;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
@@ -26,7 +27,7 @@ public class Heightmap {
 	private static final Logger LOGGER = LogManager.getLogger();
 	static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
 	static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
-	private final PackedIntegerArray storage;
+	private final class_6490 storage;
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;
 

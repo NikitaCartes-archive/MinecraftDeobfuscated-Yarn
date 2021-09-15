@@ -1,17 +1,19 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Predicate;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.class_6558;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.collection.IdList;
+import net.minecraft.util.collection.IndexedIterable;
 
 public class IdListPalette<T> implements Palette<T> {
-	private final IdList<T> idList;
-	private final T defaultValue;
+	private final IndexedIterable<T> idList;
 
-	public IdListPalette(IdList<T> idList, T defaultValue) {
-		this.idList = idList;
-		this.defaultValue = defaultValue;
+	public IdListPalette(IndexedIterable<T> indexedIterable) {
+		this.idList = indexedIterable;
+	}
+
+	public static <A> Palette<A> method_38286(int i, IndexedIterable<A> indexedIterable, PaletteResizeListener<A> paletteResizeListener) {
+		return new IdListPalette<>(indexedIterable);
 	}
 
 	@Override
@@ -28,7 +30,11 @@ public class IdListPalette<T> implements Palette<T> {
 	@Override
 	public T getByIndex(int index) {
 		T object = this.idList.get(index);
-		return object == null ? this.defaultValue : object;
+		if (object == null) {
+			throw new class_6558(index);
+		} else {
+			return object;
+		}
 	}
 
 	@Override
@@ -47,9 +53,5 @@ public class IdListPalette<T> implements Palette<T> {
 	@Override
 	public int getIndexBits() {
 		return this.idList.size();
-	}
-
-	@Override
-	public void readNbt(NbtList nbt) {
 	}
 }

@@ -14,7 +14,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
@@ -22,8 +21,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.BlockSource;
-import net.minecraft.world.gen.DefaultBlockSource;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
@@ -33,7 +30,6 @@ public abstract class Carver<C extends CarverConfig> {
 	public static final Carver<RavineCarverConfig> RAVINE = register("canyon", new RavineCarver(RavineCarverConfig.RAVINE_CODEC));
 	public static final Carver<RavineCarverConfig> UNDERWATER_CANYON = register("underwater_canyon", new UnderwaterCanyonCarver(RavineCarverConfig.RAVINE_CODEC));
 	public static final Carver<CaveCarverConfig> UNDERWATER_CAVE = register("underwater_cave", new UnderwaterCaveCarver(CaveCarverConfig.CAVE_CODEC));
-	protected static final BlockSource STONE_SOURCE = new DefaultBlockSource(Blocks.STONE.getDefaultState());
 	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
@@ -70,6 +66,10 @@ public abstract class Carver<C extends CarverConfig> {
 		Blocks.SNOW,
 		Blocks.PACKED_ICE,
 		Blocks.DEEPSLATE,
+		Blocks.CALCITE,
+		Blocks.SAND,
+		Blocks.RED_SAND,
+		Blocks.GRAVEL,
 		Blocks.TUFF,
 		Blocks.GRANITE,
 		Blocks.IRON_ORE,
@@ -186,19 +186,22 @@ public abstract class Carver<C extends CarverConfig> {
 		MutableBoolean foundSurface
 	) {
 		BlockState blockState = chunk.getBlockState(pos);
-		BlockState blockState2 = chunk.getBlockState(downPos.set(pos, Direction.UP));
 		if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
 			foundSurface.setTrue();
 		}
 
-		if (!this.canCarveBlock(blockState, blockState2) && !isDebug(config)) {
+		if (!this.canAlwaysCarveBlock(blockState) && !isDebug(config)) {
 			return false;
 		} else {
-			BlockState blockState3 = this.getState(context, config, pos, sampler);
-			if (blockState3 == null) {
+			BlockState blockState2 = this.getState(context, config, pos, sampler);
+			if (blockState2 == null) {
 				return false;
 			} else {
-				chunk.setBlockState(pos, blockState3, false);
+				chunk.setBlockState(pos, blockState2, false);
+				if (sampler.needsFluidTick() && !blockState2.getFluidState().isEmpty()) {
+					chunk.getFluidTickScheduler().schedule(pos, blockState2.getFluidState().getFluid(), 0);
+				}
+
 				if (foundSurface.isTrue()) {
 					downPos.set(pos, Direction.DOWN);
 					if (chunk.getBlockState(downPos).isOf(Blocks.DIRT)) {
@@ -218,8 +221,8 @@ public abstract class Carver<C extends CarverConfig> {
 		} else if (!config.aquifers) {
 			return isDebug(config) ? getDebugState(config, AIR) : AIR;
 		} else {
-			BlockState blockState = sampler.apply(STONE_SOURCE, pos.getX(), pos.getY(), pos.getZ(), 0.0);
-			if (blockState == Blocks.STONE.getDefaultState()) {
+			BlockState blockState = sampler.apply(pos.getX(), pos.getY(), pos.getZ(), 0.0, 0.0);
+			if (blockState == null) {
 				return isDebug(config) ? config.debugConfig.getBarrierState() : null;
 			} else {
 				return isDebug(config) ? getDebugState(config, blockState) : blockState;
@@ -253,10 +256,6 @@ public abstract class Carver<C extends CarverConfig> {
 
 	protected boolean canAlwaysCarveBlock(BlockState state) {
 		return this.alwaysCarvableBlocks.contains(state.getBlock());
-	}
-
-	protected boolean canCarveBlock(BlockState state, BlockState stateAbove) {
-		return this.canAlwaysCarveBlock(state) || (state.isOf(Blocks.SAND) || state.isOf(Blocks.GRAVEL)) && !stateAbove.getFluidState().isIn(FluidTags.WATER);
 	}
 
 	protected boolean isRegionUncarvable(Chunk chunk, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {

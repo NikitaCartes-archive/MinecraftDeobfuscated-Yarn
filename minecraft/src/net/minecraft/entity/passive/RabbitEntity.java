@@ -380,7 +380,8 @@ public class RabbitEntity extends AnimalEntity {
 
 	public static boolean canSpawn(EntityType<RabbitEntity> entity, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		BlockState blockState = world.getBlockState(pos.down());
-		return (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SAND)) && world.getBaseLightLevel(pos, 0) > 8;
+		return (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.SAND))
+			&& world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	boolean wantsCarrots() {

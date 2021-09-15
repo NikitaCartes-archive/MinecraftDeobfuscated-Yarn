@@ -12,7 +12,6 @@ import net.minecraft.world.ChunkSectionCache;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
@@ -54,7 +53,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 	}
 
 	protected boolean generateVeinPart(
-		StructureWorldAccess structureWorldAccess,
+		StructureWorldAccess world,
 		Random random,
 		OreFeatureConfig config,
 		double startX,
@@ -108,7 +107,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			}
 		}
 
-		try (ChunkSectionCache chunkSectionCache = new ChunkSectionCache(structureWorldAccess)) {
+		try (ChunkSectionCache chunkSectionCache = new ChunkSectionCache(world)) {
 			for (int mx = 0; mx < j; mx++) {
 				double d = ds[mx * 4 + 3];
 				if (!(d < 0.0)) {
@@ -130,14 +129,14 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 								if (u * u + w * w < 1.0) {
 									for (int aa = p; aa <= s; aa++) {
 										double ab = ((double)aa + 0.5 - h) / d;
-										if (u * u + w * w + ab * ab < 1.0 && !structureWorldAccess.isOutOfHeightLimit(v)) {
+										if (u * u + w * w + ab * ab < 1.0 && !world.isOutOfHeightLimit(v)) {
 											int ac = t - x + (v - y) * horizontalSize + (aa - z) * horizontalSize * verticalSize;
 											if (!bitSet.get(ac)) {
 												bitSet.set(ac);
 												mutable.set(t, v, aa);
-												if (structureWorldAccess.isValidForSetBlock(mutable)) {
+												if (world.isValidForSetBlock(mutable)) {
 													ChunkSection chunkSection = chunkSectionCache.getSection(mutable);
-													if (chunkSection != WorldChunk.EMPTY_SECTION) {
+													if (chunkSection != null) {
 														int ad = ChunkSectionPos.getLocalCoord(t);
 														int ae = ChunkSectionPos.getLocalCoord(v);
 														int af = ChunkSectionPos.getLocalCoord(aa);

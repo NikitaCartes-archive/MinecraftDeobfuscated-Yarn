@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.NetherFortressGenerator;
 import net.minecraft.structure.StructureManager;
@@ -13,9 +14,10 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(
@@ -36,7 +38,6 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		long l,
 		ChunkRandom chunkRandom,
 		ChunkPos chunkPos,
-		Biome biome,
 		ChunkPos chunkPos2,
 		DefaultFeatureConfig defaultFeatureConfig,
 		HeightLimitView heightLimitView
@@ -64,22 +65,26 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ChunkPos chunkPos,
-			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig,
-			HeightLimitView heightLimitView
+			HeightLimitView heightLimitView,
+			Predicate<Biome> predicate
 		) {
-			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2));
-			this.addPiece(start);
-			start.fillOpenings(start, this, this.random);
-			List<StructurePiece> list = start.pieces;
+			if (predicate.test(
+				chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos.getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(chunkPos.getCenterZ()))
+			)) {
+				NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2));
+				this.addPiece(start);
+				start.fillOpenings(start, this, this.random);
+				List<StructurePiece> list = start.pieces;
 
-			while (!list.isEmpty()) {
-				int i = this.random.nextInt(list.size());
-				StructurePiece structurePiece = (StructurePiece)list.remove(i);
-				structurePiece.fillOpenings(start, this, this.random);
+				while (!list.isEmpty()) {
+					int i = this.random.nextInt(list.size());
+					StructurePiece structurePiece = (StructurePiece)list.remove(i);
+					structurePiece.fillOpenings(start, this, this.random);
+				}
+
+				this.randomUpwardTranslation(this.random, 48, 70);
 			}
-
-			this.randomUpwardTranslation(this.random, 48, 70);
 		}
 	}
 }

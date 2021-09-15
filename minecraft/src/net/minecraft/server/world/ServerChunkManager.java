@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -33,6 +32,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.SpawnDensityCapper;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
@@ -48,7 +48,6 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 public class ServerChunkManager extends ChunkManager {
 	private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
 	private final ChunkTicketManager ticketManager;
-	private final ChunkGenerator chunkGenerator;
 	final ServerWorld world;
 	final Thread serverThread;
 	final ServerLightingProvider lightingProvider;
@@ -81,7 +80,6 @@ public class ServerChunkManager extends ChunkManager {
 	) {
 		this.world = world;
 		this.mainThreadExecutor = new ServerChunkManager.MainThreadExecutor(world);
-		this.chunkGenerator = chunkGenerator;
 		this.serverThread = Thread.currentThread();
 		File file = session.getWorldDirectory(world.getRegistryKey());
 		File file2 = new File(file, "data");
@@ -95,7 +93,7 @@ public class ServerChunkManager extends ChunkManager {
 			workerExecutor,
 			this.mainThreadExecutor,
 			this,
-			this.getChunkGenerator(),
+			chunkGenerator,
 			worldGenerationProgressListener,
 			chunkStatusChangeListener,
 			supplier,
@@ -302,17 +300,12 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	public boolean isTickingFutureReady(long pos) {
-		return this.isFutureReady(pos, ChunkHolder::getTickingFuture);
-	}
-
-	private boolean isFutureReady(long pos, Function<ChunkHolder, CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>>> futureFunction) {
 		ChunkHolder chunkHolder = this.getChunkHolder(pos);
 		if (chunkHolder == null) {
 			return false;
 		} else {
-			Either<WorldChunk, ChunkHolder.Unloaded> either = (Either<WorldChunk, ChunkHolder.Unloaded>)((CompletableFuture)futureFunction.apply(chunkHolder))
-				.getNow(ChunkHolder.UNLOADED_WORLD_CHUNK);
-			return either.left().isPresent();
+			Either<WorldChunk, ChunkHolder.Unloaded> either = (Either<WorldChunk, ChunkHolder.Unloaded>)chunkHolder.getTickingFuture().getNow(null);
+			return either != null && either.left().isPresent();
 		}
 	}
 
@@ -354,7 +347,7 @@ public class ServerChunkManager extends ChunkManager {
 			boolean bl3 = worldProperties.getTime() % 400L == 0L;
 			this.world.getProfiler().push("naturalSpawnCount");
 			int j = this.ticketManager.getSpawningChunkCount();
-			SpawnHelper.Info info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded);
+			SpawnHelper.Info info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded, new SpawnDensityCapper(this.threadedAnvilChunkStorage));
 			this.spawnInfo = info;
 			this.world.getProfiler().pop();
 			List<ChunkHolder> list = Lists.<ChunkHolder>newArrayList(this.threadedAnvilChunkStorage.entryIterator());
@@ -406,7 +399,7 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	public ChunkGenerator getChunkGenerator() {
-		return this.chunkGenerator;
+		return this.threadedAnvilChunkStorage.method_37897();
 	}
 
 	@Override

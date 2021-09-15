@@ -40,10 +40,9 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		this.logic.writeNbt(this.world, this.pos, nbt);
-		return nbt;
+		this.logic.writeNbt(nbt);
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, MobSpawnerBlockEntity blockEntity) {
@@ -54,15 +53,13 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 		blockEntity.logic.serverTick((ServerWorld)world, pos);
 	}
 
-	@Nullable
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.MOB_SPAWNER, this.toInitialChunkDataNbt());
+		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		NbtCompound nbtCompound = this.writeNbt(new NbtCompound());
+		NbtCompound nbtCompound = this.createNbt();
 		nbtCompound.remove("SpawnPotentials");
 		return nbtCompound;
 	}

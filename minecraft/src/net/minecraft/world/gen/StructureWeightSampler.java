@@ -3,6 +3,7 @@ package net.minecraft.world.gen;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import net.minecraft.class_6568;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructurePiece;
@@ -18,8 +19,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 /**
  * Applies weights to noise values if they are near structures, placing terrain under them and hollowing out the space above them.
  */
-public class StructureWeightSampler {
-	public static final StructureWeightSampler INSTANCE = new StructureWeightSampler();
+public class StructureWeightSampler implements class_6568.class_6572 {
 	public static final int field_31461 = 12;
 	private static final int field_31462 = 24;
 	private static final float[] STRUCTURE_WEIGHT_TABLE = Util.make(new float[13824], array -> {
@@ -36,7 +36,7 @@ public class StructureWeightSampler {
 	private final ObjectListIterator<StructurePiece> pieceIterator;
 	private final ObjectListIterator<JigsawJunction> junctionIterator;
 
-	public StructureWeightSampler(StructureAccessor accessor, Chunk chunk) {
+	public StructureWeightSampler(StructureAccessor structureAccessor, Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
 		int i = chunkPos.getStartX();
 		int j = chunkPos.getStartZ();
@@ -44,8 +44,8 @@ public class StructureWeightSampler {
 		this.pieces = new ObjectArrayList<>(10);
 
 		for (StructureFeature<?> structureFeature : StructureFeature.LAND_MODIFYING_STRUCTURES) {
-			accessor.getStructuresWithChildren(ChunkSectionPos.from(chunk), structureFeature).forEach(start -> {
-				for (StructurePiece structurePiece : start.getChildren()) {
+			structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(chunk), structureFeature).forEach(structureStart -> {
+				for (StructurePiece structurePiece : structureStart.getChildren()) {
 					if (structurePiece.intersectsChunk(chunkPos, 12)) {
 						if (structurePiece instanceof PoolStructurePiece) {
 							PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
@@ -73,30 +73,21 @@ public class StructureWeightSampler {
 		this.junctionIterator = this.junctions.iterator();
 	}
 
-	private StructureWeightSampler() {
-		this.junctions = new ObjectArrayList<>();
-		this.pieces = new ObjectArrayList<>();
-		this.pieceIterator = this.pieces.iterator();
-		this.junctionIterator = this.junctions.iterator();
-	}
-
-	/**
-	 * Gets the weight of the structures near the given position.
-	 */
-	public double getWeight(int x, int y, int z) {
+	@Override
+	public double sample(int i, int j, int k) {
 		double d = 0.0;
 
 		while (this.pieceIterator.hasNext()) {
 			StructurePiece structurePiece = (StructurePiece)this.pieceIterator.next();
 			BlockBox blockBox = structurePiece.getBoundingBox();
-			int i = Math.max(0, Math.max(blockBox.getMinX() - x, x - blockBox.getMaxX()));
-			int j = y - (blockBox.getMinY() + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
-			int k = Math.max(0, Math.max(blockBox.getMinZ() - z, z - blockBox.getMaxZ()));
+			int l = Math.max(0, Math.max(blockBox.getMinX() - i, i - blockBox.getMaxX()));
+			int m = j - (blockBox.getMinY() + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
+			int n = Math.max(0, Math.max(blockBox.getMinZ() - k, k - blockBox.getMaxZ()));
 			StructureWeightType structureWeightType = structurePiece.method_33882();
 			if (structureWeightType == StructureWeightType.BURY) {
-				d += getMagnitudeWeight(i, j, k);
+				d += getMagnitudeWeight(l, m, n);
 			} else if (structureWeightType == StructureWeightType.BEARD) {
-				d += getStructureWeight(i, j, k) * 0.8;
+				d += getStructureWeight(l, m, n) * 0.8;
 			}
 		}
 
@@ -104,10 +95,10 @@ public class StructureWeightSampler {
 
 		while (this.junctionIterator.hasNext()) {
 			JigsawJunction jigsawJunction = (JigsawJunction)this.junctionIterator.next();
-			int l = x - jigsawJunction.getSourceX();
-			int i = y - jigsawJunction.getSourceGroundY();
-			int j = z - jigsawJunction.getSourceZ();
-			d += getStructureWeight(l, i, j) * 0.4;
+			int o = i - jigsawJunction.getSourceX();
+			int l = j - jigsawJunction.getSourceGroundY();
+			int m = k - jigsawJunction.getSourceZ();
+			d += getStructureWeight(o, l, m) * 0.4;
 		}
 
 		this.junctionIterator.back(this.junctions.size());

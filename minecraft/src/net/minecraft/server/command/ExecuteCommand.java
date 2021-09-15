@@ -697,14 +697,12 @@ public class ExecuteCommand {
 									return OptionalInt.empty();
 								}
 
-								NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
-								nbtCompound.remove("x");
-								nbtCompound.remove("y");
-								nbtCompound.remove("z");
-								NbtCompound nbtCompound2 = blockEntity2.writeNbt(new NbtCompound());
-								nbtCompound2.remove("x");
-								nbtCompound2.remove("y");
-								nbtCompound2.remove("z");
+								if (blockEntity2.getType() != blockEntity.getType()) {
+									return OptionalInt.empty();
+								}
+
+								NbtCompound nbtCompound = blockEntity.createNbt();
+								NbtCompound nbtCompound2 = blockEntity2.createNbt();
 								if (!nbtCompound.equals(nbtCompound2)) {
 									return OptionalInt.empty();
 								}

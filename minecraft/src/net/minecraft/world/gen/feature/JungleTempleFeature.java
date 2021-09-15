@@ -1,12 +1,14 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.function.Predicate;
 import net.minecraft.structure.JungleTempleGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -30,12 +32,16 @@ public class JungleTempleFeature extends StructureFeature<DefaultFeatureConfig> 
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ChunkPos chunkPos,
-			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig,
-			HeightLimitView heightLimitView
+			HeightLimitView heightLimitView,
+			Predicate<Biome> predicate
 		) {
-			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
-			this.addPiece(jungleTempleGenerator);
+			if (StructureFeature.checkBiome(chunkGenerator, heightLimitView, predicate, Heightmap.Type.WORLD_SURFACE_WG, chunkPos.getCenterX(), chunkPos.getCenterZ())) {
+				if (StructureFeature.getLowestCornerInGroundHeight(chunkGenerator, 12, 15, chunkPos, heightLimitView) >= chunkGenerator.getSeaLevel()) {
+					JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
+					this.addPiece(jungleTempleGenerator);
+				}
+			}
 		}
 	}
 }

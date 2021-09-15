@@ -18,7 +18,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.collection.WeightedPicker;
+import net.minecraft.util.collection.Weighted;
+import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -115,7 +116,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 			}
 		} else {
 			this.cooldown--;
-			Optional<LongJumpTask.Target> optional = WeightedPicker.getRandom(serverWorld.random, this.targets);
+			Optional<LongJumpTask.Target> optional = Weighting.getRandom(serverWorld.random, this.targets);
 			if (optional.isPresent()) {
 				this.targets.remove(optional.get());
 				mobEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(((LongJumpTask.Target)optional.get()).getPos()));
@@ -210,7 +211,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 		return true;
 	}
 
-	public static class Target extends WeightedPicker.Entry {
+	public static class Target extends Weighted.Absent {
 		private final BlockPos pos;
 		private final Vec3d ramVelocity;
 

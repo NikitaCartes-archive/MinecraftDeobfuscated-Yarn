@@ -173,32 +173,31 @@ public class FilledMapItem extends NetworkSyncedItem {
 								}
 
 								w /= i * i;
-								double f = (e - d) * 4.0 / (double)(i + 4) + ((double)(o + p & 1) - 0.5) * 0.4;
-								int y = 1;
-								if (f > 0.6) {
-									y = 2;
-								}
-
-								if (f < -0.6) {
-									y = 0;
-								}
-
 								MapColor mapColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.CLEAR);
+								MapColor.Brightness brightness;
 								if (mapColor == MapColor.WATER_BLUE) {
-									f = (double)w * 0.1 + (double)(o + p & 1) * 0.2;
-									y = 1;
+									double f = (double)w * 0.1 + (double)(o + p & 1) * 0.2;
 									if (f < 0.5) {
-										y = 2;
+										brightness = MapColor.Brightness.HIGH;
+									} else if (f > 0.9) {
+										brightness = MapColor.Brightness.LOW;
+									} else {
+										brightness = MapColor.Brightness.NORMAL;
 									}
-
-									if (f > 0.9) {
-										y = 0;
+								} else {
+									double f = (e - d) * 4.0 / (double)(i + 4) + ((double)(o + p & 1) - 0.5) * 0.4;
+									if (f > 0.6) {
+										brightness = MapColor.Brightness.HIGH;
+									} else if (f < -0.6) {
+										brightness = MapColor.Brightness.LOW;
+									} else {
+										brightness = MapColor.Brightness.NORMAL;
 									}
 								}
 
 								d = e;
 								if (p >= 0 && q * q + r * r < n * n && (!bl2 || (o + p & 1) != 0)) {
-									bl |= state.putColor(o, p, (byte)(mapColor.id * 4 + y));
+									bl |= state.putColor(o, p, mapColor.getRenderColorByte(brightness));
 								}
 							}
 						}
@@ -214,7 +213,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	private static boolean hasPositiveDepth(Biome[] biomes, int scale, int x, int z) {
-		return biomes[x * scale + z * scale * 128 * scale].getDepth() >= 0.0F;
+		return true;
 	}
 
 	public static void fillExplorationMap(ServerWorld world, ItemStack map) {
@@ -269,37 +268,19 @@ public class FilledMapItem extends NetworkSyncedItem {
 								n--;
 							}
 
-							int o = 3;
+							MapColor.Brightness brightness = MapColor.Brightness.LOWEST;
 							MapColor mapColor = MapColor.CLEAR;
-							if (biome.getDepth() < 0.0F) {
-								mapColor = MapColor.ORANGE;
-								if (n > 7 && m % 2 == 0) {
-									o = (l + (int)(MathHelper.sin((float)m + 0.0F) * 7.0F)) / 8 % 5;
-									if (o == 3) {
-										o = 1;
-									} else if (o == 4) {
-										o = 0;
-									}
-								} else if (n > 7) {
-									mapColor = MapColor.CLEAR;
-								} else if (n > 5) {
-									o = 1;
-								} else if (n > 3) {
-									o = 0;
-								} else if (n > 1) {
-									o = 0;
-								}
-							} else if (n > 0) {
+							if (n > 0) {
 								mapColor = MapColor.BROWN;
 								if (n > 3) {
-									o = 1;
+									brightness = MapColor.Brightness.NORMAL;
 								} else {
-									o = 3;
+									brightness = MapColor.Brightness.LOWEST;
 								}
 							}
 
 							if (mapColor != MapColor.CLEAR) {
-								mapState.setColor(l, m, (byte)(mapColor.id * 4 + o));
+								mapState.setColor(l, m, mapColor.getRenderColorByte(brightness));
 							}
 						}
 					}

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -16,12 +17,12 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.random.ChunkRandom;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,9 +40,9 @@ public abstract class StructureStart<C extends FeatureConfig> implements Structu
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ChunkPos chunkPos,
-			Biome biome,
 			MineshaftFeatureConfig mineshaftFeatureConfig,
-			HeightLimitView heightLimitView
+			HeightLimitView heightLimitView,
+			Predicate<Biome> predicate
 		) {
 		}
 
@@ -76,7 +77,13 @@ public abstract class StructureStart<C extends FeatureConfig> implements Structu
 	}
 
 	public abstract void init(
-		DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, StructureManager manager, ChunkPos pos, Biome biome, C config, HeightLimitView world
+		DynamicRegistryManager registryManager,
+		ChunkGenerator chunkGenerator,
+		StructureManager manager,
+		ChunkPos pos,
+		C featureConfig,
+		HeightLimitView heightLimitView,
+		Predicate<Biome> predicate
 	);
 
 	public final BlockBox setBoundingBoxFromChildren() {
@@ -99,19 +106,25 @@ public abstract class StructureStart<C extends FeatureConfig> implements Structu
 	}
 
 	public void generateStructure(
-		StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos
+		StructureWorldAccess world,
+		StructureAccessor structureAccessor,
+		ChunkGenerator chunkGenerator,
+		Random random,
+		Predicate<Biome> predicate,
+		BlockBox blockBox,
+		ChunkPos chunkPos
 	) {
 		synchronized (this.children) {
 			if (!this.children.isEmpty()) {
-				BlockBox blockBox = ((StructurePiece)this.children.get(0)).boundingBox;
-				BlockPos blockPos = blockBox.getCenter();
-				BlockPos blockPos2 = new BlockPos(blockPos.getX(), blockBox.getMinY(), blockPos.getZ());
+				BlockBox blockBox2 = ((StructurePiece)this.children.get(0)).boundingBox;
+				BlockPos blockPos = blockBox2.getCenter();
+				BlockPos blockPos2 = new BlockPos(blockPos.getX(), blockBox2.getMinY(), blockPos.getZ());
 				Iterator<StructurePiece> iterator = this.children.iterator();
 
 				while (iterator.hasNext()) {
 					StructurePiece structurePiece = (StructurePiece)iterator.next();
-					if (structurePiece.getBoundingBox().intersects(box)
-						&& !structurePiece.generate(world, structureAccessor, chunkGenerator, random, box, chunkPos, blockPos2)) {
+					if (structurePiece.getBoundingBox().intersects(blockBox)
+						&& !structurePiece.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos2)) {
 						iterator.remove();
 					}
 				}
@@ -141,6 +154,7 @@ public abstract class StructureStart<C extends FeatureConfig> implements Structu
 		}
 	}
 
+	@Deprecated
 	protected void randomUpwardTranslation(int seaLevel, int i, Random random, int j) {
 		int k = seaLevel - j;
 		BlockBox blockBox = this.setBoundingBoxFromChildren();
@@ -153,6 +167,7 @@ public abstract class StructureStart<C extends FeatureConfig> implements Structu
 		this.translateUpward(m);
 	}
 
+	@Deprecated
 	protected void randomUpwardTranslation(Random random, int minY, int maxY) {
 		BlockBox blockBox = this.setBoundingBoxFromChildren();
 		int i = maxY - minY + 1 - blockBox.getBlockCountY();
@@ -167,6 +182,7 @@ public abstract class StructureStart<C extends FeatureConfig> implements Structu
 		this.translateUpward(k);
 	}
 
+	@Deprecated
 	protected void translateUpward(int amount) {
 		for (StructurePiece structurePiece : this.children) {
 			structurePiece.translate(0, amount, 0);

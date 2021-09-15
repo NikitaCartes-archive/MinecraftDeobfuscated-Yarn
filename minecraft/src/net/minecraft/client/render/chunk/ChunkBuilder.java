@@ -114,25 +114,26 @@ public class ChunkBuilder {
 				BlockBufferBuilderStorage blockBufferBuilderStorage = (BlockBufferBuilderStorage)this.threadBuffers.poll();
 				this.queuedTaskCount = this.rebuildQueue.size();
 				this.bufferCount = this.threadBuffers.size();
-				CompletableFuture.runAsync(() -> {
-				}, this.executor).thenCompose(void_ -> task.run(blockBufferBuilderStorage)).whenComplete((result, throwable) -> {
-					if (throwable != null) {
-						CrashReport crashReport = CrashReport.create(throwable, "Batching chunks");
-						MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
-					} else {
-						this.mailbox.send(() -> {
-							if (result == ChunkBuilder.Result.SUCCESSFUL) {
-								blockBufferBuilderStorage.clear();
-							} else {
-								blockBufferBuilderStorage.reset();
-							}
+				CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferBuilderStorage)), this.executor)
+					.thenCompose(completableFuture -> completableFuture)
+					.whenComplete((result, throwable) -> {
+						if (throwable != null) {
+							CrashReport crashReport = CrashReport.create(throwable, "Batching chunks");
+							MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
+						} else {
+							this.mailbox.send(() -> {
+								if (result == ChunkBuilder.Result.SUCCESSFUL) {
+									blockBufferBuilderStorage.clear();
+								} else {
+									blockBufferBuilderStorage.reset();
+								}
 
-							this.threadBuffers.add(blockBufferBuilderStorage);
-							this.bufferCount = this.threadBuffers.size();
-							this.scheduleRunTasks();
-						});
-					}
-				});
+								this.threadBuffers.add(blockBufferBuilderStorage);
+								this.bufferCount = this.threadBuffers.size();
+								this.scheduleRunTasks();
+							});
+						}
+					});
 			}
 		}
 	}
@@ -161,14 +162,11 @@ public class ChunkBuilder {
 		return this.cameraPosition;
 	}
 
-	public boolean upload() {
-		boolean bl;
+	public void upload() {
 		Runnable runnable;
-		for (bl = false; (runnable = (Runnable)this.uploadQueue.poll()) != null; bl = true) {
+		while ((runnable = (Runnable)this.uploadQueue.poll()) != null) {
 			runnable.run();
 		}
-
-		return bl;
 	}
 
 	public void rebuild(ChunkBuilder.BuiltChunk chunk) {
@@ -231,7 +229,6 @@ public class ChunkBuilder {
 			.stream()
 			.collect(Collectors.toMap(renderLayer -> renderLayer, renderLayer -> new VertexBuffer()));
 		public Box boundingBox;
-		private int rebuildFrame = -1;
 		private boolean needsRebuild = true;
 		final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
 		private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
@@ -258,15 +255,6 @@ public class ChunkBuilder {
 					&& this.isChunkNonEmpty(this.neighborPositions[Direction.NORTH.ordinal()])
 					&& this.isChunkNonEmpty(this.neighborPositions[Direction.EAST.ordinal()])
 					&& this.isChunkNonEmpty(this.neighborPositions[Direction.SOUTH.ordinal()]);
-		}
-
-		public boolean setRebuildFrame(int frame) {
-			if (this.rebuildFrame == frame) {
-				return false;
-			} else {
-				this.rebuildFrame = frame;
-				return true;
-			}
 		}
 
 		public VertexBuffer getBuffer(RenderLayer layer) {
@@ -406,6 +394,11 @@ public class ChunkBuilder {
 			}
 
 			@Override
+			protected String getName() {
+				return "rend_chk_rebuild";
+			}
+
+			@Override
 			public CompletableFuture<ChunkBuilder.Result> run(BlockBufferBuilderStorage buffers) {
 				if (this.cancelled.get()) {
 					return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
@@ -439,6 +432,7 @@ public class ChunkBuilder {
 								return ChunkBuilder.Result.CANCELLED;
 							} else {
 								BuiltChunk.this.data.set(chunkData);
+								ChunkBuilder.this.worldRenderer.method_38550(BuiltChunk.this);
 								return ChunkBuilder.Result.SUCCESSFUL;
 							}
 						});
@@ -548,6 +542,11 @@ public class ChunkBuilder {
 			}
 
 			@Override
+			protected String getName() {
+				return "rend_chk_sort";
+			}
+
+			@Override
 			public CompletableFuture<ChunkBuilder.Result> run(BlockBufferBuilderStorage buffers) {
 				if (this.cancelled.get()) {
 					return CompletableFuture.completedFuture(ChunkBuilder.Result.CANCELLED);
@@ -610,6 +609,8 @@ public class ChunkBuilder {
 			public abstract CompletableFuture<ChunkBuilder.Result> run(BlockBufferBuilderStorage buffers);
 
 			public abstract void cancel();
+
+			protected abstract String getName();
 
 			public int compareTo(ChunkBuilder.BuiltChunk.Task task) {
 				return Doubles.compare(this.distance, task.distance);

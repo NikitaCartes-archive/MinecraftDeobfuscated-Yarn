@@ -108,7 +108,7 @@ public class RaidManager extends PersistentState {
 					blockPos3 = blockPos;
 				}
 
-				Raid raid = this.getOrCreateRaid(player.getServerWorld(), blockPos3);
+				Raid raid = this.getOrCreateRaid(player.getWorld(), blockPos3);
 				boolean bl = false;
 				if (!raid.hasStarted()) {
 					if (!this.raids.containsKey(raid.getRaidId())) {

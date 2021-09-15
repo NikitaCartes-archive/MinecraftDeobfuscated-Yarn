@@ -1,8 +1,8 @@
 package net.minecraft.world.level.storage;
 
-import com.mojang.bridge.game.GameVersion;
 import java.io.File;
 import javax.annotation.Nullable;
+import net.minecraft.GameVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -92,13 +92,13 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	public boolean isFutureLevel() {
-		return this.versionInfo.getVersionId() > SharedConstants.getGameVersion().getWorldVersion();
+		return this.versionInfo.getVersion().getId() > SharedConstants.getGameVersion().getSaveVersion().getId();
 	}
 
 	public LevelSummary.ConversionWarning getConversionWarning() {
 		GameVersion gameVersion = SharedConstants.getGameVersion();
-		int i = gameVersion.getWorldVersion();
-		int j = this.versionInfo.getVersionId();
+		int i = gameVersion.getSaveVersion().getId();
+		int j = this.versionInfo.getVersion().getId();
 		if (!gameVersion.isStable() && j < i) {
 			return LevelSummary.ConversionWarning.UPGRADE_TO_SNAPSHOT;
 		} else {
@@ -111,17 +111,21 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	/**
-	 * Returns whether the level is from a version before the world height was changed to -64 to 320.
+	 * Returns whether the level is from a version after the world height was changed to -64 to 320.
 	 * 
-	 * <p>This includes world versions {@code 2692} and earlier (21w05b and earlier).
+	 * <p>This corresponds to world versions {@code 2693} to {@code 2706}, or
+	 * game versions 21w06a to 21w14a.
 	 */
-	public boolean isPreWorldHeightChangeVersion() {
-		int i = this.versionInfo.getVersionId();
-		return i > 2692 && i <= 2706;
+	public boolean hasIncompatibleWorldHeight() {
+		return this.versionInfo.getVersion().hasIncompatibleWorldHeight();
 	}
 
 	public boolean isUnavailable() {
-		return this.isLocked() || this.isPreWorldHeightChangeVersion();
+		return !this.isLocked() && !this.requiresConversion() ? !this.isVersionAvailable() : true;
+	}
+
+	public boolean isVersionAvailable() {
+		return this.versionInfo.getVersion().isAvailableTo(SharedConstants.getGameVersion().getSaveVersion());
 	}
 
 	public Text getDetails() {
@@ -135,10 +139,12 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	private Text createDetails() {
 		if (this.isLocked()) {
 			return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
-		} else if (this.isPreWorldHeightChangeVersion()) {
-			return new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
 		} else if (this.requiresConversion()) {
-			return new TranslatableText("selectWorld.conversion");
+			return new TranslatableText("selectWorld.conversion").formatted(Formatting.RED);
+		} else if (this.hasIncompatibleWorldHeight()) {
+			return new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
+		} else if (!this.versionInfo.getVersion().hasSameSeries(SharedConstants.getGameVersion().getSaveVersion())) {
+			return new TranslatableText("selectWorld.incompatible_series").formatted(Formatting.RED);
 		} else {
 			MutableText mutableText = (MutableText)(this.isHardcore()
 				? new LiteralText("").append(new TranslatableText("gameMode.hardcore").formatted(Formatting.DARK_RED))

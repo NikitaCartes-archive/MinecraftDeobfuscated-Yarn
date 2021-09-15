@@ -43,6 +43,7 @@ public class MineshaftGenerator {
 	private static final int field_31554 = 20;
 	private static final int field_31555 = 50;
 	private static final int field_31556 = 8;
+	public static final int field_34729 = 50;
 
 	private static MineshaftGenerator.MineshaftPart pickPiece(
 		StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, @Nullable Direction orientation, int chainLength, MineshaftFeature.Type type
@@ -1098,19 +1099,6 @@ public class MineshaftGenerator {
 			if (this.method_33999(world, boundingBox)) {
 				return false;
 			} else {
-				this.fillWithOutline(
-					world,
-					boundingBox,
-					this.boundingBox.getMinX(),
-					this.boundingBox.getMinY(),
-					this.boundingBox.getMinZ(),
-					this.boundingBox.getMaxX(),
-					this.boundingBox.getMinY(),
-					this.boundingBox.getMaxZ(),
-					Blocks.DIRT.getDefaultState(),
-					AIR,
-					true
-				);
 				this.fillWithOutline(
 					world,
 					boundingBox,

@@ -8,7 +8,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.world.gen.feature.size.FeatureSize;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
-import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 import net.minecraft.world.gen.treedecorator.TreeDecorator;
 import net.minecraft.world.gen.trunk.TrunkPlacer;
 
@@ -102,7 +101,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 			this.trunkPlacer = trunkPlacer;
 			this.foliageProvider = foliageProvider;
 			this.saplingProvider = saplingProvider;
-			this.dirtProvider = new SimpleBlockStateProvider(Blocks.DIRT.getDefaultState());
+			this.dirtProvider = BlockStateProvider.of(Blocks.DIRT);
 			this.foliagePlacer = foliagePlacer;
 			this.minimumSize = minimumSize;
 		}

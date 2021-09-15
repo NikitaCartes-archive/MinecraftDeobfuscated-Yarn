@@ -12,7 +12,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.ControlsOptionsScreen;
+import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.gui.screen.option.NarratorOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -34,8 +34,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.WinNativeModuleUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -263,7 +265,7 @@ public class Keyboard {
 							});
 						} else {
 							BlockEntity blockEntity = this.client.player.world.getBlockEntity(blockPos);
-							NbtCompound nbtCompound = blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : null;
+							NbtCompound nbtCompound = blockEntity != null ? blockEntity.createNbt() : null;
 							this.copyBlock(blockState, blockPos, nbtCompound);
 							this.debugLog("debug.inspect.client.block");
 						}
@@ -295,13 +297,6 @@ public class Keyboard {
 	}
 
 	private void copyBlock(BlockState state, BlockPos pos, @Nullable NbtCompound nbt) {
-		if (nbt != null) {
-			nbt.remove("x");
-			nbt.remove("y");
-			nbt.remove("z");
-			nbt.remove("id");
-		}
-
 		StringBuilder stringBuilder = new StringBuilder(BlockArgumentParser.stringifyBlockState(state));
 		if (nbt != null) {
 			stringBuilder.append(nbt);
@@ -342,8 +337,7 @@ public class Keyboard {
 			}
 
 			Screen screen = this.client.currentScreen;
-			if (action == 1
-				&& (!(this.client.currentScreen instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)screen).time <= Util.getMeasuringTimeMs() - 20L)) {
+			if (action == 1 && (!(this.client.currentScreen instanceof KeybindsScreen) || ((KeybindsScreen)screen).field_34800 <= Util.getMeasuringTimeMs() - 20L)) {
 				if (this.client.options.keyFullscreen.matchesKey(key, scancode)) {
 					this.client.getWindow().toggleFullscreen();
 					this.client.options.fullscreen = this.client.getWindow().isFullscreen();
@@ -493,7 +487,10 @@ public class Keyboard {
 					GlfwUtil.makeJvmCrash();
 				}
 
-				throw new CrashException(new CrashReport("Manually triggered debug crash", new Throwable()));
+				CrashReport crashReport = new CrashReport("Manually triggered debug crash", new Throwable());
+				CrashReportSection crashReportSection = crashReport.addElement("Manual crash details");
+				WinNativeModuleUtil.addDetailTo(crashReportSection);
+				throw new CrashException(crashReport);
 			}
 
 			if (n >= 1000L) {

@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -34,12 +35,17 @@ import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -345,21 +351,37 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (source instanceof ProjectileDamageSource) {
+			Entity entity = source.getSource();
+			boolean bl;
+			if (entity instanceof PotionEntity) {
+				bl = this.damageFromPotion(source, (PotionEntity)entity, amount);
+			} else {
+				bl = false;
+			}
+
 			for (int i = 0; i < 64; i++) {
 				if (this.teleportRandomly()) {
 					return true;
 				}
 			}
 
-			return false;
+			return bl;
 		} else {
-			boolean bl = super.damage(source, amount);
+			boolean bl2 = super.damage(source, amount);
 			if (!this.world.isClient() && !(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
 				this.teleportRandomly();
 			}
 
-			return bl;
+			return bl2;
 		}
+	}
+
+	private boolean damageFromPotion(DamageSource source, PotionEntity potion, float amount) {
+		ItemStack itemStack = potion.getStack();
+		Potion potion2 = PotionUtil.getPotion(itemStack);
+		List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
+		boolean bl = potion2 == Potions.WATER && list.isEmpty();
+		return bl ? super.damage(source, amount) : false;
 	}
 
 	public boolean isAngry() {
@@ -505,8 +527,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		private final TargetPredicate staringPlayerPredicate;
 		private final TargetPredicate validTargetPredicate = TargetPredicate.createAttackable().ignoreVisibility();
 
-		public TeleportTowardsPlayerGoal(EndermanEntity enderman, @Nullable Predicate<LivingEntity> predicate) {
-			super(enderman, PlayerEntity.class, 10, false, false, predicate);
+		public TeleportTowardsPlayerGoal(EndermanEntity enderman, @Nullable Predicate<LivingEntity> targetPredicate) {
+			super(enderman, PlayerEntity.class, 10, false, false, targetPredicate);
 			this.enderman = enderman;
 			this.staringPlayerPredicate = TargetPredicate.createAttackable()
 				.setBaseMaxDistance(this.getFollowRange())

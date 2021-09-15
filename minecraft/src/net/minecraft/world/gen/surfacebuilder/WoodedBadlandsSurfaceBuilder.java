@@ -2,11 +2,10 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
 
 public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
@@ -20,7 +19,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	@Override
 	public void generate(
 		Random random,
-		Chunk chunk,
+		class_6557 arg,
 		Biome biome,
 		int i,
 		int j,
@@ -33,78 +32,74 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 		long n,
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
-		int o = i & 15;
-		int p = j & 15;
 		BlockState blockState3 = WHITE_TERRACOTTA;
 		SurfaceConfig surfaceConfig = biome.getGenerationSettings().getSurfaceConfig();
 		BlockState blockState4 = surfaceConfig.getUnderMaterial();
 		BlockState blockState5 = surfaceConfig.getTopMaterial();
 		BlockState blockState6 = blockState4;
-		int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+		int o = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
-		int r = -1;
+		int p = -1;
 		boolean bl2 = false;
-		int s = 0;
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		int q = 0;
 
-		for (int t = k; t >= m; t--) {
-			if (s < 15) {
-				mutable.set(o, t, p);
-				BlockState blockState7 = chunk.getBlockState(mutable);
+		for (int r = k; r >= m; r--) {
+			if (q < 15) {
+				BlockState blockState7 = arg.getState(r);
 				if (blockState7.isAir()) {
-					r = -1;
+					p = -1;
 				} else if (blockState7.isOf(blockState.getBlock())) {
-					if (r == -1) {
+					if (p == -1) {
 						bl2 = false;
-						if (q <= 0) {
+						if (o <= 0) {
 							blockState3 = Blocks.AIR.getDefaultState();
 							blockState6 = blockState;
-						} else if (t >= l - 4 && t <= l + 1) {
+						} else if (r >= l - 4 && r <= l + 1) {
 							blockState3 = WHITE_TERRACOTTA;
 							blockState6 = blockState4;
 						}
 
-						if (t < l && (blockState3 == null || blockState3.isAir())) {
+						if (r < l && (blockState3 == null || blockState3.isAir())) {
 							blockState3 = blockState2;
 						}
 
-						r = q + Math.max(0, t - l);
-						if (t < l - 1) {
-							chunk.setBlockState(mutable, blockState6, false);
+						p = o + Math.max(0, r - l);
+						if (r < l - 1) {
+							arg.method_38092(r, blockState6);
 							if (blockState6 == WHITE_TERRACOTTA) {
-								chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
+								arg.method_38092(r, ORANGE_TERRACOTTA);
 							}
-						} else if (t > 86 + q * 2) {
+						} else if (r > 96 + o * 2) {
 							if (bl) {
-								chunk.setBlockState(mutable, Blocks.COARSE_DIRT.getDefaultState(), false);
+								arg.method_38092(r, Blocks.COARSE_DIRT.getDefaultState());
 							} else {
-								chunk.setBlockState(mutable, Blocks.GRASS_BLOCK.getDefaultState(), false);
+								arg.method_38092(r, Blocks.GRASS_BLOCK.getDefaultState());
 							}
-						} else if (t <= l + 3 + q) {
-							chunk.setBlockState(mutable, blockState5, false);
+						} else if (r <= l + 10 + o) {
+							arg.method_38092(r, blockState5);
 							bl2 = true;
 						} else {
 							BlockState blockState8;
-							if (t < 64 || t > 127) {
+							if (r < 64 || r > 159) {
 								blockState8 = ORANGE_TERRACOTTA;
 							} else if (bl) {
 								blockState8 = TERRACOTTA;
 							} else {
-								blockState8 = this.calculateLayerBlockState(i, t, j);
+								blockState8 = this.calculateLayerBlockState(i, r, j);
 							}
 
-							chunk.setBlockState(mutable, blockState8, false);
+							arg.method_38092(r, blockState8);
 						}
-					} else if (r > 0) {
-						r--;
+					} else if (p > 0) {
+						p--;
 						if (bl2) {
-							chunk.setBlockState(mutable, ORANGE_TERRACOTTA, false);
+							arg.method_38092(r, ORANGE_TERRACOTTA);
 						} else {
-							chunk.setBlockState(mutable, this.calculateLayerBlockState(i, t, j), false);
+							arg.method_38092(r, this.calculateLayerBlockState(i, r, j));
 						}
 					}
 
-					s++;
+					q++;
 				}
 			}
 		}

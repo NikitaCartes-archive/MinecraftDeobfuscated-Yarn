@@ -334,8 +334,12 @@ public abstract class LivingEntity extends Entity {
 
 		super.baseTick();
 		this.world.getProfiler().push("livingEntityBaseTick");
-		boolean bl = this instanceof PlayerEntity;
+		if (this.isFireImmune() || this.world.isClient) {
+			this.extinguish();
+		}
+
 		if (this.isAlive()) {
+			boolean bl = this instanceof PlayerEntity;
 			if (this.isInsideWall()) {
 				this.damage(DamageSource.IN_WALL, 1.0F);
 			} else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox())) {
@@ -347,16 +351,10 @@ public abstract class LivingEntity extends Entity {
 					}
 				}
 			}
-		}
 
-		if (this.isFireImmune() || this.world.isClient) {
-			this.extinguish();
-		}
-
-		boolean bl2 = bl && ((PlayerEntity)this).getAbilities().invulnerable;
-		if (this.isAlive()) {
 			if (this.isSubmergedIn(FluidTags.WATER) && !this.world.getBlockState(new BlockPos(this.getX(), this.getEyeY(), this.getZ())).isOf(Blocks.BUBBLE_COLUMN)) {
-				if (!this.canBreatheInWater() && !StatusEffectUtil.hasWaterBreathing(this) && !bl2) {
+				boolean bl2 = !this.canBreatheInWater() && !StatusEffectUtil.hasWaterBreathing(this) && (!bl || !((PlayerEntity)this).getAbilities().invulnerable);
+				if (bl2) {
 					this.setAir(this.getNextAirUnderwater(this.getAir()));
 					if (this.getAir() == -20) {
 						this.setAir(0);
@@ -2225,7 +2223,7 @@ public abstract class LivingEntity extends Entity {
 				BlockPos blockPos = this.getVelocityAffectingPos();
 				float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
 				float fxx = this.onGround ? p * 0.91F : 0.91F;
-				Vec3d vec3d6 = this.applyMovementInput(movementInput, p);
+				Vec3d vec3d6 = this.method_26318(movementInput, p);
 				double q = vec3d6.y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
@@ -2265,17 +2263,17 @@ public abstract class LivingEntity extends Entity {
 		entity.limbAngle = entity.limbAngle + entity.limbDistance;
 	}
 
-	public Vec3d applyMovementInput(Vec3d movementInput, float slipperiness) {
-		this.updateVelocity(this.getMovementSpeed(slipperiness), movementInput);
+	public Vec3d method_26318(Vec3d vec3d, float f) {
+		this.updateVelocity(this.getMovementSpeed(f), vec3d);
 		this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
 		this.move(MovementType.SELF, this.getVelocity());
-		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d2 = this.getVelocity();
 		if ((this.horizontalCollision || this.jumping)
 			&& (this.isClimbing() || this.getBlockStateAtPos().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
-			vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
+			vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
 		}
 
-		return vec3d;
+		return vec3d2;
 	}
 
 	public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {
@@ -3460,6 +3458,8 @@ public abstract class LivingEntity extends Entity {
 		this.updateTrackedPosition(d, e, f);
 		this.bodyYaw = (float)(packet.getHeadYaw() * 360) / 256.0F;
 		this.headYaw = (float)(packet.getHeadYaw() * 360) / 256.0F;
+		this.prevBodyYaw = this.bodyYaw;
+		this.prevHeadYaw = this.headYaw;
 		this.setId(packet.getId());
 		this.setUuid(packet.getUuid());
 		this.updatePositionAndAngles(d, e, f, g, h);

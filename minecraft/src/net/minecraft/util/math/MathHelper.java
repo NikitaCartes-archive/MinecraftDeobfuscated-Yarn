@@ -426,6 +426,10 @@ public class MathHelper {
 		return (value - start) / (end - start);
 	}
 
+	public static float getLerpProgress(float value, float start, float end) {
+		return (value - start) / (end - start);
+	}
+
 	public static boolean method_34945(Vec3d vec3d, Vec3d vec3d2, Box box) {
 		double d = (box.minX + box.maxX) * 0.5;
 		double e = (box.maxX - box.minX) * 0.5;
@@ -814,7 +818,15 @@ public class MathHelper {
 		return clampedLerp(start, end, getLerpProgress(lerpValue, lerpStart, lerpEnd));
 	}
 
+	public static float clampedLerpFromProgress(float lerpValue, float lerpStart, float lerpEnd, float start, float end) {
+		return clampedLerp(start, end, getLerpProgress(lerpValue, lerpStart, lerpEnd));
+	}
+
 	public static double lerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
+		return lerp(getLerpProgress(lerpValue, lerpStart, lerpEnd), start, end);
+	}
+
+	public static float lerpFromProgress(float lerpValue, float lerpStart, float lerpEnd, float start, float end) {
 		return lerp(getLerpProgress(lerpValue, lerpStart, lerpEnd), start, end);
 	}
 

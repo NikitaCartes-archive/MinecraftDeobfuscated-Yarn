@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Predicate;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
@@ -26,6 +27,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
@@ -47,7 +50,8 @@ public class StructurePoolBasedGenerator {
 		Random random,
 		boolean modifyBoundingBox,
 		boolean surface,
-		HeightLimitView world
+		HeightLimitView world,
+		Predicate<Biome> predicate
 	) {
 		StructureFeature.init();
 		List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
@@ -74,39 +78,41 @@ public class StructurePoolBasedGenerator {
 				k = pos.getY();
 			}
 
-			int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
-			poolStructurePiece.translate(0, k - l, 0);
-			list.add(poolStructurePiece);
-			if (config.getSize() > 0) {
-				int m = 80;
-				Box box = new Box((double)(i - 80), (double)(k - 80), (double)(j - 80), (double)(i + 80 + 1), (double)(k + 80 + 1), (double)(j + 80 + 1));
-				StructurePoolBasedGenerator.StructurePoolGenerator structurePoolGenerator = new StructurePoolBasedGenerator.StructurePoolGenerator(
-					registry, config.getSize(), pieceFactory, chunkGenerator, structureManager, list, random
-				);
-				structurePoolGenerator.structurePieces
-					.addLast(
-						new StructurePoolBasedGenerator.ShapedPoolStructurePiece(
-							poolStructurePiece,
-							new MutableObject<>(VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST)),
-							k + 80,
-							0
-						)
+			if (predicate.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j)))) {
+				int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
+				poolStructurePiece.translate(0, k - l, 0);
+				list.add(poolStructurePiece);
+				if (config.getSize() > 0) {
+					int m = 80;
+					Box box = new Box((double)(i - 80), (double)(k - 80), (double)(j - 80), (double)(i + 80 + 1), (double)(k + 80 + 1), (double)(j + 80 + 1));
+					StructurePoolBasedGenerator.StructurePoolGenerator structurePoolGenerator = new StructurePoolBasedGenerator.StructurePoolGenerator(
+						registry, config.getSize(), pieceFactory, chunkGenerator, structureManager, list, random
 					);
+					structurePoolGenerator.structurePieces
+						.addLast(
+							new StructurePoolBasedGenerator.ShapedPoolStructurePiece(
+								poolStructurePiece,
+								new MutableObject<>(VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST)),
+								k + 80,
+								0
+							)
+						);
 
-				while (!structurePoolGenerator.structurePieces.isEmpty()) {
-					StructurePoolBasedGenerator.ShapedPoolStructurePiece shapedPoolStructurePiece = (StructurePoolBasedGenerator.ShapedPoolStructurePiece)structurePoolGenerator.structurePieces
-						.removeFirst();
-					structurePoolGenerator.generatePiece(
-						shapedPoolStructurePiece.piece,
-						shapedPoolStructurePiece.pieceShape,
-						shapedPoolStructurePiece.minY,
-						shapedPoolStructurePiece.currentSize,
-						modifyBoundingBox,
-						world
-					);
+					while (!structurePoolGenerator.structurePieces.isEmpty()) {
+						StructurePoolBasedGenerator.ShapedPoolStructurePiece shapedPoolStructurePiece = (StructurePoolBasedGenerator.ShapedPoolStructurePiece)structurePoolGenerator.structurePieces
+							.removeFirst();
+						structurePoolGenerator.generatePiece(
+							shapedPoolStructurePiece.piece,
+							shapedPoolStructurePiece.pieceShape,
+							shapedPoolStructurePiece.minY,
+							shapedPoolStructurePiece.currentSize,
+							modifyBoundingBox,
+							world
+						);
+					}
+
+					list.forEach(children::addPiece);
 				}
-
-				list.forEach(children::addPiece);
 			}
 		}
 	}

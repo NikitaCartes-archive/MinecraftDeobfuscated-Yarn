@@ -6,13 +6,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.BlockSource;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class LakeFeature extends Feature<SingleStateFeatureConfig> {
@@ -119,34 +117,6 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 										structureWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), Block.NOTIFY_LISTENERS);
 									} else {
 										structureWorldAccess.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
-									}
-								}
-							}
-						}
-					}
-				}
-
-				if (singleStateFeatureConfig.state.getMaterial() == Material.LAVA) {
-					BlockSource blockSource = context.getGenerator().getBlockSource();
-
-					for (int s = 0; s < 16; s++) {
-						for (int txxx = 0; txxx < 16; txxx++) {
-							for (int u = 0; u < 8; u++) {
-								boolean bl2 = !bls[(s * 16 + txxx) * 8 + u]
-									&& (
-										s < 15 && bls[((s + 1) * 16 + txxx) * 8 + u]
-											|| s > 0 && bls[((s - 1) * 16 + txxx) * 8 + u]
-											|| txxx < 15 && bls[(s * 16 + txxx + 1) * 8 + u]
-											|| txxx > 0 && bls[(s * 16 + (txxx - 1)) * 8 + u]
-											|| u < 7 && bls[(s * 16 + txxx) * 8 + u + 1]
-											|| u > 0 && bls[(s * 16 + txxx) * 8 + (u - 1)]
-									);
-								if (bl2 && (u < 4 || random.nextInt(2) != 0)) {
-									BlockState blockState = structureWorldAccess.getBlockState(blockPos.add(s, u, txxx));
-									if (blockState.getMaterial().isSolid() && !blockState.isIn(BlockTags.LAVA_POOL_STONE_REPLACEABLES)) {
-										BlockPos blockPos3 = blockPos.add(s, u, txxx);
-										structureWorldAccess.setBlockState(blockPos3, blockSource.get(blockPos3), Block.NOTIFY_LISTENERS);
-										this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos3);
 									}
 								}
 							}

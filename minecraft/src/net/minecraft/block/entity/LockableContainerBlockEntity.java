@@ -35,14 +35,12 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		this.lock.writeNbt(nbt);
 		if (this.customName != null) {
 			nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
-
-		return nbt;
 	}
 
 	public void setCustomName(Text customName) {

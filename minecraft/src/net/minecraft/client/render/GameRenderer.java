@@ -1029,7 +1029,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		}
 	}
 
-	public void renderWorld(float tickDelta, long limitTime, MatrixStack matrix) {
+	public void renderWorld(float tickDelta, long limitTime, MatrixStack matrices) {
 		this.lightmapTextureManager.update(tickDelta);
 		if (this.client.getCameraEntity() == null) {
 			this.client.setCameraEntity(this.client.player);
@@ -1040,7 +1040,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		boolean bl = this.shouldRenderBlockOutline();
 		this.client.getProfiler().swap("camera");
 		Camera camera = this.camera;
-		this.viewDistance = (float)(this.client.options.viewDistance * 16);
+		this.viewDistance = (float)(this.client.options.getViewDistance() * 16);
 		MatrixStack matrixStack = new MatrixStack();
 		double d = this.getFov(camera, tickDelta, true);
 		matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(d));
@@ -1072,14 +1072,14 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			this.client.options.getPerspective().isFrontView(),
 			tickDelta
 		);
-		matrix.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
-		matrix.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
-		this.client.worldRenderer.setupFrustum(matrix, camera.getPos(), this.getBasicProjectionMatrix(Math.max(d, this.client.options.fov)));
-		this.client.worldRenderer.render(matrix, tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f);
+		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
+		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
+		this.client.worldRenderer.setupFrustum(matrices, camera.getPos(), this.getBasicProjectionMatrix(Math.max(d, this.client.options.fov)));
+		this.client.worldRenderer.render(matrices, tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
 			RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
-			this.renderHand(matrix, camera, tickDelta);
+			this.renderHand(matrices, camera, tickDelta);
 		}
 
 		this.client.getProfiler().pop();

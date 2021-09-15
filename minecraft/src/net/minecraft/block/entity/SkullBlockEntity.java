@@ -48,15 +48,13 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		if (this.owner != null) {
 			NbtCompound nbtCompound = new NbtCompound();
 			NbtHelper.writeGameProfile(nbtCompound, this.owner);
 			nbt.put("SkullOwner", nbtCompound);
 		}
-
-		return nbt;
 	}
 
 	@Override
@@ -90,15 +88,13 @@ public class SkullBlockEntity extends BlockEntity {
 		return this.owner;
 	}
 
-	@Nullable
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.SKULL, this.toInitialChunkDataNbt());
+		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		return this.writeNbt(new NbtCompound());
+		return this.createNbt();
 	}
 
 	public void setOwner(@Nullable GameProfile owner) {

@@ -1,7 +1,9 @@
 package net.minecraft.recipe;
 
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.BannerItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -35,7 +37,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 						return false;
 					}
 
-					if (itemStack3.getSubNbt("BlockEntityTag") != null) {
+					if (BlockItem.getBlockEntityNbt(itemStack3) != null) {
 						return false;
 					}
 
@@ -65,10 +67,10 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		if (itemStack2.isEmpty()) {
 			return itemStack2;
 		} else {
-			NbtCompound nbtCompound = itemStack.getSubNbt("BlockEntityTag");
+			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
 			NbtCompound nbtCompound2 = nbtCompound == null ? new NbtCompound() : nbtCompound.copy();
 			nbtCompound2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
-			itemStack2.setSubNbt("BlockEntityTag", nbtCompound2);
+			BlockItem.setBlockEntityNbt(itemStack2, BlockEntityType.BANNER, nbtCompound2);
 			return itemStack2;
 		}
 	}

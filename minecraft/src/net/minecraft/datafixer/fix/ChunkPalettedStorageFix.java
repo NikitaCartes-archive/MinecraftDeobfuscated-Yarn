@@ -895,7 +895,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 	}
 
 	static class Section {
-		private final Int2ObjectBiMap<Dynamic<?>> paletteMap = new Int2ObjectBiMap<>(32);
+		private final Int2ObjectBiMap<Dynamic<?>> paletteMap = Int2ObjectBiMap.method_37913(32);
 		private final List<Dynamic<?>> paletteData;
 		private final Dynamic<?> section;
 		private final boolean hasBlocks;

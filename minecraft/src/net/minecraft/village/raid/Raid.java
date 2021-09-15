@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -30,6 +31,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -591,7 +593,7 @@ public class Raid {
 
 	public static ItemStack getOminousBanner() {
 		ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
-		NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("BlockEntityTag");
+		NbtCompound nbtCompound = new NbtCompound();
 		NbtList nbtList = new BannerPattern.Patterns()
 			.add(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN)
 			.add(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
@@ -603,6 +605,7 @@ public class Raid {
 			.add(BannerPattern.BORDER, DyeColor.BLACK)
 			.toNbt();
 		nbtCompound.put("Patterns", nbtList);
+		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BANNER, nbtCompound);
 		itemStack.addHideFlag(ItemStack.TooltipSection.ADDITIONAL);
 		itemStack.setCustomName(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
 		return itemStack;

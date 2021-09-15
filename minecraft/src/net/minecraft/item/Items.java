@@ -1452,7 +1452,7 @@ public class Items {
 	public static final Item PHANTOM_MEMBRANE = register("phantom_membrane", new Item(new Item.Settings().group(ItemGroup.BREWING)));
 	public static final Item NAUTILUS_SHELL = register("nautilus_shell", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item HEART_OF_THE_SEA = register("heart_of_the_sea", new Item(new Item.Settings().group(ItemGroup.MATERIALS).rarity(Rarity.UNCOMMON)));
-	public static final Item CROSSBOW = register("crossbow", new CrossbowItem(new Item.Settings().maxCount(1).group(ItemGroup.COMBAT).maxDamage(326)));
+	public static final Item CROSSBOW = register("crossbow", new CrossbowItem(new Item.Settings().maxCount(1).group(ItemGroup.COMBAT).maxDamage(465)));
 	public static final Item SUSPICIOUS_STEW = register(
 		"suspicious_stew", new SuspiciousStewItem(new Item.Settings().maxCount(1).food(FoodComponents.SUSPICIOUS_STEW))
 	);

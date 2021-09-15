@@ -317,14 +317,12 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		nbt.put("Bees", this.getBees());
 		if (this.hasFlowerPos()) {
 			nbt.put("FlowerPos", NbtHelper.fromBlockPos(this.flowerPos));
 		}
-
-		return nbt;
 	}
 
 	public NbtList getBees() {

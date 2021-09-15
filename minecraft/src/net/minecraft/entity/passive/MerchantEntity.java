@@ -222,11 +222,6 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		return i >= 0 && i < this.inventory.size() ? StackReference.of(this.inventory, i) : super.getStackReference(mappedIndex);
 	}
 
-	@Override
-	public World getMerchantWorld() {
-		return this.world;
-	}
-
 	protected abstract void fillRecipes();
 
 	protected void fillRecipesFromPool(TradeOfferList recipeList, TradeOffers.Factory[] pool, int count) {
@@ -255,5 +250,10 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		float g = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * (float) (Math.PI / 180.0);
 		Vec3d vec3d = new Vec3d(0.0, this.getBoundingBox().getYLength() - 1.0, 0.2);
 		return this.getLerpedPos(f).add(vec3d.rotateY(-g));
+	}
+
+	@Override
+	public boolean isClient() {
+		return this.world.isClient;
 	}
 }

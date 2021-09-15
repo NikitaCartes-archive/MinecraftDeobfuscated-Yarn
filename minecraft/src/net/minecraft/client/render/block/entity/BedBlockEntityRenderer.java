@@ -104,7 +104,7 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 	}
 
 	private void renderPart(
-		MatrixStack matrix,
+		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
 		ModelPart part,
 		Direction direction,
@@ -113,14 +113,14 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 		int overlay,
 		boolean isFoot
 	) {
-		matrix.push();
-		matrix.translate(0.0, 0.5625, isFoot ? -1.0 : 0.0);
-		matrix.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
-		matrix.translate(0.5, 0.5, 0.5);
-		matrix.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F + direction.asRotation()));
-		matrix.translate(-0.5, -0.5, -0.5);
+		matrices.push();
+		matrices.translate(0.0, 0.5625, isFoot ? -1.0 : 0.0);
+		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+		matrices.translate(0.5, 0.5, 0.5);
+		matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F + direction.asRotation()));
+		matrices.translate(-0.5, -0.5, -0.5);
 		VertexConsumer vertexConsumer = sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid);
-		part.render(matrix, vertexConsumer, light, overlay);
-		matrix.pop();
+		part.render(matrices, vertexConsumer, light, overlay);
+		matrices.pop();
 	}
 }

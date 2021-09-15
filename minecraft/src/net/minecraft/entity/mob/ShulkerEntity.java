@@ -93,8 +93,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		this.goalSelector.add(7, new ShulkerEntity.PeekGoal());
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this, this.getClass()).setGroupRevenge());
-		this.targetSelector.add(2, new ShulkerEntity.SearchForPlayerGoal(this));
-		this.targetSelector.add(3, new ShulkerEntity.SearchForTargetGoal(this));
+		this.targetSelector.add(2, new ShulkerEntity.TargetPlayerGoal(this));
+		this.targetSelector.add(3, new ShulkerEntity.TargetOtherTeamGoal(this));
 	}
 
 	@Override
@@ -514,6 +514,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	public void readFromPacket(MobSpawnS2CPacket packet) {
 		super.readFromPacket(packet);
 		this.bodyYaw = 0.0F;
+		this.prevBodyYaw = 0.0F;
 	}
 
 	@Override
@@ -593,52 +594,6 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
-	class SearchForPlayerGoal extends ActiveTargetGoal<PlayerEntity> {
-		public SearchForPlayerGoal(ShulkerEntity shulker) {
-			super(shulker, PlayerEntity.class, true);
-		}
-
-		@Override
-		public boolean canStart() {
-			return ShulkerEntity.this.world.getDifficulty() == Difficulty.PEACEFUL ? false : super.canStart();
-		}
-
-		@Override
-		protected Box getSearchBox(double distance) {
-			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
-			if (direction.getAxis() == Direction.Axis.X) {
-				return this.mob.getBoundingBox().expand(4.0, distance, distance);
-			} else {
-				return direction.getAxis() == Direction.Axis.Z
-					? this.mob.getBoundingBox().expand(distance, distance, 4.0)
-					: this.mob.getBoundingBox().expand(distance, 4.0, distance);
-			}
-		}
-	}
-
-	static class SearchForTargetGoal extends ActiveTargetGoal<LivingEntity> {
-		public SearchForTargetGoal(ShulkerEntity shulker) {
-			super(shulker, LivingEntity.class, 10, true, false, entity -> entity instanceof Monster);
-		}
-
-		@Override
-		public boolean canStart() {
-			return this.mob.getScoreboardTeam() == null ? false : super.canStart();
-		}
-
-		@Override
-		protected Box getSearchBox(double distance) {
-			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
-			if (direction.getAxis() == Direction.Axis.X) {
-				return this.mob.getBoundingBox().expand(4.0, distance, distance);
-			} else {
-				return direction.getAxis() == Direction.Axis.Z
-					? this.mob.getBoundingBox().expand(distance, distance, 4.0)
-					: this.mob.getBoundingBox().expand(distance, 4.0, distance);
-			}
-		}
-	}
-
 	class ShootBulletGoal extends Goal {
 		private int counter;
 
@@ -695,6 +650,59 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public void tick() {
+		}
+	}
+
+	/**
+	 * A target goal on other teams' entities if this shulker belongs
+	 * to a team.
+	 */
+	static class TargetOtherTeamGoal extends ActiveTargetGoal<LivingEntity> {
+		public TargetOtherTeamGoal(ShulkerEntity shulker) {
+			super(shulker, LivingEntity.class, 10, true, false, entity -> entity instanceof Monster);
+		}
+
+		@Override
+		public boolean canStart() {
+			return this.mob.getScoreboardTeam() == null ? false : super.canStart();
+		}
+
+		@Override
+		protected Box getSearchBox(double distance) {
+			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
+			if (direction.getAxis() == Direction.Axis.X) {
+				return this.mob.getBoundingBox().expand(4.0, distance, distance);
+			} else {
+				return direction.getAxis() == Direction.Axis.Z
+					? this.mob.getBoundingBox().expand(distance, distance, 4.0)
+					: this.mob.getBoundingBox().expand(distance, 4.0, distance);
+			}
+		}
+	}
+
+	/**
+	 * A hostile target goal on players.
+	 */
+	class TargetPlayerGoal extends ActiveTargetGoal<PlayerEntity> {
+		public TargetPlayerGoal(ShulkerEntity shulker) {
+			super(shulker, PlayerEntity.class, true);
+		}
+
+		@Override
+		public boolean canStart() {
+			return ShulkerEntity.this.world.getDifficulty() == Difficulty.PEACEFUL ? false : super.canStart();
+		}
+
+		@Override
+		protected Box getSearchBox(double distance) {
+			Direction direction = ((ShulkerEntity)this.mob).getAttachedFace();
+			if (direction.getAxis() == Direction.Axis.X) {
+				return this.mob.getBoundingBox().expand(4.0, distance, distance);
+			} else {
+				return direction.getAxis() == Direction.Axis.Z
+					? this.mob.getBoundingBox().expand(distance, distance, 4.0)
+					: this.mob.getBoundingBox().expand(distance, 4.0, distance);
+			}
 		}
 	}
 

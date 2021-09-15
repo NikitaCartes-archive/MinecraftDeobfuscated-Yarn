@@ -2,8 +2,11 @@ package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
@@ -28,6 +31,10 @@ public abstract class BlockEntity {
 		this.cachedState = state;
 	}
 
+	public static BlockPos posFromNbt(NbtCompound nbt) {
+		return new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"));
+	}
+
 	@Nullable
 	public World getWorld() {
 		return this.world;
@@ -44,21 +51,49 @@ public abstract class BlockEntity {
 	public void readNbt(NbtCompound nbt) {
 	}
 
-	public NbtCompound writeNbt(NbtCompound nbt) {
-		return this.writeIdentifyingData(nbt);
+	protected void writeNbt(NbtCompound nbt) {
 	}
 
-	private NbtCompound writeIdentifyingData(NbtCompound nbt) {
+	public final NbtCompound createNbtWithIdentifyingData() {
+		NbtCompound nbtCompound = this.createNbt();
+		this.writeIdentifyingData(nbtCompound);
+		return nbtCompound;
+	}
+
+	public final NbtCompound createNbtWithId() {
+		NbtCompound nbtCompound = this.createNbt();
+		this.writeIdToNbt(nbtCompound);
+		return nbtCompound;
+	}
+
+	public final NbtCompound createNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		this.writeNbt(nbtCompound);
+		return nbtCompound;
+	}
+
+	private void writeIdToNbt(NbtCompound nbt) {
 		Identifier identifier = BlockEntityType.getId(this.getType());
 		if (identifier == null) {
 			throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
 		} else {
 			nbt.putString("id", identifier.toString());
-			nbt.putInt("x", this.pos.getX());
-			nbt.putInt("y", this.pos.getY());
-			nbt.putInt("z", this.pos.getZ());
-			return nbt;
 		}
+	}
+
+	public static void writeIdToNbt(NbtCompound nbt, BlockEntityType<?> type) {
+		nbt.putString("id", BlockEntityType.getId(type).toString());
+	}
+
+	public void setStackNbt(ItemStack stack) {
+		BlockItem.setBlockEntityNbt(stack, this.getType(), this.createNbt());
+	}
+
+	private void writeIdentifyingData(NbtCompound nbt) {
+		this.writeIdToNbt(nbt);
+		nbt.putInt("x", this.pos.getX());
+		nbt.putInt("y", this.pos.getY());
+		nbt.putInt("z", this.pos.getZ());
 	}
 
 	@Nullable
@@ -112,13 +147,26 @@ public abstract class BlockEntity {
 		return this.cachedState;
 	}
 
+	/**
+	 * Implement and return a packet that should be sent to players nearby when the observable state of
+	 * this block entity changes. Return null to not send an update packet.
+	 * <p>
+	 * If the data returned by {@link #toInitialChunkDataNbt initial chunk data} is suitable for updates,
+	 * the following shortcut can be used to create an update packet: {@code BlockEntityUpdateS2CPacket.create(this)}.
+	 * <p>
+	 * The NBT will be passed to {@link #readNbt} on the client.
+	 */
 	@Nullable
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
+	public Packet<ClientPlayPacketListener> toUpdatePacket() {
 		return null;
 	}
 
+	/**
+	 * Serializes the state of this block entity that is observable by clients. It is sent alongside the initial chunk data,
+	 * as well as when the block entity implements {@link #toUpdatePacket} and decides to use the default {@link BlockEntityUpdateS2CPacket}.
+	 */
 	public NbtCompound toInitialChunkDataNbt() {
-		return this.writeIdentifyingData(new NbtCompound());
+		return new NbtCompound();
 	}
 
 	public boolean isRemoved() {

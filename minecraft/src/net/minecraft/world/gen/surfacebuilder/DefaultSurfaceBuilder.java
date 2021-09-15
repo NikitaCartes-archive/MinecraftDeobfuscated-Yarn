@@ -2,11 +2,10 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
 
 public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	public DefaultSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
@@ -15,7 +14,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 
 	public void generate(
 		Random random,
-		Chunk chunk,
+		class_6557 arg,
 		Biome biome,
 		int i,
 		int j,
@@ -30,7 +29,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 	) {
 		this.generate(
 			random,
-			chunk,
+			arg,
 			biome,
 			i,
 			j,
@@ -48,13 +47,13 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 
 	protected void generate(
 		Random random,
-		Chunk chunk,
+		class_6557 arg,
 		Biome biome,
-		int x,
+		int z,
 		int z,
 		int height,
 		double noise,
-		BlockState defaultBlock,
+		BlockState defaultFluid,
 		BlockState fluidBlock,
 		BlockState topBlock,
 		BlockState underBlock,
@@ -62,74 +61,62 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		int seaLevel,
 		int i
 	) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		seaLevel = Integer.MIN_VALUE;
 		int j = (int)(noise / 3.0 + 3.0 + random.nextDouble() * 0.25);
-		if (j == 0) {
-			boolean bl = false;
+		BlockState blockState = underBlock;
+		int k = -1;
 
-			for (int k = height; k >= i; k--) {
-				mutable.set(x, k, z);
-				BlockState blockState = chunk.getBlockState(mutable);
-				if (blockState.isAir()) {
-					bl = false;
-				} else if (blockState.isOf(defaultBlock.getBlock())) {
-					if (!bl) {
-						BlockState blockState2;
-						if (k >= seaLevel) {
-							blockState2 = Blocks.AIR.getDefaultState();
-						} else if (k == seaLevel - 1) {
-							blockState2 = biome.getTemperature(mutable) < 0.15F ? Blocks.ICE.getDefaultState() : fluidBlock;
-						} else if (k >= seaLevel - (7 + j)) {
-							blockState2 = defaultBlock;
-						} else {
-							blockState2 = underwaterBlock;
-						}
-
-						chunk.setBlockState(mutable, blockState2, false);
-					}
-
-					bl = true;
+		for (int l = height; l >= i; l--) {
+			BlockState blockState2 = arg.getState(l);
+			if (blockState2.isAir()) {
+				k = -1;
+				seaLevel = Integer.MIN_VALUE;
+			} else if (!blockState2.isOf(defaultFluid.getBlock())) {
+				seaLevel = Math.max(l + 1, seaLevel);
+			} else if (k == -1) {
+				k = j;
+				BlockState blockState3;
+				if (l >= seaLevel + 2) {
+					blockState3 = topBlock;
+				} else if (l >= seaLevel - 1) {
+					blockState = underBlock;
+					blockState3 = topBlock;
+				} else if (l >= seaLevel - 4) {
+					blockState = underBlock;
+					blockState3 = underBlock;
+				} else if (l >= seaLevel - (7 + j)) {
+					blockState3 = blockState;
+				} else {
+					blockState = defaultFluid;
+					blockState3 = underwaterBlock;
 				}
-			}
-		} else {
-			BlockState blockState3 = underBlock;
-			int kx = -1;
 
-			for (int l = height; l >= i; l--) {
-				mutable.set(x, l, z);
-				BlockState blockState2 = chunk.getBlockState(mutable);
-				if (blockState2.isAir()) {
-					kx = -1;
-				} else if (blockState2.isOf(defaultBlock.getBlock())) {
-					if (kx == -1) {
-						kx = j;
-						BlockState blockState4;
-						if (l >= seaLevel + 2) {
-							blockState4 = topBlock;
-						} else if (l >= seaLevel - 1) {
-							blockState3 = underBlock;
-							blockState4 = topBlock;
-						} else if (l >= seaLevel - 4) {
-							blockState3 = underBlock;
-							blockState4 = underBlock;
-						} else if (l >= seaLevel - (7 + j)) {
-							blockState4 = blockState3;
-						} else {
-							blockState3 = defaultBlock;
-							blockState4 = underwaterBlock;
-						}
-
-						chunk.setBlockState(mutable, blockState4, false);
-					} else if (kx > 0) {
-						kx--;
-						chunk.setBlockState(mutable, blockState3, false);
-						if (kx == 0 && blockState3.isOf(Blocks.SAND) && j > 1) {
-							kx = random.nextInt(4) + Math.max(0, l - seaLevel);
-							blockState3 = blockState3.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
-						}
-					}
+				arg.method_38092(l, method_38463(blockState3, arg, l, seaLevel));
+			} else if (k > 0) {
+				k--;
+				arg.method_38092(l, method_38463(blockState, arg, l, seaLevel));
+				if (k == 0 && blockState.isOf(Blocks.SAND) && j > 1) {
+					k = random.nextInt(4) + Math.max(0, l - seaLevel);
+					blockState = blockState.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
 				}
 			}
 		}
+	}
+
+	private static BlockState method_38463(BlockState state, class_6557 chunk, int i, int j) {
+		if (i <= j && state.isOf(Blocks.GRASS_BLOCK)) {
+			return Blocks.DIRT.getDefaultState();
+		} else if (state.isOf(Blocks.SAND) && isAboveAirOrFluid(chunk, i)) {
+			return Blocks.SANDSTONE.getDefaultState();
+		} else if (state.isOf(Blocks.RED_SAND) && isAboveAirOrFluid(chunk, i)) {
+			return Blocks.RED_SANDSTONE.getDefaultState();
+		} else {
+			return state.isOf(Blocks.GRAVEL) && isAboveAirOrFluid(chunk, i) ? Blocks.STONE.getDefaultState() : state;
+		}
+	}
+
+	private static boolean isAboveAirOrFluid(class_6557 chunk, int i) {
+		BlockState blockState = chunk.getState(i - 1);
+		return blockState.isAir() || !blockState.getFluidState().isEmpty();
 	}
 }

@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,6 +51,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
+import jdk.jfr.FlightRecorder;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
@@ -91,12 +93,12 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.ProgressListener;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
+import net.minecraft.util.WinNativeModuleUtil;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -114,6 +116,9 @@ import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.RecordDumper;
 import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
+import net.minecraft.util.profiling.jfr.JfrProfiler;
+import net.minecraft.util.profiling.jfr.event.ticking.ServerTickTimeEvent;
+import net.minecraft.util.profiling.jfr.event.worldgen.WorldLoadFinishedEvent;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -174,7 +179,7 @@ import org.apache.logging.log4j.Logger;
  * @see net.minecraft.server.integrated.IntegratedServer
  */
 public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable {
-	static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final float field_33212 = 0.8F;
 	private static final int field_33213 = 100;
 	public static final int field_33206 = 50;
@@ -326,46 +331,33 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 */
 	protected abstract boolean setupServer() throws IOException;
 
-	public static void convertLevel(LevelStorage.Session session) {
-		if (session.needsConversion()) {
-			LOGGER.info("Converting map!");
-			session.convert(new ProgressListener() {
-				private long lastProgressUpdate = Util.getMeasuringTimeMs();
-
-				@Override
-				public void setTitle(Text title) {
-				}
-
-				@Override
-				public void setTitleAndTask(Text title) {
-				}
-
-				@Override
-				public void progressStagePercentage(int percentage) {
-					if (Util.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
-						this.lastProgressUpdate = Util.getMeasuringTimeMs();
-						MinecraftServer.LOGGER.info("Converting... {}%", percentage);
-					}
-				}
-
-				@Override
-				public void setDone() {
-				}
-
-				@Override
-				public void setTask(Text task) {
-				}
-			});
-		}
-	}
-
 	protected void loadWorld() {
+		if (FlightRecorder.isAvailable() && !JfrProfiler.isProfiling()) {
+		}
+
+		boolean bl = false;
+		WorldLoadFinishedEvent worldLoadFinishedEvent = Util.make(new WorldLoadFinishedEvent(), worldLoadFinishedEventx -> {
+			if (worldLoadFinishedEventx.isEnabled()) {
+				worldLoadFinishedEventx.begin();
+			}
+		});
 		this.loadWorldResourcePack();
 		this.saveProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldGenerationProgressListener);
 		this.updateDifficulty();
 		this.prepareStartRegion(worldGenerationProgressListener);
+		if (worldLoadFinishedEvent.shouldCommit()) {
+			worldLoadFinishedEvent.commit();
+		}
+
+		if (bl) {
+			try {
+				JfrProfiler.stop();
+			} catch (Throwable var5) {
+				LOGGER.warn("Failed to stop JFR profiling", var5);
+			}
+		}
 	}
 
 	protected void updateDifficulty() {
@@ -474,7 +466,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 			Random random = new Random(world.getSeed());
-			BlockPos blockPos = biomeSource.locateBiome(0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random);
+			BlockPos blockPos = biomeSource.locateBiome(
+				0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random, chunkGenerator.method_38276()
+			);
 			ChunkPos chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
 			if (blockPos == null) {
 				LOGGER.warn("Unable to find spawn biome");
@@ -483,7 +477,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			boolean bl = false;
 
 			for (Block block : BlockTags.VALID_SPAWN.values()) {
-				if (biomeSource.getTopMaterials().contains(block.getDefaultState())) {
+				if (biomeSource.method_38113(block.getDefaultState())) {
 					bl = true;
 					break;
 				}
@@ -724,6 +718,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.metadata.setDescription(new LiteralText(this.motd));
 				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
 				this.setFavicon(this.metadata);
+				this.method_38582();
 
 				while (this.running) {
 					long l = Util.getMeasuringTimeMs() - this.timeReference;
@@ -784,6 +779,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.exit();
 			}
 		}
+	}
+
+	private void method_38582() {
+		FlightRecorder.addPeriodicEvent(ServerTickTimeEvent.class, () -> {
+			ServerTickTimeEvent serverTickTimeEvent = new ServerTickTimeEvent(this.getTickTime());
+			if (serverTickTimeEvent.shouldCommit()) {
+				serverTickTimeEvent.commit();
+			}
+		});
 	}
 
 	private boolean shouldKeepTicking() {
@@ -1160,7 +1164,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void sendDifficulty(ServerPlayerEntity player) {
-		WorldProperties worldProperties = player.getServerWorld().getLevelProperties();
+		WorldProperties worldProperties = player.getWorld().getLevelProperties();
 		player.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 	}
 
@@ -1690,6 +1694,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.dumpStats(path.resolve("stats.txt"));
 			this.dumpThreads(path.resolve("threads.txt"));
 			this.dumpProperties(path.resolve("server.properties.txt"));
+			this.dumpNativeModules(path.resolve("modules.txt"));
 		} catch (IOException var7) {
 			LOGGER.warn("Failed to save debug report", (Throwable)var7);
 		}
@@ -1802,6 +1807,57 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			throw var10;
+		}
+
+		if (writer != null) {
+			writer.close();
+		}
+	}
+
+	private void dumpNativeModules(Path path) throws IOException {
+		Writer writer = Files.newBufferedWriter(path);
+
+		label49: {
+			try {
+				label50: {
+					List<WinNativeModuleUtil.NativeModule> list;
+					try {
+						list = Lists.<WinNativeModuleUtil.NativeModule>newArrayList(WinNativeModuleUtil.collectNativeModules());
+					} catch (Throwable var7) {
+						LOGGER.warn("Failed to list native modules", var7);
+						break label50;
+					}
+
+					list.sort(Comparator.comparing(module -> module.path));
+					Iterator throwable = list.iterator();
+
+					while (true) {
+						if (!throwable.hasNext()) {
+							break label49;
+						}
+
+						WinNativeModuleUtil.NativeModule nativeModule = (WinNativeModuleUtil.NativeModule)throwable.next();
+						writer.write(nativeModule.toString());
+						writer.write(10);
+					}
+				}
+			} catch (Throwable var8) {
+				if (writer != null) {
+					try {
+						writer.close();
+					} catch (Throwable var6) {
+						var8.addSuppressed(var6);
+					}
+				}
+
+				throw var8;
+			}
+
+			if (writer != null) {
+				writer.close();
+			}
+
+			return;
 		}
 
 		if (writer != null) {

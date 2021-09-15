@@ -38,7 +38,6 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class IntegratedServer extends MinecraftServer {
-	public static final int field_33015 = -1;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
 	private boolean paused;
@@ -110,7 +109,7 @@ public class IntegratedServer extends MinecraftServer {
 			this.incrementTotalWorldTimeStat();
 		} else {
 			super.tick(shouldKeepTicking);
-			int i = Math.max(2, this.client.options.viewDistance + -1);
+			int i = Math.max(2, this.client.options.viewDistance);
 			if (i != this.getPlayerManager().getViewDistance()) {
 				LOGGER.info("Changing view distance to {}, from {}", i, this.getPlayerManager().getViewDistance());
 				this.getPlayerManager().setViewDistance(i);

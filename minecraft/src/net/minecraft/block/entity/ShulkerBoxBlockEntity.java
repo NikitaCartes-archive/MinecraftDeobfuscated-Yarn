@@ -194,9 +194,11 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		return this.writeInventoryNbt(nbt);
+		if (!this.serializeLootTable(nbt)) {
+			Inventories.writeNbt(nbt, this.inventory, false);
+		}
 	}
 
 	public void readInventoryNbt(NbtCompound nbt) {
@@ -204,14 +206,6 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		if (!this.deserializeLootTable(nbt) && nbt.contains("Items", NbtElement.LIST_TYPE)) {
 			Inventories.readNbt(nbt, this.inventory);
 		}
-	}
-
-	public NbtCompound writeInventoryNbt(NbtCompound nbt) {
-		if (!this.serializeLootTable(nbt)) {
-			Inventories.writeNbt(nbt, this.inventory, false);
-		}
-
-		return nbt;
 	}
 
 	@Override

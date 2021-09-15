@@ -52,8 +52,8 @@ public class AlternativeLootCondition implements LootCondition {
 		}
 
 		@Override
-		public AlternativeLootCondition.Builder or(LootCondition.Builder condition) {
-			this.terms.add(condition.build());
+		public AlternativeLootCondition.Builder or(LootCondition.Builder builder) {
+			this.terms.add(builder.build());
 			return this;
 		}
 

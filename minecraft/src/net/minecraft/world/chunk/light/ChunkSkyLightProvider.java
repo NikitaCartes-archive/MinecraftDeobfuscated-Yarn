@@ -134,7 +134,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 						continue;
 					}
 
-					j = 15 - this.lightStorage.method_31931(m, true);
+					j = 15 - this.lightStorage.getLight(m, true);
 				}
 
 				int k = this.getPropagatedLevel(m, id, j);

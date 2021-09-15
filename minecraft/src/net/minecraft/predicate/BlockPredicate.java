@@ -52,7 +52,7 @@ public class BlockPredicate {
 			} else {
 				if (this.nbt != NbtPredicate.ANY) {
 					BlockEntity blockEntity = world.getBlockEntity(pos);
-					if (blockEntity == null || !this.nbt.test(blockEntity.writeNbt(new NbtCompound()))) {
+					if (blockEntity == null || !this.nbt.test(blockEntity.createNbtWithIdentifyingData())) {
 						return false;
 					}
 				}

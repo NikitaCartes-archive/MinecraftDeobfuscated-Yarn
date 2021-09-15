@@ -254,15 +254,13 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		return (List<BeaconBlockEntity.BeamSegment>)(this.level == 0 ? ImmutableList.of() : this.beamSegments);
 	}
 
-	@Nullable
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.BEACON, this.toInitialChunkDataNbt());
+		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		return this.writeNbt(new NbtCompound());
+		return this.createNbt();
 	}
 
 	@Nullable
@@ -284,7 +282,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		nbt.putInt("Primary", StatusEffect.getRawId(this.primary));
 		nbt.putInt("Secondary", StatusEffect.getRawId(this.secondary));
@@ -294,7 +292,6 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		}
 
 		this.lock.writeNbt(nbt);
-		return nbt;
 	}
 
 	public void setCustomName(@Nullable Text customName) {

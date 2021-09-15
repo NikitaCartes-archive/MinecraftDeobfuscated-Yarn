@@ -20,7 +20,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class SwampHutGenerator extends StructurePieceWithDimensions {
+public class SwampHutGenerator extends ShiftableStructurePiece {
 	private boolean hasWitch;
 	private boolean hasCat;
 

@@ -155,6 +155,11 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
+	public int size() {
+		return this.idToEntry.size();
+	}
+
+	@Override
 	public Lifecycle getEntryLifecycle(T entry) {
 		return (Lifecycle)this.entryToLifecycle.get(entry);
 	}

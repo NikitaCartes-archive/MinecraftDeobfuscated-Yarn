@@ -18,8 +18,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 	private static final Direction[] DIRECTIONS = Direction.values();

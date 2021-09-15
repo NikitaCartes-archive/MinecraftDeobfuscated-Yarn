@@ -42,7 +42,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
-import net.minecraft.util.ProgressListener;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashMemoryReserve;
@@ -183,7 +182,7 @@ public class LevelStorage {
 		}
 	}
 
-	int getCurrentVersion() {
+	private int getCurrentVersion() {
 		return 19133;
 	}
 
@@ -335,16 +334,6 @@ public class LevelStorage {
 		public WorldSaveHandler createSaveHandler() {
 			this.checkValid();
 			return new WorldSaveHandler(this, LevelStorage.this.dataFixer);
-		}
-
-		public boolean needsConversion() {
-			LevelSummary levelSummary = this.getLevelSummary();
-			return levelSummary != null && levelSummary.getVersionInfo().getLevelFormatVersion() != LevelStorage.this.getCurrentVersion();
-		}
-
-		public boolean convert(ProgressListener progressListener) {
-			this.checkValid();
-			return AnvilLevelStorage.convertLevel(this, progressListener);
 		}
 
 		@Nullable

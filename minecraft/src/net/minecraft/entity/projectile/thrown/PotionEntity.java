@@ -113,7 +113,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			for (LivingEntity livingEntity : list) {
 				double d = this.squaredDistanceTo(livingEntity);
 				if (d < 16.0 && livingEntity.hurtByWater()) {
-					livingEntity.damage(DamageSource.magic(livingEntity, this.getOwner()), 1.0F);
+					livingEntity.damage(DamageSource.magic(this, this.getOwner()), 1.0F);
 				}
 			}
 		}

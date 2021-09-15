@@ -1,6 +1,7 @@
 package net.minecraft.client.realms.gui;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.time.Duration;
@@ -104,7 +105,7 @@ public class RealmsDataFetcher {
 	}
 
 	public synchronized List<RealmsServer> getServers() {
-		return Lists.<RealmsServer>newArrayList(this.servers);
+		return ImmutableList.copyOf(this.servers);
 	}
 
 	public synchronized int getPendingInvitesCount() {

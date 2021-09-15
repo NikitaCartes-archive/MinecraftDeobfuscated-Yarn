@@ -1,45 +1,41 @@
 package net.minecraft.network.packet.s2c.play;
 
+import javax.annotation.Nullable;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 
 public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final int MOB_SPAWNER = 1;
-	public static final int COMMAND_BLOCK = 2;
-	public static final int BEACON = 3;
-	public static final int SKULL = 4;
-	public static final int CONDUIT = 5;
-	public static final int BANNER = 6;
-	public static final int STRUCTURE = 7;
-	public static final int END_GATEWAY = 8;
-	public static final int SIGN = 9;
-	public static final int BED = 11;
-	public static final int JIGSAW = 12;
-	public static final int CAMPFIRE = 13;
-	public static final int BEEHIVE = 14;
 	private final BlockPos pos;
-	private final int blockEntityType;
+	private final BlockEntityType<?> blockEntityType;
+	@Nullable
 	private final NbtCompound nbt;
 
-	public BlockEntityUpdateS2CPacket(BlockPos pos, int blockEntityType, NbtCompound nbt) {
+	public static BlockEntityUpdateS2CPacket create(BlockEntity blockEntity) {
+		return new BlockEntityUpdateS2CPacket(blockEntity.getPos(), blockEntity.getType(), blockEntity.toInitialChunkDataNbt());
+	}
+
+	private BlockEntityUpdateS2CPacket(BlockPos pos, BlockEntityType<?> blockEntityType, NbtCompound nbt) {
 		this.pos = pos;
 		this.blockEntityType = blockEntityType;
-		this.nbt = nbt;
+		this.nbt = nbt.isEmpty() ? null : nbt;
 	}
 
 	public BlockEntityUpdateS2CPacket(PacketByteBuf buf) {
 		this.pos = buf.readBlockPos();
-		this.blockEntityType = buf.readUnsignedByte();
+		this.blockEntityType = Registry.BLOCK_ENTITY_TYPE.get(buf.readVarInt());
 		this.nbt = buf.readNbt();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
-		buf.writeByte((byte)this.blockEntityType);
+		buf.writeVarInt(Registry.BLOCK_ENTITY_TYPE.getRawId(this.blockEntityType));
 		buf.writeNbt(this.nbt);
 	}
 
@@ -51,10 +47,11 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		return this.pos;
 	}
 
-	public int getBlockEntityType() {
+	public BlockEntityType<?> getBlockEntityType() {
 		return this.blockEntityType;
 	}
 
+	@Nullable
 	public NbtCompound getNbt() {
 		return this.nbt;
 	}

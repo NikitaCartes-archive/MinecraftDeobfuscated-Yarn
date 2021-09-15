@@ -32,26 +32,44 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateArgumentType.BlockPredicate> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
-	private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("arguments.block.tag.unknown", id)
-	);
+	static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("arguments.block.tag.unknown", id));
 
 	public static BlockPredicateArgumentType blockPredicate() {
 		return new BlockPredicateArgumentType();
 	}
 
 	public BlockPredicateArgumentType.BlockPredicate parse(StringReader stringReader) throws CommandSyntaxException {
-		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
+		final BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
 		if (blockArgumentParser.getBlockState() != null) {
-			BlockPredicateArgumentType.StatePredicate statePredicate = new BlockPredicateArgumentType.StatePredicate(
+			final BlockPredicateArgumentType.StatePredicate statePredicate = new BlockPredicateArgumentType.StatePredicate(
 				blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData()
 			);
-			return manager -> statePredicate;
+			return new BlockPredicateArgumentType.BlockPredicate() {
+				@Override
+				public Predicate<CachedBlockPosition> create(TagManager manager) {
+					return statePredicate;
+				}
+
+				@Override
+				public boolean hasNbt() {
+					return statePredicate.hasNbt();
+				}
+			};
 		} else {
-			Identifier identifier = blockArgumentParser.getTagId();
-			return manager -> {
-				Tag<Block> tag = manager.getTag(Registry.BLOCK_KEY, identifier, id -> UNKNOWN_TAG_EXCEPTION.create(id.toString()));
-				return new BlockPredicateArgumentType.TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
+			final Identifier identifier = blockArgumentParser.getTagId();
+			return new BlockPredicateArgumentType.BlockPredicate() {
+				@Override
+				public Predicate<CachedBlockPosition> create(TagManager manager) throws CommandSyntaxException {
+					Tag<Block> tag = manager.getTag(
+						Registry.BLOCK_KEY, identifier, identifierx -> BlockPredicateArgumentType.UNKNOWN_TAG_EXCEPTION.create(identifierx.toString())
+					);
+					return new BlockPredicateArgumentType.TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
+				}
+
+				@Override
+				public boolean hasNbt() {
+					return blockArgumentParser.getNbtData() != null;
+				}
 			};
 		}
 	}
@@ -82,6 +100,8 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 
 	public interface BlockPredicate {
 		Predicate<CachedBlockPosition> create(TagManager manager) throws CommandSyntaxException;
+
+		boolean hasNbt();
 	}
 
 	static class StatePredicate implements Predicate<CachedBlockPosition> {
@@ -111,9 +131,13 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new NbtCompound()), true);
+					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.createNbtWithIdentifyingData(), true);
 				}
 			}
+		}
+
+		public boolean hasNbt() {
+			return this.nbt != null;
 		}
 	}
 
@@ -154,7 +178,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new NbtCompound()), true);
+					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.createNbtWithIdentifyingData(), true);
 				}
 			}
 		}

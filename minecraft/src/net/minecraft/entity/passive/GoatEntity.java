@@ -2,8 +2,10 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -45,6 +47,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class GoatEntity extends AnimalEntity {
 	public static final EntityDimensions LONG_JUMPING_DIMENSIONS = EntityDimensions.changing(0.9F, 1.3F).scaled(0.7F);
@@ -280,6 +283,19 @@ public class GoatEntity extends AnimalEntity {
 	@Override
 	protected EntityNavigation createNavigation(World world) {
 		return new GoatEntity.GoatNavigation(this, world);
+	}
+
+	public static boolean canSpawn(EntityType<? extends AnimalEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		BlockState blockState = world.getBlockState(pos.down());
+		return (
+				blockState.isOf(Blocks.STONE)
+					|| blockState.isOf(Blocks.SNOW)
+					|| blockState.isOf(Blocks.POWDER_SNOW)
+					|| blockState.isOf(Blocks.SNOW_BLOCK)
+					|| blockState.isOf(Blocks.PACKED_ICE)
+					|| blockState.isOf(Blocks.GRAVEL)
+			)
+			&& world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	static class GoatNavigation extends MobNavigation {

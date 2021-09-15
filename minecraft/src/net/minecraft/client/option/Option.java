@@ -14,9 +14,14 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.PrioritizeChunkUpdatesMode;
 import net.minecraft.client.resource.VideoWarningManager;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.sound.SoundManager;
+import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -253,6 +258,13 @@ public abstract class Option {
 			MinecraftClient.getInstance().worldRenderer.reload();
 		}
 	);
+	public static final CyclingOption<PrioritizeChunkUpdatesMode> PRIORITIZE_CHUNK_UPDATES_MODE = CyclingOption.create(
+		"options.prioritizeChunkUpdates",
+		PrioritizeChunkUpdatesMode.values(),
+		prioritizeChunkUpdatesMode -> new TranslatableText(prioritizeChunkUpdatesMode.getName()),
+		gameOptions -> gameOptions.prioritizeChunkUpdatesMode,
+		(gameOptions, option, prioritizeChunkUpdatesMode) -> gameOptions.prioritizeChunkUpdatesMode = prioritizeChunkUpdatesMode
+	);
 	public static final CyclingOption<AttackIndicator> ATTACK_INDICATOR = CyclingOption.create(
 		"options.attackIndicator",
 		AttackIndicator.values(),
@@ -320,6 +332,24 @@ public abstract class Option {
 		guiScale -> (Text)(guiScale == 0 ? new TranslatableText("options.guiScale.auto") : new LiteralText(Integer.toString(guiScale))),
 		gameOptions -> gameOptions.guiScale,
 		(gameOptions, option, guiScale) -> gameOptions.guiScale = guiScale
+	);
+	public static final CyclingOption<String> AUDIO_DEVICE = CyclingOption.create(
+		"options.audioDevice",
+		(Supplier<List<String>>)(() -> Stream.concat(Stream.of(""), MinecraftClient.getInstance().getSoundManager().getSoundDevices().stream()).toList()),
+		device -> {
+			if ("".equals(device)) {
+				return new TranslatableText("options.audioDevice.default");
+			} else {
+				return device.startsWith("OpenAL Soft on ") ? new LiteralText(device.substring(SoundSystem.OPENAL_SOFT_ON_LENGTH)) : new LiteralText(device);
+			}
+		},
+		gameOptions -> gameOptions.soundDevice,
+		(gameOptions, option, audioDevice) -> {
+			gameOptions.soundDevice = audioDevice;
+			SoundManager soundManager = MinecraftClient.getInstance().getSoundManager();
+			soundManager.reloadSounds();
+			soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+		}
 	);
 	public static final CyclingOption<Arm> MAIN_HAND = CyclingOption.create(
 		"options.mainHand", Arm.values(), Arm::getOptionName, gameOptions -> gameOptions.mainArm, (gameOptions, option, mainArm) -> {
@@ -474,6 +504,13 @@ public abstract class Option {
 		MONOCHROME_LOGO_TOOLTIP,
 		gameOptions -> gameOptions.monochromeLogo,
 		(gameOptions, option, monochromeLogo) -> gameOptions.monochromeLogo = monochromeLogo
+	);
+	private static final Text HIDE_LIGHTNING_FLASHES_TOOLTIP = new TranslatableText("options.hideLightningFlashes.tooltip");
+	public static final CyclingOption<Boolean> HIDE_LIGHTNING_FLASHES = CyclingOption.create(
+		"options.hideLightningFlashes",
+		HIDE_LIGHTNING_FLASHES_TOOLTIP,
+		gameOptions -> gameOptions.hideLightningFlashes,
+		(gameOptions, option, hideLightningFlashes) -> gameOptions.hideLightningFlashes = hideLightningFlashes
 	);
 	private final Text key;
 

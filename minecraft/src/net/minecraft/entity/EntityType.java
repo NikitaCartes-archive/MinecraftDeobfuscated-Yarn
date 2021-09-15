@@ -164,7 +164,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		"arrow", EntityType.Builder.<ArrowEntity>create(ArrowEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20)
 	);
 	public static final EntityType<AxolotlEntity> AXOLOTL = register(
-		"axolotl", EntityType.Builder.create(AxolotlEntity::new, SpawnGroup.UNDERGROUND_WATER_CREATURE).setDimensions(0.75F, 0.42F).maxTrackingRange(10)
+		"axolotl", EntityType.Builder.create(AxolotlEntity::new, SpawnGroup.AXOLOTLS).setDimensions(0.75F, 0.42F).maxTrackingRange(10)
 	);
 	public static final EntityType<BatEntity> BAT = register(
 		"bat", EntityType.Builder.create(BatEntity::new, SpawnGroup.AMBIENT).setDimensions(0.5F, 0.9F).maxTrackingRange(5)

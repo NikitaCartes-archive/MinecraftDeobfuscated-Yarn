@@ -79,6 +79,11 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 
 		float m = MathHelper.lerp(g, livingEntity.prevPitch, livingEntity.getPitch());
+		if (shouldFlipUpsideDown(livingEntity)) {
+			m *= -1.0F;
+			k *= -1.0F;
+		}
+
 		if (livingEntity.getPose() == EntityPose.SLEEPING) {
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
@@ -205,13 +210,9 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
 			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
-		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
-			String string = Formatting.strip(entity.getName().getString());
-			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
-				matrices.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
-				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
-			}
+		} else if (shouldFlipUpsideDown(entity)) {
+			matrices.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
+			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 		}
 	}
 
@@ -269,5 +270,16 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 			return MinecraftClient.isHudEnabled() && livingEntity != minecraftClient.getCameraEntity() && bl && !livingEntity.hasPassengers();
 		}
+	}
+
+	public static boolean shouldFlipUpsideDown(LivingEntity entity) {
+		if (entity instanceof PlayerEntity || entity.hasCustomName()) {
+			String string = Formatting.strip(entity.getName().getString());
+			if ("Dinnerbone".equals(string) || "Grumm".equals(string)) {
+				return !(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE);
+			}
+		}
+
+		return false;
 	}
 }

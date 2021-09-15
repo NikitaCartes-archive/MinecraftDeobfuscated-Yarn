@@ -19,9 +19,8 @@ public class BedBlockEntity extends BlockEntity {
 		this.color = color;
 	}
 
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.BED, this.toInitialChunkDataNbt());
+		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	public DyeColor getColor() {

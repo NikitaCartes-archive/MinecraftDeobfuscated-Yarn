@@ -48,6 +48,14 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 		return state.cycle(AGE);
 	}
 
+	public BlockState withMaxAge(BlockState state) {
+		return state.with(AGE, Integer.valueOf(25));
+	}
+
+	public boolean hasMaxAge(BlockState state) {
+		return (Integer)state.get(AGE) == 25;
+	}
+
 	protected BlockState copyState(BlockState from, BlockState to) {
 		return to;
 	}

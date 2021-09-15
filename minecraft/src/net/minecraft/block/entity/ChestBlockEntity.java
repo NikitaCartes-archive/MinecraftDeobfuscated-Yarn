@@ -84,13 +84,11 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		if (!this.serializeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inventory);
 		}
-
-		return nbt;
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {

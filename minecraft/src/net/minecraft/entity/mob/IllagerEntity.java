@@ -2,6 +2,8 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.world.World;
 
@@ -22,6 +24,11 @@ public abstract class IllagerEntity extends RaiderEntity {
 
 	public IllagerEntity.State getState() {
 		return IllagerEntity.State.CROSSED;
+	}
+
+	@Override
+	public boolean canTarget(LivingEntity target) {
+		return target instanceof MerchantEntity && target.isBaby() ? false : super.canTarget(target);
 	}
 
 	protected class LongDoorInteractGoal extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {

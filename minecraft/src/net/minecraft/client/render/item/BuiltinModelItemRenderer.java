@@ -141,7 +141,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 			}
 		} else {
 			if (stack.isOf(Items.SHIELD)) {
-				boolean bl = stack.getSubNbt("BlockEntityTag") != null;
+				boolean bl = BlockItem.getBlockEntityNbt(stack) != null;
 				matrices.push();
 				matrices.scale(1.0F, -1.0F, -1.0F);
 				SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;

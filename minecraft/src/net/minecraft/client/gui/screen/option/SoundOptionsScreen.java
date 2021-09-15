@@ -20,19 +20,28 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		int i = 0;
-		this.addDrawableChild(new SoundSliderWidget(this.client, this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), SoundCategory.MASTER, 310));
-		i += 2;
+		int i = this.height / 6 - 12;
+		int j = 22;
+		int k = 0;
+		this.addDrawableChild(new SoundSliderWidget(this.client, this.width / 2 - 155 + k % 2 * 160, i + 22 * (k >> 1), SoundCategory.MASTER, 310));
+		k += 2;
 
 		for (SoundCategory soundCategory : SoundCategory.values()) {
 			if (soundCategory != SoundCategory.MASTER) {
-				this.addDrawableChild(new SoundSliderWidget(this.client, this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), soundCategory, 150));
-				i++;
+				this.addDrawableChild(new SoundSliderWidget(this.client, this.width / 2 - 155 + k % 2 * 160, i + 22 * (k >> 1), soundCategory, 150));
+				k++;
 			}
 		}
 
-		this.addDrawableChild(Option.SUBTITLES.createButton(this.gameOptions, this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
+		if (k % 2 == 1) {
+			k++;
+		}
+
+		this.addDrawableChild(Option.AUDIO_DEVICE.createButton(this.gameOptions, this.width / 2 - 155, i + 22 * (k >> 1), 310));
+		k += 2;
+		this.addDrawableChild(Option.SUBTITLES.createButton(this.gameOptions, this.width / 2 - 75, i + 22 * (k >> 1), 150));
+		k += 2;
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, i + 22 * (k >> 1), 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
 	}
 
 	@Override

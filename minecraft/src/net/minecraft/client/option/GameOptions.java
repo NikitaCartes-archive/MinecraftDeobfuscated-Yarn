@@ -31,6 +31,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.PrioritizeChunkUpdatesMode;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
@@ -65,14 +66,18 @@ public class GameOptions {
 	public static final int field_32155 = 32;
 	private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
 	private static final float field_32151 = 1.0F;
+	public static final String field_34785 = "";
 	public boolean monochromeLogo;
+	public boolean hideLightningFlashes;
 	public double mouseSensitivity = 0.5;
 	public int viewDistance;
+	private int serverViewDistance = 0;
 	public float entityDistanceScaling = 1.0F;
 	public int maxFps = 120;
 	public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
 	public GraphicsMode graphicsMode = GraphicsMode.FANCY;
 	public AoMode ao = AoMode.MAX;
+	public PrioritizeChunkUpdatesMode prioritizeChunkUpdatesMode = PrioritizeChunkUpdatesMode.NONE;
 	public List<String> resourcePacks = Lists.<String>newArrayList();
 	public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
 	public ChatVisibility chatVisibility = ChatVisibility.FULL;
@@ -335,6 +340,7 @@ public class GameOptions {
 	public ParticlesMode particles = ParticlesMode.ALL;
 	public NarratorMode narrator = NarratorMode.OFF;
 	public String language = "en_us";
+	public String soundDevice = "";
 	public boolean syncChunkWrites;
 
 	public GameOptions(MinecraftClient client, File optionsFile) {
@@ -389,6 +395,7 @@ public class GameOptions {
 		this.sneakToggled = visitor.visitBoolean("toggleCrouch", this.sneakToggled);
 		this.sprintToggled = visitor.visitBoolean("toggleSprint", this.sprintToggled);
 		this.monochromeLogo = visitor.visitBoolean("darkMojangStudiosBackground", this.monochromeLogo);
+		this.hideLightningFlashes = visitor.visitBoolean("hideLightningFlashes", this.hideLightningFlashes);
 		this.mouseSensitivity = visitor.visitDouble("mouseSensitivity", this.mouseSensitivity);
 		this.fov = visitor.visitDouble("fov", (this.fov - 70.0) / 40.0) * 40.0 + 70.0;
 		this.distortionEffectScale = visitor.visitFloat("screenEffectScale", this.distortionEffectScale);
@@ -402,12 +409,16 @@ public class GameOptions {
 		this.difficulty = visitor.visitObject("difficulty", this.difficulty, Difficulty::byOrdinal, Difficulty::getId);
 		this.graphicsMode = visitor.visitObject("graphicsMode", this.graphicsMode, GraphicsMode::byId, GraphicsMode::getId);
 		this.ao = visitor.visitObject("ao", this.ao, GameOptions::loadAo, ao -> Integer.toString(ao.getId()));
+		this.prioritizeChunkUpdatesMode = visitor.visitObject(
+			"prioritizeChunkUpdates", this.prioritizeChunkUpdatesMode, PrioritizeChunkUpdatesMode::get, PrioritizeChunkUpdatesMode::getId
+		);
 		this.biomeBlendRadius = visitor.visitInt("biomeBlendRadius", this.biomeBlendRadius);
 		this.cloudRenderMode = visitor.visitObject("renderClouds", this.cloudRenderMode, GameOptions::loadCloudRenderMode, GameOptions::saveCloudRenderMode);
 		this.resourcePacks = visitor.visitObject("resourcePacks", this.resourcePacks, GameOptions::parseList, GSON::toJson);
 		this.incompatibleResourcePacks = visitor.visitObject("incompatibleResourcePacks", this.incompatibleResourcePacks, GameOptions::parseList, GSON::toJson);
 		this.lastServer = visitor.visitString("lastServer", this.lastServer);
 		this.language = visitor.visitString("lang", this.language);
+		this.soundDevice = visitor.visitString("soundDevice", this.soundDevice);
 		this.chatVisibility = visitor.visitObject("chatVisibility", this.chatVisibility, ChatVisibility::byId, ChatVisibility::getId);
 		this.chatOpacity = visitor.visitDouble("chatOpacity", this.chatOpacity);
 		this.chatLineSpacing = visitor.visitDouble("chatLineSpacing", this.chatLineSpacing);
@@ -762,7 +773,7 @@ public class GameOptions {
 	}
 
 	public CloudRenderMode getCloudRenderMode() {
-		return this.viewDistance >= 4 ? this.cloudRenderMode : CloudRenderMode.OFF;
+		return this.getViewDistance() >= 4 ? this.cloudRenderMode : CloudRenderMode.OFF;
 	}
 
 	public boolean shouldUseNativeTransport() {
@@ -864,6 +875,7 @@ public class GameOptions {
 			.add(Pair.of("forceUnicodeFont", String.valueOf(this.forceUnicodeFont)))
 			.add(Pair.of("fov", String.valueOf(this.fov)))
 			.add(Pair.of("fovEffectScale", String.valueOf(this.fovEffectScale)))
+			.add(Pair.of("prioritizeChunkUpdates", String.valueOf(this.prioritizeChunkUpdatesMode)))
 			.add(Pair.of("fullscreen", String.valueOf(this.fullscreen)))
 			.add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution)))
 			.add(Pair.of("gamma", String.valueOf(this.gamma)))
@@ -883,10 +895,19 @@ public class GameOptions {
 			.add(Pair.of("screenEffectScale", String.valueOf(this.distortionEffectScale)))
 			.add(Pair.of("syncChunkWrites", String.valueOf(this.syncChunkWrites)))
 			.add(Pair.of("useNativeTransport", String.valueOf(this.useNativeTransport)))
+			.add(Pair.of("soundDevice", String.valueOf(this.soundDevice)))
 			.build();
 		return (String)immutableList.stream()
 			.map(option -> (String)option.getFirst() + ": " + (String)option.getSecond())
 			.collect(Collectors.joining(System.lineSeparator()));
+	}
+
+	public void setServerViewDistance(int viewDistance) {
+		this.serverViewDistance = viewDistance;
+	}
+
+	public int getViewDistance() {
+		return this.serverViewDistance > 0 ? Math.min(this.viewDistance, this.serverViewDistance) : this.viewDistance;
 	}
 
 	@Environment(EnvType.CLIENT)

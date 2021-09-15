@@ -2,7 +2,6 @@ package net.minecraft.block.entity;
 
 import java.util.Optional;
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
@@ -128,28 +127,22 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
-		this.saveInitialChunkData(nbt);
-		nbt.putIntArray("CookingTimes", this.cookingTimes);
-		nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
-		return nbt;
-	}
-
-	private NbtCompound saveInitialChunkData(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		Inventories.writeNbt(nbt, this.itemsBeingCooked, true);
-		return nbt;
+		nbt.putIntArray("CookingTimes", this.cookingTimes);
+		nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
 	}
 
-	@Nullable
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.CAMPFIRE, this.toInitialChunkDataNbt());
+		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		return this.saveInitialChunkData(new NbtCompound());
+		NbtCompound nbtCompound = new NbtCompound();
+		Inventories.writeNbt(nbtCompound, this.itemsBeingCooked, true);
+		return nbtCompound;
 	}
 
 	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {

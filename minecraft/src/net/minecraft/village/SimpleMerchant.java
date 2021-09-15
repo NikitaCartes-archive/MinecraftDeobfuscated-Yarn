@@ -5,7 +5,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.world.World;
 
 public class SimpleMerchant implements Merchant {
 	private final PlayerEntity player;
@@ -45,8 +44,8 @@ public class SimpleMerchant implements Merchant {
 	}
 
 	@Override
-	public World getMerchantWorld() {
-		return this.player.world;
+	public boolean isClient() {
+		return this.player.getWorld().isClient;
 	}
 
 	@Override

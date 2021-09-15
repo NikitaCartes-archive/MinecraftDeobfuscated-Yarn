@@ -17,11 +17,14 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 	private int nextId;
 	private int size;
 
-	public Int2ObjectBiMap(int size) {
-		size = (int)((float)size / 0.8F);
+	private Int2ObjectBiMap(int size) {
 		this.values = (K[])(new Object[size]);
 		this.ids = new int[size];
 		this.idToValues = (K[])(new Object[size]);
+	}
+
+	public static <A> Int2ObjectBiMap<A> method_37913(int i) {
+		return new Int2ObjectBiMap((int)((float)i / 0.8F));
 	}
 
 	@Override
@@ -64,17 +67,19 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 	private void resize(int newSize) {
 		K[] objects = this.values;
 		int[] is = this.ids;
-		this.values = (K[])(new Object[newSize]);
-		this.ids = new int[newSize];
-		this.idToValues = (K[])(new Object[newSize]);
-		this.nextId = 0;
-		this.size = 0;
+		Int2ObjectBiMap<K> int2ObjectBiMap = new Int2ObjectBiMap<>(newSize);
 
 		for (int i = 0; i < objects.length; i++) {
 			if (objects[i] != null) {
-				this.put(objects[i], is[i]);
+				int2ObjectBiMap.put(objects[i], is[i]);
 			}
 		}
+
+		this.values = int2ObjectBiMap.values;
+		this.ids = int2ObjectBiMap.ids;
+		this.idToValues = int2ObjectBiMap.idToValues;
+		this.nextId = int2ObjectBiMap.nextId;
+		this.size = int2ObjectBiMap.size;
 	}
 
 	public void put(K value, int id) {
@@ -154,6 +159,7 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 		this.size = 0;
 	}
 
+	@Override
 	public int size() {
 		return this.size;
 	}

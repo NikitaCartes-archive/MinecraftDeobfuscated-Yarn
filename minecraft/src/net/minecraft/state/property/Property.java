@@ -29,7 +29,7 @@ public abstract class Property<T extends Comparable<T>> {
 					.orElseGet(() -> DataResult.error("Unable to read property: " + this + " with value: " + value)),
 			this::name
 		);
-	private final Codec<Property.Value<T>> valueCodec = this.codec.xmap(this::createValue, Property.Value::getValue);
+	private final Codec<Property.Value<T>> valueCodec = this.codec.xmap(this::createValue, Property.Value::value);
 
 	protected Property(String name, Class<T> type) {
 		this.type = type;
@@ -37,11 +37,11 @@ public abstract class Property<T extends Comparable<T>> {
 	}
 
 	public Property.Value<T> createValue(T value) {
-		return new Property.Value<>(this, value);
+		return new Property.Value(this, value);
 	}
 
 	public Property.Value<T> createValue(State<?, ?> state) {
-		return new Property.Value<>(this, state.get(this));
+		return new Property.Value(this, state.get(this));
 	}
 
 	public Stream<Property.Value<T>> stream() {
@@ -111,11 +111,11 @@ public abstract class Property<T extends Comparable<T>> {
 		return dataResult.map(comparable -> state.with(this, comparable)).setPartial(state);
 	}
 
-	public static final class Value<T extends Comparable<T>> {
+	public static record Value() {
 		private final Property<T> property;
 		private final T value;
 
-		Value(Property<T> property, T value) {
+		public Value(Property<T> property, T value) {
 			if (!property.getValues().contains(value)) {
 				throw new IllegalArgumentException("Value " + value + " does not belong to property " + property);
 			} else {
@@ -124,29 +124,8 @@ public abstract class Property<T extends Comparable<T>> {
 			}
 		}
 
-		public Property<T> getProperty() {
-			return this.property;
-		}
-
-		public T getValue() {
-			return this.value;
-		}
-
 		public String toString() {
 			return this.property.getName() + "=" + this.property.name(this.value);
-		}
-
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			} else {
-				return !(o instanceof Property.Value<?> value) ? false : this.property == value.property && this.value.equals(value.value);
-			}
-		}
-
-		public int hashCode() {
-			int i = this.property.hashCode();
-			return 31 * i + this.value.hashCode();
 		}
 	}
 }

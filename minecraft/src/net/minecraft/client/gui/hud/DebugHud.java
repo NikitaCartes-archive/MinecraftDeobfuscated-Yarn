@@ -40,6 +40,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Formatting;
@@ -61,8 +62,11 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
@@ -312,7 +316,12 @@ public class DebugHud extends DrawableHelper {
 
 			ServerWorld serverWorld = this.getServerWorld();
 			if (serverWorld != null) {
-				SpawnHelper.Info info = serverWorld.getChunkManager().getSpawnInfo();
+				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+				ChunkGenerator chunkGenerator = serverChunkManager.getChunkGenerator();
+				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = chunkGenerator.method_38276();
+				BiomeSource biomeSource = chunkGenerator.getBiomeSource();
+				biomeSource.addDebugInfo(list, blockPos, multiNoiseSampler);
+				SpawnHelper.Info info = serverChunkManager.getSpawnInfo();
 				if (info != null) {
 					Object2IntMap<SpawnGroup> object2IntMap = info.getGroupToCount();
 					int m = info.getSpawningChunkCount();

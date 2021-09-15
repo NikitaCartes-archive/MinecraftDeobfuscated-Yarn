@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.OceanMonumentGenerator;
 import net.minecraft.structure.StructureManager;
@@ -12,13 +13,14 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
@@ -38,7 +40,6 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		long l,
 		ChunkRandom chunkRandom,
 		ChunkPos chunkPos,
-		Biome biome,
 		ChunkPos chunkPos2,
 		DefaultFeatureConfig defaultFeatureConfig,
 		HeightLimitView heightLimitView
@@ -46,14 +47,8 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		int i = chunkPos.getOffsetX(9);
 		int j = chunkPos.getOffsetZ(9);
 
-		for (Biome biome2 : biomeSource.getBiomesInArea(i, chunkGenerator.getSeaLevel(), j, 16)) {
-			if (!biome2.getGenerationSettings().hasStructureFeature(this)) {
-				return false;
-			}
-		}
-
-		for (Biome biome3 : biomeSource.getBiomesInArea(i, chunkGenerator.getSeaLevel(), j, 29)) {
-			if (biome3.getCategory() != Biome.Category.OCEAN && biome3.getCategory() != Biome.Category.RIVER) {
+		for (Biome biome : biomeSource.getBiomesInArea(i, chunkGenerator.getSeaLevel(), j, 29, chunkGenerator.method_38276())) {
+			if (biome.getCategory() != Biome.Category.OCEAN && biome.getCategory() != Biome.Category.RIVER) {
 				return false;
 			}
 		}
@@ -83,31 +78,39 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ChunkPos chunkPos,
-			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig,
-			HeightLimitView heightLimitView
+			HeightLimitView heightLimitView,
+			Predicate<Biome> predicate
 		) {
-			this.method_36216(chunkPos);
+			this.method_36216(chunkGenerator, heightLimitView, predicate, chunkPos);
 		}
 
-		private void method_36216(ChunkPos chunkPos) {
-			int i = chunkPos.getStartX() - 29;
-			int j = chunkPos.getStartZ() - 29;
-			Direction direction = Direction.Type.HORIZONTAL.random(this.random);
-			this.addPiece(new OceanMonumentGenerator.Base(this.random, i, j, direction));
-			this.field_33415 = true;
+		private void method_36216(ChunkGenerator chunkGenerator, HeightLimitView heightLimitView, Predicate<Biome> predicate, ChunkPos chunkPos) {
+			if (StructureFeature.checkBiome(chunkGenerator, heightLimitView, predicate, Heightmap.Type.OCEAN_FLOOR_WG, chunkPos.getCenterX(), chunkPos.getCenterZ())) {
+				int i = chunkPos.getStartX() - 29;
+				int j = chunkPos.getStartZ() - 29;
+				Direction direction = Direction.Type.HORIZONTAL.random(this.random);
+				this.addPiece(new OceanMonumentGenerator.Base(this.random, i, j, direction));
+				this.field_33415 = true;
+			}
 		}
 
 		@Override
 		public void generateStructure(
-			StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos
+			StructureWorldAccess world,
+			StructureAccessor structureAccessor,
+			ChunkGenerator chunkGenerator,
+			Random random,
+			Predicate<Biome> predicate,
+			BlockBox blockBox,
+			ChunkPos chunkPos
 		) {
 			if (!this.field_33415) {
 				this.children.clear();
-				this.method_36216(this.getPos());
+				this.method_36216(chunkGenerator, world, predicate, this.getPos());
 			}
 
-			super.generateStructure(world, structureAccessor, chunkGenerator, random, box, chunkPos);
+			super.generateStructure(world, structureAccessor, chunkGenerator, random, predicate, blockBox, chunkPos);
 		}
 	}
 }

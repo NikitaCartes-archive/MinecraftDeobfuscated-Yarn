@@ -7,6 +7,7 @@ import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -95,12 +96,11 @@ public class LecternBlock extends BlockWithEntity {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		World world = ctx.getWorld();
 		ItemStack itemStack = ctx.getStack();
-		NbtCompound nbtCompound = itemStack.getNbt();
 		PlayerEntity playerEntity = ctx.getPlayer();
 		boolean bl = false;
-		if (!world.isClient && playerEntity != null && nbtCompound != null && playerEntity.isCreativeLevelTwoOp() && nbtCompound.contains("BlockEntityTag")) {
-			NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockEntityTag");
-			if (nbtCompound2.contains("Book")) {
+		if (!world.isClient && playerEntity != null && playerEntity.isCreativeLevelTwoOp()) {
+			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
+			if (nbtCompound != null && nbtCompound.contains("Book")) {
 				bl = true;
 			}
 		}

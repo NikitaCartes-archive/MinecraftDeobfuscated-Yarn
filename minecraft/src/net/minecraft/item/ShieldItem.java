@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -25,7 +26,7 @@ public class ShieldItem extends Item {
 
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		return stack.getSubNbt("BlockEntityTag") != null ? this.getTranslationKey() + "." + getColor(stack).getName() : super.getTranslationKey(stack);
+		return BlockItem.getBlockEntityNbt(stack) != null ? this.getTranslationKey() + "." + getColor(stack).getName() : super.getTranslationKey(stack);
 	}
 
 	@Override
@@ -56,6 +57,7 @@ public class ShieldItem extends Item {
 	}
 
 	public static DyeColor getColor(ItemStack stack) {
-		return DyeColor.byId(stack.getOrCreateSubNbt("BlockEntityTag").getInt("Base"));
+		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
+		return nbtCompound != null ? DyeColor.byId(nbtCompound.getInt("Base")) : DyeColor.WHITE;
 	}
 }

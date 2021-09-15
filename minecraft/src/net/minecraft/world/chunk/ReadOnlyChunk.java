@@ -17,9 +17,13 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.source.BiomeArray;
+import net.minecraft.world.TickScheduler;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -28,10 +32,12 @@ import net.minecraft.world.gen.feature.StructureFeature;
  */
 public class ReadOnlyChunk extends ProtoChunk {
 	private final WorldChunk wrapped;
+	private final boolean field_34554;
 
-	public ReadOnlyChunk(WorldChunk wrapped) {
-		super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped);
+	public ReadOnlyChunk(WorldChunk wrapped, boolean bl) {
+		super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped.field_34544, wrapped.getWorld().getRegistryManager().get(Registry.BIOME_KEY));
 		this.wrapped = wrapped;
+		this.field_34554 = bl;
 	}
 
 	@Nullable
@@ -40,7 +46,6 @@ public class ReadOnlyChunk extends ProtoChunk {
 		return this.wrapped.getBlockEntity(pos);
 	}
 
-	@Nullable
 	@Override
 	public BlockState getBlockState(BlockPos pos) {
 		return this.wrapped.getBlockState(pos);
@@ -56,22 +61,36 @@ public class ReadOnlyChunk extends ProtoChunk {
 		return this.wrapped.getMaxLightLevel();
 	}
 
+	@Override
+	public ChunkSection getSection(int yIndex) {
+		return this.field_34554 ? this.wrapped.getSection(yIndex) : super.getSection(yIndex);
+	}
+
 	@Nullable
 	@Override
 	public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
-		return null;
+		return this.field_34554 ? this.wrapped.setBlockState(pos, state, moved) : null;
 	}
 
 	@Override
 	public void setBlockEntity(BlockEntity blockEntity) {
+		if (this.field_34554) {
+			this.wrapped.setBlockEntity(blockEntity);
+		}
 	}
 
 	@Override
 	public void addEntity(Entity entity) {
+		if (this.field_34554) {
+			this.wrapped.addEntity(entity);
+		}
 	}
 
 	@Override
 	public void setStatus(ChunkStatus status) {
+		if (this.field_34554) {
+			super.setStatus(status);
+		}
 	}
 
 	@Override
@@ -92,13 +111,23 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
+	public Heightmap getHeightmap(Heightmap.Type type) {
+		return this.wrapped.getHeightmap(type);
+	}
+
+	@Override
 	public int sampleHeightmap(Heightmap.Type type, int x, int z) {
 		return this.wrapped.sampleHeightmap(this.transformHeightmapType(type), x, z);
 	}
 
 	@Override
-	public BlockPos method_35319(Heightmap.Type type) {
-		return this.wrapped.method_35319(this.transformHeightmapType(type));
+	public BlockPos sampleMaxHeightMap(Heightmap.Type type) {
+		return this.wrapped.sampleMaxHeightMap(this.transformHeightmapType(type));
+	}
+
+	@Override
+	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+		return this.wrapped.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
 	@Override
@@ -144,11 +173,6 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public BiomeArray getBiomeArray() {
-		return this.wrapped.getBiomeArray();
-	}
-
-	@Override
 	public void setShouldSave(boolean shouldSave) {
 	}
 
@@ -187,32 +211,36 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setBiomes(BiomeArray biomes) {
-	}
-
-	@Override
 	public Stream<BlockPos> getLightSourcesStream() {
 		return this.wrapped.getLightSourcesStream();
 	}
 
 	@Override
-	public ChunkTickScheduler<Block> getBlockTickScheduler() {
+	public TickScheduler<Block> getBlockTickScheduler() {
 		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), this.getPos(), this);
 	}
 
 	@Override
-	public ChunkTickScheduler<Fluid> getFluidTickScheduler() {
+	public TickScheduler<Fluid> getFluidTickScheduler() {
 		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, this.getPos(), this);
 	}
 
 	@Override
 	public BitSet getCarvingMask(GenerationStep.Carver carver) {
-		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
+		if (this.field_34554) {
+			return super.getCarvingMask(carver);
+		} else {
+			throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
+		}
 	}
 
 	@Override
 	public BitSet getOrCreateCarvingMask(GenerationStep.Carver carver) {
-		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
+		if (this.field_34554) {
+			return super.getOrCreateCarvingMask(carver);
+		} else {
+			throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
+		}
 	}
 
 	public WorldChunk getWrappedChunk() {
@@ -227,5 +255,12 @@ public class ReadOnlyChunk extends ProtoChunk {
 	@Override
 	public void setLightOn(boolean lightOn) {
 		this.wrapped.setLightOn(lightOn);
+	}
+
+	@Override
+	public void method_38257(BiomeSource biomeSource, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+		if (this.field_34554) {
+			this.wrapped.method_38257(biomeSource, multiNoiseSampler);
+		}
 	}
 }

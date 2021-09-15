@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -19,9 +20,10 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
-import net.minecraft.entity.ai.goal.FlyOntoTreeGoal;
+import net.minecraft.entity.ai.goal.FlyGoal;
 import net.minecraft.entity.ai.goal.FollowMobGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -40,6 +42,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -54,6 +57,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
@@ -149,7 +153,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(2, new SitGoal(this));
 		this.goalSelector.add(2, new FollowOwnerGoal(this, 1.0, 5.0F, 1.0F, true));
-		this.goalSelector.add(2, new FlyOntoTreeGoal(this, 1.0));
+		this.goalSelector.add(2, new ParrotEntity.FlyOntoTreeGoal(this, 1.0));
 		this.goalSelector.add(3, new SitOnOwnerShoulderGoal(this));
 		this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0F, 7.0F));
 	}
@@ -441,5 +445,52 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.5F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
+	}
+
+	static class FlyOntoTreeGoal extends FlyGoal {
+		public FlyOntoTreeGoal(PathAwareEntity pathAwareEntity, double d) {
+			super(pathAwareEntity, d);
+		}
+
+		@Nullable
+		@Override
+		protected Vec3d getWanderTarget() {
+			Vec3d vec3d = null;
+			if (this.mob.isTouchingWater()) {
+				vec3d = FuzzyTargeting.find(this.mob, 15, 15);
+			}
+
+			if (this.mob.getRandom().nextFloat() >= this.probability) {
+				vec3d = this.locateTree();
+			}
+
+			return vec3d == null ? super.getWanderTarget() : vec3d;
+		}
+
+		@Nullable
+		private Vec3d locateTree() {
+			BlockPos blockPos = this.mob.getBlockPos();
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+			BlockPos.Mutable mutable2 = new BlockPos.Mutable();
+
+			for (BlockPos blockPos2 : BlockPos.iterate(
+				MathHelper.floor(this.mob.getX() - 3.0),
+				MathHelper.floor(this.mob.getY() - 6.0),
+				MathHelper.floor(this.mob.getZ() - 3.0),
+				MathHelper.floor(this.mob.getX() + 3.0),
+				MathHelper.floor(this.mob.getY() + 6.0),
+				MathHelper.floor(this.mob.getZ() + 3.0)
+			)) {
+				if (!blockPos.equals(blockPos2)) {
+					BlockState blockState = this.mob.world.getBlockState(mutable2.set(blockPos2, Direction.DOWN));
+					boolean bl = blockState.getBlock() instanceof LeavesBlock || blockState.isIn(BlockTags.LOGS);
+					if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.set(blockPos2, Direction.UP))) {
+						return Vec3d.ofBottomCenter(blockPos2);
+					}
+				}
+			}
+
+			return null;
+		}
 	}
 }

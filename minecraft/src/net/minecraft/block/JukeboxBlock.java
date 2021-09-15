@@ -6,6 +6,7 @@ import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MusicDiscItem;
@@ -32,12 +33,9 @@ public class JukeboxBlock extends BlockWithEntity {
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		super.onPlaced(world, pos, state, placer, itemStack);
-		NbtCompound nbtCompound = itemStack.getOrCreateNbt();
-		if (nbtCompound.contains("BlockEntityTag")) {
-			NbtCompound nbtCompound2 = nbtCompound.getCompound("BlockEntityTag");
-			if (nbtCompound2.contains("RecordItem")) {
-				world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
-			}
+		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
+		if (nbtCompound != null && nbtCompound.contains("RecordItem")) {
+			world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 		}
 	}
 

@@ -44,7 +44,7 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt) {
+	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 
 		for (int i = 0; i < 4; i++) {
@@ -59,7 +59,6 @@ public class SignBlockEntity extends BlockEntity {
 
 		nbt.putString("Color", this.textColor.getName());
 		nbt.putBoolean("GlowingText", this.glowingText);
-		return nbt;
 	}
 
 	@Override
@@ -139,15 +138,13 @@ public class SignBlockEntity extends BlockEntity {
 		return filtered ? this.filteredTexts : this.texts;
 	}
 
-	@Nullable
-	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.SIGN, this.toInitialChunkDataNbt());
+		return BlockEntityUpdateS2CPacket.create(this);
 	}
 
 	@Override
 	public NbtCompound toInitialChunkDataNbt() {
-		return this.writeNbt(new NbtCompound());
+		return this.createNbt();
 	}
 
 	@Override

@@ -44,10 +44,7 @@ public class AxisAlignedLinearPosRuleTest extends PosRuleTest {
 		float h = (float)Math.abs((blockPos2.getZ() - pivot.getZ()) * direction.getOffsetZ());
 		int i = (int)(f + g + h);
 		float j = random.nextFloat();
-		return (double)j
-			<= MathHelper.clampedLerp(
-				(double)this.minChance, (double)this.maxChance, MathHelper.getLerpProgress((double)i, (double)this.minDistance, (double)this.maxDistance)
-			);
+		return j <= MathHelper.clampedLerp(this.minChance, this.maxChance, MathHelper.getLerpProgress((float)i, (float)this.minDistance, (float)this.maxDistance));
 	}
 
 	@Override

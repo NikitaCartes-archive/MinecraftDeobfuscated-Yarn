@@ -9,7 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.WorldChunk;
 
 public class ChunkSectionCache implements AutoCloseable {
 	private final WorldAccess world;
@@ -39,13 +38,13 @@ public class ChunkSectionCache implements AutoCloseable {
 
 			return this.cachedSection;
 		} else {
-			return WorldChunk.EMPTY_SECTION;
+			return null;
 		}
 	}
 
 	public BlockState getBlockState(BlockPos pos) {
 		ChunkSection chunkSection = this.getSection(pos);
-		if (chunkSection == WorldChunk.EMPTY_SECTION) {
+		if (chunkSection == null) {
 			return Blocks.AIR.getDefaultState();
 		} else {
 			int i = ChunkSectionPos.getLocalCoord(pos.getX());

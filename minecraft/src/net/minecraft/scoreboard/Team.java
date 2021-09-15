@@ -13,7 +13,6 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 
 public class Team extends AbstractTeam {
-	public static final int field_31883 = 16;
 	private static final int field_31884 = 0;
 	private static final int field_31885 = 1;
 	private final Scoreboard scoreboard;

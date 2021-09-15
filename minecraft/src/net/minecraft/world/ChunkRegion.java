@@ -63,7 +63,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final ChunkPos lowerCorner;
 	private final ChunkPos upperCorner;
 	private final StructureAccessor structureAccessor;
-	private final ChunkStatus field_33754;
+	private final ChunkStatus status;
 	/**
 	 * The number of neighboring chunks which can be accessed for block
 	 * placement.
@@ -77,15 +77,15 @@ public class ChunkRegion implements StructureWorldAccess {
 	@Nullable
 	private Supplier<String> field_33756;
 
-	public ChunkRegion(ServerWorld world, List<Chunk> list, ChunkStatus chunkStatus, int placementRadius) {
-		this.field_33754 = chunkStatus;
+	public ChunkRegion(ServerWorld world, List<Chunk> chunks, ChunkStatus status, int placementRadius) {
+		this.status = status;
 		this.placementRadius = placementRadius;
-		int i = MathHelper.floor(Math.sqrt((double)list.size()));
-		if (i * i != list.size()) {
+		int i = MathHelper.floor(Math.sqrt((double)chunks.size()));
+		if (i * i != chunks.size()) {
 			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
 		} else {
-			ChunkPos chunkPos = ((Chunk)list.get(list.size() / 2)).getPos();
-			this.chunks = list;
+			ChunkPos chunkPos = ((Chunk)chunks.get(chunks.size() / 2)).getPos();
+			this.chunks = chunks;
 			this.centerPos = chunkPos;
 			this.width = i;
 			this.world = world;
@@ -93,9 +93,9 @@ public class ChunkRegion implements StructureWorldAccess {
 			this.levelProperties = world.getLevelProperties();
 			this.random = world.getRandom();
 			this.dimension = world.getDimension();
-			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.getDimension().getBiomeAccessType());
-			this.lowerCorner = ((Chunk)list.get(0)).getPos();
-			this.upperCorner = ((Chunk)list.get(list.size() - 1)).getPos();
+			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed));
+			this.lowerCorner = ((Chunk)chunks.get(0)).getPos();
+			this.upperCorner = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
 			this.structureAccessor = world.getStructureAccessor().forRegion(this);
 		}
 	}
@@ -104,6 +104,7 @@ public class ChunkRegion implements StructureWorldAccess {
 		return this.centerPos;
 	}
 
+	@Override
 	public void method_36972(@Nullable Supplier<String> supplier) {
 		this.field_33756 = supplier;
 	}
@@ -256,7 +257,7 @@ public class ChunkRegion implements StructureWorldAccess {
 					+ "], pos: "
 					+ pos
 					+ ", status: "
-					+ this.field_33754
+					+ this.status
 					+ (this.field_33756 == null ? "" : ", currently generating: " + (String)this.field_33756.get())
 			);
 			return false;

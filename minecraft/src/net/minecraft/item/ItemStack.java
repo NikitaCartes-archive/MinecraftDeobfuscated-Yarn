@@ -13,12 +13,10 @@ import java.text.DecimalFormatSymbols;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
@@ -28,7 +26,6 @@ import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.command.argument.BlockArgumentParser;
-import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -210,10 +207,10 @@ public final class ItemStack {
 	private NbtCompound nbt;
 	private boolean empty;
 	private Entity holder;
-	private CachedBlockPosition lastDestroyPos;
-	private boolean lastDestroyResult;
-	private CachedBlockPosition lastPlaceOnPos;
-	private boolean lastPlaceOnResult;
+	@Nullable
+	private BlockPredicatesChecker destroyChecker;
+	@Nullable
+	private BlockPredicatesChecker placeChecker;
 
 	public Optional<TooltipData> getTooltipData() {
 		return this.getItem().getTooltipData(this);
@@ -1088,70 +1085,20 @@ public final class ItemStack {
 		return mutableText2;
 	}
 
-	private static boolean areBlocksEqual(CachedBlockPosition first, @Nullable CachedBlockPosition second) {
-		if (second == null || first.getBlockState() != second.getBlockState()) {
-			return false;
-		} else if (first.getBlockEntity() == null && second.getBlockEntity() == null) {
-			return true;
-		} else {
-			return first.getBlockEntity() != null && second.getBlockEntity() != null
-				? Objects.equals(first.getBlockEntity().writeNbt(new NbtCompound()), second.getBlockEntity().writeNbt(new NbtCompound()))
-				: false;
+	public boolean canPlaceOn(TagManager tagManager, CachedBlockPosition pos) {
+		if (this.placeChecker == null) {
+			this.placeChecker = new BlockPredicatesChecker("CanPlaceOn");
 		}
+
+		return this.placeChecker.check(this, tagManager, pos);
 	}
 
 	public boolean canDestroy(TagManager tagManager, CachedBlockPosition pos) {
-		if (areBlocksEqual(pos, this.lastDestroyPos)) {
-			return this.lastDestroyResult;
-		} else {
-			this.lastDestroyPos = pos;
-			if (this.hasNbt() && this.nbt.contains("CanDestroy", NbtElement.LIST_TYPE)) {
-				NbtList nbtList = this.nbt.getList("CanDestroy", NbtElement.STRING_TYPE);
-
-				for (int i = 0; i < nbtList.size(); i++) {
-					String string = nbtList.getString(i);
-
-					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(tagManager);
-						if (predicate.test(pos)) {
-							this.lastDestroyResult = true;
-							return true;
-						}
-					} catch (CommandSyntaxException var7) {
-					}
-				}
-			}
-
-			this.lastDestroyResult = false;
-			return false;
+		if (this.destroyChecker == null) {
+			this.destroyChecker = new BlockPredicatesChecker("CanDestroy");
 		}
-	}
 
-	public boolean canPlaceOn(TagManager tagManager, CachedBlockPosition pos) {
-		if (areBlocksEqual(pos, this.lastPlaceOnPos)) {
-			return this.lastPlaceOnResult;
-		} else {
-			this.lastPlaceOnPos = pos;
-			if (this.hasNbt() && this.nbt.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
-				NbtList nbtList = this.nbt.getList("CanPlaceOn", NbtElement.STRING_TYPE);
-
-				for (int i = 0; i < nbtList.size(); i++) {
-					String string = nbtList.getString(i);
-
-					try {
-						Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(tagManager);
-						if (predicate.test(pos)) {
-							this.lastPlaceOnResult = true;
-							return true;
-						}
-					} catch (CommandSyntaxException var7) {
-					}
-				}
-			}
-
-			this.lastPlaceOnResult = false;
-			return false;
-		}
+		return this.destroyChecker.check(this, tagManager, pos);
 	}
 
 	public int getCooldown() {
