@@ -38,12 +38,11 @@ implements Nameable {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         if (this.hasCustomName()) {
             nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        return nbt;
     }
 
     @Override

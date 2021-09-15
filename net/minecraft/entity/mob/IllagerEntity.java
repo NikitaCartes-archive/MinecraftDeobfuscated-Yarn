@@ -5,6 +5,8 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.world.World;
 
@@ -26,6 +28,14 @@ extends RaiderEntity {
 
     public State getState() {
         return State.CROSSED;
+    }
+
+    @Override
+    public boolean canTarget(LivingEntity target) {
+        if (target instanceof MerchantEntity && target.isBaby()) {
+            return false;
+        }
+        return super.canTarget(target);
     }
 
     public static enum State {

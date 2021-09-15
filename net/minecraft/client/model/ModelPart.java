@@ -117,16 +117,16 @@ public final class ModelPart {
         matrices.pop();
     }
 
-    public void rotate(MatrixStack matrix) {
-        matrix.translate(this.pivotX / 16.0f, this.pivotY / 16.0f, this.pivotZ / 16.0f);
+    public void rotate(MatrixStack matrices) {
+        matrices.translate(this.pivotX / 16.0f, this.pivotY / 16.0f, this.pivotZ / 16.0f);
         if (this.roll != 0.0f) {
-            matrix.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(this.roll));
+            matrices.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(this.roll));
         }
         if (this.yaw != 0.0f) {
-            matrix.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
+            matrices.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
         }
         if (this.pitch != 0.0f) {
-            matrix.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.pitch));
+            matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.pitch));
         }
     }
 

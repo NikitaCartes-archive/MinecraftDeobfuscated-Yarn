@@ -12,7 +12,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkSectionCache
@@ -31,7 +30,7 @@ implements AutoCloseable {
     public ChunkSection getSection(BlockPos pos) {
         int i = this.world.getSectionIndex(pos.getY());
         if (i < 0 || i >= this.world.countVerticalSections()) {
-            return WorldChunk.EMPTY_SECTION;
+            return null;
         }
         long l2 = ChunkSectionPos.toLong(pos);
         if (this.cachedSection == null || this.sectionPos != l2) {
@@ -48,7 +47,7 @@ implements AutoCloseable {
 
     public BlockState getBlockState(BlockPos pos) {
         ChunkSection chunkSection = this.getSection(pos);
-        if (chunkSection == WorldChunk.EMPTY_SECTION) {
+        if (chunkSection == null) {
             return Blocks.AIR.getDefaultState();
         }
         int i = ChunkSectionPos.getLocalCoord(pos.getX());

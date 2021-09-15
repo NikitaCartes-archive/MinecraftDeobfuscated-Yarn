@@ -110,6 +110,7 @@ extends StructurePiece {
     protected abstract void handleMetadata(String var1, BlockPos var2, ServerWorldAccess var3, Random var4, BlockBox var5);
 
     @Override
+    @Deprecated
     public void translate(int x, int y, int z) {
         super.translate(x, y, z);
         this.pos = this.pos.add(x, y, z);

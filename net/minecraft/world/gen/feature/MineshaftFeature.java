@@ -6,6 +6,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,11 +20,12 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class MineshaftFeature
 extends StructureFeature<MineshaftFeatureConfig> {
@@ -32,7 +34,7 @@ extends StructureFeature<MineshaftFeatureConfig> {
     }
 
     @Override
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, Biome biome, ChunkPos chunkPos2, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, ChunkPos chunkPos2, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView) {
         chunkRandom.setCarverSeed(l, chunkPos.x, chunkPos.z);
         double d = mineshaftFeatureConfig.probability;
         return chunkRandom.nextDouble() < d;
@@ -50,7 +52,10 @@ extends StructureFeature<MineshaftFeatureConfig> {
         }
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
+            if (!predicate.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos.getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(chunkPos.getCenterZ())))) {
+                return;
+            }
             MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), mineshaftFeatureConfig.type);
             this.addPiece(mineshaftRoom);
             mineshaftRoom.fillOpenings(mineshaftRoom, this, this.random);

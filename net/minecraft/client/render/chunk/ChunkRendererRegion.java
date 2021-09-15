@@ -23,23 +23,17 @@ public class ChunkRendererRegion
 implements BlockRenderView {
     protected final int chunkXOffset;
     protected final int chunkZOffset;
-    protected final BlockPos offset;
-    protected final int sizeX;
-    protected final int sizeY;
-    protected final int sizeZ;
     protected final WorldChunk[][] chunks;
-    protected final BlockState[] blockStates;
     protected final World world;
 
     @Nullable
     public static ChunkRendererRegion create(World world, BlockPos startPos, BlockPos endPos, int chunkRadius) {
-        int m;
         int i = ChunkSectionPos.getSectionCoord(startPos.getX() - chunkRadius);
         int j = ChunkSectionPos.getSectionCoord(startPos.getZ() - chunkRadius);
         int k = ChunkSectionPos.getSectionCoord(endPos.getX() + chunkRadius);
         int l = ChunkSectionPos.getSectionCoord(endPos.getZ() + chunkRadius);
         WorldChunk[][] worldChunks = new WorldChunk[k - i + 1][l - j + 1];
-        for (m = i; m <= k; ++m) {
+        for (int m = i; m <= k; ++m) {
             for (int n = j; n <= l; ++n) {
                 worldChunks[m - i][n - j] = world.getChunk(m, n);
             }
@@ -47,10 +41,7 @@ implements BlockRenderView {
         if (ChunkRendererRegion.isEmptyBetween(startPos, endPos, i, j, worldChunks)) {
             return null;
         }
-        m = 1;
-        BlockPos blockPos = startPos.add(-1, -1, -1);
-        BlockPos blockPos2 = endPos.add(1, 1, 1);
-        return new ChunkRendererRegion(world, i, j, worldChunks, blockPos, blockPos2);
+        return new ChunkRendererRegion(world, i, j, worldChunks);
     }
 
     public static boolean isEmptyBetween(BlockPos from, BlockPos to, int i, int j, WorldChunk[][] chunks) {
@@ -64,44 +55,25 @@ implements BlockRenderView {
         return true;
     }
 
-    public ChunkRendererRegion(World world, int chunkX, int chunkZ, WorldChunk[][] chunks, BlockPos startPos, BlockPos endPos) {
+    public ChunkRendererRegion(World world, int chunkX, int chunkZ, WorldChunk[][] chunks) {
         this.world = world;
         this.chunkXOffset = chunkX;
         this.chunkZOffset = chunkZ;
         this.chunks = chunks;
-        this.offset = startPos;
-        this.sizeX = endPos.getX() - startPos.getX() + 1;
-        this.sizeY = endPos.getY() - startPos.getY() + 1;
-        this.sizeZ = endPos.getZ() - startPos.getZ() + 1;
-        this.blockStates = new BlockState[this.sizeX * this.sizeY * this.sizeZ];
-        for (BlockPos blockPos : BlockPos.iterate(startPos, endPos)) {
-            int i = ChunkSectionPos.getSectionCoord(blockPos.getX()) - chunkX;
-            int j = ChunkSectionPos.getSectionCoord(blockPos.getZ()) - chunkZ;
-            WorldChunk worldChunk = chunks[i][j];
-            int k = this.getIndex(blockPos);
-            this.blockStates[k] = worldChunk.getBlockState(blockPos);
-        }
-    }
-
-    protected final int getIndex(BlockPos pos) {
-        return this.getIndex(pos.getX(), pos.getY(), pos.getZ());
-    }
-
-    protected int getIndex(int x, int y, int z) {
-        int i = x - this.offset.getX();
-        int j = y - this.offset.getY();
-        int k = z - this.offset.getZ();
-        return k * this.sizeX * this.sizeY + j * this.sizeX + i;
     }
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        return this.blockStates[this.getIndex(pos)];
+        int i = ChunkSectionPos.getSectionCoord(pos.getX()) - this.chunkXOffset;
+        int j = ChunkSectionPos.getSectionCoord(pos.getZ()) - this.chunkZOffset;
+        return this.chunks[i][j].getBlockState(pos);
     }
 
     @Override
     public FluidState getFluidState(BlockPos pos) {
-        return this.blockStates[this.getIndex(pos)].getFluidState();
+        int i = ChunkSectionPos.getSectionCoord(pos.getX()) - this.chunkXOffset;
+        int j = ChunkSectionPos.getSectionCoord(pos.getZ()) - this.chunkZOffset;
+        return this.chunks[i][j].getBlockState(pos).getFluidState();
     }
 
     @Override

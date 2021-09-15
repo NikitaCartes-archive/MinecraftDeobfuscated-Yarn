@@ -97,20 +97,11 @@ public class Structure {
         BlockPos blockPos3 = new BlockPos(Math.max(start.getX(), blockPos.getX()), Math.max(start.getY(), blockPos.getY()), Math.max(start.getZ(), blockPos.getZ()));
         this.size = dimensions;
         for (BlockPos blockPos4 : BlockPos.iterate(blockPos2, blockPos3)) {
-            StructureBlockInfo structureBlockInfo;
             BlockPos blockPos5 = blockPos4.subtract(blockPos2);
             BlockState blockState = world.getBlockState(blockPos4);
             if (ignoredBlock != null && blockState.isOf(ignoredBlock)) continue;
             BlockEntity blockEntity = world.getBlockEntity(blockPos4);
-            if (blockEntity != null) {
-                NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
-                nbtCompound.remove("x");
-                nbtCompound.remove("y");
-                nbtCompound.remove("z");
-                structureBlockInfo = new StructureBlockInfo(blockPos5, blockState, nbtCompound.copy());
-            } else {
-                structureBlockInfo = new StructureBlockInfo(blockPos5, blockState, null);
-            }
+            StructureBlockInfo structureBlockInfo = blockEntity != null ? new StructureBlockInfo(blockPos5, blockState, blockEntity.createNbtWithId()) : new StructureBlockInfo(blockPos5, blockState, null);
             Structure.method_28054(structureBlockInfo, list, list2, list3);
         }
         List<StructureBlockInfo> list4 = Structure.method_28055(list, list2, list3);
@@ -225,9 +216,6 @@ public class Structure {
             o = Math.max(o, blockPos.getZ());
             list4.add(Pair.of(blockPos, structureBlockInfo.nbt));
             if (structureBlockInfo.nbt != null && (blockEntity = world.getBlockEntity(blockPos)) != null) {
-                structureBlockInfo.nbt.putInt("x", blockPos.getX());
-                structureBlockInfo.nbt.putInt("y", blockPos.getY());
-                structureBlockInfo.nbt.putInt("z", blockPos.getZ());
                 if (blockEntity instanceof LootableContainerBlockEntity) {
                     structureBlockInfo.nbt.putLong("LootTableSeed", random.nextLong());
                 }

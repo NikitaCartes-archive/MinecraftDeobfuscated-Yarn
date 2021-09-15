@@ -121,7 +121,7 @@ public class ChunkBuilder {
         BlockBufferBuilderStorage blockBufferBuilderStorage = this.threadBuffers.poll();
         this.queuedTaskCount = this.rebuildQueue.size();
         this.bufferCount = this.threadBuffers.size();
-        ((CompletableFuture)CompletableFuture.runAsync(() -> {}, this.executor).thenCompose(void_ -> task.run(blockBufferBuilderStorage))).whenComplete((result, throwable) -> {
+        ((CompletableFuture)CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferBuilderStorage)), this.executor).thenCompose(completableFuture -> completableFuture)).whenComplete((result, throwable) -> {
             if (throwable != null) {
                 CrashReport crashReport = CrashReport.create(throwable, "Batching chunks");
                 MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
@@ -164,14 +164,11 @@ public class ChunkBuilder {
         return this.cameraPosition;
     }
 
-    public boolean upload() {
+    public void upload() {
         Runnable runnable;
-        boolean bl = false;
         while ((runnable = this.uploadQueue.poll()) != null) {
             runnable.run();
-            bl = true;
         }
-        return bl;
     }
 
     public void rebuild(BuiltChunk chunk) {
@@ -229,7 +226,6 @@ public class ChunkBuilder {
         private final Set<BlockEntity> blockEntities = Sets.newHashSet();
         private final Map<RenderLayer, VertexBuffer> buffers = RenderLayer.getBlockLayers().stream().collect(Collectors.toMap(renderLayer -> renderLayer, renderLayer -> new VertexBuffer()));
         public Box boundingBox;
-        private int rebuildFrame = -1;
         private boolean needsRebuild = true;
         final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
         private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
@@ -252,14 +248,6 @@ public class ChunkBuilder {
             if (this.getSquaredCameraDistance() > 576.0) {
                 return this.isChunkNonEmpty(this.neighborPositions[Direction.WEST.ordinal()]) && this.isChunkNonEmpty(this.neighborPositions[Direction.NORTH.ordinal()]) && this.isChunkNonEmpty(this.neighborPositions[Direction.EAST.ordinal()]) && this.isChunkNonEmpty(this.neighborPositions[Direction.SOUTH.ordinal()]);
             }
-            return true;
-        }
-
-        public boolean setRebuildFrame(int frame) {
-            if (this.rebuildFrame == frame) {
-                return false;
-            }
-            this.rebuildFrame = frame;
             return true;
         }
 
@@ -397,6 +385,11 @@ public class ChunkBuilder {
             }
 
             @Override
+            protected String getName() {
+                return "rend_chk_sort";
+            }
+
+            @Override
             public CompletableFuture<Result> run(BlockBufferBuilderStorage buffers) {
                 if (this.cancelled.get()) {
                     return CompletableFuture.completedFuture(Result.CANCELLED);
@@ -454,6 +447,8 @@ public class ChunkBuilder {
 
             public abstract void cancel();
 
+            protected abstract String getName();
+
             @Override
             public int compareTo(Task task) {
                 return Doubles.compare(this.distance, task.distance);
@@ -474,6 +469,11 @@ public class ChunkBuilder {
             public RebuildTask(@Nullable double distance, ChunkRendererRegion region) {
                 super(distance);
                 this.region = region;
+            }
+
+            @Override
+            protected String getName() {
+                return "rend_chk_rebuild";
             }
 
             @Override
@@ -510,6 +510,7 @@ public class ChunkBuilder {
                         return Result.CANCELLED;
                     }
                     BuiltChunk.this.data.set(chunkData);
+                    ChunkBuilder.this.worldRenderer.method_38550(BuiltChunk.this);
                     return Result.SUCCESSFUL;
                 });
             }

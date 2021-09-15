@@ -16,15 +16,15 @@ import net.minecraft.world.gen.feature.OreFeatureConfig;
 
 public class EmeraldOreFeatureConfig
 implements FeatureConfig {
-    public static final Codec<EmeraldOreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.list(OreFeatureConfig.Target.CODEC).fieldOf("targets")).forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.target)).apply((Applicative<EmeraldOreFeatureConfig, ?>)instance, EmeraldOreFeatureConfig::new));
-    public final List<OreFeatureConfig.Target> target;
+    public static final Codec<EmeraldOreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.list(OreFeatureConfig.Target.CODEC).fieldOf("targets")).forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.targets)).apply((Applicative<EmeraldOreFeatureConfig, ?>)instance, EmeraldOreFeatureConfig::new));
+    public final List<OreFeatureConfig.Target> targets;
 
     public EmeraldOreFeatureConfig(BlockState target, BlockState state) {
         this(ImmutableList.of(OreFeatureConfig.createTarget(new BlockStateMatchRuleTest(target), state)));
     }
 
-    public EmeraldOreFeatureConfig(List<OreFeatureConfig.Target> list) {
-        this.target = list;
+    public EmeraldOreFeatureConfig(List<OreFeatureConfig.Target> targets) {
+        this.targets = targets;
     }
 }
 

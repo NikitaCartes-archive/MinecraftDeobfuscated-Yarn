@@ -3,7 +3,6 @@
  */
 package net.minecraft.util;
 
-import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -43,7 +42,7 @@ public class CubicSampler {
         return vec3d;
     }
 
-    @DontObfuscate
+    @FunctionalInterface
     public static interface RgbFetcher {
         public Vec3d fetch(int var1, int var2, int var3);
     }

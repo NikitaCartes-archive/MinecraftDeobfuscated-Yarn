@@ -327,7 +327,6 @@ extends Entity {
 
     @Override
     public void baseTick() {
-        boolean bl2;
         this.lastHandSwingProgress = this.handSwingProgress;
         if (this.firstUpdate) {
             this.getSleepingPosition().ifPresent(this::setPositionInBed);
@@ -337,24 +336,23 @@ extends Entity {
         }
         super.baseTick();
         this.world.getProfiler().push("livingEntityBaseTick");
-        boolean bl = this instanceof PlayerEntity;
+        if (this.isFireImmune() || this.world.isClient) {
+            this.extinguish();
+        }
         if (this.isAlive()) {
+            BlockPos blockPos;
             double e;
             double d;
+            boolean bl = this instanceof PlayerEntity;
             if (this.isInsideWall()) {
                 this.damage(DamageSource.IN_WALL, 1.0f);
             } else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox()) && (d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getSafeZone()) < 0.0 && (e = this.world.getWorldBorder().getDamagePerBlock()) > 0.0) {
                 this.damage(DamageSource.IN_WALL, Math.max(1, MathHelper.floor(-d * e)));
             }
-        }
-        if (this.isFireImmune() || this.world.isClient) {
-            this.extinguish();
-        }
-        boolean bl3 = bl2 = bl && ((PlayerEntity)this).getAbilities().invulnerable;
-        if (this.isAlive()) {
-            BlockPos blockPos;
             if (this.isSubmergedIn(FluidTags.WATER) && !this.world.getBlockState(new BlockPos(this.getX(), this.getEyeY(), this.getZ())).isOf(Blocks.BUBBLE_COLUMN)) {
-                if (!(this.canBreatheInWater() || StatusEffectUtil.hasWaterBreathing(this) || bl2)) {
+                boolean bl2;
+                boolean bl3 = bl2 = !this.canBreatheInWater() && !StatusEffectUtil.hasWaterBreathing(this) && (!bl || !((PlayerEntity)this).getAbilities().invulnerable);
+                if (bl2) {
                     this.setAir(this.getNextAirUnderwater(this.getAir()));
                     if (this.getAir() == -20) {
                         this.setAir(0);
@@ -2010,7 +2008,7 @@ extends Entity {
                 BlockPos blockPos = this.getVelocityAffectingPos();
                 float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
                 float f = this.onGround ? p * 0.91f : 0.91f;
-                Vec3d vec3d6 = this.applyMovementInput(movementInput, p);
+                Vec3d vec3d6 = this.method_26318(movementInput, p);
                 double q = vec3d6.y;
                 if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
                     q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
@@ -2045,15 +2043,15 @@ extends Entity {
         entity.limbAngle += entity.limbDistance;
     }
 
-    public Vec3d applyMovementInput(Vec3d movementInput, float slipperiness) {
-        this.updateVelocity(this.getMovementSpeed(slipperiness), movementInput);
+    public Vec3d method_26318(Vec3d vec3d, float f) {
+        this.updateVelocity(this.getMovementSpeed(f), vec3d);
         this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
         this.move(MovementType.SELF, this.getVelocity());
-        Vec3d vec3d = this.getVelocity();
+        Vec3d vec3d2 = this.getVelocity();
         if ((this.horizontalCollision || this.jumping) && (this.isClimbing() || this.getBlockStateAtPos().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
-            vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
+            vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
         }
-        return vec3d;
+        return vec3d2;
     }
 
     public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {
@@ -3145,6 +3143,8 @@ extends Entity {
         this.updateTrackedPosition(d, e, f);
         this.bodyYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
         this.headYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
+        this.prevBodyYaw = this.bodyYaw;
+        this.prevHeadYaw = this.headYaw;
         this.setId(packet.getId());
         this.setUuid(packet.getUuid());
         this.updatePositionAndAngles(d, e, f, g, h);

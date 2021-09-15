@@ -42,7 +42,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
@@ -131,15 +130,15 @@ public class Util {
         return executorService;
     }
 
-    public static Executor getBootstrapExecutor() {
+    public static ExecutorService getBootstrapExecutor() {
         return BOOTSTRAP_EXECUTOR;
     }
 
-    public static Executor getMainWorkerExecutor() {
+    public static ExecutorService getMainWorkerExecutor() {
         return MAIN_WORKER_EXECUTOR;
     }
 
-    public static Executor getIoWorkerExecutor() {
+    public static ExecutorService getIoWorkerExecutor() {
         return IO_WORKER_EXECUTOR;
     }
 
@@ -230,6 +229,23 @@ public class Util {
             };
         }
         return task;
+    }
+
+    public static <V> Supplier<V> debugSupplier(String activeThreadName, Supplier<V> supplier) {
+        if (SharedConstants.isDevelopment) {
+            return () -> {
+                Thread thread = Thread.currentThread();
+                String string2 = thread.getName();
+                thread.setName(activeThreadName);
+                try {
+                    Object t = supplier.get();
+                    return t;
+                } finally {
+                    thread.setName(string2);
+                }
+            };
+        }
+        return supplier;
     }
 
     public static OperatingSystem getOperatingSystem() {

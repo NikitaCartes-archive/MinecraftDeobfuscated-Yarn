@@ -30,7 +30,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -96,7 +96,7 @@ public class GeneratorOptions {
     }
 
     public static NoiseChunkGenerator createOverworldGenerator(Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed) {
-        return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false, biomeRegistry), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.OVERWORLD));
+        return new NoiseChunkGenerator(MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(biomeRegistry), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.OVERWORLD));
     }
 
     public long getSeed() {
@@ -202,12 +202,6 @@ public class GeneratorOptions {
             }
             case "debug_all_block_states": {
                 return new GeneratorOptions(l, bl, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, new DebugChunkGenerator(registry2)));
-            }
-            case "amplified": {
-                return new GeneratorOptions(l, bl, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false, registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.AMPLIFIED))));
-            }
-            case "largebiomes": {
-                return new GeneratorOptions(l, bl, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, true, registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.OVERWORLD))));
             }
         }
         return new GeneratorOptions(l, bl, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, GeneratorOptions.createOverworldGenerator(registry2, registry3, l)));

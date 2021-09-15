@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -55,16 +56,15 @@ extends EndPortalBlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putLong("Age", this.age);
         if (this.exitPortalPos != null) {
             nbt.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
         }
         if (this.exactTeleport) {
-            nbt.putBoolean("ExactTeleport", this.exactTeleport);
+            nbt.putBoolean("ExactTeleport", true);
         }
-        return nbt;
     }
 
     @Override
@@ -125,15 +125,13 @@ extends EndPortalBlockEntity {
         return 1.0f - MathHelper.clamp(((float)this.teleportCooldown - tickDelta) / 40.0f, 0.0f, 1.0f);
     }
 
-    @Override
-    @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.END_GATEWAY, this.toInitialChunkDataNbt());
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
     public NbtCompound toInitialChunkDataNbt() {
-        return this.writeNbt(new NbtCompound());
+        return this.createNbt();
     }
 
     private static void startTeleportCooldown(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {
@@ -302,6 +300,10 @@ extends EndPortalBlockEntity {
     public void setExitPortalPos(BlockPos pos, boolean exactTeleport) {
         this.exactTeleport = exactTeleport;
         this.exitPortalPos = pos;
+    }
+
+    public /* synthetic */ Packet toUpdatePacket() {
+        return this.toUpdatePacket();
     }
 }
 

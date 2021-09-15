@@ -77,7 +77,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     static final Text SNAPSHOT_FIRST_LINE = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
     static final Text SNAPSHOT_SECOND_LINE = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
     static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
-    static final Text PRE_WORLDHEIGHT_TEXT = new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
+    static final Text CONVERSION_TOOLTIP = new TranslatableText("selectWorld.conversion.tooltip").formatted(Formatting.RED);
+    static final Text INCOMPATIBLE_WORLDHEIGHT_TEXT = new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
     private final SelectWorldScreen parent;
     @Nullable
     private List<LevelSummary> levels;
@@ -186,7 +187,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         @Override
         public Text getNarration() {
             TranslatableText translatableText = new TranslatableText("narrator.select.world", this.level.getDisplayName(), new Date(this.level.getLastPlayed()), this.level.isHardcore() ? new TranslatableText("gameMode.hardcore") : new TranslatableText("gameMode." + this.level.getGameMode().getName()), this.level.hasCheats() ? new TranslatableText("selectWorld.cheats") : LiteralText.EMPTY, this.level.getVersion());
-            MutableText text = this.level.isLocked() ? ScreenTexts.joinSentences(translatableText, LOCKED_TEXT) : (this.level.isPreWorldHeightChangeVersion() ? ScreenTexts.joinSentences(translatableText, PRE_WORLDHEIGHT_TEXT) : translatableText);
+            MutableText text = this.level.isLocked() ? ScreenTexts.joinSentences(translatableText, LOCKED_TEXT) : (this.level.hasIncompatibleWorldHeight() ? ScreenTexts.joinSentences(translatableText, INCOMPATIBLE_WORLDHEIGHT_TEXT) : translatableText);
             return new TranslatableText("narrator.select", text);
         }
 
@@ -221,10 +222,15 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     if (bl) {
                         this.screen.setTooltip(this.client.textRenderer.wrapLines(LOCKED_TEXT, 175));
                     }
-                } else if (this.level.isPreWorldHeightChangeVersion()) {
+                } else if (this.level.requiresConversion()) {
+                    DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
+                    if (bl) {
+                        this.screen.setTooltip(this.client.textRenderer.wrapLines(CONVERSION_TOOLTIP, 175));
+                    }
+                } else if (this.level.hasIncompatibleWorldHeight()) {
                     DrawableHelper.drawTexture(matrices, x, y, 96.0f, 32.0f, 32, 32, 256, 256);
                     if (bl) {
-                        this.screen.setTooltip(this.client.textRenderer.wrapLines(PRE_WORLDHEIGHT_TEXT, 175));
+                        this.screen.setTooltip(this.client.textRenderer.wrapLines(INCOMPATIBLE_WORLDHEIGHT_TEXT, 175));
                     }
                 } else if (this.level.isDifferentVersion()) {
                     DrawableHelper.drawTexture(matrices, x, y, 32.0f, j, 32, 32, 256, 256);

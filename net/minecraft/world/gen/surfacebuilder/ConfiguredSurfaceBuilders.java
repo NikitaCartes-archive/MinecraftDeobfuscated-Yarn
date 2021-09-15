@@ -34,6 +34,12 @@ public class ConfiguredSurfaceBuilders {
     public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> SWAMP = ConfiguredSurfaceBuilders.register("swamp", SurfaceBuilder.SWAMP.withConfig(SurfaceBuilder.GRASS_CONFIG));
     public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> WARPED_FOREST = ConfiguredSurfaceBuilders.register("warped_forest", SurfaceBuilder.NETHER_FOREST.withConfig(SurfaceBuilder.WARPED_NYLIUM_CONFIG));
     public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> WOODED_BADLANDS = ConfiguredSurfaceBuilders.register("wooded_badlands", SurfaceBuilder.WOODED_BADLANDS.withConfig(SurfaceBuilder.BADLANDS_CONFIG));
+    public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> GROVE = ConfiguredSurfaceBuilders.register("grove", SurfaceBuilder.GROVE.withConfig(SurfaceBuilder.DIRT_SNOW_CONFIG));
+    public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> SNOWCAPPED_PEAKS = ConfiguredSurfaceBuilders.register("snowcapped_peaks", SurfaceBuilder.SNOWCAPPED_PEAKS.withConfig(SurfaceBuilder.SNOW_PEAKS_CONFIG));
+    public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> LOFTY_PEAKS = ConfiguredSurfaceBuilders.register("lofty_peaks", SurfaceBuilder.LOFTY_PEAKS.withConfig(SurfaceBuilder.LOFTY_PEAKS_CONFIG));
+    public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> STONY_PEAKS = ConfiguredSurfaceBuilders.register("stony_peaks", SurfaceBuilder.STONY_PEAKS.withConfig(SurfaceBuilder.STONE_CONFIG));
+    public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> SNOWY_SLOPES = ConfiguredSurfaceBuilders.register("snowy_slopes", SurfaceBuilder.SNOWY_SLOPES.withConfig(SurfaceBuilder.SNOW_CONFIG));
+    public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> STONE_SHORE = ConfiguredSurfaceBuilders.register("stone_shore", SurfaceBuilder.STONE_SHORE.withConfig(SurfaceBuilder.STONE_CONFIG));
 
     private static <SC extends SurfaceConfig> ConfiguredSurfaceBuilder<SC> register(String id, ConfiguredSurfaceBuilder<SC> configuredSurfaceBuilder) {
         return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_SURFACE_BUILDER, id, configuredSurfaceBuilder);

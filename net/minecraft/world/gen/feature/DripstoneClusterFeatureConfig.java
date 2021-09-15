@@ -26,7 +26,7 @@ implements FeatureConfig {
     public final int maxDistanceFromCenterAffectingChanceOfDripstoneColumn;
     public final int maxDistanceFromCenterAffectingHeightBias;
 
-    public DripstoneClusterFeatureConfig(int floorToCeilingSearchRange, IntProvider height, IntProvider radius, int maxStalagmiteStalactiteHeightDiff, int heightDeviation, IntProvider dripstoneBlockLayerThickness, FloatProvider density, FloatProvider wetness, float wetnessMean, int i, int j) {
+    public DripstoneClusterFeatureConfig(int floorToCeilingSearchRange, IntProvider height, IntProvider radius, int maxStalagmiteStalactiteHeightDiff, int heightDeviation, IntProvider dripstoneBlockLayerThickness, FloatProvider density, FloatProvider wetness, float wetnessMean, int maxDistanceFromCenterAffectingChanceOfDripstoneColumn, int maxDistanceFromCenterAffectingHeightBias) {
         this.floorToCeilingSearchRange = floorToCeilingSearchRange;
         this.height = height;
         this.radius = radius;
@@ -36,8 +36,8 @@ implements FeatureConfig {
         this.density = density;
         this.wetness = wetness;
         this.chanceOfDripstoneColumnAtMaxDistanceFromCenter = wetnessMean;
-        this.maxDistanceFromCenterAffectingChanceOfDripstoneColumn = i;
-        this.maxDistanceFromCenterAffectingHeightBias = j;
+        this.maxDistanceFromCenterAffectingChanceOfDripstoneColumn = maxDistanceFromCenterAffectingChanceOfDripstoneColumn;
+        this.maxDistanceFromCenterAffectingHeightBias = maxDistanceFromCenterAffectingHeightBias;
     }
 }
 

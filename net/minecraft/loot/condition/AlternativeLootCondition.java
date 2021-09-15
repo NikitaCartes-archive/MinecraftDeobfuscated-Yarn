@@ -65,8 +65,8 @@ implements LootCondition {
         }
 
         @Override
-        public Builder or(LootCondition.Builder condition) {
-            this.terms.add(condition.build());
+        public Builder or(LootCondition.Builder builder) {
+            this.terms.add(builder.build());
             return this;
         }
 

@@ -73,7 +73,7 @@ implements StructureWorldAccess {
     private final ChunkPos lowerCorner;
     private final ChunkPos upperCorner;
     private final StructureAccessor structureAccessor;
-    private final ChunkStatus field_33754;
+    private final ChunkStatus status;
     /**
      * The number of neighboring chunks which can be accessed for block
      * placement.
@@ -87,15 +87,15 @@ implements StructureWorldAccess {
     @Nullable
     private Supplier<String> field_33756;
 
-    public ChunkRegion(ServerWorld world, List<Chunk> list, ChunkStatus chunkStatus, int placementRadius) {
-        this.field_33754 = chunkStatus;
+    public ChunkRegion(ServerWorld world, List<Chunk> chunks, ChunkStatus status, int placementRadius) {
+        this.status = status;
         this.placementRadius = placementRadius;
-        int i = MathHelper.floor(Math.sqrt(list.size()));
-        if (i * i != list.size()) {
+        int i = MathHelper.floor(Math.sqrt(chunks.size()));
+        if (i * i != chunks.size()) {
             throw Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
         }
-        ChunkPos chunkPos = list.get(list.size() / 2).getPos();
-        this.chunks = list;
+        ChunkPos chunkPos = chunks.get(chunks.size() / 2).getPos();
+        this.chunks = chunks;
         this.centerPos = chunkPos;
         this.width = i;
         this.world = world;
@@ -103,9 +103,9 @@ implements StructureWorldAccess {
         this.levelProperties = world.getLevelProperties();
         this.random = world.getRandom();
         this.dimension = world.getDimension();
-        this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.getDimension().getBiomeAccessType());
-        this.lowerCorner = list.get(0).getPos();
-        this.upperCorner = list.get(list.size() - 1).getPos();
+        this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed));
+        this.lowerCorner = chunks.get(0).getPos();
+        this.upperCorner = chunks.get(chunks.size() - 1).getPos();
         this.structureAccessor = world.getStructureAccessor().forRegion(this);
     }
 
@@ -113,6 +113,7 @@ implements StructureWorldAccess {
         return this.centerPos;
     }
 
+    @Override
     public void method_36972(@Nullable Supplier<String> supplier) {
         this.field_33756 = supplier;
     }
@@ -243,7 +244,7 @@ implements StructureWorldAccess {
         int k = Math.abs(this.centerPos.x - i);
         int l = Math.abs(this.centerPos.z - j);
         if (k > this.placementRadius || l > this.placementRadius) {
-            Util.error("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + pos + ", status: " + this.field_33754 + (String)(this.field_33756 == null ? "" : ", currently generating: " + this.field_33756.get()));
+            Util.error("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + pos + ", status: " + this.status + (String)(this.field_33756 == null ? "" : ", currently generating: " + this.field_33756.get()));
             return false;
         }
         return true;

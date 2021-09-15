@@ -24,7 +24,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.collection.WeightedPicker;
+import net.minecraft.util.collection.Weighted;
+import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -107,7 +108,7 @@ extends Task<E> {
             }
         } else {
             --this.cooldown;
-            Optional<Target> optional = WeightedPicker.getRandom(serverWorld.random, this.targets);
+            Optional<Target> optional = Weighting.getRandom(serverWorld.random, this.targets);
             if (optional.isPresent()) {
                 this.targets.remove(optional.get());
                 ((LivingEntity)mobEntity).getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(optional.get().getPos()));
@@ -206,7 +207,7 @@ extends Task<E> {
     }
 
     public static class Target
-    extends WeightedPicker.Entry {
+    extends Weighted.Absent {
         private final BlockPos pos;
         private final Vec3d ramVelocity;
 

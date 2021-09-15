@@ -180,6 +180,7 @@ import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -620,7 +621,7 @@ WindowEventHandler {
         SplashOverlay.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
         this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
-        this.setOverlay(new SplashOverlay(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
+        this.setOverlay(new SplashOverlay(this, this.resourceManager.reload((Executor)Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
             if (SharedConstants.isDevelopment) {
                 this.checkGameData();
             }
@@ -833,7 +834,7 @@ WindowEventHandler {
         if (!force) {
             this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.MANUAL, list);
         }
-        this.setOverlay(new SplashOverlay(this, this.resourceManager.reload(Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
+        this.setOverlay(new SplashOverlay(this, this.resourceManager.reload((Executor)Util.getMainWorkerExecutor(), (Executor)this, COMPLETED_UNIT_FUTURE, list), throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
             this.worldRenderer.reload();
             this.resourceReloadLogger.finish();
             completableFuture.complete(null);
@@ -1521,8 +1522,14 @@ WindowEventHandler {
             } else if (this.player.isSleeping() && this.world != null) {
                 this.setScreen(new SleepingChatScreen());
             }
-        } else if (this.currentScreen != null && this.currentScreen instanceof SleepingChatScreen && !this.player.isSleeping()) {
-            this.setScreen(null);
+        } else {
+            Screen screen = this.currentScreen;
+            if (screen instanceof SleepingChatScreen) {
+                SleepingChatScreen sleepingChatScreen = (SleepingChatScreen)screen;
+                if (!this.player.isSleeping()) {
+                    sleepingChatScreen.closeChatIfEmpty();
+                }
+            }
         }
         if (this.currentScreen != null) {
             this.attackCooldown = 10000;
@@ -1699,7 +1706,6 @@ WindowEventHandler {
     }
 
     public static DataPackSettings loadDataPackSettings(LevelStorage.Session storageSession) {
-        MinecraftServer.convertLevel(storageSession);
         DataPackSettings dataPackSettings = storageSession.getDataPackSettings();
         if (dataPackSettings == null) {
             throw new IllegalStateException("Failed to load data pack config");
@@ -2067,13 +2073,13 @@ WindowEventHandler {
     }
 
     private ItemStack addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-        NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+        NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
         if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
             NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
             stack.getOrCreateNbt().put("SkullOwner", nbtCompound2);
             return stack;
         }
-        stack.setSubNbt("BlockEntityTag", nbtCompound);
+        BlockItem.setBlockEntityNbt(stack, blockEntity.getType(), nbtCompound);
         NbtCompound nbtCompound2 = new NbtCompound();
         NbtList nbtList = new NbtList();
         nbtList.add(NbtString.of("\"(+NBT)\""));

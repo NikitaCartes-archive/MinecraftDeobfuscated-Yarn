@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.network;
 
+import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
@@ -46,6 +47,9 @@ public class SpawnLocating {
 
     @Nullable
     public static BlockPos findServerSpawnPoint(ServerWorld world, ChunkPos chunkPos, boolean validSpawnNeeded) {
+        if (SharedConstants.method_37896(chunkPos.getStartX(), chunkPos.getStartZ())) {
+            return null;
+        }
         for (int i = chunkPos.getStartX(); i <= chunkPos.getEndX(); ++i) {
             for (int j = chunkPos.getStartZ(); j <= chunkPos.getEndZ(); ++j) {
                 BlockPos blockPos = SpawnLocating.findOverworldSpawn(world, i, j, validSpawnNeeded);

@@ -18,7 +18,6 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.provider.nbt.LootNbtProvider;
 import net.minecraft.loot.provider.nbt.LootNbtProviderType;
 import net.minecraft.loot.provider.nbt.LootNbtProviderTypes;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.util.JsonHelper;
@@ -34,7 +33,7 @@ implements LootNbtProvider {
         @Override
         public NbtElement getNbt(LootContext context) {
             BlockEntity blockEntity = context.get(LootContextParameters.BLOCK_ENTITY);
-            return blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : null;
+            return blockEntity != null ? blockEntity.createNbtWithIdentifyingData() : null;
         }
 
         @Override

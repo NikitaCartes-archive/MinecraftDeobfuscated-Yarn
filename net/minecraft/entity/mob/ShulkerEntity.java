@@ -98,8 +98,8 @@ implements Monster {
         this.goalSelector.add(7, new PeekGoal());
         this.goalSelector.add(8, new LookAroundGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this, this.getClass()).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new SearchForPlayerGoal(this));
-        this.targetSelector.add(3, new SearchForTargetGoal(this));
+        this.targetSelector.add(2, new TargetPlayerGoal(this));
+        this.targetSelector.add(3, new TargetOtherTeamGoal(this));
     }
 
     @Override
@@ -479,6 +479,7 @@ implements Monster {
     public void readFromPacket(MobSpawnS2CPacket packet) {
         super.readFromPacket(packet);
         this.bodyYaw = 0.0f;
+        this.prevBodyYaw = 0.0f;
     }
 
     @Override
@@ -645,9 +646,9 @@ implements Monster {
         }
     }
 
-    class SearchForPlayerGoal
+    class TargetPlayerGoal
     extends ActiveTargetGoal<PlayerEntity> {
-        public SearchForPlayerGoal(ShulkerEntity shulker) {
+        public TargetPlayerGoal(ShulkerEntity shulker) {
             super((MobEntity)shulker, PlayerEntity.class, true);
         }
 
@@ -672,9 +673,9 @@ implements Monster {
         }
     }
 
-    static class SearchForTargetGoal
+    static class TargetOtherTeamGoal
     extends ActiveTargetGoal<LivingEntity> {
-        public SearchForTargetGoal(ShulkerEntity shulker) {
+        public TargetOtherTeamGoal(ShulkerEntity shulker) {
             super(shulker, LivingEntity.class, 10, true, false, entity -> entity instanceof Monster);
         }
 

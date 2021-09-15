@@ -19,9 +19,9 @@ import net.minecraft.block.enums.WireConnection;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.ShiftableStructurePiece;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
-import net.minecraft.structure.StructurePieceWithDimensions;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -31,7 +31,9 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class JungleTempleGenerator
-extends StructurePieceWithDimensions {
+extends ShiftableStructurePiece {
+    public static final int field_34727 = 12;
+    public static final int field_34728 = 15;
     private boolean placedMainChest;
     private boolean placedHiddenChest;
     private boolean placedTrap1;

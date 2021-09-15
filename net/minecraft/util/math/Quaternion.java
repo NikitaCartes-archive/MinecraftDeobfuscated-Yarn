@@ -64,12 +64,12 @@ public final class Quaternion {
         return quaternion;
     }
 
-    public static Quaternion fromEulerXyzDegrees(Vec3f vec3f) {
-        return Quaternion.fromEulerXyz((float)Math.toRadians(vec3f.getX()), (float)Math.toRadians(vec3f.getY()), (float)Math.toRadians(vec3f.getZ()));
+    public static Quaternion fromEulerXyzDegrees(Vec3f vector) {
+        return Quaternion.fromEulerXyz((float)Math.toRadians(vector.getX()), (float)Math.toRadians(vector.getY()), (float)Math.toRadians(vector.getZ()));
     }
 
-    public static Quaternion fromEulerXyz(Vec3f vec3f) {
-        return Quaternion.fromEulerXyz(vec3f.getX(), vec3f.getY(), vec3f.getZ());
+    public static Quaternion fromEulerXyz(Vec3f vector) {
+        return Quaternion.fromEulerXyz(vector.getX(), vector.getY(), vector.getZ());
     }
 
     public static Quaternion fromEulerXyz(float x, float y, float z) {

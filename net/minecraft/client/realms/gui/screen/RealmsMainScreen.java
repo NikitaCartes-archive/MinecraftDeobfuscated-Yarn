@@ -23,7 +23,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.realms.KeyCombo;
 import net.minecraft.client.realms.Ping;
 import net.minecraft.client.realms.RealmsClient;
@@ -119,16 +118,15 @@ extends RealmsScreen {
     private final RateLimiter rateLimiter;
     private boolean dontSetConnectedToRealms;
     final Screen lastScreen;
-    volatile RealmSelectionList realmSelectionList;
+    RealmSelectionList realmSelectionList;
     private boolean field_33775;
-    long selectedServerId = -1L;
-    ButtonWidget playButton;
+    private ButtonWidget playButton;
     private ButtonWidget backButton;
     private ButtonWidget renewButton;
     private ButtonWidget configureButton;
     private ButtonWidget leaveButton;
     private List<Text> tooltip;
-    List<RealmsServer> realmsServers = Lists.newArrayList();
+    private List<RealmsServer> realmsServers = ImmutableList.of();
     volatile int numberOfPendingInvites;
     int animTick;
     private boolean hasFetchedServers;
@@ -182,9 +180,6 @@ extends RealmsScreen {
         if (this.popupOpenedByUser) {
             return true;
         }
-        if (this.trialsAvailable && !this.createdTrial && this.realmsServers.isEmpty()) {
-            return true;
-        }
         return this.realmsServers.isEmpty();
     }
 
@@ -214,7 +209,6 @@ extends RealmsScreen {
             this.checkParentalConsent();
         }
         this.checkClientCompatibility();
-        this.checkUnreadNews();
         if (!this.dontSetConnectedToRealms) {
             this.client.setConnectedToRealms(false);
         }
@@ -241,21 +235,15 @@ extends RealmsScreen {
     }
 
     public void addButtons() {
-        this.leaveButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 202, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer(this.selectedServerId))));
-        this.configureButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 190, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.configure"), button -> this.configureClicked(this.findServer(this.selectedServerId))));
-        this.playButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 93, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.play"), button -> {
-            RealmsServer realmsServer = this.findServer(this.selectedServerId);
-            if (realmsServer == null) {
-                return;
-            }
-            this.play(realmsServer, this);
-        }));
+        this.leaveButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 202, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer())));
+        this.configureButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 190, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.configure"), button -> this.configureClicked(this.findServer())));
+        this.playButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 93, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.play"), button -> this.play(this.findServer(), this)));
         this.backButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 32, 90, 20, ScreenTexts.BACK, button -> {
             if (!this.justClosedPopup) {
                 this.client.setScreen(this.lastScreen);
             }
         }));
-        this.renewButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.expiredRenew"), button -> this.onRenew()));
+        this.renewButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer())));
         this.pendingInvitesButton = this.addDrawableChild(new PendingInvitesButton());
         this.newsButton = this.addDrawableChild(new NewsButton());
         this.showPopupButton = this.addDrawableChild(new ShowPopupButton());
@@ -268,8 +256,7 @@ extends RealmsScreen {
             this.client.setScreen(this.lastScreen);
         }));
         this.buyARealmButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20, new TranslatableText("mco.selectServer.buy"), button -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms")));
-        RealmsServer realmsServer = this.findServer(this.selectedServerId);
-        this.updateButtonStates(realmsServer);
+        this.updateButtonStates(null);
     }
 
     void updateButtonStates(@Nullable RealmsServer server) {
@@ -295,7 +282,7 @@ extends RealmsScreen {
         return (!this.shouldShowPopup() || this.popupOpenedByUser) && RealmsMainScreen.hasParentalConsent() && this.hasFetchedServers;
     }
 
-    private boolean shouldPlayButtonBeActive(@Nullable RealmsServer server) {
+    boolean shouldPlayButtonBeActive(@Nullable RealmsServer server) {
         return server != null && !server.expired && server.state == RealmsServer.State.OPEN;
     }
 
@@ -330,6 +317,8 @@ extends RealmsScreen {
         if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.SERVER_LIST)) {
             boolean bl;
             List<RealmsServer> list = REALMS_DATA_FETCHER.getServers();
+            RealmsServer realmsServer = this.findServer();
+            RealmSelectionListEntry entry = null;
             this.realmSelectionList.clear();
             boolean bl2 = bl = !this.hasFetchedServers;
             if (bl) {
@@ -337,16 +326,19 @@ extends RealmsScreen {
             }
             if (list != null) {
                 boolean bl22 = false;
-                for (RealmsServer realmsServer : list) {
-                    if (!this.isOwnedNotExpired(realmsServer)) continue;
+                for (RealmsServer realmsServer2 : list) {
+                    if (!this.isOwnedNotExpired(realmsServer2)) continue;
                     bl22 = true;
                 }
                 this.realmsServers = list;
                 if (this.shouldShowMessageInList()) {
-                    this.realmSelectionList.addTrialEntry(new RealmSelectionListTrialEntry());
+                    this.realmSelectionList.addEntry(new RealmSelectionListTrialEntry());
                 }
-                for (RealmsServer realmsServer : this.realmsServers) {
-                    this.realmSelectionList.addEntry(new RealmSelectionListEntry(realmsServer));
+                for (RealmsServer realmsServer2 : this.realmsServers) {
+                    RealmSelectionListEntry realmSelectionListEntry = new RealmSelectionListEntry(realmsServer2);
+                    this.realmSelectionList.addEntry(realmSelectionListEntry);
+                    if (realmsServer == null || realmsServer.id != realmsServer2.id) continue;
+                    entry = realmSelectionListEntry;
                 }
                 if (!regionsPinged && bl22) {
                     regionsPinged = true;
@@ -356,7 +348,7 @@ extends RealmsScreen {
             if (bl) {
                 this.addButtons();
             } else {
-                this.updateButtonStates(this.findServer(this.selectedServerId));
+                this.realmSelectionList.setSelected(entry);
             }
         }
         if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.PENDING_INVITE)) {
@@ -377,9 +369,9 @@ extends RealmsScreen {
         if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.LIVE_STATS)) {
             RealmsServerPlayerLists realmsServerPlayerLists = REALMS_DATA_FETCHER.getLivestats();
             block2: for (RealmsServerPlayerList realmsServerPlayerList : realmsServerPlayerLists.servers) {
-                for (RealmsServer realmsServer : this.realmsServers) {
-                    if (realmsServer.id != realmsServerPlayerList.serverId) continue;
-                    realmsServer.updateServerPing(realmsServerPlayerList);
+                for (RealmsServer realmsServer3 : this.realmsServers) {
+                    if (realmsServer3.id != realmsServerPlayerList.serverId) continue;
+                    realmsServer3.updateServerPing(realmsServerPlayerList);
                     continue block2;
                 }
             }
@@ -431,14 +423,12 @@ extends RealmsScreen {
         this.createdTrial = createdTrial;
     }
 
-    void onRenew() {
-        RealmsServer realmsServer = this.findServer(this.selectedServerId);
-        if (realmsServer == null) {
-            return;
+    void onRenew(@Nullable RealmsServer realmsServer) {
+        if (realmsServer != null) {
+            String string = "https://aka.ms/ExtendJavaRealms?subscriptionId=" + realmsServer.remoteSubscriptionId + "&profileId=" + this.client.getSession().getUuid() + "&ref=" + (realmsServer.expiredTrial ? "expiredTrial" : "expiredRealm");
+            this.client.keyboard.setClipboard(string);
+            Util.getOperatingSystem().open(string);
         }
-        String string = "https://aka.ms/ExtendJavaRealms?subscriptionId=" + realmsServer.remoteSubscriptionId + "&profileId=" + this.client.getSession().getUuid() + "&ref=" + (realmsServer.expiredTrial ? "expiredTrial" : "expiredRealm");
-        this.client.keyboard.setClipboard(string);
-        Util.getOperatingSystem().open(string);
     }
 
     private void checkClientCompatibility() {
@@ -474,9 +464,6 @@ extends RealmsScreen {
                 }
             }.start();
         }
-    }
-
-    private void checkUnreadNews() {
     }
 
     void checkParentalConsent() {
@@ -569,7 +556,7 @@ extends RealmsScreen {
             this.saveListScrollPosition();
             TranslatableText text = new TranslatableText("mco.configure.world.leave.question.line1");
             TranslatableText text2 = new TranslatableText("mco.configure.world.leave.question.line2");
-            this.client.setScreen(new RealmsLongConfirmationScreen(this::leaveServer, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
+            this.client.setScreen(new RealmsLongConfirmationScreen(bl -> this.leaveServer(bl, selectedServer), RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
         }
     }
 
@@ -578,28 +565,24 @@ extends RealmsScreen {
     }
 
     @Nullable
-    RealmsServer findServer(long id) {
-        for (RealmsServer realmsServer : this.realmsServers) {
-            if (realmsServer.id != id) continue;
-            return realmsServer;
+    private RealmsServer findServer() {
+        if (this.realmSelectionList == null) {
+            return null;
         }
-        return null;
+        Entry entry = (Entry)this.realmSelectionList.getSelectedOrNull();
+        return entry != null ? entry.getRealmsServer() : null;
     }
 
-    private void leaveServer(boolean confirmed) {
+    private void leaveServer(boolean confirmed, final RealmsServer realmsServer) {
         if (confirmed) {
-            final long l = this.selectedServerId;
             new Thread("Realms-leave-server"){
 
                 @Override
                 public void run() {
                     try {
-                        RealmsServer realmsServer = RealmsMainScreen.this.findServer(l);
-                        if (realmsServer != null) {
-                            RealmsClient realmsClient = RealmsClient.createRealmsClient();
-                            realmsClient.uninviteMyselfFrom(realmsServer.id);
-                            RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.removeServer(realmsServer));
-                        }
+                        RealmsClient realmsClient = RealmsClient.createRealmsClient();
+                        realmsClient.uninviteMyselfFrom(realmsServer.id);
+                        RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.removeServer(realmsServer));
                     } catch (RealmsServiceException realmsServiceException) {
                         LOGGER.error("Couldn't configure world");
                         RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(new RealmsGenericErrorScreen(realmsServiceException, (Screen)RealmsMainScreen.this)));
@@ -613,15 +596,19 @@ extends RealmsScreen {
     void removeServer(RealmsServer serverData) {
         REALMS_DATA_FETCHER.removeItem(serverData);
         this.realmsServers.remove(serverData);
-        this.realmSelectionList.children().removeIf(child -> child instanceof RealmSelectionListEntry && ((RealmSelectionListEntry)child).mServerData.id == this.selectedServerId);
+        this.realmSelectionList.children().removeIf(child -> {
+            RealmsServer realmsServer2 = child.getRealmsServer();
+            return realmsServer2 != null && realmsServer2.id == realmsServer.id;
+        });
         this.realmSelectionList.setSelected((Entry)null);
         this.updateButtonStates(null);
-        this.selectedServerId = -1L;
         this.playButton.active = false;
     }
 
     public void removeSelection() {
-        this.selectedServerId = -1L;
+        if (this.realmSelectionList != null) {
+            this.realmSelectionList.setSelected((Entry)null);
+        }
     }
 
     @Override
@@ -670,8 +657,7 @@ extends RealmsScreen {
                     this.addSelectableChild(this.realmSelectionList);
                     this.field_33775 = true;
                 }
-                RealmsServer realmsServer = this.findServer(this.selectedServerId);
-                this.playButton.active = this.shouldPlayButtonBeActive(realmsServer);
+                this.playButton.active = this.shouldPlayButtonBeActive(this.findServer());
             }
             this.showingPopup = false;
         }
@@ -1019,12 +1005,6 @@ extends RealmsScreen {
         return realmsMainScreen;
     }
 
-    public void method_35683() {
-        if (this.shouldShowPopup() && this.popupOpenedByUser) {
-            this.popupOpenedByUser = false;
-        }
-    }
-
     public static void loadImages(ResourceManager manager) {
         Collection<Identifier> collection = manager.findResources("textures/gui/images", filename -> filename.endsWith(".png"));
         IMAGES = collection.stream().filter(id -> id.getNamespace().equals("realms")).collect(ImmutableList.toImmutableList());
@@ -1032,10 +1012,6 @@ extends RealmsScreen {
 
     void setTooltips(Text ... tooltips) {
         this.tooltip = Arrays.asList(tooltips);
-    }
-
-    private void setTooltips(Iterable<Text> tooltips) {
-        this.tooltip = ImmutableList.copyOf(tooltips);
     }
 
     private void openPendingInvitesScreen(ButtonWidget button) {
@@ -1049,21 +1025,8 @@ extends RealmsScreen {
     @Environment(value=EnvType.CLIENT)
     class RealmSelectionList
     extends RealmsObjectSelectionList<Entry> {
-        private boolean hasTrial;
-
         public RealmSelectionList() {
             super(RealmsMainScreen.this.width, RealmsMainScreen.this.height, 32, RealmsMainScreen.this.height - 40, 36);
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            this.hasTrial = false;
-        }
-
-        public int addTrialEntry(Entry entry) {
-            this.hasTrial = true;
-            return this.addEntry(entry);
         }
 
         @Override
@@ -1101,85 +1064,38 @@ extends RealmsScreen {
         }
 
         @Override
-        public void setSelected(int index) {
-            RealmsServer realmsServer;
-            this.setSelectedItem(index);
-            if (index == -1) {
-                return;
-            }
-            if (this.hasTrial) {
-                if (index == 0) {
-                    realmsServer = null;
-                } else {
-                    if (index - 1 >= RealmsMainScreen.this.realmsServers.size()) {
-                        RealmsMainScreen.this.selectedServerId = -1L;
-                        return;
-                    }
-                    realmsServer = RealmsMainScreen.this.realmsServers.get(index - 1);
-                }
-            } else {
-                if (index >= RealmsMainScreen.this.realmsServers.size()) {
-                    RealmsMainScreen.this.selectedServerId = -1L;
-                    return;
-                }
-                realmsServer = RealmsMainScreen.this.realmsServers.get(index);
-            }
-            RealmsMainScreen.this.updateButtonStates(realmsServer);
-            if (realmsServer == null) {
-                RealmsMainScreen.this.selectedServerId = -1L;
-                return;
-            }
-            if (realmsServer.state == RealmsServer.State.UNINITIALIZED) {
-                RealmsMainScreen.this.selectedServerId = -1L;
-                return;
-            }
-            RealmsMainScreen.this.selectedServerId = realmsServer.id;
-            if (RealmsMainScreen.this.clicks >= 10 && RealmsMainScreen.this.playButton.active) {
-                RealmsMainScreen.this.play(RealmsMainScreen.this.findServer(RealmsMainScreen.this.selectedServerId), RealmsMainScreen.this);
-            }
-        }
-
-        @Override
         public void setSelected(@Nullable Entry entry) {
             super.setSelected(entry);
-            int i = this.children().indexOf(entry) - (this.hasTrial ? 1 : 0);
-            if (i >= 0 && i < RealmsMainScreen.this.realmsServers.size()) {
-                RealmsServer realmsServer = RealmsMainScreen.this.realmsServers.get(i);
-                RealmsMainScreen.this.selectedServerId = realmsServer.id;
-                RealmsMainScreen.this.updateButtonStates(realmsServer);
+            if (entry != null) {
+                RealmsMainScreen.this.updateButtonStates(entry.getRealmsServer());
+            } else {
+                RealmsMainScreen.this.updateButtonStates(null);
             }
         }
 
         @Override
         public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
-            if (this.hasTrial) {
-                if (selectionIndex == 0) {
-                    RealmsMainScreen.this.popupOpenedByUser = true;
-                    return;
-                }
-                --selectionIndex;
-            }
-            if (selectionIndex >= RealmsMainScreen.this.realmsServers.size()) {
+            Entry entry = (Entry)this.getEntry(selectionIndex);
+            if (entry instanceof RealmSelectionListTrialEntry) {
+                RealmsMainScreen.this.popupOpenedByUser = true;
                 return;
             }
-            RealmsServer realmsServer = RealmsMainScreen.this.realmsServers.get(selectionIndex);
+            RealmsServer realmsServer = entry.getRealmsServer();
             if (realmsServer == null) {
                 return;
             }
             if (realmsServer.state == RealmsServer.State.UNINITIALIZED) {
-                RealmsMainScreen.this.selectedServerId = -1L;
                 MinecraftClient.getInstance().setScreen(new RealmsCreateRealmScreen(realmsServer, RealmsMainScreen.this));
-            } else {
-                RealmsMainScreen.this.selectedServerId = realmsServer.id;
+                return;
             }
             if (RealmsMainScreen.this.hoverState == HoverState.CONFIGURE) {
-                RealmsMainScreen.this.selectedServerId = realmsServer.id;
                 RealmsMainScreen.this.configureClicked(realmsServer);
             } else if (RealmsMainScreen.this.hoverState == HoverState.LEAVE) {
-                RealmsMainScreen.this.selectedServerId = realmsServer.id;
                 RealmsMainScreen.this.leaveClicked(realmsServer);
             } else if (RealmsMainScreen.this.hoverState == HoverState.EXPIRED) {
-                RealmsMainScreen.this.onRenew();
+                RealmsMainScreen.this.onRenew(realmsServer);
+            } else if (RealmsMainScreen.this.clicks >= 10 && RealmsMainScreen.this.shouldPlayButtonBeActive(realmsServer)) {
+                RealmsMainScreen.this.play(realmsServer, RealmsMainScreen.this);
             }
         }
 
@@ -1191,11 +1107,6 @@ extends RealmsScreen {
         @Override
         public int getRowWidth() {
             return 300;
-        }
-
-        @Override
-        public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.setSelected((Entry)entry);
         }
     }
 
@@ -1312,12 +1223,11 @@ extends RealmsScreen {
         public Text getNarration() {
             return TRIAL_NARRATION;
         }
-    }
 
-    @Environment(value=EnvType.CLIENT)
-    abstract class Entry
-    extends AlwaysSelectedEntryListWidget.Entry<Entry> {
-        Entry() {
+        @Override
+        @Nullable
+        public RealmsServer getRealmsServer() {
+            return null;
         }
     }
 
@@ -1325,7 +1235,7 @@ extends RealmsScreen {
     class RealmSelectionListEntry
     extends Entry {
         private static final int field_32054 = 36;
-        final RealmsServer mServerData;
+        private final RealmsServer mServerData;
 
         public RealmSelectionListEntry(RealmsServer serverData) {
             this.mServerData = serverData;
@@ -1339,10 +1249,7 @@ extends RealmsScreen {
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (this.mServerData.state == RealmsServer.State.UNINITIALIZED) {
-                RealmsMainScreen.this.selectedServerId = -1L;
                 RealmsMainScreen.this.client.setScreen(new RealmsCreateRealmScreen(this.mServerData, RealmsMainScreen.this));
-            } else {
-                RealmsMainScreen.this.selectedServerId = this.mServerData.id;
             }
             return true;
         }
@@ -1445,6 +1352,22 @@ extends RealmsScreen {
             }
             return new TranslatableText("narrator.select", this.mServerData.name);
         }
+
+        @Override
+        @Nullable
+        public RealmsServer getRealmsServer() {
+            return this.mServerData;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    abstract class Entry
+    extends AlwaysSelectedEntryListWidget.Entry<Entry> {
+        Entry() {
+        }
+
+        @Nullable
+        public abstract RealmsServer getRealmsServer();
     }
 
     @Environment(value=EnvType.CLIENT)

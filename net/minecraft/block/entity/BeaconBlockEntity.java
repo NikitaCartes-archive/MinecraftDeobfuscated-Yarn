@@ -24,6 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -247,15 +248,13 @@ implements NamedScreenHandlerFactory {
         return this.level == 0 ? ImmutableList.of() : this.beamSegments;
     }
 
-    @Override
-    @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.BEACON, this.toInitialChunkDataNbt());
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
     public NbtCompound toInitialChunkDataNbt() {
-        return this.writeNbt(new NbtCompound());
+        return this.createNbt();
     }
 
     @Nullable
@@ -276,7 +275,7 @@ implements NamedScreenHandlerFactory {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("Primary", StatusEffect.getRawId(this.primary));
         nbt.putInt("Secondary", StatusEffect.getRawId(this.secondary));
@@ -285,7 +284,6 @@ implements NamedScreenHandlerFactory {
             nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
         this.lock.writeNbt(nbt);
-        return nbt;
     }
 
     public void setCustomName(@Nullable Text customName) {
@@ -310,6 +308,10 @@ implements NamedScreenHandlerFactory {
     public void setWorld(World world) {
         super.setWorld(world);
         this.minY = world.getBottomY() - 1;
+    }
+
+    public /* synthetic */ Packet toUpdatePacket() {
+        return this.toUpdatePacket();
     }
 
     public static class BeamSegment {

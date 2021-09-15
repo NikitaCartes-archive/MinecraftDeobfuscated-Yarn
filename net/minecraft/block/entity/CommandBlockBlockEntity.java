@@ -10,6 +10,7 @@ import net.minecraft.block.CommandBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -60,13 +61,12 @@ extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         this.commandExecutor.writeNbt(nbt);
         nbt.putBoolean("powered", this.isPowered());
         nbt.putBoolean("conditionMet", this.isConditionMet());
         nbt.putBoolean("auto", this.isAuto());
-        return nbt;
     }
 
     @Override
@@ -78,13 +78,11 @@ extends BlockEntity {
         this.setAuto(nbt.getBoolean("auto"));
     }
 
-    @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
         if (this.needsUpdatePacket()) {
             this.setNeedsUpdatePacket(false);
-            NbtCompound nbtCompound = this.writeNbt(new NbtCompound());
-            return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.COMMAND_BLOCK, nbtCompound);
+            return BlockEntityUpdateS2CPacket.create(this);
         }
         return null;
     }
@@ -175,6 +173,11 @@ extends BlockEntity {
             return blockState.get(CommandBlock.CONDITIONAL);
         }
         return false;
+    }
+
+    @Nullable
+    public /* synthetic */ Packet toUpdatePacket() {
+        return this.toUpdatePacket();
     }
 
     public static enum Type {

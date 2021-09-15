@@ -42,6 +42,8 @@ import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.Spread32AboveDecorator;
 import net.minecraft.world.gen.decorator.SpreadDoubleHeightmapDecorator;
 import net.minecraft.world.gen.decorator.SquareDecorator;
+import net.minecraft.world.gen.decorator.SurfaceRelativeThresholdDecorator;
+import net.minecraft.world.gen.decorator.SurfaceRelativeThresholdDecoratorConfig;
 import net.minecraft.world.gen.decorator.WaterDepthThresholdDecorator;
 import net.minecraft.world.gen.decorator.WaterDepthThresholdDecoratorConfig;
 
@@ -61,6 +63,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<ChanceDecoratorConfig> LAVA_LAKE = Decorator.register("lava_lake", new LavaLakeDecorator(ChanceDecoratorConfig.CODEC));
     public static final Decorator<HeightmapDecoratorConfig> HEIGHTMAP = Decorator.register("heightmap", new HeightmapDecorator(HeightmapDecoratorConfig.CODEC));
     public static final Decorator<HeightmapDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = Decorator.register("heightmap_spread_double", new SpreadDoubleHeightmapDecorator(HeightmapDecoratorConfig.CODEC));
+    public static final Decorator<SurfaceRelativeThresholdDecoratorConfig> SURFACE_RELATIVE_THRESHOLD = Decorator.register("surface_relative_threshold", new SurfaceRelativeThresholdDecorator(SurfaceRelativeThresholdDecoratorConfig.CODEC));
     public static final Decorator<WaterDepthThresholdDecoratorConfig> WATER_DEPTH_THRESHOLD = Decorator.register("water_depth_threshold", new WaterDepthThresholdDecorator(WaterDepthThresholdDecoratorConfig.CODEC));
     public static final Decorator<CaveSurfaceDecoratorConfig> CAVE_SURFACE = Decorator.register("cave_surface", new CaveSurfaceDecorator(CaveSurfaceDecoratorConfig.CODEC));
     public static final Decorator<RangeDecoratorConfig> RANGE = Decorator.register("range", new RangeDecorator(RangeDecoratorConfig.CODEC));

@@ -42,7 +42,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity player) {
-        this.trigger(player, conditions -> conditions.matches(player.getServerWorld(), player.getX(), player.getY(), player.getZ()));
+        this.trigger(player, conditions -> conditions.matches(player.getWorld(), player.getX(), player.getY(), player.getZ()));
     }
 
     @Override

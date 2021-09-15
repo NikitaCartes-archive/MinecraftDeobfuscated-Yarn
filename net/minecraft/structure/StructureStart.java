@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
@@ -21,12 +22,12 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.random.ChunkRandom;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +44,7 @@ implements StructurePiecesHolder {
     public static final StructureStart<?> DEFAULT = new StructureStart<MineshaftFeatureConfig>(null, new ChunkPos(0, 0), 0, 0L){
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
         }
 
         @Override
@@ -76,7 +77,7 @@ implements StructurePiecesHolder {
         this.random.setCarverSeed(seed, pos.x, pos.z);
     }
 
-    public abstract void init(DynamicRegistryManager var1, ChunkGenerator var2, StructureManager var3, ChunkPos var4, Biome var5, C var6, HeightLimitView var7);
+    public abstract void init(DynamicRegistryManager var1, ChunkGenerator var2, StructureManager var3, ChunkPos var4, C var5, HeightLimitView var6, Predicate<Biome> var7);
 
     public final BlockBox setBoundingBoxFromChildren() {
         if (this.boundingBox == null) {
@@ -102,19 +103,19 @@ implements StructurePiecesHolder {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void generateStructure(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos) {
+    public void generateStructure(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, Predicate<Biome> predicate, BlockBox blockBox, ChunkPos chunkPos) {
         List<StructurePiece> list = this.children;
         synchronized (list) {
             if (this.children.isEmpty()) {
                 return;
             }
-            BlockBox blockBox = this.children.get((int)0).boundingBox;
-            BlockPos blockPos = blockBox.getCenter();
-            BlockPos blockPos2 = new BlockPos(blockPos.getX(), blockBox.getMinY(), blockPos.getZ());
+            BlockBox blockBox2 = this.children.get((int)0).boundingBox;
+            BlockPos blockPos = blockBox2.getCenter();
+            BlockPos blockPos2 = new BlockPos(blockPos.getX(), blockBox2.getMinY(), blockPos.getZ());
             Iterator<StructurePiece> iterator = this.children.iterator();
             while (iterator.hasNext()) {
                 StructurePiece structurePiece = iterator.next();
-                if (!structurePiece.getBoundingBox().intersects(box) || structurePiece.generate(world, structureAccessor, chunkGenerator, random, box, chunkPos, blockPos2)) continue;
+                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos2)) continue;
                 iterator.remove();
             }
         }
@@ -144,6 +145,7 @@ implements StructurePiecesHolder {
         return nbtCompound;
     }
 
+    @Deprecated
     protected void randomUpwardTranslation(int seaLevel, int i, Random random, int j) {
         int k = seaLevel - j;
         BlockBox blockBox = this.setBoundingBoxFromChildren();
@@ -155,6 +157,7 @@ implements StructurePiecesHolder {
         this.translateUpward(m);
     }
 
+    @Deprecated
     protected void randomUpwardTranslation(Random random, int minY, int maxY) {
         BlockBox blockBox = this.setBoundingBoxFromChildren();
         int i = maxY - minY + 1 - blockBox.getBlockCountY();
@@ -163,6 +166,7 @@ implements StructurePiecesHolder {
         this.translateUpward(k);
     }
 
+    @Deprecated
     protected void translateUpward(int amount) {
         for (StructurePiece structurePiece : this.children) {
             structurePiece.translate(0, amount, 0);

@@ -32,7 +32,7 @@ extends DiskFeature {
         if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
             return false;
         }
-        return super.generate(new FeatureContext<DiskFeatureConfig>(structureWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig));
+        return super.generate(new FeatureContext<DiskFeatureConfig>(context.getFeature(), structureWorldAccess, context.getGenerator(), context.getRandom(), blockPos, context.getConfig()));
     }
 }
 

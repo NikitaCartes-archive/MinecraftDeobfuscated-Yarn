@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -1659,9 +1660,13 @@ CommandOutput {
         if (this.noClip) {
             return false;
         }
+        Vec3d vec3d = this.getEyePos();
         float f = this.dimensions.width * 0.8f;
-        Box box = Box.of(this.getEyePos(), f, 1.0E-6, f);
-        return this.world.getBlockCollisions(this, box, (state, pos) -> state.shouldSuffocate(this.world, (BlockPos)pos)).findAny().isPresent();
+        Box box = Box.of(vec3d, f, 1.0E-6, f);
+        return this.world.getStatesInBox(box).filter(Predicate.not(AbstractBlock.AbstractBlockState::isAir)).anyMatch(blockState -> {
+            BlockPos blockPos = new BlockPos(vec3d);
+            return blockState.shouldSuffocate(this.world, blockPos) && VoxelShapes.matchesAnywhere(blockState.getCollisionShape(this.world, blockPos).offset(vec3d.x, vec3d.y, vec3d.z), VoxelShapes.cuboid(box), BooleanBiFunction.AND);
+        });
     }
 
     /**
@@ -3077,6 +3082,10 @@ CommandOutput {
 
     public boolean canModifyAt(World world, BlockPos pos) {
         return true;
+    }
+
+    public World getWorld() {
+        return this.world;
     }
 
     public static enum RemovalReason {

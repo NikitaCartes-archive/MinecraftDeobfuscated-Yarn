@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class Team
 extends AbstractTeam {
-    public static final int field_31883 = 16;
     private static final int field_31884 = 0;
     private static final int field_31885 = 1;
     private final Scoreboard scoreboard;

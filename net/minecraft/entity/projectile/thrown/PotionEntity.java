@@ -119,7 +119,7 @@ implements FlyingItemEntity {
             for (LivingEntity livingEntity : list) {
                 double d = this.squaredDistanceTo(livingEntity);
                 if (!(d < 16.0) || !livingEntity.hurtByWater()) continue;
-                livingEntity.damage(DamageSource.magic(livingEntity, this.getOwner()), 1.0f);
+                livingEntity.damage(DamageSource.magic(this, this.getOwner()), 1.0f);
             }
         }
         List<AxolotlEntity> list2 = this.world.getNonSpectatingEntities(AxolotlEntity.class, box);

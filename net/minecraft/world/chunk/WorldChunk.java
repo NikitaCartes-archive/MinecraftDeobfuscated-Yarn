@@ -5,18 +5,9 @@ package net.minecraft.world.chunk;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
-import it.unimi.dsi.fastutil.shorts.ShortList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -28,6 +19,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_6603;
 import net.minecraft.client.world.DummyClientTickScheduler;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
@@ -39,7 +31,6 @@ import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.SimpleTickScheduler;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -53,7 +44,6 @@ import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
@@ -64,13 +54,12 @@ import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.SimpleGameEventDispatcher;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
-import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class WorldChunk
-implements Chunk {
+extends Chunk {
     static final Logger LOGGER = LogManager.getLogger();
     private static final BlockEntityTickInvoker EMPTY_BLOCK_ENTITY_TICKER = new BlockEntityTickInvoker(){
 
@@ -93,69 +82,38 @@ implements Chunk {
             return "<null>";
         }
     };
-    @Nullable
-    public static final ChunkSection EMPTY_SECTION = null;
-    private final ChunkSection[] sections;
-    private BiomeArray biomeArray;
-    private final Map<BlockPos, NbtCompound> pendingBlockEntityNbts = Maps.newHashMap();
     private final Map<BlockPos, WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.newHashMap();
     private boolean loadedToWorld;
     final World world;
-    private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
-    private final UpgradeData upgradeData;
-    private final Map<BlockPos, BlockEntity> blockEntities = Maps.newHashMap();
-    private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.newHashMap();
-    private final Map<StructureFeature<?>, LongSet> structureReferences = Maps.newHashMap();
-    private final ShortList[] postProcessingLists;
-    private TickScheduler<Block> blockTickScheduler;
-    private TickScheduler<Fluid> fluidTickScheduler;
-    private volatile boolean shouldSave;
-    private long inhabitedTime;
     @Nullable
     private Supplier<ChunkHolder.LevelType> levelTypeProvider;
     @Nullable
     private Consumer<WorldChunk> loadToWorldConsumer;
-    private final ChunkPos pos;
-    private volatile boolean lightOn;
     private final Int2ObjectMap<GameEventDispatcher> gameEventDispatchers;
 
-    public WorldChunk(World world, ChunkPos pos, BiomeArray biomes) {
-        this(world, pos, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
+    public WorldChunk(World world, ChunkPos pos) {
+        this(world, pos, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
     }
 
-    public WorldChunk(World world, ChunkPos pos, BiomeArray biomes, UpgradeData upgradeData, TickScheduler<Block> blockTickScheduler, TickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sections, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
+    public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, TickScheduler<Block> tickScheduler, TickScheduler<Fluid> blockTickScheduler, long l, @Nullable ChunkSection[] chunkSections, @Nullable Consumer<WorldChunk> consumer) {
+        super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), l, chunkSections, tickScheduler, blockTickScheduler);
         this.world = world;
-        this.pos = pos;
-        this.upgradeData = upgradeData;
         this.gameEventDispatchers = new Int2ObjectOpenHashMap<GameEventDispatcher>();
         for (Heightmap.Type type : Heightmap.Type.values()) {
             if (!ChunkStatus.FULL.getHeightmapTypes().contains(type)) continue;
-            this.heightmaps.put(type, new Heightmap(this, type));
+            this.field_34541.put(type, new Heightmap(this, type));
         }
-        this.biomeArray = biomes;
-        this.blockTickScheduler = blockTickScheduler;
-        this.fluidTickScheduler = fluidTickScheduler;
-        this.inhabitedTime = inhabitedTime;
-        this.loadToWorldConsumer = loadToWorldConsumer;
-        this.sections = new ChunkSection[world.countVerticalSections()];
-        if (sections != null) {
-            if (this.sections.length == sections.length) {
-                System.arraycopy(sections, 0, this.sections, 0, this.sections.length);
-            } else {
-                LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", (Object)sections.length, (Object)this.sections.length);
-            }
-        }
-        this.postProcessingLists = new ShortList[world.countVerticalSections()];
+        this.loadToWorldConsumer = consumer;
     }
 
     public WorldChunk(ServerWorld serverWorld, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> consumer) {
-        this(serverWorld, protoChunk.getPos(), protoChunk.getBiomeArray(), protoChunk.getUpgradeData(), protoChunk.getBlockTickScheduler(), protoChunk.getFluidTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), consumer);
+        this(serverWorld, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.getBlockTickScheduler(), protoChunk.getFluidTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), consumer);
         for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
             this.setBlockEntity(blockEntity);
         }
-        this.pendingBlockEntityNbts.putAll(protoChunk.getBlockEntityNbts());
+        this.field_34542.putAll(protoChunk.getBlockEntityNbts());
         for (int i = 0; i < protoChunk.getPostProcessingLists().length; ++i) {
-            this.postProcessingLists[i] = protoChunk.getPostProcessingLists()[i];
+            this.field_34536[i] = protoChunk.getPostProcessingLists()[i];
         }
         this.setStructureStarts(protoChunk.getStructureStarts());
         this.setStructureReferences(protoChunk.getStructureReferences());
@@ -164,29 +122,12 @@ implements Chunk {
             this.setHeightmap(entry.getKey(), entry.getValue().asLongArray());
         }
         this.setLightOn(protoChunk.isLightOn());
-        this.shouldSave = true;
+        this.field_34537 = true;
     }
 
     @Override
     public GameEventDispatcher getGameEventDispatcher(int ySectionCoord) {
         return this.gameEventDispatchers.computeIfAbsent(ySectionCoord, sectionCoord -> new SimpleGameEventDispatcher(this.world));
-    }
-
-    @Override
-    public Heightmap getHeightmap(Heightmap.Type type2) {
-        return this.heightmaps.computeIfAbsent(type2, type -> new Heightmap(this, (Heightmap.Type)type));
-    }
-
-    @Override
-    public Set<BlockPos> getBlockEntityPositions() {
-        HashSet<BlockPos> set = Sets.newHashSet(this.pendingBlockEntityNbts.keySet());
-        set.addAll(this.blockEntities.keySet());
-        return set;
-    }
-
-    @Override
-    public ChunkSection[] getSectionArray() {
-        return this.sections;
     }
 
     @Override
@@ -207,7 +148,7 @@ implements Chunk {
         try {
             ChunkSection chunkSection;
             int l = this.getSectionIndex(j);
-            if (l >= 0 && l < this.sections.length && !ChunkSection.isEmpty(chunkSection = this.sections[l])) {
+            if (l >= 0 && l < this.field_34545.length && !(chunkSection = this.field_34545[l]).isEmpty()) {
                 return chunkSection.getBlockState(i & 0xF, j & 0xF, k & 0xF);
             }
             return Blocks.AIR.getDefaultState();
@@ -228,7 +169,7 @@ implements Chunk {
         try {
             ChunkSection chunkSection;
             int i = this.getSectionIndex(y);
-            if (i >= 0 && i < this.sections.length && !ChunkSection.isEmpty(chunkSection = this.sections[i])) {
+            if (i >= 0 && i < this.field_34545.length && !(chunkSection = this.field_34545[i]).isEmpty()) {
                 return chunkSection.getFluidState(x & 0xF, y & 0xF, z & 0xF);
             }
             return Fluids.EMPTY.getDefaultState();
@@ -243,28 +184,24 @@ implements Chunk {
     @Override
     @Nullable
     public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
-        int m;
         int l;
+        int k;
         int i = pos.getY();
-        int j = this.getSectionIndex(i);
-        ChunkSection chunkSection = this.sections[j];
-        if (chunkSection == EMPTY_SECTION) {
-            if (state.isAir()) {
-                return null;
-            }
-            this.sections[j] = chunkSection = new ChunkSection(ChunkSectionPos.getSectionCoord(i));
-        }
+        ChunkSection chunkSection = this.getSection(this.getSectionIndex(i));
         boolean bl = chunkSection.isEmpty();
-        int k = pos.getX() & 0xF;
-        BlockState blockState = chunkSection.setBlockState(k, l = i & 0xF, m = pos.getZ() & 0xF, state);
+        if (bl && state.isAir()) {
+            return null;
+        }
+        int j = pos.getX() & 0xF;
+        BlockState blockState = chunkSection.setBlockState(j, k = i & 0xF, l = pos.getZ() & 0xF, state);
         if (blockState == state) {
             return null;
         }
         Block block = state.getBlock();
-        this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING).trackUpdate(k, i, m, state);
-        this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES).trackUpdate(k, i, m, state);
-        this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR).trackUpdate(k, i, m, state);
-        this.heightmaps.get(Heightmap.Type.WORLD_SURFACE).trackUpdate(k, i, m, state);
+        ((Heightmap)this.field_34541.get(Heightmap.Type.MOTION_BLOCKING)).trackUpdate(j, i, l, state);
+        ((Heightmap)this.field_34541.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(j, i, l, state);
+        ((Heightmap)this.field_34541.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(j, i, l, state);
+        ((Heightmap)this.field_34541.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(j, i, l, state);
         boolean bl2 = chunkSection.isEmpty();
         if (bl != bl2) {
             this.world.getChunkManager().getLightingProvider().setSectionStatus(pos, bl2);
@@ -275,7 +212,7 @@ implements Chunk {
         } else if (!blockState.isOf(block) && bl3) {
             this.removeBlockEntity(pos);
         }
-        if (!chunkSection.getBlockState(k, l, m).isOf(block)) {
+        if (!chunkSection.getBlockState(j, k, l).isOf(block)) {
             return null;
         }
         if (!this.world.isClient) {
@@ -293,34 +230,13 @@ implements Chunk {
                 this.updateTicker(blockEntity);
             }
         }
-        this.shouldSave = true;
+        this.field_34537 = true;
         return blockState;
     }
 
     @Override
     @Deprecated
     public void addEntity(Entity entity) {
-    }
-
-    @Override
-    public int sampleHeightmap(Heightmap.Type type, int x, int z) {
-        return this.heightmaps.get(type).get(x & 0xF, z & 0xF) - 1;
-    }
-
-    @Override
-    public BlockPos method_35319(Heightmap.Type type) {
-        ChunkPos chunkPos = this.getPos();
-        int i = this.getBottomY();
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int j = chunkPos.getStartX(); j <= chunkPos.getEndX(); ++j) {
-            for (int k = chunkPos.getStartZ(); k <= chunkPos.getEndZ(); ++k) {
-                int l = this.sampleHeightmap(type, j & 0xF, k & 0xF);
-                if (l <= i) continue;
-                i = l;
-                mutable.set(j, i, k);
-            }
-        }
-        return mutable.toImmutable();
     }
 
     @Nullable
@@ -342,8 +258,8 @@ implements Chunk {
     public BlockEntity getBlockEntity(BlockPos pos, CreationType creationType) {
         BlockEntity blockEntity2;
         NbtCompound nbtCompound;
-        BlockEntity blockEntity = this.blockEntities.get(pos);
-        if (blockEntity == null && (nbtCompound = this.pendingBlockEntityNbts.remove(pos)) != null && (blockEntity2 = this.loadBlockEntity(pos, nbtCompound)) != null) {
+        BlockEntity blockEntity = (BlockEntity)this.field_34543.get(pos);
+        if (blockEntity == null && (nbtCompound = (NbtCompound)this.field_34542.remove(pos)) != null && (blockEntity2 = this.loadBlockEntity(pos, nbtCompound)) != null) {
             return blockEntity2;
         }
         if (blockEntity == null) {
@@ -351,7 +267,7 @@ implements Chunk {
                 this.addBlockEntity(blockEntity);
             }
         } else if (blockEntity.isRemoved()) {
-            this.blockEntities.remove(pos);
+            this.field_34543.remove(pos);
             return null;
         }
         return blockEntity;
@@ -387,15 +303,10 @@ implements Chunk {
         }
         blockEntity.setWorld(this.world);
         blockEntity.cancelRemoval();
-        BlockEntity blockEntity2 = this.blockEntities.put(blockPos.toImmutable(), blockEntity);
+        BlockEntity blockEntity2 = this.field_34543.put(blockPos.toImmutable(), blockEntity);
         if (blockEntity2 != null && blockEntity2 != blockEntity) {
             blockEntity2.markRemoved();
         }
-    }
-
-    @Override
-    public void addPendingBlockEntityNbt(NbtCompound nbt) {
-        this.pendingBlockEntityNbts.put(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")), nbt);
     }
 
     @Override
@@ -403,11 +314,11 @@ implements Chunk {
     public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
         BlockEntity blockEntity = this.getBlockEntity(pos);
         if (blockEntity != null && !blockEntity.isRemoved()) {
-            NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+            NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
             nbtCompound.putBoolean("keepPacked", false);
             return nbtCompound;
         }
-        NbtCompound nbtCompound = this.pendingBlockEntityNbts.get(pos);
+        NbtCompound nbtCompound = (NbtCompound)this.field_34542.get(pos);
         if (nbtCompound != null) {
             nbtCompound = nbtCompound.copy();
             nbtCompound.putBoolean("keepPacked", true);
@@ -418,7 +329,7 @@ implements Chunk {
     @Override
     public void removeBlockEntity(BlockPos pos) {
         BlockEntity blockEntity;
-        if (this.canTickBlockEntities() && (blockEntity = this.blockEntities.remove(pos)) != null) {
+        if (this.canTickBlockEntities() && (blockEntity = (BlockEntity)this.field_34543.remove(pos)) != null) {
             this.removeGameEventListener(blockEntity);
             blockEntity.markRemoved();
         }
@@ -455,65 +366,26 @@ implements Chunk {
         }
     }
 
-    public void markDirty() {
-        this.shouldSave = true;
-    }
-
     public boolean isEmpty() {
         return false;
     }
 
-    @Override
-    public ChunkPos getPos() {
-        return this.pos;
-    }
-
-    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, NbtCompound nbt, BitSet bitSet) {
-        boolean bl;
-        boolean bl2 = bl = biomes != null;
-        if (bl) {
-            this.blockEntities.values().forEach(this::removeBlockEntity);
-            this.blockEntities.clear();
-        } else {
-            this.blockEntities.values().removeIf(blockEntity -> {
-                int i = this.getSectionIndex(blockEntity.getPos().getY());
-                if (bitSet.get(i)) {
-                    blockEntity.markRemoved();
-                    return true;
-                }
-                return false;
-            });
-        }
-        for (int i = 0; i < this.sections.length; ++i) {
-            ChunkSection chunkSection = this.sections[i];
-            if (!bitSet.get(i)) {
-                if (!bl || chunkSection == EMPTY_SECTION) continue;
-                this.sections[i] = EMPTY_SECTION;
-                continue;
-            }
-            if (chunkSection == EMPTY_SECTION) {
-                this.sections[i] = chunkSection = new ChunkSection(this.sectionIndexToCoord(i));
-            }
-            chunkSection.fromPacket(buf);
-        }
-        if (biomes != null) {
-            this.biomeArray = biomes;
+    public void loadFromPacket(PacketByteBuf packetByteBuf, NbtCompound nbtCompound2, Consumer<class_6603.class_6605> consumer) {
+        this.method_38289();
+        for (ChunkSection chunkSection : this.field_34545) {
+            chunkSection.fromPacket(packetByteBuf);
         }
         for (Heightmap.Type type : Heightmap.Type.values()) {
             String string = type.getName();
-            if (!nbt.contains(string, 12)) continue;
-            this.setHeightmap(type, nbt.getLongArray(string));
+            if (!nbtCompound2.contains(string, 12)) continue;
+            this.setHeightmap(type, nbtCompound2.getLongArray(string));
         }
-    }
-
-    private void removeBlockEntity(BlockEntity blockEntity) {
-        blockEntity.markRemoved();
-        this.blockEntityTickers.remove(blockEntity.getPos());
-    }
-
-    @Override
-    public BiomeArray getBiomeArray() {
-        return this.biomeArray;
+        consumer.accept((blockPos, blockEntityType, nbtCompound) -> {
+            BlockEntity blockEntity = this.getBlockEntity(blockPos, CreationType.IMMEDIATE);
+            if (blockEntity != null && nbtCompound != null && blockEntity.getType() == blockEntityType) {
+                blockEntity.readNbt(nbtCompound);
+            }
+        });
     }
 
     public void setLoadedToWorld(boolean loaded) {
@@ -524,116 +396,33 @@ implements Chunk {
         return this.world;
     }
 
-    @Override
-    public Collection<Map.Entry<Heightmap.Type, Heightmap>> getHeightmaps() {
-        return Collections.unmodifiableSet(this.heightmaps.entrySet());
-    }
-
     public Map<BlockPos, BlockEntity> getBlockEntities() {
-        return this.blockEntities;
-    }
-
-    @Override
-    public NbtCompound getBlockEntityNbt(BlockPos pos) {
-        return this.pendingBlockEntityNbts.get(pos);
+        return this.field_34543;
     }
 
     @Override
     public Stream<BlockPos> getLightSourcesStream() {
-        return StreamSupport.stream(BlockPos.iterate(this.pos.getStartX(), this.getBottomY(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopY() - 1, this.pos.getEndZ()).spliterator(), false).filter(blockPos -> this.getBlockState((BlockPos)blockPos).getLuminance() != 0);
-    }
-
-    @Override
-    public TickScheduler<Block> getBlockTickScheduler() {
-        return this.blockTickScheduler;
-    }
-
-    @Override
-    public TickScheduler<Fluid> getFluidTickScheduler() {
-        return this.fluidTickScheduler;
-    }
-
-    @Override
-    public void setShouldSave(boolean shouldSave) {
-        this.shouldSave = shouldSave;
-    }
-
-    @Override
-    public boolean needsSaving() {
-        return this.shouldSave;
-    }
-
-    @Override
-    @Nullable
-    public StructureStart<?> getStructureStart(StructureFeature<?> structure) {
-        return this.structureStarts.get(structure);
-    }
-
-    @Override
-    public void setStructureStart(StructureFeature<?> structure, StructureStart<?> start) {
-        this.structureStarts.put(structure, start);
-    }
-
-    @Override
-    public Map<StructureFeature<?>, StructureStart<?>> getStructureStarts() {
-        return this.structureStarts;
-    }
-
-    @Override
-    public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
-        this.structureStarts.clear();
-        this.structureStarts.putAll(structureStarts);
-    }
-
-    @Override
-    public LongSet getStructureReferences(StructureFeature<?> structure2) {
-        return this.structureReferences.computeIfAbsent(structure2, structure -> new LongOpenHashSet());
-    }
-
-    @Override
-    public void addStructureReference(StructureFeature<?> structure2, long reference) {
-        this.structureReferences.computeIfAbsent(structure2, structure -> new LongOpenHashSet()).add(reference);
-    }
-
-    @Override
-    public Map<StructureFeature<?>, LongSet> getStructureReferences() {
-        return this.structureReferences;
-    }
-
-    @Override
-    public void setStructureReferences(Map<StructureFeature<?>, LongSet> structureReferences) {
-        this.structureReferences.clear();
-        this.structureReferences.putAll(structureReferences);
-    }
-
-    @Override
-    public long getInhabitedTime() {
-        return this.inhabitedTime;
-    }
-
-    @Override
-    public void setInhabitedTime(long inhabitedTime) {
-        this.inhabitedTime = inhabitedTime;
+        return StreamSupport.stream(BlockPos.iterate(this.field_34538.getStartX(), this.getBottomY(), this.field_34538.getStartZ(), this.field_34538.getEndX(), this.getTopY() - 1, this.field_34538.getEndZ()).spliterator(), false).filter(blockPos -> this.getBlockState((BlockPos)blockPos).getLuminance() != 0);
     }
 
     public void runPostProcessing() {
         ChunkPos chunkPos = this.getPos();
-        for (int i = 0; i < this.postProcessingLists.length; ++i) {
-            if (this.postProcessingLists[i] == null) continue;
-            for (Short short_ : this.postProcessingLists[i]) {
+        for (int i = 0; i < this.field_34536.length; ++i) {
+            if (this.field_34536[i] == null) continue;
+            for (Short short_ : this.field_34536[i]) {
                 BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.sectionIndexToCoord(i), chunkPos);
                 BlockState blockState = this.getBlockState(blockPos);
                 BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
                 this.world.setBlockState(blockPos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
             }
-            this.postProcessingLists[i].clear();
+            this.field_34536[i].clear();
         }
         this.disableTickSchedulers();
-        for (BlockPos blockPos2 : ImmutableList.copyOf(this.pendingBlockEntityNbts.keySet())) {
+        for (BlockPos blockPos2 : ImmutableList.copyOf(this.field_34542.keySet())) {
             this.getBlockEntity(blockPos2);
         }
-        this.pendingBlockEntityNbts.clear();
-        this.upgradeData.upgrade(this);
+        this.field_34542.clear();
+        this.field_34540.upgrade(this);
     }
 
     @Nullable
@@ -659,52 +448,32 @@ implements Chunk {
         return blockEntity;
     }
 
-    @Override
-    public UpgradeData getUpgradeData() {
-        return this.upgradeData;
-    }
-
-    @Override
-    public ShortList[] getPostProcessingLists() {
-        return this.postProcessingLists;
-    }
-
     public void disableTickSchedulers() {
-        if (this.blockTickScheduler instanceof ChunkTickScheduler) {
-            ((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), pos -> this.getBlockState((BlockPos)pos).getBlock());
-            this.blockTickScheduler = DummyClientTickScheduler.get();
-        } else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
-            ((SimpleTickScheduler)this.blockTickScheduler).scheduleTo(this.world.getBlockTickScheduler());
-            this.blockTickScheduler = DummyClientTickScheduler.get();
+        if (this.field_34546 instanceof ChunkTickScheduler) {
+            ((ChunkTickScheduler)this.field_34546).tick(this.world.getBlockTickScheduler(), pos -> this.getBlockState((BlockPos)pos).getBlock());
+            this.field_34546 = DummyClientTickScheduler.get();
+        } else if (this.field_34546 instanceof SimpleTickScheduler) {
+            ((SimpleTickScheduler)this.field_34546).scheduleTo(this.world.getBlockTickScheduler());
+            this.field_34546 = DummyClientTickScheduler.get();
         }
-        if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
-            ((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), pos -> this.getFluidState((BlockPos)pos).getFluid());
-            this.fluidTickScheduler = DummyClientTickScheduler.get();
-        } else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
-            ((SimpleTickScheduler)this.fluidTickScheduler).scheduleTo(this.world.getFluidTickScheduler());
-            this.fluidTickScheduler = DummyClientTickScheduler.get();
+        if (this.field_34547 instanceof ChunkTickScheduler) {
+            ((ChunkTickScheduler)this.field_34547).tick(this.world.getFluidTickScheduler(), pos -> this.getFluidState((BlockPos)pos).getFluid());
+            this.field_34547 = DummyClientTickScheduler.get();
+        } else if (this.field_34547 instanceof SimpleTickScheduler) {
+            ((SimpleTickScheduler)this.field_34547).scheduleTo(this.world.getFluidTickScheduler());
+            this.field_34547 = DummyClientTickScheduler.get();
         }
     }
 
     public void enableTickSchedulers(ServerWorld world) {
-        if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
-            this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, ((ServerTickScheduler)world.getBlockTickScheduler()).getScheduledTicksInChunk(this.pos, true, false), world.getTime());
+        if (this.field_34546 == DummyClientTickScheduler.get()) {
+            this.field_34546 = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, ((ServerTickScheduler)world.getBlockTickScheduler()).getScheduledTicksInChunk(this.field_34538, true, false), world.getTime());
             this.setShouldSave(true);
         }
-        if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
-            this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, ((ServerTickScheduler)world.getFluidTickScheduler()).getScheduledTicksInChunk(this.pos, true, false), world.getTime());
+        if (this.field_34547 == DummyClientTickScheduler.get()) {
+            this.field_34547 = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, ((ServerTickScheduler)world.getFluidTickScheduler()).getScheduledTicksInChunk(this.field_34538, true, false), world.getTime());
             this.setShouldSave(true);
         }
-    }
-
-    @Override
-    public int getBottomY() {
-        return this.world.getBottomY();
-    }
-
-    @Override
-    public int getHeight() {
-        return this.world.getHeight();
     }
 
     @Override
@@ -723,23 +492,15 @@ implements Chunk {
         this.levelTypeProvider = levelTypeProvider;
     }
 
-    @Override
-    public boolean isLightOn() {
-        return this.lightOn;
-    }
-
-    @Override
-    public void setLightOn(boolean lightOn) {
-        this.lightOn = lightOn;
-        this.setShouldSave(true);
-    }
-
-    public void removeAllBlockEntities() {
-        this.blockEntities.values().forEach(this::removeBlockEntity);
+    public void method_38289() {
+        this.field_34543.values().forEach(BlockEntity::markRemoved);
+        this.field_34543.clear();
+        this.blockEntityTickers.values().forEach(wrappedBlockEntityTickInvoker -> wrappedBlockEntityTickInvoker.setWrapped(EMPTY_BLOCK_ENTITY_TICKER));
+        this.blockEntityTickers.clear();
     }
 
     public void updateAllBlockEntities() {
-        this.blockEntities.values().forEach(blockEntity -> {
+        this.field_34543.values().forEach(blockEntity -> {
             this.updateGameEventListener(blockEntity);
             this.updateTicker(blockEntity);
         });

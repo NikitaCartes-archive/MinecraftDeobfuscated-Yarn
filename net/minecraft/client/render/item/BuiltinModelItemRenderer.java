@@ -135,7 +135,7 @@ implements SynchronousResourceReloader {
             return;
         }
         if (stack.isOf(Items.SHIELD)) {
-            boolean bl = stack.getSubNbt("BlockEntityTag") != null;
+            boolean bl = BlockItem.getBlockEntityNbt(stack) != null;
             matrices.push();
             matrices.scale(1.0f, -1.0f, -1.0f);
             SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;

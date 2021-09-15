@@ -199,12 +199,11 @@ implements SidedInventory {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putShort("BrewTime", (short)this.brewTime);
         Inventories.writeNbt(nbt, this.inventory);
         nbt.putByte("Fuel", (byte)this.fuel);
-        return nbt;
     }
 
     @Override

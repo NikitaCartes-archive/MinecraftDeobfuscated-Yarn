@@ -30,7 +30,6 @@ public class Scoreboard {
     public static final int MIN_SIDEBAR_TEAM_DISPLAY_SLOT_ID = 3;
     public static final int MAX_SIDEBAR_TEAM_DISPLAY_SLOT_ID = 18;
     public static final int DISPLAY_SLOT_COUNT = 19;
-    public static final int MAX_NAME_LENGTH = 40;
     private final Map<String, ScoreboardObjective> objectives = Maps.newHashMap();
     private final Map<ScoreboardCriterion, List<ScoreboardObjective>> objectivesByCriterion = Maps.newHashMap();
     private final Map<String, Map<ScoreboardObjective, ScoreboardPlayerScore>> playerObjectives = Maps.newHashMap();
@@ -53,9 +52,6 @@ public class Scoreboard {
     }
 
     public ScoreboardObjective addObjective(String name, ScoreboardCriterion criterion2, Text displayName, ScoreboardCriterion.RenderType renderType) {
-        if (name.length() > 16) {
-            throw new IllegalArgumentException("The objective name '" + name + "' is too long!");
-        }
         if (this.objectives.containsKey(name)) {
             throw new IllegalArgumentException("An objective with the name '" + name + "' already exists!");
         }
@@ -79,13 +75,10 @@ public class Scoreboard {
         return scoreboardPlayerScore != null;
     }
 
-    public ScoreboardPlayerScore getPlayerScore(String player, ScoreboardObjective objective2) {
-        if (player.length() > 40) {
-            throw new IllegalArgumentException("The player name '" + player + "' is too long!");
-        }
-        Map map = this.playerObjectives.computeIfAbsent(player, string -> Maps.newHashMap());
+    public ScoreboardPlayerScore getPlayerScore(String string2, ScoreboardObjective objective2) {
+        Map map = this.playerObjectives.computeIfAbsent(string2, string -> Maps.newHashMap());
         return map.computeIfAbsent(objective2, objective -> {
-            ScoreboardPlayerScore scoreboardPlayerScore = new ScoreboardPlayerScore(this, (ScoreboardObjective)objective, player);
+            ScoreboardPlayerScore scoreboardPlayerScore = new ScoreboardPlayerScore(this, (ScoreboardObjective)objective, string2);
             scoreboardPlayerScore.setScore(0);
             return scoreboardPlayerScore;
         });
@@ -175,9 +168,6 @@ public class Scoreboard {
     }
 
     public Team addTeam(String name) {
-        if (name.length() > 16) {
-            throw new IllegalArgumentException("The team name '" + name + "' is too long!");
-        }
         Team team = this.getTeam(name);
         if (team != null) {
             throw new IllegalArgumentException("A team with the name '" + name + "' already exists!");
@@ -197,9 +187,6 @@ public class Scoreboard {
     }
 
     public boolean addPlayerToTeam(String playerName, Team team) {
-        if (playerName.length() > 40) {
-            throw new IllegalArgumentException("The player name '" + playerName + "' is too long!");
-        }
         if (this.getPlayerTeam(playerName) != null) {
             this.clearPlayerTeam(playerName);
         }
@@ -338,9 +325,6 @@ public class Scoreboard {
             NbtCompound nbtCompound = list.getCompound(i);
             ScoreboardObjective scoreboardObjective = this.getObjective(nbtCompound.getString("Objective"));
             String string = nbtCompound.getString("Name");
-            if (string.length() > 40) {
-                string = string.substring(0, 40);
-            }
             ScoreboardPlayerScore scoreboardPlayerScore = this.getPlayerScore(string, scoreboardObjective);
             scoreboardPlayerScore.setScore(nbtCompound.getInt("Score"));
             if (!nbtCompound.contains("Locked")) continue;

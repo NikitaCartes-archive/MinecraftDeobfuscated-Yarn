@@ -14,6 +14,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.UserCache;
@@ -53,14 +54,13 @@ extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         if (this.owner != null) {
             NbtCompound nbtCompound = new NbtCompound();
             NbtHelper.writeGameProfile(nbtCompound, this.owner);
             nbt.put(SKULL_OWNER_KEY, nbtCompound);
         }
-        return nbt;
     }
 
     @Override
@@ -95,15 +95,13 @@ extends BlockEntity {
         return this.owner;
     }
 
-    @Override
-    @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.SKULL, this.toInitialChunkDataNbt());
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
     public NbtCompound toInitialChunkDataNbt() {
-        return this.writeNbt(new NbtCompound());
+        return this.createNbt();
     }
 
     /*
@@ -140,6 +138,10 @@ extends BlockEntity {
                 callback.accept(gameProfile);
             });
         }, () -> executor.execute(() -> callback.accept(owner)))));
+    }
+
+    public /* synthetic */ Packet toUpdatePacket() {
+        return this.toUpdatePacket();
     }
 }
 

@@ -6,7 +6,9 @@ package net.minecraft.client.world;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -22,7 +24,7 @@ import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.particle.FireworksSparkParticle;
-import net.minecraft.client.render.DimensionEffects;
+import net.minecraft.client.render.SkyProperties;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.EntityTrackingSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -94,39 +96,55 @@ extends World {
      * A minor offset applied when spawning particles.
      */
     private static final double PARTICLE_Y_OFFSET = 0.05;
+    private static final int field_34805 = 10;
+    private static final int field_34806 = 1000;
     final EntityList entityList = new EntityList();
     private final ClientEntityManager<Entity> entityManager = new ClientEntityManager<Entity>(Entity.class, new ClientEntityHandler());
     private final ClientPlayNetworkHandler netHandler;
     private final WorldRenderer worldRenderer;
     private final Properties clientWorldProperties;
-    private final DimensionEffects dimensionEffects;
+    private final SkyProperties skyProperties;
     private final MinecraftClient client = MinecraftClient.getInstance();
     final List<AbstractClientPlayerEntity> players = Lists.newArrayList();
     private Scoreboard scoreboard = new Scoreboard();
     private final Map<String, MapState> mapStates = Maps.newHashMap();
     private static final long field_32640 = 0xFFFFFFL;
     private int lightningTicksLeft;
-    private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap(3), cache -> {
-        cache.put(BiomeColors.GRASS_COLOR, new BiomeColorCache());
-        cache.put(BiomeColors.FOLIAGE_COLOR, new BiomeColorCache());
-        cache.put(BiomeColors.WATER_COLOR, new BiomeColorCache());
+    private final Object2ObjectArrayMap<ColorResolver, BiomeColorCache> colorCache = Util.make(new Object2ObjectArrayMap(3), map -> {
+        map.put(BiomeColors.GRASS_COLOR, new BiomeColorCache(pos -> this.calculateColor((BlockPos)pos, BiomeColors.GRASS_COLOR)));
+        map.put(BiomeColors.FOLIAGE_COLOR, new BiomeColorCache(pos -> this.calculateColor((BlockPos)pos, BiomeColors.FOLIAGE_COLOR)));
+        map.put(BiomeColors.WATER_COLOR, new BiomeColorCache(pos -> this.calculateColor((BlockPos)pos, BiomeColors.WATER_COLOR)));
     });
     private final ClientChunkManager chunkManager;
+    private final Deque<Runnable> chunkUpdaters = Queues.newArrayDeque();
 
-    public ClientWorld(ClientPlayNetworkHandler networkHandler, Properties properties, RegistryKey<World> registryRef, DimensionType dimensionType, int loadDistance, Supplier<Profiler> profiler, WorldRenderer worldRenderer, boolean debugWorld, long seed) {
+    public ClientWorld(ClientPlayNetworkHandler netHandler, Properties properties, RegistryKey<World> registryRef, DimensionType dimensionType, int loadDistance, Supplier<Profiler> profiler, WorldRenderer worldRenderer, boolean debugWorld, long seed) {
         super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
-        this.netHandler = networkHandler;
+        this.netHandler = netHandler;
         this.chunkManager = new ClientChunkManager(this, loadDistance);
         this.clientWorldProperties = properties;
         this.worldRenderer = worldRenderer;
-        this.dimensionEffects = DimensionEffects.byDimensionType(dimensionType);
+        this.skyProperties = SkyProperties.byDimensionType(dimensionType);
         this.setSpawnPos(new BlockPos(8, 64, 8), 0.0f);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
     }
 
-    public DimensionEffects getDimensionEffects() {
-        return this.dimensionEffects;
+    public void enqueueChunkUpdate(Runnable updater) {
+        this.chunkUpdaters.add(updater);
+    }
+
+    public void runQueuedChunkUpdates() {
+        Runnable runnable;
+        int i = this.chunkUpdaters.size();
+        int j = i < 1000 ? Math.max(10, i / 10) : i;
+        for (int k = 0; k < j && (runnable = this.chunkUpdaters.poll()) != null; ++k) {
+            runnable.run();
+        }
+    }
+
+    public SkyProperties getSkyProperties() {
+        return this.skyProperties;
     }
 
     public void tick(BooleanSupplier shouldKeepTicking) {
@@ -203,7 +221,7 @@ extends World {
     }
 
     public void unloadBlockEntities(WorldChunk chunk) {
-        chunk.removeAllBlockEntities();
+        chunk.method_38289();
         this.chunkManager.getLightingProvider().setColumnEnabled(chunk.getPos(), false);
         this.entityManager.stopTicking(chunk.getPos());
     }
@@ -531,7 +549,7 @@ extends World {
         return h * 0.8f + 0.2f;
     }
 
-    public Vec3d getSkyColor(Vec3d vec3d, float f) {
+    public Vec3d method_23777(Vec3d vec3d, float f) {
         float n;
         float m;
         float g = this.getSkyAngle(f);
@@ -558,7 +576,7 @@ extends World {
             j2 = j2 * o + n * (1.0f - o);
             k2 = k2 * o + n * (1.0f - o);
         }
-        if (this.lightningTicksLeft > 0) {
+        if (!this.client.options.hideLightningFlashes && this.lightningTicksLeft > 0) {
             n = (float)this.lightningTicksLeft - f;
             if (n > 1.0f) {
                 n = 1.0f;
@@ -619,7 +637,7 @@ extends World {
 
     @Override
     public float getBrightness(Direction direction, boolean shaded) {
-        boolean bl = this.getDimensionEffects().isDarkened();
+        boolean bl = this.getSkyProperties().isDarkened();
         if (!shaded) {
             return bl ? 0.9f : 1.0f;
         }
@@ -645,7 +663,7 @@ extends World {
     @Override
     public int getColor(BlockPos pos, ColorResolver colorResolver) {
         BiomeColorCache biomeColorCache = this.colorCache.get(colorResolver);
-        return biomeColorCache.getBiomeColor(pos, () -> this.calculateColor(pos, colorResolver));
+        return biomeColorCache.getBiomeColor(pos);
     }
 
     public int calculateColor(BlockPos pos, ColorResolver colorResolver) {

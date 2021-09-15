@@ -147,6 +147,11 @@ extends MutableRegistry<T> {
     }
 
     @Override
+    public int size() {
+        return this.idToEntry.size();
+    }
+
+    @Override
     public Lifecycle getEntryLifecycle(T entry) {
         return this.entryToLifecycle.get(entry);
     }

@@ -4,45 +4,91 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_6496;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.CheckerboardBiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
-import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BiomeSource
-implements BiomeAccess.Storage {
+public abstract class BiomeSource {
     public static final Codec<BiomeSource> CODEC;
-    protected final Map<StructureFeature<?>, Boolean> structureFeatures = Maps.newHashMap();
-    protected final Set<BlockState> topMaterials = Sets.newHashSet();
-    protected final List<Biome> biomes;
+    private final ImmutableSet<BlockState> topMaterials;
+    private final List<Biome> biomes;
+    private final ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> field_34469;
 
     protected BiomeSource(Stream<Supplier<Biome>> stream) {
         this(stream.map(Supplier::get).collect(ImmutableList.toImmutableList()));
     }
 
-    protected BiomeSource(List<Biome> biomes) {
-        this.biomes = biomes;
+    protected BiomeSource(List<Biome> list) {
+        record class_6543(int comp_68, ConfiguredFeature<?, ?> comp_69) {
+        }
+        ArrayList<class_6543> list2;
+        this.biomes = list;
+        this.topMaterials = list.stream().map(biome -> biome.getGenerationSettings().getSurfaceConfig().getTopMaterial()).collect(ImmutableSet.toImmutableSet());
+        HashMap<class_6543, Set> map = Maps.newHashMap();
+        int i = 0;
+        for (Biome biome2 : list) {
+            int j;
+            list2 = Lists.newArrayList();
+            List<List<Supplier<ConfiguredFeature<?, ?>>>> list3 = biome2.getGenerationSettings().getFeatures();
+            i = Math.max(i, list3.size());
+            for (j = 0; j < list3.size(); ++j) {
+                for (Supplier supplier : (List)list3.get(j)) {
+                    list2.add(new class_6543(j, (ConfiguredFeature)supplier.get()));
+                }
+            }
+            for (j = 0; j < list2.size(); ++j) {
+                Set set = map.computeIfAbsent((class_6543)list2.get(j), arg -> Sets.newHashSet());
+                if (j >= list2.size() - 1) continue;
+                set.add((class_6543)list2.get(j + 1));
+            }
+        }
+        HashSet set2 = Sets.newHashSet();
+        HashSet set3 = Sets.newHashSet();
+        list2 = Lists.newArrayList();
+        for (class_6543 lv : map.keySet()) {
+            if (!set3.isEmpty()) {
+                throw new IllegalStateException("You somehow broke the universe; DFS bork (iteration finished with non-empty in-progress vertex set");
+            }
+            if (set2.contains(lv) || !class_6496.method_37951(map, set2, set3, list2::add, lv)) continue;
+            Collections.reverse(list2);
+            throw new IllegalStateException("Feature order cycle found: " + list2.stream().filter(set3::contains).map(Object::toString).collect(Collectors.joining(", ")));
+        }
+        Collections.reverse(list2);
+        ImmutableList.Builder builder = ImmutableList.builder();
+        int j = 0;
+        while (j < i) {
+            int k = j++;
+            builder.add(list2.stream().filter(arg -> arg.comp_68() == k).map(class_6543::comp_69).collect(ImmutableList.toImmutableList()));
+        }
+        this.field_34469 = builder.build();
     }
 
     protected abstract Codec<? extends BiomeSource> getCodec();
@@ -53,7 +99,7 @@ implements BiomeAccess.Storage {
         return this.biomes;
     }
 
-    public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
+    public Set<Biome> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
         int i = BiomeCoords.fromBlock(x - radius);
         int j = BiomeCoords.fromBlock(y - radius);
         int k = BiomeCoords.fromBlock(z - radius);
@@ -70,7 +116,7 @@ implements BiomeAccess.Storage {
                     int u = i + s;
                     int v = j + t;
                     int w = k + r;
-                    set.add(this.getBiomeForNoiseGen(u, v, w));
+                    set.add(this.method_38109(u, v, w, multiNoiseSampler));
                 }
             }
         }
@@ -78,12 +124,12 @@ implements BiomeAccess.Storage {
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<Biome> predicate, Random random) {
-        return this.locateBiome(x, y, z, radius, 1, predicate, random, false);
+    public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<Biome> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+        return this.locateBiome(x, y, z, radius, 1, predicate, random, false, multiNoiseSampler);
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl) {
+    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
         int o;
         int j = BiomeCoords.fromBlock(x);
         int k = BiomeCoords.fromBlock(z);
@@ -92,7 +138,9 @@ implements BiomeAccess.Storage {
         BlockPos blockPos = null;
         int n = 0;
         for (int p = o = bl ? 0 : l; p <= l; p += i) {
-            for (int q = -p; q <= p; q += i) {
+            int q;
+            int n2 = q = SharedConstants.DEBUG_BIOME_SOURCE ? 0 : -p;
+            while (q <= p) {
                 boolean bl2 = Math.abs(q) == p;
                 for (int r = -p; r <= p; r += i) {
                     int t;
@@ -102,7 +150,7 @@ implements BiomeAccess.Storage {
                         boolean bl4 = bl3 = Math.abs(r) == p;
                         if (!bl3 && !bl2) continue;
                     }
-                    if (!predicate.test(this.getBiomeForNoiseGen(s = j + r, m, t = k + q))) continue;
+                    if (!predicate.test(this.method_38109(s = j + r, m, t = k + q, multiNoiseSampler))) continue;
                     if (blockPos == null || random.nextInt(n + 1) == 0) {
                         blockPos = new BlockPos(BiomeCoords.toBlock(s), y, BiomeCoords.toBlock(t));
                         if (bl) {
@@ -111,29 +159,29 @@ implements BiomeAccess.Storage {
                     }
                     ++n;
                 }
+                q += i;
             }
         }
         return blockPos;
     }
 
-    public boolean hasStructureFeature(StructureFeature<?> feature) {
-        return this.structureFeatures.computeIfAbsent(feature, structureFeature -> this.biomes.stream().anyMatch(biome -> biome.getGenerationSettings().hasStructureFeature((StructureFeature<?>)structureFeature)));
+    public abstract Biome method_38109(int var1, int var2, int var3, MultiNoiseUtil.MultiNoiseSampler var4);
+
+    public boolean method_38113(BlockState blockState) {
+        return this.topMaterials.contains(blockState);
     }
 
-    public Set<BlockState> getTopMaterials() {
-        if (this.topMaterials.isEmpty()) {
-            for (Biome biome : this.biomes) {
-                this.topMaterials.add(biome.getGenerationSettings().getSurfaceConfig().getTopMaterial());
-            }
-        }
-        return this.topMaterials;
+    public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+    }
+
+    public ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> method_38115() {
+        return this.field_34469;
     }
 
     static {
         Registry.register(Registry.BIOME_SOURCE, "fixed", FixedBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.CODEC);
-        Registry.register(Registry.BIOME_SOURCE, "vanilla_layered", VanillaLayeredBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
         CODEC = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::getCodec, Function.identity());
     }

@@ -270,9 +270,6 @@ public class ScoreboardCommand {
         if (scoreboard.getNullableObjective(objective) != null) {
             throw OBJECTIVES_ADD_DUPLICATE_EXCEPTION.create();
         }
-        if (objective.length() > 16) {
-            throw ScoreboardObjectiveArgumentType.LONG_NAME_EXCEPTION.create(16);
-        }
         scoreboard.addObjective(objective, criteria, displayName, criteria.getDefaultRenderType());
         ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objective);
         source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.add.success", scoreboardObjective.toHoverableText()), true);

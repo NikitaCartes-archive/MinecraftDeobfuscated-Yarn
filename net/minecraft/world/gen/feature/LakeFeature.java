@@ -9,13 +9,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.BlockSource;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -110,27 +108,11 @@ extends Feature<SingleStateFeatureConfig> {
                 }
             }
         }
-        if (singleStateFeatureConfig.state.getMaterial() == Material.LAVA) {
-            BlockSource blockSource = context.getGenerator().getBlockSource();
-            for (int s = 0; s < 16; ++s) {
-                for (t = 0; t < 16; ++t) {
-                    for (int u = 0; u < 8; ++u) {
-                        BlockState blockState;
-                        boolean bl2;
-                        boolean bl = bl2 = !bls[(s * 16 + t) * 8 + u] && (s < 15 && bls[((s + 1) * 16 + t) * 8 + u] || s > 0 && bls[((s - 1) * 16 + t) * 8 + u] || t < 15 && bls[(s * 16 + t + 1) * 8 + u] || t > 0 && bls[(s * 16 + (t - 1)) * 8 + u] || u < 7 && bls[(s * 16 + t) * 8 + u + 1] || u > 0 && bls[(s * 16 + t) * 8 + (u - 1)]);
-                        if (!bl2 || u >= 4 && random.nextInt(2) == 0 || !(blockState = structureWorldAccess.getBlockState(blockPos.add(s, u, t))).getMaterial().isSolid() || blockState.isIn(BlockTags.LAVA_POOL_STONE_REPLACEABLES)) continue;
-                        BlockPos blockPos3 = blockPos.add(s, u, t);
-                        structureWorldAccess.setBlockState(blockPos3, blockSource.get(blockPos3), Block.NOTIFY_LISTENERS);
-                        this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos3);
-                    }
-                }
-            }
-        }
         if (singleStateFeatureConfig.state.getMaterial() == Material.WATER) {
-            for (int j2 = 0; j2 < 16; ++j2) {
+            for (j = 0; j < 16; ++j) {
                 for (int s = 0; s < 16; ++s) {
                     t = 4;
-                    BlockPos blockPos2 = blockPos.add(j2, 4, s);
+                    BlockPos blockPos2 = blockPos.add(j, 4, s);
                     if (!structureWorldAccess.getBiome(blockPos2).canSetIce(structureWorldAccess, blockPos2, false)) continue;
                     structureWorldAccess.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), Block.NOTIFY_LISTENERS);
                 }

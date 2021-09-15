@@ -18,10 +18,9 @@ extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("OutputSignal", this.outputSignal);
-        return nbt;
     }
 
     @Override

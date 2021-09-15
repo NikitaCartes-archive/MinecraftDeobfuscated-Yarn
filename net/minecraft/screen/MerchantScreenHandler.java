@@ -143,9 +143,9 @@ extends ScreenHandler {
     }
 
     private void playYesSound() {
-        if (!this.merchant.getMerchantWorld().isClient) {
+        if (!this.merchant.isClient()) {
             Entity entity = (Entity)((Object)this.merchant);
-            this.merchant.getMerchantWorld().playSound(entity.getX(), entity.getY(), entity.getZ(), this.merchant.getYesSound(), SoundCategory.NEUTRAL, 1.0f, 1.0f, false);
+            entity.getWorld().playSound(entity.getX(), entity.getY(), entity.getZ(), this.merchant.getYesSound(), SoundCategory.NEUTRAL, 1.0f, 1.0f, false);
         }
     }
 
@@ -153,7 +153,7 @@ extends ScreenHandler {
     public void close(PlayerEntity player) {
         super.close(player);
         this.merchant.setCurrentCustomer(null);
-        if (this.merchant.getMerchantWorld().isClient) {
+        if (this.merchant.isClient()) {
             return;
         }
         if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {

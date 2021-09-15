@@ -16,7 +16,7 @@ extends BlockStateProvider {
     public static final Codec<SimpleBlockStateProvider> CODEC = ((MapCodec)BlockState.CODEC.fieldOf("state")).xmap(SimpleBlockStateProvider::new, simpleBlockStateProvider -> simpleBlockStateProvider.state).codec();
     private final BlockState state;
 
-    public SimpleBlockStateProvider(BlockState state) {
+    protected SimpleBlockStateProvider(BlockState state) {
         this.state = state;
     }
 

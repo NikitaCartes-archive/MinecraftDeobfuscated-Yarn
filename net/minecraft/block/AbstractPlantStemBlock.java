@@ -56,6 +56,14 @@ implements Fertilizable {
         return (BlockState)state.cycle(AGE);
     }
 
+    public BlockState withMaxAge(BlockState state) {
+        return (BlockState)state.with(AGE, 25);
+    }
+
+    public boolean hasMaxAge(BlockState state) {
+        return state.get(AGE) == 25;
+    }
+
     protected BlockState copyState(BlockState from, BlockState to) {
         return to;
     }

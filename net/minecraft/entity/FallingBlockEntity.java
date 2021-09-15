@@ -23,7 +23,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.AutomaticItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -152,11 +151,9 @@ extends Entity {
                                     ((LandingBlock)((Object)block)).onLanding(this.world, blockPos, this.block, blockState, this);
                                 }
                                 if (this.blockEntityData != null && this.block.hasBlockEntity() && (blockEntity = this.world.getBlockEntity(blockPos)) != null) {
-                                    NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+                                    NbtCompound nbtCompound = blockEntity.createNbt();
                                     for (String string : this.blockEntityData.getKeys()) {
-                                        NbtElement nbtElement = this.blockEntityData.get(string);
-                                        if ("x".equals(string) || "y".equals(string) || "z".equals(string)) continue;
-                                        nbtCompound.put(string, nbtElement.copy());
+                                        nbtCompound.put(string, this.blockEntityData.get(string).copy());
                                     }
                                     try {
                                         blockEntity.readNbt(nbtCompound);
@@ -264,10 +261,6 @@ extends Entity {
         if (this.block.isAir()) {
             this.block = Blocks.SAND.getDefaultState();
         }
-    }
-
-    public World getWorldClient() {
-        return this.world;
     }
 
     public void setHurtEntities(float fallHurtAmount, int fallHurtMax) {

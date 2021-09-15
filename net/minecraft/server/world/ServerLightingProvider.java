@@ -87,8 +87,8 @@ implements AutoCloseable {
     }
 
     @Override
-    public void setColumnEnabled(ChunkPos chunkPos, boolean bl) {
-        this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setColumnEnabled(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl));
+    public void setColumnEnabled(ChunkPos pos, boolean retainData) {
+        this.enqueue(pos.x, pos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setColumnEnabled(pos, retainData), () -> "enableLight " + pos + " " + retainData));
     }
 
     @Override
@@ -121,7 +121,7 @@ implements AutoCloseable {
             ChunkSection[] chunkSections = chunk.getSectionArray();
             for (int i = 0; i < chunk.countVerticalSections(); ++i) {
                 ChunkSection chunkSection = chunkSections[i];
-                if (ChunkSection.isEmpty(chunkSection)) continue;
+                if (chunkSection.isEmpty()) continue;
                 int j = this.world.sectionIndexToCoord(i);
                 super.setSectionStatus(ChunkSectionPos.from(chunkPos, j), false);
             }

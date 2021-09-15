@@ -13,11 +13,14 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import org.jetbrains.annotations.Nullable;
 
 public class FixedBiomeSource
-extends BiomeSource {
+extends BiomeSource
+implements BiomeAccess.Storage {
     public static final Codec<FixedBiomeSource> CODEC = ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome).stable().codec();
     private final Supplier<Biome> biome;
 
@@ -41,13 +44,18 @@ extends BiomeSource {
     }
 
     @Override
+    public Biome method_38109(int i, int j, int k, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+        return this.biome.get();
+    }
+
+    @Override
     public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
         return this.biome.get();
     }
 
     @Override
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl) {
+    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
         if (predicate.test(this.biome.get())) {
             if (bl) {
                 return new BlockPos(x, y, z);
@@ -58,7 +66,7 @@ extends BiomeSource {
     }
 
     @Override
-    public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
+    public Set<Biome> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
         return Sets.newHashSet(this.biome.get());
     }
 }

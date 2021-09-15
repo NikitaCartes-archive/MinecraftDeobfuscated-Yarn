@@ -45,9 +45,6 @@ extends PersistentState {
             MutableText text2;
             NbtCompound nbtCompound = nbt.getCompound(i);
             String string = nbtCompound.getString("Name");
-            if (string.length() > 16) {
-                string = string.substring(0, 16);
-            }
             Team team = this.scoreboard.addTeam(string);
             MutableText text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
             if (text != null) {
@@ -101,9 +98,6 @@ extends PersistentState {
             NbtCompound nbtCompound = nbt.getCompound(i);
             ScoreboardCriterion.getOrCreateStatCriterion(nbtCompound.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
                 String string = nbtCompound.getString("Name");
-                if (string.length() > 16) {
-                    string = string.substring(0, 16);
-                }
                 MutableText text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
                 ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(nbtCompound.getString("RenderType"));
                 this.scoreboard.addObjective(string, (ScoreboardCriterion)scoreboardCriterion, text, renderType);

@@ -29,7 +29,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public ScoreboardObjectiveUpdateS2CPacket(PacketByteBuf buf) {
-        this.name = buf.readString(16);
+        this.name = buf.readString();
         this.mode = buf.readByte();
         if (this.mode == 0 || this.mode == 2) {
             this.displayName = buf.readText();

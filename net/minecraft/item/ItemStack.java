@@ -20,11 +20,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -33,7 +31,6 @@ import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.command.argument.BlockArgumentParser;
-import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -49,6 +46,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.BlockPredicatesChecker;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -212,10 +210,10 @@ public final class ItemStack {
     private NbtCompound nbt;
     private boolean empty;
     private Entity holder;
-    private CachedBlockPosition lastDestroyPos;
-    private boolean lastDestroyResult;
-    private CachedBlockPosition lastPlaceOnPos;
-    private boolean lastPlaceOnResult;
+    @Nullable
+    private BlockPredicatesChecker destroyChecker;
+    @Nullable
+    private BlockPredicatesChecker placeChecker;
 
     public Optional<TooltipData> getTooltipData() {
         return this.getItem().getTooltipData(this);
@@ -1025,67 +1023,18 @@ public final class ItemStack {
         return mutableText2;
     }
 
-    private static boolean areBlocksEqual(CachedBlockPosition first, @Nullable CachedBlockPosition second) {
-        if (second == null || first.getBlockState() != second.getBlockState()) {
-            return false;
+    public boolean canPlaceOn(TagManager tagManager, CachedBlockPosition pos) {
+        if (this.placeChecker == null) {
+            this.placeChecker = new BlockPredicatesChecker(CAN_PLACE_ON_KEY);
         }
-        if (first.getBlockEntity() == null && second.getBlockEntity() == null) {
-            return true;
-        }
-        if (first.getBlockEntity() == null || second.getBlockEntity() == null) {
-            return false;
-        }
-        return Objects.equals(first.getBlockEntity().writeNbt(new NbtCompound()), second.getBlockEntity().writeNbt(new NbtCompound()));
+        return this.placeChecker.check(this, tagManager, pos);
     }
 
     public boolean canDestroy(TagManager tagManager, CachedBlockPosition pos) {
-        if (ItemStack.areBlocksEqual(pos, this.lastDestroyPos)) {
-            return this.lastDestroyResult;
+        if (this.destroyChecker == null) {
+            this.destroyChecker = new BlockPredicatesChecker(CAN_DESTROY_KEY);
         }
-        this.lastDestroyPos = pos;
-        if (this.hasNbt() && this.nbt.contains(CAN_DESTROY_KEY, 9)) {
-            NbtList nbtList = this.nbt.getList(CAN_DESTROY_KEY, 8);
-            for (int i = 0; i < nbtList.size(); ++i) {
-                String string = nbtList.getString(i);
-                try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(tagManager);
-                    if (predicate.test(pos)) {
-                        this.lastDestroyResult = true;
-                        return true;
-                    }
-                    continue;
-                } catch (CommandSyntaxException commandSyntaxException) {
-                    // empty catch block
-                }
-            }
-        }
-        this.lastDestroyResult = false;
-        return false;
-    }
-
-    public boolean canPlaceOn(TagManager tagManager, CachedBlockPosition pos) {
-        if (ItemStack.areBlocksEqual(pos, this.lastPlaceOnPos)) {
-            return this.lastPlaceOnResult;
-        }
-        this.lastPlaceOnPos = pos;
-        if (this.hasNbt() && this.nbt.contains(CAN_PLACE_ON_KEY, 9)) {
-            NbtList nbtList = this.nbt.getList(CAN_PLACE_ON_KEY, 8);
-            for (int i = 0; i < nbtList.size(); ++i) {
-                String string = nbtList.getString(i);
-                try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(tagManager);
-                    if (predicate.test(pos)) {
-                        this.lastPlaceOnResult = true;
-                        return true;
-                    }
-                    continue;
-                } catch (CommandSyntaxException commandSyntaxException) {
-                    // empty catch block
-                }
-            }
-        }
-        this.lastPlaceOnResult = false;
-        return false;
+        return this.destroyChecker.check(this, tagManager, pos);
     }
 
     public int getCooldown() {

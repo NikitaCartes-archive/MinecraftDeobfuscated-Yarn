@@ -123,7 +123,7 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
                 j = this.getCurrentLevelFromSection(chunkNibbleArray2, m);
             } else {
                 if (direction == Direction.DOWN) continue;
-                j = 15 - ((SkyLightStorage)this.lightStorage).method_31931(m, true);
+                j = 15 - ((SkyLightStorage)this.lightStorage).getLight(m, true);
             }
             int k = this.getPropagatedLevel(m, id, j);
             if (i > k) {

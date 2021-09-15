@@ -3,31 +3,30 @@
  */
 package net.minecraft.world.chunk;
 
-import java.util.function.Function;
 import java.util.function.Predicate;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.class_6558;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.collection.IdList;
+import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
-import org.jetbrains.annotations.Nullable;
 
 public class ArrayPalette<T>
 implements Palette<T> {
-    private final IdList<T> idList;
+    private final IndexedIterable<T> idList;
     private final T[] array;
     private final PaletteResizeListener<T> resizeListener;
-    private final Function<NbtCompound, T> valueDeserializer;
     private final int indexBits;
     private int size;
 
-    public ArrayPalette(IdList<T> idList, int integer, PaletteResizeListener<T> resizeListener, Function<NbtCompound, T> valueDeserializer) {
-        this.idList = idList;
+    public ArrayPalette(IndexedIterable<T> indexedIterable, int integer, PaletteResizeListener<T> resizeListener) {
+        this.idList = indexedIterable;
         this.array = new Object[1 << integer];
         this.indexBits = integer;
         this.resizeListener = resizeListener;
-        this.valueDeserializer = valueDeserializer;
+    }
+
+    public static <A> Palette<A> method_38295(int i, IndexedIterable<A> indexedIterable, PaletteResizeListener<A> paletteResizeListener) {
+        return new ArrayPalette<A>(indexedIterable, i, paletteResizeListener);
     }
 
     @Override
@@ -54,12 +53,11 @@ implements Palette<T> {
     }
 
     @Override
-    @Nullable
     public T getByIndex(int index) {
         if (index >= 0 && index < this.size) {
             return this.array[index];
         }
-        return null;
+        throw new class_6558(index);
     }
 
     @Override
@@ -90,14 +88,6 @@ implements Palette<T> {
     @Override
     public int getIndexBits() {
         return this.size;
-    }
-
-    @Override
-    public void readNbt(NbtList nbt) {
-        for (int i = 0; i < nbt.size(); ++i) {
-            this.array[i] = this.valueDeserializer.apply(nbt.getCompound(i));
-        }
-        this.size = nbt.size();
     }
 }
 

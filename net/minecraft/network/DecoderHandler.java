@@ -12,6 +12,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.profiling.jfr.event.network.PacketReceivedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -29,21 +30,28 @@ extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
-        if (byteBuf.readableBytes() == 0) {
+        int i = byteBuf.readableBytes();
+        if (i == 0) {
             return;
         }
         PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf);
-        int i = packetByteBuf.readVarInt();
-        Packet<?> packet = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getPacketHandler(this.side, i, packetByteBuf);
+        int j = packetByteBuf.readVarInt();
+        Packet<?> packet = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getPacketHandler(this.side, j, packetByteBuf);
         if (packet == null) {
-            throw new IOException("Bad packet id " + i);
+            throw new IOException("Bad packet id " + j);
+        }
+        if (PacketReceivedEvent.TYPE.isEnabled()) {
+            int k = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId();
+            String string = "%d/%d (%s)".formatted(k, j, packet.getClass().getSimpleName());
+            PacketReceivedEvent packetReceivedEvent = new PacketReceivedEvent(string, channelHandlerContext.channel().remoteAddress(), i);
+            packetReceivedEvent.commit();
         }
         if (packetByteBuf.readableBytes() > 0) {
-            throw new IOException("Packet " + channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId() + "/" + i + " (" + packet.getClass().getSimpleName() + ") was larger than I expected, found " + packetByteBuf.readableBytes() + " bytes extra whilst reading packet " + i);
+            throw new IOException("Packet " + channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId() + "/" + j + " (" + packet.getClass().getSimpleName() + ") was larger than I expected, found " + packetByteBuf.readableBytes() + " bytes extra whilst reading packet " + j);
         }
         list.add(packet);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(MARKER, " IN: [{}:{}] {}", (Object)channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), (Object)i, (Object)packet.getClass().getName());
+            LOGGER.debug(MARKER, " IN: [{}:{}] {}", (Object)channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), (Object)j, (Object)packet.getClass().getName());
         }
     }
 }

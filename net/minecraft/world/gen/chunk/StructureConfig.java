@@ -18,7 +18,7 @@ import net.minecraft.util.dynamic.Codecs;
 public class StructureConfig {
     public static final Codec<StructureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, 4096).fieldOf("spacing")).forGetter(config -> config.spacing), ((MapCodec)Codec.intRange(0, 4096).fieldOf("separation")).forGetter(config -> config.separation), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("salt")).forGetter(config -> config.salt)).apply((Applicative<StructureConfig, ?>)instance, StructureConfig::new)).comapFlatMap(config -> {
         if (config.spacing <= config.separation) {
-            return DataResult.error("Spacing has to be smaller than separation");
+            return DataResult.error("Spacing has to be larger than separation");
         }
         return DataResult.success(config);
     }, Function.identity());

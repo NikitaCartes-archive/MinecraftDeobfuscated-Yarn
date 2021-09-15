@@ -313,6 +313,11 @@ VillagerDataContainer {
         return true;
     }
 
+    @Override
+    public boolean isClient() {
+        return this.getWorld().isClient;
+    }
+
     public void restock() {
         this.updateDemandBonus();
         for (TradeOffer tradeOffer : this.getOffers()) {

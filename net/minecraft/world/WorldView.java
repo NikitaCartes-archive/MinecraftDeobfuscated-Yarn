@@ -68,8 +68,8 @@ BiomeAccess.Storage {
     @Override
     default public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
         Chunk chunk = this.getChunk(BiomeCoords.toChunk(biomeX), BiomeCoords.toChunk(biomeZ), ChunkStatus.BIOMES, false);
-        if (chunk != null && chunk.getBiomeArray() != null) {
-            return chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
+        if (chunk != null) {
+            return chunk.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
         }
         return this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
     }

@@ -4,7 +4,7 @@
 package net.minecraft.util.math.noise;
 
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.WorldGenRandom;
+import net.minecraft.world.gen.random.AbstractRandom;
 
 public class SimplexNoiseSampler {
     protected static final int[][] GRADIENTS = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}, {1, 1, 0}, {0, -1, 1}, {-1, 1, 0}, {0, -1, -1}};
@@ -16,7 +16,7 @@ public class SimplexNoiseSampler {
     public final double originY;
     public final double originZ;
 
-    public SimplexNoiseSampler(WorldGenRandom random) {
+    public SimplexNoiseSampler(AbstractRandom random) {
         int i;
         this.originX = random.nextDouble() * 256.0;
         this.originY = random.nextDouble() * 256.0;

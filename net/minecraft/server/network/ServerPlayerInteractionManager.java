@@ -47,7 +47,7 @@ public class ServerPlayerInteractionManager {
 
     public ServerPlayerInteractionManager(ServerPlayerEntity player) {
         this.player = player;
-        this.world = player.getServerWorld();
+        this.world = player.getWorld();
     }
 
     /**

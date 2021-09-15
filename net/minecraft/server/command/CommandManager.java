@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import jdk.jfr.FlightRecorder;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
@@ -47,6 +48,7 @@ import net.minecraft.server.command.GameRuleCommand;
 import net.minecraft.server.command.GiveCommand;
 import net.minecraft.server.command.HelpCommand;
 import net.minecraft.server.command.ItemCommand;
+import net.minecraft.server.command.JfrCommand;
 import net.minecraft.server.command.KickCommand;
 import net.minecraft.server.command.KillCommand;
 import net.minecraft.server.command.ListCommand;
@@ -175,6 +177,9 @@ public class CommandManager {
         TriggerCommand.register(this.dispatcher);
         WeatherCommand.register(this.dispatcher);
         WorldBorderCommand.register(this.dispatcher);
+        if (FlightRecorder.isAvailable()) {
+            JfrCommand.register(this.dispatcher);
+        }
         if (SharedConstants.isDevelopment) {
             TestCommand.register(this.dispatcher);
         }

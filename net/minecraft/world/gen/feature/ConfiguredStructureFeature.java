@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -15,11 +16,11 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
     public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE.dispatch(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
@@ -36,8 +37,8 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
     /**
      * @see StructureFeature#tryPlaceStart
      */
-    public StructureStart<?> tryPlaceStart(DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, Biome biome, int referenceCount, StructureConfig structureConfig, HeightLimitView heightLimitView) {
-        return ((StructureFeature)this.feature).tryPlaceStart(registryManager, chunkGenerator, biomeSource, structureManager, worldSeed, chunkPos, biome, referenceCount, new ChunkRandom(), structureConfig, this.config, heightLimitView);
+    public StructureStart<?> tryPlaceStart(DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, int i, StructureConfig structureConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
+        return ((StructureFeature)this.feature).tryPlaceStart(registryManager, chunkGenerator, biomeSource, structureManager, worldSeed, chunkPos, i, new ChunkRandom(), structureConfig, this.config, heightLimitView, predicate);
     }
 }
 

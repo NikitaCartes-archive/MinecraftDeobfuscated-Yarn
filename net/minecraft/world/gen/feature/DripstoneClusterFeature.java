@@ -131,7 +131,7 @@ extends Feature<DripstoneClusterFeatureConfig> {
             return 0;
         }
         int i = Math.abs(localX) + Math.abs(localZ);
-        float f = (float)MathHelper.clampedLerpFromProgress(i, 0.0, config.maxDistanceFromCenterAffectingHeightBias, (double)height / 2.0, 0.0);
+        float f = (float)MathHelper.clampedLerpFromProgress((double)i, 0.0, (double)config.maxDistanceFromCenterAffectingHeightBias, (double)height / 2.0, 0.0);
         return (int)DripstoneClusterFeature.clampedGaussian(random, 0.0f, height, f, config.heightDeviation);
     }
 
@@ -166,7 +166,7 @@ extends Feature<DripstoneClusterFeatureConfig> {
         int i = radiusX - Math.abs(localX);
         int j = radiusZ - Math.abs(localZ);
         int k = Math.min(i, j);
-        return MathHelper.clampedLerpFromProgress(k, 0.0, config.maxDistanceFromCenterAffectingChanceOfDripstoneColumn, config.chanceOfDripstoneColumnAtMaxDistanceFromCenter, 1.0);
+        return MathHelper.clampedLerpFromProgress(k, 0.0f, config.maxDistanceFromCenterAffectingChanceOfDripstoneColumn, config.chanceOfDripstoneColumnAtMaxDistanceFromCenter, 1.0f);
     }
 
     private static float clampedGaussian(Random random, float min, float max, float mean, float deviation) {

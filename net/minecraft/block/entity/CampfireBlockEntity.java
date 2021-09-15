@@ -14,6 +14,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
@@ -25,7 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class CampfireBlockEntity
 extends BlockEntity
@@ -115,28 +115,22 @@ implements Clearable {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
-        this.saveInitialChunkData(nbt);
-        nbt.putIntArray("CookingTimes", this.cookingTimes);
-        nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
-        return nbt;
-    }
-
-    private NbtCompound saveInitialChunkData(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         Inventories.writeNbt(nbt, this.itemsBeingCooked, true);
-        return nbt;
+        nbt.putIntArray("CookingTimes", this.cookingTimes);
+        nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
     }
 
-    @Override
-    @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.CAMPFIRE, this.toInitialChunkDataNbt());
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
     public NbtCompound toInitialChunkDataNbt() {
-        return this.saveInitialChunkData(new NbtCompound());
+        NbtCompound nbtCompound = new NbtCompound();
+        Inventories.writeNbt(nbtCompound, this.itemsBeingCooked, true);
+        return nbtCompound;
     }
 
     public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {
@@ -173,6 +167,10 @@ implements Clearable {
         if (this.world != null) {
             this.updateListeners();
         }
+    }
+
+    public /* synthetic */ Packet toUpdatePacket() {
+        return this.toUpdatePacket();
     }
 }
 

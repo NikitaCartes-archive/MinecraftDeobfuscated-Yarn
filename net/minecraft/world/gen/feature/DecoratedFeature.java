@@ -4,10 +4,12 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.Optional;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.DecoratorContext;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -29,10 +31,14 @@ extends Feature<DecoratedFeatureConfig> {
         DecoratedFeatureConfig decoratedFeatureConfig = context.getConfig();
         ChunkGenerator chunkGenerator = context.getGenerator();
         Random random = context.getRandom();
-        BlockPos blockPos2 = context.getOrigin();
         ConfiguredFeature<?, ?> configuredFeature = decoratedFeatureConfig.feature.get();
-        decoratedFeatureConfig.decorator.getPositions(new DecoratorContext(structureWorldAccess, chunkGenerator), random, blockPos2).forEach(blockPos -> {
-            if (configuredFeature.generate(structureWorldAccess, chunkGenerator, random, (BlockPos)blockPos)) {
+        decoratedFeatureConfig.decorator.getPositions(new DecoratorContext(structureWorldAccess, chunkGenerator), random, context.getOrigin()).forEach(origin -> {
+            Biome biome;
+            Optional<ConfiguredFeature<?, ?>> optional = context.getFeature();
+            if (optional.isPresent() && !(configuredFeature.getFeature() instanceof DecoratedFeature) && !(biome = structureWorldAccess.getBiome((BlockPos)origin)).getGenerationSettings().isFeatureAllowed(optional.get())) {
+                return;
+            }
+            if (configuredFeature.generate(optional, structureWorldAccess, chunkGenerator, random, (BlockPos)origin)) {
                 mutableBoolean.setTrue();
             }
         });

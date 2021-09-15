@@ -8,8 +8,11 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
@@ -50,7 +53,6 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
-import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.EntityTrackerEntry;
@@ -76,6 +78,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.thread.MessageListener;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.util.thread.ThreadExecutor;
@@ -95,6 +98,7 @@ import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -121,7 +125,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     final ServerWorld world;
     private final ServerLightingProvider lightingProvider;
     private final ThreadExecutor<Runnable> mainThreadExecutor;
-    private final ChunkGenerator chunkGenerator;
+    private ChunkGenerator chunkGenerator;
     private final Supplier<PersistentStateManager> persistentStateManagerFactory;
     private final PointOfInterestStorage pointOfInterestStorage;
     final LongSet unloadedChunks = new LongOpenHashSet();
@@ -164,6 +168,18 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.setViewDistance(viewDistance);
     }
 
+    protected ChunkGenerator method_37897() {
+        return this.chunkGenerator;
+    }
+
+    public void method_37904() {
+        DataResult<JsonElement> dataResult = ChunkGenerator.CODEC.encodeStart(JsonOps.INSTANCE, this.chunkGenerator);
+        DataResult dataResult2 = dataResult.flatMap(jsonElement -> ChunkGenerator.CODEC.parse(JsonOps.INSTANCE, jsonElement));
+        dataResult2.result().ifPresent(chunkGenerator -> {
+            this.chunkGenerator = chunkGenerator;
+        });
+    }
+
     private static double getSquaredDistance(ChunkPos pos, Entity entity) {
         double d = ChunkSectionPos.getOffsetPos(pos.x, 8);
         double e = ChunkSectionPos.getOffsetPos(pos.z, 8);
@@ -172,28 +188,62 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return f * f + g * g;
     }
 
-    private static int getChebyshevDistance(ChunkPos pos, ServerPlayerEntity player, boolean useWatchedPosition) {
+    private static boolean method_37901(ChunkPos chunkPos, ServerPlayerEntity serverPlayerEntity, boolean bl, int i) {
+        int k;
         int j;
-        int i;
-        if (useWatchedPosition) {
-            ChunkSectionPos chunkSectionPos = player.getWatchedSection();
-            i = chunkSectionPos.getSectionX();
-            j = chunkSectionPos.getSectionZ();
+        if (bl) {
+            ChunkSectionPos chunkSectionPos = serverPlayerEntity.getWatchedSection();
+            j = chunkSectionPos.getSectionX();
+            k = chunkSectionPos.getSectionZ();
         } else {
-            i = ChunkSectionPos.getSectionCoord(player.getBlockX());
-            j = ChunkSectionPos.getSectionCoord(player.getBlockZ());
+            j = ChunkSectionPos.getSectionCoord(serverPlayerEntity.getBlockX());
+            k = ChunkSectionPos.getSectionCoord(serverPlayerEntity.getBlockZ());
         }
-        return ThreadedAnvilChunkStorage.getChebyshevDistance(pos, i, j);
+        return ThreadedAnvilChunkStorage.method_37899(chunkPos, j, k, i);
     }
 
-    private static int getChebyshevDistance(ChunkPos chunkPos, Entity entity) {
-        return ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, ChunkSectionPos.getSectionCoord(entity.getBlockX()), ChunkSectionPos.getSectionCoord(entity.getBlockZ()));
+    private static boolean method_37899(ChunkPos chunkPos, int i, int j, int k) {
+        int l = chunkPos.x;
+        int m = chunkPos.z;
+        return ThreadedAnvilChunkStorage.method_37898(l, m, i, j, k);
     }
 
-    private static int getChebyshevDistance(ChunkPos pos, int x, int z) {
-        int i = pos.x - x;
-        int j = pos.z - z;
-        return Math.max(Math.abs(i), Math.abs(j));
+    public static boolean method_37898(int i, int j, int k, int l, int m) {
+        int n = i - k;
+        int o = j - l;
+        int q = n * n + o * o;
+        int p = m * m + m;
+        return q <= p;
+    }
+
+    private static boolean method_37906(ChunkPos chunkPos, ServerPlayerEntity serverPlayerEntity, boolean bl, int i) {
+        int k;
+        int j;
+        if (bl) {
+            ChunkSectionPos chunkSectionPos = serverPlayerEntity.getWatchedSection();
+            j = chunkSectionPos.getSectionX();
+            k = chunkSectionPos.getSectionZ();
+        } else {
+            j = ChunkSectionPos.getSectionCoord(serverPlayerEntity.getBlockX());
+            k = ChunkSectionPos.getSectionCoord(serverPlayerEntity.getBlockZ());
+        }
+        return ThreadedAnvilChunkStorage.method_37905(chunkPos.x, chunkPos.z, j, k, i);
+    }
+
+    private static boolean method_37905(int i, int j, int k, int l, int m) {
+        if (!ThreadedAnvilChunkStorage.method_37898(i, j, k, l, m)) {
+            return false;
+        }
+        if (!ThreadedAnvilChunkStorage.method_37898(i + 1, j, k, l, m)) {
+            return true;
+        }
+        if (!ThreadedAnvilChunkStorage.method_37898(i, j + 1, k, l, m)) {
+            return true;
+        }
+        if (!ThreadedAnvilChunkStorage.method_37898(i - 1, j, k, l, m)) {
+            return true;
+        }
+        return !ThreadedAnvilChunkStorage.method_37898(i, j - 1, k, l, m);
     }
 
     protected ServerLightingProvider getLightingProvider() {
@@ -448,8 +498,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     boolean bl;
                     boolean bl2 = bl = nbtCompound.contains("Level", 10) && nbtCompound.getCompound("Level").contains("Status", 8);
                     if (bl) {
-                        ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, nbtCompound);
-                        this.method_27053(pos, chunk.getStatus().getChunkType());
+                        ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, nbtCompound);
+                        this.method_27053(pos, ((Chunk)chunk).getStatus().getChunkType());
                         return Either.left(chunk);
                     }
                     LOGGER.error("Chunk file at {} is missing level data, skipping", (Object)pos);
@@ -465,7 +515,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 LOGGER.error("Couldn't load chunk {}", (Object)pos, (Object)exception);
             }
             this.method_27054(pos);
-            return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA, this.world));
+            return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(Registry.BIOME_KEY)));
         }, this.mainThreadExecutor);
     }
 
@@ -484,7 +534,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         Executor executor = runnable -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable));
         return completableFuture.thenComposeAsync(either -> either.map(list -> {
             try {
-                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runGenerationTask(executor, this.world, this.chunkGenerator, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (List<Chunk>)list);
+                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runGenerationTask(executor, this.world, this.chunkGenerator, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (List<Chunk>)list, false);
                 this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
                 return completableFuture;
             } catch (Exception exception) {
@@ -532,7 +582,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     worldChunk2 = ((ReadOnlyChunk)protoChunk).getWrappedChunk();
                 } else {
                     worldChunk2 = new WorldChunk(this.world, protoChunk, worldChunk -> ThreadedAnvilChunkStorage.method_31413(this.world, protoChunk.getEntities()));
-                    chunkHolder.setCompletedChunk(new ReadOnlyChunk(worldChunk2));
+                    chunkHolder.setCompletedChunk(new ReadOnlyChunk(worldChunk2, false));
                 }
                 worldChunk2.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
                 worldChunk2.loadToWorld();
@@ -555,8 +605,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
         ((CompletableFuture)completableFuture2).thenAcceptAsync(either -> either.ifLeft(worldChunk -> {
             this.totalChunksLoadedCount.getAndIncrement();
-            Packet[] packets = new Packet[2];
-            this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> this.sendChunkDataPackets((ServerPlayerEntity)serverPlayerEntity, packets, (WorldChunk)worldChunk));
+            MutableObject mutableObject = new MutableObject();
+            this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> this.sendChunkDataPackets((ServerPlayerEntity)serverPlayerEntity, mutableObject, (WorldChunk)worldChunk));
         }), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
         return completableFuture2;
     }
@@ -630,18 +680,17 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             this.ticketManager.setWatchDistance(this.watchDistance);
             for (ChunkHolder chunkHolder : this.currentChunkHolders.values()) {
                 ChunkPos chunkPos = chunkHolder.getPos();
-                Packet[] packets = new Packet[2];
+                MutableObject mutableObject = new MutableObject();
                 this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> {
-                    int j = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, serverPlayerEntity, true);
-                    boolean bl = j <= j;
-                    boolean bl2 = j <= this.watchDistance;
-                    this.sendWatchPackets((ServerPlayerEntity)serverPlayerEntity, chunkPos, packets, bl, bl2);
+                    boolean bl = ThreadedAnvilChunkStorage.method_37901(chunkPos, serverPlayerEntity, true, j);
+                    boolean bl2 = ThreadedAnvilChunkStorage.method_37901(chunkPos, serverPlayerEntity, true, this.watchDistance);
+                    this.sendWatchPackets((ServerPlayerEntity)serverPlayerEntity, chunkPos, mutableObject, bl, bl2);
                 });
             }
         }
     }
 
-    protected void sendWatchPackets(ServerPlayerEntity player, ChunkPos pos, Packet<?>[] packets, boolean withinMaxWatchDistance, boolean withinViewDistance) {
+    protected void sendWatchPackets(ServerPlayerEntity player, ChunkPos pos, MutableObject<ChunkDataS2CPacket> mutableObject, boolean withinMaxWatchDistance, boolean withinViewDistance) {
         ChunkHolder chunkHolder;
         if (player.world != this.world) {
             return;
@@ -649,7 +698,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         if (withinViewDistance && !withinMaxWatchDistance && (chunkHolder = this.getChunkHolder(pos.toLong())) != null) {
             WorldChunk worldChunk = chunkHolder.getWorldChunk();
             if (worldChunk != null) {
-                this.sendChunkDataPackets(player, packets, worldChunk);
+                this.sendChunkDataPackets(player, mutableObject, worldChunk);
             }
             DebugInfoSender.sendChunkWatchingChange(this.world, pos);
         }
@@ -705,11 +754,15 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {
+        return this.method_37907(chunkPos).findAny().isEmpty();
+    }
+
+    public Stream<ServerPlayerEntity> method_37907(ChunkPos chunkPos) {
         long l = chunkPos.toLong();
         if (!this.ticketManager.method_20800(l)) {
-            return true;
+            return Stream.empty();
         }
-        return this.playerChunkWatchingManager.getPlayersWatchingChunk(l).noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && ThreadedAnvilChunkStorage.getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0);
+        return this.playerChunkWatchingManager.getPlayersWatchingChunk(l).filter(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && ThreadedAnvilChunkStorage.getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0);
     }
 
     private boolean doesNotGenerateChunks(ServerPlayerEntity player) {
@@ -736,8 +789,9 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
         for (int k = i - this.watchDistance; k <= i + this.watchDistance; ++k) {
             for (int l = j - this.watchDistance; l <= j + this.watchDistance; ++l) {
+                if (!ThreadedAnvilChunkStorage.method_37898(k, l, i, j, this.watchDistance)) continue;
                 ChunkPos chunkPos = new ChunkPos(k, l);
-                this.sendWatchPackets(player, chunkPos, new Packet[2], !added, added);
+                this.sendWatchPackets(player, chunkPos, new MutableObject<ChunkDataS2CPacket>(), !added, added);
             }
         }
     }
@@ -805,9 +859,9 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             for (int s = o; s <= q; ++s) {
                 for (int t = p; t <= r; ++t) {
                     ChunkPos chunkPos = new ChunkPos(s, t);
-                    boolean bl42 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, k, n) <= this.watchDistance;
-                    boolean bl5 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, i, j) <= this.watchDistance;
-                    this.sendWatchPackets(player, chunkPos, new Packet[2], bl42, bl5);
+                    boolean bl42 = ThreadedAnvilChunkStorage.method_37899(chunkPos, k, n, this.watchDistance);
+                    boolean bl5 = ThreadedAnvilChunkStorage.method_37899(chunkPos, i, j, this.watchDistance);
+                    this.sendWatchPackets(player, chunkPos, new MutableObject<ChunkDataS2CPacket>(), bl42, bl5);
                 }
             }
         } else {
@@ -818,18 +872,20 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             int o;
             for (o = k - this.watchDistance; o <= k + this.watchDistance; ++o) {
                 for (p = n - this.watchDistance; p <= n + this.watchDistance; ++p) {
+                    if (!ThreadedAnvilChunkStorage.method_37898(o, p, k, n, this.watchDistance)) continue;
                     chunkPos2 = new ChunkPos(o, p);
                     bl6 = true;
                     bl7 = false;
-                    this.sendWatchPackets(player, chunkPos2, new Packet[2], true, false);
+                    this.sendWatchPackets(player, chunkPos2, new MutableObject<ChunkDataS2CPacket>(), true, false);
                 }
             }
             for (o = i - this.watchDistance; o <= i + this.watchDistance; ++o) {
                 for (p = j - this.watchDistance; p <= j + this.watchDistance; ++p) {
+                    if (!ThreadedAnvilChunkStorage.method_37898(o, p, i, j, this.watchDistance)) continue;
                     chunkPos2 = new ChunkPos(o, p);
                     bl6 = false;
                     bl7 = true;
-                    this.sendWatchPackets(player, chunkPos2, new Packet[2], false, true);
+                    this.sendWatchPackets(player, chunkPos2, new MutableObject<ChunkDataS2CPacket>(), false, true);
                 }
             }
         }
@@ -837,13 +893,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     @Override
     public Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean onlyOnWatchDistanceEdge) {
-        return this.playerChunkWatchingManager.getPlayersWatchingChunk(chunkPos.toLong()).filter(serverPlayerEntity -> {
-            int i = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, serverPlayerEntity, true);
-            if (i > this.watchDistance) {
-                return false;
-            }
-            return !onlyOnWatchDistanceEdge || i == this.watchDistance;
-        });
+        return this.playerChunkWatchingManager.getPlayersWatchingChunk(chunkPos.toLong()).filter(serverPlayerEntity -> onlyOnWatchDistanceEdge ? ThreadedAnvilChunkStorage.method_37906(chunkPos, serverPlayerEntity, true, this.watchDistance) : ThreadedAnvilChunkStorage.method_37901(chunkPos, serverPlayerEntity, true, this.watchDistance));
     }
 
     protected void loadEntity(Entity entity) {
@@ -931,12 +981,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
     }
 
-    private void sendChunkDataPackets(ServerPlayerEntity player, Packet<?>[] packets, WorldChunk chunk) {
-        if (packets[0] == null) {
-            packets[0] = new ChunkDataS2CPacket(chunk);
-            packets[1] = new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, null, null, true);
+    private void sendChunkDataPackets(ServerPlayerEntity player, MutableObject<ChunkDataS2CPacket> mutableObject, WorldChunk chunk) {
+        if (mutableObject.getValue() == null) {
+            mutableObject.setValue(new ChunkDataS2CPacket(chunk, this.lightingProvider, null, null, true));
         }
-        player.sendInitialChunkPackets(chunk.getPos(), packets[0], packets[1]);
+        player.sendInitialChunkPackets(chunk.getPos(), mutableObject.getValue());
         DebugInfoSender.sendChunkWatchingChange(this.world, chunk.getPos());
         ArrayList<Entity> list = Lists.newArrayList();
         ArrayList<Entity> list2 = Lists.newArrayList();
@@ -1058,8 +1107,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 return;
             }
             Vec3d vec3d = player.getPos().subtract(this.entry.getLastPos());
-            int i = Math.min(this.getMaxTrackDistance(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
-            boolean bl2 = bl = vec3d.x >= (double)(-i) && vec3d.x <= (double)i && vec3d.z >= (double)(-i) && vec3d.z <= (double)i && this.entity.canBeSpectated(player);
+            double e = vec3d.x * vec3d.x + vec3d.z * vec3d.z;
+            double d = Math.min(this.getMaxTrackDistance(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
+            double f = d * d;
+            boolean bl2 = bl = e <= f && this.entity.canBeSpectated(player);
             if (bl) {
                 if (this.listeners.add(player.networkHandler)) {
                     this.entry.startTracking(player);

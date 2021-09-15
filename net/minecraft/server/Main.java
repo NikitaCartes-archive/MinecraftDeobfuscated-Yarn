@@ -51,6 +51,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiling.jfr.JfrProfiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
@@ -85,7 +86,8 @@ public class Main {
         ArgumentAcceptingOptionSpec<String> optionSpec11 = optionParser.accepts("world").withRequiredArg();
         ArgumentAcceptingOptionSpec<Integer> optionSpec12 = optionParser.accepts("port").withRequiredArg().ofType(Integer.class).defaultsTo(-1, (Integer[])new Integer[0]);
         ArgumentAcceptingOptionSpec<String> optionSpec13 = optionParser.accepts("serverId").withRequiredArg();
-        NonOptionArgumentSpec<String> optionSpec14 = optionParser.nonOptions();
+        OptionSpecBuilder optionSpec14 = optionParser.accepts("jfrProfile");
+        NonOptionArgumentSpec<String> optionSpec15 = optionParser.nonOptions();
         try {
             ServerResourceManager serverResourceManager;
             OptionSet optionSet = optionParser.parse(args);
@@ -94,6 +96,9 @@ public class Main {
                 return;
             }
             CrashReport.initCrashReport();
+            if (optionSet.has(optionSpec14)) {
+                JfrProfiler.start(JfrProfiler.InstanceType.SERVER);
+            }
             Bootstrap.initialize();
             Bootstrap.logMissing();
             Util.startTimerHack();
@@ -119,11 +124,20 @@ public class Main {
             String string = Optional.ofNullable(optionSet.valueOf(optionSpec11)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
             LevelStorage levelStorage = LevelStorage.create(file.toPath());
             LevelStorage.Session session = levelStorage.createSession(string);
-            MinecraftServer.convertLevel(session);
             LevelSummary levelSummary = session.getLevelSummary();
-            if (levelSummary != null && levelSummary.isPreWorldHeightChangeVersion()) {
-                LOGGER.info("Loading of worlds with extended height is disabled.");
-                return;
+            if (levelSummary != null) {
+                if (levelSummary.hasIncompatibleWorldHeight()) {
+                    LOGGER.info("Loading of worlds with extended height is disabled.");
+                    return;
+                }
+                if (levelSummary.requiresConversion()) {
+                    LOGGER.info("This world must be opened in an older version (like 1.6.4) to be safely converted");
+                    return;
+                }
+                if (!levelSummary.isVersionAvailable()) {
+                    LOGGER.info("This world was created by an incompatible version.");
+                    return;
+                }
             }
             DataPackSettings dataPackSettings = session.getDataPackSettings();
             boolean bl = optionSet.has(optionSpec7);
@@ -169,7 +183,7 @@ public class Main {
                 minecraftDedicatedServer.setServerPort((Integer)optionSet.valueOf(optionSpec12));
                 minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
                 minecraftDedicatedServer.setServerId((String)optionSet.valueOf(optionSpec13));
-                boolean bl2 = bl = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec14).contains("nogui");
+                boolean bl2 = bl = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec15).contains("nogui");
                 if (bl && !GraphicsEnvironment.isHeadless()) {
                     minecraftDedicatedServer.createGui();
                 }

@@ -7,11 +7,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6603;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.nbt.NbtCompound;
@@ -20,10 +21,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
-import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
-import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.WorldChunk;
@@ -91,7 +90,7 @@ extends ChunkManager {
     }
 
     @Nullable
-    public WorldChunk loadChunkFromPacket(int x, int z, BiomeArray biomes, PacketByteBuf buf, NbtCompound nbt, BitSet bitSet) {
+    public WorldChunk loadChunkFromPacket(int x, int z, PacketByteBuf packetByteBuf, NbtCompound nbtCompound, Consumer<class_6603.class_6605> consumer) {
         if (!this.chunks.isInRadius(x, z)) {
             LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", (Object)x, (Object)z);
             return null;
@@ -100,19 +99,11 @@ extends ChunkManager {
         WorldChunk worldChunk = this.chunks.chunks.get(i);
         ChunkPos chunkPos = new ChunkPos(x, z);
         if (!ClientChunkManager.positionEquals(worldChunk, x, z)) {
-            worldChunk = new WorldChunk(this.world, chunkPos, biomes);
-            worldChunk.loadFromPacket(biomes, buf, nbt, bitSet);
+            worldChunk = new WorldChunk(this.world, chunkPos);
+            worldChunk.loadFromPacket(packetByteBuf, nbtCompound, consumer);
             this.chunks.set(i, worldChunk);
         } else {
-            worldChunk.loadFromPacket(biomes, buf, nbt, bitSet);
-        }
-        ChunkSection[] chunkSections = worldChunk.getSectionArray();
-        LightingProvider lightingProvider = this.getLightingProvider();
-        lightingProvider.setColumnEnabled(chunkPos, true);
-        for (int j = 0; j < chunkSections.length; ++j) {
-            ChunkSection chunkSection = chunkSections[j];
-            int k = this.world.sectionIndexToCoord(j);
-            lightingProvider.setSectionStatus(ChunkSectionPos.from(x, k, z), ChunkSection.isEmpty(chunkSection));
+            worldChunk.loadFromPacket(packetByteBuf, nbtCompound, consumer);
         }
         this.world.resetChunkColor(chunkPos);
         return worldChunk;

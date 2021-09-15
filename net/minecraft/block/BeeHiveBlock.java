@@ -29,6 +29,7 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -258,7 +259,7 @@ extends BlockWithEntity {
                 if (bl) {
                     nbtCompound = new NbtCompound();
                     nbtCompound.put("Bees", beehiveBlockEntity.getBees());
-                    itemStack.setSubNbt("BlockEntityTag", nbtCompound);
+                    BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BEEHIVE, nbtCompound);
                 }
                 nbtCompound = new NbtCompound();
                 nbtCompound.putInt("honey_level", i);

@@ -3,46 +3,50 @@
  */
 package net.minecraft.world;
 
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.Weighted;
+import net.minecraft.util.Util;
+import net.minecraft.util.collection.DataPool;
+import net.minecraft.util.dynamic.Range;
 
-public class MobSpawnerEntry
-extends Weighted.Absent {
-    public static final int DEFAULT_WEIGHT = 1;
+public record MobSpawnerEntry(NbtCompound entity, Optional<CustomSpawnRules> customSpawnRules) {
+    public static final Codec<MobSpawnerEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)NbtCompound.CODEC.fieldOf("entity")).forGetter(entry -> entry.entity), CustomSpawnRules.CODEC.optionalFieldOf("custom_spawn_rules").forGetter(mobSpawnerEntry -> mobSpawnerEntry.customSpawnRules)).apply((Applicative<MobSpawnerEntry, ?>)instance, MobSpawnerEntry::new));
+    public static final Codec<DataPool<MobSpawnerEntry>> DATA_POOL_CODEC = DataPool.createCodec(CODEC);
     public static final String DEFAULT_ENTITY_ID = "minecraft:pig";
-    private final NbtCompound entityNbt;
 
     public MobSpawnerEntry() {
-        super(1);
-        this.entityNbt = new NbtCompound();
-        this.entityNbt.putString("id", DEFAULT_ENTITY_ID);
+        this(Util.make(new NbtCompound(), nbt -> nbt.putString("id", DEFAULT_ENTITY_ID)), Optional.empty());
     }
 
-    public MobSpawnerEntry(NbtCompound nbt) {
-        this(nbt.contains("Weight", 99) ? nbt.getInt("Weight") : 1, nbt.getCompound("Entity"));
+    public MobSpawnerEntry {
+        Identifier identifier = Identifier.tryParse(nbtCompound.getString("id"));
+        nbtCompound.putString("id", identifier != null ? identifier.toString() : DEFAULT_ENTITY_ID);
     }
 
-    public MobSpawnerEntry(int weight, NbtCompound entityNbt) {
-        super(weight);
-        this.entityNbt = entityNbt;
-        Identifier identifier = Identifier.tryParse(entityNbt.getString("id"));
-        if (identifier != null) {
-            entityNbt.putString("id", identifier.toString());
-        } else {
-            entityNbt.putString("id", DEFAULT_ENTITY_ID);
+    public NbtCompound getNbt() {
+        return this.entity;
+    }
+
+    public Optional<CustomSpawnRules> getCustomSpawnRules() {
+        return this.customSpawnRules;
+    }
+
+    public record CustomSpawnRules(Range<Integer> blockLightLimit, Range<Integer> skyLightLimit) {
+        private static final Range<Integer> DEFAULT = new Range<Integer>(0, 15);
+        public static final Codec<CustomSpawnRules> CODEC = RecordCodecBuilder.create(instance -> instance.group(Range.CODEC.optionalFieldOf("block_light_limit", DEFAULT).flatXmap(CustomSpawnRules::validate, CustomSpawnRules::validate).forGetter(rules -> rules.blockLightLimit), Range.CODEC.optionalFieldOf("sky_light_limit", DEFAULT).flatXmap(CustomSpawnRules::validate, CustomSpawnRules::validate).forGetter(rules -> rules.skyLightLimit)).apply((Applicative<CustomSpawnRules, ?>)instance, CustomSpawnRules::new));
+
+        private static DataResult<Range<Integer>> validate(Range<Integer> provider) {
+            if (!DEFAULT.contains(provider)) {
+                return DataResult.error("Light values must be withing range " + DEFAULT);
+            }
+            return DataResult.success(provider);
         }
-    }
-
-    public NbtCompound toNbt() {
-        NbtCompound nbtCompound = new NbtCompound();
-        nbtCompound.put("Entity", this.entityNbt);
-        nbtCompound.putInt("Weight", this.getWeight().getValue());
-        return nbtCompound;
-    }
-
-    public NbtCompound getEntityNbt() {
-        return this.entityNbt;
     }
 }
 

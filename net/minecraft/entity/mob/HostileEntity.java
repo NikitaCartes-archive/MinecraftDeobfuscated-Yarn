@@ -97,6 +97,9 @@ implements Monster {
         if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
             return false;
         }
+        if (world.getLightLevel(LightType.BLOCK, pos) > 0) {
+            return false;
+        }
         int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
         return i <= random.nextInt(8);
     }

@@ -99,7 +99,7 @@ public class EntityPredicate {
     }
 
     public boolean test(ServerPlayerEntity player, @Nullable Entity entity) {
-        return this.test(player.getServerWorld(), player.getPos(), entity);
+        return this.test(player.getWorld(), player.getPos(), entity);
     }
 
     public boolean test(ServerWorld world, @Nullable Vec3d pos, @Nullable Entity entity2) {
@@ -210,7 +210,7 @@ public class EntityPredicate {
     }
 
     public static LootContext createAdvancementEntityLootContext(ServerPlayerEntity player, Entity target) {
-        return new LootContext.Builder(player.getServerWorld()).parameter(LootContextParameters.THIS_ENTITY, target).parameter(LootContextParameters.ORIGIN, player.getPos()).random(player.getRandom()).build(LootContextTypes.ADVANCEMENT_ENTITY);
+        return new LootContext.Builder(player.getWorld()).parameter(LootContextParameters.THIS_ENTITY, target).parameter(LootContextParameters.ORIGIN, player.getPos()).random(player.getRandom()).build(LootContextTypes.ADVANCEMENT_ENTITY);
     }
 
     public static class Builder {

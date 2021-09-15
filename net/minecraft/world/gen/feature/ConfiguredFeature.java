@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -58,7 +59,11 @@ implements Decoratable<ConfiguredFeature<?, ?>> {
     }
 
     public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos origin) {
-        return ((Feature)this.feature).generate(new FeatureContext<FC>(world, chunkGenerator, random, origin, this.config));
+        return ((Feature)this.feature).generate(new FeatureContext<FC>(Optional.empty(), world, chunkGenerator, random, origin, this.config));
+    }
+
+    public boolean generate(Optional<ConfiguredFeature<?, ?>> feature, StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos origin) {
+        return ((Feature)this.feature).generate(new FeatureContext<FC>(feature, world, chunkGenerator, random, origin, this.config));
     }
 
     public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {

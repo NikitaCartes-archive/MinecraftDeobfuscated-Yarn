@@ -3,13 +3,20 @@
  */
 package net.minecraft.item;
 
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.AbstractPlantStemBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -47,6 +54,28 @@ extends Item {
             return 2.0f;
         }
         return super.getMiningSpeedMultiplier(stack, state);
+    }
+
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        AbstractPlantStemBlock abstractPlantStemBlock;
+        BlockPos blockPos;
+        World world = context.getWorld();
+        BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
+        Block block = blockState.getBlock();
+        if (block instanceof AbstractPlantStemBlock && !(abstractPlantStemBlock = (AbstractPlantStemBlock)block).hasMaxAge(blockState)) {
+            PlayerEntity playerEntity2 = context.getPlayer();
+            ItemStack itemStack = context.getStack();
+            if (playerEntity2 instanceof ServerPlayerEntity) {
+                Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity2, blockPos, itemStack);
+            }
+            world.setBlockState(blockPos, abstractPlantStemBlock.withMaxAge(blockState));
+            if (playerEntity2 != null) {
+                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(context.getHand()));
+            }
+            return ActionResult.success(world.isClient);
+        }
+        return super.useOnBlock(context);
     }
 }
 

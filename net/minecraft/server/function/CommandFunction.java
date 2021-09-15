@@ -86,14 +86,14 @@ public class CommandFunction {
         }
 
         @Override
-        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, int depth, @Nullable CommandFunctionManager.Tracer tracer) throws CommandSyntaxException {
+        public void execute(CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, Deque<CommandFunctionManager.Entry> deque, int i, int j, @Nullable CommandFunctionManager.Tracer tracer) throws CommandSyntaxException {
             if (tracer != null) {
                 String string = this.parsed.getReader().getString();
-                tracer.traceCommandStart(depth, string);
-                int i = this.execute(manager, source);
-                tracer.traceCommandEnd(depth, string, i);
+                tracer.traceCommandStart(j, string);
+                int k = this.execute(commandFunctionManager, serverCommandSource);
+                tracer.traceCommandEnd(j, string, k);
             } else {
-                this.execute(manager, source);
+                this.execute(commandFunctionManager, serverCommandSource);
             }
         }
 
@@ -148,20 +148,20 @@ public class CommandFunction {
         }
 
         @Override
-        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength, int depth, @Nullable CommandFunctionManager.Tracer tracer) {
-            Util.ifPresentOrElse(this.function.get(manager), f -> {
+        public void execute(CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, Deque<CommandFunctionManager.Entry> deque, int i, int j, @Nullable CommandFunctionManager.Tracer tracer) {
+            Util.ifPresentOrElse(this.function.get(commandFunctionManager), f -> {
                 Element[] elements = f.getElements();
                 if (tracer != null) {
-                    tracer.traceFunctionCall(depth, f.getId(), elements.length);
+                    tracer.traceFunctionCall(j, f.getId(), elements.length);
                 }
-                int k = maxChainLength - entries.size();
+                int k = i - deque.size();
                 int l = Math.min(elements.length, k);
                 for (int m = l - 1; m >= 0; --m) {
-                    entries.addFirst(new CommandFunctionManager.Entry(source, depth + 1, elements[m]));
+                    deque.addFirst(new CommandFunctionManager.Entry(serverCommandSource, j + 1, elements[m]));
                 }
             }, () -> {
                 if (tracer != null) {
-                    tracer.traceFunctionCall(depth, this.function.getId(), -1);
+                    tracer.traceFunctionCall(j, this.function.getId(), -1);
                 }
             });
         }

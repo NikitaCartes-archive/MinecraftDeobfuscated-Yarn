@@ -25,7 +25,7 @@ import net.minecraft.village.VillagerData;
 import org.jetbrains.annotations.Nullable;
 
 public class TrackedDataHandlerRegistry {
-    private static final Int2ObjectBiMap<TrackedDataHandler<?>> DATA_HANDLERS = new Int2ObjectBiMap(16);
+    private static final Int2ObjectBiMap<TrackedDataHandler<?>> DATA_HANDLERS = Int2ObjectBiMap.method_37913(16);
     public static final TrackedDataHandler<Byte> BYTE = new TrackedDataHandler<Byte>(){
 
         @Override

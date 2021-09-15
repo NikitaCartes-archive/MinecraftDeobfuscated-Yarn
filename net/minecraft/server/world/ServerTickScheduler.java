@@ -60,30 +60,25 @@ implements TickScheduler<T> {
         }
         Iterator<ScheduledTick<T>> iterator = this.scheduledTickActionsInOrder.iterator();
         this.world.getProfiler().push("cleaning");
-        while (i > 0 && iterator.hasNext()) {
+        while (iterator.hasNext()) {
             scheduledTick = iterator.next();
-            if (scheduledTick.time > this.world.getTime()) break;
+            if (i-- == 0 || scheduledTick.time > this.world.getTime()) break;
             if (!this.world.method_37117(scheduledTick.pos)) continue;
             iterator.remove();
             this.scheduledTickActions.remove(scheduledTick);
             this.currentTickActions.add(scheduledTick);
-            --i;
         }
         this.world.getProfiler().swap("ticking");
         while ((scheduledTick = this.currentTickActions.poll()) != null) {
-            if (this.world.method_37117(scheduledTick.pos)) {
-                try {
-                    this.consumedTickActions.add(scheduledTick);
-                    this.tickConsumer.accept(scheduledTick);
-                    continue;
-                } catch (Throwable throwable) {
-                    CrashReport crashReport = CrashReport.create(throwable, "Exception while ticking");
-                    CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
-                    CrashReportSection.addBlockInfo(crashReportSection, this.world, scheduledTick.pos, null);
-                    throw new CrashException(crashReport);
-                }
+            this.consumedTickActions.add(scheduledTick);
+            try {
+                this.tickConsumer.accept(scheduledTick);
+            } catch (Throwable throwable) {
+                CrashReport crashReport = CrashReport.create(throwable, "Exception while ticking");
+                CrashReportSection crashReportSection = crashReport.addElement("Block being ticked");
+                CrashReportSection.addBlockInfo(crashReportSection, this.world, scheduledTick.pos, null);
+                throw new CrashException(crashReport);
             }
-            this.schedule(scheduledTick.pos, scheduledTick.getObject(), 0);
         }
         this.world.getProfiler().pop();
         this.consumedTickActions.clear();

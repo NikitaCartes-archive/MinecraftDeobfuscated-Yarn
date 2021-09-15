@@ -12,7 +12,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public interface Merchant {
@@ -28,8 +27,6 @@ public interface Merchant {
     public void trade(TradeOffer var1);
 
     public void onSellingItem(ItemStack var1);
-
-    public World getMerchantWorld();
 
     public int getExperience();
 
@@ -50,5 +47,7 @@ public interface Merchant {
             player2.sendTradeOffers(optionalInt.getAsInt(), tradeOfferList, levelProgress, this.getExperience(), this.isLeveledMerchant(), this.canRefreshTrades());
         }
     }
+
+    public boolean isClient();
 }
 

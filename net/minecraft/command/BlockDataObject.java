@@ -59,9 +59,6 @@ implements DataCommandObject {
 
     @Override
     public void setNbt(NbtCompound nbt) {
-        nbt.putInt("x", this.pos.getX());
-        nbt.putInt("y", this.pos.getY());
-        nbt.putInt("z", this.pos.getZ());
         BlockState blockState = this.blockEntity.getWorld().getBlockState(this.pos);
         this.blockEntity.readNbt(nbt);
         this.blockEntity.markDirty();
@@ -70,7 +67,7 @@ implements DataCommandObject {
 
     @Override
     public NbtCompound getNbt() {
-        return this.blockEntity.writeNbt(new NbtCompound());
+        return this.blockEntity.createNbtWithIdentifyingData();
     }
 
     @Override

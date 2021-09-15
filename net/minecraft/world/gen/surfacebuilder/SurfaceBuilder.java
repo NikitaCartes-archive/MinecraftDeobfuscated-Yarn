@@ -8,9 +8,9 @@ import com.mojang.serialization.MapCodec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_6557;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.surfacebuilder.BadlandsSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.BasaltDeltasSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
@@ -19,12 +19,18 @@ import net.minecraft.world.gen.surfacebuilder.ErodedBadlandsSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.FrozenOceanSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.GiantTreeTaigaSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.GravellyMountainSurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.GroveSurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.LoftyPeaksSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.MountainSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.NetherForestSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.NetherSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.NopeSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.ShatteredSavannaSurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.SnowcappedPeaksSurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.SnowySlopesSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SoulSandValleySurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.StoneShoreSurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.StonyPeaksSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 import net.minecraft.world.gen.surfacebuilder.SwampSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
@@ -54,6 +60,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     private static final BlockState BLACKSTONE = Blocks.BLACKSTONE.getDefaultState();
     private static final BlockState BASALT = Blocks.BASALT.getDefaultState();
     private static final BlockState MAGMA_BLOCK = Blocks.MAGMA_BLOCK.getDefaultState();
+    private static final BlockState SNOW_BLOCK = Blocks.SNOW_BLOCK.getDefaultState();
     public static final TernarySurfaceConfig PODZOL_CONFIG = new TernarySurfaceConfig(PODZOL, DIRT, GRAVEL);
     public static final TernarySurfaceConfig GRAVEL_CONFIG = new TernarySurfaceConfig(GRAVEL, GRAVEL, GRAVEL);
     public static final TernarySurfaceConfig GRASS_CONFIG = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, GRAVEL);
@@ -70,6 +77,10 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     public static final TernarySurfaceConfig CRIMSON_NYLIUM_CONFIG = new TernarySurfaceConfig(CRIMSON_NYLIUM, NETHERRACK, NETHER_WART_BLOCK);
     public static final TernarySurfaceConfig WARPED_NYLIUM_CONFIG = new TernarySurfaceConfig(WARPED_NYLIUM, NETHERRACK, WARPED_WART_BLOCK);
     public static final TernarySurfaceConfig BASALT_DELTA_CONFIG = new TernarySurfaceConfig(BLACKSTONE, BASALT, MAGMA_BLOCK);
+    public static final TernarySurfaceConfig DIRT_SNOW_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, DIRT, GRAVEL);
+    public static final TernarySurfaceConfig SNOW_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, GRAVEL);
+    public static final TernarySurfaceConfig LOFTY_PEAKS_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, STONE, STONE);
+    public static final TernarySurfaceConfig SNOW_PEAKS_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, STONE);
     public static final SurfaceBuilder<TernarySurfaceConfig> DEFAULT = SurfaceBuilder.register("default", new DefaultSurfaceBuilder(TernarySurfaceConfig.CODEC));
     public static final SurfaceBuilder<TernarySurfaceConfig> MOUNTAIN = SurfaceBuilder.register("mountain", new MountainSurfaceBuilder(TernarySurfaceConfig.CODEC));
     public static final SurfaceBuilder<TernarySurfaceConfig> SHATTERED_SAVANNA = SurfaceBuilder.register("shattered_savanna", new ShatteredSavannaSurfaceBuilder(TernarySurfaceConfig.CODEC));
@@ -84,7 +95,13 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     public static final SurfaceBuilder<TernarySurfaceConfig> NETHER_FOREST = SurfaceBuilder.register("nether_forest", new NetherForestSurfaceBuilder(TernarySurfaceConfig.CODEC));
     public static final SurfaceBuilder<TernarySurfaceConfig> SOUL_SAND_VALLEY = SurfaceBuilder.register("soul_sand_valley", new SoulSandValleySurfaceBuilder(TernarySurfaceConfig.CODEC));
     public static final SurfaceBuilder<TernarySurfaceConfig> BASALT_DELTAS = SurfaceBuilder.register("basalt_deltas", new BasaltDeltasSurfaceBuilder(TernarySurfaceConfig.CODEC));
+    public static final SurfaceBuilder<TernarySurfaceConfig> GROVE = SurfaceBuilder.register("grove", new GroveSurfaceBuilder(TernarySurfaceConfig.CODEC));
+    public static final SurfaceBuilder<TernarySurfaceConfig> SNOWCAPPED_PEAKS = SurfaceBuilder.register("snowcapped_peaks", new SnowcappedPeaksSurfaceBuilder(TernarySurfaceConfig.CODEC));
     public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = SurfaceBuilder.register("nope", new NopeSurfaceBuilder(TernarySurfaceConfig.CODEC));
+    public static final SurfaceBuilder<TernarySurfaceConfig> SNOWY_SLOPES = SurfaceBuilder.register("snowy_slopes", new SnowySlopesSurfaceBuilder(TernarySurfaceConfig.CODEC));
+    public static final SurfaceBuilder<TernarySurfaceConfig> LOFTY_PEAKS = SurfaceBuilder.register("lofty_peaks", new LoftyPeaksSurfaceBuilder(TernarySurfaceConfig.CODEC));
+    public static final SurfaceBuilder<TernarySurfaceConfig> STONY_PEAKS = SurfaceBuilder.register("stony_peaks", new StonyPeaksSurfaceBuilder(TernarySurfaceConfig.CODEC));
+    public static final SurfaceBuilder<TernarySurfaceConfig> STONE_SHORE = SurfaceBuilder.register("stone_shore", new StoneShoreSurfaceBuilder(TernarySurfaceConfig.CODEC));
     private final Codec<ConfiguredSurfaceBuilder<C>> codec;
 
     private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String id, F surfaceBuilder) {
@@ -117,7 +134,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
      * @param defaultFluid default fluid of the chunk generator
      * @param seaLevel the sea level of the chunk generator
      */
-    public abstract void generate(Random var1, Chunk var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, int var12, long var13, C var15);
+    public abstract void generate(Random var1, class_6557 var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, int var12, long var13, C var15);
 
     /**
      * Runs before {@link #generate} and allows for custom noise to be initialized.

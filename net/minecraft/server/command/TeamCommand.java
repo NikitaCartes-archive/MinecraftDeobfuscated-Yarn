@@ -11,7 +11,6 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +33,6 @@ import net.minecraft.util.Formatting;
 
 public class TeamCommand {
     private static final SimpleCommandExceptionType ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.team.add.duplicate"));
-    private static final DynamicCommandExceptionType ADD_LONG_NAME_EXCEPTION = new DynamicCommandExceptionType(maxLength -> new TranslatableText("commands.team.add.longName", maxLength));
     private static final SimpleCommandExceptionType EMPTY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.team.empty.unchanged"));
     private static final SimpleCommandExceptionType OPTION_NAME_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.team.option.name.unchanged"));
     private static final SimpleCommandExceptionType OPTION_COLOR_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.team.option.color.unchanged"));
@@ -173,9 +171,6 @@ public class TeamCommand {
         ServerScoreboard scoreboard = source.getServer().getScoreboard();
         if (scoreboard.getTeam(team) != null) {
             throw ADD_DUPLICATE_EXCEPTION.create();
-        }
-        if (team.length() > 16) {
-            throw ADD_LONG_NAME_EXCEPTION.create(16);
         }
         Team team2 = scoreboard.addTeam(team);
         team2.setDisplayName(displayName);

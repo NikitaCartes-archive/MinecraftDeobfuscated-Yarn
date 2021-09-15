@@ -296,18 +296,15 @@ public class ExecuteCommand {
                     BlockEntity blockEntity = world.getBlockEntity(blockPos2);
                     BlockEntity blockEntity2 = world.getBlockEntity(blockPos3);
                     if (blockEntity != null) {
+                        NbtCompound nbtCompound2;
                         if (blockEntity2 == null) {
                             return OptionalInt.empty();
                         }
-                        NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
-                        nbtCompound.remove("x");
-                        nbtCompound.remove("y");
-                        nbtCompound.remove("z");
-                        NbtCompound nbtCompound2 = blockEntity2.writeNbt(new NbtCompound());
-                        nbtCompound2.remove("x");
-                        nbtCompound2.remove("y");
-                        nbtCompound2.remove("z");
-                        if (!nbtCompound.equals(nbtCompound2)) {
+                        if (blockEntity2.getType() != blockEntity.getType()) {
+                            return OptionalInt.empty();
+                        }
+                        NbtCompound nbtCompound = blockEntity.createNbt();
+                        if (!nbtCompound.equals(nbtCompound2 = blockEntity2.createNbt())) {
                             return OptionalInt.empty();
                         }
                     }

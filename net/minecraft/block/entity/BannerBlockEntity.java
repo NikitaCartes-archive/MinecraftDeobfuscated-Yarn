@@ -13,9 +13,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -53,7 +55,7 @@ implements Nameable {
     @Nullable
     public static NbtList getPatternListTag(ItemStack stack) {
         NbtList nbtList = null;
-        NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+        NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
         if (nbtCompound != null && nbtCompound.contains(PATTERNS_KEY, 9)) {
             nbtList = nbtCompound.getList(PATTERNS_KEY, 10).copy();
         }
@@ -87,7 +89,7 @@ implements Nameable {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         if (this.patternListTag != null) {
             nbt.put(PATTERNS_KEY, this.patternListTag);
@@ -95,7 +97,6 @@ implements Nameable {
         if (this.customName != null) {
             nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        return nbt;
     }
 
     @Override
@@ -109,19 +110,17 @@ implements Nameable {
         this.patternListTagRead = true;
     }
 
-    @Override
-    @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.BANNER, this.toInitialChunkDataNbt());
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
     public NbtCompound toInitialChunkDataNbt() {
-        return this.writeNbt(new NbtCompound());
+        return this.createNbt();
     }
 
     public static int getPatternCount(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+        NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
         if (nbtCompound != null && nbtCompound.contains(PATTERNS_KEY)) {
             return nbtCompound.getList(PATTERNS_KEY, 10).size();
         }
@@ -151,7 +150,7 @@ implements Nameable {
     }
 
     public static void loadFromItemStack(ItemStack stack) {
-        NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+        NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
         if (nbtCompound == null || !nbtCompound.contains(PATTERNS_KEY, 9)) {
             return;
         }
@@ -161,14 +160,17 @@ implements Nameable {
         }
         nbtList.remove(nbtList.size() - 1);
         if (nbtList.isEmpty()) {
-            stack.removeSubNbt("BlockEntityTag");
+            nbtCompound.remove(PATTERNS_KEY);
         }
+        BlockItem.setBlockEntityNbt(stack, BlockEntityType.BANNER, nbtCompound);
     }
 
     public ItemStack getPickStack() {
         ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.baseColor));
         if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-            itemStack.getOrCreateSubNbt("BlockEntityTag").put(PATTERNS_KEY, this.patternListTag.copy());
+            NbtCompound nbtCompound = new NbtCompound();
+            nbtCompound.put(PATTERNS_KEY, this.patternListTag.copy());
+            BlockItem.setBlockEntityNbt(itemStack, this.getType(), nbtCompound);
         }
         if (this.customName != null) {
             itemStack.setCustomName(this.customName);
@@ -178,6 +180,10 @@ implements Nameable {
 
     public DyeColor getColorForState() {
         return this.baseColor;
+    }
+
+    public /* synthetic */ Packet toUpdatePacket() {
+        return this.toUpdatePacket();
     }
 }
 

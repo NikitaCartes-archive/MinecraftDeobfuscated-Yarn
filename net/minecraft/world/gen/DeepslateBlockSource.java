@@ -4,43 +4,37 @@
 package net.minecraft.world.gen;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.class_6568;
+import net.minecraft.class_6583;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.BlockSource;
-import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
+import net.minecraft.world.gen.random.BlockPosRandomDeriver;
+import org.jetbrains.annotations.Nullable;
 
 public class DeepslateBlockSource
-implements BlockSource {
+implements class_6583 {
     private static final int DEFAULT_MIN_Y = -8;
     private static final int MAX_Y = 0;
-    private final ChunkRandom random;
-    private final long seed;
-    private final BlockState defaultBlock;
+    private final BlockPosRandomDeriver field_34587;
     private final BlockState deepslateState;
-    private final ChunkGeneratorSettings settings;
 
-    public DeepslateBlockSource(long seed, BlockState defaultBlock, BlockState deepslateState, ChunkGeneratorSettings settings) {
-        this.random = new ChunkRandom(seed);
-        this.seed = seed;
-        this.defaultBlock = defaultBlock;
-        this.deepslateState = deepslateState;
-        this.settings = settings;
+    public DeepslateBlockSource(BlockPosRandomDeriver blockPosRandomDeriver, BlockState blockState) {
+        this.field_34587 = blockPosRandomDeriver;
+        this.deepslateState = blockState;
     }
 
     @Override
-    public BlockState sample(int x, int y, int z) {
-        if (!this.settings.hasDeepslate()) {
-            return this.defaultBlock;
-        }
-        if (y < -8) {
+    @Nullable
+    public BlockState apply(class_6568 arg, int i, int j, int k) {
+        if (j < -8) {
             return this.deepslateState;
         }
-        if (y > 0) {
-            return this.defaultBlock;
+        if (j > 0) {
+            return null;
         }
-        double d = MathHelper.lerpFromProgress(y, -8.0, 0.0, 1.0, 0.0);
-        this.random.setDeepslateSeed(this.seed, x, y, z);
-        return (double)this.random.nextFloat() < d ? this.deepslateState : this.defaultBlock;
+        double d = MathHelper.lerpFromProgress(j, -8.0f, 0.0f, 1.0f, 0.0f);
+        AtomicSimpleRandom abstractRandom = this.field_34587.createRandom(i, j, k);
+        return (double)abstractRandom.nextFloat() < d ? this.deepslateState : null;
     }
 }
 

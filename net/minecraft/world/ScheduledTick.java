@@ -26,12 +26,17 @@ public class ScheduledTick<T> {
         this.priority = priority;
     }
 
-    public boolean equals(Object o) {
-        if (o instanceof ScheduledTick) {
-            ScheduledTick scheduledTick = (ScheduledTick)o;
-            return this.pos.equals(scheduledTick.pos) && this.object == scheduledTick.object;
-        }
-        return false;
+    /*
+     * Enabled force condition propagation
+     * Lifted jumps to return sites
+     */
+    public boolean equals(Object object) {
+        Object object2 = object;
+        if (!(object2 instanceof ScheduledTick)) return false;
+        ScheduledTick scheduledTick = (ScheduledTick)object2;
+        if (!this.pos.equals(scheduledTick.pos)) return false;
+        if (this.object != scheduledTick.object) return false;
+        return true;
     }
 
     public int hashCode() {

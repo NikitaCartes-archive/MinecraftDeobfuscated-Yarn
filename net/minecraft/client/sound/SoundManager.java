@@ -113,6 +113,10 @@ extends SinglePreparationResourceReloader<SoundList> {
         this.soundSystem.reloadSounds();
     }
 
+    public List<String> getSoundDevices() {
+        return this.soundSystem.getSoundDevices();
+    }
+
     static boolean isSoundResourcePresent(Sound sound, Identifier id, ResourceManager resourceManager) {
         Identifier identifier = sound.getLocation();
         if (!resourceManager.containsResource(identifier)) {
@@ -196,6 +200,10 @@ extends SinglePreparationResourceReloader<SoundList> {
 
     public String getDebugString() {
         return this.soundSystem.getDebugString();
+    }
+
+    public void reloadSounds() {
+        this.soundSystem.reloadSounds();
     }
 
     @Override

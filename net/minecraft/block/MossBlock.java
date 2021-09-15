@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -36,7 +37,7 @@ implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        Feature.VEGETATION_PATCH.generate(new FeatureContext<VegetationPatchFeatureConfig>(world, world.getChunkManager().getChunkGenerator(), random, pos.up(), ConfiguredFeatures.MOSS_PATCH_BONEMEAL.getConfig()));
+        Feature.VEGETATION_PATCH.generate(new FeatureContext<VegetationPatchFeatureConfig>(Optional.empty(), world, world.getChunkManager().getChunkGenerator(), random, pos.up(), ConfiguredFeatures.MOSS_PATCH_BONEMEAL.getConfig()));
     }
 }
 

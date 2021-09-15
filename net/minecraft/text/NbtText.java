@@ -202,7 +202,7 @@ implements ParsableText {
             BlockPos blockPos;
             ServerWorld serverWorld;
             if (this.pos != null && (serverWorld = source.getWorld()).canSetBlock(blockPos = this.pos.toAbsoluteBlockPos(source)) && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
-                return Stream.of(blockEntity.writeNbt(new NbtCompound()));
+                return Stream.of(blockEntity.createNbtWithIdentifyingData());
             }
             return Stream.empty();
         }

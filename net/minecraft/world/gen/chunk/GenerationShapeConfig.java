@@ -15,7 +15,7 @@ import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
 import net.minecraft.world.gen.chunk.SlideConfig;
 
 public class GenerationShapeConfig {
-    public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(GenerationShapeConfig::getMinimumY), ((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(GenerationShapeConfig::getHeight), ((MapCodec)NoiseSamplingConfig.CODEC.fieldOf("sampling")).forGetter(GenerationShapeConfig::getSampling), ((MapCodec)SlideConfig.CODEC.fieldOf("top_slide")).forGetter(GenerationShapeConfig::getTopSlide), ((MapCodec)SlideConfig.CODEC.fieldOf("bottom_slide")).forGetter(GenerationShapeConfig::getBottomSlide), ((MapCodec)Codec.intRange(1, 4).fieldOf("size_horizontal")).forGetter(GenerationShapeConfig::getSizeHorizontal), ((MapCodec)Codec.intRange(1, 4).fieldOf("size_vertical")).forGetter(GenerationShapeConfig::getSizeVertical), ((MapCodec)Codec.DOUBLE.fieldOf("density_factor")).forGetter(GenerationShapeConfig::getDensityFactor), ((MapCodec)Codec.DOUBLE.fieldOf("density_offset")).forGetter(GenerationShapeConfig::getDensityOffset), ((MapCodec)Codec.BOOL.fieldOf("simplex_surface_noise")).forGetter(GenerationShapeConfig::hasSimplexSurfaceNoise), Codec.BOOL.optionalFieldOf("random_density_offset", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::hasRandomDensityOffset), Codec.BOOL.optionalFieldOf("island_noise_override", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::hasIslandNoiseOverride), Codec.BOOL.optionalFieldOf("amplified", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::isAmplified)).apply((Applicative<GenerationShapeConfig, ?>)instance, GenerationShapeConfig::new)).comapFlatMap(GenerationShapeConfig::checkHeight, Function.identity());
+    public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(GenerationShapeConfig::getMinimumY), ((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(GenerationShapeConfig::getHeight), ((MapCodec)NoiseSamplingConfig.CODEC.fieldOf("sampling")).forGetter(GenerationShapeConfig::getSampling), ((MapCodec)SlideConfig.CODEC.fieldOf("top_slide")).forGetter(GenerationShapeConfig::getTopSlide), ((MapCodec)SlideConfig.CODEC.fieldOf("bottom_slide")).forGetter(GenerationShapeConfig::getBottomSlide), ((MapCodec)Codec.intRange(1, 4).fieldOf("size_horizontal")).forGetter(GenerationShapeConfig::getSizeHorizontal), ((MapCodec)Codec.intRange(1, 4).fieldOf("size_vertical")).forGetter(GenerationShapeConfig::getSizeVertical), ((MapCodec)Codec.DOUBLE.fieldOf("density_factor")).forGetter(GenerationShapeConfig::getDensityFactor), ((MapCodec)Codec.DOUBLE.fieldOf("density_offset")).forGetter(GenerationShapeConfig::getDensityOffset), ((MapCodec)Codec.BOOL.fieldOf("simplex_surface_noise")).forGetter(GenerationShapeConfig::hasSimplexSurfaceNoise), Codec.BOOL.optionalFieldOf("random_density_offset", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::hasRandomDensityOffset), Codec.BOOL.optionalFieldOf("island_noise_override", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::hasIslandNoiseOverride), Codec.BOOL.optionalFieldOf("amplified", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::isAmplified), Codec.BOOL.optionalFieldOf("use_legacy_random", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::method_38413)).apply((Applicative<GenerationShapeConfig, ?>)instance, GenerationShapeConfig::new)).comapFlatMap(GenerationShapeConfig::checkHeight, Function.identity());
     private final int minimumY;
     private final int height;
     private final NoiseSamplingConfig sampling;
@@ -29,6 +29,7 @@ public class GenerationShapeConfig {
     private final boolean randomDensityOffset;
     private final boolean islandNoiseOverride;
     private final boolean amplified;
+    private final boolean field_34687;
 
     private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
         if (config.getMinimumY() + config.getHeight() > DimensionType.MAX_COLUMN_HEIGHT + 1) {
@@ -43,7 +44,7 @@ public class GenerationShapeConfig {
         return DataResult.success(config);
     }
 
-    private GenerationShapeConfig(int minimumY, int height, NoiseSamplingConfig sampling, SlideConfig topSlide, SlideConfig bottomSlide, int horizontalSize, int verticalSize, double densityFactor, double densityOffset, boolean simplexSurfaceNoise, boolean randomDensityOffset, boolean islandNoiseOverride, boolean amplified) {
+    private GenerationShapeConfig(int minimumY, int height, NoiseSamplingConfig sampling, SlideConfig topSlide, SlideConfig bottomSlide, int horizontalSize, int verticalSize, double densityFactor, double densityOffset, boolean simplexSurfaceNoise, boolean randomDensityOffset, boolean islandNoiseOverride, boolean amplified, boolean bl) {
         this.minimumY = minimumY;
         this.height = height;
         this.sampling = sampling;
@@ -57,10 +58,11 @@ public class GenerationShapeConfig {
         this.randomDensityOffset = randomDensityOffset;
         this.islandNoiseOverride = islandNoiseOverride;
         this.amplified = amplified;
+        this.field_34687 = bl;
     }
 
-    public static GenerationShapeConfig create(int minimumY, int height, NoiseSamplingConfig sampling, SlideConfig topSlide, SlideConfig bottomSlide, int horizontalSize, int verticalSize, double densityFactor, double densityOffset, boolean simplexSurfaceNoise, boolean randomDensityOffset, boolean islandNoiseOverride, boolean amplified) {
-        GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(minimumY, height, sampling, topSlide, bottomSlide, horizontalSize, verticalSize, densityFactor, densityOffset, simplexSurfaceNoise, randomDensityOffset, islandNoiseOverride, amplified);
+    public static GenerationShapeConfig create(int minimumY, int height, NoiseSamplingConfig sampling, SlideConfig topSlide, SlideConfig bottomSlide, int horizontalSize, int verticalSize, double densityFactor, double densityOffset, boolean simplexSurfaceNoise, boolean randomDensityOffset, boolean islandNoiseOverride, boolean amplified, boolean bl) {
+        GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(minimumY, height, sampling, topSlide, bottomSlide, horizontalSize, verticalSize, densityFactor, densityOffset, simplexSurfaceNoise, randomDensityOffset, islandNoiseOverride, amplified, bl);
         GenerationShapeConfig.checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
             throw new IllegalStateException(partialResult.message());
         });
@@ -121,6 +123,10 @@ public class GenerationShapeConfig {
     @Deprecated
     public boolean isAmplified() {
         return this.amplified;
+    }
+
+    public boolean method_38413() {
+        return this.field_34687;
     }
 }
 

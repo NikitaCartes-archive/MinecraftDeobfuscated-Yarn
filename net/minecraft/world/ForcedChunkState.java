@@ -10,7 +10,7 @@ import net.minecraft.world.PersistentState;
 
 public class ForcedChunkState
 extends PersistentState {
-    public static final String field_30961 = "chunks";
+    public static final String CHUNKS_KEY = "chunks";
     private static final String FORCED_KEY = "Forced";
     private final LongSet chunks;
 

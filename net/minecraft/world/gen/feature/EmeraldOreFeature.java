@@ -23,7 +23,7 @@ extends Feature<EmeraldOreFeatureConfig> {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
         EmeraldOreFeatureConfig emeraldOreFeatureConfig = context.getConfig();
-        for (OreFeatureConfig.Target target : emeraldOreFeatureConfig.target) {
+        for (OreFeatureConfig.Target target : emeraldOreFeatureConfig.targets) {
             if (!target.target.test(structureWorldAccess.getBlockState(blockPos), context.getRandom())) continue;
             structureWorldAccess.setBlockState(blockPos, target.state, Block.NOTIFY_LISTENERS);
             break;

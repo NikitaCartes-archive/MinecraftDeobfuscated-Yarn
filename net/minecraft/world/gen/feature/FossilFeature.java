@@ -49,7 +49,7 @@ extends Feature<FossilFeatureConfig> {
         Vec3i vec3i = structure.getRotatedSize(blockRotation);
         int j = random.nextInt(16 - vec3i.getX());
         int k = random.nextInt(16 - vec3i.getZ());
-        int l = structureWorldAccess.getTopY();
+        int l = blockPos.getY();
         for (m = 0; m < vec3i.getX(); ++m) {
             for (int n = 0; n < vec3i.getZ(); ++n) {
                 l = Math.min(l, structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));

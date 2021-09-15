@@ -36,10 +36,9 @@ implements SculkSensorListener.Callback {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("last_vibration_frequency", this.lastVibrationFrequency);
-        return nbt;
     }
 
     public SculkSensorListener getEventListener() {

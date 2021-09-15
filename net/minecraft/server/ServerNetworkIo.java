@@ -171,6 +171,10 @@ public class ServerNetworkIo {
         return this.server;
     }
 
+    public List<ClientConnection> getConnections() {
+        return this.connections;
+    }
+
     static class DelayingChannelInboundHandler
     extends ChannelInboundHandlerAdapter {
         private static final Timer TIMER = new HashedWheelTimer();

@@ -708,8 +708,6 @@ extends AnimalEntity {
         @Override
         protected PathNodeNavigator createPathNodeNavigator(int range) {
             this.nodeMaker = new AmphibiousPathNodeMaker(true);
-            this.nodeMaker.setCanOpenDoors(false);
-            this.nodeMaker.setCanEnterOpenDoors(false);
             return new PathNodeNavigator(this.nodeMaker, range);
         }
 

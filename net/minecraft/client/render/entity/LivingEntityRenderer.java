@@ -88,6 +88,10 @@ implements FeatureRendererContext<T, M> {
             k = j - h;
         }
         float m = MathHelper.lerp(g, ((LivingEntity)livingEntity).prevPitch, ((Entity)livingEntity).getPitch());
+        if (LivingEntityRenderer.shouldFlipUpsideDown(livingEntity)) {
+            m *= -1.0f;
+            k *= -1.0f;
+        }
         if (((Entity)livingEntity).getPose() == EntityPose.SLEEPING && (direction = ((LivingEntity)livingEntity).getSleepingDirection()) != null) {
             n = ((Entity)livingEntity).getEyeHeight(EntityPose.STANDING) - 0.1f;
             matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0, (float)(-direction.getOffsetZ()) * n);
@@ -186,7 +190,6 @@ implements FeatureRendererContext<T, M> {
     }
 
     protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
-        String string;
         EntityPose entityPose;
         if (this.isShaking(entity)) {
             bodyYaw += (float)(Math.cos((double)((LivingEntity)entity).age * 3.25) * Math.PI * (double)0.4f);
@@ -209,7 +212,7 @@ implements FeatureRendererContext<T, M> {
             matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
             matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0f));
-        } else if ((((Entity)entity).hasCustomName() || entity instanceof PlayerEntity) && ("Dinnerbone".equals(string = Formatting.strip(((Entity)entity).getName().getString())) || "Grumm".equals(string)) && (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
+        } else if (LivingEntityRenderer.shouldFlipUpsideDown(entity)) {
             matrices.translate(0.0, ((Entity)entity).getHeight() + 0.1f, 0.0);
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         }
@@ -273,6 +276,14 @@ implements FeatureRendererContext<T, M> {
             }
         }
         return MinecraftClient.isHudEnabled() && livingEntity != minecraftClient.getCameraEntity() && bl && !((Entity)livingEntity).hasPassengers();
+    }
+
+    public static boolean shouldFlipUpsideDown(LivingEntity entity) {
+        String string;
+        if ((entity instanceof PlayerEntity || entity.hasCustomName()) && ("Dinnerbone".equals(string = Formatting.strip(entity.getName().getString())) || "Grumm".equals(string))) {
+            return !(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE);
+        }
+        return false;
     }
 }
 

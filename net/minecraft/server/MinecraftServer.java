@@ -57,6 +57,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.imageio.ImageIO;
+import jdk.jfr.FlightRecorder;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
@@ -107,12 +108,12 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.ProgressListener;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
+import net.minecraft.util.WinNativeModuleUtil;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -130,6 +131,9 @@ import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.RecordDumper;
 import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
+import net.minecraft.util.profiling.jfr.JfrProfiler;
+import net.minecraft.util.profiling.jfr.event.ticking.ServerTickTimeEvent;
+import net.minecraft.util.profiling.jfr.event.worldgen.WorldLoadFinishedEvent;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -195,7 +199,7 @@ extends ReentrantThreadExecutor<ServerTask>
 implements SnooperListener,
 CommandOutput,
 AutoCloseable {
-    static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final float field_33212 = 0.8f;
     private static final int field_33213 = 100;
     public static final int field_33206 = 50;
@@ -330,46 +334,32 @@ AutoCloseable {
      */
     protected abstract boolean setupServer() throws IOException;
 
-    public static void convertLevel(LevelStorage.Session session) {
-        if (session.needsConversion()) {
-            LOGGER.info("Converting map!");
-            session.convert(new ProgressListener(){
-                private long lastProgressUpdate = Util.getMeasuringTimeMs();
-
-                @Override
-                public void setTitle(Text title) {
-                }
-
-                @Override
-                public void setTitleAndTask(Text title) {
-                }
-
-                @Override
-                public void progressStagePercentage(int percentage) {
-                    if (Util.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
-                        this.lastProgressUpdate = Util.getMeasuringTimeMs();
-                        LOGGER.info("Converting... {}%", (Object)percentage);
-                    }
-                }
-
-                @Override
-                public void setDone() {
-                }
-
-                @Override
-                public void setTask(Text task) {
-                }
-            });
-        }
-    }
-
     protected void loadWorld() {
+        if (!FlightRecorder.isAvailable() || !JfrProfiler.isProfiling()) {
+            // empty if block
+        }
+        boolean bl = false;
+        WorldLoadFinishedEvent worldLoadFinishedEvent2 = Util.make(new WorldLoadFinishedEvent(), worldLoadFinishedEvent -> {
+            if (worldLoadFinishedEvent.isEnabled()) {
+                worldLoadFinishedEvent.begin();
+            }
+        });
         this.loadWorldResourcePack();
         this.saveProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
         WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
         this.createWorlds(worldGenerationProgressListener);
         this.updateDifficulty();
         this.prepareStartRegion(worldGenerationProgressListener);
+        if (worldLoadFinishedEvent2.shouldCommit()) {
+            worldLoadFinishedEvent2.commit();
+        }
+        if (bl) {
+            try {
+                JfrProfiler.stop();
+            } catch (Throwable throwable) {
+                LOGGER.warn("Failed to stop JFR profiling", throwable);
+            }
+        }
     }
 
     protected void updateDifficulty() {
@@ -445,14 +435,14 @@ AutoCloseable {
         ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
         BiomeSource biomeSource = chunkGenerator.getBiomeSource();
         Random random = new Random(world.getSeed());
-        BlockPos blockPos = biomeSource.locateBiome(0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random);
+        BlockPos blockPos = biomeSource.locateBiome(0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random, chunkGenerator.method_38276());
         ChunkPos chunkPos2 = chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
         if (blockPos == null) {
             LOGGER.warn("Unable to find spawn biome");
         }
         boolean bl = false;
         for (Block block : BlockTags.VALID_SPAWN.values()) {
-            if (!biomeSource.getTopMaterials().contains(block.getDefaultState())) continue;
+            if (!biomeSource.method_38113(block.getDefaultState())) continue;
             bl = true;
             break;
         }
@@ -661,6 +651,7 @@ AutoCloseable {
                 this.metadata.setDescription(new LiteralText(this.motd));
                 this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
                 this.setFavicon(this.metadata);
+                this.method_38582();
                 while (this.running) {
                     long l = Util.getMeasuringTimeMs() - this.timeReference;
                     if (l > 2000L && this.timeReference - this.lastTimeReference >= 15000L) {
@@ -709,6 +700,15 @@ AutoCloseable {
                 this.exit();
             }
         }
+    }
+
+    private void method_38582() {
+        FlightRecorder.addPeriodicEvent(ServerTickTimeEvent.class, () -> {
+            ServerTickTimeEvent serverTickTimeEvent = new ServerTickTimeEvent(this.getTickTime());
+            if (serverTickTimeEvent.shouldCommit()) {
+                serverTickTimeEvent.commit();
+            }
+        });
     }
 
     private boolean shouldKeepTicking() {
@@ -1055,7 +1055,7 @@ AutoCloseable {
     }
 
     private void sendDifficulty(ServerPlayerEntity player) {
-        WorldProperties worldProperties = player.getServerWorld().getLevelProperties();
+        WorldProperties worldProperties = player.getWorld().getLevelProperties();
         player.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
     }
 
@@ -1551,6 +1551,7 @@ AutoCloseable {
             this.dumpStats(path.resolve("stats.txt"));
             this.dumpThreads(path.resolve("threads.txt"));
             this.dumpProperties(path.resolve("server.properties.txt"));
+            this.dumpNativeModules(path.resolve("modules.txt"));
         } catch (IOException iOException) {
             LOGGER.warn("Failed to save debug report", (Throwable)iOException);
         }
@@ -1601,6 +1602,36 @@ AutoCloseable {
             for (ThreadInfo threadInfo : threadInfos) {
                 writer.write(threadInfo.toString());
                 ((Writer)writer).write(10);
+            }
+        }
+    }
+
+    private void dumpNativeModules(Path path) throws IOException {
+        BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);
+        try {
+            ArrayList<WinNativeModuleUtil.NativeModule> list;
+            try {
+                list = Lists.newArrayList(WinNativeModuleUtil.collectNativeModules());
+            } catch (Throwable throwable) {
+                LOGGER.warn("Failed to list native modules", throwable);
+                if (writer != null) {
+                    ((Writer)writer).close();
+                }
+                return;
+            }
+            list.sort(Comparator.comparing(module -> module.path));
+            for (WinNativeModuleUtil.NativeModule nativeModule : list) {
+                writer.write(nativeModule.toString());
+                ((Writer)writer).write(10);
+            }
+        } finally {
+            if (writer != null) {
+                try {
+                    ((Writer)writer).close();
+                } catch (Throwable throwable) {
+                    Throwable throwable2;
+                    throwable2.addSuppressed(throwable);
+                }
             }
         }
     }

@@ -10,12 +10,12 @@ import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.class_6557;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.WorldGenRandom;
+import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
@@ -36,7 +36,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, class_6557 arg, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
         double e = 0.0;
         double f = 0.0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -60,66 +60,63 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                 e = 0.0;
             }
         }
-        int r = i & 0xF;
-        int s = j & 0xF;
         SurfaceConfig surfaceConfig = biome.getGenerationSettings().getSurfaceConfig();
         BlockState blockState3 = surfaceConfig.getUnderMaterial();
         BlockState blockState4 = surfaceConfig.getTopMaterial();
         BlockState blockState5 = blockState3;
         BlockState blockState6 = blockState4;
-        int t = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
-        int u = -1;
-        int v = 0;
-        int w = 2 + random.nextInt(4);
-        int x = l + 18 + random.nextInt(10);
-        for (int y = Math.max(k, (int)e + 1); y >= m; --y) {
-            mutable.set(r, y, s);
-            if (chunk.getBlockState(mutable).isAir() && y < (int)e && random.nextDouble() > 0.01) {
-                chunk.setBlockState(mutable, PACKED_ICE, false);
-            } else if (chunk.getBlockState(mutable).getMaterial() == Material.WATER && y > (int)f && y < l && f != 0.0 && random.nextDouble() > 0.15) {
-                chunk.setBlockState(mutable, PACKED_ICE, false);
+        int r = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
+        int s = -1;
+        int t = 0;
+        int u = 2 + random.nextInt(4);
+        int v = l + 18 + random.nextInt(10);
+        for (int w = Math.max(k, (int)e + 1); w >= m; --w) {
+            if (arg.getState(w).isAir() && w < (int)e && random.nextDouble() > 0.01) {
+                arg.method_38092(w, PACKED_ICE);
+            } else if (arg.getState(w).getMaterial() == Material.WATER && w > (int)f && w < l && f != 0.0 && random.nextDouble() > 0.15) {
+                arg.method_38092(w, PACKED_ICE);
             }
-            BlockState blockState7 = chunk.getBlockState(mutable);
+            BlockState blockState7 = arg.getState(w);
             if (blockState7.isAir()) {
-                u = -1;
+                s = -1;
                 continue;
             }
             if (blockState7.isOf(blockState.getBlock())) {
-                if (u == -1) {
-                    if (t <= 0) {
+                if (s == -1) {
+                    if (r <= 0) {
                         blockState6 = AIR;
                         blockState5 = blockState;
-                    } else if (y >= l - 4 && y <= l + 1) {
+                    } else if (w >= l - 4 && w <= l + 1) {
                         blockState6 = blockState4;
                         blockState5 = blockState3;
                     }
-                    if (y < l && (blockState6 == null || blockState6.isAir())) {
-                        blockState6 = biome.getTemperature(mutable.set(i, y, j)) < 0.15f ? ICE : blockState2;
+                    if (w < l && (blockState6 == null || blockState6.isAir())) {
+                        blockState6 = biome.getTemperature(mutable.set(i, w, j)) < 0.15f ? ICE : blockState2;
                     }
-                    u = t;
-                    if (y >= l - 1) {
-                        chunk.setBlockState(mutable, blockState6, false);
+                    s = r;
+                    if (w >= l - 1) {
+                        arg.method_38092(w, blockState6);
                         continue;
                     }
-                    if (y < l - 7 - t) {
+                    if (w < l - 7 - r) {
                         blockState6 = AIR;
                         blockState5 = blockState;
-                        chunk.setBlockState(mutable, GRAVEL, false);
+                        arg.method_38092(w, GRAVEL);
                         continue;
                     }
-                    chunk.setBlockState(mutable, blockState5, false);
+                    arg.method_38092(w, blockState5);
                     continue;
                 }
-                if (u <= 0) continue;
-                chunk.setBlockState(mutable, blockState5, false);
-                if (--u != 0 || !blockState5.isOf(Blocks.SAND) || t <= 1) continue;
-                u = random.nextInt(4) + Math.max(0, y - 63);
+                if (s <= 0) continue;
+                arg.method_38092(w, blockState5);
+                if (--s != 0 || !blockState5.isOf(Blocks.SAND) || r <= 1) continue;
+                s = random.nextInt(4) + Math.max(0, w - 63);
                 blockState5 = blockState5.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
                 continue;
             }
-            if (!blockState7.isOf(Blocks.PACKED_ICE) || v > w || y <= x) continue;
-            chunk.setBlockState(mutable, SNOW_BLOCK, false);
-            ++v;
+            if (!blockState7.isOf(Blocks.PACKED_ICE) || t > u || w <= v) continue;
+            arg.method_38092(w, SNOW_BLOCK);
+            ++t;
         }
     }
 
@@ -127,8 +124,8 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     public void initSeed(long seed) {
         if (this.seed != seed || this.icebergNoise == null || this.icebergCutoffNoise == null) {
             ChunkRandom chunkRandom = new ChunkRandom(seed);
-            this.icebergNoise = new OctaveSimplexNoiseSampler((WorldGenRandom)chunkRandom, IntStream.rangeClosed(-3, 0));
-            this.icebergCutoffNoise = new OctaveSimplexNoiseSampler((WorldGenRandom)chunkRandom, ImmutableList.of(Integer.valueOf(0)));
+            this.icebergNoise = new OctaveSimplexNoiseSampler((AbstractRandom)chunkRandom, IntStream.rangeClosed(-3, 0));
+            this.icebergCutoffNoise = new OctaveSimplexNoiseSampler((AbstractRandom)chunkRandom, ImmutableList.of(Integer.valueOf(0)));
         }
         this.seed = seed;
     }

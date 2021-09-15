@@ -131,7 +131,7 @@ AutoCloseable {
             }
         } : new WorldBorder();
         this.thread = Thread.currentThread();
-        this.biomeAccess = new BiomeAccess(this, seed, dimensionType.getBiomeAccessType());
+        this.biomeAccess = new BiomeAccess(this, seed);
         this.debugWorld = debugWorld;
     }
 
@@ -572,7 +572,7 @@ AutoCloseable {
 
     public void markDirty(BlockPos pos) {
         if (this.isChunkLoaded(pos)) {
-            this.getWorldChunk(pos).markDirty();
+            this.getWorldChunk(pos).setShouldSave(true);
         }
     }
 
@@ -877,7 +877,7 @@ AutoCloseable {
                 WorldChunk chunk = this.getChunkManager().getWorldChunk(o, p);
                 if (chunk == null) continue;
                 for (int q = m; q <= n; ++q) {
-                    chunk.getGameEventDispatcher(q).dispatch(gameEvent, entity, pos);
+                    ((Chunk)chunk).getGameEventDispatcher(q).dispatch(gameEvent, entity, pos);
                 }
             }
         }

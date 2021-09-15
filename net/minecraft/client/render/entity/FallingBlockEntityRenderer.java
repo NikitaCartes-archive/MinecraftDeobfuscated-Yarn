@@ -36,7 +36,7 @@ extends EntityRenderer<FallingBlockEntity> {
         if (blockState.getRenderType() != BlockRenderType.MODEL) {
             return;
         }
-        World world = fallingBlockEntity.getWorldClient();
+        World world = fallingBlockEntity.getWorld();
         if (blockState == world.getBlockState(fallingBlockEntity.getBlockPos()) || blockState.getRenderType() == BlockRenderType.INVISIBLE) {
             return;
         }

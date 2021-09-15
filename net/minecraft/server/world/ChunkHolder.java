@@ -4,7 +4,7 @@
 package net.minecraft.server.world;
 
 import com.mojang.datafixers.util.Either;
-import it.unimi.dsi.fastutil.shorts.ShortArraySet;
+import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.ShortSet;
 import java.util.BitSet;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
@@ -163,7 +163,7 @@ public class ChunkHolder {
         int i = this.world.getSectionIndex(pos.getY());
         if (this.blockUpdatesBySection[i] == null) {
             this.pendingBlockUpdates = true;
-            this.blockUpdatesBySection[i] = new ShortArraySet();
+            this.blockUpdatesBySection[i] = new ShortOpenHashSet();
         }
         this.blockUpdatesBySection[i].add(ChunkSectionPos.packLocal(pos));
     }
@@ -217,7 +217,7 @@ public class ChunkHolder {
                 this.sendPacketToPlayersWatching(new BlockUpdateS2CPacket(blockPos, blockState), false);
                 this.tryUpdateBlockEntityAt(world, blockPos, blockState);
             } else {
-                ChunkSection chunkSection = chunk.getSectionArray()[j];
+                ChunkSection chunkSection = chunk.getSection(j);
                 ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDeltaUpdateS2CPacket(chunkSectionPos, shortSet, chunkSection, this.field_26744);
                 this.sendPacketToPlayersWatching(chunkDeltaUpdateS2CPacket, false);
                 chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> this.tryUpdateBlockEntityAt(world, (BlockPos)pos, (BlockState)state));
@@ -234,10 +234,10 @@ public class ChunkHolder {
     }
 
     private void sendBlockEntityUpdatePacket(World world, BlockPos pos) {
-        BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket;
+        Packet<ClientPlayPacketListener> packet;
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity != null && (blockEntityUpdateS2CPacket = blockEntity.toUpdatePacket()) != null) {
-            this.sendPacketToPlayersWatching(blockEntityUpdateS2CPacket, false);
+        if (blockEntity != null && (packet = blockEntity.toUpdatePacket()) != null) {
+            this.sendPacketToPlayersWatching(packet, false);
         }
     }
 

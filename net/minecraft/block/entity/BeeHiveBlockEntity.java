@@ -261,13 +261,12 @@ extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.put(BEES_KEY, this.getBees());
         if (this.hasFlowerPos()) {
             nbt.put(FLOWER_POS_KEY, NbtHelper.fromBlockPos(this.flowerPos));
         }
-        return nbt;
     }
 
     public NbtList getBees() {

@@ -10,8 +10,8 @@ import net.minecraft.block.StairsBlock;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.ShiftableStructurePiece;
 import net.minecraft.structure.StructurePieceType;
-import net.minecraft.structure.StructurePieceWithDimensions;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -21,7 +21,9 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DesertTempleGenerator
-extends StructurePieceWithDimensions {
+extends ShiftableStructurePiece {
+    public static final int field_34725 = 21;
+    public static final int field_34726 = 21;
     private final boolean[] hasPlacedChest = new boolean[4];
 
     public DesertTempleGenerator(Random random, int x, int z) {
@@ -49,6 +51,9 @@ extends StructurePieceWithDimensions {
     public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
         int l;
         int i;
+        if (!this.adjustToMinHeight(world, -random.nextInt(3))) {
+            return false;
+        }
         this.fillWithOutline(world, boundingBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, Blocks.SANDSTONE.getDefaultState(), Blocks.SANDSTONE.getDefaultState(), false);
         for (i = 1; i <= 9; ++i) {
             this.fillWithOutline(world, boundingBox, i, i, i, this.width - 1 - i, i, this.depth - 1 - i, Blocks.SANDSTONE.getDefaultState(), Blocks.SANDSTONE.getDefaultState(), false);

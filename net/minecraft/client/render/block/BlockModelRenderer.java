@@ -44,15 +44,15 @@ public class BlockModelRenderer {
         this.colors = colors;
     }
 
-    public boolean render(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrix, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay) {
+    public boolean render(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay) {
         boolean bl = MinecraftClient.isAmbientOcclusionEnabled() && state.getLuminance() == 0 && model.useAmbientOcclusion();
         Vec3d vec3d = state.getModelOffset(world, pos);
-        matrix.translate(vec3d.x, vec3d.y, vec3d.z);
+        matrices.translate(vec3d.x, vec3d.y, vec3d.z);
         try {
             if (bl) {
-                return this.renderSmooth(world, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay);
+                return this.renderSmooth(world, model, state, pos, matrices, vertexConsumer, cull, random, seed, overlay);
             }
-            return this.renderFlat(world, model, state, pos, matrix, vertexConsumer, cull, random, seed, overlay);
+            return this.renderFlat(world, model, state, pos, matrices, vertexConsumer, cull, random, seed, overlay);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating block model");
             CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
@@ -62,7 +62,7 @@ public class BlockModelRenderer {
         }
     }
 
-    public boolean renderSmooth(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack buffer, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay) {
+    public boolean renderSmooth(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay) {
         boolean bl = false;
         float[] fs = new float[DIRECTIONS.length * 2];
         BitSet bitSet = new BitSet(3);
@@ -74,19 +74,19 @@ public class BlockModelRenderer {
             if (list.isEmpty()) continue;
             mutable.set((Vec3i)pos, direction);
             if (cull && !Block.shouldDrawSide(state, world, pos, direction, mutable)) continue;
-            this.renderQuadsSmooth(world, state, pos, buffer, vertexConsumer, list, fs, bitSet, ambientOcclusionCalculator, overlay);
+            this.renderQuadsSmooth(world, state, pos, matrices, vertexConsumer, list, fs, bitSet, ambientOcclusionCalculator, overlay);
             bl = true;
         }
         random.setSeed(seed);
         List<BakedQuad> list2 = model.getQuads(state, null, random);
         if (!list2.isEmpty()) {
-            this.renderQuadsSmooth(world, state, pos, buffer, vertexConsumer, list2, fs, bitSet, ambientOcclusionCalculator, overlay);
+            this.renderQuadsSmooth(world, state, pos, matrices, vertexConsumer, list2, fs, bitSet, ambientOcclusionCalculator, overlay);
             bl = true;
         }
         return bl;
     }
 
-    public boolean renderFlat(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack buffer, VertexConsumer vertexConsumer, boolean cull, Random random, long l, int i) {
+    public boolean renderFlat(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random, long l, int i) {
         boolean bl = false;
         BitSet bitSet = new BitSet(3);
         BlockPos.Mutable mutable = pos.mutableCopy();
@@ -97,23 +97,23 @@ public class BlockModelRenderer {
             mutable.set((Vec3i)pos, direction);
             if (cull && !Block.shouldDrawSide(state, world, pos, direction, mutable)) continue;
             int j = WorldRenderer.getLightmapCoordinates(world, state, mutable);
-            this.renderQuadsFlat(world, state, pos, j, i, false, buffer, vertexConsumer, list, bitSet);
+            this.renderQuadsFlat(world, state, pos, j, i, false, matrices, vertexConsumer, list, bitSet);
             bl = true;
         }
         random.setSeed(l);
         List<BakedQuad> list2 = model.getQuads(state, null, random);
         if (!list2.isEmpty()) {
-            this.renderQuadsFlat(world, state, pos, -1, i, true, buffer, vertexConsumer, list2, bitSet);
+            this.renderQuadsFlat(world, state, pos, -1, i, true, matrices, vertexConsumer, list2, bitSet);
             bl = true;
         }
         return bl;
     }
 
-    private void renderQuadsSmooth(BlockRenderView world, BlockState state, BlockPos pos, MatrixStack matrix, VertexConsumer vertexConsumer, List<BakedQuad> quads, float[] box, BitSet flags, AmbientOcclusionCalculator ambientOcclusionCalculator, int overlay) {
+    private void renderQuadsSmooth(BlockRenderView world, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, List<BakedQuad> quads, float[] box, BitSet flags, AmbientOcclusionCalculator ambientOcclusionCalculator, int overlay) {
         for (BakedQuad bakedQuad : quads) {
             this.getQuadDimensions(world, state, pos, bakedQuad.getVertexData(), bakedQuad.getFace(), box, flags);
             ambientOcclusionCalculator.apply(world, state, pos, bakedQuad.getFace(), box, flags, bakedQuad.hasShade());
-            this.renderQuad(world, state, pos, vertexConsumer, matrix.peek(), bakedQuad, ambientOcclusionCalculator.brightness[0], ambientOcclusionCalculator.brightness[1], ambientOcclusionCalculator.brightness[2], ambientOcclusionCalculator.brightness[3], ambientOcclusionCalculator.light[0], ambientOcclusionCalculator.light[1], ambientOcclusionCalculator.light[2], ambientOcclusionCalculator.light[3], overlay);
+            this.renderQuad(world, state, pos, vertexConsumer, matrices.peek(), bakedQuad, ambientOcclusionCalculator.brightness[0], ambientOcclusionCalculator.brightness[1], ambientOcclusionCalculator.brightness[2], ambientOcclusionCalculator.brightness[3], ambientOcclusionCalculator.light[0], ambientOcclusionCalculator.light[1], ambientOcclusionCalculator.light[2], ambientOcclusionCalculator.light[3], overlay);
         }
     }
 

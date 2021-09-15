@@ -49,7 +49,7 @@ implements Predicate<CachedBlockPosition> {
         }
         if (this.data != null) {
             BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-            return blockEntity != null && NbtHelper.matches(this.data, blockEntity.writeNbt(new NbtCompound()), true);
+            return blockEntity != null && NbtHelper.matches(this.data, blockEntity.createNbtWithIdentifyingData(), true);
         }
         return true;
     }
@@ -68,11 +68,7 @@ implements Predicate<CachedBlockPosition> {
             return false;
         }
         if (this.data != null && (blockEntity = world.getBlockEntity(pos)) != null) {
-            NbtCompound nbtCompound = this.data.copy();
-            nbtCompound.putInt("x", pos.getX());
-            nbtCompound.putInt("y", pos.getY());
-            nbtCompound.putInt("z", pos.getZ());
-            blockEntity.readNbt(nbtCompound);
+            blockEntity.readNbt(this.data);
         }
         return true;
     }

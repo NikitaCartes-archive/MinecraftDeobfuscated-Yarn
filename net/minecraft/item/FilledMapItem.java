@@ -114,8 +114,7 @@ extends NetworkSyncedItem {
             bl = false;
             double d = 0.0;
             for (int p = m - n - 1; p < m + n; ++p) {
-                MapColor mapColor;
-                int y;
+                double f;
                 if (o < 0 || p < -1 || o >= 128 || p >= 128) continue;
                 int q = o - l;
                 int r = p - m;
@@ -141,7 +140,7 @@ extends NetworkSyncedItem {
                 } else {
                     BlockPos.Mutable mutable = new BlockPos.Mutable();
                     BlockPos.Mutable mutable2 = new BlockPos.Mutable();
-                    for (y = 0; y < i; ++y) {
+                    for (int y = 0; y < i; ++y) {
                         for (int z = 0; z < i; ++z) {
                             BlockState blockState;
                             int aa = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
@@ -169,28 +168,11 @@ extends NetworkSyncedItem {
                         }
                     }
                 }
-                w /= i * i;
-                double f = (e - d) * 4.0 / (double)(i + 4) + ((double)(o + p & 1) - 0.5) * 0.4;
-                y = 1;
-                if (f > 0.6) {
-                    y = 2;
-                }
-                if (f < -0.6) {
-                    y = 0;
-                }
-                if ((mapColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.CLEAR)) == MapColor.WATER_BLUE) {
-                    f = (double)w * 0.1 + (double)(o + p & 1) * 0.2;
-                    y = 1;
-                    if (f < 0.5) {
-                        y = 2;
-                    }
-                    if (f > 0.9) {
-                        y = 0;
-                    }
-                }
+                MapColor mapColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.CLEAR);
+                MapColor.Brightness brightness = mapColor == MapColor.WATER_BLUE ? ((f = (double)(w /= i * i) * 0.1 + (double)(o + p & 1) * 0.2) < 0.5 ? MapColor.Brightness.HIGH : (f > 0.9 ? MapColor.Brightness.LOW : MapColor.Brightness.NORMAL)) : ((f = (e - d) * 4.0 / (double)(i + 4) + ((double)(o + p & 1) - 0.5) * 0.4) > 0.6 ? MapColor.Brightness.HIGH : (f < -0.6 ? MapColor.Brightness.LOW : MapColor.Brightness.NORMAL));
                 d = e;
                 if (p < 0 || q * q + r * r >= n * n || bl2 && (o + p & 1) == 0) continue;
-                bl |= state.putColor(o, p, (byte)(mapColor.id * 4 + y));
+                bl |= state.putColor(o, p, mapColor.getRenderColorByte(brightness));
             }
         }
     }
@@ -204,7 +186,7 @@ extends NetworkSyncedItem {
     }
 
     private static boolean hasPositiveDepth(Biome[] biomes, int scale, int x, int z) {
-        return biomes[x * scale + z * scale * 128 * scale].getDepth() >= 0.0f;
+        return true;
     }
 
     public static void fillExplorationMap(ServerWorld world, ItemStack map) {
@@ -255,32 +237,14 @@ extends NetworkSyncedItem {
                 if (FilledMapItem.hasPositiveDepth(biomes, i, l, m + 1)) {
                     --n;
                 }
-                int o = 3;
+                MapColor.Brightness brightness = MapColor.Brightness.LOWEST;
                 MapColor mapColor = MapColor.CLEAR;
-                if (biome.getDepth() < 0.0f) {
-                    mapColor = MapColor.ORANGE;
-                    if (n > 7 && m % 2 == 0) {
-                        o = (l + (int)(MathHelper.sin((float)m + 0.0f) * 7.0f)) / 8 % 5;
-                        if (o == 3) {
-                            o = 1;
-                        } else if (o == 4) {
-                            o = 0;
-                        }
-                    } else if (n > 7) {
-                        mapColor = MapColor.CLEAR;
-                    } else if (n > 5) {
-                        o = 1;
-                    } else if (n > 3) {
-                        o = 0;
-                    } else if (n > 1) {
-                        o = 0;
-                    }
-                } else if (n > 0) {
+                if (n > 0) {
                     mapColor = MapColor.BROWN;
-                    o = n > 3 ? 1 : 3;
+                    brightness = n > 3 ? MapColor.Brightness.NORMAL : MapColor.Brightness.LOWEST;
                 }
                 if (mapColor == MapColor.CLEAR) continue;
-                mapState.setColor(l, m, (byte)(mapColor.id * 4 + o));
+                mapState.setColor(l, m, mapColor.getRenderColorByte(brightness));
             }
         }
     }

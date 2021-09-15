@@ -12,6 +12,8 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -38,7 +40,10 @@ extends ConditionalLootFunction {
     @Override
     protected ItemStack process(ItemStack stack, LootContext context) {
         NbtList nbtList2;
-        NbtCompound nbtCompound = stack.getOrCreateSubNbt("BlockEntityTag");
+        NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
+        if (nbtCompound == null) {
+            nbtCompound = new NbtCompound();
+        }
         BannerPattern.Patterns patterns = new BannerPattern.Patterns();
         this.patterns.forEach(patterns::add);
         NbtList nbtList = patterns.toNbt();
@@ -49,6 +54,7 @@ extends ConditionalLootFunction {
             nbtList2 = nbtList;
         }
         nbtCompound.put("Patterns", nbtList2);
+        BlockItem.setBlockEntityNbt(stack, BlockEntityType.BANNER, nbtCompound);
         return stack;
     }
 

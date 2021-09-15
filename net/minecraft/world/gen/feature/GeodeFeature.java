@@ -24,14 +24,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.WorldGenRandom;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.GeodeCrackConfig;
 import net.minecraft.world.gen.feature.GeodeFeatureConfig;
 import net.minecraft.world.gen.feature.GeodeLayerConfig;
 import net.minecraft.world.gen.feature.GeodeLayerThicknessConfig;
 import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class GeodeFeature
 extends Feature<GeodeFeatureConfig> {
@@ -58,7 +58,7 @@ extends Feature<GeodeFeatureConfig> {
         LinkedList<Pair<BlockPos, Integer>> list = Lists.newLinkedList();
         int k = geodeFeatureConfig.distributionPoints.get(random);
         ChunkRandom chunkRandom = new ChunkRandom(structureWorldAccess.getSeed());
-        DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create((WorldGenRandom)chunkRandom, -4, 1.0);
+        DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create((AbstractRandom)chunkRandom, -4, 1.0);
         LinkedList<BlockPos> list2 = Lists.newLinkedList();
         double d = (double)k / (double)geodeFeatureConfig.outerWallDistance.getMax();
         GeodeLayerThicknessConfig geodeLayerThicknessConfig = geodeFeatureConfig.layerThicknessConfig;

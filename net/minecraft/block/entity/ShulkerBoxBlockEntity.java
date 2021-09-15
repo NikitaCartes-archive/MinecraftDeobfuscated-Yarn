@@ -192,9 +192,11 @@ implements SidedInventory {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
-        return this.writeInventoryNbt(nbt);
+        if (!this.serializeLootTable(nbt)) {
+            Inventories.writeNbt(nbt, this.inventory, false);
+        }
     }
 
     public void readInventoryNbt(NbtCompound nbt) {
@@ -202,13 +204,6 @@ implements SidedInventory {
         if (!this.deserializeLootTable(nbt) && nbt.contains(ITEMS_KEY, 9)) {
             Inventories.readNbt(nbt, this.inventory);
         }
-    }
-
-    public NbtCompound writeInventoryNbt(NbtCompound nbt) {
-        if (!this.serializeLootTable(nbt)) {
-            Inventories.writeNbt(nbt, this.inventory, false);
-        }
-        return nbt;
     }
 
     @Override

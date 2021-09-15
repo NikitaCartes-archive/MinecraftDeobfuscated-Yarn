@@ -78,16 +78,16 @@ implements BlockEntityRenderer<BedBlockEntity> {
         }
     }
 
-    private void renderPart(MatrixStack matrix, VertexConsumerProvider vertexConsumers, ModelPart part, Direction direction, SpriteIdentifier sprite, int light, int overlay, boolean isFoot) {
-        matrix.push();
-        matrix.translate(0.0, 0.5625, isFoot ? -1.0 : 0.0);
-        matrix.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
-        matrix.translate(0.5, 0.5, 0.5);
-        matrix.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f + direction.asRotation()));
-        matrix.translate(-0.5, -0.5, -0.5);
+    private void renderPart(MatrixStack matrices, VertexConsumerProvider vertexConsumers, ModelPart part, Direction direction, SpriteIdentifier sprite, int light, int overlay, boolean isFoot) {
+        matrices.push();
+        matrices.translate(0.0, 0.5625, isFoot ? -1.0 : 0.0);
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+        matrices.translate(0.5, 0.5, 0.5);
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f + direction.asRotation()));
+        matrices.translate(-0.5, -0.5, -0.5);
         VertexConsumer vertexConsumer = sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid);
-        part.render(matrix, vertexConsumer, light, overlay);
-        matrix.pop();
+        part.render(matrices, vertexConsumer, light, overlay);
+        matrices.pop();
     }
 }
 

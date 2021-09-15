@@ -90,6 +90,12 @@ public abstract class BiomeKeys {
     public static final RegistryKey<Biome> BASALT_DELTAS = BiomeKeys.register("basalt_deltas");
     public static final RegistryKey<Biome> DRIPSTONE_CAVES = BiomeKeys.register("dripstone_caves");
     public static final RegistryKey<Biome> LUSH_CAVES = BiomeKeys.register("lush_caves");
+    public static final RegistryKey<Biome> MEADOW = BiomeKeys.register("meadow");
+    public static final RegistryKey<Biome> GROVE = BiomeKeys.register("grove");
+    public static final RegistryKey<Biome> SNOWY_SLOPES = BiomeKeys.register("snowy_slopes");
+    public static final RegistryKey<Biome> SNOWCAPPED_PEAKS = BiomeKeys.register("snowcapped_peaks");
+    public static final RegistryKey<Biome> LOFTY_PEAKS = BiomeKeys.register("lofty_peaks");
+    public static final RegistryKey<Biome> STONY_PEAKS = BiomeKeys.register("stony_peaks");
 
     private static RegistryKey<Biome> register(String name) {
         return RegistryKey.of(Registry.BIOME_KEY, new Identifier(name));

@@ -11,7 +11,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 public class ScoreboardObjective {
-    public static final int field_31882 = 16;
     private final Scoreboard scoreboard;
     private final String name;
     private final ScoreboardCriterion criterion;

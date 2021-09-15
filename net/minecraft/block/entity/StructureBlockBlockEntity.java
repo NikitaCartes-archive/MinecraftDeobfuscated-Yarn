@@ -18,6 +18,7 @@ import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
@@ -63,7 +64,7 @@ extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putString("name", this.getStructureName());
         nbt.putString(AUTHOR_KEY, this.author);
@@ -83,7 +84,6 @@ extends BlockEntity {
         nbt.putBoolean("showboundingbox", this.showBoundingBox);
         nbt.putFloat("integrity", this.integrity);
         nbt.putLong("seed", this.seed);
-        return nbt;
     }
 
     @Override
@@ -135,15 +135,13 @@ extends BlockEntity {
         }
     }
 
-    @Override
-    @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.STRUCTURE, this.toInitialChunkDataNbt());
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
     public NbtCompound toInitialChunkDataNbt() {
-        return this.writeNbt(new NbtCompound());
+        return this.createNbt();
     }
 
     public boolean openScreen(PlayerEntity player) {
@@ -429,6 +427,10 @@ extends BlockEntity {
 
     public void setShowBoundingBox(boolean showBoundingBox) {
         this.showBoundingBox = showBoundingBox;
+    }
+
+    public /* synthetic */ Packet toUpdatePacket() {
+        return this.toUpdatePacket();
     }
 
     private static /* synthetic */ void method_35293(ServerWorld serverWorld, BlockPos blockPos) {

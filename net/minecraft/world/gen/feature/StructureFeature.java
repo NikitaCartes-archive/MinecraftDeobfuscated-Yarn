@@ -13,6 +13,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
@@ -28,13 +29,14 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.StructureAccessor;
@@ -67,6 +69,7 @@ import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import net.minecraft.world.gen.feature.SwampHutFeature;
 import net.minecraft.world.gen.feature.VillageFeature;
 import net.minecraft.world.gen.feature.WoodlandMansionFeature;
+import net.minecraft.world.gen.random.ChunkRandom;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -191,16 +194,15 @@ public abstract class StructureFeature<C extends FeatureConfig> {
             for (int m = -l; m <= l; ++m) {
                 boolean bl = m == -l || m == l;
                 for (int n = -l; n <= l; ++n) {
-                    Chunk chunk;
-                    StructureStart<?> structureStart;
                     boolean bl2;
                     boolean bl3 = bl2 = n == -l || n == l;
                     if (!bl && !bl2) continue;
                     int o = j + i * m;
                     int p = k + i * n;
                     ChunkPos chunkPos = this.getStartChunk(config, worldSeed, chunkRandom, o, p);
-                    boolean bl32 = world.getBiomeAccess().getBiomeForNoiseGen(chunkPos).getGenerationSettings().hasStructureFeature(this);
-                    if (bl32 && (structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS)), this, chunk)) != null && structureStart.hasChildren()) {
+                    Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
+                    StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk), this, chunk);
+                    if (structureStart != null && structureStart.hasChildren()) {
                         if (skipExistingChunks && structureStart.isInExistingChunk()) {
                             structureStart.incrementReferences();
                             return structureStart.getBlockPos();
@@ -260,7 +262,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
      * {@link #getStartChunk}. Specific structures override this method to reduce the spawn probability or
      * restrict the spawn in some other way.
      */
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkRandom random, ChunkPos pos, Biome biome, ChunkPos chunkPos, C config, HeightLimitView world) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkRandom random, ChunkPos pos, ChunkPos chunkPos, C featureConfig, HeightLimitView heightLimitView) {
         return true;
     }
 
@@ -274,11 +276,11 @@ public abstract class StructureFeature<C extends FeatureConfig> {
      * If this structure doesn't have a starting point in the chunk, {@link StructureStart#DEFAULT}
      * will be returned.
      */
-    public StructureStart<?> tryPlaceStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator generator, BiomeSource biomeSource, StructureManager manager, long worldSeed, ChunkPos pos, Biome biome, int referenceCount, ChunkRandom random, StructureConfig structureConfig, C config, HeightLimitView world) {
-        ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, random, pos.x, pos.z);
-        if (pos.x == chunkPos.x && pos.z == chunkPos.z && this.shouldStartAt(generator, biomeSource, worldSeed, random, pos, biome, chunkPos, config, world)) {
-            StructureStart<C> structureStart = this.createStart(pos, referenceCount, worldSeed);
-            structureStart.init(dynamicRegistryManager, generator, manager, pos, biome, config, world);
+    public StructureStart<?> tryPlaceStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator generator, BiomeSource biomeSource, StructureManager manager, long worldSeed, ChunkPos pos, int i, ChunkRandom chunkRandom, StructureConfig structureConfig, C featureConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
+        ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, chunkRandom, pos.x, pos.z);
+        if (pos.x == chunkPos.x && pos.z == chunkPos.z && this.shouldStartAt(generator, biomeSource, worldSeed, chunkRandom, pos, chunkPos, featureConfig, heightLimitView)) {
+            StructureStart<C> structureStart = this.createStart(pos, i, worldSeed);
+            structureStart.init(dynamicRegistryManager, generator, manager, pos, featureConfig, heightLimitView, predicate);
             if (structureStart.hasChildren()) {
                 return structureStart;
             }
@@ -287,6 +289,17 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     }
 
     public abstract StructureStartFactory<C> getStructureStartFactory();
+
+    protected static int getLowestCornerInGroundHeight(ChunkGenerator generator, int deltaX, int deltaZ, ChunkPos chunkPos, HeightLimitView world) {
+        int i = chunkPos.getStartX();
+        int j = chunkPos.getStartZ();
+        int[] is = StructureFeature.getCornerInGroundHeights(generator, i, deltaX, j, deltaZ, world);
+        return Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
+    }
+
+    protected static int[] getCornerInGroundHeights(ChunkGenerator generator, int x, int deltaX, int z, int deltaZ, HeightLimitView world) {
+        return new int[]{generator.getHeightInGround(x, z, Heightmap.Type.WORLD_SURFACE_WG, world), generator.getHeightInGround(x, z + deltaZ, Heightmap.Type.WORLD_SURFACE_WG, world), generator.getHeightInGround(x + deltaX, z, Heightmap.Type.WORLD_SURFACE_WG, world), generator.getHeightInGround(x + deltaX, z + deltaZ, Heightmap.Type.WORLD_SURFACE_WG, world)};
+    }
 
     public String getName() {
         return (String)STRUCTURES.inverse().get(this);
@@ -302,6 +315,12 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 
     public Pool<SpawnSettings.SpawnEntry> getUndergroundWaterCreatureSpawns() {
         return SpawnSettings.EMPTY_ENTRY_POOL;
+    }
+
+    protected static boolean checkBiome(ChunkGenerator generator, HeightLimitView world, Predicate<Biome> biomePredicate, Heightmap.Type heightmap, int x, int z) {
+        int i = generator.getHeightInGround(x, z, heightmap, world);
+        Biome biome = generator.getBiomeForNoiseGen(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(z));
+        return biomePredicate.test(biome);
     }
 
     public static interface StructureStartFactory<C extends FeatureConfig> {

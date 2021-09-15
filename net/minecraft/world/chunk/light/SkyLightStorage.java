@@ -34,33 +34,33 @@ extends LightStorage<Data> {
 
     @Override
     protected int getLight(long blockPos) {
-        return this.method_31931(blockPos, false);
+        return this.getLight(blockPos, false);
     }
 
-    protected int method_31931(long l, boolean bl) {
-        long m = ChunkSectionPos.fromBlockPos(l);
-        int i = ChunkSectionPos.unpackY(m);
-        Data data = bl ? (Data)this.storage : (Data)this.uncachedStorage;
-        int j = data.columnToTopSection.get(ChunkSectionPos.withZeroY(m));
+    protected int getLight(long blockPos, boolean cached) {
+        long l = ChunkSectionPos.fromBlockPos(blockPos);
+        int i = ChunkSectionPos.unpackY(l);
+        Data data = cached ? (Data)this.storage : (Data)this.uncachedStorage;
+        int j = data.columnToTopSection.get(ChunkSectionPos.withZeroY(l));
         if (j == data.minSectionY || i >= j) {
-            if (bl && !this.isSectionEnabled(m)) {
+            if (cached && !this.isSectionEnabled(l)) {
                 return 0;
             }
             return 15;
         }
-        ChunkNibbleArray chunkNibbleArray = this.getLightSection(data, m);
+        ChunkNibbleArray chunkNibbleArray = this.getLightSection(data, l);
         if (chunkNibbleArray == null) {
-            l = BlockPos.removeChunkSectionLocalY(l);
+            blockPos = BlockPos.removeChunkSectionLocalY(blockPos);
             while (chunkNibbleArray == null) {
                 if (++i >= j) {
                     return 15;
                 }
-                l = BlockPos.add(l, 0, 16, 0);
-                m = ChunkSectionPos.offset(m, Direction.UP);
-                chunkNibbleArray = this.getLightSection(data, m);
+                blockPos = BlockPos.add(blockPos, 0, 16, 0);
+                l = ChunkSectionPos.offset(l, Direction.UP);
+                chunkNibbleArray = this.getLightSection(data, l);
             }
         }
-        return chunkNibbleArray.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(l)));
+        return chunkNibbleArray.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos)));
     }
 
     @Override

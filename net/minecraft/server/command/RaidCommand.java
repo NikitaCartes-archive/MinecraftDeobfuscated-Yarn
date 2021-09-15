@@ -82,11 +82,11 @@ public class RaidCommand {
     private static int executeStart(ServerCommandSource source, int level) throws CommandSyntaxException {
         ServerPlayerEntity serverPlayerEntity = source.getPlayer();
         BlockPos blockPos = serverPlayerEntity.getBlockPos();
-        if (serverPlayerEntity.getServerWorld().hasRaidAt(blockPos)) {
+        if (serverPlayerEntity.getWorld().hasRaidAt(blockPos)) {
             source.sendError(new LiteralText("Raid already started close by"));
             return -1;
         }
-        RaidManager raidManager = serverPlayerEntity.getServerWorld().getRaidManager();
+        RaidManager raidManager = serverPlayerEntity.getWorld().getRaidManager();
         Raid raid = raidManager.startRaid(serverPlayerEntity);
         if (raid != null) {
             raid.setBadOmenLevel(level);
@@ -101,7 +101,7 @@ public class RaidCommand {
     private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
         ServerPlayerEntity serverPlayerEntity = source.getPlayer();
         BlockPos blockPos = serverPlayerEntity.getBlockPos();
-        Raid raid = serverPlayerEntity.getServerWorld().getRaidAt(blockPos);
+        Raid raid = serverPlayerEntity.getWorld().getRaidAt(blockPos);
         if (raid != null) {
             raid.invalidate();
             source.sendFeedback(new LiteralText("Stopped raid"), false);
@@ -137,7 +137,7 @@ public class RaidCommand {
 
     @Nullable
     private static Raid getRaid(ServerPlayerEntity player) {
-        return player.getServerWorld().getRaidAt(player.getBlockPos());
+        return player.getWorld().getRaidAt(player.getBlockPos());
     }
 }
 

@@ -19,7 +19,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
@@ -43,6 +42,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.SpawnDensityCapper;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
@@ -61,7 +61,6 @@ public class ServerChunkManager
 extends ChunkManager {
     private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
     private final ChunkTicketManager ticketManager;
-    private final ChunkGenerator chunkGenerator;
     final ServerWorld world;
     final Thread serverThread;
     final ServerLightingProvider lightingProvider;
@@ -82,13 +81,12 @@ extends ChunkManager {
     public ServerChunkManager(ServerWorld world, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> supplier) {
         this.world = world;
         this.mainThreadExecutor = new MainThreadExecutor(world);
-        this.chunkGenerator = chunkGenerator;
         this.serverThread = Thread.currentThread();
         File file = session.getWorldDirectory(world.getRegistryKey());
         File file2 = new File(file, "data");
         file2.mkdirs();
         this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
-        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(world, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, chunkStatusChangeListener, supplier, viewDistance, bl);
+        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(world, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, chunkGenerator, worldGenerationProgressListener, chunkStatusChangeListener, supplier, viewDistance, bl);
         this.lightingProvider = this.threadedAnvilChunkStorage.getLightingProvider();
         this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
         this.initChunkCaches();
@@ -271,16 +269,12 @@ extends ChunkManager {
     }
 
     public boolean isTickingFutureReady(long pos) {
-        return this.isFutureReady(pos, ChunkHolder::getTickingFuture);
-    }
-
-    private boolean isFutureReady(long pos, Function<ChunkHolder, CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>>> futureFunction) {
         ChunkHolder chunkHolder = this.getChunkHolder(pos);
         if (chunkHolder == null) {
             return false;
         }
-        Either<WorldChunk, ChunkHolder.Unloaded> either = futureFunction.apply(chunkHolder).getNow(ChunkHolder.UNLOADED_WORLD_CHUNK);
-        return either.left().isPresent();
+        Either either = chunkHolder.getTickingFuture().getNow(null);
+        return either != null && either.left().isPresent();
     }
 
     public void save(boolean flush) {
@@ -322,7 +316,7 @@ extends ChunkManager {
             boolean bl3 = worldProperties.getTime() % 400L == 0L;
             this.world.getProfiler().push("naturalSpawnCount");
             int j = this.ticketManager.getSpawningChunkCount();
-            this.spawnInfo = info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded);
+            this.spawnInfo = info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded, new SpawnDensityCapper(this.threadedAnvilChunkStorage));
             this.world.getProfiler().pop();
             ArrayList<ChunkHolder> list = Lists.newArrayList(this.threadedAnvilChunkStorage.entryIterator());
             Collections.shuffle(list);
@@ -372,7 +366,7 @@ extends ChunkManager {
     }
 
     public ChunkGenerator getChunkGenerator() {
-        return this.chunkGenerator;
+        return this.threadedAnvilChunkStorage.method_37897();
     }
 
     @Override

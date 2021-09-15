@@ -20,6 +20,7 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.dimension.DimensionType;
@@ -103,7 +104,11 @@ public final class DimensionOptions {
             return false;
         }
         MultiNoiseBiomeSource multiNoiseBiomeSource = (MultiNoiseBiomeSource)noiseChunkGenerator.getBiomeSource();
-        if (!multiNoiseBiomeSource.matchesInstance(seed)) {
+        if (!multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSource.Preset.NETHER)) {
+            return false;
+        }
+        BiomeSource biomeSource = ((DimensionOptions)entry.getValue()).getChunkGenerator().getBiomeSource();
+        if (biomeSource instanceof MultiNoiseBiomeSource && !((MultiNoiseBiomeSource)biomeSource).matchesInstance(MultiNoiseBiomeSource.Preset.OVERWORLD)) {
             return false;
         }
         if (!(noiseChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {

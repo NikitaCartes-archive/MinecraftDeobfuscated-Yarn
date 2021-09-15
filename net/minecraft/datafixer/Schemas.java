@@ -137,6 +137,7 @@ import net.minecraft.datafixer.fix.StructureFeatureChildrenPoolElementFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.StructureSeparationDataFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
+import net.minecraft.datafixer.fix.UntaggedSpawnerFix;
 import net.minecraft.datafixer.fix.VillagerFollowRangeFix;
 import net.minecraft.datafixer.fix.VillagerGossipFix;
 import net.minecraft.datafixer.fix.VillagerProfessionFix;
@@ -197,6 +198,7 @@ import net.minecraft.datafixer.schema.Schema2686;
 import net.minecraft.datafixer.schema.Schema2688;
 import net.minecraft.datafixer.schema.Schema2704;
 import net.minecraft.datafixer.schema.Schema2707;
+import net.minecraft.datafixer.schema.Schema2831;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -584,6 +586,8 @@ public class Schemas {
         Schema schema141 = builder.addSchema(2717, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(ItemNameFix.create(schema141, "Rename azalea_leaves_flowers", Schemas.replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))));
         builder.addFixer(BlockNameFix.create(schema141, "Rename azalea_leaves_flowers items", Schemas.replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))));
+        Schema schema142 = builder.addSchema(2831, Schema2831::new);
+        builder.addFixer(new UntaggedSpawnerFix(schema142));
     }
 
     private static UnaryOperator<String> replacing(Map<String, String> replacements) {

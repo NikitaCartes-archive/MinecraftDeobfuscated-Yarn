@@ -57,6 +57,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -1195,7 +1196,7 @@ extends LivingEntity {
                     return;
                 }
             } else if (this.leashNbt.contains("X", 99) && this.leashNbt.contains("Y", 99) && this.leashNbt.contains("Z", 99)) {
-                BlockPos blockPos = new BlockPos(this.leashNbt.getInt("X"), this.leashNbt.getInt("Y"), this.leashNbt.getInt("Z"));
+                BlockPos blockPos = NbtHelper.toBlockPos(this.leashNbt);
                 this.attachLeash(LeashKnotEntity.getOrCreate(this.world, blockPos), true);
                 return;
             }

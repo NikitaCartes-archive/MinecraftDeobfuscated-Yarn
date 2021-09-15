@@ -16,6 +16,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -155,7 +156,7 @@ implements OperatorBlock {
             commandBlockExecutor.setCustomName(itemStack.getName());
         }
         if (!world.isClient) {
-            if (itemStack.getSubNbt("BlockEntityTag") == null) {
+            if (BlockItem.getBlockEntityNbt(itemStack) == null) {
                 commandBlockExecutor.setTrackingOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
                 commandBlockBlockEntity.setAuto(this.auto);
             }

@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.function.Predicate;
 import net.minecraft.structure.MarginedStructureStart;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructureManager;
@@ -46,10 +47,10 @@ extends StructureFeature<StructurePoolFeatureConfig> {
         }
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, StructurePoolFeatureConfig structurePoolFeatureConfig, HeightLimitView heightLimitView) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, StructurePoolFeatureConfig structurePoolFeatureConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
             BlockPos blockPos = new BlockPos(chunkPos.getStartX(), this.jigsawFeature.structureStartY, chunkPos.getStartZ());
             StructurePools.initDefaultPools();
-            StructurePoolBasedGenerator.generate(dynamicRegistryManager, structurePoolFeatureConfig, PoolStructurePiece::new, chunkGenerator, structureManager, blockPos, this, this.random, this.jigsawFeature.modifyBoundingBox, this.jigsawFeature.surface, heightLimitView);
+            StructurePoolBasedGenerator.generate(dynamicRegistryManager, structurePoolFeatureConfig, PoolStructurePiece::new, chunkGenerator, structureManager, blockPos, this, this.random, this.jigsawFeature.modifyBoundingBox, this.jigsawFeature.surface, heightLimitView, predicate);
         }
     }
 }

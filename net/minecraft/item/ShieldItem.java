@@ -9,8 +9,10 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BannerItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -33,7 +35,7 @@ extends Item {
 
     @Override
     public String getTranslationKey(ItemStack stack) {
-        if (stack.getSubNbt("BlockEntityTag") != null) {
+        if (BlockItem.getBlockEntityNbt(stack) != null) {
             return this.getTranslationKey() + "." + ShieldItem.getColor(stack).getName();
         }
         return super.getTranslationKey(stack);
@@ -67,7 +69,8 @@ extends Item {
     }
 
     public static DyeColor getColor(ItemStack stack) {
-        return DyeColor.byId(stack.getOrCreateSubNbt("BlockEntityTag").getInt(BASE_KEY));
+        NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
+        return nbtCompound != null ? DyeColor.byId(nbtCompound.getInt(BASE_KEY)) : DyeColor.WHITE;
     }
 }
 

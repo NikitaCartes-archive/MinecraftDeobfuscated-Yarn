@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class IdList<T>
 implements IndexedIterable<T> {
-    public static final int NULL_ID = -1;
     private int nextId;
     private final IdentityHashMap<T, Integer> idMap;
     private final List<T> list;
@@ -67,6 +66,7 @@ implements IndexedIterable<T> {
         return this.get(index) != null;
     }
 
+    @Override
     public int size() {
         return this.idMap.size();
     }

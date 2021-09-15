@@ -34,7 +34,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity player, Vec3d enteredPos) {
-        this.trigger(player, (T conditions) -> conditions.matches(player.getServerWorld(), enteredPos, player.getX(), player.getY(), player.getZ()));
+        this.trigger(player, (T conditions) -> conditions.matches(player.getWorld(), enteredPos, player.getX(), player.getY(), player.getZ()));
     }
 
     @Override

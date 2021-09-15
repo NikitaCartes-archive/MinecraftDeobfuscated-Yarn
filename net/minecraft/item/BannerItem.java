@@ -8,6 +8,7 @@ import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.WallStandingBlockItem;
@@ -32,7 +33,7 @@ extends WallStandingBlockItem {
     }
 
     public static void appendBannerTooltip(ItemStack stack, List<Text> tooltip) {
-        NbtCompound nbtCompound = stack.getSubNbt("BlockEntityTag");
+        NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
         if (nbtCompound == null || !nbtCompound.contains("Patterns")) {
             return;
         }

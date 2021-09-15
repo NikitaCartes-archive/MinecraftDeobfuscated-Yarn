@@ -13,6 +13,7 @@ import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.PoolStructurePiece;
@@ -31,7 +32,6 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import org.jetbrains.annotations.Nullable;
 
 public class JigsawBlockEntity
 extends BlockEntity {
@@ -91,14 +91,13 @@ extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putString(NAME_KEY, this.name.toString());
         nbt.putString(TARGET_KEY, this.target.toString());
         nbt.putString(POOL_KEY, this.pool.toString());
         nbt.putString(FINAL_STATE_KEY, this.finalState);
         nbt.putString(JOINT_KEY, this.joint.asString());
-        return nbt;
     }
 
     @Override
@@ -111,15 +110,13 @@ extends BlockEntity {
         this.joint = Joint.byName(nbt.getString(JOINT_KEY)).orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? Joint.ALIGNED : Joint.ROLLABLE);
     }
 
-    @Override
-    @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, BlockEntityUpdateS2CPacket.JIGSAW, this.toInitialChunkDataNbt());
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
     public NbtCompound toInitialChunkDataNbt() {
-        return this.writeNbt(new NbtCompound());
+        return this.createNbt();
     }
 
     public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {
@@ -137,6 +134,10 @@ extends BlockEntity {
         for (PoolStructurePiece poolStructurePiece2 : list) {
             poolStructurePiece2.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
         }
+    }
+
+    public /* synthetic */ Packet toUpdatePacket() {
+        return this.toUpdatePacket();
     }
 
     public static enum Joint implements StringIdentifiable

@@ -153,6 +153,7 @@ implements ServerLoginPacketListener {
                     this.addToServer(serverPlayerEntity2);
                 }
             } catch (Exception exception) {
+                LOGGER.error("Couldn't place player in world", (Throwable)exception);
                 TranslatableText text2 = new TranslatableText("multiplayer.disconnect.invalid_player_data");
                 this.connection.send(new DisconnectS2CPacket(text2));
                 this.connection.disconnect(text2);

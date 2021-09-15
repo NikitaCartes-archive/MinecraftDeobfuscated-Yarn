@@ -74,7 +74,7 @@ public class CloneCommand {
                     if (!filter.test(cachedBlockPosition)) continue;
                     BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos3);
                     if (blockEntity != null) {
-                        NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+                        NbtCompound nbtCompound = blockEntity.createNbt();
                         list2.add(new BlockInfo(blockPos4, blockState, nbtCompound));
                         deque.addLast(blockPos3);
                         continue;
@@ -117,9 +117,6 @@ public class CloneCommand {
         for (BlockInfo blockInfo2 : list2) {
             BlockEntity blockEntity4 = serverWorld.getBlockEntity(blockInfo2.pos);
             if (blockInfo2.blockEntityTag != null && blockEntity4 != null) {
-                blockInfo2.blockEntityTag.putInt("x", blockInfo2.pos.getX());
-                blockInfo2.blockEntityTag.putInt("y", blockInfo2.pos.getY());
-                blockInfo2.blockEntityTag.putInt("z", blockInfo2.pos.getZ());
                 blockEntity4.readNbt(blockInfo2.blockEntityTag);
                 blockEntity4.markDirty();
             }

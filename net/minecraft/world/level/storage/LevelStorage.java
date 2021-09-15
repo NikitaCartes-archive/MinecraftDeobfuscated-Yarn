@@ -48,7 +48,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
-import net.minecraft.util.ProgressListener;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashMemoryReserve;
@@ -63,7 +62,6 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
-import net.minecraft.world.level.storage.AnvilLevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
 import net.minecraft.world.level.storage.SaveVersionInfo;
@@ -150,7 +148,7 @@ public class LevelStorage {
         return list;
     }
 
-    int getCurrentVersion() {
+    private int getCurrentVersion() {
         return 19133;
     }
 
@@ -292,16 +290,6 @@ public class LevelStorage {
         public WorldSaveHandler createSaveHandler() {
             this.checkValid();
             return new WorldSaveHandler(this, LevelStorage.this.dataFixer);
-        }
-
-        public boolean needsConversion() {
-            LevelSummary levelSummary = this.getLevelSummary();
-            return levelSummary != null && levelSummary.getVersionInfo().getLevelFormatVersion() != LevelStorage.this.getCurrentVersion();
-        }
-
-        public boolean convert(ProgressListener progressListener) {
-            this.checkValid();
-            return AnvilLevelStorage.convertLevel(this, progressListener);
         }
 
         @Nullable

@@ -4,11 +4,12 @@
 package net.minecraft.world.gen.stateprovider;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.class_6578;
+import net.minecraft.class_6580;
+import net.minecraft.class_6581;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
-import net.minecraft.world.gen.stateprovider.ForestFlowerBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.PillarBlockStateProvider;
-import net.minecraft.world.gen.stateprovider.PlainsFlowerBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.RandomizedIntBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
@@ -16,8 +17,9 @@ import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 public class BlockStateProviderType<P extends BlockStateProvider> {
     public static final BlockStateProviderType<SimpleBlockStateProvider> SIMPLE_STATE_PROVIDER = BlockStateProviderType.register("simple_state_provider", SimpleBlockStateProvider.CODEC);
     public static final BlockStateProviderType<WeightedBlockStateProvider> WEIGHTED_STATE_PROVIDER = BlockStateProviderType.register("weighted_state_provider", WeightedBlockStateProvider.CODEC);
-    public static final BlockStateProviderType<PlainsFlowerBlockStateProvider> PLAIN_FLOWER_PROVIDER = BlockStateProviderType.register("plain_flower_provider", PlainsFlowerBlockStateProvider.CODEC);
-    public static final BlockStateProviderType<ForestFlowerBlockStateProvider> FOREST_FLOWER_PROVIDER = BlockStateProviderType.register("forest_flower_provider", ForestFlowerBlockStateProvider.CODEC);
+    public static final BlockStateProviderType<class_6581> NOISE_2D_CUTOFF_PROVIDER = BlockStateProviderType.register("noise_2d_cutoff_provider", class_6581.field_34713);
+    public static final BlockStateProviderType<class_6580> NOISE_2D_PROVIDER = BlockStateProviderType.register("noise_2d_provider", class_6580.field_34711);
+    public static final BlockStateProviderType<class_6578> DUAL_NOISE_2D_PROVIDER = BlockStateProviderType.register("dual_noise_2d_provider", class_6578.field_34702);
     public static final BlockStateProviderType<PillarBlockStateProvider> ROTATED_BLOCK_PROVIDER = BlockStateProviderType.register("rotated_block_provider", PillarBlockStateProvider.CODEC);
     public static final BlockStateProviderType<RandomizedIntBlockStateProvider> RANDOMIZED_INT_STATE_PROVIDER = BlockStateProviderType.register("randomized_int_state_provider", RandomizedIntBlockStateProvider.CODEC);
     private final Codec<P> codec;

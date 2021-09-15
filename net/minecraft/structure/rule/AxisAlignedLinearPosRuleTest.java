@@ -42,7 +42,7 @@ extends PosRuleTest {
         float h = Math.abs((blockPos2.getZ() - pivot.getZ()) * direction.getOffsetZ());
         int i = (int)(f + g + h);
         float j = random.nextFloat();
-        return (double)j <= MathHelper.clampedLerp((double)this.minChance, (double)this.maxChance, MathHelper.getLerpProgress(i, this.minDistance, this.maxDistance));
+        return j <= MathHelper.clampedLerp(this.minChance, this.maxChance, MathHelper.getLerpProgress(i, this.minDistance, this.maxDistance));
     }
 
     @Override

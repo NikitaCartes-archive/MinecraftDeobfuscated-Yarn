@@ -3,20 +3,26 @@
  */
 package net.minecraft.util.dynamic;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.lang.invoke.CallSite;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.util.Util;
 
 /**
  * A few extensions for {@link Codec} or {@link DynamicOps}.
@@ -28,6 +34,7 @@ import java.util.function.Supplier;
 public class Codecs {
     public static final Codec<Integer> NONNEGATIVE_INT = Codecs.rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
     public static final Codec<Integer> POSITIVE_INT = Codecs.rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
+    public static final Codec<Float> field_34387 = Codecs.method_37928(0.0f, Float.MAX_VALUE, float_ -> "Value must be positive: " + float_);
 
     /**
      * Returns an exclusive-or codec for {@link Either} instances.
@@ -51,6 +58,24 @@ public class Codecs {
         return new Xor<F, S>(first, second);
     }
 
+    public static <P, I> Codec<I> method_37931(Codec<P> codec, String string, String string2, BiFunction<P, P, DataResult<I>> biFunction, Function<I, P> function, Function<I, P> function2) {
+        Codec<Object> codec2 = Codec.list(codec).comapFlatMap(list2 -> Util.toArray(list2, 2).flatMap(list -> {
+            Object object = list.get(0);
+            Object object2 = list.get(1);
+            return (DataResult)biFunction.apply(object, object2);
+        }), object -> ImmutableList.of(function.apply(object), function2.apply(object)));
+        Codec<Object> codec3 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf(string)).forGetter(Pair::getFirst), ((MapCodec)codec.fieldOf(string2)).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of)).comapFlatMap(pair -> (DataResult)biFunction.apply(pair.getFirst(), pair.getSecond()), object -> Pair.of(function.apply(object), function2.apply(object)));
+        Codec<Object> codec4 = new class_6495<Object, Object>(codec2, codec3).xmap(either -> either.map(object -> object, object -> object), Either::left);
+        return Codec.either(codec, codec4).comapFlatMap(either -> either.map(object -> (DataResult)biFunction.apply(object, object), DataResult::success), object -> {
+            Object object3;
+            Object object2 = function.apply(object);
+            if (Objects.equals(object2, object3 = function2.apply(object))) {
+                return Either.left(object2);
+            }
+            return Either.right(object);
+        });
+    }
+
     private static <N extends Number> Function<N, DataResult<N>> createRangeChecker(N min, N max, Function<N, String> messageFactory) {
         return value -> {
             if (((Comparable)((Object)value)).compareTo(min) >= 0 && ((Comparable)((Object)value)).compareTo(max) <= 0) {
@@ -63,6 +88,20 @@ public class Codecs {
     private static Codec<Integer> rangedInt(int min, int max, Function<Integer, String> messageFactory) {
         Function<Integer, DataResult<Integer>> function = Codecs.createRangeChecker(min, max, messageFactory);
         return Codec.INT.flatXmap(function, function);
+    }
+
+    private static <N extends Number> Function<N, DataResult<N>> method_37940(N number, N number2, Function<N, String> function) {
+        return number3 -> {
+            if (((Comparable)((Object)number3)).compareTo(number) > 0 && ((Comparable)((Object)number3)).compareTo(number2) <= 0) {
+                return DataResult.success(number3);
+            }
+            return DataResult.error((String)function.apply(number3));
+        };
+    }
+
+    private static Codec<Float> method_37928(float f, float g, Function<Float, String> function) {
+        Function<Float, DataResult<Float>> function2 = Codecs.method_37940(Float.valueOf(f), Float.valueOf(g), function);
+        return Codec.FLOAT.flatXmap(function2, function2);
     }
 
     public static <T> Function<List<T>, DataResult<List<T>>> createNonEmptyListChecker() {
@@ -160,6 +199,59 @@ public class Codecs {
         @Override
         public /* synthetic */ DataResult encode(Object input, DynamicOps ops, Object prefix) {
             return this.encode((Either)input, ops, prefix);
+        }
+    }
+
+    static final class class_6495<F, S>
+    implements Codec<Either<F, S>> {
+        private final Codec<F> field_34388;
+        private final Codec<S> field_34389;
+
+        public class_6495(Codec<F> codec, Codec<S> codec2) {
+            this.field_34388 = codec;
+            this.field_34389 = codec2;
+        }
+
+        @Override
+        public <T> DataResult<Pair<Either<F, S>, T>> decode(DynamicOps<T> dynamicOps, T object) {
+            DataResult<Pair<Either<F, Pair>, T>> dataResult = this.field_34388.decode(dynamicOps, object).map((? super R pair) -> pair.mapFirst(Either::left));
+            if (!dataResult.error().isPresent()) {
+                return dataResult;
+            }
+            DataResult<Pair<Either<F, S>, T>> dataResult2 = this.field_34389.decode(dynamicOps, object).map((? super R pair) -> pair.mapFirst(Either::right));
+            if (!dataResult2.error().isPresent()) {
+                return dataResult2;
+            }
+            return dataResult.apply2((pair, pair2) -> pair2, dataResult2);
+        }
+
+        @Override
+        public <T> DataResult<T> encode(Either<F, S> either, DynamicOps<T> dynamicOps, T object) {
+            return either.map(object2 -> this.field_34388.encode(object2, dynamicOps, object), object2 -> this.field_34389.encode(object2, dynamicOps, object));
+        }
+
+        public boolean equals(Object object) {
+            if (this == object) {
+                return true;
+            }
+            if (object == null || this.getClass() != object.getClass()) {
+                return false;
+            }
+            class_6495 lv = (class_6495)object;
+            return Objects.equals(this.field_34388, lv.field_34388) && Objects.equals(this.field_34389, lv.field_34389);
+        }
+
+        public int hashCode() {
+            return Objects.hash(this.field_34388, this.field_34389);
+        }
+
+        public String toString() {
+            return "EitherCodec[" + this.field_34388 + ", " + this.field_34389 + "]";
+        }
+
+        @Override
+        public /* synthetic */ DataResult encode(Object object, DynamicOps dynamicOps, Object object2) {
+            return this.encode((Either)object, dynamicOps, object2);
         }
     }
 }

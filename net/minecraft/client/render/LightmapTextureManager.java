@@ -114,7 +114,7 @@ implements AutoCloseable {
                 float p = n * ((n * 0.6f + 0.4f) * 0.6f + 0.4f);
                 float q = n * (n * n * 0.6f + 0.4f);
                 vec3f2.set(o, p, q);
-                if (clientWorld.getDimensionEffects().shouldBrightenLighting()) {
+                if (clientWorld.getSkyProperties().shouldBrightenLighting()) {
                     vec3f2.lerp(new Vec3f(0.99f, 1.12f, 1.0f), 0.25f);
                 } else {
                     Vec3f vec3f3 = vec3f.copy();

@@ -15,7 +15,6 @@ import net.minecraft.world.ChunkSectionCache;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -56,7 +55,7 @@ extends Feature<OreFeatureConfig> {
         return false;
     }
 
-    protected boolean generateVeinPart(StructureWorldAccess structureWorldAccess, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int horizontalSize, int verticalSize) {
+    protected boolean generateVeinPart(StructureWorldAccess world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int horizontalSize, int verticalSize) {
         double h;
         double g;
         double e;
@@ -90,7 +89,7 @@ extends Feature<OreFeatureConfig> {
                 ds[k * 4 + 3] = -1.0;
             }
         }
-        try (ChunkSectionCache chunkSectionCache = new ChunkSectionCache(structureWorldAccess);){
+        try (ChunkSectionCache chunkSectionCache = new ChunkSectionCache(world);){
             for (int m = 0; m < j; ++m) {
                 d = ds[m * 4 + 3];
                 if (d < 0.0) continue;
@@ -113,10 +112,10 @@ extends Feature<OreFeatureConfig> {
                             ChunkSection chunkSection;
                             int ac;
                             double ab = ((double)aa + 0.5 - h) / d;
-                            if (!(u * u + w * w + ab * ab < 1.0) || structureWorldAccess.isOutOfHeightLimit(v) || bitSet.get(ac = t - x + (v - y) * horizontalSize + (aa - z) * horizontalSize * verticalSize)) continue;
+                            if (!(u * u + w * w + ab * ab < 1.0) || world.isOutOfHeightLimit(v) || bitSet.get(ac = t - x + (v - y) * horizontalSize + (aa - z) * horizontalSize * verticalSize)) continue;
                             bitSet.set(ac);
                             mutable.set(t, v, aa);
-                            if (!structureWorldAccess.isValidForSetBlock(mutable) || (chunkSection = chunkSectionCache.getSection(mutable)) == WorldChunk.EMPTY_SECTION) continue;
+                            if (!world.isValidForSetBlock(mutable) || (chunkSection = chunkSectionCache.getSection(mutable)) == null) continue;
                             int ad = ChunkSectionPos.getLocalCoord(t);
                             int ae = ChunkSectionPos.getLocalCoord(v);
                             int af = ChunkSectionPos.getLocalCoord(aa);

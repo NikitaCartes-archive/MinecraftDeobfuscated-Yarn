@@ -3,12 +3,14 @@
  */
 package net.minecraft.world;
 
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.feature.StructureFeature;
+import org.jetbrains.annotations.Nullable;
 
 public interface StructureWorldAccess
 extends ServerWorldAccess {
@@ -22,6 +24,9 @@ extends ServerWorldAccess {
      */
     default public boolean isValidForSetBlock(BlockPos pos) {
         return true;
+    }
+
+    default public void method_36972(@Nullable Supplier<String> supplier) {
     }
 }
 

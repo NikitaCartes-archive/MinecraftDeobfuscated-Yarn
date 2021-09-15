@@ -3,34 +3,37 @@
  */
 package net.minecraft.world.chunk;
 
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.class_6558;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.collection.IdList;
+import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.collection.Int2ObjectBiMap;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
-import org.jetbrains.annotations.Nullable;
 
 public class BiMapPalette<T>
 implements Palette<T> {
-    private final IdList<T> idList;
+    private final IndexedIterable<T> idList;
     private final Int2ObjectBiMap<T> map;
     private final PaletteResizeListener<T> resizeHandler;
-    private final Function<NbtCompound, T> elementDeserializer;
-    private final Function<T, NbtCompound> elementSerializer;
     private final int indexBits;
 
-    public BiMapPalette(IdList<T> idList, int indexBits, PaletteResizeListener<T> resizeHandler, Function<NbtCompound, T> elementDeserializer, Function<T, NbtCompound> elementSerializer) {
-        this.idList = idList;
+    public BiMapPalette(IndexedIterable<T> indexedIterable, int i, PaletteResizeListener<T> paletteResizeListener, List<T> list) {
+        this(indexedIterable, i, paletteResizeListener);
+        list.forEach(this.map::add);
+    }
+
+    public BiMapPalette(IndexedIterable<T> indexedIterable, int indexBits, PaletteResizeListener<T> resizeHandler) {
+        this.idList = indexedIterable;
         this.indexBits = indexBits;
         this.resizeHandler = resizeHandler;
-        this.elementDeserializer = elementDeserializer;
-        this.elementSerializer = elementSerializer;
-        this.map = new Int2ObjectBiMap(1 << indexBits);
+        this.map = Int2ObjectBiMap.method_37913(1 << indexBits);
+    }
+
+    public static <A> Palette<A> method_38287(int i, IndexedIterable<A> indexedIterable, PaletteResizeListener<A> paletteResizeListener) {
+        return new BiMapPalette<A>(indexedIterable, i, paletteResizeListener);
     }
 
     @Override
@@ -52,9 +55,12 @@ implements Palette<T> {
     }
 
     @Override
-    @Nullable
     public T getByIndex(int index) {
-        return this.map.get(index);
+        T object = this.map.get(index);
+        if (object == null) {
+            throw new class_6558(index);
+        }
+        return object;
     }
 
     @Override
@@ -84,23 +90,15 @@ implements Palette<T> {
         return i;
     }
 
+    public List<T> method_38288() {
+        ArrayList arrayList = new ArrayList();
+        this.map.iterator().forEachRemaining(arrayList::add);
+        return arrayList;
+    }
+
     @Override
     public int getIndexBits() {
         return this.map.size();
-    }
-
-    @Override
-    public void readNbt(NbtList nbt) {
-        this.map.clear();
-        for (int i = 0; i < nbt.size(); ++i) {
-            this.map.add(this.elementDeserializer.apply(nbt.getCompound(i)));
-        }
-    }
-
-    public void writeNbt(NbtList nbt) {
-        for (int i = 0; i < this.getIndexBits(); ++i) {
-            nbt.add((NbtElement)this.elementSerializer.apply(this.map.get(i)));
-        }
     }
 }
 

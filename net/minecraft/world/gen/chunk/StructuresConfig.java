@@ -3,16 +3,23 @@
  */
 package net.minecraft.world.gen.chunk;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.StrongholdConfig;
 import net.minecraft.world.gen.chunk.StructureConfig;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +41,7 @@ public class StructuresConfig {
      */
     public static final StrongholdConfig DEFAULT_STRONGHOLD;
     private final Map<StructureFeature<?>, StructureConfig> structures;
+    private final ImmutableMap<StructureFeature<?>, ImmutableMultimap<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>>> configuredStructures;
     /**
      * Placement settings for the stronghold for this particular combination of settings,
      * may be null to disable placement of strongholds.
@@ -41,9 +49,16 @@ public class StructuresConfig {
     @Nullable
     private final StrongholdConfig stronghold;
 
-    public StructuresConfig(Optional<StrongholdConfig> stronghold, Map<StructureFeature<?>, StructureConfig> structures) {
-        this.stronghold = stronghold.orElse(null);
+    private StructuresConfig(Map<StructureFeature<?>, StructureConfig> structures, @Nullable StrongholdConfig stronghold) {
+        this.stronghold = stronghold;
         this.structures = structures;
+        HashMap hashMap = new HashMap();
+        ConfiguredStructureFeatures.registerAll((feature2, biome) -> hashMap.computeIfAbsent(feature2.feature, feature -> ImmutableMultimap.builder()).put(feature2, biome));
+        this.configuredStructures = hashMap.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> ((ImmutableMultimap.Builder)entry.getValue()).build()));
+    }
+
+    public StructuresConfig(Optional<StrongholdConfig> stronghold, Map<StructureFeature<?>, StructureConfig> structures) {
+        this(structures, stronghold.orElse(null));
     }
 
     /**
@@ -52,10 +67,10 @@ public class StructuresConfig {
      * @param withStronghold determines if the default stronghold configuration should be included
      */
     public StructuresConfig(boolean withStronghold) {
-        this.structures = Maps.newHashMap(DEFAULT_STRUCTURES);
-        this.stronghold = withStronghold ? DEFAULT_STRONGHOLD : null;
+        this(Maps.newHashMap(DEFAULT_STRUCTURES), withStronghold ? DEFAULT_STRONGHOLD : null);
     }
 
+    @VisibleForTesting
     public Map<StructureFeature<?>, StructureConfig> getStructures() {
         return this.structures;
     }
@@ -72,6 +87,10 @@ public class StructuresConfig {
     @Nullable
     public StrongholdConfig getStronghold() {
         return this.stronghold;
+    }
+
+    public ImmutableMultimap<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> getConfiguredStructureFeature(StructureFeature<?> feature) {
+        return this.configuredStructures.getOrDefault(feature, ImmutableMultimap.of());
     }
 
     static {

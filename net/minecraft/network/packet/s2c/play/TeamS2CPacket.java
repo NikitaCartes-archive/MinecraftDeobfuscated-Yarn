@@ -76,7 +76,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public TeamS2CPacket(PacketByteBuf buf) {
-        this.teamName = buf.readString(16);
+        this.teamName = buf.readString();
         this.packetType = buf.readByte();
         this.team = TeamS2CPacket.containsTeamInfo(this.packetType) ? Optional.of(new SerializableTeam(buf)) : Optional.empty();
         this.playerNames = TeamS2CPacket.containsPlayers(this.packetType) ? buf.readList(PacketByteBuf::readString) : ImmutableList.of();

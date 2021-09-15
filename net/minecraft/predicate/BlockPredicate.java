@@ -60,7 +60,7 @@ public class BlockPredicate {
         if (!this.state.test(blockState)) {
             return false;
         }
-        return this.nbt == NbtPredicate.ANY || (blockEntity = world.getBlockEntity(pos)) != null && this.nbt.test(blockEntity.writeNbt(new NbtCompound()));
+        return this.nbt == NbtPredicate.ANY || (blockEntity = world.getBlockEntity(pos)) != null && this.nbt.test(blockEntity.createNbtWithIdentifyingData());
     }
 
     public static BlockPredicate fromJson(@Nullable JsonElement json) {

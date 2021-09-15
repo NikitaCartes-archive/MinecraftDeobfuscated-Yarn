@@ -25,6 +25,14 @@ extends Pool<Weighted.Present<E>> {
         return new Builder();
     }
 
+    public static <E> DataPool<E> method_38062() {
+        return new DataPool<E>(List.of());
+    }
+
+    public static <E> DataPool<E> method_38061(E object) {
+        return new DataPool<E>(List.of(Weighted.of(object, 1)));
+    }
+
     public Optional<E> getDataOrEmpty(Random random) {
         return this.getOrEmpty(random).map(Weighted.Present::getData);
     }

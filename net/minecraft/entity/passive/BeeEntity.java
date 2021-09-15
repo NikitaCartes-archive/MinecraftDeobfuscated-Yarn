@@ -201,7 +201,7 @@ Flutterer {
         this.goalSelector.add(8, new BeeWanderAroundGoal());
         this.goalSelector.add(9, new SwimGoal(this));
         this.targetSelector.add(1, new BeeRevengeGoal(this).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new BeeFollowTargetGoal(this));
+        this.targetSelector.add(2, new StingTargetGoal(this));
         this.targetSelector.add(3, new UniversalAngerGoal<BeeEntity>(this, true));
     }
 
@@ -1259,9 +1259,9 @@ Flutterer {
         }
     }
 
-    static class BeeFollowTargetGoal
+    static class StingTargetGoal
     extends ActiveTargetGoal<PlayerEntity> {
-        BeeFollowTargetGoal(BeeEntity bee) {
+        StingTargetGoal(BeeEntity bee) {
             super(bee, PlayerEntity.class, 10, true, false, bee::shouldAngerAt);
         }
 

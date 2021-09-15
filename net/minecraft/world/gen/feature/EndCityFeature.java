@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.function.Predicate;
 import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -18,11 +19,12 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class EndCityFeature
 extends StructureFeature<DefaultFeatureConfig> {
@@ -38,7 +40,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, Biome biome, ChunkPos chunkPos2, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, ChunkPos chunkPos2, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
         return EndCityFeature.getGenerationHeight(chunkPos, chunkGenerator, heightLimitView) >= 60;
     }
 
@@ -76,13 +78,16 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
             BlockRotation blockRotation = BlockRotation.random(this.random);
             int i = EndCityFeature.getGenerationHeight(chunkPos, chunkGenerator, heightLimitView);
             if (i < 60) {
                 return;
             }
             BlockPos blockPos = chunkPos.getCenterAtY(i);
+            if (!predicate.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ())))) {
+                return;
+            }
             ArrayList<StructurePiece> list = Lists.newArrayList();
             EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
             list.forEach(this::addPiece);

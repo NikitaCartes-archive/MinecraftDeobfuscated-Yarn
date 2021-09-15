@@ -321,16 +321,16 @@ extends HostileEntity {
 
     class TrackOwnerTargetGoal
     extends TrackTargetGoal {
-        private final TargetPredicate TRACK_OWNER_PREDICATE;
+        private final TargetPredicate targetPredicate;
 
         public TrackOwnerTargetGoal(PathAwareEntity mob) {
             super(mob, false);
-            this.TRACK_OWNER_PREDICATE = TargetPredicate.createNonAttackable().ignoreVisibility().ignoreDistanceScalingFactor();
+            this.targetPredicate = TargetPredicate.createNonAttackable().ignoreVisibility().ignoreDistanceScalingFactor();
         }
 
         @Override
         public boolean canStart() {
-            return VexEntity.this.owner != null && VexEntity.this.owner.getTarget() != null && this.canTrack(VexEntity.this.owner.getTarget(), this.TRACK_OWNER_PREDICATE);
+            return VexEntity.this.owner != null && VexEntity.this.owner.getTarget() != null && this.canTrack(VexEntity.this.owner.getTarget(), this.targetPredicate);
         }
 
         @Override

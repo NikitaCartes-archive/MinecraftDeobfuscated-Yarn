@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.MarginedStructureStart;
@@ -16,6 +17,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
@@ -40,21 +42,24 @@ extends StructureFeature<RangeDecoratorConfig> {
         }
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, RangeDecoratorConfig rangeDecoratorConfig, HeightLimitView heightLimitView) {
-            int l;
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, RangeDecoratorConfig rangeDecoratorConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
             int i = chunkPos.getStartX() + this.random.nextInt(16);
             int j = chunkPos.getStartZ() + this.random.nextInt(16);
             int k = chunkGenerator.getSeaLevel();
             HeightContext heightContext = new HeightContext(chunkGenerator, heightLimitView);
+            int l = rangeDecoratorConfig.heightProvider.get(this.random, heightContext);
             VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(i, j, heightLimitView);
             BlockPos.Mutable mutable = new BlockPos.Mutable(i, l, j);
-            for (l = rangeDecoratorConfig.heightProvider.get(this.random, heightContext); l > k; --l) {
-                BlockState blockState = verticalBlockSample.getState(mutable);
-                mutable.move(Direction.DOWN);
-                BlockState blockState2 = verticalBlockSample.getState(mutable);
-                if (blockState.isAir() && (blockState2.isOf(Blocks.SOUL_SAND) || blockState2.isSideSolidFullSquare(EmptyBlockView.INSTANCE, mutable, Direction.UP))) break;
+            while (l > k) {
+                BlockState blockState = verticalBlockSample.getState(l);
+                BlockState blockState2 = verticalBlockSample.getState(--l);
+                if (!blockState.isAir() || !blockState2.isOf(Blocks.SOUL_SAND) && !blockState2.isSideSolidFullSquare(EmptyBlockView.INSTANCE, mutable.setY(l), Direction.UP)) continue;
+                break;
             }
             if (l <= k) {
+                return;
+            }
+            if (!predicate.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(l), BiomeCoords.fromBlock(j)))) {
                 return;
             }
             NetherFossilGenerator.addPieces(structureManager, this, this.random, new BlockPos(i, l, j));

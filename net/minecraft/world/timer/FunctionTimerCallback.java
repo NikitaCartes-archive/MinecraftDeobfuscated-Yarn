@@ -25,6 +25,11 @@ implements TimerCallback<MinecraftServer> {
         commandFunctionManager.getFunction(this.name).ifPresent(commandFunction -> commandFunctionManager.execute((CommandFunction)commandFunction, commandFunctionManager.getScheduledCommandSource()));
     }
 
+    @Override
+    public /* synthetic */ void call(Object server, Timer events, long time) {
+        this.call((MinecraftServer)server, (Timer<MinecraftServer>)events, time);
+    }
+
     public static class Serializer
     extends TimerCallback.Serializer<MinecraftServer, FunctionTimerCallback> {
         public Serializer() {

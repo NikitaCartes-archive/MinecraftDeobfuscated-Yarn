@@ -122,10 +122,10 @@ public class UpgradeData {
         ChunkPos chunkPos = chunk.getPos();
         World worldAccess = chunk.getWorld();
         for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
-            ChunkSection chunkSection = chunk.getSectionArray()[i];
+            ChunkSection chunkSection = chunk.getSection(i);
             int[] is = this.centerIndicesToUpgrade[i];
             this.centerIndicesToUpgrade[i] = null;
-            if (chunkSection == null || is == null || is.length <= 0) continue;
+            if (is == null || is.length <= 0) continue;
             Direction[] directions = Direction.values();
             PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
             for (int j : is) {

@@ -61,7 +61,7 @@ implements SynchronousResourceReloader {
         this.crosshairTarget = crosshairTarget;
     }
 
-    public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumers) {
+    public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
         BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);
         if (blockEntityRenderer == null) {
             return;
@@ -72,7 +72,7 @@ implements SynchronousResourceReloader {
         if (!blockEntityRenderer.isInRenderDistance(blockEntity, this.camera.getPos())) {
             return;
         }
-        BlockEntityRenderDispatcher.runReported(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumers));
+        BlockEntityRenderDispatcher.runReported(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, tickDelta, matrices, vertexConsumers));
     }
 
     private static <T extends BlockEntity> void render(BlockEntityRenderer<T> renderer, T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {

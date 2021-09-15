@@ -1,0 +1,40 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.util.profiling.jfr;
+
+import com.mojang.datafixers.util.Pair;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import net.minecraft.util.profiling.jfr.JfrJsonReport;
+import net.minecraft.util.profiling.jfr.sample.ChunkGenerationSample;
+import net.minecraft.util.profiling.jfr.sample.CpuLoadSample;
+import net.minecraft.util.profiling.jfr.sample.FileIoSample;
+import net.minecraft.util.profiling.jfr.sample.GcHeapSummarySample;
+import net.minecraft.util.profiling.jfr.sample.LongRunningSampleStatistics;
+import net.minecraft.util.profiling.jfr.sample.PacketSample;
+import net.minecraft.util.profiling.jfr.sample.ServerTickTimeSample;
+import net.minecraft.util.profiling.jfr.sample.ThreadAllocationStatisticsSample;
+import net.minecraft.world.chunk.ChunkStatus;
+import org.jetbrains.annotations.Nullable;
+
+public record JfrProfile(Instant startTime, Instant endTime, Duration duration, @Nullable Duration worldGenDuration, List<ServerTickTimeSample> serverTickTimeSamples, List<CpuLoadSample> cpuLoadSamples, GcHeapSummarySample.Statistics gcHeapSummaryStatistics, ThreadAllocationStatisticsSample.AllocationMap threadAllocationMap, PacketSample.Statistics packetReadStatistics, PacketSample.Statistics packetSentStatistics, FileIoSample.Statistics fileWriteStatistics, FileIoSample.Statistics fileReadStatistics, List<ChunkGenerationSample> chunkGenerationSamples) {
+    public List<Pair<ChunkStatus, LongRunningSampleStatistics<ChunkGenerationSample>>> getChunkGenerationSampleStatistics() {
+        Map<ChunkStatus, List<ChunkGenerationSample>> map = this.chunkGenerationSamples.stream().collect(Collectors.groupingBy(ChunkGenerationSample::chunkStatus));
+        return map.entrySet().stream().map(entry -> Pair.of((ChunkStatus)entry.getKey(), LongRunningSampleStatistics.fromSamples((List)entry.getValue()))).sorted(Comparator.comparing(pair -> ((LongRunningSampleStatistics)pair.getSecond()).totalDuration()).reversed()).toList();
+    }
+
+    public String toJson() {
+        return new JfrJsonReport().toString(this);
+    }
+
+    @Nullable
+    public Duration worldGenDuration() {
+        return this.worldGenDuration;
+    }
+}
+
