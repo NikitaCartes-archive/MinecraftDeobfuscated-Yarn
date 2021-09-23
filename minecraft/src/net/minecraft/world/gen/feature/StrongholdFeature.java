@@ -2,27 +2,20 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
-import java.util.function.Predicate;
+import net.minecraft.class_6622;
+import net.minecraft.class_6626;
 import net.minecraft.structure.MarginedStructureStart;
 import net.minecraft.structure.StrongholdGenerator;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.random.ChunkRandom;
 
-public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
+public class StrongholdFeature extends MarginedStructureStart<DefaultFeatureConfig> {
 	public StrongholdFeature(Codec<DefaultFeatureConfig> codec) {
-		super(codec);
-	}
-
-	@Override
-	public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
-		return StrongholdFeature.Start::new;
+		super(codec, StrongholdFeature::method_38686);
 	}
 
 	protected boolean shouldStartAt(
@@ -38,43 +31,26 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		return chunkGenerator.isStrongholdStartingChunk(chunkPos);
 	}
 
-	public static class Start extends MarginedStructureStart<DefaultFeatureConfig> {
-		private final long seed;
+	private static void method_38686(class_6626 arg, DefaultFeatureConfig defaultFeatureConfig, class_6622.class_6623 arg2) {
+		int i = 0;
 
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
-			super(structureFeature, chunkPos, i, l);
-			this.seed = l;
-		}
+		StrongholdGenerator.Start start;
+		do {
+			arg.method_38719();
+			arg2.random().setCarverSeed(arg2.seed() + (long)(i++), arg2.chunkPos().x, arg2.chunkPos().z);
+			StrongholdGenerator.init();
+			start = new StrongholdGenerator.Start(arg2.random(), arg2.chunkPos().getOffsetX(2), arg2.chunkPos().getOffsetZ(2));
+			arg.addPiece(start);
+			start.fillOpenings(start, arg, arg2.random());
+			List<StructurePiece> list = start.pieces;
 
-		public void init(
-			DynamicRegistryManager dynamicRegistryManager,
-			ChunkGenerator chunkGenerator,
-			StructureManager structureManager,
-			ChunkPos chunkPos,
-			DefaultFeatureConfig defaultFeatureConfig,
-			HeightLimitView heightLimitView,
-			Predicate<Biome> predicate
-		) {
-			int i = 0;
+			while (!list.isEmpty()) {
+				int j = arg2.random().nextInt(list.size());
+				StructurePiece structurePiece = (StructurePiece)list.remove(j);
+				structurePiece.fillOpenings(start, arg, arg2.random());
+			}
 
-			StrongholdGenerator.Start start;
-			do {
-				this.clearChildren();
-				this.random.setCarverSeed(this.seed + (long)(i++), chunkPos.x, chunkPos.z);
-				StrongholdGenerator.init();
-				start = new StrongholdGenerator.Start(this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2));
-				this.addPiece(start);
-				start.fillOpenings(start, this, this.random);
-				List<StructurePiece> list = start.pieces;
-
-				while (!list.isEmpty()) {
-					int j = this.random.nextInt(list.size());
-					StructurePiece structurePiece = (StructurePiece)list.remove(j);
-					structurePiece.fillOpenings(start, this, this.random);
-				}
-
-				this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);
-			} while (this.hasNoChildren() || start.portalRoom == null);
-		}
+			arg.method_38716(arg2.chunkGenerator().getSeaLevel(), arg2.chunkGenerator().getMinimumY(), arg2.random(), 10);
+		} while (arg.method_38720() || start.portalRoom == null);
 	}
 }

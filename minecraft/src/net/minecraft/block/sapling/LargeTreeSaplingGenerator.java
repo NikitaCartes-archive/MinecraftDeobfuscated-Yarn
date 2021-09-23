@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Override
@@ -27,10 +26,10 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	}
 
 	@Nullable
-	protected abstract ConfiguredFeature<TreeFeatureConfig, ?> getLargeTreeFeature(Random random);
+	protected abstract ConfiguredFeature<?, ?> getLargeTreeFeature(Random random);
 
 	public boolean generateLargeTree(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random, int x, int z) {
-		ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.getLargeTreeFeature(random);
+		ConfiguredFeature<?, ?> configuredFeature = this.getLargeTreeFeature(random);
 		if (configuredFeature == null) {
 			return false;
 		} else {

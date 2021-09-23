@@ -52,7 +52,11 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.StructureWeightSampler;
 import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
+import net.minecraft.world.gen.feature.NetherFortressFeature;
+import net.minecraft.world.gen.feature.OceanMonumentFeature;
+import net.minecraft.world.gen.feature.PillagerOutpostFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.SwampHutFeature;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
@@ -160,7 +164,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			float f = (float)lv.method_38357(ix, kx);
 			float g = (float)lv.method_38359(ix, kx);
 			float h = (float)lv.method_38358(ix, kx);
-			double lx = lv.method_38360(ix, kx).comp_77();
+			double lx = lv.method_38360(ix, kx).offset();
 			return this.noiseColumnSampler.method_38378(ix, jx, kx, d, e, f, g, h, lx);
 		});
 	}
@@ -361,7 +365,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public void carve(ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carver) {
-		BiomeAccess biomeAccess2 = biomeAccess.withSource((ix, jx, kx) -> this.populationSource.method_38109(ix, jx, kx, this.method_38276()));
+		BiomeAccess biomeAccess2 = biomeAccess.withSource((ix, jx, kx) -> this.populationSource.getBiome(ix, jx, kx, this.method_38276()));
 		ChunkRandom chunkRandom = new ChunkRandom();
 		int i = 8;
 		ChunkPos chunkPos = chunk.getPos();
@@ -392,8 +396,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				ChunkPos chunkPos3 = new ChunkPos(chunkPos.x + o, chunkPos.z + p);
 				Chunk chunk2 = chunkRegion.getChunk(chunkPos3.x, chunkPos3.z);
 				GenerationSettings generationSettings = chunk2.method_38258(
-						() -> this.populationSource
-								.method_38109(BiomeCoords.fromBlock(chunkPos3.getStartX()), 0, BiomeCoords.fromBlock(chunkPos3.getStartZ()), this.method_38276())
+						() -> this.populationSource.getBiome(BiomeCoords.fromBlock(chunkPos3.getStartX()), 0, BiomeCoords.fromBlock(chunkPos3.getStartZ()), this.method_38276())
 					)
 					.getGenerationSettings();
 				List<Supplier<ConfiguredCarver<?>>> list = generationSettings.getCarversForStep(carver);
@@ -548,31 +551,31 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
 		if (accessor.getStructureAt(pos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
 			if (group == SpawnGroup.MONSTER) {
-				return StructureFeature.SWAMP_HUT.getMonsterSpawns();
+				return SwampHutFeature.MONSTER_SPAWNS;
 			}
 
 			if (group == SpawnGroup.CREATURE) {
-				return StructureFeature.SWAMP_HUT.getCreatureSpawns();
+				return SwampHutFeature.CREATURE_SPAWNS;
 			}
 		}
 
 		if (group == SpawnGroup.MONSTER) {
 			if (accessor.getStructureAt(pos, false, StructureFeature.PILLAGER_OUTPOST).hasChildren()) {
-				return StructureFeature.PILLAGER_OUTPOST.getMonsterSpawns();
+				return PillagerOutpostFeature.MONSTER_SPAWNS;
 			}
 
 			if (accessor.getStructureAt(pos, false, StructureFeature.MONUMENT).hasChildren()) {
-				return StructureFeature.MONUMENT.getMonsterSpawns();
+				return OceanMonumentFeature.MONSTER_SPAWNS;
 			}
 
 			if (accessor.getStructureAt(pos, true, StructureFeature.FORTRESS).hasChildren()) {
-				return StructureFeature.FORTRESS.getMonsterSpawns();
+				return NetherFortressFeature.MONSTER_SPAWNS;
 			}
 		}
 
 		return (group == SpawnGroup.UNDERGROUND_WATER_CREATURE || group == SpawnGroup.AXOLOTLS)
 				&& accessor.getStructureAt(pos, false, StructureFeature.MONUMENT).hasChildren()
-			? StructureFeature.MONUMENT.getUndergroundWaterCreatureSpawns()
+			? SpawnSettings.EMPTY_ENTRY_POOL
 			: super.getEntitySpawnList(biome, accessor, group, pos);
 	}
 

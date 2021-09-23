@@ -795,10 +795,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	public String getEntitiesDebugString() {
-		return "E: " + this.regularEntityCount + "/" + this.world.getRegularEntityCount() + ", B: " + this.blockEntityCount;
+		return "E: "
+			+ this.regularEntityCount
+			+ "/"
+			+ this.world.getRegularEntityCount()
+			+ ", B: "
+			+ this.blockEntityCount
+			+ ", SD: "
+			+ this.client.options.simulationDistance;
 	}
 
-	private void setupTerrain(Camera camera, Frustum frustum, boolean hasForcedFrustum, boolean bl) {
+	private void setupTerrain(Camera camera, Frustum frustum, boolean hasForcedFrustum, boolean spectator) {
 		Vec3d vec3d = camera.getPos();
 		if (this.client.options.getViewDistance() != this.viewDistance) {
 			this.reload();
@@ -844,21 +851,21 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.lastCameraY = n;
 		this.lastCameraZ = o;
 		this.client.getProfiler().swap("update");
-		boolean bl2 = this.client.chunkCullingEnabled;
-		if (bl && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
-			bl2 = false;
+		boolean bl = this.client.chunkCullingEnabled;
+		if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
+			bl = false;
 		}
 
 		if (!hasForcedFrustum) {
 			if (this.field_34810) {
 				this.client.getProfiler().push("full_update_schedule");
 				this.field_34810 = false;
-				boolean bl3 = bl2;
+				boolean bl2 = bl;
 				this.field_34808 = Util.getMainWorkerExecutor().submit(() -> {
 					Queue<WorldRenderer.ChunkInfo> queue = Queues.<WorldRenderer.ChunkInfo>newArrayDeque();
 					this.method_38549(camera, queue);
 					WorldRenderer.class_6600 lvx = new WorldRenderer.class_6600(this.chunks.chunks.length);
-					this.method_34808(lvx.field_34819, lvx.field_34818, vec3d, queue, bl3);
+					this.method_34808(lvx.field_34819, lvx.field_34818, vec3d, queue, bl2);
 					this.field_34817.set(lvx);
 					this.field_34809.set(true);
 				});
@@ -873,12 +880,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				while (!this.field_34816.isEmpty()) {
 					ChunkBuilder.BuiltChunk builtChunk = (ChunkBuilder.BuiltChunk)this.field_34816.poll();
 					WorldRenderer.ChunkInfo chunkInfo = lv.field_34818.getInfo(builtChunk);
-					if (chunkInfo != null) {
+					if (chunkInfo != null && chunkInfo.chunk == builtChunk) {
 						queue.add(chunkInfo);
 					}
 				}
 
-				this.method_34808(lv.field_34819, lv.field_34818, vec3d, queue, bl2);
+				this.method_34808(lv.field_34819, lv.field_34818, vec3d, queue, bl);
 				this.field_34809.set(true);
 				this.client.getProfiler().pop();
 			}
@@ -1118,16 +1125,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		profiler.swap("chunk_update_queue");
 		this.world.runQueuedChunkUpdates();
 		profiler.swap("light_updates");
-		this.world.getChunkManager().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, false, true);
+		boolean bl = this.world.method_38743();
+		this.world.getChunkManager().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, bl, true);
 		Vec3d vec3d = camera.getPos();
 		double d = vec3d.getX();
 		double e = vec3d.getY();
 		double f = vec3d.getZ();
 		Matrix4f matrix4f2 = matrices.peek().getModel();
 		profiler.swap("culling");
-		boolean bl = this.capturedFrustum != null;
+		boolean bl2 = this.capturedFrustum != null;
 		Frustum frustum;
-		if (bl) {
+		if (bl2) {
 			frustum = this.capturedFrustum;
 			frustum.setPosition(this.capturedFrustumPosition.x, this.capturedFrustumPosition.y, this.capturedFrustumPosition.z);
 		} else {
@@ -1136,7 +1144,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		this.client.getProfiler().swap("captureFrustum");
 		if (this.shouldCaptureFrustum) {
-			this.captureFrustum(matrix4f2, matrix4f, vec3d.x, vec3d.y, vec3d.z, bl ? new Frustum(matrix4f2, matrix4f) : frustum);
+			this.captureFrustum(matrix4f2, matrix4f, vec3d.x, vec3d.y, vec3d.z, bl2 ? new Frustum(matrix4f2, matrix4f) : frustum);
 			this.shouldCaptureFrustum = false;
 		}
 
@@ -1145,15 +1153,15 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		BackgroundRenderer.setFogBlack();
 		RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
 		float g = gameRenderer.getViewDistance();
-		boolean bl2 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
+		boolean bl3 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		profiler.swap("sky");
 		RenderSystem.setShader(GameRenderer::getPositionShader);
-		this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2));
+		this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl3));
 		profiler.swap("fog");
-		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0F, 32.0F), bl2);
+		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0F, 32.0F), bl3);
 		profiler.swap("terrain_setup");
-		this.setupTerrain(camera, frustum, bl, this.client.player.isSpectator());
+		this.setupTerrain(camera, frustum, bl2, this.client.player.isSpectator());
 		profiler.swap("compilechunks");
 		this.updateChunks(camera);
 		profiler.swap("terrain");
@@ -1184,7 +1192,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.client.getFramebuffer().beginWrite(false);
 		}
 
-		boolean bl3 = false;
+		boolean bl4 = false;
 		VertexConsumerProvider.Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
 
 		for (Entity entity : this.world.getEntities()) {
@@ -1204,7 +1212,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 				VertexConsumerProvider vertexConsumerProvider;
 				if (this.canDrawEntityOutlines() && this.client.hasOutline(entity)) {
-					bl3 = true;
+					bl4 = true;
 					OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
 					vertexConsumerProvider = outlineVertexConsumerProvider;
 					int i = entity.getTeamColorValue();
@@ -1281,7 +1289,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		immediate.draw(TexturedRenderLayers.getSign());
 		immediate.draw(TexturedRenderLayers.getChest());
 		this.bufferBuilders.getOutlineVertexConsumers().draw();
-		if (bl3) {
+		if (bl4) {
 			this.entityOutlineShader.render(tickDelta);
 			this.client.getFramebuffer().beginWrite(false);
 		}
@@ -3246,15 +3254,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	@Environment(EnvType.CLIENT)
 	static class ChunkInfoList {
 		private final WorldRenderer.ChunkInfo[] current;
-		private final WorldRenderer.ChunkInfo[] pending;
 
 		ChunkInfoList(int i) {
 			this.current = new WorldRenderer.ChunkInfo[i];
-			this.pending = new WorldRenderer.ChunkInfo[i];
-		}
-
-		private void update() {
-			System.arraycopy(this.pending, 0, this.current, 0, this.current.length);
 		}
 
 		public void setInfo(ChunkBuilder.BuiltChunk chunk, WorldRenderer.ChunkInfo info) {
@@ -3262,8 +3264,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		@Nullable
-		public WorldRenderer.ChunkInfo getInfo(ChunkBuilder.BuiltChunk chunk) {
-			return this.current[chunk.index];
+		public WorldRenderer.ChunkInfo getInfo(ChunkBuilder.BuiltChunk builtChunk) {
+			int i = builtChunk.index;
+			return i >= 0 && i < this.current.length ? this.current[i] : null;
 		}
 	}
 

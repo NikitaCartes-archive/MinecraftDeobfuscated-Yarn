@@ -15,7 +15,7 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
+import net.minecraft.world.gen.MultiNoiseParameters;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorSettings {
@@ -23,7 +23,7 @@ public final class ChunkGeneratorSettings {
 		instance -> instance.group(
 					StructuresConfig.CODEC.fieldOf("structures").forGetter(ChunkGeneratorSettings::getStructuresConfig),
 					GenerationShapeConfig.CODEC.fieldOf("noise").forGetter(ChunkGeneratorSettings::getGenerationShapeConfig),
-					VanillaLayeredBiomeSource.CODEC.fieldOf("octaves").forGetter(ChunkGeneratorSettings::getBiomeSource),
+					MultiNoiseParameters.CODEC.fieldOf("octaves").forGetter(ChunkGeneratorSettings::getBiomeSource),
 					BlockState.CODEC.fieldOf("default_block").forGetter(ChunkGeneratorSettings::getDefaultBlock),
 					BlockState.CODEC.fieldOf("default_fluid").forGetter(ChunkGeneratorSettings::getDefaultFluid),
 					Codec.INT.fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorSettings::getBedrockCeilingY),
@@ -41,7 +41,7 @@ public final class ChunkGeneratorSettings {
 	public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
 	private final StructuresConfig structuresConfig;
 	private final GenerationShapeConfig generationShapeConfig;
-	private final VanillaLayeredBiomeSource biomeSource;
+	private final MultiNoiseParameters biomeSource;
 	private final BlockState defaultBlock;
 	private final BlockState defaultFluid;
 	private final int bedrockCeilingY;
@@ -66,7 +66,7 @@ public final class ChunkGeneratorSettings {
 	private ChunkGeneratorSettings(
 		StructuresConfig structuresConfig,
 		GenerationShapeConfig generationShapeConfig,
-		VanillaLayeredBiomeSource biomeSource,
+		MultiNoiseParameters biomeSource,
 		BlockState defaultBlock,
 		BlockState defaultFluid,
 		int bedrockFloorY,
@@ -103,7 +103,7 @@ public final class ChunkGeneratorSettings {
 		return this.generationShapeConfig;
 	}
 
-	public VanillaLayeredBiomeSource getBiomeSource() {
+	public MultiNoiseParameters getBiomeSource() {
 		return this.biomeSource;
 	}
 
@@ -200,7 +200,7 @@ public final class ChunkGeneratorSettings {
 				false,
 				true
 			),
-			new VanillaLayeredBiomeSource(
+			new MultiNoiseParameters(
 				new DoublePerlinNoiseSampler.NoiseParameters(0, 0.0),
 				new DoublePerlinNoiseSampler.NoiseParameters(0, 0.0),
 				new DoublePerlinNoiseSampler.NoiseParameters(0, 0.0),
@@ -243,7 +243,7 @@ public final class ChunkGeneratorSettings {
 				false,
 				true
 			),
-			new VanillaLayeredBiomeSource(
+			new MultiNoiseParameters(
 				new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0),
 				new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0),
 				new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0),
@@ -285,7 +285,7 @@ public final class ChunkGeneratorSettings {
 				amplified,
 				false
 			),
-			new VanillaLayeredBiomeSource(
+			new MultiNoiseParameters(
 				new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0),
 				new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0),
 				new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0),

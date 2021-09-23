@@ -51,7 +51,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
-import jdk.jfr.FlightRecorder;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
@@ -116,9 +115,8 @@ import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.RecordDumper;
 import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
-import net.minecraft.util.profiling.jfr.JfrProfiler;
-import net.minecraft.util.profiling.jfr.event.ticking.ServerTickTimeEvent;
-import net.minecraft.util.profiling.jfr.event.worldgen.WorldLoadFinishedEvent;
+import net.minecraft.util.profiling.jfr.Finishable;
+import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -180,6 +178,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
+	public static final String field_34982 = "vanilla";
 	private static final float field_33212 = 0.8F;
 	private static final int field_33213 = 100;
 	public static final int field_33206 = 50;
@@ -275,6 +274,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		AtomicReference<S> atomicReference = new AtomicReference();
 		Thread thread = new Thread(() -> ((MinecraftServer)atomicReference.get()).runServer(), "Server thread");
 		thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error(throwable));
+		if (Runtime.getRuntime().availableProcessors() > 4) {
+			thread.setPriority(8);
+		}
+
 		S minecraftServer = (S)serverFactory.apply(thread);
 		atomicReference.set(minecraftServer);
 		thread.start();
@@ -332,28 +335,24 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	protected abstract boolean setupServer() throws IOException;
 
 	protected void loadWorld() {
-		if (FlightRecorder.isAvailable() && !JfrProfiler.isProfiling()) {
+		if (!FlightProfiler.INSTANCE.isProfiling()) {
 		}
 
 		boolean bl = false;
-		WorldLoadFinishedEvent worldLoadFinishedEvent = Util.make(new WorldLoadFinishedEvent(), worldLoadFinishedEventx -> {
-			if (worldLoadFinishedEventx.isEnabled()) {
-				worldLoadFinishedEventx.begin();
-			}
-		});
+		Finishable finishable = FlightProfiler.INSTANCE.startWorldLoadProfiling();
 		this.loadWorldResourcePack();
 		this.saveProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldGenerationProgressListener);
 		this.updateDifficulty();
 		this.prepareStartRegion(worldGenerationProgressListener);
-		if (worldLoadFinishedEvent.shouldCommit()) {
-			worldLoadFinishedEvent.commit();
+		if (finishable != null) {
+			finishable.finish();
 		}
 
 		if (bl) {
 			try {
-				JfrProfiler.stop();
+				FlightProfiler.INSTANCE.stop();
 			} catch (Throwable var5) {
 				LOGGER.warn("Failed to stop JFR profiling", var5);
 			}
@@ -718,7 +717,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.metadata.setDescription(new LiteralText(this.motd));
 				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
 				this.setFavicon(this.metadata);
-				this.method_38582();
 
 				while (this.running) {
 					long l = Util.getMeasuringTimeMs() - this.timeReference;
@@ -745,6 +743,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					this.profiler.pop();
 					this.endTickMetrics();
 					this.loading = true;
+					FlightProfiler.INSTANCE.onTick(this.tickTime);
 				}
 			} else {
 				this.setCrashReport(null);
@@ -779,15 +778,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.exit();
 			}
 		}
-	}
-
-	private void method_38582() {
-		FlightRecorder.addPeriodicEvent(ServerTickTimeEvent.class, () -> {
-			ServerTickTimeEvent serverTickTimeEvent = new ServerTickTimeEvent(this.getTickTime());
-			if (serverTickTimeEvent.shouldCommit()) {
-				serverTickTimeEvent.commit();
-			}
-		});
 	}
 
 	private boolean shouldKeepTicking() {

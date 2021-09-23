@@ -210,7 +210,7 @@ public class SavannaVillageData {
 			new StructurePool(
 				new Identifier("village/savanna/trees"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.ACACIA), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.ACACIA_CHECKED), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
@@ -220,7 +220,7 @@ public class SavannaVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofLegacySingle("village/savanna/savanna_lamp_post_01"), 4),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.ACACIA), 4),
+					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.ACACIA_CHECKED), 4),
 					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_HAY), 4),
 					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_MELON), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 4)
@@ -234,7 +234,7 @@ public class SavannaVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/savanna/savanna_lamp_post_01", StructureProcessorLists.ZOMBIE_SAVANNA), 4),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.ACACIA), 4),
+					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.ACACIA_CHECKED), 4),
 					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_HAY), 4),
 					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_MELON), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 4)

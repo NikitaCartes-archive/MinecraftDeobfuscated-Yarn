@@ -3,12 +3,11 @@ package net.minecraft.util.collection;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
-import net.minecraft.class_6490;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.mutable.MutableInt;
 
-public class PackedIntegerArray implements class_6490 {
+public class PackedIntegerArray implements PaletteStorage {
 	/**
 	 * Magic constants for faster integer division by a constant.
 	 * 
@@ -215,7 +214,7 @@ public class PackedIntegerArray implements class_6490 {
 		0,
 		5
 	};
-	private final long[] storage;
+	private final long[] data;
 	private final int elementBits;
 	private final long maxValue;
 	private final int size;
@@ -224,17 +223,17 @@ public class PackedIntegerArray implements class_6490 {
 	private final int indexOffset;
 	private final int indexShift;
 
-	public PackedIntegerArray(int i, int j, IntStream intStream) {
-		this(i, j);
+	public PackedIntegerArray(int elementBits, int size, IntStream values) {
+		this(elementBits, size);
 		MutableInt mutableInt = new MutableInt();
-		intStream.forEach(ix -> this.set(mutableInt.getAndIncrement(), ix));
+		values.forEach(value -> this.set(mutableInt.getAndIncrement(), value));
 	}
 
 	public PackedIntegerArray(int elementBits, int size) {
 		this(elementBits, size, (long[])null);
 	}
 
-	public PackedIntegerArray(int elementBits, int size, @Nullable long[] storage) {
+	public PackedIntegerArray(int elementBits, int size, @Nullable long[] data) {
 		Validate.inclusiveBetween(1L, 32L, (long)elementBits);
 		this.size = size;
 		this.elementBits = elementBits;
@@ -245,14 +244,14 @@ public class PackedIntegerArray implements class_6490 {
 		this.indexOffset = INDEX_PARAMETERS[i + 1];
 		this.indexShift = INDEX_PARAMETERS[i + 2];
 		int j = (size + this.elementsPerLong - 1) / this.elementsPerLong;
-		if (storage != null) {
-			if (storage.length != j) {
-				throw (RuntimeException)Util.throwOrPause(new RuntimeException("Invalid length given for storage, got: " + storage.length + " but expected: " + j));
+		if (data != null) {
+			if (data.length != j) {
+				throw (RuntimeException)Util.throwOrPause(new RuntimeException("Invalid length given for storage, got: " + data.length + " but expected: " + j));
 			}
 
-			this.storage = storage;
+			this.data = data;
 		} else {
-			this.storage = new long[j];
+			this.data = new long[j];
 		}
 	}
 
@@ -263,39 +262,39 @@ public class PackedIntegerArray implements class_6490 {
 	}
 
 	@Override
-	public int setAndGetOldValue(int i, int j) {
-		Validate.inclusiveBetween(0L, (long)(this.size - 1), (long)i);
-		Validate.inclusiveBetween(0L, this.maxValue, (long)j);
-		int k = this.getStorageIndex(i);
-		long l = this.storage[k];
-		int m = (i - k * this.elementsPerLong) * this.elementBits;
-		int n = (int)(l >> m & this.maxValue);
-		this.storage[k] = l & ~(this.maxValue << m) | ((long)j & this.maxValue) << m;
-		return n;
+	public int swap(int index, int value) {
+		Validate.inclusiveBetween(0L, (long)(this.size - 1), (long)index);
+		Validate.inclusiveBetween(0L, this.maxValue, (long)value);
+		int i = this.getStorageIndex(index);
+		long l = this.data[i];
+		int j = (index - i * this.elementsPerLong) * this.elementBits;
+		int k = (int)(l >> j & this.maxValue);
+		this.data[i] = l & ~(this.maxValue << j) | ((long)value & this.maxValue) << j;
+		return k;
 	}
 
 	@Override
-	public void set(int i, int j) {
-		Validate.inclusiveBetween(0L, (long)(this.size - 1), (long)i);
-		Validate.inclusiveBetween(0L, this.maxValue, (long)j);
-		int k = this.getStorageIndex(i);
-		long l = this.storage[k];
-		int m = (i - k * this.elementsPerLong) * this.elementBits;
-		this.storage[k] = l & ~(this.maxValue << m) | ((long)j & this.maxValue) << m;
+	public void set(int index, int value) {
+		Validate.inclusiveBetween(0L, (long)(this.size - 1), (long)index);
+		Validate.inclusiveBetween(0L, this.maxValue, (long)value);
+		int i = this.getStorageIndex(index);
+		long l = this.data[i];
+		int j = (index - i * this.elementsPerLong) * this.elementBits;
+		this.data[i] = l & ~(this.maxValue << j) | ((long)value & this.maxValue) << j;
 	}
 
 	@Override
-	public int get(int i) {
-		Validate.inclusiveBetween(0L, (long)(this.size - 1), (long)i);
-		int j = this.getStorageIndex(i);
-		long l = this.storage[j];
-		int k = (i - j * this.elementsPerLong) * this.elementBits;
-		return (int)(l >> k & this.maxValue);
+	public int get(int index) {
+		Validate.inclusiveBetween(0L, (long)(this.size - 1), (long)index);
+		int i = this.getStorageIndex(index);
+		long l = this.data[i];
+		int j = (index - i * this.elementsPerLong) * this.elementBits;
+		return (int)(l >> j & this.maxValue);
 	}
 
 	@Override
-	public long[] getStorage() {
-		return this.storage;
+	public long[] getData() {
+		return this.data;
 	}
 
 	@Override
@@ -309,12 +308,12 @@ public class PackedIntegerArray implements class_6490 {
 	}
 
 	@Override
-	public void forEach(IntConsumer intConsumer) {
+	public void forEach(IntConsumer action) {
 		int i = 0;
 
-		for (long l : this.storage) {
+		for (long l : this.data) {
 			for (int j = 0; j < this.elementsPerLong; j++) {
-				intConsumer.accept((int)(l & this.maxValue));
+				action.accept((int)(l & this.maxValue));
 				l >>= this.elementBits;
 				if (++i >= this.size) {
 					return;

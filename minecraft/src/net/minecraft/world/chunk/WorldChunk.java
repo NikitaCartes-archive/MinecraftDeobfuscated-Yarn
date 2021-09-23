@@ -329,9 +329,9 @@ public class WorldChunk extends Chunk {
 		if (!this.world.getWorldBorder().contains(pos)) {
 			return false;
 		} else {
-			return !(this.world instanceof ServerWorld)
+			return !(this.world instanceof ServerWorld serverWorld)
 				? true
-				: this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.toLong(pos));
+				: this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && serverWorld.method_37116(ChunkPos.toLong(pos));
 		}
 	}
 

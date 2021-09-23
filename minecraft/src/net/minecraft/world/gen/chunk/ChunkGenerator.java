@@ -156,7 +156,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		return this.getBiomeSource().method_38109(biomeX, biomeY, biomeZ, this.method_38276());
+		return this.getBiomeSource().getBiome(biomeX, biomeY, biomeZ, this.method_38276());
 	}
 
 	/**
@@ -179,10 +179,8 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 	 * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the STRUCTURE_STARTS stage) are returned, excluding strongholds
 	 */
 	@Nullable
-	public BlockPos locateStructure(ServerWorld world, StructureFeature<?> feature, BlockPos center, int radius, boolean skipExistingChunks) {
-		if (!this.method_38263(world, feature)) {
-			return null;
-		} else if (feature == StructureFeature.STRONGHOLD) {
+	public BlockPos locateStructure(ServerWorld serverWorld, StructureFeature<?> structureFeature, BlockPos center, int radius, boolean skipExistingChunks) {
+		if (structureFeature == StructureFeature.STRONGHOLD) {
 			this.generateStrongholdPositions();
 			BlockPos blockPos = null;
 			double d = Double.MAX_VALUE;
@@ -202,26 +200,24 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 			return blockPos;
 		} else {
-			StructureConfig structureConfig = this.structuresConfig.getForType(feature);
-			return structureConfig == null
-				? null
-				: feature.locateStructure(world, world.getStructureAccessor(), center, radius, skipExistingChunks, world.getSeed(), structureConfig);
-		}
-	}
-
-	private boolean method_38263(ServerWorld serverWorld, StructureFeature<?> structureFeature) {
-		ImmutableMultimap<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> immutableMultimap = this.structuresConfig
-			.getConfiguredStructureFeature(structureFeature);
-		if (immutableMultimap.isEmpty()) {
-			return false;
-		} else {
-			Registry<Biome> registry = serverWorld.getRegistryManager().get(Registry.BIOME_KEY);
-			Set<RegistryKey<Biome>> set = (Set<RegistryKey<Biome>>)this.biomeSource
-				.getBiomes()
-				.stream()
-				.flatMap(biome -> registry.getKey(biome).stream())
-				.collect(Collectors.toSet());
-			return immutableMultimap.values().stream().anyMatch(set::contains);
+			StructureConfig structureConfig = this.structuresConfig.getForType(structureFeature);
+			ImmutableMultimap<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> immutableMultimap = this.structuresConfig
+				.getConfiguredStructureFeature(structureFeature);
+			if (structureConfig != null && !immutableMultimap.isEmpty()) {
+				Registry<Biome> registry = serverWorld.getRegistryManager().get(Registry.BIOME_KEY);
+				Set<RegistryKey<Biome>> set = (Set<RegistryKey<Biome>>)this.biomeSource
+					.getBiomes()
+					.stream()
+					.flatMap(biome -> registry.getKey(biome).stream())
+					.collect(Collectors.toSet());
+				return immutableMultimap.values().stream().noneMatch(set::contains)
+					? null
+					: structureFeature.locateStructure(
+						serverWorld, serverWorld.getStructureAccessor(), center, radius, skipExistingChunks, serverWorld.getSeed(), structureConfig
+					);
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -231,7 +227,6 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 		int k = pos.getStartX();
 		int l = pos.getStartZ();
 		if (!SharedConstants.method_37896(k, l)) {
-			Registry<Biome> registry = world.getRegistryManager().get(Registry.BIOME_KEY);
 			BlockPos blockPos = new BlockPos(k, world.getBottomY(), l);
 			int m = ChunkSectionPos.getSectionCoord(blockPos.getX());
 			int n = ChunkSectionPos.getSectionCoord(blockPos.getZ());
@@ -247,8 +242,8 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 			long s = chunkRandom.setPopulationSeed(world.getSeed(), k, l);
 
 			try {
-				Registry<ConfiguredFeature<?, ?>> registry2 = world.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY);
-				Registry<StructureFeature<?>> registry3 = world.getRegistryManager().get(Registry.STRUCTURE_FEATURE_KEY);
+				Registry<ConfiguredFeature<?, ?>> registry = world.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY);
+				Registry<StructureFeature<?>> registry2 = world.getRegistryManager().get(Registry.STRUCTURE_FEATURE_KEY);
 				int t = Math.max(GenerationStep.Feature.values().length, immutableList.size());
 
 				for (int u = 0; u < t; u++) {
@@ -256,21 +251,18 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 					if (structureAccessor.shouldGenerateStructures()) {
 						for (StructureFeature<?> structureFeature : (List)map.getOrDefault(u, Collections.emptyList())) {
 							chunkRandom.setDecoratorSeed(s, v, u);
-							Supplier<String> supplier = () -> (String)registry3.getKey(structureFeature).map(Object::toString).orElseGet(structureFeature::toString);
+							Supplier<String> supplier = () -> (String)registry2.getKey(structureFeature).map(Object::toString).orElseGet(structureFeature::toString);
 
 							try {
-								ImmutableMultimap<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> immutableMultimap = this.structuresConfig
-									.getConfiguredStructureFeature(structureFeature);
 								world.method_36972(supplier);
-								Predicate<Biome> predicate = biome -> this.method_38274(registry, immutableMultimap::containsValue, biome);
 								structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), structureFeature)
 									.forEach(
 										structureStart -> structureStart.generateStructure(
-												world, structureAccessor, this, chunkRandom, predicate, new BlockBox(o, q, p, o + 15, r, p + 15), new ChunkPos(m, n)
+												world, structureAccessor, this, chunkRandom, new BlockBox(o, q, p, o + 15, r, p + 15), new ChunkPos(m, n)
 											)
 									);
-							} catch (Exception var32) {
-								CrashReport crashReport = CrashReport.create(var32, "Feature placement");
+							} catch (Exception var31) {
+								CrashReport crashReport = CrashReport.create(var31, "Feature placement");
 								crashReport.addElement("Feature").add("Description", supplier::get);
 								throw new CrashException(crashReport);
 							}
@@ -281,14 +273,14 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 					if (immutableList.size() > u) {
 						for (ConfiguredFeature<?, ?> configuredFeature : (ImmutableList)immutableList.get(u)) {
-							Supplier<String> supplier2 = () -> (String)registry2.getKey(configuredFeature).map(Object::toString).orElseGet(configuredFeature::toString);
+							Supplier<String> supplier2 = () -> (String)registry.getKey(configuredFeature).map(Object::toString).orElseGet(configuredFeature::toString);
 							chunkRandom.setDecoratorSeed(s, v, u);
 
 							try {
 								world.method_36972(supplier2);
 								configuredFeature.generate(Optional.of(configuredFeature), world, this, chunkRandom, blockPos);
-							} catch (Exception var33) {
-								CrashReport crashReport2 = CrashReport.create(var33, "Feature placement");
+							} catch (Exception var32) {
+								CrashReport crashReport2 = CrashReport.create(var32, "Feature placement");
 								crashReport2.addElement("Feature").add("Description", supplier2::get);
 								throw new CrashException(crashReport2);
 							}
@@ -299,8 +291,8 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 				}
 
 				world.method_36972(null);
-			} catch (Exception var34) {
-				CrashReport crashReport3 = CrashReport.create(var34, "Biome decoration");
+			} catch (Exception var33) {
+				CrashReport crashReport3 = CrashReport.create(var33, "Biome decoration");
 				crashReport3.addElement("Generation").add("CenterX", i).add("CenterZ", j).add("Seed", s);
 				throw new CrashException(crashReport3);
 			}
@@ -360,36 +352,38 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 		Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
 
-		label33:
+		label39:
 		for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE) {
-			StructureConfig structureConfig2 = this.structuresConfig.getForType(structureFeature);
-			if (structureConfig2 != null) {
-				int i = method_38264(structureAccessor, chunk, chunkSectionPos, structureFeature);
+			if (structureFeature != StructureFeature.STRONGHOLD) {
+				StructureConfig structureConfig2 = this.structuresConfig.getForType(structureFeature);
+				if (structureConfig2 != null) {
+					int i = method_38264(structureAccessor, chunk, chunkSectionPos, structureFeature);
 
-				for (Entry<ConfiguredStructureFeature<?, ?>, Collection<RegistryKey<Biome>>> entry : this.structuresConfig
-					.getConfiguredStructureFeature(structureFeature)
-					.asMap()
-					.entrySet()) {
-					StructureStart<?> structureStart2 = ((ConfiguredStructureFeature)entry.getKey())
-						.tryPlaceStart(
-							registryManager,
-							this,
-							this.populationSource,
-							structureManager,
-							worldSeed,
-							chunkPos,
-							i,
-							structureConfig2,
-							chunk,
-							biome -> this.method_38274(registry, ((Collection)entry.getValue())::contains, biome)
-						);
-					if (structureStart2.hasChildren()) {
-						structureAccessor.setStructureStart(chunkSectionPos, structureFeature, structureStart2, chunk);
-						continue label33;
+					for (Entry<ConfiguredStructureFeature<?, ?>, Collection<RegistryKey<Biome>>> entry : this.structuresConfig
+						.getConfiguredStructureFeature(structureFeature)
+						.asMap()
+						.entrySet()) {
+						StructureStart<?> structureStart2 = ((ConfiguredStructureFeature)entry.getKey())
+							.tryPlaceStart(
+								registryManager,
+								this,
+								this.populationSource,
+								structureManager,
+								worldSeed,
+								chunkPos,
+								i,
+								structureConfig2,
+								chunk,
+								biome -> this.method_38274(registry, ((Collection)entry.getValue())::contains, biome)
+							);
+						if (structureStart2.hasChildren()) {
+							structureAccessor.setStructureStart(chunkSectionPos, structureFeature, structureStart2, chunk);
+							continue label39;
+						}
 					}
-				}
 
-				structureAccessor.setStructureStart(chunkSectionPos, structureFeature, StructureStart.DEFAULT, chunk);
+					structureAccessor.setStructureStart(chunkSectionPos, structureFeature, StructureStart.DEFAULT, chunk);
+				}
 			}
 		}
 	}

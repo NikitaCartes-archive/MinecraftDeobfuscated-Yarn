@@ -10,13 +10,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_6490;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.PackedIntegerArray;
+import net.minecraft.util.collection.PaletteStorage;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
@@ -27,14 +27,14 @@ public class Heightmap {
 	private static final Logger LOGGER = LogManager.getLogger();
 	static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
 	static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
-	private final class_6490 storage;
+	private final PaletteStorage storage;
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;
 
 	public Heightmap(Chunk chunk, Heightmap.Type type) {
 		this.blockPredicate = type.getBlockPredicate();
 		this.chunk = chunk;
-		int i = MathHelper.log2DeBruijn(chunk.getHeight() + 1);
+		int i = MathHelper.ceilLog2(chunk.getHeight() + 1);
 		this.storage = new PackedIntegerArray(i, 256);
 	}
 
@@ -120,7 +120,7 @@ public class Heightmap {
 	}
 
 	public void setTo(Chunk chunk, Heightmap.Type type, long[] ls) {
-		long[] ms = this.storage.getStorage();
+		long[] ms = this.storage.getData();
 		if (ms.length == ls.length) {
 			System.arraycopy(ls, 0, ms, 0, ls.length);
 		} else {
@@ -130,7 +130,7 @@ public class Heightmap {
 	}
 
 	public long[] asLongArray() {
-		return this.storage.getStorage();
+		return this.storage.getData();
 	}
 
 	private static int toIndex(int x, int z) {

@@ -1,12 +1,12 @@
 package net.minecraft.structure;
 
 import java.util.Random;
+import net.minecraft.class_6625;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -24,17 +24,17 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 		super(StructurePieceType.DESERT_TEMPLE, x, 64, z, 21, 15, 21, getRandomHorizontalDirection(random));
 	}
 
-	public DesertTempleGenerator(ServerWorld world, NbtCompound nbt) {
-		super(StructurePieceType.DESERT_TEMPLE, nbt);
-		this.hasPlacedChest[0] = nbt.getBoolean("hasPlacedChest0");
-		this.hasPlacedChest[1] = nbt.getBoolean("hasPlacedChest1");
-		this.hasPlacedChest[2] = nbt.getBoolean("hasPlacedChest2");
-		this.hasPlacedChest[3] = nbt.getBoolean("hasPlacedChest3");
+	public DesertTempleGenerator(NbtCompound nbtCompound) {
+		super(StructurePieceType.DESERT_TEMPLE, nbtCompound);
+		this.hasPlacedChest[0] = nbtCompound.getBoolean("hasPlacedChest0");
+		this.hasPlacedChest[1] = nbtCompound.getBoolean("hasPlacedChest1");
+		this.hasPlacedChest[2] = nbtCompound.getBoolean("hasPlacedChest2");
+		this.hasPlacedChest[3] = nbtCompound.getBoolean("hasPlacedChest3");
 	}
 
 	@Override
-	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-		super.writeNbt(world, nbt);
+	protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+		super.writeNbt(arg, nbt);
 		nbt.putBoolean("hasPlacedChest0", this.hasPlacedChest[0]);
 		nbt.putBoolean("hasPlacedChest1", this.hasPlacedChest[1]);
 		nbt.putBoolean("hasPlacedChest2", this.hasPlacedChest[2]);
@@ -42,7 +42,7 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 	}
 
 	@Override
-	public boolean generate(
+	public void generate(
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
@@ -51,9 +51,7 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		if (!this.adjustToMinHeight(world, -random.nextInt(3))) {
-			return false;
-		} else {
+		if (this.adjustToMinHeight(world, -random.nextInt(3))) {
 			this.fillWithOutline(
 				world, boundingBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, Blocks.SANDSTONE.getDefaultState(), Blocks.SANDSTONE.getDefaultState(), false
 			);
@@ -262,8 +260,6 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 					this.hasPlacedChest[direction.getHorizontal()] = this.addChest(world, boundingBox, random, 10 + m, -11, 10 + n, LootTables.DESERT_PYRAMID_CHEST);
 				}
 			}
-
-			return true;
 		}
 	}
 }

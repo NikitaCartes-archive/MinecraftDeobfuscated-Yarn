@@ -40,7 +40,7 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 	}
 
 	@Override
-	public Biome method_38109(int i, int j, int k, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+	public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
 		return (Biome)this.biome.get();
 	}
 
@@ -52,7 +52,7 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 	@Nullable
 	@Override
 	public BlockPos locateBiome(
-		int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler
+		int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler
 	) {
 		if (predicate.test((Biome)this.biome.get())) {
 			return bl ? new BlockPos(x, y, z) : new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1));

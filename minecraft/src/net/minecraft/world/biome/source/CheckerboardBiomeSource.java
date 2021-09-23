@@ -37,7 +37,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome method_38109(int i, int j, int k, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
-		return (Biome)((Supplier)this.biomeArray.get(Math.floorMod((i >> this.gridSize) + (k >> this.gridSize), this.biomeArray.size()))).get();
+	public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+		return (Biome)((Supplier)this.biomeArray.get(Math.floorMod((x >> this.gridSize) + (z >> this.gridSize), this.biomeArray.size()))).get();
 	}
 }

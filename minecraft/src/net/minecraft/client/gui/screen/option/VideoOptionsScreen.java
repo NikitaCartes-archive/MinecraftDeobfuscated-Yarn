@@ -36,6 +36,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	private static final Option[] OPTIONS = new Option[]{
 		Option.GRAPHICS,
 		Option.RENDER_DISTANCE,
+		Option.PRIORITIZE_CHUNK_UPDATES_MODE,
+		Option.SIMULATION_DISTANCE,
 		Option.AO,
 		Option.FRAMERATE_LIMIT,
 		Option.VSYNC,
@@ -50,8 +52,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		Option.ENTITY_SHADOWS,
 		Option.DISTORTION_EFFECT_SCALE,
 		Option.ENTITY_DISTANCE_SCALING,
-		Option.FOV_EFFECT_SCALE,
-		Option.PRIORITIZE_CHUNK_UPDATES_MODE
+		Option.FOV_EFFECT_SCALE
 	};
 	private ButtonListWidget list;
 	private final VideoWarningManager warningManager;

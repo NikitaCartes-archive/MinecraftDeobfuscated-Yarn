@@ -6,7 +6,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
 import net.minecraft.world.gen.random.AbstractRandom;
 
-public class InterpolatedNoiseSampler implements class_6568.class_6572 {
+public class InterpolatedNoiseSampler implements class_6568.ColumnSampler {
 	private final OctavePerlinNoiseSampler lowerInterpolatedNoise;
 	private final OctavePerlinNoiseSampler upperInterpolatedNoise;
 	private final OctavePerlinNoiseSampler interpolationNoise;
@@ -48,7 +48,7 @@ public class InterpolatedNoiseSampler implements class_6568.class_6572 {
 	}
 
 	@Override
-	public double sample(int i, int j, int k) {
+	public double calculateNoise(int i, int j, int k) {
 		int l = Math.floorDiv(i, this.field_34756);
 		int m = Math.floorDiv(j, this.field_34757);
 		int n = Math.floorDiv(k, this.field_34756);

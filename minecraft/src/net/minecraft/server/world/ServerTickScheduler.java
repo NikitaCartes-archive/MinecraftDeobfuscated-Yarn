@@ -56,9 +56,9 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 			Iterator<ScheduledTick<T>> iterator = this.scheduledTickActionsInOrder.iterator();
 			this.world.getProfiler().push("cleaning");
 
-			while (iterator.hasNext()) {
+			while (i > 0 && iterator.hasNext()) {
 				ScheduledTick<T> scheduledTick = (ScheduledTick<T>)iterator.next();
-				if (i-- == 0 || scheduledTick.time > this.world.getTime()) {
+				if (scheduledTick.time > this.world.getTime()) {
 					break;
 				}
 
@@ -66,6 +66,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 					iterator.remove();
 					this.scheduledTickActions.remove(scheduledTick);
 					this.currentTickActions.add(scheduledTick);
+					i--;
 				}
 			}
 

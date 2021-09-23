@@ -12,36 +12,36 @@ import net.minecraft.world.biome.BiomeKeys;
 
 public final class VanillaTerrainParameters {
 	private static final float OFFSET_VALUE_OFFSET = 0.015F;
-	static final ToFloatFunction<VanillaTerrainParameters.TerrainNoisePoint> field_34524 = new ToFloatFunction<VanillaTerrainParameters.TerrainNoisePoint>() {
-		public float apply(VanillaTerrainParameters.TerrainNoisePoint terrainNoisePoint) {
-			return terrainNoisePoint.continentalnessNoise;
+	static final ToFloatFunction<VanillaTerrainParameters.NoisePoint> CONTINENTALNESS = new ToFloatFunction<VanillaTerrainParameters.NoisePoint>() {
+		public float apply(VanillaTerrainParameters.NoisePoint noisePoint) {
+			return noisePoint.continentalnessNoise;
 		}
 
 		public String toString() {
 			return "continents";
 		}
 	};
-	static final ToFloatFunction<VanillaTerrainParameters.TerrainNoisePoint> field_34525 = new ToFloatFunction<VanillaTerrainParameters.TerrainNoisePoint>() {
-		public float apply(VanillaTerrainParameters.TerrainNoisePoint terrainNoisePoint) {
-			return terrainNoisePoint.erosionNoise;
+	static final ToFloatFunction<VanillaTerrainParameters.NoisePoint> EROSION = new ToFloatFunction<VanillaTerrainParameters.NoisePoint>() {
+		public float apply(VanillaTerrainParameters.NoisePoint noisePoint) {
+			return noisePoint.erosionNoise;
 		}
 
 		public String toString() {
 			return "erosion";
 		}
 	};
-	static final ToFloatFunction<VanillaTerrainParameters.TerrainNoisePoint> field_34526 = new ToFloatFunction<VanillaTerrainParameters.TerrainNoisePoint>() {
-		public float apply(VanillaTerrainParameters.TerrainNoisePoint terrainNoisePoint) {
-			return terrainNoisePoint.field_34535;
+	static final ToFloatFunction<VanillaTerrainParameters.NoisePoint> WEIRDNESS = new ToFloatFunction<VanillaTerrainParameters.NoisePoint>() {
+		public float apply(VanillaTerrainParameters.NoisePoint noisePoint) {
+			return noisePoint.weirdnessNoise;
 		}
 
 		public String toString() {
 			return "weirdness";
 		}
 	};
-	static final ToFloatFunction<VanillaTerrainParameters.TerrainNoisePoint> field_34527 = new ToFloatFunction<VanillaTerrainParameters.TerrainNoisePoint>() {
-		public float apply(VanillaTerrainParameters.TerrainNoisePoint terrainNoisePoint) {
-			return terrainNoisePoint.weirdnessNoise;
+	static final ToFloatFunction<VanillaTerrainParameters.NoisePoint> NORMALIZED_WEIRDNESS = new ToFloatFunction<VanillaTerrainParameters.NoisePoint>() {
+		public float apply(VanillaTerrainParameters.NoisePoint noisePoint) {
+			return noisePoint.normalizedWeirdness;
 		}
 
 		public String toString() {
@@ -49,22 +49,22 @@ public final class VanillaTerrainParameters {
 		}
 	};
 	@Debug
-	public Spline<VanillaTerrainParameters.TerrainNoisePoint> offsetSpline;
+	public Spline<VanillaTerrainParameters.NoisePoint> offsetSpline;
 	@Debug
-	public Spline<VanillaTerrainParameters.TerrainNoisePoint> factorSpline;
+	public Spline<VanillaTerrainParameters.NoisePoint> factorSpline;
 	@Debug
-	public Spline<VanillaTerrainParameters.TerrainNoisePoint> field_34530;
+	public Spline<VanillaTerrainParameters.NoisePoint> peakSpline;
 
 	public VanillaTerrainParameters() {
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline = createLandSpline(-0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline2 = createLandSpline(-0.1F, 0.03F, 0.1F, 0.1F, 0.01F, -0.03F, false, false);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline3 = createLandSpline(-0.1F, 0.03F, 0.1F, 0.7F, 0.01F, -0.03F, true, true);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline4 = createLandSpline(-0.05F, 0.03F, 0.1F, 1.0F, 0.01F, 0.01F, true, true);
+		Spline<VanillaTerrainParameters.NoisePoint> spline = createLandSpline(-0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false);
+		Spline<VanillaTerrainParameters.NoisePoint> spline2 = createLandSpline(-0.1F, 0.03F, 0.1F, 0.1F, 0.01F, -0.03F, false, false);
+		Spline<VanillaTerrainParameters.NoisePoint> spline3 = createLandSpline(-0.1F, 0.03F, 0.1F, 0.7F, 0.01F, -0.03F, true, true);
+		Spline<VanillaTerrainParameters.NoisePoint> spline4 = createLandSpline(-0.05F, 0.03F, 0.1F, 1.0F, 0.01F, 0.01F, true, true);
 		float f = -0.51F;
 		float g = -0.4F;
 		float h = 0.1F;
 		float i = -0.15F;
-		this.offsetSpline = Spline.builder(field_34524)
+		this.offsetSpline = Spline.builder(CONTINENTALNESS)
 			.add(-1.1F, 0.044F, 0.0F)
 			.add(-1.02F, -0.2222F, 0.0F)
 			.add(-0.51F, -0.2222F, 0.0F)
@@ -76,24 +76,24 @@ public final class VanillaTerrainParameters {
 			.add(0.25F, spline3, 0.0F)
 			.add(1.0F, spline4, 0.0F)
 			.build();
-		this.factorSpline = Spline.builder(field_34524)
+		this.factorSpline = Spline.builder(CONTINENTALNESS)
 			.add(-0.19F, 3.95F, 0.0F)
 			.add(-0.15F, buildErosionFactorSpline(6.25F, true), 0.0F)
 			.add(-0.1F, buildErosionFactorSpline(5.47F, true), 0.0F)
 			.add(0.03F, buildErosionFactorSpline(5.08F, true), 0.0F)
 			.add(0.06F, buildErosionFactorSpline(4.69F, false), 0.0F)
 			.build();
-		this.field_34530 = Spline.builder(field_34524)
+		this.peakSpline = Spline.builder(CONTINENTALNESS)
 			.add(0.1F, 0.0F, 0.0F)
 			.add(
 				0.2F,
-				Spline.builder(field_34525)
+				Spline.builder(EROSION)
 					.add(
 						-0.8F,
-						Spline.builder(field_34527)
+						Spline.builder(NORMALIZED_WEIRDNESS)
 							.add(-1.0F, 0.0F, 0.0F)
 							.add(0.2F, 0.0F, 0.0F)
-							.add(1.0F, Spline.builder(field_34526).add(-0.01F, 0.625F, 0.0F).add(0.01F, 0.15625F, 0.0F).build(), 0.0F)
+							.add(1.0F, Spline.builder(WEIRDNESS).add(-0.01F, 0.625F, 0.0F).add(0.01F, 0.15625F, 0.0F).build(), 0.0F)
 							.build(),
 						0.0F
 					)
@@ -104,23 +104,23 @@ public final class VanillaTerrainParameters {
 			.build();
 	}
 
-	private static Spline<VanillaTerrainParameters.TerrainNoisePoint> buildErosionFactorSpline(float f, boolean bl) {
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline = Spline.builder(field_34526).add(-0.2F, 6.3F, 0.0F).add(0.2F, f, 0.0F).build();
-		Spline.Builder<VanillaTerrainParameters.TerrainNoisePoint> builder = Spline.builder(field_34525)
+	private static Spline<VanillaTerrainParameters.NoisePoint> buildErosionFactorSpline(float value, boolean bl) {
+		Spline<VanillaTerrainParameters.NoisePoint> spline = Spline.builder(WEIRDNESS).add(-0.2F, 6.3F, 0.0F).add(0.2F, value, 0.0F).build();
+		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.builder(EROSION)
 			.add(-0.6F, spline, 0.0F)
-			.add(-0.5F, Spline.builder(field_34526).add(-0.05F, 6.3F, 0.0F).add(0.05F, 2.67F, 0.0F).build(), 0.0F)
+			.add(-0.5F, Spline.builder(WEIRDNESS).add(-0.05F, 6.3F, 0.0F).add(0.05F, 2.67F, 0.0F).build(), 0.0F)
 			.add(-0.35F, spline, 0.0F)
 			.add(-0.25F, spline, 0.0F)
-			.add(-0.1F, Spline.builder(field_34526).add(-0.05F, 2.67F, 0.0F).add(0.05F, 6.3F, 0.0F).build(), 0.0F)
+			.add(-0.1F, Spline.builder(WEIRDNESS).add(-0.05F, 2.67F, 0.0F).add(0.05F, 6.3F, 0.0F).build(), 0.0F)
 			.add(0.03F, spline, 0.0F);
 		if (bl) {
-			Spline<VanillaTerrainParameters.TerrainNoisePoint> spline2 = Spline.builder(field_34526).add(0.0F, f, 0.0F).add(0.1F, 0.625F, 0.0F).build();
-			Spline<VanillaTerrainParameters.TerrainNoisePoint> spline3 = Spline.builder(field_34527).add(-0.9F, f, 0.0F).add(-0.69F, spline2, 0.0F).build();
-			builder.add(0.35F, f, 0.0F).add(0.45F, spline3, 0.0F).add(0.55F, spline3, 0.0F).add(0.62F, f, 0.0F);
+			Spline<VanillaTerrainParameters.NoisePoint> spline2 = Spline.builder(WEIRDNESS).add(0.0F, value, 0.0F).add(0.1F, 0.625F, 0.0F).build();
+			Spline<VanillaTerrainParameters.NoisePoint> spline3 = Spline.builder(NORMALIZED_WEIRDNESS).add(-0.9F, value, 0.0F).add(-0.69F, spline2, 0.0F).build();
+			builder.add(0.35F, value, 0.0F).add(0.45F, spline3, 0.0F).add(0.55F, spline3, 0.0F).add(0.62F, value, 0.0F);
 		} else {
-			Spline<VanillaTerrainParameters.TerrainNoisePoint> spline2 = Spline.builder(field_34527).add(-0.7F, spline, 0.0F).add(-0.15F, 1.37F, 0.0F).build();
-			Spline<VanillaTerrainParameters.TerrainNoisePoint> spline3 = Spline.builder(field_34527).add(0.45F, spline, 0.0F).add(0.7F, 1.56F, 0.0F).build();
-			builder.add(0.05F, spline3, 0.0F).add(0.4F, spline3, 0.0F).add(0.45F, spline2, 0.0F).add(0.55F, spline2, 0.0F).add(0.58F, f, 0.0F);
+			Spline<VanillaTerrainParameters.NoisePoint> spline2 = Spline.builder(NORMALIZED_WEIRDNESS).add(-0.7F, spline, 0.0F).add(-0.15F, 1.37F, 0.0F).build();
+			Spline<VanillaTerrainParameters.NoisePoint> spline3 = Spline.builder(NORMALIZED_WEIRDNESS).add(0.45F, spline, 0.0F).add(0.7F, 1.56F, 0.0F).build();
+			builder.add(0.05F, spline3, 0.0F).add(0.4F, spline3, 0.0F).add(0.45F, spline2, 0.0F).add(0.55F, spline2, 0.0F).add(0.58F, value, 0.0F);
 		}
 
 		return builder.build();
@@ -130,8 +130,8 @@ public final class VanillaTerrainParameters {
 		return (g - f) / (i - h);
 	}
 
-	private static Spline<VanillaTerrainParameters.TerrainNoisePoint> method_38219(float f, boolean bl) {
-		Spline.Builder<VanillaTerrainParameters.TerrainNoisePoint> builder = Spline.builder(field_34527);
+	private static Spline<VanillaTerrainParameters.NoisePoint> method_38219(float f, boolean bl) {
+		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.builder(NORMALIZED_WEIRDNESS);
 		float g = -0.7F;
 		float h = -1.0F;
 		float i = getOffsetValue(-1.0F, f, -0.7F);
@@ -186,28 +186,26 @@ public final class VanillaTerrainParameters {
 		return i / (0.46082947F * h) - 1.17F;
 	}
 
-	private static Spline<VanillaTerrainParameters.TerrainNoisePoint> createLandSpline(
-		float f, float g, float h, float i, float j, float k, boolean bl, boolean bl2
-	) {
+	private static Spline<VanillaTerrainParameters.NoisePoint> createLandSpline(float f, float g, float h, float i, float j, float k, boolean bl, boolean bl2) {
 		float l = 0.6F;
 		float m = 0.5F;
 		float n = 0.5F;
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline = method_38219(MathHelper.lerp(i, 0.6F, 1.5F), bl2);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline2 = method_38219(MathHelper.lerp(i, 0.6F, 1.0F), bl2);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline3 = method_38219(i, bl2);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline4 = createFlatOffsetSpline(
+		Spline<VanillaTerrainParameters.NoisePoint> spline = method_38219(MathHelper.lerp(i, 0.6F, 1.5F), bl2);
+		Spline<VanillaTerrainParameters.NoisePoint> spline2 = method_38219(MathHelper.lerp(i, 0.6F, 1.0F), bl2);
+		Spline<VanillaTerrainParameters.NoisePoint> spline3 = method_38219(i, bl2);
+		Spline<VanillaTerrainParameters.NoisePoint> spline4 = createFlatOffsetSpline(
 			f - 0.15F, 0.5F * i, MathHelper.lerp(0.5F, 0.5F, 0.5F) * i, 0.5F * i, 0.6F * i, 0.5F
 		);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline5 = createFlatOffsetSpline(f, j * i, g * i, 0.5F * i, 0.6F * i, 0.5F);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline6 = createFlatOffsetSpline(f, j, j, g, h, 0.5F);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline7 = createFlatOffsetSpline(f, j, j, g, h, 0.5F);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline8 = Spline.builder(field_34527)
+		Spline<VanillaTerrainParameters.NoisePoint> spline5 = createFlatOffsetSpline(f, j * i, g * i, 0.5F * i, 0.6F * i, 0.5F);
+		Spline<VanillaTerrainParameters.NoisePoint> spline6 = createFlatOffsetSpline(f, j, j, g, h, 0.5F);
+		Spline<VanillaTerrainParameters.NoisePoint> spline7 = createFlatOffsetSpline(f, j, j, g, h, 0.5F);
+		Spline<VanillaTerrainParameters.NoisePoint> spline8 = Spline.builder(NORMALIZED_WEIRDNESS)
 			.add(-1.0F, f, 0.0F)
 			.add(-0.4F, spline6, 0.0F)
 			.add(0.0F, h + 0.07F, 0.0F)
 			.build();
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline9 = createFlatOffsetSpline(-0.02F, k, k, g, h, 0.0F);
-		Spline.Builder<VanillaTerrainParameters.TerrainNoisePoint> builder = Spline.builder(field_34525)
+		Spline<VanillaTerrainParameters.NoisePoint> spline9 = createFlatOffsetSpline(-0.02F, k, k, g, h, 0.0F);
+		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.builder(EROSION)
 			.add(-0.85F, spline, 0.0F)
 			.add(-0.7F, spline2, 0.0F)
 			.add(-0.4F, spline3, 0.0F)
@@ -222,10 +220,10 @@ public final class VanillaTerrainParameters {
 		return builder.build();
 	}
 
-	private static Spline<VanillaTerrainParameters.TerrainNoisePoint> createFlatOffsetSpline(float f, float g, float h, float i, float j, float k) {
+	private static Spline<VanillaTerrainParameters.NoisePoint> createFlatOffsetSpline(float f, float g, float h, float i, float j, float k) {
 		float l = Math.max(0.5F * (g - f), k);
 		float m = 5.0F * (h - g);
-		return Spline.builder(field_34527)
+		return Spline.builder(NORMALIZED_WEIRDNESS)
 			.add(-1.0F, f, l)
 			.add(-0.4F, g, Math.min(l, m))
 			.add(0.0F, h, m)
@@ -234,30 +232,24 @@ public final class VanillaTerrainParameters {
 			.build();
 	}
 
-	public void method_38215(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> consumer) {
-		MultiNoiseUtil.ParameterRange parameterRange = MultiNoiseUtil.ParameterRange.method_38121(-1.0F, 1.0F);
-		consumer.accept(
+	public void writeDebugBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
+		MultiNoiseUtil.ParameterRange parameterRange = MultiNoiseUtil.ParameterRange.of(-1.0F, 1.0F);
+		parameters.accept(
 			Pair.of(
 				MultiNoiseUtil.createNoiseHypercube(
-					parameterRange, parameterRange, parameterRange, parameterRange, MultiNoiseUtil.ParameterRange.method_38120(0.0F), parameterRange, 0.01F
+					parameterRange, parameterRange, parameterRange, parameterRange, MultiNoiseUtil.ParameterRange.of(0.0F), parameterRange, 0.01F
 				),
 				BiomeKeys.PLAINS
 			)
 		);
-		Spline<VanillaTerrainParameters.TerrainNoisePoint> spline = createLandSpline(-0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false);
+		Spline<VanillaTerrainParameters.NoisePoint> spline = createLandSpline(-0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false);
 		RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
 
-		for (Float float_ : spline.method_37921()) {
-			consumer.accept(
+		for (Float float_ : spline.getLocations()) {
+			parameters.accept(
 				Pair.of(
 					MultiNoiseUtil.createNoiseHypercube(
-						parameterRange,
-						parameterRange,
-						parameterRange,
-						MultiNoiseUtil.ParameterRange.method_38120(float_),
-						MultiNoiseUtil.ParameterRange.method_38120(0.0F),
-						parameterRange,
-						0.0F
+						parameterRange, parameterRange, parameterRange, MultiNoiseUtil.ParameterRange.of(float_), MultiNoiseUtil.ParameterRange.of(0.0F), parameterRange, 0.0F
 					),
 					registryKey
 				)
@@ -265,17 +257,11 @@ public final class VanillaTerrainParameters {
 			registryKey = registryKey == BiomeKeys.DESERT ? BiomeKeys.BADLANDS : BiomeKeys.DESERT;
 		}
 
-		for (Float float_ : this.offsetSpline.method_37921()) {
-			consumer.accept(
+		for (Float float_ : this.offsetSpline.getLocations()) {
+			parameters.accept(
 				Pair.of(
 					MultiNoiseUtil.createNoiseHypercube(
-						parameterRange,
-						parameterRange,
-						MultiNoiseUtil.ParameterRange.method_38120(float_),
-						parameterRange,
-						MultiNoiseUtil.ParameterRange.method_38120(0.0F),
-						parameterRange,
-						0.0F
+						parameterRange, parameterRange, MultiNoiseUtil.ParameterRange.of(float_), parameterRange, MultiNoiseUtil.ParameterRange.of(0.0F), parameterRange, 0.0F
 					),
 					BiomeKeys.SNOWY_TAIGA
 				)
@@ -284,46 +270,46 @@ public final class VanillaTerrainParameters {
 	}
 
 	@Debug
-	public Spline<VanillaTerrainParameters.TerrainNoisePoint> method_38207() {
+	public Spline<VanillaTerrainParameters.NoisePoint> getOffsetSpline() {
 		return this.offsetSpline;
 	}
 
 	@Debug
-	public Spline<VanillaTerrainParameters.TerrainNoisePoint> method_38216() {
+	public Spline<VanillaTerrainParameters.NoisePoint> getFactorSpline() {
 		return this.factorSpline;
 	}
 
-	public float getOffset(VanillaTerrainParameters.TerrainNoisePoint point) {
+	public float getOffset(VanillaTerrainParameters.NoisePoint point) {
 		return this.offsetSpline.apply(point) + 0.015F;
 	}
 
-	public float getFactor(VanillaTerrainParameters.TerrainNoisePoint point) {
+	public float getFactor(VanillaTerrainParameters.NoisePoint point) {
 		return this.factorSpline.apply(point);
 	}
 
-	public float method_38221(VanillaTerrainParameters.TerrainNoisePoint terrainNoisePoint) {
-		return this.field_34530.apply(terrainNoisePoint);
+	public float getPeak(VanillaTerrainParameters.NoisePoint point) {
+		return this.peakSpline.apply(point);
 	}
 
-	public VanillaTerrainParameters.TerrainNoisePoint createTerrainNoisePoint(float continentalnessNoise, float erosionNoise, float weirdnessNoise) {
-		return new VanillaTerrainParameters.TerrainNoisePoint(continentalnessNoise, erosionNoise, getNormalizedWeirdness(weirdnessNoise), weirdnessNoise);
+	public VanillaTerrainParameters.NoisePoint createNoisePoint(float continentalnessNoise, float erosionNoise, float weirdnessNoise) {
+		return new VanillaTerrainParameters.NoisePoint(continentalnessNoise, erosionNoise, getNormalizedWeirdness(weirdnessNoise), weirdnessNoise);
 	}
 
 	public static float getNormalizedWeirdness(float weirdness) {
 		return -(Math.abs(Math.abs(weirdness) - 0.6666667F) - 0.33333334F) * 3.0F;
 	}
 
-	public static final class TerrainNoisePoint {
+	public static final class NoisePoint {
 		final float continentalnessNoise;
 		final float erosionNoise;
+		final float normalizedWeirdness;
 		final float weirdnessNoise;
-		final float field_34535;
 
-		public TerrainNoisePoint(float continentalnessNoise, float erosionNoise, float weirdnessNoise, float f) {
+		public NoisePoint(float continentalnessNoise, float erosionNoise, float normalizedWeirdness, float weirdnessNoise) {
 			this.continentalnessNoise = continentalnessNoise;
 			this.erosionNoise = erosionNoise;
+			this.normalizedWeirdness = normalizedWeirdness;
 			this.weirdnessNoise = weirdnessNoise;
-			this.field_34535 = f;
 		}
 
 		public float getContinentalnessNoise() {
@@ -334,12 +320,12 @@ public final class VanillaTerrainParameters {
 			return this.erosionNoise;
 		}
 
-		public float getWeirdnessNoise() {
-			return this.weirdnessNoise;
+		public float getNormalizedWeirdness() {
+			return this.normalizedWeirdness;
 		}
 
-		public float method_38229() {
-			return this.field_34535;
+		public float getWeirdnessNoise() {
+			return this.weirdnessNoise;
 		}
 	}
 }

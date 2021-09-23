@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,7 +21,6 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -94,17 +94,17 @@ public class MineshaftGenerator {
 		private boolean hasSpawner;
 		private final int length;
 
-		public MineshaftCorridor(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.MINESHAFT_CORRIDOR, nbt);
-			this.hasRails = nbt.getBoolean("hr");
-			this.hasCobwebs = nbt.getBoolean("sc");
-			this.hasSpawner = nbt.getBoolean("hps");
-			this.length = nbt.getInt("Num");
+		public MineshaftCorridor(NbtCompound nbtCompound) {
+			super(StructurePieceType.MINESHAFT_CORRIDOR, nbtCompound);
+			this.hasRails = nbtCompound.getBoolean("hr");
+			this.hasCobwebs = nbtCompound.getBoolean("sc");
+			this.hasSpawner = nbtCompound.getBoolean("hps");
+			this.length = nbtCompound.getInt("Num");
 		}
 
 		@Override
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-			super.writeNbt(world, nbt);
+		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+			super.writeNbt(arg, nbt);
 			nbt.putBoolean("hr", this.hasRails);
 			nbt.putBoolean("sc", this.hasCobwebs);
 			nbt.putBoolean("hps", this.hasSpawner);
@@ -346,7 +346,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(
+		public void generate(
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
@@ -355,9 +355,7 @@ public class MineshaftGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			if (this.method_33999(world, boundingBox)) {
-				return false;
-			} else {
+			if (!this.method_33999(world, boundingBox)) {
 				int i = 0;
 				int j = 2;
 				int k = 0;
@@ -428,8 +426,6 @@ public class MineshaftGenerator {
 						}
 					}
 				}
-
-				return true;
 			}
 		}
 
@@ -564,15 +560,15 @@ public class MineshaftGenerator {
 		private final Direction direction;
 		private final boolean twoFloors;
 
-		public MineshaftCrossing(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.MINESHAFT_CROSSING, nbt);
-			this.twoFloors = nbt.getBoolean("tf");
-			this.direction = Direction.fromHorizontal(nbt.getInt("D"));
+		public MineshaftCrossing(NbtCompound nbtCompound) {
+			super(StructurePieceType.MINESHAFT_CROSSING, nbtCompound);
+			this.twoFloors = nbtCompound.getBoolean("tf");
+			this.direction = Direction.fromHorizontal(nbtCompound.getInt("D"));
 		}
 
 		@Override
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-			super.writeNbt(world, nbt);
+		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+			super.writeNbt(arg, nbt);
 			nbt.putBoolean("tf", this.twoFloors);
 			nbt.putInt("D", this.direction.getHorizontal());
 		}
@@ -707,7 +703,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(
+		public void generate(
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
@@ -716,9 +712,7 @@ public class MineshaftGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			if (this.method_33999(world, boundingBox)) {
-				return false;
-			} else {
+			if (!this.method_33999(world, boundingBox)) {
 				BlockState blockState = this.mineshaftType.getPlanks();
 				if (this.twoFloors) {
 					this.fillWithOutline(
@@ -834,8 +828,6 @@ public class MineshaftGenerator {
 						this.method_33880(world, boundingBox, blockState, j, i, k);
 					}
 				}
-
-				return true;
 			}
 		}
 
@@ -869,7 +861,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
 			nbt.putInt("MST", this.mineshaftType.ordinal());
 		}
 
@@ -952,11 +944,11 @@ public class MineshaftGenerator {
 			this.mineshaftType = type;
 		}
 
-		public MineshaftRoom(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.MINESHAFT_ROOM, nbt);
+		public MineshaftRoom(NbtCompound nbtCompound) {
+			super(StructurePieceType.MINESHAFT_ROOM, nbtCompound);
 			BlockBox.CODEC
 				.listOf()
-				.parse(NbtOps.INSTANCE, nbt.getList("Entrances", NbtElement.INT_ARRAY_TYPE))
+				.parse(NbtOps.INSTANCE, nbtCompound.getList("Entrances", NbtElement.INT_ARRAY_TYPE))
 				.resultOrPartial(MineshaftGenerator.LOGGER::error)
 				.ifPresent(this.entrances::addAll);
 		}
@@ -1087,7 +1079,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(
+		public void generate(
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
@@ -1096,9 +1088,7 @@ public class MineshaftGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			if (this.method_33999(world, boundingBox)) {
-				return false;
-			} else {
+			if (!this.method_33999(world, boundingBox)) {
 				this.fillWithOutline(
 					world,
 					boundingBox,
@@ -1141,7 +1131,6 @@ public class MineshaftGenerator {
 					AIR,
 					false
 				);
-				return true;
 			}
 		}
 
@@ -1155,8 +1144,8 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-			super.writeNbt(world, nbt);
+		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+			super.writeNbt(arg, nbt);
 			BlockBox.CODEC
 				.listOf()
 				.encodeStart(NbtOps.INSTANCE, this.entrances)
@@ -1171,8 +1160,8 @@ public class MineshaftGenerator {
 			this.setOrientation(orientation);
 		}
 
-		public MineshaftStairs(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.MINESHAFT_STAIRS, nbt);
+		public MineshaftStairs(NbtCompound nbtCompound) {
+			super(StructurePieceType.MINESHAFT_STAIRS, nbtCompound);
 		}
 
 		@Nullable
@@ -1218,7 +1207,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(
+		public void generate(
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
@@ -1227,17 +1216,13 @@ public class MineshaftGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			if (this.method_33999(world, boundingBox)) {
-				return false;
-			} else {
+			if (!this.method_33999(world, boundingBox)) {
 				this.fillWithOutline(world, boundingBox, 0, 5, 0, 2, 7, 1, AIR, AIR, false);
 				this.fillWithOutline(world, boundingBox, 0, 0, 7, 2, 2, 8, AIR, AIR, false);
 
 				for (int i = 0; i < 5; i++) {
 					this.fillWithOutline(world, boundingBox, 0, 5 - i - (i < 4 ? 1 : 0), 2 + i, 2, 7 - i, 2 + i, AIR, AIR, false);
 				}
-
-				return true;
 			}
 		}
 	}

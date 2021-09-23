@@ -211,9 +211,21 @@ public abstract class Option {
 	);
 	public static final DoubleOption RENDER_DISTANCE = new DoubleOption(
 		"options.renderDistance", 2.0, 16.0, 1.0F, gameOptions -> (double)gameOptions.viewDistance, (gameOptions, viewDistance) -> {
-			gameOptions.viewDistance = (int)viewDistance.doubleValue();
+			gameOptions.viewDistance = viewDistance.intValue();
 			MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate();
 		}, (gameOptions, option) -> {
+			double d = option.get(gameOptions);
+			return option.getGenericLabel(new TranslatableText("options.chunks", (int)d));
+		}
+	);
+	public static final DoubleOption SIMULATION_DISTANCE = new DoubleOption(
+		"options.simulationDistance",
+		2.0,
+		16.0,
+		1.0F,
+		gameOptions -> (double)gameOptions.simulationDistance,
+		(gameOptions, simulationDistance) -> gameOptions.simulationDistance = simulationDistance.intValue(),
+		(gameOptions, option) -> {
 			double d = option.get(gameOptions);
 			return option.getGenericLabel(new TranslatableText("options.chunks", (int)d));
 		}
@@ -263,7 +275,7 @@ public abstract class Option {
 		PrioritizeChunkUpdatesMode.values(),
 		prioritizeChunkUpdatesMode -> new TranslatableText(prioritizeChunkUpdatesMode.getName()),
 		gameOptions -> gameOptions.prioritizeChunkUpdatesMode,
-		(gameOptions, option, prioritizeChunkUpdatesMode) -> gameOptions.prioritizeChunkUpdatesMode = prioritizeChunkUpdatesMode
+		(gameOptions, option, prioritizeChunkUpdateMode) -> gameOptions.prioritizeChunkUpdatesMode = prioritizeChunkUpdateMode
 	);
 	public static final CyclingOption<AttackIndicator> ATTACK_INDICATOR = CyclingOption.create(
 		"options.attackIndicator",

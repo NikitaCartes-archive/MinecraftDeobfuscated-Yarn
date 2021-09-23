@@ -914,8 +914,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	/**
 	 * Checks if this world is a debug world.
 	 * 
-	 * <p>Debug worlds are not modifiable and are typically meant for development and debug use only.
-	 * See <a href="https://minecraft.gamepedia.com/Debug_mode">the minecraft wiki</a> as well.
+	 * <p>Debug worlds are not modifiable. They have a barrier layer at y=60,
+	 * and lists all possible block states in game at y=70, helpful for finding
+	 * block rendering and model errors.
+	 * 
+	 * @see net.minecraft.world.gen.chunk.DebugChunkGenerator
 	 */
 	public final boolean isDebugWorld() {
 		return this.debugWorld;

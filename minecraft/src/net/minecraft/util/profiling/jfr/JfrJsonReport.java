@@ -11,9 +11,11 @@ import com.mojang.datafixers.util.Pair;
 import java.time.Duration;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
+import java.util.stream.DoubleStream;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Quantiles;
 import net.minecraft.util.profiling.jfr.sample.ChunkGenerationSample;
@@ -116,12 +118,13 @@ public class JfrJsonReport {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			DoubleSummaryStatistics doubleSummaryStatistics = samples.stream().mapToDouble(ServerTickTimeSample::averageTickMs).summaryStatistics();
+			double[] ds = samples.stream().mapToDouble(serverTickTimeSample -> (double)serverTickTimeSample.averageTickMs().toNanos() / 1000000.0).toArray();
+			DoubleSummaryStatistics doubleSummaryStatistics = DoubleStream.of(ds).summaryStatistics();
 			jsonObject.addProperty("minMs", doubleSummaryStatistics.getMin());
 			jsonObject.addProperty("averageMs", doubleSummaryStatistics.getAverage());
 			jsonObject.addProperty("maxMs", doubleSummaryStatistics.getMax());
-			Quantiles.create(samples.stream().mapToDouble(ServerTickTimeSample::averageTickMs).toArray())
-				.forEach((quantile, value) -> jsonObject.addProperty("p" + quantile, value));
+			Map<Integer, Double> map = Quantiles.create(ds);
+			map.forEach((quantile, value) -> jsonObject.addProperty("p" + quantile, value));
 			return jsonObject;
 		}
 	}

@@ -105,7 +105,7 @@ public class MoreOptionsDialog implements Drawable {
 		);
 		this.mapFeaturesButton.visible = false;
 		this.mapTypeButton = parent.addDrawableChild(
-			CyclingButtonWidget.<GeneratorType>builder(GeneratorType::getTranslationKey)
+			CyclingButtonWidget.<GeneratorType>builder(GeneratorType::getDisplayName)
 				.values((List<GeneratorType>)GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES)
 				.build(
 					j,

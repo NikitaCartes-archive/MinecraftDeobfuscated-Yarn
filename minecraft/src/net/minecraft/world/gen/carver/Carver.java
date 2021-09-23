@@ -133,41 +133,37 @@ public abstract class Carver<C extends CarverConfig> {
 			int p = Math.min(MathHelper.floor(y + verticalScale) + 1, context.getMinY() + context.getHeight() - 8);
 			int q = Math.max(MathHelper.floor(z - horizontalScale) - l - 1, 0);
 			int r = Math.min(MathHelper.floor(z + horizontalScale) - l, 15);
-			if (!config.aquifers && this.isRegionUncarvable(chunk, m, n, o, p, q, r)) {
-				return false;
-			} else {
-				boolean bl = false;
-				BlockPos.Mutable mutable = new BlockPos.Mutable();
-				BlockPos.Mutable mutable2 = new BlockPos.Mutable();
+			boolean bl = false;
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+			BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
-				for (int s = m; s <= n; s++) {
-					int t = chunkPos.getOffsetX(s);
-					double g = ((double)t + 0.5 - x) / horizontalScale;
+			for (int s = m; s <= n; s++) {
+				int t = chunkPos.getOffsetX(s);
+				double g = ((double)t + 0.5 - x) / horizontalScale;
 
-					for (int u = q; u <= r; u++) {
-						int v = chunkPos.getOffsetZ(u);
-						double h = ((double)v + 0.5 - z) / horizontalScale;
-						if (!(g * g + h * h >= 1.0)) {
-							MutableBoolean mutableBoolean = new MutableBoolean(false);
+				for (int u = q; u <= r; u++) {
+					int v = chunkPos.getOffsetZ(u);
+					double h = ((double)v + 0.5 - z) / horizontalScale;
+					if (!(g * g + h * h >= 1.0)) {
+						MutableBoolean mutableBoolean = new MutableBoolean(false);
 
-							for (int w = p; w > o; w--) {
-								double aa = ((double)w - 0.5 - y) / verticalScale;
-								if (!skipPredicate.shouldSkip(context, g, aa, h, w)) {
-									int ab = w - context.getMinY();
-									int ac = s | u << 4 | ab << 8;
-									if (!carvingMask.get(ac) || isDebug(config)) {
-										carvingMask.set(ac);
-										mutable.set(t, w, v);
-										bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, random, mutable, mutable2, sampler, mutableBoolean);
-									}
+						for (int w = p; w > o; w--) {
+							double aa = ((double)w - 0.5 - y) / verticalScale;
+							if (!skipPredicate.shouldSkip(context, g, aa, h, w)) {
+								int ab = w - context.getMinY();
+								int ac = s | u << 4 | ab << 8;
+								if (!carvingMask.get(ac) || isDebug(config)) {
+									carvingMask.set(ac);
+									mutable.set(t, w, v);
+									bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, random, mutable, mutable2, sampler, mutableBoolean);
 								}
 							}
 						}
 					}
 				}
-
-				return bl;
 			}
+
+			return bl;
 		} else {
 			return false;
 		}
@@ -218,8 +214,6 @@ public abstract class Carver<C extends CarverConfig> {
 	private BlockState getState(CarverContext context, C config, BlockPos pos, AquiferSampler sampler) {
 		if (pos.getY() <= config.lavaLevel.getY(context)) {
 			return LAVA.getBlockState();
-		} else if (!config.aquifers) {
-			return isDebug(config) ? getDebugState(config, AIR) : AIR;
 		} else {
 			BlockState blockState = sampler.apply(pos.getX(), pos.getY(), pos.getZ(), 0.0, 0.0);
 			if (blockState == null) {

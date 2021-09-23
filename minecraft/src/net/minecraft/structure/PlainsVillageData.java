@@ -190,7 +190,7 @@ public class PlainsVillageData {
 			new StructurePool(
 				new Identifier("village/plains/trees"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.OAK), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.OAK_CHECKED), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
@@ -200,7 +200,7 @@ public class PlainsVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofLegacySingle("village/plains/plains_lamp_1"), 2),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.OAK), 1),
+					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.OAK_CHECKED), 1),
 					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.FLOWER_PLAIN), 1),
 					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_HAY), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 2)
@@ -214,7 +214,7 @@ public class PlainsVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/plains_lamp_1", StructureProcessorLists.ZOMBIE_PLAINS), 1),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.OAK), 1),
+					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.OAK_CHECKED), 1),
 					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.FLOWER_PLAIN), 1),
 					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_HAY), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 2)

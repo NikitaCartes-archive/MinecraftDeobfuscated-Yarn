@@ -71,13 +71,13 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome method_38109(int i, int j, int k, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
-		int l = i >> 2;
-		int m = k >> 2;
-		if ((long)l * (long)l + (long)m * (long)m <= 4096L) {
+	public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+		int i = x >> 2;
+		int j = z >> 2;
+		if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
 			return this.centerBiome;
 		} else {
-			float f = getNoiseAt(this.noise, l * 2 + 1, m * 2 + 1);
+			float f = getNoiseAt(this.noise, i * 2 + 1, j * 2 + 1);
 			if (f > 40.0F) {
 				return this.highlandsBiome;
 			} else if (f >= 0.0F) {

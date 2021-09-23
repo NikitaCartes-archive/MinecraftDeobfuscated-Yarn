@@ -3,40 +3,42 @@ package net.minecraft.world.chunk;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.class_6558;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.collection.Int2ObjectBiMap;
 
+/**
+ * A palette backed by a bidirectional hash table.
+ */
 public class BiMapPalette<T> implements Palette<T> {
 	private final IndexedIterable<T> idList;
 	private final Int2ObjectBiMap<T> map;
-	private final PaletteResizeListener<T> resizeHandler;
+	private final PaletteResizeListener<T> listener;
 	private final int indexBits;
 
-	public BiMapPalette(IndexedIterable<T> indexedIterable, int i, PaletteResizeListener<T> paletteResizeListener, List<T> list) {
-		this(indexedIterable, i, paletteResizeListener);
-		list.forEach(this.map::add);
+	public BiMapPalette(IndexedIterable<T> idList, int bits, PaletteResizeListener<T> listener, List<T> entries) {
+		this(idList, bits, listener);
+		entries.forEach(this.map::add);
 	}
 
-	public BiMapPalette(IndexedIterable<T> indexedIterable, int indexBits, PaletteResizeListener<T> resizeHandler) {
-		this.idList = indexedIterable;
+	public BiMapPalette(IndexedIterable<T> idList, int indexBits, PaletteResizeListener<T> listener) {
+		this.idList = idList;
 		this.indexBits = indexBits;
-		this.resizeHandler = resizeHandler;
-		this.map = Int2ObjectBiMap.method_37913(1 << indexBits);
+		this.listener = listener;
+		this.map = Int2ObjectBiMap.create(1 << indexBits);
 	}
 
-	public static <A> Palette<A> method_38287(int i, IndexedIterable<A> indexedIterable, PaletteResizeListener<A> paletteResizeListener) {
-		return new BiMapPalette<>(indexedIterable, i, paletteResizeListener);
+	public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener) {
+		return new BiMapPalette<>(idList, bits, listener);
 	}
 
 	@Override
-	public int getIndex(T object) {
+	public int index(T object) {
 		int i = this.map.getRawId(object);
 		if (i == -1) {
 			i = this.map.add(object);
 			if (i >= 1 << this.indexBits) {
-				i = this.resizeHandler.onResize(this.indexBits + 1, object);
+				i = this.listener.onResize(this.indexBits + 1, object);
 			}
 		}
 
@@ -44,8 +46,8 @@ public class BiMapPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public boolean accepts(Predicate<T> predicate) {
-		for (int i = 0; i < this.getIndexBits(); i++) {
+	public boolean hasAny(Predicate<T> predicate) {
+		for (int i = 0; i < this.getSize(); i++) {
 			if (predicate.test(this.map.get(i))) {
 				return true;
 			}
@@ -55,17 +57,17 @@ public class BiMapPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public T getByIndex(int index) {
-		T object = this.map.get(index);
+	public T get(int id) {
+		T object = this.map.get(id);
 		if (object == null) {
-			throw new class_6558(index);
+			throw new EntryMissingException(id);
 		} else {
 			return object;
 		}
 	}
 
 	@Override
-	public void fromPacket(PacketByteBuf buf) {
+	public void readPacket(PacketByteBuf buf) {
 		this.map.clear();
 		int i = buf.readVarInt();
 
@@ -75,8 +77,8 @@ public class BiMapPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void toPacket(PacketByteBuf buf) {
-		int i = this.getIndexBits();
+	public void writePacket(PacketByteBuf buf) {
+		int i = this.getSize();
 		buf.writeVarInt(i);
 
 		for (int j = 0; j < i; j++) {
@@ -86,23 +88,23 @@ public class BiMapPalette<T> implements Palette<T> {
 
 	@Override
 	public int getPacketSize() {
-		int i = PacketByteBuf.getVarIntLength(this.getIndexBits());
+		int i = PacketByteBuf.getVarIntLength(this.getSize());
 
-		for (int j = 0; j < this.getIndexBits(); j++) {
+		for (int j = 0; j < this.getSize(); j++) {
 			i += PacketByteBuf.getVarIntLength(this.idList.getRawId(this.map.get(j)));
 		}
 
 		return i;
 	}
 
-	public List<T> method_38288() {
+	public List<T> getElements() {
 		ArrayList<T> arrayList = new ArrayList();
 		this.map.iterator().forEachRemaining(arrayList::add);
 		return arrayList;
 	}
 
 	@Override
-	public int getIndexBits() {
+	public int getSize() {
 		return this.map.size();
 	}
 }

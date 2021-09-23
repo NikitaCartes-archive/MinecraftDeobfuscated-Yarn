@@ -34,8 +34,8 @@ public class ChunkSection {
 
 	public ChunkSection(int i, Registry<Biome> registry) {
 		this.yOffset = blockCoordFromChunkCoord(i);
-		this.container = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.class_6563.field_34569);
-		this.field_34556 = new PalettedContainer<>(registry, registry.getOrThrow(BiomeKeys.PLAINS), PalettedContainer.class_6563.field_34570);
+		this.container = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
+		this.field_34556 = new PalettedContainer<>(registry, registry.getOrThrow(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
 	}
 
 	public static int blockCoordFromChunkCoord(int chunkPos) {
@@ -65,9 +65,9 @@ public class ChunkSection {
 	public BlockState setBlockState(int x, int y, int z, BlockState state, boolean lock) {
 		BlockState blockState;
 		if (lock) {
-			blockState = this.container.setSync(x, y, z, state);
+			blockState = this.container.swap(x, y, z, state);
 		} else {
-			blockState = this.container.set(x, y, z, state);
+			blockState = this.container.swapUnsafe(x, y, z, state);
 		}
 
 		FluidState fluidState = blockState.getFluidState();
@@ -149,14 +149,14 @@ public class ChunkSection {
 
 	public void fromPacket(PacketByteBuf buf) {
 		this.nonEmptyBlockCount = buf.readShort();
-		this.container.fromPacket(buf);
-		this.field_34556.fromPacket(buf);
+		this.container.readPacket(buf);
+		this.field_34556.readPacket(buf);
 	}
 
 	public void toPacket(PacketByteBuf buf) {
 		buf.writeShort(this.nonEmptyBlockCount);
-		this.container.toPacket(buf);
-		this.field_34556.toPacket(buf);
+		this.container.writePacket(buf);
+		this.field_34556.writePacket(buf);
 	}
 
 	public int getPacketSize() {
@@ -182,7 +182,7 @@ public class ChunkSection {
 			for (int m = 0; m < 4; m++) {
 				for (int n = 0; n < 4; n++) {
 					for (int o = 0; o < 4; o++) {
-						palettedContainer.set(m, n, o, biomeSource.method_38109(i + m, k + n, j + o, multiNoiseSampler));
+						palettedContainer.swapUnsafe(m, n, o, biomeSource.getBiome(i + m, k + n, j + o, multiNoiseSampler));
 					}
 				}
 			}

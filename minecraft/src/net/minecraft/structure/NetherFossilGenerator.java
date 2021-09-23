@@ -1,8 +1,8 @@
 package net.minecraft.structure;
 
 import java.util.Random;
+import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -44,8 +44,8 @@ public class NetherFossilGenerator {
 			super(StructurePieceType.NETHER_FOSSIL, 0, manager, template, template.toString(), createPlacementData(rotation), pos);
 		}
 
-		public Piece(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.NETHER_FOSSIL, nbt, world, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+		public Piece(StructureManager structureManager, NbtCompound nbt) {
+			super(StructurePieceType.NETHER_FOSSIL, nbt, structureManager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 		}
 
 		private static StructurePlacementData createPlacementData(BlockRotation rotation) {
@@ -56,8 +56,8 @@ public class NetherFossilGenerator {
 		}
 
 		@Override
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-			super.writeNbt(world, nbt);
+		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+			super.writeNbt(arg, nbt);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 		}
 
@@ -66,7 +66,7 @@ public class NetherFossilGenerator {
 		}
 
 		@Override
-		public boolean generate(
+		public void generate(
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
@@ -76,7 +76,7 @@ public class NetherFossilGenerator {
 			BlockPos pos
 		) {
 			boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-			return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 		}
 	}
 }

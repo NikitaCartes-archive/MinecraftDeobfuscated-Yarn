@@ -332,13 +332,31 @@ public class MathHelper {
 		return value != 0 && (value & value - 1) == 0;
 	}
 
-	public static int log2DeBruijn(int value) {
+	/**
+	 * {@return ceil(log<sub>2</sub>({@code value}))}
+	 * 
+	 * <p>The vanilla implementation uses the de Bruijn sequence.
+	 * 
+	 * @see Integer#numberOfLeadingZeros(int)
+	 * 
+	 * @param value the input value
+	 */
+	public static int ceilLog2(int value) {
 		value = isPowerOfTwo(value) ? value : smallestEncompassingPowerOfTwo(value);
 		return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int)((long)value * 125613361L >> 27) & 31];
 	}
 
-	public static int log2(int value) {
-		return log2DeBruijn(value) - (isPowerOfTwo(value) ? 0 : 1);
+	/**
+	 * {@return floor(log<sub>2</sub>({@code value}))}
+	 * 
+	 * <p>The vanilla implementation uses the de Bruijn sequence.
+	 * 
+	 * @see Integer#numberOfLeadingZeros(int)
+	 * 
+	 * @param value the input value
+	 */
+	public static int floorLog2(int value) {
+		return ceilLog2(value) - (isPowerOfTwo(value) ? 0 : 1);
 	}
 
 	public static int packRgb(float r, float g, float b) {
@@ -811,6 +829,10 @@ public class MathHelper {
 	}
 
 	public static int square(int n) {
+		return n * n;
+	}
+
+	public static long square(long n) {
 		return n * n;
 	}
 

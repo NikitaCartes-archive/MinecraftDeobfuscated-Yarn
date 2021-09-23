@@ -19,8 +19,8 @@ public class DoublePerlinNoiseSampler {
 		return new DoublePerlinNoiseSampler(random, offset, new DoubleArrayList(octaves));
 	}
 
-	public static DoublePerlinNoiseSampler method_38476(AbstractRandom abstractRandom, DoublePerlinNoiseSampler.NoiseParameters noiseParameters) {
-		return create(abstractRandom, noiseParameters.getFirstOctave(), noiseParameters.getAmplitudes());
+	public static DoublePerlinNoiseSampler create(AbstractRandom random, DoublePerlinNoiseSampler.NoiseParameters parameters) {
+		return create(random, parameters.getFirstOctave(), parameters.getAmplitudes());
 	}
 
 	public static DoublePerlinNoiseSampler create(AbstractRandom random, int offset, DoubleList octaves) {

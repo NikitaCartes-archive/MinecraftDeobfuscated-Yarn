@@ -6,7 +6,8 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.nio.file.Path;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.profiling.jfr.JfrProfiler;
+import net.minecraft.util.profiling.jfr.FlightProfiler;
+import net.minecraft.util.profiling.jfr.InstanceType;
 
 public class JfrCommand {
 	private static final SimpleCommandExceptionType JFR_START_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.jfr.start.failed"));
@@ -27,8 +28,8 @@ public class JfrCommand {
 	}
 
 	private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
-		JfrProfiler.InstanceType instanceType = JfrProfiler.InstanceType.get(source.getServer());
-		if (!JfrProfiler.start(instanceType)) {
+		InstanceType instanceType = InstanceType.get(source.getServer());
+		if (!FlightProfiler.INSTANCE.start(instanceType)) {
 			throw JFR_START_FAILED_EXCEPTION.create();
 		} else {
 			source.sendFeedback(new TranslatableText("commands.jfr.started"), false);
@@ -38,7 +39,7 @@ public class JfrCommand {
 
 	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
 		try {
-			Path path = JfrProfiler.stop();
+			Path path = FlightProfiler.INSTANCE.stop();
 			source.sendFeedback(new TranslatableText("commands.jfr.stopped", path), false);
 			return 1;
 		} catch (Throwable var2) {

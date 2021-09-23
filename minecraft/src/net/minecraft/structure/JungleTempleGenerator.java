@@ -1,6 +1,7 @@
 package net.minecraft.structure;
 
 import java.util.Random;
+import net.minecraft.class_6625;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeverBlock;
@@ -15,7 +16,6 @@ import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -37,17 +37,17 @@ public class JungleTempleGenerator extends ShiftableStructurePiece {
 		super(StructurePieceType.JUNGLE_TEMPLE, x, 64, z, 12, 10, 15, getRandomHorizontalDirection(random));
 	}
 
-	public JungleTempleGenerator(ServerWorld world, NbtCompound nbt) {
-		super(StructurePieceType.JUNGLE_TEMPLE, nbt);
-		this.placedMainChest = nbt.getBoolean("placedMainChest");
-		this.placedHiddenChest = nbt.getBoolean("placedHiddenChest");
-		this.placedTrap1 = nbt.getBoolean("placedTrap1");
-		this.placedTrap2 = nbt.getBoolean("placedTrap2");
+	public JungleTempleGenerator(NbtCompound nbtCompound) {
+		super(StructurePieceType.JUNGLE_TEMPLE, nbtCompound);
+		this.placedMainChest = nbtCompound.getBoolean("placedMainChest");
+		this.placedHiddenChest = nbtCompound.getBoolean("placedHiddenChest");
+		this.placedTrap1 = nbtCompound.getBoolean("placedTrap1");
+		this.placedTrap2 = nbtCompound.getBoolean("placedTrap2");
 	}
 
 	@Override
-	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-		super.writeNbt(world, nbt);
+	protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+		super.writeNbt(arg, nbt);
 		nbt.putBoolean("placedMainChest", this.placedMainChest);
 		nbt.putBoolean("placedHiddenChest", this.placedHiddenChest);
 		nbt.putBoolean("placedTrap1", this.placedTrap1);
@@ -55,7 +55,7 @@ public class JungleTempleGenerator extends ShiftableStructurePiece {
 	}
 
 	@Override
-	public boolean generate(
+	public void generate(
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
@@ -64,9 +64,7 @@ public class JungleTempleGenerator extends ShiftableStructurePiece {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		if (!this.adjustToAverageHeight(world, boundingBox, 0)) {
-			return false;
-		} else {
+		if (this.adjustToAverageHeight(world, boundingBox, 0)) {
 			this.fillWithOutline(world, boundingBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, false, random, COBBLESTONE_RANDOMIZER);
 			this.fillWithOutline(world, boundingBox, 2, 1, 2, 9, 2, 2, false, random, COBBLESTONE_RANDOMIZER);
 			this.fillWithOutline(world, boundingBox, 2, 1, 12, 9, 2, 12, false, random, COBBLESTONE_RANDOMIZER);
@@ -386,8 +384,6 @@ public class JungleTempleGenerator extends ShiftableStructurePiece {
 			if (!this.placedHiddenChest) {
 				this.placedHiddenChest = this.addChest(world, boundingBox, random, 9, -3, 10, LootTables.JUNGLE_TEMPLE_CHEST);
 			}
-
-			return true;
 		}
 	}
 

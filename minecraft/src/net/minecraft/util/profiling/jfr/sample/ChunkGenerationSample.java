@@ -11,15 +11,13 @@ public record ChunkGenerationSample() implements LongRunningSample {
 	private final ChunkPos chunkPos;
 	private final ColumnPos centerPos;
 	private final ChunkStatus chunkStatus;
-	private final boolean successful;
 	private final String worldKey;
 
-	public ChunkGenerationSample(Duration duration, ChunkPos chunkPos, ColumnPos columnPos, ChunkStatus chunkStatus, boolean bl, String string) {
+	public ChunkGenerationSample(Duration duration, ChunkPos chunkPos, ColumnPos columnPos, ChunkStatus chunkStatus, String string) {
 		this.duration = duration;
 		this.chunkPos = chunkPos;
 		this.centerPos = columnPos;
 		this.chunkStatus = chunkStatus;
-		this.successful = bl;
 		this.worldKey = string;
 	}
 
@@ -29,7 +27,6 @@ public record ChunkGenerationSample() implements LongRunningSample {
 			new ChunkPos(event.getInt("chunkPosX"), event.getInt("chunkPosX")),
 			new ColumnPos(event.getInt("worldPosX"), event.getInt("worldPosZ")),
 			ChunkStatus.byId(event.getString("status")),
-			event.getBoolean("success"),
 			event.getString("level")
 		);
 	}

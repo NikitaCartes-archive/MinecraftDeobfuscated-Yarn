@@ -1,46 +1,20 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.function.Predicate;
+import net.minecraft.class_6622;
+import net.minecraft.class_6626;
 import net.minecraft.structure.DesertTempleGenerator;
-import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DesertPyramidFeature extends StructureFeature<DefaultFeatureConfig> {
 	public DesertPyramidFeature(Codec<DefaultFeatureConfig> codec) {
-		super(codec);
+		super(codec, DesertPyramidFeature::method_38673);
 	}
 
-	@Override
-	public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
-		return DesertPyramidFeature.Start::new;
-	}
-
-	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
-			super(structureFeature, chunkPos, i, l);
-		}
-
-		public void init(
-			DynamicRegistryManager dynamicRegistryManager,
-			ChunkGenerator chunkGenerator,
-			StructureManager structureManager,
-			ChunkPos chunkPos,
-			DefaultFeatureConfig defaultFeatureConfig,
-			HeightLimitView heightLimitView,
-			Predicate<Biome> predicate
-		) {
-			if (StructureFeature.checkBiome(chunkGenerator, heightLimitView, predicate, Heightmap.Type.WORLD_SURFACE_WG, chunkPos.getCenterX(), chunkPos.getCenterZ())) {
-				if (StructureFeature.getLowestCornerInGroundHeight(chunkGenerator, 21, 21, chunkPos, heightLimitView) >= chunkGenerator.getSeaLevel()) {
-					DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
-					this.addPiece(desertTempleGenerator);
-				}
+	private static void method_38673(class_6626 arg, DefaultFeatureConfig defaultFeatureConfig, class_6622.class_6623 arg2) {
+		if (arg2.method_38707(Heightmap.Type.WORLD_SURFACE_WG)) {
+			if (arg2.method_38705(21, 21) >= arg2.chunkGenerator().getSeaLevel()) {
+				arg.addPiece(new DesertTempleGenerator(arg2.random(), arg2.chunkPos().getStartX(), arg2.chunkPos().getStartZ()));
 			}
 		}
 	}

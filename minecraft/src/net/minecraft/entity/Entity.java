@@ -169,6 +169,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected boolean onGround;
 	public boolean horizontalCollision;
 	public boolean verticalCollision;
+	public boolean field_34927;
+	private static final float field_34928 = 0.0063F;
 	public boolean velocityModified;
 	protected Vec3d movementMultiplier = Vec3d.ZERO;
 	@Nullable
@@ -598,6 +600,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			this.world.getProfiler().push("rest");
 			this.horizontalCollision = !MathHelper.approximatelyEquals(movement.x, vec3d.x) || !MathHelper.approximatelyEquals(movement.z, vec3d.z);
 			this.verticalCollision = movement.y != vec3d.y;
+			this.field_34927 = movement.subtract(vec3d).lengthSquared() < 0.0063F;
 			this.onGround = this.verticalCollision && movement.y < 0.0;
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.world.getBlockState(blockPos);

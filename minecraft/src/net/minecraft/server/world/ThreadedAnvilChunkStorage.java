@@ -39,6 +39,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_6609;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -769,7 +770,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return this.chunkHolders.size();
 	}
 
-	protected ChunkTicketManager getTicketManager() {
+	public ChunkTicketManager getTicketManager() {
 		return this.ticketManager;
 	}
 
@@ -791,10 +792,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			.addColumn("ticket")
 			.addColumn("spawning")
 			.addColumn("block_entity_count")
+			.addColumn("ticking_ticket")
+			.addColumn("ticking_level")
 			.startBody(writer);
+		class_6609 lv = this.ticketManager.method_38631();
 
 		for (Entry<ChunkHolder> entry : this.chunkHolders.long2ObjectEntrySet()) {
-			ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
+			long l = entry.getLongKey();
+			ChunkPos chunkPos = new ChunkPos(l);
 			ChunkHolder chunkHolder = (ChunkHolder)entry.getValue();
 			Optional<Chunk> optional = Optional.ofNullable(chunkHolder.getCurrentChunk());
 			Optional<WorldChunk> optional2 = optional.flatMap(chunk -> chunk instanceof WorldChunk ? Optional.of((WorldChunk)chunk) : Optional.empty());
@@ -808,9 +813,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				getFutureStatus(chunkHolder.getAccessibleFuture()),
 				getFutureStatus(chunkHolder.getTickingFuture()),
 				getFutureStatus(chunkHolder.getEntityTickingFuture()),
-				this.ticketManager.getTicket(entry.getLongKey()),
+				this.ticketManager.getTicket(l),
 				!this.isTooFarFromPlayersToSpawnMobs(chunkPos),
-				optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0)
+				optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0),
+				lv.method_38643(l),
+				lv.getLevel(l)
 			);
 		}
 	}

@@ -77,8 +77,8 @@ public class LinkedBlockPosHashSet extends LongLinkedOpenHashSet {
 	 * of values set at that position.
 	 */
 	protected static class Storage extends Long2LongLinkedOpenHashMap {
-		private static final int STARTING_OFFSET = MathHelper.log2(60000000);
-		private static final int HORIZONTAL_COLUMN_BIT_SEPARATION = MathHelper.log2(60000000);
+		private static final int STARTING_OFFSET = MathHelper.floorLog2(60000000);
+		private static final int HORIZONTAL_COLUMN_BIT_SEPARATION = MathHelper.floorLog2(60000000);
 		private static final int FIELD_SPACING = 64 - STARTING_OFFSET - HORIZONTAL_COLUMN_BIT_SEPARATION;
 		private static final int Y_BIT_OFFSET = 0;
 		private static final int X_BIT_OFFSET = FIELD_SPACING;

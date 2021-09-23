@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.decorator;
 
+import net.minecraft.block.Block;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -76,5 +77,9 @@ public interface Decoratable<R> {
 	 */
 	default R spreadHorizontally() {
 		return this.decorate(Decorator.SQUARE.configure(NopeDecoratorConfig.INSTANCE));
+	}
+
+	default R method_38670(Block block) {
+		return this.decorate(Decorator.BLOCK_SURVIVES_FILTER.configure(new BlockSurvivesFilterDecoratorConfig(block.getDefaultState())));
 	}
 }

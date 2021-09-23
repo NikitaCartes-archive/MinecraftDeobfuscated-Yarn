@@ -114,7 +114,8 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		this.statusConsumer.accept(new TranslatableText("connect.joining"));
 		this.profile = packet.getProfile();
 		this.connection.setState(NetworkState.PLAY);
-		this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentScreen, this.connection, this.profile));
+		this.connection
+			.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentScreen, this.connection, this.profile, this.client.createTelemetrySender()));
 	}
 
 	@Override

@@ -40,6 +40,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.NetherFortressFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -273,7 +274,7 @@ public final class SpawnHelper {
 		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos pos, @Nullable Biome biome
 	) {
 		return shouldUseNetherFortressSpawns(pos, world, spawnGroup, structureAccessor)
-			? StructureFeature.FORTRESS.getMonsterSpawns()
+			? NetherFortressFeature.MONSTER_SPAWNS
 			: chunkGenerator.getEntitySpawnList(biome != null ? biome : world.getBiome(pos), structureAccessor, spawnGroup, pos);
 	}
 

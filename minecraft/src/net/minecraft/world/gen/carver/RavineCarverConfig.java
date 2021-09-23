@@ -24,18 +24,17 @@ public class RavineCarverConfig extends CarverConfig {
 		HeightProvider y,
 		FloatProvider yScale,
 		YOffset lavaLevel,
-		boolean aquifers,
-		CarverDebugConfig debugConfig,
-		FloatProvider verticalRotation,
+		CarverDebugConfig carverDebugConfig,
+		FloatProvider floatProvider,
 		RavineCarverConfig.Shape shape
 	) {
-		super(probability, y, yScale, lavaLevel, aquifers, debugConfig);
-		this.verticalRotation = verticalRotation;
+		super(probability, y, yScale, lavaLevel, carverDebugConfig);
+		this.verticalRotation = floatProvider;
 		this.shape = shape;
 	}
 
 	public RavineCarverConfig(CarverConfig config, FloatProvider verticalRotation, RavineCarverConfig.Shape shape) {
-		this(config.probability, config.y, config.yScale, config.lavaLevel, config.aquifers, config.debugConfig, verticalRotation, shape);
+		this(config.probability, config.y, config.yScale, config.lavaLevel, config.debugConfig, verticalRotation, shape);
 	}
 
 	public static class Shape {

@@ -80,11 +80,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		int j = config.foliagePlacer.getRandomHeight(random, i, config);
 		int k = i - j;
 		int l = config.foliagePlacer.getRandomRadius(random, k);
-		if (pos.getY() < world.getBottomY() + 1 || pos.getY() + i + 1 > world.getTopY()) {
-			return false;
-		} else if (!config.saplingProvider.getBlockState(random, pos).canPlaceAt(world, pos)) {
-			return false;
-		} else {
+		if (pos.getY() >= world.getBottomY() + 1 && pos.getY() + i + 1 <= world.getTopY()) {
 			OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
 			int m = this.getTopPosition(world, i, pos, config);
 			if (m >= i || optionalInt.isPresent() && m >= optionalInt.getAsInt()) {
@@ -94,6 +90,8 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 			} else {
 				return false;
 			}
+		} else {
+			return false;
 		}
 	}
 

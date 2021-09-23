@@ -12,15 +12,10 @@ import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class PillagerOutpostFeature extends JigsawFeature {
-	private static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
+	public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
 
 	public PillagerOutpostFeature(Codec<StructurePoolFeatureConfig> codec) {
 		super(codec, 0, true, true);
-	}
-
-	@Override
-	public Pool<SpawnSettings.SpawnEntry> getMonsterSpawns() {
-		return MONSTER_SPAWNS;
 	}
 
 	protected boolean shouldStartAt(

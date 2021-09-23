@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import java.io.IOException;
 import java.util.List;
-import net.minecraft.util.profiling.jfr.event.network.PacketReceivedEvent;
+import net.minecraft.util.profiling.jfr.FlightProfiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -30,13 +30,9 @@ public class DecoderHandler extends ByteToMessageDecoder {
 			if (packet == null) {
 				throw new IOException("Bad packet id " + j);
 			} else {
-				if (PacketReceivedEvent.TYPE.isEnabled()) {
-					int k = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId();
-					String string = "%d/%d (%s)".formatted(k, j, packet.getClass().getSimpleName());
-					PacketReceivedEvent packetReceivedEvent = new PacketReceivedEvent(string, channelHandlerContext.channel().remoteAddress(), i);
-					packetReceivedEvent.commit();
-				}
-
+				int k = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId();
+				FlightProfiler.INSTANCE
+					.onPacketReceived(() -> "%d/%d (%s)".formatted(k, j, packet.getClass().getSimpleName()), channelHandlerContext.channel().remoteAddress(), i);
 				if (packetByteBuf.readableBytes() > 0) {
 					throw new IOException(
 						"Packet "

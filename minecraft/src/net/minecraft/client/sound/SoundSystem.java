@@ -20,6 +20,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
@@ -39,6 +40,7 @@ public class SoundSystem {
 	private static final float field_33024 = 1.0F;
 	private static final int field_33025 = 20;
 	private static final Set<Identifier> UNKNOWN_SOUNDS = Sets.<Identifier>newHashSet();
+	private static final long field_34966 = 1000L;
 	public static final String FOR_THE_DEBUG = "FOR THE DEBUG!";
 	public static final String OPENAL_SOFT_ON = "OpenAL Soft on ";
 	public static final int OPENAL_SOFT_ON_LENGTH = "OpenAL Soft on ".length();
@@ -51,6 +53,7 @@ public class SoundSystem {
 	private final SoundExecutor taskQueue = new SoundExecutor();
 	private final Channel channel = new Channel(this.soundEngine, this.taskQueue);
 	private int ticks;
+	private long lastSoundDeviceCheckTime;
 	private final Map<SoundInstance, Channel.SourceManager> sources = Maps.<SoundInstance, Channel.SourceManager>newHashMap();
 	private final Multimap<SoundCategory, SoundInstance> sounds = HashMultimap.create();
 	private final List<TickableSoundInstance> tickingSounds = Lists.<TickableSoundInstance>newArrayList();
@@ -159,8 +162,39 @@ public class SoundSystem {
 		this.listeners.remove(listener);
 	}
 
-	public void tick(boolean bl) {
-		if (!bl) {
+	private boolean shouldReloadSounds() {
+		if (this.soundEngine.isDeviceUnavailable()) {
+			LOGGER.info("Audio device was lost!");
+			return true;
+		} else {
+			long l = Util.getMeasuringTimeMs();
+			boolean bl = l - this.lastSoundDeviceCheckTime >= 1000L;
+			if (!bl) {
+				return false;
+			} else {
+				this.lastSoundDeviceCheckTime = l;
+				if ("".equals(this.settings.soundDevice)) {
+					if (this.soundEngine.updateDeviceSpecifier()) {
+						LOGGER.info("System default audio device has changed!");
+						return true;
+					}
+				} else if (!this.soundEngine.getCurrentDeviceName().equals(this.settings.soundDevice)
+					&& this.soundEngine.getSoundDevices().contains(this.settings.soundDevice)) {
+					LOGGER.info("Preferred audio device has become available!");
+					return true;
+				}
+
+				return false;
+			}
+		}
+	}
+
+	public void tick(boolean paused) {
+		if (this.shouldReloadSounds()) {
+			this.reloadSounds();
+		}
+
+		if (!paused) {
 			this.tick();
 		}
 

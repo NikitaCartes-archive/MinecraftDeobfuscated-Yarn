@@ -1,48 +1,23 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.function.Predicate;
+import net.minecraft.class_6622;
+import net.minecraft.class_6626;
 import net.minecraft.structure.IglooGenerator;
-import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class IglooFeature extends StructureFeature<DefaultFeatureConfig> {
 	public IglooFeature(Codec<DefaultFeatureConfig> codec) {
-		super(codec);
+		super(codec, IglooFeature::method_38675);
 	}
 
-	@Override
-	public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
-		return IglooFeature.Start::new;
-	}
-
-	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
-			super(structureFeature, chunkPos, i, l);
-		}
-
-		public void init(
-			DynamicRegistryManager dynamicRegistryManager,
-			ChunkGenerator chunkGenerator,
-			StructureManager structureManager,
-			ChunkPos chunkPos,
-			DefaultFeatureConfig defaultFeatureConfig,
-			HeightLimitView heightLimitView,
-			Predicate<Biome> predicate
-		) {
-			if (StructureFeature.checkBiome(chunkGenerator, heightLimitView, predicate, Heightmap.Type.WORLD_SURFACE_WG, chunkPos.getCenterX(), chunkPos.getCenterZ())) {
-				BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 90, chunkPos.getStartZ());
-				BlockRotation blockRotation = BlockRotation.random(this.random);
-				IglooGenerator.addPieces(structureManager, blockPos, blockRotation, this, this.random);
-			}
+	private static void method_38675(class_6626 arg, DefaultFeatureConfig defaultFeatureConfig, class_6622.class_6623 arg2) {
+		if (arg2.method_38707(Heightmap.Type.WORLD_SURFACE_WG)) {
+			BlockPos blockPos = new BlockPos(arg2.chunkPos().getStartX(), 90, arg2.chunkPos().getStartZ());
+			BlockRotation blockRotation = BlockRotation.random(arg2.random());
+			IglooGenerator.addPieces(arg2.structureManager(), blockPos, blockRotation, arg, arg2.random());
 		}
 	}
 }

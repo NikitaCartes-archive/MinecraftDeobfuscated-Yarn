@@ -11,7 +11,7 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 	private final T argument;
 	private long tickCreated;
 
-	protected ChunkTicket(ChunkTicketType<T> type, int level, T argument) {
+	public ChunkTicket(ChunkTicketType<T> type, int level, T argument) {
 		this.type = type;
 		this.level = level;
 		this.argument = argument;

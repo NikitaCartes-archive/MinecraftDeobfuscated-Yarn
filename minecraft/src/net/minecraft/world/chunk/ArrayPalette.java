@@ -1,30 +1,33 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Predicate;
-import net.minecraft.class_6558;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
 
+/**
+ * A palette that stores the possible entries in an array and maps them
+ * to their indices in the array.
+ */
 public class ArrayPalette<T> implements Palette<T> {
 	private final IndexedIterable<T> idList;
 	private final T[] array;
-	private final PaletteResizeListener<T> resizeListener;
+	private final PaletteResizeListener<T> listener;
 	private final int indexBits;
 	private int size;
 
-	public ArrayPalette(IndexedIterable<T> indexedIterable, int integer, PaletteResizeListener<T> resizeListener) {
-		this.idList = indexedIterable;
-		this.array = (T[])(new Object[1 << integer]);
-		this.indexBits = integer;
-		this.resizeListener = resizeListener;
+	public ArrayPalette(IndexedIterable<T> idList, int bits, PaletteResizeListener<T> listener) {
+		this.idList = idList;
+		this.array = (T[])(new Object[1 << bits]);
+		this.indexBits = bits;
+		this.listener = listener;
 	}
 
-	public static <A> Palette<A> method_38295(int i, IndexedIterable<A> indexedIterable, PaletteResizeListener<A> paletteResizeListener) {
-		return new ArrayPalette<>(indexedIterable, i, paletteResizeListener);
+	public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener) {
+		return new ArrayPalette<>(idList, bits, listener);
 	}
 
 	@Override
-	public int getIndex(T object) {
+	public int index(T object) {
 		for (int i = 0; i < this.size; i++) {
 			if (this.array[i] == object) {
 				return i;
@@ -37,12 +40,12 @@ public class ArrayPalette<T> implements Palette<T> {
 			this.size++;
 			return ix;
 		} else {
-			return this.resizeListener.onResize(this.indexBits + 1, object);
+			return this.listener.onResize(this.indexBits + 1, object);
 		}
 	}
 
 	@Override
-	public boolean accepts(Predicate<T> predicate) {
+	public boolean hasAny(Predicate<T> predicate) {
 		for (int i = 0; i < this.size; i++) {
 			if (predicate.test(this.array[i])) {
 				return true;
@@ -53,16 +56,16 @@ public class ArrayPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public T getByIndex(int index) {
-		if (index >= 0 && index < this.size) {
-			return this.array[index];
+	public T get(int id) {
+		if (id >= 0 && id < this.size) {
+			return this.array[id];
 		} else {
-			throw new class_6558(index);
+			throw new EntryMissingException(id);
 		}
 	}
 
 	@Override
-	public void fromPacket(PacketByteBuf buf) {
+	public void readPacket(PacketByteBuf buf) {
 		this.size = buf.readVarInt();
 
 		for (int i = 0; i < this.size; i++) {
@@ -71,7 +74,7 @@ public class ArrayPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void toPacket(PacketByteBuf buf) {
+	public void writePacket(PacketByteBuf buf) {
 		buf.writeVarInt(this.size);
 
 		for (int i = 0; i < this.size; i++) {
@@ -81,9 +84,9 @@ public class ArrayPalette<T> implements Palette<T> {
 
 	@Override
 	public int getPacketSize() {
-		int i = PacketByteBuf.getVarIntLength(this.getIndexBits());
+		int i = PacketByteBuf.getVarIntLength(this.getSize());
 
-		for (int j = 0; j < this.getIndexBits(); j++) {
+		for (int j = 0; j < this.getSize(); j++) {
 			i += PacketByteBuf.getVarIntLength(this.idList.getRawId(this.array[j]));
 		}
 
@@ -91,7 +94,7 @@ public class ArrayPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public int getIndexBits() {
+	public int getSize() {
 		return this.size;
 	}
 }

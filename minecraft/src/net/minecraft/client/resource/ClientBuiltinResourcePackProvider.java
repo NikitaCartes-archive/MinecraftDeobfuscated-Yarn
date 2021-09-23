@@ -2,9 +2,10 @@ package net.minecraft.client.resource;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.hash.Hashing;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +40,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -110,7 +110,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	}
 
 	public CompletableFuture<?> download(String url, String packSha1, boolean closeAfterDownload) {
-		String string = DigestUtils.sha1Hex(url);
+		String string = Hashing.sha1().hashString(url, StandardCharsets.UTF_8).toString();
 		String string2 = SHA1_PATTERN.matcher(packSha1).matches() ? packSha1 : "";
 		this.lock.lock();
 
@@ -208,22 +208,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 
 	private boolean verifyFile(String expectedSha1, File file) {
 		try {
-			FileInputStream fileInputStream = new FileInputStream(file);
-
-			String string;
-			try {
-				string = DigestUtils.sha1Hex(fileInputStream);
-			} catch (Throwable var8) {
-				try {
-					fileInputStream.close();
-				} catch (Throwable var7) {
-					var8.addSuppressed(var7);
-				}
-
-				throw var8;
-			}
-
-			fileInputStream.close();
+			String string = com.google.common.io.Files.asByteSource(file).hash(Hashing.sha1()).toString();
 			if (expectedSha1.isEmpty()) {
 				LOGGER.info("Found file {} without verification hash", file);
 				return true;
@@ -235,8 +220,8 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			}
 
 			LOGGER.warn("File {} had wrong hash (expected {}, found {}).", file, expectedSha1, string);
-		} catch (IOException var9) {
-			LOGGER.warn("File {} couldn't be hashed.", file, var9);
+		} catch (IOException var4) {
+			LOGGER.warn("File {} couldn't be hashed.", file, var4);
 		}
 
 		return false;

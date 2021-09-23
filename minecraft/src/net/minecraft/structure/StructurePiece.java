@@ -1,9 +1,12 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,7 +18,6 @@ import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -88,18 +90,18 @@ public abstract class StructurePiece {
 		return Direction.Type.HORIZONTAL.random(random);
 	}
 
-	public final NbtCompound toNbt(ServerWorld world) {
+	public final NbtCompound toNbt(class_6625 arg) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
 		BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbtCompound.put("BB", nbtElement));
 		Direction direction = this.getFacing();
 		nbtCompound.putInt("O", direction == null ? -1 : direction.getHorizontal());
 		nbtCompound.putInt("GD", this.chainLength);
-		this.writeNbt(world, nbtCompound);
+		this.writeNbt(arg, nbtCompound);
 		return nbtCompound;
 	}
 
-	protected abstract void writeNbt(ServerWorld world, NbtCompound nbt);
+	protected abstract void writeNbt(class_6625 arg, NbtCompound nbt);
 
 	public StructureWeightType method_33882() {
 		return StructureWeightType.BEARD;
@@ -108,7 +110,7 @@ public abstract class StructurePiece {
 	public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
 	}
 
-	public abstract boolean generate(
+	public abstract void generate(
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
@@ -482,6 +484,22 @@ public abstract class StructurePiece {
 
 	public void translate(int x, int y, int z) {
 		this.boundingBox.move(x, y, z);
+	}
+
+	public static BlockBox method_38703(Stream<StructurePiece> stream) {
+		return (BlockBox)BlockBox.encompass(stream.map(StructurePiece::getBoundingBox)::iterator)
+			.orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
+	}
+
+	@Nullable
+	public static StructurePiece method_38702(List<StructurePiece> list, BlockBox blockBox) {
+		for (StructurePiece structurePiece : list) {
+			if (structurePiece.getBoundingBox().intersects(blockBox)) {
+				return structurePiece;
+			}
+		}
+
+		return null;
 	}
 
 	@Nullable

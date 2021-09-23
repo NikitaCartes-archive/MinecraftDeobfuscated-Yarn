@@ -80,6 +80,7 @@ import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
+import net.minecraft.client.util.telemetry.TelemetrySender;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandSource;
@@ -303,14 +304,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final UUID sessionId = UUID.randomUUID();
 	private Set<RegistryKey<World>> worldKeys;
 	private DynamicRegistryManager registryManager = DynamicRegistryManager.create();
+	private final TelemetrySender telemetrySender;
 
-	public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile) {
+	public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile, TelemetrySender telemetrySender) {
 		this.client = client;
 		this.loginScreen = screen;
 		this.connection = connection;
 		this.profile = profile;
 		this.advancementHandler = new ClientAdvancementManager(client);
 		this.commandSource = new ClientCommandSource(this, client);
+		this.telemetrySender = telemetrySender;
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -373,6 +376,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.connection
 			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
 		this.client.getGame().onStartGameSession();
+		this.telemetrySender.setGameModeAndSend(packet.gameMode(), packet.hardcore());
 	}
 
 	@Override
@@ -676,6 +680,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onDisconnected(Text reason) {
 		this.client.disconnect();
+		this.telemetrySender.send();
 		if (this.loginScreen != null) {
 			if (this.loginScreen instanceof RealmsScreen) {
 				this.client.setScreen(new DisconnectedRealmsScreen(this.loginScreen, DISCONNECT_LOST_TEXT, reason));
@@ -1727,7 +1732,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		try {
 			packetByteBuf = packet.getData();
 			if (CustomPayloadS2CPacket.BRAND.equals(identifier)) {
-				this.client.player.setServerBrand(packetByteBuf.readString());
+				String string = packetByteBuf.readString();
+				this.client.player.setServerBrand(string);
+				this.telemetrySender.setServerBrandAndSend(string);
 			} else if (CustomPayloadS2CPacket.DEBUG_PATH.equals(identifier)) {
 				int i = packetByteBuf.readInt();
 				float f = packetByteBuf.readFloat();
@@ -1780,9 +1787,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				}
 			} else if (CustomPayloadS2CPacket.DEBUG_POI_ADDED.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
-				String string = packetByteBuf.readString();
+				String string2 = packetByteBuf.readString();
 				int j = packetByteBuf.readInt();
-				VillageDebugRenderer.PointOfInterest pointOfInterest = new VillageDebugRenderer.PointOfInterest(blockPos2, string, j);
+				VillageDebugRenderer.PointOfInterest pointOfInterest = new VillageDebugRenderer.PointOfInterest(blockPos2, string2, j);
 				this.client.debugRenderer.villageDebugRenderer.addPointOfInterest(pointOfInterest);
 			} else if (CustomPayloadS2CPacket.DEBUG_POI_REMOVED.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
@@ -1800,8 +1807,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				for (int n = 0; n < j; n++) {
 					int k = packetByteBuf.readInt();
 					boolean bl = packetByteBuf.readBoolean();
-					String string2 = packetByteBuf.readString(255);
-					list.add(new GoalSelectorDebugRenderer.GoalSelector(blockPos2, k, string2, bl));
+					String string3 = packetByteBuf.readString(255);
+					list.add(new GoalSelectorDebugRenderer.GoalSelector(blockPos2, k, string3, bl));
 				}
 
 				this.client.debugRenderer.goalSelectorDebugRenderer.setGoalSelectorList(m, list);
@@ -1821,12 +1828,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				Position position = new PositionImpl(d, e, g);
 				UUID uUID = packetByteBuf.readUuid();
 				int o = packetByteBuf.readInt();
-				String string3 = packetByteBuf.readString();
 				String string4 = packetByteBuf.readString();
+				String string5 = packetByteBuf.readString();
 				int p = packetByteBuf.readInt();
 				float h = packetByteBuf.readFloat();
 				float q = packetByteBuf.readFloat();
-				String string5 = packetByteBuf.readString();
+				String string6 = packetByteBuf.readString();
 				boolean bl2 = packetByteBuf.readBoolean();
 				Path path2;
 				if (bl2) {
@@ -1836,26 +1843,26 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				}
 
 				boolean bl3 = packetByteBuf.readBoolean();
-				VillageDebugRenderer.Brain brain = new VillageDebugRenderer.Brain(uUID, o, string3, string4, p, h, q, position, string5, path2, bl3);
+				VillageDebugRenderer.Brain brain = new VillageDebugRenderer.Brain(uUID, o, string4, string5, p, h, q, position, string6, path2, bl3);
 				int r = packetByteBuf.readVarInt();
 
 				for (int s = 0; s < r; s++) {
-					String string6 = packetByteBuf.readString();
-					brain.possibleActivities.add(string6);
+					String string7 = packetByteBuf.readString();
+					brain.possibleActivities.add(string7);
 				}
 
 				int s = packetByteBuf.readVarInt();
 
 				for (int t = 0; t < s; t++) {
-					String string7 = packetByteBuf.readString();
-					brain.runningTasks.add(string7);
+					String string8 = packetByteBuf.readString();
+					brain.runningTasks.add(string8);
 				}
 
 				int t = packetByteBuf.readVarInt();
 
 				for (int u = 0; u < t; u++) {
-					String string8 = packetByteBuf.readString();
-					brain.memories.add(string8);
+					String string9 = packetByteBuf.readString();
+					brain.memories.add(string9);
 				}
 
 				int u = packetByteBuf.readVarInt();
@@ -1875,8 +1882,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				int w = packetByteBuf.readVarInt();
 
 				for (int x = 0; x < w; x++) {
-					String string9 = packetByteBuf.readString();
-					brain.gossips.add(string9);
+					String string10 = packetByteBuf.readString();
+					brain.gossips.add(string10);
 				}
 
 				this.client.debugRenderer.villageDebugRenderer.addBrain(brain);
@@ -1910,8 +1917,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				int z = packetByteBuf.readVarInt();
 
 				for (int aa = 0; aa < z; aa++) {
-					String string10 = packetByteBuf.readString();
-					bee.labels.add(string10);
+					String string11 = packetByteBuf.readString();
+					bee.labels.add(string11);
 				}
 
 				int aa = packetByteBuf.readVarInt();
@@ -1924,20 +1931,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this.client.debugRenderer.beeDebugRenderer.addBee(bee);
 			} else if (CustomPayloadS2CPacket.DEBUG_HIVE.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
-				String string = packetByteBuf.readString();
+				String string2 = packetByteBuf.readString();
 				int j = packetByteBuf.readInt();
 				int ab = packetByteBuf.readInt();
 				boolean bl7 = packetByteBuf.readBoolean();
-				BeeDebugRenderer.Hive hive = new BeeDebugRenderer.Hive(blockPos2, string, j, ab, bl7, this.world.getTime());
+				BeeDebugRenderer.Hive hive = new BeeDebugRenderer.Hive(blockPos2, string2, j, ab, bl7, this.world.getTime());
 				this.client.debugRenderer.beeDebugRenderer.addHive(hive);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
 				this.client.debugRenderer.gameTestDebugRenderer.clear();
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				int m = packetByteBuf.readInt();
-				String string11 = packetByteBuf.readString();
+				String string12 = packetByteBuf.readString();
 				int ab = packetByteBuf.readInt();
-				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, m, string11, ab);
+				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, m, string12, ab);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT.equals(identifier)) {
 				GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
 				BlockPos blockPos8 = packetByteBuf.readBlockPos();

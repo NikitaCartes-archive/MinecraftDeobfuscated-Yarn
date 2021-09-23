@@ -142,10 +142,10 @@ public abstract class GeneratorType {
 				getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)
 			)
 	);
-	private final Text translationKey;
+	private final Text displayName;
 
-	GeneratorType(String string) {
-		this.translationKey = new TranslatableText("generator." + string);
+	GeneratorType(String translationKeySuffix) {
+		this.displayName = new TranslatableText("generator." + translationKeySuffix);
 	}
 
 	private static GeneratorOptions createFixedBiomeOptions(
@@ -191,8 +191,8 @@ public abstract class GeneratorType {
 		}
 	}
 
-	public Text getTranslationKey() {
-		return this.translationKey;
+	public Text getDisplayName() {
+		return this.displayName;
 	}
 
 	public GeneratorOptions createDefaultOptions(DynamicRegistryManager.Impl registryManager, long seed, boolean generateStructures, boolean bonusChest) {

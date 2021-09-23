@@ -207,6 +207,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			workerExecutor,
 			chunkGenerator,
 			server.getPlayerManager().getViewDistance(),
+			server.getPlayerManager().method_38651(),
 			bl,
 			worldGenerationProgressListener,
 			this.entityManager::updateTrackingStatus,
@@ -389,18 +390,20 @@ public class ServerWorld extends World implements StructureWorldAccess {
 						profiler.push("checkDespawn");
 						entity.checkDespawn();
 						profiler.pop();
-						Entity entity2 = entity.getVehicle();
-						if (entity2 != null) {
-							if (!entity2.isRemoved() && entity2.hasPassenger(entity)) {
-								return;
+						if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().method_38630(ChunkPos.toLong(entity.getBlockPos()))) {
+							Entity entity2 = entity.getVehicle();
+							if (entity2 != null) {
+								if (!entity2.isRemoved() && entity2.hasPassenger(entity)) {
+									return;
+								}
+
+								entity.stopRiding();
 							}
 
-							entity.stopRiding();
+							profiler.push("tick");
+							this.tickEntity(this::tickEntity, entity);
+							profiler.pop();
 						}
-
-						profiler.push("tick");
-						this.tickEntity(this::tickEntity, entity);
-						profiler.pop();
 					}
 				}
 			});

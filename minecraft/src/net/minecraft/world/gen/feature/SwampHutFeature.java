@@ -1,61 +1,25 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.function.Predicate;
+import net.minecraft.class_6622;
+import net.minecraft.class_6626;
 import net.minecraft.entity.EntityType;
-import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.SwampHutGenerator;
 import net.minecraft.util.collection.Pool;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SwampHutFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.WITCH, 1, 1, 1));
-	private static final Pool<SpawnSettings.SpawnEntry> CREATURE_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.CAT, 1, 1, 1));
+	public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.WITCH, 1, 1, 1));
+	public static final Pool<SpawnSettings.SpawnEntry> CREATURE_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.CAT, 1, 1, 1));
 
 	public SwampHutFeature(Codec<DefaultFeatureConfig> codec) {
-		super(codec);
+		super(codec, SwampHutFeature::method_38693);
 	}
 
-	@Override
-	public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
-		return SwampHutFeature.Start::new;
-	}
-
-	@Override
-	public Pool<SpawnSettings.SpawnEntry> getMonsterSpawns() {
-		return MONSTER_SPAWNS;
-	}
-
-	@Override
-	public Pool<SpawnSettings.SpawnEntry> getCreatureSpawns() {
-		return CREATURE_SPAWNS;
-	}
-
-	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
-			super(structureFeature, chunkPos, i, l);
-		}
-
-		public void init(
-			DynamicRegistryManager dynamicRegistryManager,
-			ChunkGenerator chunkGenerator,
-			StructureManager structureManager,
-			ChunkPos chunkPos,
-			DefaultFeatureConfig defaultFeatureConfig,
-			HeightLimitView heightLimitView,
-			Predicate<Biome> predicate
-		) {
-			if (StructureFeature.checkBiome(chunkGenerator, heightLimitView, predicate, Heightmap.Type.WORLD_SURFACE_WG, chunkPos.getCenterX(), chunkPos.getCenterZ())) {
-				SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
-				this.addPiece(swampHutGenerator);
-			}
+	private static void method_38693(class_6626 arg, DefaultFeatureConfig defaultFeatureConfig, class_6622.class_6623 arg2) {
+		if (arg2.method_38707(Heightmap.Type.WORLD_SURFACE_WG)) {
+			arg.addPiece(new SwampHutGenerator(arg2.random(), arg2.chunkPos().getStartX(), arg2.chunkPos().getStartZ()));
 		}
 	}
 }
