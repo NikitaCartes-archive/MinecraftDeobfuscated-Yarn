@@ -71,6 +71,7 @@ public class GameOptions {
 	public boolean hideLightningFlashes;
 	public double mouseSensitivity = 0.5;
 	public int viewDistance;
+	public int simulationDistance;
 	private int serverViewDistance = 0;
 	public float entityDistanceScaling = 1.0F;
 	public int maxFps = 120;
@@ -348,11 +349,14 @@ public class GameOptions {
 		this.optionsFile = new File(optionsFile, "options.txt");
 		if (client.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
 			Option.RENDER_DISTANCE.setMax(32.0F);
+			Option.SIMULATION_DISTANCE.setMax(32.0F);
 		} else {
 			Option.RENDER_DISTANCE.setMax(16.0F);
+			Option.SIMULATION_DISTANCE.setMax(16.0F);
 		}
 
 		this.viewDistance = client.is64Bit() ? 12 : 8;
+		this.simulationDistance = client.is64Bit() ? 12 : 8;
 		this.syncChunkWrites = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
 		this.load();
 	}
@@ -402,6 +406,7 @@ public class GameOptions {
 		this.fovEffectScale = visitor.visitFloat("fovEffectScale", this.fovEffectScale);
 		this.gamma = visitor.visitDouble("gamma", this.gamma);
 		this.viewDistance = visitor.visitInt("renderDistance", this.viewDistance);
+		this.simulationDistance = visitor.visitInt("simulationDistance", this.simulationDistance);
 		this.entityDistanceScaling = visitor.visitFloat("entityDistanceScaling", this.entityDistanceScaling);
 		this.guiScale = visitor.visitInt("guiScale", this.guiScale);
 		this.particles = visitor.visitObject("particles", this.particles, ParticlesMode::byId, ParticlesMode::getId);
@@ -891,6 +896,7 @@ public class GameOptions {
 			.add(Pair.of("reducedDebugInfo", String.valueOf(this.reducedDebugInfo)))
 			.add(Pair.of("renderClouds", String.valueOf(this.cloudRenderMode)))
 			.add(Pair.of("renderDistance", String.valueOf(this.viewDistance)))
+			.add(Pair.of("simulationDistance", String.valueOf(this.simulationDistance)))
 			.add(Pair.of("resourcePacks", String.valueOf(this.resourcePacks)))
 			.add(Pair.of("screenEffectScale", String.valueOf(this.distortionEffectScale)))
 			.add(Pair.of("syncChunkWrites", String.valueOf(this.syncChunkWrites)))

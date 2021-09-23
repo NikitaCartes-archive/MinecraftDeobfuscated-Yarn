@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
@@ -330,7 +331,7 @@ public class TitleScreen extends Screen {
 				string = string + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType());
 			}
 
-			if (this.client.isModded()) {
+			if (MinecraftClient.isModded()) {
 				string = string + I18n.translate("menu.modded");
 			}
 

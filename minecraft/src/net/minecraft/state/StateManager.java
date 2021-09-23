@@ -30,14 +30,14 @@ public class StateManager<O, S extends State<O, S>> {
 	private final ImmutableSortedMap<String, Property<?>> properties;
 	private final ImmutableList<S> states;
 
-	protected StateManager(Function<O, S> function, O object, StateManager.Factory<O, S> factory, Map<String, Property<?>> propertiesMap) {
-		this.owner = object;
+	protected StateManager(Function<O, S> defaultStateGetter, O owner, StateManager.Factory<O, S> factory, Map<String, Property<?>> propertiesMap) {
+		this.owner = owner;
 		this.properties = ImmutableSortedMap.copyOf(propertiesMap);
-		Supplier<S> supplier = () -> (State)function.apply(object);
+		Supplier<S> supplier = () -> (State)defaultStateGetter.apply(owner);
 		MapCodec<S> mapCodec = MapCodec.of(Encoder.empty(), Decoder.unit(supplier));
 
 		for(Entry<String, Property<?>> entry : this.properties.entrySet()) {
-			mapCodec = method_30040(mapCodec, supplier, (String)entry.getKey(), (Property)entry.getValue());
+			mapCodec = addFieldToMapCodec(mapCodec, supplier, (String)entry.getKey(), (Property)entry.getValue());
 		}
 
 		MapCodec<S> mapCodec2 = mapCodec;
@@ -55,7 +55,7 @@ public class StateManager<O, S extends State<O, S>> {
 
 		stream.forEach(list2 -> {
 			ImmutableMap<Property<?>, Comparable<?>> immutableMap = (ImmutableMap)list2.stream().collect(ImmutableMap.toImmutableMap(Pair::getFirst, Pair::getSecond));
-			S statexx = factory.create(object, immutableMap, mapCodec2);
+			S statexx = factory.create(owner, immutableMap, mapCodec2);
 			map.put(immutableMap, statexx);
 			list.add(statexx);
 		});
@@ -67,10 +67,10 @@ public class StateManager<O, S extends State<O, S>> {
 		this.states = ImmutableList.copyOf(list);
 	}
 
-	private static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> method_30040(
-		MapCodec<S> mapCodec, Supplier<S> supplier, String string, Property<T> property
+	private static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> addFieldToMapCodec(
+		MapCodec<S> mapCodec, Supplier<S> defaultStateGetter, String key, Property<T> property
 	) {
-		return Codec.<S, S>mapPair(mapCodec, property.getValueCodec().fieldOf(string).setPartial(() -> property.createValue((State<?, ?>)supplier.get())))
+		return Codec.<S, S>mapPair(mapCodec, property.getValueCodec().fieldOf(key).setPartial(() -> property.createValue((State<?, ?>)defaultStateGetter.get())))
 			.xmap(
 				pair -> (State)((State)pair.getFirst()).with(property, ((Property.Value)pair.getSecond()).value()),
 				state -> Pair.of(state, (S)property.createValue(state))
@@ -145,8 +145,8 @@ public class StateManager<O, S extends State<O, S>> {
 			}
 		}
 
-		public StateManager<O, S> build(Function<O, S> ownerToStateFunction, StateManager.Factory<O, S> factory) {
-			return new StateManager<>(ownerToStateFunction, this.owner, factory, this.namedProperties);
+		public StateManager<O, S> build(Function<O, S> defaultStateGetter, StateManager.Factory<O, S> factory) {
+			return new StateManager<>(defaultStateGetter, this.owner, factory, this.namedProperties);
 		}
 	}
 

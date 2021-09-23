@@ -37,6 +37,10 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<RangeDecoratorConfig> RANGE = register("range", new RangeDecorator(RangeDecoratorConfig.CODEC));
 	public static final Decorator<NopeDecoratorConfig> SPREAD_32_ABOVE = register("spread_32_above", new Spread32AboveDecorator(NopeDecoratorConfig.CODEC));
 	public static final Decorator<NopeDecoratorConfig> END_GATEWAY = register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig.CODEC));
+	public static final Decorator<BlockSurvivesFilterDecoratorConfig> BLOCK_SURVIVES_FILTER = register(
+		"block_survives_filter", new BlockSurvivesFilterDecorator(BlockSurvivesFilterDecoratorConfig.CODEC)
+	);
+	public static final Decorator<BlockFilterDecoratorConfig> BLOCK_FILTER = register("block_filter", new BlockFilterDecorator(BlockFilterDecoratorConfig.CODEC));
 	private final Codec<ConfiguredDecorator<DC>> codec;
 
 	private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String registryName, G decorator) {
@@ -45,7 +49,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 
 	public Decorator(Codec<DC> configCodec) {
 		this.codec = configCodec.fieldOf("config")
-			.<ConfiguredDecorator<DC>>xmap(decoratorConfig -> new ConfiguredDecorator<>(this, (DC)decoratorConfig), ConfiguredDecorator::getConfig)
+			.<ConfiguredDecorator<DC>>xmap(config -> new ConfiguredDecorator<>(this, (DC)config), ConfiguredDecorator::getConfig)
 			.codec();
 	}
 

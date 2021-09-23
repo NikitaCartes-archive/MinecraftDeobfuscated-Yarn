@@ -37,7 +37,7 @@ public class BlockPos extends Vec3i {
 	 * The block position which x, y, and z values are all zero.
 	 */
 	public static final BlockPos ORIGIN = new BlockPos(0, 0, 0);
-	private static final int SIZE_BITS_X = 1 + MathHelper.log2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
+	private static final int SIZE_BITS_X = 1 + MathHelper.floorLog2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
 	private static final int SIZE_BITS_Z = SIZE_BITS_X;
 	public static final int SIZE_BITS_Y = 64 - SIZE_BITS_X - SIZE_BITS_Z;
 	private static final long BITS_X = (1L << SIZE_BITS_X) - 1L;

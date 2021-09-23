@@ -18,14 +18,14 @@ public final class Spline<C> implements ToFloatFunction<C> {
 	private final List<ToFloatFunction<C>> values;
 	private final float[] derivatives;
 
-	Spline(ToFloatFunction<C> toFloatFunction, float[] fs, List<ToFloatFunction<C>> list, float[] gs) {
-		if (fs.length == list.size() && fs.length == gs.length) {
-			this.locationFunction = toFloatFunction;
-			this.locations = fs;
-			this.values = list;
-			this.derivatives = gs;
+	Spline(ToFloatFunction<C> locationFunction, float[] locations, List<ToFloatFunction<C>> values, float[] derivatives) {
+		if (locations.length == values.size() && locations.length == derivatives.length) {
+			this.locationFunction = locationFunction;
+			this.locations = locations;
+			this.values = values;
+			this.derivatives = derivatives;
 		} else {
-			throw new IllegalArgumentException("All lengths must be equal, got: " + fs.length + " " + list.size() + " " + gs.length);
+			throw new IllegalArgumentException("All lengths must be equal, got: " + locations.length + " " + values.size() + " " + derivatives.length);
 		}
 	}
 
@@ -68,23 +68,23 @@ public final class Spline<C> implements ToFloatFunction<C> {
 	}
 
 	@Debug
-	protected ToFloatFunction<C> method_37914() {
+	protected ToFloatFunction<C> getLocationFunction() {
 		return this.locationFunction;
 	}
 
 	@Debug
-	public List<Float> method_37921() {
+	public List<Float> getLocations() {
 		return Collections.unmodifiableList(Floats.asList(this.locations));
 	}
 
 	@Debug
-	public ToFloatFunction<C> method_37917(int i) {
-		return (ToFloatFunction<C>)this.values.get(i);
+	public ToFloatFunction<C> getValue(int index) {
+		return (ToFloatFunction<C>)this.values.get(index);
 	}
 
 	@Debug
-	public float method_37922(int i) {
-		return this.derivatives[i];
+	public float getDerivative(int index) {
+		return this.derivatives[index];
 	}
 
 	public String toString() {

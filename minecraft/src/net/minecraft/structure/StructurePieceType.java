@@ -1,8 +1,8 @@
 package net.minecraft.structure;
 
 import java.util.Locale;
+import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
 
 public interface StructurePieceType {
@@ -39,9 +39,9 @@ public interface StructurePieceType {
 	StructurePieceType STRONGHOLD_CORRIDOR = register(StrongholdGenerator.Corridor::new, "SHS");
 	StructurePieceType STRONGHOLD_STAIRS = register(StrongholdGenerator.Stairs::new, "SHSSD");
 	StructurePieceType JUNGLE_TEMPLE = register(JungleTempleGenerator::new, "TeJP");
-	StructurePieceType OCEAN_TEMPLE = register(OceanRuinGenerator.Piece::new, "ORP");
-	StructurePieceType IGLOO = register(IglooGenerator.Piece::new, "Iglu");
-	StructurePieceType RUINED_PORTAL = register(RuinedPortalStructurePiece::new, "RUPO");
+	StructurePieceType OCEAN_TEMPLE = method_38691(OceanRuinGenerator.Piece::new, "ORP");
+	StructurePieceType IGLOO = method_38691(IglooGenerator.Piece::new, "Iglu");
+	StructurePieceType RUINED_PORTAL = method_38691(RuinedPortalStructurePiece::new, "RUPO");
 	StructurePieceType SWAMP_HUT = register(SwampHutGenerator::new, "TeSH");
 	StructurePieceType DESERT_TEMPLE = register(DesertTempleGenerator::new, "TeDP");
 	StructurePieceType OCEAN_MONUMENT_BASE = register(OceanMonumentGenerator.Base::new, "OMB");
@@ -56,16 +56,42 @@ public interface StructurePieceType {
 	StructurePieceType OCEAN_MONUMENT_SIMPLE_ROOM = register(OceanMonumentGenerator.SimpleRoom::new, "OMSimple");
 	StructurePieceType OCEAN_MONUMENT_SIMPLE_TOP_ROOM = register(OceanMonumentGenerator.SimpleRoomTop::new, "OMSimpleT");
 	StructurePieceType OCEAN_MONUMENT_WING_ROOM = register(OceanMonumentGenerator.WingRoom::new, "OMWR");
-	StructurePieceType END_CITY = register(EndCityGenerator.Piece::new, "ECP");
-	StructurePieceType WOODLAND_MANSION = register(WoodlandMansionGenerator.Piece::new, "WMP");
+	StructurePieceType END_CITY = method_38691(EndCityGenerator.Piece::new, "ECP");
+	StructurePieceType WOODLAND_MANSION = method_38691(WoodlandMansionGenerator.Piece::new, "WMP");
 	StructurePieceType BURIED_TREASURE = register(BuriedTreasureGenerator.Piece::new, "BTP");
-	StructurePieceType SHIPWRECK = register(ShipwreckGenerator.Piece::new, "Shipwreck");
-	StructurePieceType NETHER_FOSSIL = register(NetherFossilGenerator.Piece::new, "NeFos");
-	StructurePieceType JIGSAW = register(PoolStructurePiece::new, "jigsaw");
+	StructurePieceType SHIPWRECK = method_38691(ShipwreckGenerator.Piece::new, "Shipwreck");
+	StructurePieceType NETHER_FOSSIL = method_38691(NetherFossilGenerator.Piece::new, "NeFos");
+	StructurePieceType JIGSAW = method_38692(PoolStructurePiece::new, "jigsaw");
 
-	StructurePiece load(ServerWorld world, NbtCompound nbt);
+	StructurePiece load(class_6625 arg, NbtCompound nbt);
 
-	static StructurePieceType register(StructurePieceType pieceType, String id) {
-		return Registry.register(Registry.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), pieceType);
+	private static StructurePieceType method_38692(StructurePieceType structurePieceType, String string) {
+		return Registry.register(Registry.STRUCTURE_PIECE, string.toLowerCase(Locale.ROOT), structurePieceType);
+	}
+
+	private static StructurePieceType register(StructurePieceType.class_6615 arg, String id) {
+		return method_38692(arg, id);
+	}
+
+	private static StructurePieceType method_38691(StructurePieceType.class_6616 arg, String string) {
+		return method_38692(arg, string);
+	}
+
+	public interface class_6615 extends StructurePieceType {
+		StructurePiece load(NbtCompound nbtCompound);
+
+		@Override
+		default StructurePiece load(class_6625 arg, NbtCompound nbtCompound) {
+			return this.load(nbtCompound);
+		}
+	}
+
+	public interface class_6616 extends StructurePieceType {
+		StructurePiece load(StructureManager structureManager, NbtCompound nbtCompound);
+
+		@Override
+		default StructurePiece load(class_6625 arg, NbtCompound nbtCompound) {
+			return this.load(arg.structureManager(), nbtCompound);
+		}
 	}
 }

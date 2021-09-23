@@ -1,9 +1,6 @@
 package net.minecraft.world.gen.stateprovider;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_6578;
-import net.minecraft.class_6580;
-import net.minecraft.class_6581;
 import net.minecraft.util.registry.Registry;
 
 public class BlockStateProviderType<P extends BlockStateProvider> {
@@ -11,9 +8,13 @@ public class BlockStateProviderType<P extends BlockStateProvider> {
 	public static final BlockStateProviderType<WeightedBlockStateProvider> WEIGHTED_STATE_PROVIDER = register(
 		"weighted_state_provider", WeightedBlockStateProvider.CODEC
 	);
-	public static final BlockStateProviderType<class_6581> NOISE_2D_CUTOFF_PROVIDER = register("noise_2d_cutoff_provider", class_6581.field_34713);
-	public static final BlockStateProviderType<class_6580> NOISE_2D_PROVIDER = register("noise_2d_provider", class_6580.field_34711);
-	public static final BlockStateProviderType<class_6578> DUAL_NOISE_2D_PROVIDER = register("dual_noise_2d_provider", class_6578.field_34702);
+	public static final BlockStateProviderType<NoiseThresholdBlockStateProvider> NOISE_THRESHOLD_PROVIDER = register(
+		"noise_threshold_provider", NoiseThresholdBlockStateProvider.CODEC
+	);
+	public static final BlockStateProviderType<NoiseBlockStateProvider> NOISE_PROVIDER = register("noise_provider", NoiseBlockStateProvider.CODEC);
+	public static final BlockStateProviderType<DualNoiseBlockStateProvider> DUAL_NOISE_PROVIDER = register(
+		"dual_noise_provider", DualNoiseBlockStateProvider.DUAL_CODEC
+	);
 	public static final BlockStateProviderType<PillarBlockStateProvider> ROTATED_BLOCK_PROVIDER = register(
 		"rotated_block_provider", PillarBlockStateProvider.CODEC
 	);

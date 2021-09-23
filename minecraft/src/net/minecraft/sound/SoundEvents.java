@@ -466,6 +466,7 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_GRAVEL_PLACE = register("block.gravel.place");
 	public static final SoundEvent BLOCK_GRAVEL_STEP = register("block.gravel.step");
 	public static final SoundEvent BLOCK_GRINDSTONE_USE = register("block.grindstone.use");
+	public static final SoundEvent BLOCK_GROWING_PLANT_CROP = register("block.growing_plant.crop");
 	public static final SoundEvent ENTITY_GUARDIAN_AMBIENT = register("entity.guardian.ambient");
 	public static final SoundEvent ENTITY_GUARDIAN_AMBIENT_LAND = register("entity.guardian.ambient_land");
 	public static final SoundEvent ENTITY_GUARDIAN_ATTACK = register("entity.guardian.attack");

@@ -120,13 +120,13 @@ public class JfrProfileRecorder {
 				case "minecraft.ChunkGeneration":
 					this.chunkGenerationSamples.add(ChunkGenerationSample.fromEvent(event));
 					break;
-				case "minecraft.WorldLoadFinishedEvent":
+				case "minecraft.LoadWorld":
 					this.worldGenDuration = event.getDuration();
 					break;
 				case "minecraft.ServerTickTime":
 					this.serverTickTimeSamples.add(ServerTickTimeSample.fromEvent(event));
 					break;
-				case "minecraft.PacketRead":
+				case "minecraft.PacketReceived":
 					this.packetReadSamples.add(PacketSample.fromEvent(event));
 					break;
 				case "minecraft.PacketSent":

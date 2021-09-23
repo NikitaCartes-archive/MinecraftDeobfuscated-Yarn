@@ -4,11 +4,11 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -42,12 +42,12 @@ public class PoolStructurePiece extends StructurePiece {
 		this.rotation = rotation;
 	}
 
-	public PoolStructurePiece(ServerWorld world, NbtCompound nbt) {
+	public PoolStructurePiece(class_6625 arg, NbtCompound nbt) {
 		super(StructurePieceType.JIGSAW, nbt);
-		this.structureManager = world.getStructureManager();
+		this.structureManager = arg.structureManager();
 		this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
 		this.groundLevelDelta = nbt.getInt("ground_level_delta");
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, world.getServer().getResourceManager(), world.getServer().getRegistryManager());
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, arg.resourceManager(), arg.registryAccess());
 		this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC
 			.parse(registryOps, nbt.getCompound("pool_element"))
 			.resultOrPartial(LOGGER::error)
@@ -60,12 +60,12 @@ public class PoolStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+	protected void writeNbt(class_6625 arg, NbtCompound nbt) {
 		nbt.putInt("PosX", this.pos.getX());
 		nbt.putInt("PosY", this.pos.getY());
 		nbt.putInt("PosZ", this.pos.getZ());
 		nbt.putInt("ground_level_delta", this.groundLevelDelta);
-		RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, world.getServer().getRegistryManager());
+		RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, arg.registryAccess());
 		StructurePoolElement.CODEC
 			.encodeStart(registryReadingOps, this.poolElement)
 			.resultOrPartial(LOGGER::error)
@@ -81,7 +81,7 @@ public class PoolStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	public boolean generate(
+	public void generate(
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
@@ -90,10 +90,10 @@ public class PoolStructurePiece extends StructurePiece {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		return this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
+		this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
 	}
 
-	public boolean generate(
+	public void generate(
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
@@ -102,8 +102,7 @@ public class PoolStructurePiece extends StructurePiece {
 		BlockPos pos,
 		boolean keepJigsaws
 	) {
-		return this.poolElement
-			.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pos, this.rotation, boundingBox, random, keepJigsaws);
+		this.poolElement.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pos, this.rotation, boundingBox, random, keepJigsaws);
 	}
 
 	@Override

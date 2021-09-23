@@ -360,12 +360,12 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		int m,
 		int n,
 		NoiseColumnSampler noiseColumnSampler,
-		Supplier<class_6568.class_6572> supplier,
+		Supplier<class_6568.ColumnSampler> supplier,
 		Supplier<ChunkGeneratorSettings> supplier2,
 		AquiferSampler.class_6565 arg
 	) {
 		if (this.field_34539 == null) {
-			this.field_34539 = new class_6568(m, n, 16 / m, j, i, noiseColumnSampler, k, l, (class_6568.class_6572)supplier.get(), supplier2, arg);
+			this.field_34539 = new class_6568(m, n, 16 / m, j, i, noiseColumnSampler, k, l, (class_6568.ColumnSampler)supplier.get(), supplier2, arg);
 		}
 
 		return this.field_34539;

@@ -1,55 +1,24 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.function.Predicate;
+import net.minecraft.class_6622;
+import net.minecraft.class_6626;
 import net.minecraft.structure.ShipwreckGenerator;
-import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ShipwreckFeature extends StructureFeature<ShipwreckFeatureConfig> {
 	public ShipwreckFeature(Codec<ShipwreckFeatureConfig> codec) {
-		super(codec);
+		super(codec, ShipwreckFeature::method_38685);
 	}
 
-	@Override
-	public StructureFeature.StructureStartFactory<ShipwreckFeatureConfig> getStructureStartFactory() {
-		return ShipwreckFeature.Start::new;
-	}
-
-	public static class Start extends StructureStart<ShipwreckFeatureConfig> {
-		public Start(StructureFeature<ShipwreckFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
-			super(structureFeature, chunkPos, i, l);
-		}
-
-		public void init(
-			DynamicRegistryManager dynamicRegistryManager,
-			ChunkGenerator chunkGenerator,
-			StructureManager structureManager,
-			ChunkPos chunkPos,
-			ShipwreckFeatureConfig shipwreckFeatureConfig,
-			HeightLimitView heightLimitView,
-			Predicate<Biome> predicate
-		) {
-			if (StructureFeature.checkBiome(
-				chunkGenerator,
-				heightLimitView,
-				predicate,
-				shipwreckFeatureConfig.isBeached ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG,
-				chunkPos.getCenterX(),
-				chunkPos.getCenterZ()
-			)) {
-				BlockRotation blockRotation = BlockRotation.random(this.random);
-				BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 90, chunkPos.getStartZ());
-				ShipwreckGenerator.addParts(structureManager, blockPos, blockRotation, this, this.random, shipwreckFeatureConfig);
-			}
+	private static void method_38685(class_6626 arg, ShipwreckFeatureConfig shipwreckFeatureConfig, class_6622.class_6623 arg2) {
+		Heightmap.Type type = shipwreckFeatureConfig.isBeached ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
+		if (arg2.method_38707(type)) {
+			BlockRotation blockRotation = BlockRotation.random(arg2.random());
+			BlockPos blockPos = new BlockPos(arg2.chunkPos().getStartX(), 90, arg2.chunkPos().getStartZ());
+			ShipwreckGenerator.addParts(arg2.structureManager(), blockPos, blockRotation, arg, arg2.random(), shipwreckFeatureConfig);
 		}
 	}
 }

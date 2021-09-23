@@ -5,6 +5,7 @@ import com.mojang.util.UUIDTypeAdapter;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -17,13 +18,17 @@ public class Session {
 	private final String username;
 	private final String uuid;
 	private final String accessToken;
+	private final Optional<String> xuid;
+	private final Optional<String> clientId;
 	private final Session.AccountType accountType;
 
-	public Session(String username, String uuid, String accessToken, String accountType) {
+	public Session(String username, String uuid, String accessToken, Optional<String> xuid, Optional<String> clientId, Session.AccountType accountType) {
 		this.username = username;
 		this.uuid = uuid;
 		this.accessToken = accessToken;
-		this.accountType = Session.AccountType.byName(accountType);
+		this.xuid = xuid;
+		this.clientId = clientId;
+		this.accountType = accountType;
 	}
 
 	public String getSessionId() {
@@ -42,6 +47,14 @@ public class Session {
 		return this.accessToken;
 	}
 
+	public Optional<String> getClientId() {
+		return this.clientId;
+	}
+
+	public Optional<String> getXuid() {
+		return this.xuid;
+	}
+
 	public GameProfile getProfile() {
 		try {
 			UUID uUID = UUIDTypeAdapter.fromString(this.getUuid());
@@ -58,10 +71,11 @@ public class Session {
 	@Environment(EnvType.CLIENT)
 	public static enum AccountType {
 		LEGACY("legacy"),
-		MOJANG("mojang");
+		MOJANG("mojang"),
+		MSA("msa");
 
 		private static final Map<String, Session.AccountType> BY_NAME = (Map<String, Session.AccountType>)Arrays.stream(values())
-			.collect(Collectors.toMap(accountType -> accountType.name, Function.identity()));
+			.collect(Collectors.toMap(type -> type.name, Function.identity()));
 		private final String name;
 
 		private AccountType(String name) {
@@ -69,8 +83,12 @@ public class Session {
 		}
 
 		@Nullable
-		public static Session.AccountType byName(String string) {
-			return (Session.AccountType)BY_NAME.get(string.toLowerCase(Locale.ROOT));
+		public static Session.AccountType byName(String name) {
+			return (Session.AccountType)BY_NAME.get(name.toLowerCase(Locale.ROOT));
+		}
+
+		public String getName() {
+			return this.name;
 		}
 	}
 }

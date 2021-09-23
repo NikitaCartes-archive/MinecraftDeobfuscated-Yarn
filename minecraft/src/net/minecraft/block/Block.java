@@ -63,7 +63,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Represents a block that can be placed in a world.
+ * A block is a voxel in a {@linkplain World world}.
+ * This class and its subclasses define all logics for those voxels.
  * 
  * <p>There is exactly one instance for every type of block. Every stone
  * block for example in a world shares the same block instance. Each block
@@ -77,7 +78,11 @@ import org.apache.logging.log4j.Logger;
  * <p>The translation key for the block name is determined by {@link
  * #getTranslationKey}.
  * 
- * @see <a href="https://minecraft.fandom.com/wiki/Model">Model - Official Minecraft Wiki</a>
+ * <p>In the world, the actual voxels are not stored as blocks, but as
+ * {@linkplain BlockState block states}. The possible states of the block
+ * is defined by {@link appendProperties}.
+ * 
+ * @see BlockState
  */
 public class Block extends AbstractBlock implements ItemConvertible {
 	protected static final Logger LOGGER = LogManager.getLogger();

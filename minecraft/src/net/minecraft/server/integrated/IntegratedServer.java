@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class IntegratedServer extends MinecraftServer {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_34964 = 2;
 	private final MinecraftClient client;
 	private boolean paused;
 	private int lanPort = -1;
@@ -46,6 +47,7 @@ public class IntegratedServer extends MinecraftServer {
 	private GameMode forcedGameMode;
 	private LanServerPinger lanPinger;
 	private UUID localPlayerUuid;
+	private int simulationDistance = 0;
 
 	public IntegratedServer(
 		Thread serverThread,
@@ -113,6 +115,13 @@ public class IntegratedServer extends MinecraftServer {
 			if (i != this.getPlayerManager().getViewDistance()) {
 				LOGGER.info("Changing view distance to {}, from {}", i, this.getPlayerManager().getViewDistance());
 				this.getPlayerManager().setViewDistance(i);
+			}
+
+			int j = Math.max(2, this.client.options.simulationDistance);
+			if (j != this.simulationDistance) {
+				LOGGER.info("Changing simulation distance to {}, from {}", j, this.simulationDistance);
+				this.getPlayerManager().setSimulationDistance(j);
+				this.simulationDistance = j;
 			}
 		}
 	}

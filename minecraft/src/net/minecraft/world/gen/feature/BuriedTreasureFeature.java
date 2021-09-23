@@ -1,16 +1,13 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.function.Predicate;
+import net.minecraft.class_6622;
+import net.minecraft.class_6626;
 import net.minecraft.structure.BuriedTreasureGenerator;
-import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -20,7 +17,7 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 	private static final int SALT = 10387320;
 
 	public BuriedTreasureFeature(Codec<ProbabilityConfig> codec) {
-		super(codec);
+		super(codec, BuriedTreasureFeature::method_38672);
 	}
 
 	protected boolean shouldStartAt(
@@ -37,35 +34,15 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 		return chunkRandom.nextFloat() < probabilityConfig.probability;
 	}
 
-	@Override
-	public StructureFeature.StructureStartFactory<ProbabilityConfig> getStructureStartFactory() {
-		return BuriedTreasureFeature.Start::new;
+	private static void method_38672(class_6626 arg, ProbabilityConfig probabilityConfig, class_6622.class_6623 arg2) {
+		if (arg2.method_38707(Heightmap.Type.OCEAN_FLOOR_WG)) {
+			BlockPos blockPos = new BlockPos(arg2.chunkPos().getOffsetX(9), 90, arg2.chunkPos().getOffsetZ(9));
+			arg.addPiece(new BuriedTreasureGenerator.Piece(blockPos));
+		}
 	}
 
-	public static class Start extends StructureStart<ProbabilityConfig> {
-		public Start(StructureFeature<ProbabilityConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
-			super(structureFeature, chunkPos, i, l);
-		}
-
-		public void init(
-			DynamicRegistryManager dynamicRegistryManager,
-			ChunkGenerator chunkGenerator,
-			StructureManager structureManager,
-			ChunkPos chunkPos,
-			ProbabilityConfig probabilityConfig,
-			HeightLimitView heightLimitView,
-			Predicate<Biome> predicate
-		) {
-			if (StructureFeature.checkBiome(chunkGenerator, heightLimitView, predicate, Heightmap.Type.OCEAN_FLOOR_WG, chunkPos.getCenterX(), chunkPos.getCenterZ())) {
-				BlockPos blockPos = new BlockPos(chunkPos.getOffsetX(9), 90, chunkPos.getOffsetZ(9));
-				this.addPiece(new BuriedTreasureGenerator.Piece(blockPos));
-			}
-		}
-
-		@Override
-		public BlockPos getBlockPos() {
-			ChunkPos chunkPos = this.getPos();
-			return new BlockPos(chunkPos.getOffsetX(9), 0, chunkPos.getOffsetZ(9));
-		}
+	@Override
+	public BlockPos method_38671(ChunkPos chunkPos) {
+		return new BlockPos(chunkPos.getOffsetX(9), 0, chunkPos.getOffsetZ(9));
 	}
 }

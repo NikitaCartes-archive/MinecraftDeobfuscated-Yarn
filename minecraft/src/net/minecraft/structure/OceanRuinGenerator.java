@@ -3,6 +3,7 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,7 +16,6 @@ import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.tag.BlockTags;
@@ -206,8 +206,8 @@ public class OceanRuinGenerator {
 			this.large = large;
 		}
 
-		public Piece(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.OCEAN_TEMPLE, nbt, world, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+		public Piece(StructureManager structureManager, NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_TEMPLE, nbt, structureManager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 			this.integrity = nbt.getFloat("Integrity");
 			this.biomeType = OceanRuinFeature.BiomeType.valueOf(nbt.getString("BiomeType"));
 			this.large = nbt.getBoolean("IsLarge");
@@ -221,8 +221,8 @@ public class OceanRuinGenerator {
 		}
 
 		@Override
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-			super.writeNbt(world, nbt);
+		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+			super.writeNbt(arg, nbt);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 			nbt.putFloat("Integrity", this.integrity);
 			nbt.putString("BiomeType", this.biomeType.toString());
@@ -255,7 +255,7 @@ public class OceanRuinGenerator {
 		}
 
 		@Override
-		public boolean generate(
+		public void generate(
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
@@ -278,7 +278,7 @@ public class OceanRuinGenerator {
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, world, blockPos), this.pos.getZ());
-			return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 		}
 
 		private int method_14829(BlockPos start, BlockView world, BlockPos end) {

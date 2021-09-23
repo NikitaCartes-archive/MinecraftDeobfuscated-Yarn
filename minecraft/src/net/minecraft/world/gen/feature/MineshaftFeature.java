@@ -3,20 +3,17 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import net.minecraft.class_6622;
+import net.minecraft.class_6626;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.MineshaftGenerator;
-import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -24,7 +21,7 @@ import net.minecraft.world.gen.random.ChunkRandom;
 
 public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	public MineshaftFeature(Codec<MineshaftFeatureConfig> codec) {
-		super(codec);
+		super(codec, MineshaftFeature::method_38678);
 	}
 
 	protected boolean shouldStartAt(
@@ -42,41 +39,24 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		return chunkRandom.nextDouble() < d;
 	}
 
-	@Override
-	public StructureFeature.StructureStartFactory<MineshaftFeatureConfig> getStructureStartFactory() {
-		return MineshaftFeature.Start::new;
-	}
-
-	public static class Start extends StructureStart<MineshaftFeatureConfig> {
-		public Start(StructureFeature<MineshaftFeatureConfig> structureFeature, ChunkPos chunkPos, int i, long l) {
-			super(structureFeature, chunkPos, i, l);
-		}
-
-		public void init(
-			DynamicRegistryManager dynamicRegistryManager,
-			ChunkGenerator chunkGenerator,
-			StructureManager structureManager,
-			ChunkPos chunkPos,
-			MineshaftFeatureConfig mineshaftFeatureConfig,
-			HeightLimitView heightLimitView,
-			Predicate<Biome> predicate
-		) {
-			if (predicate.test(
-				chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos.getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(chunkPos.getCenterZ()))
+	private static void method_38678(class_6626 arg, MineshaftFeatureConfig mineshaftFeatureConfig, class_6622.class_6623 arg2) {
+		if (arg2.validBiome()
+			.test(
+				arg2.chunkGenerator()
+					.getBiomeForNoiseGen(BiomeCoords.fromBlock(arg2.chunkPos().getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(arg2.chunkPos().getCenterZ()))
 			)) {
-				MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
-					0, this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), mineshaftFeatureConfig.type
-				);
-				this.addPiece(mineshaftRoom);
-				mineshaftRoom.fillOpenings(mineshaftRoom, this, this.random);
-				if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
-					int i = -5;
-					BlockBox blockBox = this.setBoundingBoxFromChildren();
-					int j = chunkGenerator.getSeaLevel() - blockBox.getMaxY() + blockBox.getBlockCountY() / 2 - -5;
-					this.translateUpward(j);
-				} else {
-					this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);
-				}
+			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
+				0, arg2.random(), arg2.chunkPos().getOffsetX(2), arg2.chunkPos().getOffsetZ(2), mineshaftFeatureConfig.type
+			);
+			arg.addPiece(mineshaftRoom);
+			mineshaftRoom.fillOpenings(mineshaftRoom, arg, arg2.random());
+			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
+				int i = -5;
+				BlockBox blockBox = arg.method_38721();
+				int j = arg2.chunkGenerator().getSeaLevel() - blockBox.getMaxY() + blockBox.getBlockCountY() / 2 - -5;
+				arg.method_38715(j);
+			} else {
+				arg.method_38716(arg2.chunkGenerator().getSeaLevel(), arg2.chunkGenerator().getMinimumY(), arg2.random(), 10);
 			}
 		}
 	}

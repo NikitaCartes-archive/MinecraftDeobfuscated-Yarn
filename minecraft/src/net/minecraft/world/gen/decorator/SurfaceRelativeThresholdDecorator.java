@@ -13,9 +13,9 @@ public class SurfaceRelativeThresholdDecorator extends Decorator<SurfaceRelative
 	public Stream<BlockPos> getPositions(
 		DecoratorContext decoratorContext, Random random, SurfaceRelativeThresholdDecoratorConfig surfaceRelativeThresholdDecoratorConfig, BlockPos blockPos
 	) {
-		long l = (long)decoratorContext.getTopY(surfaceRelativeThresholdDecoratorConfig.field_34722, blockPos.getX(), blockPos.getZ());
-		long m = l + (long)surfaceRelativeThresholdDecoratorConfig.field_34723;
-		long n = l + (long)surfaceRelativeThresholdDecoratorConfig.field_34724;
+		long l = (long)decoratorContext.getTopY(surfaceRelativeThresholdDecoratorConfig.heightmap, blockPos.getX(), blockPos.getZ());
+		long m = l + (long)surfaceRelativeThresholdDecoratorConfig.min;
+		long n = l + (long)surfaceRelativeThresholdDecoratorConfig.max;
 		return (long)blockPos.getY() >= m && (long)blockPos.getY() <= n ? Stream.of(blockPos) : Stream.of();
 	}
 }

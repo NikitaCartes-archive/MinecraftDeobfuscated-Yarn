@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import java.nio.IntBuffer;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.OptionalLong;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -16,6 +17,7 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
+import org.lwjgl.openal.ALC11;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.openal.ALUtil;
@@ -24,9 +26,13 @@ import org.lwjgl.system.MemoryStack;
 @Environment(EnvType.CLIENT)
 public class SoundEngine {
 	static final Logger LOGGER = LogManager.getLogger();
+	private static final int field_34945 = 0;
 	private static final int field_31897 = 30;
 	private long devicePointer;
 	private long contextPointer;
+	private boolean disconnectExtensionPresent;
+	@Nullable
+	private String deviceSpecifier;
 	private static final SoundEngine.SourceSet EMPTY_SOURCE_SET = new SoundEngine.SourceSet() {
 		@Nullable
 		@Override
@@ -57,8 +63,13 @@ public class SoundEngine {
 	private SoundEngine.SourceSet staticSources = EMPTY_SOURCE_SET;
 	private final SoundListener listener = new SoundListener();
 
+	public SoundEngine() {
+		this.deviceSpecifier = findAvailableDeviceSpecifier();
+	}
+
 	public void init(@Nullable String deviceSpecifier) {
 		this.devicePointer = openDeviceOrFallback(deviceSpecifier);
+		this.disconnectExtensionPresent = ALC10.alcIsExtensionPresent(this.devicePointer, "ALC_EXT_disconnect");
 		ALCCapabilities aLCCapabilities = ALC.createCapabilities(this.devicePointer);
 		if (AlUtil.checkAlcErrors(this.devicePointer, "Get capabilities")) {
 			throw new IllegalStateException("Failed to get OpenAL capabilities");
@@ -82,7 +93,7 @@ public class SoundEngine {
 					throw new IllegalStateException("AL_EXT_LINEAR_DISTANCE is not supported");
 				} else {
 					AlUtil.checkErrors("Enable per-source distance models");
-					LOGGER.info("OpenAL initialized.");
+					LOGGER.info("OpenAL initialized on device {}", this.getCurrentDeviceName());
 				}
 			}
 		}
@@ -121,7 +132,35 @@ public class SoundEngine {
 
 	@Nullable
 	public static String findAvailableDeviceSpecifier() {
-		return !ALC10.alcIsExtensionPresent(0L, "ALC_ENUMERATE_ALL_EXT") ? null : ALC10.alcGetString(0L, 4115);
+		if (!ALC10.alcIsExtensionPresent(0L, "ALC_ENUMERATE_ALL_EXT")) {
+			return null;
+		} else {
+			ALUtil.getStringList(0L, 4115);
+			return ALC10.alcGetString(0L, 4114);
+		}
+	}
+
+	public String getCurrentDeviceName() {
+		String string = ALC10.alcGetString(this.devicePointer, 4115);
+		if (string == null) {
+			string = ALC10.alcGetString(this.devicePointer, 4101);
+		}
+
+		if (string == null) {
+			string = "Unknown";
+		}
+
+		return string;
+	}
+
+	public boolean updateDeviceSpecifier() {
+		String string = findAvailableDeviceSpecifier();
+		if (Objects.equals(this.deviceSpecifier, string)) {
+			return false;
+		} else {
+			this.deviceSpecifier = string;
+			return true;
+		}
 	}
 
 	private static long openDeviceOrFallback(@Nullable String deviceSpecifier) {
@@ -187,6 +226,10 @@ public class SoundEngine {
 	public List<String> getSoundDevices() {
 		List<String> list = ALUtil.getStringList(0L, 4115);
 		return list == null ? Collections.emptyList() : list;
+	}
+
+	public boolean isDeviceUnavailable() {
+		return this.disconnectExtensionPresent && ALC11.alcGetInteger(this.devicePointer, 787) == 0;
 	}
 
 	@Environment(EnvType.CLIENT)

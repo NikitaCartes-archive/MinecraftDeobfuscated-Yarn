@@ -45,32 +45,32 @@ public abstract class BiomeSource {
 			.collect(ImmutableSet.toImmutableSet());
 
 		final class class_6543 extends Record {
-			private final int comp_68;
-			private final ConfiguredFeature<?, ?> comp_69;
+			private final int step;
+			private final ConfiguredFeature<?, ?> feature;
 
 			class_6543(int i, ConfiguredFeature<?, ?> configuredFeature) {
-				this.comp_68 = i;
-				this.comp_69 = configuredFeature;
+				this.step = i;
+				this.feature = configuredFeature;
 			}
 
 			public final String toString() {
-				return ObjectMethods.bootstrap<"toString",class_6543,"step;feature",class_6543::comp_68,class_6543::comp_69>(this);
+				return ObjectMethods.bootstrap<"toString",class_6543,"step;feature",class_6543::step,class_6543::feature>(this);
 			}
 
 			public final int hashCode() {
-				return ObjectMethods.bootstrap<"hashCode",class_6543,"step;feature",class_6543::comp_68,class_6543::comp_69>(this);
+				return ObjectMethods.bootstrap<"hashCode",class_6543,"step;feature",class_6543::step,class_6543::feature>(this);
 			}
 
 			public final boolean equals(Object object) {
-				return ObjectMethods.bootstrap<"equals",class_6543,"step;feature",class_6543::comp_68,class_6543::comp_69>(this, object);
+				return ObjectMethods.bootstrap<"equals",class_6543,"step;feature",class_6543::step,class_6543::feature>(this, object);
 			}
 
-			public int comp_68() {
-				return this.comp_68;
+			public int step() {
+				return this.step;
 			}
 
-			public ConfiguredFeature<?, ?> comp_69() {
-				return this.comp_69;
+			public ConfiguredFeature<?, ?> feature() {
+				return this.feature;
 			}
 		}
 
@@ -118,7 +118,7 @@ public abstract class BiomeSource {
 
 		for(int j = 0; j < i; ++j) {
 			int k = j;
-			builder.add((ImmutableList)list2.stream().filter(arg -> arg.comp_68() == k).map(class_6543::comp_69).collect(ImmutableList.toImmutableList()));
+			builder.add((ImmutableList)list2.stream().filter(arg -> arg.step() == k).map(class_6543::feature).collect(ImmutableList.toImmutableList()));
 		}
 
 		this.field_34469 = builder.build();
@@ -150,7 +150,7 @@ public abstract class BiomeSource {
 					int u = i + s;
 					int v = j + t;
 					int w = k + r;
-					set.add(this.method_38109(u, v, w, multiNoiseSampler));
+					set.add(this.getBiome(u, v, w, multiNoiseSampler));
 				}
 			}
 		}
@@ -159,13 +159,13 @@ public abstract class BiomeSource {
 	}
 
 	@Nullable
-	public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<Biome> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
-		return this.locateBiome(x, y, z, radius, 1, predicate, random, false, multiNoiseSampler);
+	public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<Biome> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+		return this.locateBiome(x, y, z, radius, 1, predicate, random, false, noiseSampler);
 	}
 
 	@Nullable
 	public BlockPos locateBiome(
-		int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler
+		int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler
 	) {
 		int j = BiomeCoords.fromBlock(x);
 		int k = BiomeCoords.fromBlock(z);
@@ -189,7 +189,7 @@ public abstract class BiomeSource {
 
 					int s = j + r;
 					int t = k + q;
-					if (predicate.test(this.method_38109(s, m, t, multiNoiseSampler))) {
+					if (predicate.test(this.getBiome(s, m, t, noiseSampler))) {
 						if (blockPos == null || random.nextInt(n + 1) == 0) {
 							blockPos = new BlockPos(BiomeCoords.toBlock(s), y, BiomeCoords.toBlock(t));
 							if (bl) {
@@ -206,13 +206,13 @@ public abstract class BiomeSource {
 		return blockPos;
 	}
 
-	public abstract Biome method_38109(int i, int j, int k, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler);
+	public abstract Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler);
 
 	public boolean method_38113(BlockState blockState) {
 		return this.topMaterials.contains(blockState);
 	}
 
-	public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+	public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
 	}
 
 	public ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> method_38115() {

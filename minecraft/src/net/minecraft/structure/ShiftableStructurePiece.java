@@ -1,7 +1,7 @@
 package net.minecraft.structure;
 
+import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -31,7 +31,7 @@ public abstract class ShiftableStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+	protected void writeNbt(class_6625 arg, NbtCompound nbt) {
 		nbt.putInt("Width", this.width);
 		nbt.putInt("Height", this.height);
 		nbt.putInt("Depth", this.depth);

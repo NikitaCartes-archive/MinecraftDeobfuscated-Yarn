@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import jdk.jfr.FlightRecorder;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandSource;
@@ -50,6 +49,7 @@ import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import net.minecraft.util.profiling.jfr.FlightProfiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -118,7 +118,7 @@ public class CommandManager {
 		TriggerCommand.register(this.dispatcher);
 		WeatherCommand.register(this.dispatcher);
 		WorldBorderCommand.register(this.dispatcher);
-		if (FlightRecorder.isAvailable()) {
+		if (FlightProfiler.INSTANCE.isAvailable()) {
 			JfrCommand.register(this.dispatcher);
 		}
 

@@ -4,13 +4,13 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
@@ -42,13 +42,15 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		this.placementData = placementData;
 	}
 
-	public SimpleStructurePiece(StructurePieceType type, NbtCompound nbtCompound, ServerWorld world, Function<Identifier, StructurePlacementData> function) {
+	public SimpleStructurePiece(
+		StructurePieceType type, NbtCompound nbtCompound, StructureManager structureManager, Function<Identifier, StructurePlacementData> function
+	) {
 		super(type, nbtCompound);
 		this.setOrientation(Direction.NORTH);
 		this.identifier = nbtCompound.getString("Template");
 		this.pos = new BlockPos(nbtCompound.getInt("TPX"), nbtCompound.getInt("TPY"), nbtCompound.getInt("TPZ"));
 		Identifier identifier = this.getId();
-		this.structure = world.getStructureManager().getStructureOrBlank(identifier);
+		this.structure = structureManager.getStructureOrBlank(identifier);
 		this.placementData = (StructurePlacementData)function.apply(identifier);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
 	}
@@ -58,7 +60,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+	protected void writeNbt(class_6625 arg, NbtCompound nbt) {
 		nbt.putInt("TPX", this.pos.getX());
 		nbt.putInt("TPY", this.pos.getY());
 		nbt.putInt("TPZ", this.pos.getZ());
@@ -66,7 +68,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	public boolean generate(
+	public void generate(
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
@@ -109,8 +111,6 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 				}
 			}
 		}
-
-		return true;
 	}
 
 	protected abstract void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox);

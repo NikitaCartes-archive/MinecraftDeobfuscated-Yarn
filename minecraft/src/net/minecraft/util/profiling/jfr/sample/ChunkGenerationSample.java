@@ -12,15 +12,13 @@ public final class ChunkGenerationSample extends Record implements LongRunningSa
 	private final ChunkPos chunkPos;
 	private final ColumnPos centerPos;
 	private final ChunkStatus chunkStatus;
-	private final boolean successful;
 	private final String worldKey;
 
-	public ChunkGenerationSample(Duration duration, ChunkPos chunkPos, ColumnPos columnPos, ChunkStatus chunkStatus, boolean bl, String string) {
+	public ChunkGenerationSample(Duration duration, ChunkPos chunkPos, ColumnPos columnPos, ChunkStatus chunkStatus, String string) {
 		this.duration = duration;
 		this.chunkPos = chunkPos;
 		this.centerPos = columnPos;
 		this.chunkStatus = chunkStatus;
-		this.successful = bl;
 		this.worldKey = string;
 	}
 
@@ -30,25 +28,24 @@ public final class ChunkGenerationSample extends Record implements LongRunningSa
 			new ChunkPos(event.getInt("chunkPosX"), event.getInt("chunkPosX")),
 			new ColumnPos(event.getInt("worldPosX"), event.getInt("worldPosZ")),
 			ChunkStatus.byId(event.getString("status")),
-			event.getBoolean("success"),
 			event.getString("level")
 		);
 	}
 
 	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",ChunkGenerationSample,"duration;chunkPos;worldPos;status;success;level",ChunkGenerationSample::duration,ChunkGenerationSample::chunkPos,ChunkGenerationSample::centerPos,ChunkGenerationSample::chunkStatus,ChunkGenerationSample::successful,ChunkGenerationSample::worldKey>(
+		return ObjectMethods.bootstrap<"toString",ChunkGenerationSample,"duration;chunkPos;worldPos;status;level",ChunkGenerationSample::duration,ChunkGenerationSample::chunkPos,ChunkGenerationSample::centerPos,ChunkGenerationSample::chunkStatus,ChunkGenerationSample::worldKey>(
 			this
 		);
 	}
 
 	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",ChunkGenerationSample,"duration;chunkPos;worldPos;status;success;level",ChunkGenerationSample::duration,ChunkGenerationSample::chunkPos,ChunkGenerationSample::centerPos,ChunkGenerationSample::chunkStatus,ChunkGenerationSample::successful,ChunkGenerationSample::worldKey>(
+		return ObjectMethods.bootstrap<"hashCode",ChunkGenerationSample,"duration;chunkPos;worldPos;status;level",ChunkGenerationSample::duration,ChunkGenerationSample::chunkPos,ChunkGenerationSample::centerPos,ChunkGenerationSample::chunkStatus,ChunkGenerationSample::worldKey>(
 			this
 		);
 	}
 
 	public final boolean equals(Object o) {
-		return ObjectMethods.bootstrap<"equals",ChunkGenerationSample,"duration;chunkPos;worldPos;status;success;level",ChunkGenerationSample::duration,ChunkGenerationSample::chunkPos,ChunkGenerationSample::centerPos,ChunkGenerationSample::chunkStatus,ChunkGenerationSample::successful,ChunkGenerationSample::worldKey>(
+		return ObjectMethods.bootstrap<"equals",ChunkGenerationSample,"duration;chunkPos;worldPos;status;level",ChunkGenerationSample::duration,ChunkGenerationSample::chunkPos,ChunkGenerationSample::centerPos,ChunkGenerationSample::chunkStatus,ChunkGenerationSample::worldKey>(
 			this, o
 		);
 	}
@@ -68,10 +65,6 @@ public final class ChunkGenerationSample extends Record implements LongRunningSa
 
 	public ChunkStatus chunkStatus() {
 		return this.chunkStatus;
-	}
-
-	public boolean successful() {
-		return this.successful;
 	}
 
 	public String worldKey() {

@@ -3,6 +3,7 @@ package net.minecraft.structure;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Random;
+import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,7 +11,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -57,8 +57,8 @@ public class IglooGenerator {
 			);
 		}
 
-		public Piece(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.IGLOO, nbt, world, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier));
+		public Piece(StructureManager structureManager, NbtCompound nbt) {
+			super(StructurePieceType.IGLOO, nbt, structureManager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier));
 		}
 
 		private static StructurePlacementData createPlacementData(BlockRotation rotation, Identifier identifier) {
@@ -74,8 +74,8 @@ public class IglooGenerator {
 		}
 
 		@Override
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-			super.writeNbt(world, nbt);
+		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+			super.writeNbt(arg, nbt);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 		}
 
@@ -91,7 +91,7 @@ public class IglooGenerator {
 		}
 
 		@Override
-		public boolean generate(
+		public void generate(
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
@@ -107,7 +107,7 @@ public class IglooGenerator {
 			int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
 			BlockPos blockPos3 = this.pos;
 			this.pos = this.pos.add(0, i - 90 - 1, 0);
-			boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 			if (identifier.equals(IglooGenerator.TOP_TEMPLATE)) {
 				BlockPos blockPos4 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)));
 				BlockState blockState = world.getBlockState(blockPos4.down());
@@ -117,7 +117,6 @@ public class IglooGenerator {
 			}
 
 			this.pos = blockPos3;
-			return bl;
 		}
 	}
 }

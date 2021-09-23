@@ -102,7 +102,12 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 			int l = Math.min(Integer.lowestOneBit(info.getWidth()), Integer.lowestOneBit(info.getHeight()));
 			if (l < k) {
 				LOGGER.warn(
-					"Texture {} with size {}x{} limits mip level from {} to {}", info.getId(), info.getWidth(), info.getHeight(), MathHelper.log2(k), MathHelper.log2(l)
+					"Texture {} with size {}x{} limits mip level from {} to {}",
+					info.getId(),
+					info.getWidth(),
+					info.getHeight(),
+					MathHelper.floorLog2(k),
+					MathHelper.floorLog2(l)
 				);
 				k = l;
 			}
@@ -111,7 +116,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		}
 
 		int m = Math.min(j, k);
-		int n = MathHelper.log2(m);
+		int n = MathHelper.floorLog2(m);
 		int l;
 		if (n < mipmapLevel) {
 			LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.id, mipmapLevel, n, m);

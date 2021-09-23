@@ -1,12 +1,12 @@
 package net.minecraft.structure;
 
 import java.util.Random;
+import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -22,16 +22,16 @@ public class BuriedTreasureGenerator {
 			super(StructurePieceType.BURIED_TREASURE, 0, new BlockBox(pos));
 		}
 
-		public Piece(ServerWorld world, NbtCompound nbt) {
-			super(StructurePieceType.BURIED_TREASURE, nbt);
+		public Piece(NbtCompound nbtCompound) {
+			super(StructurePieceType.BURIED_TREASURE, nbtCompound);
 		}
 
 		@Override
-		protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
 		}
 
 		@Override
-		public boolean generate(
+		public void generate(
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
@@ -68,13 +68,12 @@ public class BuriedTreasureGenerator {
 					}
 
 					this.boundingBox = new BlockBox(mutable);
-					return this.addChest(world, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
+					this.addChest(world, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
+					return;
 				}
 
 				mutable.move(0, -1, 0);
 			}
-
-			return false;
 		}
 
 		private boolean isLiquid(BlockState state) {

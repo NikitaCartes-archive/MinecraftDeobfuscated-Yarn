@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -18,7 +19,6 @@ import net.minecraft.block.VineBlock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
 import net.minecraft.structure.processor.BlockAgeStructureProcessor;
@@ -80,8 +80,8 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		this.properties = properties;
 	}
 
-	public RuinedPortalStructurePiece(ServerWorld world, NbtCompound nbt) {
-		super(StructurePieceType.RUINED_PORTAL, nbt, world, identifier -> createPlacementData(world, nbt, identifier));
+	public RuinedPortalStructurePiece(StructureManager structureManager, NbtCompound nbt) {
+		super(StructurePieceType.RUINED_PORTAL, nbt, structureManager, identifier -> createPlacementData(structureManager, nbt, identifier));
 		this.verticalPlacement = RuinedPortalStructurePiece.VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
 		this.properties = RuinedPortalStructurePiece.Properties.CODEC
 			.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties")))
@@ -89,8 +89,8 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-		super.writeNbt(world, nbt);
+	protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+		super.writeNbt(arg, nbt);
 		nbt.putString("Rotation", this.placementData.getRotation().name());
 		nbt.putString("Mirror", this.placementData.getMirror().name());
 		nbt.putString("VerticalPlacement", this.verticalPlacement.getId());
@@ -100,8 +100,8 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			.ifPresent(nbtElement -> nbt.put("Properties", nbtElement));
 	}
 
-	private static StructurePlacementData createPlacementData(ServerWorld world, NbtCompound nbt, Identifier id) {
-		Structure structure = world.getStructureManager().getStructureOrBlank(id);
+	private static StructurePlacementData createPlacementData(StructureManager structureManager, NbtCompound nbt, Identifier id) {
+		Structure structure = structureManager.getStructureOrBlank(id);
 		BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
 		return createPlacementData(
 			BlockMirror.valueOf(nbt.getString("Mirror")),
@@ -156,7 +156,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	public boolean generate(
+	public void generate(
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
@@ -166,11 +166,9 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		BlockPos pos
 	) {
 		BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (!boundingBox.contains(blockBox.getCenter())) {
-			return true;
-		} else {
+		if (boundingBox.contains(blockBox.getCenter())) {
 			boundingBox.encompass(blockBox);
-			boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 			this.placeNetherrackBase(random, world);
 			this.updateNetherracksInBound(random, world);
 			if (this.properties.vines || this.properties.overgrown) {
@@ -184,8 +182,6 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 					}
 				});
 			}
-
-			return bl;
 		}
 	}
 
@@ -328,7 +324,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		public Properties() {
 		}
 
-		public <T> Properties(boolean cold, float mossiness, boolean airPocket, boolean overgrown, boolean vines, boolean replaceWithBlackstone) {
+		public Properties(boolean cold, float mossiness, boolean airPocket, boolean overgrown, boolean vines, boolean replaceWithBlackstone) {
 			this.cold = cold;
 			this.mossiness = mossiness;
 			this.airPocket = airPocket;

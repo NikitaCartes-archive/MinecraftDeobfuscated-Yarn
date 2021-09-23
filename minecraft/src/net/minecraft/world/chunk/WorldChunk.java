@@ -330,10 +330,14 @@ public class WorldChunk extends Chunk {
 	boolean canTickBlockEntity(BlockPos pos) {
 		if (!this.world.getWorldBorder().contains(pos)) {
 			return false;
-		} else if (!(this.world instanceof ServerWorld)) {
-			return true;
 		} else {
-			return this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.toLong(pos));
+			World var3 = this.world;
+			if (!(var3 instanceof ServerWorld)) {
+				return true;
+			} else {
+				ServerWorld serverWorld = (ServerWorld)var3;
+				return this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && serverWorld.method_37116(ChunkPos.toLong(pos));
+			}
 		}
 	}
 
