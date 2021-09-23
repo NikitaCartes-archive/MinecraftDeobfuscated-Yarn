@@ -18,7 +18,7 @@ public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
     }
 
     public static <T extends Comparable<T>> Codec<Range<T>> createCodec(Codec<T> elementCodec) {
-        return Codecs.method_37931(elementCodec, "min_inclusive", "max_inclusive", Range::validate, Range::minInclusive, Range::maxInclusive);
+        return Codecs.createCodecForPairObject(elementCodec, "min_inclusive", "max_inclusive", Range::validate, Range::minInclusive, Range::maxInclusive);
     }
 
     public static <T extends Comparable<T>> Codec<Range<T>> createRangedCodec(Codec<T> codec, T minInclusive, T maxInclusive) {

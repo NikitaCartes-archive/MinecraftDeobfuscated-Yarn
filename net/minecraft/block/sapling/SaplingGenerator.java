@@ -13,15 +13,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class SaplingGenerator {
     @Nullable
-    protected abstract ConfiguredFeature<TreeFeatureConfig, ?> getTreeFeature(Random var1, boolean var2);
+    protected abstract ConfiguredFeature<?, ?> getTreeFeature(Random var1, boolean var2);
 
     public boolean generate(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random) {
-        ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.getTreeFeature(random, this.areFlowersNearby(world, pos));
+        ConfiguredFeature<?, ?> configuredFeature = this.getTreeFeature(random, this.areFlowersNearby(world, pos));
         if (configuredFeature == null) {
             return false;
         }

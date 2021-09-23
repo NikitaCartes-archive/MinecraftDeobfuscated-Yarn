@@ -10,6 +10,6 @@ import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @FieldsAreNonnullByDefault
-interface PackageInfo6511 {
+interface PackageInfo6627 {
 }
 

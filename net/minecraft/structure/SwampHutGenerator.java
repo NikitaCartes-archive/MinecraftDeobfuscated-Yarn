@@ -8,12 +8,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.StairShape;
+import net.minecraft.class_6625;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.ShiftableStructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.math.BlockBox;
@@ -34,24 +34,24 @@ extends ShiftableStructurePiece {
         super(StructurePieceType.SWAMP_HUT, x, 64, z, 7, 7, 9, SwampHutGenerator.getRandomHorizontalDirection(random));
     }
 
-    public SwampHutGenerator(ServerWorld world, NbtCompound nbt) {
-        super(StructurePieceType.SWAMP_HUT, nbt);
-        this.hasWitch = nbt.getBoolean("Witch");
-        this.hasCat = nbt.getBoolean("Cat");
+    public SwampHutGenerator(NbtCompound nbtCompound) {
+        super(StructurePieceType.SWAMP_HUT, nbtCompound);
+        this.hasWitch = nbtCompound.getBoolean("Witch");
+        this.hasCat = nbtCompound.getBoolean("Cat");
     }
 
     @Override
-    protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-        super.writeNbt(world, nbt);
+    protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+        super.writeNbt(arg, nbt);
         nbt.putBoolean("Witch", this.hasWitch);
         nbt.putBoolean("Cat", this.hasCat);
     }
 
     @Override
-    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
         BlockPos.Mutable blockPos;
         if (!this.adjustToAverageHeight(world, boundingBox, 0)) {
-            return false;
+            return;
         }
         this.fillWithOutline(world, boundingBox, 1, 1, 1, 5, 1, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
         this.fillWithOutline(world, boundingBox, 1, 4, 2, 5, 4, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
@@ -100,7 +100,6 @@ extends ShiftableStructurePiece {
             world.spawnEntityAndPassengers(witchEntity);
         }
         this.spawnCat(world, boundingBox);
-        return true;
     }
 
     private void spawnCat(ServerWorldAccess world, BlockBox box) {

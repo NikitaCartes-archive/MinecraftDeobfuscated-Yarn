@@ -21,8 +21,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.profiling.jfr.event.worldgen.ChunkGenerationEvent;
+import net.minecraft.util.profiling.jfr.Finishable;
+import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
@@ -207,21 +207,11 @@ public class ChunkStatus {
     }
 
     public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> runGenerationTask(Executor executor, ServerWorld world, ChunkGenerator generator, StructureManager structureManager, ServerLightingProvider lightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> fullChunkConverter, List<Chunk> chunks, boolean bl) {
-        ChunkGenerationEvent chunkGenerationEvent;
         Chunk chunk = chunks.get(chunks.size() / 2);
-        if (ChunkGenerationEvent.TYPE.isEnabled()) {
-            ChunkPos chunkPos = chunk.getPos();
-            chunkGenerationEvent = new ChunkGenerationEvent(chunkPos, world.getRegistryKey(), this.id);
-            chunkGenerationEvent.begin();
-        } else {
-            chunkGenerationEvent = null;
-        }
+        Finishable finishable = FlightProfiler.INSTANCE.startChunkGenerationProfiling(chunk.getPos(), world.getRegistryKey(), this.id);
         CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.generationTask.doWork(this, executor, world, generator, structureManager, lightingProvider, fullChunkConverter, chunks, chunk, bl);
-        return chunkGenerationEvent != null && chunkGenerationEvent.shouldCommit() ? completableFuture.thenApply(either -> {
-            either.ifLeft(chunk -> {
-                chunkGenerationEvent.success = true;
-            });
-            chunkGenerationEvent.commit();
+        return finishable != null ? completableFuture.thenApply(either -> {
+            finishable.finish();
             return either;
         }) : completableFuture;
     }

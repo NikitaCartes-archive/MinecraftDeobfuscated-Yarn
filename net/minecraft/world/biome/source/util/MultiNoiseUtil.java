@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.util.dynamic.Codecs;
@@ -29,238 +28,95 @@ public class MultiNoiseUtil {
     protected static final int HYPERCUBE_DIMENSION = 7;
 
     public static NoiseValuePoint createNoiseValuePoint(float temperatureNoise, float humidityNoise, float continentalnessNoise, float erosionNoise, float depth, float weirdnessNoise) {
-        return new NoiseValuePoint(temperatureNoise, humidityNoise, continentalnessNoise, erosionNoise, depth, weirdnessNoise);
+        return new NoiseValuePoint(MultiNoiseUtil.method_38665(temperatureNoise), MultiNoiseUtil.method_38665(humidityNoise), MultiNoiseUtil.method_38665(continentalnessNoise), MultiNoiseUtil.method_38665(erosionNoise), MultiNoiseUtil.method_38665(depth), MultiNoiseUtil.method_38665(weirdnessNoise));
     }
 
     public static NoiseHypercube createNoiseHypercube(float temperature, float humidity, float continentalness, float erosion, float depth, float weirdness, float offset) {
-        return new NoiseHypercube(ParameterRange.method_38120(temperature), ParameterRange.method_38120(humidity), ParameterRange.method_38120(continentalness), ParameterRange.method_38120(erosion), ParameterRange.method_38120(depth), ParameterRange.method_38120(weirdness), offset);
+        return new NoiseHypercube(ParameterRange.of(temperature), ParameterRange.of(humidity), ParameterRange.of(continentalness), ParameterRange.of(erosion), ParameterRange.of(depth), ParameterRange.of(weirdness), MultiNoiseUtil.method_38665(offset));
     }
 
     public static NoiseHypercube createNoiseHypercube(ParameterRange temperature, ParameterRange humidity, ParameterRange continentalness, ParameterRange erosion, ParameterRange depth, ParameterRange weirdness, float offset) {
-        return new NoiseHypercube(temperature, humidity, continentalness, erosion, depth, weirdness, offset);
+        return new NoiseHypercube(temperature, humidity, continentalness, erosion, depth, weirdness, MultiNoiseUtil.method_38665(offset));
     }
 
-    public static final class NoiseValuePoint {
-        final float temperatureNoise;
-        final float humidityNoise;
-        final float continentalnessNoise;
-        final float erosionNoise;
-        final float depth;
-        final float weirdnessNoise;
+    public static long method_38665(float f) {
+        return (long)(f * 10000.0f);
+    }
 
-        NoiseValuePoint(float temperatureNoise, float humidityNoise, float continentalnessNoise, float erosionNoise, float depth, float weirdnessNoise) {
-            this.temperatureNoise = temperatureNoise;
-            this.humidityNoise = humidityNoise;
-            this.continentalnessNoise = continentalnessNoise;
-            this.erosionNoise = erosionNoise;
-            this.depth = depth;
-            this.weirdnessNoise = weirdnessNoise;
-        }
+    public static float method_38666(long l) {
+        return (float)l / 10000.0f;
+    }
 
-        public float getTemperatureNoise() {
-            return this.temperatureNoise;
-        }
-
-        public float getHumidityNoise() {
-            return this.humidityNoise;
-        }
-
-        public float getContinentalnessNoise() {
-            return this.continentalnessNoise;
-        }
-
-        public float getErosionNoise() {
-            return this.erosionNoise;
-        }
-
-        public float getDepth() {
-            return this.depth;
-        }
-
-        public float getWeirdnessNoise() {
-            return this.weirdnessNoise;
-        }
-
+    public record NoiseValuePoint(long temperatureNoise, long humidityNoise, long continentalnessNoise, long erosionNoise, long depth, long weirdnessNoise) {
         @VisibleForTesting
-        protected float[] getNoiseValueList() {
-            return new float[]{this.temperatureNoise, this.humidityNoise, this.continentalnessNoise, this.erosionNoise, this.depth, this.weirdnessNoise, 0.0f};
+        protected long[] getNoiseValueList() {
+            return new long[]{this.temperatureNoise, this.humidityNoise, this.continentalnessNoise, this.erosionNoise, this.depth, this.weirdnessNoise, 0L};
         }
     }
 
-    public static final class NoiseHypercube {
-        public static final Codec<NoiseHypercube> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ParameterRange.CODEC.fieldOf("temperature")).forGetter(noiseHypercube -> noiseHypercube.temperature), ((MapCodec)ParameterRange.CODEC.fieldOf("humidity")).forGetter(noiseHypercube -> noiseHypercube.humidity), ((MapCodec)ParameterRange.CODEC.fieldOf("continentalness")).forGetter(noiseHypercube -> noiseHypercube.continentalness), ((MapCodec)ParameterRange.CODEC.fieldOf("erosion")).forGetter(noiseHypercube -> noiseHypercube.erosion), ((MapCodec)ParameterRange.CODEC.fieldOf("depth")).forGetter(noiseHypercube -> noiseHypercube.depth), ((MapCodec)ParameterRange.CODEC.fieldOf("weirdness")).forGetter(noiseHypercube -> noiseHypercube.weirdness), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("offset")).forGetter(noiseHypercube -> Float.valueOf(noiseHypercube.offset))).apply((Applicative<NoiseHypercube, ?>)instance, NoiseHypercube::new));
-        private final ParameterRange temperature;
-        private final ParameterRange humidity;
-        private final ParameterRange continentalness;
-        private final ParameterRange erosion;
-        private final ParameterRange depth;
-        private final ParameterRange weirdness;
-        private final float offset;
+    public record NoiseHypercube(ParameterRange temperature, ParameterRange humidity, ParameterRange continentalness, ParameterRange erosion, ParameterRange depth, ParameterRange weirdness, long offset) {
+        public static final Codec<NoiseHypercube> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ParameterRange.CODEC.fieldOf("temperature")).forGetter(noiseHypercube -> noiseHypercube.temperature), ((MapCodec)ParameterRange.CODEC.fieldOf("humidity")).forGetter(noiseHypercube -> noiseHypercube.humidity), ((MapCodec)ParameterRange.CODEC.fieldOf("continentalness")).forGetter(noiseHypercube -> noiseHypercube.continentalness), ((MapCodec)ParameterRange.CODEC.fieldOf("erosion")).forGetter(noiseHypercube -> noiseHypercube.erosion), ((MapCodec)ParameterRange.CODEC.fieldOf("depth")).forGetter(noiseHypercube -> noiseHypercube.depth), ((MapCodec)ParameterRange.CODEC.fieldOf("weirdness")).forGetter(noiseHypercube -> noiseHypercube.weirdness), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("offset")).xmap(MultiNoiseUtil::method_38665, MultiNoiseUtil::method_38666).forGetter(noiseHypercube -> noiseHypercube.offset)).apply((Applicative<NoiseHypercube, ?>)instance, NoiseHypercube::new));
 
-        NoiseHypercube(ParameterRange temperature, ParameterRange humidity, ParameterRange continentalness, ParameterRange erosion, ParameterRange depth, ParameterRange weirdness, float offset) {
-            this.temperature = temperature;
-            this.humidity = humidity;
-            this.continentalness = continentalness;
-            this.erosion = erosion;
-            this.depth = depth;
-            this.weirdness = weirdness;
-            this.offset = offset;
-        }
-
-        public String toString() {
-            return "[temp: " + this.temperature + ", hum: " + this.humidity + ", cont: " + this.continentalness + ", eros: " + this.erosion + ", depth: " + this.depth + ", weird: " + this.weirdness + ", offset: " + this.offset + "]";
-        }
-
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
-            }
-            NoiseHypercube noiseHypercube = (NoiseHypercube)o;
-            if (!this.temperature.equals(noiseHypercube.temperature)) {
-                return false;
-            }
-            if (!this.humidity.equals(noiseHypercube.humidity)) {
-                return false;
-            }
-            if (!this.continentalness.equals(noiseHypercube.continentalness)) {
-                return false;
-            }
-            if (!this.erosion.equals(noiseHypercube.erosion)) {
-                return false;
-            }
-            if (!this.depth.equals(noiseHypercube.depth)) {
-                return false;
-            }
-            if (!this.weirdness.equals(noiseHypercube.weirdness)) {
-                return false;
-            }
-            return Float.compare(noiseHypercube.offset, this.offset) == 0;
-        }
-
-        public int hashCode() {
-            return Objects.hash(this.temperature, this.humidity, this.continentalness, this.erosion, this.depth, this.weirdness, Float.valueOf(this.offset));
-        }
-
-        float getSquaredDistance(NoiseValuePoint point) {
+        long getSquaredDistance(NoiseValuePoint point) {
             return MathHelper.square(this.temperature.getDistance(point.temperatureNoise)) + MathHelper.square(this.humidity.getDistance(point.humidityNoise)) + MathHelper.square(this.continentalness.getDistance(point.continentalnessNoise)) + MathHelper.square(this.erosion.getDistance(point.erosionNoise)) + MathHelper.square(this.depth.getDistance(point.depth)) + MathHelper.square(this.weirdness.getDistance(point.weirdnessNoise)) + MathHelper.square(this.offset);
         }
 
-        public ParameterRange getTemperature() {
-            return this.temperature;
-        }
-
-        public ParameterRange getHumidity() {
-            return this.humidity;
-        }
-
-        public ParameterRange getContinentalness() {
-            return this.continentalness;
-        }
-
-        public ParameterRange getErosion() {
-            return this.erosion;
-        }
-
-        public ParameterRange getDepth() {
-            return this.depth;
-        }
-
-        public ParameterRange getWeirdness() {
-            return this.weirdness;
-        }
-
-        public float getOffset() {
-            return this.offset;
-        }
-
         protected List<ParameterRange> getParameters() {
-            return ImmutableList.of(this.temperature, this.humidity, this.continentalness, this.erosion, this.depth, this.weirdness, ParameterRange.method_38120(this.offset));
+            return ImmutableList.of(this.temperature, this.humidity, this.continentalness, this.erosion, this.depth, this.weirdness, new ParameterRange(this.offset, this.offset));
         }
     }
 
-    public static final class ParameterRange {
-        public static final Codec<ParameterRange> CODEC = Codecs.method_37931(Codec.floatRange(-2.0f, 2.0f), "min", "max", (float_, float2) -> {
-            if (float_.compareTo((Float)float2) > 0) {
-                return DataResult.error("Cannon construct interval, min > max (" + float_ + " > " + float2 + ")");
+    public record ParameterRange(long min, long max) {
+        public static final Codec<ParameterRange> CODEC = Codecs.createCodecForPairObject(Codec.floatRange(-2.0f, 2.0f), "min", "max", (min, max) -> {
+            if (min.compareTo((Float)max) > 0) {
+                return DataResult.error("Cannon construct interval, min > max (" + min + " > " + max + ")");
             }
-            return DataResult.success(new ParameterRange(float_.floatValue(), float2.floatValue()));
-        }, ParameterRange::getMin, ParameterRange::getMax);
-        private final float min;
-        private final float max;
+            return DataResult.success(new ParameterRange(MultiNoiseUtil.method_38665(min.floatValue()), MultiNoiseUtil.method_38665(max.floatValue())));
+        }, parameterRange -> Float.valueOf(MultiNoiseUtil.method_38666(parameterRange.min())), parameterRange -> Float.valueOf(MultiNoiseUtil.method_38666(parameterRange.max())));
 
-        private ParameterRange(float min, float max) {
-            this.min = min;
-            this.max = max;
+        public static ParameterRange of(float point) {
+            return ParameterRange.of(point, point);
         }
 
-        public static ParameterRange method_38120(float f) {
-            return ParameterRange.method_38121(f, f);
-        }
-
-        public static ParameterRange method_38121(float f, float g) {
-            if (f > g) {
-                throw new IllegalArgumentException("min > max: " + f + " " + g);
+        public static ParameterRange of(float min, float max) {
+            if (min > max) {
+                throw new IllegalArgumentException("min > max: " + min + " " + max);
             }
-            return new ParameterRange(f, g);
+            return new ParameterRange(MultiNoiseUtil.method_38665(min), MultiNoiseUtil.method_38665(max));
         }
 
-        public static ParameterRange method_38123(ParameterRange parameterRange, ParameterRange parameterRange2) {
-            if (parameterRange.getMin() > parameterRange2.getMax()) {
-                throw new IllegalArgumentException("min > max: " + parameterRange + " " + parameterRange2);
+        public static ParameterRange combine(ParameterRange min, ParameterRange max) {
+            if (min.min() > max.max()) {
+                throw new IllegalArgumentException("min > max: " + min + " " + max);
             }
-            return new ParameterRange(parameterRange.getMin(), parameterRange2.getMax());
+            return new ParameterRange(min.min(), max.max());
         }
 
-        public float getMin() {
-            return this.min;
-        }
-
-        public float getMax() {
-            return this.max;
-        }
-
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
-            }
-            ParameterRange parameterRange = (ParameterRange)o;
-            return Float.compare(parameterRange.min, this.min) == 0 && Float.compare(parameterRange.max, this.max) == 0;
-        }
-
-        public int hashCode() {
-            return Objects.hash(Float.valueOf(this.min), Float.valueOf(this.max));
-        }
-
+        @Override
         public String toString() {
-            return this.min == this.max ? String.format("%.2f", Float.valueOf(this.min)) : String.format("[%.2f-%.2f]", Float.valueOf(this.min), Float.valueOf(this.max));
+            return this.min == this.max ? String.format("%d", this.min) : String.format("[%d-%d]", this.min, this.max);
         }
 
-        public float getDistance(float noise) {
-            float f = noise - this.max;
-            float g = this.min - noise;
-            if (f > 0.0f) {
-                return f;
+        public long getDistance(long noise) {
+            long l = noise - this.max;
+            long m = this.min - noise;
+            if (l > 0L) {
+                return l;
             }
-            return Math.max(g, 0.0f);
+            return Math.max(m, 0L);
         }
 
-        public float getDistance(ParameterRange other) {
-            float f = other.getMin() - this.max;
-            float g = this.min - other.getMax();
-            if (f > 0.0f) {
-                return f;
+        public long getDistance(ParameterRange other) {
+            long l = other.min() - this.max;
+            long m = this.min - other.max();
+            if (l > 0L) {
+                return l;
             }
-            return Math.max(g, 0.0f);
+            return Math.max(m, 0L);
         }
 
         public ParameterRange combine(@Nullable ParameterRange other) {
-            return other == null ? this : new ParameterRange(Math.min(this.min, other.getMin()), Math.max(this.max, other.getMax()));
+            return other == null ? this : new ParameterRange(Math.min(this.min, other.min()), Math.max(this.max, other.max()));
         }
     }
 
@@ -287,12 +143,12 @@ public class MultiNoiseUtil {
 
         @VisibleForTesting
         public T getValueSimple(NoiseValuePoint point, Supplier<T> defaultValue) {
-            float f = Float.MAX_VALUE;
+            long l = Long.MAX_VALUE;
             Supplier<T> supplier = defaultValue;
             for (Pair<NoiseHypercube, Supplier<T>> pair : this.getEntries()) {
-                float g = pair.getFirst().getSquaredDistance(point);
-                if (!(g < f)) continue;
-                f = g;
+                long m = pair.getFirst().getSquaredDistance(point);
+                if (m >= l) continue;
+                l = m;
                 supplier = pair.getSecond();
             }
             return supplier.get();
@@ -307,13 +163,13 @@ public class MultiNoiseUtil {
         }
     }
 
-    static final class SearchTree<T> {
+    protected static final class SearchTree<T> {
         private static final int MAX_NODES_FOR_SIMPLE_TREE = 10;
         private final TreeNode<T> firstNode;
-        private final ThreadLocal<TreeLeafNode<T>> field_34488 = new ThreadLocal();
+        private final ThreadLocal<TreeLeafNode<T>> previousResultNode = new ThreadLocal();
 
-        private SearchTree(TreeNode<T> treeNode) {
-            this.firstNode = treeNode;
+        private SearchTree(TreeNode<T> firstNode) {
+            this.firstNode = firstNode;
         }
 
         public static <T> SearchTree<T> create(List<Pair<NoiseHypercube, Supplier<T>>> entries) {
@@ -336,28 +192,28 @@ public class MultiNoiseUtil {
                 return subTree.get(0);
             }
             if (subTree.size() <= 10) {
-                subTree.sort(Comparator.comparingDouble(node -> {
-                    float f = 0.0f;
+                subTree.sort(Comparator.comparingLong(node -> {
+                    long l = 0L;
                     for (int j = 0; j < parameterNumber; ++j) {
                         ParameterRange parameterRange = node.parameters[j];
-                        f += Math.abs((parameterRange.getMin() + parameterRange.getMax()) / 2.0f);
+                        l += Math.abs((parameterRange.min() + parameterRange.max()) / 2L);
                     }
-                    return f;
+                    return l;
                 }));
                 return new TreeBranchNode(subTree);
             }
-            float f = Float.POSITIVE_INFINITY;
+            long l = Long.MAX_VALUE;
             int i = -1;
             List<TreeBranchNode<T>> list = null;
             for (int j = 0; j < parameterNumber; ++j) {
                 SearchTree.sortTree(subTree, parameterNumber, j, false);
                 List<TreeBranchNode<T>> list2 = SearchTree.getBatchedTree(subTree);
-                float g = 0.0f;
+                long m = 0L;
                 for (TreeBranchNode<T> treeBranchNode : list2) {
-                    g += SearchTree.getRangeLengthSum(treeBranchNode.parameters);
+                    m += SearchTree.getRangeLengthSum(treeBranchNode.parameters);
                 }
-                if (!(f > g)) continue;
-                f = g;
+                if (l <= m) continue;
+                l = m;
                 i = j;
                 list = list2;
             }
@@ -365,19 +221,19 @@ public class MultiNoiseUtil {
             return new TreeBranchNode(list.stream().map(node -> SearchTree.createNode(parameterNumber, Arrays.asList(node.subTree))).collect(Collectors.toList()));
         }
 
-        private static <T> void sortTree(List<? extends TreeNode<T>> subTree, int i, int j, boolean bl) {
-            Comparator<TreeNode<TreeNode<T>>> comparator = SearchTree.method_38149(j, bl);
-            for (int k = 1; k < i; ++k) {
-                comparator = comparator.thenComparing(SearchTree.method_38149((j + k) % i, bl));
+        private static <T> void sortTree(List<? extends TreeNode<T>> subTree, int parameterNumber, int currentParameter, boolean abs) {
+            Comparator<TreeNode<TreeNode<T>>> comparator = SearchTree.createNodeComparator(currentParameter, abs);
+            for (int i = 1; i < parameterNumber; ++i) {
+                comparator = comparator.thenComparing(SearchTree.createNodeComparator((currentParameter + i) % parameterNumber, abs));
             }
             subTree.sort(comparator);
         }
 
-        private static <T> Comparator<TreeNode<T>> method_38149(int i, boolean bl) {
-            return Comparator.comparingDouble(treeNode -> {
-                ParameterRange parameterRange = treeNode.parameters[i];
-                float f = (parameterRange.getMin() + parameterRange.getMax()) / 2.0f;
-                return bl ? (double)Math.abs(f) : (double)f;
+        private static <T> Comparator<TreeNode<T>> createNodeComparator(int currentParameter, boolean abs) {
+            return Comparator.comparingLong(treeNode -> {
+                ParameterRange parameterRange = treeNode.parameters[currentParameter];
+                long l = (parameterRange.min() + parameterRange.max()) / 2L;
+                return abs ? Math.abs(l) : l;
             });
         }
 
@@ -397,12 +253,12 @@ public class MultiNoiseUtil {
             return list;
         }
 
-        private static float getRangeLengthSum(ParameterRange[] parameters) {
-            float f = 0.0f;
+        private static long getRangeLengthSum(ParameterRange[] parameters) {
+            long l = 0L;
             for (ParameterRange parameterRange : parameters) {
-                f += Math.abs(parameterRange.getMax() - parameterRange.getMin());
+                l += Math.abs(parameterRange.max() - parameterRange.min());
             }
-            return f;
+            return l;
         }
 
         static <T> List<ParameterRange> getEnclosingParameters(List<? extends TreeNode<T>> subTree) {
@@ -423,9 +279,9 @@ public class MultiNoiseUtil {
         }
 
         public T get(NoiseValuePoint point, NodeDistanceFunction<T> distanceFunction) {
-            float[] fs = point.getNoiseValueList();
-            TreeLeafNode<T> treeLeafNode = this.firstNode.getResultingNode(fs, this.field_34488.get(), distanceFunction);
-            this.field_34488.set(treeLeafNode);
+            long[] ls = point.getNoiseValueList();
+            TreeLeafNode<T> treeLeafNode = this.firstNode.getResultingNode(ls, this.previousResultNode.get(), distanceFunction);
+            this.previousResultNode.set(treeLeafNode);
             return treeLeafNode.value.get();
         }
 
@@ -436,14 +292,14 @@ public class MultiNoiseUtil {
                 this.parameters = subTree.toArray(new ParameterRange[0]);
             }
 
-            protected abstract TreeLeafNode<T> getResultingNode(float[] var1, @Nullable TreeLeafNode<T> var2, NodeDistanceFunction<T> var3);
+            protected abstract TreeLeafNode<T> getResultingNode(long[] var1, @Nullable TreeLeafNode<T> var2, NodeDistanceFunction<T> var3);
 
-            protected float getSquaredDistance(float[] otherParameters) {
-                float f = 0.0f;
+            protected long getSquaredDistance(long[] otherParameters) {
+                long l = 0L;
                 for (int i = 0; i < 7; ++i) {
-                    f += MathHelper.square(this.parameters[i].getDistance(otherParameters[i]));
+                    l += MathHelper.square(this.parameters[i].getDistance(otherParameters[i]));
                 }
-                return f;
+                return l;
             }
 
             public String toString() {
@@ -465,20 +321,20 @@ public class MultiNoiseUtil {
             }
 
             @Override
-            protected TreeLeafNode<T> getResultingNode(float[] otherParameters, @Nullable TreeLeafNode<T> treeLeafNode, NodeDistanceFunction<T> nodeDistanceFunction) {
-                float f = treeLeafNode == null ? Float.POSITIVE_INFINITY : nodeDistanceFunction.getDistance(treeLeafNode, otherParameters);
-                TreeLeafNode<T> treeLeafNode2 = treeLeafNode;
-                for (TreeNode treeNode : this.subTree) {
-                    float h;
-                    float g = nodeDistanceFunction.getDistance(treeNode, otherParameters);
-                    if (!(f > g)) continue;
-                    TreeLeafNode<T> treeLeafNode3 = treeNode.getResultingNode(otherParameters, null, nodeDistanceFunction);
-                    float f2 = h = treeNode == treeLeafNode3 ? g : nodeDistanceFunction.getDistance(treeLeafNode3, otherParameters);
-                    if (!(f > h)) continue;
-                    f = h;
-                    treeLeafNode2 = treeLeafNode3;
+            protected TreeLeafNode<T> getResultingNode(long[] otherParameters, @Nullable TreeLeafNode<T> alternative, NodeDistanceFunction<T> distanceFunction) {
+                long l = alternative == null ? Long.MAX_VALUE : distanceFunction.getDistance(alternative, otherParameters);
+                TreeLeafNode<T> treeLeafNode = alternative;
+                for (TreeNode<T> treeNode : this.subTree) {
+                    long n;
+                    long m = distanceFunction.getDistance(treeNode, otherParameters);
+                    if (l <= m) continue;
+                    TreeLeafNode<T> treeLeafNode2 = treeNode.getResultingNode(otherParameters, treeLeafNode, distanceFunction);
+                    long l2 = n = treeNode == treeLeafNode2 ? m : distanceFunction.getDistance(treeLeafNode2, otherParameters);
+                    if (l <= n) continue;
+                    l = n;
+                    treeLeafNode = treeLeafNode2;
                 }
-                return treeLeafNode2;
+                return treeLeafNode;
             }
         }
 
@@ -492,14 +348,14 @@ public class MultiNoiseUtil {
             }
 
             @Override
-            protected TreeLeafNode<T> getResultingNode(float[] otherParameters, @Nullable TreeLeafNode<T> treeLeafNode, NodeDistanceFunction<T> nodeDistanceFunction) {
+            protected TreeLeafNode<T> getResultingNode(long[] otherParameters, @Nullable TreeLeafNode<T> alternative, NodeDistanceFunction<T> distanceFunction) {
                 return this;
             }
         }
     }
 
     static interface NodeDistanceFunction<T> {
-        public float getDistance(SearchTree.TreeNode<T> var1, float[] var2);
+        public long getDistance(SearchTree.TreeNode<T> var1, long[] var2);
     }
 }
 

@@ -32,10 +32,10 @@ AutoCloseable {
      * @return the future of the reload
      * @see #reload(Executor, Executor, CompletableFuture, List)
      * 
-     * @param prepareExecutor an executor for the prepare stage
+     * @param initialStage a completable future to be completed before this reload
      * @param applyExecutor an executor for the apply stage
      * @param packs a list of resource packs providing resources
-     * @param initialStage a completable future to be completed before this reload
+     * @param prepareExecutor an executor for the prepare stage
      */
     default public CompletableFuture<Unit> reload(Executor prepareExecutor, Executor applyExecutor, List<ResourcePack> packs, CompletableFuture<Unit> initialStage) {
         return this.reload(prepareExecutor, applyExecutor, initialStage, packs).whenComplete();
@@ -53,10 +53,10 @@ AutoCloseable {
      * @return the reload
      * @see ResourceReloader#reload
      * 
-     * @param prepareExecutor an executor for the prepare stage
-     * @param applyExecutor an executor for the apply stage
      * @param initialStage a completable future to be completed before this reload
+     * @param applyExecutor an executor for the apply stage
      * @param packs a list of resource packs providing resources
+     * @param prepareExecutor an executor for the prepare stage
      */
     public ResourceReload reload(Executor var1, Executor var2, CompletableFuture<Unit> var3, List<ResourcePack> var4);
 

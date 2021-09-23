@@ -9,7 +9,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.class_6568;
-import net.minecraft.class_6576;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
@@ -21,9 +20,10 @@ import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
-import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
+import net.minecraft.world.gen.MultiNoiseParameters;
 import net.minecraft.world.gen.NoiseHelper;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
@@ -53,7 +53,7 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     private final int verticalNoiseResolution;
     private final int noiseSizeY;
     private final GenerationShapeConfig config;
-    private final class_6568.class_6572 noise;
+    private final class_6568.ColumnSampler noise;
     @Nullable
     private final SimplexNoiseSampler islandNoise;
     private final DoublePerlinNoiseSampler field_34681;
@@ -81,13 +81,13 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     private final DoublePerlinNoiseSampler field_34646;
     private final DoublePerlinNoiseSampler field_34647;
     private final DoublePerlinNoiseSampler field_34648;
-    private final DoublePerlinNoiseSampler field_34649;
-    private final DoublePerlinNoiseSampler field_34650;
-    private final DoublePerlinNoiseSampler field_34651;
-    private final DoublePerlinNoiseSampler field_34652;
-    private final DoublePerlinNoiseSampler field_34653;
-    private final DoublePerlinNoiseSampler field_34654;
-    private final VanillaTerrainParameters field_34655 = new VanillaTerrainParameters();
+    private final DoublePerlinNoiseSampler temperatureNoise;
+    private final DoublePerlinNoiseSampler humidityNoise;
+    private final DoublePerlinNoiseSampler continentalnessNoise;
+    private final DoublePerlinNoiseSampler erosionNoise;
+    private final DoublePerlinNoiseSampler weirdnessNoise;
+    private final DoublePerlinNoiseSampler shiftNoise;
+    private final VanillaTerrainParameters terrainParameters = new VanillaTerrainParameters();
     private final DoublePerlinNoiseSampler field_34656;
     private final class_6568.class_6571 field_34657;
     private final class_6568.class_6571 field_34659;
@@ -100,22 +100,22 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     private final class_6568.class_6571 field_34666;
     private final boolean field_34667;
 
-    public NoiseColumnSampler(int i, int horizontalNoiseResolution, int verticalNoiseResolution, GenerationShapeConfig generationShapeConfig, VanillaLayeredBiomeSource vanillaLayeredBiomeSource, boolean bl, long l) {
+    public NoiseColumnSampler(int i, int horizontalNoiseResolution, int verticalNoiseResolution, GenerationShapeConfig config, MultiNoiseParameters noiseParameters, boolean bl, long seed) {
         AbstractRandom abstractRandom4;
         this.verticalNoiseResolution = horizontalNoiseResolution;
         this.noiseSizeY = verticalNoiseResolution;
-        this.config = generationShapeConfig;
-        this.densityFactor = generationShapeConfig.getDensityFactor();
-        this.densityOffset = generationShapeConfig.getDensityOffset();
-        int j = generationShapeConfig.getMinimumY();
+        this.config = config;
+        this.densityFactor = config.getDensityFactor();
+        this.densityOffset = config.getDensityOffset();
+        int j = config.getMinimumY();
         this.field_34682 = MathHelper.floorDiv(j, horizontalNoiseResolution);
-        AtomicSimpleRandom abstractRandom = new AtomicSimpleRandom(l);
-        AtomicSimpleRandom abstractRandom2 = new AtomicSimpleRandom(l);
-        AbstractRandom abstractRandom3 = generationShapeConfig.method_38413() ? abstractRandom2 : abstractRandom.derive();
-        this.noise = new InterpolatedNoiseSampler(abstractRandom3, generationShapeConfig.getSampling(), i, horizontalNoiseResolution);
-        NoiseSampler noiseSampler = this.field_34632 = generationShapeConfig.hasSimplexSurfaceNoise() ? new OctaveSimplexNoiseSampler((AbstractRandom)abstractRandom2, IntStream.rangeClosed(-3, 0)) : new OctavePerlinNoiseSampler((AbstractRandom)abstractRandom2, IntStream.rangeClosed(-3, 0));
-        if (generationShapeConfig.hasIslandNoiseOverride()) {
-            abstractRandom4 = new AtomicSimpleRandom(l);
+        AtomicSimpleRandom abstractRandom = new AtomicSimpleRandom(seed);
+        AtomicSimpleRandom abstractRandom2 = new AtomicSimpleRandom(seed);
+        AbstractRandom abstractRandom3 = config.method_38413() ? abstractRandom2 : abstractRandom.derive();
+        this.noise = new InterpolatedNoiseSampler(abstractRandom3, config.getSampling(), i, horizontalNoiseResolution);
+        NoiseSampler noiseSampler = this.field_34632 = config.hasSimplexSurfaceNoise() ? new OctaveSimplexNoiseSampler((AbstractRandom)abstractRandom2, IntStream.rangeClosed(-3, 0)) : new OctavePerlinNoiseSampler((AbstractRandom)abstractRandom2, IntStream.rangeClosed(-3, 0));
+        if (config.hasIslandNoiseOverride()) {
+            abstractRandom4 = new AtomicSimpleRandom(seed);
             abstractRandom4.skip(17292);
             this.islandNoise = new SimplexNoiseSampler(abstractRandom4);
         } else {
@@ -144,51 +144,51 @@ implements MultiNoiseUtil.MultiNoiseSampler {
         this.field_34633 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -8, 1.0);
         this.field_34648 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -8, 0.5, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 2.0, 0.0);
         this.field_34667 = bl;
-        this.field_34649 = DoublePerlinNoiseSampler.method_38476(new AtomicSimpleRandom(l), vanillaLayeredBiomeSource.method_38365());
-        this.field_34650 = DoublePerlinNoiseSampler.method_38476(new AtomicSimpleRandom(l + 1L), vanillaLayeredBiomeSource.method_38367());
-        this.field_34651 = DoublePerlinNoiseSampler.method_38476(new AtomicSimpleRandom(l + 2L), vanillaLayeredBiomeSource.method_38368());
-        this.field_34652 = DoublePerlinNoiseSampler.method_38476(new AtomicSimpleRandom(l + 3L), vanillaLayeredBiomeSource.method_38369());
-        this.field_34653 = DoublePerlinNoiseSampler.method_38476(new AtomicSimpleRandom(l + 4L), vanillaLayeredBiomeSource.method_38370());
-        this.field_34654 = DoublePerlinNoiseSampler.method_38476(new AtomicSimpleRandom(l + 5L), vanillaLayeredBiomeSource.method_38371());
+        this.temperatureNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed), noiseParameters.temperature());
+        this.humidityNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 1L), noiseParameters.humidity());
+        this.continentalnessNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 2L), noiseParameters.continentalness());
+        this.erosionNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 3L), noiseParameters.erosion());
+        this.weirdnessNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 4L), noiseParameters.weirdness());
+        this.shiftNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 5L), noiseParameters.shift());
         this.field_34657 = arg -> arg.method_38344((i, j, k) -> this.method_38380(i, j, k, arg.method_38360(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k))));
         int k = Stream.of(VeinType.values()).mapToInt(veinType -> veinType.minY).min().orElse(j);
-        int m = Stream.of(VeinType.values()).mapToInt(veinType -> veinType.maxY).max().orElse(j);
+        int l = Stream.of(VeinType.values()).mapToInt(veinType -> veinType.maxY).max().orElse(j);
         float f = 4.0f;
         AbstractRandom abstractRandom5 = abstractRandom.derive();
-        this.field_34659 = NoiseColumnSampler.method_38379(k, m, 0, 1.5, abstractRandom5.derive(), -8, 1.0);
-        this.field_34660 = NoiseColumnSampler.method_38379(k, m, 0, 4.0, abstractRandom5.derive(), -7, 1.0);
-        this.field_34661 = NoiseColumnSampler.method_38379(k, m, 0, 4.0, abstractRandom5.derive(), -7, 1.0);
+        this.field_34659 = NoiseColumnSampler.method_38379(k, l, 0, 1.5, abstractRandom5.derive(), -8, 1.0);
+        this.field_34660 = NoiseColumnSampler.method_38379(k, l, 0, 4.0, abstractRandom5.derive(), -7, 1.0);
+        this.field_34661 = NoiseColumnSampler.method_38379(k, l, 0, 4.0, abstractRandom5.derive(), -7, 1.0);
         this.field_34656 = DoublePerlinNoiseSampler.create(abstractRandom5.derive(), -5, 1.0);
         this.field_34662 = abstractRandom5.createBlockPosRandomDeriver();
         double d = 2.6666666666666665;
         AbstractRandom abstractRandom6 = abstractRandom.derive();
-        int n = j + 4;
-        int o = j + generationShapeConfig.getHeight();
-        this.field_34663 = NoiseColumnSampler.method_38379(n, o, -1, 1.0, abstractRandom6.derive(), -8, 1.0);
-        this.field_34664 = NoiseColumnSampler.method_38379(n, o, 0, 1.0, abstractRandom6.derive(), -8, 1.0);
-        this.field_34665 = NoiseColumnSampler.method_38379(n, o, 0, 2.6666666666666665, abstractRandom6.derive(), -7, 1.0);
-        this.field_34666 = NoiseColumnSampler.method_38379(n, o, 0, 2.6666666666666665, abstractRandom6.derive(), -7, 1.0);
+        int m = j + 4;
+        int n = j + config.getHeight();
+        this.field_34663 = NoiseColumnSampler.method_38379(m, n, -1, 1.0, abstractRandom6.derive(), -8, 1.0);
+        this.field_34664 = NoiseColumnSampler.method_38379(m, n, 0, 1.0, abstractRandom6.derive(), -8, 1.0);
+        this.field_34665 = NoiseColumnSampler.method_38379(m, n, 0, 2.6666666666666665, abstractRandom6.derive(), -7, 1.0);
+        this.field_34666 = NoiseColumnSampler.method_38379(m, n, 0, 2.6666666666666665, abstractRandom6.derive(), -7, 1.0);
         this.field_34681 = DoublePerlinNoiseSampler.create(abstractRandom.derive(), -16, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
     }
 
     private static class_6568.class_6571 method_38379(int i, int j, int k, double d, AbstractRandom abstractRandom, int l2, double ... ds) {
         DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(abstractRandom, l2, ds);
-        class_6568.class_6572 lv = (l, m, n) -> {
+        class_6568.ColumnSampler columnSampler = (l, m, n) -> {
             if (m > j || m < i) {
                 return k;
             }
             return doublePerlinNoiseSampler.sample((double)l * d, (double)m * d, (double)n * d);
         };
-        return arg2 -> arg2.method_38344(lv);
+        return arg -> arg.method_38344(columnSampler);
     }
 
-    private double method_38380(int i, int j, int k, class_6576 arg) {
-        double d = this.noise.sample(i, j, k);
+    private double method_38380(int i, int j, int k, TerrainNoisePoint terrainNoisePoint) {
+        double d = this.noise.calculateNoise(i, j, k);
         boolean bl = !this.field_34667;
-        return this.method_38381(i, j, k, arg, d, bl);
+        return this.method_38381(i, j, k, terrainNoisePoint, d, bl);
     }
 
-    private double method_38381(int i, int j, int k, class_6576 arg, double d, boolean bl) {
+    private double method_38381(int i, int j, int k, TerrainNoisePoint terrainNoisePoint, double d, boolean bl) {
         double n;
         double m;
         double l;
@@ -199,9 +199,9 @@ implements MultiNoiseUtil.MultiNoiseSampler {
         if (this.densityFactor == 0.0 && this.densityOffset == -0.030078125) {
             e = 0.0;
         } else {
-            f = this.method_38409(arg.comp_79(), i, k);
+            f = this.method_38409(terrainNoisePoint.peaks(), i, k);
             g = this.getDepth(j);
-            e = h * (double)((h = (g + arg.comp_77() + f) * arg.comp_78()) > 0.0 ? 4 : 1);
+            e = h * (double)((h = (g + terrainNoisePoint.offset() + f) * terrainNoisePoint.factor()) > 0.0 ? 4 : 1);
         }
         f = e + d;
         g = 1.5625;
@@ -267,7 +267,7 @@ implements MultiNoiseUtil.MultiNoiseSampler {
         return noise;
     }
 
-    protected class_6568.class_6569 method_38390(class_6568 arg, class_6568.class_6572 arg2, boolean bl) {
+    protected class_6568.class_6569 method_38390(class_6568 arg, class_6568.ColumnSampler columnSampler, boolean bl) {
         class_6568.class_6573 lv = this.field_34657.instantiate(arg);
         class_6568.class_6573 lv2 = bl ? this.field_34663.instantiate(arg) : () -> -1.0;
         class_6568.class_6573 lv3 = bl ? this.field_34664.instantiate(arg) : () -> 0.0;
@@ -286,7 +286,7 @@ implements MultiNoiseUtil.MultiNoiseSampler {
                 double m = Math.abs(1.5 * lv5.sample()) - h;
                 e = Math.min(e, Math.max(l, m));
             }
-            return arg.method_38354().apply(i, j, k, d, e += arg2.sample(i, j, k));
+            return arg.method_38354().apply(i, j, k, d, e += columnSampler.calculateNoise(i, j, k));
         };
     }
 
@@ -319,11 +319,11 @@ implements MultiNoiseUtil.MultiNoiseSampler {
         };
     }
 
-    protected int method_38383(int i, int j, class_6576 arg) {
+    protected int method_38383(int i, int j, TerrainNoisePoint terrainNoisePoint) {
         for (int k = this.field_34682 + this.noiseSizeY; k >= this.field_34682; --k) {
             int l = k * this.verticalNoiseResolution;
             double d = -0.703125;
-            double e = this.method_38381(i, l, j, arg, -0.703125, true);
+            double e = this.method_38381(i, l, j, terrainNoisePoint, -0.703125, true);
             if (!(e > 0.390625)) continue;
             return l;
         }
@@ -350,7 +350,7 @@ implements MultiNoiseUtil.MultiNoiseSampler {
         float f = (float)this.method_38401(d, 0.0, e);
         float g = (float)this.method_38404(d, 0.0, e);
         float h = (float)this.method_38407(d, 0.0, e);
-        double l = this.field_34655.getOffset(this.field_34655.createTerrainNoisePoint(f, g, h));
+        double l = this.terrainParameters.getOffset(this.terrainParameters.createNoisePoint(f, g, h));
         return this.method_38378(i, j, k, d, e, f, g, h, l);
     }
 
@@ -360,26 +360,26 @@ implements MultiNoiseUtil.MultiNoiseSampler {
         return MultiNoiseUtil.createNoiseValuePoint((float)this.method_38375(d, m, e), (float)this.method_38396(d, m, e), f, g, (float)n, h);
     }
 
-    public class_6576 method_38376(int i, int j, float f, float g, float h) {
+    public TerrainNoisePoint createTerrainNoisePoint(int x, int z, float continentalness, float weirdness, float erosion) {
         if (this.islandNoise != null) {
-            double d = TheEndBiomeSource.getNoiseAt(this.islandNoise, i / 8, j / 8) - 8.0f;
+            double d = TheEndBiomeSource.getNoiseAt(this.islandNoise, x / 8, z / 8) - 8.0f;
             double e = d > 0.0 ? 0.001953125 : 0.0078125;
-            return new class_6576(d, e, 0.0);
+            return new TerrainNoisePoint(d, e, 0.0);
         }
-        VanillaTerrainParameters.TerrainNoisePoint terrainNoisePoint = this.field_34655.createTerrainNoisePoint(f, h, g);
-        return new class_6576(this.field_34655.getOffset(terrainNoisePoint), this.field_34655.getFactor(terrainNoisePoint), this.field_34655.method_38221(terrainNoisePoint));
+        VanillaTerrainParameters.NoisePoint noisePoint = this.terrainParameters.createNoisePoint(continentalness, erosion, weirdness);
+        return new TerrainNoisePoint(this.terrainParameters.getOffset(noisePoint), this.terrainParameters.getFactor(noisePoint), this.terrainParameters.getPeak(noisePoint));
     }
 
     public double method_38377(int i, int j, int k) {
-        return this.field_34654.sample(i, j, k) * 4.0;
+        return this.shiftNoise.sample(i, j, k) * 4.0;
     }
 
     public double method_38375(double d, double e, double f) {
-        return this.field_34649.sample(d, e, f);
+        return this.temperatureNoise.sample(d, e, f);
     }
 
     public double method_38396(double d, double e, double f) {
-        return this.field_34650.sample(d, e, f);
+        return this.humidityNoise.sample(d, e, f);
     }
 
     public double method_38401(double d, double e, double f) {
@@ -394,7 +394,7 @@ implements MultiNoiseUtil.MultiNoiseSampler {
             double g = d * 0.005;
             return Math.sin(g + 0.5 * Math.sin(g));
         }
-        return this.field_34651.sample(d, e, f);
+        return this.continentalnessNoise.sample(d, e, f);
     }
 
     public double method_38404(double d, double e, double f) {
@@ -409,11 +409,11 @@ implements MultiNoiseUtil.MultiNoiseSampler {
             double g = f * 0.005;
             return Math.sin(g + 0.5 * Math.sin(g));
         }
-        return this.field_34652.sample(d, e, f);
+        return this.erosionNoise.sample(d, e, f);
     }
 
     public double method_38407(double d, double e, double f) {
-        return this.field_34653.sample(d, e, f);
+        return this.weirdnessNoise.sample(d, e, f);
     }
 
     private double method_38398(int i, int j, int k) {

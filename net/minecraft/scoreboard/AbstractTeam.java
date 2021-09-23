@@ -64,7 +64,7 @@ public abstract class AbstractTeam {
             this.value = value;
         }
 
-        public Text getTranslationKey() {
+        public Text getDisplayName() {
             return new TranslatableText("team.collision." + this.name);
         }
 
@@ -97,7 +97,7 @@ public abstract class AbstractTeam {
             this.value = value;
         }
 
-        public Text getTranslationKey() {
+        public Text getDisplayName() {
             return new TranslatableText("team.visibility." + this.name);
         }
 

@@ -25,7 +25,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
  * Applies weights to noise values if they are near structures, placing terrain under them and hollowing out the space above them.
  */
 public class StructureWeightSampler
-implements class_6568.class_6572 {
+implements class_6568.ColumnSampler {
     public static final int field_31461 = 12;
     private static final int field_31462 = 24;
     private static final float[] STRUCTURE_WEIGHT_TABLE = Util.make(new float[13824], array -> {
@@ -75,7 +75,7 @@ implements class_6568.class_6572 {
     }
 
     @Override
-    public double sample(int i, int j, int k) {
+    public double calculateNoise(int i, int j, int k) {
         int m;
         int l;
         double d = 0.0;

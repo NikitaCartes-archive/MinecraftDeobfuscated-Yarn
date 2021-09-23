@@ -78,7 +78,7 @@ extends ChunkManager {
     @Debug
     private SpawnHelper.Info spawnInfo;
 
-    public ServerChunkManager(ServerWorld world, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> supplier) {
+    public ServerChunkManager(ServerWorld world, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, int i, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> supplier) {
         this.world = world;
         this.mainThreadExecutor = new MainThreadExecutor(world);
         this.serverThread = Thread.currentThread();
@@ -89,6 +89,7 @@ extends ChunkManager {
         this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(world, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, chunkGenerator, worldGenerationProgressListener, chunkStatusChangeListener, supplier, viewDistance, bl);
         this.lightingProvider = this.threadedAnvilChunkStorage.getLightingProvider();
         this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
+        this.ticketManager.method_38629(i);
         this.initChunkCaches();
     }
 
@@ -445,6 +446,10 @@ extends ChunkManager {
 
     public void applyViewDistance(int watchDistance) {
         this.threadedAnvilChunkStorage.setViewDistance(watchDistance);
+    }
+
+    public void applySimulationDistance(int i) {
+        this.ticketManager.method_38629(i);
     }
 
     @Override

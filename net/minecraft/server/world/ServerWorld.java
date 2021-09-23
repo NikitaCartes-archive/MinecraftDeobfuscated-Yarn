@@ -198,7 +198,7 @@ implements StructureWorldAccess {
         DataFixer dataFixer = server.getDataFixer();
         EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(worldKey), "entities"), dataFixer, bl, server);
         this.entityManager = new ServerEntityManager<Entity>(Entity.class, new ServerEntityHandler(), chunkDataAccess);
-        this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
+        this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().method_38651(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
@@ -342,6 +342,9 @@ implements StructureWorldAccess {
                 profiler.push("checkDespawn");
                 entity.checkDespawn();
                 profiler.pop();
+                if (!this.chunkManager.threadedAnvilChunkStorage.getTicketManager().method_38630(ChunkPos.toLong(entity.getBlockPos()))) {
+                    return;
+                }
                 Entity entity2 = entity.getVehicle();
                 if (entity2 != null) {
                     if (entity2.isRemoved() || !entity2.hasPassenger((Entity)entity)) {

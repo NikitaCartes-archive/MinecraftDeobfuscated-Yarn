@@ -10,8 +10,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import java.lang.invoke.MethodHandle;
-import java.lang.runtime.ObjectMethods;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -19,12 +17,11 @@ import java.util.concurrent.Semaphore;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
-import net.minecraft.class_6490;
-import net.minecraft.class_6502;
-import net.minecraft.class_6564;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.collection.EmptyPaletteStorage;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.collection.PackedIntegerArray;
+import net.minecraft.util.collection.PaletteStorage;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.thread.AtomicStack;
 import net.minecraft.util.thread.LockHelper;
@@ -33,343 +30,352 @@ import net.minecraft.world.chunk.BiMapPalette;
 import net.minecraft.world.chunk.IdListPalette;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
+import net.minecraft.world.chunk.SingularPalette;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A paletted container stores objects in 3D voxels as small integer indices,
+ * governed by "palettes" that map between these objects and indices.
+ * 
+ * @see Palette
+ */
 public class PalettedContainer<T>
 implements PaletteResizeListener<T> {
     private static final int field_34557 = 0;
-    private final PaletteResizeListener<T> field_34558 = (newSize, added) -> 0;
-    private final IndexedIterable<T> field_34559;
-    private volatile class_6561<T> field_34560;
-    private final class_6563 field_34561;
-    private final Semaphore field_34562 = new Semaphore(1);
+    private final PaletteResizeListener<T> dummyListener = (newSize, added) -> 0;
+    private final IndexedIterable<T> idList;
+    private volatile Data<T> data;
+    private final PaletteProvider paletteProvider;
+    private final Semaphore semaphore = new Semaphore(1);
     @Nullable
-    private final AtomicStack<Pair<Thread, StackTraceElement[]>> field_34563 = null;
+    private final AtomicStack<Pair<Thread, StackTraceElement[]>> lockStack = null;
 
+    /**
+     * Acquires the semaphore on this container, and crashes if it cannot be
+     * acquired.
+     */
     public void lock() {
-        if (this.field_34563 != null) {
+        if (this.lockStack != null) {
             Thread thread = Thread.currentThread();
-            this.field_34563.push(Pair.of(thread, thread.getStackTrace()));
+            this.lockStack.push(Pair.of(thread, thread.getStackTrace()));
         }
-        LockHelper.checkLock(this.field_34562, this.field_34563, "PalettedContainer");
+        LockHelper.checkLock(this.semaphore, this.lockStack, "PalettedContainer");
     }
 
+    /**
+     * Releases the semaphore on this container.
+     */
     public void unlock() {
-        this.field_34562.release();
+        this.semaphore.release();
     }
 
-    public static <T> Codec<PalettedContainer<T>> method_38298(IndexedIterable<T> indexedIterable, Codec<T> codec, class_6563 arg) {
-        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.listOf().fieldOf("palette")).forGetter(class_6562::comp_75), Codec.LONG_STREAM.optionalFieldOf("data").forGetter(class_6562::comp_76)).apply((Applicative<class_6562, ?>)instance, class_6562::new)).comapFlatMap(arg2 -> PalettedContainer.read(indexedIterable, arg, arg2), palettedContainer -> palettedContainer.write(indexedIterable, arg));
+    /**
+     * Creates a codec for a paletted container with a specific palette provider.
+     * 
+     * @return the created codec
+     * 
+     * @param idList the id list to map between objects and full integer IDs
+     * @param provider the palette provider that controls how the data are serialized and what
+     * types of palette are used for what entry bit sizes
+     * @param entryCodec the codec for each entry in the palette
+     */
+    public static <T> Codec<PalettedContainer<T>> createCodec(IndexedIterable<T> idList, Codec<T> entryCodec, PaletteProvider provider) {
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)entryCodec.listOf().fieldOf("palette")).forGetter(Serialized::paletteEntries), Codec.LONG_STREAM.optionalFieldOf("data").forGetter(Serialized::storage)).apply((Applicative<Serialized, ?>)instance, Serialized::new)).comapFlatMap(serialized -> PalettedContainer.read(idList, provider, serialized), container -> container.write(idList, provider));
     }
 
-    public PalettedContainer(IndexedIterable<T> indexedIterable, class_6563 arg, class_6560<T> arg2, class_6490 arg3, List<T> list) {
-        this.field_34559 = indexedIterable;
-        this.field_34561 = arg;
-        Palette<T> palette = arg2.comp_72().create(arg2.comp_73(), indexedIterable, this);
-        list.forEach(palette::getIndex);
-        this.field_34560 = new class_6561<T>(arg2, arg3, palette);
+    public PalettedContainer(IndexedIterable<T> idList, PaletteProvider paletteProvider, DataProvider<T> dataProvider, PaletteStorage storage, List<T> entries) {
+        this.idList = idList;
+        this.paletteProvider = paletteProvider;
+        Palette<T> palette = dataProvider.factory().create(dataProvider.bits(), idList, this);
+        entries.forEach(palette::index);
+        this.data = new Data<T>(dataProvider, storage, palette);
     }
 
-    public PalettedContainer(IndexedIterable<T> indexedIterable, T object, class_6563 arg) {
-        this.field_34561 = arg;
-        this.field_34559 = indexedIterable;
-        this.field_34560 = this.method_38297(null, 0);
-        this.field_34560.field_34565.getIndex(object);
+    public PalettedContainer(IndexedIterable<T> idList, T object, PaletteProvider paletteProvider) {
+        this.paletteProvider = paletteProvider;
+        this.idList = idList;
+        this.data = this.getCompatibleData(null, 0);
+        this.data.palette.index(object);
     }
 
-    private class_6561<T> method_38297(@Nullable class_6561<T> arg, int i) {
-        class_6560<T> lv = this.field_34561.method_38314(this.field_34559, i);
-        if (arg != null && lv.equals(arg.comp_74())) {
-            return arg;
+    /**
+     * {@return a compatible data object for the given entry {@code bits} size}
+     * This may return a new data object or return {@code previousData} if it
+     * can be reused.
+     * 
+     * @param bits the number of bits each entry uses
+     * @param previousData the previous data, may be reused if suitable
+     */
+    private Data<T> getCompatibleData(@Nullable Data<T> previousData, int bits) {
+        DataProvider<T> dataProvider = this.paletteProvider.createDataProvider(this.idList, bits);
+        if (previousData != null && dataProvider.equals(previousData.configuration())) {
+            return previousData;
         }
-        return lv.method_38305(this.field_34559, this, this.field_34561.method_38312(), null);
+        return dataProvider.createData(this.idList, this, this.paletteProvider.getContainerSize(), null);
     }
 
     @Override
     public int onResize(int i, T object) {
-        class_6561<T> lv = this.field_34560;
-        class_6561 lv2 = this.method_38297(lv, i);
-        lv2.method_38308(lv.field_34565, lv.field_34564);
-        this.field_34560 = lv2;
-        return lv2.field_34565.getIndex(object);
+        Data<T> data = this.data;
+        Data data2 = this.getCompatibleData(data, i);
+        data2.importFrom(data.palette, data.storage);
+        this.data = data2;
+        return data2.palette.index(object);
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public T setSync(int x, int y, int z, T value) {
+    public T swap(int x, int y, int z, T value) {
         this.lock();
         try {
-            T t = this.setAndGetOldValue(this.field_34561.method_38313(x, y, z), value);
+            T t = this.swap(this.paletteProvider.computeIndex(x, y, z), value);
             return t;
         } finally {
             this.unlock();
         }
     }
 
-    public T set(int x, int y, int z, T value) {
-        return this.setAndGetOldValue(this.field_34561.method_38313(x, y, z), value);
+    public T swapUnsafe(int x, int y, int z, T value) {
+        return this.swap(this.paletteProvider.computeIndex(x, y, z), value);
     }
 
-    private T setAndGetOldValue(int index, T value) {
-        int i = this.field_34560.field_34565.getIndex(value);
-        int j = this.field_34560.field_34564.setAndGetOldValue(index, i);
-        return this.field_34560.field_34565.getByIndex(j);
+    private T swap(int index, T value) {
+        int i = this.data.palette.index(value);
+        int j = this.data.storage.swap(index, i);
+        return this.data.palette.get(j);
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void method_35321(int i, int j, int k, T object) {
+    public void set(int x, int y, int z, T value) {
         this.lock();
         try {
-            this.set(this.field_34561.method_38313(i, j, k), object);
+            this.set(this.paletteProvider.computeIndex(x, y, z), value);
         } finally {
             this.unlock();
         }
     }
 
-    private void set(int index, T object) {
-        this.field_34560.method_38307(index, object);
+    private void set(int index, T value) {
+        this.data.set(index, value);
     }
 
     public T get(int x, int y, int z) {
-        return this.get(this.field_34561.method_38313(x, y, z));
+        return this.get(this.paletteProvider.computeIndex(x, y, z));
     }
 
     protected T get(int index) {
-        class_6561<T> lv = this.field_34560;
-        return lv.field_34565.getByIndex(lv.field_34564.get(index));
+        Data<T> data = this.data;
+        return data.palette.get(data.storage.get(index));
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void fromPacket(PacketByteBuf buf) {
+    /**
+     * Reads data from the packet byte buffer into this container. Previous data
+     * in this container is discarded.
+     * 
+     * @param buf the packet byte buffer
+     */
+    public void readPacket(PacketByteBuf buf) {
         this.lock();
         try {
             byte i = buf.readByte();
-            class_6561<T> lv = this.method_38297(this.field_34560, i);
-            lv.field_34565.fromPacket(buf);
-            buf.readLongArray(lv.field_34564.getStorage());
-            this.field_34560 = lv;
+            Data<T> data = this.getCompatibleData(this.data, i);
+            data.palette.readPacket(buf);
+            buf.readLongArray(data.storage.getData());
+            this.data = data;
         } finally {
             this.unlock();
         }
     }
 
-    public void toPacket(PacketByteBuf packetByteBuf) {
+    /**
+     * Writes this container to the packet byte buffer.
+     * 
+     * @param buf the packet byte buffer
+     */
+    public void writePacket(PacketByteBuf buf) {
         this.lock();
         try {
-            this.field_34560.method_38309(packetByteBuf);
+            this.data.writePacket(buf);
         } finally {
             this.unlock();
         }
     }
 
-    private static <T> DataResult<PalettedContainer<T>> read(IndexedIterable<T> indexedIterable, class_6563 arg, class_6562<T> arg2) {
-        class_6490 lv2;
-        List<T> list = arg2.comp_75();
-        int i2 = arg.method_38312();
-        int j = arg.method_38315(indexedIterable, list.size());
-        class_6560<T> lv = arg.method_38314(indexedIterable, j);
+    private static <T> DataResult<PalettedContainer<T>> read(IndexedIterable<T> idList, PaletteProvider provider, Serialized<T> serialized) {
+        PaletteStorage paletteStorage;
+        List<T> list = serialized.paletteEntries();
+        int i2 = provider.getContainerSize();
+        int j = provider.getBits(idList, list.size());
+        DataProvider<T> dataProvider = provider.createDataProvider(idList, j);
         if (j == 0) {
-            lv2 = new class_6502(i2);
+            paletteStorage = new EmptyPaletteStorage(i2);
         } else {
-            Optional<LongStream> optional = arg2.comp_76();
+            Optional<LongStream> optional = serialized.storage();
             if (optional.isEmpty()) {
                 return DataResult.error("Missing values for non-zero storage");
             }
             long[] ls = optional.get().toArray();
-            if (lv.comp_72() == class_6563.field_34571) {
-                BiMapPalette<Object> palette = new BiMapPalette<Object>(indexedIterable, j, (i, object) -> 0, list);
-                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, arg.method_38312(), ls);
-                IntStream intStream = IntStream.range(0, packedIntegerArray.getSize()).map(i -> indexedIterable.getRawId(palette.getByIndex(packedIntegerArray.get(i))));
-                lv2 = new PackedIntegerArray(lv.comp_73(), i2, intStream);
+            if (dataProvider.factory() == PaletteProvider.ID_LIST) {
+                BiMapPalette<Object> palette = new BiMapPalette<Object>(idList, j, (i, object) -> 0, list);
+                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, provider.getContainerSize(), ls);
+                IntStream intStream = IntStream.range(0, packedIntegerArray.getSize()).map(i -> idList.getRawId(palette.get(packedIntegerArray.get(i))));
+                paletteStorage = new PackedIntegerArray(dataProvider.bits(), i2, intStream);
             } else {
-                lv2 = new PackedIntegerArray(lv.comp_73(), i2, ls);
+                paletteStorage = new PackedIntegerArray(dataProvider.bits(), i2, ls);
             }
         }
-        return DataResult.success(new PalettedContainer<T>(indexedIterable, arg, lv, lv2, list));
+        return DataResult.success(new PalettedContainer<T>(idList, provider, dataProvider, paletteStorage, list));
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    private class_6562<T> write(IndexedIterable<T> indexedIterable, class_6563 arg) {
+    private Serialized<T> write(IndexedIterable<T> idList, PaletteProvider provider) {
         this.lock();
         try {
             Optional<LongStream> optional;
             int k;
-            BiMapPalette<T> biMapPalette = new BiMapPalette<T>(indexedIterable, this.field_34560.field_34564.getElementBits(), this.field_34558);
+            BiMapPalette<T> biMapPalette = new BiMapPalette<T>(idList, this.data.storage.getElementBits(), this.dummyListener);
             Object object = null;
             int i = -1;
-            int j = arg.method_38312();
+            int j = provider.getContainerSize();
             int[] is = new int[j];
             for (k = 0; k < j; ++k) {
                 T object2 = this.get(k);
                 if (object2 != object) {
                     object = object2;
-                    i = biMapPalette.getIndex(object2);
+                    i = biMapPalette.index(object2);
                 }
                 is[k] = i;
             }
-            k = arg.method_38315(indexedIterable, biMapPalette.getIndexBits());
+            k = provider.getBits(idList, biMapPalette.getSize());
             if (k != 0) {
-                PackedIntegerArray lv = new PackedIntegerArray(k, j);
+                PackedIntegerArray paletteStorage = new PackedIntegerArray(k, j);
                 for (int l = 0; l < is.length; ++l) {
-                    lv.set(l, is[l]);
+                    paletteStorage.set(l, is[l]);
                 }
-                long[] ls = lv.getStorage();
+                long[] ls = paletteStorage.getData();
                 optional = Optional.of(Arrays.stream(ls));
             } else {
                 optional = Optional.empty();
             }
-            class_6562<T> class_65622 = new class_6562<T>(biMapPalette.method_38288(), optional);
-            return class_65622;
+            Serialized<T> serialized = new Serialized<T>(biMapPalette.getElements(), optional);
+            return serialized;
         } finally {
             this.unlock();
         }
     }
 
     public int getPacketSize() {
-        return this.field_34560.method_38306();
+        return this.data.getPacketSize();
     }
 
+    /**
+     * {@return {@code true} if any object in this container's palette matches
+     * this predicate}
+     */
     public boolean hasAny(Predicate<T> predicate) {
-        return this.field_34560.field_34565.accepts(predicate);
+        return this.data.palette.hasAny(predicate);
     }
 
-    public void count(CountConsumer<T> consumer) {
+    public void count(Counter<T> counter) {
         Int2IntOpenHashMap int2IntMap = new Int2IntOpenHashMap();
-        this.field_34560.field_34564.forEach(i -> int2IntMap.put(i, int2IntMap.get(i) + 1));
-        int2IntMap.int2IntEntrySet().forEach(entry -> consumer.accept(this.field_34560.field_34565.getByIndex(entry.getIntKey()), entry.getIntValue()));
+        this.data.storage.forEach(key -> int2IntMap.put(key, int2IntMap.get(key) + 1));
+        int2IntMap.int2IntEntrySet().forEach(entry -> counter.accept(this.data.palette.get(entry.getIntKey()), entry.getIntValue()));
     }
 
-    public static abstract class class_6563 {
-        public static final Palette.class_6559 field_34566 = class_6564::method_38316;
-        public static final Palette.class_6559 field_34567 = ArrayPalette::method_38295;
-        public static final Palette.class_6559 field_34568 = BiMapPalette::method_38287;
-        static final Palette.class_6559 field_34571 = IdListPalette::method_38286;
-        public static final class_6563 field_34569 = new class_6563(4){
+    public static abstract class PaletteProvider {
+        public static final Palette.Factory SINGULAR = SingularPalette::create;
+        public static final Palette.Factory ARRAY = ArrayPalette::create;
+        public static final Palette.Factory BI_MAP = BiMapPalette::create;
+        static final Palette.Factory ID_LIST = IdListPalette::create;
+        public static final PaletteProvider BLOCK_STATE = new PaletteProvider(4){
 
             @Override
-            public <A> class_6560<A> method_38314(IndexedIterable<A> indexedIterable, int i) {
-                return switch (i) {
-                    case 0 -> new class_6560(field_34566, i);
-                    case 1, 2, 3, 4 -> new class_6560(field_34567, 4);
-                    case 5, 6, 7, 8 -> new class_6560(field_34568, i);
-                    default -> new class_6560(field_34571, MathHelper.log2DeBruijn(indexedIterable.size()));
+            public <A> DataProvider<A> createDataProvider(IndexedIterable<A> idList, int bits) {
+                return switch (bits) {
+                    case 0 -> new DataProvider(SINGULAR, bits);
+                    case 1, 2, 3, 4 -> new DataProvider(ARRAY, 4);
+                    case 5, 6, 7, 8 -> new DataProvider(BI_MAP, bits);
+                    default -> new DataProvider(ID_LIST, MathHelper.ceilLog2(idList.size()));
                 };
             }
         };
-        public static final class_6563 field_34570 = new class_6563(2){
+        public static final PaletteProvider BIOME = new PaletteProvider(2){
 
             @Override
-            public <A> class_6560<A> method_38314(IndexedIterable<A> indexedIterable, int i) {
-                return switch (i) {
-                    case 0 -> new class_6560(field_34566, i);
-                    case 1, 2 -> new class_6560(field_34567, i);
-                    default -> new class_6560(field_34571, MathHelper.log2DeBruijn(indexedIterable.size()));
+            public <A> DataProvider<A> createDataProvider(IndexedIterable<A> idList, int bits) {
+                return switch (bits) {
+                    case 0 -> new DataProvider(SINGULAR, bits);
+                    case 1, 2 -> new DataProvider(ARRAY, bits);
+                    default -> new DataProvider(ID_LIST, MathHelper.ceilLog2(idList.size()));
                 };
             }
         };
-        private final int field_34572;
+        private final int edgeBits;
 
-        class_6563(int i) {
-            this.field_34572 = i;
+        PaletteProvider(int edgeBits) {
+            this.edgeBits = edgeBits;
         }
 
-        public int method_38312() {
-            return 1 << this.field_34572 * 3;
+        public int getContainerSize() {
+            return 1 << this.edgeBits * 3;
         }
 
-        public int method_38313(int i, int j, int k) {
-            return (j << this.field_34572 | k) << this.field_34572 | i;
+        public int computeIndex(int x, int y, int z) {
+            return (y << this.edgeBits | z) << this.edgeBits | x;
         }
 
-        public abstract <A> class_6560<A> method_38314(IndexedIterable<A> var1, int var2);
+        public abstract <A> DataProvider<A> createDataProvider(IndexedIterable<A> var1, int var2);
 
-        <A> int method_38315(IndexedIterable<A> indexedIterable, int i) {
-            int j = MathHelper.log2DeBruijn(i);
-            class_6560<A> lv = this.method_38314(indexedIterable, j);
-            return lv.comp_72() == field_34571 ? j : lv.comp_73();
-        }
-    }
-
-    record class_6560<T>(Palette.class_6559 comp_72, int comp_73) {
-        public class_6561<T> method_38305(IndexedIterable<T> indexedIterable, PaletteResizeListener<T> paletteResizeListener, int i, @Nullable long[] ls) {
-            class_6490 lv = this.comp_73 == 0 ? new class_6502(i) : new PackedIntegerArray(this.comp_73, i, ls);
-            Palette<T> palette = this.comp_72.create(this.comp_73, indexedIterable, paletteResizeListener);
-            return new class_6561<T>(this, lv, palette);
+        <A> int getBits(IndexedIterable<A> idList, int size) {
+            int i = MathHelper.ceilLog2(size);
+            DataProvider<A> dataProvider = this.createDataProvider(idList, i);
+            return dataProvider.factory() == ID_LIST ? i : dataProvider.bits();
         }
     }
 
-    static final class class_6561<T>
-    extends Record {
-        private final class_6560<T> comp_74;
-        final class_6490 field_34564;
-        final Palette<T> field_34565;
-
-        class_6561(class_6560<T> arg, class_6490 arg2, Palette<T> palette) {
-            this.comp_74 = arg;
-            this.field_34564 = arg2;
-            this.field_34565 = palette;
+    record DataProvider<T>(Palette.Factory factory, int bits) {
+        public Data<T> createData(IndexedIterable<T> idList, PaletteResizeListener<T> listener, int size, @Nullable long[] storage) {
+            PaletteStorage paletteStorage = this.bits == 0 ? new EmptyPaletteStorage(size) : new PackedIntegerArray(this.bits, size, storage);
+            Palette<T> palette = this.factory.create(this.bits, idList, listener);
+            return new Data<T>(this, paletteStorage, palette);
         }
+    }
 
-        public void method_38308(Palette<T> palette, class_6490 arg) {
-            for (int i = 0; i < arg.getSize(); ++i) {
-                this.method_38307(i, palette.getByIndex(arg.get(i)));
+    record Data<T>(DataProvider<T> configuration, PaletteStorage storage, Palette<T> palette) {
+        public void importFrom(Palette<T> palette, PaletteStorage storage) {
+            for (int i = 0; i < storage.getSize(); ++i) {
+                this.set(i, palette.get(storage.get(i)));
             }
         }
 
-        public void method_38307(int i, T object) {
-            this.field_34564.set(i, this.field_34565.getIndex(object));
+        public void set(int index, T value) {
+            this.storage.set(index, this.palette.index(value));
         }
 
-        public int method_38306() {
-            return 1 + this.field_34565.getPacketSize() + PacketByteBuf.getVarIntLength(this.field_34564.getSize()) + this.field_34564.getStorage().length * 8;
+        public int getPacketSize() {
+            return 1 + this.palette.getPacketSize() + PacketByteBuf.getVarIntLength(this.storage.getSize()) + this.storage.getData().length * 8;
         }
 
-        public void method_38309(PacketByteBuf packetByteBuf) {
-            packetByteBuf.writeByte(this.field_34564.getElementBits());
-            this.field_34565.toPacket(packetByteBuf);
-            packetByteBuf.writeLongArray(this.field_34564.getStorage());
-        }
-
-        @Override
-        public final String toString() {
-            return ObjectMethods.bootstrap("toString", new MethodHandle[]{class_6561.class, "configuration;storage;palette", "comp_74", "field_34564", "field_34565"}, this);
-        }
-
-        @Override
-        public final int hashCode() {
-            return (int)ObjectMethods.bootstrap("hashCode", new MethodHandle[]{class_6561.class, "configuration;storage;palette", "comp_74", "field_34564", "field_34565"}, this);
-        }
-
-        @Override
-        public final boolean equals(Object object) {
-            return (boolean)ObjectMethods.bootstrap("equals", new MethodHandle[]{class_6561.class, "configuration;storage;palette", "comp_74", "field_34564", "field_34565"}, this, object);
-        }
-
-        public class_6560<T> comp_74() {
-            return this.comp_74;
-        }
-
-        public class_6490 method_38310() {
-            return this.field_34564;
-        }
-
-        public Palette<T> method_38311() {
-            return this.field_34565;
+        public void writePacket(PacketByteBuf buf) {
+            buf.writeByte(this.storage.getElementBits());
+            this.palette.writePacket(buf);
+            buf.writeLongArray(this.storage.getData());
         }
     }
 
-    record class_6562<T>(List<T> comp_75, Optional<LongStream> comp_76) {
+    record Serialized<T>(List<T> paletteEntries, Optional<LongStream> storage) {
     }
 
     @FunctionalInterface
-    public static interface CountConsumer<T> {
+    public static interface Counter<T> {
         public void accept(T var1, int var2);
     }
 }

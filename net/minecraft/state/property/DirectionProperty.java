@@ -40,10 +40,10 @@ extends EnumProperty<Direction> {
      * 
      * @see #of(String)
      * 
-     * @param name the name of the property; see {@linkplain Property#name the note on the
-     * name}
      * @param filter the filter which specifies if a value is allowed; required to allow
      * 2 or more values
+     * @param name the name of the property; see {@linkplain Property#name the note on the
+     * name}
      */
     public static DirectionProperty of(String name, Predicate<Direction> filter) {
         return DirectionProperty.of(name, Arrays.stream(Direction.values()).filter(filter).collect(Collectors.toList()));
@@ -54,9 +54,9 @@ extends EnumProperty<Direction> {
      * 
      * @see #of(String)
      * 
+     * @param values the values the property contains; required to have 2 or more values
      * @param name the name of the property; see {@linkplain Property#name the note on the
      * name}
-     * @param values the values the property contains; required to have 2 or more values
      */
     public static DirectionProperty of(String name, Direction ... values) {
         return DirectionProperty.of(name, Lists.newArrayList(values));
@@ -67,9 +67,9 @@ extends EnumProperty<Direction> {
      * 
      * @see #of(String)
      * 
+     * @param values the values the property contains; required to have 2 or more values
      * @param name the name of the property; see {@linkplain Property#name the note on the
      * name}
-     * @param values the values the property contains; required to have 2 or more values
      */
     public static DirectionProperty of(String name, Collection<Direction> values) {
         return new DirectionProperty(name, values);

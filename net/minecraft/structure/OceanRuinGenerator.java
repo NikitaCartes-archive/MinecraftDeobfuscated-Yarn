@@ -13,13 +13,13 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.class_6625;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -137,8 +137,8 @@ public class OceanRuinGenerator {
             this.large = large;
         }
 
-        public Piece(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_TEMPLE, nbt, world, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+        public Piece(StructureManager structureManager, NbtCompound nbt) {
+            super(StructurePieceType.OCEAN_TEMPLE, nbt, structureManager, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
             this.integrity = nbt.getFloat("Integrity");
             this.biomeType = OceanRuinFeature.BiomeType.valueOf(nbt.getString("BiomeType"));
             this.large = nbt.getBoolean("IsLarge");
@@ -149,8 +149,8 @@ public class OceanRuinGenerator {
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putString("Rot", this.placementData.getRotation().name());
             nbt.putFloat("Integrity", this.integrity);
             nbt.putString("BiomeType", this.biomeType.toString());
@@ -180,13 +180,13 @@ public class OceanRuinGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.placementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(this.integrity)).addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
             int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
             this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
             BlockPos blockPos = Structure.transformAround(new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.NONE, this.placementData.getRotation(), BlockPos.ORIGIN).add(this.pos);
             this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, world, blockPos), this.pos.getZ());
-            return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+            super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
         }
 
         private int method_14829(BlockPos start, BlockView world, BlockPos end) {

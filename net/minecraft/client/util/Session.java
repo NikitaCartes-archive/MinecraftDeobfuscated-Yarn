@@ -8,6 +8,7 @@ import com.mojang.util.UUIDTypeAdapter;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,13 +21,17 @@ public class Session {
     private final String username;
     private final String uuid;
     private final String accessToken;
+    private final Optional<String> xuid;
+    private final Optional<String> clientId;
     private final AccountType accountType;
 
-    public Session(String username, String uuid, String accessToken, String accountType) {
+    public Session(String username, String uuid, String accessToken, Optional<String> xuid, Optional<String> clientId, AccountType accountType) {
         this.username = username;
         this.uuid = uuid;
         this.accessToken = accessToken;
-        this.accountType = AccountType.byName(accountType);
+        this.xuid = xuid;
+        this.clientId = clientId;
+        this.accountType = accountType;
     }
 
     public String getSessionId() {
@@ -45,6 +50,14 @@ public class Session {
         return this.accessToken;
     }
 
+    public Optional<String> getClientId() {
+        return this.clientId;
+    }
+
+    public Optional<String> getXuid() {
+        return this.xuid;
+    }
+
     public GameProfile getProfile() {
         try {
             UUID uUID = UUIDTypeAdapter.fromString(this.getUuid());
@@ -61,7 +74,8 @@ public class Session {
     @Environment(value=EnvType.CLIENT)
     public static enum AccountType {
         LEGACY("legacy"),
-        MOJANG("mojang");
+        MOJANG("mojang"),
+        MSA("msa");
 
         private static final Map<String, AccountType> BY_NAME;
         private final String name;
@@ -71,12 +85,16 @@ public class Session {
         }
 
         @Nullable
-        public static AccountType byName(String string) {
-            return BY_NAME.get(string.toLowerCase(Locale.ROOT));
+        public static AccountType byName(String name) {
+            return BY_NAME.get(name.toLowerCase(Locale.ROOT));
+        }
+
+        public String getName() {
+            return this.name;
         }
 
         static {
-            BY_NAME = Arrays.stream(AccountType.values()).collect(Collectors.toMap(accountType -> accountType.name, Function.identity()));
+            BY_NAME = Arrays.stream(AccountType.values()).collect(Collectors.toMap(type -> type.name, Function.identity()));
         }
     }
 }

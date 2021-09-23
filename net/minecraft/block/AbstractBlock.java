@@ -124,12 +124,12 @@ public abstract class AbstractBlock {
      * 
      * @return the new state of this block
      * 
-     * @param state the state of this block
-     * @param direction the direction from this block to the neighbor
      * @param neighborState the state of the updated neighbor block
-     * @param world the world
-     * @param pos the position of this block
+     * @param direction the direction from this block to the neighbor
+     * @param state the state of this block
      * @param neighborPos the position of the neighbor block
+     * @param pos the position of this block
+     * @param world the world
      */
     @Deprecated
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {

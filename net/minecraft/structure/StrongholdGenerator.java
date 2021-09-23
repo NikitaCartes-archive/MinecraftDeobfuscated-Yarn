@@ -22,10 +22,10 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
+import net.minecraft.class_6625;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePiecesHolder;
@@ -203,15 +203,15 @@ public class StrongholdGenerator {
             this.rightExitExists = random.nextInt(2) == 0;
         }
 
-        public Corridor(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_CORRIDOR, nbt);
-            this.leftExitExists = nbt.getBoolean("Left");
-            this.rightExitExists = nbt.getBoolean("Right");
+        public Corridor(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_CORRIDOR, nbtCompound);
+            this.leftExitExists = nbtCompound.getBoolean("Left");
+            this.rightExitExists = nbtCompound.getBoolean("Right");
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putBoolean("Left", this.leftExitExists);
             nbt.putBoolean("Right", this.rightExitExists);
         }
@@ -236,7 +236,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 4, 6, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.generateEntrance(world, random, boundingBox, Piece.EntranceType.OPENING, 1, 1, 6);
@@ -252,7 +252,6 @@ public class StrongholdGenerator {
             if (this.rightExitExists) {
                 this.fillWithOutline(world, boundingBox, 4, 1, 2, 4, 3, 4, AIR, AIR, false);
             }
-            return true;
         }
     }
 
@@ -268,8 +267,8 @@ public class StrongholdGenerator {
             this.entryDoor = this.getRandomEntrance(random);
         }
 
-        public PrisonHall(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_PRISON_HALL, nbt);
+        public PrisonHall(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_PRISON_HALL, nbtCompound);
         }
 
         @Override
@@ -286,7 +285,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 8, 4, 10, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.fillWithOutline(world, boundingBox, 1, 1, 10, 3, 3, 10, AIR, AIR, false);
@@ -310,7 +309,6 @@ public class StrongholdGenerator {
             this.addBlock(world, blockState2, 4, 2, 2, boundingBox);
             this.addBlock(world, blockState, 4, 1, 8, boundingBox);
             this.addBlock(world, blockState2, 4, 2, 8, boundingBox);
-            return true;
         }
     }
 
@@ -322,8 +320,8 @@ public class StrongholdGenerator {
             this.entryDoor = this.getRandomEntrance(random);
         }
 
-        public LeftTurn(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_LEFT_TURN, nbt);
+        public LeftTurn(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_LEFT_TURN, nbtCompound);
         }
 
         @Override
@@ -345,7 +343,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 4, 4, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, boundingBox, this.entryDoor, 1, 1, 0);
             Direction direction = this.getFacing();
@@ -354,7 +352,6 @@ public class StrongholdGenerator {
             } else {
                 this.fillWithOutline(world, boundingBox, 4, 1, 1, 4, 3, 3, AIR, AIR, false);
             }
-            return true;
         }
     }
 
@@ -366,8 +363,8 @@ public class StrongholdGenerator {
             this.entryDoor = this.getRandomEntrance(random);
         }
 
-        public RightTurn(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_RIGHT_TURN, nbt);
+        public RightTurn(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_RIGHT_TURN, nbtCompound);
         }
 
         @Override
@@ -389,7 +386,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 4, 4, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, boundingBox, this.entryDoor, 1, 1, 0);
             Direction direction = this.getFacing();
@@ -398,7 +395,6 @@ public class StrongholdGenerator {
             } else {
                 this.fillWithOutline(world, boundingBox, 0, 1, 1, 0, 3, 3, AIR, AIR, false);
             }
-            return true;
         }
     }
 
@@ -416,14 +412,14 @@ public class StrongholdGenerator {
             this.roomType = random.nextInt(5);
         }
 
-        public SquareRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, nbt);
-            this.roomType = nbt.getInt("Type");
+        public SquareRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, nbtCompound);
+            this.roomType = nbtCompound.getInt("Type");
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putInt("Type", this.roomType);
         }
 
@@ -443,7 +439,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 10, 6, 10, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, boundingBox, this.entryDoor, 4, 1, 0);
             this.fillWithOutline(world, boundingBox, 4, 1, 10, 6, 3, 10, AIR, AIR, false);
@@ -527,7 +523,6 @@ public class StrongholdGenerator {
                     this.addChest(world, boundingBox, random, 3, 4, 8, LootTables.STRONGHOLD_CROSSING_CHEST);
                 }
             }
-            return true;
         }
     }
 
@@ -543,8 +538,8 @@ public class StrongholdGenerator {
             this.entryDoor = this.getRandomEntrance(random);
         }
 
-        public Stairs(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_STAIRS, nbt);
+        public Stairs(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_STAIRS, nbtCompound);
         }
 
         @Override
@@ -561,7 +556,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 10, 7, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, boundingBox, this.entryDoor, 1, 7, 0);
             this.generateEntrance(world, random, boundingBox, Piece.EntranceType.OPENING, 1, 1, 7);
@@ -575,7 +570,6 @@ public class StrongholdGenerator {
                 this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 2, 5 - i, 1 + i, boundingBox);
                 this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 3, 5 - i, 1 + i, boundingBox);
             }
-            return true;
         }
     }
 
@@ -605,13 +599,13 @@ public class StrongholdGenerator {
             this.isStructureStart = nbtCompound.getBoolean("Source");
         }
 
-        public SpiralStaircase(ServerWorld world, NbtCompound nbt) {
-            this(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, nbt);
+        public SpiralStaircase(NbtCompound nbtCompound) {
+            this(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, nbtCompound);
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putBoolean("Source", this.isStructureStart);
         }
 
@@ -632,7 +626,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 10, 4, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, boundingBox, this.entryDoor, 1, 7, 0);
             this.generateEntrance(world, random, boundingBox, Piece.EntranceType.OPENING, 1, 1, 4);
@@ -653,7 +647,6 @@ public class StrongholdGenerator {
             this.addBlock(world, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), 1, 2, 1, boundingBox);
             this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 1, 1, 2, boundingBox);
             this.addBlock(world, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), 1, 1, 3, boundingBox);
-            return true;
         }
     }
 
@@ -677,17 +670,17 @@ public class StrongholdGenerator {
             this.upperRightExists = random.nextInt(3) > 0;
         }
 
-        public FiveWayCrossing(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, nbt);
-            this.lowerLeftExists = nbt.getBoolean("leftLow");
-            this.upperLeftExists = nbt.getBoolean("leftHigh");
-            this.lowerRightExists = nbt.getBoolean("rightLow");
-            this.upperRightExists = nbt.getBoolean("rightHigh");
+        public FiveWayCrossing(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, nbtCompound);
+            this.lowerLeftExists = nbtCompound.getBoolean("leftLow");
+            this.upperLeftExists = nbtCompound.getBoolean("leftHigh");
+            this.lowerRightExists = nbtCompound.getBoolean("rightLow");
+            this.upperRightExists = nbtCompound.getBoolean("rightHigh");
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putBoolean("leftLow", this.lowerLeftExists);
             nbt.putBoolean("leftHigh", this.upperLeftExists);
             nbt.putBoolean("rightLow", this.lowerRightExists);
@@ -727,7 +720,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 9, 8, 10, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, boundingBox, this.entryDoor, 4, 3, 0);
             if (this.lowerLeftExists) {
@@ -757,7 +750,6 @@ public class StrongholdGenerator {
             this.fillWithOutline(world, boundingBox, 8, 5, 7, 8, 5, 9, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
             this.fillWithOutline(world, boundingBox, 5, 5, 7, 7, 5, 9, (BlockState)Blocks.SMOOTH_STONE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.DOUBLE), (BlockState)Blocks.SMOOTH_STONE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.DOUBLE), false);
             this.addBlock(world, (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH), 6, 5, 6, boundingBox);
-            return true;
         }
     }
 
@@ -774,14 +766,14 @@ public class StrongholdGenerator {
             this.entryDoor = this.getRandomEntrance(random);
         }
 
-        public ChestCorridor(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, nbt);
-            this.chestGenerated = nbt.getBoolean("Chest");
+        public ChestCorridor(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, nbtCompound);
+            this.chestGenerated = nbtCompound.getBoolean("Chest");
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putBoolean("Chest", this.chestGenerated);
         }
 
@@ -799,7 +791,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 4, 4, 6, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.generateEntrance(world, random, boundingBox, Piece.EntranceType.OPENING, 1, 1, 6);
@@ -815,7 +807,6 @@ public class StrongholdGenerator {
                 this.chestGenerated = true;
                 this.addChest(world, boundingBox, random, 3, 2, 3, LootTables.STRONGHOLD_CORRIDOR_CHEST);
             }
-            return true;
         }
     }
 
@@ -834,14 +825,14 @@ public class StrongholdGenerator {
             this.tall = boundingBox.getBlockCountY() > 6;
         }
 
-        public Library(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_LIBRARY, nbt);
-            this.tall = nbt.getBoolean("Tall");
+        public Library(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_LIBRARY, nbtCompound);
+            this.tall = nbtCompound.getBoolean("Tall");
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putBoolean("Tall", this.tall);
         }
 
@@ -854,7 +845,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             int l;
             int i = 11;
             if (!this.tall) {
@@ -947,7 +938,6 @@ public class StrongholdGenerator {
                 this.addBlock(world, AIR, 12, 9, 1, boundingBox);
                 this.addChest(world, boundingBox, random, 12, 8, 1, LootTables.STRONGHOLD_LIBRARY_CHEST);
             }
-            return true;
         }
     }
 
@@ -963,14 +953,14 @@ public class StrongholdGenerator {
             this.setOrientation(orientation);
         }
 
-        public PortalRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, nbt);
-            this.spawnerPlaced = nbt.getBoolean("Mob");
+        public PortalRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, nbtCompound);
+            this.spawnerPlaced = nbtCompound.getBoolean("Mob");
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putBoolean("Mob", this.spawnerPlaced);
         }
 
@@ -990,7 +980,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             BlockPos.Mutable blockPos;
             int j;
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 10, 7, 15, false, random, STONE_BRICK_RANDOMIZER);
@@ -1066,7 +1056,6 @@ public class StrongholdGenerator {
                     ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.SILVERFISH);
                 }
             }
-            return true;
         }
     }
 
@@ -1089,7 +1078,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
             nbt.putString("EntryDoor", this.entryDoor.name());
         }
 
@@ -1246,7 +1235,7 @@ public class StrongholdGenerator {
             super(StructurePieceType.STRONGHOLD_START, 0, i, j, Start.getRandomHorizontalDirection(random));
         }
 
-        public Start(ServerWorld serverWorld, NbtCompound nbtCompound) {
+        public Start(NbtCompound nbtCompound) {
             super(StructurePieceType.STRONGHOLD_START, nbtCompound);
         }
 
@@ -1269,14 +1258,14 @@ public class StrongholdGenerator {
             this.length = orientation == Direction.NORTH || orientation == Direction.SOUTH ? boundingBox.getBlockCountZ() : boundingBox.getBlockCountX();
         }
 
-        public SmallCorridor(ServerWorld serverWorld, NbtCompound nbt) {
-            super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, nbt);
-            this.length = nbt.getInt("Steps");
+        public SmallCorridor(NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, nbtCompound);
+            this.length = nbtCompound.getInt("Steps");
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putInt("Steps", this.length);
         }
 
@@ -1298,7 +1287,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             for (int i = 0; i < this.length; ++i) {
                 this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 0, 0, i, boundingBox);
                 this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 1, 0, i, boundingBox);
@@ -1318,7 +1307,6 @@ public class StrongholdGenerator {
                 this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 3, 4, i, boundingBox);
                 this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 4, 4, i, boundingBox);
             }
-            return true;
         }
     }
 

@@ -7,9 +7,9 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_6625;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.math.BlockBox;
@@ -30,16 +30,16 @@ public class BuriedTreasureGenerator {
             super(StructurePieceType.BURIED_TREASURE, 0, new BlockBox(pos));
         }
 
-        public Piece(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.BURIED_TREASURE, nbt);
+        public Piece(NbtCompound nbtCompound) {
+            super(StructurePieceType.BURIED_TREASURE, nbtCompound);
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.getMinX(), this.boundingBox.getMinZ());
             BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.getMinX(), i, this.boundingBox.getMinZ());
             while (mutable.getY() > world.getBottomY()) {
@@ -60,11 +60,11 @@ public class BuriedTreasureGenerator {
                         world.setBlockState((BlockPos)blockPos, blockState3, Block.NOTIFY_ALL);
                     }
                     this.boundingBox = new BlockBox(mutable);
-                    return this.addChest(world, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
+                    this.addChest(world, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
+                    return;
                 }
                 mutable.move(0, -1, 0);
             }
-            return false;
         }
 
         private boolean isLiquid(BlockState state) {

@@ -198,8 +198,8 @@ public class EnchantmentHelper {
      * {@return the highest level of the passed enchantment in the enchantment's
      * applicable equipment slots' item stacks}
      * 
-     * @param enchantment the enchantment
      * @param entity the entity whose equipment slots are checked
+     * @param enchantment the enchantment
      */
     public static int getEquipmentLevel(Enchantment enchantment, LivingEntity entity) {
         Collection<ItemStack> iterable = enchantment.getEquipment(entity).values();
@@ -302,9 +302,9 @@ public class EnchantmentHelper {
      * <p>If multiple equipment slots' item stacks are valid, a random pair is
      * returned.
      * 
+     * @param condition extra conditions for the item stack to pass for selection
      * @param enchantment the enchantment the equipped item stack must have
      * @param entity the entity to choose equipments from
-     * @param condition extra conditions for the item stack to pass for selection
      */
     @Nullable
     public static Map.Entry<EquipmentSlot, ItemStack> chooseEquipmentWith(Enchantment enchantment, LivingEntity entity, Predicate<ItemStack> condition) {
@@ -352,10 +352,10 @@ public class EnchantmentHelper {
     /**
      * Enchants the {@code target} item stack and returns it.
      * 
-     * @param random the seed
-     * @param target the item stack to enchant
      * @param level the experience level
      * @param treasureAllowed whether treasure enchantments may appear
+     * @param random the seed
+     * @param target the item stack to enchant
      */
     public static ItemStack enchant(Random random, ItemStack target, int level, boolean treasureAllowed) {
         List<EnchantmentLevelEntry> list = EnchantmentHelper.generateEnchantments(random, target, level, treasureAllowed);

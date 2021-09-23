@@ -924,8 +924,8 @@ extends Entity {
      * net.minecraft.client.network.ClientPlayNetworkHandler#onEntityStatusEffect
      * reception} of the status effect packet.
      * 
-     * @param effect the effect to set
      * @param source the source entity or {@code null} for non-entity sources
+     * @param effect the effect to set
      */
     public void setStatusEffect(StatusEffectInstance effect, @Nullable Entity source) {
         if (!this.canHaveStatusEffect(effect)) {

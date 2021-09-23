@@ -57,7 +57,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.imageio.ImageIO;
-import jdk.jfr.FlightRecorder;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
@@ -131,9 +130,8 @@ import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.RecordDumper;
 import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
-import net.minecraft.util.profiling.jfr.JfrProfiler;
-import net.minecraft.util.profiling.jfr.event.ticking.ServerTickTimeEvent;
-import net.minecraft.util.profiling.jfr.event.worldgen.WorldLoadFinishedEvent;
+import net.minecraft.util.profiling.jfr.Finishable;
+import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -200,6 +198,7 @@ implements SnooperListener,
 CommandOutput,
 AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
+    public static final String field_34982 = "vanilla";
     private static final float field_33212 = 0.8f;
     private static final int field_33213 = 100;
     public static final int field_33206 = 50;
@@ -292,6 +291,9 @@ AutoCloseable {
         AtomicReference<MinecraftServer> atomicReference = new AtomicReference<MinecraftServer>();
         Thread thread2 = new Thread(() -> ((MinecraftServer)atomicReference.get()).runServer(), "Server thread");
         thread2.setUncaughtExceptionHandler((thread, throwable) -> LOGGER.error(throwable));
+        if (Runtime.getRuntime().availableProcessors() > 4) {
+            thread2.setPriority(8);
+        }
         MinecraftServer minecraftServer = (MinecraftServer)serverFactory.apply(thread2);
         atomicReference.set(minecraftServer);
         thread2.start();
@@ -335,27 +337,23 @@ AutoCloseable {
     protected abstract boolean setupServer() throws IOException;
 
     protected void loadWorld() {
-        if (!FlightRecorder.isAvailable() || !JfrProfiler.isProfiling()) {
+        if (!FlightProfiler.INSTANCE.isProfiling()) {
             // empty if block
         }
         boolean bl = false;
-        WorldLoadFinishedEvent worldLoadFinishedEvent2 = Util.make(new WorldLoadFinishedEvent(), worldLoadFinishedEvent -> {
-            if (worldLoadFinishedEvent.isEnabled()) {
-                worldLoadFinishedEvent.begin();
-            }
-        });
+        Finishable finishable = FlightProfiler.INSTANCE.startWorldLoadProfiling();
         this.loadWorldResourcePack();
         this.saveProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
         WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
         this.createWorlds(worldGenerationProgressListener);
         this.updateDifficulty();
         this.prepareStartRegion(worldGenerationProgressListener);
-        if (worldLoadFinishedEvent2.shouldCommit()) {
-            worldLoadFinishedEvent2.commit();
+        if (finishable != null) {
+            finishable.finish();
         }
         if (bl) {
             try {
-                JfrProfiler.stop();
+                FlightProfiler.INSTANCE.stop();
             } catch (Throwable throwable) {
                 LOGGER.warn("Failed to stop JFR profiling", throwable);
             }
@@ -651,7 +649,6 @@ AutoCloseable {
                 this.metadata.setDescription(new LiteralText(this.motd));
                 this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
                 this.setFavicon(this.metadata);
-                this.method_38582();
                 while (this.running) {
                     long l = Util.getMeasuringTimeMs() - this.timeReference;
                     if (l > 2000L && this.timeReference - this.lastTimeReference >= 15000L) {
@@ -675,6 +672,7 @@ AutoCloseable {
                     this.profiler.pop();
                     this.endTickMetrics();
                     this.loading = true;
+                    FlightProfiler.INSTANCE.onTick(this.tickTime);
                 }
             } else {
                 this.setCrashReport(null);
@@ -700,15 +698,6 @@ AutoCloseable {
                 this.exit();
             }
         }
-    }
-
-    private void method_38582() {
-        FlightRecorder.addPeriodicEvent(ServerTickTimeEvent.class, () -> {
-            ServerTickTimeEvent serverTickTimeEvent = new ServerTickTimeEvent(this.getTickTime());
-            if (serverTickTimeEvent.shouldCommit()) {
-                serverTickTimeEvent.commit();
-            }
-        });
     }
 
     private boolean shouldKeepTicking() {
@@ -925,7 +914,7 @@ AutoCloseable {
 
     @DontObfuscate
     public String getServerModName() {
-        return "vanilla";
+        return field_34982;
     }
 
     public SystemDetails addSystemDetails(SystemDetails details) {
@@ -1244,9 +1233,9 @@ AutoCloseable {
      * 
      * @return whether the server was successfully opened to LAN
      * 
+     * @param port the port to open up to LAN connections
      * @param gameMode the game mode connecting players will have set by default
      * @param cheatsAllowed whether players on the server have operator permissions
-     * @param port the port to open up to LAN connections
      */
     public boolean openToLan(@Nullable GameMode gameMode, boolean cheatsAllowed, int port) {
         return false;
@@ -1378,8 +1367,8 @@ AutoCloseable {
     public static DataPackSettings loadDataPacks(ResourcePackManager resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode) {
         resourcePackManager.scanPacks();
         if (safeMode) {
-            resourcePackManager.setEnabledProfiles(Collections.singleton("vanilla"));
-            return new DataPackSettings(ImmutableList.of("vanilla"), ImmutableList.of());
+            resourcePackManager.setEnabledProfiles(Collections.singleton(field_34982));
+            return new DataPackSettings(ImmutableList.of(field_34982), ImmutableList.of());
         }
         LinkedHashSet<String> set = Sets.newLinkedHashSet();
         for (String string : dataPackSettings.getEnabled()) {
@@ -1397,7 +1386,7 @@ AutoCloseable {
         }
         if (set.isEmpty()) {
             LOGGER.info("No datapacks selected, forcing vanilla");
-            set.add("vanilla");
+            set.add(field_34982);
         }
         resourcePackManager.setEnabledProfiles(set);
         return MinecraftServer.createDataPackSettings(resourcePackManager);

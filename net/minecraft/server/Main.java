@@ -51,7 +51,8 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.profiling.jfr.JfrProfiler;
+import net.minecraft.util.profiling.jfr.FlightProfiler;
+import net.minecraft.util.profiling.jfr.InstanceType;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
@@ -95,9 +96,10 @@ public class Main {
                 optionParser.printHelpOn(System.err);
                 return;
             }
+            FlightProfiler.INSTANCE.registerEvents();
             CrashReport.initCrashReport();
             if (optionSet.has(optionSpec14)) {
-                JfrProfiler.start(JfrProfiler.InstanceType.SERVER);
+                FlightProfiler.INSTANCE.start(InstanceType.SERVER);
             }
             Bootstrap.initialize();
             Bootstrap.logMissing();

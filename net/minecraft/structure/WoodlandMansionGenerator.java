@@ -12,12 +12,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.class_6625;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -977,8 +977,8 @@ public class WoodlandMansionGenerator {
             super(StructurePieceType.WOODLAND_MANSION, 0, structureManager, Piece.getId(template), template, Piece.createPlacementData(mirror, rotation), pos);
         }
 
-        public Piece(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.WOODLAND_MANSION, nbt, world, (Identifier identifier) -> Piece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot"))));
+        public Piece(StructureManager structureManager, NbtCompound nbt) {
+            super(StructurePieceType.WOODLAND_MANSION, nbt, structureManager, (Identifier identifier) -> Piece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot"))));
         }
 
         @Override
@@ -995,8 +995,8 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putString("Rot", this.placementData.getRotation().name());
             nbt.putString("Mi", this.placementData.getMirror().name());
         }

@@ -47,7 +47,7 @@ public abstract class BiomeSource {
     }
 
     protected BiomeSource(List<Biome> list) {
-        record class_6543(int comp_68, ConfiguredFeature<?, ?> comp_69) {
+        record class_6543(int step, ConfiguredFeature<?, ?> feature) {
         }
         ArrayList<class_6543> list2;
         this.biomes = list;
@@ -86,7 +86,7 @@ public abstract class BiomeSource {
         int j = 0;
         while (j < i) {
             int k = j++;
-            builder.add(list2.stream().filter(arg -> arg.comp_68() == k).map(class_6543::comp_69).collect(ImmutableList.toImmutableList()));
+            builder.add(list2.stream().filter(arg -> arg.step() == k).map(class_6543::feature).collect(ImmutableList.toImmutableList()));
         }
         this.field_34469 = builder.build();
     }
@@ -116,7 +116,7 @@ public abstract class BiomeSource {
                     int u = i + s;
                     int v = j + t;
                     int w = k + r;
-                    set.add(this.method_38109(u, v, w, multiNoiseSampler));
+                    set.add(this.getBiome(u, v, w, multiNoiseSampler));
                 }
             }
         }
@@ -124,12 +124,12 @@ public abstract class BiomeSource {
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<Biome> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
-        return this.locateBiome(x, y, z, radius, 1, predicate, random, false, multiNoiseSampler);
+    public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<Biome> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+        return this.locateBiome(x, y, z, radius, 1, predicate, random, false, noiseSampler);
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         int o;
         int j = BiomeCoords.fromBlock(x);
         int k = BiomeCoords.fromBlock(z);
@@ -150,7 +150,7 @@ public abstract class BiomeSource {
                         boolean bl4 = bl3 = Math.abs(r) == p;
                         if (!bl3 && !bl2) continue;
                     }
-                    if (!predicate.test(this.method_38109(s = j + r, m, t = k + q, multiNoiseSampler))) continue;
+                    if (!predicate.test(this.getBiome(s = j + r, m, t = k + q, noiseSampler))) continue;
                     if (blockPos == null || random.nextInt(n + 1) == 0) {
                         blockPos = new BlockPos(BiomeCoords.toBlock(s), y, BiomeCoords.toBlock(t));
                         if (bl) {
@@ -165,13 +165,13 @@ public abstract class BiomeSource {
         return blockPos;
     }
 
-    public abstract Biome method_38109(int var1, int var2, int var3, MultiNoiseUtil.MultiNoiseSampler var4);
+    public abstract Biome getBiome(int var1, int var2, int var3, MultiNoiseUtil.MultiNoiseSampler var4);
 
     public boolean method_38113(BlockState blockState) {
         return this.topMaterials.contains(blockState);
     }
 
-    public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+    public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
     }
 
     public ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> method_38115() {

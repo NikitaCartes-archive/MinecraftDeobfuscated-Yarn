@@ -13,11 +13,11 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_6625;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.math.BlockBox;
@@ -233,12 +233,12 @@ public class OceanMonumentGenerator {
             super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, orientation, 1, box);
         }
 
-        public Penthouse(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, nbt);
+        public Penthouse(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             int i;
             this.fillWithOutline(world, boundingBox, 2, -1, 2, 11, -1, 11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(world, boundingBox, 0, -1, 0, 1, -1, 11, PRISMARINE, PRISMARINE, false);
@@ -276,7 +276,6 @@ public class OceanMonumentGenerator {
             this.fillWithOutline(world, boundingBox, 6, -1, 7, 7, -1, 8, DARK_PRISMARINE, DARK_PRISMARINE, false);
             this.setAirAndWater(world, boundingBox, 6, -1, 3, 7, -1, 4);
             this.spawnElderGuardian(world, boundingBox, 6, 1, 6);
-            return true;
         }
     }
 
@@ -289,12 +288,12 @@ public class OceanMonumentGenerator {
             this.field_14481 = i & 1;
         }
 
-        public WingRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, nbt);
+        public WingRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             if (this.field_14481 == 0) {
                 int i;
                 for (i = 0; i < 4; ++i) {
@@ -375,7 +374,6 @@ public class OceanMonumentGenerator {
                 this.fillWithOutline(world, boundingBox, 14, 3, 8, 14, 3, 13, DARK_PRISMARINE, DARK_PRISMARINE, false);
                 this.spawnElderGuardian(world, boundingBox, 11, 5, 13);
             }
-            return true;
         }
     }
 
@@ -385,12 +383,12 @@ public class OceanMonumentGenerator {
             super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, 1, orientation, setting, 2, 2, 2);
         }
 
-        public CoreRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, nbt);
+        public CoreRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillArea(world, boundingBox, 1, 8, 0, 14, 8, 14, PRISMARINE);
             int i = 7;
             BlockState blockState = PRISMARINE_BRICKS;
@@ -449,7 +447,6 @@ public class OceanMonumentGenerator {
             this.fillWithOutline(world, boundingBox, 3, 1, 13, 3, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(world, boundingBox, 13, 1, 12, 13, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(world, boundingBox, 12, 1, 13, 12, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-            return true;
         }
     }
 
@@ -459,12 +456,12 @@ public class OceanMonumentGenerator {
             super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, 1, orientation, setting, 1, 2, 2);
         }
 
-        public DoubleYZRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, nbt);
+        public DoubleYZRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             BlockState blockState;
             int i;
             PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
@@ -546,7 +543,6 @@ public class OceanMonumentGenerator {
                 this.fillWithOutline(world, boundingBox, 6, 1, 10, 6, 3, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 this.fillWithOutline(world, boundingBox, 6, 1, 13, 6, 3, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             }
-            return true;
         }
     }
 
@@ -556,12 +552,12 @@ public class OceanMonumentGenerator {
             super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, 1, orientation, setting, 2, 2, 1);
         }
 
-        public DoubleXYRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, nbt);
+        public DoubleXYRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
             PieceSetting pieceSetting2 = this.setting;
             PieceSetting pieceSetting3 = pieceSetting2.neighbors[Direction.UP.getId()];
@@ -645,7 +641,6 @@ public class OceanMonumentGenerator {
             if (pieceSetting4.neighborPresences[Direction.EAST.getId()]) {
                 this.setAirAndWater(world, boundingBox, 15, 5, 3, 15, 6, 4);
             }
-            return true;
         }
     }
 
@@ -655,12 +650,12 @@ public class OceanMonumentGenerator {
             super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, 1, orientation, setting, 1, 1, 2);
         }
 
-        public DoubleZRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, nbt);
+        public DoubleZRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
             PieceSetting pieceSetting2 = this.setting;
             if (this.setting.roomIndex / 25 > 0) {
@@ -727,7 +722,6 @@ public class OceanMonumentGenerator {
             if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
                 this.setAirAndWater(world, boundingBox, 7, 1, 11, 7, 2, 12);
             }
-            return true;
         }
     }
 
@@ -737,12 +731,12 @@ public class OceanMonumentGenerator {
             super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, 1, orientation, setting, 2, 1, 1);
         }
 
-        public DoubleXRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, nbt);
+        public DoubleXRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
             PieceSetting pieceSetting2 = this.setting;
             if (this.setting.roomIndex / 25 > 0) {
@@ -790,7 +784,6 @@ public class OceanMonumentGenerator {
             if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
                 this.setAirAndWater(world, boundingBox, 15, 1, 3, 15, 2, 4);
             }
-            return true;
         }
     }
 
@@ -800,12 +793,12 @@ public class OceanMonumentGenerator {
             super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, 1, orientation, setting, 1, 2, 1);
         }
 
-        public DoubleYRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, nbt);
+        public DoubleYRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             if (this.setting.roomIndex / 25 > 0) {
                 this.method_14774(world, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
             }
@@ -865,7 +858,6 @@ public class OceanMonumentGenerator {
                 }
                 pieceSetting2 = pieceSetting;
             }
-            return true;
         }
     }
 
@@ -875,12 +867,12 @@ public class OceanMonumentGenerator {
             super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, 1, orientation, setting, 1, 1, 1);
         }
 
-        public SimpleRoomTop(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, nbt);
+        public SimpleRoomTop(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             if (this.setting.roomIndex / 25 > 0) {
                 this.method_14774(world, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
             }
@@ -914,7 +906,6 @@ public class OceanMonumentGenerator {
             if (this.setting.neighborPresences[Direction.SOUTH.getId()]) {
                 this.setAirAndWater(world, boundingBox, 3, 1, 0, 4, 2, 0);
             }
-            return true;
         }
     }
 
@@ -927,12 +918,12 @@ public class OceanMonumentGenerator {
             this.field_14480 = random.nextInt(3);
         }
 
-        public SimpleRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, nbt);
+        public SimpleRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             boolean bl;
             if (this.setting.roomIndex / 25 > 0) {
                 this.method_14774(world, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
@@ -1070,7 +1061,6 @@ public class OceanMonumentGenerator {
                 this.fillWithOutline(world, boundingBox, 3, 2, 3, 4, 2, 4, PRISMARINE, PRISMARINE, false);
                 this.fillWithOutline(world, boundingBox, 3, 3, 3, 4, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             }
-            return true;
         }
     }
 
@@ -1080,12 +1070,12 @@ public class OceanMonumentGenerator {
             super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, 1, orientation, setting, 1, 1, 1);
         }
 
-        public Entry(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, nbt);
+        public Entry(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, nbtCompound);
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             this.fillWithOutline(world, boundingBox, 0, 3, 0, 2, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(world, boundingBox, 5, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(world, boundingBox, 0, 2, 0, 1, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1104,7 +1094,6 @@ public class OceanMonumentGenerator {
             if (this.setting.neighborPresences[Direction.EAST.getId()]) {
                 this.setAirAndWater(world, boundingBox, 6, 1, 3, 7, 2, 4);
             }
-            return true;
         }
     }
 
@@ -1155,8 +1144,8 @@ public class OceanMonumentGenerator {
             this.field_14465.add(new Penthouse(orientation, blockBox3));
         }
 
-        public Base(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_MONUMENT_BASE, nbt);
+        public Base(NbtCompound nbtCompound) {
+            super(StructurePieceType.OCEAN_MONUMENT_BASE, nbtCompound);
         }
 
         private List<PieceSetting> method_14760(Random random) {
@@ -1261,7 +1250,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             int j;
             int i = Math.max(world.getSeaLevel(), 64) - this.boundingBox.getMinY();
             this.setAirAndWater(world, boundingBox, 0, 0, 0, 58, i, 58);
@@ -1304,7 +1293,6 @@ public class OceanMonumentGenerator {
                 if (!piece.getBoundingBox().intersects(boundingBox)) continue;
                 piece.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
             }
-            return true;
         }
 
         private void method_14761(boolean bl, int i, StructureWorldAccess world, Random random, BlockBox box) {
@@ -1660,7 +1648,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
         }
 
         protected void setAirAndWater(StructureWorldAccess world, BlockBox box, int x, int y, int z, int width, int height, int depth) {

@@ -375,7 +375,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
         if (itemGroup.shouldRenderName()) {
             RenderSystem.disableBlend();
-            this.textRenderer.draw(matrices, itemGroup.getTranslationKey(), 8.0f, 6.0f, 0x404040);
+            this.textRenderer.draw(matrices, itemGroup.getDisplayName(), 8.0f, 6.0f, 0x404040);
         }
     }
 
@@ -581,7 +581,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                 }
             });
             if (itemGroup != null) {
-                list2.add(1, itemGroup.getTranslationKey().shallowCopy().formatted(Formatting.BLUE));
+                list2.add(1, itemGroup.getDisplayName().shallowCopy().formatted(Formatting.BLUE));
             }
             this.renderTooltip(matrices, list2, stack.getTooltipData(), x, y);
         } else {
@@ -642,7 +642,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         }
         k = group.isTopRow() ? (k -= 32) : (k += this.backgroundHeight);
         if (this.isPointWithinBounds(j + 3, k + 3, 23, 27, mouseX, mouseY)) {
-            this.renderTooltip(matrices, group.getTranslationKey(), mouseX, mouseY);
+            this.renderTooltip(matrices, group.getDisplayName(), mouseX, mouseY);
             return true;
         }
         return false;

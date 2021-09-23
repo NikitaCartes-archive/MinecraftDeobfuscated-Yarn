@@ -63,8 +63,8 @@ extends ResourceFactory {
      * 
      * @return the list matching identifiers
      * 
-     * @param startingPath the starting path to begin scanning from
      * @param pathPredicate a predicate to determine whether a path should be included or not
+     * @param startingPath the starting path to begin scanning from
      */
     public Collection<Identifier> findResources(String var1, Predicate<String> var2);
 

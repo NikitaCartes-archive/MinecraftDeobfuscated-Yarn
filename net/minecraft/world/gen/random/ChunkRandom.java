@@ -76,9 +76,9 @@ implements AbstractRandom {
      * at doing so, many entropy issues arise from the salt being so small and result in
      * weird alignments between features that have an index close apart.
      * 
-     * @param populationSeed the population seed computed in {@link #setPopulationSeed(long, int, int)}
      * @param index the index of the feature in the feature list
      * @param step the generation step's ordinal for this feature
+     * @param populationSeed the population seed computed in {@link #setPopulationSeed(long, int, int)}
      */
     public void setDecoratorSeed(long populationSeed, int index, int step) {
         long l = populationSeed + (long)index + (long)(10000 * step);

@@ -463,10 +463,10 @@ public final class NbtHelper {
     /**
      * Uses the data fixer to update an NBT compound object to the latest data version.
      * 
+     * @param oldVersion the data version of the NBT compound object
      * @param fixer the data fixer
      * @param fixTypes the fix types
      * @param compound the NBT compound object to fix
-     * @param oldVersion the data version of the NBT compound object
      */
     public static NbtCompound update(DataFixer fixer, DataFixTypes fixTypes, NbtCompound compound, int oldVersion) {
         return NbtHelper.update(fixer, fixTypes, compound, oldVersion, SharedConstants.getGameVersion().getWorldVersion());
@@ -475,10 +475,10 @@ public final class NbtHelper {
     /**
      * Uses the data fixer to update an NBT compound object.
      * 
-     * @param fixer the data fixer
      * @param fixTypes the fix types
-     * @param compound the NBT compound object to fix
+     * @param fixer the data fixer
      * @param oldVersion the data version of the NBT compound object
+     * @param compound the NBT compound object to fix
      * @param targetVersion the data version to update the NBT compound object to
      */
     public static NbtCompound update(DataFixer fixer, DataFixTypes fixTypes, NbtCompound compound, int oldVersion, int targetVersion) {

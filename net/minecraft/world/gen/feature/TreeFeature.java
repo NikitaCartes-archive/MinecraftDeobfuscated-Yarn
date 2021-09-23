@@ -84,9 +84,6 @@ extends Feature<TreeFeatureConfig> {
         if (pos.getY() < world.getBottomY() + 1 || pos.getY() + i + 1 > world.getTopY()) {
             return false;
         }
-        if (!config.saplingProvider.getBlockState(random, pos).canPlaceAt(world, pos)) {
-            return false;
-        }
         OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
         int m = this.getTopPosition(world, i, pos, config);
         if (!(m >= i || optionalInt.isPresent() && m >= optionalInt.getAsInt())) {

@@ -261,21 +261,25 @@ public interface AquiferSampler {
         public FluidLevel getFluidLevel(int i, int y, int j) {
             int o;
             int n;
-            int m;
             FluidLevel fluidLevel = this.field_34580.getFluidLevel(i, y, j);
             int k = Integer.MAX_VALUE;
-            int l = y + 6;
+            int l = y + 12;
+            int m = y - 12;
             boolean bl = false;
             for (int[] is : field_34581) {
                 FluidLevel fluidLevel2;
                 boolean bl3;
-                m = i + ChunkSectionPos.getBlockCoord(is[0]);
-                n = j + ChunkSectionPos.getBlockCoord(is[1]);
-                o = this.columnSampler.method_38383(m, n, this.field_34578.method_38353(this.columnSampler, BiomeCoords.fromBlock(m), BiomeCoords.fromBlock(n)));
-                int p = o + 8;
-                boolean bl2 = is[0] == 0 && is[1] == 0;
-                boolean bl4 = bl3 = l > p;
-                if ((bl3 || bl2) && !(fluidLevel2 = this.field_34580.getFluidLevel(m, p, n)).method_38318(p).isAir()) {
+                boolean bl2;
+                n = i + ChunkSectionPos.getBlockCoord(is[0]);
+                o = j + ChunkSectionPos.getBlockCoord(is[1]);
+                int p = this.columnSampler.method_38383(n, o, this.field_34578.method_38353(this.columnSampler, BiomeCoords.fromBlock(n), BiomeCoords.fromBlock(o)));
+                int q = p + 8;
+                boolean bl4 = bl2 = is[0] == 0 && is[1] == 0;
+                if (bl2 && m > q) {
+                    return fluidLevel;
+                }
+                boolean bl5 = bl3 = l > q;
+                if ((bl3 || bl2) && !(fluidLevel2 = this.field_34580.getFluidLevel(n, q, o)).method_38318(q).isAir()) {
                     if (bl2) {
                         bl = true;
                     }
@@ -283,21 +287,17 @@ public interface AquiferSampler {
                         return fluidLevel2;
                     }
                 }
-                k = Math.min(k, o);
-            }
-            int q = y - 6;
-            if (q > k) {
-                return fluidLevel;
+                k = Math.min(k, p);
             }
             int r = 40;
             int s = Math.floorDiv(i, 64);
             int t = Math.floorDiv(y, 40);
-            m = Math.floorDiv(j, 64);
+            int u = Math.floorDiv(j, 64);
             n = -20;
             o = 50;
-            double d = this.fluidLevelNoise.sample(s, (double)t / 1.4, m) * 50.0 + -20.0;
-            int u = t * 40 + 20;
-            if (bl && u >= k - 30 && u < fluidLevel.y) {
+            double d = this.fluidLevelNoise.sample(s, (double)t / 1.4, u) * 50.0 + -20.0;
+            int v = t * 40 + 20;
+            if (bl && v >= k - 30 && v < fluidLevel.y) {
                 if (d > -12.0) {
                     return fluidLevel;
                 }
@@ -313,14 +313,14 @@ public interface AquiferSampler {
                     d = -40.0;
                 }
             }
-            int v = u + MathHelper.floor(d);
-            int w = Math.min(k, v);
+            int w = v + MathHelper.floor(d);
+            int x = Math.min(k, w);
             boolean bl4 = false;
-            if (u == -20 && !bl) {
-                double e = this.fluidTypeNoise.sample(s, (double)t / 1.4, m);
+            if (v == -20 && !bl) {
+                double e = this.fluidTypeNoise.sample(s, (double)t / 1.4, u);
                 bl4 = Math.abs(e) > (double)0.22f;
             }
-            return new FluidLevel(w, bl4 ? Blocks.LAVA.getDefaultState() : fluidLevel.state);
+            return new FluidLevel(x, bl4 ? Blocks.LAVA.getDefaultState() : fluidLevel.state);
         }
     }
 

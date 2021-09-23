@@ -4,50 +4,54 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Predicate;
-import net.minecraft.class_6558;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
+import net.minecraft.world.chunk.EntryMissingException;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
 
+/**
+ * A palette that directly stores the raw ID of entries to the palette
+ * container storage.
+ */
 public class IdListPalette<T>
 implements Palette<T> {
     private final IndexedIterable<T> idList;
 
-    public IdListPalette(IndexedIterable<T> indexedIterable) {
-        this.idList = indexedIterable;
+    public IdListPalette(IndexedIterable<T> idList) {
+        this.idList = idList;
     }
 
-    public static <A> Palette<A> method_38286(int i, IndexedIterable<A> indexedIterable, PaletteResizeListener<A> paletteResizeListener) {
-        return new IdListPalette<A>(indexedIterable);
+    public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener) {
+        return new IdListPalette<A>(idList);
     }
 
     @Override
-    public int getIndex(T object) {
+    public int index(T object) {
         int i = this.idList.getRawId(object);
         return i == -1 ? 0 : i;
     }
 
     @Override
-    public boolean accepts(Predicate<T> predicate) {
+    public boolean hasAny(Predicate<T> predicate) {
         return true;
     }
 
     @Override
-    public T getByIndex(int index) {
-        T object = this.idList.get(index);
+    public T get(int id) {
+        T object = this.idList.get(id);
         if (object == null) {
-            throw new class_6558(index);
+            throw new EntryMissingException(id);
         }
         return object;
     }
 
     @Override
-    public void fromPacket(PacketByteBuf buf) {
+    public void readPacket(PacketByteBuf buf) {
     }
 
     @Override
-    public void toPacket(PacketByteBuf buf) {
+    public void writePacket(PacketByteBuf buf) {
     }
 
     @Override
@@ -56,7 +60,7 @@ implements Palette<T> {
     }
 
     @Override
-    public int getIndexBits() {
+    public int getSize() {
         return this.idList.size();
     }
 }

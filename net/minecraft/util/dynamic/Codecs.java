@@ -34,7 +34,7 @@ import net.minecraft.util.Util;
 public class Codecs {
     public static final Codec<Integer> NONNEGATIVE_INT = Codecs.rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
     public static final Codec<Integer> POSITIVE_INT = Codecs.rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
-    public static final Codec<Float> field_34387 = Codecs.method_37928(0.0f, Float.MAX_VALUE, float_ -> "Value must be positive: " + float_);
+    public static final Codec<Float> POSITIVE_FLOAT = Codecs.method_37928(0.0f, Float.MAX_VALUE, float_ -> "Value must be positive: " + float_);
 
     /**
      * Returns an exclusive-or codec for {@link Either} instances.
@@ -58,18 +58,18 @@ public class Codecs {
         return new Xor<F, S>(first, second);
     }
 
-    public static <P, I> Codec<I> method_37931(Codec<P> codec, String string, String string2, BiFunction<P, P, DataResult<I>> biFunction, Function<I, P> function, Function<I, P> function2) {
+    public static <P, I> Codec<I> createCodecForPairObject(Codec<P> codec, String leftFieldName, String rightFieldName, BiFunction<P, P, DataResult<I>> combineFunction, Function<I, P> leftFunction, Function<I, P> rightFunction) {
         Codec<Object> codec2 = Codec.list(codec).comapFlatMap(list2 -> Util.toArray(list2, 2).flatMap(list -> {
             Object object = list.get(0);
             Object object2 = list.get(1);
-            return (DataResult)biFunction.apply(object, object2);
-        }), object -> ImmutableList.of(function.apply(object), function2.apply(object)));
-        Codec<Object> codec3 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf(string)).forGetter(Pair::getFirst), ((MapCodec)codec.fieldOf(string2)).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of)).comapFlatMap(pair -> (DataResult)biFunction.apply(pair.getFirst(), pair.getSecond()), object -> Pair.of(function.apply(object), function2.apply(object)));
+            return (DataResult)combineFunction.apply(object, object2);
+        }), object -> ImmutableList.of(leftFunction.apply(object), rightFunction.apply(object)));
+        Codec<Object> codec3 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf(leftFieldName)).forGetter(Pair::getFirst), ((MapCodec)codec.fieldOf(rightFieldName)).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of)).comapFlatMap(pair -> (DataResult)combineFunction.apply(pair.getFirst(), pair.getSecond()), object -> Pair.of(leftFunction.apply(object), rightFunction.apply(object)));
         Codec<Object> codec4 = new class_6495<Object, Object>(codec2, codec3).xmap(either -> either.map(object -> object, object -> object), Either::left);
-        return Codec.either(codec, codec4).comapFlatMap(either -> either.map(object -> (DataResult)biFunction.apply(object, object), DataResult::success), object -> {
+        return Codec.either(codec, codec4).comapFlatMap(either -> either.map(object -> (DataResult)combineFunction.apply(object, object), DataResult::success), object -> {
             Object object3;
-            Object object2 = function.apply(object);
-            if (Objects.equals(object2, object3 = function2.apply(object))) {
+            Object object2 = leftFunction.apply(object);
+            if (Objects.equals(object2, object3 = rightFunction.apply(object))) {
                 return Either.left(object2);
             }
             return Either.right(object);

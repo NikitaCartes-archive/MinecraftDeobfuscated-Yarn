@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.spi.FileSystemProvider;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,6 +74,9 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class Util {
+    static final Logger LOGGER = LogManager.getLogger();
+    private static final int MAX_PARALLELISM = 255;
+    private static final String MAX_BG_THREADS_PROPERTY = "max.bg.threads";
     private static final AtomicInteger NEXT_WORKER_ID = new AtomicInteger(1);
     private static final ExecutorService BOOTSTRAP_EXECUTOR = Util.createWorker("Bootstrap");
     private static final ExecutorService MAIN_WORKER_EXECUTOR = Util.createWorker("Main");
@@ -80,7 +84,7 @@ public class Util {
     public static LongSupplier nanoTimeSupplier = System::nanoTime;
     public static final UUID NIL_UUID = new UUID(0L, 0L);
     public static final FileSystemProvider JAR_FILE_SYSTEM_PROVIDER = FileSystemProvider.installedProviders().stream().filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar")).findFirst().orElseThrow(() -> new IllegalStateException("No jar file system provider found"));
-    static final Logger LOGGER = LogManager.getLogger();
+    private static Consumer<String> missingBreakpointHandler = string -> {};
 
     public static <K, V> Collector<Map.Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
         return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
@@ -110,7 +114,7 @@ public class Util {
     }
 
     private static ExecutorService createWorker(String name) {
-        int i = MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 7);
+        int i = MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, Util.getMaxBackgroundThreads());
         ExecutorService executorService = i <= 0 ? MoreExecutors.newDirectExecutorService() : new ForkJoinPool(i, forkJoinPool -> {
             ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool){
 
@@ -128,6 +132,22 @@ public class Util {
             return forkJoinWorkerThread;
         }, Util::uncaughtExceptionHandler, true);
         return executorService;
+    }
+
+    private static int getMaxBackgroundThreads() {
+        String string = System.getProperty(MAX_BG_THREADS_PROPERTY);
+        if (string != null) {
+            try {
+                int i = Integer.parseInt(string);
+                if (i >= 1 && i <= 255) {
+                    return i;
+                }
+                LOGGER.error("Wrong {} property value '{}'. Should be an integer value between 1 and {}.", (Object)MAX_BG_THREADS_PROPERTY, (Object)string, (Object)255);
+            } catch (NumberFormatException numberFormatException) {
+                LOGGER.error("Could not parse {} property value '{}'. Should be an integer value between 1 and {}.", (Object)MAX_BG_THREADS_PROPERTY, (Object)string, (Object)255);
+            }
+        }
+        return 255;
     }
 
     public static ExecutorService getBootstrapExecutor() {
@@ -402,26 +422,29 @@ public class Util {
     public static void error(String message) {
         LOGGER.error(message);
         if (SharedConstants.isDevelopment) {
-            Util.pause();
+            Util.pause(message);
         }
     }
 
     public static <T extends Throwable> T throwOrPause(T t) {
         if (SharedConstants.isDevelopment) {
             LOGGER.error("Trying to throw a fatal exception, pausing in IDE", t);
-            Util.pause();
+            Util.pause(t.getMessage());
         }
         return t;
     }
 
-    private static void pause() {
-        try {
-            while (true) {
-                Thread.sleep(1000L);
-                LOGGER.error("paused");
-            }
-        } catch (InterruptedException interruptedException) {
-            return;
+    public static void setMissingBreakpointHandler(Consumer<String> missingBreakpointHandler) {
+        Util.missingBreakpointHandler = missingBreakpointHandler;
+    }
+
+    private static void pause(String message) {
+        boolean bl;
+        Instant instant = Instant.now();
+        LOGGER.warn("Did you remember to set a breakpoint here?");
+        boolean bl2 = bl = Duration.between(instant, Instant.now()).toMillis() > 500L;
+        if (!bl) {
+            missingBreakpointHandler.accept(message);
         }
     }
 
@@ -667,9 +690,9 @@ public class Util {
     }
 
     public static enum OperatingSystem {
-        LINUX,
-        SOLARIS,
-        WINDOWS{
+        LINUX("linux"),
+        SOLARIS("solaris"),
+        WINDOWS("windows"){
 
             @Override
             protected String[] getURLOpenCommand(URL url) {
@@ -677,7 +700,7 @@ public class Util {
             }
         }
         ,
-        OSX{
+        OSX("mac"){
 
             @Override
             protected String[] getURLOpenCommand(URL url) {
@@ -685,8 +708,13 @@ public class Util {
             }
         }
         ,
-        UNKNOWN;
+        UNKNOWN("unknown");
 
+        private final String name;
+
+        OperatingSystem(String name) {
+            this.name = name;
+        }
 
         public void open(URL url) {
             try {
@@ -732,6 +760,10 @@ public class Util {
             } catch (IllegalArgumentException | MalformedURLException | URISyntaxException exception) {
                 LOGGER.error("Couldn't open uri '{}'", (Object)uri, (Object)exception);
             }
+        }
+
+        public String getName() {
+            return this.name;
         }
     }
 

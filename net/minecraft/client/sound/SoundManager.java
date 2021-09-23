@@ -163,8 +163,8 @@ extends SinglePreparationResourceReloader<SoundList> {
         this.soundSystem.stop();
     }
 
-    public void tick(boolean bl) {
-        this.soundSystem.tick(bl);
+    public void tick(boolean paused) {
+        this.soundSystem.tick(paused);
     }
 
     public void resumeAll() {

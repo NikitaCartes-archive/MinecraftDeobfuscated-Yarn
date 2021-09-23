@@ -16,9 +16,9 @@ import net.minecraft.block.TripwireHookBlock;
 import net.minecraft.block.VineBlock;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WireConnection;
+import net.minecraft.class_6625;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.ShiftableStructurePiece;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -44,17 +44,17 @@ extends ShiftableStructurePiece {
         super(StructurePieceType.JUNGLE_TEMPLE, x, 64, z, 12, 10, 15, JungleTempleGenerator.getRandomHorizontalDirection(random));
     }
 
-    public JungleTempleGenerator(ServerWorld world, NbtCompound nbt) {
-        super(StructurePieceType.JUNGLE_TEMPLE, nbt);
-        this.placedMainChest = nbt.getBoolean("placedMainChest");
-        this.placedHiddenChest = nbt.getBoolean("placedHiddenChest");
-        this.placedTrap1 = nbt.getBoolean("placedTrap1");
-        this.placedTrap2 = nbt.getBoolean("placedTrap2");
+    public JungleTempleGenerator(NbtCompound nbtCompound) {
+        super(StructurePieceType.JUNGLE_TEMPLE, nbtCompound);
+        this.placedMainChest = nbtCompound.getBoolean("placedMainChest");
+        this.placedHiddenChest = nbtCompound.getBoolean("placedHiddenChest");
+        this.placedTrap1 = nbtCompound.getBoolean("placedTrap1");
+        this.placedTrap2 = nbtCompound.getBoolean("placedTrap2");
     }
 
     @Override
-    protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-        super.writeNbt(world, nbt);
+    protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+        super.writeNbt(arg, nbt);
         nbt.putBoolean("placedMainChest", this.placedMainChest);
         nbt.putBoolean("placedHiddenChest", this.placedHiddenChest);
         nbt.putBoolean("placedTrap1", this.placedTrap1);
@@ -62,11 +62,11 @@ extends ShiftableStructurePiece {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
         int k;
         int i;
         if (!this.adjustToAverageHeight(world, boundingBox, 0)) {
-            return false;
+            return;
         }
         this.fillWithOutline(world, boundingBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, false, random, COBBLESTONE_RANDOMIZER);
         this.fillWithOutline(world, boundingBox, 2, 1, 2, 9, 2, 2, false, random, COBBLESTONE_RANDOMIZER);
@@ -226,7 +226,6 @@ extends ShiftableStructurePiece {
         if (!this.placedHiddenChest) {
             this.placedHiddenChest = this.addChest(world, boundingBox, random, 9, -3, 10, LootTables.JUNGLE_TEMPLE_CHEST);
         }
-        return true;
     }
 
     static class CobblestoneRandomizer

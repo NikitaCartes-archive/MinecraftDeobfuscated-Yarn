@@ -58,9 +58,9 @@ public interface GameEventDispatcher {
     /**
      * Dispatches an event to all the listeners in this dispatcher.
      * 
-     * @param event the event
-     * @param entity an entity related to the event
      * @param pos the block position of the event
+     * @param entity an entity related to the event
+     * @param event the event
      */
     public void dispatch(GameEvent var1, @Nullable Entity var2, BlockPos var3);
 }

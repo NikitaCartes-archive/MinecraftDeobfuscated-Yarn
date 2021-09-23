@@ -6,7 +6,7 @@ package net.minecraft.client.network;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.SocialInteractionsService;
+import com.mojang.authlib.minecraft.UserApiService;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -22,12 +22,12 @@ import net.minecraft.util.Util;
 public class SocialInteractionsManager {
     private final MinecraftClient client;
     private final Set<UUID> hiddenPlayers = Sets.newHashSet();
-    private final SocialInteractionsService socialInteractionsService;
+    private final UserApiService socialInteractionsService;
     private final Map<String, UUID> playerNameByUuid = Maps.newHashMap();
 
-    public SocialInteractionsManager(MinecraftClient client, SocialInteractionsService socialInteractionsService) {
+    public SocialInteractionsManager(MinecraftClient client, UserApiService userApiService) {
         this.client = client;
-        this.socialInteractionsService = socialInteractionsService;
+        this.socialInteractionsService = userApiService;
     }
 
     public void hidePlayer(UUID uuid) {

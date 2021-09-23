@@ -1119,8 +1119,8 @@ implements DataProvider {
      * <p>The shaped recipe converts 9 items in a square to a compacted form of the item.
      * <p>The shapeless recipe converts the compacted form to 9 of the normal form.
      * 
-     * @param compacted compacted output item, e.g. block of copper
      * @param input input item used to craft compacted item, e.g. copper ingot
+     * @param compacted compacted output item, e.g. block of copper
      */
     private static void offerReversibleCompactingRecipes(Consumer<RecipeJsonProvider> exporter, ItemConvertible compacted, ItemConvertible input) {
         RecipesProvider.offerReversibleCompactingRecipes(exporter, compacted, input, RecipesProvider.method_36450(input), null, RecipesProvider.method_36450(compacted), null);

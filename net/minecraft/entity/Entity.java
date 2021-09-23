@@ -184,6 +184,8 @@ CommandOutput {
     protected boolean onGround;
     public boolean horizontalCollision;
     public boolean verticalCollision;
+    public boolean field_34927;
+    private static final float field_34928 = 0.0063f;
     public boolean velocityModified;
     protected Vec3d movementMultiplier = Vec3d.ZERO;
     @Nullable
@@ -608,6 +610,7 @@ CommandOutput {
         this.world.getProfiler().push("rest");
         this.horizontalCollision = !MathHelper.approximatelyEquals(movement.x, vec3d.x) || !MathHelper.approximatelyEquals(movement.z, vec3d.z);
         this.verticalCollision = movement.y != vec3d.y;
+        this.field_34927 = movement.subtract(vec3d).lengthSquared() < (double)0.0063f;
         this.onGround = this.verticalCollision && movement.y < 0.0;
         BlockPos blockPos = this.getLandingPos();
         BlockState blockState = this.world.getBlockState(blockPos);
@@ -1672,8 +1675,8 @@ CommandOutput {
     /**
      * Called when a player interacts with this entity.
      * 
-     * @param player the player
      * @param hand the hand the player used to interact with this entity
+     * @param player the player
      */
     public ActionResult interact(PlayerEntity player, Hand hand) {
         return ActionResult.PASS;

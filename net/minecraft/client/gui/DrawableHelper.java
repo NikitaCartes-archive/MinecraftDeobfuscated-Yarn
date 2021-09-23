@@ -178,13 +178,13 @@ public abstract class DrawableHelper {
      * <p>The width and height of the region are the same as
      * the dimensions of the rectangle.
      * 
-     * @param matrices the matrix stack used for rendering
-     * @param x the X coordinate of the rectangle
-     * @param y the Y coordinate of the rectangle
-     * @param u the left-most coordinate of the texture region
+     * @param height the height
      * @param v the top-most coordinate of the texture region
      * @param width the width
-     * @param height the height
+     * @param y the Y coordinate of the rectangle
+     * @param u the left-most coordinate of the texture region
+     * @param matrices the matrix stack used for rendering
+     * @param x the X coordinate of the rectangle
      */
     public void drawTexture(MatrixStack matrices, int x, int y, int u, int v, int width, int height) {
         DrawableHelper.drawTexture(matrices, x, y, this.zOffset, u, v, width, height, 256, 256);
@@ -196,16 +196,16 @@ public abstract class DrawableHelper {
      * <p>The width and height of the region are the same as
      * the dimensions of the rectangle.
      * 
-     * @param matrices the matrix stack used for rendering
-     * @param x the X coordinate of the rectangle
-     * @param y the Y coordinate of the rectangle
-     * @param z the Z coordinate of the rectangle
      * @param u the left-most coordinate of the texture region
-     * @param v the top-most coordinate of the texture region
-     * @param width the width of the rectangle
-     * @param height the height of the rectangle
-     * @param textureHeight the height of the entire texture
+     * @param z the Z coordinate of the rectangle
+     * @param y the Y coordinate of the rectangle
+     * @param x the X coordinate of the rectangle
+     * @param matrices the matrix stack used for rendering
      * @param textureWidth the width of the entire texture
+     * @param textureHeight the height of the entire texture
+     * @param height the height of the rectangle
+     * @param width the width of the rectangle
+     * @param v the top-most coordinate of the texture region
      */
     public static void drawTexture(MatrixStack matrices, int x, int y, int z, float u, float v, int width, int height, int textureHeight, int textureWidth) {
         DrawableHelper.drawTexture(matrices, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
@@ -214,17 +214,17 @@ public abstract class DrawableHelper {
     /**
      * Draws a textured rectangle from a region in a texture.
      * 
-     * @param matrices the matrix stack used for rendering
-     * @param x the X coordinate of the rectangle
-     * @param y the Y coordinate of the rectangle
-     * @param width the width of the rectangle
-     * @param height the height of the rectangle
-     * @param u the left-most coordinate of the texture region
-     * @param v the top-most coordinate of the texture region
-     * @param regionWidth the width of the texture region
-     * @param regionHeight the height of the texture region
      * @param textureWidth the width of the entire texture
+     * @param regionHeight the height of the texture region
+     * @param regionWidth the width of the texture region
+     * @param v the top-most coordinate of the texture region
      * @param textureHeight the height of the entire texture
+     * @param x the X coordinate of the rectangle
+     * @param matrices the matrix stack used for rendering
+     * @param u the left-most coordinate of the texture region
+     * @param height the height of the rectangle
+     * @param width the width of the rectangle
+     * @param y the Y coordinate of the rectangle
      */
     public static void drawTexture(MatrixStack matrices, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
         DrawableHelper.drawTexture(matrices, x, x + width, y, y + height, 0, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
@@ -237,14 +237,14 @@ public abstract class DrawableHelper {
      * the dimensions of the rectangle.
      * 
      * @param matrices the matrix stack used for rendering
-     * @param x the X coordinate of the rectangle
-     * @param y the Y coordinate of the rectangle
      * @param u the left-most coordinate of the texture region
      * @param v the top-most coordinate of the texture region
-     * @param width the width of the rectangle
-     * @param height the height of the rectangle
+     * @param x the X coordinate of the rectangle
+     * @param y the Y coordinate of the rectangle
      * @param textureWidth the width of the entire texture
      * @param textureHeight the height of the entire texture
+     * @param width the width of the rectangle
+     * @param height the height of the rectangle
      */
     public static void drawTexture(MatrixStack matrices, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
         DrawableHelper.drawTexture(matrices, x, y, width, height, u, v, width, height, textureWidth, textureHeight);

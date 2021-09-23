@@ -92,9 +92,6 @@ public abstract class Carver<C extends CarverConfig> {
         int p = Math.min(MathHelper.floor(y + verticalScale) + 1, context.getMinY() + context.getHeight() - 8);
         int q = Math.max(MathHelper.floor(z - horizontalScale) - l - 1, 0);
         int r = Math.min(MathHelper.floor(z + horizontalScale) - l, 15);
-        if (!((CarverConfig)config).aquifers && this.isRegionUncarvable(chunk, m, n, o, p, q, r)) {
-            return false;
-        }
         boolean bl = false;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
@@ -149,9 +146,6 @@ public abstract class Carver<C extends CarverConfig> {
     private BlockState getState(CarverContext context, C config, BlockPos pos, AquiferSampler sampler) {
         if (pos.getY() <= ((CarverConfig)config).lavaLevel.getY(context)) {
             return LAVA.getBlockState();
-        }
-        if (!((CarverConfig)config).aquifers) {
-            return Carver.isDebug(config) ? Carver.getDebugState(config, AIR) : AIR;
         }
         BlockState blockState = sampler.apply(pos.getX(), pos.getY(), pos.getZ(), 0.0, 0.0);
         if (blockState == null) {

@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.class_6576;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
@@ -32,6 +31,7 @@ import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.gen.NoiseColumnSampler;
@@ -50,10 +50,10 @@ extends BiomeSource {
         this(entries, Optional.empty());
     }
 
-    MultiNoiseBiomeSource(MultiNoiseUtil.Entries<Biome> entries, Optional<Pair<Registry<Biome>, Preset>> optional) {
-        super(entries.getEntries().stream().map(Pair::getSecond));
-        this.instance = optional;
-        this.biomeEntries = entries;
+    MultiNoiseBiomeSource(MultiNoiseUtil.Entries<Biome> biomeEntries, Optional<Pair<Registry<Biome>, Preset>> instance) {
+        super(biomeEntries.getEntries().stream().map(Pair::getSecond));
+        this.instance = instance;
+        this.biomeEntries = biomeEntries;
     }
 
     @Override
@@ -70,37 +70,42 @@ extends BiomeSource {
         return this.instance.map(pair -> new Instance((Preset)pair.getSecond(), (Registry)pair.getFirst()));
     }
 
-    public boolean matchesInstance(Preset preset) {
-        return this.instance.isPresent() && Objects.equals(this.instance.get().getSecond(), preset);
+    public boolean matchesInstance(Preset instance) {
+        return this.instance.isPresent() && Objects.equals(this.instance.get().getSecond(), instance);
     }
 
     @Override
-    public Biome method_38109(int i, int j, int k, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
-        return this.method_38167(multiNoiseSampler.sample(i, j, k));
+    public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+        return this.getBiomeAtPoint(noiseSampler.sample(x, y, z));
     }
 
     @Debug
-    public Biome method_38167(MultiNoiseUtil.NoiseValuePoint noiseValuePoint) {
-        return this.biomeEntries.getValue(noiseValuePoint, () -> BuiltinBiomes.THE_VOID);
+    public Biome getBiomeAtPoint(MultiNoiseUtil.NoiseValuePoint point) {
+        return this.biomeEntries.getValue(point, () -> BuiltinBiomes.THE_VOID);
     }
 
     @Override
-    public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+    public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         int i = BiomeCoords.fromBlock(pos.getX());
         int j = BiomeCoords.fromBlock(pos.getY());
         int k = BiomeCoords.fromBlock(pos.getZ());
-        MultiNoiseUtil.NoiseValuePoint noiseValuePoint = multiNoiseSampler.sample(i, j, k);
-        double d = VanillaTerrainParameters.getNormalizedWeirdness(noiseValuePoint.getWeirdnessNoise());
+        MultiNoiseUtil.NoiseValuePoint noiseValuePoint = noiseSampler.sample(i, j, k);
+        float f = MultiNoiseUtil.method_38666(noiseValuePoint.continentalnessNoise());
+        float g = MultiNoiseUtil.method_38666(noiseValuePoint.erosionNoise());
+        float h = MultiNoiseUtil.method_38666(noiseValuePoint.temperatureNoise());
+        float l = MultiNoiseUtil.method_38666(noiseValuePoint.humidityNoise());
+        float m = MultiNoiseUtil.method_38666(noiseValuePoint.weirdnessNoise());
+        double d = VanillaTerrainParameters.getNormalizedWeirdness(m);
         DecimalFormat decimalFormat = new DecimalFormat("0.000");
-        info.add("Multinoise C: " + decimalFormat.format(noiseValuePoint.getContinentalnessNoise()) + " E: " + decimalFormat.format(noiseValuePoint.getErosionNoise()) + " T: " + decimalFormat.format(noiseValuePoint.getTemperatureNoise()) + " H: " + decimalFormat.format(noiseValuePoint.getHumidityNoise()) + " W: " + decimalFormat.format(noiseValuePoint.getWeirdnessNoise()));
+        info.add("Multinoise C: " + decimalFormat.format(f) + " E: " + decimalFormat.format(g) + " T: " + decimalFormat.format(h) + " H: " + decimalFormat.format(l) + " W: " + decimalFormat.format(m));
         VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
-        info.add("Biome builder PV: " + VanillaBiomeParameters.getWeirdnessDescription(d) + " C: " + vanillaBiomeParameters.getContinentalnessDescription(noiseValuePoint.getContinentalnessNoise()) + " E: " + vanillaBiomeParameters.getErosionDescription(noiseValuePoint.getErosionNoise()) + " T: " + vanillaBiomeParameters.getTemperatureDescription(noiseValuePoint.getTemperatureNoise()) + " H: " + vanillaBiomeParameters.getHumidityDescription(noiseValuePoint.getHumidityNoise()));
-        if (!(multiNoiseSampler instanceof NoiseColumnSampler)) {
+        info.add("Biome builder PV: " + VanillaBiomeParameters.getWeirdnessDescription(d) + " C: " + vanillaBiomeParameters.getContinentalnessDescription(f) + " E: " + vanillaBiomeParameters.getErosionDescription(g) + " T: " + vanillaBiomeParameters.getTemperatureDescription(h) + " H: " + vanillaBiomeParameters.getHumidityDescription(l));
+        if (!(noiseSampler instanceof NoiseColumnSampler)) {
             return;
         }
-        NoiseColumnSampler noiseColumnSampler = (NoiseColumnSampler)multiNoiseSampler;
-        class_6576 lv = noiseColumnSampler.method_38376(pos.getX(), pos.getZ(), noiseValuePoint.getContinentalnessNoise(), noiseValuePoint.getWeirdnessNoise(), noiseValuePoint.getErosionNoise());
-        info.add("Terrain PV: " + decimalFormat.format(d) + " O: " + decimalFormat.format(lv.comp_77()) + " F: " + decimalFormat.format(lv.comp_78()) + " P: " + decimalFormat.format(lv.comp_79()));
+        NoiseColumnSampler noiseColumnSampler = (NoiseColumnSampler)noiseSampler;
+        TerrainNoisePoint terrainNoisePoint = noiseColumnSampler.createTerrainNoisePoint(pos.getX(), pos.getZ(), f, m, g);
+        info.add("Terrain PV: " + decimalFormat.format(d) + " O: " + decimalFormat.format(terrainNoisePoint.offset()) + " F: " + decimalFormat.format(terrainNoisePoint.factor()) + " P: " + decimalFormat.format(terrainNoisePoint.peaks()));
     }
 
     static final class Instance {
@@ -137,9 +142,9 @@ extends BiomeSource {
         final Identifier id;
         private final BiFunction<Preset, Registry<Biome>, MultiNoiseBiomeSource> biomeSourceFunction;
 
-        public Preset(Identifier id, BiFunction<Preset, Registry<Biome>, MultiNoiseBiomeSource> biFunction) {
+        public Preset(Identifier id, BiFunction<Preset, Registry<Biome>, MultiNoiseBiomeSource> biomeSourceFunction) {
             this.id = id;
-            this.biomeSourceFunction = biFunction;
+            this.biomeSourceFunction = biomeSourceFunction;
             BY_IDENTIFIER.put(id, this);
         }
 

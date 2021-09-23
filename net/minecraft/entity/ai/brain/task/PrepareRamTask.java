@@ -54,14 +54,14 @@ extends Task<E> {
     /**
      * Creates a ram preparation task. It has a fixed run time of {@value #RUN_TIME}.
      * 
-     * @param cooldownFactory the factory for the cooldown, in ticks, of the ram task, given the entity
-     * @param minDistance the min manhattan distance from the ram starting location to the ram target
-     * @param maxDistance the max straight-line distance from the ram starting location to the ram target
      * @param speed the speed the entity walks at
      * @param targetPredicate the predicate for the ram target
      * @param prepareTime the prepare time, in ticks, the entity will stand between reaching the ram
      * start position and the start of the ram
      * @param soundFactory the factory of the ram prepare sound given the entity
+     * @param cooldownFactory the factory for the cooldown, in ticks, of the ram task, given the entity
+     * @param minDistance the min manhattan distance from the ram starting location to the ram target
+     * @param maxDistance the max straight-line distance from the ram starting location to the ram target
      */
     public PrepareRamTask(ToIntFunction<E> cooldownFactory, int minDistance, int maxDistance, float speed, TargetPredicate targetPredicate, int prepareTime, Function<E, SoundEvent> soundFactory) {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.RAM_TARGET, MemoryModuleState.VALUE_ABSENT), 160);

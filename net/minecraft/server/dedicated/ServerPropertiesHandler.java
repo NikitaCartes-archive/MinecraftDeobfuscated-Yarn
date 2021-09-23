@@ -53,6 +53,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final long maxTickTime;
     public final int rateLimit;
     public final int viewDistance;
+    public final int field_34883;
     public final int maxPlayers;
     public final int networkCompressionThreshold;
     public final boolean broadcastRconToOps;
@@ -82,6 +83,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         this.maxTickTime = this.parseLong("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
         this.rateLimit = this.getInt("rate-limit", 0);
         this.viewDistance = this.getInt("view-distance", 10);
+        this.field_34883 = this.getInt("simulation-distance", 10);
         this.maxPlayers = this.getInt("max-players", 20);
         this.networkCompressionThreshold = this.getInt("network-compression-threshold", 256);
         this.broadcastRconToOps = this.parseBoolean("broadcast-rcon-to-ops", true);

@@ -3,11 +3,13 @@
  */
 package net.minecraft.world.gen.decorator;
 
+import net.minecraft.block.Block;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.decorator.BlockSurvivesFilterDecoratorConfig;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 import net.minecraft.world.gen.decorator.Decorator;
@@ -84,6 +86,10 @@ public interface Decoratable<R> {
      */
     default public R spreadHorizontally() {
         return this.decorate(Decorator.SQUARE.configure(NopeDecoratorConfig.INSTANCE));
+    }
+
+    default public R method_38670(Block block) {
+        return this.decorate(Decorator.BLOCK_SURVIVES_FILTER.configure(new BlockSurvivesFilterDecoratorConfig(block.getDefaultState())));
     }
 }
 

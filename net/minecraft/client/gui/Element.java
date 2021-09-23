@@ -37,9 +37,9 @@ public interface Element {
      * @see net.minecraft.client.Mouse#onMouseButton(long, int, int, int)
      * @see org.lwjgl.glfw.GLFW#GLFW_MOUSE_BUTTON_1
      * 
-     * @param mouseX the X coordinate of the mouse
      * @param mouseY the Y coordinate of the mouse
      * @param button the mouse button number
+     * @param mouseX the X coordinate of the mouse
      */
     default public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return false;
@@ -56,9 +56,9 @@ public interface Element {
      * @see net.minecraft.client.Mouse#onMouseButton(long, int, int, int)
      * @see org.lwjgl.glfw.GLFW#GLFW_MOUSE_BUTTON_1
      * 
-     * @param mouseX the X coordinate of the mouse
      * @param mouseY the Y coordinate of the mouse
      * @param button the mouse button number
+     * @param mouseX the X coordinate of the mouse
      */
     default public boolean mouseReleased(double mouseX, double mouseY, int button) {
         return false;
@@ -77,8 +77,8 @@ public interface Element {
      * 
      * @param mouseX the current X coordinate of the mouse
      * @param mouseY the current Y coordinate of the mouse
-     * @param button the mouse button number
      * @param deltaX the difference of the current X with the previous X coordinate
+     * @param button the mouse button number
      * @param deltaY the difference of the current Y with the previous Y coordinate
      */
     default public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
@@ -92,9 +92,9 @@ public interface Element {
      * @return {@code true} to indicate that the event handling is successful/valid
      * @see net.minecraft.client.Mouse#onMouseScroll(long, double, double)
      * 
+     * @param amount value is {@code < 0} if scrolled down, {@code > 0} if scrolled up
      * @param mouseX the X coordinate of the mouse
      * @param mouseY the Y coordinate of the mouse
-     * @param amount value is {@code < 0} if scrolled down, {@code > 0} if scrolled up
      */
     default public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         return false;
@@ -111,9 +111,9 @@ public interface Element {
      * @see org.lwjgl.glfw.GLFW#GLFW_KEY_Q
      * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
      * 
-     * @param keyCode the named key code of the event as described in the {@link org.lwjgl.glfw.GLFW GLFW} class
      * @param scanCode the unique/platform-specific scan code of the keyboard input
      * @param modifiers a GLFW bitfield describing the modifier keys that are held down (see <a href="https://www.glfw.org/docs/3.3/group__mods.html">GLFW Modifier key flags</a>)
+     * @param keyCode the named key code of the event as described in the {@link org.lwjgl.glfw.GLFW GLFW} class
      */
     default public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return false;
@@ -130,9 +130,9 @@ public interface Element {
      * @see org.lwjgl.glfw.GLFW#GLFW_KEY_Q
      * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
      * 
-     * @param keyCode the named key code of the event as described in the {@link org.lwjgl.glfw.GLFW GLFW} class
-     * @param scanCode the unique/platform-specific scan code of the keyboard input
      * @param modifiers a GLFW bitfield describing the modifier keys that are held down (see <a href="https://www.glfw.org/docs/3.3/group__mods.html">GLFW Modifier key flags</a>)
+     * @param scanCode the unique/platform-specific scan code of the keyboard input
+     * @param keyCode the named key code of the event as described in the {@link org.lwjgl.glfw.GLFW GLFW} class
      */
     default public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         return false;

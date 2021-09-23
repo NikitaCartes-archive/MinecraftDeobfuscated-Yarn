@@ -44,7 +44,7 @@ implements BiomeAccess.Storage {
     }
 
     @Override
-    public Biome method_38109(int i, int j, int k, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+    public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         return this.biome.get();
     }
 
@@ -55,7 +55,7 @@ implements BiomeAccess.Storage {
 
     @Override
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         if (predicate.test(this.biome.get())) {
             if (bl) {
                 return new BlockPos(x, y, z);

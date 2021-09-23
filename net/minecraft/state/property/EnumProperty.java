@@ -93,9 +93,9 @@ extends Property<T> {
      * 
      * @throws IllegalArgumentException if multiple values have the same name
      * 
+     * @param type the type of the values the property contains
      * @param name the name of the property; see {@linkplain Property#name the note on the
      * name}
-     * @param type the type of the values the property contains
      */
     public static <T extends Enum<T>> EnumProperty<T> of(String name, Class<T> type) {
         return EnumProperty.of(name, type, Predicates.alwaysTrue());
@@ -147,9 +147,9 @@ extends Property<T> {
      * 
      * @see #of(String, Class)
      * 
+     * @param type the type of the values the property contains
      * @param name the name of the property; see {@linkplain Property#name the note on the
      * name}
-     * @param type the type of the values the property contains
      * @param values the values the property contains; required to have 2 or more values
      */
     public static <T extends Enum<T>> EnumProperty<T> of(String name, Class<T> type, Collection<T> values) {

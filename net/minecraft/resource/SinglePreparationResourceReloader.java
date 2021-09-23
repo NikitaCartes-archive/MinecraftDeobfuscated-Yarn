@@ -30,8 +30,8 @@ implements ResourceReloader {
      * 
      * @return the prepared object
      * 
-     * @param manager the resource manager
      * @param profiler the prepare profiler
+     * @param manager the resource manager
      */
     protected abstract T prepare(ResourceManager var1, Profiler var2);
 
@@ -41,9 +41,9 @@ implements ResourceReloader {
      * <p>This method is called in the apply executor, or the game engine, in a
      * reload.
      * 
-     * @param prepared the prepared object
      * @param manager the resource manager
      * @param profiler the apply profiler
+     * @param prepared the prepared object
      */
     protected abstract void apply(T var1, ResourceManager var2, Profiler var3);
 }

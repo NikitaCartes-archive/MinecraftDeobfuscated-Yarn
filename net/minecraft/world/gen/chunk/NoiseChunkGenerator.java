@@ -60,7 +60,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
+import net.minecraft.world.gen.feature.NetherFortressFeature;
+import net.minecraft.world.gen.feature.OceanMonumentFeature;
+import net.minecraft.world.gen.feature.PillagerOutpostFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.SwampHutFeature;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import org.jetbrains.annotations.Nullable;
@@ -142,7 +146,7 @@ extends ChunkGenerator {
             float f = (float)lv.method_38357(i, k);
             float g = (float)lv.method_38359(i, k);
             float h = (float)lv.method_38358(i, k);
-            double l = lv.method_38360(i, k).comp_77();
+            double l = lv.method_38360(i, k).offset();
             return this.noiseColumnSampler.method_38378(i, j, k, d, e, f, g, h, l);
         });
     }
@@ -315,7 +319,7 @@ extends ChunkGenerator {
 
     @Override
     public void carve(ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carver) {
-        BiomeAccess biomeAccess2 = biomeAccess.withSource((i, j, k) -> this.populationSource.method_38109(i, j, k, this.method_38276()));
+        BiomeAccess biomeAccess2 = biomeAccess.withSource((i, j, k) -> this.populationSource.getBiome(i, j, k, this.method_38276()));
         ChunkRandom chunkRandom = new ChunkRandom();
         int i2 = 8;
         ChunkPos chunkPos = chunk.getPos();
@@ -333,7 +337,7 @@ extends ChunkGenerator {
             for (int p = -8; p <= 8; ++p) {
                 ChunkPos chunkPos3 = new ChunkPos(chunkPos.x + o, chunkPos.z + p);
                 Chunk chunk2 = chunkRegion.getChunk(chunkPos3.x, chunkPos3.z);
-                GenerationSettings generationSettings = chunk2.method_38258(() -> this.populationSource.method_38109(BiomeCoords.fromBlock(chunkPos3.getStartX()), 0, BiomeCoords.fromBlock(chunkPos3.getStartZ()), this.method_38276())).getGenerationSettings();
+                GenerationSettings generationSettings = chunk2.method_38258(() -> this.populationSource.getBiome(BiomeCoords.fromBlock(chunkPos3.getStartX()), 0, BiomeCoords.fromBlock(chunkPos3.getStartZ()), this.method_38276())).getGenerationSettings();
                 List<Supplier<ConfiguredCarver<?>>> list = generationSettings.getCarversForStep(carver);
                 ListIterator<Supplier<ConfiguredCarver<?>>> listIterator = list.listIterator();
                 while (listIterator.hasNext()) {
@@ -455,25 +459,25 @@ extends ChunkGenerator {
     public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
         if (accessor.getStructureAt(pos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
             if (group == SpawnGroup.MONSTER) {
-                return StructureFeature.SWAMP_HUT.getMonsterSpawns();
+                return SwampHutFeature.MONSTER_SPAWNS;
             }
             if (group == SpawnGroup.CREATURE) {
-                return StructureFeature.SWAMP_HUT.getCreatureSpawns();
+                return SwampHutFeature.CREATURE_SPAWNS;
             }
         }
         if (group == SpawnGroup.MONSTER) {
             if (accessor.getStructureAt(pos, false, StructureFeature.PILLAGER_OUTPOST).hasChildren()) {
-                return StructureFeature.PILLAGER_OUTPOST.getMonsterSpawns();
+                return PillagerOutpostFeature.MONSTER_SPAWNS;
             }
             if (accessor.getStructureAt(pos, false, StructureFeature.MONUMENT).hasChildren()) {
-                return StructureFeature.MONUMENT.getMonsterSpawns();
+                return OceanMonumentFeature.MONSTER_SPAWNS;
             }
             if (accessor.getStructureAt(pos, true, StructureFeature.FORTRESS).hasChildren()) {
-                return StructureFeature.FORTRESS.getMonsterSpawns();
+                return NetherFortressFeature.MONSTER_SPAWNS;
             }
         }
         if ((group == SpawnGroup.UNDERGROUND_WATER_CREATURE || group == SpawnGroup.AXOLOTLS) && accessor.getStructureAt(pos, false, StructureFeature.MONUMENT).hasChildren()) {
-            return StructureFeature.MONUMENT.getUndergroundWaterCreatureSpawns();
+            return SpawnSettings.EMPTY_ENTRY_POOL;
         }
         return super.getEntitySpawnList(biome, accessor, group, pos);
     }

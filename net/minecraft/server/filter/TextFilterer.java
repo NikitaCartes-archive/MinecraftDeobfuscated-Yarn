@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -31,7 +32,6 @@ import net.minecraft.server.filter.TextStream;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.TaskExecutor;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -82,7 +82,7 @@ implements AutoCloseable {
             int j = JsonHelper.getInt(jsonObject, "hashesToDrop", -1);
             int k = JsonHelper.getInt(jsonObject, "maxConcurrentRequests", 7);
             HashIgnorer hashIgnorer = HashIgnorer.dropHashes(j);
-            return new TextFilterer(uRI, new Base64().encodeToString(string.getBytes(StandardCharsets.US_ASCII)), i, string2, hashIgnorer, k);
+            return new TextFilterer(uRI, Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.US_ASCII)), i, string2, hashIgnorer, k);
         } catch (Exception exception) {
             LOGGER.warn("Failed to parse chat filter config {}", (Object)config, (Object)exception);
             return null;

@@ -1080,8 +1080,8 @@ extends LivingEntity {
      * including its vehicle, its name and whether it is persistent or not.
      * <p>If {@code keepEquipment} is {@code true}, it will also keep its equipment.
      * 
-     * @param entityType the entity type to convert to
      * @param keepEquipment whether the equipment of this entity should be kept
+     * @param entityType the entity type to convert to
      */
     @Nullable
     public <T extends MobEntity> T convertTo(EntityType<T> entityType, boolean keepEquipment) {

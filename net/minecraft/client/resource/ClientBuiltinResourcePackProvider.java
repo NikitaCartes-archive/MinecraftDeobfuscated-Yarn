@@ -5,9 +5,10 @@ package net.minecraft.client.resource;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.hash.Hashing;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +45,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -114,7 +114,7 @@ implements ResourcePackProvider {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     public CompletableFuture<?> download(String url, String packSha1, boolean closeAfterDownload) {
-        String string = DigestUtils.sha1Hex(url);
+        String string = Hashing.sha1().hashString(url, StandardCharsets.UTF_8).toString();
         String string2 = SHA1_PATTERN.matcher(packSha1).matches() ? packSha1 : "";
         this.lock.lock();
         try {
@@ -191,10 +191,7 @@ implements ResourcePackProvider {
 
     private boolean verifyFile(String expectedSha1, File file) {
         try {
-            String string;
-            try (FileInputStream fileInputStream = new FileInputStream(file);){
-                string = DigestUtils.sha1Hex(fileInputStream);
-            }
+            String string = com.google.common.io.Files.asByteSource(file).hash(Hashing.sha1()).toString();
             if (expectedSha1.isEmpty()) {
                 LOGGER.info("Found file {} without verification hash", (Object)file);
                 return true;

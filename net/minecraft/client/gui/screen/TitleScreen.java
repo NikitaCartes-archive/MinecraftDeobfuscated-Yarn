@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
@@ -268,7 +269,7 @@ extends Screen {
         }
         String string = "Minecraft " + SharedConstants.getGameVersion().getName();
         string = this.client.isDemo() ? string + " Demo" : string + (String)("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType());
-        if (this.client.isModded()) {
+        if (MinecraftClient.isModded()) {
             string = string + I18n.translate("menu.modded", new Object[0]);
         }
         TitleScreen.drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 0xFFFFFF | l);

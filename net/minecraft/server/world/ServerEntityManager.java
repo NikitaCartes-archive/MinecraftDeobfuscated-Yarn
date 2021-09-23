@@ -100,8 +100,8 @@ implements AutoCloseable {
      * 
      * @return if the entity was loaded or added
      * 
-     * @param entity the entity
      * @param existing whether this entity is loaded from the map than created anew
+     * @param entity the entity
      */
     private boolean addEntity(T entity, boolean existing) {
         EntityTrackingStatus entityTrackingStatus;
@@ -166,8 +166,8 @@ implements AutoCloseable {
      * 
      * @see updateTrackingStatus(ChunkPos, EntityTrackingStatus)
      * 
-     * @param chunkPos the chunk to update
      * @param levelType the updated level type of the chunk
+     * @param chunkPos the chunk to update
      */
     public void updateTrackingStatus(ChunkPos chunkPos, ChunkHolder.LevelType levelType) {
         EntityTrackingStatus entityTrackingStatus = EntityTrackingStatus.fromLevelType(levelType);
@@ -178,8 +178,8 @@ implements AutoCloseable {
      * Updates the {@code trackingStatus} of tracking sections in a chunk
      * at {@code chunkPos}.
      * 
-     * @param chunkPos the chunk to update
      * @param trackingStatus the updated section tracking status
+     * @param chunkPos the chunk to update
      */
     public void updateTrackingStatus(ChunkPos chunkPos, EntityTrackingStatus trackingStatus) {
         long l = chunkPos.toLong();

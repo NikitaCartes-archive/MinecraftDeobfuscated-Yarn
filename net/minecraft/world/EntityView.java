@@ -27,9 +27,9 @@ public interface EntityView {
      * 
      * @return a list of entities within a box, excluding the given entity, all satisfying the given predicate
      * 
-     * @param except the entity the box logically surrounds; this entity is ignored if it is inside the box
      * @param box the box in which to search for entities
      * @param predicate a predicate which entities must satisfy in order to be included in the returned list
+     * @param except the entity the box logically surrounds; this entity is ignored if it is inside the box
      */
     public List<Entity> getOtherEntities(@Nullable Entity var1, Box var2, Predicate<? super Entity> var3);
 

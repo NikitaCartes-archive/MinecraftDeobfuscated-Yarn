@@ -40,12 +40,12 @@ public interface ResourceReloader {
      * @see ReloadableResourceManager#reload(Executor, Executor,
      * CompletableFuture, List)
      * 
-     * @param synchronizer the synchronizer
-     * @param manager the resource manager
      * @param prepareProfiler the profiler for prepare stage
      * @param applyProfiler the profiler for apply stage
      * @param prepareExecutor the executor for prepare stage
      * @param applyExecutor the executor for apply stage
+     * @param synchronizer the synchronizer
+     * @param manager the resource manager
      */
     public CompletableFuture<Void> reload(Synchronizer var1, ResourceManager var2, Profiler var3, Profiler var4, Executor var5, Executor var6);
 

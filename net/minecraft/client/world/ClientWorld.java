@@ -143,6 +143,10 @@ extends World {
         }
     }
 
+    public boolean method_38743() {
+        return this.chunkUpdaters.isEmpty();
+    }
+
     public SkyProperties getSkyProperties() {
         return this.skyProperties;
     }

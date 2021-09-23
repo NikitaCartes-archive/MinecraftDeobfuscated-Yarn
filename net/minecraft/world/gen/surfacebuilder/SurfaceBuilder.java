@@ -123,16 +123,16 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     /**
      * Places the surface blocks for the given column.
      * 
-     * @param random the Random instance, seeded with a hash of the x and z coordinates
-     * @param chunk the current chunk being surface built
-     * @param biome the biome in the column that is being surface built
-     * @param x X coordinate of the column
-     * @param z Z coordinate of the column
-     * @param height height of the column retrieved using {@link net.minecraft.world.Heightmap.Type#WORLD_SURFACE_WG}, and will never be lower than the sea level
-     * @param noise noise value at this column. Has a range of {@code (-8, 8)} but follows a normal distribution so most values will be around {@code (-2, 2)}
-     * @param defaultBlock default block of the chunk generator, used to know which block to replace with the surface blocks
      * @param defaultFluid default fluid of the chunk generator
      * @param seaLevel the sea level of the chunk generator
+     * @param defaultBlock default block of the chunk generator, used to know which block to replace with the surface blocks
+     * @param height height of the column retrieved using {@link net.minecraft.world.Heightmap.Type#WORLD_SURFACE_WG}, and will never be lower than the sea level
+     * @param noise noise value at this column. Has a range of {@code (-8, 8)} but follows a normal distribution so most values will be around {@code (-2, 2)}
+     * @param x X coordinate of the column
+     * @param z Z coordinate of the column
+     * @param chunk the current chunk being surface built
+     * @param biome the biome in the column that is being surface built
+     * @param random the Random instance, seeded with a hash of the x and z coordinates
      */
     public abstract void generate(Random var1, class_6557 var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, int var12, long var13, C var15);
 

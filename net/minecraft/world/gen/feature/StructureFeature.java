@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -14,26 +13,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
+import net.minecraft.class_6621;
+import net.minecraft.class_6622;
+import net.minecraft.class_6624;
+import net.minecraft.class_6625;
+import net.minecraft.class_6626;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.Pool;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.SpawnSettings;
-import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -74,7 +73,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class StructureFeature<C extends FeatureConfig> {
+public class StructureFeature<C extends FeatureConfig> {
     public static final BiMap<String, StructureFeature<?>> STRUCTURES = HashBiMap.create();
     private static final Map<StructureFeature<?>, GenerationStep.Feature> STRUCTURE_TO_GENERATION_STEP = Maps.newHashMap();
     private static final Logger LOGGER = LogManager.getLogger();
@@ -86,7 +85,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     public static final StructureFeature<DefaultFeatureConfig> IGLOO = StructureFeature.register("Igloo", new IglooFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<RuinedPortalFeatureConfig> RUINED_PORTAL = StructureFeature.register("Ruined_Portal", new RuinedPortalFeature(RuinedPortalFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<ShipwreckFeatureConfig> SHIPWRECK = StructureFeature.register("Shipwreck", new ShipwreckFeature(ShipwreckFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
-    public static final SwampHutFeature SWAMP_HUT = StructureFeature.register("Swamp_Hut", new SwampHutFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
+    public static final StructureFeature<DefaultFeatureConfig> SWAMP_HUT = StructureFeature.register("Swamp_Hut", new SwampHutFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<DefaultFeatureConfig> STRONGHOLD = StructureFeature.register("Stronghold", new StrongholdFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.STRONGHOLDS);
     public static final StructureFeature<DefaultFeatureConfig> MONUMENT = StructureFeature.register("Monument", new OceanMonumentFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<OceanRuinFeatureConfig> OCEAN_RUIN = StructureFeature.register("Ocean_Ruin", new OceanRuinFeature(OceanRuinFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
@@ -97,10 +96,10 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     public static final StructureFeature<RangeDecoratorConfig> NETHER_FOSSIL = StructureFeature.register("Nether_Fossil", new NetherFossilFeature(RangeDecoratorConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION);
     public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = StructureFeature.register("Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final List<StructureFeature<?>> LAND_MODIFYING_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
-    private static final Identifier JIGSAW_ID = new Identifier("jigsaw");
-    private static final Map<Identifier, Identifier> JIGSAW_STRUCTURE_PIECES = ImmutableMap.builder().put(new Identifier("nvi"), JIGSAW_ID).put(new Identifier("pcp"), JIGSAW_ID).put(new Identifier("bastionremnant"), JIGSAW_ID).put(new Identifier("runtime"), JIGSAW_ID).build();
     public static final int field_31518 = 8;
     private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
+    private final class_6622<C> field_34929;
+    private final class_6621 field_34930;
 
     private static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
         STRUCTURES.put(name.toLowerCase(Locale.ROOT), structureFeature);
@@ -108,8 +107,14 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         return (F)Registry.register(Registry.STRUCTURE_FEATURE, name.toLowerCase(Locale.ROOT), structureFeature);
     }
 
-    public StructureFeature(Codec<C> codec) {
+    public StructureFeature(Codec<C> codec, class_6622<C> arg) {
+        this(codec, arg, class_6621.field_34938);
+    }
+
+    public StructureFeature(Codec<C> codec, class_6622<C> arg, class_6621 arg2) {
         this.codec = ((MapCodec)codec.fieldOf("config")).xmap(featureConfig -> new ConfiguredStructureFeature<FeatureConfig, StructureFeature>(this, (FeatureConfig)featureConfig), configuredStructureFeature -> configuredStructureFeature.config).codec();
+        this.field_34929 = arg;
+        this.field_34930 = arg2;
     }
 
     /**
@@ -124,7 +129,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     }
 
     @Nullable
-    public static StructureStart<?> readStructureStart(ServerWorld world, NbtCompound nbt, long worldSeed) {
+    public static StructureStart<?> readStructureStart(class_6625 arg, NbtCompound nbt, long worldSeed) {
         String string = nbt.getString("id");
         if ("INVALID".equals(string)) {
             return StructureStart.DEFAULT;
@@ -138,28 +143,13 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         int i = nbt.getInt("references");
         NbtList nbtList = nbt.getList("Children", 10);
         try {
-            StructureStart<?> structureStart = structureFeature.createStart(chunkPos, i, worldSeed);
-            for (int j = 0; j < nbtList.size(); ++j) {
-                NbtCompound nbtCompound = nbtList.getCompound(j);
-                String string2 = nbtCompound.getString("id").toLowerCase(Locale.ROOT);
-                Identifier identifier = new Identifier(string2);
-                Identifier identifier2 = JIGSAW_STRUCTURE_PIECES.getOrDefault(identifier, identifier);
-                StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(identifier2);
-                if (structurePieceType == null) {
-                    LOGGER.error("Unknown structure piece id: {}", (Object)identifier2);
-                    continue;
-                }
-                try {
-                    StructurePiece structurePiece = structurePieceType.load(world, nbtCompound);
-                    structureStart.addPiece(structurePiece);
-                    continue;
-                } catch (Exception exception) {
-                    LOGGER.error("Exception loading structure piece with id {}", (Object)identifier2, (Object)exception);
-                }
+            class_6624 lv = class_6624.method_38711(nbtList, arg);
+            if (structureFeature == MONUMENT) {
+                lv = OceanMonumentFeature.method_38680(chunkPos, worldSeed, lv);
             }
-            return structureStart;
-        } catch (Exception exception2) {
-            LOGGER.error("Failed Start with id {}", (Object)string, (Object)exception2);
+            return new StructureStart(structureFeature, chunkPos, i, lv);
+        } catch (Exception exception) {
+            LOGGER.error("Failed Start with id {}", (Object)string, (Object)exception);
             return null;
         }
     }
@@ -170,6 +160,10 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 
     public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config) {
         return new ConfiguredStructureFeature<C, StructureFeature>(this, config);
+    }
+
+    public BlockPos method_38671(ChunkPos chunkPos) {
+        return new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ());
     }
 
     /**
@@ -205,10 +199,10 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     if (structureStart != null && structureStart.hasChildren()) {
                         if (skipExistingChunks && structureStart.isInExistingChunk()) {
                             structureStart.incrementReferences();
-                            return structureStart.getBlockPos();
+                            return this.method_38671(structureStart.getPos());
                         }
                         if (!skipExistingChunks) {
-                            return structureStart.getBlockPos();
+                            return this.method_38671(structureStart.getPos());
                         }
                     }
                     if (l == 0) break;
@@ -266,21 +260,18 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         return true;
     }
 
-    private StructureStart<C> createStart(ChunkPos pos, int i, long l) {
-        return this.getStructureStartFactory().create(this, pos, i, l);
-    }
-
     /**
      * Tries to place a starting point for this type of structure in the given chunk.
      * <p>
      * If this structure doesn't have a starting point in the chunk, {@link StructureStart#DEFAULT}
      * will be returned.
      */
-    public StructureStart<?> tryPlaceStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator generator, BiomeSource biomeSource, StructureManager manager, long worldSeed, ChunkPos pos, int i, ChunkRandom chunkRandom, StructureConfig structureConfig, C featureConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
-        ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, chunkRandom, pos.x, pos.z);
-        if (pos.x == chunkPos.x && pos.z == chunkPos.z && this.shouldStartAt(generator, biomeSource, worldSeed, chunkRandom, pos, chunkPos, featureConfig, heightLimitView)) {
-            StructureStart<C> structureStart = this.createStart(pos, i, worldSeed);
-            structureStart.init(dynamicRegistryManager, generator, manager, pos, featureConfig, heightLimitView, predicate);
+    public StructureStart<?> tryPlaceStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator generator, BiomeSource biomeSource, StructureManager manager, long worldSeed, ChunkPos pos, int i, ChunkRandom chunkRandom2, StructureConfig structureConfig, C featureConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
+        ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, chunkRandom2, pos.x, pos.z);
+        if (pos.x == chunkPos.x && pos.z == chunkPos.z && this.shouldStartAt(generator, biomeSource, worldSeed, chunkRandom2, pos, chunkPos, featureConfig, heightLimitView)) {
+            class_6626 lv = new class_6626();
+            this.field_34929.generatePieces(lv, featureConfig, new class_6622.class_6623(dynamicRegistryManager, generator, manager, pos, predicate, heightLimitView, Util.make(new ChunkRandom(), chunkRandom -> chunkRandom.setCarverSeed(worldSeed, chunkPos.x, chunkPos.z)), worldSeed));
+            StructureStart structureStart = new StructureStart(this, pos, i, lv.method_38714());
             if (structureStart.hasChildren()) {
                 return structureStart;
             }
@@ -288,43 +279,16 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         return StructureStart.DEFAULT;
     }
 
-    public abstract StructureStartFactory<C> getStructureStartFactory();
-
-    protected static int getLowestCornerInGroundHeight(ChunkGenerator generator, int deltaX, int deltaZ, ChunkPos chunkPos, HeightLimitView world) {
-        int i = chunkPos.getStartX();
-        int j = chunkPos.getStartZ();
-        int[] is = StructureFeature.getCornerInGroundHeights(generator, i, deltaX, j, deltaZ, world);
-        return Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
-    }
-
-    protected static int[] getCornerInGroundHeights(ChunkGenerator generator, int x, int deltaX, int z, int deltaZ, HeightLimitView world) {
-        return new int[]{generator.getHeightInGround(x, z, Heightmap.Type.WORLD_SURFACE_WG, world), generator.getHeightInGround(x, z + deltaZ, Heightmap.Type.WORLD_SURFACE_WG, world), generator.getHeightInGround(x + deltaX, z, Heightmap.Type.WORLD_SURFACE_WG, world), generator.getHeightInGround(x + deltaX, z + deltaZ, Heightmap.Type.WORLD_SURFACE_WG, world)};
+    public class_6621 method_38690() {
+        return this.field_34930;
     }
 
     public String getName() {
         return (String)STRUCTURES.inverse().get(this);
     }
 
-    public Pool<SpawnSettings.SpawnEntry> getMonsterSpawns() {
-        return SpawnSettings.EMPTY_ENTRY_POOL;
-    }
-
-    public Pool<SpawnSettings.SpawnEntry> getCreatureSpawns() {
-        return SpawnSettings.EMPTY_ENTRY_POOL;
-    }
-
-    public Pool<SpawnSettings.SpawnEntry> getUndergroundWaterCreatureSpawns() {
-        return SpawnSettings.EMPTY_ENTRY_POOL;
-    }
-
-    protected static boolean checkBiome(ChunkGenerator generator, HeightLimitView world, Predicate<Biome> biomePredicate, Heightmap.Type heightmap, int x, int z) {
-        int i = generator.getHeightInGround(x, z, heightmap, world);
-        Biome biome = generator.getBiomeForNoiseGen(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(z));
-        return biomePredicate.test(biome);
-    }
-
-    public static interface StructureStartFactory<C extends FeatureConfig> {
-        public StructureStart<C> create(StructureFeature<C> var1, ChunkPos var2, int var3, long var4);
+    public BlockBox calculateBoundingBox(BlockBox blockBox) {
+        return blockBox;
     }
 }
 

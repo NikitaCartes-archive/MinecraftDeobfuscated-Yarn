@@ -79,7 +79,7 @@ public class TeamCommand {
             throw OPTION_NAMETAG_VISIBILITY_UNCHANGED_EXCEPTION.create();
         }
         team.setNameTagVisibilityRule(visibility);
-        source.sendFeedback(new TranslatableText("commands.team.option.nametagVisibility.success", team.getFormattedName(), visibility.getTranslationKey()), true);
+        source.sendFeedback(new TranslatableText("commands.team.option.nametagVisibility.success", team.getFormattedName(), visibility.getDisplayName()), true);
         return 0;
     }
 
@@ -88,7 +88,7 @@ public class TeamCommand {
             throw OPTION_DEATH_MESSAGE_VISIBILITY_UNCHANGED_EXCEPTION.create();
         }
         team.setDeathMessageVisibilityRule(visibility);
-        source.sendFeedback(new TranslatableText("commands.team.option.deathMessageVisibility.success", team.getFormattedName(), visibility.getTranslationKey()), true);
+        source.sendFeedback(new TranslatableText("commands.team.option.deathMessageVisibility.success", team.getFormattedName(), visibility.getDisplayName()), true);
         return 0;
     }
 
@@ -97,7 +97,7 @@ public class TeamCommand {
             throw OPTION_COLLISION_RULE_UNCHANGED_EXCEPTION.create();
         }
         team.setCollisionRule(collisionRule);
-        source.sendFeedback(new TranslatableText("commands.team.option.collisionRule.success", team.getFormattedName(), collisionRule.getTranslationKey()), true);
+        source.sendFeedback(new TranslatableText("commands.team.option.collisionRule.success", team.getFormattedName(), collisionRule.getDisplayName()), true);
         return 0;
     }
 

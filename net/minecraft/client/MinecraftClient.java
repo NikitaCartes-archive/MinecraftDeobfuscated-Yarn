@@ -12,8 +12,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.minecraft.OfflineSocialInteractions;
-import com.mojang.authlib.minecraft.SocialInteractionsService;
+import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlDebugInfo;
@@ -175,6 +174,7 @@ import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.telemetry.TelemetrySender;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
@@ -389,7 +389,7 @@ WindowEventHandler {
     private final SplashTextResourceSupplier splashTextLoader;
     private final VideoWarningManager videoWarningManager;
     private final MinecraftSessionService sessionService;
-    private final SocialInteractionsService socialInteractionsService;
+    private final UserApiService userApiService;
     private final PlayerSkinProvider skinProvider;
     private final BakedModelManager bakedModelManager;
     private final BlockRenderManager blockRenderManager;
@@ -401,6 +401,7 @@ WindowEventHandler {
     private final SocialInteractionsManager socialInteractionsManager;
     private final EntityModelLoader entityModelLoader;
     private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
+    private final UUID deviceSessionId = UUID.randomUUID();
     @Nullable
     public ClientPlayerInteractionManager interactionManager;
     /**
@@ -428,6 +429,8 @@ WindowEventHandler {
     @Nullable
     private ClientConnection integratedServerConnection;
     private boolean integratedServerRunning;
+    @Nullable
+    private TelemetrySender telemetrySender;
     @Nullable
     public Entity cameraEntity;
     @Nullable
@@ -498,7 +501,7 @@ WindowEventHandler {
         this.networkProxy = args.network.netProxy;
         YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
         this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-        this.socialInteractionsService = this.createSocialInteractionsService(yggdrasilAuthenticationService, args);
+        this.userApiService = this.createSocialInteractionsService(yggdrasilAuthenticationService, args);
         this.session = args.network.session;
         LOGGER.info("Setting user: {}", (Object)this.session.getUsername());
         LOGGER.debug("(Session ID is {})", (Object)this.session.getSessionId());
@@ -584,7 +587,7 @@ WindowEventHandler {
         this.bufferBuilders = new BufferBuilderStorage();
         this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
         this.resourceManager.registerReloader(this.gameRenderer);
-        this.socialInteractionsManager = new SocialInteractionsManager(this, this.socialInteractionsService);
+        this.socialInteractionsManager = new SocialInteractionsManager(this, this.userApiService);
         this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), builtinModelItemRenderer, this.blockColors);
         this.resourceManager.registerReloader(this.blockRenderManager);
         this.worldRenderer = new WorldRenderer(this, this.bufferBuilders);
@@ -640,7 +643,7 @@ WindowEventHandler {
 
     private String getWindowTitle() {
         StringBuilder stringBuilder = new StringBuilder("Minecraft");
-        if (this.isModded()) {
+        if (MinecraftClient.isModded()) {
             stringBuilder.append("*");
         }
         stringBuilder.append(" ");
@@ -661,12 +664,12 @@ WindowEventHandler {
         return stringBuilder.toString();
     }
 
-    private SocialInteractionsService createSocialInteractionsService(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
+    private UserApiService createSocialInteractionsService(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
         try {
-            return yggdrasilAuthenticationService.createSocialInteractionsService(runArgs.network.session.getAccessToken());
+            return yggdrasilAuthenticationService.createUserApiService(runArgs.network.session.getAccessToken());
         } catch (AuthenticationException authenticationException) {
             LOGGER.error("Failed to verify authentication", (Throwable)authenticationException);
-            return new OfflineSocialInteractions();
+            return UserApiService.OFFLINE;
         }
     }
 
@@ -675,7 +678,7 @@ WindowEventHandler {
      * 
      * <p>This checks the client's brand and if the MinecraftClient's class is still signed.
      */
-    public boolean isModded() {
+    public static boolean isModded() {
         return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
     }
 
@@ -703,6 +706,9 @@ WindowEventHandler {
 
     public void run() {
         this.thread = Thread.currentThread();
+        if (Runtime.getRuntime().availableProcessors() > 4) {
+            this.thread.setPriority(10);
+        }
         try {
             boolean bl = false;
             while (this.running) {
@@ -1722,6 +1728,10 @@ WindowEventHandler {
         return saveProperties;
     }
 
+    public TelemetrySender createTelemetrySender() {
+        return new TelemetrySender(this, this.userApiService, this.session.getXuid(), this.session.getClientId(), this.deviceSessionId);
+    }
+
     public void startIntegratedServer(String worldName) {
         this.startIntegratedServer(worldName, DynamicRegistryManager.create(), MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, WorldLoadAction.BACKUP);
     }
@@ -1956,11 +1966,11 @@ WindowEventHandler {
     }
 
     public boolean isMultiplayerEnabled() {
-        return this.multiplayerEnabled && this.socialInteractionsService.serversAllowed();
+        return this.multiplayerEnabled && this.userApiService.serversAllowed();
     }
 
     public boolean isRealmsEnabled() {
-        return this.socialInteractionsService.realmsAllowed();
+        return this.userApiService.realmsAllowed();
     }
 
     /**
@@ -1983,7 +1993,7 @@ WindowEventHandler {
         if (!this.onlineChatEnabled) {
             return ChatRestriction.DISABLED_BY_LAUNCHER;
         }
-        if (!this.socialInteractionsService.chatAllowed()) {
+        if (!this.userApiService.chatAllowed()) {
             return ChatRestriction.DISABLED_BY_PROFILE;
         }
         return ChatRestriction.ENABLED;

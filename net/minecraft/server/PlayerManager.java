@@ -125,6 +125,7 @@ public abstract class PlayerManager {
     private final DynamicRegistryManager.Impl registryManager;
     protected final int maxPlayers;
     private int viewDistance;
+    private int simulationDistance;
     private boolean cheatsAllowed;
     private static final boolean field_29791 = false;
     private int latencyUpdateTimer;
@@ -622,6 +623,10 @@ public abstract class PlayerManager {
         return this.viewDistance;
     }
 
+    public int method_38651() {
+        return this.simulationDistance;
+    }
+
     public MinecraftServer getServer() {
         return this.server;
     }
@@ -698,6 +703,14 @@ public abstract class PlayerManager {
         for (ServerWorld serverWorld : this.server.getWorlds()) {
             if (serverWorld == null) continue;
             serverWorld.getChunkManager().applyViewDistance(viewDistance);
+        }
+    }
+
+    public void setSimulationDistance(int simulationDistance) {
+        this.simulationDistance = simulationDistance;
+        for (ServerWorld serverWorld : this.server.getWorlds()) {
+            if (serverWorld == null) continue;
+            serverWorld.getChunkManager().applySimulationDistance(simulationDistance);
         }
     }
 

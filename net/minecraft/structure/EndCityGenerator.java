@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.class_6625;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -15,13 +16,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePlacementData;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -194,7 +193,7 @@ public class EndCityGenerator {
             int i = random.nextInt();
             for (StructurePiece structurePiece : list) {
                 structurePiece.chainLength = i;
-                StructurePiece structurePiece2 = StructureStart.getIntersecting(pieces, structurePiece.getBoundingBox());
+                StructurePiece structurePiece2 = StructurePiece.method_38702(pieces, structurePiece.getBoundingBox());
                 if (structurePiece2 == null || structurePiece2.chainLength == parent.chainLength) continue;
                 bl = true;
                 break;
@@ -213,8 +212,8 @@ public class EndCityGenerator {
             super(StructurePieceType.END_CITY, 0, manager, Piece.getId(template), template, Piece.createPlacementData(includeAir, rotation), pos);
         }
 
-        public Piece(ServerWorld world, NbtCompound nbtCompound) {
-            super(StructurePieceType.END_CITY, nbtCompound, world, identifier -> Piece.createPlacementData(nbtCompound.getBoolean("OW"), BlockRotation.valueOf(nbtCompound.getString("Rot"))));
+        public Piece(StructureManager structureManager, NbtCompound nbtCompound) {
+            super(StructurePieceType.END_CITY, nbtCompound, structureManager, identifier -> Piece.createPlacementData(nbtCompound.getBoolean("OW"), BlockRotation.valueOf(nbtCompound.getString("Rot"))));
         }
 
         private static StructurePlacementData createPlacementData(boolean includeAir, BlockRotation rotation) {
@@ -232,8 +231,8 @@ public class EndCityGenerator {
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putString("Rot", this.placementData.getRotation().name());
             nbt.putBoolean("OW", this.placementData.getProcessors().get(0) == BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
         }

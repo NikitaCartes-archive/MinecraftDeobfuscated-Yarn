@@ -112,7 +112,7 @@ public class JfrProfileRecorder {
                     this.chunkGenerationSamples.add(ChunkGenerationSample.fromEvent(event));
                     break;
                 }
-                case "minecraft.WorldLoadFinishedEvent": {
+                case "minecraft.LoadWorld": {
                     this.worldGenDuration = event.getDuration();
                     break;
                 }
@@ -120,7 +120,7 @@ public class JfrProfileRecorder {
                     this.serverTickTimeSamples.add(ServerTickTimeSample.fromEvent(event));
                     break;
                 }
-                case "minecraft.PacketRead": {
+                case "minecraft.PacketReceived": {
                     this.packetReadSamples.add(PacketSample.fromEvent(event));
                     break;
                 }

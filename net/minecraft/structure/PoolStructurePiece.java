@@ -8,11 +8,11 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -49,12 +49,12 @@ extends StructurePiece {
         this.rotation = rotation;
     }
 
-    public PoolStructurePiece(ServerWorld world, NbtCompound nbt) {
+    public PoolStructurePiece(class_6625 arg, NbtCompound nbt) {
         super(StructurePieceType.JIGSAW, nbt);
-        this.structureManager = world.getStructureManager();
+        this.structureManager = arg.structureManager();
         this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
         this.groundLevelDelta = nbt.getInt("ground_level_delta");
-        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, world.getServer().getResourceManager(), world.getServer().getRegistryManager());
+        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, arg.resourceManager(), arg.registryAccess());
         this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC.parse(registryOps, nbt.getCompound("pool_element")).resultOrPartial(LOGGER::error).orElseThrow(() -> new IllegalStateException("Invalid pool element found"));
         this.rotation = BlockRotation.valueOf(nbt.getString("rotation"));
         this.boundingBox = this.poolElement.getBoundingBox(this.structureManager, this.pos, this.rotation);
@@ -64,12 +64,12 @@ extends StructurePiece {
     }
 
     @Override
-    protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+    protected void writeNbt(class_6625 arg, NbtCompound nbt) {
         nbt.putInt("PosX", this.pos.getX());
         nbt.putInt("PosY", this.pos.getY());
         nbt.putInt("PosZ", this.pos.getZ());
         nbt.putInt("ground_level_delta", this.groundLevelDelta);
-        RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, world.getServer().getRegistryManager());
+        RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, arg.registryAccess());
         StructurePoolElement.CODEC.encodeStart(registryReadingOps, this.poolElement).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("pool_element", (NbtElement)nbtElement));
         nbt.putString("rotation", this.rotation.name());
         NbtList nbtList = new NbtList();
@@ -80,12 +80,12 @@ extends StructurePiece {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-        return this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
     }
 
-    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, BlockPos pos, boolean keepJigsaws) {
-        return this.poolElement.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pos, this.rotation, boundingBox, random, keepJigsaws);
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, BlockPos pos, boolean keepJigsaws) {
+        this.poolElement.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pos, this.rotation, boundingBox, random, keepJigsaws);
     }
 
     @Override

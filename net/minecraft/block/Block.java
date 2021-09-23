@@ -72,7 +72,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a block that can be placed in a world.
+ * A block is a voxel in a {@linkplain World world}.
+ * This class and its subclasses define all logics for those voxels.
  * 
  * <p>There is exactly one instance for every type of block. Every stone
  * block for example in a world shares the same block instance. Each block
@@ -86,7 +87,11 @@ import org.jetbrains.annotations.Nullable;
  * <p>The translation key for the block name is determined by {@link
  * #getTranslationKey}.
  * 
- * @see <a href="https://minecraft.fandom.com/wiki/Model">Model - Official Minecraft Wiki</a>
+ * <p>In the world, the actual voxels are not stored as blocks, but as
+ * {@linkplain BlockState block states}. The possible states of the block
+ * is defined by {@link appendProperties}.
+ * 
+ * @see BlockState
  */
 public class Block
 extends AbstractBlock
@@ -219,11 +224,11 @@ implements ItemConvertible {
      * <p>If the new state {@linkplain BlockState#isAir() is air},
      * breaks the block at the position instead.
      * 
-     * @param state the existing block state
      * @param newState the new block state
      * @param world the world
      * @param pos the position of the replaced block state
      * @param flags the bitwise flags for {@link net.minecraft.world.ModifiableWorld#setBlockState(BlockPos, BlockState, int, int)}
+     * @param state the existing block state
      */
     public static void replace(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags) {
         Block.replace(state, newState, world, pos, flags, 512);
@@ -237,12 +242,12 @@ implements ItemConvertible {
      * <p>If the new state {@linkplain BlockState#isAir() is air},
      * breaks the block at the position instead.
      * 
-     * @param state the existing block state
-     * @param newState the new block state
-     * @param world the world
      * @param pos the position of the replaced block state
      * @param flags the bitwise flags for {@link net.minecraft.world.ModifiableWorld#setBlockState(BlockPos, BlockState, int, int)}
      * @param maxUpdateDepth the limit for the cascading block updates
+     * @param state the existing block state
+     * @param newState the new block state
+     * @param world the world
      */
     public static void replace(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
         if (newState != state) {

@@ -289,8 +289,10 @@ extends Chunk {
         if (!this.world.getWorldBorder().contains(pos)) {
             return false;
         }
-        if (this.world instanceof ServerWorld) {
-            return this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && ((ServerWorld)this.world).method_37116(ChunkPos.toLong(pos));
+        World world = this.world;
+        if (world instanceof ServerWorld) {
+            ServerWorld serverWorld = (ServerWorld)world;
+            return this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && serverWorld.method_37116(ChunkPos.toLong(pos));
         }
         return true;
     }

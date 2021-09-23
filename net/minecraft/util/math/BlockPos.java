@@ -301,14 +301,14 @@ extends Vec3i {
      * <p>The iterator yields positions in no specific order. The same position
      * may be returned multiple times by the iterator.
      * 
-     * @param random the {@link Random} object used to compute new positions
-     * @param count the number of positions to iterate
-     * @param minX the minimum x value for returned positions
-     * @param minY the minimum y value for returned positions
-     * @param minZ the minimum z value for returned positions
-     * @param maxX the maximum x value for returned positions
      * @param maxY the maximum y value for returned positions
      * @param maxZ the maximum z value for returned positions
+     * @param minZ the minimum z value for returned positions
+     * @param maxX the maximum x value for returned positions
+     * @param minX the minimum x value for returned positions
+     * @param minY the minimum y value for returned positions
+     * @param random the {@link Random} object used to compute new positions
+     * @param count the number of positions to iterate
      */
     public static Iterable<BlockPos> iterateRandomly(final Random random, final int count, final int minX, final int minY, final int minZ, int maxX, int maxY, int maxZ) {
         final int i = maxX - minX + 1;
@@ -347,10 +347,10 @@ extends Vec3i {
      * the one with a positive z offset is visited first before the one with a
      * negative z offset.
      * 
-     * @param center the center of iteration
-     * @param rangeX the maximum x difference from the center
      * @param rangeY the maximum y difference from the center
      * @param rangeZ the maximum z difference from the center
+     * @param center the center of iteration
+     * @param rangeX the maximum x difference from the center
      */
     public static Iterable<BlockPos> iterateOutwards(BlockPos center, final int rangeX, final int rangeY, final int rangeZ) {
         final int i = rangeX + rangeY + rangeZ;
@@ -475,10 +475,10 @@ extends Vec3i {
      * 
      * @throws IllegalStateException when the 2 directions lie on the same axis
      * 
-     * @param center the center of iteration
-     * @param radius the maximum chebychev distance
      * @param firstDirection the direction the iterator moves first
      * @param secondDirection the direction the iterator moves after the first
+     * @param center the center of iteration
+     * @param radius the maximum chebychev distance
      */
     public static Iterable<Mutable> iterateInSquare(final BlockPos center, final int radius, final Direction firstDirection, final Direction secondDirection) {
         Validate.validState(firstDirection.getAxis() != secondDirection.getAxis(), "The two directions cannot be on the same axis", new Object[0]);
@@ -633,7 +633,7 @@ extends Vec3i {
     }
 
     static {
-        SIZE_BITS_Z = SIZE_BITS_X = 1 + MathHelper.log2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
+        SIZE_BITS_Z = SIZE_BITS_X = 1 + MathHelper.floorLog2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
         SIZE_BITS_Y = 64 - SIZE_BITS_X - SIZE_BITS_Z;
         BITS_X = (1L << SIZE_BITS_X) - 1L;
         BITS_Y = (1L << SIZE_BITS_Y) - 1L;

@@ -16,13 +16,13 @@ import net.minecraft.block.WallTorchBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.class_6625;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePiecesHolder;
@@ -93,15 +93,15 @@ public class MineshaftGenerator {
         private final Direction direction;
         private final boolean twoFloors;
 
-        public MineshaftCrossing(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.MINESHAFT_CROSSING, nbt);
-            this.twoFloors = nbt.getBoolean("tf");
-            this.direction = Direction.fromHorizontal(nbt.getInt("D"));
+        public MineshaftCrossing(NbtCompound nbtCompound) {
+            super(StructurePieceType.MINESHAFT_CROSSING, nbtCompound);
+            this.twoFloors = nbtCompound.getBoolean("tf");
+            this.direction = Direction.fromHorizontal(nbtCompound.getInt("D"));
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putBoolean("tf", this.twoFloors);
             nbt.putInt("D", this.direction.getHorizontal());
         }
@@ -173,9 +173,9 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             if (this.method_33999(world, boundingBox)) {
-                return false;
+                return;
             }
             BlockState blockState = this.mineshaftType.getPlanks();
             if (this.twoFloors) {
@@ -198,7 +198,6 @@ public class MineshaftGenerator {
                     this.method_33880(world, boundingBox, blockState, j, i, k);
                 }
             }
-            return true;
         }
 
         private void generateCrossingPillar(StructureWorldAccess world, BlockBox boundingBox, int x, int minY, int z, int maxY) {
@@ -215,8 +214,8 @@ public class MineshaftGenerator {
             this.setOrientation(orientation);
         }
 
-        public MineshaftStairs(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.MINESHAFT_STAIRS, nbt);
+        public MineshaftStairs(NbtCompound nbtCompound) {
+            super(StructurePieceType.MINESHAFT_STAIRS, nbtCompound);
         }
 
         @Nullable
@@ -260,16 +259,15 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             if (this.method_33999(world, boundingBox)) {
-                return false;
+                return;
             }
             this.fillWithOutline(world, boundingBox, 0, 5, 0, 2, 7, 1, AIR, AIR, false);
             this.fillWithOutline(world, boundingBox, 0, 0, 7, 2, 2, 8, AIR, AIR, false);
             for (int i = 0; i < 5; ++i) {
                 this.fillWithOutline(world, boundingBox, 0, 5 - i - (i < 4 ? 1 : 0), 2 + i, 2, 7 - i, 2 + i, AIR, AIR, false);
             }
-            return true;
         }
     }
 
@@ -280,17 +278,17 @@ public class MineshaftGenerator {
         private boolean hasSpawner;
         private final int length;
 
-        public MineshaftCorridor(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.MINESHAFT_CORRIDOR, nbt);
-            this.hasRails = nbt.getBoolean("hr");
-            this.hasCobwebs = nbt.getBoolean("sc");
-            this.hasSpawner = nbt.getBoolean("hps");
-            this.length = nbt.getInt("Num");
+        public MineshaftCorridor(NbtCompound nbtCompound) {
+            super(StructurePieceType.MINESHAFT_CORRIDOR, nbtCompound);
+            this.hasRails = nbtCompound.getBoolean("hr");
+            this.hasCobwebs = nbtCompound.getBoolean("sc");
+            this.hasSpawner = nbtCompound.getBoolean("hps");
+            this.length = nbtCompound.getInt("Num");
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putBoolean("hr", this.hasRails);
             nbt.putBoolean("sc", this.hasCobwebs);
             nbt.putBoolean("hps", this.hasSpawner);
@@ -427,12 +425,12 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             int p;
             int o;
             int n;
             if (this.method_33999(world, boundingBox)) {
-                return false;
+                return;
             }
             boolean i = false;
             int j = 2;
@@ -493,7 +491,6 @@ public class MineshaftGenerator {
                     this.addBlockWithRandomThreshold(world, boundingBox, random, f, 1, 0, p, blockState2);
                 }
             }
-            return true;
         }
 
         private void fillSupportBeam(StructureWorldAccess world, BlockBox box, int x, int y, int z) {
@@ -636,7 +633,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
             nbt.putInt("MST", this.mineshaftType.ordinal());
         }
 
@@ -709,9 +706,9 @@ public class MineshaftGenerator {
             this.mineshaftType = type;
         }
 
-        public MineshaftRoom(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.MINESHAFT_ROOM, nbt);
-            BlockBox.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.getList("Entrances", 11)).resultOrPartial(LOGGER::error).ifPresent(this.entrances::addAll);
+        public MineshaftRoom(NbtCompound nbtCompound) {
+            super(StructurePieceType.MINESHAFT_ROOM, nbtCompound);
+            BlockBox.CODEC.listOf().parse(NbtOps.INSTANCE, nbtCompound.getList("Entrances", 11)).resultOrPartial(LOGGER::error).ifPresent(this.entrances::addAll);
         }
 
         @Override
@@ -751,16 +748,15 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             if (this.method_33999(world, boundingBox)) {
-                return false;
+                return;
             }
             this.fillWithOutline(world, boundingBox, this.boundingBox.getMinX(), this.boundingBox.getMinY() + 1, this.boundingBox.getMinZ(), this.boundingBox.getMaxX(), Math.min(this.boundingBox.getMinY() + 3, this.boundingBox.getMaxY()), this.boundingBox.getMaxZ(), AIR, AIR, false);
             for (BlockBox blockBox : this.entrances) {
                 this.fillWithOutline(world, boundingBox, blockBox.getMinX(), blockBox.getMaxY() - 2, blockBox.getMinZ(), blockBox.getMaxX(), blockBox.getMaxY(), blockBox.getMaxZ(), AIR, AIR, false);
             }
             this.fillHalfEllipsoid(world, boundingBox, this.boundingBox.getMinX(), this.boundingBox.getMinY() + 4, this.boundingBox.getMinZ(), this.boundingBox.getMaxX(), this.boundingBox.getMaxY(), this.boundingBox.getMaxZ(), AIR, false);
-            return true;
         }
 
         @Override
@@ -772,8 +768,8 @@ public class MineshaftGenerator {
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             BlockBox.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.entrances).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("Entrances", (NbtElement)nbtElement));
         }
     }

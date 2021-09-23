@@ -90,9 +90,9 @@ extends JsonDataLoader {
      * but this method will return the same result unless the recipes in this
      * manager are updated.
      * 
+     * @param world the input world
      * @param type the desired recipe type
      * @param inventory the input inventory
-     * @param world the input world
      */
     public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> type, C inventory, World world) {
         return this.getAllOfType(type).values().stream().flatMap(recipe -> Util.stream(type.match(recipe, world, inventory))).findFirst();
@@ -123,9 +123,9 @@ extends JsonDataLoader {
      * 
      * @return the created list of matching recipes
      * 
-     * @param type the desired recipe type
-     * @param inventory the input inventory
      * @param world the input world
+     * @param inventory the input inventory
+     * @param type the desired recipe type
      */
     public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> type, C inventory, World world) {
         return this.getAllOfType(type).values().stream().flatMap(recipe -> Util.stream(type.match(recipe, world, inventory))).sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey())).collect(Collectors.toList());
@@ -146,9 +146,9 @@ extends JsonDataLoader {
      * 
      * @see Recipe#getRemainder(Inventory)
      * 
-     * @param type the desired recipe type
-     * @param inventory the input inventory
      * @param world the input world
+     * @param inventory the input inventory
+     * @param type the desired recipe type
      */
     public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> type, C inventory, World world) {
         Optional<T> optional = this.getFirstMatch(type, inventory, world);

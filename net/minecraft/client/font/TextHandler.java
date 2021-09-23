@@ -71,9 +71,9 @@ public class TextHandler {
      * {@return the length of a string when it is trimmed to be at most {@code
      * maxWidth} wide}
      * 
-     * @param text the string to trim
      * @param maxWidth the max width of the trimmed string
      * @param style the style of the trimmed string
+     * @param text the string to trim
      */
     public int getTrimmedLength(String text, int maxWidth, Style style) {
         WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(maxWidth);

@@ -250,8 +250,8 @@ extends ByteBuf {
      * to encode the compound NBT
      * @see #decode(Codec)
      * 
-     * @param codec the codec to encode the object
      * @param object the object to write to this buf
+     * @param codec the codec to encode the object
      */
     public <T> void encode(Codec<T> codec, T object) {
         DataResult<NbtElement> dataResult = codec.encodeStart(NbtOps.INSTANCE, (NbtElement)object);
@@ -301,8 +301,8 @@ extends ByteBuf {
      * @param <T> the list's entry type
      * @see #readCollection(IntFunction, Function)
      * 
-     * @param collection the collection to write
      * @param entrySerializer a serializer that writes each entry to this buf
+     * @param collection the collection to write
      */
     public <T> void writeCollection(Collection<T> collection, BiConsumer<PacketByteBuf, T> entrySerializer) {
         this.writeVarInt(collection.size());
@@ -375,8 +375,8 @@ extends ByteBuf {
      * @see #readMap(Function, Function)
      * 
      * @param mapFactory a factory that creates a map with a given size
-     * @param keyParser a parser that parses each key for the map given this buf
      * @param valueParser a parser that parses each value for the map given this buf
+     * @param keyParser a parser that parses each key for the map given this buf
      */
     public <K, V, M extends Map<K, V>> M readMap(IntFunction<M> mapFactory, Function<PacketByteBuf, K> keyParser, Function<PacketByteBuf, V> valueParser) {
         int i = this.readVarInt();
@@ -397,8 +397,8 @@ extends ByteBuf {
      * @return the read map
      * @see #readMap(IntFunction, Function, Function)
      * 
-     * @param keyParser a parser that parses each key for the map given this buf
      * @param valueParser a parser that parses each value for the map given this buf
+     * @param keyParser a parser that parses each key for the map given this buf
      */
     public <K, V> Map<K, V> readMap(Function<PacketByteBuf, K> keyParser, Function<PacketByteBuf, V> valueParser) {
         return this.readMap(Maps::newHashMapWithExpectedSize, keyParser, valueParser);
@@ -657,8 +657,8 @@ extends ByteBuf {
      * @throws io.netty.handler.codec.DecoderException if the read array has a
      * length over {@code maxSize}
      * 
-     * @param toArray the array to reuse
      * @param maxSize the max length of the read array
+     * @param toArray the array to reuse
      */
     public long[] readLongArray(@Nullable long[] toArray, int maxSize) {
         int i = this.readVarInt();

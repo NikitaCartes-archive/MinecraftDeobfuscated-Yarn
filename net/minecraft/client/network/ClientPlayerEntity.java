@@ -686,7 +686,7 @@ extends AbstractClientPlayerEntity {
         if (this.isSprinting()) {
             boolean bl72;
             bl6 = !this.input.hasForwardMovement() || !bl5;
-            boolean bl8 = bl72 = bl6 || this.horizontalCollision || this.isTouchingWater() && !this.isSubmergedInWater();
+            boolean bl8 = bl72 = bl6 || this.horizontalCollision && !this.field_34927 || this.isTouchingWater() && !this.isSubmergedInWater();
             if (this.isSwimming()) {
                 if (!this.onGround && !this.input.sneaking && bl6 || !this.isTouchingWater()) {
                     this.setSprinting(false);

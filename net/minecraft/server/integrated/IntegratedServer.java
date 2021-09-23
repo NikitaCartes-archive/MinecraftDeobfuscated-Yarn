@@ -44,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
 public class IntegratedServer
 extends MinecraftServer {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final int field_34964 = 2;
     private final MinecraftClient client;
     private boolean paused;
     private int lanPort = -1;
@@ -51,6 +52,7 @@ extends MinecraftServer {
     private GameMode forcedGameMode;
     private LanServerPinger lanPinger;
     private UUID localPlayerUuid;
+    private int simulationDistance = 0;
 
     public IntegratedServer(Thread serverThread, MinecraftClient client, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, ResourcePackManager dataPackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super(serverThread, registryManager, session, saveProperties, dataPackManager, client.getNetworkProxy(), client.getDataFixer(), serverResourceManager, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
@@ -74,6 +76,7 @@ extends MinecraftServer {
 
     @Override
     public void tick(BooleanSupplier shouldKeepTicking) {
+        int j;
         boolean bl = this.paused;
         this.paused = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
         Profiler profiler = this.getProfiler();
@@ -93,6 +96,11 @@ extends MinecraftServer {
         if (i != this.getPlayerManager().getViewDistance()) {
             LOGGER.info("Changing view distance to {}, from {}", (Object)i, (Object)this.getPlayerManager().getViewDistance());
             this.getPlayerManager().setViewDistance(i);
+        }
+        if ((j = Math.max(2, this.client.options.simulationDistance)) != this.simulationDistance) {
+            LOGGER.info("Changing simulation distance to {}, from {}", (Object)j, (Object)this.simulationDistance);
+            this.getPlayerManager().setSimulationDistance(j);
+            this.simulationDistance = j;
         }
     }
 

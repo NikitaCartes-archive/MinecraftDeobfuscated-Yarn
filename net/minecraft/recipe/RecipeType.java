@@ -47,9 +47,9 @@ public interface RecipeType<T extends Recipe<?>> {
      * <p>This utility method casts the {@code recipe} from {@code Recipe<C>} to
      * {@code T} conveniently.
      * 
-     * @param recipe the recipe to match and cast
-     * @param world the input world
      * @param inventory the input inventory
+     * @param world the input world
+     * @param recipe the recipe to match and cast
      */
     default public <C extends Inventory> Optional<T> match(Recipe<C> recipe, World world, C inventory) {
         return recipe.matches(inventory, world) ? Optional.of(recipe) : Optional.empty();

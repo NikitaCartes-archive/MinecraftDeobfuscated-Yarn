@@ -20,14 +20,14 @@ extends CarverConfig {
     public final FloatProvider verticalRotation;
     public final Shape shape;
 
-    public RavineCarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, boolean aquifers, CarverDebugConfig debugConfig, FloatProvider verticalRotation, Shape shape) {
-        super(probability, y, yScale, lavaLevel, aquifers, debugConfig);
-        this.verticalRotation = verticalRotation;
+    public RavineCarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig carverDebugConfig, FloatProvider floatProvider, Shape shape) {
+        super(probability, y, yScale, lavaLevel, carverDebugConfig);
+        this.verticalRotation = floatProvider;
         this.shape = shape;
     }
 
     public RavineCarverConfig(CarverConfig config, FloatProvider verticalRotation, Shape shape) {
-        this(config.probability, config.y, config.yScale, config.lavaLevel, config.aquifers, config.debugConfig, verticalRotation, shape);
+        this(config.probability, config.y, config.yScale, config.lavaLevel, config.debugConfig, verticalRotation, shape);
     }
 
     public static class Shape {

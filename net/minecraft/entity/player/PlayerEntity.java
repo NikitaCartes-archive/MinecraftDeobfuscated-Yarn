@@ -1174,9 +1174,9 @@ extends LivingEntity {
      * 
      * @implNote This is used by the client player to trigger bundle tutorials.
      * 
-     * @param cursorStack the item stack on the player's cursor
-     * @param slotStack the item stack in the clicked slot
      * @param clickType the click type (mouse button used)
+     * @param slotStack the item stack in the clicked slot
+     * @param cursorStack the item stack on the player's cursor
      */
     public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
     }

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface IndexedIterable<T>
 extends Iterable<T> {
-    public static final int field_34829 = -1;
+    public static final int ABSENT_RAW_ID = -1;
 
     public int getRawId(T var1);
 

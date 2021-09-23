@@ -3,11 +3,12 @@
  */
 package net.minecraft.structure;
 
+import java.util.Map;
 import java.util.Random;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.class_6625;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
@@ -33,6 +34,7 @@ public class ShipwreckGenerator {
     static final BlockPos DEFAULT_POSITION = new BlockPos(4, 0, 15);
     private static final Identifier[] BEACHED_TEMPLATES = new Identifier[]{new Identifier("shipwreck/with_mast"), new Identifier("shipwreck/sideways_full"), new Identifier("shipwreck/sideways_fronthalf"), new Identifier("shipwreck/sideways_backhalf"), new Identifier("shipwreck/rightsideup_full"), new Identifier("shipwreck/rightsideup_fronthalf"), new Identifier("shipwreck/rightsideup_backhalf"), new Identifier("shipwreck/with_mast_degraded"), new Identifier("shipwreck/rightsideup_full_degraded"), new Identifier("shipwreck/rightsideup_fronthalf_degraded"), new Identifier("shipwreck/rightsideup_backhalf_degraded")};
     private static final Identifier[] REGULAR_TEMPLATES = new Identifier[]{new Identifier("shipwreck/with_mast"), new Identifier("shipwreck/upsidedown_full"), new Identifier("shipwreck/upsidedown_fronthalf"), new Identifier("shipwreck/upsidedown_backhalf"), new Identifier("shipwreck/sideways_full"), new Identifier("shipwreck/sideways_fronthalf"), new Identifier("shipwreck/sideways_backhalf"), new Identifier("shipwreck/rightsideup_full"), new Identifier("shipwreck/rightsideup_fronthalf"), new Identifier("shipwreck/rightsideup_backhalf"), new Identifier("shipwreck/with_mast_degraded"), new Identifier("shipwreck/upsidedown_full_degraded"), new Identifier("shipwreck/upsidedown_fronthalf_degraded"), new Identifier("shipwreck/upsidedown_backhalf_degraded"), new Identifier("shipwreck/sideways_full_degraded"), new Identifier("shipwreck/sideways_fronthalf_degraded"), new Identifier("shipwreck/sideways_backhalf_degraded"), new Identifier("shipwreck/rightsideup_full_degraded"), new Identifier("shipwreck/rightsideup_fronthalf_degraded"), new Identifier("shipwreck/rightsideup_backhalf_degraded")};
+    static final Map<String, Identifier> field_34939 = Map.of("map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST);
 
     public static void addParts(StructureManager structureManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder structurePiecesHolder, Random random, ShipwreckFeatureConfig config) {
         Identifier identifier = Util.getRandom(config.isBeached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
@@ -48,14 +50,14 @@ public class ShipwreckGenerator {
             this.grounded = grounded;
         }
 
-        public Piece(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.SHIPWRECK, nbt, world, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+        public Piece(StructureManager structureManager, NbtCompound nbt) {
+            super(StructurePieceType.SHIPWRECK, nbt, structureManager, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
             this.grounded = nbt.getBoolean("isBeached");
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putBoolean("isBeached", this.grounded);
             nbt.putString("Rot", this.placementData.getRotation().name());
         }
@@ -66,17 +68,14 @@ public class ShipwreckGenerator {
 
         @Override
         protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
-            if ("map_chest".equals(metadata)) {
-                LootableContainerBlockEntity.setLootTable(world, random, pos.down(), LootTables.SHIPWRECK_MAP_CHEST);
-            } else if ("treasure_chest".equals(metadata)) {
-                LootableContainerBlockEntity.setLootTable(world, random, pos.down(), LootTables.SHIPWRECK_TREASURE_CHEST);
-            } else if ("supply_chest".equals(metadata)) {
-                LootableContainerBlockEntity.setLootTable(world, random, pos.down(), LootTables.SHIPWRECK_SUPPLY_CHEST);
+            Identifier identifier = field_34939.get(metadata);
+            if (identifier != null) {
+                LootableContainerBlockEntity.setLootTable(world, random, pos.down(), identifier);
             }
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             int i = world.getTopY();
             int j = 0;
             Vec3i vec3i = this.structure.getSize();
@@ -95,7 +94,7 @@ public class ShipwreckGenerator {
             }
             int m = this.grounded ? i - vec3i.getY() / 2 - random.nextInt(3) : j;
             this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
-            return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+            super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
         }
     }
 }

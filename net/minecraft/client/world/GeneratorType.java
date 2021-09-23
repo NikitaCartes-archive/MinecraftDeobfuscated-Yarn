@@ -88,10 +88,10 @@ public abstract class GeneratorType {
         ChunkGenerator chunkGenerator = generatorOptions.getChunkGenerator();
         return new CustomizeFlatLevelScreen(screen, config -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.getRegistryWithReplacedOverworldGenerator(createWorldScreen.moreOptionsDialog.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY), generatorOptions.getDimensions(), new FlatChunkGenerator((FlatChunkGeneratorConfig)config)))), chunkGenerator instanceof FlatChunkGenerator ? ((FlatChunkGenerator)chunkGenerator).getConfig() : FlatChunkGeneratorConfig.getDefaultConfig(screen.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY)));
     }, Optional.of(SINGLE_BIOME_SURFACE), (screen, generatorOptions) -> new CustomizeBuffetLevelScreen(screen, screen.moreOptionsDialog.getRegistryManager(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.createFixedBiomeOptions(createWorldScreen.moreOptionsDialog.getRegistryManager(), generatorOptions, SINGLE_BIOME_SURFACE, biome)), GeneratorType.getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)), Optional.of(SINGLE_BIOME_CAVES), (screen, generatorOptions) -> new CustomizeBuffetLevelScreen(screen, screen.moreOptionsDialog.getRegistryManager(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.createFixedBiomeOptions(createWorldScreen.moreOptionsDialog.getRegistryManager(), generatorOptions, SINGLE_BIOME_CAVES, biome)), GeneratorType.getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)), Optional.of(SINGLE_BIOME_FLOATING_ISLANDS), (screen, generatorOptions) -> new CustomizeBuffetLevelScreen(screen, screen.moreOptionsDialog.getRegistryManager(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.createFixedBiomeOptions(createWorldScreen.moreOptionsDialog.getRegistryManager(), generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)), GeneratorType.getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)));
-    private final Text translationKey;
+    private final Text displayName;
 
-    GeneratorType(String string) {
-        this.translationKey = new TranslatableText("generator." + string);
+    GeneratorType(String translationKeySuffix) {
+        this.displayName = new TranslatableText("generator." + translationKeySuffix);
     }
 
     private static GeneratorOptions createFixedBiomeOptions(DynamicRegistryManager registryManager, GeneratorOptions generatorOptions, GeneratorType type, Biome biome) {
@@ -117,8 +117,8 @@ public abstract class GeneratorType {
         return Optional.empty();
     }
 
-    public Text getTranslationKey() {
-        return this.translationKey;
+    public Text getDisplayName() {
+        return this.displayName;
     }
 
     public GeneratorOptions createDefaultOptions(DynamicRegistryManager.Impl registryManager, long seed, boolean generateStructures, boolean bonusChest) {

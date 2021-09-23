@@ -109,8 +109,8 @@ extends AbstractTeam {
      * Decorates the name of an entity with the prefix, suffix and color of the team.
      * If the team is null, returns a copy of the name.
      * 
-     * @param team the team, can be null
      * @param name the name to be decorated
+     * @param team the team, can be null
      */
     public static MutableText decorateName(@Nullable AbstractTeam team, Text name) {
         if (team == null) {

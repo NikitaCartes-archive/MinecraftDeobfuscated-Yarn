@@ -123,8 +123,8 @@ public class CommandFunctionManager {
      * @see #execute(CommandFunction, ServerCommandSource)
      * 
      * @param function the function
-     * @param source the command source to execute with
      * @param tracer a tracer for a non-recursive function execution
+     * @param source the command source to execute with
      */
     public int execute(CommandFunction function, ServerCommandSource source, @Nullable Tracer tracer) {
         if (this.execution != null) {

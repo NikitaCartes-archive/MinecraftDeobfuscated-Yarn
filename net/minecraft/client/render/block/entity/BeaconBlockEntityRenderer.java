@@ -107,8 +107,8 @@ implements BlockEntityRenderer<BeaconBlockEntity> {
     }
 
     /**
-     * @param u the left-most coordinate of the texture region
      * @param v the top-most coordinate of the texture region
+     * @param u the left-most coordinate of the texture region
      */
     private static void renderBeamVertex(Matrix4f modelMatrix, Matrix3f normalMatrix, VertexConsumer vertices, float red, float green, float blue, float alpha, int y, float x, float z, float u, float v) {
         vertices.vertex(modelMatrix, x, y, z).color(red, green, blue, alpha).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE).normal(normalMatrix, 0.0f, 1.0f, 0.0f).next();

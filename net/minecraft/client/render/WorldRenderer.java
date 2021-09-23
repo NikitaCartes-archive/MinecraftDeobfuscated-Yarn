@@ -737,10 +737,10 @@ AutoCloseable {
     }
 
     public String getEntitiesDebugString() {
-        return "E: " + this.regularEntityCount + "/" + this.world.getRegularEntityCount() + ", B: " + this.blockEntityCount;
+        return "E: " + this.regularEntityCount + "/" + this.world.getRegularEntityCount() + ", B: " + this.blockEntityCount + ", SD: " + this.client.options.simulationDistance;
     }
 
-    private void setupTerrain(Camera camera, Frustum frustum, boolean hasForcedFrustum, boolean bl) {
+    private void setupTerrain(Camera camera, Frustum frustum, boolean hasForcedFrustum, boolean spectator) {
         Vec3d vec3d = camera.getPos();
         if (this.client.options.getViewDistance() != this.viewDistance) {
             this.reload();
@@ -783,20 +783,20 @@ AutoCloseable {
         this.lastCameraY = n;
         this.lastCameraZ = o;
         this.client.getProfiler().swap("update");
-        boolean bl2 = this.client.chunkCullingEnabled;
-        if (bl && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
-            bl2 = false;
+        boolean bl = this.client.chunkCullingEnabled;
+        if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
+            bl = false;
         }
         if (!hasForcedFrustum) {
             if (this.field_34810) {
                 this.client.getProfiler().push("full_update_schedule");
                 this.field_34810 = false;
-                boolean bl3 = bl2;
+                boolean bl2 = bl;
                 this.field_34808 = Util.getMainWorkerExecutor().submit(() -> {
                     ArrayDeque<ChunkInfo> queue = Queues.newArrayDeque();
                     this.method_38549(camera, queue);
                     class_6600 lv = new class_6600(this.chunks.chunks.length);
-                    this.method_34808(lv.field_34819, lv.field_34818, vec3d, queue, bl3);
+                    this.method_34808(lv.field_34819, lv.field_34818, vec3d, queue, bl2);
                     this.field_34817.set(lv);
                     this.field_34809.set(true);
                 });
@@ -809,10 +809,10 @@ AutoCloseable {
                 while (!this.field_34816.isEmpty()) {
                     ChunkBuilder.BuiltChunk builtChunk = (ChunkBuilder.BuiltChunk)this.field_34816.poll();
                     ChunkInfo chunkInfo = lv.field_34818.getInfo(builtChunk);
-                    if (chunkInfo == null) continue;
+                    if (chunkInfo == null || chunkInfo.chunk != builtChunk) continue;
                     queue.add(chunkInfo);
                 }
-                this.method_34808(lv.field_34819, lv.field_34818, vec3d, queue, bl2);
+                this.method_34808(lv.field_34819, lv.field_34818, vec3d, queue, bl);
                 this.field_34809.set(true);
                 this.client.getProfiler().pop();
             }
@@ -988,7 +988,7 @@ AutoCloseable {
     public void render(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f) {
         int m;
         Frustum frustum;
-        boolean bl;
+        boolean bl2;
         RenderSystem.setShaderGameTime(this.world.getTime(), tickDelta);
         this.blockEntityRenderDispatcher.configure(this.world, camera, this.client.crosshairTarget);
         this.entityRenderDispatcher.configure(this.world, camera, this.client.targetedEntity);
@@ -996,15 +996,16 @@ AutoCloseable {
         profiler.swap("chunk_update_queue");
         this.world.runQueuedChunkUpdates();
         profiler.swap("light_updates");
-        this.world.getChunkManager().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, false, true);
+        boolean bl = this.world.method_38743();
+        this.world.getChunkManager().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, bl, true);
         Vec3d vec3d = camera.getPos();
         double d = vec3d.getX();
         double e = vec3d.getY();
         double f = vec3d.getZ();
         Matrix4f matrix4f2 = matrices.peek().getModel();
         profiler.swap("culling");
-        boolean bl2 = bl = this.capturedFrustum != null;
-        if (bl) {
+        boolean bl3 = bl2 = this.capturedFrustum != null;
+        if (bl2) {
             frustum = this.capturedFrustum;
             frustum.setPosition(this.capturedFrustumPosition.x, this.capturedFrustumPosition.y, this.capturedFrustumPosition.z);
         } else {
@@ -1012,7 +1013,7 @@ AutoCloseable {
         }
         this.client.getProfiler().swap("captureFrustum");
         if (this.shouldCaptureFrustum) {
-            this.captureFrustum(matrix4f2, matrix4f, vec3d.x, vec3d.y, vec3d.z, bl ? new Frustum(matrix4f2, matrix4f) : frustum);
+            this.captureFrustum(matrix4f2, matrix4f, vec3d.x, vec3d.y, vec3d.z, bl2 ? new Frustum(matrix4f2, matrix4f) : frustum);
             this.shouldCaptureFrustum = false;
         }
         profiler.swap("clear");
@@ -1020,14 +1021,14 @@ AutoCloseable {
         BackgroundRenderer.setFogBlack();
         RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
         float g = gameRenderer.getViewDistance();
-        boolean bl22 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
+        boolean bl32 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
         profiler.swap("sky");
         RenderSystem.setShader(GameRenderer::getPositionShader);
-        this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl22));
+        this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl32));
         profiler.swap("fog");
-        BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0f, 32.0f), bl22);
+        BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0f, 32.0f), bl32);
         profiler.swap("terrain_setup");
-        this.setupTerrain(camera, frustum, bl, this.client.player.isSpectator());
+        this.setupTerrain(camera, frustum, bl2, this.client.player.isSpectator());
         profiler.swap("compilechunks");
         this.updateChunks(camera);
         profiler.swap("terrain");
@@ -1054,7 +1055,7 @@ AutoCloseable {
             this.entityOutlinesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             this.client.getFramebuffer().beginWrite(false);
         }
-        boolean bl3 = false;
+        boolean bl4 = false;
         VertexConsumerProvider.Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
         for (Entity entity : this.world.getEntities()) {
             VertexConsumerProvider vertexConsumerProvider;
@@ -1066,7 +1067,7 @@ AutoCloseable {
                 entity.lastRenderZ = entity.getZ();
             }
             if (this.canDrawEntityOutlines() && this.client.hasOutline(entity)) {
-                bl3 = true;
+                bl4 = true;
                 OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
                 vertexConsumerProvider = outlineVertexConsumerProvider;
                 int i = entity.getTeamColorValue();
@@ -1132,7 +1133,7 @@ AutoCloseable {
         immediate.draw(TexturedRenderLayers.getSign());
         immediate.draw(TexturedRenderLayers.getChest());
         this.bufferBuilders.getOutlineVertexConsumers().draw();
-        if (bl3) {
+        if (bl4) {
             this.entityOutlineShader.render(tickDelta);
             this.client.getFramebuffer().beginWrite(false);
         }
@@ -2824,15 +2825,9 @@ AutoCloseable {
     @Environment(value=EnvType.CLIENT)
     static class ChunkInfoList {
         private final ChunkInfo[] current;
-        private final ChunkInfo[] pending;
 
         ChunkInfoList(int i) {
             this.current = new ChunkInfo[i];
-            this.pending = new ChunkInfo[i];
-        }
-
-        private void update() {
-            System.arraycopy(this.pending, 0, this.current, 0, this.current.length);
         }
 
         public void setInfo(ChunkBuilder.BuiltChunk chunk, ChunkInfo info) {
@@ -2840,8 +2835,12 @@ AutoCloseable {
         }
 
         @Nullable
-        public ChunkInfo getInfo(ChunkBuilder.BuiltChunk chunk) {
-            return this.current[chunk.index];
+        public ChunkInfo getInfo(ChunkBuilder.BuiltChunk builtChunk) {
+            int i = builtChunk.index;
+            if (i < 0 || i >= this.current.length) {
+                return null;
+            }
+            return this.current[i];
         }
     }
 }

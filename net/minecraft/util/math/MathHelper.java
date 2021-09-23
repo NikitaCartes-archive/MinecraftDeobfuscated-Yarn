@@ -186,8 +186,8 @@ public class MathHelper {
      * [min, max]}} If the range is empty (i.e. {@code max < min}), it
      * returns {@code min}.
      * 
-     * @param min the minimum value, inclusive
      * @param max the maximum value, inclusive
+     * @param min the minimum value, inclusive
      */
     public static int nextInt(Random random, int min, int max) {
         if (min >= max) {
@@ -352,13 +352,31 @@ public class MathHelper {
         return value != 0 && (value & value - 1) == 0;
     }
 
-    public static int log2DeBruijn(int value) {
+    /**
+     * {@return ceil(log<sub>2</sub>({@code value}))}
+     * 
+     * <p>The vanilla implementation uses the de Bruijn sequence.
+     * 
+     * @see Integer#numberOfLeadingZeros(int)
+     * 
+     * @param value the input value
+     */
+    public static int ceilLog2(int value) {
         value = MathHelper.isPowerOfTwo(value) ? value : MathHelper.smallestEncompassingPowerOfTwo(value);
         return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int)((long)value * 125613361L >> 27) & 0x1F];
     }
 
-    public static int log2(int value) {
-        return MathHelper.log2DeBruijn(value) - (MathHelper.isPowerOfTwo(value) ? 0 : 1);
+    /**
+     * {@return floor(log<sub>2</sub>({@code value}))}
+     * 
+     * <p>The vanilla implementation uses the de Bruijn sequence.
+     * 
+     * @see Integer#numberOfLeadingZeros(int)
+     * 
+     * @param value the input value
+     */
+    public static int floorLog2(int value) {
+        return MathHelper.ceilLog2(value) - (MathHelper.isPowerOfTwo(value) ? 0 : 1);
     }
 
     public static int packRgb(float r, float g, float b) {
@@ -437,8 +455,8 @@ public class MathHelper {
      * In other words, {@code getLerpProgress(lerp(delta, start, end), start, end) == delta}.
      * 
      * @param value the result of the lerp function
-     * @param start the value interpolated from
      * @param end the value interpolated to
+     * @param start the value interpolated from
      */
     public static double getLerpProgress(double value, double start, double end) {
         return (value - start) / (end - start);
@@ -700,12 +718,12 @@ public class MathHelper {
     /**
      * A two-dimensional lerp between values on the 4 corners of the unit square. Arbitrary values are specified for the corners and the output is interpolated between them.
      * 
+     * @param x1y1 the output if {@code deltaX} is 1 and {@code deltaY} is 1
      * @param deltaX the x-coordinate on the unit square
      * @param deltaY the y-coordinate on the unit square
      * @param x0y0 the output if {@code deltaX} is 0 and {@code deltaY} is 0
      * @param x1y0 the output if {@code deltaX} is 1 and {@code deltaY} is 0
      * @param x0y1 the output if {@code deltaX} is 0 and {@code deltaY} is 1
-     * @param x1y1 the output if {@code deltaX} is 1 and {@code deltaY} is 1
      */
     public static double lerp2(double deltaX, double deltaY, double x0y0, double x1y0, double x0y1, double x1y1) {
         return MathHelper.lerp(deltaY, MathHelper.lerp(deltaX, x0y0, x1y0), MathHelper.lerp(deltaX, x0y1, x1y1));
@@ -714,17 +732,17 @@ public class MathHelper {
     /**
      * A three-dimensional lerp between values on the 8 corners of the unit cube. Arbitrary values are specified for the corners and the output is interpolated between them.
      * 
-     * @param deltaX the x-coordinate on the unit cube
-     * @param deltaY the y-coordinate on the unit cube
-     * @param deltaZ the z-coordinate on the unit cube
-     * @param x0y0z0 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
-     * @param x1y0z0 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
-     * @param x0y1z0 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
      * @param x1y1z0 the output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 0
-     * @param x0y0z1 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
-     * @param x1y0z1 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
-     * @param x0y1z1 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
+     * @param x0y1z0 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
+     * @param x1y0z0 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
+     * @param x0y0z0 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
+     * @param deltaZ the z-coordinate on the unit cube
      * @param x1y1z1 the output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 1
+     * @param deltaY the y-coordinate on the unit cube
+     * @param x0y1z1 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
+     * @param deltaX the x-coordinate on the unit cube
+     * @param x1y0z1 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
+     * @param x0y0z1 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
      */
     public static double lerp3(double deltaX, double deltaY, double deltaZ, double x0y0z0, double x1y0z0, double x0y1z0, double x1y1z0, double x0y0z1, double x1y0z1, double x0y1z1, double x1y1z1) {
         return MathHelper.lerp(deltaZ, MathHelper.lerp2(deltaX, deltaY, x0y0z0, x1y0z0, x0y1z0, x1y1z0), MathHelper.lerp2(deltaX, deltaY, x0y0z1, x1y0z1, x0y1z1, x1y1z1));
@@ -788,6 +806,10 @@ public class MathHelper {
     }
 
     public static int square(int n) {
+        return n * n;
+    }
+
+    public static long square(long n) {
         return n * n;
     }
 

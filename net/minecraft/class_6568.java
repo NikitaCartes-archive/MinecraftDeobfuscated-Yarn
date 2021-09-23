@@ -9,11 +9,11 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_6576;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
@@ -35,13 +35,13 @@ public class class_6568 {
     private final double[][] field_34608;
     private final double[][] field_34609;
     private final double[][] field_34610;
-    private final class_6576[][] field_34611;
-    private final Long2ObjectMap<class_6576> field_34612 = new Long2ObjectOpenHashMap<class_6576>();
+    private final TerrainNoisePoint[][] field_34611;
+    private final Long2ObjectMap<TerrainNoisePoint> field_34612 = new Long2ObjectOpenHashMap<TerrainNoisePoint>();
     private final AquiferSampler field_34613;
     private final class_6569 field_34614;
     private final class_6569 field_34615;
 
-    public class_6568(int i, int j, int k, int l, int m, NoiseColumnSampler noiseColumnSampler, int n, int o, class_6572 arg, Supplier<ChunkGeneratorSettings> supplier, AquiferSampler.class_6565 arg2) {
+    public class_6568(int i, int j, int k, int l, int m, NoiseColumnSampler noiseColumnSampler, int n, int o, ColumnSampler columnSampler, Supplier<ChunkGeneratorSettings> supplier, AquiferSampler.class_6565 arg) {
         this.field_34596 = i;
         this.field_34597 = j;
         this.field_34598 = l;
@@ -58,7 +58,7 @@ public class class_6568 {
         this.field_34608 = new double[p + 1][];
         this.field_34609 = new double[p + 1][];
         this.field_34610 = new double[p + 1][];
-        this.field_34611 = new class_6576[p + 1][];
+        this.field_34611 = new TerrainNoisePoint[p + 1][];
         for (int q = 0; q <= p; ++q) {
             int r = this.field_34603 + q;
             this.field_34606[q] = new double[p + 1];
@@ -66,7 +66,7 @@ public class class_6568 {
             this.field_34608[q] = new double[p + 1];
             this.field_34609[q] = new double[p + 1];
             this.field_34610[q] = new double[p + 1];
-            this.field_34611[q] = new class_6576[p + 1];
+            this.field_34611[q] = new TerrainNoisePoint[p + 1];
             for (int s = 0; s <= p; ++s) {
                 int t = this.field_34604 + s;
                 class_6570 lv = class_6568.method_38346(noiseColumnSampler, r, t);
@@ -78,8 +78,8 @@ public class class_6568 {
                 this.field_34611[q][s] = lv.field_34616;
             }
         }
-        this.field_34613 = noiseColumnSampler.method_38389(this, n, o, m, l, arg2, supplier.get().hasAquifers());
-        this.field_34614 = noiseColumnSampler.method_38390(this, arg, supplier.get().hasNoodleCaves());
+        this.field_34613 = noiseColumnSampler.method_38389(this, n, o, m, l, arg, supplier.get().hasAquifers());
+        this.field_34614 = noiseColumnSampler.method_38390(this, columnSampler, supplier.get().hasNoodleCaves());
         this.field_34615 = noiseColumnSampler.method_38391(this, supplier.get().hasOreVeins());
     }
 
@@ -108,11 +108,11 @@ public class class_6568 {
         return this.field_34610[i - this.field_34603][j - this.field_34604];
     }
 
-    public class_6576 method_38360(int i, int j) {
+    public TerrainNoisePoint method_38360(int i, int j) {
         return this.field_34611[i - this.field_34603][j - this.field_34604];
     }
 
-    public class_6576 method_38353(NoiseColumnSampler noiseColumnSampler, int i, int j) {
+    public TerrainNoisePoint method_38353(NoiseColumnSampler noiseColumnSampler, int i, int j) {
         int k = i - this.field_34603;
         int l2 = j - this.field_34604;
         int m = this.field_34611.length;
@@ -122,23 +122,23 @@ public class class_6568 {
         return this.field_34612.computeIfAbsent(ChunkPos.toLong(i, j), l -> class_6568.method_38346((NoiseColumnSampler)noiseColumnSampler, (int)ChunkPos.getPackedX((long)l), (int)ChunkPos.getPackedZ((long)l)).field_34616);
     }
 
-    public class_6576 method_38361(int i, int j) {
+    public TerrainNoisePoint method_38361(int i, int j) {
         int k = BiomeCoords.fromBlock(i) - this.field_34603;
         int l = BiomeCoords.fromBlock(j) - this.field_34604;
-        class_6576 lv = this.field_34611[k][l];
-        class_6576 lv2 = this.field_34611[k][l + 1];
-        class_6576 lv3 = this.field_34611[k + 1][l];
-        class_6576 lv4 = this.field_34611[k + 1][l + 1];
+        TerrainNoisePoint terrainNoisePoint = this.field_34611[k][l];
+        TerrainNoisePoint terrainNoisePoint2 = this.field_34611[k][l + 1];
+        TerrainNoisePoint terrainNoisePoint3 = this.field_34611[k + 1][l];
+        TerrainNoisePoint terrainNoisePoint4 = this.field_34611[k + 1][l + 1];
         double d = (double)Math.floorMod(i, 4) / 4.0;
         double e = (double)Math.floorMod(j, 4) / 4.0;
-        double f = MathHelper.lerp2(d, e, lv.comp_77(), lv3.comp_77(), lv2.comp_77(), lv4.comp_77());
-        double g = MathHelper.lerp2(d, e, lv.comp_78(), lv3.comp_78(), lv2.comp_78(), lv4.comp_78());
-        double h = MathHelper.lerp2(d, e, lv.comp_79(), lv3.comp_79(), lv2.comp_79(), lv4.comp_79());
-        return new class_6576(f, g, h);
+        double f = MathHelper.lerp2(d, e, terrainNoisePoint.offset(), terrainNoisePoint3.offset(), terrainNoisePoint2.offset(), terrainNoisePoint4.offset());
+        double g = MathHelper.lerp2(d, e, terrainNoisePoint.factor(), terrainNoisePoint3.factor(), terrainNoisePoint2.factor(), terrainNoisePoint4.factor());
+        double h = MathHelper.lerp2(d, e, terrainNoisePoint.peaks(), terrainNoisePoint3.peaks(), terrainNoisePoint2.peaks(), terrainNoisePoint4.peaks());
+        return new TerrainNoisePoint(f, g, h);
     }
 
-    protected NoiseInterpolator method_38344(class_6572 arg) {
-        return new NoiseInterpolator(arg);
+    protected NoiseInterpolator method_38344(ColumnSampler columnSampler) {
+        return new NoiseInterpolator(columnSampler);
     }
 
     public void method_38336() {
@@ -190,7 +190,7 @@ public class class_6568 {
         final double field_34620;
         final double field_34621;
         @Debug
-        public final class_6576 field_34616;
+        public final TerrainNoisePoint field_34616;
 
         class_6570(NoiseColumnSampler noiseColumnSampler, int i, int j) {
             this.field_34617 = (double)i + noiseColumnSampler.method_38377(i, 0, j);
@@ -198,13 +198,13 @@ public class class_6568 {
             this.field_34619 = noiseColumnSampler.method_38401(this.field_34617, 0.0, this.field_34618);
             this.field_34620 = noiseColumnSampler.method_38407(this.field_34617, 0.0, this.field_34618);
             this.field_34621 = noiseColumnSampler.method_38404(this.field_34617, 0.0, this.field_34618);
-            this.field_34616 = noiseColumnSampler.method_38376(BiomeCoords.toBlock(i), BiomeCoords.toBlock(j), (float)this.field_34619, (float)this.field_34620, (float)this.field_34621);
+            this.field_34616 = noiseColumnSampler.createTerrainNoisePoint(BiomeCoords.toBlock(i), BiomeCoords.toBlock(j), (float)this.field_34619, (float)this.field_34620, (float)this.field_34621);
         }
     }
 
     @FunctionalInterface
-    public static interface class_6572 {
-        public double sample(int var1, int var2, int var3);
+    public static interface ColumnSampler {
+        public double calculateNoise(int var1, int var2, int var3);
     }
 
     @FunctionalInterface
@@ -217,7 +217,7 @@ public class class_6568 {
     implements class_6573 {
         private double[][] startNoiseBuffer;
         private double[][] endNoiseBuffer;
-        private final class_6572 columnSampler;
+        private final ColumnSampler columnSampler;
         private double x0y0z0;
         private double x0y0z1;
         private double x1y0z0;
@@ -232,10 +232,10 @@ public class class_6568 {
         private double x1z1;
         private double z0;
         private double z1;
-        private double field_34624;
+        private double result;
 
-        NoiseInterpolator(class_6572 arg2) {
-            this.columnSampler = arg2;
+        NoiseInterpolator(ColumnSampler columnSampler) {
+            this.columnSampler = columnSampler;
             this.startNoiseBuffer = this.createBuffer(class_6568.this.field_34598, class_6568.this.field_34599);
             this.endNoiseBuffer = this.createBuffer(class_6568.this.field_34598, class_6568.this.field_34599);
             class_6568.this.field_34605.add(this);
@@ -266,7 +266,7 @@ public class class_6568 {
                     double d;
                     int l = k + class_6568.this.field_34600;
                     int m = l * class_6568.this.field_34597;
-                    ds[i][k] = d = this.columnSampler.sample(noiseX * class_6568.this.field_34596, m, j * class_6568.this.field_34596);
+                    ds[i][k] = d = this.columnSampler.calculateNoise(noiseX * class_6568.this.field_34596, m, j * class_6568.this.field_34596);
                 }
             }
         }
@@ -295,12 +295,12 @@ public class class_6568 {
         }
 
         void sampleNoise(double deltaZ) {
-            this.field_34624 = MathHelper.lerp(deltaZ, this.z0, this.z1);
+            this.result = MathHelper.lerp(deltaZ, this.z0, this.z1);
         }
 
         @Override
         public double sample() {
-            return this.field_34624;
+            return this.result;
         }
 
         private void swapBuffers() {

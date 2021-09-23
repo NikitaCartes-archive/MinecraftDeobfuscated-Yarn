@@ -156,7 +156,7 @@ implements BiomeAccess.Storage {
 
     @Override
     public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-        return this.getBiomeSource().method_38109(biomeX, biomeY, biomeZ, this.method_38276());
+        return this.getBiomeSource().getBiome(biomeX, biomeY, biomeZ, this.method_38276());
     }
 
     /**
@@ -173,15 +173,12 @@ implements BiomeAccess.Storage {
      * 
      * @return {@code null} if no structure could be found within the given search radius
      * 
-     * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
      * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the STRUCTURE_STARTS stage) are returned, excluding strongholds
+     * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
      */
     @Nullable
-    public BlockPos locateStructure(ServerWorld world, StructureFeature<?> feature, BlockPos center, int radius, boolean skipExistingChunks) {
-        if (!this.method_38263(world, feature)) {
-            return null;
-        }
-        if (feature == StructureFeature.STRONGHOLD) {
+    public BlockPos locateStructure(ServerWorld serverWorld, StructureFeature<?> structureFeature, BlockPos center, int radius, boolean skipExistingChunks) {
+        if (structureFeature == StructureFeature.STRONGHOLD) {
             this.generateStrongholdPositions();
             BlockPos blockPos = null;
             double d = Double.MAX_VALUE;
@@ -200,21 +197,17 @@ implements BiomeAccess.Storage {
             }
             return blockPos;
         }
-        StructureConfig structureConfig = this.structuresConfig.getForType(feature);
-        if (structureConfig == null) {
-            return null;
-        }
-        return feature.locateStructure(world, world.getStructureAccessor(), center, radius, skipExistingChunks, world.getSeed(), structureConfig);
-    }
-
-    private boolean method_38263(ServerWorld serverWorld, StructureFeature<?> structureFeature) {
+        StructureConfig structureConfig = this.structuresConfig.getForType(structureFeature);
         ImmutableMultimap<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> immutableMultimap = this.structuresConfig.getConfiguredStructureFeature(structureFeature);
-        if (immutableMultimap.isEmpty()) {
-            return false;
+        if (structureConfig == null || immutableMultimap.isEmpty()) {
+            return null;
         }
         Registry<Biome> registry = serverWorld.getRegistryManager().get(Registry.BIOME_KEY);
         Set set = this.biomeSource.getBiomes().stream().flatMap(biome -> registry.getKey((Biome)biome).stream()).collect(Collectors.toSet());
-        return immutableMultimap.values().stream().anyMatch(set::contains);
+        if (immutableMultimap.values().stream().noneMatch(set::contains)) {
+            return null;
+        }
+        return structureFeature.locateStructure(serverWorld, serverWorld.getStructureAccessor(), center, radius, skipExistingChunks, serverWorld.getSeed(), structureConfig);
     }
 
     public void generateFeatures(StructureWorldAccess world, ChunkPos pos, StructureAccessor structureAccessor) {
@@ -225,7 +218,6 @@ implements BiomeAccess.Storage {
         if (SharedConstants.method_37896(k, l = pos.getStartZ())) {
             return;
         }
-        Registry<Biome> registry = world.getRegistryManager().get(Registry.BIOME_KEY);
         BlockPos blockPos = new BlockPos(k, world.getBottomY(), l);
         int m = ChunkSectionPos.getSectionCoord(blockPos.getX());
         int n = ChunkSectionPos.getSectionCoord(blockPos.getZ());
@@ -238,8 +230,8 @@ implements BiomeAccess.Storage {
         ChunkRandom chunkRandom = new ChunkRandom();
         long s = chunkRandom.setPopulationSeed(world.getSeed(), k, l);
         try {
-            Registry<ConfiguredFeature<?, ?>> registry2 = world.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY);
-            Registry<StructureFeature<?>> registry3 = world.getRegistryManager().get(Registry.STRUCTURE_FEATURE_KEY);
+            Registry<ConfiguredFeature<?, ?>> registry = world.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY);
+            Registry<StructureFeature<?>> registry2 = world.getRegistryManager().get(Registry.STRUCTURE_FEATURE_KEY);
             int t = Math.max(GenerationStep.Feature.values().length, immutableList.size());
             for (int u = 0; u < t; ++u) {
                 int v = 0;
@@ -247,12 +239,10 @@ implements BiomeAccess.Storage {
                     List list = map.getOrDefault(u, Collections.emptyList());
                     for (StructureFeature structureFeature2 : list) {
                         chunkRandom.setDecoratorSeed(s, v, u);
-                        Supplier<String> supplier = () -> registry3.getKey(structureFeature2).map(Object::toString).orElseGet(structureFeature2::toString);
+                        Supplier<String> supplier = () -> registry2.getKey(structureFeature2).map(Object::toString).orElseGet(structureFeature2::toString);
                         try {
-                            ImmutableMultimap<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> immutableMultimap = this.structuresConfig.getConfiguredStructureFeature(structureFeature2);
                             world.method_36972(supplier);
-                            Predicate<Biome> predicate = biome -> this.method_38274(registry, immutableMultimap::containsValue, (Biome)biome);
-                            structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), structureFeature2).forEach(structureStart -> structureStart.generateStructure(world, structureAccessor, this, chunkRandom, predicate, new BlockBox(o, q, p, o + 15, r, p + 15), new ChunkPos(m, n)));
+                            structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), structureFeature2).forEach(structureStart -> structureStart.generateStructure(world, structureAccessor, this, chunkRandom, new BlockBox(o, q, p, o + 15, r, p + 15), new ChunkPos(m, n)));
                         } catch (Exception exception) {
                             CrashReport crashReport = CrashReport.create(exception, "Feature placement");
                             crashReport.addElement("Feature").add("Description", supplier::get);
@@ -263,7 +253,7 @@ implements BiomeAccess.Storage {
                 }
                 if (immutableList.size() <= u) continue;
                 for (ConfiguredFeature configuredFeature : (ImmutableList)immutableList.get(u)) {
-                    Supplier<String> supplier2 = () -> registry2.getKey(configuredFeature).map(Object::toString).orElseGet(configuredFeature::toString);
+                    Supplier<String> supplier2 = () -> registry.getKey(configuredFeature).map(Object::toString).orElseGet(configuredFeature::toString);
                     chunkRandom.setDecoratorSeed(s, v, u);
                     try {
                         world.method_36972(supplier2);
@@ -322,8 +312,8 @@ implements BiomeAccess.Storage {
         }
         Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
         block0: for (StructureFeature structureFeature : Registry.STRUCTURE_FEATURE) {
-            StructureConfig structureConfig2 = this.structuresConfig.getForType(structureFeature);
-            if (structureConfig2 == null) continue;
+            StructureConfig structureConfig2;
+            if (structureFeature == StructureFeature.STRONGHOLD || (structureConfig2 = this.structuresConfig.getForType(structureFeature)) == null) continue;
             int i = ChunkGenerator.method_38264(structureAccessor, chunk, chunkSectionPos, structureFeature);
             for (Map.Entry entry : ((ImmutableMap)this.structuresConfig.getConfiguredStructureFeature(structureFeature).asMap()).entrySet()) {
                 StructureStart<?> structureStart2 = ((ConfiguredStructureFeature)entry.getKey()).tryPlaceStart(registryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, i, structureConfig2, chunk, biome -> this.method_38274(registry, ((Collection)entry.getValue())::contains, (Biome)biome));

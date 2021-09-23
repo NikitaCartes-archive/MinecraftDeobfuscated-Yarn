@@ -4,8 +4,10 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,11 +16,11 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
+import net.minecraft.class_6625;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.util.BlockMirror;
@@ -76,18 +78,18 @@ public abstract class StructurePiece {
         return Direction.Type.HORIZONTAL.random(random);
     }
 
-    public final NbtCompound toNbt(ServerWorld world) {
+    public final NbtCompound toNbt(class_6625 arg) {
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
         BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbtCompound.put("BB", (NbtElement)nbtElement));
         Direction direction = this.getFacing();
         nbtCompound.putInt("O", direction == null ? -1 : direction.getHorizontal());
         nbtCompound.putInt("GD", this.chainLength);
-        this.writeNbt(world, nbtCompound);
+        this.writeNbt(arg, nbtCompound);
         return nbtCompound;
     }
 
-    protected abstract void writeNbt(ServerWorld var1, NbtCompound var2);
+    protected abstract void writeNbt(class_6625 var1, NbtCompound var2);
 
     public StructureWeightType method_33882() {
         return StructureWeightType.BEARD;
@@ -96,7 +98,7 @@ public abstract class StructurePiece {
     public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
     }
 
-    public abstract boolean generate(StructureWorldAccess var1, StructureAccessor var2, ChunkGenerator var3, Random var4, BlockBox var5, ChunkPos var6, BlockPos var7);
+    public abstract void generate(StructureWorldAccess var1, StructureAccessor var2, ChunkGenerator var3, Random var4, BlockBox var5, ChunkPos var6, BlockPos var7);
 
     public BlockBox getBoundingBox() {
         return this.boundingBox;
@@ -382,6 +384,19 @@ public abstract class StructurePiece {
 
     public void translate(int x, int y, int z) {
         this.boundingBox.move(x, y, z);
+    }
+
+    public static BlockBox method_38703(Stream<StructurePiece> stream) {
+        return BlockBox.encompass(stream.map(StructurePiece::getBoundingBox)::iterator).orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
+    }
+
+    @Nullable
+    public static StructurePiece method_38702(List<StructurePiece> list, BlockBox blockBox) {
+        for (StructurePiece structurePiece : list) {
+            if (!structurePiece.getBoundingBox().intersects(blockBox)) continue;
+            return structurePiece;
+        }
+        return null;
     }
 
     @Nullable

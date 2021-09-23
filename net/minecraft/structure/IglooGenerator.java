@@ -11,9 +11,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.class_6625;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -58,8 +58,8 @@ public class IglooGenerator {
             super(StructurePieceType.IGLOO, 0, manager, identifier, identifier.toString(), Piece.createPlacementData(rotation, identifier), Piece.getPosOffset(identifier, pos, yOffset));
         }
 
-        public Piece(ServerWorld world, NbtCompound nbt) {
-            super(StructurePieceType.IGLOO, nbt, world, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier));
+        public Piece(StructureManager structureManager, NbtCompound nbt) {
+            super(StructurePieceType.IGLOO, nbt, structureManager, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier));
         }
 
         private static StructurePlacementData createPlacementData(BlockRotation rotation, Identifier identifier) {
@@ -71,8 +71,8 @@ public class IglooGenerator {
         }
 
         @Override
-        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
-            super.writeNbt(world, nbt);
+        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+            super.writeNbt(arg, nbt);
             nbt.putString("Rot", this.placementData.getRotation().name());
         }
 
@@ -89,7 +89,7 @@ public class IglooGenerator {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             BlockPos blockPos4;
             BlockState blockState;
             Identifier identifier = new Identifier(this.identifier);
@@ -99,12 +99,11 @@ public class IglooGenerator {
             int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
             BlockPos blockPos3 = this.pos;
             this.pos = this.pos.add(0, i - 90 - 1, 0);
-            boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+            super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
             if (identifier.equals(TOP_TEMPLATE) && !(blockState = world.getBlockState((blockPos4 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && !blockState.isOf(Blocks.LADDER)) {
                 world.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), Block.NOTIFY_ALL);
             }
             this.pos = blockPos3;
-            return bl;
         }
     }
 }

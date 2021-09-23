@@ -470,6 +470,7 @@ public class SoundEvents {
     public static final SoundEvent BLOCK_GRAVEL_PLACE = SoundEvents.register("block.gravel.place");
     public static final SoundEvent BLOCK_GRAVEL_STEP = SoundEvents.register("block.gravel.step");
     public static final SoundEvent BLOCK_GRINDSTONE_USE = SoundEvents.register("block.grindstone.use");
+    public static final SoundEvent BLOCK_GROWING_PLANT_CROP = SoundEvents.register("block.growing_plant.crop");
     public static final SoundEvent ENTITY_GUARDIAN_AMBIENT = SoundEvents.register("entity.guardian.ambient");
     public static final SoundEvent ENTITY_GUARDIAN_AMBIENT_LAND = SoundEvents.register("entity.guardian.ambient_land");
     public static final SoundEvent ENTITY_GUARDIAN_ATTACK = SoundEvents.register("entity.guardian.attack");

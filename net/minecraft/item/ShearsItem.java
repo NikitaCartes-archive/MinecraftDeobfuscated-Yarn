@@ -15,6 +15,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -69,6 +71,7 @@ extends Item {
             if (playerEntity2 instanceof ServerPlayerEntity) {
                 Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity2, blockPos, itemStack);
             }
+            world.playSound(playerEntity2, blockPos, SoundEvents.BLOCK_GROWING_PLANT_CROP, SoundCategory.BLOCKS, 1.0f, 1.0f);
             world.setBlockState(blockPos, abstractPlantStemBlock.withMaxAge(blockState));
             if (playerEntity2 != null) {
                 itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(context.getHand()));

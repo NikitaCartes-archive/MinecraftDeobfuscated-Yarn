@@ -13,9 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class Int2ObjectBiMap<K>
 implements IndexedIterable<K> {
-    public static final int field_29828 = -1;
+    public static final int ABSENT = -1;
     private static final Object EMPTY = null;
-    private static final float field_29829 = 0.8f;
+    private static final float LOAD_FACTOR = 0.8f;
     private K[] values;
     private int[] ids;
     private K[] idToValues;
@@ -28,8 +28,8 @@ implements IndexedIterable<K> {
         this.idToValues = new Object[size];
     }
 
-    public static <A> Int2ObjectBiMap<A> method_37913(int i) {
-        return new Int2ObjectBiMap((int)((float)i / 0.8f));
+    public static <A> Int2ObjectBiMap<A> create(int expectedSize) {
+        return new Int2ObjectBiMap((int)((float)expectedSize / 0.8f));
     }
 
     @Override

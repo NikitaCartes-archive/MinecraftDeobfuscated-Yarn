@@ -851,7 +851,7 @@ public class DefaultBiomeCreator {
         DefaultBiomeFeatures.addMineables(builder);
         DefaultBiomeFeatures.addDefaultOres(builder);
         DefaultBiomeFeatures.addDefaultDisks(builder);
-        DefaultBiomeFeatures.addTaigaTrees(builder);
+        DefaultBiomeFeatures.addGroveTrees(builder);
         DefaultBiomeFeatures.addDefaultVegetation(builder);
         DefaultBiomeFeatures.addSprings(builder);
         DefaultBiomeFeatures.addEmeraldOre(builder);

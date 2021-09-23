@@ -42,8 +42,8 @@ extends ItemDispenserBehavior {
      * @return the created projectile
      * 
      * @param world the world the projectile will spawn in
-     * @param position the output location of the dispenser
      * @param stack the stack that the dispenser will consume
+     * @param position the output location of the dispenser
      */
     protected abstract ProjectileEntity createProjectile(World var1, Position var2, ItemStack var3);
 

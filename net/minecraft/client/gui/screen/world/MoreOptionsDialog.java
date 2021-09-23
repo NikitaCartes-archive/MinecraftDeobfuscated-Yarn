@@ -98,7 +98,7 @@ implements Drawable {
             this.generatorOptions = this.generatorOptions.toggleGenerateStructures();
         }));
         this.mapFeaturesButton.visible = false;
-        this.mapTypeButton = parent.addDrawableChild(CyclingButtonWidget.builder(GeneratorType::getTranslationKey).values(GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES).build(j, 100, 150, 20, new TranslatableText("selectWorld.mapType"), (button, generatorType) -> {
+        this.mapTypeButton = parent.addDrawableChild(CyclingButtonWidget.builder(GeneratorType::getDisplayName).values(GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES).build(j, 100, 150, 20, new TranslatableText("selectWorld.mapType"), (button, generatorType) -> {
             this.generatorType = Optional.of(generatorType);
             this.generatorOptions = generatorType.createDefaultOptions(this.registryManager, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest());
             parent.setMoreOptionsOpen();

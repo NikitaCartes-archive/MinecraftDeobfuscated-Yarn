@@ -10,6 +10,10 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.CountConfig;
+import net.minecraft.world.gen.decorator.BlockFilterDecorator;
+import net.minecraft.world.gen.decorator.BlockFilterDecoratorConfig;
+import net.minecraft.world.gen.decorator.BlockSurvivesFilterDecorator;
+import net.minecraft.world.gen.decorator.BlockSurvivesFilterDecoratorConfig;
 import net.minecraft.world.gen.decorator.CarvingMaskDecorator;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
 import net.minecraft.world.gen.decorator.CaveSurfaceDecorator;
@@ -69,6 +73,8 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<RangeDecoratorConfig> RANGE = Decorator.register("range", new RangeDecorator(RangeDecoratorConfig.CODEC));
     public static final Decorator<NopeDecoratorConfig> SPREAD_32_ABOVE = Decorator.register("spread_32_above", new Spread32AboveDecorator(NopeDecoratorConfig.CODEC));
     public static final Decorator<NopeDecoratorConfig> END_GATEWAY = Decorator.register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig.CODEC));
+    public static final Decorator<BlockSurvivesFilterDecoratorConfig> BLOCK_SURVIVES_FILTER = Decorator.register("block_survives_filter", new BlockSurvivesFilterDecorator(BlockSurvivesFilterDecoratorConfig.CODEC));
+    public static final Decorator<BlockFilterDecoratorConfig> BLOCK_FILTER = Decorator.register("block_filter", new BlockFilterDecorator(BlockFilterDecoratorConfig.CODEC));
     private final Codec<ConfiguredDecorator<DC>> codec;
 
     private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String registryName, G decorator) {
@@ -76,7 +82,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     }
 
     public Decorator(Codec<DC> configCodec) {
-        this.codec = ((MapCodec)configCodec.fieldOf("config")).xmap(decoratorConfig -> new ConfiguredDecorator<DecoratorConfig>(this, (DecoratorConfig)decoratorConfig), ConfiguredDecorator::getConfig).codec();
+        this.codec = ((MapCodec)configCodec.fieldOf("config")).xmap(config -> new ConfiguredDecorator<DecoratorConfig>(this, (DecoratorConfig)config), ConfiguredDecorator::getConfig).codec();
     }
 
     public ConfiguredDecorator<DC> configure(DC config) {
