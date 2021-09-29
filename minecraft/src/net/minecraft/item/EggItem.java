@@ -23,7 +23,7 @@ public class EggItem extends Item {
 		if (!world.isClient) {
 			EggEntity eggEntity = new EggEntity(world, user);
 			eggEntity.setItem(itemStack);
-			eggEntity.setProperties(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 1.0F);
+			eggEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(eggEntity);
 		}
 

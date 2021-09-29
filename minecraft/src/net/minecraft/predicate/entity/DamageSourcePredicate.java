@@ -12,13 +12,21 @@ import net.minecraft.util.math.Vec3d;
 
 public class DamageSourcePredicate {
 	public static final DamageSourcePredicate EMPTY = DamageSourcePredicate.Builder.create().build();
+	@Nullable
 	private final Boolean isProjectile;
+	@Nullable
 	private final Boolean isExplosion;
+	@Nullable
 	private final Boolean bypassesArmor;
+	@Nullable
 	private final Boolean bypassesInvulnerability;
+	@Nullable
 	private final Boolean bypassesMagic;
+	@Nullable
 	private final Boolean isFire;
+	@Nullable
 	private final Boolean isMagic;
+	@Nullable
 	private final Boolean isLightning;
 	private final EntityPredicate directEntity;
 	private final EntityPredicate sourceEntity;
@@ -125,13 +133,21 @@ public class DamageSourcePredicate {
 	}
 
 	public static class Builder {
+		@Nullable
 		private Boolean isProjectile;
+		@Nullable
 		private Boolean isExplosion;
+		@Nullable
 		private Boolean bypassesArmor;
+		@Nullable
 		private Boolean bypassesInvulnerability;
+		@Nullable
 		private Boolean bypassesMagic;
+		@Nullable
 		private Boolean isFire;
+		@Nullable
 		private Boolean isMagic;
+		@Nullable
 		private Boolean isLightning;
 		private EntityPredicate directEntity = EntityPredicate.ANY;
 		private EntityPredicate sourceEntity = EntityPredicate.ANY;

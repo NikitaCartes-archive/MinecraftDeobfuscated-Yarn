@@ -9,12 +9,12 @@ public record Range() {
 	private final T maxInclusive;
 	public static final Codec<Range<Integer>> CODEC = createCodec(Codec.INT);
 
-	public Range(T comparable, T comparable2) {
-		if (comparable.compareTo(comparable2) > 0) {
+	public Range(T minInclusive, T maxInclusive) {
+		if (minInclusive.compareTo(maxInclusive) > 0) {
 			throw new IllegalArgumentException("min_inclusive must be less than or equal to max_inclusive");
 		} else {
-			this.minInclusive = comparable;
-			this.maxInclusive = comparable2;
+			this.minInclusive = minInclusive;
+			this.maxInclusive = maxInclusive;
 		}
 	}
 

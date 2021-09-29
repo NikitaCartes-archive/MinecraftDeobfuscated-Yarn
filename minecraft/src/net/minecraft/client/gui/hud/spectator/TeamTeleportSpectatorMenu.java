@@ -71,7 +71,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Environment(EnvType.CLIENT)
-	class TeleportToSpecificTeamCommand implements SpectatorMenuCommand {
+	static class TeleportToSpecificTeamCommand implements SpectatorMenuCommand {
 		private final Team team;
 		private final Identifier skinId;
 		private final List<PlayerListEntry> scoreboardEntries;

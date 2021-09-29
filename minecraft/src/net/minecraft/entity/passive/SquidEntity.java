@@ -258,6 +258,11 @@ public class SquidEntity extends WaterCreatureEntity {
 		}
 
 		@Override
+		public boolean shouldRunEveryTick() {
+			return true;
+		}
+
+		@Override
 		public void tick() {
 			this.timer++;
 			LivingEntity livingEntity = SquidEntity.this.getAttacker();
@@ -314,7 +319,7 @@ public class SquidEntity extends WaterCreatureEntity {
 			int i = this.squid.getDespawnCounter();
 			if (i > 100) {
 				this.squid.setSwimmingVector(0.0F, 0.0F, 0.0F);
-			} else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.touchingWater || !this.squid.hasSwimmingVector()) {
+			} else if (this.squid.getRandom().nextInt(toGoalTicks(50)) == 0 || !this.squid.touchingWater || !this.squid.hasSwimmingVector()) {
 				float f = this.squid.getRandom().nextFloat() * (float) (Math.PI * 2);
 				float g = MathHelper.cos(f) * 0.2F;
 				float h = -0.1F + this.squid.getRandom().nextFloat() * 0.2F;

@@ -3,10 +3,10 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public abstract class AbstractMountainSurfaceBuilder extends DefaultSurfaceBuilder {
@@ -20,7 +20,7 @@ public abstract class AbstractMountainSurfaceBuilder extends DefaultSurfaceBuild
 	@Override
 	public void generate(
 		Random random,
-		class_6557 arg,
+		BlockColumn blockColumn,
 		Biome biome,
 		int i,
 		int j,
@@ -35,7 +35,7 @@ public abstract class AbstractMountainSurfaceBuilder extends DefaultSurfaceBuild
 	) {
 		BlockState blockState3;
 		BlockState blockState4;
-		if (this.getLayerBlockConfig() != null && this.shouldPlaceSteepSlopeBlock(arg, i, j, this.getLayerBlockConfig())) {
+		if (this.getLayerBlockConfig() != null && this.shouldPlaceSteepSlopeBlock(blockColumn, i, j, this.getLayerBlockConfig())) {
 			blockState3 = this.getLayerBlockConfig().getState();
 			blockState4 = this.getLayerBlockConfig().getState();
 		} else {
@@ -43,7 +43,7 @@ public abstract class AbstractMountainSurfaceBuilder extends DefaultSurfaceBuild
 			blockState4 = this.getUnderMaterial(ternarySurfaceConfig, i, j);
 		}
 
-		this.generate(random, arg, biome, i, j, k, d, blockState, blockState2, blockState3, blockState4, ternarySurfaceConfig.getUnderwaterMaterial(), l, m);
+		this.generate(random, blockColumn, biome, i, j, k, d, blockState, blockState2, blockState3, blockState4, ternarySurfaceConfig.getUnderwaterMaterial(), l, m);
 	}
 
 	protected BlockState getBlockFromNoise(double scale, int x, int z, BlockState outsideRangeState, BlockState insideRangeState, double noiseMin, double noiseMax) {
@@ -68,7 +68,7 @@ public abstract class AbstractMountainSurfaceBuilder extends DefaultSurfaceBuild
 		this.seed = seed;
 	}
 
-	public boolean shouldPlaceSteepSlopeBlock(class_6557 arg, int x, int z, AbstractMountainSurfaceBuilder.SteepSlopeBlockConfig config) {
+	public boolean shouldPlaceSteepSlopeBlock(BlockColumn blockColumn, int x, int z, AbstractMountainSurfaceBuilder.SteepSlopeBlockConfig config) {
 		return false;
 	}
 

@@ -229,7 +229,7 @@ public class ClientWorld extends World {
 	}
 
 	public void unloadBlockEntities(WorldChunk chunk) {
-		chunk.method_38289();
+		chunk.clear();
 		this.chunkManager.getLightingProvider().setColumnEnabled(chunk.getPos(), false);
 		this.entityManager.stopTicking(chunk.getPos());
 	}

@@ -9,9 +9,17 @@ import net.minecraft.world.biome.BiomeKeys;
 
 public final class VanillaBiomeParameters {
 	private static final float field_34500 = 0.05F;
+	private static final float field_35047 = 0.26666668F;
+	public static final float field_35041 = 0.4F;
+	private static final float field_35048 = 0.93333334F;
 	private static final float field_34501 = 0.1F;
-	private static final float field_34502 = 0.56666666F;
+	public static final float field_34502 = 0.56666666F;
 	private static final float field_34503 = 0.7666667F;
+	public static final float field_35042 = -0.11F;
+	public static final float field_35043 = 0.03F;
+	public static final float field_35044 = 0.3F;
+	public static final float field_35045 = -0.78F;
+	public static final float field_35046 = -0.375F;
 	private final MultiNoiseUtil.ParameterRange DEFAULT_PARAMETER = MultiNoiseUtil.ParameterRange.of(-1.0F, 1.0F);
 	private final MultiNoiseUtil.ParameterRange[] TEMPERATURE_PARAMETERS = new MultiNoiseUtil.ParameterRange[]{
 		MultiNoiseUtil.ParameterRange.of(-1.0F, -0.45F),
@@ -932,18 +940,19 @@ public final class VanillaBiomeParameters {
 	}
 
 	public String getContinentalnessDescription(double continentalness) {
-		if (continentalness < (double)this.MUSHROOM_FIELDS_CONTINENTALNESS.max()) {
+		double d = (double)MultiNoiseUtil.method_38665((float)continentalness);
+		if (d < (double)this.MUSHROOM_FIELDS_CONTINENTALNESS.max()) {
 			return "Mushroom fields";
-		} else if (continentalness < (double)this.DEEP_OCEAN_CONTINENTALNESS.max()) {
+		} else if (d < (double)this.DEEP_OCEAN_CONTINENTALNESS.max()) {
 			return "Deep ocean";
-		} else if (continentalness < (double)this.OCEAN_CONTINENTALNESS.max()) {
+		} else if (d < (double)this.OCEAN_CONTINENTALNESS.max()) {
 			return "Ocean";
-		} else if (continentalness < (double)this.SHORE_CONTINENTALNESS.max()) {
+		} else if (d < (double)this.SHORE_CONTINENTALNESS.max()) {
 			return "Coast";
-		} else if (continentalness < (double)this.NEAR_INLAND_CONTINENTALNESS.max()) {
+		} else if (d < (double)this.NEAR_INLAND_CONTINENTALNESS.max()) {
 			return "Near inland";
 		} else {
-			return continentalness < (double)this.MID_INLAND_CONTINENTALNESS.max() ? "Mid inland" : "Far inland";
+			return d < (double)this.MID_INLAND_CONTINENTALNESS.max() ? "Mid inland" : "Far inland";
 		}
 	}
 
@@ -960,8 +969,10 @@ public final class VanillaBiomeParameters {
 	}
 
 	private static String getNoiseRangeIndex(double noisePoint, MultiNoiseUtil.ParameterRange[] noiseRanges) {
+		double d = (double)MultiNoiseUtil.method_38665((float)noisePoint);
+
 		for (int i = 0; i < noiseRanges.length; i++) {
-			if (noisePoint < (double)noiseRanges[i].max()) {
+			if (d < (double)noiseRanges[i].max()) {
 				return i + "";
 			}
 		}

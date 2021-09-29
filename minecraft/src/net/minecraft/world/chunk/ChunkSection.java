@@ -167,22 +167,22 @@ public class ChunkSection {
 		return this.container.hasAny(predicate);
 	}
 
-	public Biome method_38293(int i, int j, int k) {
-		return this.field_34556.get(i, j, k);
+	public Biome method_38293(int x, int y, int z) {
+		return this.field_34556.get(x, y, z);
 	}
 
-	public void method_38291(BiomeSource biomeSource, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler, int i, int j) {
+	public void method_38291(BiomeSource source, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
 		PalettedContainer<Biome> palettedContainer = this.method_38294();
 		palettedContainer.lock();
 
 		try {
-			int k = BiomeCoords.fromBlock(this.getYOffset());
-			int l = 4;
+			int i = BiomeCoords.fromBlock(this.getYOffset());
+			int j = 4;
 
-			for (int m = 0; m < 4; m++) {
-				for (int n = 0; n < 4; n++) {
-					for (int o = 0; o < 4; o++) {
-						palettedContainer.swapUnsafe(m, n, o, biomeSource.getBiome(i + m, k + n, j + o, multiNoiseSampler));
+			for (int k = 0; k < 4; k++) {
+				for (int l = 0; l < 4; l++) {
+					for (int m = 0; m < 4; m++) {
+						palettedContainer.swapUnsafe(k, l, m, source.getBiome(x + k, i + l, z + m, sampler));
 					}
 				}
 			}

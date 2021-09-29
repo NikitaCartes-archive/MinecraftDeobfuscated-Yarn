@@ -5,11 +5,11 @@ import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
@@ -33,7 +33,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 
 	public void generate(
 		Random random,
-		class_6557 arg,
+		BlockColumn blockColumn,
 		Biome biome,
 		int i,
 		int j,
@@ -59,7 +59,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 
 		for (int r = k; r >= m; r--) {
 			if (q < 15) {
-				BlockState blockState7 = arg.getState(r);
+				BlockState blockState7 = blockColumn.getState(r);
 				if (blockState7.isAir()) {
 					p = -1;
 				} else if (blockState7.isOf(blockState.getBlock())) {
@@ -80,7 +80,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 						p = o + Math.max(0, r - l);
 						if (r >= l - 1) {
 							if (r <= l + 10 + o) {
-								arg.method_38092(r, blockState5);
+								blockColumn.setState(r, blockState5);
 								bl2 = true;
 							} else {
 								BlockState blockState8;
@@ -92,10 +92,10 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 									blockState8 = this.calculateLayerBlockState(i, r, j);
 								}
 
-								arg.method_38092(r, blockState8);
+								blockColumn.setState(r, blockState8);
 							}
 						} else {
-							arg.method_38092(r, blockState6);
+							blockColumn.setState(r, blockState6);
 							if (blockState6.isOf(Blocks.WHITE_TERRACOTTA)
 								|| blockState6.isOf(Blocks.ORANGE_TERRACOTTA)
 								|| blockState6.isOf(Blocks.MAGENTA_TERRACOTTA)
@@ -112,15 +112,15 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 								|| blockState6.isOf(Blocks.GREEN_TERRACOTTA)
 								|| blockState6.isOf(Blocks.RED_TERRACOTTA)
 								|| blockState6.isOf(Blocks.BLACK_TERRACOTTA)) {
-								arg.method_38092(r, ORANGE_TERRACOTTA);
+								blockColumn.setState(r, ORANGE_TERRACOTTA);
 							}
 						}
 					} else if (p > 0) {
 						p--;
 						if (bl2) {
-							arg.method_38092(r, ORANGE_TERRACOTTA);
+							blockColumn.setState(r, ORANGE_TERRACOTTA);
 						} else {
-							arg.method_38092(r, this.calculateLayerBlockState(i, r, j));
+							blockColumn.setState(r, this.calculateLayerBlockState(i, r, j));
 						}
 					}
 

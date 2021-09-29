@@ -326,14 +326,15 @@ public class PandaEntity extends AnimalEntity {
 			}
 		}
 
-		if (this.getTarget() == null) {
+		LivingEntity livingEntity = this.getTarget();
+		if (livingEntity == null) {
 			this.shouldGetRevenge = false;
 			this.shouldAttack = false;
 		}
 
 		if (this.getAskForBambooTicks() > 0) {
-			if (this.getTarget() != null) {
-				this.lookAtEntity(this.getTarget(), 90.0F, 90.0F);
+			if (livingEntity != null) {
+				this.lookAtEntity(livingEntity, 90.0F, 90.0F);
 			}
 
 			if (this.getAskForBambooTicks() == 29 || this.getAskForBambooTicks() == 14) {
@@ -818,12 +819,14 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return this.nextLieOnBackAge < this.panda.age && this.panda.isLazy() && this.panda.isIdle() && this.panda.random.nextInt(400) == 1;
+			return this.nextLieOnBackAge < this.panda.age && this.panda.isLazy() && this.panda.isIdle() && this.panda.random.nextInt(toGoalTicks(400)) == 1;
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			return !this.panda.isTouchingWater() && (this.panda.isLazy() || this.panda.random.nextInt(600) != 1) ? this.panda.random.nextInt(2000) != 1 : false;
+			return !this.panda.isTouchingWater() && (this.panda.isLazy() || this.panda.random.nextInt(toGoalTicks(600)) != 1)
+				? this.panda.random.nextInt(toGoalTicks(2000)) != 1
+				: false;
 		}
 
 		@Override
@@ -904,13 +907,13 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
-	class PandaMateGoal extends AnimalMateGoal {
+	static class PandaMateGoal extends AnimalMateGoal {
 		private final PandaEntity panda;
 		private int nextAskPlayerForBambooAge;
 
-		public PandaMateGoal(PandaEntity panda, double chance) {
-			super(panda, chance);
-			this.panda = panda;
+		public PandaMateGoal(PandaEntity pandaEntity, double d) {
+			super(pandaEntity, d);
+			this.panda = pandaEntity;
 		}
 
 		@Override
@@ -1020,8 +1023,8 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return !PandaEntity.this.isTouchingWater() && (PandaEntity.this.isLazy() || PandaEntity.this.random.nextInt(600) != 1)
-				? PandaEntity.this.random.nextInt(2000) != 1
+			return !PandaEntity.this.isTouchingWater() && (PandaEntity.this.isLazy() || PandaEntity.this.random.nextInt(toGoalTicks(600)) != 1)
+				? PandaEntity.this.random.nextInt(toGoalTicks(2000)) != 1
 				: false;
 		}
 
@@ -1089,7 +1092,7 @@ public class PandaEntity extends AnimalEntity {
 					if (this.panda.world.getBlockState(this.panda.getBlockPos().add(i, -1, j)).isAir()) {
 						return true;
 					} else {
-						return this.panda.isPlayful() && this.panda.random.nextInt(60) == 1 ? true : this.panda.random.nextInt(500) == 1;
+						return this.panda.isPlayful() && this.panda.random.nextInt(toGoalTicks(60)) == 1 ? true : this.panda.random.nextInt(toGoalTicks(500)) == 1;
 					}
 				}
 			} else {
@@ -1123,7 +1126,7 @@ public class PandaEntity extends AnimalEntity {
 		@Override
 		public boolean canStart() {
 			if (this.panda.isBaby() && this.panda.isIdle()) {
-				return this.panda.isWeak() && this.panda.random.nextInt(500) == 1 ? true : this.panda.random.nextInt(6000) == 1;
+				return this.panda.isWeak() && this.panda.random.nextInt(toGoalTicks(500)) == 1 ? true : this.panda.random.nextInt(toGoalTicks(6000)) == 1;
 			} else {
 				return false;
 			}

@@ -103,7 +103,7 @@ public class ServerChunkManager extends ChunkManager {
 		);
 		this.lightingProvider = this.threadedAnvilChunkStorage.getLightingProvider();
 		this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
-		this.ticketManager.method_38629(i);
+		this.ticketManager.setSimulationDistance(i);
 		this.initChunkCaches();
 	}
 
@@ -338,49 +338,59 @@ public class ServerChunkManager extends ChunkManager {
 
 	private void tickChunks() {
 		long l = this.world.getTime();
-		long m = l - this.lastMobSpawningTime;
 		this.lastMobSpawningTime = l;
-		WorldProperties worldProperties = this.world.getLevelProperties();
 		boolean bl = this.world.isDebugWorld();
-		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
-		if (!bl) {
-			this.world.getProfiler().push("pollingChunks");
+		if (bl) {
+			this.threadedAnvilChunkStorage.tickEntityMovement();
+		} else {
+			WorldProperties worldProperties = this.world.getLevelProperties();
+			Profiler profiler = this.world.getProfiler();
+			profiler.push("pollingChunks");
 			int i = this.world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED);
-			boolean bl3 = worldProperties.getTime() % 400L == 0L;
-			this.world.getProfiler().push("naturalSpawnCount");
+			boolean bl2 = worldProperties.getTime() % 400L == 0L;
+			profiler.push("naturalSpawnCount");
 			int j = this.ticketManager.getSpawningChunkCount();
 			SpawnHelper.Info info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded, new SpawnDensityCapper(this.threadedAnvilChunkStorage));
 			this.spawnInfo = info;
-			this.world.getProfiler().pop();
-			List<ChunkHolder> list = Lists.<ChunkHolder>newArrayList(this.threadedAnvilChunkStorage.entryIterator());
-			Collections.shuffle(list);
-			list.forEach(chunkHolder -> {
-				Optional<WorldChunk> optional = ((Either)chunkHolder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
-				if (optional.isPresent()) {
-					WorldChunk worldChunk = (WorldChunk)optional.get();
-					ChunkPos chunkPos = worldChunk.getPos();
-					if (this.world.method_37115(chunkPos) && !this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
-						worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
-						if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(chunkPos)) {
-							SpawnHelper.spawn(this.world, worldChunk, info, this.spawnAnimals, this.spawnMonsters, bl3);
-						}
+			profiler.swap("filteringLoadedChunks");
+			List<ServerChunkManager.class_6635> list = Lists.<ServerChunkManager.class_6635>newArrayListWithCapacity(j);
 
-						this.world.tickChunk(worldChunk, i);
-					}
+			for (ChunkHolder chunkHolder : this.threadedAnvilChunkStorage.entryIterator()) {
+				WorldChunk worldChunk = chunkHolder.getWorldChunk();
+				if (worldChunk != null) {
+					list.add(new ServerChunkManager.class_6635(worldChunk, chunkHolder));
 				}
-			});
-			this.world.getProfiler().push("customSpawners");
-			if (bl2) {
+			}
+
+			profiler.swap("spawnAndTick");
+			boolean bl3 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
+			long m = l - this.lastMobSpawningTime;
+			Collections.shuffle(list);
+
+			for (ServerChunkManager.class_6635 lv : list) {
+				WorldChunk worldChunk2 = lv.chunk;
+				ChunkPos chunkPos = worldChunk2.getPos();
+				if (this.world.method_37115(chunkPos) && this.threadedAnvilChunkStorage.method_38783(chunkPos)) {
+					worldChunk2.increaseInhabitedTime(m);
+					if (bl3 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(chunkPos)) {
+						SpawnHelper.spawn(this.world, worldChunk2, info, this.spawnAnimals, this.spawnMonsters, bl2);
+					}
+
+					this.world.tickChunk(worldChunk2, i);
+				}
+			}
+
+			profiler.swap("customSpawners");
+			if (bl3) {
 				this.world.tickSpawners(this.spawnMonsters, this.spawnAnimals);
 			}
 
-			this.world.getProfiler().swap("broadcast");
-			list.forEach(chunkHolder -> ((Either)chunkHolder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left().ifPresent(chunkHolder::flushUpdates));
-			this.world.getProfiler().pop();
-			this.world.getProfiler().pop();
+			profiler.swap("broadcast");
+			list.forEach(arg -> arg.holder.flushUpdates(arg.chunk));
+			profiler.pop();
+			profiler.pop();
+			this.threadedAnvilChunkStorage.tickEntityMovement();
 		}
-
-		this.threadedAnvilChunkStorage.tickEntityMovement();
 	}
 
 	private void ifChunkLoaded(long pos, Consumer<WorldChunk> chunkConsumer) {
@@ -482,8 +492,8 @@ public class ServerChunkManager extends ChunkManager {
 		this.threadedAnvilChunkStorage.setViewDistance(watchDistance);
 	}
 
-	public void applySimulationDistance(int i) {
-		this.ticketManager.method_38629(i);
+	public void applySimulationDistance(int simulationDistance) {
+		this.ticketManager.setSimulationDistance(simulationDistance);
 	}
 
 	@Override
@@ -549,6 +559,16 @@ public class ServerChunkManager extends ChunkManager {
 				ServerChunkManager.this.lightingProvider.tick();
 				return super.runTask();
 			}
+		}
+	}
+
+	static record class_6635() {
+		final WorldChunk chunk;
+		final ChunkHolder holder;
+
+		class_6635(WorldChunk worldChunk, ChunkHolder chunkHolder) {
+			this.chunk = worldChunk;
+			this.holder = chunkHolder;
 		}
 	}
 }

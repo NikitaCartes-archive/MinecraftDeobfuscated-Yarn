@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -54,6 +55,7 @@ public class SoundSystem {
 	private final Channel channel = new Channel(this.soundEngine, this.taskQueue);
 	private int ticks;
 	private long lastSoundDeviceCheckTime;
+	private final AtomicReference<SoundSystem.class_6665> field_35083 = new AtomicReference(SoundSystem.class_6665.NO_CHANGE);
 	private final Map<SoundInstance, Channel.SourceManager> sources = Maps.<SoundInstance, Channel.SourceManager>newHashMap();
 	private final Multimap<SoundCategory, SoundInstance> sounds = HashMultimap.create();
 	private final List<TickableSoundInstance> tickingSounds = Lists.<TickableSoundInstance>newArrayList();
@@ -169,23 +171,27 @@ public class SoundSystem {
 		} else {
 			long l = Util.getMeasuringTimeMs();
 			boolean bl = l - this.lastSoundDeviceCheckTime >= 1000L;
-			if (!bl) {
-				return false;
-			} else {
+			if (bl) {
 				this.lastSoundDeviceCheckTime = l;
-				if ("".equals(this.settings.soundDevice)) {
-					if (this.soundEngine.updateDeviceSpecifier()) {
-						LOGGER.info("System default audio device has changed!");
-						return true;
-					}
-				} else if (!this.soundEngine.getCurrentDeviceName().equals(this.settings.soundDevice)
-					&& this.soundEngine.getSoundDevices().contains(this.settings.soundDevice)) {
-					LOGGER.info("Preferred audio device has become available!");
-					return true;
-				}
+				if (this.field_35083.compareAndSet(SoundSystem.class_6665.NO_CHANGE, SoundSystem.class_6665.ONGOING)) {
+					String string = this.settings.soundDevice;
+					Util.getIoWorkerExecutor().execute(() -> {
+						if ("".equals(string)) {
+							if (this.soundEngine.updateDeviceSpecifier()) {
+								LOGGER.info("System default audio device has changed!");
+								this.field_35083.compareAndSet(SoundSystem.class_6665.ONGOING, SoundSystem.class_6665.CHANGE_DETECTED);
+							}
+						} else if (!this.soundEngine.getCurrentDeviceName().equals(string) && this.soundEngine.getSoundDevices().contains(string)) {
+							LOGGER.info("Preferred audio device has become available!");
+							this.field_35083.compareAndSet(SoundSystem.class_6665.ONGOING, SoundSystem.class_6665.CHANGE_DETECTED);
+						}
 
-				return false;
+						this.field_35083.compareAndSet(SoundSystem.class_6665.ONGOING, SoundSystem.class_6665.NO_CHANGE);
+					});
+				}
 			}
+
+			return this.field_35083.compareAndSet(SoundSystem.class_6665.CHANGE_DETECTED, SoundSystem.class_6665.NO_CHANGE);
 		}
 	}
 
@@ -456,5 +462,12 @@ public class SoundSystem {
 
 	public List<String> getSoundDevices() {
 		return this.soundEngine.getSoundDevices();
+	}
+
+	@Environment(EnvType.CLIENT)
+	static enum class_6665 {
+		ONGOING,
+		CHANGE_DETECTED,
+		NO_CHANGE;
 	}
 }

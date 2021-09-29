@@ -33,9 +33,9 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
 	final List<Enchantment> enchantments;
 
-	EnchantRandomlyLootFunction(LootCondition[] lootConditions, Collection<Enchantment> collection) {
-		super(lootConditions);
-		this.enchantments = ImmutableList.copyOf(collection);
+	EnchantRandomlyLootFunction(LootCondition[] conditions, Collection<Enchantment> enchantments) {
+		super(conditions);
+		this.enchantments = ImmutableList.copyOf(enchantments);
 	}
 
 	@Override

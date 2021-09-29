@@ -1,11 +1,13 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 
 public class CreeperIgniteGoal extends Goal {
 	private final CreeperEntity creeper;
+	@Nullable
 	private LivingEntity target;
 
 	public CreeperIgniteGoal(CreeperEntity creeper) {
@@ -28,6 +30,11 @@ public class CreeperIgniteGoal extends Goal {
 	@Override
 	public void stop() {
 		this.target = null;
+	}
+
+	@Override
+	public boolean shouldRunEveryTick() {
+		return true;
 	}
 
 	@Override

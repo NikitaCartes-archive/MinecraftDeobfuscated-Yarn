@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.decorator;
 
-import java.util.BitSet;
+import net.minecraft.class_6643;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -23,7 +23,7 @@ public class DecoratorContext extends HeightContext {
 		return this.world.getTopY(heightmap, x, z);
 	}
 
-	public BitSet getOrCreateCarvingMask(ChunkPos chunkPos, GenerationStep.Carver carver) {
+	public class_6643 getOrCreateCarvingMask(ChunkPos chunkPos, GenerationStep.Carver carver) {
 		return ((ProtoChunk)this.world.getChunk(chunkPos.x, chunkPos.z)).getOrCreateCarvingMask(carver);
 	}
 

@@ -58,6 +58,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	private int warningSoundCooldown;
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	private int angerTime;
+	@Nullable
 	private UUID targetUuid;
 
 	public PolarBearEntity(EntityType<? extends PolarBearEntity> entityType, World world) {
@@ -138,6 +139,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		this.targetUuid = uuid;
 	}
 
+	@Nullable
 	@Override
 	public UUID getAngryAt() {
 		return this.targetUuid;

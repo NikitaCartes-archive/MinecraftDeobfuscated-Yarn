@@ -100,6 +100,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	static volatile boolean hasParentalConsent;
 	static volatile boolean checkedParentalConsent;
 	static volatile boolean checkedClientCompatibility;
+	@Nullable
 	static Screen realmsGenericErrorScreen;
 	private static boolean regionsPinged;
 	private final RateLimiter rateLimiter;
@@ -112,6 +113,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private ButtonWidget renewButton;
 	private ButtonWidget configureButton;
 	private ButtonWidget leaveButton;
+	@Nullable
 	private List<Text> tooltip;
 	private List<RealmsServer> realmsServers = ImmutableList.of();
 	volatile int numberOfPendingInvites;
@@ -123,6 +125,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private volatile boolean createdTrial;
 	private volatile boolean showingPopup;
 	volatile boolean hasUnreadNews;
+	@Nullable
 	volatile String newsLink;
 	private int carouselIndex;
 	private int carouselTick;

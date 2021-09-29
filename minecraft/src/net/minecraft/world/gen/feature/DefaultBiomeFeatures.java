@@ -382,7 +382,7 @@ public class DefaultBiomeFeatures {
 
 	public static void addBatsAndMonsters(SpawnSettings.Builder builder) {
 		addCaveMobs(builder);
-		addMonsters(builder, 95, 5, 100);
+		addMonsters(builder, 95, 5, 100, false);
 	}
 
 	public static void addCaveWaterMobs(SpawnSettings.Builder builder) {
@@ -415,20 +415,25 @@ public class DefaultBiomeFeatures {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 10, 2, 3));
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.POLAR_BEAR, 1, 1, 2));
 		addCaveMobs(builder);
-		addMonsters(builder, 95, 5, 20);
+		addMonsters(builder, 95, 5, 20, false);
 		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.STRAY, 80, 4, 4));
 	}
 
 	public static void addDesertMobs(SpawnSettings.Builder builder) {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
 		addCaveMobs(builder);
-		addMonsters(builder, 19, 1, 100);
+		addMonsters(builder, 19, 1, 100, false);
 		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.HUSK, 80, 4, 4));
 	}
 
-	public static void addMonsters(SpawnSettings.Builder builder, int zombieWeight, int zombieVillagerWeight, int skeletonWeight) {
+	public static void method_38941(SpawnSettings.Builder builder) {
+		addCaveMobs(builder);
+		addMonsters(builder, 95, 5, 100, true);
+	}
+
+	public static void addMonsters(SpawnSettings.Builder builder, int zombieWeight, int zombieVillagerWeight, int skeletonWeight, boolean bl) {
 		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
-		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIE, zombieWeight, 4, 4));
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(bl ? EntityType.DROWNED : EntityType.ZOMBIE, zombieWeight, 4, 4));
 		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIE_VILLAGER, zombieVillagerWeight, 1, 1));
 		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SKELETON, skeletonWeight, 4, 4));
 		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.CREEPER, 100, 4, 4));

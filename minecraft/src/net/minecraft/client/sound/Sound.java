@@ -1,5 +1,6 @@
 package net.minecraft.client.sound;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
@@ -89,6 +90,7 @@ public class Sound implements SoundContainer<Sound> {
 			this.name = name;
 		}
 
+		@Nullable
 		public static Sound.RegistrationType getByName(String string) {
 			for (Sound.RegistrationType registrationType : values()) {
 				if (registrationType.name.equals(string)) {

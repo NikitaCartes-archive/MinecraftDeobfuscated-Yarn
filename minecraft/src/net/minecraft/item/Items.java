@@ -820,7 +820,7 @@ public class Items {
 	public static final Item STICK = register("stick", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item BOWL = register("bowl", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item MUSHROOM_STEW = register(
-		"mushroom_stew", new MushroomStewItem(new Item.Settings().maxCount(1).group(ItemGroup.FOOD).food(FoodComponents.MUSHROOM_STEW))
+		"mushroom_stew", new StewItem(new Item.Settings().maxCount(1).group(ItemGroup.FOOD).food(FoodComponents.MUSHROOM_STEW))
 	);
 	public static final Item STRING = register("string", new AliasedBlockItem(Blocks.TRIPWIRE, new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item FEATHER = register("feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -1314,7 +1314,7 @@ public class Items {
 	public static final Item RABBIT = register("rabbit", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.RABBIT)));
 	public static final Item COOKED_RABBIT = register("cooked_rabbit", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.COOKED_RABBIT)));
 	public static final Item RABBIT_STEW = register(
-		"rabbit_stew", new MushroomStewItem(new Item.Settings().maxCount(1).group(ItemGroup.FOOD).food(FoodComponents.RABBIT_STEW))
+		"rabbit_stew", new StewItem(new Item.Settings().maxCount(1).group(ItemGroup.FOOD).food(FoodComponents.RABBIT_STEW))
 	);
 	public static final Item RABBIT_FOOT = register("rabbit_foot", new Item(new Item.Settings().group(ItemGroup.BREWING)));
 	public static final Item RABBIT_HIDE = register("rabbit_hide", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -1392,7 +1392,7 @@ public class Items {
 	public static final Item BEETROOT = register("beetroot", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.BEETROOT)));
 	public static final Item BEETROOT_SEEDS = register("beetroot_seeds", new AliasedBlockItem(Blocks.BEETROOTS, new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item BEETROOT_SOUP = register(
-		"beetroot_soup", new MushroomStewItem(new Item.Settings().maxCount(1).group(ItemGroup.FOOD).food(FoodComponents.BEETROOT_SOUP))
+		"beetroot_soup", new StewItem(new Item.Settings().maxCount(1).group(ItemGroup.FOOD).food(FoodComponents.BEETROOT_SOUP))
 	);
 	public static final Item DRAGON_BREATH = register(
 		"dragon_breath", new Item(new Item.Settings().recipeRemainder(GLASS_BOTTLE).group(ItemGroup.BREWING).rarity(Rarity.UNCOMMON))

@@ -88,33 +88,37 @@ public class MeleeAttackGoal extends Goal {
 	@Override
 	public void tick() {
 		LivingEntity livingEntity = this.mob.getTarget();
-		this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
-		double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
-		this.updateCountdownTicks = Math.max(this.updateCountdownTicks - 1, 0);
-		if ((this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity))
-			&& this.updateCountdownTicks <= 0
-			&& (
-				this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0
-					|| livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0
-					|| this.mob.getRandom().nextFloat() < 0.05F
-			)) {
-			this.targetX = livingEntity.getX();
-			this.targetY = livingEntity.getY();
-			this.targetZ = livingEntity.getZ();
-			this.updateCountdownTicks = 4 + this.mob.getRandom().nextInt(7);
-			if (d > 1024.0) {
-				this.updateCountdownTicks += 10;
-			} else if (d > 256.0) {
-				this.updateCountdownTicks += 5;
+		if (livingEntity != null) {
+			this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
+			double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
+			this.updateCountdownTicks = Math.max(this.updateCountdownTicks - 1, 0);
+			if ((this.pauseWhenMobIdle || this.mob.getVisibilityCache().canSee(livingEntity))
+				&& this.updateCountdownTicks <= 0
+				&& (
+					this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0
+						|| livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0
+						|| this.mob.getRandom().nextFloat() < 0.05F
+				)) {
+				this.targetX = livingEntity.getX();
+				this.targetY = livingEntity.getY();
+				this.targetZ = livingEntity.getZ();
+				this.updateCountdownTicks = 4 + this.mob.getRandom().nextInt(7);
+				if (d > 1024.0) {
+					this.updateCountdownTicks += 10;
+				} else if (d > 256.0) {
+					this.updateCountdownTicks += 5;
+				}
+
+				if (!this.mob.getNavigation().startMovingTo(livingEntity, this.speed)) {
+					this.updateCountdownTicks += 15;
+				}
+
+				this.updateCountdownTicks = this.getTickCount(this.updateCountdownTicks);
 			}
 
-			if (!this.mob.getNavigation().startMovingTo(livingEntity, this.speed)) {
-				this.updateCountdownTicks += 15;
-			}
+			this.cooldown = Math.max(this.cooldown - 1, 0);
+			this.attack(livingEntity, d);
 		}
-
-		this.cooldown = Math.max(this.cooldown - 1, 0);
-		this.attack(livingEntity, d);
 	}
 
 	protected void attack(LivingEntity target, double squaredDistance) {
@@ -127,7 +131,7 @@ public class MeleeAttackGoal extends Goal {
 	}
 
 	protected void resetCooldown() {
-		this.cooldown = 20;
+		this.cooldown = this.getTickCount(20);
 	}
 
 	protected boolean isCooledDown() {
@@ -139,7 +143,7 @@ public class MeleeAttackGoal extends Goal {
 	}
 
 	protected int getMaxCooldown() {
-		return 20;
+		return this.getTickCount(20);
 	}
 
 	protected double getSquaredMaxAttackDistance(LivingEntity entity) {

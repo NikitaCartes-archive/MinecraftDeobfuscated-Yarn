@@ -2,6 +2,7 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InfestedBlock;
@@ -32,6 +33,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SilverfishEntity extends HostileEntity {
+	@Nullable
 	private SilverfishEntity.CallForHelpGoal callForHelpGoal;
 
 	public SilverfishEntity(EntityType<? extends SilverfishEntity> entityType, World world) {
@@ -145,7 +147,7 @@ public class SilverfishEntity extends HostileEntity {
 
 		public void onHurt() {
 			if (this.delay == 0) {
-				this.delay = 20;
+				this.delay = this.getTickCount(20);
 			}
 		}
 
@@ -187,6 +189,7 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	static class WanderAndInfestGoal extends WanderAroundGoal {
+		@Nullable
 		private Direction direction;
 		private boolean canInfest;
 
@@ -203,7 +206,7 @@ public class SilverfishEntity extends HostileEntity {
 				return false;
 			} else {
 				Random random = this.mob.getRandom();
-				if (this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && random.nextInt(10) == 0) {
+				if (this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && random.nextInt(toGoalTicks(10)) == 0) {
 					this.direction = Direction.random(random);
 					BlockPos blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
 					BlockState blockState = this.mob.world.getBlockState(blockPos);

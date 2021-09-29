@@ -228,25 +228,25 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		return bedPart == BedPart.HEAD ? DoubleBlockProperties.Type.FIRST : DoubleBlockProperties.Type.SECOND;
 	}
 
-	private static boolean isBed(BlockView world, BlockPos pos) {
+	private static boolean isBedBelow(BlockView world, BlockPos pos) {
 		return world.getBlockState(pos.down()).getBlock() instanceof BedBlock;
 	}
 
-	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, float f) {
+	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, float spawnAngle) {
 		Direction direction = world.getBlockState(pos).get(FACING);
 		Direction direction2 = direction.rotateYClockwise();
-		Direction direction3 = direction2.pointsTo(f) ? direction2.getOpposite() : direction2;
-		if (isBed(world, pos)) {
+		Direction direction3 = direction2.pointsTo(spawnAngle) ? direction2.getOpposite() : direction2;
+		if (isBedBelow(world, pos)) {
 			return findWakeUpPosition(type, world, pos, direction, direction3);
 		} else {
-			int[][] is = method_30838(direction, direction3);
+			int[][] is = getAroundAndOnBedOffets(direction, direction3);
 			Optional<Vec3d> optional = findWakeUpPosition(type, world, pos, is, true);
 			return optional.isPresent() ? optional : findWakeUpPosition(type, world, pos, is, false);
 		}
 	}
 
-	private static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, Direction direction, Direction direction2) {
-		int[][] is = method_30840(direction, direction2);
+	private static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, Direction bedDirection, Direction respawnDirection) {
+		int[][] is = getAroundBedOffsets(bedDirection, respawnDirection);
 		Optional<Vec3d> optional = findWakeUpPosition(type, world, pos, is, true);
 		if (optional.isPresent()) {
 			return optional;
@@ -256,7 +256,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			if (optional2.isPresent()) {
 				return optional2;
 			} else {
-				int[][] js = method_30837(direction);
+				int[][] js = getOnBedOffsets(bedDirection);
 				Optional<Vec3d> optional3 = findWakeUpPosition(type, world, pos, js, true);
 				if (optional3.isPresent()) {
 					return optional3;
@@ -273,12 +273,12 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		}
 	}
 
-	private static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, int[][] is, boolean bl) {
+	private static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, int[][] possibleOffsets, boolean ignoreInvalidPos) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int[] js : is) {
-			mutable.set(pos.getX() + js[0], pos.getY(), pos.getZ() + js[1]);
-			Vec3d vec3d = Dismounting.findRespawnPos(type, world, mutable, bl);
+		for (int[] is : possibleOffsets) {
+			mutable.set(pos.getX() + is[0], pos.getY(), pos.getZ() + is[1]);
+			Vec3d vec3d = Dismounting.findRespawnPos(type, world, mutable, ignoreInvalidPos);
 			if (vec3d != null) {
 				return Optional.of(vec3d);
 			}
@@ -333,26 +333,26 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		return false;
 	}
 
-	private static int[][] method_30838(Direction direction, Direction direction2) {
-		return ArrayUtils.addAll(method_30840(direction, direction2), method_30837(direction));
+	private static int[][] getAroundAndOnBedOffets(Direction bedDirection, Direction respawnDirection) {
+		return ArrayUtils.addAll(getAroundBedOffsets(bedDirection, respawnDirection), getOnBedOffsets(bedDirection));
 	}
 
-	private static int[][] method_30840(Direction direction, Direction direction2) {
+	private static int[][] getAroundBedOffsets(Direction bedDirection, Direction respawnDirection) {
 		return new int[][]{
-			{direction2.getOffsetX(), direction2.getOffsetZ()},
-			{direction2.getOffsetX() - direction.getOffsetX(), direction2.getOffsetZ() - direction.getOffsetZ()},
-			{direction2.getOffsetX() - direction.getOffsetX() * 2, direction2.getOffsetZ() - direction.getOffsetZ() * 2},
-			{-direction.getOffsetX() * 2, -direction.getOffsetZ() * 2},
-			{-direction2.getOffsetX() - direction.getOffsetX() * 2, -direction2.getOffsetZ() - direction.getOffsetZ() * 2},
-			{-direction2.getOffsetX() - direction.getOffsetX(), -direction2.getOffsetZ() - direction.getOffsetZ()},
-			{-direction2.getOffsetX(), -direction2.getOffsetZ()},
-			{-direction2.getOffsetX() + direction.getOffsetX(), -direction2.getOffsetZ() + direction.getOffsetZ()},
-			{direction.getOffsetX(), direction.getOffsetZ()},
-			{direction2.getOffsetX() + direction.getOffsetX(), direction2.getOffsetZ() + direction.getOffsetZ()}
+			{respawnDirection.getOffsetX(), respawnDirection.getOffsetZ()},
+			{respawnDirection.getOffsetX() - bedDirection.getOffsetX(), respawnDirection.getOffsetZ() - bedDirection.getOffsetZ()},
+			{respawnDirection.getOffsetX() - bedDirection.getOffsetX() * 2, respawnDirection.getOffsetZ() - bedDirection.getOffsetZ() * 2},
+			{-bedDirection.getOffsetX() * 2, -bedDirection.getOffsetZ() * 2},
+			{-respawnDirection.getOffsetX() - bedDirection.getOffsetX() * 2, -respawnDirection.getOffsetZ() - bedDirection.getOffsetZ() * 2},
+			{-respawnDirection.getOffsetX() - bedDirection.getOffsetX(), -respawnDirection.getOffsetZ() - bedDirection.getOffsetZ()},
+			{-respawnDirection.getOffsetX(), -respawnDirection.getOffsetZ()},
+			{-respawnDirection.getOffsetX() + bedDirection.getOffsetX(), -respawnDirection.getOffsetZ() + bedDirection.getOffsetZ()},
+			{bedDirection.getOffsetX(), bedDirection.getOffsetZ()},
+			{respawnDirection.getOffsetX() + bedDirection.getOffsetX(), respawnDirection.getOffsetZ() + bedDirection.getOffsetZ()}
 		};
 	}
 
-	private static int[][] method_30837(Direction direction) {
-		return new int[][]{{0, 0}, {-direction.getOffsetX(), -direction.getOffsetZ()}};
+	private static int[][] getOnBedOffsets(Direction bedDirection) {
+		return new int[][]{{0, 0}, {-bedDirection.getOffsetX(), -bedDirection.getOffsetZ()}};
 	}
 }

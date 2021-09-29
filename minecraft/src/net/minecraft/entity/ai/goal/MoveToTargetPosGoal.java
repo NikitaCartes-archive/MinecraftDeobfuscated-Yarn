@@ -45,7 +45,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	}
 
 	protected int getInterval(PathAwareEntity mob) {
-		return 200 + mob.getRandom().nextInt(200);
+		return toGoalTicks(200 + mob.getRandom().nextInt(200));
 	}
 
 	@Override
@@ -72,6 +72,11 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	protected BlockPos getTargetPos() {
 		return this.targetPos.up();
+	}
+
+	@Override
+	public boolean shouldRunEveryTick() {
+		return true;
 	}
 
 	@Override

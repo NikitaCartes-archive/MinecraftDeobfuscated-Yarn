@@ -19,10 +19,10 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 	final LootNumberProvider durabilityRange;
 	final boolean add;
 
-	SetDamageLootFunction(LootCondition[] lootConditions, LootNumberProvider lootNumberProvider, boolean bl) {
-		super(lootConditions);
-		this.durabilityRange = lootNumberProvider;
-		this.add = bl;
+	SetDamageLootFunction(LootCondition[] conditons, LootNumberProvider durabilityRange, boolean add) {
+		super(conditons);
+		this.durabilityRange = durabilityRange;
+		this.add = add;
 	}
 
 	@Override

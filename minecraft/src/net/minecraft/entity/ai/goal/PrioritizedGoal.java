@@ -49,6 +49,16 @@ public class PrioritizedGoal extends Goal {
 	}
 
 	@Override
+	public boolean shouldRunEveryTick() {
+		return this.goal.shouldRunEveryTick();
+	}
+
+	@Override
+	protected int getTickCount(int ticks) {
+		return this.goal.getTickCount(ticks);
+	}
+
+	@Override
 	public void tick() {
 		this.goal.tick();
 	}

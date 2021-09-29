@@ -25,13 +25,13 @@ public class CaveSurfaceDecorator extends Decorator<CaveSurfaceDecoratorConfig> 
 			AbstractBlock.AbstractBlockState::isAir,
 			blockState -> blockState.getMaterial().isSolid()
 		);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			return Stream.of();
 		} else {
 			OptionalInt optionalInt = caveSurfaceDecoratorConfig.surface == VerticalSurfaceType.CEILING
 				? ((CaveSurface)optional.get()).getCeilingHeight()
 				: ((CaveSurface)optional.get()).getFloorHeight();
-			return !optionalInt.isPresent() ? Stream.of() : Stream.of(blockPos.withY(optionalInt.getAsInt() - caveSurfaceDecoratorConfig.surface.getOffset()));
+			return optionalInt.isEmpty() ? Stream.of() : Stream.of(blockPos.withY(optionalInt.getAsInt() - caveSurfaceDecoratorConfig.surface.getOffset()));
 		}
 	}
 }

@@ -39,7 +39,7 @@ public class EatGrassGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.timer = 40;
+		this.timer = this.getTickCount(40);
 		this.world.sendEntityStatus(this.mob, EntityStatuses.SET_SHEEP_EAT_GRASS_TIMER_OR_PRIME_TNT_MINECART);
 		this.mob.getNavigation().stop();
 	}
@@ -61,7 +61,7 @@ public class EatGrassGoal extends Goal {
 	@Override
 	public void tick() {
 		this.timer = Math.max(0, this.timer - 1);
-		if (this.timer == 4) {
+		if (this.timer == this.getTickCount(4)) {
 			BlockPos blockPos = this.mob.getBlockPos();
 			if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
 				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {

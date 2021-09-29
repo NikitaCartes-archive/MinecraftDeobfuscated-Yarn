@@ -63,13 +63,9 @@ public class StructureFeatureChildrenPoolElementFix extends DataFix {
 					return child;
 				} else {
 					OptionalDynamic<?> optionalDynamic = child.get("pool_element");
-					if (!optionalDynamic.get("element_type").asString("").equals("minecraft:feature_pool_element")) {
-						return child;
-					} else {
-						return !optionalDynamic.get("feature").get("name").result().isPresent()
-							? child
-							: child.update("pool_element", poolElement -> poolElement.update("feature", StructureFeatureChildrenPoolElementFix::updatePoolElementFeature));
-					}
+					return !optionalDynamic.get("element_type").asString("").equals("minecraft:feature_pool_element")
+						? child
+						: child.update("pool_element", poolElement -> poolElement.update("feature", StructureFeatureChildrenPoolElementFix::updatePoolElementFeature));
 				}
 			}
 		);

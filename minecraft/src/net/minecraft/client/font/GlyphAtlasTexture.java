@@ -80,7 +80,9 @@ public class GlyphAtlasTexture extends AbstractTexture {
 		final int y;
 		private final int width;
 		private final int height;
+		@Nullable
 		private GlyphAtlasTexture.Slot subSlot1;
+		@Nullable
 		private GlyphAtlasTexture.Slot subSlot2;
 		private boolean occupied;
 

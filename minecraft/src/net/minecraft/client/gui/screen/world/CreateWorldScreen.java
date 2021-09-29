@@ -267,7 +267,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private void createLevel() {
-		this.client.method_29970(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
+		this.client.setScreenAndRender(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
 		if (this.copyTempDirDataPacks()) {
 			this.clearTempResources();
 			GeneratorOptions generatorOptions = this.moreOptionsDialog.getGeneratorOptions(this.hardcore);

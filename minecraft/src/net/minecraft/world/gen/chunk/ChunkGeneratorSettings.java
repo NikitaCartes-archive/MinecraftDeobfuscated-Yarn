@@ -23,7 +23,7 @@ public final class ChunkGeneratorSettings {
 		instance -> instance.group(
 					StructuresConfig.CODEC.fieldOf("structures").forGetter(ChunkGeneratorSettings::getStructuresConfig),
 					GenerationShapeConfig.CODEC.fieldOf("noise").forGetter(ChunkGeneratorSettings::getGenerationShapeConfig),
-					MultiNoiseParameters.CODEC.fieldOf("octaves").forGetter(ChunkGeneratorSettings::getBiomeSource),
+					MultiNoiseParameters.CODEC.fieldOf("octaves").forGetter(ChunkGeneratorSettings::getMultiNoiseParameters),
 					BlockState.CODEC.fieldOf("default_block").forGetter(ChunkGeneratorSettings::getDefaultBlock),
 					BlockState.CODEC.fieldOf("default_fluid").forGetter(ChunkGeneratorSettings::getDefaultFluid),
 					Codec.INT.fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorSettings::getBedrockCeilingY),
@@ -41,7 +41,7 @@ public final class ChunkGeneratorSettings {
 	public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
 	private final StructuresConfig structuresConfig;
 	private final GenerationShapeConfig generationShapeConfig;
-	private final MultiNoiseParameters biomeSource;
+	private final MultiNoiseParameters multiNoiseParameters;
 	private final BlockState defaultBlock;
 	private final BlockState defaultFluid;
 	private final int bedrockCeilingY;
@@ -54,6 +54,7 @@ public final class ChunkGeneratorSettings {
 	private final boolean oreVeins;
 	private final boolean noodleCaves;
 	public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("overworld"));
+	public static final RegistryKey<ChunkGeneratorSettings> field_35051 = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("large_biomes"));
 	public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("amplified"));
 	public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("nether"));
 	public static final RegistryKey<ChunkGeneratorSettings> END = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("end"));
@@ -61,12 +62,12 @@ public final class ChunkGeneratorSettings {
 	public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(
 		Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("floating_islands")
 	);
-	private static final ChunkGeneratorSettings INSTANCE = register(OVERWORLD, createSurfaceSettings(new StructuresConfig(true), false));
+	private static final ChunkGeneratorSettings INSTANCE = register(OVERWORLD, createSurfaceSettings(new StructuresConfig(true), false, false));
 
 	private ChunkGeneratorSettings(
 		StructuresConfig structuresConfig,
 		GenerationShapeConfig generationShapeConfig,
-		MultiNoiseParameters biomeSource,
+		MultiNoiseParameters multiNoiseParameters,
 		BlockState defaultBlock,
 		BlockState defaultFluid,
 		int bedrockFloorY,
@@ -81,7 +82,7 @@ public final class ChunkGeneratorSettings {
 	) {
 		this.structuresConfig = structuresConfig;
 		this.generationShapeConfig = generationShapeConfig;
-		this.biomeSource = biomeSource;
+		this.multiNoiseParameters = multiNoiseParameters;
 		this.defaultBlock = defaultBlock;
 		this.defaultFluid = defaultFluid;
 		this.bedrockCeilingY = bedrockFloorY;
@@ -103,8 +104,8 @@ public final class ChunkGeneratorSettings {
 		return this.generationShapeConfig;
 	}
 
-	public MultiNoiseParameters getBiomeSource() {
-		return this.biomeSource;
+	public MultiNoiseParameters getMultiNoiseParameters() {
+		return this.multiNoiseParameters;
 	}
 
 	public BlockState getDefaultBlock() {
@@ -265,7 +266,8 @@ public final class ChunkGeneratorSettings {
 		);
 	}
 
-	private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified) {
+	private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, boolean bl) {
+		int i = bl ? -2 : 0;
 		double d = 0.9999999814507745;
 		return new ChunkGeneratorSettings(
 			structuresConfig,
@@ -286,12 +288,12 @@ public final class ChunkGeneratorSettings {
 				false
 			),
 			new MultiNoiseParameters(
-				new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0),
-				new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0),
-				new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0),
-				new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.0, 1.0, 0.0, 1.0, 1.0),
-				new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0),
-				new DoublePerlinNoiseSampler.NoiseParameters(-3, 1.0, 1.0, 1.0, 0.0)
+				new DoublePerlinNoiseSampler.NoiseParameters(-9 + i, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0),
+				new DoublePerlinNoiseSampler.NoiseParameters(-7 + i, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0),
+				new DoublePerlinNoiseSampler.NoiseParameters(-9 + i, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0),
+				new DoublePerlinNoiseSampler.NoiseParameters(-9 + i, 1.0, 1.0, 0.0, 1.0, 1.0),
+				new DoublePerlinNoiseSampler.NoiseParameters(-7 + i, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0),
+				new DoublePerlinNoiseSampler.NoiseParameters(-3 + i, 1.0, 1.0, 1.0, 0.0)
 			),
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),
@@ -308,7 +310,8 @@ public final class ChunkGeneratorSettings {
 	}
 
 	static {
-		register(AMPLIFIED, createSurfaceSettings(new StructuresConfig(true), true));
+		register(field_35051, createSurfaceSettings(new StructuresConfig(true), false, true));
+		register(AMPLIFIED, createSurfaceSettings(new StructuresConfig(true), true, false));
 		register(NETHER, createUndergroundSettings(new StructuresConfig(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState()));
 		register(END, createIslandSettings(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), true, true));
 		register(CAVES, createUndergroundSettings(new StructuresConfig(true), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState()));

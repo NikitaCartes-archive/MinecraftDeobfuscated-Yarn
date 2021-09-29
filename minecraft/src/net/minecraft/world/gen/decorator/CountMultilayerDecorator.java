@@ -1,10 +1,9 @@
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
-import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -17,7 +16,7 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 	}
 
 	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, CountConfig countConfig, BlockPos blockPos) {
-		List<BlockPos> list = Lists.<BlockPos>newArrayList();
+		Builder<BlockPos> builder = Stream.builder();
 		int i = 0;
 
 		boolean bl;
@@ -30,7 +29,7 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 				int m = decoratorContext.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l);
 				int n = findPos(decoratorContext, k, m, l, i);
 				if (n != Integer.MAX_VALUE) {
-					list.add(new BlockPos(k, n, l));
+					builder.add(new BlockPos(k, n, l));
 					bl = true;
 				}
 			}
@@ -38,7 +37,7 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 			i++;
 		} while (bl);
 
-		return list.stream();
+		return builder.build();
 	}
 
 	private static int findPos(DecoratorContext context, int x, int y, int z, int targetY) {

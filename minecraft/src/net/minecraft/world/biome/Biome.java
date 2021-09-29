@@ -13,7 +13,6 @@ import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -36,6 +35,7 @@ import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LightType;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -210,7 +210,7 @@ public final class Biome {
 
 	public void buildSurface(
 		Random random,
-		class_6557 chunk,
+		BlockColumn chunk,
 		int x,
 		int z,
 		int worldHeight,

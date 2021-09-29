@@ -69,20 +69,10 @@ public class SuffixArray<T> {
 	public void build() {
 		int i = this.characters.size();
 		int[] is = new int[i];
-		final int[] js = new int[i];
-		final int[] ks = new int[i];
+		int[] js = new int[i];
+		int[] ks = new int[i];
 		int[] ls = new int[i];
-		IntComparator intComparator = new IntComparator() {
-			@Override
-			public int compare(int i, int j) {
-				return js[i] == js[j] ? Integer.compare(ks[i], ks[j]) : Integer.compare(js[i], js[j]);
-			}
-
-			@Override
-			public int compare(Integer integer, Integer integer2) {
-				return this.compare(integer.intValue(), integer2.intValue());
-			}
-		};
+		IntComparator intComparator = (ix, jx) -> js[ix] == js[jx] ? Integer.compare(ks[ix], ks[jx]) : Integer.compare(js[ix], js[jx]);
 		Swapper swapper = (ix, jx) -> {
 			if (ix != jx) {
 				int kx = js[ix];
@@ -154,7 +144,7 @@ public class SuffixArray<T> {
 				stringBuilder.append('^');
 			}
 
-			int l = this.characters.get(j + k);
+			int l = this.characters.getInt(j + k);
 			if (l == -1) {
 				break;
 			}

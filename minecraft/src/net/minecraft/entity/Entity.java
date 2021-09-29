@@ -1064,7 +1064,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 			}
 
-			this.fallDistance = 0.0F;
+			this.onLanding();
 		} else if (heightDifference < 0.0) {
 			this.fallDistance = (float)((double)this.fallDistance - heightDifference);
 		}
@@ -1150,7 +1150,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.onSwimmingStart();
 			}
 
-			this.fallDistance = 0.0F;
+			this.onLanding();
 			this.touchingWater = true;
 			this.extinguish();
 		} else {
@@ -2232,10 +2232,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 
 		this.setVelocity(vec3d.x, d, vec3d.z);
-		this.fallDistance = 0.0F;
+		this.onLanding();
 	}
 
 	public void onKilledOther(ServerWorld world, LivingEntity other) {
+	}
+
+	public void onLanding() {
+		this.fallDistance = 0.0F;
 	}
 
 	protected void pushOutOfBlocks(double x, double y, double z) {
@@ -2270,7 +2274,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void slowMovement(BlockState state, Vec3d multiplier) {
-		this.fallDistance = 0.0F;
+		this.onLanding();
 		this.movementMultiplier = multiplier;
 	}
 

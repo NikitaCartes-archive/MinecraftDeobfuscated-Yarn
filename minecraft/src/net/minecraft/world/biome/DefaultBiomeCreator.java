@@ -33,7 +33,7 @@ public class DefaultBiomeCreator {
 			DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		} else {
 			DefaultBiomeFeatures.addCaveMobs(builder);
-			DefaultBiomeFeatures.addMonsters(builder, 100, 25, 100);
+			DefaultBiomeFeatures.addMonsters(builder, 100, 25, 100, false);
 		}
 
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GIANT_TREE_TAIGA);
@@ -1440,7 +1440,7 @@ public class DefaultBiomeCreator {
 
 	public static Biome createDripstoneCaves() {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
-		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		DefaultBiomeFeatures.method_38941(builder);
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.STONE);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);

@@ -3,6 +3,7 @@ package net.minecraft.entity.passive;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowerBlock;
@@ -42,8 +43,10 @@ import org.apache.commons.lang3.tuple.Pair;
 public class MooshroomEntity extends CowEntity implements Shearable {
 	private static final TrackedData<String> TYPE = DataTracker.registerData(MooshroomEntity.class, TrackedDataHandlerRegistry.STRING);
 	private static final int MUTATION_CHANCE = 1024;
+	@Nullable
 	private StatusEffect stewEffect;
 	private int stewEffectDuration;
+	@Nullable
 	private UUID lightningId;
 
 	public MooshroomEntity(EntityType<? extends MooshroomEntity> entityType, World world) {

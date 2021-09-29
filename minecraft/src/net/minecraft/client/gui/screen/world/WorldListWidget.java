@@ -72,7 +72,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	static final Text SNAPSHOT_SECOND_LINE = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
 	static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
 	static final Text CONVERSION_TOOLTIP = new TranslatableText("selectWorld.conversion.tooltip").formatted(Formatting.RED);
-	static final Text INCOMPATIBLE_WORLDHEIGHT_TEXT = new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
 	private final SelectWorldScreen parent;
 	@Nullable
 	private List<LevelSummary> levels;
@@ -172,6 +171,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private final SelectWorldScreen screen;
 		final LevelSummary level;
 		private final Identifier iconLocation;
+		@Nullable
 		private File iconFile;
 		@Nullable
 		private final NativeImageBackedTexture icon;
@@ -206,8 +206,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			Text text;
 			if (this.level.isLocked()) {
 				text = ScreenTexts.joinSentences(translatableText, WorldListWidget.LOCKED_TEXT);
-			} else if (this.level.hasIncompatibleWorldHeight()) {
-				text = ScreenTexts.joinSentences(translatableText, WorldListWidget.INCOMPATIBLE_WORLDHEIGHT_TEXT);
 			} else {
 				text = translatableText;
 			}
@@ -250,11 +248,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 					if (bl) {
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.CONVERSION_TOOLTIP, 175));
-					}
-				} else if (this.level.hasIncompatibleWorldHeight()) {
-					DrawableHelper.drawTexture(matrices, x, y, 96.0F, 32.0F, 32, 32, 256, 256);
-					if (bl) {
-						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.INCOMPATIBLE_WORLDHEIGHT_TEXT, 175));
 					}
 				} else if (this.level.isDifferentVersion()) {
 					DrawableHelper.drawTexture(matrices, x, y, 32.0F, (float)j, 32, 32, 256, 256);
@@ -468,7 +461,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		private void openReadingWorldScreen() {
-			this.client.method_29970(new SaveLevelScreen(new TranslatableText("selectWorld.data_read")));
+			this.client.setScreenAndRender(new SaveLevelScreen(new TranslatableText("selectWorld.data_read")));
 		}
 
 		@Nullable

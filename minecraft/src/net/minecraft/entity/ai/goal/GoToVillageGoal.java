@@ -21,7 +21,7 @@ public class GoToVillageGoal extends Goal {
 
 	public GoToVillageGoal(PathAwareEntity mob, int searchRange) {
 		this.mob = mob;
-		this.searchRange = searchRange;
+		this.searchRange = toGoalTicks(searchRange);
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 

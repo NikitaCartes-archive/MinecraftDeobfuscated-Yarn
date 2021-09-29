@@ -83,25 +83,46 @@ public final class VanillaTerrainParameters {
 			.add(0.03F, buildErosionFactorSpline(5.08F, true), 0.0F)
 			.add(0.06F, buildErosionFactorSpline(4.69F, false), 0.0F)
 			.build();
+		float j = 0.65F;
 		this.peakSpline = Spline.builder(CONTINENTALNESS)
-			.add(0.1F, 0.0F, 0.0F)
-			.add(
-				0.2F,
-				Spline.builder(EROSION)
-					.add(
-						-0.8F,
-						Spline.builder(NORMALIZED_WEIRDNESS)
-							.add(-1.0F, 0.0F, 0.0F)
-							.add(0.2F, 0.0F, 0.0F)
-							.add(1.0F, Spline.builder(WEIRDNESS).add(-0.01F, 0.625F, 0.0F).add(0.01F, 0.15625F, 0.0F).build(), 0.0F)
-							.build(),
-						0.0F
-					)
-					.add(-0.4F, 0.0F, 0.0F)
-					.build(),
-				0.0F
-			)
+			.add(-0.11F, 0.0F, 0.0F)
+			.add(0.03F, this.method_38856(1.0F, 0.5F, 0.0F, 0.0F), 0.0F)
+			.add(0.65F, this.method_38856(1.0F, 1.0F, 1.0F, 0.0F), 0.0F)
 			.build();
+	}
+
+	private Spline<VanillaTerrainParameters.NoisePoint> method_38856(float f, float g, float h, float i) {
+		float j = -0.5775F;
+		Spline<VanillaTerrainParameters.NoisePoint> spline = this.method_38855(f, h);
+		Spline<VanillaTerrainParameters.NoisePoint> spline2 = this.method_38855(g, i);
+		return Spline.builder(EROSION).add(-1.0F, spline, 0.0F).add(-0.78F, spline2, 0.0F).add(-0.5775F, spline2, 0.0F).add(-0.375F, 0.0F, 0.0F).build();
+	}
+
+	private Spline<VanillaTerrainParameters.NoisePoint> method_38855(float f, float g) {
+		float h = getNormalizedWeirdness(0.4F);
+		float i = getNormalizedWeirdness(0.56666666F);
+		float j = (h + i) / 2.0F;
+		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.builder(NORMALIZED_WEIRDNESS);
+		builder.add(h, 0.0F, 0.0F);
+		if (g > 0.0F) {
+			builder.add(j, this.method_38857(g), 0.0F);
+		} else {
+			builder.add(j, 0.0F, 0.0F);
+		}
+
+		if (f > 0.0F) {
+			builder.add(1.0F, this.method_38857(f), 0.0F);
+		} else {
+			builder.add(1.0F, 0.0F, 0.0F);
+		}
+
+		return builder.build();
+	}
+
+	private Spline<VanillaTerrainParameters.NoisePoint> method_38857(float f) {
+		float g = 0.63F * f;
+		float h = 0.3F * f;
+		return Spline.builder(WEIRDNESS).add(-0.01F, g, 0.0F).add(0.01F, h, 0.0F).build();
 	}
 
 	private static Spline<VanillaTerrainParameters.NoisePoint> buildErosionFactorSpline(float value, boolean bl) {

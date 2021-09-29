@@ -17,9 +17,11 @@ import net.minecraft.loot.function.EnchantWithLevelsLootFunction;
 import net.minecraft.loot.function.ExplorationMapLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetDamageLootFunction;
+import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.potion.Potions;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -339,6 +341,12 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(ItemEntry.builder(Items.COOKED_COD).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
 						.with(ItemEntry.builder(Items.COOKED_SALMON).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
 				)
+				.pool(
+					LootPool.builder()
+						.rolls(UniformLootNumberProvider.create(0.0F, 2.0F))
+						.with(ItemEntry.builder(Items.POTION))
+						.apply(SetPotionLootFunction.builder(Potions.WATER_BREATHING))
+				)
 		);
 		biConsumer.accept(
 			LootTables.DESERT_PYRAMID_CHEST,
@@ -560,7 +568,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(
 							ItemEntry.builder(Items.MAP)
 								.apply(
-									ExplorationMapLootFunction.create()
+									ExplorationMapLootFunction.builder()
 										.withDestination(StructureFeature.BURIED_TREASURE)
 										.withDecoration(MapIcon.Type.RED_X)
 										.withZoom((byte)1)
@@ -794,7 +802,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							ItemEntry.builder(Items.MAP)
 								.weight(10)
 								.apply(
-									ExplorationMapLootFunction.create()
+									ExplorationMapLootFunction.builder()
 										.withDestination(StructureFeature.BURIED_TREASURE)
 										.withDecoration(MapIcon.Type.RED_X)
 										.withZoom((byte)1)
@@ -825,7 +833,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							ItemEntry.builder(Items.MAP)
 								.weight(5)
 								.apply(
-									ExplorationMapLootFunction.create()
+									ExplorationMapLootFunction.builder()
 										.withDestination(StructureFeature.BURIED_TREASURE)
 										.withDecoration(MapIcon.Type.RED_X)
 										.withZoom((byte)1)

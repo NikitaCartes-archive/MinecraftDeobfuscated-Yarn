@@ -108,13 +108,13 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
+	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean nonEdge) {
 		this.enqueue(
 			pos.getSectionX(),
 			pos.getSectionZ(),
 			() -> 0,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable((Runnable)(() -> super.enqueueSectionData(lightType, pos, nibbles, bl)), (Supplier<String>)(() -> "queueData " + pos))
+			Util.debugRunnable((Runnable)(() -> super.enqueueSectionData(lightType, pos, nibbles, nonEdge)), (Supplier<String>)(() -> "queueData " + pos))
 		);
 	}
 

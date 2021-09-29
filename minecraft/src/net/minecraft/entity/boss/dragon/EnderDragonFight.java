@@ -81,11 +81,15 @@ public class EnderDragonFight {
 	private int playerUpdateTimer;
 	private boolean dragonKilled;
 	private boolean previouslyKilled;
+	@Nullable
 	private UUID dragonUuid;
 	private boolean doLegacyCheck = true;
+	@Nullable
 	private BlockPos exitPortalLocation;
+	@Nullable
 	private EnderDragonSpawnState dragonSpawnState;
 	private int spawnStateTimer;
+	@Nullable
 	private List<EndCrystalEntity> crystals;
 
 	public EnderDragonFight(ServerWorld world, long gatewaysSeed, NbtCompound nbt) {

@@ -73,7 +73,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 				}
 
 				if (i < this.contents.length()) {
-					mutableText.append(this.contents.substring(i, this.contents.length()));
+					mutableText.append(this.contents.substring(i));
 				}
 
 				return mutableText;
@@ -96,9 +96,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 					EntitySelector entitySelector;
 					while (true) {
 						if (!reader.canRead()) {
-							return new MessageArgumentType.MessageFormat(
-								string, (MessageArgumentType.MessageSelector[])list.toArray(new MessageArgumentType.MessageSelector[list.size()])
-							);
+							return new MessageArgumentType.MessageFormat(string, (MessageArgumentType.MessageSelector[])list.toArray(new MessageArgumentType.MessageSelector[0]));
 						}
 
 						if (reader.peek() == '@') {

@@ -61,6 +61,11 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	}
 
 	@Override
+	public boolean shouldRunEveryTick() {
+		return true;
+	}
+
+	@Override
 	public void tick() {
 		LivingEntity livingEntity = this.actor.getTarget();
 		if (livingEntity != null) {

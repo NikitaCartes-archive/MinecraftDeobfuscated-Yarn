@@ -501,9 +501,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.inventory.updateItems();
 		this.prevStrideDistance = this.strideDistance;
 		super.tickMovement();
-		this.flyingSpeed = 0.02F;
+		this.airStrafingSpeed = 0.02F;
 		if (this.isSprinting()) {
-			this.flyingSpeed = (float)((double)this.flyingSpeed + 0.005999999865889549);
+			this.airStrafingSpeed = (float)((double)this.airStrafingSpeed + 0.005999999865889549);
 		}
 
 		this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
@@ -1452,13 +1452,13 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		if (this.abilities.flying && !this.hasVehicle()) {
 			double g = this.getVelocity().y;
-			float i = this.flyingSpeed;
-			this.flyingSpeed = this.abilities.getFlySpeed() * (float)(this.isSprinting() ? 2 : 1);
+			float i = this.airStrafingSpeed;
+			this.airStrafingSpeed = this.abilities.getFlySpeed() * (float)(this.isSprinting() ? 2 : 1);
 			super.travel(movementInput);
 			Vec3d vec3d2 = this.getVelocity();
 			this.setVelocity(vec3d2.x, g * 0.6, vec3d2.z);
-			this.flyingSpeed = i;
-			this.fallDistance = 0.0F;
+			this.airStrafingSpeed = i;
+			this.onLanding();
 			this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
 		} else {
 			super.travel(movementInput);

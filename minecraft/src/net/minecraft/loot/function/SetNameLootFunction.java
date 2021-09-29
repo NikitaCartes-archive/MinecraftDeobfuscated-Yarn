@@ -26,10 +26,10 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 	@Nullable
 	final LootContext.EntityTarget entity;
 
-	SetNameLootFunction(LootCondition[] lootConditions, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
-		super(lootConditions);
-		this.name = text;
-		this.entity = entityTarget;
+	SetNameLootFunction(LootCondition[] conditions, @Nullable Text name, @Nullable LootContext.EntityTarget entity) {
+		super(conditions);
+		this.name = name;
+		this.entity = entity;
 	}
 
 	@Override

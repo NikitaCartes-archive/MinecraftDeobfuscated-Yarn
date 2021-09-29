@@ -17,7 +17,7 @@ public class BannedIpEntry extends BanEntry<String> {
 
 	@Override
 	public Text toText() {
-		return new LiteralText(this.getKey());
+		return new LiteralText(String.valueOf(this.getKey()));
 	}
 
 	public BannedIpEntry(JsonObject json) {

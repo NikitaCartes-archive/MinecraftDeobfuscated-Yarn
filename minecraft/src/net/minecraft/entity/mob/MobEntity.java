@@ -88,6 +88,7 @@ public abstract class MobEntity extends LivingEntity {
 	public static final String LEASH_KEY = "Leash";
 	private static final int field_30087 = 1;
 	public static final float DEFAULT_DROP_CHANCE = 0.085F;
+	public static final int field_35039 = 2;
 	public int ambientSoundChance;
 	protected int experiencePoints;
 	protected LookControl lookControl;
@@ -97,6 +98,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected EntityNavigation navigation;
 	protected final GoalSelector goalSelector;
 	protected final GoalSelector targetSelector;
+	@Nullable
 	private LivingEntity target;
 	private final MobVisibilityCache visibilityCache;
 	private final DefaultedList<ItemStack> handItems = DefaultedList.ofSize(2, ItemStack.EMPTY);
@@ -106,6 +108,7 @@ public abstract class MobEntity extends LivingEntity {
 	private boolean pickUpLoot;
 	private boolean persistent;
 	private final Map<PathNodeType, Float> pathfindingPenalties = Maps.newEnumMap(PathNodeType.class);
+	@Nullable
 	private Identifier lootTable;
 	private long lootTableSeed;
 	@Nullable
@@ -685,12 +688,23 @@ public abstract class MobEntity extends LivingEntity {
 		this.world.getProfiler().push("sensing");
 		this.visibilityCache.clear();
 		this.world.getProfiler().pop();
-		this.world.getProfiler().push("targetSelector");
-		this.targetSelector.tick();
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("goalSelector");
-		this.goalSelector.tick();
-		this.world.getProfiler().pop();
+		int i = this.world.getServer().getTicks() + this.getId();
+		if (i % 2 != 0 && this.age > 1) {
+			this.world.getProfiler().push("targetSelector");
+			this.targetSelector.tickGoals(false);
+			this.world.getProfiler().pop();
+			this.world.getProfiler().push("goalSelector");
+			this.goalSelector.tickGoals(false);
+			this.world.getProfiler().pop();
+		} else {
+			this.world.getProfiler().push("targetSelector");
+			this.targetSelector.tick();
+			this.world.getProfiler().pop();
+			this.world.getProfiler().push("goalSelector");
+			this.goalSelector.tick();
+			this.world.getProfiler().pop();
+		}
+
 		this.world.getProfiler().push("navigation");
 		this.navigation.tick();
 		this.world.getProfiler().pop();
@@ -716,15 +730,40 @@ public abstract class MobEntity extends LivingEntity {
 	protected void mobTick() {
 	}
 
-	public int getLookPitchSpeed() {
+	/**
+	 * {@return the maximum degrees which the pitch can change when looking}
+	 * 
+	 * <p>This is used by the look control.
+	 * 
+	 * <p>It can return from {@code 1} for entities that can hardly raise their head,
+	 * like axolotols or dolphins, or {@code 180} for entities that can freely raise
+	 * and lower their head, like guardians. The default return value is {@code 40}.
+	 */
+	public int getMaxLookPitchChange() {
 		return 40;
 	}
 
-	public int getBodyYawSpeed() {
+	/**
+	 * {@return the maximum degrees which the head yaw can differ from the body yaw}
+	 * 
+	 * <p>This is used by the body control.
+	 * 
+	 * <p>It can return from {@code 1} for entities that can hardly rotate their head,
+	 * like axolotols or dolphins, or {@code 180} for entities that can freely rotate
+	 * their head, like shulkers. The default return value is {@code 75}.
+	 */
+	public int getMaxHeadRotation() {
 		return 75;
 	}
 
-	public int getLookYawSpeed() {
+	/**
+	 * {@return the maximum degrees which the yaw can change when looking}
+	 * 
+	 * <p>This is used by the look control.
+	 * 
+	 * <p>The default return value is {@code 10}.
+	 */
+	public int getMaxLookYawChange() {
 		return 10;
 	}
 
@@ -745,17 +784,23 @@ public abstract class MobEntity extends LivingEntity {
 		this.setYaw(this.changeAngle(this.getYaw(), h, maxYawChange));
 	}
 
-	private float changeAngle(float oldAngle, float newAngle, float maxChangeInAngle) {
-		float f = MathHelper.wrapDegrees(newAngle - oldAngle);
-		if (f > maxChangeInAngle) {
-			f = maxChangeInAngle;
+	/**
+	 * Changes the angle from {@code from} to {@code to}, or by {@code max} degrees
+	 * if {@code to} is too big a change.
+	 * 
+	 * <p>This is the same as {@link LookControl#changeAngle(float, float, float)}.
+	 */
+	private float changeAngle(float from, float to, float max) {
+		float f = MathHelper.wrapDegrees(to - from);
+		if (f > max) {
+			f = max;
 		}
 
-		if (f < -maxChangeInAngle) {
-			f = -maxChangeInAngle;
+		if (f < -max) {
+			f = -max;
 		}
 
-		return oldAngle + f;
+		return from + f;
 	}
 
 	public static boolean canMobSpawn(EntityType<? extends MobEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

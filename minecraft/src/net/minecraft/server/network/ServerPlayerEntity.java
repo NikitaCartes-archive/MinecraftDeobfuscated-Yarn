@@ -158,15 +158,21 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private ChatVisibility clientChatVisibility = ChatVisibility.FULL;
 	private boolean clientChatColorsEnabled = true;
 	private long lastActionTime = Util.getMeasuringTimeMs();
+	@Nullable
 	private Entity cameraEntity;
 	private boolean inTeleportationState;
 	private boolean seenCredits;
 	private final ServerRecipeBook recipeBook = new ServerRecipeBook();
+	@Nullable
 	private Vec3d levitationStartPos;
 	private int levitationStartTick;
 	private boolean disconnected;
 	@Nullable
+	private Vec3d fallStartPos;
+	@Nullable
 	private Vec3d enteredNetherPos;
+	@Nullable
+	private Vec3d vehicleInLavaRidingPos;
 	/**
 	 * A chunk section position indicating where the player's client is currently
 	 * watching chunks from. Used referentially for the game to update the chunks
@@ -442,6 +448,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 			Criteria.LEVITATION.trigger(this, this.levitationStartPos, this.age - this.levitationStartTick);
 		}
 
+		this.tickFallStartPos();
+		this.tickVehicleInLavaRiding();
 		this.advancementTracker.sendUpdate(this);
 	}
 
@@ -513,6 +521,36 @@ public class ServerPlayerEntity extends PlayerEntity {
 			CrashReportSection crashReportSection = crashReport.addElement("Player being ticked");
 			this.populateCrashReport(crashReportSection);
 			throw new CrashException(crashReport);
+		}
+	}
+
+	@Override
+	public void onLanding() {
+		if (this.getHealth() > 0.0F && this.fallStartPos != null) {
+			Criteria.FALL_FROM_HEIGHT.trigger(this, this.fallStartPos);
+		}
+
+		this.fallStartPos = null;
+		super.onLanding();
+	}
+
+	public void tickFallStartPos() {
+		if (this.fallDistance > 0.0F && this.fallStartPos == null) {
+			this.fallStartPos = this.getPos();
+		}
+	}
+
+	public void tickVehicleInLavaRiding() {
+		if (this.getVehicle() != null && this.getVehicle().isInLava()) {
+			if (this.vehicleInLavaRidingPos == null) {
+				this.vehicleInLavaRidingPos = this.getPos();
+			} else {
+				Criteria.RIDE_ENTITY_IN_LAVA.trigger(this, this.vehicleInLavaRidingPos);
+			}
+		}
+
+		if (this.vehicleInLavaRidingPos != null && (this.getVehicle() == null || !this.getVehicle().isInLava())) {
+			this.vehicleInLavaRidingPos = null;
 		}
 	}
 
@@ -1336,7 +1374,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return (Entity)(this.cameraEntity == null ? this : this.cameraEntity);
 	}
 
-	public void setCameraEntity(Entity entity) {
+	public void setCameraEntity(@Nullable Entity entity) {
 		Entity entity2 = this.getCameraEntity();
 		this.cameraEntity = (Entity)(entity == null ? this : entity);
 		if (entity2 != this.cameraEntity) {

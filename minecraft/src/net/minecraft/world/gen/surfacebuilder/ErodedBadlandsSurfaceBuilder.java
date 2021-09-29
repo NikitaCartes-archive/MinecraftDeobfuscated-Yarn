@@ -2,10 +2,10 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 
 public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
@@ -19,7 +19,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	@Override
 	public void generate(
 		Random random,
-		class_6557 arg,
+		BlockColumn blockColumn,
 		Biome biome,
 		int i,
 		int j,
@@ -57,7 +57,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 		boolean bl2 = false;
 
 		for (int r = Math.max(k, (int)e + 1); r >= m; r--) {
-			BlockState blockState7 = arg.getState(r);
+			BlockState blockState7 = blockColumn.getState(r);
 			if (blockState7.isOf(blockState.getBlock())) {
 				break;
 			}
@@ -68,11 +68,11 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 		}
 
 		for (int r = Math.max(k, (int)e + 1); r >= m; r--) {
-			if (arg.getState(r).isAir() && r < (int)e) {
-				arg.method_38092(r, blockState);
+			if (blockColumn.getState(r).isAir() && r < (int)e) {
+				blockColumn.setState(r, blockState);
 			}
 
-			BlockState blockState7x = arg.getState(r);
+			BlockState blockState7x = blockColumn.getState(r);
 			if (blockState7x.isAir()) {
 				q = -1;
 			} else if (blockState7x.isOf(blockState.getBlock())) {
@@ -102,13 +102,13 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 								blockState8 = this.calculateLayerBlockState(i, r, j);
 							}
 
-							arg.method_38092(r, blockState8);
+							blockColumn.setState(r, blockState8);
 						} else {
-							arg.method_38092(r, blockState5);
+							blockColumn.setState(r, blockState5);
 							bl2 = true;
 						}
 					} else {
-						arg.method_38092(r, blockState6);
+						blockColumn.setState(r, blockState6);
 						if (blockState6.isOf(Blocks.WHITE_TERRACOTTA)
 							|| blockState6.isOf(Blocks.ORANGE_TERRACOTTA)
 							|| blockState6.isOf(Blocks.MAGENTA_TERRACOTTA)
@@ -125,15 +125,15 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 							|| blockState6.isOf(Blocks.GREEN_TERRACOTTA)
 							|| blockState6.isOf(Blocks.RED_TERRACOTTA)
 							|| blockState6.isOf(Blocks.BLACK_TERRACOTTA)) {
-							arg.method_38092(r, ORANGE_TERRACOTTA);
+							blockColumn.setState(r, ORANGE_TERRACOTTA);
 						}
 					}
 				} else if (q > 0) {
 					q--;
 					if (bl2) {
-						arg.method_38092(r, ORANGE_TERRACOTTA);
+						blockColumn.setState(r, ORANGE_TERRACOTTA);
 					} else {
-						arg.method_38092(r, this.calculateLayerBlockState(i, r, j));
+						blockColumn.setState(r, this.calculateLayerBlockState(i, r, j));
 					}
 				}
 			}

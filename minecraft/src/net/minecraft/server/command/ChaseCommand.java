@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 public class ChaseCommand {
 	private static final String field_35000 = "localhost";
-	private static final String field_35001 = "localhost";
+	private static final String field_35001 = "0.0.0.0";
 	private static final int field_35002 = 10000;
 	private static final int field_35003 = 100;
 	public static BiMap<String, RegistryKey<World>> DIMENSIONS = ImmutableBiMap.of("o", World.OVERWORLD, "n", World.NETHER, "e", World.END);
@@ -57,7 +57,7 @@ public class ChaseCommand {
 										)
 								)
 						)
-						.executes(commandContext -> startServer(commandContext.getSource(), "localhost", 10000))
+						.executes(commandContext -> startServer(commandContext.getSource(), "0.0.0.0", 10000))
 				)
 				.then(CommandManager.literal("stop").executes(commandContext -> stop(commandContext.getSource())))
 		);

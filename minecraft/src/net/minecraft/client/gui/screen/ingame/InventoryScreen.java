@@ -76,7 +76,6 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawStatusEffects = !this.recipeBook.isOpen();
 		if (this.recipeBook.isOpen() && this.narrow) {
 			this.drawBackground(matrices, delta, mouseX, mouseY);
 			this.recipeBook.render(matrices, mouseX, mouseY, delta);

@@ -59,14 +59,14 @@ public class NbtOrderedStringFormatter implements NbtElementVisitor {
 	private final String prefix;
 	private final int indentationLevel;
 	private final List<String> pathParts;
-	private String result;
+	private String result = "";
 
 	public NbtOrderedStringFormatter() {
 		this("    ", 0, Lists.<String>newArrayList());
 	}
 
-	public NbtOrderedStringFormatter(String prefix, int indentationLevel, List<String> pathParts) {
-		this.prefix = prefix;
+	public NbtOrderedStringFormatter(String string, int indentationLevel, List<String> pathParts) {
+		this.prefix = string;
 		this.indentationLevel = indentationLevel;
 		this.pathParts = pathParts;
 	}

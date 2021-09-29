@@ -55,10 +55,10 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	private static final String field_33278 = "\n";
 	private final String prefix;
 	private final int indentationLevel;
-	private Text result;
+	private Text result = LiteralText.EMPTY;
 
-	public NbtTextFormatter(String prefix, int indentationLevel) {
-		this.prefix = prefix;
+	public NbtTextFormatter(String string, int indentationLevel) {
+		this.prefix = string;
 		this.indentationLevel = indentationLevel;
 	}
 

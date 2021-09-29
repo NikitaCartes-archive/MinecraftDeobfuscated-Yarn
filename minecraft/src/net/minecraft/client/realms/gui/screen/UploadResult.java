@@ -1,11 +1,13 @@
 package net.minecraft.client.realms.gui.screen;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class UploadResult {
 	public final int statusCode;
+	@Nullable
 	public final String errorMessage;
 
 	UploadResult(int statusCode, String errorMessage) {
@@ -23,7 +25,7 @@ public class UploadResult {
 			return this;
 		}
 
-		public UploadResult.Builder withErrorMessage(String errorMessage) {
+		public UploadResult.Builder withErrorMessage(@Nullable String errorMessage) {
 			this.errorMessage = errorMessage;
 			return this;
 		}

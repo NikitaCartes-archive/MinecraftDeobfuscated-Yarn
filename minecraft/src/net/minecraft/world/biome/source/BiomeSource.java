@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6496;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.TopologicalSorts;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -84,7 +84,7 @@ public abstract class BiomeSource {
 				throw new IllegalStateException("You somehow broke the universe; DFS bork (iteration finished with non-empty in-progress vertex set");
 			}
 
-			if (!set2.contains(lv) && class_6496.method_37951(map, set2, set3, list2::add, lv)) {
+			if (!set2.contains(lv) && TopologicalSorts.sort(map, set2, set3, list2::add, lv)) {
 				Collections.reverse(list2);
 				throw new IllegalStateException(
 					"Feature order cycle found: " + (String)list2.stream().filter(set3::contains).map(Object::toString).collect(Collectors.joining(", "))

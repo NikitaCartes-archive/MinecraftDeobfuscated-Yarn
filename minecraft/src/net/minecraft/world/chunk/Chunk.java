@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6568;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -46,6 +45,7 @@ import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,60 +55,60 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class Chunk implements BlockView, BiomeAccess.Storage, StructureHolder {
 	private static final Logger field_34548 = LogManager.getLogger();
-	protected final ShortList[] field_34536;
-	protected volatile boolean field_34537;
-	private volatile boolean field_34549;
-	protected final ChunkPos field_34538;
-	private long field_34550;
+	protected final ShortList[] postProcessingLists;
+	protected volatile boolean needsSaving;
+	private volatile boolean lightOn;
+	protected final ChunkPos pos;
+	private long inhabitedTime;
 	@Nullable
 	@Deprecated
-	private Biome field_34551;
+	private Biome biome;
 	@Nullable
-	protected class_6568 field_34539;
-	protected final UpgradeData field_34540;
-	protected final Map<Heightmap.Type, Heightmap> field_34541 = Maps.newEnumMap(Heightmap.Type.class);
-	private final Map<StructureFeature<?>, StructureStart<?>> field_34552 = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
-	private final Map<StructureFeature<?>, LongSet> field_34553 = Maps.<StructureFeature<?>, LongSet>newHashMap();
-	protected final Map<BlockPos, NbtCompound> field_34542 = Maps.<BlockPos, NbtCompound>newHashMap();
-	protected final Map<BlockPos, BlockEntity> field_34543 = Maps.<BlockPos, BlockEntity>newHashMap();
-	protected final HeightLimitView field_34544;
-	protected final ChunkSection[] field_34545;
-	protected TickScheduler<Block> field_34546;
-	protected TickScheduler<Fluid> field_34547;
+	protected ChunkNoiseSampler chunkNoiseSampler;
+	protected final UpgradeData upgradeData;
+	protected final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
+	private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
+	private final Map<StructureFeature<?>, LongSet> structureReferences = Maps.<StructureFeature<?>, LongSet>newHashMap();
+	protected final Map<BlockPos, NbtCompound> blockEntityNbts = Maps.<BlockPos, NbtCompound>newHashMap();
+	protected final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
+	protected final HeightLimitView heightLimitView;
+	protected final ChunkSection[] sectionArray;
+	protected TickScheduler<Block> blockTickScheduler;
+	protected TickScheduler<Fluid> fluidTickScheduler;
 
 	public Chunk(
-		ChunkPos chunkPos,
+		ChunkPos pos,
 		UpgradeData upgradeData,
 		HeightLimitView heightLimitView,
-		Registry<Biome> registry,
-		long l,
-		@Nullable ChunkSection[] chunkSections,
-		TickScheduler<Block> tickScheduler,
-		TickScheduler<Fluid> tickScheduler2
+		Registry<Biome> biome,
+		long inhabitedTime,
+		@Nullable ChunkSection[] sectionArrayInitializer,
+		TickScheduler<Block> blockTickScheduler,
+		TickScheduler<Fluid> fluidTickScheduler
 	) {
-		this.field_34538 = chunkPos;
-		this.field_34540 = upgradeData;
-		this.field_34544 = heightLimitView;
-		this.field_34545 = new ChunkSection[heightLimitView.countVerticalSections()];
-		this.field_34550 = l;
-		this.field_34536 = new ShortList[heightLimitView.countVerticalSections()];
-		this.field_34546 = tickScheduler;
-		this.field_34547 = tickScheduler2;
-		if (chunkSections != null) {
-			if (this.field_34545.length == chunkSections.length) {
-				System.arraycopy(chunkSections, 0, this.field_34545, 0, this.field_34545.length);
+		this.pos = pos;
+		this.upgradeData = upgradeData;
+		this.heightLimitView = heightLimitView;
+		this.sectionArray = new ChunkSection[heightLimitView.countVerticalSections()];
+		this.inhabitedTime = inhabitedTime;
+		this.postProcessingLists = new ShortList[heightLimitView.countVerticalSections()];
+		this.blockTickScheduler = blockTickScheduler;
+		this.fluidTickScheduler = fluidTickScheduler;
+		if (sectionArrayInitializer != null) {
+			if (this.sectionArray.length == sectionArrayInitializer.length) {
+				System.arraycopy(sectionArrayInitializer, 0, this.sectionArray, 0, this.sectionArray.length);
 			} else {
-				field_34548.warn("Could not set level chunk sections, array length is {} instead of {}", chunkSections.length, this.field_34545.length);
+				field_34548.warn("Could not set level chunk sections, array length is {} instead of {}", sectionArrayInitializer.length, this.sectionArray.length);
 			}
 		}
 
-		method_38256(heightLimitView, registry, this.field_34545);
+		fillSectionArray(heightLimitView, biome, this.sectionArray);
 	}
 
-	private static void method_38256(HeightLimitView heightLimitView, Registry<Biome> registry, ChunkSection[] chunkSections) {
-		for (int i = 0; i < chunkSections.length; i++) {
-			if (chunkSections[i] == null) {
-				chunkSections[i] = new ChunkSection(heightLimitView.sectionIndexToCoord(i), registry);
+	private static void fillSectionArray(HeightLimitView world, Registry<Biome> biome, ChunkSection[] sectionArray) {
+		for (int i = 0; i < sectionArray.length; i++) {
+			if (sectionArray[i] == null) {
+				sectionArray[i] = new ChunkSection(world.sectionIndexToCoord(i), biome);
 			}
 		}
 	}
@@ -144,13 +144,13 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public Set<BlockPos> getBlockEntityPositions() {
-		Set<BlockPos> set = Sets.<BlockPos>newHashSet(this.field_34542.keySet());
-		set.addAll(this.field_34543.keySet());
+		Set<BlockPos> set = Sets.<BlockPos>newHashSet(this.blockEntityNbts.keySet());
+		set.addAll(this.blockEntities.keySet());
 		return set;
 	}
 
 	public ChunkSection[] getSectionArray() {
-		return this.field_34545;
+		return this.sectionArray;
 	}
 
 	public ChunkSection getSection(int yIndex) {
@@ -158,7 +158,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps() {
-		return Collections.unmodifiableSet(this.field_34541.entrySet());
+		return Collections.unmodifiableSet(this.heightmaps.entrySet());
 	}
 
 	public void setHeightmap(Heightmap.Type type, long[] heightmap) {
@@ -166,18 +166,18 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public Heightmap getHeightmap(Heightmap.Type type) {
-		return (Heightmap)this.field_34541.computeIfAbsent(type, typex -> new Heightmap(this, typex));
+		return (Heightmap)this.heightmaps.computeIfAbsent(type, typex -> new Heightmap(this, typex));
 	}
 
 	public int sampleHeightmap(Heightmap.Type type, int x, int z) {
-		Heightmap heightmap = (Heightmap)this.field_34541.get(type);
+		Heightmap heightmap = (Heightmap)this.heightmaps.get(type);
 		if (heightmap == null) {
 			if (SharedConstants.isDevelopment && this instanceof WorldChunk) {
 				field_34548.error("Unprimed heightmap: " + type + " " + x + " " + z);
 			}
 
 			Heightmap.populateHeightmaps(this, EnumSet.of(type));
-			heightmap = (Heightmap)this.field_34541.get(type);
+			heightmap = (Heightmap)this.heightmaps.get(type);
 		}
 
 		return heightmap.get(x & 15, z & 15) - 1;
@@ -187,8 +187,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		int i = this.getBottomY();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int j = this.field_34538.getStartX(); j <= this.field_34538.getEndX(); j++) {
-			for (int k = this.field_34538.getStartZ(); k <= this.field_34538.getEndZ(); k++) {
+		for (int j = this.pos.getStartX(); j <= this.pos.getEndX(); j++) {
+			for (int k = this.pos.getStartZ(); k <= this.pos.getEndZ(); k++) {
 				int l = this.sampleHeightmap(type, j & 15, k & 15);
 				if (l > i) {
 					i = l;
@@ -201,52 +201,52 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public ChunkPos getPos() {
-		return this.field_34538;
+		return this.pos;
 	}
 
 	@Nullable
 	@Override
 	public StructureStart<?> getStructureStart(StructureFeature<?> structure) {
-		return (StructureStart<?>)this.field_34552.get(structure);
+		return (StructureStart<?>)this.structureStarts.get(structure);
 	}
 
 	@Override
 	public void setStructureStart(StructureFeature<?> structure, StructureStart<?> start) {
-		this.field_34552.put(structure, start);
-		this.field_34537 = true;
+		this.structureStarts.put(structure, start);
+		this.needsSaving = true;
 	}
 
 	public Map<StructureFeature<?>, StructureStart<?>> getStructureStarts() {
-		return Collections.unmodifiableMap(this.field_34552);
+		return Collections.unmodifiableMap(this.structureStarts);
 	}
 
 	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
-		this.field_34552.clear();
-		this.field_34552.putAll(structureStarts);
-		this.field_34537 = true;
+		this.structureStarts.clear();
+		this.structureStarts.putAll(structureStarts);
+		this.needsSaving = true;
 	}
 
 	@Override
 	public LongSet getStructureReferences(StructureFeature<?> structure) {
-		return (LongSet)this.field_34553.computeIfAbsent(structure, structureFeature -> new LongOpenHashSet());
+		return (LongSet)this.structureReferences.computeIfAbsent(structure, structureFeature -> new LongOpenHashSet());
 	}
 
 	@Override
 	public void addStructureReference(StructureFeature<?> structure, long reference) {
-		((LongSet)this.field_34553.computeIfAbsent(structure, structureFeature -> new LongOpenHashSet())).add(reference);
-		this.field_34537 = true;
+		((LongSet)this.structureReferences.computeIfAbsent(structure, structureFeature -> new LongOpenHashSet())).add(reference);
+		this.needsSaving = true;
 	}
 
 	@Override
 	public Map<StructureFeature<?>, LongSet> getStructureReferences() {
-		return Collections.unmodifiableMap(this.field_34553);
+		return Collections.unmodifiableMap(this.structureReferences);
 	}
 
 	@Override
 	public void setStructureReferences(Map<StructureFeature<?>, LongSet> structureReferences) {
-		this.field_34553.clear();
-		this.field_34553.putAll(structureReferences);
-		this.field_34537 = true;
+		this.structureReferences.clear();
+		this.structureReferences.putAll(structureReferences);
+		this.needsSaving = true;
 	}
 
 	public boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
@@ -268,11 +268,11 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public void setShouldSave(boolean shouldSave) {
-		this.field_34537 = shouldSave;
+		this.needsSaving = shouldSave;
 	}
 
 	public boolean needsSaving() {
-		return this.field_34537;
+		return this.needsSaving;
 	}
 
 	public abstract ChunkStatus getStatus();
@@ -284,7 +284,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public ShortList[] getPostProcessingLists() {
-		return this.field_34536;
+		return this.postProcessingLists;
 	}
 
 	public void markBlockForPostProcessing(short packedPos, int index) {
@@ -292,12 +292,12 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public void addPendingBlockEntityNbt(NbtCompound nbt) {
-		this.field_34542.put(BlockEntity.posFromNbt(nbt), nbt);
+		this.blockEntityNbts.put(BlockEntity.posFromNbt(nbt), nbt);
 	}
 
 	@Nullable
 	public NbtCompound getBlockEntityNbt(BlockPos pos) {
-		return (NbtCompound)this.field_34542.get(pos);
+		return (NbtCompound)this.blockEntityNbts.get(pos);
 	}
 
 	@Nullable
@@ -306,23 +306,27 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	public abstract Stream<BlockPos> getLightSourcesStream();
 
 	public TickScheduler<Block> getBlockTickScheduler() {
-		return this.field_34546;
+		return this.blockTickScheduler;
 	}
 
 	public TickScheduler<Fluid> getFluidTickScheduler() {
-		return this.field_34547;
+		return this.fluidTickScheduler;
 	}
 
 	public UpgradeData getUpgradeData() {
-		return this.field_34540;
+		return this.upgradeData;
 	}
 
 	public long getInhabitedTime() {
-		return this.field_34550;
+		return this.inhabitedTime;
+	}
+
+	public void increaseInhabitedTime(long delta) {
+		this.inhabitedTime += delta;
 	}
 
 	public void setInhabitedTime(long inhabitedTime) {
-		this.field_34550 = inhabitedTime;
+		this.inhabitedTime = inhabitedTime;
 	}
 
 	public static ShortList getList(ShortList[] lists, int index) {
@@ -334,50 +338,62 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public boolean isLightOn() {
-		return this.field_34549;
+		return this.lightOn;
 	}
 
 	public void setLightOn(boolean lightOn) {
-		this.field_34549 = lightOn;
+		this.lightOn = lightOn;
 		this.setShouldSave(true);
 	}
 
 	@Override
 	public int getBottomY() {
-		return this.field_34544.getBottomY();
+		return this.heightLimitView.getBottomY();
 	}
 
 	@Override
 	public int getHeight() {
-		return this.field_34544.getHeight();
+		return this.heightLimitView.getHeight();
 	}
 
-	public class_6568 method_38255(
-		int i,
-		int j,
-		int k,
-		int l,
-		int m,
-		int n,
+	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(
+		int minimumY,
+		int height,
+		int x,
+		int z,
+		int horizontalNoiseResolution,
+		int verticalNoiseResolutuion,
 		NoiseColumnSampler noiseColumnSampler,
-		Supplier<class_6568.ColumnSampler> supplier,
-		Supplier<ChunkGeneratorSettings> supplier2,
-		AquiferSampler.class_6565 arg
+		Supplier<ChunkNoiseSampler.ColumnSampler> supplier,
+		Supplier<ChunkGeneratorSettings> settings,
+		AquiferSampler.FluidLevelSampler fluidLevelSampler
 	) {
-		if (this.field_34539 == null) {
-			this.field_34539 = new class_6568(m, n, 16 / m, j, i, noiseColumnSampler, k, l, (class_6568.ColumnSampler)supplier.get(), supplier2, arg);
+		if (this.chunkNoiseSampler == null) {
+			this.chunkNoiseSampler = new ChunkNoiseSampler(
+				horizontalNoiseResolution,
+				verticalNoiseResolutuion,
+				16 / horizontalNoiseResolution,
+				height,
+				minimumY,
+				noiseColumnSampler,
+				x,
+				z,
+				(ChunkNoiseSampler.ColumnSampler)supplier.get(),
+				settings,
+				fluidLevelSampler
+			);
 		}
 
-		return this.field_34539;
+		return this.chunkNoiseSampler;
 	}
 
 	@Deprecated
 	public Biome method_38258(Supplier<Biome> supplier) {
-		if (this.field_34551 == null) {
-			this.field_34551 = (Biome)supplier.get();
+		if (this.biome == null) {
+			this.biome = (Biome)supplier.get();
 		}
 
-		return this.field_34551;
+		return this.biome;
 	}
 
 	@Override
@@ -387,7 +403,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 			int j = i + BiomeCoords.fromBlock(this.getHeight()) - 1;
 			int k = MathHelper.clamp(biomeY, i, j);
 			int l = this.getSectionIndex(BiomeCoords.toBlock(k));
-			return this.field_34545[l].method_38293(biomeX & 3, k & 3, biomeZ & 3);
+			return this.sectionArray[l].method_38293(biomeX & 3, k & 3, biomeZ & 3);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Getting biome");
 			CrashReportSection crashReportSection = crashReport.addElement("Biome being got");
@@ -396,14 +412,18 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		}
 	}
 
-	public void method_38257(BiomeSource biomeSource, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+	public void method_38257(BiomeSource source, MultiNoiseUtil.MultiNoiseSampler sampler) {
 		ChunkPos chunkPos = this.getPos();
 		int i = BiomeCoords.fromBlock(chunkPos.getStartX());
 		int j = BiomeCoords.fromBlock(chunkPos.getStartZ());
 
 		for (int k = 0; k < this.countVerticalSections(); k++) {
 			ChunkSection chunkSection = this.getSection(k);
-			chunkSection.method_38291(biomeSource, multiNoiseSampler, i, j);
+			chunkSection.method_38291(source, sampler, i, j);
 		}
+	}
+
+	public boolean hasStructureReferences() {
+		return !this.structureReferences.isEmpty();
 	}
 }

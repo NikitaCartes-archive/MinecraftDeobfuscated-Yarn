@@ -489,7 +489,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.networkProxy = args.network.netProxy;
 		YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
 		this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-		this.userApiService = this.createSocialInteractionsService(yggdrasilAuthenticationService, args);
+		this.userApiService = this.createUserApiService(yggdrasilAuthenticationService, args);
 		this.session = args.network.session;
 		LOGGER.info("Setting user: {}", this.session.getUsername());
 		LOGGER.debug("(Session ID is {})", this.session.getSessionId());
@@ -687,9 +687,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return stringBuilder.toString();
 	}
 
-	private UserApiService createSocialInteractionsService(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
+	private UserApiService createUserApiService(YggdrasilAuthenticationService authService, RunArgs runArgs) {
 		try {
-			return yggdrasilAuthenticationService.createUserApiService(runArgs.network.session.getAccessToken());
+			return authService.createUserApiService(runArgs.network.session.getAccessToken());
 		} catch (AuthenticationException var4) {
 			LOGGER.error("Failed to verify authentication", (Throwable)var4);
 			return UserApiService.OFFLINE;
@@ -789,14 +789,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private void initializeSearchableContainers() {
 		TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<>(
-			itemStack -> itemStack.getTooltip(null, TooltipContext.Default.NORMAL)
+			stack -> stack.getTooltip(null, TooltipContext.Default.NORMAL)
 					.stream()
-					.map(text -> Formatting.strip(text.getString()).trim())
+					.map(tooltip -> Formatting.strip(tooltip.getString()).trim())
 					.filter(string -> !string.isEmpty()),
-			itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem()))
+			stack -> Stream.of(Registry.ITEM.getId(stack.getItem()))
 		);
 		IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<>(
-			itemStack -> ItemTags.getTagGroup().getTagsFor(itemStack.getItem()).stream()
+			stack -> ItemTags.getTagGroup().getTagsFor(stack.getItem()).stream()
 		);
 		DefaultedList<ItemStack> defaultedList = DefaultedList.of();
 
@@ -804,17 +804,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			item.appendStacks(ItemGroup.SEARCH, defaultedList);
 		}
 
-		defaultedList.forEach(itemStack -> {
-			textSearchableContainer.add(itemStack);
-			identifierSearchableContainer.add(itemStack);
+		defaultedList.forEach(stack -> {
+			textSearchableContainer.add(stack);
+			identifierSearchableContainer.add(stack);
 		});
 		TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<>(
-			recipeResultCollection -> recipeResultCollection.getAllRecipes()
+			resultCollection -> resultCollection.getAllRecipes()
 					.stream()
 					.flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream())
-					.map(text -> Formatting.strip(text.getString()).trim())
+					.map(tooltip -> Formatting.strip(tooltip.getString()).trim())
 					.filter(string -> !string.isEmpty()),
-			recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem()))
+			resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem()))
 		);
 		this.searchManager.put(SearchManager.ITEM_TOOLTIP, textSearchableContainer);
 		this.searchManager.put(SearchManager.ITEM_TAG, identifierSearchableContainer);
@@ -1209,10 +1209,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.options.debugEnabled && this.options.debugProfilerEnabled && !this.options.hudHidden;
 	}
 
-	private Profiler startMonitor(boolean active, @Nullable TickDurationMonitor tickDurationMonitor) {
+	private Profiler startMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
 		if (!active) {
 			this.tickTimeTracker.disable();
-			if (!this.recorder.isActive() && tickDurationMonitor == null) {
+			if (!this.recorder.isActive() && monitor == null) {
 				return DummyProfiler.INSTANCE;
 			}
 		}
@@ -1234,7 +1234,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			profiler = Profiler.union(profiler, this.recorder.getProfiler());
 		}
 
-		return TickDurationMonitor.tickProfiler(profiler, tickDurationMonitor);
+		return TickDurationMonitor.tickProfiler(profiler, monitor);
 	}
 
 	private void endMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
@@ -1294,43 +1294,43 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		System.gc();
 	}
 
-	public boolean toggleDebugProfiler(Consumer<TranslatableText> consumer) {
+	public boolean toggleDebugProfiler(Consumer<TranslatableText> chatMessageSender) {
 		if (this.recorder.isActive()) {
 			this.stopRecorder();
 			return false;
 		} else {
-			Consumer<ProfileResult> consumer2 = profileResult -> {
-				int i = profileResult.getTickSpan();
-				double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
+			Consumer<ProfileResult> consumer = result -> {
+				int i = result.getTickSpan();
+				double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
 				this.execute(
-					() -> consumer.accept(
+					() -> chatMessageSender.accept(
 							new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))
 						)
 				);
 			};
-			Consumer<Path> consumer3 = path -> {
+			Consumer<Path> consumer2 = path -> {
 				Text text = new LiteralText(path.toString())
 					.formatted(Formatting.UNDERLINE)
 					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
-				this.execute(() -> consumer.accept(new TranslatableText("debug.profiling.stop", text)));
+				this.execute(() -> chatMessageSender.accept(new TranslatableText("debug.profiling.stop", text)));
 			};
 			SystemDetails systemDetails = addSystemDetailsToCrashReport(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
-			Consumer<List<Path>> consumer4 = list -> {
-				Path path = this.method_37275(systemDetails, list);
-				consumer3.accept(path);
+			Consumer<List<Path>> consumer3 = files -> {
+				Path path = this.saveProfilingResult(systemDetails, files);
+				consumer2.accept(path);
 			};
-			Consumer<Path> consumer5;
+			Consumer<Path> consumer4;
 			if (this.server == null) {
-				consumer5 = path -> consumer4.accept(ImmutableList.of(path));
+				consumer4 = path -> consumer3.accept(ImmutableList.of(path));
 			} else {
 				this.server.addSystemDetails(systemDetails);
 				CompletableFuture<Path> completableFuture = new CompletableFuture();
 				CompletableFuture<Path> completableFuture2 = new CompletableFuture();
 				CompletableFuture.allOf(completableFuture, completableFuture2)
-					.thenRunAsync(() -> consumer4.accept(ImmutableList.of((Path)completableFuture.join(), (Path)completableFuture2.join())), Util.getIoWorkerExecutor());
-				this.server.setupRecorder(profileResult -> {
+					.thenRunAsync(() -> consumer3.accept(ImmutableList.of((Path)completableFuture.join(), (Path)completableFuture2.join())), Util.getIoWorkerExecutor());
+				this.server.setupRecorder(result -> {
 				}, completableFuture2::complete);
-				consumer5 = completableFuture::complete;
+				consumer4 = completableFuture::complete;
 			}
 
 			this.recorder = DebugRecorder.of(
@@ -1338,11 +1338,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				Util.nanoTimeSupplier,
 				Util.getIoWorkerExecutor(),
 				new RecordDumper("client"),
-				profileResult -> {
+				result -> {
 					this.recorder = DummyRecorder.INSTANCE;
-					consumer2.accept(profileResult);
+					consumer.accept(result);
 				},
-				consumer5
+				consumer4
 			);
 			return true;
 		}
@@ -1355,7 +1355,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	private Path method_37275(SystemDetails systemDetails, List<Path> list) {
+	private Path saveProfilingResult(SystemDetails details, List<Path> files) {
 		String string;
 		if (this.isInSingleplayer()) {
 			string = this.getServer().getSaveProperties().getLevelName();
@@ -1376,9 +1376,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			ZipCompressor zipCompressor = new ZipCompressor(path);
 
 			try {
-				zipCompressor.write(Paths.get("system.txt"), systemDetails.collect());
+				zipCompressor.write(Paths.get("system.txt"), details.collect());
 				zipCompressor.write(Paths.get("client").resolve(this.options.getOptionsFile().getName()), this.options.collectProfiledOptions());
-				list.forEach(zipCompressor::copyAll);
+				files.forEach(zipCompressor::copyAll);
 			} catch (Throwable var20) {
 				try {
 					zipCompressor.close();
@@ -1391,7 +1391,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			zipCompressor.close();
 		} finally {
-			for (Path path3 : list) {
+			for (Path path3 : files) {
 				try {
 					FileUtils.forceDelete(path3.toFile());
 				} catch (IOException var18) {
@@ -2043,8 +2043,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 							minecraftSessionService,
 							gameProfileRepository,
 							userCache,
-							i -> {
-								WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
+							spawnChunkRadius -> {
+								WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(spawnChunkRadius + 0);
 								this.worldGenProgressTracker.set(worldGenerationProgressTracker);
 								return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
 							}
@@ -2129,8 +2129,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} else {
 			this.setScreen(
 				new ConfirmScreen(
-					bl -> {
-						if (bl) {
+					confirmed -> {
+						if (confirmed) {
 							onConfirm.run();
 						} else {
 							this.setScreen(null);
@@ -2211,6 +2211,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			clientPlayNetworkHandler.clearWorld();
 		}
 
+		this.socialInteractionsManager.unloadBlockList();
 		IntegratedServer integratedServer = this.server;
 		this.server = null;
 		this.gameRenderer.reset();
@@ -2250,7 +2251,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.pop();
 	}
 
-	public void method_29970(Screen screen) {
+	public void setScreenAndRender(Screen screen) {
 		this.profiler.push("forcedTick");
 		this.setScreen(screen);
 		this.render(false);
@@ -3010,6 +3011,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public boolean shouldFilterText() {
 		return false;
+	}
+
+	public void loadBlockList() {
+		this.socialInteractionsManager.loadBlockList();
 	}
 
 	/**

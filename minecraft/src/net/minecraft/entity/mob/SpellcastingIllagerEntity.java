@@ -115,7 +115,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 
 		@Override
 		public void start() {
-			this.spellCooldown = this.getInitialCooldown();
+			this.spellCooldown = this.getTickCount(this.getInitialCooldown());
 			SpellcastingIllagerEntity.this.spellTicks = this.getSpellTicks();
 			this.startTime = SpellcastingIllagerEntity.this.age + this.startTimeDelay();
 			SoundEvent soundEvent = this.getSoundPrepare();
@@ -179,8 +179,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 				SpellcastingIllagerEntity.this.getLookControl()
 					.lookAt(
 						SpellcastingIllagerEntity.this.getTarget(),
-						(float)SpellcastingIllagerEntity.this.getBodyYawSpeed(),
-						(float)SpellcastingIllagerEntity.this.getLookPitchSpeed()
+						(float)SpellcastingIllagerEntity.this.getMaxHeadRotation(),
+						(float)SpellcastingIllagerEntity.this.getMaxLookPitchChange()
 					);
 			}
 		}

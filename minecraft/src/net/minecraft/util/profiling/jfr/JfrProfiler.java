@@ -189,7 +189,7 @@ public class JfrProfiler implements FlightProfiler {
 	@Override
 	public void onPacketSent(Supplier<String> packetNameSupplier, SocketAddress remoteAddress, int bytes) {
 		if (EventType.getEventType(PacketSentEvent.class).isEnabled()) {
-			new PacketReceivedEvent((String)packetNameSupplier.get(), remoteAddress, bytes).commit();
+			new PacketSentEvent((String)packetNameSupplier.get(), remoteAddress, bytes).commit();
 		}
 	}
 

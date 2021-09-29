@@ -354,7 +354,7 @@ public class TurtleEntity extends AnimalEntity {
 			} else if (this.turtle.hasEgg()) {
 				return true;
 			} else {
-				return this.turtle.getRandom().nextInt(700) != 0 ? false : !this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 64.0);
+				return this.turtle.getRandom().nextInt(toGoalTicks(700)) != 0 ? false : !this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 64.0);
 			}
 		}
 
@@ -372,7 +372,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return !this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 7.0) && !this.noPath && this.homeReachingTryTicks <= 600;
+			return !this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 7.0) && !this.noPath && this.homeReachingTryTicks <= this.getTickCount(600);
 		}
 
 		@Override
@@ -429,7 +429,7 @@ public class TurtleEntity extends AnimalEntity {
 			if (!this.turtle.isTouchingWater() && this.hasReached()) {
 				if (this.turtle.sandDiggingCounter < 1) {
 					this.turtle.setDiggingSand(true);
-				} else if (this.turtle.sandDiggingCounter > 200) {
+				} else if (this.turtle.sandDiggingCounter > this.getTickCount(200)) {
 					World world = this.turtle.world;
 					world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_LAY_EGG, SoundCategory.BLOCKS, 0.3F, 0.9F + world.random.nextFloat() * 0.2F);
 					world.setBlockState(

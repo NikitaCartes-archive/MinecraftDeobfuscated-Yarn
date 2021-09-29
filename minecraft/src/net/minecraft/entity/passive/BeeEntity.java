@@ -128,6 +128,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	public static final String FLOWER_POS_KEY = "FlowerPos";
 	public static final String HIVE_POS_KEY = "HivePos";
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
+	@Nullable
 	private UUID targetUuid;
 	private float currentPitch;
 	private float lastPitch;
@@ -409,6 +410,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		this.dataTracker.set(ANGER, ticks);
 	}
 
+	@Nullable
 	@Override
 	public UUID getAngryAt() {
 		return this.targetUuid;
@@ -838,7 +840,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 		@Override
 		public void tick() {
-			if (BeeEntity.this.random.nextInt(30) == 0) {
+			if (BeeEntity.this.random.nextInt(this.getTickCount(30)) == 0) {
 				for (int i = 1; i <= 2; i++) {
 					BlockPos blockPos = BeeEntity.this.getBlockPos().down(i);
 					BlockState blockState = BeeEntity.this.world.getBlockState(blockPos);
@@ -918,7 +920,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		public void tick() {
 			if (BeeEntity.this.flowerPos != null) {
 				this.ticks++;
-				if (this.ticks > 600) {
+				if (this.ticks > this.getTickCount(600)) {
 					BeeEntity.this.flowerPos = null;
 				} else if (!BeeEntity.this.navigation.isFollowingPath()) {
 					if (BeeEntity.this.isTooFar(BeeEntity.this.flowerPos)) {
@@ -983,7 +985,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		public void tick() {
 			if (BeeEntity.this.hivePos != null) {
 				this.ticks++;
-				if (this.ticks > 600) {
+				if (this.ticks > this.getTickCount(600)) {
 					this.makeChosenHivePossibleHive();
 				} else if (!BeeEntity.this.navigation.isFollowingPath()) {
 					if (!BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 16)) {
@@ -1090,6 +1092,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		private int pollinationTicks;
 		private int lastPollinationTick;
 		private boolean running;
+		@Nullable
 		private Vec3d nextTarget;
 		private int ticks;
 		private static final int field_30308 = 600;
@@ -1170,6 +1173,11 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			this.running = false;
 			BeeEntity.this.navigation.stop();
 			BeeEntity.this.ticksUntilCanPollinate = 200;
+		}
+
+		@Override
+		public boolean shouldRunEveryTick() {
+			return true;
 		}
 
 		@Override

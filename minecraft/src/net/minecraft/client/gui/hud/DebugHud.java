@@ -318,7 +318,7 @@ public class DebugHud extends DrawableHelper {
 			if (serverWorld != null) {
 				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 				ChunkGenerator chunkGenerator = serverChunkManager.getChunkGenerator();
-				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = chunkGenerator.method_38276();
+				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = chunkGenerator.getMultiNoiseSampler();
 				BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 				biomeSource.addDebugInfo(list, blockPos, multiNoiseSampler);
 				SpawnHelper.Info info = serverChunkManager.getSpawnInfo();

@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
@@ -37,9 +38,7 @@ import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_6609;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -74,6 +73,7 @@ import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.SimulationDistanceLevelPropagator;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -795,7 +795,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			.addColumn("ticking_ticket")
 			.addColumn("ticking_level")
 			.startBody(writer);
-		class_6609 lv = this.ticketManager.method_38631();
+		SimulationDistanceLevelPropagator simulationDistanceLevelPropagator = this.ticketManager.method_38631();
 
 		for (Entry<ChunkHolder> entry : this.chunkHolders.long2ObjectEntrySet()) {
 			long l = entry.getLongKey();
@@ -814,10 +814,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				getFutureStatus(chunkHolder.getTickingFuture()),
 				getFutureStatus(chunkHolder.getEntityTickingFuture()),
 				this.ticketManager.getTicket(l),
-				!this.isTooFarFromPlayersToSpawnMobs(chunkPos),
+				this.method_38783(chunkPos),
 				optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0),
-				lv.method_38643(l),
-				lv.getLevel(l)
+				simulationDistanceLevelPropagator.getTickingTicket(l),
+				simulationDistanceLevelPropagator.getLevel(l)
 			);
 		}
 	}
@@ -839,17 +839,45 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return nbtCompound == null ? null : this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound);
 	}
 
-	boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {
-		return this.method_37907(chunkPos).findAny().isEmpty();
+	boolean method_38783(ChunkPos chunkPos) {
+		long l = chunkPos.toLong();
+		if (!this.ticketManager.method_20800(l)) {
+			return false;
+		} else {
+			for (ServerPlayerEntity serverPlayerEntity : this.playerChunkWatchingManager.getPlayersWatchingChunk(l)) {
+				if (this.method_38782(serverPlayerEntity, chunkPos)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
-	public Stream<ServerPlayerEntity> method_37907(ChunkPos chunkPos) {
+	public List<ServerPlayerEntity> method_37907(ChunkPos chunkPos) {
 		long l = chunkPos.toLong();
-		return !this.ticketManager.method_20800(l)
-			? Stream.empty()
-			: this.playerChunkWatchingManager
-				.getPlayersWatchingChunk(l)
-				.filter(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0);
+		if (!this.ticketManager.method_20800(l)) {
+			return List.of();
+		} else {
+			Builder<ServerPlayerEntity> builder = ImmutableList.builder();
+
+			for (ServerPlayerEntity serverPlayerEntity : this.playerChunkWatchingManager.getPlayersWatchingChunk(l)) {
+				if (this.method_38782(serverPlayerEntity, chunkPos)) {
+					builder.add(serverPlayerEntity);
+				}
+			}
+
+			return builder.build();
+		}
+	}
+
+	private boolean method_38782(ServerPlayerEntity serverPlayerEntity, ChunkPos chunkPos) {
+		if (serverPlayerEntity.isSpectator()) {
+			return false;
+		} else {
+			double d = getSquaredDistance(chunkPos, serverPlayerEntity);
+			return d < 16384.0;
+		}
 	}
 
 	private boolean doesNotGenerateChunks(ServerPlayerEntity player) {
@@ -985,18 +1013,18 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	@Override
-	public Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean onlyOnWatchDistanceEdge) {
-		return this.playerChunkWatchingManager.getPlayersWatchingChunk(chunkPos.toLong()).filter(serverPlayerEntity -> {
-			if (onlyOnWatchDistanceEdge) {
-				if (method_37906(chunkPos, serverPlayerEntity, true, this.watchDistance)) {
-					return true;
-				}
-			} else if (method_37901(chunkPos, serverPlayerEntity, true, this.watchDistance)) {
-				return true;
-			}
+	public List<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean onlyOnWatchDistanceEdge) {
+		Set<ServerPlayerEntity> set = this.playerChunkWatchingManager.getPlayersWatchingChunk(chunkPos.toLong());
+		Builder<ServerPlayerEntity> builder = ImmutableList.builder();
 
-			return false;
-		});
+		for (ServerPlayerEntity serverPlayerEntity : set) {
+			if (onlyOnWatchDistanceEdge && method_37906(chunkPos, serverPlayerEntity, true, this.watchDistance)
+				|| !onlyOnWatchDistanceEdge && method_37901(chunkPos, serverPlayerEntity, true, this.watchDistance)) {
+				builder.add(serverPlayerEntity);
+			}
+		}
+
+		return builder.build();
 	}
 
 	protected void loadEntity(Entity entity) {
@@ -1089,12 +1117,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	private void sendChunkDataPackets(ServerPlayerEntity player, MutableObject<ChunkDataS2CPacket> mutableObject, WorldChunk chunk) {
-		if (mutableObject.getValue() == null) {
-			mutableObject.setValue(new ChunkDataS2CPacket(chunk, this.lightingProvider, null, null, true));
+	private void sendChunkDataPackets(ServerPlayerEntity player, MutableObject<ChunkDataS2CPacket> cachedDataPacket, WorldChunk chunk) {
+		if (cachedDataPacket.getValue() == null) {
+			cachedDataPacket.setValue(new ChunkDataS2CPacket(chunk, this.lightingProvider, null, null, true));
 		}
 
-		player.sendInitialChunkPackets(chunk.getPos(), mutableObject.getValue());
+		player.sendInitialChunkPackets(chunk.getPos(), cachedDataPacket.getValue());
 		DebugInfoSender.sendChunkWatchingChange(this.world, chunk.getPos());
 		List<Entity> list = Lists.<Entity>newArrayList();
 		List<Entity> list2 = Lists.<Entity>newArrayList();

@@ -152,7 +152,7 @@ public final class SpawnHelper {
 						if (isAcceptableSpawnPosition(world, chunk, mutable, f)) {
 							if (spawnEntry == null) {
 								Optional<SpawnSettings.SpawnEntry> optional = pickRandomSpawnEntry(world, structureAccessor, chunkGenerator, group, world.random, mutable);
-								if (!optional.isPresent()) {
+								if (optional.isEmpty()) {
 									break;
 								}
 
@@ -281,7 +281,7 @@ public final class SpawnHelper {
 	public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
 		return spawnGroup == SpawnGroup.MONSTER
 			&& world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)
-			&& structureAccessor.getStructureAt(pos, false, StructureFeature.FORTRESS).hasChildren();
+			&& structureAccessor.getStructureAt(pos, StructureFeature.FORTRESS).hasChildren();
 	}
 
 	private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk) {

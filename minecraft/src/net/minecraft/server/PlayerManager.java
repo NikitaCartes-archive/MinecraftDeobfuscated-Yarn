@@ -738,6 +738,7 @@ public abstract class PlayerManager {
 	 * 
 	 * @return the user data of the host of the server if the server is an integrated server, otherwise {@code null}
 	 */
+	@Nullable
 	public NbtCompound getUserData() {
 		return null;
 	}
@@ -773,7 +774,7 @@ public abstract class PlayerManager {
 
 	public ServerStatHandler createStatHandler(PlayerEntity player) {
 		UUID uUID = player.getUuid();
-		ServerStatHandler serverStatHandler = uUID == null ? null : (ServerStatHandler)this.statisticsMap.get(uUID);
+		ServerStatHandler serverStatHandler = (ServerStatHandler)this.statisticsMap.get(uUID);
 		if (serverStatHandler == null) {
 			File file = this.server.getSavePath(WorldSavePath.STATS).toFile();
 			File file2 = new File(file, uUID + ".json");

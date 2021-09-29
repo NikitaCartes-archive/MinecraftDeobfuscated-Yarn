@@ -390,7 +390,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 						profiler.push("checkDespawn");
 						entity.checkDespawn();
 						profiler.pop();
-						if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().method_38630(ChunkPos.toLong(entity.getBlockPos()))) {
+						if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().isSimulating(ChunkPos.toLong(entity.getBlockPos()))) {
 							Entity entity2 = entity.getVehicle();
 							if (entity2 != null) {
 								if (!entity2.isRemoved() && entity2.hasPassenger(entity)) {
@@ -795,7 +795,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public void unloadEntities(WorldChunk chunk) {
-		chunk.method_38289();
+		chunk.clear();
 	}
 
 	public void removePlayer(ServerPlayerEntity player, Entity.RemovalReason reason) {
@@ -1043,7 +1043,15 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			.getChunkGenerator()
 			.getBiomeSource()
 			.locateBiome(
-				pos.getX(), pos.getY(), pos.getZ(), radius, i, biome2 -> biome2 == biome, this.random, true, this.getChunkManager().getChunkGenerator().method_38276()
+				pos.getX(),
+				pos.getY(),
+				pos.getZ(),
+				radius,
+				i,
+				biome2 -> biome2 == biome,
+				this.random,
+				true,
+				this.getChunkManager().getChunkGenerator().getMultiNoiseSampler()
 			);
 	}
 
@@ -1417,8 +1425,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-		return this.getStructureAccessor().getStructuresWithChildren(pos, feature);
+	public List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
+		return this.getStructureAccessor().method_38853(pos, feature);
 	}
 
 	@Override

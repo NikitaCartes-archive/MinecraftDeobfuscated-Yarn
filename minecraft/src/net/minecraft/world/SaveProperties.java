@@ -79,6 +79,7 @@ public interface SaveProperties {
 
 	GameRules getGameRules();
 
+	@Nullable
 	NbtCompound getPlayerData();
 
 	NbtCompound getDragonFight();

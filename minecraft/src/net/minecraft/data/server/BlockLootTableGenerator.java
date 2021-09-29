@@ -321,7 +321,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					.with(
 						ItemEntry.builder(drop)
 							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
-							.apply(CopyStateFunction.getBuilder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
+							.apply(CopyStateFunction.builder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
 					)
 			);
 	}
@@ -335,7 +335,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						ItemEntry.builder(drop)
 							.conditionally(WITH_SILK_TOUCH)
 							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
-							.apply(CopyStateFunction.getBuilder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
+							.apply(CopyStateFunction.builder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
 							.alternatively(ItemEntry.builder(drop))
 					)
 			);

@@ -22,9 +22,9 @@ import net.minecraft.world.gen.feature.util.FeatureContext;
 public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> NO_OP = register("no_op", new NoOpFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<TreeFeatureConfig> TREE = register("tree", new TreeFeature(TreeFeatureConfig.CODEC));
-	public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC));
-	public static final FlowerFeature<RandomPatchFeatureConfig> NO_BONEMEAL_FLOWER = register(
-		"no_bonemeal_flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC)
+	public static final Feature<RandomPatchFeatureConfig> FLOWER = register("flower", new RandomPatchFeature(RandomPatchFeatureConfig.CODEC));
+	public static final Feature<RandomPatchFeatureConfig> NO_BONEMEAL_FLOWER = register(
+		"no_bonemeal_flower", new RandomPatchFeature(RandomPatchFeatureConfig.CODEC)
 	);
 	public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig.CODEC));
 	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new BlockPileFeature(BlockPileFeatureConfig.CODEC));
@@ -48,7 +48,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> GLOWSTONE_BLOB = register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> FREEZE_TOP_LAYER = register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> VINES = register("vines", new VinesFeature(DefaultFeatureConfig.CODEC));
-	public static final Feature<GrowingPlantFeatureConfig> GROWING_PLANT = register("growing_plant", new GrowingPlantFeature(GrowingPlantFeatureConfig.CODEC));
+	public static final Feature<BlockColumnFeatureConfig> BLOCK_COLUMN = register("block_column", new BlockColumnFeature(BlockColumnFeatureConfig.CODEC));
 	public static final Feature<VegetationPatchFeatureConfig> VEGETATION_PATCH = register(
 		"vegetation_patch", new VegetationPatchFeature(VegetationPatchFeatureConfig.CODEC)
 	);

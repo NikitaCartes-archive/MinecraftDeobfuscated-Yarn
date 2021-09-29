@@ -867,7 +867,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 								this.player.handleFall(this.player.getY() - l, packet.isOnGround());
 								this.player.setOnGround(packet.isOnGround());
 								if (bl) {
-									this.player.fallDistance = 0.0F;
+									this.player.onLanding();
 								}
 
 								this.player.increaseTravelMotionStats(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k);

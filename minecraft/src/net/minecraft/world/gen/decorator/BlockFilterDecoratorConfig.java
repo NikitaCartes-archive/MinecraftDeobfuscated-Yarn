@@ -2,27 +2,20 @@ package net.minecraft.world.gen.decorator;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.List;
-import net.minecraft.block.Block;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 
-public record BlockFilterDecoratorConfig() implements DecoratorConfig {
-	private final List<Block> allowed;
-	private final List<Block> disallowed;
-	private final BlockPos offset;
+public class BlockFilterDecoratorConfig implements DecoratorConfig {
 	public static final Codec<BlockFilterDecoratorConfig> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					Registry.BLOCK.listOf().optionalFieldOf("allowed", List.of()).forGetter(BlockFilterDecoratorConfig::allowed),
-					Registry.BLOCK.listOf().optionalFieldOf("disallowed", List.of()).forGetter(BlockFilterDecoratorConfig::disallowed),
-					BlockPos.CODEC.fieldOf("offset").forGetter(BlockFilterDecoratorConfig::offset)
-				)
+		instance -> instance.group(BlockPredicate.BASE_CODEC.fieldOf("predicate").forGetter(blockFilterDecoratorConfig -> blockFilterDecoratorConfig.predicate))
 				.apply(instance, BlockFilterDecoratorConfig::new)
 	);
+	private final BlockPredicate predicate;
 
-	public BlockFilterDecoratorConfig(List<Block> list, List<Block> list2, BlockPos blockPos) {
-		this.allowed = list;
-		this.disallowed = list2;
-		this.offset = blockPos;
+	public BlockFilterDecoratorConfig(BlockPredicate predicate) {
+		this.predicate = predicate;
+	}
+
+	public BlockPredicate getPredicate() {
+		return this.predicate;
 	}
 }

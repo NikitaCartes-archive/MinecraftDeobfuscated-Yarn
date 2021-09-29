@@ -22,7 +22,7 @@ public class SpawnDensityCapper {
 	}
 
 	private List<ServerPlayerEntity> getMobSpawnablePlayers(ChunkPos chunkPos) {
-		return this.chunkPosToMobSpawnablePlayers.computeIfAbsent(chunkPos.toLong(), l -> this.threadedAnvilChunkStorage.method_37907(chunkPos).toList());
+		return this.chunkPosToMobSpawnablePlayers.computeIfAbsent(chunkPos.toLong(), l -> this.threadedAnvilChunkStorage.method_37907(chunkPos));
 	}
 
 	public void increaseDensity(ChunkPos chunkPos, SpawnGroup spawnGroup) {

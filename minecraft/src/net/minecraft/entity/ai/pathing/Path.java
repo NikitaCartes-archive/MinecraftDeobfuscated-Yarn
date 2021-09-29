@@ -15,6 +15,7 @@ public class Path {
 	private final List<PathNode> nodes;
 	private PathNode[] debugNodes = new PathNode[0];
 	private PathNode[] debugSecondNodes = new PathNode[0];
+	@Nullable
 	private Set<TargetPathNode> debugTargetNodes;
 	private int currentNodeIndex;
 	private final BlockPos target;

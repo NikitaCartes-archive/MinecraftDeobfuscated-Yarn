@@ -45,7 +45,9 @@ public class IntegratedServer extends MinecraftServer {
 	private int lanPort = -1;
 	@Nullable
 	private GameMode forcedGameMode;
+	@Nullable
 	private LanServerPinger lanPinger;
+	@Nullable
 	private UUID localPlayerUuid;
 	private int simulationDistance = 0;
 
@@ -206,6 +208,7 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public boolean openToLan(@Nullable GameMode gameMode, boolean cheatsAllowed, int port) {
 		try {
+			this.client.loadBlockList();
 			this.getNetworkIo().bind(null, port);
 			LOGGER.info("Started serving on {}", port);
 			this.lanPort = port;

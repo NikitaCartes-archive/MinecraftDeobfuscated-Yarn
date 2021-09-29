@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen.option;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -15,6 +16,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class KeybindsScreen extends GameOptionsScreen {
+	@Nullable
 	public KeyBinding selectedKeyBinding;
 	public long field_34800;
 	private ControlsListWidget controlsList;

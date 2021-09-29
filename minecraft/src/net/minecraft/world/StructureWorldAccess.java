@@ -1,7 +1,7 @@
 package net.minecraft.world;
 
+import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
@@ -11,7 +11,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public interface StructureWorldAccess extends ServerWorldAccess {
 	long getSeed();
 
-	Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature);
+	List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature);
 
 	/**
 	 * {@return {@code true} if the given position is an accessible position

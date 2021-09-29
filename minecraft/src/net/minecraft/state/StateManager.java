@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -73,7 +74,8 @@ public class StateManager<O, S extends State<O, S>> {
 	private static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> addFieldToMapCodec(
 		MapCodec<S> mapCodec, Supplier<S> defaultStateGetter, String key, Property<T> property
 	) {
-		return Codec.mapPair(mapCodec, property.getValueCodec().fieldOf(key).setPartial(() -> property.createValue((State<?, ?>)defaultStateGetter.get())))
+		return Codec.mapPair(mapCodec, property.getValueCodec().fieldOf(key).orElseGet((Consumer<String>)(string -> {
+			}), () -> property.createValue((State<?, ?>)defaultStateGetter.get())))
 			.xmap(
 				pair -> (State)((State)pair.getFirst()).with(property, ((Property.Value)pair.getSecond()).value()), state -> Pair.of(state, property.createValue(state))
 			);

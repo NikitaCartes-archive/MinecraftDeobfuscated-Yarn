@@ -33,6 +33,11 @@ public class LookAroundGoal extends Goal {
 	}
 
 	@Override
+	public boolean shouldRunEveryTick() {
+		return true;
+	}
+
+	@Override
 	public void tick() {
 		this.lookTime--;
 		this.mob.getLookControl().lookAt(this.mob.getX() + this.deltaX, this.mob.getEyeY(), this.mob.getZ() + this.deltaZ);

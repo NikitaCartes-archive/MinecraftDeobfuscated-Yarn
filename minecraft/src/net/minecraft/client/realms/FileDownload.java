@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -49,9 +50,12 @@ public class FileDownload {
 	volatile boolean finished;
 	volatile boolean error;
 	volatile boolean extracting;
+	@Nullable
 	private volatile File backupFile;
 	volatile File resourcePackPath;
+	@Nullable
 	private volatile HttpGet httpRequest;
+	@Nullable
 	private Thread currentThread;
 	private final RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(120000).setConnectTimeout(120000).build();
 	private static final String[] INVALID_FILE_NAMES = new String[]{
@@ -229,7 +233,7 @@ public class FileDownload {
 		return folder;
 	}
 
-	void untarGzipArchive(String name, File archive, LevelStorage storage) throws IOException {
+	void untarGzipArchive(String name, @Nullable File archive, LevelStorage storage) throws IOException {
 		Pattern pattern = Pattern.compile(".*-([0-9]+)$");
 		int i = 1;
 
@@ -248,8 +252,9 @@ public class FileDownload {
 				if (levelSummary.getName().toLowerCase(Locale.ROOT).startsWith(name.toLowerCase(Locale.ROOT))) {
 					Matcher matcher = pattern.matcher(levelSummary.getName());
 					if (matcher.matches()) {
-						if (Integer.valueOf(matcher.group(1)) > i) {
-							i = Integer.valueOf(matcher.group(1));
+						int j = Integer.parseInt(matcher.group(1));
+						if (j > i) {
+							i = j;
 						}
 					} else {
 						i++;
@@ -351,11 +356,12 @@ public class FileDownload {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class DownloadCountingOutputStream extends CountingOutputStream {
+	static class DownloadCountingOutputStream extends CountingOutputStream {
+		@Nullable
 		private ActionListener listener;
 
-		public DownloadCountingOutputStream(OutputStream out) {
-			super(out);
+		public DownloadCountingOutputStream(OutputStream outputStream) {
+			super(outputStream);
 		}
 
 		public void setListener(ActionListener listener) {

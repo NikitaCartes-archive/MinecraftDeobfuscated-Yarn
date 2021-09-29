@@ -15,6 +15,7 @@ public class DamagePredicate {
 	private final NumberRange.FloatRange dealt;
 	private final NumberRange.FloatRange taken;
 	private final EntityPredicate sourceEntity;
+	@Nullable
 	private final Boolean blocked;
 	private final DamageSourcePredicate type;
 
@@ -85,6 +86,7 @@ public class DamagePredicate {
 		private NumberRange.FloatRange dealt = NumberRange.FloatRange.ANY;
 		private NumberRange.FloatRange taken = NumberRange.FloatRange.ANY;
 		private EntityPredicate sourceEntity = EntityPredicate.ANY;
+		@Nullable
 		private Boolean blocked;
 		private DamageSourcePredicate type = DamageSourcePredicate.EMPTY;
 

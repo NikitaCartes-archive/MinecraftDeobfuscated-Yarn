@@ -357,6 +357,7 @@ public class GameOptions {
 
 		this.viewDistance = client.is64Bit() ? 12 : 8;
 		this.simulationDistance = client.is64Bit() ? 12 : 8;
+		this.gamma = 0.5;
 		this.syncChunkWrites = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
 		this.load();
 	}

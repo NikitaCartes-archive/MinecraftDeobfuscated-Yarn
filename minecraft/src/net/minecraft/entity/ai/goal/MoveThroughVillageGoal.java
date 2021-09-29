@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import javax.annotation.Nullable;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.NavigationConditions;
@@ -23,6 +24,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 public class MoveThroughVillageGoal extends Goal {
 	protected final PathAwareEntity mob;
 	private final double speed;
+	@Nullable
 	private Path targetPath;
 	private BlockPos target;
 	private final boolean requiresNighttime;

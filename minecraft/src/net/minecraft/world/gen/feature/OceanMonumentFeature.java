@@ -43,7 +43,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		int i = chunkPos.getOffsetX(9);
 		int j = chunkPos.getOffsetZ(9);
 
-		for (Biome biome : biomeSource.getBiomesInArea(i, chunkGenerator.getSeaLevel(), j, 29, chunkGenerator.method_38276())) {
+		for (Biome biome : biomeSource.getBiomesInArea(i, chunkGenerator.getSeaLevel(), j, 29, chunkGenerator.getMultiNoiseSampler())) {
 			if (biome.getCategory() != Biome.Category.OCEAN && biome.getCategory() != Biome.Category.RIVER) {
 				return false;
 			}

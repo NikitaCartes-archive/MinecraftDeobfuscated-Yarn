@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import javax.annotation.Nullable;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,6 +12,7 @@ import net.minecraft.world.World;
 
 public class WolfBegGoal extends Goal {
 	private final WolfEntity wolf;
+	@Nullable
 	private PlayerEntity begFrom;
 	private final World world;
 	private final float begDistance;
@@ -53,8 +55,13 @@ public class WolfBegGoal extends Goal {
 	}
 
 	@Override
+	public boolean shouldRunEveryTick() {
+		return true;
+	}
+
+	@Override
 	public void tick() {
-		this.wolf.getLookControl().lookAt(this.begFrom.getX(), this.begFrom.getEyeY(), this.begFrom.getZ(), 10.0F, (float)this.wolf.getLookPitchSpeed());
+		this.wolf.getLookControl().lookAt(this.begFrom.getX(), this.begFrom.getEyeY(), this.begFrom.getZ(), 10.0F, (float)this.wolf.getMaxLookPitchChange());
 		this.timer--;
 	}
 

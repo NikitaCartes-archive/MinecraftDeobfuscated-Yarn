@@ -8,12 +8,11 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.SetCountLootFunction;
-import net.minecraft.loot.function.SetNbtLootFunction;
+import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.potion.Potions;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
 	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
@@ -93,67 +92,67 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:swiftness"))))
+								.apply(SetPotionLootFunction.builder(Potions.SWIFTNESS))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:slowness"))))
+								.apply(SetPotionLootFunction.builder(Potions.SLOWNESS))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:strength"))))
+								.apply(SetPotionLootFunction.builder(Potions.STRENGTH))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:healing"))))
+								.apply(SetPotionLootFunction.builder(Potions.HEALING))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:harming"))))
+								.apply(SetPotionLootFunction.builder(Potions.HARMING))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:leaping"))))
+								.apply(SetPotionLootFunction.builder(Potions.LEAPING))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:regeneration"))))
+								.apply(SetPotionLootFunction.builder(Potions.REGENERATION))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:fire_resistance"))))
+								.apply(SetPotionLootFunction.builder(Potions.FIRE_RESISTANCE))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:water_breathing"))))
+								.apply(SetPotionLootFunction.builder(Potions.WATER_BREATHING))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:invisibility"))))
+								.apply(SetPotionLootFunction.builder(Potions.INVISIBILITY))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:night_vision"))))
+								.apply(SetPotionLootFunction.builder(Potions.NIGHT_VISION))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:weakness"))))
+								.apply(SetPotionLootFunction.builder(Potions.WEAKNESS))
 						)
 						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:poison"))))
+								.apply(SetPotionLootFunction.builder(Potions.POISON))
 						)
 				)
 		);

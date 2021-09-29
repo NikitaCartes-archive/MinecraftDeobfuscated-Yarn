@@ -1,12 +1,12 @@
 package net.minecraft.util.math.noise;
 
 import java.util.stream.IntStream;
-import net.minecraft.class_6568;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
 import net.minecraft.world.gen.random.AbstractRandom;
 
-public class InterpolatedNoiseSampler implements class_6568.ColumnSampler {
+public class InterpolatedNoiseSampler implements ChunkNoiseSampler.ColumnSampler {
 	private final OctavePerlinNoiseSampler lowerInterpolatedNoise;
 	private final OctavePerlinNoiseSampler upperInterpolatedNoise;
 	private final OctavePerlinNoiseSampler interpolationNoise;

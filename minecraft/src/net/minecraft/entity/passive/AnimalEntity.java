@@ -31,6 +31,7 @@ import net.minecraft.world.event.GameEvent;
 public abstract class AnimalEntity extends PassiveEntity {
 	static final int BREEDING_COOLDOWN = 6000;
 	private int loveTicks;
+	@Nullable
 	private UUID lovingPlayer;
 
 	protected AnimalEntity(EntityType<? extends AnimalEntity> entityType, World world) {

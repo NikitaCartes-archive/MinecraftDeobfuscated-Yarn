@@ -2,10 +2,10 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 
 public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
@@ -19,7 +19,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	@Override
 	public void generate(
 		Random random,
-		class_6557 arg,
+		BlockColumn blockColumn,
 		Biome biome,
 		int i,
 		int j,
@@ -45,7 +45,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 
 		for (int r = k; r >= m; r--) {
 			if (q < 15) {
-				BlockState blockState7 = arg.getState(r);
+				BlockState blockState7 = blockColumn.getState(r);
 				if (blockState7.isAir()) {
 					p = -1;
 				} else if (blockState7.isOf(blockState.getBlock())) {
@@ -65,18 +65,18 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 
 						p = o + Math.max(0, r - l);
 						if (r < l - 1) {
-							arg.method_38092(r, blockState6);
+							blockColumn.setState(r, blockState6);
 							if (blockState6 == WHITE_TERRACOTTA) {
-								arg.method_38092(r, ORANGE_TERRACOTTA);
+								blockColumn.setState(r, ORANGE_TERRACOTTA);
 							}
 						} else if (r > 96 + o * 2) {
 							if (bl) {
-								arg.method_38092(r, Blocks.COARSE_DIRT.getDefaultState());
+								blockColumn.setState(r, Blocks.COARSE_DIRT.getDefaultState());
 							} else {
-								arg.method_38092(r, Blocks.GRASS_BLOCK.getDefaultState());
+								blockColumn.setState(r, Blocks.GRASS_BLOCK.getDefaultState());
 							}
 						} else if (r <= l + 10 + o) {
-							arg.method_38092(r, blockState5);
+							blockColumn.setState(r, blockState5);
 							bl2 = true;
 						} else {
 							BlockState blockState8;
@@ -88,14 +88,14 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 								blockState8 = this.calculateLayerBlockState(i, r, j);
 							}
 
-							arg.method_38092(r, blockState8);
+							blockColumn.setState(r, blockState8);
 						}
 					} else if (p > 0) {
 						p--;
 						if (bl2) {
-							arg.method_38092(r, ORANGE_TERRACOTTA);
+							blockColumn.setState(r, ORANGE_TERRACOTTA);
 						} else {
-							arg.method_38092(r, this.calculateLayerBlockState(i, r, j));
+							blockColumn.setState(r, this.calculateLayerBlockState(i, r, j));
 						}
 					}
 

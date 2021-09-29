@@ -13,6 +13,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public abstract class SchoolingFishEntity extends FishEntity {
+	@Nullable
 	private SchoolingFishEntity leader;
 	private int groupSize = 1;
 

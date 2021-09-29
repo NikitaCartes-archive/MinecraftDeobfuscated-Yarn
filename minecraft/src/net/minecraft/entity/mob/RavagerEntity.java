@@ -125,7 +125,7 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public int getBodyYawSpeed() {
+	public int getMaxHeadRotation() {
 		return 45;
 	}
 

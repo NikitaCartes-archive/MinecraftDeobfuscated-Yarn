@@ -39,6 +39,7 @@ public class BatEntity extends AmbientEntity {
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int ROOSTING_FLAG = 1;
 	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(4.0);
+	@Nullable
 	private BlockPos hangingPosition;
 
 	public BatEntity(EntityType<? extends BatEntity> entityType, World world) {

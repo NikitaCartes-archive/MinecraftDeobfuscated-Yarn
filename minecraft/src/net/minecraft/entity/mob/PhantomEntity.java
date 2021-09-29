@@ -254,11 +254,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public void tick() {
-			if (PhantomEntity.this.random.nextInt(350) == 0) {
+			if (PhantomEntity.this.random.nextInt(this.getTickCount(350)) == 0) {
 				this.yOffset = -4.0F + PhantomEntity.this.random.nextFloat() * 9.0F;
 			}
 
-			if (PhantomEntity.this.random.nextInt(250) == 0) {
+			if (PhantomEntity.this.random.nextInt(this.getTickCount(250)) == 0) {
 				this.radius++;
 				if (this.radius > 15.0F) {
 					this.radius = 5.0F;
@@ -266,7 +266,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				}
 			}
 
-			if (PhantomEntity.this.random.nextInt(450) == 0) {
+			if (PhantomEntity.this.random.nextInt(this.getTickCount(450)) == 0) {
 				this.angle = PhantomEntity.this.random.nextFloat() * 2.0F * (float) Math.PI;
 				this.adjustDirection();
 			}
@@ -299,7 +299,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	class FindTargetGoal extends Goal {
 		private final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
-		private int delay = 20;
+		private int delay = toGoalTicks(20);
 
 		@Override
 		public boolean canStart() {
@@ -307,7 +307,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				this.delay--;
 				return false;
 			} else {
-				this.delay = 60;
+				this.delay = toGoalTicks(60);
 				List<PlayerEntity> list = PhantomEntity.this.world
 					.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
 				if (!list.isEmpty()) {
@@ -426,12 +426,12 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
-			return livingEntity != null ? PhantomEntity.this.isTarget(PhantomEntity.this.getTarget(), TargetPredicate.DEFAULT) : false;
+			return livingEntity != null ? PhantomEntity.this.isTarget(livingEntity, TargetPredicate.DEFAULT) : false;
 		}
 
 		@Override
 		public void start() {
-			this.cooldown = 10;
+			this.cooldown = this.getTickCount(10);
 			PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 			this.startSwoop();
 		}
@@ -450,7 +450,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				if (this.cooldown <= 0) {
 					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.SWOOP;
 					this.startSwoop();
-					this.cooldown = (8 + PhantomEntity.this.random.nextInt(4)) * 20;
+					this.cooldown = this.getTickCount((8 + PhantomEntity.this.random.nextInt(4)) * 20);
 					PhantomEntity.this.playSound(SoundEvents.ENTITY_PHANTOM_SWOOP, 10.0F, 0.95F + PhantomEntity.this.random.nextFloat() * 0.1F);
 				}
 			}
@@ -483,7 +483,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				if (!this.canStart()) {
 					return false;
 				} else {
-					if (PhantomEntity.this.age % 20 == 0) {
+					if (PhantomEntity.this.age % 20 == PhantomEntity.this.getId() % 2) {
 						List<CatEntity> list = PhantomEntity.this.world
 							.getEntitiesByClass(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
 						if (!list.isEmpty()) {
@@ -515,15 +515,17 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public void tick() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
-			PhantomEntity.this.targetPosition = new Vec3d(livingEntity.getX(), livingEntity.getBodyY(0.5), livingEntity.getZ());
-			if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
-				PhantomEntity.this.tryAttack(livingEntity);
-				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
-				if (!PhantomEntity.this.isSilent()) {
-					PhantomEntity.this.world.syncWorldEvent(WorldEvents.PHANTOM_BITES, PhantomEntity.this.getBlockPos(), 0);
+			if (livingEntity != null) {
+				PhantomEntity.this.targetPosition = new Vec3d(livingEntity.getX(), livingEntity.getBodyY(0.5), livingEntity.getZ());
+				if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
+					PhantomEntity.this.tryAttack(livingEntity);
+					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
+					if (!PhantomEntity.this.isSilent()) {
+						PhantomEntity.this.world.syncWorldEvent(WorldEvents.PHANTOM_BITES, PhantomEntity.this.getBlockPos(), 0);
+					}
+				} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
+					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 				}
-			} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
-				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 			}
 		}
 	}

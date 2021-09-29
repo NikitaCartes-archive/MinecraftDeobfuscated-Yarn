@@ -34,6 +34,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	public static final int field_32663 = 8;
 	public static final int field_32664 = 64;
 	public static final int field_32665 = 64;
+	@Nullable
 	private PlayerListEntry cachedScoreboardEntry;
 	public float elytraPitch;
 	public float elytraYaw;

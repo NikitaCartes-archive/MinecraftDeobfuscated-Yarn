@@ -69,7 +69,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	private static final int field_30491 = 8;
 	private static final int field_30492 = 5;
 	private static final float field_30493 = 0.05F;
-	static final Vec3f field_33765 = Util.make(() -> {
+	static final Vec3f SOUTH_VECTOR = Util.make(() -> {
 		Vec3i vec3i = Direction.SOUTH.getVector();
 		return new Vec3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
 	});
@@ -83,7 +83,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	public ShulkerEntity(EntityType<? extends ShulkerEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 5;
-		this.lookControl = new ShulkerEntity.class_6376(this);
+		this.lookControl = new ShulkerEntity.ShulkerLookControl(this);
 	}
 
 	@Override
@@ -518,12 +518,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public int getLookPitchSpeed() {
+	public int getMaxLookPitchChange() {
 		return 180;
 	}
 
 	@Override
-	public int getBodyYawSpeed() {
+	public int getMaxHeadRotation() {
 		return 180;
 	}
 
@@ -566,7 +566,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		@Override
 		public boolean canStart() {
 			return ShulkerEntity.this.getTarget() == null
-				&& ShulkerEntity.this.random.nextInt(40) == 0
+				&& ShulkerEntity.this.random.nextInt(toGoalTicks(40)) == 0
 				&& ShulkerEntity.this.canStay(ShulkerEntity.this.getBlockPos(), ShulkerEntity.this.getAttachedFace());
 		}
 
@@ -577,7 +577,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public void start() {
-			this.counter = 20 * (1 + ShulkerEntity.this.random.nextInt(3));
+			this.counter = this.getTickCount(20 * (1 + ShulkerEntity.this.random.nextInt(3)));
 			ShulkerEntity.this.setPeekAmount(30);
 		}
 
@@ -619,26 +619,33 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 
 		@Override
+		public boolean shouldRunEveryTick() {
+			return true;
+		}
+
+		@Override
 		public void tick() {
 			if (ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL) {
 				this.counter--;
 				LivingEntity livingEntity = ShulkerEntity.this.getTarget();
-				ShulkerEntity.this.getLookControl().lookAt(livingEntity, 180.0F, 180.0F);
-				double d = ShulkerEntity.this.squaredDistanceTo(livingEntity);
-				if (d < 400.0) {
-					if (this.counter <= 0) {
-						this.counter = 20 + ShulkerEntity.this.random.nextInt(10) * 20 / 2;
-						ShulkerEntity.this.world
-							.spawnEntity(new ShulkerBulletEntity(ShulkerEntity.this.world, ShulkerEntity.this, livingEntity, ShulkerEntity.this.getAttachedFace().getAxis()));
-						ShulkerEntity.this.playSound(
-							SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (ShulkerEntity.this.random.nextFloat() - ShulkerEntity.this.random.nextFloat()) * 0.2F + 1.0F
-						);
+				if (livingEntity != null) {
+					ShulkerEntity.this.getLookControl().lookAt(livingEntity, 180.0F, 180.0F);
+					double d = ShulkerEntity.this.squaredDistanceTo(livingEntity);
+					if (d < 400.0) {
+						if (this.counter <= 0) {
+							this.counter = 20 + ShulkerEntity.this.random.nextInt(10) * 20 / 2;
+							ShulkerEntity.this.world
+								.spawnEntity(new ShulkerBulletEntity(ShulkerEntity.this.world, ShulkerEntity.this, livingEntity, ShulkerEntity.this.getAttachedFace().getAxis()));
+							ShulkerEntity.this.playSound(
+								SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (ShulkerEntity.this.random.nextFloat() - ShulkerEntity.this.random.nextFloat()) * 0.2F + 1.0F
+							);
+						}
+					} else {
+						ShulkerEntity.this.setTarget(null);
 					}
-				} else {
-					ShulkerEntity.this.setTarget(null);
-				}
 
-				super.tick();
+					super.tick();
+				}
 			}
 		}
 	}
@@ -650,6 +657,40 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public void tick() {
+		}
+	}
+
+	class ShulkerLookControl extends LookControl {
+		public ShulkerLookControl(MobEntity entity) {
+			super(entity);
+		}
+
+		@Override
+		protected void clampHeadYaw() {
+		}
+
+		@Override
+		protected Optional<Float> getTargetYaw() {
+			Direction direction = ShulkerEntity.this.getAttachedFace().getOpposite();
+			Vec3f vec3f = ShulkerEntity.SOUTH_VECTOR.copy();
+			vec3f.rotate(direction.getRotationQuaternion());
+			Vec3i vec3i = direction.getVector();
+			Vec3f vec3f2 = new Vec3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
+			vec3f2.cross(vec3f);
+			double d = this.x - this.entity.getX();
+			double e = this.y - this.entity.getEyeY();
+			double f = this.z - this.entity.getZ();
+			Vec3f vec3f3 = new Vec3f((float)d, (float)e, (float)f);
+			float g = vec3f2.dot(vec3f3);
+			float h = vec3f.dot(vec3f3);
+			return !(Math.abs(g) > 1.0E-5F) && !(Math.abs(h) > 1.0E-5F)
+				? Optional.empty()
+				: Optional.of((float)(MathHelper.atan2((double)(-g), (double)h) * 180.0F / (float)Math.PI));
+		}
+
+		@Override
+		protected Optional<Float> getTargetPitch() {
+			return Optional.of(0.0F);
 		}
 	}
 
@@ -703,40 +744,6 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					? this.mob.getBoundingBox().expand(distance, distance, 4.0)
 					: this.mob.getBoundingBox().expand(distance, 4.0, distance);
 			}
-		}
-	}
-
-	class class_6376 extends LookControl {
-		public class_6376(MobEntity mobEntity) {
-			super(mobEntity);
-		}
-
-		@Override
-		protected void method_36980() {
-		}
-
-		@Override
-		protected Optional<Float> getTargetYaw() {
-			Direction direction = ShulkerEntity.this.getAttachedFace().getOpposite();
-			Vec3f vec3f = ShulkerEntity.field_33765.copy();
-			vec3f.rotate(direction.getRotationQuaternion());
-			Vec3i vec3i = direction.getVector();
-			Vec3f vec3f2 = new Vec3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
-			vec3f2.cross(vec3f);
-			double d = this.lookX - this.entity.getX();
-			double e = this.lookY - this.entity.getEyeY();
-			double f = this.lookZ - this.entity.getZ();
-			Vec3f vec3f3 = new Vec3f((float)d, (float)e, (float)f);
-			float g = vec3f2.dot(vec3f3);
-			float h = vec3f.dot(vec3f3);
-			return !(Math.abs(g) > 1.0E-5F) && !(Math.abs(h) > 1.0E-5F)
-				? Optional.empty()
-				: Optional.of((float)(MathHelper.atan2((double)(-g), (double)h) * 180.0F / (float)Math.PI));
-		}
-
-		@Override
-		protected Optional<Float> getTargetPitch() {
-			return Optional.of(0.0F);
 		}
 	}
 }

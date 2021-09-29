@@ -121,28 +121,34 @@ public class LocationPredicate {
 		);
 	}
 
-	public boolean test(ServerWorld serverWorld, double d, double e, double f) {
-		if (!this.x.test(d)) {
+	public static LocationPredicate y(NumberRange.FloatRange y) {
+		return new LocationPredicate(
+			NumberRange.FloatRange.ANY, y, NumberRange.FloatRange.ANY, null, null, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY
+		);
+	}
+
+	public boolean test(ServerWorld world, double x, double y, double z) {
+		if (!this.x.test(x)) {
 			return false;
-		} else if (!this.y.test(e)) {
+		} else if (!this.y.test(y)) {
 			return false;
-		} else if (!this.z.test(f)) {
+		} else if (!this.z.test(z)) {
 			return false;
-		} else if (this.dimension != null && this.dimension != serverWorld.getRegistryKey()) {
+		} else if (this.dimension != null && this.dimension != world.getRegistryKey()) {
 			return false;
 		} else {
-			BlockPos blockPos = new BlockPos(d, e, f);
-			boolean bl = serverWorld.canSetBlock(blockPos);
-			Optional<RegistryKey<Biome>> optional = serverWorld.getRegistryManager().get(Registry.BIOME_KEY).getKey(serverWorld.getBiome(blockPos));
+			BlockPos blockPos = new BlockPos(x, y, z);
+			boolean bl = world.canSetBlock(blockPos);
+			Optional<RegistryKey<Biome>> optional = world.getRegistryManager().get(Registry.BIOME_KEY).getKey(world.getBiome(blockPos));
 			if (!optional.isPresent()) {
 				return false;
 			} else if (this.biome == null || bl && this.biome == optional.get()) {
-				if (this.feature == null || bl && serverWorld.getStructureAccessor().getStructureAt(blockPos, true, this.feature).hasChildren()) {
-					if (this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(serverWorld, blockPos)) {
-						if (!this.light.test(serverWorld, blockPos)) {
+				if (this.feature == null || bl && world.getStructureAccessor().method_38854(blockPos, this.feature).hasChildren()) {
+					if (this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
+						if (!this.light.test(world, blockPos)) {
 							return false;
 						} else {
-							return !this.block.test(serverWorld, blockPos) ? false : this.fluid.test(serverWorld, blockPos);
+							return !this.block.test(world, blockPos) ? false : this.fluid.test(world, blockPos);
 						}
 					} else {
 						return false;

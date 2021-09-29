@@ -92,7 +92,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 				List<Biome> list = Lists.<Biome>newArrayList();
 
 				for (Biome biome : this.populationSource.getBiomes()) {
-					if (method_38266(biome)) {
+					if (canPlaceStrongholdInBiome(biome)) {
 						list.add(biome);
 					}
 				}
@@ -111,7 +111,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 					int o = (int)Math.round(Math.cos(d) * e);
 					int p = (int)Math.round(Math.sin(d) * e);
 					BlockPos blockPos = this.populationSource
-						.locateBiome(ChunkSectionPos.getOffsetPos(o, 8), 0, ChunkSectionPos.getOffsetPos(p, 8), 112, list::contains, random, this.method_38276());
+						.locateBiome(ChunkSectionPos.getOffsetPos(o, 8), 0, ChunkSectionPos.getOffsetPos(p, 8), 112, list::contains, random, this.getMultiNoiseSampler());
 					if (blockPos != null) {
 						o = ChunkSectionPos.getSectionCoord(blockPos.getX());
 						p = ChunkSectionPos.getSectionCoord(blockPos.getZ());
@@ -131,7 +131,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 		}
 	}
 
-	private static boolean method_38266(Biome biome) {
+	private static boolean canPlaceStrongholdInBiome(Biome biome) {
 		Biome.Category category = biome.getCategory();
 		return category != Biome.Category.OCEAN
 			&& category != Biome.Category.RIVER
@@ -145,25 +145,25 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 	public abstract ChunkGenerator withSeed(long seed);
 
-	public CompletableFuture<Chunk> populateBiomes(Executor executor, Registry<Biome> registry, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateBiomes(Executor executor, Registry<Biome> biomeRegistry, StructureAccessor structureAccessor, Chunk chunk) {
 		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
-			chunk.method_38257(this.biomeSource, this.method_38276());
+			chunk.method_38257(this.biomeSource, this.getMultiNoiseSampler());
 			return chunk;
 		}), Util.getMainWorkerExecutor());
 	}
 
-	public abstract MultiNoiseUtil.MultiNoiseSampler method_38276();
+	public abstract MultiNoiseUtil.MultiNoiseSampler getMultiNoiseSampler();
 
 	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		return this.getBiomeSource().getBiome(biomeX, biomeY, biomeZ, this.method_38276());
+		return this.getBiomeSource().getBiome(biomeX, biomeY, biomeZ, this.getMultiNoiseSampler());
 	}
 
 	/**
 	 * Generates caves for the given chunk.
 	 */
 	public abstract void carve(
-		ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carver
+		ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep
 	);
 
 	/**
@@ -255,7 +255,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 							try {
 								world.method_36972(supplier);
-								structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), structureFeature)
+								structureAccessor.method_38853(ChunkSectionPos.from(blockPos), structureFeature)
 									.forEach(
 										structureStart -> structureStart.generateStructure(
 												world, structureAccessor, this, chunkRandom, new BlockBox(o, q, p, o + 15, r, p + 15), new ChunkPos(m, n)
@@ -345,7 +345,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 					method_38264(structureAccessor, chunk, chunkSectionPos, StructureFeature.STRONGHOLD),
 					structureConfig,
 					chunk,
-					ChunkGenerator::method_38266
+					ChunkGenerator::canPlaceStrongholdInBiome
 				);
 			structureAccessor.setStructureStart(chunkSectionPos, StructureFeature.STRONGHOLD, structureStart, chunk);
 		}

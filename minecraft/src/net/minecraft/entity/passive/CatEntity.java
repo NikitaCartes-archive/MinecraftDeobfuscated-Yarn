@@ -141,6 +141,7 @@ public class CatEntity extends TameableEntity {
 		map.put(10, new Identifier("textures/entity/cat/all_black.png"));
 	});
 	private CatEntity.CatFleeGoal<PlayerEntity> fleeGoal;
+	@Nullable
 	private net.minecraft.entity.ai.goal.TemptGoal temptGoal;
 	private float sleepAnimation;
 	private float prevSleepAnimation;
@@ -425,8 +426,7 @@ public class CatEntity extends TameableEntity {
 		}
 
 		World world2 = world.toServerWorld();
-		if (world2 instanceof ServerWorld
-			&& ((ServerWorld)world2).getStructureAccessor().getStructureAt(this.getBlockPos(), true, StructureFeature.SWAMP_HUT).hasChildren()) {
+		if (world2 instanceof ServerWorld && ((ServerWorld)world2).getStructureAccessor().method_38854(this.getBlockPos(), StructureFeature.SWAMP_HUT).hasChildren()) {
 			this.setCatType(ALL_BLACK_TYPE);
 			this.setPersistent();
 		}
@@ -549,7 +549,9 @@ public class CatEntity extends TameableEntity {
 
 	static class SleepWithOwnerGoal extends Goal {
 		private final CatEntity cat;
+		@Nullable
 		private PlayerEntity owner;
+		@Nullable
 		private BlockPos bedPos;
 		private int ticksOnBed;
 
@@ -665,7 +667,7 @@ public class CatEntity extends TameableEntity {
 				this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
 				if (this.cat.squaredDistanceTo(this.owner) < 2.5) {
 					this.ticksOnBed++;
-					if (this.ticksOnBed > 16) {
+					if (this.ticksOnBed > this.getTickCount(16)) {
 						this.cat.setInSleepingPose(true);
 						this.cat.setHeadDown(false);
 					} else {
@@ -692,9 +694,9 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void tick() {
 			super.tick();
-			if (this.player == null && this.mob.getRandom().nextInt(600) == 0) {
+			if (this.player == null && this.mob.getRandom().nextInt(this.getTickCount(600)) == 0) {
 				this.player = this.closestPlayer;
-			} else if (this.mob.getRandom().nextInt(500) == 0) {
+			} else if (this.mob.getRandom().nextInt(this.getTickCount(500)) == 0) {
 				this.player = null;
 			}
 		}

@@ -5,6 +5,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class HoverPhase extends AbstractPhase {
+	@Nullable
 	private Vec3d target;
 
 	public HoverPhase(EnderDragonEntity enderDragonEntity) {

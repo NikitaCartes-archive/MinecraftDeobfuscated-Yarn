@@ -3,6 +3,7 @@ package net.minecraft.client.sound;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Optional;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -30,6 +31,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 	private Optional<BiomeMoodSound> moodSound = Optional.empty();
 	private Optional<BiomeAdditionsSound> additionsSound = Optional.empty();
 	private float moodPercentage;
+	@Nullable
 	private Biome activeBiome;
 
 	public BiomeEffectSoundPlayer(ClientPlayerEntity player, SoundManager soundManager, BiomeAccess biomeAccess) {

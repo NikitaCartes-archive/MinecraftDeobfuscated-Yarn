@@ -2,10 +2,10 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 
 public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	public DefaultSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
@@ -14,7 +14,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 
 	public void generate(
 		Random random,
-		class_6557 arg,
+		BlockColumn blockColumn,
 		Biome biome,
 		int i,
 		int j,
@@ -29,7 +29,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 	) {
 		this.generate(
 			random,
-			arg,
+			blockColumn,
 			biome,
 			i,
 			j,
@@ -47,9 +47,9 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 
 	protected void generate(
 		Random random,
-		class_6557 arg,
+		BlockColumn column,
 		Biome biome,
-		int z,
+		int x,
 		int z,
 		int height,
 		double noise,
@@ -67,7 +67,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		int k = -1;
 
 		for (int l = height; l >= i; l--) {
-			BlockState blockState2 = arg.getState(l);
+			BlockState blockState2 = column.getState(l);
 			if (blockState2.isAir()) {
 				k = -1;
 				seaLevel = Integer.MIN_VALUE;
@@ -91,10 +91,10 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 					blockState3 = underwaterBlock;
 				}
 
-				arg.method_38092(l, method_38463(blockState3, arg, l, seaLevel));
+				column.setState(l, method_38463(blockState3, column, l, seaLevel));
 			} else if (k > 0) {
 				k--;
-				arg.method_38092(l, method_38463(blockState, arg, l, seaLevel));
+				column.setState(l, method_38463(blockState, column, l, seaLevel));
 				if (k == 0 && blockState.isOf(Blocks.SAND) && j > 1) {
 					k = random.nextInt(4) + Math.max(0, l - seaLevel);
 					blockState = blockState.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
@@ -103,7 +103,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		}
 	}
 
-	private static BlockState method_38463(BlockState state, class_6557 chunk, int i, int j) {
+	private static BlockState method_38463(BlockState state, BlockColumn chunk, int i, int j) {
 		if (i <= j && state.isOf(Blocks.GRASS_BLOCK)) {
 			return Blocks.DIRT.getDefaultState();
 		} else if (state.isOf(Blocks.SAND) && isAboveAirOrFluid(chunk, i)) {
@@ -115,7 +115,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		}
 	}
 
-	private static boolean isAboveAirOrFluid(class_6557 chunk, int i) {
+	private static boolean isAboveAirOrFluid(BlockColumn chunk, int i) {
 		BlockState blockState = chunk.getState(i - 1);
 		return blockState.isAir() || !blockState.getFluidState().isEmpty();
 	}

@@ -75,6 +75,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private final List<Drawable> drawables = Lists.<Drawable>newArrayList();
 	public boolean passEvents;
 	public TextRenderer textRenderer;
+	@Nullable
 	private URI clickedLink;
 	private static final long SCREEN_INIT_NARRATION_DELAY = TimeUnit.SECONDS.toMillis(2L);
 	private static final long NARRATOR_MODE_CHANGE_DELAY = SCREEN_INIT_NARRATION_DELAY;
@@ -263,7 +264,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 			for (int t = 0; t < components.size(); t++) {
 				TooltipComponent tooltipComponent2 = (TooltipComponent)components.get(t);
-				tooltipComponent2.drawItems(this.textRenderer, l, s, matrices, this.itemRenderer, 400, this.client.getTextureManager());
+				tooltipComponent2.drawItems(this.textRenderer, l, s, matrices, this.itemRenderer, 400);
 				s += tooltipComponent2.getHeight() + (t == 0 ? 2 : 0);
 			}
 

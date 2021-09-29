@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.Set;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -31,6 +32,7 @@ import net.minecraft.util.math.intprovider.ClampedIntProvider;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.math.intprovider.WeightedListIntProvider;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
@@ -39,6 +41,7 @@ import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.decorator.BlockFilterDecoratorConfig;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
 import net.minecraft.world.gen.decorator.CaveSurfaceDecoratorConfig;
@@ -49,6 +52,7 @@ import net.minecraft.world.gen.decorator.CountNoiseBiasedDecoratorConfig;
 import net.minecraft.world.gen.decorator.CountNoiseDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
+import net.minecraft.world.gen.decorator.EnvironmentScanDecoratorConfig;
 import net.minecraft.world.gen.decorator.HeightmapDecoratorConfig;
 import net.minecraft.world.gen.decorator.NopeDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
@@ -69,9 +73,6 @@ import net.minecraft.world.gen.foliage.SpruceFoliagePlacer;
 import net.minecraft.world.gen.heightprovider.BiasedToBottomHeightProvider;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 import net.minecraft.world.gen.heightprovider.VeryBiasedToBottomHeightProvider;
-import net.minecraft.world.gen.placer.ColumnPlacer;
-import net.minecraft.world.gen.placer.DoublePlantPlacer;
-import net.minecraft.world.gen.placer.SimpleBlockPlacer;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.DualNoiseBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.NoiseBlockStateProvider;
@@ -255,13 +256,18 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> SEAGRASS_SIMPLE = register(
 		"seagrass_simple",
 		Feature.SIMPLE_BLOCK
-			.configure(
-				new SimpleBlockFeatureConfig(
-					BlockStateProvider.of(Blocks.SEAGRASS),
-					ImmutableList.of(Blocks.STONE.getDefaultState()),
-					ImmutableList.of(Blocks.WATER.getDefaultState()),
-					ImmutableList.of(Blocks.WATER.getDefaultState())
-				)
+			.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.SEAGRASS)))
+			.decorate(
+				Decorator.BLOCK_FILTER
+					.configure(
+						new BlockFilterDecoratorConfig(
+							BlockPredicate.allOf(
+								BlockPredicate.matchingBlock(Blocks.STONE, new BlockPos(0, -1, 0)),
+								BlockPredicate.matchingBlock(Blocks.WATER, BlockPos.ORIGIN),
+								BlockPredicate.matchingBlock(Blocks.WATER, new BlockPos(0, 1, 0))
+							)
+						)
+					)
 			)
 			.applyChance(10)
 			.decorate(Decorator.CARVING_MASK.configure(new CarvingMaskDecoratorConfig(GenerationStep.Carver.LIQUID)))
@@ -300,7 +306,7 @@ public class ConfiguredFeatures {
 		"blue_ice", Feature.BLUE_ICE.configure(FeatureConfig.DEFAULT).uniformRange(YOffset.fixed(30), YOffset.fixed(61)).spreadHorizontally().repeatRandomly(19)
 	);
 	public static final ConfiguredFeature<?, ?> BAMBOO_LIGHT = register(
-		"bamboo_light", Feature.BAMBOO.configure(new ProbabilityConfig(0.0F)).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(16)
+		"bamboo_light", Feature.BAMBOO.configure(new ProbabilityConfig(0.0F)).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(4)
 	);
 	public static final ConfiguredFeature<?, ?> BAMBOO = register(
 		"bamboo",
@@ -512,63 +518,42 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> PATCH_FIRE = register(
 		"patch_fire",
 		Feature.RANDOM_PATCH
-			.configure(
-				new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.FIRE), SimpleBlockPlacer.INSTANCE)
-					.tries(64)
-					.whitelist(ImmutableSet.of(Blocks.NETHERRACK))
-					.cannotProject()
-					.build()
-			)
+			.configure(method_38947(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.FIRE))), Set.of(Blocks.NETHERRACK)))
 			.decorate(ConfiguredFeatures.Decorators.FIRE)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_SOUL_FIRE = register(
 		"patch_soul_fire",
 		Feature.RANDOM_PATCH
-			.configure(
-				new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.SOUL_FIRE), new SimpleBlockPlacer())
-					.tries(64)
-					.whitelist(ImmutableSet.of(Blocks.SOUL_SOIL))
-					.cannotProject()
-					.build()
-			)
+			.configure(method_38947(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.SOUL_FIRE))), Set.of(Blocks.SOUL_SOIL)))
 			.decorate(ConfiguredFeatures.Decorators.FIRE)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_BROWN_MUSHROOM = register(
 		"patch_brown_mushroom",
-		Feature.RANDOM_PATCH
-			.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.BROWN_MUSHROOM), SimpleBlockPlacer.INSTANCE).tries(64).cannotProject().build())
+		Feature.RANDOM_PATCH.configure(method_38946(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.BROWN_MUSHROOM)))))
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_RED_MUSHROOM = register(
 		"patch_red_mushroom",
-		Feature.RANDOM_PATCH
-			.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.RED_MUSHROOM), SimpleBlockPlacer.INSTANCE).tries(64).cannotProject().build())
+		Feature.RANDOM_PATCH.configure(method_38946(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.RED_MUSHROOM)))))
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_CRIMSON_ROOTS = register(
 		"patch_crimson_roots",
 		Feature.RANDOM_PATCH
-			.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.CRIMSON_ROOTS), new SimpleBlockPlacer()).tries(64).cannotProject().build())
+			.configure(method_38946(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.CRIMSON_ROOTS)))))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_TOP)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_SUNFLOWER = register(
 		"patch_sunflower",
 		Feature.RANDOM_PATCH
-			.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.SUNFLOWER), new DoublePlantPlacer()).tries(64).cannotProject().build())
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.configure(method_38946(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.SUNFLOWER)))))
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.repeat(10)
+			.applyChance(3)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_PUMPKIN = register(
 		"patch_pumpkin",
 		Feature.RANDOM_PATCH
-			.configure(
-				new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.PUMPKIN), SimpleBlockPlacer.INSTANCE)
-					.tries(64)
-					.whitelist(ImmutableSet.of(Blocks.GRASS_BLOCK))
-					.cannotProject()
-					.build()
-			)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
-			.applyChance(32)
+			.configure(method_38947(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.PUMPKIN))), Set.of(Blocks.GRASS_BLOCK)))
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.applyChance(2048)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_TAIGA_GRASS = register(
 		"patch_taiga_grass", Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.TAIGA_GRASS_CONFIG)
@@ -580,149 +565,181 @@ public class ConfiguredFeatures {
 		"patch_grass_plain",
 		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.GRASS_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
 			.decorate(Decorator.COUNT_NOISE.configure(new CountNoiseDecoratorConfig(-0.8, 5, 10)))
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_GRASS_FOREST = register(
 		"patch_grass_forest",
-		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(2)
+		Feature.RANDOM_PATCH
+			.configure(ConfiguredFeatures.Configs.GRASS_CONFIG)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
+			.repeat(2)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_GRASS_BADLANDS = register(
 		"patch_grass_badlands",
-		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE).spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_GRASS_SAVANNA = register(
 		"patch_grass_savanna",
-		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(20)
+		Feature.RANDOM_PATCH
+			.configure(ConfiguredFeatures.Configs.GRASS_CONFIG)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
+			.repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_GRASS_NORMAL = register(
 		"patch_grass_normal",
-		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(5)
+		Feature.RANDOM_PATCH
+			.configure(ConfiguredFeatures.Configs.GRASS_CONFIG)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
+			.repeat(5)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_GRASS_TAIGA_2 = register(
 		"patch_grass_taiga_2",
-		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.TAIGA_GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+		Feature.RANDOM_PATCH
+			.configure(ConfiguredFeatures.Configs.TAIGA_GRASS_CONFIG)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_GRASS_TAIGA = register(
 		"patch_grass_taiga",
 		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.TAIGA_GRASS_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
 			.repeat(7)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_GRASS_JUNGLE = register(
 		"patch_grass_jungle",
 		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.LUSH_GRASS_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
 			.repeat(25)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_DEAD_BUSH_2 = register(
 		"patch_dead_bush_2",
-		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(2)
+		Feature.RANDOM_PATCH
+			.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
+			.repeat(2)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_DEAD_BUSH = register(
 		"patch_dead_bush",
-		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+		Feature.RANDOM_PATCH
+			.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_DEAD_BUSH_BADLANDS = register(
 		"patch_dead_bush_badlands",
-		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(20)
+		Feature.RANDOM_PATCH
+			.configure(ConfiguredFeatures.Configs.DEAD_BUSH_CONFIG)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
+			.repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_MELON = register(
 		"patch_melon",
 		Feature.RANDOM_PATCH
 			.configure(
-				new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.MELON), SimpleBlockPlacer.INSTANCE)
-					.tries(64)
-					.whitelist(ImmutableSet.of(Blocks.GRASS_BLOCK))
-					.canReplace()
-					.cannotProject()
-					.build()
+				new RandomPatchFeatureConfig(
+					64,
+					7,
+					3,
+					Set.of(Blocks.GRASS_BLOCK),
+					Set.of(),
+					false,
+					() -> Feature.SIMPLE_BLOCK
+							.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.MELON)))
+							.decorate(Decorator.BLOCK_FILTER.configure(new BlockFilterDecoratorConfig(BlockPredicate.replaceable())))
+				)
 			)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.applyChance(64)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_BERRY_SPARSE = register(
-		"patch_berry_sparse", PATCH_BERRY_BUSH.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+		"patch_berry_sparse", PATCH_BERRY_BUSH.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE).spreadHorizontally()
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_BERRY_DECORATED = register(
-		"patch_berry_decorated", PATCH_BERRY_BUSH.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(12)
+		"patch_berry_decorated", PATCH_BERRY_BUSH.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE).spreadHorizontally().applyChance(12)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_WATERLILLY = register(
 		"patch_waterlilly",
 		Feature.RANDOM_PATCH
-			.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.LILY_PAD), SimpleBlockPlacer.INSTANCE).tries(10).build())
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+			.configure(
+				new RandomPatchFeatureConfig(
+					10,
+					7,
+					3,
+					Set.of(),
+					Set.of(),
+					false,
+					() -> Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.LILY_PAD))).method_38872()
+				)
+			)
+			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP_WORLD_SURFACE)
+			.spreadHorizontally()
 			.repeat(4)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_TALL_GRASS_2 = register(
 		"patch_tall_grass_2",
 		Feature.RANDOM_PATCH
 			.configure(ConfiguredFeatures.Configs.TALL_GRASS_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
 			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP)
 			.spreadHorizontally()
+			.applyChance(32)
 			.decorate(Decorator.COUNT_NOISE.configure(new CountNoiseDecoratorConfig(-0.8, 0, 7)))
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_TALL_GRASS = register(
 		"patch_tall_grass",
-		Feature.RANDOM_PATCH
-			.configure(ConfiguredFeatures.Configs.TALL_GRASS_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.repeat(7)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.TALL_GRASS_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(5)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_LARGE_FERN = register(
 		"patch_large_fern",
 		Feature.RANDOM_PATCH
-			.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.LARGE_FERN), new DoublePlantPlacer()).tries(64).cannotProject().build())
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.configure(method_38946(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.LARGE_FERN)))))
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.repeat(7)
+			.applyChance(5)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_CACTUS = register(
 		"patch_cactus",
 		Feature.RANDOM_PATCH
 			.configure(
-				new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.CACTUS), new ColumnPlacer(BiasedToBottomIntProvider.create(1, 3)))
-					.tries(10)
-					.cannotProject()
-					.build()
+				method_38948(
+					Feature.BLOCK_COLUMN
+						.configure(BlockColumnFeatureConfig.create(BiasedToBottomIntProvider.create(1, 3), BlockStateProvider.of(Blocks.CACTUS)))
+						.method_38670(Blocks.CACTUS),
+					Set.of(),
+					10
+				)
 			)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_CACTUS_DESERT = register(
-		"patch_cactus_desert", PATCH_CACTUS.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(10)
+		"patch_cactus_desert", PATCH_CACTUS.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(6)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_CACTUS_DECORATED = register(
-		"patch_cactus_decorated", PATCH_CACTUS.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).repeat(5)
+		"patch_cactus_decorated", PATCH_CACTUS.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(13)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_SUGAR_CANE_SWAMP = register(
 		"patch_sugar_cane_swamp",
-		Feature.RANDOM_PATCH
-			.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
-			.repeat(20)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(3)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_SUGAR_CANE_DESERT = register(
 		"patch_sugar_cane_desert",
-		Feature.RANDOM_PATCH
-			.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
-			.repeat(60)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_SUGAR_CANE_BADLANDS = register(
 		"patch_sugar_cane_badlands",
-		Feature.RANDOM_PATCH
-			.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
-			.repeat(13)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(5)
 	);
 	public static final ConfiguredFeature<?, ?> PATCH_SUGAR_CANE = register(
 		"patch_sugar_cane",
-		Feature.RANDOM_PATCH
-			.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
-			.repeat(10)
+		Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.SUGAR_CANE_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(6)
 	);
 	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_NETHER = register(
 		"brown_mushroom_nether", PATCH_BROWN_MUSHROOM.range(ConfiguredFeatures.Decorators.BOTTOM_TO_TOP).applyChance(2)
@@ -731,16 +748,16 @@ public class ConfiguredFeatures {
 		"red_mushroom_nether", PATCH_RED_MUSHROOM.range(ConfiguredFeatures.Decorators.BOTTOM_TO_TOP).applyChance(2)
 	);
 	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_NORMAL = register(
-		"brown_mushroom_normal", PATCH_BROWN_MUSHROOM.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(4)
+		"brown_mushroom_normal", PATCH_BROWN_MUSHROOM.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(256)
 	);
 	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_NORMAL = register(
-		"red_mushroom_normal", PATCH_RED_MUSHROOM.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE).applyChance(8)
+		"red_mushroom_normal", PATCH_RED_MUSHROOM.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(512)
 	);
 	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_TAIGA = register(
 		"brown_mushroom_taiga", PATCH_BROWN_MUSHROOM.applyChance(4).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 	);
 	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_TAIGA = register(
-		"red_mushroom_taiga", PATCH_RED_MUSHROOM.applyChance(8).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_SPREAD_DOUBLE)
+		"red_mushroom_taiga", PATCH_RED_MUSHROOM.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(512)
 	);
 	public static final ConfiguredFeature<?, ?> BROWN_MUSHROOM_GIANT = register("brown_mushroom_giant", BROWN_MUSHROOM_TAIGA.repeat(3));
 	public static final ConfiguredFeature<?, ?> RED_MUSHROOM_GIANT = register("red_mushroom_giant", RED_MUSHROOM_TAIGA.repeat(3));
@@ -852,9 +869,9 @@ public class ConfiguredFeatures {
 		"ore_dirt",
 		Feature.ORE
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, Blocks.DIRT.getDefaultState(), 33))
-			.uniformRange(YOffset.fixed(0), YOffset.getTop())
+			.uniformRange(YOffset.fixed(0), YOffset.fixed(160))
 			.spreadHorizontally()
-			.repeat(15)
+			.repeat(7)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_GRAVEL = register(
 		"ore_gravel",
@@ -1194,12 +1211,14 @@ public class ConfiguredFeatures {
 			)
 	);
 	public static final ConfiguredFeature<?, ?> SPRUCE_CHECKED = register("spruce_checked", SPRUCE.method_38670(Blocks.SPRUCE_SAPLING));
-	public static final ConfiguredFeature<?, ?> SPRUCE_ON_SNOW = register(
-		"spruce_on_snow",
-		SPRUCE.decorate(
-			Decorator.BLOCK_FILTER.configure(new BlockFilterDecoratorConfig(List.of(Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW), List.of(), new BlockPos(0, -1, 0)))
-		)
-	);
+	public static final BlockPredicate field_35097 = BlockPredicate.matchingBlocks(List.of(Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW), new BlockPos(0, -1, 0));
+	public static final ConfiguredDecorator<?> field_35098 = Decorator.BLOCK_FILTER
+		.configure(new BlockFilterDecoratorConfig(field_35097))
+		.decorate(
+			Decorator.ENVIRONMENT_SCAN
+				.configure(new EnvironmentScanDecoratorConfig(Direction.UP, BlockPredicate.not(BlockPredicate.matchingBlock(Blocks.POWDER_SNOW, BlockPos.ORIGIN)), 8))
+		);
+	public static final ConfiguredFeature<?, ?> SPRUCE_ON_SNOW = register("spruce_on_snow", SPRUCE.decorate(field_35098));
 	public static final ConfiguredFeature<TreeFeatureConfig, ?> PINE = register(
 		"pine",
 		Feature.TREE
@@ -1216,12 +1235,7 @@ public class ConfiguredFeatures {
 			)
 	);
 	public static final ConfiguredFeature<?, ?> PINE_CHECKED = register("pine_checked", PINE.method_38670(Blocks.SPRUCE_SAPLING));
-	public static final ConfiguredFeature<?, ?> PINE_ON_SNOW = register(
-		"pine_on_snow",
-		PINE.decorate(
-			Decorator.BLOCK_FILTER.configure(new BlockFilterDecoratorConfig(List.of(Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW), List.of(), new BlockPos(0, -1, 0)))
-		)
-	);
+	public static final ConfiguredFeature<?, ?> PINE_ON_SNOW = register("pine_on_snow", PINE.decorate(field_35098));
 	public static final ConfiguredFeature<?, ?> JUNGLE_TREE = register(
 		"jungle_tree",
 		Feature.TREE
@@ -1292,8 +1306,8 @@ public class ConfiguredFeatures {
 			.configure(method_38749().decorators(ImmutableList.of(ConfiguredFeatures.Decorators.VERY_RARE_BEEHIVES_TREES)).build())
 			.method_38670(Blocks.BIRCH_SAPLING)
 	);
-	public static final ConfiguredFeature<?, ?> SUPER_BIRCH_BEES_05 = register(
-		"super_birch_bees_05",
+	public static final ConfiguredFeature<?, ?> SUPER_BIRCH_BEES = register(
+		"super_birch_bees",
 		Feature.TREE
 			.configure(method_38749().decorators(ImmutableList.of(ConfiguredFeatures.Decorators.HALF_BEEHIVES_TREES)).build())
 			.method_38670(Blocks.BIRCH_SAPLING)
@@ -1368,156 +1382,180 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<TreeFeatureConfig, ?> FANCY_OAK_BEES_005 = register(
 		"fancy_oak_bees_005", Feature.TREE.configure(method_38751().decorators(List.of(ConfiguredFeatures.Decorators.MORE_BEEHIVES_TREES)).build())
 	);
-	public static final ConfiguredFeature<?, ?> FANCY_OAK_BEES_05 = register(
-		"fancy_oak_bees_05",
+	public static final ConfiguredFeature<?, ?> FANCY_OAK_BEES = register(
+		"fancy_oak_bees",
 		Feature.TREE.configure(method_38751().decorators(List.of(ConfiguredFeatures.Decorators.HALF_BEEHIVES_TREES)).build()).method_38670(Blocks.OAK_SAPLING)
 	);
 	public static final ConfiguredFeature<?, ?> FLOWER_WARM = register(
 		"flower_warm",
-		Feature.FLOWER
-			.configure(ConfiguredFeatures.Configs.DEFAULT_FLOWER_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.repeat(4)
+		Feature.FLOWER.configure(ConfiguredFeatures.Configs.DEFAULT_FLOWER_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(16)
 	);
 	public static final ConfiguredFeature<?, ?> FLOWER_DEFAULT = register(
 		"flower_default",
-		Feature.FLOWER
-			.configure(ConfiguredFeatures.Configs.DEFAULT_FLOWER_CONFIG)
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.repeat(2)
+		Feature.FLOWER.configure(ConfiguredFeatures.Configs.DEFAULT_FLOWER_CONFIG).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(32)
 	);
 	public static final ConfiguredFeature<?, ?> FLOWER_FOREST = register(
 		"flower_forest",
 		Feature.FLOWER
 			.configure(
-				new RandomPatchFeatureConfig.Builder(
-						new NoiseBlockStateProvider(
-							2345L,
-							new DoublePerlinNoiseSampler.NoiseParameters(0, 1.0),
-							0.020833334F,
-							ImmutableList.of(
-								Blocks.DANDELION.getDefaultState(),
-								Blocks.POPPY.getDefaultState(),
-								Blocks.ALLIUM.getDefaultState(),
-								Blocks.AZURE_BLUET.getDefaultState(),
-								Blocks.RED_TULIP.getDefaultState(),
-								Blocks.ORANGE_TULIP.getDefaultState(),
-								Blocks.WHITE_TULIP.getDefaultState(),
-								Blocks.PINK_TULIP.getDefaultState(),
-								Blocks.OXEYE_DAISY.getDefaultState(),
-								Blocks.CORNFLOWER.getDefaultState(),
-								Blocks.LILY_OF_THE_VALLEY.getDefaultState()
+				new RandomPatchFeatureConfig(
+					96,
+					6,
+					2,
+					Set.of(),
+					Set.of(),
+					true,
+					() -> Feature.SIMPLE_BLOCK
+							.configure(
+								new SimpleBlockFeatureConfig(
+									new NoiseBlockStateProvider(
+										2345L,
+										new DoublePerlinNoiseSampler.NoiseParameters(0, 1.0),
+										0.020833334F,
+										List.of(
+											Blocks.DANDELION.getDefaultState(),
+											Blocks.POPPY.getDefaultState(),
+											Blocks.ALLIUM.getDefaultState(),
+											Blocks.AZURE_BLUET.getDefaultState(),
+											Blocks.RED_TULIP.getDefaultState(),
+											Blocks.ORANGE_TULIP.getDefaultState(),
+											Blocks.WHITE_TULIP.getDefaultState(),
+											Blocks.PINK_TULIP.getDefaultState(),
+											Blocks.OXEYE_DAISY.getDefaultState(),
+											Blocks.CORNFLOWER.getDefaultState(),
+											Blocks.LILY_OF_THE_VALLEY.getDefaultState()
+										)
+									)
+								)
 							)
-						),
-						SimpleBlockPlacer.INSTANCE
-					)
-					.tries(64)
-					.build()
+							.method_38872()
+				)
 			)
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.repeat(100)
+			.applyChance(2)
+			.repeat(3)
 	);
 	public static final ConfiguredFeature<?, ?> FLOWER_SWAMP = register(
 		"flower_swamp",
 		Feature.FLOWER
-			.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.BLUE_ORCHID), SimpleBlockPlacer.INSTANCE).tries(64).build())
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
+			.configure(
+				new RandomPatchFeatureConfig(
+					6,
+					6,
+					2,
+					Set.of(),
+					Set.of(),
+					true,
+					() -> Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.BLUE_ORCHID))).method_38872()
+				)
+			)
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.applyChance(32)
 	);
 	public static final ConfiguredFeature<?, ?> FLOWER_PLAIN = register(
 		"flower_plain",
 		Feature.FLOWER
 			.configure(
-				new RandomPatchFeatureConfig.Builder(
-						new NoiseThresholdBlockStateProvider(
-							2345L,
-							new DoublePerlinNoiseSampler.NoiseParameters(0, 1.0),
-							0.005F,
-							-0.8F,
-							0.33333334F,
-							Blocks.DANDELION.getDefaultState(),
-							ImmutableList.of(
-								Blocks.ORANGE_TULIP.getDefaultState(), Blocks.RED_TULIP.getDefaultState(), Blocks.PINK_TULIP.getDefaultState(), Blocks.WHITE_TULIP.getDefaultState()
-							),
-							ImmutableList.of(
-								Blocks.POPPY.getDefaultState(), Blocks.AZURE_BLUET.getDefaultState(), Blocks.OXEYE_DAISY.getDefaultState(), Blocks.CORNFLOWER.getDefaultState()
+				new RandomPatchFeatureConfig(
+					64,
+					6,
+					2,
+					Set.of(),
+					Set.of(),
+					true,
+					() -> Feature.SIMPLE_BLOCK
+							.configure(
+								new SimpleBlockFeatureConfig(
+									new NoiseThresholdBlockStateProvider(
+										2345L,
+										new DoublePerlinNoiseSampler.NoiseParameters(0, 1.0),
+										0.005F,
+										-0.8F,
+										0.33333334F,
+										Blocks.DANDELION.getDefaultState(),
+										ImmutableList.of(
+											Blocks.ORANGE_TULIP.getDefaultState(), Blocks.RED_TULIP.getDefaultState(), Blocks.PINK_TULIP.getDefaultState(), Blocks.WHITE_TULIP.getDefaultState()
+										),
+										ImmutableList.of(
+											Blocks.POPPY.getDefaultState(), Blocks.AZURE_BLUET.getDefaultState(), Blocks.OXEYE_DAISY.getDefaultState(), Blocks.CORNFLOWER.getDefaultState()
+										)
+									)
+								)
 							)
-						),
-						SimpleBlockPlacer.INSTANCE
-					)
-					.tries(64)
-					.build()
+							.method_38872()
+				)
 			)
 	);
 	public static final ConfiguredFeature<?, ?> FLOWER_PLAIN_DECORATED = register(
 		"flower_plain_decorated",
-		FLOWER_PLAIN.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
-			.decorate(ConfiguredFeatures.Decorators.HEIGHTMAP)
-			.spreadHorizontally()
+		FLOWER_PLAIN.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.applyChance(32)
 			.decorate(Decorator.COUNT_NOISE.configure(new CountNoiseDecoratorConfig(-0.8, 15, 4)))
 	);
 	public static final ConfiguredFeature<?, ?> FLOWER_MEADOW = register(
 		"flower_meadow",
 		Feature.FLOWER
 			.configure(
-				new RandomPatchFeatureConfig.Builder(
-						new DualNoiseBlockStateProvider(
-							new Range(1, 3),
-							new DoublePerlinNoiseSampler.NoiseParameters(-10, 1.0),
-							1.0F,
-							2345L,
-							new DoublePerlinNoiseSampler.NoiseParameters(-3, 1.0),
-							1.0F,
-							ImmutableList.of(
-								Blocks.TALL_GRASS.getDefaultState(),
-								Blocks.ALLIUM.getDefaultState(),
-								Blocks.POPPY.getDefaultState(),
-								Blocks.AZURE_BLUET.getDefaultState(),
-								Blocks.DANDELION.getDefaultState(),
-								Blocks.CORNFLOWER.getDefaultState(),
-								Blocks.OXEYE_DAISY.getDefaultState(),
-								Blocks.GRASS.getDefaultState()
+				new RandomPatchFeatureConfig(
+					96,
+					6,
+					2,
+					Set.of(),
+					Set.of(),
+					true,
+					() -> Feature.SIMPLE_BLOCK
+							.configure(
+								new SimpleBlockFeatureConfig(
+									new DualNoiseBlockStateProvider(
+										new Range(1, 3),
+										new DoublePerlinNoiseSampler.NoiseParameters(-10, 1.0),
+										1.0F,
+										2345L,
+										new DoublePerlinNoiseSampler.NoiseParameters(-3, 1.0),
+										1.0F,
+										ImmutableList.of(
+											Blocks.TALL_GRASS.getDefaultState(),
+											Blocks.ALLIUM.getDefaultState(),
+											Blocks.POPPY.getDefaultState(),
+											Blocks.AZURE_BLUET.getDefaultState(),
+											Blocks.DANDELION.getDefaultState(),
+											Blocks.CORNFLOWER.getDefaultState(),
+											Blocks.OXEYE_DAISY.getDefaultState(),
+											Blocks.GRASS.getDefaultState()
+										)
+									)
+								)
 							)
-						),
-						SimpleBlockPlacer.INSTANCE
-					)
-					.tries(64)
-					.build()
+							.method_38872()
+				)
 			)
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.repeat(64)
 	);
+	public static final ConfiguredFeature<?, ?> field_35099 = Feature.SIMPLE_BLOCK
+		.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.GRASS.getDefaultState())))
+		.method_38872();
 	private static final ImmutableList<Supplier<ConfiguredFeature<?, ?>>> FOREST_FLOWER_VEGETATION_CONFIGS = ImmutableList.of(
-		() -> Feature.RANDOM_PATCH
-				.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.LILAC), new DoublePlantPlacer()).tries(64).cannotProject().build()),
-		() -> Feature.RANDOM_PATCH
-				.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.ROSE_BUSH), new DoublePlantPlacer()).tries(64).cannotProject().build()),
-		() -> Feature.RANDOM_PATCH
-				.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.PEONY), new DoublePlantPlacer()).tries(64).cannotProject().build()),
+		() -> Feature.RANDOM_PATCH.configure(method_38946(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.LILAC))))),
+		() -> Feature.RANDOM_PATCH.configure(method_38946(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.ROSE_BUSH))))),
+		() -> Feature.RANDOM_PATCH.configure(method_38946(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.PEONY))))),
 		() -> Feature.NO_BONEMEAL_FLOWER
-				.configure(new RandomPatchFeatureConfig.Builder(BlockStateProvider.of(Blocks.LILY_OF_THE_VALLEY), SimpleBlockPlacer.INSTANCE).tries(64).build())
+				.configure(method_38946(Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.LILY_OF_THE_VALLEY)))))
 	);
 	public static final ConfiguredFeature<?, ?> FOREST_FLOWER_VEGETATION_COMMON = register(
 		"forest_flower_vegetation_common",
 		Feature.SIMPLE_RANDOM_SELECTOR
 			.configure(new SimpleRandomFeatureConfig(FOREST_FLOWER_VEGETATION_CONFIGS))
 			.repeat(ClampedIntProvider.create(UniformIntProvider.create(-1, 3), 0, 3))
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.repeat(5)
+			.applyChance(7)
 	);
 	public static final ConfiguredFeature<?, ?> FOREST_FLOWER_VEGETATION = register(
 		"forest_flower_vegetation",
 		Feature.SIMPLE_RANDOM_SELECTOR
 			.configure(new SimpleRandomFeatureConfig(FOREST_FLOWER_VEGETATION_CONFIGS))
 			.repeat(ClampedIntProvider.create(UniformIntProvider.create(-3, 1), 0, 1))
-			.decorate(ConfiguredFeatures.Decorators.SPREAD_32_ABOVE)
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.repeat(5)
+			.applyChance(7)
 	);
 	public static final ConfiguredFeature<?, ?> DARK_FOREST_VEGETATION_BROWN = register(
 		"dark_forest_vegetation_brown",
@@ -1579,7 +1617,7 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> MEADOW_TREES = register(
 		"meadow_trees",
 		Feature.RANDOM_SELECTOR
-			.configure(new RandomFeatureConfig(ImmutableList.of(FANCY_OAK_BEES_05.withChance(0.5F)), SUPER_BIRCH_BEES_05))
+			.configure(new RandomFeatureConfig(ImmutableList.of(FANCY_OAK_BEES.withChance(0.5F)), SUPER_BIRCH_BEES))
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_OCEAN_FLOOR_NO_WATER)
 			.applyChance(100)
 	);
@@ -1594,7 +1632,7 @@ public class ConfiguredFeatures {
 		"grove_vegetation",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(PINE_ON_SNOW.withChance(0.33333334F)), SPRUCE_ON_SNOW))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP_OCEAN_FLOOR_NO_WATER)
+			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_BADLANDS = register(
@@ -1763,35 +1801,47 @@ public class ConfiguredFeatures {
 			pool().add(Blocks.CAVE_VINES.getDefaultState(), 4).add(Blocks.CAVE_VINES.getDefaultState().with(CaveVines.BERRIES, Boolean.valueOf(true)), 1)
 		),
 		CaveVinesHeadBlock.AGE,
-		UniformIntProvider.create(17, 25)
+		UniformIntProvider.create(23, 25)
 	);
-	public static final ConfiguredFeature<GrowingPlantFeatureConfig, ?> CAVE_VINE = register(
+	public static final ConfiguredFeature<BlockColumnFeatureConfig, ?> CAVE_VINE = register(
 		"cave_vine",
-		Feature.GROWING_PLANT
+		Feature.BLOCK_COLUMN
 			.configure(
-				new GrowingPlantFeatureConfig(
-					DataPool.<IntProvider>builder()
-						.add(UniformIntProvider.create(1, 20), 2)
-						.add(UniformIntProvider.create(1, 3), 3)
-						.add(UniformIntProvider.create(1, 7), 10)
-						.build(),
+				new BlockColumnFeatureConfig(
+					List.of(
+						BlockColumnFeatureConfig.createLayer(
+							new WeightedListIntProvider(
+								DataPool.<IntProvider>builder()
+									.add(UniformIntProvider.create(0, 19), 2)
+									.add(UniformIntProvider.create(0, 2), 3)
+									.add(UniformIntProvider.create(0, 6), 10)
+									.build()
+							),
+							RANDOM_BERRIES_CAVE_VINES_BODY_PROVIDER
+						),
+						BlockColumnFeatureConfig.createLayer(ConstantIntProvider.create(1), RANDOM_AGE_CAVE_VINES_HEAD_PROVIDER)
+					),
 					Direction.DOWN,
-					RANDOM_BERRIES_CAVE_VINES_BODY_PROVIDER,
-					RANDOM_AGE_CAVE_VINES_HEAD_PROVIDER,
-					false
+					false,
+					true
 				)
 			)
 	);
-	public static final ConfiguredFeature<GrowingPlantFeatureConfig, ?> CAVE_VINE_IN_MOSS = register(
+	public static final ConfiguredFeature<BlockColumnFeatureConfig, ?> CAVE_VINE_IN_MOSS = register(
 		"cave_vine_in_moss",
-		Feature.GROWING_PLANT
+		Feature.BLOCK_COLUMN
 			.configure(
-				new GrowingPlantFeatureConfig(
-					DataPool.<IntProvider>builder().add(UniformIntProvider.create(1, 4), 5).add(UniformIntProvider.create(2, 8), 1).build(),
+				new BlockColumnFeatureConfig(
+					List.of(
+						BlockColumnFeatureConfig.createLayer(
+							new WeightedListIntProvider(DataPool.<IntProvider>builder().add(UniformIntProvider.create(0, 3), 5).add(UniformIntProvider.create(1, 7), 1).build()),
+							RANDOM_BERRIES_CAVE_VINES_BODY_PROVIDER
+						),
+						BlockColumnFeatureConfig.createLayer(ConstantIntProvider.create(1), RANDOM_AGE_CAVE_VINES_HEAD_PROVIDER)
+					),
 					Direction.DOWN,
-					RANDOM_BERRIES_CAVE_VINES_BODY_PROVIDER,
-					RANDOM_AGE_CAVE_VINES_HEAD_PROVIDER,
-					false
+					false,
+					true
 				)
 			)
 	);
@@ -2002,6 +2052,18 @@ public class ConfiguredFeatures {
 		return DataPool.builder();
 	}
 
+	private static RandomPatchFeatureConfig method_38948(ConfiguredFeature<?, ?> configuredFeature, Set<Block> set, int i) {
+		return new RandomPatchFeatureConfig(i, 7, 3, set, Set.of(), false, () -> configuredFeature.method_38872());
+	}
+
+	static RandomPatchFeatureConfig method_38947(ConfiguredFeature<?, ?> configuredFeature, Set<Block> set) {
+		return method_38948(configuredFeature, set, 96);
+	}
+
+	static RandomPatchFeatureConfig method_38946(ConfiguredFeature<?, ?> configuredFeature) {
+		return method_38948(configuredFeature, Set.of(), 96);
+	}
+
 	private static TreeFeatureConfig.Builder method_38746(Block block, Block block2, int i, int j, int k, int l) {
 		return new TreeFeatureConfig.Builder(
 			BlockStateProvider.of(block),
@@ -2039,14 +2101,21 @@ public class ConfiguredFeatures {
 			.ignoreVines();
 	}
 
-	private static ConfiguredFeature<GrowingPlantFeatureConfig, ?> createBigDripleafFeature(Direction blockDirection) {
-		return Feature.GROWING_PLANT
+	private static ConfiguredFeature<BlockColumnFeatureConfig, ?> createBigDripleafFeature(Direction blockDirection) {
+		return Feature.BLOCK_COLUMN
 			.configure(
-				new GrowingPlantFeatureConfig(
-					DataPool.<IntProvider>builder().add(UniformIntProvider.create(1, 5), 2).add(ConstantIntProvider.create(1), 1).build(),
+				new BlockColumnFeatureConfig(
+					List.of(
+						BlockColumnFeatureConfig.createLayer(
+							new WeightedListIntProvider(DataPool.<IntProvider>builder().add(UniformIntProvider.create(0, 4), 2).add(ConstantIntProvider.create(0), 1).build()),
+							BlockStateProvider.of(Blocks.BIG_DRIPLEAF_STEM.getDefaultState().with(Properties.HORIZONTAL_FACING, blockDirection))
+						),
+						BlockColumnFeatureConfig.createLayer(
+							ConstantIntProvider.create(1), BlockStateProvider.of(Blocks.BIG_DRIPLEAF.getDefaultState().with(Properties.HORIZONTAL_FACING, blockDirection))
+						)
+					),
 					Direction.UP,
-					BlockStateProvider.of(Blocks.BIG_DRIPLEAF_STEM.getDefaultState().with(Properties.HORIZONTAL_FACING, blockDirection)),
-					BlockStateProvider.of(Blocks.BIG_DRIPLEAF.getDefaultState().with(Properties.HORIZONTAL_FACING, blockDirection)),
+					true,
 					true
 				)
 			);
@@ -2071,59 +2140,69 @@ public class ConfiguredFeatures {
 		return Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id, configuredFeature);
 	}
 
+	static RandomPatchFeatureConfig method_38950(BlockStateProvider blockStateProvider, int i) {
+		return new RandomPatchFeatureConfig(
+			i, 7, 3, Set.of(), Set.of(), false, () -> Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(blockStateProvider)).method_38872()
+		);
+	}
+
 	public static final class Configs {
-		public static final RandomPatchFeatureConfig GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-				BlockStateProvider.of(Blocks.GRASS), SimpleBlockPlacer.INSTANCE
-			)
-			.tries(32)
-			.build();
-		public static final RandomPatchFeatureConfig TAIGA_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-				new WeightedBlockStateProvider(ConfiguredFeatures.pool().add(Blocks.GRASS.getDefaultState(), 1).add(Blocks.FERN.getDefaultState(), 4)),
-				SimpleBlockPlacer.INSTANCE
-			)
-			.tries(32)
-			.build();
-		public static final RandomPatchFeatureConfig LUSH_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-				new WeightedBlockStateProvider(ConfiguredFeatures.pool().add(Blocks.GRASS.getDefaultState(), 3).add(Blocks.FERN.getDefaultState(), 1)),
-				SimpleBlockPlacer.INSTANCE
-			)
-			.blacklist(ImmutableSet.of(Blocks.PODZOL.getDefaultState()))
-			.tries(32)
-			.build();
-		public static final RandomPatchFeatureConfig DEFAULT_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-				new WeightedBlockStateProvider(ConfiguredFeatures.pool().add(Blocks.POPPY.getDefaultState(), 2).add(Blocks.DANDELION.getDefaultState(), 1)),
-				SimpleBlockPlacer.INSTANCE
-			)
-			.tries(64)
-			.build();
-		public static final RandomPatchFeatureConfig DEAD_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(
-				BlockStateProvider.of(Blocks.DEAD_BUSH), SimpleBlockPlacer.INSTANCE
-			)
-			.tries(4)
-			.build();
-		public static final RandomPatchFeatureConfig SWEET_BERRY_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(
-				BlockStateProvider.of(Blocks.SWEET_BERRY_BUSH.getDefaultState().with(SweetBerryBushBlock.AGE, Integer.valueOf(3))), SimpleBlockPlacer.INSTANCE
-			)
-			.tries(64)
-			.whitelist(ImmutableSet.of(Blocks.GRASS_BLOCK))
-			.cannotProject()
-			.build();
-		public static final RandomPatchFeatureConfig TALL_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-				BlockStateProvider.of(Blocks.TALL_GRASS), new DoublePlantPlacer()
-			)
-			.tries(64)
-			.cannotProject()
-			.build();
-		public static final RandomPatchFeatureConfig SUGAR_CANE_CONFIG = new RandomPatchFeatureConfig.Builder(
-				BlockStateProvider.of(Blocks.SUGAR_CANE), new ColumnPlacer(BiasedToBottomIntProvider.create(2, 4))
-			)
-			.tries(20)
-			.spreadX(4)
-			.spreadY(0)
-			.spreadZ(4)
-			.cannotProject()
-			.needsWater()
-			.build();
+		public static final RandomPatchFeatureConfig GRASS_CONFIG = ConfiguredFeatures.method_38950(BlockStateProvider.of(Blocks.GRASS), 32);
+		public static final RandomPatchFeatureConfig TAIGA_GRASS_CONFIG = ConfiguredFeatures.method_38950(
+			new WeightedBlockStateProvider(ConfiguredFeatures.pool().add(Blocks.GRASS.getDefaultState(), 1).add(Blocks.FERN.getDefaultState(), 4)), 32
+		);
+		public static final RandomPatchFeatureConfig LUSH_GRASS_CONFIG = new RandomPatchFeatureConfig(
+			32,
+			7,
+			3,
+			Set.of(),
+			Set.of(Blocks.PODZOL.getDefaultState()),
+			false,
+			() -> Feature.SIMPLE_BLOCK
+					.configure(
+						new SimpleBlockFeatureConfig(
+							new WeightedBlockStateProvider(ConfiguredFeatures.pool().add(Blocks.GRASS.getDefaultState(), 3).add(Blocks.FERN.getDefaultState(), 1))
+						)
+					)
+					.method_38872()
+		);
+		public static final RandomPatchFeatureConfig DEFAULT_FLOWER_CONFIG = ConfiguredFeatures.method_38950(
+			new WeightedBlockStateProvider(ConfiguredFeatures.pool().add(Blocks.POPPY.getDefaultState(), 2).add(Blocks.DANDELION.getDefaultState(), 1)), 64
+		);
+		public static final RandomPatchFeatureConfig DEAD_BUSH_CONFIG = ConfiguredFeatures.method_38950(BlockStateProvider.of(Blocks.DEAD_BUSH), 4);
+		public static final RandomPatchFeatureConfig SWEET_BERRY_BUSH_CONFIG = ConfiguredFeatures.method_38947(
+			Feature.SIMPLE_BLOCK
+				.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.SWEET_BERRY_BUSH.getDefaultState().with(SweetBerryBushBlock.AGE, Integer.valueOf(3))))),
+			Set.of(Blocks.GRASS_BLOCK)
+		);
+		public static final RandomPatchFeatureConfig TALL_GRASS_CONFIG = ConfiguredFeatures.method_38946(
+			Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.TALL_GRASS)))
+		);
+		public static final RandomPatchFeatureConfig SUGAR_CANE_CONFIG = new RandomPatchFeatureConfig(
+			20,
+			4,
+			0,
+			Set.of(),
+			Set.of(),
+			false,
+			() -> Feature.BLOCK_COLUMN
+					.configure(BlockColumnFeatureConfig.create(BiasedToBottomIntProvider.create(2, 4), BlockStateProvider.of(Blocks.SUGAR_CANE)))
+					.method_38872()
+					.method_38670(Blocks.SUGAR_CANE)
+					.decorate(
+						Decorator.BLOCK_FILTER
+							.configure(
+								new BlockFilterDecoratorConfig(
+									BlockPredicate.anyOf(
+										BlockPredicate.matchingFluids(List.of(Fluids.WATER, Fluids.FLOWING_WATER), new BlockPos(1, -1, 0)),
+										BlockPredicate.matchingFluids(List.of(Fluids.WATER, Fluids.FLOWING_WATER), new BlockPos(-1, -1, 0)),
+										BlockPredicate.matchingFluids(List.of(Fluids.WATER, Fluids.FLOWING_WATER), new BlockPos(0, -1, 1)),
+										BlockPredicate.matchingFluids(List.of(Fluids.WATER, Fluids.FLOWING_WATER), new BlockPos(0, -1, -1))
+									)
+								)
+							)
+					)
+		);
 		public static final SpringFeatureConfig LAVA_SPRING_CONFIG = new SpringFeatureConfig(
 			Fluids.LAVA.getDefaultState(), true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DEEPSLATE, Blocks.TUFF)
 		);
@@ -2154,7 +2233,7 @@ public class ConfiguredFeatures {
 		public static final BeehiveTreeDecorator VERY_RARE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.002F);
 		public static final BeehiveTreeDecorator REGULAR_BEEHIVES_TREES = new BeehiveTreeDecorator(0.02F);
 		public static final BeehiveTreeDecorator MORE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.05F);
-		public static final BeehiveTreeDecorator HALF_BEEHIVES_TREES = new BeehiveTreeDecorator(0.5F);
+		public static final BeehiveTreeDecorator HALF_BEEHIVES_TREES = new BeehiveTreeDecorator(1.0F);
 		public static final ConfiguredDecorator<HeightmapDecoratorConfig> HEIGHTMAP = Decorator.HEIGHTMAP
 			.configure(new HeightmapDecoratorConfig(Heightmap.Type.MOTION_BLOCKING));
 		public static final ConfiguredDecorator<HeightmapDecoratorConfig> TOP_SOLID_HEIGHTMAP = Decorator.HEIGHTMAP
@@ -2163,8 +2242,6 @@ public class ConfiguredFeatures {
 			.configure(new HeightmapDecoratorConfig(Heightmap.Type.WORLD_SURFACE_WG));
 		public static final ConfiguredDecorator<HeightmapDecoratorConfig> HEIGHTMAP_OCEAN_FLOOR = Decorator.HEIGHTMAP
 			.configure(new HeightmapDecoratorConfig(Heightmap.Type.OCEAN_FLOOR));
-		public static final ConfiguredDecorator<HeightmapDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = Decorator.HEIGHTMAP_SPREAD_DOUBLE
-			.configure(new HeightmapDecoratorConfig(Heightmap.Type.MOTION_BLOCKING));
 		public static final RangeDecoratorConfig BOTTOM_TO_TOP = new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.getTop()));
 		public static final RangeDecoratorConfig BOTTOM_TO_TOP_OFFSET_10 = new RangeDecoratorConfig(
 			UniformHeightProvider.create(YOffset.aboveBottom(10), YOffset.belowTop(10))
@@ -2177,13 +2254,11 @@ public class ConfiguredFeatures {
 		);
 		public static final RangeDecoratorConfig BOTTOM_TO_120 = new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.getBottom(), YOffset.fixed(120)));
 		public static final ConfiguredDecorator<?> FIRE = Decorator.RANGE.configure(BOTTOM_TO_TOP_OFFSET_4).spreadHorizontally().repeatRandomly(5);
-		public static final ConfiguredDecorator<?> SPREAD_32_ABOVE = Decorator.SPREAD_32_ABOVE.configure(NopeDecoratorConfig.INSTANCE);
 		public static final ConfiguredDecorator<?> HEIGHTMAP_OCEAN_FLOOR_NO_WATER = HEIGHTMAP_OCEAN_FLOOR.decorate(
 			Decorator.WATER_DEPTH_THRESHOLD.configure(new WaterDepthThresholdDecoratorConfig(0))
 		);
 		public static final ConfiguredDecorator<?> SQUARE_HEIGHTMAP_OCEAN_FLOOR_NO_WATER = HEIGHTMAP_OCEAN_FLOOR_NO_WATER.spreadHorizontally();
 		public static final ConfiguredDecorator<?> SQUARE_HEIGHTMAP = HEIGHTMAP.spreadHorizontally();
-		public static final ConfiguredDecorator<?> SQUARE_HEIGHTMAP_SPREAD_DOUBLE = HEIGHTMAP_SPREAD_DOUBLE.spreadHorizontally();
 		public static final ConfiguredDecorator<?> SQUARE_TOP_SOLID_HEIGHTMAP = TOP_SOLID_HEIGHTMAP.spreadHorizontally();
 		public static final ConfiguredDecorator<?> DARK_OAK_TREE_HEIGHTMAP = HEIGHTMAP_OCEAN_FLOOR_NO_WATER.decorate(
 			Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT)

@@ -18,25 +18,21 @@ public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
 		SimpleBlockFeatureConfig simpleBlockFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		if ((simpleBlockFeatureConfig.placeOn.isEmpty() || simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState(blockPos.down())))
-			&& (simpleBlockFeatureConfig.placeIn.isEmpty() || simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)))
-			&& (simpleBlockFeatureConfig.placeUnder.isEmpty() || simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up())))) {
-			BlockState blockState = simpleBlockFeatureConfig.toPlace.getBlockState(context.getRandom(), blockPos);
-			if (blockState.canPlaceAt(structureWorldAccess, blockPos)) {
-				if (blockState.getBlock() instanceof TallPlantBlock) {
-					if (!structureWorldAccess.isAir(blockPos.up())) {
-						return false;
-					}
-
-					TallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);
-				} else {
-					structureWorldAccess.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS);
+		BlockState blockState = simpleBlockFeatureConfig.toPlace().getBlockState(context.getRandom(), blockPos);
+		if (blockState.canPlaceAt(structureWorldAccess, blockPos)) {
+			if (blockState.getBlock() instanceof TallPlantBlock) {
+				if (!structureWorldAccess.isAir(blockPos.up())) {
+					return false;
 				}
 
-				return true;
+				TallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);
+			} else {
+				structureWorldAccess.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS);
 			}
-		}
 
-		return false;
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

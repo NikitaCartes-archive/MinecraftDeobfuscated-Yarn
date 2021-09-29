@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.SharedConstants;
+import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
@@ -38,6 +39,7 @@ import net.minecraft.datafixer.fix.CatTypeFix;
 import net.minecraft.datafixer.fix.CauldronRenameFix;
 import net.minecraft.datafixer.fix.ChoiceFix;
 import net.minecraft.datafixer.fix.ChoiceTypesFix;
+import net.minecraft.datafixer.fix.ChunkHeightAndBiomeFix;
 import net.minecraft.datafixer.fix.ChunkLightRemoveFix;
 import net.minecraft.datafixer.fix.ChunkPalettedStorageFix;
 import net.minecraft.datafixer.fix.ChunkStatusFix;
@@ -140,6 +142,8 @@ import net.minecraft.datafixer.fix.VillagerProfessionFix;
 import net.minecraft.datafixer.fix.VillagerTradeFix;
 import net.minecraft.datafixer.fix.VillagerXpRebuildFix;
 import net.minecraft.datafixer.fix.WallPropertyFix;
+import net.minecraft.datafixer.fix.WorldGenSettingsDisallowOldCustomWorldsFix;
+import net.minecraft.datafixer.fix.WorldGenSettingsHeightAndBiomeFix;
 import net.minecraft.datafixer.fix.WorldUuidFix;
 import net.minecraft.datafixer.fix.WriteAndReadFix;
 import net.minecraft.datafixer.fix.ZombieVillagerXpRebuildFix;
@@ -195,6 +199,7 @@ import net.minecraft.datafixer.schema.Schema2688;
 import net.minecraft.datafixer.schema.Schema2704;
 import net.minecraft.datafixer.schema.Schema2707;
 import net.minecraft.datafixer.schema.Schema2831;
+import net.minecraft.datafixer.schema.Schema2832;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -718,7 +723,9 @@ public class Schemas {
 			.build();
 		builder.addFixer(ItemNameFix.create(schema133, "Rename copper item suffixes", replacing(immutableMap2)));
 		builder.addFixer(JigsawBlockNameFix.create(schema133, "Rename copper blocks suffixes", replacing(immutableMap2)));
-		Schema schema134 = builder.addSchema(2696, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema134 = builder.addSchema(2693, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new AddFlagIfNotPresentFix(schema134, TypeReferences.CHUNK_GENERATOR_SETTINGS, "has_increased_height_already", false));
+		Schema schema135 = builder.addSchema(2696, EMPTY_IDENTIFIER_NORMALIZE);
 		ImmutableMap<String, String> immutableMap3 = ImmutableMap.<String, String>builder()
 			.put("minecraft:grimstone", "minecraft:deepslate")
 			.put("minecraft:grimstone_slab", "minecraft:cobbled_deepslate_slab")
@@ -738,41 +745,49 @@ public class Schemas {
 			.put("minecraft:grimstone_brick_wall", "minecraft:deepslate_brick_wall")
 			.put("minecraft:chiseled_grimstone", "minecraft:chiseled_deepslate")
 			.build();
-		builder.addFixer(ItemNameFix.create(schema134, "Renamed grimstone block items to deepslate", replacing(immutableMap3)));
-		builder.addFixer(JigsawBlockNameFix.create(schema134, "Renamed grimstone blocks to deepslate", replacing(immutableMap3)));
-		Schema schema135 = builder.addSchema(2700, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(ItemNameFix.create(schema135, "Renamed grimstone block items to deepslate", replacing(immutableMap3)));
+		builder.addFixer(JigsawBlockNameFix.create(schema135, "Renamed grimstone blocks to deepslate", replacing(immutableMap3)));
+		Schema schema136 = builder.addSchema(2700, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			JigsawBlockNameFix.create(
-				schema135,
+				schema136,
 				"Renamed cave vines blocks",
 				replacing(ImmutableMap.of("minecraft:cave_vines_head", "minecraft:cave_vines", "minecraft:cave_vines_body", "minecraft:cave_vines_plant"))
 			)
 		);
-		Schema schema136 = builder.addSchema(2701, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new StructureFeatureChildrenPoolElementFix(schema136));
-		Schema schema137 = builder.addSchema(2702, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new ArrowPickupFix(schema137));
-		Schema schema138 = builder.addSchema(2704, Schema2704::new);
-		builder.addFixer(new ChoiceTypesFix(schema138, "Added Goat", TypeReferences.ENTITY));
-		Schema schema139 = builder.addSchema(2707, Schema2707::new);
-		builder.addFixer(new ChoiceTypesFix(schema139, "Added Marker", TypeReferences.ENTITY));
-		Schema schema140 = builder.addSchema(2710, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema137 = builder.addSchema(2701, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new StructureFeatureChildrenPoolElementFix(schema137));
+		Schema schema138 = builder.addSchema(2702, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ArrowPickupFix(schema138));
+		Schema schema139 = builder.addSchema(2704, Schema2704::new);
+		builder.addFixer(new ChoiceTypesFix(schema139, "Added Goat", TypeReferences.ENTITY));
+		Schema schema140 = builder.addSchema(2707, Schema2707::new);
+		builder.addFixer(new ChoiceTypesFix(schema140, "Added Marker", TypeReferences.ENTITY));
+		builder.addFixer(new AddFlagIfNotPresentFix(schema140, TypeReferences.CHUNK_GENERATOR_SETTINGS, "has_increased_height_already", true));
+		Schema schema141 = builder.addSchema(2710, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
-			new StatsRenameFix(schema140, "Renamed play_one_minute stat to play_time", ImmutableMap.of("minecraft:play_one_minute", "minecraft:play_time"))
+			new StatsRenameFix(schema141, "Renamed play_one_minute stat to play_time", ImmutableMap.of("minecraft:play_one_minute", "minecraft:play_time"))
 		);
-		Schema schema141 = builder.addSchema(2717, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema142 = builder.addSchema(2717, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			ItemNameFix.create(
-				schema141, "Rename azalea_leaves_flowers", replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))
+				schema142, "Rename azalea_leaves_flowers", replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))
 			)
 		);
 		builder.addFixer(
 			BlockNameFix.create(
-				schema141, "Rename azalea_leaves_flowers items", replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))
+				schema142, "Rename azalea_leaves_flowers items", replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))
 			)
 		);
-		Schema schema142 = builder.addSchema(2831, Schema2831::new);
-		builder.addFixer(new UntaggedSpawnerFix(schema142));
+		Schema schema143 = builder.addSchema(2825, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new AddFlagIfNotPresentFix(schema143, TypeReferences.CHUNK_GENERATOR_SETTINGS, "has_increased_height_already", false));
+		Schema schema144 = builder.addSchema(2831, Schema2831::new);
+		builder.addFixer(new UntaggedSpawnerFix(schema144));
+		Schema schema145 = builder.addSchema(2832, Schema2832::new);
+		builder.addFixer(new WorldGenSettingsHeightAndBiomeFix(schema145));
+		builder.addFixer(new ChunkHeightAndBiomeFix(schema145));
+		Schema schema146 = builder.addSchema(2833, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new WorldGenSettingsDisallowOldCustomWorldsFix(schema146));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

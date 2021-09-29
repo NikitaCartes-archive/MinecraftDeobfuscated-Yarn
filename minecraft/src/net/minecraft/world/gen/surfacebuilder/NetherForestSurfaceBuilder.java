@@ -3,10 +3,10 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
@@ -19,7 +19,7 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 
 	public void generate(
 		Random random,
-		class_6557 arg,
+		BlockColumn blockColumn,
 		Biome biome,
 		int i,
 		int j,
@@ -42,7 +42,7 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 
 		for (int q = 127; q >= m; q--) {
 			BlockState blockState4 = ternarySurfaceConfig.getTopMaterial();
-			BlockState blockState5 = arg.getState(q);
+			BlockState blockState5 = blockColumn.getState(q);
 			if (blockState5.isAir()) {
 				p = -1;
 			} else if (blockState5.isOf(blockState.getBlock())) {
@@ -65,13 +65,13 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 
 					p = o;
 					if (q >= l - 1) {
-						arg.method_38092(q, blockState4);
+						blockColumn.setState(q, blockState4);
 					} else {
-						arg.method_38092(q, blockState3);
+						blockColumn.setState(q, blockState3);
 					}
 				} else if (p > 0) {
 					p--;
-					arg.method_38092(q, blockState3);
+					blockColumn.setState(q, blockState3);
 				}
 			}
 		}

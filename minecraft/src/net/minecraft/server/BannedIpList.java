@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.gson.JsonObject;
 import java.io.File;
 import java.net.SocketAddress;
+import javax.annotation.Nullable;
 
 public class BannedIpList extends ServerConfigList<String, BannedIpEntry> {
 	public BannedIpList(File file) {
@@ -23,6 +24,7 @@ public class BannedIpList extends ServerConfigList<String, BannedIpEntry> {
 		return this.contains(ip);
 	}
 
+	@Nullable
 	public BannedIpEntry get(SocketAddress address) {
 		String string = this.stringifyAddress(address);
 		return this.get(string);

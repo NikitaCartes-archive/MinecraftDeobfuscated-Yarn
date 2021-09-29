@@ -28,8 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6603;
-import net.minecraft.class_6606;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -131,6 +129,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -171,6 +170,7 @@ import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightData;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
@@ -615,13 +615,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.method_38540(packet.getX(), packet.getZ(), packet.method_38599());
 	}
 
-	private void method_38539(int i, int j, class_6603 arg) {
-		this.world.getChunkManager().loadChunkFromPacket(i, j, arg.method_38586(), arg.method_38594(), arg.method_38587(i, j));
+	private void method_38539(int i, int j, ChunkData chunkData) {
+		this.world.getChunkManager().loadChunkFromPacket(i, j, chunkData.getSectionsDataBuf(), chunkData.getHeightmap(), chunkData.getBlockEntities(i, j));
 	}
 
-	private void method_38540(int i, int j, class_6606 arg) {
+	private void method_38540(int i, int j, LightData lightData) {
 		this.world.enqueueChunkUpdate(() -> {
-			this.method_38543(i, j, arg);
+			this.readLightData(i, j, lightData);
 			WorldChunk worldChunk = this.world.getChunkManager().getWorldChunk(i, j, false);
 			if (worldChunk != null) {
 				this.method_38541(worldChunk, i, j);
@@ -2149,20 +2149,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		int i = packet.getChunkX();
 		int j = packet.getChunkZ();
-		class_6606 lv = packet.method_38600();
-		this.world.enqueueChunkUpdate(() -> this.method_38543(i, j, lv));
+		LightData lightData = packet.getData();
+		this.world.enqueueChunkUpdate(() -> this.readLightData(i, j, lightData));
 	}
 
-	private void method_38543(int i, int j, class_6606 arg) {
+	private void readLightData(int x, int z, LightData data) {
 		LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
-		BitSet bitSet = arg.method_38601();
-		BitSet bitSet2 = arg.method_38604();
-		Iterator<byte[]> iterator = arg.method_38606().iterator();
-		this.updateLighting(i, j, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator, arg.method_38611());
-		BitSet bitSet3 = arg.method_38608();
-		BitSet bitSet4 = arg.method_38609();
-		Iterator<byte[]> iterator2 = arg.method_38610().iterator();
-		this.updateLighting(i, j, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, arg.method_38611());
+		BitSet bitSet = data.getInitedSky();
+		BitSet bitSet2 = data.getUninitedSky();
+		Iterator<byte[]> iterator = data.getSkyNibbles().iterator();
+		this.updateLighting(x, z, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator, data.isNonEdge());
+		BitSet bitSet3 = data.getInitedBlock();
+		BitSet bitSet4 = data.getUninitedBlock();
+		Iterator<byte[]> iterator2 = data.getBlockNibbles().iterator();
+		this.updateLighting(x, z, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, data.isNonEdge());
 	}
 
 	@Override
@@ -2199,15 +2199,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	private void updateLighting(
-		int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet bitSet, BitSet bitSet2, Iterator<byte[]> iterator, boolean bl
+		int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet inited, BitSet uninited, Iterator<byte[]> nibbles, boolean nonEdge
 	) {
 		for (int i = 0; i < provider.getHeight(); i++) {
 			int j = provider.getBottomY() + i;
-			boolean bl2 = bitSet.get(i);
-			boolean bl3 = bitSet2.get(i);
-			if (bl2 || bl3) {
+			boolean bl = inited.get(i);
+			boolean bl2 = uninited.get(i);
+			if (bl || bl2) {
 				provider.enqueueSectionData(
-					type, ChunkSectionPos.from(chunkX, j, chunkZ), bl2 ? new ChunkNibbleArray((byte[])((byte[])iterator.next()).clone()) : new ChunkNibbleArray(), bl
+					type, ChunkSectionPos.from(chunkX, j, chunkZ), bl ? new ChunkNibbleArray((byte[])((byte[])nibbles.next()).clone()) : new ChunkNibbleArray(), nonEdge
 				);
 				this.world.scheduleBlockRenders(chunkX, j, chunkZ);
 			}

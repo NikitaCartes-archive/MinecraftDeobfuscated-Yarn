@@ -9,6 +9,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.exception.RealmsHttpException;
@@ -84,7 +86,7 @@ public abstract class Request<T extends Request<T>> {
 	public String text() {
 		try {
 			this.connect();
-			String string = null;
+			String string;
 			if (this.responseCode() >= 400) {
 				string = this.read(this.connection.getErrorStream());
 			} else {
@@ -98,11 +100,11 @@ public abstract class Request<T extends Request<T>> {
 		}
 	}
 
-	private String read(InputStream in) throws IOException {
+	private String read(@Nullable InputStream in) throws IOException {
 		if (in == null) {
 			return "";
 		} else {
-			InputStreamReader inputStreamReader = new InputStreamReader(in, "UTF-8");
+			InputStreamReader inputStreamReader = new InputStreamReader(in, StandardCharsets.UTF_8);
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (int i = inputStreamReader.read(); i != -1; i = inputStreamReader.read()) {

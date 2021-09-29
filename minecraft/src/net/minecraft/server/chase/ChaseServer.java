@@ -54,11 +54,14 @@ public class ChaseServer {
 	}
 
 	private void runSender() {
+		ChaseServer.TeleportPos teleportPos = null;
+
 		while (this.running) {
 			if (!this.clientSockets.isEmpty()) {
-				String string = this.getTeleportMessage();
-				if (string != null) {
-					byte[] bs = string.getBytes(StandardCharsets.US_ASCII);
+				ChaseServer.TeleportPos teleportPos2 = this.getTeleportPosition();
+				if (teleportPos2 != null && !teleportPos2.equals(teleportPos)) {
+					teleportPos = teleportPos2;
+					byte[] bs = teleportPos2.getTeleportCommand().getBytes(StandardCharsets.US_ASCII);
 
 					for (Socket socket : this.clientSockets) {
 						if (!socket.isClosed()) {
@@ -67,8 +70,8 @@ public class ChaseServer {
 									OutputStream outputStream = socket.getOutputStream();
 									outputStream.write(bs);
 									outputStream.flush();
-								} catch (IOException var3) {
-									LOGGER.info("Remote control client socket got an IO exception and will be closed", (Throwable)var3);
+								} catch (IOException var3x) {
+									LOGGER.info("Remote control client socket got an IO exception and will be closed", (Throwable)var3x);
 									IOUtils.closeQuietly(socket);
 								}
 							});
@@ -83,7 +86,7 @@ public class ChaseServer {
 			if (this.running) {
 				try {
 					Thread.sleep((long)this.interval);
-				} catch (InterruptedException var5) {
+				} catch (InterruptedException var6) {
 				}
 			}
 		}
@@ -122,7 +125,7 @@ public class ChaseServer {
 	}
 
 	@Nullable
-	private String getTeleportMessage() {
+	private ChaseServer.TeleportPos getTeleportPosition() {
 		List<ServerPlayerEntity> list = this.playerManager.getPlayerList();
 		if (list.isEmpty()) {
 			return null;
@@ -131,16 +134,31 @@ public class ChaseServer {
 			String string = (String)ChaseCommand.DIMENSIONS.inverse().get(serverPlayerEntity.getWorld().getRegistryKey());
 			return string == null
 				? null
-				: String.format(
-					Locale.ROOT,
-					"t %s %.2f %.2f %.2f %.2f %.2f\n",
-					string,
-					serverPlayerEntity.getX(),
-					serverPlayerEntity.getY(),
-					serverPlayerEntity.getZ(),
-					serverPlayerEntity.getYaw(),
-					serverPlayerEntity.getPitch()
+				: new ChaseServer.TeleportPos(
+					string, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.getYaw(), serverPlayerEntity.getPitch()
 				);
+		}
+	}
+
+	static record TeleportPos() {
+		private final String dimensionName;
+		private final double x;
+		private final double y;
+		private final double z;
+		private final float yaw;
+		private final float pitch;
+
+		TeleportPos(String string, double d, double e, double f, float g, float h) {
+			this.dimensionName = string;
+			this.x = d;
+			this.y = e;
+			this.z = f;
+			this.yaw = g;
+			this.pitch = h;
+		}
+
+		String getTeleportCommand() {
+			return String.format(Locale.ROOT, "t %s %.2f %.2f %.2f %.2f %.2f\n", this.dimensionName, this.x, this.y, this.z, this.yaw, this.pitch);
 		}
 	}
 }

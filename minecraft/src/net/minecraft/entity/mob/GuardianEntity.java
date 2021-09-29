@@ -54,9 +54,11 @@ public class GuardianEntity extends HostileEntity {
 	private float spikesExtensionRate;
 	private float spikesExtension;
 	private float prevSpikesExtension;
+	@Nullable
 	private LivingEntity cachedBeamTarget;
 	private int beamTicks;
 	private boolean flopping;
+	@Nullable
 	protected WanderAroundGoal wanderGoal;
 
 	public GuardianEntity(EntityType<? extends GuardianEntity> entityType, World world) {
@@ -338,7 +340,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public int getLookPitchSpeed() {
+	public int getMaxLookPitchChange() {
 		return 180;
 	}
 
@@ -375,14 +377,18 @@ public class GuardianEntity extends HostileEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return super.shouldContinue() && (this.elder || this.guardian.squaredDistanceTo(this.guardian.getTarget()) > 9.0);
+			return super.shouldContinue() && (this.elder || this.guardian.getTarget() != null && this.guardian.squaredDistanceTo(this.guardian.getTarget()) > 9.0);
 		}
 
 		@Override
 		public void start() {
 			this.beamTicks = -10;
 			this.guardian.getNavigation().stop();
-			this.guardian.getLookControl().lookAt(this.guardian.getTarget(), 90.0F, 90.0F);
+			LivingEntity livingEntity = this.guardian.getTarget();
+			if (livingEntity != null) {
+				this.guardian.getLookControl().lookAt(livingEntity, 90.0F, 90.0F);
+			}
+
 			this.guardian.velocityDirty = true;
 		}
 
@@ -394,35 +400,42 @@ public class GuardianEntity extends HostileEntity {
 		}
 
 		@Override
+		public boolean shouldRunEveryTick() {
+			return true;
+		}
+
+		@Override
 		public void tick() {
 			LivingEntity livingEntity = this.guardian.getTarget();
-			this.guardian.getNavigation().stop();
-			this.guardian.getLookControl().lookAt(livingEntity, 90.0F, 90.0F);
-			if (!this.guardian.canSee(livingEntity)) {
-				this.guardian.setTarget(null);
-			} else {
-				this.beamTicks++;
-				if (this.beamTicks == 0) {
-					this.guardian.setBeamTarget(this.guardian.getTarget().getId());
-					if (!this.guardian.isSilent()) {
-						this.guardian.world.sendEntityStatus(this.guardian, EntityStatuses.PLAY_GUARDIAN_ATTACK_SOUND);
-					}
-				} else if (this.beamTicks >= this.guardian.getWarmupTime()) {
-					float f = 1.0F;
-					if (this.guardian.world.getDifficulty() == Difficulty.HARD) {
-						f += 2.0F;
-					}
-
-					if (this.elder) {
-						f += 2.0F;
-					}
-
-					livingEntity.damage(DamageSource.magic(this.guardian, this.guardian), f);
-					livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+			if (livingEntity != null) {
+				this.guardian.getNavigation().stop();
+				this.guardian.getLookControl().lookAt(livingEntity, 90.0F, 90.0F);
+				if (!this.guardian.canSee(livingEntity)) {
 					this.guardian.setTarget(null);
-				}
+				} else {
+					this.beamTicks++;
+					if (this.beamTicks == 0) {
+						this.guardian.setBeamTarget(livingEntity.getId());
+						if (!this.guardian.isSilent()) {
+							this.guardian.world.sendEntityStatus(this.guardian, EntityStatuses.PLAY_GUARDIAN_ATTACK_SOUND);
+						}
+					} else if (this.beamTicks >= this.guardian.getWarmupTime()) {
+						float f = 1.0F;
+						if (this.guardian.world.getDifficulty() == Difficulty.HARD) {
+							f += 2.0F;
+						}
 
-				super.tick();
+						if (this.elder) {
+							f += 2.0F;
+						}
+
+						livingEntity.damage(DamageSource.magic(this.guardian, this.guardian), f);
+						livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+						this.guardian.setTarget(null);
+					}
+
+					super.tick();
+				}
 			}
 		}
 	}
@@ -461,7 +474,7 @@ public class GuardianEntity extends HostileEntity {
 				double r = lookControl.getLookX();
 				double s = lookControl.getLookY();
 				double t = lookControl.getLookZ();
-				if (!lookControl.isActive()) {
+				if (!lookControl.isPending()) {
 					r = o;
 					s = p;
 					t = q;

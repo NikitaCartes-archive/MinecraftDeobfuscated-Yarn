@@ -30,7 +30,9 @@ import net.minecraft.util.registry.Registry;
 public final class Ingredient implements Predicate<ItemStack> {
 	public static final Ingredient EMPTY = new Ingredient(Stream.empty());
 	private final Ingredient.Entry[] entries;
+	@Nullable
 	private ItemStack[] matchingStacks;
+	@Nullable
 	private IntList ids;
 
 	private Ingredient(Stream<? extends Ingredient.Entry> entries) {

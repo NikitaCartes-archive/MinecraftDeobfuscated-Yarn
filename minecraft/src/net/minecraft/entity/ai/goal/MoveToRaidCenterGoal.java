@@ -41,7 +41,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	public void tick() {
 		if (this.actor.hasActiveRaid()) {
 			Raid raid = this.actor.getRaid();
-			if (this.actor.age % 20 == 0) {
+			if (this.actor.age % 20 == this.actor.getId() % 2) {
 				this.includeFreeRaiders(raid);
 			}
 

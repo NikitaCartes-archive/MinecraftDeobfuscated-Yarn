@@ -9,6 +9,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class DyingPhase extends AbstractPhase {
+	@Nullable
 	private Vec3d target;
 	private int ticks;
 

@@ -36,6 +36,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class EvokerEntity extends SpellcastingIllagerEntity {
+	@Nullable
 	private SheepEntity wololoTarget;
 
 	public EvokerEntity(EntityType<? extends EvokerEntity> entityType, World world) {
@@ -224,10 +225,10 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		public void tick() {
 			if (EvokerEntity.this.getTarget() != null) {
 				EvokerEntity.this.getLookControl()
-					.lookAt(EvokerEntity.this.getTarget(), (float)EvokerEntity.this.getBodyYawSpeed(), (float)EvokerEntity.this.getLookPitchSpeed());
+					.lookAt(EvokerEntity.this.getTarget(), (float)EvokerEntity.this.getMaxHeadRotation(), (float)EvokerEntity.this.getMaxLookPitchChange());
 			} else if (EvokerEntity.this.getWololoTarget() != null) {
 				EvokerEntity.this.getLookControl()
-					.lookAt(EvokerEntity.this.getWololoTarget(), (float)EvokerEntity.this.getBodyYawSpeed(), (float)EvokerEntity.this.getLookPitchSpeed());
+					.lookAt(EvokerEntity.this.getWololoTarget(), (float)EvokerEntity.this.getMaxHeadRotation(), (float)EvokerEntity.this.getMaxLookPitchChange());
 			}
 		}
 	}

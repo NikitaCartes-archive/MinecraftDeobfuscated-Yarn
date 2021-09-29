@@ -7,8 +7,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.FlowerFeature;
+import net.minecraft.world.gen.feature.ConfiguredFeatures;
+import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
 
 public class GrassBlock extends SpreadableBlock implements Fertilizable {
 	public GrassBlock(AbstractBlock.Settings settings) {
@@ -30,14 +30,14 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 		BlockPos blockPos = pos.up();
 		BlockState blockState = Blocks.GRASS.getDefaultState();
 
-		label48:
+		label46:
 		for (int i = 0; i < 128; i++) {
 			BlockPos blockPos2 = blockPos;
 
 			for (int j = 0; j < i / 16; j++) {
 				blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
 				if (!world.getBlockState(blockPos2.down()).isOf(this) || world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
-					continue label48;
+					continue label46;
 				}
 			}
 
@@ -47,27 +47,20 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 			}
 
 			if (blockState2.isAir()) {
-				BlockState blockState3;
+				ConfiguredFeature<?, ?> configuredFeature;
 				if (random.nextInt(8) == 0) {
 					List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).getGenerationSettings().getFlowerFeatures();
 					if (list.isEmpty()) {
 						continue;
 					}
 
-					blockState3 = getFlowerState(random, blockPos2, (ConfiguredFeature)list.get(0));
+					configuredFeature = (ConfiguredFeature<?, ?>)((RandomPatchFeatureConfig)((ConfiguredFeature)list.get(0)).getConfig()).feature().get();
 				} else {
-					blockState3 = blockState;
+					configuredFeature = ConfiguredFeatures.field_35099;
 				}
 
-				if (blockState3.canPlaceAt(world, blockPos2)) {
-					world.setBlockState(blockPos2, blockState3, Block.NOTIFY_ALL);
-				}
+				configuredFeature.generate(world, world.getChunkManager().getChunkGenerator(), random, blockPos2);
 			}
 		}
-	}
-
-	private static <U extends FeatureConfig> BlockState getFlowerState(Random random, BlockPos pos, ConfiguredFeature<U, ?> flowerFeature) {
-		FlowerFeature<U> flowerFeature2 = (FlowerFeature<U>)flowerFeature.feature;
-		return flowerFeature2.getFlowerState(random, pos, flowerFeature.getConfig());
 	}
 }

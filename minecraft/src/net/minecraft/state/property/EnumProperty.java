@@ -1,6 +1,5 @@
 package net.minecraft.state.property;
 
-import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -93,7 +92,7 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Proper
 	 * @param type the type of the values the property contains
 	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type) {
-		return of(name, type, Predicates.alwaysTrue());
+		return of(name, type, (Predicate<T>)(enum_ -> true));
 	}
 
 	/**

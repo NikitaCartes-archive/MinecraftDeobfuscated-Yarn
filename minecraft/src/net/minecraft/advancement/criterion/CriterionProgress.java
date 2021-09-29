@@ -7,10 +7,12 @@ import com.google.gson.JsonSyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 
 public class CriterionProgress {
 	private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+	@Nullable
 	private Date obtainedDate;
 
 	public boolean isObtained() {
@@ -25,6 +27,7 @@ public class CriterionProgress {
 		this.obtainedDate = null;
 	}
 
+	@Nullable
 	public Date getObtainedDate() {
 		return this.obtainedDate;
 	}

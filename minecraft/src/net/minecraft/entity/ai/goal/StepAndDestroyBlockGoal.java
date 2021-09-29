@@ -41,7 +41,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 			this.cooldown--;
 			return false;
 		} else if (this.hasAvailableTarget()) {
-			this.cooldown = 20;
+			this.cooldown = toGoalTicks(20);
 			return true;
 		} else {
 			this.cooldown = this.getInterval(this.mob);

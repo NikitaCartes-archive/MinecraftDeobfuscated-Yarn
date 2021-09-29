@@ -12,7 +12,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.util.RealmsTextureManager;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -172,7 +171,6 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		TextureManager textureManager = minecraftClient.getTextureManager();
 		if (minigame) {
 			RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
 		} else if (empty) {
@@ -221,6 +219,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		final boolean isCurrentlyActiveSlot;
 		final String slotName;
 		final long imageId;
+		@Nullable
 		final String image;
 		public final boolean empty;
 		public final boolean minigame;

@@ -11,7 +11,9 @@ public class CachedBlockPosition {
 	private final WorldView world;
 	private final BlockPos pos;
 	private final boolean forceLoad;
+	@Nullable
 	private BlockState state;
+	@Nullable
 	private BlockEntity blockEntity;
 	private boolean cachedEntity;
 

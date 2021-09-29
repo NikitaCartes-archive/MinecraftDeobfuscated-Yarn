@@ -59,6 +59,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
+		@Nullable
 		private final Block block;
 		private final StatePredicate state;
 		private final LocationPredicate location;

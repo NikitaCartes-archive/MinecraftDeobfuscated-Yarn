@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -11,6 +12,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 public class LookAtEntityGoal extends Goal {
 	public static final float field_33760 = 0.02F;
 	protected final MobEntity mob;
+	@Nullable
 	protected Entity target;
 	protected final float range;
 	private int lookTime;
@@ -91,9 +93,16 @@ public class LookAtEntityGoal extends Goal {
 	}
 
 	@Override
+	public boolean shouldRunEveryTick() {
+		return true;
+	}
+
+	@Override
 	public void tick() {
-		double d = this.field_33761 ? this.mob.getEyeY() : this.target.getEyeY();
-		this.mob.getLookControl().lookAt(this.target.getX(), d, this.target.getZ());
-		this.lookTime--;
+		if (this.target.isAlive()) {
+			double d = this.field_33761 ? this.mob.getEyeY() : this.target.getEyeY();
+			this.mob.getLookControl().lookAt(this.target.getX(), d, this.target.getZ());
+			this.lookTime--;
+		}
 	}
 }

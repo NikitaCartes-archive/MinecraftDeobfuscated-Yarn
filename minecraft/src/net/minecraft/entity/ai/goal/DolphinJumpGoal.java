@@ -17,7 +17,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 
 	public DolphinJumpGoal(DolphinEntity dolphin, int chance) {
 		this.dolphin = dolphin;
-		this.chance = chance;
+		this.chance = toGoalTicks(chance);
 	}
 
 	@Override

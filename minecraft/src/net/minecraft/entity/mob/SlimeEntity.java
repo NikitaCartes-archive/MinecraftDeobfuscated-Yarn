@@ -303,7 +303,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public int getLookPitchSpeed() {
+	public int getMaxLookPitchChange() {
 		return 0;
 	}
 
@@ -368,7 +368,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		@Override
 		public void start() {
-			this.ticksLeft = 300;
+			this.ticksLeft = toGoalTicks(300);
 			super.start();
 		}
 
@@ -383,8 +383,17 @@ public class SlimeEntity extends MobEntity implements Monster {
 		}
 
 		@Override
+		public boolean shouldRunEveryTick() {
+			return true;
+		}
+
+		@Override
 		public void tick() {
-			this.slime.lookAtEntity(this.slime.getTarget(), 10.0F, 10.0F);
+			LivingEntity livingEntity = this.slime.getTarget();
+			if (livingEntity != null) {
+				this.slime.lookAtEntity(livingEntity, 10.0F, 10.0F);
+			}
+
 			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).look(this.slime.getYaw(), this.slime.canAttack());
 		}
 	}
@@ -428,7 +437,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		@Override
 		public void tick() {
 			if (--this.timer <= 0) {
-				this.timer = 40 + this.slime.getRandom().nextInt(60);
+				this.timer = this.getTickCount(40 + this.slime.getRandom().nextInt(60));
 				this.targetYaw = (float)this.slime.getRandom().nextInt(360);
 			}
 
@@ -503,6 +512,11 @@ public class SlimeEntity extends MobEntity implements Monster {
 		@Override
 		public boolean canStart() {
 			return (this.slime.isTouchingWater() || this.slime.isInLava()) && this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl;
+		}
+
+		@Override
+		public boolean shouldRunEveryTick() {
+			return true;
 		}
 
 		@Override

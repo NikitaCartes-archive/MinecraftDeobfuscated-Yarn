@@ -7,10 +7,10 @@ import com.mojang.serialization.Codec;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.Map.Entry;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
@@ -25,7 +25,7 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 
 	public void generate(
 		Random random,
-		class_6557 arg,
+		BlockColumn blockColumn,
 		Biome biome,
 		int i,
 		int j,
@@ -55,22 +55,22 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 				.max(Comparator.comparing(entry -> ((OctavePerlinNoiseSampler)entry.getValue()).sample((double)i, (double)l, (double)j)))
 				.get())
 			.getKey();
-		BlockState blockState5 = arg.getState(128);
+		BlockState blockState5 = blockColumn.getState(128);
 
 		for (int r = 127; r >= m; r--) {
-			BlockState blockState6 = arg.getState(r);
+			BlockState blockState6 = blockColumn.getState(r);
 			if (blockState5.isOf(blockState.getBlock()) && (blockState6.isAir() || blockState6 == blockState2)) {
-				for (int s = 0; s < p && arg.getState(r + s).isOf(blockState.getBlock()); s++) {
-					arg.method_38092(r + s, blockState3);
+				for (int s = 0; s < p && blockColumn.getState(r + s).isOf(blockState.getBlock()); s++) {
+					blockColumn.setState(r + s, blockState3);
 				}
 			}
 
 			if ((blockState5.isAir() || blockState5 == blockState2) && blockState6.isOf(blockState.getBlock())) {
-				for (int s = 0; s < q && arg.getState(r - s).isOf(blockState.getBlock()); s++) {
+				for (int s = 0; s < q && blockColumn.getState(r - s).isOf(blockState.getBlock()); s++) {
 					if (bl && r >= o - 4 && r <= o + 1) {
-						arg.method_38092(r - s, this.getLavaShoreState());
+						blockColumn.setState(r - s, this.getLavaShoreState());
 					} else {
-						arg.method_38092(r - s, blockState4);
+						blockColumn.setState(r - s, blockState4);
 					}
 				}
 			}

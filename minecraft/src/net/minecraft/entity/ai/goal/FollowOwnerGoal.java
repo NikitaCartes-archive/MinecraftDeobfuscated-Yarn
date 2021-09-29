@@ -85,9 +85,9 @@ public class FollowOwnerGoal extends Goal {
 
 	@Override
 	public void tick() {
-		this.tameable.getLookControl().lookAt(this.owner, 10.0F, (float)this.tameable.getLookPitchSpeed());
+		this.tameable.getLookControl().lookAt(this.owner, 10.0F, (float)this.tameable.getMaxLookPitchChange());
 		if (--this.updateCountdownTicks <= 0) {
-			this.updateCountdownTicks = 10;
+			this.updateCountdownTicks = this.getTickCount(10);
 			if (!this.tameable.isLeashed() && !this.tameable.hasVehicle()) {
 				if (this.tameable.squaredDistanceTo(this.owner) >= 144.0) {
 					this.tryTeleport();

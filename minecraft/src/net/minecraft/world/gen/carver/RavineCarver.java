@@ -1,21 +1,17 @@
 package net.minecraft.world.gen.carver;
 
 import com.mojang.serialization.Codec;
-import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_6643;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.AquiferSampler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class RavineCarver extends Carver<RavineCarverConfig> {
-	private static final Logger LOGGER = LogManager.getLogger();
-
 	public RavineCarver(Codec<RavineCarverConfig> codec) {
 		super(codec);
 	}
@@ -32,7 +28,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		Random random,
 		AquiferSampler aquiferSampler,
 		ChunkPos chunkPos,
-		BitSet bitSet
+		class_6643 arg
 	) {
 		int i = (this.getBranchFactor() * 2 - 1) * 16;
 		double d = (double)chunkPos.getOffsetX(random.nextInt(16));
@@ -44,7 +40,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		float k = ravineCarverConfig.shape.thickness.get(random);
 		int l = (int)((float)i * ravineCarverConfig.shape.distanceFactor.get(random));
 		int m = 0;
-		this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), aquiferSampler, d, (double)j, e, k, f, g, 0, l, h, bitSet);
+		this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), aquiferSampler, d, (double)j, e, k, f, g, 0, l, h, arg);
 		return true;
 	}
 
@@ -64,7 +60,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		int branchStartIndex,
 		int branchCount,
 		double yawPitchRatio,
-		BitSet carvingMask
+		class_6643 arg
 	) {
 		Random random = new Random(seed);
 		float[] fs = this.createHorizontalStretchFactors(context, config, random);
@@ -98,14 +94,13 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 					config,
 					chunk,
 					posToBiome,
-					seed,
 					aquiferSampler,
 					x,
 					y,
 					z,
 					d,
 					e,
-					carvingMask,
+					arg,
 					(contextx, dx, ex, fx, yx) -> this.isPositionExcluded(contextx, fs, dx, ex, fx, yx)
 				);
 			}

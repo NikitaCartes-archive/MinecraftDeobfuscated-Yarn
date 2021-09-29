@@ -43,7 +43,7 @@ public class WanderAroundGoal extends Goal {
 					return false;
 				}
 
-				if (this.mob.getRandom().nextInt(this.chance) != 0) {
+				if (this.mob.getRandom().nextInt(toGoalTicks(this.chance)) != 0) {
 					return false;
 				}
 			}

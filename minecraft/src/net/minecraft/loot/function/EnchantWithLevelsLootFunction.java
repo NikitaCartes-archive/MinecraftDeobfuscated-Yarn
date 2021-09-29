@@ -17,10 +17,10 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	final LootNumberProvider range;
 	final boolean treasureEnchantmentsAllowed;
 
-	EnchantWithLevelsLootFunction(LootCondition[] lootConditions, LootNumberProvider lootNumberProvider, boolean bl) {
-		super(lootConditions);
-		this.range = lootNumberProvider;
-		this.treasureEnchantmentsAllowed = bl;
+	EnchantWithLevelsLootFunction(LootCondition[] conditions, LootNumberProvider range, boolean treasureEnchantmentsAllowed) {
+		super(conditions);
+		this.range = range;
+		this.treasureEnchantmentsAllowed = treasureEnchantmentsAllowed;
 	}
 
 	@Override

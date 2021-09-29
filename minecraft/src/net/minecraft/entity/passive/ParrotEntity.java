@@ -118,6 +118,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	private float flapSpeed = 1.0F;
 	private float field_28640 = 1.0F;
 	private boolean songPlaying;
+	@Nullable
 	private BlockPos songSource;
 
 	public ParrotEntity(EntityType<? extends ParrotEntity> entityType, World world) {

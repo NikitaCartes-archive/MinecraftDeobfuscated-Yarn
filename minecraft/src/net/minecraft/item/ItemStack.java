@@ -204,8 +204,10 @@ public final class ItemStack {
 	 * 
 	 * @see <a href="nbt-operations">Item Stack NBT Operations</a>
 	 */
+	@Nullable
 	private NbtCompound nbt;
 	private boolean empty;
+	@Nullable
 	private Entity holder;
 	@Nullable
 	private BlockPredicatesChecker destroyChecker;

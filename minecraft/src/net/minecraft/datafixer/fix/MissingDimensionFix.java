@@ -24,15 +24,15 @@ public class MissingDimensionFix extends DataFix {
 		super(outputSchema, changesType);
 	}
 
-	private static <A> Type<Pair<A, Dynamic<?>>> method_29913(String string, Type<A> type) {
+	protected static <A> Type<Pair<A, Dynamic<?>>> method_29913(String string, Type<A> type) {
 		return DSL.and(DSL.field(string, type), DSL.remainderType());
 	}
 
-	private static <A> Type<Pair<Either<A, Unit>, Dynamic<?>>> method_29915(String string, Type<A> type) {
+	protected static <A> Type<Pair<Either<A, Unit>, Dynamic<?>>> method_29915(String string, Type<A> type) {
 		return DSL.and(DSL.optional(DSL.field(string, type)), DSL.remainderType());
 	}
 
-	private static <A1, A2> Type<Pair<Either<A1, Unit>, Pair<Either<A2, Unit>, Dynamic<?>>>> method_29914(
+	protected static <A1, A2> Type<Pair<Either<A1, Unit>, Pair<Either<A2, Unit>, Dynamic<?>>>> method_29914(
 		String string, Type<A1> type, String string2, Type<A2> type2
 	) {
 		return DSL.and(DSL.optional(DSL.field(string, type)), DSL.optional(DSL.field(string2, type2)), DSL.remainderType());
@@ -48,10 +48,7 @@ public class MissingDimensionFix extends DataFix {
 				"minecraft:debug",
 				DSL.remainderType(),
 				"minecraft:flat",
-				method_29915(
-					"settings",
-					method_29914("biome", schema.getType(TypeReferences.BIOME), "layers", DSL.list(method_29915("block", schema.getType(TypeReferences.BLOCK_NAME))))
-				),
+				method_38820(schema),
 				"minecraft:noise",
 				method_29914(
 					"biome_source",
@@ -98,6 +95,15 @@ public class MissingDimensionFix extends DataFix {
 						}))
 			);
 		}
+	}
+
+	protected static Type<? extends Pair<? extends Either<? extends Pair<? extends Either<?, Unit>, ? extends Pair<? extends Either<? extends List<? extends Pair<? extends Either<?, Unit>, Dynamic<?>>>, Unit>, Dynamic<?>>>, Unit>, Dynamic<?>>> method_38820(
+		Schema schema
+	) {
+		return method_29915(
+			"settings",
+			method_29914("biome", schema.getType(TypeReferences.BIOME), "layers", DSL.list(method_29915("block", schema.getType(TypeReferences.BLOCK_NAME))))
+		);
 	}
 
 	private <T> Dynamic<T> method_29912(Dynamic<T> dynamic) {

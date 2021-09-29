@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import net.minecraft.class_6603;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -27,6 +26,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.SimpleTickScheduler;
@@ -89,45 +89,47 @@ public class WorldChunk extends Chunk {
 		World world,
 		ChunkPos pos,
 		UpgradeData upgradeData,
-		TickScheduler<Block> tickScheduler,
-		TickScheduler<Fluid> blockTickScheduler,
-		long l,
-		@Nullable ChunkSection[] chunkSections,
-		@Nullable Consumer<WorldChunk> consumer
+		TickScheduler<Block> blockTickScheduler,
+		TickScheduler<Fluid> fluidTickScheduler,
+		long inhabitedTime,
+		@Nullable ChunkSection[] sectionArrayInitializer,
+		@Nullable Consumer<WorldChunk> loadToWorldConsumer
 	) {
-		super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), l, chunkSections, tickScheduler, blockTickScheduler);
+		super(
+			pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), inhabitedTime, sectionArrayInitializer, blockTickScheduler, fluidTickScheduler
+		);
 		this.world = world;
 		this.gameEventDispatchers = new Int2ObjectOpenHashMap<>();
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
 			if (ChunkStatus.FULL.getHeightmapTypes().contains(type)) {
-				this.field_34541.put(type, new Heightmap(this, type));
+				this.heightmaps.put(type, new Heightmap(this, type));
 			}
 		}
 
-		this.loadToWorldConsumer = consumer;
+		this.loadToWorldConsumer = loadToWorldConsumer;
 	}
 
-	public WorldChunk(ServerWorld serverWorld, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> consumer) {
+	public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
 		this(
-			serverWorld,
+			world,
 			protoChunk.getPos(),
 			protoChunk.getUpgradeData(),
 			protoChunk.getBlockTickScheduler(),
 			protoChunk.getFluidTickScheduler(),
 			protoChunk.getInhabitedTime(),
 			protoChunk.getSectionArray(),
-			consumer
+			loadToWorldConsumer
 		);
 
 		for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
 			this.setBlockEntity(blockEntity);
 		}
 
-		this.field_34542.putAll(protoChunk.getBlockEntityNbts());
+		this.blockEntityNbts.putAll(protoChunk.getBlockEntityNbts());
 
 		for (int i = 0; i < protoChunk.getPostProcessingLists().length; i++) {
-			this.field_34536[i] = protoChunk.getPostProcessingLists()[i];
+			this.postProcessingLists[i] = protoChunk.getPostProcessingLists()[i];
 		}
 
 		this.setStructureStarts(protoChunk.getStructureStarts());
@@ -140,7 +142,7 @@ public class WorldChunk extends Chunk {
 		}
 
 		this.setLightOn(protoChunk.isLightOn());
-		this.field_34537 = true;
+		this.needsSaving = true;
 	}
 
 	@Override
@@ -167,8 +169,8 @@ public class WorldChunk extends Chunk {
 		} else {
 			try {
 				int l = this.getSectionIndex(j);
-				if (l >= 0 && l < this.field_34545.length) {
-					ChunkSection chunkSection = this.field_34545[l];
+				if (l >= 0 && l < this.sectionArray.length) {
+					ChunkSection chunkSection = this.sectionArray[l];
 					if (!chunkSection.isEmpty()) {
 						return chunkSection.getBlockState(i & 15, j & 15, k & 15);
 					}
@@ -192,8 +194,8 @@ public class WorldChunk extends Chunk {
 	public FluidState getFluidState(int x, int y, int z) {
 		try {
 			int i = this.getSectionIndex(y);
-			if (i >= 0 && i < this.field_34545.length) {
-				ChunkSection chunkSection = this.field_34545[i];
+			if (i >= 0 && i < this.sectionArray.length) {
+				ChunkSection chunkSection = this.sectionArray[i];
 				if (!chunkSection.isEmpty()) {
 					return chunkSection.getFluidState(x & 15, y & 15, z & 15);
 				}
@@ -225,10 +227,10 @@ public class WorldChunk extends Chunk {
 				return null;
 			} else {
 				Block block = state.getBlock();
-				((Heightmap)this.field_34541.get(Heightmap.Type.MOTION_BLOCKING)).trackUpdate(j, i, l, state);
-				((Heightmap)this.field_34541.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(j, i, l, state);
-				((Heightmap)this.field_34541.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(j, i, l, state);
-				((Heightmap)this.field_34541.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(j, i, l, state);
+				((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING)).trackUpdate(j, i, l, state);
+				((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(j, i, l, state);
+				((Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(j, i, l, state);
+				((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(j, i, l, state);
 				boolean bl2 = chunkSection.isEmpty();
 				if (bl != bl2) {
 					this.world.getChunkManager().getLightingProvider().setSectionStatus(pos, bl2);
@@ -261,7 +263,7 @@ public class WorldChunk extends Chunk {
 						}
 					}
 
-					this.field_34537 = true;
+					this.needsSaving = true;
 					return blockState;
 				}
 			}
@@ -287,9 +289,9 @@ public class WorldChunk extends Chunk {
 
 	@Nullable
 	public BlockEntity getBlockEntity(BlockPos pos, WorldChunk.CreationType creationType) {
-		BlockEntity blockEntity = (BlockEntity)this.field_34543.get(pos);
+		BlockEntity blockEntity = (BlockEntity)this.blockEntities.get(pos);
 		if (blockEntity == null) {
-			NbtCompound nbtCompound = (NbtCompound)this.field_34542.remove(pos);
+			NbtCompound nbtCompound = (NbtCompound)this.blockEntityNbts.remove(pos);
 			if (nbtCompound != null) {
 				BlockEntity blockEntity2 = this.loadBlockEntity(pos, nbtCompound);
 				if (blockEntity2 != null) {
@@ -306,7 +308,7 @@ public class WorldChunk extends Chunk {
 				}
 			}
 		} else if (blockEntity.isRemoved()) {
-			this.field_34543.remove(pos);
+			this.blockEntities.remove(pos);
 			return null;
 		}
 
@@ -341,7 +343,7 @@ public class WorldChunk extends Chunk {
 		if (this.getBlockState(blockPos).hasBlockEntity()) {
 			blockEntity.setWorld(this.world);
 			blockEntity.cancelRemoval();
-			BlockEntity blockEntity2 = (BlockEntity)this.field_34543.put(blockPos.toImmutable(), blockEntity);
+			BlockEntity blockEntity2 = (BlockEntity)this.blockEntities.put(blockPos.toImmutable(), blockEntity);
 			if (blockEntity2 != null && blockEntity2 != blockEntity) {
 				blockEntity2.markRemoved();
 			}
@@ -357,7 +359,7 @@ public class WorldChunk extends Chunk {
 			nbtCompound.putBoolean("keepPacked", false);
 			return nbtCompound;
 		} else {
-			NbtCompound nbtCompound = (NbtCompound)this.field_34542.get(pos);
+			NbtCompound nbtCompound = (NbtCompound)this.blockEntityNbts.get(pos);
 			if (nbtCompound != null) {
 				nbtCompound = nbtCompound.copy();
 				nbtCompound.putBoolean("keepPacked", true);
@@ -370,7 +372,7 @@ public class WorldChunk extends Chunk {
 	@Override
 	public void removeBlockEntity(BlockPos pos) {
 		if (this.canTickBlockEntities()) {
-			BlockEntity blockEntity = (BlockEntity)this.field_34543.remove(pos);
+			BlockEntity blockEntity = (BlockEntity)this.blockEntities.remove(pos);
 			if (blockEntity != null) {
 				this.removeGameEventListener(blockEntity);
 				blockEntity.markRemoved();
@@ -415,10 +417,10 @@ public class WorldChunk extends Chunk {
 		return false;
 	}
 
-	public void loadFromPacket(PacketByteBuf packetByteBuf, NbtCompound nbtCompound, Consumer<class_6603.class_6605> consumer) {
-		this.method_38289();
+	public void loadFromPacket(PacketByteBuf packetByteBuf, NbtCompound nbtCompound, Consumer<ChunkData.BlockEntityVisitor> consumer) {
+		this.clear();
 
-		for (ChunkSection chunkSection : this.field_34545) {
+		for (ChunkSection chunkSection : this.sectionArray) {
 			chunkSection.fromPacket(packetByteBuf);
 		}
 
@@ -429,7 +431,7 @@ public class WorldChunk extends Chunk {
 			}
 		}
 
-		consumer.accept((class_6603.class_6605)(blockPos, blockEntityType, nbtCompoundx) -> {
+		consumer.accept((ChunkData.BlockEntityVisitor)(blockPos, blockEntityType, nbtCompoundx) -> {
 			BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.CreationType.IMMEDIATE);
 			if (blockEntity != null && nbtCompoundx != null && blockEntity.getType() == blockEntityType) {
 				blockEntity.readNbt(nbtCompoundx);
@@ -446,16 +448,13 @@ public class WorldChunk extends Chunk {
 	}
 
 	public Map<BlockPos, BlockEntity> getBlockEntities() {
-		return this.field_34543;
+		return this.blockEntities;
 	}
 
 	@Override
 	public Stream<BlockPos> getLightSourcesStream() {
 		return StreamSupport.stream(
-				BlockPos.iterate(
-						this.field_34538.getStartX(), this.getBottomY(), this.field_34538.getStartZ(), this.field_34538.getEndX(), this.getTopY() - 1, this.field_34538.getEndZ()
-					)
-					.spliterator(),
+				BlockPos.iterate(this.pos.getStartX(), this.getBottomY(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopY() - 1, this.pos.getEndZ()).spliterator(),
 				false
 			)
 			.filter(blockPos -> this.getBlockState(blockPos).getLuminance() != 0);
@@ -464,27 +463,27 @@ public class WorldChunk extends Chunk {
 	public void runPostProcessing() {
 		ChunkPos chunkPos = this.getPos();
 
-		for (int i = 0; i < this.field_34536.length; i++) {
-			if (this.field_34536[i] != null) {
-				for (Short short_ : this.field_34536[i]) {
+		for (int i = 0; i < this.postProcessingLists.length; i++) {
+			if (this.postProcessingLists[i] != null) {
+				for (Short short_ : this.postProcessingLists[i]) {
 					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.sectionIndexToCoord(i), chunkPos);
 					BlockState blockState = this.getBlockState(blockPos);
 					BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
 					this.world.setBlockState(blockPos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
 				}
 
-				this.field_34536[i].clear();
+				this.postProcessingLists[i].clear();
 			}
 		}
 
 		this.disableTickSchedulers();
 
-		for (BlockPos blockPos2 : ImmutableList.copyOf(this.field_34542.keySet())) {
+		for (BlockPos blockPos2 : ImmutableList.copyOf(this.blockEntityNbts.keySet())) {
 			this.getBlockEntity(blockPos2);
 		}
 
-		this.field_34542.clear();
-		this.field_34540.upgrade(this);
+		this.blockEntityNbts.clear();
+		this.upgradeData.upgrade(this);
 	}
 
 	@Nullable
@@ -513,34 +512,34 @@ public class WorldChunk extends Chunk {
 	}
 
 	public void disableTickSchedulers() {
-		if (this.field_34546 instanceof ChunkTickScheduler) {
-			((ChunkTickScheduler)this.field_34546).tick(this.world.getBlockTickScheduler(), pos -> this.getBlockState(pos).getBlock());
-			this.field_34546 = DummyClientTickScheduler.get();
-		} else if (this.field_34546 instanceof SimpleTickScheduler) {
-			((SimpleTickScheduler)this.field_34546).scheduleTo(this.world.getBlockTickScheduler());
-			this.field_34546 = DummyClientTickScheduler.get();
+		if (this.blockTickScheduler instanceof ChunkTickScheduler) {
+			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), pos -> this.getBlockState(pos).getBlock());
+			this.blockTickScheduler = DummyClientTickScheduler.get();
+		} else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
+			((SimpleTickScheduler)this.blockTickScheduler).scheduleTo(this.world.getBlockTickScheduler());
+			this.blockTickScheduler = DummyClientTickScheduler.get();
 		}
 
-		if (this.field_34547 instanceof ChunkTickScheduler) {
-			((ChunkTickScheduler)this.field_34547).tick(this.world.getFluidTickScheduler(), pos -> this.getFluidState(pos).getFluid());
-			this.field_34547 = DummyClientTickScheduler.get();
-		} else if (this.field_34547 instanceof SimpleTickScheduler) {
-			((SimpleTickScheduler)this.field_34547).scheduleTo(this.world.getFluidTickScheduler());
-			this.field_34547 = DummyClientTickScheduler.get();
+		if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
+			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), pos -> this.getFluidState(pos).getFluid());
+			this.fluidTickScheduler = DummyClientTickScheduler.get();
+		} else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
+			((SimpleTickScheduler)this.fluidTickScheduler).scheduleTo(this.world.getFluidTickScheduler());
+			this.fluidTickScheduler = DummyClientTickScheduler.get();
 		}
 	}
 
 	public void enableTickSchedulers(ServerWorld world) {
-		if (this.field_34546 == DummyClientTickScheduler.get()) {
-			this.field_34546 = new SimpleTickScheduler<>(
-				Registry.BLOCK::getId, world.getBlockTickScheduler().getScheduledTicksInChunk(this.field_34538, true, false), world.getTime()
+		if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
+			this.blockTickScheduler = new SimpleTickScheduler<>(
+				Registry.BLOCK::getId, world.getBlockTickScheduler().getScheduledTicksInChunk(this.pos, true, false), world.getTime()
 			);
 			this.setShouldSave(true);
 		}
 
-		if (this.field_34547 == DummyClientTickScheduler.get()) {
-			this.field_34547 = new SimpleTickScheduler<>(
-				Registry.FLUID::getId, world.getFluidTickScheduler().getScheduledTicksInChunk(this.field_34538, true, false), world.getTime()
+		if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
+			this.fluidTickScheduler = new SimpleTickScheduler<>(
+				Registry.FLUID::getId, world.getFluidTickScheduler().getScheduledTicksInChunk(this.pos, true, false), world.getTime()
 			);
 			this.setShouldSave(true);
 		}
@@ -559,15 +558,15 @@ public class WorldChunk extends Chunk {
 		this.levelTypeProvider = levelTypeProvider;
 	}
 
-	public void method_38289() {
-		this.field_34543.values().forEach(BlockEntity::markRemoved);
-		this.field_34543.clear();
-		this.blockEntityTickers.values().forEach(wrappedBlockEntityTickInvoker -> wrappedBlockEntityTickInvoker.setWrapped(EMPTY_BLOCK_ENTITY_TICKER));
+	public void clear() {
+		this.blockEntities.values().forEach(BlockEntity::markRemoved);
+		this.blockEntities.clear();
+		this.blockEntityTickers.values().forEach(ticker -> ticker.setWrapped(EMPTY_BLOCK_ENTITY_TICKER));
 		this.blockEntityTickers.clear();
 	}
 
 	public void updateAllBlockEntities() {
-		this.field_34543.values().forEach(blockEntity -> {
+		this.blockEntities.values().forEach(blockEntity -> {
 			this.updateGameEventListener(blockEntity);
 			this.updateTicker(blockEntity);
 		});

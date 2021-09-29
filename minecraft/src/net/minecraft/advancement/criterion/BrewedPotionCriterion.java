@@ -37,6 +37,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
+		@Nullable
 		private final Potion potion;
 
 		public Conditions(EntityPredicate.Extended player, @Nullable Potion potion) {

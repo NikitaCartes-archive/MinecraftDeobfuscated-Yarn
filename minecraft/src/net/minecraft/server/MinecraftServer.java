@@ -466,7 +466,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 			Random random = new Random(world.getSeed());
 			BlockPos blockPos = biomeSource.locateBiome(
-				0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random, chunkGenerator.method_38276()
+				0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random, chunkGenerator.getMultiNoiseSampler()
 			);
 			ChunkPos chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
 			if (blockPos == null) {

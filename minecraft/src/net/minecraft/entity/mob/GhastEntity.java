@@ -234,6 +234,11 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		}
 
 		@Override
+		public boolean shouldRunEveryTick() {
+			return true;
+		}
+
+		@Override
 		public void tick() {
 			if (this.ghast.getTarget() == null) {
 				Vec3d vec3d = this.ghast.getVelocity();
@@ -276,36 +281,43 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		}
 
 		@Override
+		public boolean shouldRunEveryTick() {
+			return true;
+		}
+
+		@Override
 		public void tick() {
 			LivingEntity livingEntity = this.ghast.getTarget();
-			double d = 64.0;
-			if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0 && this.ghast.canSee(livingEntity)) {
-				World world = this.ghast.world;
-				this.cooldown++;
-				if (this.cooldown == 10 && !this.ghast.isSilent()) {
-					world.syncWorldEvent(null, WorldEvents.GHAST_WARNS, this.ghast.getBlockPos(), 0);
-				}
-
-				if (this.cooldown == 20) {
-					double e = 4.0;
-					Vec3d vec3d = this.ghast.getRotationVec(1.0F);
-					double f = livingEntity.getX() - (this.ghast.getX() + vec3d.x * 4.0);
-					double g = livingEntity.getBodyY(0.5) - (0.5 + this.ghast.getBodyY(0.5));
-					double h = livingEntity.getZ() - (this.ghast.getZ() + vec3d.z * 4.0);
-					if (!this.ghast.isSilent()) {
-						world.syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, this.ghast.getBlockPos(), 0);
+			if (livingEntity != null) {
+				double d = 64.0;
+				if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0 && this.ghast.canSee(livingEntity)) {
+					World world = this.ghast.world;
+					this.cooldown++;
+					if (this.cooldown == 10 && !this.ghast.isSilent()) {
+						world.syncWorldEvent(null, WorldEvents.GHAST_WARNS, this.ghast.getBlockPos(), 0);
 					}
 
-					FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h, this.ghast.getFireballStrength());
-					fireballEntity.setPosition(this.ghast.getX() + vec3d.x * 4.0, this.ghast.getBodyY(0.5) + 0.5, fireballEntity.getZ() + vec3d.z * 4.0);
-					world.spawnEntity(fireballEntity);
-					this.cooldown = -40;
-				}
-			} else if (this.cooldown > 0) {
-				this.cooldown--;
-			}
+					if (this.cooldown == 20) {
+						double e = 4.0;
+						Vec3d vec3d = this.ghast.getRotationVec(1.0F);
+						double f = livingEntity.getX() - (this.ghast.getX() + vec3d.x * 4.0);
+						double g = livingEntity.getBodyY(0.5) - (0.5 + this.ghast.getBodyY(0.5));
+						double h = livingEntity.getZ() - (this.ghast.getZ() + vec3d.z * 4.0);
+						if (!this.ghast.isSilent()) {
+							world.syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, this.ghast.getBlockPos(), 0);
+						}
 
-			this.ghast.setShooting(this.cooldown > 10);
+						FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h, this.ghast.getFireballStrength());
+						fireballEntity.setPosition(this.ghast.getX() + vec3d.x * 4.0, this.ghast.getBodyY(0.5) + 0.5, fireballEntity.getZ() + vec3d.z * 4.0);
+						world.spawnEntity(fireballEntity);
+						this.cooldown = -40;
+					}
+				} else if (this.cooldown > 0) {
+					this.cooldown--;
+				}
+
+				this.ghast.setShooting(this.cooldown > 10);
+			}
 		}
 	}
 }

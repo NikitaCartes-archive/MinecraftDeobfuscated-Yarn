@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -8,6 +9,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class WanderNearTargetGoal extends Goal {
 	private final PathAwareEntity mob;
+	@Nullable
 	private LivingEntity target;
 	private double x;
 	private double y;

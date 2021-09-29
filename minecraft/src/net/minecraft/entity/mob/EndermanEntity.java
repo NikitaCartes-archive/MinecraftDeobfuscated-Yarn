@@ -80,6 +80,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private int ageWhenTargetSet;
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	private int angerTime;
+	@Nullable
 	private UUID targetUuid;
 
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
@@ -158,6 +159,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		this.targetUuid = uuid;
 	}
 
+	@Nullable
 	@Override
 	public UUID getAngryAt() {
 		return this.targetUuid;
@@ -403,6 +405,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	static class ChasePlayerGoal extends Goal {
 		private final EndermanEntity enderman;
+		@Nullable
 		private LivingEntity target;
 
 		public ChasePlayerGoal(EndermanEntity enderman) {
@@ -444,7 +447,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			if (this.enderman.getCarriedBlock() != null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(20) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(toGoalTicks(20)) == 0;
 			}
 		}
 
@@ -483,7 +486,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			if (this.enderman.getCarriedBlock() == null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(2000) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(toGoalTicks(2000)) == 0;
 			}
 		}
 
@@ -521,6 +524,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	static class TeleportTowardsPlayerGoal extends ActiveTargetGoal<PlayerEntity> {
 		private final EndermanEntity enderman;
+		@Nullable
 		private PlayerEntity targetPlayer;
 		private int lookAtPlayerWarmup;
 		private int ticksSinceUnseenTeleport;
@@ -543,7 +547,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 		@Override
 		public void start() {
-			this.lookAtPlayerWarmup = 5;
+			this.lookAtPlayerWarmup = this.getTickCount(5);
 			this.ticksSinceUnseenTeleport = 0;
 			this.enderman.setProvoked();
 		}
@@ -589,7 +593,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 						this.ticksSinceUnseenTeleport = 0;
 					} else if (this.targetEntity.squaredDistanceTo(this.enderman) > 256.0
-						&& this.ticksSinceUnseenTeleport++ >= 30
+						&& this.ticksSinceUnseenTeleport++ >= this.getTickCount(30)
 						&& this.enderman.teleportTo(this.targetEntity)) {
 						this.ticksSinceUnseenTeleport = 0;
 					}

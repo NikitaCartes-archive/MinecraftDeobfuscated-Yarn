@@ -732,7 +732,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 					this.jumpStrength = 0.0F;
 				}
 
-				this.flyingSpeed = this.getMovementSpeed() * 0.1F;
+				this.airStrafingSpeed = this.getMovementSpeed() * 0.1F;
 				if (this.isLogicalSideForUpdatingMovement()) {
 					this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 					super.travel(new Vec3d((double)f, movementInput.y, (double)g));
@@ -748,7 +748,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 				this.updateLimbs(this, false);
 				this.tryCheckBlockCollision();
 			} else {
-				this.flyingSpeed = 0.02F;
+				this.airStrafingSpeed = 0.02F;
 				super.travel(movementInput);
 			}
 		}

@@ -235,7 +235,10 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		@Override
 		public void start() {
 			super.start();
-			this.targetId = IllusionerEntity.this.getTarget().getId();
+			LivingEntity livingEntity = IllusionerEntity.this.getTarget();
+			if (livingEntity != null) {
+				this.targetId = livingEntity.getId();
+			}
 		}
 
 		@Override

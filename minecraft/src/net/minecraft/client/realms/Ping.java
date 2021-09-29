@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.dto.RegionPingResult;
 import net.minecraft.util.Util;
+import org.apache.commons.io.IOUtils;
 
 @Environment(EnvType.CLIENT)
 public class Ping {
@@ -43,20 +44,11 @@ public class Ping {
 			} catch (Exception var12) {
 				l += 700L;
 			} finally {
-				close(socket);
+				IOUtils.closeQuietly(socket);
 			}
 		}
 
 		return (int)((double)l / 5.0);
-	}
-
-	private static void close(Socket socket) {
-		try {
-			if (socket != null) {
-				socket.close();
-			}
-		} catch (Throwable var2) {
-		}
 	}
 
 	private static long now() {

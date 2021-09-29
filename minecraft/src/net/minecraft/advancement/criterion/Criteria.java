@@ -35,7 +35,7 @@ public class Criteria {
 	public static final ConsumeItemCriterion CONSUME_ITEM = register(new ConsumeItemCriterion());
 	public static final EffectsChangedCriterion EFFECTS_CHANGED = register(new EffectsChangedCriterion());
 	public static final UsedTotemCriterion USED_TOTEM = register(new UsedTotemCriterion());
-	public static final NetherTravelCriterion NETHER_TRAVEL = register(new NetherTravelCriterion());
+	public static final TravelCriterion NETHER_TRAVEL = register(new TravelCriterion(new Identifier("nether_travel")));
 	public static final FishingRodHookedCriterion FISHING_ROD_HOOKED = register(new FishingRodHookedCriterion());
 	public static final ChanneledLightningCriterion CHANNELED_LIGHTNING = register(new ChanneledLightningCriterion());
 	public static final ShotCrossbowCriterion SHOT_CROSSBOW = register(new ShotCrossbowCriterion());
@@ -52,6 +52,8 @@ public class Criteria {
 	public static final StartedRidingCriterion STARTED_RIDING = register(new StartedRidingCriterion());
 	public static final LightningStrikeCriterion LIGHTNING_STRIKE = register(new LightningStrikeCriterion());
 	public static final UsingItemCriterion USING_ITEM = register(new UsingItemCriterion());
+	public static final TravelCriterion FALL_FROM_HEIGHT = register(new TravelCriterion(new Identifier("fall_from_height")));
+	public static final TravelCriterion RIDE_ENTITY_IN_LAVA = register(new TravelCriterion(new Identifier("ride_entity_in_lava")));
 
 	private static <T extends Criterion<?>> T register(T object) {
 		if (VALUES.containsKey(object.getId())) {

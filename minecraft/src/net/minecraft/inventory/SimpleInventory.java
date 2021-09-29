@@ -3,6 +3,7 @@ package net.minecraft.inventory;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,6 +16,7 @@ import net.minecraft.util.collection.DefaultedList;
 public class SimpleInventory implements Inventory, RecipeInputProvider {
 	private final int size;
 	private final DefaultedList<ItemStack> stacks;
+	@Nullable
 	private List<InventoryChangedListener> listeners;
 
 	public SimpleInventory(int size) {
@@ -35,8 +37,10 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		this.listeners.add(listener);
 	}
 
-	public void removeListener(InventoryChangedListener listener) {
-		this.listeners.remove(listener);
+	public void removeListener(InventoryChangedListener inventoryChangedListener) {
+		if (this.listeners != null) {
+			this.listeners.remove(inventoryChangedListener);
+		}
 	}
 
 	@Override

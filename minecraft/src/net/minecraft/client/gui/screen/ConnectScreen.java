@@ -57,6 +57,7 @@ public class ConnectScreen extends Screen {
 	public static void connect(Screen screen, MinecraftClient client, ServerAddress address, @Nullable ServerInfo info) {
 		ConnectScreen connectScreen = new ConnectScreen(screen);
 		client.disconnect();
+		client.loadBlockList();
 		client.setCurrentServerEntry(info);
 		client.setScreen(connectScreen);
 		connectScreen.connect(client, address);

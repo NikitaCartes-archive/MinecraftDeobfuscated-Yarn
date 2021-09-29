@@ -25,7 +25,7 @@ public interface ItemSteerable {
 				entity.bodyYaw = entity.getYaw();
 				entity.headYaw = entity.getYaw();
 				entity.stepHeight = 1.0F;
-				entity.flyingSpeed = entity.getMovementSpeed() * 0.1F;
+				entity.airStrafingSpeed = entity.getMovementSpeed() * 0.1F;
 				if (saddledEntity.boosted && saddledEntity.boostedTime++ > saddledEntity.currentBoostTime) {
 					saddledEntity.boosted = false;
 				}
@@ -48,7 +48,7 @@ public interface ItemSteerable {
 				return true;
 			} else {
 				entity.stepHeight = 0.5F;
-				entity.flyingSpeed = 0.02F;
+				entity.airStrafingSpeed = 0.02F;
 				this.setMovementInput(movementInput);
 				return false;
 			}

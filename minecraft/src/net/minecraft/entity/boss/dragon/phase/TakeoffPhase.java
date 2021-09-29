@@ -11,7 +11,9 @@ import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class TakeoffPhase extends AbstractPhase {
 	private boolean shouldFindNewPath;
+	@Nullable
 	private Path path;
+	@Nullable
 	private Vec3d pathTarget;
 
 	public TakeoffPhase(EnderDragonEntity enderDragonEntity) {

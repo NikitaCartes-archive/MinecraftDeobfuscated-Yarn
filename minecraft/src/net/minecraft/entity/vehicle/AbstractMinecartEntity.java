@@ -393,7 +393,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	protected void moveOnRail(BlockPos pos, BlockState state) {
-		this.fallDistance = 0.0F;
+		this.onLanding();
 		double d = this.getX();
 		double e = this.getY();
 		double f = this.getZ();

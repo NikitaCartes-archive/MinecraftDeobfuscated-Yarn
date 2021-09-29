@@ -67,8 +67,10 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private static final int field_29663 = 2;
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
 	private final List<PendingServerCommand> commandQueue = Collections.synchronizedList(Lists.newArrayList());
+	@Nullable
 	private QueryResponseHandler queryResponseHandler;
 	private final RconCommandOutput rconCommandOutput;
+	@Nullable
 	private RconListener rconServer;
 	private final ServerPropertiesLoader propertiesLoader;
 	@Nullable

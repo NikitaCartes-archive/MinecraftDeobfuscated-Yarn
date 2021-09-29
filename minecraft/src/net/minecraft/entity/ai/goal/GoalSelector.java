@@ -69,9 +69,9 @@ public class GoalSelector {
 		this.goals.removeIf(prioritizedGoal -> prioritizedGoal.getGoal() == goal);
 	}
 
-	private static boolean method_38063(PrioritizedGoal prioritizedGoal, EnumSet<Goal.Control> enumSet) {
-		for (Goal.Control control : prioritizedGoal.getControls()) {
-			if (enumSet.contains(control)) {
+	private static boolean usesAny(PrioritizedGoal goal, EnumSet<Goal.Control> controls) {
+		for (Goal.Control control : goal.getControls()) {
+			if (controls.contains(control)) {
 				return true;
 			}
 		}
@@ -79,9 +79,9 @@ public class GoalSelector {
 		return false;
 	}
 
-	private static boolean method_38064(PrioritizedGoal prioritizedGoal, Map<Goal.Control, PrioritizedGoal> map) {
-		for (Goal.Control control : prioritizedGoal.getControls()) {
-			if (!((PrioritizedGoal)map.getOrDefault(control, REPLACEABLE_GOAL)).canBeReplacedBy(prioritizedGoal)) {
+	private static boolean canReplaceAll(PrioritizedGoal goal, Map<Goal.Control, PrioritizedGoal> goalsByControl) {
+		for (Goal.Control control : goal.getControls()) {
+			if (!((PrioritizedGoal)goalsByControl.getOrDefault(control, REPLACEABLE_GOAL)).canBeReplacedBy(goal)) {
 				return false;
 			}
 		}
@@ -94,7 +94,7 @@ public class GoalSelector {
 		profiler.push("goalCleanup");
 
 		for (PrioritizedGoal prioritizedGoal : this.goals) {
-			if (prioritizedGoal.isRunning() && (method_38063(prioritizedGoal, this.disabledControls) || !prioritizedGoal.shouldContinue())) {
+			if (prioritizedGoal.isRunning() && (usesAny(prioritizedGoal, this.disabledControls) || !prioritizedGoal.shouldContinue())) {
 				prioritizedGoal.stop();
 			}
 		}
@@ -113,8 +113,8 @@ public class GoalSelector {
 
 		for (PrioritizedGoal prioritizedGoalx : this.goals) {
 			if (!prioritizedGoalx.isRunning()
-				&& !method_38063(prioritizedGoalx, this.disabledControls)
-				&& method_38064(prioritizedGoalx, this.goalsByControl)
+				&& !usesAny(prioritizedGoalx, this.disabledControls)
+				&& canReplaceAll(prioritizedGoalx, this.goalsByControl)
 				&& prioritizedGoalx.canStart()) {
 				for (Goal.Control control : prioritizedGoalx.getControls()) {
 					PrioritizedGoal prioritizedGoal2 = (PrioritizedGoal)this.goalsByControl.getOrDefault(control, REPLACEABLE_GOAL);
@@ -127,11 +127,16 @@ public class GoalSelector {
 		}
 
 		profiler.pop();
+		this.tickGoals(true);
+	}
+
+	public void tickGoals(boolean tickAll) {
+		Profiler profiler = (Profiler)this.profiler.get();
 		profiler.push("goalTick");
 
-		for (PrioritizedGoal prioritizedGoalxx : this.goals) {
-			if (prioritizedGoalxx.isRunning()) {
-				prioritizedGoalxx.tick();
+		for (PrioritizedGoal prioritizedGoal : this.goals) {
+			if (prioritizedGoal.isRunning() && (tickAll || prioritizedGoal.shouldRunEveryTick())) {
+				prioritizedGoal.tick();
 			}
 		}
 

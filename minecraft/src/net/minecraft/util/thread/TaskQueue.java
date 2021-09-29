@@ -1,11 +1,8 @@
 package net.minecraft.util.thread;
 
 import com.google.common.collect.Queues;
-import java.util.Collection;
-import java.util.List;
 import java.util.Queue;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
 public interface TaskQueue<T, F> {
@@ -19,17 +16,23 @@ public interface TaskQueue<T, F> {
 	int getSize();
 
 	public static final class Prioritized implements TaskQueue<TaskQueue.PrioritizedTask, Runnable> {
-		private final List<Queue<Runnable>> queues;
+		private final Queue<Runnable>[] field_35032;
+		private final AtomicInteger field_35033 = new AtomicInteger();
 
 		public Prioritized(int priorityCount) {
-			this.queues = (List<Queue<Runnable>>)IntStream.range(0, priorityCount).mapToObj(i -> Queues.newConcurrentLinkedQueue()).collect(Collectors.toList());
+			this.field_35032 = new Queue[priorityCount];
+
+			for (int i = 0; i < priorityCount; i++) {
+				this.field_35032[i] = Queues.<Runnable>newConcurrentLinkedQueue();
+			}
 		}
 
 		@Nullable
 		public Runnable poll() {
-			for (Queue<Runnable> queue : this.queues) {
+			for (Queue<Runnable> queue : this.field_35032) {
 				Runnable runnable = (Runnable)queue.poll();
 				if (runnable != null) {
+					this.field_35033.decrementAndGet();
 					return runnable;
 				}
 			}
@@ -38,30 +41,29 @@ public interface TaskQueue<T, F> {
 		}
 
 		public boolean add(TaskQueue.PrioritizedTask prioritizedTask) {
-			int i = prioritizedTask.getPriority();
-			((Queue)this.queues.get(i)).add(prioritizedTask);
-			return true;
+			int i = prioritizedTask.priority;
+			if (i < this.field_35032.length && i >= 0) {
+				this.field_35032[i].add(prioritizedTask);
+				this.field_35033.incrementAndGet();
+				return true;
+			} else {
+				throw new IndexOutOfBoundsException("Priority %d not supported. Expected range [0-%d]".formatted(i, this.field_35032.length - 1));
+			}
 		}
 
 		@Override
 		public boolean isEmpty() {
-			return this.queues.stream().allMatch(Collection::isEmpty);
+			return this.field_35033.get() == 0;
 		}
 
 		@Override
 		public int getSize() {
-			int i = 0;
-
-			for (Queue<Runnable> queue : this.queues) {
-				i += queue.size();
-			}
-
-			return i;
+			return this.field_35033.get();
 		}
 	}
 
 	public static final class PrioritizedTask implements Runnable {
-		private final int priority;
+		final int priority;
 		private final Runnable runnable;
 
 		public PrioritizedTask(int priority, Runnable runnable) {

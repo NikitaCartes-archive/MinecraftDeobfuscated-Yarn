@@ -10,12 +10,11 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.EnchantRandomlyLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
-import net.minecraft.loot.function.SetNbtLootFunction;
+import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.potion.Potions;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 public class BarterLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
 	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
@@ -27,21 +26,9 @@ public class BarterLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(ItemEntry.builder(Items.BOOK).weight(5).apply(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SOUL_SPEED)))
 						.with(ItemEntry.builder(Items.IRON_BOOTS).weight(8).apply(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SOUL_SPEED)))
-						.with(
-							ItemEntry.builder(Items.POTION)
-								.weight(8)
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:fire_resistance"))))
-						)
-						.with(
-							ItemEntry.builder(Items.SPLASH_POTION)
-								.weight(8)
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:fire_resistance"))))
-						)
-						.with(
-							ItemEntry.builder(Items.POTION)
-								.weight(10)
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:water"))))
-						)
+						.with(ItemEntry.builder(Items.POTION).weight(8).apply(SetPotionLootFunction.builder(Potions.FIRE_RESISTANCE)))
+						.with(ItemEntry.builder(Items.SPLASH_POTION).weight(8).apply(SetPotionLootFunction.builder(Potions.FIRE_RESISTANCE)))
+						.with(ItemEntry.builder(Items.POTION).weight(10).apply(SetPotionLootFunction.builder(Potions.WATER)))
 						.with(ItemEntry.builder(Items.IRON_NUGGET).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(10.0F, 36.0F))))
 						.with(ItemEntry.builder(Items.ENDER_PEARL).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
 						.with(ItemEntry.builder(Items.STRING).weight(20).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(3.0F, 9.0F))))
