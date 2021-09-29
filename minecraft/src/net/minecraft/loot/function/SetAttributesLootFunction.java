@@ -32,9 +32,9 @@ import net.minecraft.util.registry.Registry;
 public class SetAttributesLootFunction extends ConditionalLootFunction {
 	final List<SetAttributesLootFunction.Attribute> attributes;
 
-	SetAttributesLootFunction(LootCondition[] lootConditions, List<SetAttributesLootFunction.Attribute> list) {
-		super(lootConditions);
-		this.attributes = ImmutableList.copyOf(list);
+	SetAttributesLootFunction(LootCondition[] conditions, List<SetAttributesLootFunction.Attribute> attributes) {
+		super(conditions);
+		this.attributes = ImmutableList.copyOf(attributes);
 	}
 
 	@Override
@@ -69,13 +69,13 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static SetAttributesLootFunction.AttributeBuilder create(
+	public static SetAttributesLootFunction.AttributeBuilder attributeBuilder(
 		String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange
 	) {
 		return new SetAttributesLootFunction.AttributeBuilder(name, attribute, operation, amountRange);
 	}
 
-	public static SetAttributesLootFunction.Builder create() {
+	public static SetAttributesLootFunction.Builder builder() {
 		return new SetAttributesLootFunction.Builder();
 	}
 
@@ -89,19 +89,14 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		final EquipmentSlot[] slots;
 
 		Attribute(
-			String string,
-			EntityAttribute entityAttribute,
-			EntityAttributeModifier.Operation operation,
-			LootNumberProvider lootNumberProvider,
-			EquipmentSlot[] equipmentSlots,
-			@Nullable UUID uUID
+			String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount, EquipmentSlot[] slots, @Nullable UUID id
 		) {
-			this.name = string;
-			this.attribute = entityAttribute;
+			this.name = name;
+			this.attribute = attribute;
 			this.operation = operation;
-			this.amount = lootNumberProvider;
-			this.id = uUID;
-			this.slots = equipmentSlots;
+			this.amount = amount;
+			this.id = id;
+			this.slots = slots;
 		}
 
 		public JsonObject serialize(JsonSerializationContext context) {

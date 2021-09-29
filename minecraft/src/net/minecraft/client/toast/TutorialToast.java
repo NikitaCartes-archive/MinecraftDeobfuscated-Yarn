@@ -17,6 +17,7 @@ public class TutorialToast implements Toast {
 	public static final int field_32225 = 28;
 	private final TutorialToast.Type type;
 	private final Text title;
+	@Nullable
 	private final Text description;
 	private Toast.Visibility visibility = Toast.Visibility.SHOW;
 	private long lastTime;

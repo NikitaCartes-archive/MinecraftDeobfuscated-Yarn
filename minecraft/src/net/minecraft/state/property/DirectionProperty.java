@@ -1,6 +1,5 @@
 package net.minecraft.state.property;
 
-import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +25,7 @@ public class DirectionProperty extends EnumProperty<Direction> {
 	 * name}
 	 */
 	public static DirectionProperty of(String name) {
-		return of(name, Predicates.alwaysTrue());
+		return of(name, (Predicate<Direction>)(direction -> true));
 	}
 
 	/**

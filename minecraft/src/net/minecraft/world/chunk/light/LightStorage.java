@@ -338,10 +338,10 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 		}
 	}
 
-	protected void enqueueSectionData(long sectionPos, @Nullable ChunkNibbleArray array, boolean bl) {
+	protected void enqueueSectionData(long sectionPos, @Nullable ChunkNibbleArray array, boolean nonEdge) {
 		if (array != null) {
 			this.queuedSections.put(sectionPos, array);
-			if (!bl) {
+			if (!nonEdge) {
 				this.queuedEdgeSections.add(sectionPos);
 			}
 		} else {

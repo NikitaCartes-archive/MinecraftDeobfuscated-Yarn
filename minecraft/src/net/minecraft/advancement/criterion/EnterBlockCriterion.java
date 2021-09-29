@@ -51,6 +51,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
+		@Nullable
 		private final Block block;
 		private final StatePredicate state;
 

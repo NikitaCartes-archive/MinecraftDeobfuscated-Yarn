@@ -38,13 +38,15 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	final int searchRadius;
 	final boolean skipExistingChunks;
 
-	ExplorationMapLootFunction(LootCondition[] lootConditions, StructureFeature<?> structureFeature, MapIcon.Type type, byte b, int i, boolean bl) {
-		super(lootConditions);
-		this.destination = structureFeature;
-		this.decoration = type;
-		this.zoom = b;
-		this.searchRadius = i;
-		this.skipExistingChunks = bl;
+	ExplorationMapLootFunction(
+		LootCondition[] conditions, StructureFeature<?> destination, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks
+	) {
+		super(conditions);
+		this.destination = destination;
+		this.decoration = decoration;
+		this.zoom = zoom;
+		this.searchRadius = searchRadius;
+		this.skipExistingChunks = skipExistingChunks;
 	}
 
 	@Override
@@ -79,7 +81,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static ExplorationMapLootFunction.Builder create() {
+	public static ExplorationMapLootFunction.Builder builder() {
 		return new ExplorationMapLootFunction.Builder();
 	}
 

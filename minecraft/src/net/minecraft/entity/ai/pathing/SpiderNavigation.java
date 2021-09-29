@@ -1,11 +1,13 @@
 package net.minecraft.entity.ai.pathing;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SpiderNavigation extends MobNavigation {
+	@Nullable
 	private BlockPos targetPos;
 
 	public SpiderNavigation(MobEntity mobEntity, World world) {

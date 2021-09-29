@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -17,6 +18,7 @@ public class TemptGoal extends Goal {
 	private double lastPlayerZ;
 	private double lastPlayerPitch;
 	private double lastPlayerYaw;
+	@Nullable
 	protected PlayerEntity closestPlayer;
 	private int cooldown;
 	private boolean active;
@@ -88,13 +90,13 @@ public class TemptGoal extends Goal {
 	public void stop() {
 		this.closestPlayer = null;
 		this.mob.getNavigation().stop();
-		this.cooldown = 100;
+		this.cooldown = toGoalTicks(100);
 		this.active = false;
 	}
 
 	@Override
 	public void tick() {
-		this.mob.getLookControl().lookAt(this.closestPlayer, (float)(this.mob.getBodyYawSpeed() + 20), (float)this.mob.getLookPitchSpeed());
+		this.mob.getLookControl().lookAt(this.closestPlayer, (float)(this.mob.getMaxHeadRotation() + 20), (float)this.mob.getMaxLookPitchChange());
 		if (this.mob.squaredDistanceTo(this.closestPlayer) < 6.25) {
 			this.mob.getNavigation().stop();
 		} else {

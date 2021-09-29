@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.GZIPOutputStream;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -57,6 +58,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	private final int slotId;
 	private final UploadStatus uploadStatus;
 	private final RateLimiter narrationRateLimiter;
+	@Nullable
 	private volatile Text[] statusTexts;
 	private volatile Text status = new TranslatableText("mco.upload.preparing");
 	private volatile String progress;
@@ -67,7 +69,9 @@ public class RealmsUploadScreen extends RealmsScreen {
 	private ButtonWidget backButton;
 	private ButtonWidget cancelButton;
 	private int animTick;
+	@Nullable
 	private Long previousWrittenBytes;
+	@Nullable
 	private Long previousTimeSnapshot;
 	private long bytesPerSecond;
 	private final Runnable onBack;

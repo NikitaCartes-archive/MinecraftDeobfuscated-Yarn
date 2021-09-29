@@ -14,19 +14,19 @@ public final class TerrainNoisePoint extends Record {
 	}
 
 	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",TerrainNoisePoint,"offset;factor;peaks",TerrainNoisePoint::offset,TerrainNoisePoint::factor,TerrainNoisePoint::peaks>(
+		return ObjectMethods.bootstrap<"toString",TerrainNoisePoint,"offset;factor;jaggedness",TerrainNoisePoint::offset,TerrainNoisePoint::factor,TerrainNoisePoint::peaks>(
 			this
 		);
 	}
 
 	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",TerrainNoisePoint,"offset;factor;peaks",TerrainNoisePoint::offset,TerrainNoisePoint::factor,TerrainNoisePoint::peaks>(
+		return ObjectMethods.bootstrap<"hashCode",TerrainNoisePoint,"offset;factor;jaggedness",TerrainNoisePoint::offset,TerrainNoisePoint::factor,TerrainNoisePoint::peaks>(
 			this
 		);
 	}
 
 	public final boolean equals(Object object) {
-		return ObjectMethods.bootstrap<"equals",TerrainNoisePoint,"offset;factor;peaks",TerrainNoisePoint::offset,TerrainNoisePoint::factor,TerrainNoisePoint::peaks>(
+		return ObjectMethods.bootstrap<"equals",TerrainNoisePoint,"offset;factor;jaggedness",TerrainNoisePoint::offset,TerrainNoisePoint::factor,TerrainNoisePoint::peaks>(
 			this, object
 		);
 	}

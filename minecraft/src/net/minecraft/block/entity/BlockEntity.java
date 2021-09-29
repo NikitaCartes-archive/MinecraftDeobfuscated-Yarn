@@ -162,8 +162,10 @@ public abstract class BlockEntity {
 	}
 
 	/**
-	 * Serializes the state of this block entity that is observable by clients. It is sent alongside the initial chunk data,
-	 * as well as when the block entity implements {@link #toUpdatePacket} and decides to use the default {@link BlockEntityUpdateS2CPacket}.
+	 * Serializes the state of this block entity that is observable by clients.
+	 * It is sent alongside the initial chunk data, as well as when the block
+	 * entity implements {@link #toUpdatePacket} and decides to use the default
+	 * {@link net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket}.
 	 */
 	public NbtCompound toInitialChunkDataNbt() {
 		return new NbtCompound();

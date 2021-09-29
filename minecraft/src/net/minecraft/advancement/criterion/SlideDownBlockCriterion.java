@@ -51,6 +51,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
+		@Nullable
 		private final Block block;
 		private final StatePredicate state;
 

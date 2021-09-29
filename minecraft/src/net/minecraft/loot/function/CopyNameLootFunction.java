@@ -16,8 +16,8 @@ import net.minecraft.util.Nameable;
 public class CopyNameLootFunction extends ConditionalLootFunction {
 	final CopyNameLootFunction.Source source;
 
-	CopyNameLootFunction(LootCondition[] lootConditions, CopyNameLootFunction.Source source) {
-		super(lootConditions);
+	CopyNameLootFunction(LootCondition[] conditions, CopyNameLootFunction.Source source) {
+		super(conditions);
 		this.source = source;
 	}
 

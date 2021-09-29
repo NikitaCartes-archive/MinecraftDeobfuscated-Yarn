@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BinaryOperator;
@@ -54,6 +55,7 @@ public class ServerCommandSource implements CommandSource {
 	private final boolean silent;
 	@Nullable
 	private final Entity entity;
+	@Nullable
 	private final ResultConsumer<ServerCommandSource> resultConsumer;
 	private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
 	private final Vec2f rotation;
@@ -76,7 +78,7 @@ public class ServerCommandSource implements CommandSource {
 		MinecraftServer server,
 		@Nullable Entity entity,
 		boolean silent,
-		ResultConsumer<ServerCommandSource> consumer,
+		@Nullable ResultConsumer<ServerCommandSource> consumer,
 		EntityAnchorArgumentType.EntityAnchor entityAnchor
 	) {
 		this.output = output;
@@ -170,7 +172,7 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	public ServerCommandSource withConsumer(ResultConsumer<ServerCommandSource> consumer) {
-		return this.resultConsumer.equals(consumer)
+		return Objects.equals(this.resultConsumer, consumer)
 			? this
 			: new ServerCommandSource(
 				this.output,

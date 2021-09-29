@@ -444,7 +444,7 @@ public class RabbitEntity extends AnimalEntity {
 					(double)(this.targetPos.getY() + 1),
 					(double)this.targetPos.getZ() + 0.5,
 					10.0F,
-					(float)this.rabbit.getLookPitchSpeed()
+					(float)this.rabbit.getMaxLookPitchChange()
 				);
 			if (this.hasReached()) {
 				World world = this.rabbit.world;
@@ -533,13 +533,13 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	public class RabbitJumpControl extends JumpControl {
+	public static class RabbitJumpControl extends JumpControl {
 		private final RabbitEntity rabbit;
 		private boolean field_24091;
 
-		public RabbitJumpControl(RabbitEntity rabbit) {
-			super(rabbit);
-			this.rabbit = rabbit;
+		public RabbitJumpControl(RabbitEntity rabbitEntity) {
+			super(rabbitEntity);
+			this.rabbit = rabbitEntity;
 		}
 
 		public boolean isActive() {

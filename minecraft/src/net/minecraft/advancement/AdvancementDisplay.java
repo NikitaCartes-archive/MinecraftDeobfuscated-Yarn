@@ -20,6 +20,7 @@ public class AdvancementDisplay {
 	private final Text title;
 	private final Text description;
 	private final ItemStack icon;
+	@Nullable
 	private final Identifier background;
 	private final AdvancementFrame frame;
 	private final boolean showToast;

@@ -31,7 +31,7 @@ public class PounceAtTargetGoal extends Goal {
 				} else if (!this.mob.isOnGround()) {
 					return false;
 				} else {
-					return this.mob.getRandom().nextInt(5) == 0;
+					return this.mob.getRandom().nextInt(toGoalTicks(5)) == 0;
 				}
 			}
 		}

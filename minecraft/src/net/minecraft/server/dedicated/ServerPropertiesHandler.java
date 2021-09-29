@@ -28,12 +28,14 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final GameMode gameMode = this.get("gamemode", combineParser(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.SURVIVAL);
 	public final String levelName = this.getString("level-name", "world");
 	public final int serverPort = this.getInt("server-port", 25565);
+	@Nullable
 	public final Boolean announcePlayerAchievements = this.getDeprecatedBoolean("announce-player-achievements");
 	public final boolean enableQuery = this.parseBoolean("enable-query", false);
 	public final int queryPort = this.getInt("query.port", 25565);
 	public final boolean enableRcon = this.parseBoolean("enable-rcon", false);
 	public final int rconPort = this.getInt("rcon.port", 25575);
 	public final String rconPassword = this.getString("rcon.password", "");
+	@Nullable
 	public final String resourcePackHash = this.getDeprecatedString("resource-pack-hash");
 	public final String resourcePackSha1 = this.getString("resource-pack-sha1", "");
 	public final boolean hardcore = this.parseBoolean("hardcore", false);

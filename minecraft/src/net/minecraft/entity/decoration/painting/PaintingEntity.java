@@ -22,7 +22,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class PaintingEntity extends AbstractDecorationEntity {
-	public PaintingMotive motive;
+	public PaintingMotive motive = PaintingMotive.KEBAB;
 
 	public PaintingEntity(EntityType<? extends PaintingEntity> entityType, World world) {
 		super(entityType, world);
@@ -84,12 +84,12 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public int getWidthPixels() {
-		return this.motive == null ? 1 : this.motive.getWidth();
+		return this.motive.getWidth();
 	}
 
 	@Override
 	public int getHeightPixels() {
-		return this.motive == null ? 1 : this.motive.getHeight();
+		return this.motive.getHeight();
 	}
 
 	@Override

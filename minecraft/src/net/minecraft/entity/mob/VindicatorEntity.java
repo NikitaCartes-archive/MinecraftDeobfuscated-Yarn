@@ -223,7 +223,7 @@ public class VindicatorEntity extends IllagerEntity {
 		@Override
 		public boolean canStart() {
 			VindicatorEntity vindicatorEntity = (VindicatorEntity)this.mob;
-			return vindicatorEntity.hasActiveRaid() && vindicatorEntity.random.nextInt(10) == 0 && super.canStart();
+			return vindicatorEntity.hasActiveRaid() && vindicatorEntity.random.nextInt(toGoalTicks(10)) == 0 && super.canStart();
 		}
 
 		@Override

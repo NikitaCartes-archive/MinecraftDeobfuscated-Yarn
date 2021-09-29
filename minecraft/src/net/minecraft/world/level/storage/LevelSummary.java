@@ -110,16 +110,6 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.locked;
 	}
 
-	/**
-	 * Returns whether the level is from a version after the world height was changed to -64 to 320.
-	 * 
-	 * <p>This corresponds to world versions {@code 2693} to {@code 2706}, or
-	 * game versions 21w06a to 21w14a.
-	 */
-	public boolean hasIncompatibleWorldHeight() {
-		return this.versionInfo.getVersion().hasIncompatibleWorldHeight();
-	}
-
 	public boolean isUnavailable() {
 		if (!this.isLocked() && !this.requiresConversion()) {
 			return !this.isVersionAvailable();
@@ -129,7 +119,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	public boolean isVersionAvailable() {
-		return this.versionInfo.getVersion().isAvailableTo(SharedConstants.getGameVersion().getSaveVersion());
+		return SharedConstants.getGameVersion().getSaveVersion().isAvailableTo(this.versionInfo.getVersion());
 	}
 
 	public Text getDetails() {
@@ -145,9 +135,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 			return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
 		} else if (this.requiresConversion()) {
 			return new TranslatableText("selectWorld.conversion").formatted(Formatting.RED);
-		} else if (this.hasIncompatibleWorldHeight()) {
-			return new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
-		} else if (!this.versionInfo.getVersion().hasSameSeries(SharedConstants.getGameVersion().getSaveVersion())) {
+		} else if (!this.isVersionAvailable()) {
 			return new TranslatableText("selectWorld.incompatible_series").formatted(Formatting.RED);
 		} else {
 			MutableText mutableText = (MutableText)(this.isHardcore()

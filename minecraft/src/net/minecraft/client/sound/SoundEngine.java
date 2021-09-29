@@ -153,7 +153,7 @@ public class SoundEngine {
 		return string;
 	}
 
-	public boolean updateDeviceSpecifier() {
+	public synchronized boolean updateDeviceSpecifier() {
 		String string = findAvailableDeviceSpecifier();
 		if (Objects.equals(this.deviceSpecifier, string)) {
 			return false;

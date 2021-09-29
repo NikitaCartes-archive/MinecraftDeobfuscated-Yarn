@@ -22,10 +22,10 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	final LootNumberProvider countRange;
 	final int limit;
 
-	LootingEnchantLootFunction(LootCondition[] lootConditions, LootNumberProvider lootNumberProvider, int i) {
-		super(lootConditions);
-		this.countRange = lootNumberProvider;
-		this.limit = i;
+	LootingEnchantLootFunction(LootCondition[] conditions, LootNumberProvider countRange, int limit) {
+		super(conditions);
+		this.countRange = countRange;
+		this.limit = limit;
 	}
 
 	@Override

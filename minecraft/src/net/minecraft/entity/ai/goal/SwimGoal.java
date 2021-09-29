@@ -19,6 +19,11 @@ public class SwimGoal extends Goal {
 	}
 
 	@Override
+	public boolean shouldRunEveryTick() {
+		return true;
+	}
+
+	@Override
 	public void tick() {
 		if (this.mob.getRandom().nextFloat() < 0.8F) {
 			this.mob.getJumpControl().setActive();

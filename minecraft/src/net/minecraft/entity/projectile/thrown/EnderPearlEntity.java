@@ -64,12 +64,12 @@ public class EnderPearlEntity extends ThrownItemEntity {
 						entity.requestTeleport(this.getX(), this.getY(), this.getZ());
 					}
 
-					entity.fallDistance = 0.0F;
+					entity.onLanding();
 					entity.damage(DamageSource.FALL, 5.0F);
 				}
 			} else if (entity != null) {
 				entity.requestTeleport(this.getX(), this.getY(), this.getZ());
-				entity.fallDistance = 0.0F;
+				entity.onLanding();
 			}
 
 			this.discard();

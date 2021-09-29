@@ -15,8 +15,8 @@ public abstract class IntProvider {
 		either -> either.map(ConstantIntProvider::create, intProvider -> intProvider),
 		intProvider -> intProvider.getType() == IntProviderType.CONSTANT ? Either.left(((ConstantIntProvider)intProvider).getValue()) : Either.right(intProvider)
 	);
-	public static final Codec<IntProvider> field_33450 = createValidatingCodec(0, Integer.MAX_VALUE);
-	public static final Codec<IntProvider> field_33451 = createValidatingCodec(1, Integer.MAX_VALUE);
+	public static final Codec<IntProvider> NON_NEGATIVE_CODEC = createValidatingCodec(0, Integer.MAX_VALUE);
+	public static final Codec<IntProvider> POSITIVE_CODEC = createValidatingCodec(1, Integer.MAX_VALUE);
 
 	public static Codec<IntProvider> createValidatingCodec(int min, int max) {
 		Function<IntProvider, DataResult<IntProvider>> function = provider -> {

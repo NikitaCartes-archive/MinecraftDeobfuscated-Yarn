@@ -29,10 +29,10 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	final LootNbtProvider source;
 	final List<CopyNbtLootFunction.Operation> operations;
 
-	CopyNbtLootFunction(LootCondition[] lootConditions, LootNbtProvider lootNbtProvider, List<CopyNbtLootFunction.Operation> list) {
-		super(lootConditions);
-		this.source = lootNbtProvider;
-		this.operations = ImmutableList.copyOf(list);
+	CopyNbtLootFunction(LootCondition[] conditions, LootNbtProvider source, List<CopyNbtLootFunction.Operation> operations) {
+		super(conditions);
+		this.source = source;
+		this.operations = ImmutableList.copyOf(operations);
 	}
 
 	@Override
@@ -75,8 +75,8 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		private final LootNbtProvider source;
 		private final List<CopyNbtLootFunction.Operation> operations = Lists.<CopyNbtLootFunction.Operation>newArrayList();
 
-		Builder(LootNbtProvider lootNbtProvider) {
-			this.source = lootNbtProvider;
+		Builder(LootNbtProvider source) {
+			this.source = source;
 		}
 
 		public CopyNbtLootFunction.Builder withOperation(String source, String target, CopyNbtLootFunction.Operator operator) {
@@ -105,11 +105,11 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		private final NbtPathArgumentType.NbtPath parsedTargetPath;
 		private final CopyNbtLootFunction.Operator operator;
 
-		Operation(String string, String string2, CopyNbtLootFunction.Operator operator) {
-			this.sourcePath = string;
-			this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(string);
-			this.targetPath = string2;
-			this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(string2);
+		Operation(String sourcePath, String targetPath, CopyNbtLootFunction.Operator operator) {
+			this.sourcePath = sourcePath;
+			this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(sourcePath);
+			this.targetPath = targetPath;
+			this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(targetPath);
 			this.operator = operator;
 		}
 
@@ -177,8 +177,8 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		public abstract void merge(NbtElement itemTag, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceTags) throws CommandSyntaxException;
 
-		Operator(String string2) {
-			this.name = string2;
+		Operator(String name) {
+			this.name = name;
 		}
 
 		public static CopyNbtLootFunction.Operator get(String name) {

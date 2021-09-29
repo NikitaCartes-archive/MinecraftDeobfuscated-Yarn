@@ -1,6 +1,7 @@
 package net.minecraft.entity;
 
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -46,6 +47,7 @@ public class FallingBlockEntity extends Entity {
 	private boolean hurtEntities;
 	private int fallHurtMax = 40;
 	private float fallHurtAmount;
+	@Nullable
 	public NbtCompound blockEntityData;
 	protected static final TrackedData<BlockPos> BLOCK_POS = DataTracker.registerData(FallingBlockEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 

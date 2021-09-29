@@ -24,9 +24,6 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<CountExtraDecoratorConfig> COUNT_EXTRA = register("count_extra", new CountExtraDecorator(CountExtraDecoratorConfig.CODEC));
 	public static final Decorator<ChanceDecoratorConfig> LAVA_LAKE = register("lava_lake", new LavaLakeDecorator(ChanceDecoratorConfig.CODEC));
 	public static final Decorator<HeightmapDecoratorConfig> HEIGHTMAP = register("heightmap", new HeightmapDecorator(HeightmapDecoratorConfig.CODEC));
-	public static final Decorator<HeightmapDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = register(
-		"heightmap_spread_double", new SpreadDoubleHeightmapDecorator(HeightmapDecoratorConfig.CODEC)
-	);
 	public static final Decorator<SurfaceRelativeThresholdDecoratorConfig> SURFACE_RELATIVE_THRESHOLD = register(
 		"surface_relative_threshold", new SurfaceRelativeThresholdDecorator(SurfaceRelativeThresholdDecoratorConfig.CODEC)
 	);
@@ -35,8 +32,10 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	);
 	public static final Decorator<CaveSurfaceDecoratorConfig> CAVE_SURFACE = register("cave_surface", new CaveSurfaceDecorator(CaveSurfaceDecoratorConfig.CODEC));
 	public static final Decorator<RangeDecoratorConfig> RANGE = register("range", new RangeDecorator(RangeDecoratorConfig.CODEC));
-	public static final Decorator<NopeDecoratorConfig> SPREAD_32_ABOVE = register("spread_32_above", new Spread32AboveDecorator(NopeDecoratorConfig.CODEC));
 	public static final Decorator<NopeDecoratorConfig> END_GATEWAY = register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig.CODEC));
+	public static final Decorator<EnvironmentScanDecoratorConfig> ENVIRONMENT_SCAN = register(
+		"environment_scan", new EnvironmentScanDecorator(EnvironmentScanDecoratorConfig.CODEC)
+	);
 	public static final Decorator<BlockSurvivesFilterDecoratorConfig> BLOCK_SURVIVES_FILTER = register(
 		"block_survives_filter", new BlockSurvivesFilterDecorator(BlockSurvivesFilterDecoratorConfig.CODEC)
 	);

@@ -17,6 +17,7 @@ public class AdvancementManager {
 	private final Map<Identifier, Advancement> advancements = Maps.<Identifier, Advancement>newHashMap();
 	private final Set<Advancement> roots = Sets.<Advancement>newLinkedHashSet();
 	private final Set<Advancement> dependents = Sets.<Advancement>newLinkedHashSet();
+	@Nullable
 	private AdvancementManager.Listener listener;
 
 	private void remove(Advancement advancement) {

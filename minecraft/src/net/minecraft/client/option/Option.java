@@ -169,10 +169,13 @@ public abstract class Option {
 	public static final DoubleOption GAMMA = new DoubleOption(
 		"options.gamma", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.gamma, (gameOptions, gamma) -> gameOptions.gamma = gamma, (gameOptions, option) -> {
 			double d = option.getRatio(option.get(gameOptions));
-			if (d == 0.0) {
+			int i = (int)(d * 100.0);
+			if (i == 0) {
 				return option.getGenericLabel(new TranslatableText("options.gamma.min"));
+			} else if (i == 50) {
+				return option.getGenericLabel(new TranslatableText("options.gamma.default"));
 			} else {
-				return d == 1.0 ? option.getGenericLabel(new TranslatableText("options.gamma.max")) : option.getPercentAdditionLabel((int)(d * 100.0));
+				return i == 100 ? option.getGenericLabel(new TranslatableText("options.gamma.max")) : option.getGenericLabel(i);
 			}
 		}
 	);

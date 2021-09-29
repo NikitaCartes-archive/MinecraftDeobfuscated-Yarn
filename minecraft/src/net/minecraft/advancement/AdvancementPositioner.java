@@ -6,11 +6,14 @@ import javax.annotation.Nullable;
 
 public class AdvancementPositioner {
 	private final Advancement advancement;
+	@Nullable
 	private final AdvancementPositioner parent;
+	@Nullable
 	private final AdvancementPositioner previousSibling;
 	private final int childrenSize;
 	private final List<AdvancementPositioner> children = Lists.<AdvancementPositioner>newArrayList();
 	private AdvancementPositioner optionalLast;
+	@Nullable
 	private AdvancementPositioner substituteChild;
 	private int depth;
 	private float row;

@@ -55,8 +55,11 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	private static final int field_30521 = 14;
 	private static final int field_30522 = 4;
 	private int conversionTimer;
+	@Nullable
 	private UUID converter;
+	@Nullable
 	private NbtElement gossipData;
+	@Nullable
 	private NbtCompound offerData;
 	private int xp;
 

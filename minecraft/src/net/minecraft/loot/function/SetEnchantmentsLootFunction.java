@@ -31,10 +31,10 @@ public class SetEnchantmentsLootFunction extends ConditionalLootFunction {
 	final Map<Enchantment, LootNumberProvider> enchantments;
 	final boolean add;
 
-	SetEnchantmentsLootFunction(LootCondition[] lootConditions, Map<Enchantment, LootNumberProvider> map, boolean bl) {
-		super(lootConditions);
-		this.enchantments = ImmutableMap.copyOf(map);
-		this.add = bl;
+	SetEnchantmentsLootFunction(LootCondition[] conditions, Map<Enchantment, LootNumberProvider> enchantments, boolean add) {
+		super(conditions);
+		this.enchantments = ImmutableMap.copyOf(enchantments);
+		this.add = add;
 	}
 
 	@Override

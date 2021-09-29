@@ -1,10 +1,10 @@
 package net.minecraft.world.chunk;
 
 import it.unimi.dsi.fastutil.longs.LongSet;
-import java.util.BitSet;
 import java.util.Map;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_6643;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -35,7 +35,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	private final boolean field_34554;
 
 	public ReadOnlyChunk(WorldChunk wrapped, boolean bl) {
-		super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped.field_34544, wrapped.getWorld().getRegistryManager().get(Registry.BIOME_KEY));
+		super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped.heightLimitView, wrapped.getWorld().getRegistryManager().get(Registry.BIOME_KEY));
 		this.wrapped = wrapped;
 		this.field_34554 = bl;
 	}
@@ -226,7 +226,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public BitSet getCarvingMask(GenerationStep.Carver carver) {
+	public class_6643 getCarvingMask(GenerationStep.Carver carver) {
 		if (this.field_34554) {
 			return super.getCarvingMask(carver);
 		} else {
@@ -235,7 +235,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public BitSet getOrCreateCarvingMask(GenerationStep.Carver carver) {
+	public class_6643 getOrCreateCarvingMask(GenerationStep.Carver carver) {
 		if (this.field_34554) {
 			return super.getOrCreateCarvingMask(carver);
 		} else {
@@ -258,9 +258,9 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void method_38257(BiomeSource biomeSource, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+	public void method_38257(BiomeSource source, MultiNoiseUtil.MultiNoiseSampler sampler) {
 		if (this.field_34554) {
-			this.wrapped.method_38257(biomeSource, multiNoiseSampler);
+			this.wrapped.method_38257(source, sampler);
 		}
 	}
 }

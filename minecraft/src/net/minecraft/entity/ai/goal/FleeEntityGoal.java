@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -15,8 +16,10 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	protected final PathAwareEntity mob;
 	private final double slowSpeed;
 	private final double fastSpeed;
+	@Nullable
 	protected T targetEntity;
 	protected final float fleeDistance;
+	@Nullable
 	protected Path fleePath;
 	protected final EntityNavigation fleeingEntityNavigation;
 	protected final Class<T> classToFleeFrom;

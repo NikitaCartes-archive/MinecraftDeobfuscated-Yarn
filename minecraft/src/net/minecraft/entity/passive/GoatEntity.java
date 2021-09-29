@@ -172,13 +172,13 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	@Override
-	public int getBodyYawSpeed() {
+	public int getMaxHeadRotation() {
 		return 15;
 	}
 
 	@Override
 	public void setHeadYaw(float headYaw) {
-		int i = this.getBodyYawSpeed();
+		int i = this.getMaxHeadRotation();
 		float f = MathHelper.subtractAngles(this.bodyYaw, headYaw);
 		float g = MathHelper.clamp(f, (float)(-i), (float)i);
 		super.setHeadYaw(this.bodyYaw + g);

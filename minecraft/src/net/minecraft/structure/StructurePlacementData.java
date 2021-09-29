@@ -22,7 +22,6 @@ public class StructurePlacementData {
 	private boolean placeFluids = true;
 	@Nullable
 	private Random random;
-	@Nullable
 	private int field_15575;
 	private final List<StructureProcessor> processors = Lists.<StructureProcessor>newArrayList();
 	private boolean updateNeighbors;

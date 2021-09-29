@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -14,6 +15,7 @@ import net.minecraft.util.math.Vec3d;
 public class ChaseBoatGoal extends Goal {
 	private int updateCountdownTicks;
 	private final PathAwareEntity mob;
+	@Nullable
 	private PlayerEntity passenger;
 	private ChaseBoatState state;
 
@@ -75,7 +77,7 @@ public class ChaseBoatGoal extends Goal {
 		this.mob.updateVelocity(f, new Vec3d((double)this.mob.sidewaysSpeed, (double)this.mob.upwardSpeed, (double)this.mob.forwardSpeed));
 		this.mob.move(MovementType.SELF, this.mob.getVelocity());
 		if (--this.updateCountdownTicks <= 0) {
-			this.updateCountdownTicks = 10;
+			this.updateCountdownTicks = this.getTickCount(10);
 			if (this.state == ChaseBoatState.GO_TO_BOAT) {
 				BlockPos blockPos = this.passenger.getBlockPos().offset(this.passenger.getHorizontalFacing().getOpposite());
 				blockPos = blockPos.add(0, -1, 0);

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -443,8 +442,8 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-		return this.structureAccessor.getStructuresWithChildren(pos, feature);
+	public List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
+		return this.structureAccessor.method_38853(pos, feature);
 	}
 
 	@Override

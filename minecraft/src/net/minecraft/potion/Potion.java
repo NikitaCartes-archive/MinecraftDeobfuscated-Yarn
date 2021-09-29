@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class Potion {
+	@Nullable
 	private final String baseName;
 	private final ImmutableList<StatusEffectInstance> effects;
 

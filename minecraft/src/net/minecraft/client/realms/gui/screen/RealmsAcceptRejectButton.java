@@ -24,11 +24,7 @@ public abstract class RealmsAcceptRejectButton {
 	public void render(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		int i = x + this.x;
 		int j = y + this.y;
-		boolean bl = false;
-		if (mouseX >= i && mouseX <= i + this.width && mouseY >= j && mouseY <= j + this.height) {
-			bl = true;
-		}
-
+		boolean bl = mouseX >= i && mouseX <= i + this.width && mouseY >= j && mouseY <= j + this.height;
 		this.render(matrices, i, j, bl);
 	}
 

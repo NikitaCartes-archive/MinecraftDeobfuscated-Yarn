@@ -39,6 +39,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	private static final int field_32120 = 80;
 	private final Screen parent;
 	private final RealmsMainScreen mainScreen;
+	@Nullable
 	private RealmsServer serverData;
 	private final long serverId;
 	private final Text[] message = new Text[]{new TranslatableText("mco.brokenworld.message.line1"), new TranslatableText("mco.brokenworld.message.line2")};

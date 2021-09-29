@@ -40,6 +40,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	private static final Text OPERATOR_TOOLTIP = new TranslatableText("mco.configure.world.invites.ops.tooltip");
 	private static final Text REMOVE_TOOLTIP = new TranslatableText("mco.configure.world.invites.remove.tooltip");
 	private static final Text INVITED_TEXT = new TranslatableText("mco.configure.world.invited");
+	@Nullable
 	private Text tooltipText;
 	private final RealmsConfigureWorldScreen parent;
 	final RealmsServer serverData;

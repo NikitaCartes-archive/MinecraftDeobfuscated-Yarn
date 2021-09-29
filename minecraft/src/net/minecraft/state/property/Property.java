@@ -8,6 +8,7 @@ import java.lang.runtime.ObjectMethods;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.state.State;
 
 public abstract class Property<T extends Comparable<T>> {
@@ -22,6 +23,7 @@ public abstract class Property<T extends Comparable<T>> {
 	 * validation of a property}.
 	 */
 	private final String name;
+	@Nullable
 	private Integer hashCodeCache;
 	private final Codec<T> codec = Codec.STRING
 		.comapFlatMap(

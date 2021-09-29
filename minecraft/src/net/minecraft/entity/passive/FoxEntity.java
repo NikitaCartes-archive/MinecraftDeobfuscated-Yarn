@@ -732,7 +732,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	class AvoidDaylightGoal extends EscapeSunlightGoal {
-		private int timer = 100;
+		private int timer = toGoalTicks(100);
 
 		public AvoidDaylightGoal(double speed) {
 			super(FoxEntity.this, speed);
@@ -785,6 +785,7 @@ public class FoxEntity extends AnimalEntity {
 	class DefendFriendGoal extends ActiveTargetGoal<LivingEntity> {
 		@Nullable
 		private LivingEntity offender;
+		@Nullable
 		private LivingEntity friend;
 		private int lastAttackedTime;
 
@@ -831,8 +832,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	class DelayedCalmDownGoal extends FoxEntity.CalmDownGoal {
-		private static final int MAX_CALM_DOWN_TIME = 140;
-		private int timer = FoxEntity.this.random.nextInt(140);
+		private static final int MAX_CALM_DOWN_TIME = toGoalTicks(140);
+		private int timer = FoxEntity.this.random.nextInt(MAX_CALM_DOWN_TIME);
 
 		public DelayedCalmDownGoal() {
 			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK, Goal.Control.JUMP));
@@ -863,7 +864,7 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		public void stop() {
-			this.timer = FoxEntity.this.random.nextInt(140);
+			this.timer = FoxEntity.this.random.nextInt(MAX_CALM_DOWN_TIME);
 			FoxEntity.this.stopActions();
 		}
 
@@ -1131,12 +1132,15 @@ public class FoxEntity extends AnimalEntity {
 			FoxEntity.this.setChasing(true);
 			FoxEntity.this.setRollingHead(false);
 			LivingEntity livingEntity = FoxEntity.this.getTarget();
-			FoxEntity.this.getLookControl().lookAt(livingEntity, 60.0F, 30.0F);
-			Vec3d vec3d = new Vec3d(
-					livingEntity.getX() - FoxEntity.this.getX(), livingEntity.getY() - FoxEntity.this.getY(), livingEntity.getZ() - FoxEntity.this.getZ()
-				)
-				.normalize();
-			FoxEntity.this.setVelocity(FoxEntity.this.getVelocity().add(vec3d.x * 0.8, 0.9, vec3d.z * 0.8));
+			if (livingEntity != null) {
+				FoxEntity.this.getLookControl().lookAt(livingEntity, 60.0F, 30.0F);
+				Vec3d vec3d = new Vec3d(
+						livingEntity.getX() - FoxEntity.this.getX(), livingEntity.getY() - FoxEntity.this.getY(), livingEntity.getZ() - FoxEntity.this.getZ()
+					)
+					.normalize();
+				FoxEntity.this.setVelocity(FoxEntity.this.getVelocity().add(vec3d.x * 0.8, 0.9, vec3d.z * 0.8));
+			}
+
 			FoxEntity.this.getNavigation().stop();
 		}
 
@@ -1281,7 +1285,7 @@ public class FoxEntity extends AnimalEntity {
 				FoxEntity.this.setRollingHead(true);
 				FoxEntity.this.setCrouching(true);
 				FoxEntity.this.getNavigation().stop();
-				FoxEntity.this.getLookControl().lookAt(livingEntity, (float)FoxEntity.this.getBodyYawSpeed(), (float)FoxEntity.this.getLookPitchSpeed());
+				FoxEntity.this.getLookControl().lookAt(livingEntity, (float)FoxEntity.this.getMaxHeadRotation(), (float)FoxEntity.this.getMaxLookPitchChange());
 			} else {
 				FoxEntity.this.setRollingHead(false);
 				FoxEntity.this.setCrouching(false);
@@ -1291,13 +1295,15 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			LivingEntity livingEntity = FoxEntity.this.getTarget();
-			FoxEntity.this.getLookControl().lookAt(livingEntity, (float)FoxEntity.this.getBodyYawSpeed(), (float)FoxEntity.this.getLookPitchSpeed());
-			if (FoxEntity.this.squaredDistanceTo(livingEntity) <= 36.0) {
-				FoxEntity.this.setRollingHead(true);
-				FoxEntity.this.setCrouching(true);
-				FoxEntity.this.getNavigation().stop();
-			} else {
-				FoxEntity.this.getNavigation().startMovingTo(livingEntity, 1.5);
+			if (livingEntity != null) {
+				FoxEntity.this.getLookControl().lookAt(livingEntity, (float)FoxEntity.this.getMaxHeadRotation(), (float)FoxEntity.this.getMaxLookPitchChange());
+				if (FoxEntity.this.squaredDistanceTo(livingEntity) <= 36.0) {
+					FoxEntity.this.setRollingHead(true);
+					FoxEntity.this.setCrouching(true);
+					FoxEntity.this.getNavigation().stop();
+				} else {
+					FoxEntity.this.getNavigation().startMovingTo(livingEntity, 1.5);
+				}
 			}
 		}
 	}
@@ -1315,7 +1321,7 @@ public class FoxEntity extends AnimalEntity {
 				return false;
 			} else if (!FoxEntity.this.wantsToPickupItem()) {
 				return false;
-			} else if (FoxEntity.this.getRandom().nextInt(10) != 0) {
+			} else if (FoxEntity.this.getRandom().nextInt(toGoalTicks(10)) != 0) {
 				return false;
 			} else {
 				List<ItemEntity> list = FoxEntity.this.world
@@ -1397,8 +1403,8 @@ public class FoxEntity extends AnimalEntity {
 					FoxEntity.this.getX() + this.lookX,
 					FoxEntity.this.getEyeY(),
 					FoxEntity.this.getZ() + this.lookZ,
-					(float)FoxEntity.this.getBodyYawSpeed(),
-					(float)FoxEntity.this.getLookPitchSpeed()
+					(float)FoxEntity.this.getMaxHeadRotation(),
+					(float)FoxEntity.this.getMaxLookPitchChange()
 				);
 		}
 
@@ -1406,7 +1412,7 @@ public class FoxEntity extends AnimalEntity {
 			double d = (Math.PI * 2) * FoxEntity.this.getRandom().nextDouble();
 			this.lookX = Math.cos(d);
 			this.lookZ = Math.sin(d);
-			this.timer = 80 + FoxEntity.this.getRandom().nextInt(20);
+			this.timer = this.getTickCount(80 + FoxEntity.this.getRandom().nextInt(20));
 		}
 	}
 
@@ -1429,7 +1435,7 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		public void start() {
-			this.timer = 40;
+			this.timer = this.getTickCount(40);
 		}
 
 		@Override

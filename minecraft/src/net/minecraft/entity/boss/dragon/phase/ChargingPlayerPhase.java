@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 public class ChargingPlayerPhase extends AbstractPhase {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_30431 = 10;
+	@Nullable
 	private Vec3d pathTarget;
 	private int chargingTicks;
 

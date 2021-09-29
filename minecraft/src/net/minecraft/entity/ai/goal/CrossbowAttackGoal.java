@@ -61,6 +61,11 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 	}
 
 	@Override
+	public boolean shouldRunEveryTick() {
+		return true;
+	}
+
+	@Override
 	public void tick() {
 		LivingEntity livingEntity = this.actor.getTarget();
 		if (livingEntity != null) {

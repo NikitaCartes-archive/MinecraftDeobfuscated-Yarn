@@ -2,9 +2,9 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 
 public class NopeSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	public NopeSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
@@ -13,7 +13,7 @@ public class NopeSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 
 	public void generate(
 		Random random,
-		class_6557 arg,
+		BlockColumn blockColumn,
 		Biome biome,
 		int i,
 		int j,

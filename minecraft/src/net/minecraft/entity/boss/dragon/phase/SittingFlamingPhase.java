@@ -1,5 +1,6 @@
 package net.minecraft.entity.boss.dragon.phase;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -15,6 +16,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 	private static final int field_30435 = 10;
 	private int ticks;
 	private int timesRun;
+	@Nullable
 	private AreaEffectCloudEntity dragonBreathEntity;
 
 	public SittingFlamingPhase(EnderDragonEntity enderDragonEntity) {

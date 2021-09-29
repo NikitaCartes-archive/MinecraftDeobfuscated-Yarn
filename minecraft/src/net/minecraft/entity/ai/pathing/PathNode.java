@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.pathing;
 
+import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -14,6 +15,7 @@ public class PathNode {
 	public float penalizedPathLength;
 	public float distanceToNearestTarget;
 	public float heapWeight;
+	@Nullable
 	public PathNode previous;
 	public boolean visited;
 	public float pathLength;

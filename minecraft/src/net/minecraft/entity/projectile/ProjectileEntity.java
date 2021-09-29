@@ -116,6 +116,23 @@ public abstract class ProjectileEntity extends Entity {
 		return true;
 	}
 
+	/**
+	 * Sets velocity and updates rotation accordingly.
+	 * 
+	 * <p>The velocity and rotation will be set to the same direction.
+	 * 
+	 * <p>The direction is calculated as follows: Based on the direction vector
+	 * {@code (x, y, z)}, a random vector is added, then multiplied by the
+	 * {@code speed}.
+	 * 
+	 * @param x the X component of the direction vector
+	 * @param y the Y component of the direction vector
+	 * @param z the Z component of the direction vector
+	 * @param speed the speed
+	 * @param divergence the fuzziness added to the direction; player usages have 1.0 and other
+	 * mobs/tools have higher values; some mobs have difficulty-adjusted
+	 * values
+	 */
 	public void setVelocity(double x, double y, double z, float speed, float divergence) {
 		Vec3d vec3d = new Vec3d(x, y, z)
 			.normalize()
@@ -133,13 +150,26 @@ public abstract class ProjectileEntity extends Entity {
 		this.prevPitch = this.getPitch();
 	}
 
-	public void setProperties(Entity user, float pitch, float yaw, float roll, float modifierZ, float modifierXYZ) {
+	/**
+	 * Sets velocity and updates rotation accordingly.
+	 * 
+	 * @param shooter the entity who shot this projectile; used to add the shooter's velocity
+	 * to this projectile
+	 * @param pitch the pitch
+	 * @param yaw the yaw
+	 * @param roll the roll
+	 * @param speed the speed
+	 * @param divergence the fuzziness added to the direction; player usages have 1.0 and other
+	 * mobs/tools have higher values; some mobs have difficulty-adjusted
+	 * values
+	 */
+	public void setVelocity(Entity shooter, float pitch, float yaw, float roll, float speed, float divergence) {
 		float f = -MathHelper.sin(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
 		float g = -MathHelper.sin((pitch + roll) * (float) (Math.PI / 180.0));
 		float h = MathHelper.cos(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
-		this.setVelocity((double)f, (double)g, (double)h, modifierZ, modifierXYZ);
-		Vec3d vec3d = user.getVelocity();
-		this.setVelocity(this.getVelocity().add(vec3d.x, user.isOnGround() ? 0.0 : vec3d.y, vec3d.z));
+		this.setVelocity((double)f, (double)g, (double)h, speed, divergence);
+		Vec3d vec3d = shooter.getVelocity();
+		this.setVelocity(this.getVelocity().add(vec3d.x, shooter.isOnGround() ? 0.0 : vec3d.y, vec3d.z));
 	}
 
 	protected void onCollision(HitResult hitResult) {

@@ -98,7 +98,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static SetLoreLootFunction.Builder method_35544() {
+	public static SetLoreLootFunction.Builder builder() {
 		return new SetLoreLootFunction.Builder();
 	}
 

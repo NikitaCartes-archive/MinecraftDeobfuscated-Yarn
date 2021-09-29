@@ -78,6 +78,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	private float shakeProgress;
 	private float lastShakeProgress;
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
+	@Nullable
 	private UUID targetUuid;
 
 	public WolfEntity(EntityType<? extends WolfEntity> entityType, World world) {
@@ -292,8 +293,8 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	}
 
 	@Override
-	public int getLookPitchSpeed() {
-		return this.isInSittingPose() ? 20 : super.getLookPitchSpeed();
+	public int getMaxLookPitchChange() {
+		return this.isInSittingPose() ? 20 : super.getMaxLookPitchChange();
 	}
 
 	@Override

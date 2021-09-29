@@ -15,12 +15,12 @@ import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
 import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
-import net.minecraft.advancement.criterion.NetherTravelCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
 import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
+import net.minecraft.advancement.criterion.TravelCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.EntityType;
@@ -146,7 +146,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion("travelled", NetherTravelCriterion.Conditions.distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(7000.0))))
+			.criterion("travelled", TravelCriterion.Conditions.netherTravel(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(7000.0))))
 			.build(consumer, "nether/fast_travel");
 		Advancement.Task.create()
 			.parent(advancement2)
@@ -444,6 +444,28 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/ride_strider");
+		Advancement.Task.create()
+			.parent(advancement12)
+			.display(
+				Items.WARPED_FUNGUS_ON_A_STICK,
+				new TranslatableText("advancements.nether.ride_strider_in_overworld_lava.title"),
+				new TranslatableText("advancements.nether.ride_strider_in_overworld_lava.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"ride_entity_distance",
+				TravelCriterion.Conditions.rideEntityInLava(
+					EntityPredicate.Builder.create()
+						.location(LocationPredicate.dimension(World.OVERWORLD))
+						.vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()),
+					DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0))
+				)
+			)
+			.build(consumer, "adventure/ride_strider_in_overworld_lava");
 		AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Task.create(), NETHER_BIOMES)
 			.parent(advancement12)
 			.display(

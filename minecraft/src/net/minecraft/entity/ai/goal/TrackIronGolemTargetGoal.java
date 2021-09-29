@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -11,6 +12,7 @@ import net.minecraft.util.math.Box;
 
 public class TrackIronGolemTargetGoal extends TrackTargetGoal {
 	private final IronGolemEntity golem;
+	@Nullable
 	private LivingEntity target;
 	private final TargetPredicate targetPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
 

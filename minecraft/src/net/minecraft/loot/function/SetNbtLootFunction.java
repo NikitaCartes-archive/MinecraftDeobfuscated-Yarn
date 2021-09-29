@@ -15,9 +15,9 @@ import net.minecraft.util.JsonHelper;
 public class SetNbtLootFunction extends ConditionalLootFunction {
 	final NbtCompound nbt;
 
-	SetNbtLootFunction(LootCondition[] lootConditions, NbtCompound nbtCompound) {
-		super(lootConditions);
-		this.nbt = nbtCompound;
+	SetNbtLootFunction(LootCondition[] conditions, NbtCompound nbt) {
+		super(conditions);
+		this.nbt = nbt;
 	}
 
 	@Override
@@ -31,6 +31,7 @@ public class SetNbtLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
+	@Deprecated
 	public static ConditionalLootFunction.Builder<?> builder(NbtCompound nbt) {
 		return builder(conditions -> new SetNbtLootFunction(conditions, nbt));
 	}

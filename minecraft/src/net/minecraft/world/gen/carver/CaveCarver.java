@@ -1,9 +1,9 @@
 package net.minecraft.world.gen.carver;
 
 import com.mojang.serialization.Codec;
-import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_6643;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -29,7 +29,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 		Random random,
 		AquiferSampler aquiferSampler,
 		ChunkPos chunkPos,
-		BitSet bitSet
+		class_6643 arg
 	) {
 		int i = ChunkSectionPos.getBlockCoord(this.getBranchFactor() * 2 - 1);
 		int j = random.nextInt(random.nextInt(random.nextInt(this.getMaxCaveCount()) + 1) + 1);
@@ -48,7 +48,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 			if (random.nextInt(4) == 0) {
 				double n = (double)caveCarverConfig.yScale.get(random);
 				float o = 1.0F + random.nextFloat() * 6.0F;
-				this.carveCave(carverContext, caveCarverConfig, chunk, function, random.nextLong(), aquiferSampler, d, e, f, o, n, bitSet, skipPredicate);
+				this.carveCave(carverContext, caveCarverConfig, chunk, function, aquiferSampler, d, e, f, o, n, arg, skipPredicate);
 				m += random.nextInt(4);
 			}
 
@@ -76,7 +76,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 					0,
 					s,
 					this.getTunnelSystemHeightWidthRatio(),
-					bitSet,
+					arg,
 					skipPredicate
 				);
 			}
@@ -107,19 +107,18 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 		CaveCarverConfig config,
 		Chunk chunk,
 		Function<BlockPos, Biome> posToBiome,
-		long seed,
 		AquiferSampler aquiferSampler,
-		double x,
-		double y,
-		double z,
-		float yaw,
-		double yawPitchRatio,
-		BitSet carvingMask,
+		double d,
+		double e,
+		double f,
+		float g,
+		double h,
+		class_6643 arg,
 		Carver.SkipPredicate skipPredicate
 	) {
-		double d = 1.5 + (double)(MathHelper.sin((float) (Math.PI / 2)) * yaw);
-		double e = d * yawPitchRatio;
-		this.carveRegion(context, config, chunk, posToBiome, seed, aquiferSampler, x + 1.0, y, z, d, e, carvingMask, skipPredicate);
+		double i = 1.5 + (double)(MathHelper.sin((float) (Math.PI / 2)) * g);
+		double j = i * h;
+		this.carveRegion(context, config, chunk, posToBiome, aquiferSampler, d + 1.0, e, f, i, j, arg, skipPredicate);
 	}
 
 	protected void carveTunnels(
@@ -140,7 +139,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 		int branchStartIndex,
 		int branchCount,
 		double yawPitchRatio,
-		BitSet carvingMask,
+		class_6643 arg,
 		Carver.SkipPredicate skipPredicate
 	) {
 		Random random = new Random(seed);
@@ -182,7 +181,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 					j,
 					branchCount,
 					1.0,
-					carvingMask,
+					arg,
 					skipPredicate
 				);
 				this.carveTunnels(
@@ -203,7 +202,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 					j,
 					branchCount,
 					1.0,
-					carvingMask,
+					arg,
 					skipPredicate
 				);
 				return;
@@ -214,7 +213,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 					return;
 				}
 
-				this.carveRegion(context, config, chunk, posToBiome, seed, aquiferSampler, x, y, z, d * horizontalScale, e * verticalScale, carvingMask, skipPredicate);
+				this.carveRegion(context, config, chunk, posToBiome, aquiferSampler, x, y, z, d * horizontalScale, e * verticalScale, arg, skipPredicate);
 			}
 		}
 	}

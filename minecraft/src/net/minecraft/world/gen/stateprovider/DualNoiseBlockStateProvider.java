@@ -55,7 +55,9 @@ public class DualNoiseBlockStateProvider extends NoiseBlockStateProvider {
 	@Override
 	public BlockState getBlockState(Random random, BlockPos pos) {
 		double d = this.getSlowNoiseValue(pos);
-		int i = (int)MathHelper.lerpFromProgress(d, -1.0, 1.0, (double)((Integer)this.variety.minInclusive()).intValue(), (double)(this.variety.maxInclusive() + 1));
+		int i = (int)MathHelper.clampedLerpFromProgress(
+			d, -1.0, 1.0, (double)((Integer)this.variety.minInclusive()).intValue(), (double)(this.variety.maxInclusive() + 1)
+		);
 		List<BlockState> list = Lists.<BlockState>newArrayListWithCapacity(i);
 
 		for(int j = 0; j < i; ++j) {

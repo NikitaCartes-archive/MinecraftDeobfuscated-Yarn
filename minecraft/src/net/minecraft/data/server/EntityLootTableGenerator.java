@@ -28,17 +28,16 @@ import net.minecraft.loot.entry.TagEntry;
 import net.minecraft.loot.function.FurnaceSmeltLootFunction;
 import net.minecraft.loot.function.LootingEnchantLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
-import net.minecraft.loot.function.SetNbtLootFunction;
+import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.potion.Potions;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
@@ -801,7 +800,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)).withLimit(1))
-								.apply(SetNbtLootFunction.builder(Util.make(new NbtCompound(), nbtCompound -> nbtCompound.putString("Potion", "minecraft:slowness"))))
+								.apply(SetPotionLootFunction.builder(Potions.SLOWNESS))
 						)
 						.conditionally(KilledByPlayerLootCondition.builder())
 				)
@@ -1109,7 +1108,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 			}
 		}
 
-		this.lootTables.forEach(biConsumer::accept);
+		this.lootTables.forEach(biConsumer);
 	}
 
 	private void register(EntityType<?> entityType, LootTable.Builder lootTable) {

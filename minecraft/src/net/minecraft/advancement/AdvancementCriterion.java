@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class AdvancementCriterion {
+	@Nullable
 	private final CriterionConditions conditions;
 
 	public AdvancementCriterion(CriterionConditions conditions) {
@@ -69,13 +70,17 @@ public class AdvancementCriterion {
 	}
 
 	public JsonElement toJson() {
-		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("trigger", this.conditions.getId().toString());
-		JsonObject jsonObject2 = this.conditions.toJson(AdvancementEntityPredicateSerializer.INSTANCE);
-		if (jsonObject2.size() != 0) {
-			jsonObject.add("conditions", jsonObject2);
-		}
+		if (this.conditions == null) {
+			throw new JsonSyntaxException("Missing trigger");
+		} else {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("trigger", this.conditions.getId().toString());
+			JsonObject jsonObject2 = this.conditions.toJson(AdvancementEntityPredicateSerializer.INSTANCE);
+			if (jsonObject2.size() != 0) {
+				jsonObject.add("conditions", jsonObject2);
+			}
 
-		return jsonObject;
+			return jsonObject;
+		}
 	}
 }

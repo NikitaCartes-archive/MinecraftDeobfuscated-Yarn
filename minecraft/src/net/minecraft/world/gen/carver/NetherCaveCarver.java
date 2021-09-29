@@ -2,9 +2,9 @@ package net.minecraft.world.gen.carver;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
-import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_6643;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
@@ -59,8 +59,7 @@ public class NetherCaveCarver extends CaveCarver {
 		CaveCarverConfig caveCarverConfig,
 		Chunk chunk,
 		Function<BlockPos, Biome> function,
-		BitSet bitSet,
-		Random random,
+		class_6643 arg,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
 		AquiferSampler aquiferSampler,

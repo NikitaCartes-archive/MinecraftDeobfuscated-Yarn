@@ -147,9 +147,15 @@ public abstract class State<O, S> {
 	}
 
 	protected static <O, S extends State<O, S>> Codec<S> createCodec(Codec<O> codec, Function<O, S> ownerToStateFunction) {
-		return codec.dispatch("Name", state -> state.owner, object -> {
-			S state = (S)ownerToStateFunction.apply(object);
-			return state.getEntries().isEmpty() ? Codec.unit(state) : state.codec.fieldOf("Properties").codec();
-		});
+		return codec.dispatch(
+			"Name",
+			state -> state.owner,
+			object -> {
+				S state = (S)ownerToStateFunction.apply(object);
+				return state.getEntries().isEmpty()
+					? Codec.unit(state)
+					: state.codec.codec().optionalFieldOf("Properties").xmap(optional -> (State)optional.orElse(state), Optional::of).codec();
+			}
+		);
 	}
 }

@@ -23,6 +23,8 @@ import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
@@ -196,7 +198,7 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
-			this.spectatorHud.render(matrices, tickDelta);
+			this.spectatorHud.renderSpectatorMenu(matrices);
 		} else if (!this.client.options.hudHidden) {
 			this.renderHotbar(tickDelta, matrices);
 		}
@@ -438,6 +440,11 @@ public class InGameHud extends DrawableHelper {
 	protected void renderStatusEffectOverlay(MatrixStack matrices) {
 		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
 		if (!collection.isEmpty()) {
+			Screen j = this.client.currentScreen;
+			if (j instanceof AbstractInventoryScreen abstractInventoryScreen && abstractInventoryScreen.method_38934()) {
+				return;
+			}
+
 			RenderSystem.enableBlend();
 			int i = 0;
 			int j = 0;

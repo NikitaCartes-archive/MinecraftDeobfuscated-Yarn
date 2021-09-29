@@ -65,6 +65,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	private int lookingAtVillagerTicksLeft;
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	private int angerTime;
+	@Nullable
 	private UUID angryAt;
 
 	public IronGolemEntity(EntityType<? extends IronGolemEntity> entityType, World world) {
@@ -195,6 +196,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		this.angryAt = uuid;
 	}
 
+	@Nullable
 	@Override
 	public UUID getAngryAt() {
 		return this.angryAt;

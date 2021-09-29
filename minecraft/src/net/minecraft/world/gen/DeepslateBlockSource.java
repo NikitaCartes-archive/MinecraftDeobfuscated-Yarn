@@ -1,27 +1,26 @@
 package net.minecraft.world.gen;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_6568;
-import net.minecraft.class_6583;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.BlockPosRandomDeriver;
 
-public class DeepslateBlockSource implements class_6583 {
+public class DeepslateBlockSource implements BlockSource {
 	private static final int DEFAULT_MIN_Y = -8;
 	private static final int MAX_Y = 0;
 	private final BlockPosRandomDeriver field_34587;
 	private final BlockState deepslateState;
 
-	public DeepslateBlockSource(BlockPosRandomDeriver blockPosRandomDeriver, BlockState blockState) {
+	public DeepslateBlockSource(BlockPosRandomDeriver blockPosRandomDeriver, BlockState deepslateState) {
 		this.field_34587 = blockPosRandomDeriver;
-		this.deepslateState = blockState;
+		this.deepslateState = deepslateState;
 	}
 
 	@Nullable
 	@Override
-	public BlockState apply(class_6568 arg, int i, int j, int k) {
+	public BlockState apply(ChunkNoiseSampler chunkNoiseSampler, int i, int j, int k) {
 		if (j < -8) {
 			return this.deepslateState;
 		} else if (j > 0) {

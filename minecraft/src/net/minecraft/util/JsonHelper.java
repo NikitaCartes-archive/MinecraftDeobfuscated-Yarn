@@ -466,7 +466,7 @@ public class JsonHelper {
 		return deserialize(reader, false);
 	}
 
-	public static JsonArray method_37165(Reader reader) {
+	public static JsonArray deserializeArray(Reader reader) {
 		return deserialize(GSON, reader, JsonArray.class, false);
 	}
 }

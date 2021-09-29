@@ -763,7 +763,7 @@ public class BoatEntity extends Entity {
 			if (onGround) {
 				if (this.fallDistance > 3.0F) {
 					if (this.location != BoatEntity.Location.ON_LAND) {
-						this.fallDistance = 0.0F;
+						this.onLanding();
 						return;
 					}
 
@@ -782,7 +782,7 @@ public class BoatEntity extends Entity {
 					}
 				}
 
-				this.fallDistance = 0.0F;
+				this.onLanding();
 			} else if (!this.world.getFluidState(this.getBlockPos().down()).isIn(FluidTags.WATER) && heightDifference < 0.0) {
 				this.fallDistance = (float)((double)this.fallDistance - heightDifference);
 			}

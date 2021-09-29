@@ -8,6 +8,7 @@ import net.minecraft.network.listener.ServerLoginPacketListener;
 public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketListener> {
 	private static final int MAX_PAYLOAD_SIZE = 1048576;
 	private final int queryId;
+	@Nullable
 	private final PacketByteBuf response;
 
 	public LoginQueryResponseC2SPacket(int queryId, @Nullable PacketByteBuf response) {
@@ -48,6 +49,7 @@ public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketList
 		return this.queryId;
 	}
 
+	@Nullable
 	public PacketByteBuf getResponse() {
 		return this.response;
 	}

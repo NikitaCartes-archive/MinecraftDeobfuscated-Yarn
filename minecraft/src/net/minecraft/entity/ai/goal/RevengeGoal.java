@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -19,6 +20,7 @@ public class RevengeGoal extends TrackTargetGoal {
 	private boolean groupRevenge;
 	private int lastAttackedTime;
 	private final Class<?>[] noRevengeTypes;
+	@Nullable
 	private Class<?>[] noHelpTypes;
 
 	public RevengeGoal(PathAwareEntity mob, Class<?>... noRevengeTypes) {

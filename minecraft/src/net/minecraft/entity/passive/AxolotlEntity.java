@@ -25,8 +25,8 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.control.AquaticLookControl;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
+import net.minecraft.entity.ai.control.YawAdjustingLookControl;
 import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
@@ -384,12 +384,12 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	}
 
 	@Override
-	public int getLookPitchSpeed() {
+	public int getMaxLookPitchChange() {
 		return 1;
 	}
 
 	@Override
-	public int getBodyYawSpeed() {
+	public int getMaxHeadRotation() {
 		return 1;
 	}
 
@@ -561,9 +561,9 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		}
 	}
 
-	class AxolotlLookControl extends AquaticLookControl {
-		public AxolotlLookControl(AxolotlEntity axolotl, int maxYawDifference) {
-			super(axolotl, maxYawDifference);
+	class AxolotlLookControl extends YawAdjustingLookControl {
+		public AxolotlLookControl(AxolotlEntity axolotl, int yawAdjustThreshold) {
+			super(axolotl, yawAdjustThreshold);
 		}
 
 		@Override

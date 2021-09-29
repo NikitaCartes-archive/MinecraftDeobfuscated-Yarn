@@ -7,17 +7,9 @@ public class DoubleInventory implements Inventory {
 	private final Inventory first;
 	private final Inventory second;
 
-	public DoubleInventory(Inventory first, Inventory second) {
-		if (first == null) {
-			first = second;
-		}
-
-		if (second == null) {
-			second = first;
-		}
-
-		this.first = first;
-		this.second = second;
+	public DoubleInventory(Inventory inventory, Inventory inventory2) {
+		this.first = inventory;
+		this.second = inventory2;
 	}
 
 	@Override

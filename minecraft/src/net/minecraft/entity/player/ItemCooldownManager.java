@@ -56,13 +56,13 @@ public class ItemCooldownManager {
 	protected void onCooldownUpdate(Item item) {
 	}
 
-	class Entry {
+	static class Entry {
 		final int startTick;
 		final int endTick;
 
-		Entry(int startTick, int endTick) {
-			this.startTick = startTick;
-			this.endTick = endTick;
+		Entry(int i, int j) {
+			this.startTick = i;
+			this.endTick = j;
 		}
 	}
 }

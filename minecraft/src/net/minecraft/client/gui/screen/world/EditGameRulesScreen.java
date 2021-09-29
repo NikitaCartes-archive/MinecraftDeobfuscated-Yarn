@@ -105,12 +105,12 @@ public class EditGameRulesScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract class AbstractRuleWidget extends ElementListWidget.Entry<EditGameRulesScreen.AbstractRuleWidget> {
+	public abstract static class AbstractRuleWidget extends ElementListWidget.Entry<EditGameRulesScreen.AbstractRuleWidget> {
 		@Nullable
 		final List<OrderedText> description;
 
-		public AbstractRuleWidget(@Nullable List<OrderedText> description) {
-			this.description = description;
+		public AbstractRuleWidget(@Nullable List<OrderedText> list) {
+			this.description = list;
 		}
 	}
 

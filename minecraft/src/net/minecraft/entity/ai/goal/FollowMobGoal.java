@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -13,6 +14,7 @@ import net.minecraft.entity.mob.MobEntity;
 public class FollowMobGoal extends Goal {
 	private final MobEntity mob;
 	private final Predicate<MobEntity> targetPredicate;
+	@Nullable
 	private MobEntity target;
 	private final double speed;
 	private final EntityNavigation navigation;
@@ -71,9 +73,9 @@ public class FollowMobGoal extends Goal {
 	@Override
 	public void tick() {
 		if (this.target != null && !this.mob.isLeashed()) {
-			this.mob.getLookControl().lookAt(this.target, 10.0F, (float)this.mob.getLookPitchSpeed());
+			this.mob.getLookControl().lookAt(this.target, 10.0F, (float)this.mob.getMaxLookPitchChange());
 			if (--this.updateCountdownTicks <= 0) {
-				this.updateCountdownTicks = 10;
+				this.updateCountdownTicks = this.getTickCount(10);
 				double d = this.mob.getX() - this.target.getX();
 				double e = this.mob.getY() - this.target.getY();
 				double f = this.mob.getZ() - this.target.getZ();

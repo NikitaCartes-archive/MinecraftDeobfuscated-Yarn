@@ -35,7 +35,7 @@ public class RaidGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
 
 	@Override
 	public void start() {
-		this.cooldown = 200;
+		this.cooldown = toGoalTicks(200);
 		super.start();
 	}
 }

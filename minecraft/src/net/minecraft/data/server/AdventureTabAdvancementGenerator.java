@@ -8,6 +8,7 @@ import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.ChanneledLightningCriterion;
+import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
 import net.minecraft.advancement.criterion.LightningStrikeCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
@@ -17,6 +18,7 @@ import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
 import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.TargetHitCriterion;
+import net.minecraft.advancement.criterion.TravelCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.UsingItemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
@@ -24,6 +26,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.PlayerPredicate;
@@ -35,6 +38,7 @@ import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -44,6 +48,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
 public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
+	private static final int field_35091 = 384;
+	private static final int field_35092 = 320;
+	private static final int field_35093 = -64;
+	private static final int field_35094 = 5;
 	private static final List<RegistryKey<Biome>> BIOMES = ImmutableList.of(
 		BiomeKeys.BIRCH_FOREST_HILLS,
 		BiomeKeys.RIVER,
@@ -200,6 +208,23 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("traded", VillagerTradeCriterion.Conditions.any())
 			.build(consumer, "adventure/trade");
+		Advancement.Task.create()
+			.parent(advancement3)
+			.display(
+				Items.EMERALD,
+				new TranslatableText("advancements.adventure.trade_at_world_height.title"),
+				new TranslatableText("advancements.adventure.trade_at_world_height.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"trade_at_world_height",
+				VillagerTradeCriterion.Conditions.method_38914(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))))
+			)
+			.build(consumer, "adventure/trade_at_world_height");
 		Advancement advancement4 = this.requireListedMobsKilled(Advancement.Task.create())
 			.parent(advancement)
 			.display(
@@ -464,7 +489,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.build(consumer, "adventure/bullseye");
 		Advancement.Task.create()
-			.parent(advancement)
+			.parent(advancement2)
 			.display(
 				Items.LEATHER_BOOTS,
 				new TranslatableText("advancements.adventure.walk_on_powder_snow_with_leather_boots.title"),
@@ -523,6 +548,26 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion("spyglass_at_ghast", createLookingAtEntityUsing(EntityType.GHAST, Items.SPYGLASS))
 			.build(consumer, "adventure/spyglass_at_ghast");
 		Advancement.Task.create()
+			.parent(advancement2)
+			.display(
+				Items.JUKEBOX,
+				new TranslatableText("advancements.husbandry.play_jukebox_in_meadows.title"),
+				new TranslatableText("advancements.husbandry.play_jukebox_in_meadows.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"play_jukebox_in_meadows",
+				ItemUsedOnBlockCriterion.Conditions.create(
+					LocationPredicate.Builder.create().biome(BiomeKeys.MEADOW).block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX).build()),
+					ItemPredicate.Builder.create().tag(ItemTags.MUSIC_DISCS)
+				)
+			)
+			.build(consumer, "husbandry/play_jukebox_in_meadows");
+		Advancement.Task.create()
 			.parent(advancement10)
 			.display(
 				Items.SPYGLASS,
@@ -536,6 +581,27 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("spyglass_at_dragon", createLookingAtEntityUsing(EntityType.ENDER_DRAGON, Items.SPYGLASS))
 			.build(consumer, "adventure/spyglass_at_dragon");
+		Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Items.WATER_BUCKET,
+				new TranslatableText("advancements.adventure.fall_from_world_height.title"),
+				new TranslatableText("advancements.adventure.fall_from_world_height.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"fall_from_world_height",
+				TravelCriterion.Conditions.fallFromHeight(
+					EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atMost(-59.0))),
+					DistancePredicate.y(NumberRange.FloatRange.atLeast(379.0)),
+					LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))
+				)
+			)
+			.build(consumer, "adventure/caves_and_cliffs");
 	}
 
 	private Advancement.Task requireListedMobsKilled(Advancement.Task task) {

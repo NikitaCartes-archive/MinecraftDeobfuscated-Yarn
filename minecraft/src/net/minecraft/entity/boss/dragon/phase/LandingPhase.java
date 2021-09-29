@@ -9,6 +9,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class LandingPhase extends AbstractPhase {
+	@Nullable
 	private Vec3d target;
 
 	public LandingPhase(EnderDragonEntity enderDragonEntity) {

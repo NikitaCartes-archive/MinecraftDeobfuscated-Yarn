@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen.world;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -17,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 public class SelectWorldScreen extends Screen {
 	private static final Logger field_28783 = LogManager.getLogger();
 	protected final Screen parent;
+	@Nullable
 	private List<OrderedText> tooltipText;
 	private ButtonWidget deleteButton;
 	private ButtonWidget selectButton;

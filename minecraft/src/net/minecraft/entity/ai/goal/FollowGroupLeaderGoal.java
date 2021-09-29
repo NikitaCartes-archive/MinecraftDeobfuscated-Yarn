@@ -17,7 +17,7 @@ public class FollowGroupLeaderGoal extends Goal {
 	}
 
 	protected int getSurroundingSearchDelay(SchoolingFishEntity fish) {
-		return 200 + fish.getRandom().nextInt(200) % 20;
+		return toGoalTicks(200 + fish.getRandom().nextInt(200) % 20);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class FollowGroupLeaderGoal extends Goal {
 	@Override
 	public void tick() {
 		if (--this.moveDelay <= 0) {
-			this.moveDelay = 10;
+			this.moveDelay = this.getTickCount(10);
 			this.fish.moveTowardLeader();
 		}
 	}

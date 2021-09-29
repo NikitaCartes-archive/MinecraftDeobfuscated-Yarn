@@ -2,14 +2,14 @@ package net.minecraft.server.world;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import java.util.stream.Stream;
+import java.util.Set;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class PlayerChunkWatchingManager {
 	private final Object2BooleanMap<ServerPlayerEntity> watchingPlayers = new Object2BooleanOpenHashMap<>();
 
-	public Stream<ServerPlayerEntity> getPlayersWatchingChunk(long l) {
-		return this.watchingPlayers.keySet().stream();
+	public Set<ServerPlayerEntity> getPlayersWatchingChunk(long l) {
+		return this.watchingPlayers.keySet();
 	}
 
 	public void add(long l, ServerPlayerEntity player, boolean watchDisabled) {

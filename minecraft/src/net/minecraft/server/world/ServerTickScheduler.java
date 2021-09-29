@@ -108,7 +108,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	public List<ScheduledTick<T>> getScheduledTicks(BlockBox bounds, boolean updateState, boolean getStaleTicks) {
 		List<ScheduledTick<T>> list = this.transferTicksInBounds(null, this.scheduledTickActionsInOrder, bounds, updateState);
 		if (updateState && list != null) {
-			this.scheduledTickActions.removeAll(list);
+			list.forEach(this.scheduledTickActions::remove);
 		}
 
 		list = this.transferTicksInBounds(list, this.currentTickActions, bounds, updateState);

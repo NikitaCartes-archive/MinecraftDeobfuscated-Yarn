@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.AddServerScreen;
@@ -34,9 +35,11 @@ public class MultiplayerScreen extends Screen {
 	private ButtonWidget buttonEdit;
 	private ButtonWidget buttonJoin;
 	private ButtonWidget buttonDelete;
+	@Nullable
 	private List<Text> tooltipText;
 	private ServerInfo selectedEntry;
 	private LanServerQueryManager.LanServerEntryList lanServers;
+	@Nullable
 	private LanServerQueryManager.LanServerDetector lanServerDetector;
 	private boolean initialized;
 

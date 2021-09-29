@@ -2,11 +2,11 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_6557;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 
 /**
  * Places the top blocks of a biome during chunk generation.
@@ -110,7 +110,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	 * Places the surface blocks for the given column.
 	 * 
 	 * @param random the Random instance, seeded with a hash of the x and z coordinates
-	 * @param chunk the current chunk being surface built
+	 * @param column the current column being surface built
 	 * @param biome the biome in the column that is being surface built
 	 * @param x X coordinate of the column
 	 * @param z Z coordinate of the column
@@ -122,7 +122,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	 */
 	public abstract void generate(
 		Random random,
-		class_6557 chunk,
+		BlockColumn column,
 		Biome biome,
 		int x,
 		int z,

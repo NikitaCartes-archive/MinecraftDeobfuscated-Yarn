@@ -91,7 +91,7 @@ public class HoneyBlock extends TransparentBlock {
 			entity.setVelocity(new Vec3d(vec3d.x, -0.05, vec3d.z));
 		}
 
-		entity.fallDistance = 0.0F;
+		entity.onLanding();
 	}
 
 	private void addCollisionEffects(World world, Entity entity) {

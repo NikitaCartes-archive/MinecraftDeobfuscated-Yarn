@@ -124,11 +124,6 @@ public class Main {
 			LevelStorage.Session session = levelStorage.createSession(string);
 			LevelSummary levelSummary = session.getLevelSummary();
 			if (levelSummary != null) {
-				if (levelSummary.hasIncompatibleWorldHeight()) {
-					LOGGER.info("Loading of worlds with extended height is disabled.");
-					return;
-				}
-
 				if (levelSummary.requiresConversion()) {
 					LOGGER.info("This world must be opened in an older version (like 1.6.4) to be safely converted");
 					return;

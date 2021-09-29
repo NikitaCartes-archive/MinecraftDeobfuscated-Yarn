@@ -184,8 +184,8 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 		return i;
 	}
 
-	protected void enqueueSectionData(long sectionPos, @Nullable ChunkNibbleArray lightArray, boolean bl) {
-		this.lightStorage.enqueueSectionData(sectionPos, lightArray, bl);
+	protected void enqueueSectionData(long sectionPos, @Nullable ChunkNibbleArray lightArray, boolean nonEdge) {
+		this.lightStorage.enqueueSectionData(sectionPos, lightArray, nonEdge);
 	}
 
 	@Nullable

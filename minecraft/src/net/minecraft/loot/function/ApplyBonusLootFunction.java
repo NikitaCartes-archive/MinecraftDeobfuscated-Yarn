@@ -25,8 +25,8 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	final Enchantment enchantment;
 	final ApplyBonusLootFunction.Formula formula;
 
-	ApplyBonusLootFunction(LootCondition[] lootConditions, Enchantment enchantment, ApplyBonusLootFunction.Formula formula) {
-		super(lootConditions);
+	ApplyBonusLootFunction(LootCondition[] conditions, Enchantment enchantment, ApplyBonusLootFunction.Formula formula) {
+		super(conditions);
 		this.enchantment = enchantment;
 		this.formula = formula;
 	}

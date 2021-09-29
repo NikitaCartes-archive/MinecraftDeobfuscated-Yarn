@@ -27,13 +27,13 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
-import net.minecraft.class_6609;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.SortedArraySet;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.thread.MessageListener;
 import net.minecraft.world.ChunkPosDistanceLevelPropagator;
+import net.minecraft.world.SimulationDistanceLevelPropagator;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
@@ -52,7 +52,7 @@ public abstract class ChunkTicketManager {
 	private final ChunkTicketManager.DistanceFromNearestPlayerTracker distanceFromNearestPlayerTracker = new ChunkTicketManager.DistanceFromNearestPlayerTracker(
 		8
 	);
-	private final class_6609 field_34886 = new class_6609();
+	private final SimulationDistanceLevelPropagator simulationDistanceTracker = new SimulationDistanceLevelPropagator();
 	private final ChunkTicketManager.NearbyChunkTicketUpdater nearbyChunkTicketUpdater = new ChunkTicketManager.NearbyChunkTicketUpdater(33);
 	final Set<ChunkHolder> chunkHolders = Sets.<ChunkHolder>newHashSet();
 	final ChunkTaskPrioritySystem levelUpdateListener;
@@ -61,7 +61,7 @@ public abstract class ChunkTicketManager {
 	final LongSet chunkPositions = new LongOpenHashSet();
 	final Executor mainThreadExecutor;
 	private long age;
-	private int field_34887 = 10;
+	private int simulationDistance = 10;
 
 	protected ChunkTicketManager(Executor workerExecutor, Executor mainThreadExecutor) {
 		MessageListener<Runnable> messageListener = MessageListener.create("player ticket throttler", mainThreadExecutor::execute);
@@ -86,7 +86,7 @@ public abstract class ChunkTicketManager {
 				if (chunkTicket.isExpired(this.age)) {
 					iterator.remove();
 					bl = true;
-					this.field_34886.method_38641(entry.getLongKey(), chunkTicket);
+					this.simulationDistanceTracker.remove(entry.getLongKey(), chunkTicket);
 				}
 			}
 
@@ -114,7 +114,7 @@ public abstract class ChunkTicketManager {
 
 	public boolean tick(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
 		this.distanceFromNearestPlayerTracker.updateLevels();
-		this.field_34886.method_38635();
+		this.simulationDistanceTracker.updateLevels();
 		this.nearbyChunkTicketUpdater.updateLevels();
 		int i = Integer.MAX_VALUE - this.distanceFromTicketTracker.update(Integer.MAX_VALUE);
 		boolean bl = i != 0;
@@ -187,14 +187,14 @@ public abstract class ChunkTicketManager {
 		ChunkTicket<T> chunkTicket = new ChunkTicket<>(type, 33 - radius, argument);
 		long l = pos.toLong();
 		this.addTicket(l, chunkTicket);
-		this.field_34886.method_38637(l, chunkTicket);
+		this.simulationDistanceTracker.add(l, chunkTicket);
 	}
 
 	public <T> void removeTicket(ChunkTicketType<T> type, ChunkPos chunkPos, int radius, T argument) {
 		ChunkTicket<T> chunkTicket = new ChunkTicket<>(type, 33 - radius, argument);
 		long l = chunkPos.toLong();
 		this.removeTicket(l, chunkTicket);
-		this.field_34886.method_38641(l, chunkTicket);
+		this.simulationDistanceTracker.remove(l, chunkTicket);
 	}
 
 	private SortedArraySet<ChunkTicket<?>> getTicketSet(long position) {
@@ -206,10 +206,10 @@ public abstract class ChunkTicketManager {
 		long l = chunkPos.toLong();
 		if (forced) {
 			this.addTicket(l, chunkTicket);
-			this.field_34886.method_38637(l, chunkTicket);
+			this.simulationDistanceTracker.add(l, chunkTicket);
 		} else {
 			this.removeTicket(l, chunkTicket);
-			this.field_34886.method_38641(l, chunkTicket);
+			this.simulationDistanceTracker.remove(l, chunkTicket);
 		}
 	}
 
@@ -219,7 +219,7 @@ public abstract class ChunkTicketManager {
 		this.playersByChunkPos.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(player);
 		this.distanceFromNearestPlayerTracker.updateLevel(l, 0, true);
 		this.nearbyChunkTicketUpdater.updateLevel(l, 0, true);
-		this.field_34886.method_38638(ChunkTicketType.PLAYER, chunkPos, this.method_38633(), chunkPos);
+		this.simulationDistanceTracker.add(ChunkTicketType.PLAYER, chunkPos, this.getPlayerSimulationLevel(), chunkPos);
 	}
 
 	public void handleChunkLeave(ChunkSectionPos pos, ServerPlayerEntity player) {
@@ -231,20 +231,20 @@ public abstract class ChunkTicketManager {
 			this.playersByChunkPos.remove(l);
 			this.distanceFromNearestPlayerTracker.updateLevel(l, Integer.MAX_VALUE, false);
 			this.nearbyChunkTicketUpdater.updateLevel(l, Integer.MAX_VALUE, false);
-			this.field_34886.method_38642(ChunkTicketType.PLAYER, chunkPos, this.method_38633(), chunkPos);
+			this.simulationDistanceTracker.remove(ChunkTicketType.PLAYER, chunkPos, this.getPlayerSimulationLevel(), chunkPos);
 		}
 	}
 
-	private int method_38633() {
-		return Math.max(0, 31 - this.field_34887);
+	private int getPlayerSimulationLevel() {
+		return Math.max(0, 31 - this.simulationDistance);
 	}
 
-	public boolean method_38630(long l) {
-		return this.field_34886.getLevel(l) < 32;
+	public boolean isSimulating(long chunkPos) {
+		return this.simulationDistanceTracker.getLevel(chunkPos) < 32;
 	}
 
 	public boolean method_38632(long l) {
-		return this.field_34886.getLevel(l) < 33;
+		return this.simulationDistanceTracker.getLevel(l) < 33;
 	}
 
 	protected String getTicket(long pos) {
@@ -256,10 +256,10 @@ public abstract class ChunkTicketManager {
 		this.nearbyChunkTicketUpdater.setWatchDistance(viewDistance);
 	}
 
-	public void method_38629(int i) {
-		if (i != this.field_34887) {
-			this.field_34887 = i;
-			this.field_34886.method_38636(this.method_38633());
+	public void setSimulationDistance(int simulationDistance) {
+		if (simulationDistance != this.simulationDistance) {
+			this.simulationDistance = simulationDistance;
+			this.simulationDistanceTracker.updatePlayerTickets(this.getPlayerSimulationLevel());
 		}
 	}
 
@@ -308,8 +308,8 @@ public abstract class ChunkTicketManager {
 	}
 
 	@VisibleForTesting
-	class_6609 method_38631() {
-		return this.field_34886;
+	SimulationDistanceLevelPropagator method_38631() {
+		return this.simulationDistanceTracker;
 	}
 
 	class DistanceFromNearestPlayerTracker extends ChunkPosDistanceLevelPropagator {
