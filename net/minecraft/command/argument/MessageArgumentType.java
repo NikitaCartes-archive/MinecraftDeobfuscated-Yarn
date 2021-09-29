@@ -79,7 +79,7 @@ implements ArgumentType<MessageFormat> {
                 i = messageSelector.getEnd();
             }
             if (i < this.contents.length()) {
-                mutableText.append(this.contents.substring(i, this.contents.length()));
+                mutableText.append(this.contents.substring(i));
             }
             return mutableText;
         }
@@ -111,7 +111,7 @@ implements ArgumentType<MessageFormat> {
                 }
                 reader.skip();
             }
-            return new MessageFormat(string, list.toArray(new MessageSelector[list.size()]));
+            return new MessageFormat(string, list.toArray(new MessageSelector[0]));
         }
     }
 

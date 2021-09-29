@@ -4,14 +4,13 @@
 package net.minecraft.world.gen.decorator;
 
 import com.mojang.serialization.Codec;
-import java.util.BitSet;
 import java.util.Random;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.DecoratorContext;
 
 public class CarvingMaskDecorator
@@ -23,13 +22,12 @@ extends Decorator<CarvingMaskDecoratorConfig> {
     @Override
     public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, CarvingMaskDecoratorConfig carvingMaskDecoratorConfig, BlockPos blockPos) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
-        BitSet bitSet = decoratorContext.getOrCreateCarvingMask(chunkPos, carvingMaskDecoratorConfig.carver);
-        return IntStream.range(0, bitSet.length()).filter(bitSet::get).mapToObj(i -> {
-            int j = i & 0xF;
-            int k = i >> 4 & 0xF;
-            int l = i >> 8;
-            return new BlockPos(chunkPos.getStartX() + j, l, chunkPos.getStartZ() + k);
-        });
+        return decoratorContext.getOrCreateCarvingMask(chunkPos, carvingMaskDecoratorConfig.carver).method_38866(chunkPos);
+    }
+
+    @Override
+    public /* synthetic */ Stream getPositions(DecoratorContext context, Random random, DecoratorConfig config, BlockPos pos) {
+        return this.getPositions(context, random, (CarvingMaskDecoratorConfig)config, pos);
     }
 }
 

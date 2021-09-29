@@ -6,13 +6,13 @@ package net.minecraft.world.gen.carver;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.BitSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_6643;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -33,8 +33,6 @@ import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.NetherCaveCarver;
 import net.minecraft.world.gen.carver.RavineCarver;
 import net.minecraft.world.gen.carver.RavineCarverConfig;
-import net.minecraft.world.gen.carver.UnderwaterCanyonCarver;
-import net.minecraft.world.gen.carver.UnderwaterCaveCarver;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
@@ -43,8 +41,6 @@ public abstract class Carver<C extends CarverConfig> {
     public static final Carver<CaveCarverConfig> CAVE = Carver.register("cave", new CaveCarver(CaveCarverConfig.CAVE_CODEC));
     public static final Carver<CaveCarverConfig> NETHER_CAVE = Carver.register("nether_cave", new NetherCaveCarver(CaveCarverConfig.CAVE_CODEC));
     public static final Carver<RavineCarverConfig> RAVINE = Carver.register("canyon", new RavineCarver(RavineCarverConfig.RAVINE_CODEC));
-    public static final Carver<RavineCarverConfig> UNDERWATER_CANYON = Carver.register("underwater_canyon", new UnderwaterCanyonCarver(RavineCarverConfig.RAVINE_CODEC));
-    public static final Carver<CaveCarverConfig> UNDERWATER_CAVE = Carver.register("underwater_cave", new UnderwaterCaveCarver(CaveCarverConfig.CAVE_CODEC));
     protected static final BlockState AIR = Blocks.AIR.getDefaultState();
     protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
     protected static final FluidState WATER = Fluids.WATER.getDefaultState();
@@ -73,70 +69,65 @@ public abstract class Carver<C extends CarverConfig> {
         return 4;
     }
 
-    protected boolean carveRegion(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, AquiferSampler sampler, double x, double y, double z, double horizontalScale, double verticalScale, BitSet carvingMask, SkipPredicate skipPredicate) {
+    protected boolean carveRegion(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, AquiferSampler aquiferSampler, double d, double e, double f, double g, double h, class_6643 arg, SkipPredicate skipPredicate) {
         ChunkPos chunkPos = chunk.getPos();
-        int i = chunkPos.x;
-        int j = chunkPos.z;
-        Random random = new Random(seed + (long)i + (long)j);
-        double d = chunkPos.getCenterX();
-        double e = chunkPos.getCenterZ();
-        double f = 16.0 + horizontalScale * 2.0;
-        if (Math.abs(x - d) > f || Math.abs(z - e) > f) {
+        double i = chunkPos.getCenterX();
+        double j = chunkPos.getCenterZ();
+        double k = 16.0 + g * 2.0;
+        if (Math.abs(d - i) > k || Math.abs(f - j) > k) {
             return false;
         }
-        int k = chunkPos.getStartX();
-        int l = chunkPos.getStartZ();
-        int m = Math.max(MathHelper.floor(x - horizontalScale) - k - 1, 0);
-        int n = Math.min(MathHelper.floor(x + horizontalScale) - k, 15);
-        int o = Math.max(MathHelper.floor(y - verticalScale) - 1, context.getMinY() + 1);
-        int p = Math.min(MathHelper.floor(y + verticalScale) + 1, context.getMinY() + context.getHeight() - 8);
-        int q = Math.max(MathHelper.floor(z - horizontalScale) - l - 1, 0);
-        int r = Math.min(MathHelper.floor(z + horizontalScale) - l, 15);
+        int l = chunkPos.getStartX();
+        int m = chunkPos.getStartZ();
+        int n = Math.max(MathHelper.floor(d - g) - l - 1, 0);
+        int o = Math.min(MathHelper.floor(d + g) - l, 15);
+        int p = Math.max(MathHelper.floor(e - h) - 1, context.getMinY() + 1);
+        int q = Math.min(MathHelper.floor(e + h) + 1, context.getMinY() + context.getHeight() - 8);
+        int r = Math.max(MathHelper.floor(f - g) - m - 1, 0);
+        int s = Math.min(MathHelper.floor(f + g) - m, 15);
         boolean bl = false;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
-        for (int s = m; s <= n; ++s) {
-            int t = chunkPos.getOffsetX(s);
-            double g = ((double)t + 0.5 - x) / horizontalScale;
-            for (int u = q; u <= r; ++u) {
-                int v = chunkPos.getOffsetZ(u);
-                double h = ((double)v + 0.5 - z) / horizontalScale;
-                if (g * g + h * h >= 1.0) continue;
+        for (int t = n; t <= o; ++t) {
+            int u = chunkPos.getOffsetX(t);
+            double v = ((double)u + 0.5 - d) / g;
+            for (int w = r; w <= s; ++w) {
+                int x = chunkPos.getOffsetZ(w);
+                double y = ((double)x + 0.5 - f) / g;
+                if (v * v + y * y >= 1.0) continue;
                 MutableBoolean mutableBoolean = new MutableBoolean(false);
-                for (int w = p; w > o; --w) {
-                    int ab;
-                    int ac;
-                    double aa = ((double)w - 0.5 - y) / verticalScale;
-                    if (skipPredicate.shouldSkip(context, g, aa, h, w) || carvingMask.get(ac = s | u << 4 | (ab = w - context.getMinY()) << 8) && !Carver.isDebug(config)) continue;
-                    carvingMask.set(ac);
-                    mutable.set(t, w, v);
-                    bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, random, mutable, mutable2, sampler, mutableBoolean);
+                for (int z = q; z > p; --z) {
+                    double aa = ((double)z - 0.5 - e) / h;
+                    if (skipPredicate.shouldSkip(context, v, aa, y, z) || arg.method_38868(t, z, w) && !Carver.isDebug(config)) continue;
+                    arg.method_38865(t, z, w);
+                    mutable.set(u, z, x);
+                    bl |= this.carveAtPoint(context, config, chunk, posToBiome, arg, mutable, mutable2, aquiferSampler, mutableBoolean);
                 }
             }
         }
         return bl;
     }
 
-    protected boolean carveAtPoint(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, BitSet carvingMask, Random random, BlockPos.Mutable pos, BlockPos.Mutable downPos, AquiferSampler sampler, MutableBoolean foundSurface) {
-        BlockState blockState = chunk.getBlockState(pos);
+    protected boolean carveAtPoint(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, class_6643 arg, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, AquiferSampler aquiferSampler, MutableBoolean mutableBoolean) {
+        BlockState blockState = chunk.getBlockState(mutable);
         if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
-            foundSurface.setTrue();
+            mutableBoolean.setTrue();
         }
         if (!this.canAlwaysCarveBlock(blockState) && !Carver.isDebug(config)) {
             return false;
         }
-        BlockState blockState2 = this.getState(context, config, pos, sampler);
+        BlockState blockState2 = this.getState(context, config, mutable, aquiferSampler);
         if (blockState2 == null) {
             return false;
         }
-        chunk.setBlockState(pos, blockState2, false);
-        if (sampler.needsFluidTick() && !blockState2.getFluidState().isEmpty()) {
-            chunk.getFluidTickScheduler().schedule(pos, blockState2.getFluidState().getFluid(), 0);
+        chunk.setBlockState(mutable, blockState2, false);
+        if (aquiferSampler.needsFluidTick() && !blockState2.getFluidState().isEmpty()) {
+            chunk.getFluidTickScheduler().schedule(mutable, blockState2.getFluidState().getFluid(), 0);
         }
-        if (foundSurface.isTrue()) {
-            downPos.set((Vec3i)pos, Direction.DOWN);
-            if (chunk.getBlockState(downPos).isOf(Blocks.DIRT)) {
-                chunk.setBlockState(downPos, posToBiome.apply(pos).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
+        if (mutableBoolean.isTrue()) {
+            mutable2.set((Vec3i)mutable, Direction.DOWN);
+            if (chunk.getBlockState(mutable2).isOf(Blocks.DIRT)) {
+                chunk.setBlockState(mutable2, posToBiome.apply(mutable).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
             }
         }
         return true;
@@ -171,32 +162,12 @@ public abstract class Carver<C extends CarverConfig> {
         return state;
     }
 
-    public abstract boolean carve(CarverContext var1, C var2, Chunk var3, Function<BlockPos, Biome> var4, Random var5, AquiferSampler var6, ChunkPos var7, BitSet var8);
+    public abstract boolean carve(CarverContext var1, C var2, Chunk var3, Function<BlockPos, Biome> var4, Random var5, AquiferSampler var6, ChunkPos var7, class_6643 var8);
 
     public abstract boolean shouldCarve(C var1, Random var2);
 
     protected boolean canAlwaysCarveBlock(BlockState state) {
         return this.alwaysCarvableBlocks.contains(state.getBlock());
-    }
-
-    protected boolean isRegionUncarvable(Chunk chunk, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
-        ChunkPos chunkPos = chunk.getPos();
-        int i = chunkPos.getStartX();
-        int j = chunkPos.getStartZ();
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int k = minX; k <= maxX; ++k) {
-            for (int l = minZ; l <= maxZ; ++l) {
-                for (int m = minY - 1; m <= maxY + 1; ++m) {
-                    mutable.set(i + k, m, j + l);
-                    if (this.carvableFluids.contains(chunk.getFluidState(mutable).getFluid())) {
-                        return true;
-                    }
-                    if (m == maxY + 1 || Carver.isOnBoundary(k, l, minX, maxX, minZ, maxZ)) continue;
-                    m = maxY;
-                }
-            }
-        }
-        return false;
     }
 
     private static boolean isOnBoundary(int x, int z, int minX, int maxX, int minZ, int maxZ) {

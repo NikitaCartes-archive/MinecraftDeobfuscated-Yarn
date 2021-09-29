@@ -8,9 +8,9 @@ import java.util.Random;
 import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6557;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
@@ -28,7 +28,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void generate(Random random, class_6557 arg, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, BlockColumn blockColumn, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
         int o = l;
         double e = 0.03125;
         boolean bl = this.noise.sample((double)i * 0.03125, (double)j * 0.03125, 0.0) * 75.0 + random.nextDouble() > 0.0;
@@ -38,7 +38,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         BlockState blockState3 = ternarySurfaceConfig.getTopMaterial();
         BlockState blockState4 = ternarySurfaceConfig.getUnderMaterial();
         for (int r = 127; r >= m; --r) {
-            BlockState blockState5 = arg.getState(r);
+            BlockState blockState5 = blockColumn.getState(r);
             if (blockState5.isAir()) {
                 q = -1;
                 continue;
@@ -66,15 +66,15 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                 }
                 q = p;
                 if (r >= o - 1) {
-                    arg.method_38092(r, blockState3);
+                    blockColumn.setState(r, blockState3);
                     continue;
                 }
-                arg.method_38092(r, blockState4);
+                blockColumn.setState(r, blockState4);
                 continue;
             }
             if (q <= 0) continue;
             --q;
-            arg.method_38092(r, blockState4);
+            blockColumn.setState(r, blockState4);
         }
     }
 

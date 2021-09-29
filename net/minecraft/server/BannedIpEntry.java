@@ -22,7 +22,7 @@ extends BanEntry<String> {
 
     @Override
     public Text toText() {
-        return new LiteralText((String)this.getKey());
+        return new LiteralText(String.valueOf(this.getKey()));
     }
 
     public BannedIpEntry(JsonObject json) {

@@ -27,7 +27,7 @@ extends Item {
         if (!world.isClient) {
             EggEntity eggEntity = new EggEntity(world, user);
             eggEntity.setItem(itemStack);
-            eggEntity.setProperties(user, user.getPitch(), user.getYaw(), 0.0f, 1.5f, 1.0f);
+            eggEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0f, 1.5f, 1.0f);
             world.spawnEntity(eggEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));

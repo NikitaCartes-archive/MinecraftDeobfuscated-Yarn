@@ -151,13 +151,17 @@ public abstract class Option {
         gameOptions.gamma = gamma;
     }, (gameOptions, option) -> {
         double d = option.getRatio(option.get((GameOptions)gameOptions));
-        if (d == 0.0) {
+        int i = (int)(d * 100.0);
+        if (i == 0) {
             return option.getGenericLabel(new TranslatableText("options.gamma.min"));
         }
-        if (d == 1.0) {
+        if (i == 50) {
+            return option.getGenericLabel(new TranslatableText("options.gamma.default"));
+        }
+        if (i == 100) {
             return option.getGenericLabel(new TranslatableText("options.gamma.max"));
         }
-        return option.getPercentAdditionLabel((int)(d * 100.0));
+        return option.getGenericLabel(i);
     });
     public static final DoubleOption MIPMAP_LEVELS = new DoubleOption("options.mipmapLevels", 0.0, 4.0, 1.0f, gameOptions -> gameOptions.mipmapLevels, (gameOptions, mipmapLevels) -> {
         gameOptions.mipmapLevels = (int)mipmapLevels.doubleValue();

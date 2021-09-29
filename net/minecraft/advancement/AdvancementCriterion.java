@@ -20,6 +20,7 @@ import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class AdvancementCriterion {
+    @Nullable
     private final CriterionConditions conditions;
 
     public AdvancementCriterion(CriterionConditions conditions) {
@@ -69,6 +70,9 @@ public class AdvancementCriterion {
     }
 
     public JsonElement toJson() {
+        if (this.conditions == null) {
+            throw new JsonSyntaxException("Missing trigger");
+        }
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("trigger", this.conditions.getId().toString());
         JsonObject jsonObject2 = this.conditions.toJson(AdvancementEntityPredicateSerializer.INSTANCE);

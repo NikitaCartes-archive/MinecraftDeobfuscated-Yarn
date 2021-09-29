@@ -289,12 +289,19 @@ public class MathHelper {
     }
 
     /**
-     * Steps from {@code from} degrees towards {@code to} degrees, changing the value by at most {@code step} degrees.
+     * Clamps {@code value}, as an angle, between {@code mean - delta} and {@code
+     * mean + delta} degrees.
+     * 
+     * @return the clamped {@code value}
+     * 
+     * @param delta the maximum difference allowed from the mean, must not be negative
+     * @param mean the mean value of the clamp angle range
+     * @param value the value to clamp
      */
-    public static float stepAngleTowards(float from, float to, float step) {
-        float f = MathHelper.subtractAngles(from, to);
-        float g = MathHelper.clamp(f, -step, step);
-        return to - g;
+    public static float clampAngle(float value, float mean, float delta) {
+        float f = MathHelper.subtractAngles(value, mean);
+        float g = MathHelper.clamp(f, -delta, delta);
+        return mean - g;
     }
 
     /**
@@ -322,6 +329,14 @@ public class MathHelper {
         return NumberUtils.toInt(string, fallback);
     }
 
+    /**
+     * {@return the parsed integer; {@code fallback} if {@code string} is not an
+     * integer; or {@code min} if the parsed integer is too small}
+     * 
+     * @param min the minimum if the parsed value is too small
+     * @param string the string to parse
+     * @param fallback the fallback for unparsable {@code string}
+     */
     public static int parseInt(String string, int fallback, int min) {
         return Math.max(min, MathHelper.parseInt(string, fallback));
     }
@@ -334,6 +349,14 @@ public class MathHelper {
         }
     }
 
+    /**
+     * {@return the parsed double; {@code fallback} if {@code string} is not an
+     * double; or {@code min} if the parsed double is too small}
+     * 
+     * @param min the minimum if the parsed value is too small
+     * @param fallback the fallback for unparsable {@code string}
+     * @param string the string to parse
+     */
     public static double parseDouble(String string, double fallback, double min) {
         return Math.max(min, MathHelper.parseDouble(string, fallback));
     }
@@ -838,7 +861,11 @@ public class MathHelper {
      * is a multiple of {@code divisor}.
      */
     public static int roundUpToMultiple(int value, int divisor) {
-        return (value + divisor - 1) / divisor * divisor;
+        return MathHelper.ceilDiv(value, divisor) * divisor;
+    }
+
+    public static int ceilDiv(int a, int b) {
+        return -Math.floorDiv(-a, b);
     }
 
     /**

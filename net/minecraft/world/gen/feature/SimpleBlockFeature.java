@@ -25,11 +25,11 @@ extends Feature<SimpleBlockFeatureConfig> {
      */
     @Override
     public boolean generate(FeatureContext<SimpleBlockFeatureConfig> context) {
-        BlockState blockState;
         SimpleBlockFeatureConfig simpleBlockFeatureConfig = context.getConfig();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
-        if (!simpleBlockFeatureConfig.placeOn.isEmpty() && !simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState(blockPos.down())) || !simpleBlockFeatureConfig.placeIn.isEmpty() && !simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) || !simpleBlockFeatureConfig.placeUnder.isEmpty() && !simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up())) || !(blockState = simpleBlockFeatureConfig.toPlace.getBlockState(context.getRandom(), blockPos)).canPlaceAt(structureWorldAccess, blockPos)) return false;
+        BlockState blockState = simpleBlockFeatureConfig.toPlace().getBlockState(context.getRandom(), blockPos);
+        if (!blockState.canPlaceAt(structureWorldAccess, blockPos)) return false;
         if (blockState.getBlock() instanceof TallPlantBlock) {
             if (!structureWorldAccess.isAir(blockPos.up())) return false;
             TallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);

@@ -9,9 +9,11 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class SpiderNavigation
 extends MobNavigation {
+    @Nullable
     private BlockPos targetPos;
 
     public SpiderNavigation(MobEntity mobEntity, World world) {

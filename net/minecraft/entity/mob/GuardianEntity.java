@@ -59,9 +59,11 @@ extends HostileEntity {
     private float spikesExtensionRate;
     private float spikesExtension;
     private float prevSpikesExtension;
+    @Nullable
     private LivingEntity cachedBeamTarget;
     private int beamTicks;
     private boolean flopping;
+    @Nullable
     protected WanderAroundGoal wanderGoal;
 
     public GuardianEntity(EntityType<? extends GuardianEntity> entityType, World world) {
@@ -302,7 +304,7 @@ extends HostileEntity {
     }
 
     @Override
-    public int getLookPitchSpeed() {
+    public int getMaxLookPitchChange() {
         return 180;
     }
 
@@ -359,7 +361,7 @@ extends HostileEntity {
             double r = lookControl.getLookX();
             double s = lookControl.getLookY();
             double t = lookControl.getLookZ();
-            if (!lookControl.isActive()) {
+            if (!lookControl.isPending()) {
                 r = o;
                 s = p;
                 t = q;
@@ -389,14 +391,17 @@ extends HostileEntity {
 
         @Override
         public boolean shouldContinue() {
-            return super.shouldContinue() && (this.elder || this.guardian.squaredDistanceTo(this.guardian.getTarget()) > 9.0);
+            return super.shouldContinue() && (this.elder || this.guardian.getTarget() != null && this.guardian.squaredDistanceTo(this.guardian.getTarget()) > 9.0);
         }
 
         @Override
         public void start() {
             this.beamTicks = -10;
             this.guardian.getNavigation().stop();
-            this.guardian.getLookControl().lookAt(this.guardian.getTarget(), 90.0f, 90.0f);
+            LivingEntity livingEntity = this.guardian.getTarget();
+            if (livingEntity != null) {
+                this.guardian.getLookControl().lookAt(livingEntity, 90.0f, 90.0f);
+            }
             this.guardian.velocityDirty = true;
         }
 
@@ -408,8 +413,16 @@ extends HostileEntity {
         }
 
         @Override
+        public boolean shouldRunEveryTick() {
+            return true;
+        }
+
+        @Override
         public void tick() {
             LivingEntity livingEntity = this.guardian.getTarget();
+            if (livingEntity == null) {
+                return;
+            }
             this.guardian.getNavigation().stop();
             this.guardian.getLookControl().lookAt(livingEntity, 90.0f, 90.0f);
             if (!this.guardian.canSee(livingEntity)) {
@@ -418,7 +431,7 @@ extends HostileEntity {
             }
             ++this.beamTicks;
             if (this.beamTicks == 0) {
-                this.guardian.setBeamTarget(this.guardian.getTarget().getId());
+                this.guardian.setBeamTarget(livingEntity.getId());
                 if (!this.guardian.isSilent()) {
                     this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
                 }

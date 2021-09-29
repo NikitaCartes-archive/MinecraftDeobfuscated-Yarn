@@ -9,9 +9,9 @@ import com.mojang.serialization.Codec;
 import java.util.Comparator;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_6557;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
@@ -29,7 +29,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void generate(Random random, class_6557 arg, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, BlockColumn blockColumn, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
         int o = l + 1;
         int p = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
         int q = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
@@ -37,22 +37,22 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         boolean bl = this.shoreNoise.sample((double)i * 0.03125, 109.0, (double)j * 0.03125) * 75.0 + random.nextDouble() > 0.0;
         BlockState blockState3 = (BlockState)this.underLavaNoises.entrySet().stream().max(Comparator.comparing(entry -> ((OctavePerlinNoiseSampler)entry.getValue()).sample(i, l, j))).get().getKey();
         BlockState blockState4 = (BlockState)this.surfaceNoises.entrySet().stream().max(Comparator.comparing(entry -> ((OctavePerlinNoiseSampler)entry.getValue()).sample(i, l, j))).get().getKey();
-        BlockState blockState5 = arg.getState(128);
+        BlockState blockState5 = blockColumn.getState(128);
         for (int r = 127; r >= m; --r) {
             int s;
-            BlockState blockState6 = arg.getState(r);
+            BlockState blockState6 = blockColumn.getState(r);
             if (blockState5.isOf(blockState.getBlock()) && (blockState6.isAir() || blockState6 == blockState2)) {
-                for (s = 0; s < p && arg.getState(r + s).isOf(blockState.getBlock()); ++s) {
-                    arg.method_38092(r + s, blockState3);
+                for (s = 0; s < p && blockColumn.getState(r + s).isOf(blockState.getBlock()); ++s) {
+                    blockColumn.setState(r + s, blockState3);
                 }
             }
             if ((blockState5.isAir() || blockState5 == blockState2) && blockState6.isOf(blockState.getBlock())) {
-                for (s = 0; s < q && arg.getState(r - s).isOf(blockState.getBlock()); ++s) {
+                for (s = 0; s < q && blockColumn.getState(r - s).isOf(blockState.getBlock()); ++s) {
                     if (bl && r >= o - 4 && r <= o + 1) {
-                        arg.method_38092(r - s, this.getLavaShoreState());
+                        blockColumn.setState(r - s, this.getLavaShoreState());
                         continue;
                     }
-                    arg.method_38092(r - s, blockState4);
+                    blockColumn.setState(r - s, blockState4);
                 }
             }
             blockState5 = blockState6;

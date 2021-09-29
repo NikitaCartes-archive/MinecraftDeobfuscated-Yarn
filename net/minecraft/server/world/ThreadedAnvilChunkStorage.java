@@ -42,8 +42,6 @@ import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import net.minecraft.class_6609;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -86,6 +84,7 @@ import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.SimulationDistanceLevelPropagator;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -722,14 +721,14 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     void dump(Writer writer) throws IOException {
         CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("z").addColumn("level").addColumn("in_memory").addColumn("status").addColumn("full_status").addColumn("accessible_ready").addColumn("ticking_ready").addColumn("entity_ticking_ready").addColumn("ticket").addColumn("spawning").addColumn("block_entity_count").addColumn("ticking_ticket").addColumn("ticking_level").startBody(writer);
-        class_6609 lv = this.ticketManager.method_38631();
+        SimulationDistanceLevelPropagator simulationDistanceLevelPropagator = this.ticketManager.method_38631();
         for (Long2ObjectMap.Entry entry : this.chunkHolders.long2ObjectEntrySet()) {
             long l = entry.getLongKey();
             ChunkPos chunkPos = new ChunkPos(l);
             ChunkHolder chunkHolder = (ChunkHolder)entry.getValue();
             Optional<Chunk> optional = Optional.ofNullable(chunkHolder.getCurrentChunk());
             Optional<Object> optional2 = optional.flatMap(chunk -> chunk instanceof WorldChunk ? Optional.of((WorldChunk)chunk) : Optional.empty());
-            csvWriter.printRow(chunkPos.x, chunkPos.z, chunkHolder.getLevel(), optional.isPresent(), optional.map(Chunk::getStatus).orElse(null), optional2.map(WorldChunk::getLevelType).orElse(null), ThreadedAnvilChunkStorage.getFutureStatus(chunkHolder.getAccessibleFuture()), ThreadedAnvilChunkStorage.getFutureStatus(chunkHolder.getTickingFuture()), ThreadedAnvilChunkStorage.getFutureStatus(chunkHolder.getEntityTickingFuture()), this.ticketManager.getTicket(l), !this.isTooFarFromPlayersToSpawnMobs(chunkPos), optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0), lv.method_38643(l), lv.getLevel(l));
+            csvWriter.printRow(chunkPos.x, chunkPos.z, chunkHolder.getLevel(), optional.isPresent(), optional.map(Chunk::getStatus).orElse(null), optional2.map(WorldChunk::getLevelType).orElse(null), ThreadedAnvilChunkStorage.getFutureStatus(chunkHolder.getAccessibleFuture()), ThreadedAnvilChunkStorage.getFutureStatus(chunkHolder.getTickingFuture()), ThreadedAnvilChunkStorage.getFutureStatus(chunkHolder.getEntityTickingFuture()), this.ticketManager.getTicket(l), this.method_38783(chunkPos), optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0), simulationDistanceLevelPropagator.getTickingTicket(l), simulationDistanceLevelPropagator.getLevel(l));
         }
     }
 
@@ -756,16 +755,37 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound);
     }
 
-    boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {
-        return this.method_37907(chunkPos).findAny().isEmpty();
-    }
-
-    public Stream<ServerPlayerEntity> method_37907(ChunkPos chunkPos) {
+    boolean method_38783(ChunkPos chunkPos) {
         long l = chunkPos.toLong();
         if (!this.ticketManager.method_20800(l)) {
-            return Stream.empty();
+            return false;
         }
-        return this.playerChunkWatchingManager.getPlayersWatchingChunk(l).filter(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && ThreadedAnvilChunkStorage.getSquaredDistance(chunkPos, serverPlayerEntity) < 16384.0);
+        for (ServerPlayerEntity serverPlayerEntity : this.playerChunkWatchingManager.getPlayersWatchingChunk(l)) {
+            if (!this.method_38782(serverPlayerEntity, chunkPos)) continue;
+            return true;
+        }
+        return false;
+    }
+
+    public List<ServerPlayerEntity> method_37907(ChunkPos chunkPos) {
+        long l = chunkPos.toLong();
+        if (!this.ticketManager.method_20800(l)) {
+            return List.of();
+        }
+        ImmutableList.Builder builder = ImmutableList.builder();
+        for (ServerPlayerEntity serverPlayerEntity : this.playerChunkWatchingManager.getPlayersWatchingChunk(l)) {
+            if (!this.method_38782(serverPlayerEntity, chunkPos)) continue;
+            builder.add(serverPlayerEntity);
+        }
+        return builder.build();
+    }
+
+    private boolean method_38782(ServerPlayerEntity serverPlayerEntity, ChunkPos chunkPos) {
+        if (serverPlayerEntity.isSpectator()) {
+            return false;
+        }
+        double d = ThreadedAnvilChunkStorage.getSquaredDistance(chunkPos, serverPlayerEntity);
+        return d < 16384.0;
     }
 
     private boolean doesNotGenerateChunks(ServerPlayerEntity player) {
@@ -895,8 +915,14 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     @Override
-    public Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean onlyOnWatchDistanceEdge) {
-        return this.playerChunkWatchingManager.getPlayersWatchingChunk(chunkPos.toLong()).filter(serverPlayerEntity -> onlyOnWatchDistanceEdge ? ThreadedAnvilChunkStorage.method_37906(chunkPos, serverPlayerEntity, true, this.watchDistance) : ThreadedAnvilChunkStorage.method_37901(chunkPos, serverPlayerEntity, true, this.watchDistance));
+    public List<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean onlyOnWatchDistanceEdge) {
+        Set<ServerPlayerEntity> set = this.playerChunkWatchingManager.getPlayersWatchingChunk(chunkPos.toLong());
+        ImmutableList.Builder builder = ImmutableList.builder();
+        for (ServerPlayerEntity serverPlayerEntity : set) {
+            if ((!onlyOnWatchDistanceEdge || !ThreadedAnvilChunkStorage.method_37906(chunkPos, serverPlayerEntity, true, this.watchDistance)) && (onlyOnWatchDistanceEdge || !ThreadedAnvilChunkStorage.method_37901(chunkPos, serverPlayerEntity, true, this.watchDistance))) continue;
+            builder.add(serverPlayerEntity);
+        }
+        return builder.build();
     }
 
     protected void loadEntity(Entity entity) {
@@ -984,11 +1010,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
     }
 
-    private void sendChunkDataPackets(ServerPlayerEntity player, MutableObject<ChunkDataS2CPacket> mutableObject, WorldChunk chunk) {
-        if (mutableObject.getValue() == null) {
-            mutableObject.setValue(new ChunkDataS2CPacket(chunk, this.lightingProvider, null, null, true));
+    private void sendChunkDataPackets(ServerPlayerEntity player, MutableObject<ChunkDataS2CPacket> cachedDataPacket, WorldChunk chunk) {
+        if (cachedDataPacket.getValue() == null) {
+            cachedDataPacket.setValue(new ChunkDataS2CPacket(chunk, this.lightingProvider, null, null, true));
         }
-        player.sendInitialChunkPackets(chunk.getPos(), mutableObject.getValue());
+        player.sendInitialChunkPackets(chunk.getPos(), cachedDataPacket.getValue());
         DebugInfoSender.sendChunkWatchingChange(this.world, chunk.getPos());
         ArrayList<Entity> list = Lists.newArrayList();
         ArrayList<Entity> list2 = Lists.newArrayList();

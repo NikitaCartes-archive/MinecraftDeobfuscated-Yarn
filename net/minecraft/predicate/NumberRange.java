@@ -21,7 +21,9 @@ import org.jetbrains.annotations.Nullable;
 public abstract class NumberRange<T extends Number> {
     public static final SimpleCommandExceptionType EXCEPTION_EMPTY = new SimpleCommandExceptionType(new TranslatableText("argument.range.empty"));
     public static final SimpleCommandExceptionType EXCEPTION_SWAPPED = new SimpleCommandExceptionType(new TranslatableText("argument.range.swapped"));
+    @Nullable
     protected final T min;
+    @Nullable
     protected final T max;
 
     protected NumberRange(@Nullable T min, @Nullable T max) {
@@ -148,7 +150,9 @@ public abstract class NumberRange<T extends Number> {
     public static class FloatRange
     extends NumberRange<Double> {
         public static final FloatRange ANY = new FloatRange(null, null);
+        @Nullable
         private final Double squaredMin;
+        @Nullable
         private final Double squaredMax;
 
         private static FloatRange create(StringReader reader, @Nullable Double double_, @Nullable Double double2) throws CommandSyntaxException {
@@ -215,7 +219,9 @@ public abstract class NumberRange<T extends Number> {
     public static class IntRange
     extends NumberRange<Integer> {
         public static final IntRange ANY = new IntRange(null, null);
+        @Nullable
         private final Long minSquared;
+        @Nullable
         private final Long maxSquared;
 
         private static IntRange parse(StringReader reader, @Nullable Integer min, @Nullable Integer max) throws CommandSyntaxException {

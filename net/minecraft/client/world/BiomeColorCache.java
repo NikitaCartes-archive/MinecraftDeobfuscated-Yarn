@@ -124,7 +124,7 @@ public class BiomeColorCache {
 
     @Environment(value=EnvType.CLIENT)
     static class class_6598 {
-        private Int2ObjectArrayMap<int[]> field_34796 = new Int2ObjectArrayMap(16);
+        private final Int2ObjectArrayMap<int[]> field_34796 = new Int2ObjectArrayMap(16);
         private final ReentrantReadWriteLock field_34797 = new ReentrantReadWriteLock();
         private static final int field_34798 = MathHelper.square(16);
 

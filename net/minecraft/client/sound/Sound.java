@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.sound.SoundContainer;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class Sound
@@ -101,6 +102,7 @@ implements SoundContainer<Sound> {
             this.name = name;
         }
 
+        @Nullable
         public static RegistrationType getByName(String string) {
             for (RegistrationType registrationType : RegistrationType.values()) {
                 if (!registrationType.name.equals(string)) continue;

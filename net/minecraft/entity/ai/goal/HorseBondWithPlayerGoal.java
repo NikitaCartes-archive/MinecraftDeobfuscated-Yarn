@@ -52,7 +52,7 @@ extends Goal {
 
     @Override
     public void tick() {
-        if (!this.horse.isTame() && this.horse.getRandom().nextInt(50) == 0) {
+        if (!this.horse.isTame() && this.horse.getRandom().nextInt(this.getTickCount(50)) == 0) {
             Entity entity = this.horse.getPassengerList().get(0);
             if (entity == null) {
                 return;

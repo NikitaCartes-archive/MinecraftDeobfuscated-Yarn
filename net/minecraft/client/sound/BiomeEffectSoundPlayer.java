@@ -24,6 +24,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BiomeEffectSoundPlayer
@@ -38,6 +39,7 @@ implements ClientPlayerTickable {
     private Optional<BiomeMoodSound> moodSound = Optional.empty();
     private Optional<BiomeAdditionsSound> additionsSound = Optional.empty();
     private float moodPercentage;
+    @Nullable
     private Biome activeBiome;
 
     public BiomeEffectSoundPlayer(ClientPlayerEntity player, SoundManager soundManager, BiomeAccess biomeAccess) {

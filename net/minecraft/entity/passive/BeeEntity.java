@@ -136,6 +136,7 @@ Flutterer {
     public static final String FLOWER_POS_KEY = "FlowerPos";
     public static final String HIVE_POS_KEY = "HivePos";
     private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
+    @Nullable
     private UUID targetUuid;
     private float currentPitch;
     private float lastPitch;
@@ -397,6 +398,7 @@ Flutterer {
     }
 
     @Override
+    @Nullable
     public UUID getAngryAt() {
         return this.targetUuid;
     }
@@ -671,6 +673,7 @@ Flutterer {
         private int pollinationTicks;
         private int lastPollinationTick;
         private boolean running;
+        @Nullable
         private Vec3d nextTarget;
         private int ticks;
         private static final int field_30308 = 600;
@@ -759,6 +762,11 @@ Flutterer {
             this.running = false;
             BeeEntity.this.navigation.stop();
             BeeEntity.this.ticksUntilCanPollinate = 200;
+        }
+
+        @Override
+        public boolean shouldRunEveryTick() {
+            return true;
         }
 
         @Override
@@ -1003,7 +1011,7 @@ Flutterer {
                 return;
             }
             ++this.ticks;
-            if (this.ticks > 600) {
+            if (this.ticks > this.getTickCount(600)) {
                 this.makeChosenHivePossibleHive();
                 return;
             }
@@ -1113,7 +1121,7 @@ Flutterer {
                 return;
             }
             ++this.ticks;
-            if (this.ticks > 600) {
+            if (this.ticks > this.getTickCount(600)) {
                 BeeEntity.this.flowerPos = null;
                 return;
             }
@@ -1157,7 +1165,7 @@ Flutterer {
 
         @Override
         public void tick() {
-            if (BeeEntity.this.random.nextInt(30) != 0) {
+            if (BeeEntity.this.random.nextInt(this.getTickCount(30)) != 0) {
                 return;
             }
             for (int i = 1; i <= 2; ++i) {

@@ -230,15 +230,6 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     }
 
     @Override
-    protected void applyStatusEffectOffset() {
-        int i = this.x;
-        super.applyStatusEffectOffset();
-        if (this.searchBox != null && this.x != i) {
-            this.searchBox.setX(this.x + 82);
-        }
-    }
-
-    @Override
     protected void init() {
         if (this.client.interactionManager.hasCreativeInventory()) {
             super.init();

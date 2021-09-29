@@ -52,8 +52,10 @@ extends DrawableHelper {
     private final int width;
     private final List<OrderedText> description;
     private final MinecraftClient client;
+    @Nullable
     private AdvancementWidget parent;
     private final List<AdvancementWidget> children = Lists.newArrayList();
+    @Nullable
     private AdvancementProgress progress;
     private final int x;
     private final int y;

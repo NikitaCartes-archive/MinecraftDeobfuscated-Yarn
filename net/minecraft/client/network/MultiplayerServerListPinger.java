@@ -49,7 +49,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -97,12 +96,13 @@ public class MultiplayerServerListPinger {
                 if (serverMetadata.getPlayers() != null) {
                     entry.playerCountLabel = MultiplayerServerListPinger.createPlayerCountText(serverMetadata.getPlayers().getOnlinePlayerCount(), serverMetadata.getPlayers().getPlayerLimit());
                     ArrayList<Text> list = Lists.newArrayList();
-                    if (ArrayUtils.isNotEmpty(serverMetadata.getPlayers().getSample())) {
-                        for (GameProfile gameProfile : serverMetadata.getPlayers().getSample()) {
+                    GameProfile[] gameProfiles = serverMetadata.getPlayers().getSample();
+                    if (gameProfiles != null && gameProfiles.length > 0) {
+                        for (GameProfile gameProfile : gameProfiles) {
                             list.add(new LiteralText(gameProfile.getName()));
                         }
-                        if (serverMetadata.getPlayers().getSample().length < serverMetadata.getPlayers().getOnlinePlayerCount()) {
-                            list.add(new TranslatableText("multiplayer.status.and_more", serverMetadata.getPlayers().getOnlinePlayerCount() - serverMetadata.getPlayers().getSample().length));
+                        if (gameProfiles.length < serverMetadata.getPlayers().getOnlinePlayerCount()) {
+                            list.add(new TranslatableText("multiplayer.status.and_more", serverMetadata.getPlayers().getOnlinePlayerCount() - gameProfiles.length));
                         }
                         entry.playerListSummary = list;
                     }

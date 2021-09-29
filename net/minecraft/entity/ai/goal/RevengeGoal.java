@@ -17,6 +17,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.GameRules;
+import org.jetbrains.annotations.Nullable;
 
 public class RevengeGoal
 extends TrackTargetGoal {
@@ -25,6 +26,7 @@ extends TrackTargetGoal {
     private boolean groupRevenge;
     private int lastAttackedTime;
     private final Class<?>[] noRevengeTypes;
+    @Nullable
     private Class<?>[] noHelpTypes;
 
     public RevengeGoal(PathAwareEntity mob, Class<?> ... noRevengeTypes) {

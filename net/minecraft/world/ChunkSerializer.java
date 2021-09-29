@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Locale;
@@ -21,6 +20,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.class_6625;
+import net.minecraft.class_6643;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -179,7 +179,7 @@ public class ChunkSerializer {
         NbtCompound nbtCompound6 = nbtCompound2.getCompound("CarvingMasks");
         for (String string2 : nbtCompound6.getKeys()) {
             GenerationStep.Carver carver = GenerationStep.Carver.valueOf(string2);
-            protoChunk2.setCarvingMask(carver, BitSet.valueOf(nbtCompound6.getByteArray(string2)));
+            protoChunk2.setCarvingMask(carver, new class_6643(nbtCompound6.getLongArray(string2), chunk.getBottomY()));
         }
         return protoChunk2;
     }
@@ -248,9 +248,9 @@ public class ChunkSerializer {
             nbtCompound2.put("Lights", ChunkSerializer.toNbt(protoChunk.getLightSourcesBySection()));
             nbtCompound4 = new NbtCompound();
             for (GenerationStep.Carver carver : GenerationStep.Carver.values()) {
-                BitSet bitSet = protoChunk.getCarvingMask(carver);
-                if (bitSet == null) continue;
-                nbtCompound4.putByteArray(carver.toString(), bitSet.toByteArray());
+                class_6643 lv = protoChunk.getCarvingMask(carver);
+                if (lv == null) continue;
+                nbtCompound4.putLongArray(carver.toString(), lv.method_38864());
             }
             nbtCompound2.put("CarvingMasks", nbtCompound4);
         }

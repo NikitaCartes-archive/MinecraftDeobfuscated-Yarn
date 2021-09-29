@@ -38,9 +38,9 @@ public class SetStewEffectLootFunction
 extends ConditionalLootFunction {
     final Map<StatusEffect, LootNumberProvider> effects;
 
-    SetStewEffectLootFunction(LootCondition[] lootConditions, Map<StatusEffect, LootNumberProvider> map) {
-        super(lootConditions);
-        this.effects = ImmutableMap.copyOf(map);
+    SetStewEffectLootFunction(LootCondition[] conditions, Map<StatusEffect, LootNumberProvider> effects) {
+        super(conditions);
+        this.effects = ImmutableMap.copyOf(effects);
     }
 
     @Override

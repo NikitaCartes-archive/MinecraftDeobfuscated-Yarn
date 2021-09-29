@@ -659,7 +659,7 @@ Saddleable {
             return;
         }
         if (!(this.hasPassengers() && this.canBeControlledByRider() && this.isSaddled())) {
-            this.flyingSpeed = 0.02f;
+            this.airStrafingSpeed = 0.02f;
             super.travel(movementInput);
             return;
         }
@@ -693,7 +693,7 @@ Saddleable {
             }
             this.jumpStrength = 0.0f;
         }
-        this.flyingSpeed = this.getMovementSpeed() * 0.1f;
+        this.airStrafingSpeed = this.getMovementSpeed() * 0.1f;
         if (this.isLogicalSideForUpdatingMovement()) {
             this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             super.travel(new Vec3d(f, movementInput.y, g));

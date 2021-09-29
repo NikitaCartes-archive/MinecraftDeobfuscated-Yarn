@@ -84,7 +84,7 @@ public abstract class AbstractTeam {
         public final int value;
 
         public static String[] method_35595() {
-            return VISIBILITY_RULES.keySet().toArray(new String[VISIBILITY_RULES.size()]);
+            return VISIBILITY_RULES.keySet().toArray(new String[0]);
         }
 
         @Nullable

@@ -105,7 +105,7 @@ extends BiomeSource {
         }
         NoiseColumnSampler noiseColumnSampler = (NoiseColumnSampler)noiseSampler;
         TerrainNoisePoint terrainNoisePoint = noiseColumnSampler.createTerrainNoisePoint(pos.getX(), pos.getZ(), f, m, g);
-        info.add("Terrain PV: " + decimalFormat.format(d) + " O: " + decimalFormat.format(terrainNoisePoint.offset()) + " F: " + decimalFormat.format(terrainNoisePoint.factor()) + " P: " + decimalFormat.format(terrainNoisePoint.peaks()));
+        info.add("Terrain PV: " + decimalFormat.format(d) + " O: " + decimalFormat.format(terrainNoisePoint.offset()) + " F: " + decimalFormat.format(terrainNoisePoint.factor()) + " JA: " + decimalFormat.format(terrainNoisePoint.peaks()));
     }
 
     static final class Instance {

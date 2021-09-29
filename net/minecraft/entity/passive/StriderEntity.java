@@ -84,7 +84,9 @@ Saddleable {
     private static final TrackedData<Boolean> COLD = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private final SaddledComponent saddledComponent;
+    @Nullable
     private TemptGoal temptGoal;
+    @Nullable
     private EscapeDangerGoal escapeDangerGoal;
 
     public StriderEntity(EntityType<? extends StriderEntity> entityType, World world) {
@@ -277,7 +279,7 @@ Saddleable {
     protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
         this.checkBlockCollision();
         if (this.isInLava()) {
-            this.fallDistance = 0.0f;
+            this.onLanding();
             return;
         }
         super.fall(heightDifference, onGround, landedState, landedPosition);

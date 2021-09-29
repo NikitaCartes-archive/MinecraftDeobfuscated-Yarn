@@ -24,7 +24,7 @@ public interface ItemSteerable {
         Entity entity2 = entity.getFirstPassenger();
         if (!(entity.hasPassengers() && entity.canBeControlledByRider() && entity2 instanceof PlayerEntity)) {
             entity.stepHeight = 0.5f;
-            entity.flyingSpeed = 0.02f;
+            entity.airStrafingSpeed = 0.02f;
             this.setMovementInput(movementInput);
             return false;
         }
@@ -35,7 +35,7 @@ public interface ItemSteerable {
         entity.bodyYaw = entity.getYaw();
         entity.headYaw = entity.getYaw();
         entity.stepHeight = 1.0f;
-        entity.flyingSpeed = entity.getMovementSpeed() * 0.1f;
+        entity.airStrafingSpeed = entity.getMovementSpeed() * 0.1f;
         if (saddledEntity.boosted && saddledEntity.boostedTime++ > saddledEntity.currentBoostTime) {
             saddledEntity.boosted = false;
         }

@@ -106,7 +106,7 @@ implements BiomeAccess.Storage {
         }
         ArrayList<Biome> list = Lists.newArrayList();
         for (Biome biome : this.populationSource.getBiomes()) {
-            if (!ChunkGenerator.method_38266(biome)) continue;
+            if (!ChunkGenerator.canPlaceStrongholdInBiome(biome)) continue;
             list.add(biome);
         }
         int i = strongholdConfig.getDistance();
@@ -121,7 +121,7 @@ implements BiomeAccess.Storage {
             double e = (double)(4 * i + i * m * 6) + (random.nextDouble() - 0.5) * ((double)i * 2.5);
             int o = (int)Math.round(Math.cos(d) * e);
             int p = (int)Math.round(Math.sin(d) * e);
-            BlockPos blockPos = this.populationSource.locateBiome(ChunkSectionPos.getOffsetPos(o, 8), 0, ChunkSectionPos.getOffsetPos(p, 8), 112, list::contains, random, this.method_38276());
+            BlockPos blockPos = this.populationSource.locateBiome(ChunkSectionPos.getOffsetPos(o, 8), 0, ChunkSectionPos.getOffsetPos(p, 8), 112, list::contains, random, this.getMultiNoiseSampler());
             if (blockPos != null) {
                 o = ChunkSectionPos.getSectionCoord(blockPos.getX());
                 p = ChunkSectionPos.getSectionCoord(blockPos.getZ());
@@ -136,7 +136,7 @@ implements BiomeAccess.Storage {
         }
     }
 
-    private static boolean method_38266(Biome biome) {
+    private static boolean canPlaceStrongholdInBiome(Biome biome) {
         Biome.Category category = biome.getCategory();
         return category != Biome.Category.OCEAN && category != Biome.Category.RIVER && category != Biome.Category.BEACH && category != Biome.Category.SWAMP && category != Biome.Category.NETHER && category != Biome.Category.THEEND;
     }
@@ -145,18 +145,18 @@ implements BiomeAccess.Storage {
 
     public abstract ChunkGenerator withSeed(long var1);
 
-    public CompletableFuture<Chunk> populateBiomes(Executor executor, Registry<Biome> registry, StructureAccessor structureAccessor, Chunk chunk) {
+    public CompletableFuture<Chunk> populateBiomes(Executor executor, Registry<Biome> biomeRegistry, StructureAccessor structureAccessor, Chunk chunk) {
         return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
-            chunk.method_38257(this.biomeSource, this.method_38276());
+            chunk.method_38257(this.biomeSource, this.getMultiNoiseSampler());
             return chunk;
         }), Util.getMainWorkerExecutor());
     }
 
-    public abstract MultiNoiseUtil.MultiNoiseSampler method_38276();
+    public abstract MultiNoiseUtil.MultiNoiseSampler getMultiNoiseSampler();
 
     @Override
     public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-        return this.getBiomeSource().getBiome(biomeX, biomeY, biomeZ, this.method_38276());
+        return this.getBiomeSource().getBiome(biomeX, biomeY, biomeZ, this.getMultiNoiseSampler());
     }
 
     /**
@@ -242,7 +242,7 @@ implements BiomeAccess.Storage {
                         Supplier<String> supplier = () -> registry2.getKey(structureFeature2).map(Object::toString).orElseGet(structureFeature2::toString);
                         try {
                             world.method_36972(supplier);
-                            structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), structureFeature2).forEach(structureStart -> structureStart.generateStructure(world, structureAccessor, this, chunkRandom, new BlockBox(o, q, p, o + 15, r, p + 15), new ChunkPos(m, n)));
+                            structureAccessor.method_38853(ChunkSectionPos.from(blockPos), structureFeature2).forEach(structureStart -> structureStart.generateStructure(world, structureAccessor, this, chunkRandom, new BlockBox(o, q, p, o + 15, r, p + 15), new ChunkPos(m, n)));
                         } catch (Exception exception) {
                             CrashReport crashReport = CrashReport.create(exception, "Feature placement");
                             crashReport.addElement("Feature").add("Description", supplier::get);
@@ -307,7 +307,7 @@ implements BiomeAccess.Storage {
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk);
         StructureConfig structureConfig = this.structuresConfig.getForType(StructureFeature.STRONGHOLD);
         if (structureConfig != null) {
-            StructureStart<?> structureStart = ConfiguredStructureFeatures.STRONGHOLD.tryPlaceStart(registryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, ChunkGenerator.method_38264(structureAccessor, chunk, chunkSectionPos, StructureFeature.STRONGHOLD), structureConfig, chunk, ChunkGenerator::method_38266);
+            StructureStart<?> structureStart = ConfiguredStructureFeatures.STRONGHOLD.tryPlaceStart(registryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, ChunkGenerator.method_38264(structureAccessor, chunk, chunkSectionPos, StructureFeature.STRONGHOLD), structureConfig, chunk, ChunkGenerator::canPlaceStrongholdInBiome);
             structureAccessor.setStructureStart(chunkSectionPos, StructureFeature.STRONGHOLD, structureStart, chunk);
         }
         Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);

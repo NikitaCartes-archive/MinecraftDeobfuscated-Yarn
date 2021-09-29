@@ -42,6 +42,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class FallingBlockEntity
 extends Entity {
@@ -52,6 +53,7 @@ extends Entity {
     private boolean hurtEntities;
     private int fallHurtMax = 40;
     private float fallHurtAmount;
+    @Nullable
     public NbtCompound blockEntityData;
     protected static final TrackedData<BlockPos> BLOCK_POS = DataTracker.registerData(FallingBlockEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 

@@ -94,6 +94,9 @@ extends Goal {
     @Override
     public void tick() {
         LivingEntity livingEntity = this.mob.getTarget();
+        if (livingEntity == null) {
+            return;
+        }
         this.mob.getLookControl().lookAt(livingEntity, 30.0f, 30.0f);
         double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
         this.updateCountdownTicks = Math.max(this.updateCountdownTicks - 1, 0);
@@ -110,6 +113,7 @@ extends Goal {
             if (!this.mob.getNavigation().startMovingTo(livingEntity, this.speed)) {
                 this.updateCountdownTicks += 15;
             }
+            this.updateCountdownTicks = this.getTickCount(this.updateCountdownTicks);
         }
         this.cooldown = Math.max(this.cooldown - 1, 0);
         this.attack(livingEntity, d);
@@ -125,7 +129,7 @@ extends Goal {
     }
 
     protected void resetCooldown() {
-        this.cooldown = 20;
+        this.cooldown = this.getTickCount(20);
     }
 
     protected boolean isCooledDown() {
@@ -137,7 +141,7 @@ extends Goal {
     }
 
     protected int getMaxCooldown() {
-        return 20;
+        return this.getTickCount(20);
     }
 
     protected double getSquaredMaxAttackDistance(LivingEntity entity) {

@@ -71,6 +71,11 @@ extends Goal {
     }
 
     @Override
+    public boolean shouldRunEveryTick() {
+        return true;
+    }
+
+    @Override
     public void tick() {
         boolean bl2;
         LivingEntity livingEntity = ((MobEntity)this.actor).getTarget();

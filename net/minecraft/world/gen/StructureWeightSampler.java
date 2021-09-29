@@ -6,7 +6,6 @@ package net.minecraft.world.gen;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
-import net.minecraft.class_6568;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructurePiece;
@@ -19,13 +18,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.StructureWeightType;
+import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 /**
  * Applies weights to noise values if they are near structures, placing terrain under them and hollowing out the space above them.
  */
 public class StructureWeightSampler
-implements class_6568.ColumnSampler {
+implements ChunkNoiseSampler.ColumnSampler {
     public static final int field_31461 = 12;
     private static final int field_31462 = 24;
     private static final float[] STRUCTURE_WEIGHT_TABLE = Util.make(new float[13824], array -> {
@@ -49,7 +49,7 @@ implements class_6568.ColumnSampler {
         this.junctions = new ObjectArrayList<JigsawJunction>(32);
         this.pieces = new ObjectArrayList<StructurePiece>(10);
         for (StructureFeature<?> structureFeature : StructureFeature.LAND_MODIFYING_STRUCTURES) {
-            structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(chunk), structureFeature).forEach(structureStart -> {
+            structureAccessor.method_38853(ChunkSectionPos.from(chunk), structureFeature).forEach(structureStart -> {
                 for (StructurePiece structurePiece : structureStart.getChildren()) {
                     if (!structurePiece.intersectsChunk(chunkPos, 12)) continue;
                     if (structurePiece instanceof PoolStructurePiece) {

@@ -222,7 +222,7 @@ extends Screen {
 
     private void createLevel() {
         LevelInfo levelInfo;
-        this.client.method_29970(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
+        this.client.setScreenAndRender(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
         if (!this.copyTempDirDataPacks()) {
             return;
         }

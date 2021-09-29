@@ -98,7 +98,7 @@ extends ConditionalLootFunction {
         return null;
     }
 
-    public static Builder method_35544() {
+    public static Builder builder() {
         return new Builder();
     }
 

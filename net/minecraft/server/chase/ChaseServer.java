@@ -57,11 +57,13 @@ public class ChaseServer {
     }
 
     private void runSender() {
+        TeleportPos teleportPos = null;
         while (this.running) {
             if (!this.clientSockets.isEmpty()) {
-                String string = this.getTeleportMessage();
-                if (string != null) {
-                    byte[] bs = string.getBytes(StandardCharsets.US_ASCII);
+                TeleportPos teleportPos2 = this.getTeleportPosition();
+                if (teleportPos2 != null && !teleportPos2.equals(teleportPos)) {
+                    teleportPos = teleportPos2;
+                    byte[] bs = teleportPos2.getTeleportCommand().getBytes(StandardCharsets.US_ASCII);
                     for (Socket socket : this.clientSockets) {
                         if (socket.isClosed()) continue;
                         Util.getIoWorkerExecutor().submit(() -> {
@@ -117,7 +119,7 @@ public class ChaseServer {
     }
 
     @Nullable
-    private String getTeleportMessage() {
+    private TeleportPos getTeleportPosition() {
         List<ServerPlayerEntity> list = this.playerManager.getPlayerList();
         if (list.isEmpty()) {
             return null;
@@ -127,7 +129,13 @@ public class ChaseServer {
         if (string == null) {
             return null;
         }
-        return String.format(Locale.ROOT, "t %s %.2f %.2f %.2f %.2f %.2f\n", string, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), Float.valueOf(serverPlayerEntity.getYaw()), Float.valueOf(serverPlayerEntity.getPitch()));
+        return new TeleportPos(string, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.getYaw(), serverPlayerEntity.getPitch());
+    }
+
+    record TeleportPos(String dimensionName, double x, double y, double z, float yaw, float pitch) {
+        String getTeleportCommand() {
+            return String.format(Locale.ROOT, "t %s %.2f %.2f %.2f %.2f %.2f\n", this.dimensionName, this.x, this.y, this.z, Float.valueOf(this.yaw), Float.valueOf(this.pitch));
+        }
     }
 }
 

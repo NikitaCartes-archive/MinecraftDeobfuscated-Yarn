@@ -63,7 +63,9 @@ extends AnimalEntity {
     public static final double SPRINTING_SPEED = 1.33;
     private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
     private static final TrackedData<Boolean> TRUSTING = DataTracker.registerData(OcelotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    @Nullable
     private FleeGoal<PlayerEntity> fleeGoal;
+    @Nullable
     private OcelotTemptGoal temptGoal;
 
     public OcelotEntity(EntityType<? extends OcelotEntity> entityType, World world) {

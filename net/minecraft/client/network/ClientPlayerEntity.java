@@ -111,6 +111,7 @@ extends AbstractClientPlayerEntity {
     private boolean lastSprinting;
     private int ticksSinceLastPositionPacketSent;
     private boolean healthInitialized;
+    @Nullable
     private String serverBrand;
     public Input input;
     protected final MinecraftClient client;
@@ -369,10 +370,11 @@ extends AbstractClientPlayerEntity {
         this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.OPEN_INVENTORY));
     }
 
-    public void setServerBrand(String serverBrand) {
+    public void setServerBrand(@Nullable String serverBrand) {
         this.serverBrand = serverBrand;
     }
 
+    @Nullable
     public String getServerBrand() {
         return this.serverBrand;
     }

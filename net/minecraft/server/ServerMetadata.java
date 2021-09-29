@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import java.util.UUID;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents metadata sent to the client. This describes the server's message of the day, online players and the protocol version.
@@ -23,11 +24,16 @@ import net.minecraft.util.JsonHelper;
 public class ServerMetadata {
     public static final int FAVICON_WIDTH = 64;
     public static final int FAVICON_HEIGHT = 64;
+    @Nullable
     private Text description;
+    @Nullable
     private Players players;
+    @Nullable
     private Version version;
+    @Nullable
     private String favicon;
 
+    @Nullable
     public Text getDescription() {
         return this.description;
     }
@@ -36,6 +42,7 @@ public class ServerMetadata {
         this.description = description;
     }
 
+    @Nullable
     public Players getPlayers() {
         return this.players;
     }
@@ -44,6 +51,7 @@ public class ServerMetadata {
         this.players = players;
     }
 
+    @Nullable
     public Version getVersion() {
         return this.version;
     }
@@ -56,6 +64,7 @@ public class ServerMetadata {
         this.favicon = favicon;
     }
 
+    @Nullable
     public String getFavicon() {
         return this.favicon;
     }
@@ -63,6 +72,7 @@ public class ServerMetadata {
     public static class Players {
         private final int max;
         private final int online;
+        @Nullable
         private GameProfile[] sample;
 
         public Players(int max, int online) {
@@ -78,6 +88,7 @@ public class ServerMetadata {
             return this.online;
         }
 
+        @Nullable
         public GameProfile[] getSample() {
             return this.sample;
         }
@@ -111,13 +122,14 @@ public class ServerMetadata {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("max", players.getPlayerLimit());
                 jsonObject.addProperty("online", players.getOnlinePlayerCount());
-                if (players.getSample() != null && players.getSample().length > 0) {
+                GameProfile[] gameProfiles = players.getSample();
+                if (gameProfiles != null && gameProfiles.length > 0) {
                     JsonArray jsonArray = new JsonArray();
-                    for (int i = 0; i < players.getSample().length; ++i) {
+                    for (int i = 0; i < gameProfiles.length; ++i) {
                         JsonObject jsonObject2 = new JsonObject();
-                        UUID uUID = players.getSample()[i].getId();
+                        UUID uUID = gameProfiles[i].getId();
                         jsonObject2.addProperty("id", uUID == null ? "" : uUID.toString());
-                        jsonObject2.addProperty("name", players.getSample()[i].getName());
+                        jsonObject2.addProperty("name", gameProfiles[i].getName());
                         jsonArray.add(jsonObject2);
                     }
                     jsonObject.add("sample", jsonArray);

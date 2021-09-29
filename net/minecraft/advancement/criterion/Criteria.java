@@ -29,7 +29,6 @@ import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
 import net.minecraft.advancement.criterion.LevitationCriterion;
 import net.minecraft.advancement.criterion.LightningStrikeCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
-import net.minecraft.advancement.criterion.NetherTravelCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
@@ -44,6 +43,7 @@ import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.advancement.criterion.TargetHitCriterion;
 import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
+import net.minecraft.advancement.criterion.TravelCriterion;
 import net.minecraft.advancement.criterion.UsedEnderEyeCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.UsingItemCriterion;
@@ -81,7 +81,7 @@ public class Criteria {
     public static final ConsumeItemCriterion CONSUME_ITEM = Criteria.register(new ConsumeItemCriterion());
     public static final EffectsChangedCriterion EFFECTS_CHANGED = Criteria.register(new EffectsChangedCriterion());
     public static final UsedTotemCriterion USED_TOTEM = Criteria.register(new UsedTotemCriterion());
-    public static final NetherTravelCriterion NETHER_TRAVEL = Criteria.register(new NetherTravelCriterion());
+    public static final TravelCriterion NETHER_TRAVEL = Criteria.register(new TravelCriterion(new Identifier("nether_travel")));
     public static final FishingRodHookedCriterion FISHING_ROD_HOOKED = Criteria.register(new FishingRodHookedCriterion());
     public static final ChanneledLightningCriterion CHANNELED_LIGHTNING = Criteria.register(new ChanneledLightningCriterion());
     public static final ShotCrossbowCriterion SHOT_CROSSBOW = Criteria.register(new ShotCrossbowCriterion());
@@ -98,6 +98,8 @@ public class Criteria {
     public static final StartedRidingCriterion STARTED_RIDING = Criteria.register(new StartedRidingCriterion());
     public static final LightningStrikeCriterion LIGHTNING_STRIKE = Criteria.register(new LightningStrikeCriterion());
     public static final UsingItemCriterion USING_ITEM = Criteria.register(new UsingItemCriterion());
+    public static final TravelCriterion FALL_FROM_HEIGHT = Criteria.register(new TravelCriterion(new Identifier("fall_from_height")));
+    public static final TravelCriterion RIDE_ENTITY_IN_LAVA = Criteria.register(new TravelCriterion(new Identifier("ride_entity_in_lava")));
 
     private static <T extends Criterion<?>> T register(T object) {
         if (VALUES.containsKey(object.getId())) {

@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class PaintingEntity
 extends AbstractDecorationEntity {
-    public PaintingMotive motive;
+    public PaintingMotive motive = PaintingMotive.KEBAB;
 
     public PaintingEntity(EntityType<? extends PaintingEntity> entityType, World world) {
         super((EntityType<? extends AbstractDecorationEntity>)entityType, world);
@@ -83,17 +83,11 @@ extends AbstractDecorationEntity {
 
     @Override
     public int getWidthPixels() {
-        if (this.motive == null) {
-            return 1;
-        }
         return this.motive.getWidth();
     }
 
     @Override
     public int getHeightPixels() {
-        if (this.motive == null) {
-            return 1;
-        }
         return this.motive.getHeight();
     }
 

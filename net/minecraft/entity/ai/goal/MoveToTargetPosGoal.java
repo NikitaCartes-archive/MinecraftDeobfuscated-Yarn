@@ -49,7 +49,7 @@ extends Goal {
     }
 
     protected int getInterval(PathAwareEntity mob) {
-        return 200 + mob.getRandom().nextInt(200);
+        return MoveToTargetPosGoal.toGoalTicks(200 + mob.getRandom().nextInt(200));
     }
 
     @Override
@@ -74,6 +74,11 @@ extends Goal {
 
     protected BlockPos getTargetPos() {
         return this.targetPos.up();
+    }
+
+    @Override
+    public boolean shouldRunEveryTick() {
+        return true;
     }
 
     @Override

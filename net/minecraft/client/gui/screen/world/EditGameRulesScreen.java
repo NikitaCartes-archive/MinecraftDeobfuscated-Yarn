@@ -288,13 +288,13 @@ extends Screen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public abstract class AbstractRuleWidget
+    public static abstract class AbstractRuleWidget
     extends ElementListWidget.Entry<AbstractRuleWidget> {
         @Nullable
         final List<OrderedText> description;
 
-        public AbstractRuleWidget(List<OrderedText> description) {
-            this.description = description;
+        public AbstractRuleWidget(@Nullable List<OrderedText> list) {
+            this.description = list;
         }
     }
 }

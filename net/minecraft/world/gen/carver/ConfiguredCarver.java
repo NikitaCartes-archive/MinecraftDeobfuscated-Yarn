@@ -4,12 +4,12 @@
 package net.minecraft.world.gen.carver;
 
 import com.mojang.serialization.Codec;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6643;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -41,11 +41,11 @@ public class ConfiguredCarver<WC extends CarverConfig> {
         return this.carver.shouldCarve(this.config, random);
     }
 
-    public boolean carve(CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, AquiferSampler aquiferSampler, ChunkPos pos, BitSet carvingMask) {
+    public boolean carve(CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, AquiferSampler aquiferSampler, ChunkPos pos, class_6643 arg) {
         if (SharedConstants.method_37896(chunk.getPos().getStartX(), chunk.getPos().getStartZ())) {
             return false;
         }
-        return this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, carvingMask);
+        return this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, arg);
     }
 }
 

@@ -67,6 +67,7 @@ implements Angerable {
     private int warningSoundCooldown;
     private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
     private int angerTime;
+    @Nullable
     private UUID targetUuid;
 
     public PolarBearEntity(EntityType<? extends PolarBearEntity> entityType, World world) {
@@ -145,6 +146,7 @@ implements Angerable {
     }
 
     @Override
+    @Nullable
     public UUID getAngryAt() {
         return this.targetUuid;
     }

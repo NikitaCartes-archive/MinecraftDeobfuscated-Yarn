@@ -45,7 +45,7 @@ extends Goal {
 
     @Override
     public void start() {
-        this.timer = 40;
+        this.timer = this.getTickCount(40);
         this.world.sendEntityStatus(this.mob, (byte)10);
         this.mob.getNavigation().stop();
     }
@@ -67,7 +67,7 @@ extends Goal {
     @Override
     public void tick() {
         this.timer = Math.max(0, this.timer - 1);
-        if (this.timer != 4) {
+        if (this.timer != this.getTickCount(4)) {
             return;
         }
         BlockPos blockPos = this.mob.getBlockPos();

@@ -17,12 +17,14 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.util.collection.DefaultedList;
+import org.jetbrains.annotations.Nullable;
 
 public class SimpleInventory
 implements Inventory,
 RecipeInputProvider {
     private final int size;
     private final DefaultedList<ItemStack> stacks;
+    @Nullable
     private List<InventoryChangedListener> listeners;
 
     public SimpleInventory(int size) {
@@ -42,8 +44,10 @@ RecipeInputProvider {
         this.listeners.add(listener);
     }
 
-    public void removeListener(InventoryChangedListener listener) {
-        this.listeners.remove(listener);
+    public void removeListener(InventoryChangedListener inventoryChangedListener) {
+        if (this.listeners != null) {
+            this.listeners.remove(inventoryChangedListener);
+        }
     }
 
     @Override

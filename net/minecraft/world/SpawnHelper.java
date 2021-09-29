@@ -72,7 +72,8 @@ public final class SpawnHelper {
         for (Entity entity : entities) {
             SpawnGroup spawnGroup;
             MobEntity mobEntity;
-            if (entity instanceof MobEntity && ((mobEntity = (MobEntity)entity).isPersistent() || mobEntity.cannotDespawn()) || (spawnGroup = entity.getType().getSpawnGroup()) == SpawnGroup.MISC) continue;
+            Entity entity2 = entity;
+            if (entity2 instanceof MobEntity && ((mobEntity = (MobEntity)entity2).isPersistent() || mobEntity.cannotDespawn()) || (spawnGroup = entity.getType().getSpawnGroup()) == SpawnGroup.MISC) continue;
             BlockPos blockPos = entity.getBlockPos();
             chunkSource.query(ChunkPos.toLong(blockPos), worldChunk -> {
                 SpawnSettings.SpawnDensity spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, worldChunk).getSpawnSettings().getSpawnDensity(entity.getType());
@@ -141,7 +142,7 @@ public final class SpawnHelper {
                 if (playerEntity == null || !SpawnHelper.isAcceptableSpawnPosition(world, chunk, mutable, f = playerEntity.squaredDistanceTo(d, i, e))) continue;
                 if (spawnEntry == null) {
                     Optional<SpawnSettings.SpawnEntry> optional = SpawnHelper.pickRandomSpawnEntry(world, structureAccessor, chunkGenerator, group, world.random, mutable);
-                    if (!optional.isPresent()) continue block0;
+                    if (optional.isEmpty()) continue block0;
                     spawnEntry = optional.get();
                     o = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
                 }
@@ -238,7 +239,7 @@ public final class SpawnHelper {
     }
 
     public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
-        return spawnGroup == SpawnGroup.MONSTER && world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS) && structureAccessor.getStructureAt(pos, false, StructureFeature.FORTRESS).hasChildren();
+        return spawnGroup == SpawnGroup.MONSTER && world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS) && structureAccessor.getStructureAt(pos, StructureFeature.FORTRESS).hasChildren();
     }
 
     private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk) {

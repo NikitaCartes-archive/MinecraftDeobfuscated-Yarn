@@ -43,14 +43,17 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 public class MooshroomEntity
 extends CowEntity
 implements Shearable {
     private static final TrackedData<String> TYPE = DataTracker.registerData(MooshroomEntity.class, TrackedDataHandlerRegistry.STRING);
     private static final int MUTATION_CHANCE = 1024;
+    @Nullable
     private StatusEffect stewEffect;
     private int stewEffectDuration;
+    @Nullable
     private UUID lightningId;
 
     public MooshroomEntity(EntityType<? extends MooshroomEntity> entityType, World world) {

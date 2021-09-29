@@ -15,14 +15,17 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 
 public class FleeEntityGoal<T extends LivingEntity>
 extends Goal {
     protected final PathAwareEntity mob;
     private final double slowSpeed;
     private final double fastSpeed;
+    @Nullable
     protected T targetEntity;
     protected final float fleeDistance;
+    @Nullable
     protected Path fleePath;
     protected final EntityNavigation fleeingEntityNavigation;
     protected final Class<T> classToFleeFrom;

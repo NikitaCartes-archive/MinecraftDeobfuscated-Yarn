@@ -134,6 +134,7 @@ implements Flutterer {
     private float flapSpeed = 1.0f;
     private float field_28640 = 1.0f;
     private boolean songPlaying;
+    @Nullable
     private BlockPos songSource;
 
     public ParrotEntity(EntityType<? extends ParrotEntity> entityType, World world) {

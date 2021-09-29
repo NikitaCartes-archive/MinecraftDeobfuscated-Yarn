@@ -74,7 +74,7 @@ implements Monster {
     private static final int field_30491 = 8;
     private static final int field_30492 = 5;
     private static final float field_30493 = 0.05f;
-    static final Vec3f field_33765 = Util.make(() -> {
+    static final Vec3f SOUTH_VECTOR = Util.make(() -> {
         Vec3i vec3i = Direction.SOUTH.getVector();
         return new Vec3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
     });
@@ -88,7 +88,7 @@ implements Monster {
     public ShulkerEntity(EntityType<? extends ShulkerEntity> entityType, World world) {
         super((EntityType<? extends GolemEntity>)entityType, world);
         this.experiencePoints = 5;
-        this.lookControl = new class_6376(this);
+        this.lookControl = new ShulkerLookControl(this);
     }
 
     @Override
@@ -483,12 +483,12 @@ implements Monster {
     }
 
     @Override
-    public int getLookPitchSpeed() {
+    public int getMaxLookPitchChange() {
         return 180;
     }
 
     @Override
-    public int getBodyYawSpeed() {
+    public int getMaxHeadRotation() {
         return 180;
     }
 
@@ -527,27 +527,27 @@ implements Monster {
         return DyeColor.byId(b);
     }
 
-    class class_6376
+    class ShulkerLookControl
     extends LookControl {
-        public class_6376(MobEntity mobEntity) {
-            super(mobEntity);
+        public ShulkerLookControl(MobEntity entity) {
+            super(entity);
         }
 
         @Override
-        protected void method_36980() {
+        protected void clampHeadYaw() {
         }
 
         @Override
         protected Optional<Float> getTargetYaw() {
             Direction direction = ShulkerEntity.this.getAttachedFace().getOpposite();
-            Vec3f vec3f = field_33765.copy();
+            Vec3f vec3f = SOUTH_VECTOR.copy();
             vec3f.rotate(direction.getRotationQuaternion());
             Vec3i vec3i = direction.getVector();
             Vec3f vec3f2 = new Vec3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
             vec3f2.cross(vec3f);
-            double d = this.lookX - this.entity.getX();
-            double e = this.lookY - this.entity.getEyeY();
-            double f = this.lookZ - this.entity.getZ();
+            double d = this.x - this.entity.getX();
+            double e = this.y - this.entity.getEyeY();
+            double f = this.z - this.entity.getZ();
             Vec3f vec3f3 = new Vec3f((float)d, (float)e, (float)f);
             float g = vec3f2.dot(vec3f3);
             float h = vec3f.dot(vec3f3);
@@ -589,12 +589,20 @@ implements Monster {
         }
 
         @Override
+        public boolean shouldRunEveryTick() {
+            return true;
+        }
+
+        @Override
         public void tick() {
             if (ShulkerEntity.this.world.getDifficulty() == Difficulty.PEACEFUL) {
                 return;
             }
             --this.counter;
             LivingEntity livingEntity = ShulkerEntity.this.getTarget();
+            if (livingEntity == null) {
+                return;
+            }
             ShulkerEntity.this.getLookControl().lookAt(livingEntity, 180.0f, 180.0f);
             double d = ShulkerEntity.this.squaredDistanceTo(livingEntity);
             if (d < 400.0) {
@@ -619,7 +627,7 @@ implements Monster {
 
         @Override
         public boolean canStart() {
-            return ShulkerEntity.this.getTarget() == null && ShulkerEntity.this.random.nextInt(40) == 0 && ShulkerEntity.this.canStay(ShulkerEntity.this.getBlockPos(), ShulkerEntity.this.getAttachedFace());
+            return ShulkerEntity.this.getTarget() == null && ShulkerEntity.this.random.nextInt(PeekGoal.toGoalTicks(40)) == 0 && ShulkerEntity.this.canStay(ShulkerEntity.this.getBlockPos(), ShulkerEntity.this.getAttachedFace());
         }
 
         @Override
@@ -629,7 +637,7 @@ implements Monster {
 
         @Override
         public void start() {
-            this.counter = 20 * (1 + ShulkerEntity.this.random.nextInt(3));
+            this.counter = this.getTickCount(20 * (1 + ShulkerEntity.this.random.nextInt(3)));
             ShulkerEntity.this.setPeekAmount(30);
         }
 

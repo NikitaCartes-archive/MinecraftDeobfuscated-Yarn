@@ -38,10 +38,10 @@ extends ConditionalLootFunction {
     final LootNbtProvider source;
     final List<Operation> operations;
 
-    CopyNbtLootFunction(LootCondition[] lootConditions, LootNbtProvider lootNbtProvider, List<Operation> list) {
-        super(lootConditions);
-        this.source = lootNbtProvider;
-        this.operations = ImmutableList.copyOf(list);
+    CopyNbtLootFunction(LootCondition[] conditions, LootNbtProvider source, List<Operation> operations) {
+        super(conditions);
+        this.source = source;
+        this.operations = ImmutableList.copyOf(operations);
     }
 
     @Override
@@ -84,8 +84,8 @@ extends ConditionalLootFunction {
         private final LootNbtProvider source;
         private final List<Operation> operations = Lists.newArrayList();
 
-        Builder(LootNbtProvider lootNbtProvider) {
-            this.source = lootNbtProvider;
+        Builder(LootNbtProvider source) {
+            this.source = source;
         }
 
         public Builder withOperation(String source, String target, Operator operator) {
@@ -120,11 +120,11 @@ extends ConditionalLootFunction {
         private final NbtPathArgumentType.NbtPath parsedTargetPath;
         private final Operator operator;
 
-        Operation(String string, String string2, Operator operator) {
-            this.sourcePath = string;
-            this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(string);
-            this.targetPath = string2;
-            this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(string2);
+        Operation(String sourcePath, String targetPath, Operator operator) {
+            this.sourcePath = sourcePath;
+            this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(sourcePath);
+            this.targetPath = targetPath;
+            this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(targetPath);
             this.operator = operator;
         }
 
@@ -227,8 +227,8 @@ extends ConditionalLootFunction {
 
         public abstract void merge(NbtElement var1, NbtPathArgumentType.NbtPath var2, List<NbtElement> var3) throws CommandSyntaxException;
 
-        Operator(String string2) {
-            this.name = string2;
+        Operator(String name) {
+            this.name = name;
         }
 
         public static Operator get(String name) {

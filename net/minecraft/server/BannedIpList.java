@@ -9,6 +9,7 @@ import java.net.SocketAddress;
 import net.minecraft.server.BannedIpEntry;
 import net.minecraft.server.ServerConfigEntry;
 import net.minecraft.server.ServerConfigList;
+import org.jetbrains.annotations.Nullable;
 
 public class BannedIpList
 extends ServerConfigList<String, BannedIpEntry> {
@@ -31,6 +32,7 @@ extends ServerConfigList<String, BannedIpEntry> {
     }
 
     @Override
+    @Nullable
     public BannedIpEntry get(SocketAddress address) {
         String string = this.stringifyAddress(address);
         return (BannedIpEntry)this.get(string);

@@ -32,8 +32,8 @@ extends ConditionalLootFunction {
     final Enchantment enchantment;
     final Formula formula;
 
-    ApplyBonusLootFunction(LootCondition[] lootConditions, Enchantment enchantment, Formula formula) {
-        super(lootConditions);
+    ApplyBonusLootFunction(LootCondition[] conditions, Enchantment enchantment, Formula formula) {
+        super(conditions);
         this.enchantment = enchantment;
         this.formula = formula;
     }

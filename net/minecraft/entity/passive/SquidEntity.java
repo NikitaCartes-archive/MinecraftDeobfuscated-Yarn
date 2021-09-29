@@ -252,7 +252,7 @@ extends WaterCreatureEntity {
             int i = this.squid.getDespawnCounter();
             if (i > 100) {
                 this.squid.setSwimmingVector(0.0f, 0.0f, 0.0f);
-            } else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.touchingWater || !this.squid.hasSwimmingVector()) {
+            } else if (this.squid.getRandom().nextInt(SwimGoal.toGoalTicks(50)) == 0 || !this.squid.touchingWater || !this.squid.hasSwimmingVector()) {
                 float f = this.squid.getRandom().nextFloat() * ((float)Math.PI * 2);
                 float g = MathHelper.cos(f) * 0.2f;
                 float h = -0.1f + this.squid.getRandom().nextFloat() * 0.2f;
@@ -284,6 +284,11 @@ extends WaterCreatureEntity {
         @Override
         public void start() {
             this.timer = 0;
+        }
+
+        @Override
+        public boolean shouldRunEveryTick() {
+            return true;
         }
 
         @Override

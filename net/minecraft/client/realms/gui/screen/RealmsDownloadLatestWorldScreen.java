@@ -34,6 +34,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
@@ -48,14 +49,18 @@ extends RealmsScreen {
     private ButtonWidget cancelButton;
     private final String worldName;
     private final DownloadStatus downloadStatus;
+    @Nullable
     private volatile Text downloadError;
     private volatile Text status = new TranslatableText("mco.download.preparing");
+    @Nullable
     private volatile String progress;
     private volatile boolean cancelled;
     private volatile boolean showDots = true;
     private volatile boolean finished;
     private volatile boolean extracting;
+    @Nullable
     private Long previousWrittenBytes;
+    @Nullable
     private Long previousTimeSnapshot;
     private long bytesPerSecond;
     private int animTick;
@@ -286,7 +291,7 @@ extends RealmsScreen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public class DownloadStatus {
+    public static class DownloadStatus {
         public volatile long bytesWritten;
         public volatile long totalBytes;
     }

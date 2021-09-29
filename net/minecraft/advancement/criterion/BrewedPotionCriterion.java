@@ -47,6 +47,7 @@ extends AbstractCriterion<Conditions> {
 
     public static class Conditions
     extends AbstractCriterionConditions {
+        @Nullable
         private final Potion potion;
 
         public Conditions(EntityPredicate.Extended player, @Nullable Potion potion) {

@@ -1021,7 +1021,7 @@ CommandOutput {
                     this.emitGameEvent(GameEvent.HIT_GROUND);
                 }
             }
-            this.fallDistance = 0.0f;
+            this.onLanding();
         } else if (heightDifference < 0.0) {
             this.fallDistance = (float)((double)this.fallDistance - heightDifference);
         }
@@ -1105,7 +1105,7 @@ CommandOutput {
             if (!this.touchingWater && !this.firstUpdate) {
                 this.onSwimmingStart();
             }
-            this.fallDistance = 0.0f;
+            this.onLanding();
             this.touchingWater = true;
             this.extinguish();
         } else {
@@ -2123,10 +2123,14 @@ CommandOutput {
         Vec3d vec3d = this.getVelocity();
         double d = drag ? Math.max(-0.3, vec3d.y - 0.03) : Math.min(0.7, vec3d.y + 0.06);
         this.setVelocity(vec3d.x, d, vec3d.z);
-        this.fallDistance = 0.0f;
+        this.onLanding();
     }
 
     public void onKilledOther(ServerWorld world, LivingEntity other) {
+    }
+
+    public void onLanding() {
+        this.fallDistance = 0.0f;
     }
 
     protected void pushOutOfBlocks(double x, double y, double z) {
@@ -2158,7 +2162,7 @@ CommandOutput {
     }
 
     public void slowMovement(BlockState state, Vec3d multiplier) {
-        this.fallDistance = 0.0f;
+        this.onLanding();
         this.movementMultiplier = multiplier;
     }
 

@@ -41,7 +41,7 @@ extends Feature<SingleStateFeatureConfig> {
         if (blockPos.getY() <= structureWorldAccess.getBottomY() + 4) {
             return false;
         }
-        if (structureWorldAccess.getStructures(ChunkSectionPos.from(blockPos = blockPos.down(4)), StructureFeature.VILLAGE).findAny().isPresent()) {
+        if (!structureWorldAccess.getStructures(ChunkSectionPos.from(blockPos = blockPos.down(4)), StructureFeature.VILLAGE).isEmpty()) {
             return false;
         }
         boolean[] bls = new boolean[2048];

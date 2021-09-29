@@ -68,6 +68,7 @@ extends AbstractCriterion<Conditions> {
 
     public static class Conditions
     extends AbstractCriterionConditions {
+        @Nullable
         private final Block block;
         private final StatePredicate state;
         private final LocationPredicate location;

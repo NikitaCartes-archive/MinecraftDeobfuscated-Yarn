@@ -23,11 +23,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import org.jetbrains.annotations.Nullable;
 
 public class MoveThroughVillageGoal
 extends Goal {
     protected final PathAwareEntity mob;
     private final double speed;
+    @Nullable
     private Path targetPath;
     private BlockPos target;
     private final boolean requiresNighttime;

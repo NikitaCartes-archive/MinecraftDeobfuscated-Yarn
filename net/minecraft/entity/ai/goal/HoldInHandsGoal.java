@@ -19,6 +19,7 @@ extends Goal {
     private final T actor;
     private final ItemStack item;
     private final Predicate<? super T> condition;
+    @Nullable
     private final SoundEvent sound;
 
     public HoldInHandsGoal(T actor, ItemStack item, @Nullable SoundEvent sound, Predicate<? super T> condition) {

@@ -44,7 +44,7 @@ extends NoiseBlockStateProvider {
     @Override
     public BlockState getBlockState(Random random, BlockPos pos) {
         double d = this.getSlowNoiseValue(pos);
-        int i = (int)MathHelper.lerpFromProgress(d, -1.0, 1.0, (double)this.variety.minInclusive().intValue(), (double)(this.variety.maxInclusive() + 1));
+        int i = (int)MathHelper.clampedLerpFromProgress(d, -1.0, 1.0, (double)this.variety.minInclusive().intValue(), (double)(this.variety.maxInclusive() + 1));
         ArrayList<BlockState> list = Lists.newArrayListWithCapacity(i);
         for (int j = 0; j < i; ++j) {
             list.add(this.getStateAtValue(this.states, this.getSlowNoiseValue(pos.add(j * 54545, 0, j * 34234))));

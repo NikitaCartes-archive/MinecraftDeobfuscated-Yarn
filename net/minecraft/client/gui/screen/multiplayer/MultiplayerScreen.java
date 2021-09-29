@@ -26,6 +26,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
@@ -39,9 +40,11 @@ extends Screen {
     private ButtonWidget buttonEdit;
     private ButtonWidget buttonJoin;
     private ButtonWidget buttonDelete;
+    @Nullable
     private List<Text> tooltipText;
     private ServerInfo selectedEntry;
     private LanServerQueryManager.LanServerEntryList lanServers;
+    @Nullable
     private LanServerQueryManager.LanServerDetector lanServerDetector;
     private boolean initialized;
 

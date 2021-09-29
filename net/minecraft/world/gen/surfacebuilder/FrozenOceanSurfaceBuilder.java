@@ -10,10 +10,10 @@ import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.class_6557;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
@@ -36,7 +36,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void generate(Random random, class_6557 arg, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, BlockColumn blockColumn, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
         double e = 0.0;
         double f = 0.0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -71,12 +71,12 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         int u = 2 + random.nextInt(4);
         int v = l + 18 + random.nextInt(10);
         for (int w = Math.max(k, (int)e + 1); w >= m; --w) {
-            if (arg.getState(w).isAir() && w < (int)e && random.nextDouble() > 0.01) {
-                arg.method_38092(w, PACKED_ICE);
-            } else if (arg.getState(w).getMaterial() == Material.WATER && w > (int)f && w < l && f != 0.0 && random.nextDouble() > 0.15) {
-                arg.method_38092(w, PACKED_ICE);
+            if (blockColumn.getState(w).isAir() && w < (int)e && random.nextDouble() > 0.01) {
+                blockColumn.setState(w, PACKED_ICE);
+            } else if (blockColumn.getState(w).getMaterial() == Material.WATER && w > (int)f && w < l && f != 0.0 && random.nextDouble() > 0.15) {
+                blockColumn.setState(w, PACKED_ICE);
             }
-            BlockState blockState7 = arg.getState(w);
+            BlockState blockState7 = blockColumn.getState(w);
             if (blockState7.isAir()) {
                 s = -1;
                 continue;
@@ -95,27 +95,27 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                     }
                     s = r;
                     if (w >= l - 1) {
-                        arg.method_38092(w, blockState6);
+                        blockColumn.setState(w, blockState6);
                         continue;
                     }
                     if (w < l - 7 - r) {
                         blockState6 = AIR;
                         blockState5 = blockState;
-                        arg.method_38092(w, GRAVEL);
+                        blockColumn.setState(w, GRAVEL);
                         continue;
                     }
-                    arg.method_38092(w, blockState5);
+                    blockColumn.setState(w, blockState5);
                     continue;
                 }
                 if (s <= 0) continue;
-                arg.method_38092(w, blockState5);
+                blockColumn.setState(w, blockState5);
                 if (--s != 0 || !blockState5.isOf(Blocks.SAND) || r <= 1) continue;
                 s = random.nextInt(4) + Math.max(0, w - 63);
                 blockState5 = blockState5.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
                 continue;
             }
             if (!blockState7.isOf(Blocks.PACKED_ICE) || t > u || w <= v) continue;
-            arg.method_38092(w, SNOW_BLOCK);
+            blockColumn.setState(w, SNOW_BLOCK);
             ++t;
         }
     }

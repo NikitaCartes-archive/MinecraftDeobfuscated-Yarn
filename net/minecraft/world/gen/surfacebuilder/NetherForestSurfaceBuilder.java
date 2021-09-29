@@ -7,9 +7,9 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_6557;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
@@ -25,7 +25,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void generate(Random random, class_6557 arg, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, BlockColumn blockColumn, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
         double e = this.surfaceNoise.sample((double)i * 0.1, l, (double)j * 0.1);
         boolean bl = e > 0.15 + random.nextDouble() * 0.35;
         double f = this.surfaceNoise.sample((double)i * 0.1, 109.0, (double)j * 0.1);
@@ -35,7 +35,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         BlockState blockState3 = ternarySurfaceConfig.getUnderMaterial();
         for (int q = 127; q >= m; --q) {
             BlockState blockState4 = ternarySurfaceConfig.getTopMaterial();
-            BlockState blockState5 = arg.getState(q);
+            BlockState blockState5 = blockColumn.getState(q);
             if (blockState5.isAir()) {
                 p = -1;
                 continue;
@@ -57,15 +57,15 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                 }
                 p = o;
                 if (q >= l - 1) {
-                    arg.method_38092(q, blockState4);
+                    blockColumn.setState(q, blockState4);
                     continue;
                 }
-                arg.method_38092(q, blockState3);
+                blockColumn.setState(q, blockState3);
                 continue;
             }
             if (p <= 0) continue;
             --p;
-            arg.method_38092(q, blockState3);
+            blockColumn.setState(q, blockState3);
         }
     }
 

@@ -30,6 +30,7 @@ import net.minecraft.loot.function.SetLootTableLootFunction;
 import net.minecraft.loot.function.SetLoreLootFunction;
 import net.minecraft.loot.function.SetNameLootFunction;
 import net.minecraft.loot.function.SetNbtLootFunction;
+import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonSerializer;
@@ -61,6 +62,7 @@ public class LootFunctionTypes {
     public static final LootFunctionType COPY_NBT = LootFunctionTypes.register("copy_nbt", new CopyNbtLootFunction.Serializer());
     public static final LootFunctionType COPY_STATE = LootFunctionTypes.register("copy_state", new CopyStateFunction.Serializer());
     public static final LootFunctionType SET_BANNER_PATTERN = LootFunctionTypes.register("set_banner_pattern", new SetBannerPatternFunction.Serializer());
+    public static final LootFunctionType SET_POTION = LootFunctionTypes.register("set_potion", new SetPotionLootFunction.Serializer());
 
     private static LootFunctionType register(String id, JsonSerializer<? extends LootFunction> jsonSerializer) {
         return Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(jsonSerializer));

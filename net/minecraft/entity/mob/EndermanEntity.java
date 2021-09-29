@@ -84,6 +84,7 @@ implements Angerable {
     private int ageWhenTargetSet;
     private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
     private int angerTime;
+    @Nullable
     private UUID targetUuid;
 
     public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
@@ -159,6 +160,7 @@ implements Angerable {
     }
 
     @Override
+    @Nullable
     public UUID getAngryAt() {
         return this.targetUuid;
     }
@@ -375,6 +377,7 @@ implements Angerable {
     static class ChasePlayerGoal
     extends Goal {
         private final EndermanEntity enderman;
+        @Nullable
         private LivingEntity target;
 
         public ChasePlayerGoal(EndermanEntity enderman) {
@@ -422,7 +425,7 @@ implements Angerable {
             if (!this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 return false;
             }
-            return this.enderman.getRandom().nextInt(2000) == 0;
+            return this.enderman.getRandom().nextInt(PlaceBlockGoal.toGoalTicks(2000)) == 0;
         }
 
         @Override
@@ -468,7 +471,7 @@ implements Angerable {
             if (!this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 return false;
             }
-            return this.enderman.getRandom().nextInt(20) == 0;
+            return this.enderman.getRandom().nextInt(PickUpBlockGoal.toGoalTicks(20)) == 0;
         }
 
         @Override
@@ -495,6 +498,7 @@ implements Angerable {
     static class TeleportTowardsPlayerGoal
     extends ActiveTargetGoal<PlayerEntity> {
         private final EndermanEntity enderman;
+        @Nullable
         private PlayerEntity targetPlayer;
         private int lookAtPlayerWarmup;
         private int ticksSinceUnseenTeleport;
@@ -515,7 +519,7 @@ implements Angerable {
 
         @Override
         public void start() {
-            this.lookAtPlayerWarmup = 5;
+            this.lookAtPlayerWarmup = this.getTickCount(5);
             this.ticksSinceUnseenTeleport = 0;
             this.enderman.setProvoked();
         }
@@ -559,7 +563,7 @@ implements Angerable {
                             this.enderman.teleportRandomly();
                         }
                         this.ticksSinceUnseenTeleport = 0;
-                    } else if (this.targetEntity.squaredDistanceTo(this.enderman) > 256.0 && this.ticksSinceUnseenTeleport++ >= 30 && this.enderman.teleportTo(this.targetEntity)) {
+                    } else if (this.targetEntity.squaredDistanceTo(this.enderman) > 256.0 && this.ticksSinceUnseenTeleport++ >= this.getTickCount(30) && this.enderman.teleportTo(this.targetEntity)) {
                         this.ticksSinceUnseenTeleport = 0;
                     }
                 }

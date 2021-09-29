@@ -8,9 +8,9 @@ import com.mojang.serialization.MapCodec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6557;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.surfacebuilder.BadlandsSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.BasaltDeltasSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
@@ -130,11 +130,11 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
      * @param noise noise value at this column. Has a range of {@code (-8, 8)} but follows a normal distribution so most values will be around {@code (-2, 2)}
      * @param x X coordinate of the column
      * @param z Z coordinate of the column
-     * @param chunk the current chunk being surface built
+     * @param column the current column being surface built
      * @param biome the biome in the column that is being surface built
      * @param random the Random instance, seeded with a hash of the x and z coordinates
      */
-    public abstract void generate(Random var1, class_6557 var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, int var12, long var13, C var15);
+    public abstract void generate(Random var1, BlockColumn var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, int var12, long var13, C var15);
 
     /**
      * Runs before {@link #generate} and allows for custom noise to be initialized.

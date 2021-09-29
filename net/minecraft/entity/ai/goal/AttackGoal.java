@@ -7,18 +7,15 @@ import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.world.BlockView;
 
 public class AttackGoal
 extends Goal {
-    private final BlockView world;
     private final MobEntity mob;
     private LivingEntity target;
     private int cooldown;
 
     public AttackGoal(MobEntity mob) {
         this.mob = mob;
-        this.world = mob.world;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
     }
 
@@ -47,6 +44,11 @@ extends Goal {
     public void stop() {
         this.target = null;
         this.mob.getNavigation().stop();
+    }
+
+    @Override
+    public boolean shouldRunEveryTick() {
+        return true;
     }
 
     @Override

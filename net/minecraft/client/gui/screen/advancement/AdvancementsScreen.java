@@ -47,6 +47,7 @@ implements ClientAdvancementManager.Listener {
     private static final Text ADVANCEMENTS_TEXT = new TranslatableText("gui.advancements");
     private final ClientAdvancementManager advancementHandler;
     private final Map<Advancement, AdvancementTab> tabs = Maps.newLinkedHashMap();
+    @Nullable
     private AdvancementTab selectedTab;
     private boolean movingTab;
 

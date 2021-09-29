@@ -41,7 +41,7 @@ extends Goal {
 
     @Override
     public void start() {
-        this.lookCountdown = 400;
+        this.lookCountdown = this.getTickCount(400);
         this.golem.setLookingAtVillager(true);
     }
 

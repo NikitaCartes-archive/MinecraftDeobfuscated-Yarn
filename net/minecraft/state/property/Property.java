@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.state.State;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class Property<T extends Comparable<T>> {
     private final Class<T> type;
@@ -24,6 +25,7 @@ public abstract class Property<T extends Comparable<T>> {
      * validation of a property}.
      */
     private final String name;
+    @Nullable
     private Integer hashCodeCache;
     private final Codec<T> codec = Codec.STRING.comapFlatMap(value -> this.parse((String)value).map(DataResult::success).orElseGet(() -> DataResult.error("Unable to read property: " + this + " with value: " + value)), this::name);
     private final Codec<Value<T>> valueCodec = this.codec.xmap(this::createValue, Value::value);

@@ -16,11 +16,13 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class KeybindsScreen
 extends GameOptionsScreen {
+    @Nullable
     public KeyBinding selectedKeyBinding;
     public long field_34800;
     private ControlsListWidget controlsList;

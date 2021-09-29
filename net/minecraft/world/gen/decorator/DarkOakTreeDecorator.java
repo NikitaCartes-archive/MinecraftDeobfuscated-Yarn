@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.DecoratorContext;
 import net.minecraft.world.gen.decorator.NopeDecoratorConfig;
 
@@ -27,6 +28,11 @@ extends Decorator<NopeDecoratorConfig> {
             int m = k * 4 + 1 + random.nextInt(3) + blockPos.getZ();
             return new BlockPos(l, blockPos.getY(), m);
         });
+    }
+
+    @Override
+    public /* synthetic */ Stream getPositions(DecoratorContext context, Random random, DecoratorConfig config, BlockPos pos) {
+        return this.getPositions(context, random, (NopeDecoratorConfig)config, pos);
     }
 }
 

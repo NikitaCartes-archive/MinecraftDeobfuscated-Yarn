@@ -4,11 +4,15 @@
 package net.minecraft.world.gen.decorator;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.blockpredicate.BlockPredicate;
+import net.minecraft.world.gen.decorator.BlockFilterDecoratorConfig;
 import net.minecraft.world.gen.decorator.BlockSurvivesFilterDecoratorConfig;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
@@ -90,6 +94,10 @@ public interface Decoratable<R> {
 
     default public R method_38670(Block block) {
         return this.decorate(Decorator.BLOCK_SURVIVES_FILTER.configure(new BlockSurvivesFilterDecoratorConfig(block.getDefaultState())));
+    }
+
+    default public R method_38872() {
+        return this.decorate(Decorator.BLOCK_FILTER.configure(new BlockFilterDecoratorConfig(BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN))));
     }
 }
 

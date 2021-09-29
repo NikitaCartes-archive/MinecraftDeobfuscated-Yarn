@@ -49,6 +49,7 @@ import org.jetbrains.annotations.Nullable;
 public class DefaultResourcePack
 implements ResourcePack,
 ResourceFactory {
+    @Nullable
     public static Path resourcePath;
     private static final Logger LOGGER;
     public static Class<?> resourceClass;

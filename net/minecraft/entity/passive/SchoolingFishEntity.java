@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class SchoolingFishEntity
 extends FishEntity {
+    @Nullable
     private SchoolingFishEntity leader;
     private int groupSize = 1;
 

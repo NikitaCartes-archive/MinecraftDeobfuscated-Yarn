@@ -11,6 +11,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class Potion {
+    @Nullable
     private final String baseName;
     private final ImmutableList<StatusEffectInstance> effects;
 

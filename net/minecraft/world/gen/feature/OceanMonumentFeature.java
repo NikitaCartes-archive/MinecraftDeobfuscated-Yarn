@@ -42,7 +42,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, ChunkPos chunkPos2, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
         int i = chunkPos.getOffsetX(9);
         int j = chunkPos.getOffsetZ(9);
-        Set<Biome> set = biomeSource.getBiomesInArea(i, chunkGenerator.getSeaLevel(), j, 29, chunkGenerator.method_38276());
+        Set<Biome> set = biomeSource.getBiomesInArea(i, chunkGenerator.getSeaLevel(), j, 29, chunkGenerator.getMultiNoiseSampler());
         for (Biome biome : set) {
             if (biome.getCategory() == Biome.Category.OCEAN || biome.getCategory() == Biome.Category.RIVER) continue;
             return false;

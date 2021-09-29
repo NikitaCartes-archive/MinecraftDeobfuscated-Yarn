@@ -21,6 +21,7 @@ public class AdvancementManager {
     private final Map<Identifier, Advancement> advancements = Maps.newHashMap();
     private final Set<Advancement> roots = Sets.newLinkedHashSet();
     private final Set<Advancement> dependents = Sets.newLinkedHashSet();
+    @Nullable
     private Listener listener;
 
     private void remove(Advancement advancement) {

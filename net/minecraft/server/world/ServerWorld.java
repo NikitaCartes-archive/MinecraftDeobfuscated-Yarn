@@ -342,7 +342,7 @@ implements StructureWorldAccess {
                 profiler.push("checkDespawn");
                 entity.checkDespawn();
                 profiler.pop();
-                if (!this.chunkManager.threadedAnvilChunkStorage.getTicketManager().method_38630(ChunkPos.toLong(entity.getBlockPos()))) {
+                if (!this.chunkManager.threadedAnvilChunkStorage.getTicketManager().isSimulating(ChunkPos.toLong(entity.getBlockPos()))) {
                     return;
                 }
                 Entity entity2 = entity.getVehicle();
@@ -713,7 +713,7 @@ implements StructureWorldAccess {
     }
 
     public void unloadEntities(WorldChunk chunk) {
-        chunk.method_38289();
+        chunk.clear();
     }
 
     public void removePlayer(ServerPlayerEntity player, Entity.RemovalReason reason) {
@@ -909,7 +909,7 @@ implements StructureWorldAccess {
 
     @Nullable
     public BlockPos locateBiome(Biome biome, BlockPos pos, int radius, int i) {
-        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, i, biome2 -> biome2 == biome, this.random, true, this.getChunkManager().getChunkGenerator().method_38276());
+        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, i, biome2 -> biome2 == biome, this.random, true, this.getChunkManager().getChunkGenerator().getMultiNoiseSampler());
     }
 
     @Override
@@ -1156,8 +1156,8 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-        return this.getStructureAccessor().getStructuresWithChildren(pos, feature);
+    public List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
+        return this.getStructureAccessor().method_38853(pos, feature);
     }
 
     @Override

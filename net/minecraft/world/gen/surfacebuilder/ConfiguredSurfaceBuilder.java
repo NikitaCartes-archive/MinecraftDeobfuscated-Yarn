@@ -7,10 +7,10 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_6557;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 
@@ -25,7 +25,7 @@ public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
         this.config = config;
     }
 
-    public void generate(Random random, class_6557 chunk, Biome biome, int x, int z, int height, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, int i, long seed) {
+    public void generate(Random random, BlockColumn chunk, Biome biome, int x, int z, int height, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, int i, long seed) {
         this.surfaceBuilder.generate(random, chunk, biome, x, z, height, noise, defaultBlock, defaultFluid, seaLevel, i, seed, this.config);
     }
 

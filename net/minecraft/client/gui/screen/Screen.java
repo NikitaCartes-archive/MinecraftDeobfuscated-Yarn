@@ -80,6 +80,7 @@ implements Drawable {
     private final List<Drawable> drawables = Lists.newArrayList();
     public boolean passEvents;
     protected TextRenderer textRenderer;
+    @Nullable
     private URI clickedLink;
     private static final long SCREEN_INIT_NARRATION_DELAY;
     private static final long NARRATOR_MODE_CHANGE_DELAY;
@@ -265,7 +266,7 @@ implements Drawable {
         s = m;
         for (t = 0; t < components.size(); ++t) {
             tooltipComponent2 = components.get(t);
-            tooltipComponent2.drawItems(this.textRenderer, l, s, matrices, this.itemRenderer, 400, this.client.getTextureManager());
+            tooltipComponent2.drawItems(this.textRenderer, l, s, matrices, this.itemRenderer, 400);
             s += tooltipComponent2.getHeight() + (t == 0 ? 2 : 0);
         }
         this.itemRenderer.zOffset = f;

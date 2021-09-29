@@ -4,11 +4,11 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.BitSet;
-import net.minecraft.class_6603;
-import net.minecraft.class_6606;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.s2c.play.ChunkData;
+import net.minecraft.network.packet.s2c.play.LightData;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
@@ -18,30 +18,30 @@ public class ChunkDataS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private final int chunkX;
     private final int chunkZ;
-    private final class_6603 field_34870;
-    private final class_6606 field_34871;
+    private final ChunkData chunkData;
+    private final LightData lightData;
 
-    public ChunkDataS2CPacket(WorldChunk worldChunk, LightingProvider lightingProvider, @Nullable BitSet bitSet, @Nullable BitSet bitSet2, boolean bl) {
-        ChunkPos chunkPos = worldChunk.getPos();
+    public ChunkDataS2CPacket(WorldChunk chunk, LightingProvider lightProvider, @Nullable BitSet bitSet, @Nullable BitSet bitSet2, boolean bl) {
+        ChunkPos chunkPos = chunk.getPos();
         this.chunkX = chunkPos.x;
         this.chunkZ = chunkPos.z;
-        this.field_34870 = new class_6603(worldChunk);
-        this.field_34871 = new class_6606(chunkPos, lightingProvider, bitSet, bitSet2, bl);
+        this.chunkData = new ChunkData(chunk);
+        this.lightData = new LightData(chunkPos, lightProvider, bitSet, bitSet2, bl);
     }
 
-    public ChunkDataS2CPacket(PacketByteBuf packetByteBuf) {
-        this.chunkX = packetByteBuf.readInt();
-        this.chunkZ = packetByteBuf.readInt();
-        this.field_34870 = new class_6603(packetByteBuf, this.chunkX, this.chunkZ);
-        this.field_34871 = new class_6606(packetByteBuf, this.chunkX, this.chunkZ);
+    public ChunkDataS2CPacket(PacketByteBuf buf) {
+        this.chunkX = buf.readInt();
+        this.chunkZ = buf.readInt();
+        this.chunkData = new ChunkData(buf, this.chunkX, this.chunkZ);
+        this.lightData = new LightData(buf, this.chunkX, this.chunkZ);
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeInt(this.chunkX);
         buf.writeInt(this.chunkZ);
-        this.field_34870.method_38590(buf);
-        this.field_34871.method_38603(buf);
+        this.chunkData.write(buf);
+        this.lightData.write(buf);
     }
 
     @Override
@@ -57,12 +57,12 @@ implements Packet<ClientPlayPacketListener> {
         return this.chunkZ;
     }
 
-    public class_6603 method_38598() {
-        return this.field_34870;
+    public ChunkData method_38598() {
+        return this.chunkData;
     }
 
-    public class_6606 method_38599() {
-        return this.field_34871;
+    public LightData method_38599() {
+        return this.lightData;
     }
 }
 

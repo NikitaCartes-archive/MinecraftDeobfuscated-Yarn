@@ -12,10 +12,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class WolfBegGoal
 extends Goal {
     private final WolfEntity wolf;
+    @Nullable
     private PlayerEntity begFrom;
     private final World world;
     private final float begDistance;
@@ -63,8 +65,13 @@ extends Goal {
     }
 
     @Override
+    public boolean shouldRunEveryTick() {
+        return true;
+    }
+
+    @Override
     public void tick() {
-        this.wolf.getLookControl().lookAt(this.begFrom.getX(), this.begFrom.getEyeY(), this.begFrom.getZ(), 10.0f, this.wolf.getLookPitchSpeed());
+        this.wolf.getLookControl().lookAt(this.begFrom.getX(), this.begFrom.getEyeY(), this.begFrom.getZ(), 10.0f, this.wolf.getMaxLookPitchChange());
         --this.timer;
     }
 

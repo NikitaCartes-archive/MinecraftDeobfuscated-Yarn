@@ -16,6 +16,7 @@ public class TargetPredicate {
     private double baseMaxDistance = -1.0;
     private boolean respectsVisibility = true;
     private boolean useDistanceScalingFactor = true;
+    @Nullable
     private Predicate<LivingEntity> predicate;
 
     private TargetPredicate(boolean attackable) {

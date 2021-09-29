@@ -509,7 +509,7 @@ public class JsonHelper {
         return JsonHelper.deserialize(reader, false);
     }
 
-    public static JsonArray method_37165(Reader reader) {
+    public static JsonArray deserializeArray(Reader reader) {
         return JsonHelper.deserialize(GSON, reader, JsonArray.class, false);
     }
 }

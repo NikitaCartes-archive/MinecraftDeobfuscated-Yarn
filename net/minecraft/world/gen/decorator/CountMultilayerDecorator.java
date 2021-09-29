@@ -3,9 +3,7 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
@@ -14,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.DecoratorContext;
 
 public class CountMultilayerDecorator
@@ -25,7 +24,7 @@ extends Decorator<CountConfig> {
     @Override
     public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, CountConfig countConfig, BlockPos blockPos) {
         boolean bl;
-        ArrayList<BlockPos> list = Lists.newArrayList();
+        Stream.Builder<BlockPos> builder = Stream.builder();
         int i = 0;
         do {
             bl = false;
@@ -35,12 +34,12 @@ extends Decorator<CountConfig> {
                 int k = random.nextInt(16) + blockPos.getX();
                 int n = CountMultilayerDecorator.findPos(decoratorContext, k, m = decoratorContext.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l = random.nextInt(16) + blockPos.getZ()), l, i);
                 if (n == Integer.MAX_VALUE) continue;
-                list.add(new BlockPos(k, n, l));
+                builder.add(new BlockPos(k, n, l));
                 bl = true;
             }
             ++i;
         } while (bl);
-        return list.stream();
+        return builder.build();
     }
 
     private static int findPos(DecoratorContext context, int x, int y, int z, int targetY) {
@@ -63,6 +62,11 @@ extends Decorator<CountConfig> {
 
     private static boolean blocksSpawn(BlockState state) {
         return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.LAVA);
+    }
+
+    @Override
+    public /* synthetic */ Stream getPositions(DecoratorContext context, Random random, DecoratorConfig config, BlockPos pos) {
+        return this.getPositions(context, random, (CountConfig)config, pos);
     }
 }
 

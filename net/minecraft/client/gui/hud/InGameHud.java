@@ -34,6 +34,8 @@ import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.SubtitlesHud;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
@@ -204,7 +206,7 @@ extends DrawableHelper {
             this.renderPortalOverlay(g);
         }
         if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
-            this.spectatorHud.render(matrices, tickDelta);
+            this.spectatorHud.renderSpectatorMenu(matrices);
         } else if (!this.client.options.hudHidden) {
             this.renderHotbar(tickDelta, matrices);
         }
@@ -422,8 +424,10 @@ extends DrawableHelper {
     }
 
     protected void renderStatusEffectOverlay(MatrixStack matrices) {
+        AbstractInventoryScreen abstractInventoryScreen;
+        Screen screen;
         Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
-        if (collection.isEmpty()) {
+        if (collection.isEmpty() || (screen = this.client.currentScreen) instanceof AbstractInventoryScreen && (abstractInventoryScreen = (AbstractInventoryScreen)screen).method_38934()) {
             return;
         }
         RenderSystem.enableBlend();

@@ -63,12 +63,12 @@ extends ThrownItemEntity {
                     } else {
                         entity.requestTeleport(this.getX(), this.getY(), this.getZ());
                     }
-                    entity.fallDistance = 0.0f;
+                    entity.onLanding();
                     entity.damage(DamageSource.FALL, 5.0f);
                 }
             } else if (entity != null) {
                 entity.requestTeleport(this.getX(), this.getY(), this.getZ());
-                entity.fallDistance = 0.0f;
+                entity.onLanding();
             }
             this.discard();
         }

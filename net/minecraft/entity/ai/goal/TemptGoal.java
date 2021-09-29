@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.Ingredient;
+import org.jetbrains.annotations.Nullable;
 
 public class TemptGoal
 extends Goal {
@@ -22,6 +23,7 @@ extends Goal {
     private double lastPlayerZ;
     private double lastPlayerPitch;
     private double lastPlayerYaw;
+    @Nullable
     protected PlayerEntity closestPlayer;
     private int cooldown;
     private boolean active;
@@ -88,13 +90,13 @@ extends Goal {
     public void stop() {
         this.closestPlayer = null;
         this.mob.getNavigation().stop();
-        this.cooldown = 100;
+        this.cooldown = TemptGoal.toGoalTicks(100);
         this.active = false;
     }
 
     @Override
     public void tick() {
-        this.mob.getLookControl().lookAt(this.closestPlayer, this.mob.getBodyYawSpeed() + 20, this.mob.getLookPitchSpeed());
+        this.mob.getLookControl().lookAt(this.closestPlayer, this.mob.getMaxHeadRotation() + 20, this.mob.getMaxLookPitchChange());
         if (this.mob.squaredDistanceTo(this.closestPlayer) < 6.25) {
             this.mob.getNavigation().stop();
         } else {

@@ -7,8 +7,8 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6557;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.surfacebuilder.BadlandsSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
@@ -24,7 +24,7 @@ extends BadlandsSurfaceBuilder {
     }
 
     @Override
-    public void generate(Random random, class_6557 arg, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, BlockColumn blockColumn, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
         BlockState blockState3 = WHITE_TERRACOTTA;
         SurfaceConfig surfaceConfig = biome.getGenerationSettings().getSurfaceConfig();
         BlockState blockState4 = surfaceConfig.getUnderMaterial();
@@ -37,7 +37,7 @@ extends BadlandsSurfaceBuilder {
         int q = 0;
         for (int r = k; r >= m; --r) {
             if (q >= 15) continue;
-            BlockState blockState7 = arg.getState(r);
+            BlockState blockState7 = blockColumn.getState(r);
             if (blockState7.isAir()) {
                 p = -1;
                 continue;
@@ -59,29 +59,29 @@ extends BadlandsSurfaceBuilder {
                 if (r >= l - 1) {
                     if (r > 96 + o * 2) {
                         if (bl) {
-                            arg.method_38092(r, Blocks.COARSE_DIRT.getDefaultState());
+                            blockColumn.setState(r, Blocks.COARSE_DIRT.getDefaultState());
                         } else {
-                            arg.method_38092(r, Blocks.GRASS_BLOCK.getDefaultState());
+                            blockColumn.setState(r, Blocks.GRASS_BLOCK.getDefaultState());
                         }
                     } else if (r > l + 10 + o) {
                         BlockState blockState8 = r < 64 || r > 159 ? ORANGE_TERRACOTTA : (bl ? TERRACOTTA : this.calculateLayerBlockState(i, r, j));
-                        arg.method_38092(r, blockState8);
+                        blockColumn.setState(r, blockState8);
                     } else {
-                        arg.method_38092(r, blockState5);
+                        blockColumn.setState(r, blockState5);
                         bl2 = true;
                     }
                 } else {
-                    arg.method_38092(r, blockState6);
+                    blockColumn.setState(r, blockState6);
                     if (blockState6 == WHITE_TERRACOTTA) {
-                        arg.method_38092(r, ORANGE_TERRACOTTA);
+                        blockColumn.setState(r, ORANGE_TERRACOTTA);
                     }
                 }
             } else if (p > 0) {
                 --p;
                 if (bl2) {
-                    arg.method_38092(r, ORANGE_TERRACOTTA);
+                    blockColumn.setState(r, ORANGE_TERRACOTTA);
                 } else {
-                    arg.method_38092(r, this.calculateLayerBlockState(i, r, j));
+                    blockColumn.setState(r, this.calculateLayerBlockState(i, r, j));
                 }
             }
             ++q;

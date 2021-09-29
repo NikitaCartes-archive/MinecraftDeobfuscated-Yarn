@@ -29,11 +29,11 @@ import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorSettings {
-    public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorSettings::getStructuresConfig), ((MapCodec)GenerationShapeConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorSettings::getGenerationShapeConfig), ((MapCodec)MultiNoiseParameters.CODEC.fieldOf("octaves")).forGetter(ChunkGeneratorSettings::getBiomeSource), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorSettings::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorSettings::getDefaultFluid), ((MapCodec)Codec.INT.fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorSettings::getBedrockCeilingY), ((MapCodec)Codec.INT.fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorSettings::getBedrockFloorY), ((MapCodec)Codec.INT.fieldOf("sea_level")).forGetter(ChunkGeneratorSettings::getSeaLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorSettings::isMobGenerationDisabled), ((MapCodec)Codec.BOOL.fieldOf("aquifers_enabled")).forGetter(ChunkGeneratorSettings::hasAquifers), ((MapCodec)Codec.BOOL.fieldOf("noise_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoiseCaves), ((MapCodec)Codec.BOOL.fieldOf("deepslate_enabled")).forGetter(ChunkGeneratorSettings::hasDeepslate), ((MapCodec)Codec.BOOL.fieldOf("ore_veins_enabled")).forGetter(ChunkGeneratorSettings::hasOreVeins), ((MapCodec)Codec.BOOL.fieldOf("noodle_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoodleCaves)).apply((Applicative<ChunkGeneratorSettings, ?>)instance, ChunkGeneratorSettings::new));
+    public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorSettings::getStructuresConfig), ((MapCodec)GenerationShapeConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorSettings::getGenerationShapeConfig), ((MapCodec)MultiNoiseParameters.CODEC.fieldOf("octaves")).forGetter(ChunkGeneratorSettings::getMultiNoiseParameters), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorSettings::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorSettings::getDefaultFluid), ((MapCodec)Codec.INT.fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorSettings::getBedrockCeilingY), ((MapCodec)Codec.INT.fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorSettings::getBedrockFloorY), ((MapCodec)Codec.INT.fieldOf("sea_level")).forGetter(ChunkGeneratorSettings::getSeaLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorSettings::isMobGenerationDisabled), ((MapCodec)Codec.BOOL.fieldOf("aquifers_enabled")).forGetter(ChunkGeneratorSettings::hasAquifers), ((MapCodec)Codec.BOOL.fieldOf("noise_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoiseCaves), ((MapCodec)Codec.BOOL.fieldOf("deepslate_enabled")).forGetter(ChunkGeneratorSettings::hasDeepslate), ((MapCodec)Codec.BOOL.fieldOf("ore_veins_enabled")).forGetter(ChunkGeneratorSettings::hasOreVeins), ((MapCodec)Codec.BOOL.fieldOf("noodle_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoodleCaves)).apply((Applicative<ChunkGeneratorSettings, ?>)instance, ChunkGeneratorSettings::new));
     public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
     private final StructuresConfig structuresConfig;
     private final GenerationShapeConfig generationShapeConfig;
-    private final MultiNoiseParameters biomeSource;
+    private final MultiNoiseParameters multiNoiseParameters;
     private final BlockState defaultBlock;
     private final BlockState defaultFluid;
     private final int bedrockCeilingY;
@@ -46,17 +46,18 @@ public final class ChunkGeneratorSettings {
     private final boolean oreVeins;
     private final boolean noodleCaves;
     public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("overworld"));
+    public static final RegistryKey<ChunkGeneratorSettings> field_35051 = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("large_biomes"));
     public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("amplified"));
     public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("nether"));
     public static final RegistryKey<ChunkGeneratorSettings> END = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("end"));
     public static final RegistryKey<ChunkGeneratorSettings> CAVES = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("caves"));
     public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("floating_islands"));
-    private static final ChunkGeneratorSettings INSTANCE = ChunkGeneratorSettings.register(OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(new StructuresConfig(true), false));
+    private static final ChunkGeneratorSettings INSTANCE = ChunkGeneratorSettings.register(OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(new StructuresConfig(true), false, false));
 
-    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, MultiNoiseParameters biomeSource, BlockState defaultBlock, BlockState defaultFluid, int bedrockFloorY, int seaLevel, int minSurfaceLevel, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean deepslate, boolean oreVeins, boolean noodleCaves) {
+    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, MultiNoiseParameters multiNoiseParameters, BlockState defaultBlock, BlockState defaultFluid, int bedrockFloorY, int seaLevel, int minSurfaceLevel, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean deepslate, boolean oreVeins, boolean noodleCaves) {
         this.structuresConfig = structuresConfig;
         this.generationShapeConfig = generationShapeConfig;
-        this.biomeSource = biomeSource;
+        this.multiNoiseParameters = multiNoiseParameters;
         this.defaultBlock = defaultBlock;
         this.defaultFluid = defaultFluid;
         this.bedrockCeilingY = bedrockFloorY;
@@ -78,8 +79,8 @@ public final class ChunkGeneratorSettings {
         return this.generationShapeConfig;
     }
 
-    public MultiNoiseParameters getBiomeSource() {
-        return this.biomeSource;
+    public MultiNoiseParameters getMultiNoiseParameters() {
+        return this.multiNoiseParameters;
     }
 
     public BlockState getDefaultBlock() {
@@ -164,13 +165,15 @@ public final class ChunkGeneratorSettings {
         return new ChunkGeneratorSettings(new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, 0.0, -0.030078125, false, false, false, false, true), new MultiNoiseParameters(new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0), new DoublePerlinNoiseSampler.NoiseParameters(0, 0.0)), defaultBlock, defaultFluid, 0, 0, 32, false, false, false, false, false, false);
     }
 
-    private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified) {
+    private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, boolean bl) {
+        int i = bl ? -2 : 0;
         double d = 0.9999999814507745;
-        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0), new SlideConfig(-0.078125, 2, 8), new SlideConfig(0.1171875, 3, 0), 1, 2, 1.0, -0.51875, true, true, false, amplified, false), new MultiNoiseParameters(new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0), new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0), new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.0, 1.0, 0.0, 1.0, 1.0), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0), new DoublePerlinNoiseSampler.NoiseParameters(-3, 1.0, 1.0, 1.0, 0.0)), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), Integer.MIN_VALUE, 0, 63, false, true, true, true, true, true);
+        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0), new SlideConfig(-0.078125, 2, 8), new SlideConfig(0.1171875, 3, 0), 1, 2, 1.0, -0.51875, true, true, false, amplified, false), new MultiNoiseParameters(new DoublePerlinNoiseSampler.NoiseParameters(-9 + i, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0), new DoublePerlinNoiseSampler.NoiseParameters(-7 + i, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0), new DoublePerlinNoiseSampler.NoiseParameters(-9 + i, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0), new DoublePerlinNoiseSampler.NoiseParameters(-9 + i, 1.0, 1.0, 0.0, 1.0, 1.0), new DoublePerlinNoiseSampler.NoiseParameters(-7 + i, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0), new DoublePerlinNoiseSampler.NoiseParameters(-3 + i, 1.0, 1.0, 1.0, 0.0)), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), Integer.MIN_VALUE, 0, 63, false, true, true, true, true, true);
     }
 
     static {
-        ChunkGeneratorSettings.register(AMPLIFIED, ChunkGeneratorSettings.createSurfaceSettings(new StructuresConfig(true), true));
+        ChunkGeneratorSettings.register(field_35051, ChunkGeneratorSettings.createSurfaceSettings(new StructuresConfig(true), false, true));
+        ChunkGeneratorSettings.register(AMPLIFIED, ChunkGeneratorSettings.createSurfaceSettings(new StructuresConfig(true), true, false));
         ChunkGeneratorSettings.register(NETHER, ChunkGeneratorSettings.createUndergroundSettings(new StructuresConfig(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState()));
         ChunkGeneratorSettings.register(END, ChunkGeneratorSettings.createIslandSettings(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), true, true));
         ChunkGeneratorSettings.register(CAVES, ChunkGeneratorSettings.createUndergroundSettings(new StructuresConfig(true), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState()));

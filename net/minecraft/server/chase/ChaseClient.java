@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ChaseClient {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int field_34984 = 5;
+    private static final int CONNECTION_RETRY_INTERVAL = 5;
     private final String ip;
     private final int port;
     private final MinecraftServer minecraftServer;
@@ -109,7 +109,7 @@ public class ChaseClient {
     }
 
     private void executeTeleportCommand(Scanner scanner) {
-        this.getTeleportPos(scanner).ifPresent(teleportPos -> this.executeCommand(String.format(Locale.ROOT, "/execute in %s run tp @s %.3f %.3f %.3f %.3f %.3f", teleportPos.dimension.getValue(), teleportPos.pos.x, teleportPos.pos.y, teleportPos.pos.z, Float.valueOf(teleportPos.rot.y), Float.valueOf(teleportPos.rot.x))));
+        this.getTeleportPos(scanner).ifPresent(pos -> this.executeCommand(String.format(Locale.ROOT, "/execute in %s run tp @s %.3f %.3f %.3f %.3f %.3f", pos.dimension.getValue(), pos.pos.x, pos.pos.y, pos.pos.z, Float.valueOf(pos.rot.y), Float.valueOf(pos.rot.x))));
     }
 
     private Optional<TeleportPos> getTeleportPos(Scanner scanner) {

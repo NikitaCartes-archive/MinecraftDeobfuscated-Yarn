@@ -12,7 +12,7 @@ public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
     public static final Codec<Range<Integer>> CODEC = Range.createCodec(Codec.INT);
 
     public Range {
-        if (comparable.compareTo(comparable2) > 0) {
+        if (minInclusive.compareTo(maxInclusive) > 0) {
             throw new IllegalArgumentException("min_inclusive must be less than or equal to max_inclusive");
         }
     }

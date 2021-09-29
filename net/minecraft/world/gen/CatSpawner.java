@@ -51,7 +51,7 @@ implements Spawner {
             if (world.isNearOccupiedPointOfInterest(blockPos, 2)) {
                 return this.spawnInHouse(world, blockPos);
             }
-            if (world.getStructureAccessor().getStructureAt(blockPos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
+            if (world.getStructureAccessor().method_38854(blockPos, StructureFeature.SWAMP_HUT).hasChildren()) {
                 return this.spawnInSwampHut(world, blockPos);
             }
         }

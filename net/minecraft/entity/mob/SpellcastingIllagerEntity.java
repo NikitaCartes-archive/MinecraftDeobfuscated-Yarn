@@ -159,7 +159,7 @@ extends IllagerEntity {
 
         @Override
         public void start() {
-            this.spellCooldown = this.getInitialCooldown();
+            this.spellCooldown = this.getTickCount(this.getInitialCooldown());
             SpellcastingIllagerEntity.this.spellTicks = this.getSpellTicks();
             this.startTime = SpellcastingIllagerEntity.this.age + this.startTimeDelay();
             SoundEvent soundEvent = this.getSoundPrepare();
@@ -220,7 +220,7 @@ extends IllagerEntity {
         @Override
         public void tick() {
             if (SpellcastingIllagerEntity.this.getTarget() != null) {
-                SpellcastingIllagerEntity.this.getLookControl().lookAt(SpellcastingIllagerEntity.this.getTarget(), SpellcastingIllagerEntity.this.getBodyYawSpeed(), SpellcastingIllagerEntity.this.getLookPitchSpeed());
+                SpellcastingIllagerEntity.this.getLookControl().lookAt(SpellcastingIllagerEntity.this.getTarget(), SpellcastingIllagerEntity.this.getMaxHeadRotation(), SpellcastingIllagerEntity.this.getMaxLookPitchChange());
             }
         }
     }

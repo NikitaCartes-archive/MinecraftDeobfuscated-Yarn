@@ -41,9 +41,9 @@ public class SetAttributesLootFunction
 extends ConditionalLootFunction {
     final List<Attribute> attributes;
 
-    SetAttributesLootFunction(LootCondition[] lootConditions, List<Attribute> list) {
-        super(lootConditions);
-        this.attributes = ImmutableList.copyOf(list);
+    SetAttributesLootFunction(LootCondition[] conditions, List<Attribute> attributes) {
+        super(conditions);
+        this.attributes = ImmutableList.copyOf(attributes);
     }
 
     @Override
@@ -70,11 +70,11 @@ extends ConditionalLootFunction {
         return stack;
     }
 
-    public static AttributeBuilder create(String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange) {
+    public static AttributeBuilder attributeBuilder(String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange) {
         return new AttributeBuilder(name, attribute, operation, amountRange);
     }
 
-    public static Builder create() {
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -87,13 +87,13 @@ extends ConditionalLootFunction {
         final UUID id;
         final EquipmentSlot[] slots;
 
-        Attribute(String string, EntityAttribute entityAttribute, EntityAttributeModifier.Operation operation, LootNumberProvider lootNumberProvider, EquipmentSlot[] equipmentSlots, @Nullable UUID uUID) {
-            this.name = string;
-            this.attribute = entityAttribute;
+        Attribute(String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amount, EquipmentSlot[] slots, @Nullable UUID id) {
+            this.name = name;
+            this.attribute = attribute;
             this.operation = operation;
-            this.amount = lootNumberProvider;
-            this.id = uUID;
-            this.slots = equipmentSlots;
+            this.amount = amount;
+            this.id = id;
+            this.slots = slots;
         }
 
         public JsonObject serialize(JsonSerializationContext context) {

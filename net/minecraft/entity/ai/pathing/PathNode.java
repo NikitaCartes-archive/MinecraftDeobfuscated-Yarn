@@ -8,6 +8,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 
 public class PathNode {
     public final int x;
@@ -18,6 +19,7 @@ public class PathNode {
     public float penalizedPathLength;
     public float distanceToNearestTarget;
     public float heapWeight;
+    @Nullable
     public PathNode previous;
     public boolean visited;
     public float pathLength;

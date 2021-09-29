@@ -49,6 +49,7 @@ public abstract class EntityNavigation {
     protected boolean shouldRecalculate;
     protected long lastRecalculateTime;
     protected PathNodeMaker nodeMaker;
+    @Nullable
     private BlockPos currentTarget;
     private int currentDistance;
     private float rangeMultiplier = 1.0f;
@@ -70,6 +71,7 @@ public abstract class EntityNavigation {
         this.rangeMultiplier = rangeMultiplier;
     }
 
+    @Nullable
     public BlockPos getTargetPos() {
         return this.currentTarget;
     }

@@ -23,10 +23,10 @@ extends ConditionalLootFunction {
     final LootNumberProvider countRange;
     final boolean add;
 
-    SetCountLootFunction(LootCondition[] lootConditions, LootNumberProvider lootNumberProvider, boolean bl) {
-        super(lootConditions);
-        this.countRange = lootNumberProvider;
-        this.add = bl;
+    SetCountLootFunction(LootCondition[] conditions, LootNumberProvider countRange, boolean add) {
+        super(conditions);
+        this.countRange = countRange;
+        this.add = add;
     }
 
     @Override

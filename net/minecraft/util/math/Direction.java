@@ -5,6 +5,7 @@ package net.minecraft.util.math;
 
 import com.google.common.collect.Iterators;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.Arrays;
@@ -38,6 +39,7 @@ public enum Direction implements StringIdentifiable
     EAST(5, 4, 3, "east", AxisDirection.POSITIVE, Axis.X, new Vec3i(1, 0, 0));
 
     public static final Codec<Direction> CODEC;
+    public static final Codec<Direction> field_35088;
     private final int id;
     private final int idOpposite;
     private final int idHorizontal;
@@ -420,6 +422,10 @@ public enum Direction implements StringIdentifiable
         return this.name;
     }
 
+    private static DataResult<Direction> validateVertical(Direction direction) {
+        return direction.getAxis().isVertical() ? DataResult.success(direction) : DataResult.error("Expected a vertical direction");
+    }
+
     public static Direction get(AxisDirection direction, Axis axis) {
         for (Direction direction2 : ALL) {
             if (direction2.getDirection() != direction || direction2.getAxis() != axis) continue;
@@ -448,6 +454,7 @@ public enum Direction implements StringIdentifiable
 
     static {
         CODEC = StringIdentifiable.createCodec(Direction::values, Direction::byName);
+        field_35088 = CODEC.flatXmap(Direction::validateVertical, Direction::validateVertical);
         ALL = Direction.values();
         NAME_MAP = Arrays.stream(ALL).collect(Collectors.toMap(Direction::getName, direction -> direction));
         VALUES = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);

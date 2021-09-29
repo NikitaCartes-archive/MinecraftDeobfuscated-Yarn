@@ -23,8 +23,11 @@ extends AbstractPhase {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int field_30440 = 5;
     private int seenTargetTimes;
+    @Nullable
     private Path path;
+    @Nullable
     private Vec3d pathTarget;
+    @Nullable
     private LivingEntity target;
     private boolean shouldFindNewPath;
 

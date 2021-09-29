@@ -32,7 +32,7 @@ extends Item {
         if (!world.isClient) {
             ExperienceBottleEntity experienceBottleEntity = new ExperienceBottleEntity(world, user);
             experienceBottleEntity.setItem(itemStack);
-            experienceBottleEntity.setProperties(user, user.getPitch(), user.getYaw(), -20.0f, 0.7f, 1.0f);
+            experienceBottleEntity.setVelocity(user, user.getPitch(), user.getYaw(), -20.0f, 0.7f, 1.0f);
             world.spawnEntity(experienceBottleEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));

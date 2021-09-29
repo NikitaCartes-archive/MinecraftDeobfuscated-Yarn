@@ -437,10 +437,10 @@ extends PatrolEntity {
 
         @Override
         public void tick() {
-            if (!this.raider.isSilent() && this.raider.random.nextInt(100) == 0) {
+            if (!this.raider.isSilent() && this.raider.random.nextInt(this.getTickCount(100)) == 0) {
                 RaiderEntity.this.playSound(RaiderEntity.this.getCelebratingSound(), RaiderEntity.this.getSoundVolume(), RaiderEntity.this.getSoundPitch());
             }
-            if (!this.raider.hasVehicle() && this.raider.random.nextInt(50) == 0) {
+            if (!this.raider.hasVehicle() && this.raider.random.nextInt(this.getTickCount(50)) == 0) {
                 this.raider.getJumpControl().setActive();
             }
             super.tick();
@@ -487,6 +487,11 @@ extends PatrolEntity {
                 }
                 this.raider.setAttacking(true);
             }
+        }
+
+        @Override
+        public boolean shouldRunEveryTick() {
+            return true;
         }
 
         @Override

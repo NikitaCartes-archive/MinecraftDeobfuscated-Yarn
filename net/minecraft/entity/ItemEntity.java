@@ -49,7 +49,9 @@ extends Entity {
     private int itemAge;
     private int pickupDelay;
     private int health = 5;
+    @Nullable
     private UUID thrower;
+    @Nullable
     private UUID owner;
     public final float uniqueOffset;
 

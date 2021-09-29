@@ -31,10 +31,10 @@ extends ConditionalLootFunction {
     final List<Pair<BannerPattern, DyeColor>> patterns;
     final boolean append;
 
-    SetBannerPatternFunction(LootCondition[] lootConditions, List<Pair<BannerPattern, DyeColor>> list, boolean bl) {
-        super(lootConditions);
-        this.patterns = list;
-        this.append = bl;
+    SetBannerPatternFunction(LootCondition[] condiitons, List<Pair<BannerPattern, DyeColor>> patterns, boolean append) {
+        super(condiitons);
+        this.patterns = patterns;
+        this.append = append;
     }
 
     @Override
@@ -63,8 +63,8 @@ extends ConditionalLootFunction {
         return LootFunctionTypes.SET_BANNER_PATTERN;
     }
 
-    public static Builder method_35531(boolean bl) {
-        return new Builder(bl);
+    public static Builder builder(boolean append) {
+        return new Builder(append);
     }
 
     public static class Builder
@@ -72,8 +72,8 @@ extends ConditionalLootFunction {
         private final ImmutableList.Builder<Pair<BannerPattern, DyeColor>> patterns = ImmutableList.builder();
         private final boolean append;
 
-        Builder(boolean bl) {
-            this.append = bl;
+        Builder(boolean append) {
+            this.append = append;
         }
 
         @Override

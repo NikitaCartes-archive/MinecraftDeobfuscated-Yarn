@@ -28,7 +28,7 @@ extends Item {
         if (!world.isClient) {
             EnderPearlEntity enderPearlEntity = new EnderPearlEntity(world, user);
             enderPearlEntity.setItem(itemStack);
-            enderPearlEntity.setProperties(user, user.getPitch(), user.getYaw(), 0.0f, 1.5f, 1.0f);
+            enderPearlEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0f, 1.5f, 1.0f);
             world.spawnEntity(enderPearlEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));

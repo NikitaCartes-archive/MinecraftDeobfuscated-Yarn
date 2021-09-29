@@ -6,7 +6,6 @@ package net.minecraft.world.chunk;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.shorts.ShortList;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -16,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_6643;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -47,7 +47,7 @@ extends Chunk {
     private volatile ChunkStatus status = ChunkStatus.EMPTY;
     private final List<NbtCompound> entities = Lists.newArrayList();
     private final List<BlockPos> lightSources = Lists.newArrayList();
-    private final Map<GenerationStep.Carver, BitSet> carvingMasks = new Object2ObjectArrayMap<GenerationStep.Carver, BitSet>();
+    private final Map<GenerationStep.Carver, class_6643> carvingMasks = new Object2ObjectArrayMap<GenerationStep.Carver, class_6643>();
 
     public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world, Registry<Biome> registry) {
         this(pos, upgradeData, null, new ChunkTickScheduler<Block>(block -> block == null || block.getDefaultState().isAir(), pos, world), new ChunkTickScheduler<Fluid>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos, world), world, registry);
@@ -97,7 +97,7 @@ extends Chunk {
     }
 
     public void addLightSource(short chunkSliceRel, int sectionY) {
-        this.addLightSource(ProtoChunk.joinBlockPos(chunkSliceRel, this.sectionIndexToCoord(sectionY), this.field_34538));
+        this.addLightSource(ProtoChunk.joinBlockPos(chunkSliceRel, this.sectionIndexToCoord(sectionY), this.pos));
     }
 
     public void addLightSource(BlockPos pos) {
@@ -114,7 +114,7 @@ extends Chunk {
             return Blocks.VOID_AIR.getDefaultState();
         }
         int l = this.getSectionIndex(j);
-        if (this.field_34545[l].isEmpty() && state.isOf(Blocks.AIR)) {
+        if (this.sectionArray[l].isEmpty() && state.isOf(Blocks.AIR)) {
             return state;
         }
         if (state.getLuminance() > 0) {
@@ -128,7 +128,7 @@ extends Chunk {
         EnumSet<Heightmap.Type> enumSet = this.getStatus().getHeightmapTypes();
         EnumSet<Heightmap.Type> enumSet2 = null;
         for (Heightmap.Type type : enumSet) {
-            Heightmap heightmap = (Heightmap)this.field_34541.get(type);
+            Heightmap heightmap = (Heightmap)this.heightmaps.get(type);
             if (heightmap != null) continue;
             if (enumSet2 == null) {
                 enumSet2 = EnumSet.noneOf(Heightmap.Type.class);
@@ -139,24 +139,24 @@ extends Chunk {
             Heightmap.populateHeightmaps(this, enumSet2);
         }
         for (Heightmap.Type type : enumSet) {
-            ((Heightmap)this.field_34541.get(type)).trackUpdate(i & 0xF, j, k & 0xF, state);
+            ((Heightmap)this.heightmaps.get(type)).trackUpdate(i & 0xF, j, k & 0xF, state);
         }
         return blockState;
     }
 
     @Override
     public void setBlockEntity(BlockEntity blockEntity) {
-        this.field_34543.put(blockEntity.getPos(), blockEntity);
+        this.blockEntities.put(blockEntity.getPos(), blockEntity);
     }
 
     @Override
     @Nullable
     public BlockEntity getBlockEntity(BlockPos pos) {
-        return (BlockEntity)this.field_34543.get(pos);
+        return (BlockEntity)this.blockEntities.get(pos);
     }
 
     public Map<BlockPos, BlockEntity> getBlockEntities() {
-        return this.field_34543;
+        return this.blockEntities;
     }
 
     public void addEntity(NbtCompound entityTag) {
@@ -215,17 +215,17 @@ extends Chunk {
     @Override
     public void markBlockForPostProcessing(BlockPos pos) {
         if (!this.isOutOfHeightLimit(pos)) {
-            Chunk.getList(this.field_34536, this.getSectionIndex(pos.getY())).add(ProtoChunk.getPackedSectionRelative(pos));
+            Chunk.getList(this.postProcessingLists, this.getSectionIndex(pos.getY())).add(ProtoChunk.getPackedSectionRelative(pos));
         }
     }
 
     @Override
     public void markBlockForPostProcessing(short packedPos, int index) {
-        Chunk.getList(this.field_34536, index).add(packedPos);
+        Chunk.getList(this.postProcessingLists, index).add(packedPos);
     }
 
     public Map<BlockPos, NbtCompound> getBlockEntityNbts() {
-        return Collections.unmodifiableMap(this.field_34542);
+        return Collections.unmodifiableMap(this.blockEntityNbts);
     }
 
     @Override
@@ -235,26 +235,26 @@ extends Chunk {
         if (blockEntity != null) {
             return blockEntity.createNbtWithIdentifyingData();
         }
-        return (NbtCompound)this.field_34542.get(pos);
+        return (NbtCompound)this.blockEntityNbts.get(pos);
     }
 
     @Override
     public void removeBlockEntity(BlockPos pos) {
-        this.field_34543.remove(pos);
-        this.field_34542.remove(pos);
+        this.blockEntities.remove(pos);
+        this.blockEntityNbts.remove(pos);
     }
 
     @Nullable
-    public BitSet getCarvingMask(GenerationStep.Carver carver) {
+    public class_6643 getCarvingMask(GenerationStep.Carver carver) {
         return this.carvingMasks.get(carver);
     }
 
-    public BitSet getOrCreateCarvingMask(GenerationStep.Carver carver2) {
-        return this.carvingMasks.computeIfAbsent(carver2, carver -> new BitSet(98304));
+    public class_6643 getOrCreateCarvingMask(GenerationStep.Carver carver2) {
+        return this.carvingMasks.computeIfAbsent(carver2, carver -> new class_6643(this.getHeight(), this.getBottomY()));
     }
 
-    public void setCarvingMask(GenerationStep.Carver carver, BitSet mask) {
-        this.carvingMasks.put(carver, mask);
+    public void setCarvingMask(GenerationStep.Carver carver, class_6643 arg) {
+        this.carvingMasks.put(carver, arg);
     }
 
     public void setLightingProvider(LightingProvider lightingProvider) {

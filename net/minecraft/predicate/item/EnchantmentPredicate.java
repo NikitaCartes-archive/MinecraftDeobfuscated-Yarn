@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 public class EnchantmentPredicate {
     public static final EnchantmentPredicate ANY = new EnchantmentPredicate();
     public static final EnchantmentPredicate[] ARRAY_OF_ANY = new EnchantmentPredicate[0];
+    @Nullable
     private final Enchantment enchantment;
     private final NumberRange.IntRange levels;
 
@@ -38,10 +39,10 @@ public class EnchantmentPredicate {
                 return false;
             }
             int i = enchantments.get(this.enchantment);
-            if (this.levels != null && !this.levels.test(i)) {
+            if (this.levels != NumberRange.IntRange.ANY && !this.levels.test(i)) {
                 return false;
             }
-        } else if (this.levels != null) {
+        } else if (this.levels != NumberRange.IntRange.ANY) {
             for (Integer integer : enchantments.values()) {
                 if (!this.levels.test(integer)) continue;
                 return true;

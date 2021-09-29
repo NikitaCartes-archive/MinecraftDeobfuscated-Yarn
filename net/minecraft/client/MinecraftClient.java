@@ -501,7 +501,7 @@ WindowEventHandler {
         this.networkProxy = args.network.netProxy;
         YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
         this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-        this.userApiService = this.createSocialInteractionsService(yggdrasilAuthenticationService, args);
+        this.userApiService = this.createUserApiService(yggdrasilAuthenticationService, args);
         this.session = args.network.session;
         LOGGER.info("Setting user: {}", (Object)this.session.getUsername());
         LOGGER.debug("(Session ID is {})", (Object)this.session.getSessionId());
@@ -664,9 +664,9 @@ WindowEventHandler {
         return stringBuilder.toString();
     }
 
-    private UserApiService createSocialInteractionsService(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
+    private UserApiService createUserApiService(YggdrasilAuthenticationService authService, RunArgs runArgs) {
         try {
-            return yggdrasilAuthenticationService.createUserApiService(runArgs.network.session.getAccessToken());
+            return authService.createUserApiService(runArgs.network.session.getAccessToken());
         } catch (AuthenticationException authenticationException) {
             LOGGER.error("Failed to verify authentication", (Throwable)authenticationException);
             return UserApiService.OFFLINE;
@@ -755,17 +755,17 @@ WindowEventHandler {
     }
 
     private void initializeSearchableContainers() {
-        TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<ItemStack>(itemStack -> itemStack.getTooltip(null, TooltipContext.Default.NORMAL).stream().map(text -> Formatting.strip(text.getString()).trim()).filter(string -> !string.isEmpty()), itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem())));
-        IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<ItemStack>(itemStack -> ItemTags.getTagGroup().getTagsFor(itemStack.getItem()).stream());
+        TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<ItemStack>(stack -> stack.getTooltip(null, TooltipContext.Default.NORMAL).stream().map(tooltip -> Formatting.strip(tooltip.getString()).trim()).filter(string -> !string.isEmpty()), stack -> Stream.of(Registry.ITEM.getId(stack.getItem())));
+        IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<ItemStack>(stack -> ItemTags.getTagGroup().getTagsFor(stack.getItem()).stream());
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         for (Item item : Registry.ITEM) {
             item.appendStacks(ItemGroup.SEARCH, defaultedList);
         }
-        defaultedList.forEach(itemStack -> {
-            textSearchableContainer.add((ItemStack)itemStack);
-            identifierSearchableContainer.add((ItemStack)itemStack);
+        defaultedList.forEach(stack -> {
+            textSearchableContainer.add((ItemStack)stack);
+            identifierSearchableContainer.add((ItemStack)stack);
         });
-        TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<RecipeResultCollection>(recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream()).map(text -> Formatting.strip(text.getString()).trim()).filter(string -> !string.isEmpty()), recipeResultCollection -> recipeResultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem())));
+        TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<RecipeResultCollection>(resultCollection -> resultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream()).map(tooltip -> Formatting.strip(tooltip.getString()).trim()).filter(string -> !string.isEmpty()), resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem())));
         this.searchManager.put(SearchManager.ITEM_TOOLTIP, textSearchableContainer);
         this.searchManager.put(SearchManager.ITEM_TAG, identifierSearchableContainer);
         this.searchManager.put(SearchManager.RECIPE_OUTPUT, textSearchableContainer2);
@@ -1104,11 +1104,11 @@ WindowEventHandler {
         return this.options.debugEnabled && this.options.debugProfilerEnabled && !this.options.hudHidden;
     }
 
-    private Profiler startMonitor(boolean active, @Nullable TickDurationMonitor tickDurationMonitor) {
+    private Profiler startMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
         Profiler profiler;
         if (!active) {
             this.tickTimeTracker.disable();
-            if (!this.recorder.isActive() && tickDurationMonitor == null) {
+            if (!this.recorder.isActive() && monitor == null) {
                 return DummyProfiler.INSTANCE;
             }
         }
@@ -1125,7 +1125,7 @@ WindowEventHandler {
         if (this.recorder.isActive()) {
             profiler = Profiler.union(profiler, this.recorder.getProfiler());
         }
-        return TickDurationMonitor.tickProfiler(profiler, tickDurationMonitor);
+        return TickDurationMonitor.tickProfiler(profiler, monitor);
     }
 
     private void endMonitor(boolean active, @Nullable TickDurationMonitor monitor) {
@@ -1180,40 +1180,40 @@ WindowEventHandler {
         System.gc();
     }
 
-    public boolean toggleDebugProfiler(Consumer<TranslatableText> consumer) {
-        Consumer<Path> consumer5;
+    public boolean toggleDebugProfiler(Consumer<TranslatableText> chatMessageSender) {
+        Consumer<Path> consumer4;
         if (this.recorder.isActive()) {
             this.stopRecorder();
             return false;
         }
-        Consumer<ProfileResult> consumer2 = profileResult -> {
-            int i = profileResult.getTickSpan();
-            double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
-            this.execute(() -> consumer.accept(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))));
+        Consumer<ProfileResult> consumer = result -> {
+            int i = result.getTickSpan();
+            double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
+            this.execute(() -> chatMessageSender.accept(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))));
         };
-        Consumer<Path> consumer3 = path -> {
+        Consumer<Path> consumer2 = path -> {
             MutableText text = new LiteralText(path.toString()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
-            this.execute(() -> consumer.accept(new TranslatableText("debug.profiling.stop", text)));
+            this.execute(() -> chatMessageSender.accept(new TranslatableText("debug.profiling.stop", text)));
         };
         SystemDetails systemDetails = MinecraftClient.addSystemDetailsToCrashReport(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
-        Consumer<List> consumer4 = list -> {
-            Path path = this.method_37275(systemDetails, (List<Path>)list);
-            consumer3.accept(path);
+        Consumer<List> consumer3 = files -> {
+            Path path = this.saveProfilingResult(systemDetails, (List<Path>)files);
+            consumer2.accept(path);
         };
         if (this.server == null) {
-            consumer5 = path -> consumer4.accept(ImmutableList.of(path));
+            consumer4 = path -> consumer3.accept(ImmutableList.of(path));
         } else {
             this.server.addSystemDetails(systemDetails);
             CompletableFuture completableFuture = new CompletableFuture();
             CompletableFuture completableFuture2 = new CompletableFuture();
-            CompletableFuture.allOf(completableFuture, completableFuture2).thenRunAsync(() -> consumer4.accept(ImmutableList.of((Path)completableFuture.join(), (Path)completableFuture2.join())), Util.getIoWorkerExecutor());
-            this.server.setupRecorder(profileResult -> {}, completableFuture2::complete);
-            consumer5 = completableFuture::complete;
+            CompletableFuture.allOf(completableFuture, completableFuture2).thenRunAsync(() -> consumer3.accept(ImmutableList.of((Path)completableFuture.join(), (Path)completableFuture2.join())), Util.getIoWorkerExecutor());
+            this.server.setupRecorder(result -> {}, completableFuture2::complete);
+            consumer4 = completableFuture::complete;
         }
-        this.recorder = DebugRecorder.of(new ClientSamplerSource(Util.nanoTimeSupplier, this.worldRenderer), Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new RecordDumper("client"), profileResult -> {
+        this.recorder = DebugRecorder.of(new ClientSamplerSource(Util.nanoTimeSupplier, this.worldRenderer), Util.nanoTimeSupplier, Util.getIoWorkerExecutor(), new RecordDumper("client"), result -> {
             this.recorder = DummyRecorder.INSTANCE;
-            consumer2.accept((ProfileResult)profileResult);
-        }, consumer5);
+            consumer.accept((ProfileResult)result);
+        }, consumer4);
         return true;
     }
 
@@ -1227,7 +1227,7 @@ WindowEventHandler {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    private Path method_37275(SystemDetails systemDetails, List<Path> list) {
+    private Path saveProfilingResult(SystemDetails details, List<Path> files) {
         Path path;
         String string = this.isInSingleplayer() ? this.getServer().getSaveProperties().getLevelName() : this.getCurrentServerEntry().name;
         try {
@@ -1238,11 +1238,11 @@ WindowEventHandler {
             throw new UncheckedIOException(iOException);
         }
         try (ZipCompressor zipCompressor = new ZipCompressor(path);){
-            zipCompressor.write(Paths.get("system.txt", new String[0]), systemDetails.collect());
+            zipCompressor.write(Paths.get("system.txt", new String[0]), details.collect());
             zipCompressor.write(Paths.get("client", new String[0]).resolve(this.options.getOptionsFile().getName()), this.options.collectProfiledOptions());
-            list.forEach(zipCompressor::copyAll);
+            files.forEach(zipCompressor::copyAll);
         } finally {
-            for (Path path2 : list) {
+            for (Path path2 : files) {
                 try {
                     FileUtils.forceDelete(path2.toFile());
                 } catch (IOException iOException2) {
@@ -1797,8 +1797,8 @@ WindowEventHandler {
             SkullBlockEntity.setSessionService(minecraftSessionService);
             SkullBlockEntity.setExecutor(this);
             UserCache.setUseRemote(false);
-            this.server = MinecraftServer.startServer(serverThread -> new IntegratedServer((Thread)serverThread, this, registryTracker, session, integratedResourceManager.getResourcePackManager(), integratedResourceManager.getServerResourceManager(), saveProperties, minecraftSessionService, gameProfileRepository, userCache, i -> {
-                WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
+            this.server = MinecraftServer.startServer(serverThread -> new IntegratedServer((Thread)serverThread, this, registryTracker, session, integratedResourceManager.getResourcePackManager(), integratedResourceManager.getServerResourceManager(), saveProperties, minecraftSessionService, gameProfileRepository, userCache, spawnChunkRadius -> {
+                WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(spawnChunkRadius + 0);
                 this.worldGenProgressTracker.set(worldGenerationProgressTracker);
                 return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
             }));
@@ -1855,8 +1855,8 @@ WindowEventHandler {
                 onConfirm.run();
             }, text, text2, false));
         } else {
-            this.setScreen(new ConfirmScreen(bl -> {
-                if (bl) {
+            this.setScreen(new ConfirmScreen(confirmed -> {
+                if (confirmed) {
                     onConfirm.run();
                 } else {
                     this.setScreen(null);
@@ -1916,6 +1916,7 @@ WindowEventHandler {
             this.cancelTasks();
             clientPlayNetworkHandler.clearWorld();
         }
+        this.socialInteractionsManager.unloadBlockList();
         IntegratedServer integratedServer = this.server;
         this.server = null;
         this.gameRenderer.reset();
@@ -1951,7 +1952,7 @@ WindowEventHandler {
         this.profiler.pop();
     }
 
-    public void method_29970(Screen screen) {
+    public void setScreenAndRender(Screen screen) {
         this.profiler.push("forcedTick");
         this.setScreen(screen);
         this.render(false);
@@ -2669,6 +2670,10 @@ WindowEventHandler {
 
     public boolean shouldFilterText() {
         return false;
+    }
+
+    public void loadBlockList() {
+        this.socialInteractionsManager.loadBlockList();
     }
 
     static {

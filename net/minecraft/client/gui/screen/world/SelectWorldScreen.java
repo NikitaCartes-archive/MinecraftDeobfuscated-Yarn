@@ -27,12 +27,14 @@ import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class SelectWorldScreen
 extends Screen {
     private static final Logger field_28783 = LogManager.getLogger();
     protected final Screen parent;
+    @Nullable
     private List<OrderedText> tooltipText;
     private ButtonWidget deleteButton;
     private ButtonWidget selectButton;

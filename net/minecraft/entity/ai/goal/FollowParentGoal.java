@@ -6,6 +6,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.List;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.AnimalEntity;
+import org.jetbrains.annotations.Nullable;
 
 public class FollowParentGoal
 extends Goal {
@@ -13,6 +14,7 @@ extends Goal {
     public static final int field_30210 = 4;
     public static final int field_30211 = 3;
     private final AnimalEntity animal;
+    @Nullable
     private AnimalEntity parent;
     private final double speed;
     private int delay;
@@ -73,7 +75,7 @@ extends Goal {
         if (--this.delay > 0) {
             return;
         }
-        this.delay = 10;
+        this.delay = this.getTickCount(10);
         this.animal.getNavigation().startMovingTo(this.parent, this.speed);
     }
 }

@@ -7,18 +7,15 @@ import java.util.Random;
 import net.minecraft.block.sapling.LargeTreeSaplingGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
-import org.jetbrains.annotations.Nullable;
 
 public class SpruceSaplingGenerator
 extends LargeTreeSaplingGenerator {
     @Override
-    @Nullable
     protected ConfiguredFeature<?, ?> getTreeFeature(Random random, boolean bees) {
         return ConfiguredFeatures.SPRUCE;
     }
 
     @Override
-    @Nullable
     protected ConfiguredFeature<?, ?> getLargeTreeFeature(Random random) {
         return random.nextBoolean() ? ConfiguredFeatures.MEGA_SPRUCE : ConfiguredFeatures.MEGA_PINE;
     }

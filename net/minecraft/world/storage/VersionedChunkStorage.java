@@ -40,10 +40,12 @@ implements AutoCloseable {
             }
             nbt = this.featureUpdater.getUpdatedReferences(nbt);
         }
+        nbt.getCompound("Level").putString("__dimension", worldKey.getValue().toString());
         nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, Math.max(1493, i));
         if (i < SharedConstants.getGameVersion().getWorldVersion()) {
             nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
         }
+        nbt.getCompound("Level").remove("__dimension");
         return nbt;
     }
 

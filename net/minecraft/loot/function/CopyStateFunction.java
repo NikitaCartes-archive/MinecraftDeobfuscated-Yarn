@@ -34,10 +34,10 @@ extends ConditionalLootFunction {
     final Block block;
     final Set<Property<?>> properties;
 
-    CopyStateFunction(LootCondition[] lootConditions, Block block, Set<Property<?>> set) {
-        super(lootConditions);
+    CopyStateFunction(LootCondition[] conditions, Block block, Set<Property<?>> properties) {
+        super(conditions);
         this.block = block;
-        this.properties = set;
+        this.properties = properties;
     }
 
     @Override
@@ -67,7 +67,7 @@ extends ConditionalLootFunction {
         return stack;
     }
 
-    public static Builder getBuilder(Block block) {
+    public static Builder builder(Block block) {
         return new Builder(block);
     }
 

@@ -3,8 +3,11 @@
  */
 package net.minecraft.world.gen;
 
-import com.mojang.datafixers.DataFixUtils;
-import java.util.stream.Stream;
+import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import java.util.List;
+import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -33,8 +36,18 @@ public class StructureAccessor {
         return new StructureAccessor(region, this.options);
     }
 
-    public Stream<? extends StructureStart<?>> getStructuresWithChildren(ChunkSectionPos pos2, StructureFeature<?> feature) {
-        return this.world.getChunk(pos2.getSectionX(), pos2.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(feature).stream().map(long_ -> ChunkSectionPos.from(new ChunkPos((long)long_), this.world.getBottomSectionCoord())).map(pos -> this.getStructureStart((ChunkSectionPos)pos, feature, this.world.getChunk(pos.getSectionX(), pos.getSectionZ(), ChunkStatus.STRUCTURE_STARTS))).filter(structureStart -> structureStart != null && structureStart.hasChildren());
+    public List<? extends StructureStart<?>> method_38853(ChunkSectionPos chunkSectionPos, StructureFeature<?> structureFeature) {
+        LongSet longSet = this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(structureFeature);
+        ImmutableList.Builder builder = ImmutableList.builder();
+        LongIterator longIterator = longSet.iterator();
+        while (longIterator.hasNext()) {
+            long l = (Long)longIterator.next();
+            ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(new ChunkPos(l), this.world.getBottomSectionCoord());
+            StructureStart<?> structureStart = this.getStructureStart(chunkSectionPos2, structureFeature, this.world.getChunk(chunkSectionPos2.getSectionX(), chunkSectionPos2.getSectionZ(), ChunkStatus.STRUCTURE_STARTS));
+            if (structureStart == null || !structureStart.hasChildren()) continue;
+            builder.add(structureStart);
+        }
+        return builder.build();
     }
 
     @Nullable
@@ -54,13 +67,27 @@ public class StructureAccessor {
         return this.options.shouldGenerateStructures();
     }
 
-    public StructureStart<?> getStructureAt(BlockPos pos, boolean matchChildren, StructureFeature<?> feature) {
-        return DataFixUtils.orElse(this.getStructuresWithChildren(ChunkSectionPos.from(pos), feature).filter(structureStart -> {
-            if (matchChildren) {
-                return structureStart.getChildren().stream().anyMatch(piece -> piece.getBoundingBox().contains(pos));
+    public StructureStart<?> getStructureAt(BlockPos pos, StructureFeature<?> structureFeature) {
+        for (StructureStart<?> structureStart : this.method_38853(ChunkSectionPos.from(pos), structureFeature)) {
+            if (!structureStart.setBoundingBoxFromChildren().contains(pos)) continue;
+            return structureStart;
+        }
+        return StructureStart.DEFAULT;
+    }
+
+    public StructureStart<?> method_38854(BlockPos blockPos, StructureFeature<?> structureFeature) {
+        for (StructureStart<?> structureStart : this.method_38853(ChunkSectionPos.from(blockPos), structureFeature)) {
+            for (StructurePiece structurePiece : structureStart.getChildren()) {
+                if (!structurePiece.getBoundingBox().contains(blockPos)) continue;
+                return structureStart;
             }
-            return structureStart.setBoundingBoxFromChildren().contains(pos);
-        }).findFirst(), StructureStart.DEFAULT);
+        }
+        return StructureStart.DEFAULT;
+    }
+
+    public boolean method_38852(BlockPos blockPos) {
+        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
+        return this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).hasStructureReferences();
     }
 }
 

@@ -321,6 +321,7 @@ extends AnimalEntity {
 
     @Override
     public void tick() {
+        LivingEntity livingEntity;
         super.tick();
         if (this.isWorried()) {
             if (this.world.isThundering() && !this.isTouchingWater()) {
@@ -330,13 +331,13 @@ extends AnimalEntity {
                 this.setScared(false);
             }
         }
-        if (this.getTarget() == null) {
+        if ((livingEntity = this.getTarget()) == null) {
             this.shouldGetRevenge = false;
             this.shouldAttack = false;
         }
         if (this.getAskForBambooTicks() > 0) {
-            if (this.getTarget() != null) {
-                this.lookAtEntity(this.getTarget(), 90.0f, 90.0f);
+            if (livingEntity != null) {
+                this.lookAtEntity(livingEntity, 90.0f, 90.0f);
             }
             if (this.getAskForBambooTicks() == 29 || this.getAskForBambooTicks() == 14) {
                 this.playSound(SoundEvents.ENTITY_PANDA_CANT_BREED, 1.0f, 1.0f);
@@ -768,14 +769,14 @@ extends AnimalEntity {
         }
     }
 
-    class PandaMateGoal
+    static class PandaMateGoal
     extends AnimalMateGoal {
         private final PandaEntity panda;
         private int nextAskPlayerForBambooAge;
 
-        public PandaMateGoal(PandaEntity panda, double chance) {
-            super(panda, chance);
-            this.panda = panda;
+        public PandaMateGoal(PandaEntity pandaEntity, double d) {
+            super(pandaEntity, d);
+            this.panda = pandaEntity;
         }
 
         @Override
@@ -870,10 +871,10 @@ extends AnimalEntity {
 
         @Override
         public boolean shouldContinue() {
-            if (PandaEntity.this.isTouchingWater() || !PandaEntity.this.isLazy() && PandaEntity.this.random.nextInt(600) == 1) {
+            if (PandaEntity.this.isTouchingWater() || !PandaEntity.this.isLazy() && PandaEntity.this.random.nextInt(PickUpFoodGoal.toGoalTicks(600)) == 1) {
                 return false;
             }
-            return PandaEntity.this.random.nextInt(2000) != 1;
+            return PandaEntity.this.random.nextInt(PickUpFoodGoal.toGoalTicks(2000)) != 1;
         }
 
         @Override
@@ -918,15 +919,15 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return this.nextLieOnBackAge < this.panda.age && this.panda.isLazy() && this.panda.isIdle() && this.panda.random.nextInt(400) == 1;
+            return this.nextLieOnBackAge < this.panda.age && this.panda.isLazy() && this.panda.isIdle() && this.panda.random.nextInt(LieOnBackGoal.toGoalTicks(400)) == 1;
         }
 
         @Override
         public boolean shouldContinue() {
-            if (this.panda.isTouchingWater() || !this.panda.isLazy() && this.panda.random.nextInt(600) == 1) {
+            if (this.panda.isTouchingWater() || !this.panda.isLazy() && this.panda.random.nextInt(LieOnBackGoal.toGoalTicks(600)) == 1) {
                 return false;
             }
-            return this.panda.random.nextInt(2000) != 1;
+            return this.panda.random.nextInt(LieOnBackGoal.toGoalTicks(2000)) != 1;
         }
 
         @Override
@@ -955,10 +956,10 @@ extends AnimalEntity {
             if (!this.panda.isBaby() || !this.panda.isIdle()) {
                 return false;
             }
-            if (this.panda.isWeak() && this.panda.random.nextInt(500) == 1) {
+            if (this.panda.isWeak() && this.panda.random.nextInt(SneezeGoal.toGoalTicks(500)) == 1) {
                 return true;
             }
-            return this.panda.random.nextInt(6000) == 1;
+            return this.panda.random.nextInt(SneezeGoal.toGoalTicks(6000)) == 1;
         }
 
         @Override
@@ -1040,10 +1041,10 @@ extends AnimalEntity {
             if (this.panda.world.getBlockState(this.panda.getBlockPos().add(i, -1, j)).isAir()) {
                 return true;
             }
-            if (this.panda.isPlayful() && this.panda.random.nextInt(60) == 1) {
+            if (this.panda.isPlayful() && this.panda.random.nextInt(PlayGoal.toGoalTicks(60)) == 1) {
                 return true;
             }
-            return this.panda.random.nextInt(500) == 1;
+            return this.panda.random.nextInt(PlayGoal.toGoalTicks(500)) == 1;
         }
 
         @Override

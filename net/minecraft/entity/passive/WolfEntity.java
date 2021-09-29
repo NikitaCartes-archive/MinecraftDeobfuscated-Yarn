@@ -87,6 +87,7 @@ implements Angerable {
     private float shakeProgress;
     private float lastShakeProgress;
     private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
+    @Nullable
     private UUID targetUuid;
 
     public WolfEntity(EntityType<? extends WolfEntity> entityType, World world) {
@@ -291,11 +292,11 @@ implements Angerable {
     }
 
     @Override
-    public int getLookPitchSpeed() {
+    public int getMaxLookPitchChange() {
         if (this.isInSittingPose()) {
             return 20;
         }
-        return super.getLookPitchSpeed();
+        return super.getMaxLookPitchChange();
     }
 
     @Override

@@ -75,7 +75,7 @@ extends Goal {
         if (d > 676.0) {
             if (this.speed <= 3.0) {
                 this.speed *= 1.2;
-                this.counter = 40;
+                this.counter = FormCaravanGoal.toGoalTicks(40);
                 return true;
             }
             if (this.counter == 0) {

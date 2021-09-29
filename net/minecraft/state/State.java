@@ -152,7 +152,7 @@ public abstract class State<O, S> {
             if (state.getEntries().isEmpty()) {
                 return Codec.unit(state);
             }
-            return state.codec.fieldOf(PROPERTIES).codec();
+            return state.codec.codec().optionalFieldOf(PROPERTIES).xmap(optional -> optional.orElse(state), Optional::of).codec();
         });
     }
 }

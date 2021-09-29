@@ -7,8 +7,8 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6557;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.surfacebuilder.BadlandsSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
@@ -24,7 +24,7 @@ extends BadlandsSurfaceBuilder {
     }
 
     @Override
-    public void generate(Random random, class_6557 arg, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, BlockColumn blockColumn, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
         BlockState blockState7;
         int r;
         double e = 0.0;
@@ -48,15 +48,15 @@ extends BadlandsSurfaceBuilder {
         boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
         int q = -1;
         boolean bl2 = false;
-        for (r = Math.max(k, (int)e + 1); r >= m && !(blockState7 = arg.getState(r)).isOf(blockState.getBlock()); --r) {
+        for (r = Math.max(k, (int)e + 1); r >= m && !(blockState7 = blockColumn.getState(r)).isOf(blockState.getBlock()); --r) {
             if (!blockState7.isOf(Blocks.WATER)) continue;
             return;
         }
         for (r = Math.max(k, (int)e + 1); r >= m; --r) {
-            if (arg.getState(r).isAir() && r < (int)e) {
-                arg.method_38092(r, blockState);
+            if (blockColumn.getState(r).isAir() && r < (int)e) {
+                blockColumn.setState(r, blockState);
             }
-            if ((blockState7 = arg.getState(r)).isAir()) {
+            if ((blockState7 = blockColumn.getState(r)).isAir()) {
                 q = -1;
                 continue;
             }
@@ -77,25 +77,25 @@ extends BadlandsSurfaceBuilder {
                 if (r >= l - 1) {
                     if (r > l + 10 + p) {
                         BlockState blockState8 = r < 64 || r > 159 ? ORANGE_TERRACOTTA : (bl ? TERRACOTTA : this.calculateLayerBlockState(i, r, j));
-                        arg.method_38092(r, blockState8);
+                        blockColumn.setState(r, blockState8);
                         continue;
                     }
-                    arg.method_38092(r, blockState5);
+                    blockColumn.setState(r, blockState5);
                     bl2 = true;
                     continue;
                 }
-                arg.method_38092(r, blockState6);
+                blockColumn.setState(r, blockState6);
                 if (!blockState6.isOf(Blocks.WHITE_TERRACOTTA) && !blockState6.isOf(Blocks.ORANGE_TERRACOTTA) && !blockState6.isOf(Blocks.MAGENTA_TERRACOTTA) && !blockState6.isOf(Blocks.LIGHT_BLUE_TERRACOTTA) && !blockState6.isOf(Blocks.YELLOW_TERRACOTTA) && !blockState6.isOf(Blocks.LIME_TERRACOTTA) && !blockState6.isOf(Blocks.PINK_TERRACOTTA) && !blockState6.isOf(Blocks.GRAY_TERRACOTTA) && !blockState6.isOf(Blocks.LIGHT_GRAY_TERRACOTTA) && !blockState6.isOf(Blocks.CYAN_TERRACOTTA) && !blockState6.isOf(Blocks.PURPLE_TERRACOTTA) && !blockState6.isOf(Blocks.BLUE_TERRACOTTA) && !blockState6.isOf(Blocks.BROWN_TERRACOTTA) && !blockState6.isOf(Blocks.GREEN_TERRACOTTA) && !blockState6.isOf(Blocks.RED_TERRACOTTA) && !blockState6.isOf(Blocks.BLACK_TERRACOTTA)) continue;
-                arg.method_38092(r, ORANGE_TERRACOTTA);
+                blockColumn.setState(r, ORANGE_TERRACOTTA);
                 continue;
             }
             if (q <= 0) continue;
             --q;
             if (bl2) {
-                arg.method_38092(r, ORANGE_TERRACOTTA);
+                blockColumn.setState(r, ORANGE_TERRACOTTA);
                 continue;
             }
-            arg.method_38092(r, this.calculateLayerBlockState(i, r, j));
+            blockColumn.setState(r, this.calculateLayerBlockState(i, r, j));
         }
     }
 }

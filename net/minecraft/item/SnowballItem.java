@@ -27,7 +27,7 @@ extends Item {
         if (!world.isClient) {
             SnowballEntity snowballEntity = new SnowballEntity(world, user);
             snowballEntity.setItem(itemStack);
-            snowballEntity.setProperties(user, user.getPitch(), user.getYaw(), 0.0f, 1.5f, 1.0f);
+            snowballEntity.setVelocity(user, user.getPitch(), user.getYaw(), 0.0f, 1.5f, 1.0f);
             world.spawnEntity(snowballEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));

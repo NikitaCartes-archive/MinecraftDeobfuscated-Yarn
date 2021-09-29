@@ -14,9 +14,17 @@ import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 
 public final class VanillaBiomeParameters {
     private static final float field_34500 = 0.05f;
+    private static final float field_35047 = 0.26666668f;
+    public static final float field_35041 = 0.4f;
+    private static final float field_35048 = 0.93333334f;
     private static final float field_34501 = 0.1f;
-    private static final float field_34502 = 0.56666666f;
+    public static final float field_34502 = 0.56666666f;
     private static final float field_34503 = 0.7666667f;
+    public static final float field_35042 = -0.11f;
+    public static final float field_35043 = 0.03f;
+    public static final float field_35044 = 0.3f;
+    public static final float field_35045 = -0.78f;
+    public static final float field_35046 = -0.375f;
     private final MultiNoiseUtil.ParameterRange DEFAULT_PARAMETER = MultiNoiseUtil.ParameterRange.of(-1.0f, 1.0f);
     private final MultiNoiseUtil.ParameterRange[] TEMPERATURE_PARAMETERS = new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-1.0f, -0.45f), MultiNoiseUtil.ParameterRange.of(-0.45f, -0.15f), MultiNoiseUtil.ParameterRange.of(-0.15f, 0.2f), MultiNoiseUtil.ParameterRange.of(0.2f, 0.55f), MultiNoiseUtil.ParameterRange.of(0.55f, 1.0f)};
     private final MultiNoiseUtil.ParameterRange[] HUMIDITY_PARAMETERS = new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-1.0f, -0.3f), MultiNoiseUtil.ParameterRange.of(-0.3f, -0.1f), MultiNoiseUtil.ParameterRange.of(-0.1f, 0.1f), MultiNoiseUtil.ParameterRange.of(0.1f, 0.3f), MultiNoiseUtil.ParameterRange.of(0.3f, 1.0f)};
@@ -336,22 +344,23 @@ public final class VanillaBiomeParameters {
     }
 
     public String getContinentalnessDescription(double continentalness) {
-        if (continentalness < (double)this.MUSHROOM_FIELDS_CONTINENTALNESS.max()) {
+        double d = MultiNoiseUtil.method_38665((float)continentalness);
+        if (d < (double)this.MUSHROOM_FIELDS_CONTINENTALNESS.max()) {
             return "Mushroom fields";
         }
-        if (continentalness < (double)this.DEEP_OCEAN_CONTINENTALNESS.max()) {
+        if (d < (double)this.DEEP_OCEAN_CONTINENTALNESS.max()) {
             return "Deep ocean";
         }
-        if (continentalness < (double)this.OCEAN_CONTINENTALNESS.max()) {
+        if (d < (double)this.OCEAN_CONTINENTALNESS.max()) {
             return "Ocean";
         }
-        if (continentalness < (double)this.SHORE_CONTINENTALNESS.max()) {
+        if (d < (double)this.SHORE_CONTINENTALNESS.max()) {
             return "Coast";
         }
-        if (continentalness < (double)this.NEAR_INLAND_CONTINENTALNESS.max()) {
+        if (d < (double)this.NEAR_INLAND_CONTINENTALNESS.max()) {
             return "Near inland";
         }
-        if (continentalness < (double)this.MID_INLAND_CONTINENTALNESS.max()) {
+        if (d < (double)this.MID_INLAND_CONTINENTALNESS.max()) {
             return "Mid inland";
         }
         return "Far inland";
@@ -370,8 +379,9 @@ public final class VanillaBiomeParameters {
     }
 
     private static String getNoiseRangeIndex(double noisePoint, MultiNoiseUtil.ParameterRange[] noiseRanges) {
+        double d = MultiNoiseUtil.method_38665((float)noisePoint);
         for (int i = 0; i < noiseRanges.length; ++i) {
-            if (!(noisePoint < (double)noiseRanges[i].max())) continue;
+            if (!(d < (double)noiseRanges[i].max())) continue;
             return "" + i;
         }
         return "?";

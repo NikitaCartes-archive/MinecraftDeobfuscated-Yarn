@@ -60,9 +60,6 @@ extends DataFix {
             if (!optionalDynamic.get("element_type").asString("").equals("minecraft:feature_pool_element")) {
                 return child;
             }
-            if (!optionalDynamic.get("feature").get("name").result().isPresent()) {
-                return child;
-            }
             return child.update("pool_element", poolElement -> poolElement.update("feature", StructureFeatureChildrenPoolElementFix::updatePoolElementFeature));
         });
     }

@@ -394,14 +394,14 @@ extends AnimalEntity {
         return this.createChild(world, entity);
     }
 
-    public class RabbitJumpControl
+    public static class RabbitJumpControl
     extends JumpControl {
         private final RabbitEntity rabbit;
         private boolean field_24091;
 
-        public RabbitJumpControl(RabbitEntity rabbit) {
-            super(rabbit);
-            this.rabbit = rabbit;
+        public RabbitJumpControl(RabbitEntity rabbitEntity) {
+            super(rabbitEntity);
+            this.rabbit = rabbitEntity;
         }
 
         public boolean isActive() {
@@ -520,7 +520,7 @@ extends AnimalEntity {
         @Override
         public void tick() {
             super.tick();
-            this.rabbit.getLookControl().lookAt((double)this.targetPos.getX() + 0.5, this.targetPos.getY() + 1, (double)this.targetPos.getZ() + 0.5, 10.0f, this.rabbit.getLookPitchSpeed());
+            this.rabbit.getLookControl().lookAt((double)this.targetPos.getX() + 0.5, this.targetPos.getY() + 1, (double)this.targetPos.getZ() + 0.5, 10.0f, this.rabbit.getMaxLookPitchChange());
             if (this.hasReached()) {
                 World world = this.rabbit.world;
                 BlockPos blockPos = this.targetPos.up();

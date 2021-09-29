@@ -23,8 +23,8 @@ public class CopyNameLootFunction
 extends ConditionalLootFunction {
     final Source source;
 
-    CopyNameLootFunction(LootCondition[] lootConditions, Source source) {
-        super(lootConditions);
+    CopyNameLootFunction(LootCondition[] conditions, Source source) {
+        super(conditions);
         this.source = source;
     }
 

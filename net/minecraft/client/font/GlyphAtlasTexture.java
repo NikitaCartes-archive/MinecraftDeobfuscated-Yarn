@@ -72,7 +72,9 @@ extends AbstractTexture {
         final int y;
         private final int width;
         private final int height;
+        @Nullable
         private Slot subSlot1;
+        @Nullable
         private Slot subSlot2;
         private boolean occupied;
 

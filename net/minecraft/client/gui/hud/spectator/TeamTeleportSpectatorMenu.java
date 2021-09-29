@@ -77,7 +77,7 @@ SpectatorMenuCommand {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class TeleportToSpecificTeamCommand
+    static class TeleportToSpecificTeamCommand
     implements SpectatorMenuCommand {
         private final Team team;
         private final Identifier skinId;

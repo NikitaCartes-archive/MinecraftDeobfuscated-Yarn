@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class LandingPhase
 extends AbstractPhase {
+    @Nullable
     private Vec3d target;
 
     public LandingPhase(EnderDragonEntity enderDragonEntity) {

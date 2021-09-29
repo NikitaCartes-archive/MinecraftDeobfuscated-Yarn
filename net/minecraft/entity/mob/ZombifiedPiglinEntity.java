@@ -51,6 +51,7 @@ implements Angerable {
     private int angrySoundDelay;
     private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
     private int angerTime;
+    @Nullable
     private UUID targetUuid;
     private static final int field_30524 = 10;
     private static final UniformIntProvider ANGER_PASSING_COOLDOWN_RANGE = TimeHelper.betweenSeconds(4, 6);
@@ -219,6 +220,7 @@ implements Angerable {
     }
 
     @Override
+    @Nullable
     public UUID getAngryAt() {
         return this.targetUuid;
     }

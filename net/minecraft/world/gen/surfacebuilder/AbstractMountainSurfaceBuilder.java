@@ -6,9 +6,9 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_6557;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.DefaultSurfaceBuilder;
@@ -25,17 +25,17 @@ extends DefaultSurfaceBuilder {
     }
 
     @Override
-    public void generate(Random random, class_6557 arg, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+    public void generate(Random random, BlockColumn blockColumn, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
         BlockState blockState4;
         BlockState blockState3;
-        if (this.getLayerBlockConfig() != null && this.shouldPlaceSteepSlopeBlock(arg, i, j, this.getLayerBlockConfig())) {
+        if (this.getLayerBlockConfig() != null && this.shouldPlaceSteepSlopeBlock(blockColumn, i, j, this.getLayerBlockConfig())) {
             blockState3 = this.getLayerBlockConfig().getState();
             blockState4 = this.getLayerBlockConfig().getState();
         } else {
             blockState3 = this.getTopMaterial(ternarySurfaceConfig, i, j);
             blockState4 = this.getUnderMaterial(ternarySurfaceConfig, i, j);
         }
-        this.generate(random, arg, biome, i, j, k, d, blockState, blockState2, blockState3, blockState4, ternarySurfaceConfig.getUnderwaterMaterial(), l, m);
+        this.generate(random, blockColumn, biome, i, j, k, d, blockState, blockState2, blockState3, blockState4, ternarySurfaceConfig.getUnderwaterMaterial(), l, m);
     }
 
     protected BlockState getBlockFromNoise(double scale, int x, int z, BlockState outsideRangeState, BlockState insideRangeState, double noiseMin, double noiseMax) {
@@ -53,7 +53,7 @@ extends DefaultSurfaceBuilder {
         this.seed = seed;
     }
 
-    public boolean shouldPlaceSteepSlopeBlock(class_6557 arg, int x, int z, SteepSlopeBlockConfig config) {
+    public boolean shouldPlaceSteepSlopeBlock(BlockColumn blockColumn, int x, int z, SteepSlopeBlockConfig config) {
         return false;
     }
 

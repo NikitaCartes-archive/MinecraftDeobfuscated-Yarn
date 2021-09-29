@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DyingPhase
 extends AbstractPhase {
+    @Nullable
     private Vec3d target;
     private int ticks;
 

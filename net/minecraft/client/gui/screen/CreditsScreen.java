@@ -158,7 +158,7 @@ extends Screen {
                 }
             }
             resource = this.client.getResourceManager().getResource(new Identifier("texts/credits.json"));
-            JsonArray jsonArray = JsonHelper.method_37165(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
+            JsonArray jsonArray = JsonHelper.deserializeArray(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
             JsonArray jsonArray2 = jsonArray.getAsJsonArray();
             for (JsonElement jsonElement : jsonArray2) {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();

@@ -13,10 +13,12 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
+import org.jetbrains.annotations.Nullable;
 
 public class TrackIronGolemTargetGoal
 extends TrackTargetGoal {
     private final IronGolemEntity golem;
+    @Nullable
     private LivingEntity target;
     private final TargetPredicate targetPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
 

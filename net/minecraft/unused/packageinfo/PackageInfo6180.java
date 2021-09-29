@@ -6,12 +6,12 @@ package net.minecraft.unused.packageinfo;
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.annotation.ClientFieldsAreNonnullByDefault;
 import net.minecraft.util.annotation.ClientMethodsReturnNonnullByDefault;
-import net.minecraft.util.annotation.FieldsAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @ClientMethodsReturnNonnullByDefault
-@FieldsAreNonnullByDefault
+@ClientFieldsAreNonnullByDefault
 @Environment(value=EnvType.CLIENT)
 interface PackageInfo6180 {
 }

@@ -14,7 +14,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
-import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.Packet;
@@ -414,7 +413,7 @@ public class ChunkHolder {
     }
 
     public static interface PlayersWatchingChunkProvider {
-        public Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos var1, boolean var2);
+        public List<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos var1, boolean var2);
     }
 
     static final class MultithreadAction {

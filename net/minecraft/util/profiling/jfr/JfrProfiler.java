@@ -182,7 +182,7 @@ implements FlightProfiler {
     @Override
     public void onPacketSent(Supplier<String> packetNameSupplier, SocketAddress remoteAddress, int bytes) {
         if (EventType.getEventType(PacketSentEvent.class).isEnabled()) {
-            new PacketReceivedEvent(packetNameSupplier.get(), remoteAddress, bytes).commit();
+            new PacketSentEvent(packetNameSupplier.get(), remoteAddress, bytes).commit();
         }
     }
 

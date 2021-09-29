@@ -20,8 +20,8 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.control.AquaticLookControl;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
+import net.minecraft.entity.ai.control.YawAdjustingLookControl;
 import net.minecraft.entity.ai.goal.BreatheAirGoal;
 import net.minecraft.entity.ai.goal.ChaseBoatGoal;
 import net.minecraft.entity.ai.goal.DolphinJumpGoal;
@@ -86,7 +86,7 @@ extends WaterCreatureEntity {
     public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
         super((EntityType<? extends WaterCreatureEntity>)entityType, world);
         this.moveControl = new AquaticMoveControl(this, 85, 10, 0.02f, 0.1f, true);
-        this.lookControl = new AquaticLookControl(this, 10);
+        this.lookControl = new YawAdjustingLookControl(this, 10);
         this.setCanPickUpLoot(true);
     }
 
@@ -212,12 +212,12 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    public int getLookPitchSpeed() {
+    public int getMaxLookPitchChange() {
         return 1;
     }
 
     @Override
-    public int getBodyYawSpeed() {
+    public int getMaxHeadRotation() {
         return 1;
     }
 
@@ -455,9 +455,9 @@ extends WaterCreatureEntity {
                     this.noPathToStructure = true;
                     return;
                 }
-                this.dolphin.getLookControl().lookAt(vec3d2.x, vec3d2.y, vec3d2.z, this.dolphin.getBodyYawSpeed() + 20, this.dolphin.getLookPitchSpeed());
+                this.dolphin.getLookControl().lookAt(vec3d2.x, vec3d2.y, vec3d2.z, this.dolphin.getMaxHeadRotation() + 20, this.dolphin.getMaxLookPitchChange());
                 this.dolphin.getNavigation().startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.3);
-                if (world.random.nextInt(80) == 0) {
+                if (world.random.nextInt(this.getTickCount(80)) == 0) {
                     world.sendEntityStatus(this.dolphin, (byte)38);
                 }
             }
@@ -468,6 +468,7 @@ extends WaterCreatureEntity {
     extends Goal {
         private final DolphinEntity dolphin;
         private final double speed;
+        @Nullable
         private PlayerEntity closestPlayer;
 
         SwimWithPlayerGoal(DolphinEntity dolphin, double speed) {
@@ -503,7 +504,7 @@ extends WaterCreatureEntity {
 
         @Override
         public void tick() {
-            this.dolphin.getLookControl().lookAt(this.closestPlayer, this.dolphin.getBodyYawSpeed() + 20, this.dolphin.getLookPitchSpeed());
+            this.dolphin.getLookControl().lookAt(this.closestPlayer, this.dolphin.getMaxHeadRotation() + 20, this.dolphin.getMaxLookPitchChange());
             if (this.dolphin.squaredDistanceTo(this.closestPlayer) < 6.25) {
                 this.dolphin.getNavigation().stop();
             } else {

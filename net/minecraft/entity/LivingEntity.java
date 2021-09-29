@@ -199,7 +199,11 @@ extends Entity {
     public float prevBodyYaw;
     public float headYaw;
     public float prevHeadYaw;
-    public float flyingSpeed = 0.02f;
+    /**
+     * Affects horizontal aerial velocity of entities (eg. when a player jumps,
+     * is falling, or is flying, while holding the horizontal movement keys)
+     */
+    public float airStrafingSpeed = 0.02f;
     @Nullable
     protected PlayerEntity attackingPlayer;
     protected int playerHitTimer;
@@ -1916,7 +1920,7 @@ extends Entity {
             boolean bl2 = bl = this.getVelocity().y <= 0.0;
             if (bl && this.hasStatusEffect(StatusEffects.SLOW_FALLING)) {
                 d = 0.01;
-                this.fallDistance = 0.0f;
+                this.onLanding();
             }
             FluidState fluidState = this.world.getFluidState(this.getBlockPos());
             if (this.isTouchingWater() && this.shouldSwimInFluids() && !this.canWalkOnFluid(fluidState.getFluid())) {
@@ -2012,7 +2016,7 @@ extends Entity {
                 double q = vec3d6.y;
                 if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
                     q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
-                    this.fallDistance = 0.0f;
+                    this.onLanding();
                 } else if (!this.world.isClient || this.world.isChunkLoaded(blockPos)) {
                     if (!this.hasNoGravity()) {
                         q -= d;
@@ -2064,7 +2068,7 @@ extends Entity {
 
     private Vec3d applyClimbingSpeed(Vec3d motion) {
         if (this.isClimbing()) {
-            this.fallDistance = 0.0f;
+            this.onLanding();
             float f = 0.15f;
             double d = MathHelper.clamp(motion.x, (double)-0.15f, (double)0.15f);
             double e = MathHelper.clamp(motion.z, (double)-0.15f, (double)0.15f);
@@ -2081,7 +2085,7 @@ extends Entity {
         if (this.onGround) {
             return this.getMovementSpeed() * (0.21600002f / (slipperiness * slipperiness * slipperiness));
         }
-        return this.flyingSpeed;
+        return this.airStrafingSpeed;
     }
 
     public float getMovementSpeed() {
@@ -2510,7 +2514,7 @@ extends Entity {
         super.tickRiding();
         this.prevStepBobbingAmount = this.stepBobbingAmount;
         this.stepBobbingAmount = 0.0f;
-        this.fallDistance = 0.0f;
+        this.onLanding();
     }
 
     @Override

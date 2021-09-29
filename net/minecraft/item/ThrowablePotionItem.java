@@ -25,7 +25,7 @@ extends PotionItem {
         if (!world.isClient) {
             PotionEntity potionEntity = new PotionEntity(world, user);
             potionEntity.setItem(itemStack);
-            potionEntity.setProperties(user, user.getPitch(), user.getYaw(), -20.0f, 0.5f, 1.0f);
+            potionEntity.setVelocity(user, user.getPitch(), user.getYaw(), -20.0f, 0.5f, 1.0f);
             world.spawnEntity(potionEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));

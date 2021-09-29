@@ -11,11 +11,13 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
+import org.jetbrains.annotations.Nullable;
 
 public class LookAtEntityGoal
 extends Goal {
     public static final float field_33760 = 0.02f;
     protected final MobEntity mob;
+    @Nullable
     protected Entity target;
     protected final float range;
     private int lookTime;
@@ -76,7 +78,15 @@ extends Goal {
     }
 
     @Override
+    public boolean shouldRunEveryTick() {
+        return true;
+    }
+
+    @Override
     public void tick() {
+        if (!this.target.isAlive()) {
+            return;
+        }
         double d = this.field_33761 ? this.mob.getEyeY() : this.target.getEyeY();
         this.mob.getLookControl().lookAt(this.target.getX(), d, this.target.getZ());
         --this.lookTime;

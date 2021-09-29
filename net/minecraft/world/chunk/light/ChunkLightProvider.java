@@ -179,8 +179,8 @@ implements ChunkLightingView {
         return i;
     }
 
-    protected void enqueueSectionData(long sectionPos, @Nullable ChunkNibbleArray lightArray, boolean bl) {
-        ((LightStorage)this.lightStorage).enqueueSectionData(sectionPos, lightArray, bl);
+    protected void enqueueSectionData(long sectionPos, @Nullable ChunkNibbleArray lightArray, boolean nonEdge) {
+        ((LightStorage)this.lightStorage).enqueueSectionData(sectionPos, lightArray, nonEdge);
     }
 
     @Override

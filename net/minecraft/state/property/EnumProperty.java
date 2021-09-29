@@ -3,7 +3,6 @@
  */
 package net.minecraft.state.property;
 
-import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -98,7 +97,7 @@ extends Property<T> {
      * name}
      */
     public static <T extends Enum<T>> EnumProperty<T> of(String name, Class<T> type) {
-        return EnumProperty.of(name, type, Predicates.alwaysTrue());
+        return EnumProperty.of(name, type, (T enum_) -> true);
     }
 
     /**

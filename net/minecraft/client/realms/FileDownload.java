@@ -45,6 +45,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class FileDownload {
@@ -53,9 +54,12 @@ public class FileDownload {
     volatile boolean finished;
     volatile boolean error;
     volatile boolean extracting;
+    @Nullable
     private volatile File backupFile;
     volatile File resourcePackPath;
+    @Nullable
     private volatile HttpGet httpRequest;
+    @Nullable
     private Thread currentThread;
     private final RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(120000).setConnectTimeout(120000).build();
     private static final String[] INVALID_FILE_NAMES = new String[]{"CON", "COM", "PRN", "AUX", "CLOCK$", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"};
@@ -203,7 +207,7 @@ public class FileDownload {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    void untarGzipArchive(String name, File archive, LevelStorage storage) throws IOException {
+    void untarGzipArchive(String name, @Nullable File archive, LevelStorage storage) throws IOException {
         Object string;
         Pattern pattern = Pattern.compile(".*-([0-9]+)$");
         int i = 1;
@@ -221,8 +225,9 @@ public class FileDownload {
                 if (!levelSummary.getName().toLowerCase(Locale.ROOT).startsWith(name.toLowerCase(Locale.ROOT))) continue;
                 Matcher matcher = pattern.matcher(levelSummary.getName());
                 if (matcher.matches()) {
-                    if (Integer.valueOf(matcher.group(1)) <= i) continue;
-                    i = Integer.valueOf(matcher.group(1));
+                    int j = Integer.parseInt(matcher.group(1));
+                    if (j <= i) continue;
+                    i = j;
                     continue;
                 }
                 ++i;
@@ -332,12 +337,13 @@ public class FileDownload {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class DownloadCountingOutputStream
+    static class DownloadCountingOutputStream
     extends CountingOutputStream {
+        @Nullable
         private ActionListener listener;
 
-        public DownloadCountingOutputStream(OutputStream out) {
-            super(out);
+        public DownloadCountingOutputStream(OutputStream outputStream) {
+            super(outputStream);
         }
 
         public void setListener(ActionListener listener) {

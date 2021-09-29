@@ -43,7 +43,7 @@ extends Goal {
         if (((RaiderEntity)this.actor).hasActiveRaid()) {
             Vec3d vec3d;
             Raid raid = ((RaiderEntity)this.actor).getRaid();
-            if (((RaiderEntity)this.actor).age % 20 == 0) {
+            if (((RaiderEntity)this.actor).age % 20 == ((Entity)this.actor).getId() % 2) {
                 this.includeFreeRaiders(raid);
             }
             if (!((PathAwareEntity)this.actor).isNavigating() && (vec3d = NoPenaltyTargeting.find(this.actor, 15, 4, Vec3d.ofBottomCenter(raid.getCenter()), 1.5707963705062866)) != null) {

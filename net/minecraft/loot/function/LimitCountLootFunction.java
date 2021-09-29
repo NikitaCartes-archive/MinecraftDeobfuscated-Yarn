@@ -21,9 +21,9 @@ public class LimitCountLootFunction
 extends ConditionalLootFunction {
     final BoundedIntUnaryOperator limit;
 
-    LimitCountLootFunction(LootCondition[] lootConditions, BoundedIntUnaryOperator boundedIntUnaryOperator) {
-        super(lootConditions);
-        this.limit = boundedIntUnaryOperator;
+    LimitCountLootFunction(LootCondition[] conditions, BoundedIntUnaryOperator limit) {
+        super(conditions);
+        this.limit = limit;
     }
 
     @Override

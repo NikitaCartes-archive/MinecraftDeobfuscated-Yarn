@@ -64,11 +64,13 @@ implements ItemConvertible {
     public static final int DEFAULT_MAX_COUNT = 64;
     public static final int field_30888 = 32;
     public static final int field_30889 = 13;
+    @Nullable
     protected final ItemGroup group;
     private final Rarity rarity;
     private final int maxCount;
     private final int maxDamage;
     private final boolean fireproof;
+    @Nullable
     private final Item recipeRemainder;
     @Nullable
     private String translationKey;
@@ -503,9 +505,12 @@ implements ItemConvertible {
     public static class Settings {
         int maxCount = 64;
         int maxDamage;
+        @Nullable
         Item recipeRemainder;
+        @Nullable
         ItemGroup group;
         Rarity rarity = Rarity.COMMON;
+        @Nullable
         FoodComponent foodComponent;
         boolean fireproof;
 

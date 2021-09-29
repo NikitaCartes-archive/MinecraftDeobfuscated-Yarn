@@ -9,10 +9,12 @@ import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 
 public class WanderNearTargetGoal
 extends Goal {
     private final PathAwareEntity mob;
+    @Nullable
     private LivingEntity target;
     private double x;
     private double y;

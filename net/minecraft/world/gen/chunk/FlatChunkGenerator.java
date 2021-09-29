@@ -104,12 +104,12 @@ extends ChunkGenerator {
     }
 
     @Override
-    public MultiNoiseUtil.MultiNoiseSampler method_38276() {
+    public MultiNoiseUtil.MultiNoiseSampler getMultiNoiseSampler() {
         return (i, j, k) -> MultiNoiseUtil.createNoiseValuePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     @Override
-    public void carve(ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carver) {
+    public void carve(ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep) {
     }
 
     @Override

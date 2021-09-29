@@ -19,7 +19,9 @@ import org.jetbrains.annotations.Nullable;
 public class LandingApproachPhase
 extends AbstractPhase {
     private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = TargetPredicate.createAttackable().ignoreVisibility();
+    @Nullable
     private Path path;
+    @Nullable
     private Vec3d pathTarget;
 
     public LandingApproachPhase(EnderDragonEntity enderDragonEntity) {

@@ -7,8 +7,8 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6557;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
@@ -19,17 +19,17 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     }
 
     @Override
-    public void generate(Random random, class_6557 arg, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
-        this.generate(random, arg, biome, i, j, k, d, blockState, blockState2, ternarySurfaceConfig.getTopMaterial(), ternarySurfaceConfig.getUnderMaterial(), ternarySurfaceConfig.getUnderwaterMaterial(), l, m);
+    public void generate(Random random, BlockColumn blockColumn, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, int m, long n, TernarySurfaceConfig ternarySurfaceConfig) {
+        this.generate(random, blockColumn, biome, i, j, k, d, blockState, blockState2, ternarySurfaceConfig.getTopMaterial(), ternarySurfaceConfig.getUnderMaterial(), ternarySurfaceConfig.getUnderwaterMaterial(), l, m);
     }
 
-    protected void generate(Random random, class_6557 arg, Biome biome, int z, int z2, int height, double noise, BlockState defaultFluid, BlockState fluidBlock, BlockState topBlock, BlockState underBlock, BlockState underwaterBlock, int seaLevel, int i) {
+    protected void generate(Random random, BlockColumn column, Biome biome, int x, int z, int height, double noise, BlockState defaultFluid, BlockState fluidBlock, BlockState topBlock, BlockState underBlock, BlockState underwaterBlock, int seaLevel, int i) {
         seaLevel = Integer.MIN_VALUE;
         int j = (int)(noise / 3.0 + 3.0 + random.nextDouble() * 0.25);
         BlockState blockState = underBlock;
         int k = -1;
         for (int l = height; l >= i; --l) {
-            BlockState blockState2 = arg.getState(l);
+            BlockState blockState2 = column.getState(l);
             if (blockState2.isAir()) {
                 k = -1;
                 seaLevel = Integer.MIN_VALUE;
@@ -56,18 +56,18 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                     blockState = defaultFluid;
                     blockState3 = underwaterBlock;
                 }
-                arg.method_38092(l, DefaultSurfaceBuilder.method_38463(blockState3, arg, l, seaLevel));
+                column.setState(l, DefaultSurfaceBuilder.method_38463(blockState3, column, l, seaLevel));
                 continue;
             }
             if (k <= 0) continue;
-            arg.method_38092(l, DefaultSurfaceBuilder.method_38463(blockState, arg, l, seaLevel));
+            column.setState(l, DefaultSurfaceBuilder.method_38463(blockState, column, l, seaLevel));
             if (--k != 0 || !blockState.isOf(Blocks.SAND) || j <= 1) continue;
             k = random.nextInt(4) + Math.max(0, l - seaLevel);
             blockState = blockState.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
         }
     }
 
-    private static BlockState method_38463(BlockState state, class_6557 chunk, int i, int j) {
+    private static BlockState method_38463(BlockState state, BlockColumn chunk, int i, int j) {
         if (i <= j && state.isOf(Blocks.GRASS_BLOCK)) {
             return Blocks.DIRT.getDefaultState();
         }
@@ -83,7 +83,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         return state;
     }
 
-    private static boolean isAboveAirOrFluid(class_6557 chunk, int i) {
+    private static boolean isAboveAirOrFluid(BlockColumn chunk, int i) {
         BlockState blockState = chunk.getState(i - 1);
         return blockState.isAir() || !blockState.getFluidState().isEmpty();
     }

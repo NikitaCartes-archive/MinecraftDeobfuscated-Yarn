@@ -27,6 +27,7 @@ extends TrackTargetGoal {
      * between each search (as in a poisson distribution).
      */
     protected final int reciprocalChance;
+    @Nullable
     protected LivingEntity targetEntity;
     protected TargetPredicate targetPredicate;
 
@@ -41,7 +42,7 @@ extends TrackTargetGoal {
     public ActiveTargetGoal(MobEntity mob, Class<T> targetClass, int reciprocalChance, boolean checkVisibility, boolean checkCanNavigate, @Nullable Predicate<LivingEntity> targetPredicate) {
         super(mob, checkVisibility, checkCanNavigate);
         this.targetClass = targetClass;
-        this.reciprocalChance = reciprocalChance;
+        this.reciprocalChance = ActiveTargetGoal.toGoalTicks(reciprocalChance);
         this.setControls(EnumSet.of(Goal.Control.TARGET));
         this.targetPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(this.getFollowRange()).setPredicate(targetPredicate);
     }

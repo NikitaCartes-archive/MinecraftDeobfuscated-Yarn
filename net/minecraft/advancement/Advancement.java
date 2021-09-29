@@ -37,7 +37,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class Advancement {
+    @Nullable
     private final Advancement parent;
+    @Nullable
     private final AdvancementDisplay display;
     private final AdvancementRewards rewards;
     private final Identifier id;
@@ -133,11 +135,15 @@ public class Advancement {
     }
 
     public static class Task {
+        @Nullable
         private Identifier parentId;
+        @Nullable
         private Advancement parentObj;
+        @Nullable
         private AdvancementDisplay display;
         private AdvancementRewards rewards = AdvancementRewards.NONE;
         private Map<String, AdvancementCriterion> criteria = Maps.newLinkedHashMap();
+        @Nullable
         private String[][] requirements;
         private CriterionMerger merger = CriterionMerger.AND;
 
@@ -268,6 +274,9 @@ public class Advancement {
         }
 
         public void toPacket(PacketByteBuf buf) {
+            if (this.requirements == null) {
+                this.requirements = this.merger.createRequirements(this.criteria.keySet());
+            }
             if (this.parentId == null) {
                 buf.writeBoolean(false);
             } else {

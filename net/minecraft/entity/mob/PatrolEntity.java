@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class PatrolEntity
 extends HostileEntity {
+    @Nullable
     private BlockPos patrolTarget;
     private boolean patrolLeader;
     private boolean patrolling;

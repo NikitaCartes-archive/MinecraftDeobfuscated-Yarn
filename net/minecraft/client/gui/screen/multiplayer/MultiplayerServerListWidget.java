@@ -166,6 +166,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         private final MinecraftClient client;
         private final ServerInfo server;
         private final Identifier iconTextureId;
+        @Nullable
         private String iconUri;
         @Nullable
         private NativeImageBackedTexture icon;

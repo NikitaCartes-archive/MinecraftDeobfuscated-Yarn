@@ -10,6 +10,7 @@ import com.mojang.authlib.minecraft.UserApiService;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -22,12 +23,14 @@ import net.minecraft.util.Util;
 public class SocialInteractionsManager {
     private final MinecraftClient client;
     private final Set<UUID> hiddenPlayers = Sets.newHashSet();
-    private final UserApiService socialInteractionsService;
+    private final UserApiService userApiService;
     private final Map<String, UUID> playerNameByUuid = Maps.newHashMap();
+    private boolean blockListLoaded;
+    private CompletableFuture<?> blockListLoader = CompletableFuture.completedFuture(null);
 
     public SocialInteractionsManager(MinecraftClient client, UserApiService userApiService) {
         this.client = client;
-        this.socialInteractionsService = userApiService;
+        this.userApiService = userApiService;
     }
 
     public void hidePlayer(UUID uuid) {
@@ -46,8 +49,21 @@ public class SocialInteractionsManager {
         return this.hiddenPlayers.contains(uuid);
     }
 
+    public void loadBlockList() {
+        this.blockListLoaded = true;
+        this.blockListLoader = this.blockListLoader.thenRunAsync(this.userApiService::refreshBlockList, Util.getIoWorkerExecutor());
+    }
+
+    public void unloadBlockList() {
+        this.blockListLoaded = false;
+    }
+
     public boolean isPlayerBlocked(UUID uuid) {
-        return this.socialInteractionsService.isBlockedPlayer(uuid);
+        if (!this.blockListLoaded) {
+            return false;
+        }
+        this.blockListLoader.join();
+        return this.userApiService.isBlockedPlayer(uuid);
     }
 
     public Set<UUID> getHiddenPlayers() {
