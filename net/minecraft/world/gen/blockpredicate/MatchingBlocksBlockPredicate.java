@@ -9,37 +9,30 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
+import net.minecraft.world.gen.blockpredicate.OffsetPredicate;
 
 class MatchingBlocksBlockPredicate
-implements BlockPredicate {
+extends OffsetPredicate {
     private final List<Block> blocks;
-    private final BlockPos pos;
-    public static final Codec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.BLOCK.listOf().fieldOf("blocks")).forGetter(matchingBlocksBlockPredicate -> matchingBlocksBlockPredicate.blocks), ((MapCodec)BlockPos.CODEC.fieldOf("offset")).forGetter(matchingBlocksBlockPredicate -> matchingBlocksBlockPredicate.pos)).apply((Applicative<MatchingBlocksBlockPredicate, ?>)instance, MatchingBlocksBlockPredicate::new));
+    public static final Codec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingBlocksBlockPredicate.method_39013(instance).and(((MapCodec)Registry.BLOCK.listOf().fieldOf("blocks")).forGetter(matchingBlocksBlockPredicate -> matchingBlocksBlockPredicate.blocks)).apply((Applicative<MatchingBlocksBlockPredicate, ?>)instance, MatchingBlocksBlockPredicate::new));
 
-    public MatchingBlocksBlockPredicate(List<Block> blocks, BlockPos pos) {
+    public MatchingBlocksBlockPredicate(BlockPos offset, List<Block> blocks) {
+        super(offset);
         this.blocks = blocks;
-        this.pos = pos;
     }
 
     @Override
-    public boolean test(StructureWorldAccess structureWorldAccess, BlockPos blockPos) {
-        Block block = structureWorldAccess.getBlockState(blockPos.add(this.pos)).getBlock();
-        return this.blocks.contains(block);
+    protected boolean test(BlockState state) {
+        return this.blocks.contains(state.getBlock());
     }
 
     @Override
     public BlockPredicateType<?> getType() {
         return BlockPredicateType.MATCHING_BLOCKS;
-    }
-
-    @Override
-    public /* synthetic */ boolean test(Object world, Object pos) {
-        return this.test((StructureWorldAccess)world, (BlockPos)pos);
     }
 }
 

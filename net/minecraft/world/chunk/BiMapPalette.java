@@ -35,8 +35,8 @@ implements Palette<T> {
         this.map = Int2ObjectBiMap.create(1 << indexBits);
     }
 
-    public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener) {
-        return new BiMapPalette<A>(idList, bits, listener);
+    public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list) {
+        return new BiMapPalette<A>(idList, bits, listener, list);
     }
 
     @Override

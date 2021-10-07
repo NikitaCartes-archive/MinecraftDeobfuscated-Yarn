@@ -28,15 +28,15 @@ import net.minecraft.util.math.BlockPos;
 public class BlockDataObject
 implements DataCommandObject {
     static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.block.invalid"));
-    public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType((String)string){
-        final /* synthetic */ String field_13787;
+    public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = argumentName -> new DataCommand.ObjectType((String)argumentName){
+        final /* synthetic */ String argumentName;
         {
-            this.field_13787 = string;
+            this.argumentName = string;
         }
 
         @Override
         public DataCommandObject getObject(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-            BlockPos blockPos = BlockPosArgumentType.getLoadedBlockPos(context, this.field_13787 + "Pos");
+            BlockPos blockPos = BlockPosArgumentType.getLoadedBlockPos(context, this.argumentName + "Pos");
             BlockEntity blockEntity = context.getSource().getWorld().getBlockEntity(blockPos);
             if (blockEntity == null) {
                 throw INVALID_BLOCK_EXCEPTION.create();
@@ -46,7 +46,7 @@ implements DataCommandObject {
 
         @Override
         public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(ArgumentBuilder<ServerCommandSource, ?> argument, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> argumentAdder) {
-            return argument.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("block").then(argumentAdder.apply(CommandManager.argument(this.field_13787 + "Pos", BlockPosArgumentType.blockPos()))));
+            return argument.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("block").then(argumentAdder.apply(CommandManager.argument(this.argumentName + "Pos", BlockPosArgumentType.blockPos()))));
         }
     };
     private final BlockEntity blockEntity;

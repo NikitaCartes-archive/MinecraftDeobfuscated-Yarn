@@ -359,13 +359,20 @@ public class ChunkBuilder {
             chunkRenderer.send(task);
         }
 
+        /*
+         * WARNING - Removed try catching itself - possible behaviour change.
+         */
         void setNoCullingBlockEntities(Set<BlockEntity> noCullingBlockEntities) {
+            HashSet<BlockEntity> set2;
             HashSet<BlockEntity> set = Sets.newHashSet(noCullingBlockEntities);
-            HashSet<BlockEntity> set2 = Sets.newHashSet(this.blockEntities);
-            set.removeAll(this.blockEntities);
-            set2.removeAll(noCullingBlockEntities);
-            this.blockEntities.clear();
-            this.blockEntities.addAll(noCullingBlockEntities);
+            Set<BlockEntity> set3 = this.blockEntities;
+            synchronized (set3) {
+                set2 = Sets.newHashSet(this.blockEntities);
+                set.removeAll(this.blockEntities);
+                set2.removeAll(noCullingBlockEntities);
+                this.blockEntities.clear();
+                this.blockEntities.addAll(noCullingBlockEntities);
+            }
             ChunkBuilder.this.worldRenderer.updateNoCullingBlockEntities(set2, set);
         }
 

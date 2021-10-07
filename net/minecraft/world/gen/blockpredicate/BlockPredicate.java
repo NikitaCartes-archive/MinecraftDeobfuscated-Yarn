@@ -7,17 +7,20 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.function.BiPredicate;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.blockpredicate.AllOfBlockPredicate;
+import net.minecraft.world.gen.blockpredicate.AlwaysTrueBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.AnyOfBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
 import net.minecraft.world.gen.blockpredicate.MatchingBlocksBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.MatchingFluidsBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.NotBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.ReplaceableBlockPredicate;
+import net.minecraft.world.gen.blockpredicate.WouldSurviveBlockPredicate;
 
 public interface BlockPredicate
 extends BiPredicate<StructureWorldAccess, BlockPos> {
@@ -49,28 +52,40 @@ extends BiPredicate<StructureWorldAccess, BlockPos> {
         return BlockPredicate.anyOf(List.of(first, second));
     }
 
-    public static BlockPredicate matchingBlocks(List<Block> blocks, BlockPos pos) {
-        return new MatchingBlocksBlockPredicate(blocks, pos);
+    public static BlockPredicate matchingBlocks(List<Block> blocks, BlockPos offset) {
+        return new MatchingBlocksBlockPredicate(offset, blocks);
     }
 
-    public static BlockPredicate matchingBlock(Block block, BlockPos pos) {
-        return BlockPredicate.matchingBlocks(List.of(block), pos);
+    public static BlockPredicate matchingBlock(Block block, BlockPos offset) {
+        return BlockPredicate.matchingBlocks(List.of(block), offset);
     }
 
-    public static BlockPredicate matchingFluids(List<Fluid> fluids, BlockPos pos) {
-        return new MatchingFluidsBlockPredicate(fluids, pos);
+    public static BlockPredicate matchingFluids(List<Fluid> fluids, BlockPos offset) {
+        return new MatchingFluidsBlockPredicate(offset, fluids);
     }
 
-    public static BlockPredicate matchingFluid(Fluid fluid, BlockPos pos) {
-        return BlockPredicate.matchingFluids(List.of(fluid), pos);
+    public static BlockPredicate matchingFluid(Fluid fluid, BlockPos offset) {
+        return BlockPredicate.matchingFluids(List.of(fluid), offset);
     }
 
     public static BlockPredicate not(BlockPredicate predicate) {
         return new NotBlockPredicate(predicate);
     }
 
+    public static BlockPredicate replaceable(BlockPos offset) {
+        return new ReplaceableBlockPredicate(offset);
+    }
+
     public static BlockPredicate replaceable() {
-        return ReplaceableBlockPredicate.INSTANCE;
+        return BlockPredicate.replaceable(BlockPos.ORIGIN);
+    }
+
+    public static BlockPredicate wouldSurvive(BlockState state, BlockPos offset) {
+        return new WouldSurviveBlockPredicate(offset, state);
+    }
+
+    public static BlockPredicate alwaysTrue() {
+        return AlwaysTrueBlockPredicate.instance;
     }
 }
 

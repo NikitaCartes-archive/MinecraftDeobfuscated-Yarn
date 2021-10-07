@@ -16,6 +16,7 @@ import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -37,6 +38,9 @@ extends Spliterators.AbstractSpliterator<VoxelShape> {
     private final CollisionView world;
     private boolean checkWorldBorder;
     private final BiPredicate<BlockState, BlockPos> blockPredicate;
+    @Nullable
+    private BlockView field_35108;
+    private long field_35109;
 
     public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box) {
         this(world, entity, box, (state, pos) -> true);
@@ -93,9 +97,15 @@ extends Spliterators.AbstractSpliterator<VoxelShape> {
 
     @Nullable
     private BlockView getChunk(int x, int z) {
+        BlockView blockView;
         int i = ChunkSectionPos.getSectionCoord(x);
         int j = ChunkSectionPos.getSectionCoord(z);
-        return this.world.getChunkAsView(i, j);
+        if (this.field_35108 != null && this.field_35109 == ChunkPos.toLong(i, j)) {
+            return this.field_35108;
+        }
+        this.field_35108 = blockView = this.world.getChunkAsView(i, j);
+        this.field_35109 = ChunkPos.toLong(i, j);
+        return blockView;
     }
 
     boolean offerWorldBorderShape(Consumer<? super VoxelShape> action) {

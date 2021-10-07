@@ -28,20 +28,20 @@ import net.minecraft.text.TranslatableText;
 public class EntityDataObject
 implements DataCommandObject {
     private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.entity.invalid"));
-    public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType((String)string){
-        final /* synthetic */ String field_13802;
+    public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = argumentName -> new DataCommand.ObjectType((String)argumentName){
+        final /* synthetic */ String argumentName;
         {
-            this.field_13802 = string;
+            this.argumentName = string;
         }
 
         @Override
         public DataCommandObject getObject(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-            return new EntityDataObject(EntityArgumentType.getEntity(context, this.field_13802));
+            return new EntityDataObject(EntityArgumentType.getEntity(context, this.argumentName));
         }
 
         @Override
         public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(ArgumentBuilder<ServerCommandSource, ?> argument, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> argumentAdder) {
-            return argument.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("entity").then(argumentAdder.apply(CommandManager.argument(this.field_13802, EntityArgumentType.entity()))));
+            return argument.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("entity").then(argumentAdder.apply(CommandManager.argument(this.argumentName, EntityArgumentType.entity()))));
         }
     };
     private final Entity entity;

@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -24,7 +24,7 @@ extends Sensor<LivingEntity> {
         list.sort(Comparator.comparingDouble(entity::squaredDistanceTo));
         Brain<?> brain = entity.getBrain();
         brain.remember(MemoryModuleType.MOBS, list);
-        brain.remember(MemoryModuleType.VISIBLE_MOBS, list.stream().filter(livingEntity2 -> NearestLivingEntitiesSensor.testTargetPredicate(entity, livingEntity2)).collect(Collectors.toList()));
+        brain.remember(MemoryModuleType.VISIBLE_MOBS, new class_6670(entity, list));
     }
 
     @Override

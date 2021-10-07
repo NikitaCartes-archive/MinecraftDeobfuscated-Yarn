@@ -31,6 +31,7 @@ import net.minecraft.world.gen.feature.GeodeLayerConfig;
 import net.minecraft.world.gen.feature.GeodeLayerThicknessConfig;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class GeodeFeature
@@ -57,7 +58,7 @@ extends Feature<GeodeFeatureConfig> {
         int j = geodeFeatureConfig.maxGenOffset;
         LinkedList<Pair<BlockPos, Integer>> list = Lists.newLinkedList();
         int k = geodeFeatureConfig.distributionPoints.get(random);
-        ChunkRandom chunkRandom = new ChunkRandom(structureWorldAccess.getSeed());
+        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(structureWorldAccess.getSeed()));
         DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create((AbstractRandom)chunkRandom, -4, 1.0);
         LinkedList<BlockPos> list2 = Lists.newLinkedList();
         double d = (double)k / (double)geodeFeatureConfig.outerWallDistance.getMax();

@@ -3,9 +3,11 @@
  */
 package net.minecraft.world.gen.random;
 
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.BaseSimpleRandom;
+import net.minecraft.world.gen.random.GaussianGenerator;
+import net.minecraft.world.gen.random.RandomDeriver;
 
 public class SimpleRandom
 implements BaseSimpleRandom {
@@ -14,8 +16,7 @@ implements BaseSimpleRandom {
     private static final long MULTIPLIER = 25214903917L;
     private static final long INCREMENT = 11L;
     private long seed;
-    private double nextNextGaussian;
-    private boolean hasNextGaussian;
+    private final GaussianGenerator gaussianGenerator = new GaussianGenerator(this);
 
     public SimpleRandom(long seed) {
         this.setSeed(seed);
@@ -24,6 +25,11 @@ implements BaseSimpleRandom {
     @Override
     public AbstractRandom derive() {
         return new SimpleRandom(this.nextLong());
+    }
+
+    @Override
+    public RandomDeriver createBlockPosRandomDeriver() {
+        return new AtomicSimpleRandom.RandomDeriver(this.nextLong());
     }
 
     @Override
@@ -40,21 +46,7 @@ implements BaseSimpleRandom {
 
     @Override
     public double nextGaussian() {
-        double e;
-        double d;
-        double f;
-        if (this.hasNextGaussian) {
-            this.hasNextGaussian = false;
-            return this.nextNextGaussian;
-        }
-        do {
-            d = 2.0 * this.nextDouble() - 1.0;
-            e = 2.0 * this.nextDouble() - 1.0;
-        } while ((f = MathHelper.square(d) + MathHelper.square(e)) >= 1.0 || f == 0.0);
-        double g = Math.sqrt(-2.0 * Math.log(f) / f);
-        this.nextNextGaussian = e * g;
-        this.hasNextGaussian = true;
-        return d * g;
+        return this.gaussianGenerator.next();
     }
 }
 

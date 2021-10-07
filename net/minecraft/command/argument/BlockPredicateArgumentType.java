@@ -65,7 +65,7 @@ implements ArgumentType<BlockPredicate> {
 
             @Override
             public Predicate<CachedBlockPosition> create(TagManager manager) throws CommandSyntaxException {
-                Tag<Block> tag = manager.getTag(Registry.BLOCK_KEY, identifier, identifier -> UNKNOWN_TAG_EXCEPTION.create(identifier.toString()));
+                Tag<Block> tag = manager.getTag(Registry.BLOCK_KEY, identifier, id -> UNKNOWN_TAG_EXCEPTION.create(id.toString()));
                 return new TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
             }
 

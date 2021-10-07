@@ -117,15 +117,17 @@ extends World {
     });
     private final ClientChunkManager chunkManager;
     private final Deque<Runnable> chunkUpdaters = Queues.newArrayDeque();
+    private int simulationDistance;
 
-    public ClientWorld(ClientPlayNetworkHandler netHandler, Properties properties, RegistryKey<World> registryRef, DimensionType dimensionType, int loadDistance, Supplier<Profiler> profiler, WorldRenderer worldRenderer, boolean debugWorld, long seed) {
-        super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
+    public ClientWorld(ClientPlayNetworkHandler netHandler, Properties properties, RegistryKey<World> registryRef, DimensionType dimensionType, int loadDistance, int i, Supplier<Profiler> supplier, WorldRenderer worldRenderer, boolean bl, long l) {
+        super(properties, registryRef, dimensionType, supplier, true, bl, l);
         this.netHandler = netHandler;
         this.chunkManager = new ClientChunkManager(this, loadDistance);
         this.clientWorldProperties = properties;
         this.worldRenderer = worldRenderer;
         this.skyProperties = SkyProperties.byDimensionType(dimensionType);
         this.setSpawnPos(new BlockPos(8, 64, 8), 0.0f);
+        this.simulationDistance = i;
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
     }
@@ -195,6 +197,11 @@ extends World {
         });
         profiler.pop();
         this.tickBlockEntities();
+    }
+
+    @Override
+    public boolean shouldUpdatePostDeath(Entity entity) {
+        return entity.getChunkPos().getChebyshevDistance(this.client.player.getChunkPos()) <= this.simulationDistance;
     }
 
     public void tickEntity(Entity entity) {
@@ -741,6 +748,14 @@ extends World {
     @Override
     public void addBlockBreakParticles(BlockPos pos, BlockState state) {
         this.client.particleManager.addBlockBreakParticles(pos, state);
+    }
+
+    public void setSimulationDistance(int simulationDistance) {
+        this.simulationDistance = simulationDistance;
+    }
+
+    public int getSimulationDistance() {
+        return this.simulationDistance;
     }
 
     @Override

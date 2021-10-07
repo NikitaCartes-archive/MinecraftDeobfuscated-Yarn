@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ChunkPos {
     public static final long MARKER = ChunkPos.toLong(1875016, 1875016);
+    public static final ChunkPos field_35107 = new ChunkPos(0, 0);
     private static final long field_30953 = 32L;
     private static final long field_30954 = 0xFFFFFFFFL;
     private static final int field_30955 = 5;

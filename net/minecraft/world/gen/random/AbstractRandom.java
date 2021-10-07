@@ -3,14 +3,12 @@
  */
 package net.minecraft.world.gen.random;
 
-import net.minecraft.world.gen.random.BlockPosRandomDeriver;
+import net.minecraft.world.gen.random.RandomDeriver;
 
 public interface AbstractRandom {
     public AbstractRandom derive();
 
-    default public BlockPosRandomDeriver createBlockPosRandomDeriver() {
-        return new BlockPosRandomDeriver(this.nextLong());
-    }
+    public RandomDeriver createBlockPosRandomDeriver();
 
     public void setSeed(long var1);
 

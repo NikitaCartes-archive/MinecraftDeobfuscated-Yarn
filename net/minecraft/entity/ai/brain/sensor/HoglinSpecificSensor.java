@@ -6,9 +6,9 @@ package net.minecraft.entity.ai.brain.sensor;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -33,16 +33,19 @@ extends Sensor<HoglinEntity> {
         Optional<Object> optional = Optional.empty();
         int i = 0;
         ArrayList<HoglinEntity> list = Lists.newArrayList();
-        List list2 = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(Lists.newArrayList());
-        for (LivingEntity livingEntity : list2) {
-            if (livingEntity instanceof PiglinEntity && !livingEntity.isBaby()) {
+        class_6670 lv = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
+        for (LivingEntity livingEntity2 : lv.method_38978(livingEntity -> !livingEntity.isBaby() && (livingEntity instanceof PiglinEntity || livingEntity instanceof HoglinEntity))) {
+            LivingEntity livingEntity3 = livingEntity2;
+            if (livingEntity3 instanceof PiglinEntity) {
+                PiglinEntity piglinEntity = (PiglinEntity)livingEntity3;
                 ++i;
-                if (!optional.isPresent()) {
-                    optional = Optional.of((PiglinEntity)livingEntity);
+                if (optional.isEmpty()) {
+                    optional = Optional.of(piglinEntity);
                 }
             }
-            if (!(livingEntity instanceof HoglinEntity) || livingEntity.isBaby()) continue;
-            list.add((HoglinEntity)livingEntity);
+            if (!((livingEntity3 = livingEntity2) instanceof HoglinEntity)) continue;
+            HoglinEntity hoglinEntity2 = (HoglinEntity)livingEntity3;
+            list.add(hoglinEntity2);
         }
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, optional);
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, list);

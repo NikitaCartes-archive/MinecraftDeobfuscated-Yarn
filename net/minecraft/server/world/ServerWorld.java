@@ -342,7 +342,7 @@ implements StructureWorldAccess {
                 profiler.push("checkDespawn");
                 entity.checkDespawn();
                 profiler.pop();
-                if (!this.chunkManager.threadedAnvilChunkStorage.getTicketManager().isSimulating(ChunkPos.toLong(entity.getBlockPos()))) {
+                if (!this.chunkManager.threadedAnvilChunkStorage.getTicketManager().isSimulating(entity.getChunkPos().toLong())) {
                     return;
                 }
                 Entity entity2 = entity.getVehicle();

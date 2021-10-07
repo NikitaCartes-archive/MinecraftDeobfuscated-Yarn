@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_6670;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
@@ -553,15 +554,16 @@ VillagerDataContainer {
     }
 
     private void notifyDeath(Entity killer) {
-        if (!(this.world instanceof ServerWorld)) {
+        World world = this.world;
+        if (!(world instanceof ServerWorld)) {
             return;
         }
-        Optional<List<LivingEntity>> optional = this.brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
-        if (!optional.isPresent()) {
+        ServerWorld serverWorld = (ServerWorld)world;
+        Optional<class_6670> optional = this.brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+        if (optional.isEmpty()) {
             return;
         }
-        ServerWorld serverWorld = (ServerWorld)this.world;
-        optional.get().stream().filter(entity -> entity instanceof InteractionObserver).forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)((Object)livingEntity)));
+        optional.get().method_38978(InteractionObserver.class::isInstance).forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)((Object)livingEntity)));
     }
 
     public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {

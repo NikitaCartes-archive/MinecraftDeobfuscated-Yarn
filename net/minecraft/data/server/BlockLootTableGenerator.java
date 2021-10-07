@@ -175,7 +175,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     private static LootTable.Builder copperOreDrops(Block ore) {
-        return BlockLootTableGenerator.dropsWithSilkTouch(ore, (LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(ore, ((LeafEntry.Builder)ItemEntry.builder(Items.RAW_COPPER).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0f, 3.0f)))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))));
+        return BlockLootTableGenerator.dropsWithSilkTouch(ore, (LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(ore, ((LeafEntry.Builder)ItemEntry.builder(Items.RAW_COPPER).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0f, 5.0f)))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))));
     }
 
     private static LootTable.Builder lapisOreDrops(Block ore) {

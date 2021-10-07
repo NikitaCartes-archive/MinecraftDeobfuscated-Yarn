@@ -393,7 +393,7 @@ extends Entity {
         if (this.timeUntilRegen > 0 && !(this instanceof ServerPlayerEntity)) {
             --this.timeUntilRegen;
         }
-        if (this.isDead()) {
+        if (this.isDead() && this.world.shouldUpdatePostDeath(this)) {
             this.updatePostDeath();
         }
         if (this.playerHitTimer > 0) {

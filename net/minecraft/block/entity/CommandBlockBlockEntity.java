@@ -10,22 +10,18 @@ import net.minecraft.block.CommandBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.CommandBlockExecutor;
-import org.jetbrains.annotations.Nullable;
 
 public class CommandBlockBlockEntity
 extends BlockEntity {
     private boolean powered;
     private boolean auto;
     private boolean conditionMet;
-    private boolean needsUpdatePacket;
     private final CommandBlockExecutor commandExecutor = new CommandBlockExecutor(){
 
         @Override
@@ -76,15 +72,6 @@ extends BlockEntity {
         this.powered = nbt.getBoolean("powered");
         this.conditionMet = nbt.getBoolean("conditionMet");
         this.setAuto(nbt.getBoolean("auto"));
-    }
-
-    @Nullable
-    public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        if (this.needsUpdatePacket()) {
-            this.setNeedsUpdatePacket(false);
-            return BlockEntityUpdateS2CPacket.create(this);
-        }
-        return null;
     }
 
     @Override
@@ -145,14 +132,6 @@ extends BlockEntity {
         return this.conditionMet;
     }
 
-    public boolean needsUpdatePacket() {
-        return this.needsUpdatePacket;
-    }
-
-    public void setNeedsUpdatePacket(boolean needsUpdatePacket) {
-        this.needsUpdatePacket = needsUpdatePacket;
-    }
-
     public Type getCommandBlockType() {
         BlockState blockState = this.getCachedState();
         if (blockState.isOf(Blocks.COMMAND_BLOCK)) {
@@ -173,11 +152,6 @@ extends BlockEntity {
             return blockState.get(CommandBlock.CONDITIONAL);
         }
         return false;
-    }
-
-    @Nullable
-    public /* synthetic */ Packet toUpdatePacket() {
-        return this.toUpdatePacket();
     }
 
     public static enum Type {

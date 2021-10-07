@@ -83,11 +83,10 @@ implements PaletteResizeListener<T> {
         return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)entryCodec.listOf().fieldOf("palette")).forGetter(Serialized::paletteEntries), Codec.LONG_STREAM.optionalFieldOf("data").forGetter(Serialized::storage)).apply((Applicative<Serialized, ?>)instance, Serialized::new)).comapFlatMap(serialized -> PalettedContainer.read(idList, provider, serialized), container -> container.write(idList, provider));
     }
 
-    public PalettedContainer(IndexedIterable<T> idList, PaletteProvider paletteProvider, DataProvider<T> dataProvider, PaletteStorage storage, List<T> entries) {
+    public PalettedContainer(IndexedIterable<T> idList, PaletteProvider paletteProvider, DataProvider<T> dataProvider, PaletteStorage storage, List<T> list) {
         this.idList = idList;
         this.paletteProvider = paletteProvider;
-        Palette<T> palette = dataProvider.factory().create(dataProvider.bits(), idList, this);
-        entries.forEach(palette::index);
+        Palette<T> palette = dataProvider.factory().create(dataProvider.bits(), idList, this, list);
         this.data = new Data<T>(dataProvider, storage, palette);
     }
 
@@ -344,7 +343,7 @@ implements PaletteResizeListener<T> {
     record DataProvider<T>(Palette.Factory factory, int bits) {
         public Data<T> createData(IndexedIterable<T> idList, PaletteResizeListener<T> listener, int size, @Nullable long[] storage) {
             PaletteStorage paletteStorage = this.bits == 0 ? new EmptyPaletteStorage(size) : new PackedIntegerArray(this.bits, size, storage);
-            Palette<T> palette = this.factory.create(this.bits, idList, listener);
+            Palette<T> palette = this.factory.create(this.bits, idList, listener, List.of());
             return new Data<T>(this, paletteStorage, palette);
         }
     }

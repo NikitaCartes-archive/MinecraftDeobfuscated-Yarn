@@ -34,22 +34,22 @@ extends AmethystBlock
 implements Waterloggable {
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public static final DirectionProperty FACING = Properties.FACING;
-    protected final VoxelShape NORTH_SHAPE;
-    protected final VoxelShape SOUTH_SHAPE;
-    protected final VoxelShape EAST_SHAPE;
-    protected final VoxelShape WEST_SHAPE;
-    protected final VoxelShape UP_SHAPE;
-    protected final VoxelShape DOWN_SHAPE;
+    protected final VoxelShape northShape;
+    protected final VoxelShape southShape;
+    protected final VoxelShape eastShape;
+    protected final VoxelShape westShape;
+    protected final VoxelShape upShape;
+    protected final VoxelShape downShape;
 
     public AmethystClusterBlock(int height, int xzOffset, AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, false)).with(FACING, Direction.UP));
-        this.UP_SHAPE = Block.createCuboidShape(xzOffset, 0.0, xzOffset, 16 - xzOffset, height, 16 - xzOffset);
-        this.DOWN_SHAPE = Block.createCuboidShape(xzOffset, 16 - height, xzOffset, 16 - xzOffset, 16.0, 16 - xzOffset);
-        this.NORTH_SHAPE = Block.createCuboidShape(xzOffset, xzOffset, 16 - height, 16 - xzOffset, 16 - xzOffset, 16.0);
-        this.SOUTH_SHAPE = Block.createCuboidShape(xzOffset, xzOffset, 0.0, 16 - xzOffset, 16 - xzOffset, height);
-        this.EAST_SHAPE = Block.createCuboidShape(0.0, xzOffset, xzOffset, height, 16 - xzOffset, 16 - xzOffset);
-        this.WEST_SHAPE = Block.createCuboidShape(16 - height, xzOffset, xzOffset, 16.0, 16 - xzOffset, 16 - xzOffset);
+        this.upShape = Block.createCuboidShape(xzOffset, 0.0, xzOffset, 16 - xzOffset, height, 16 - xzOffset);
+        this.downShape = Block.createCuboidShape(xzOffset, 16 - height, xzOffset, 16 - xzOffset, 16.0, 16 - xzOffset);
+        this.northShape = Block.createCuboidShape(xzOffset, xzOffset, 16 - height, 16 - xzOffset, 16 - xzOffset, 16.0);
+        this.southShape = Block.createCuboidShape(xzOffset, xzOffset, 0.0, 16 - xzOffset, 16 - xzOffset, height);
+        this.eastShape = Block.createCuboidShape(0.0, xzOffset, xzOffset, height, 16 - xzOffset, 16 - xzOffset);
+        this.westShape = Block.createCuboidShape(16 - height, xzOffset, xzOffset, 16.0, 16 - xzOffset, 16 - xzOffset);
     }
 
     @Override
@@ -57,22 +57,22 @@ implements Waterloggable {
         Direction direction = state.get(FACING);
         switch (direction) {
             case NORTH: {
-                return this.NORTH_SHAPE;
+                return this.northShape;
             }
             case SOUTH: {
-                return this.SOUTH_SHAPE;
+                return this.southShape;
             }
             case EAST: {
-                return this.EAST_SHAPE;
+                return this.eastShape;
             }
             case WEST: {
-                return this.WEST_SHAPE;
+                return this.westShape;
             }
             case DOWN: {
-                return this.DOWN_SHAPE;
+                return this.downShape;
             }
         }
-        return this.UP_SHAPE;
+        return this.upShape;
     }
 
     @Override

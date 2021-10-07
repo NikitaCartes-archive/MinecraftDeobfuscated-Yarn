@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Predicate;
@@ -65,8 +64,10 @@ import net.minecraft.world.gen.feature.OceanMonumentFeature;
 import net.minecraft.world.gen.feature.PillagerOutpostFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.SwampHutFeature;
+import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 import org.jetbrains.annotations.Nullable;
 
 public final class NoiseChunkGenerator
@@ -75,6 +76,7 @@ extends ChunkGenerator {
     private static final BlockState AIR = Blocks.AIR.getDefaultState();
     private static final BlockState[] EMPTY = new BlockState[0];
     private static final int field_34589 = 8;
+    private static final int field_35129 = 5;
     private final int verticalNoiseResolution;
     private final int horizontalNoiseResolution;
     private final int noiseSizeX;
@@ -94,6 +96,7 @@ extends ChunkGenerator {
 
     private NoiseChunkGenerator(BiomeSource populationSource, BiomeSource biomeSource, long seed, Supplier<ChunkGeneratorSettings> settings) {
         super(populationSource, biomeSource, settings.get().getStructuresConfig(), seed);
+        int j;
         this.seed = seed;
         ChunkGeneratorSettings chunkGeneratorSettings = settings.get();
         this.settings = settings;
@@ -105,13 +108,22 @@ extends ChunkGenerator {
         this.noiseSizeX = 16 / this.horizontalNoiseResolution;
         this.noiseSizeY = generationShapeConfig.getHeight() / this.verticalNoiseResolution;
         this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
-        this.noiseColumnSampler = new NoiseColumnSampler(this.horizontalNoiseResolution, this.verticalNoiseResolution, this.noiseSizeY, generationShapeConfig, chunkGeneratorSettings.getMultiNoiseParameters(), chunkGeneratorSettings.hasNoiseCaves(), seed);
+        this.noiseColumnSampler = new NoiseColumnSampler(this.horizontalNoiseResolution, this.verticalNoiseResolution, this.noiseSizeY, generationShapeConfig, chunkGeneratorSettings.getMultiNoiseParameters(), chunkGeneratorSettings.hasNoiseCaves(), seed, chunkGeneratorSettings.method_38999());
         ImmutableList.Builder builder = ImmutableList.builder();
+        AbstractRandom abstractRandom = chunkGeneratorSettings.method_38997(seed);
+        int i = chunkGeneratorSettings.getBedrockFloorY();
+        if (i > -5 && i < this.worldHeight) {
+            j = this.getMinimumY() + i;
+            builder.add(new DeepslateBlockSource(abstractRandom.createBlockPosRandomDeriver(), Blocks.BEDROCK.getDefaultState(), null, j, j + 5));
+        }
+        if ((j = chunkGeneratorSettings.getBedrockCeilingY()) > -5 && j < this.worldHeight) {
+            int k = this.getMinimumY() + this.worldHeight - 1 + j;
+            builder.add(new DeepslateBlockSource(abstractRandom.createBlockPosRandomDeriver(), null, Blocks.BEDROCK.getDefaultState(), k - 5, k));
+        }
         builder.add(ChunkNoiseSampler::sampleInitialNoiseBlockState);
         builder.add(ChunkNoiseSampler::sampleOreVeins);
         if (chunkGeneratorSettings.hasDeepslate()) {
-            AtomicSimpleRandom atomicSimpleRandom = new AtomicSimpleRandom(seed);
-            builder.add(new DeepslateBlockSource(atomicSimpleRandom.createBlockPosRandomDeriver(), Blocks.DEEPSLATE.getDefaultState()));
+            builder.add(new DeepslateBlockSource(abstractRandom.createBlockPosRandomDeriver(), Blocks.DEEPSLATE.getDefaultState(), null, -8, 0));
         }
         this.blockStateSampler = new ChainedBlockSource((List<BlockSource>)((Object)builder.build()));
         AquiferSampler.FluidLevel fluidLevel = new AquiferSampler.FluidLevel(-54, Blocks.LAVA.getDefaultState());
@@ -238,7 +250,7 @@ extends ChunkGenerator {
         if (SharedConstants.method_37896(chunkPos.getStartX(), chunkPos.getStartZ())) {
             return;
         }
-        ChunkRandom chunkRandom = new ChunkRandom();
+        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
         chunkRandom.setTerrainSeed(i, j);
         final ChunkPos chunkPos2 = chunk.getPos();
         int k = chunkPos2.getStartX();
@@ -281,46 +293,12 @@ extends ChunkGenerator {
                 biome.buildSurface(chunkRandom, blockColumn, s, t, u, e, this.defaultBlock, blockState, this.getSeaLevel(), w, region.getSeed());
             }
         }
-        this.buildBedrock(chunk, chunkRandom);
-    }
-
-    private void buildBedrock(Chunk chunk, Random random) {
-        boolean bl2;
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int i = chunk.getPos().getStartX();
-        int j = chunk.getPos().getStartZ();
-        ChunkGeneratorSettings chunkGeneratorSettings = this.settings.get();
-        int k = chunkGeneratorSettings.getGenerationShapeConfig().getMinimumY();
-        int l = k + chunkGeneratorSettings.getBedrockFloorY();
-        int m = this.worldHeight - 1 + k - chunkGeneratorSettings.getBedrockCeilingY();
-        int n = 5;
-        int o = chunk.getBottomY();
-        int p = chunk.getTopY();
-        boolean bl = m + 5 - 1 >= o && m < p;
-        boolean bl3 = bl2 = l + 5 - 1 >= o && l < p;
-        if (!bl && !bl2) {
-            return;
-        }
-        for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
-            int q;
-            if (bl) {
-                for (q = 0; q < 5; ++q) {
-                    if (q > random.nextInt(5)) continue;
-                    chunk.setBlockState(mutable.set(blockPos.getX(), m - q, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
-                }
-            }
-            if (!bl2) continue;
-            for (q = 4; q >= 0; --q) {
-                if (q > random.nextInt(5)) continue;
-                chunk.setBlockState(mutable.set(blockPos.getX(), l + q, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
-            }
-        }
     }
 
     @Override
     public void carve(ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep) {
         BiomeAccess biomeAccess2 = biomeAccess.withSource((i, j, k) -> this.populationSource.getBiome(i, j, k, this.getMultiNoiseSampler()));
-        ChunkRandom chunkRandom = new ChunkRandom();
+        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
         int i2 = 8;
         ChunkPos chunkPos = chunk.getPos();
         CarverContext carverContext = new CarverContext(this, chunk);
@@ -492,7 +470,7 @@ extends ChunkGenerator {
         }
         ChunkPos chunkPos = region.getCenterPos();
         Biome biome = region.getBiome(chunkPos.getStartPos());
-        ChunkRandom chunkRandom = new ChunkRandom();
+        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
         chunkRandom.setPopulationSeed(region.getSeed(), chunkPos.getStartX(), chunkPos.getStartZ());
         SpawnHelper.populateEntities(region, biome, chunkPos, chunkRandom);
     }

@@ -3,11 +3,11 @@
  */
 package net.minecraft.entity.ai.brain.sensor;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import net.minecraft.class_6670;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -27,15 +27,15 @@ extends Sensor<LivingEntity> {
     }
 
     private List<LivingEntity> getVisibleVillagerBabies(LivingEntity entities) {
-        return this.getVisibleMobs(entities).stream().filter(this::isVillagerBaby).collect(Collectors.toList());
+        return ImmutableList.copyOf(this.getVisibleMobs(entities).method_38978(this::isVillagerBaby));
     }
 
     private boolean isVillagerBaby(LivingEntity entity) {
         return entity.getType() == EntityType.VILLAGER && entity.isBaby();
     }
 
-    private List<LivingEntity> getVisibleMobs(LivingEntity entity) {
-        return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(Lists.newArrayList());
+    private class_6670 getVisibleMobs(LivingEntity entity) {
+        return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
     }
 }
 

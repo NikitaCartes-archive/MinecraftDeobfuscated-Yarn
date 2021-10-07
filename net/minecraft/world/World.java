@@ -433,6 +433,10 @@ AutoCloseable {
         }
     }
 
+    public boolean shouldUpdatePostDeath(Entity entity) {
+        return true;
+    }
+
     public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, Explosion.DestructionType destructionType) {
         return this.createExplosion(entity, null, null, x, y, z, power, false, destructionType);
     }
@@ -553,14 +557,16 @@ AutoCloseable {
         this.getProfiler().visit("getEntities");
         ArrayList list = Lists.newArrayList();
         this.getEntityLookup().forEachIntersects(filter, box, entity -> {
+            Entity entity2;
             if (predicate.test(entity)) {
                 list.add(entity);
             }
-            if (entity instanceof EnderDragonEntity) {
-                for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
-                    Entity entity2 = (Entity)filter.downcast(enderDragonPart);
-                    if (entity2 == null || !predicate.test(entity2)) continue;
-                    list.add(entity2);
+            if ((entity2 = entity) instanceof EnderDragonEntity) {
+                EnderDragonEntity enderDragonEntity = (EnderDragonEntity)entity2;
+                for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
+                    Entity entity3 = (Entity)filter.downcast(enderDragonPart);
+                    if (entity3 == null || !predicate.test(entity3)) continue;
+                    list.add(entity3);
                 }
             }
         });

@@ -12,8 +12,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.decorator.BlockFilterDecorator;
 import net.minecraft.world.gen.decorator.BlockFilterDecoratorConfig;
-import net.minecraft.world.gen.decorator.BlockSurvivesFilterDecorator;
-import net.minecraft.world.gen.decorator.BlockSurvivesFilterDecoratorConfig;
 import net.minecraft.world.gen.decorator.CarvingMaskDecorator;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
 import net.minecraft.world.gen.decorator.CaveSurfaceDecorator;
@@ -72,7 +70,6 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<RangeDecoratorConfig> RANGE = Decorator.register("range", new RangeDecorator(RangeDecoratorConfig.CODEC));
     public static final Decorator<NopeDecoratorConfig> END_GATEWAY = Decorator.register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig.CODEC));
     public static final Decorator<EnvironmentScanDecoratorConfig> ENVIRONMENT_SCAN = Decorator.register("environment_scan", new EnvironmentScanDecorator(EnvironmentScanDecoratorConfig.CODEC));
-    public static final Decorator<BlockSurvivesFilterDecoratorConfig> BLOCK_SURVIVES_FILTER = Decorator.register("block_survives_filter", new BlockSurvivesFilterDecorator(BlockSurvivesFilterDecoratorConfig.CODEC));
     public static final Decorator<BlockFilterDecoratorConfig> BLOCK_FILTER = Decorator.register("block_filter", new BlockFilterDecorator(BlockFilterDecoratorConfig.CODEC));
     private final Codec<ConfiguredDecorator<DC>> codec;
 

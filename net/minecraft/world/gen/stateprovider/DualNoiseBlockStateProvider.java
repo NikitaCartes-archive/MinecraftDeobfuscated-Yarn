@@ -16,6 +16,7 @@ import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.stateprovider.NoiseBlockStateProvider;
@@ -33,7 +34,7 @@ extends NoiseBlockStateProvider {
         this.variety = variety;
         this.slowNoiseParameters = slowNoiseParameters;
         this.slowScale = slowScale;
-        this.slowNoiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(seed), slowNoiseParameters);
+        this.slowNoiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(new AtomicSimpleRandom(seed)), slowNoiseParameters);
     }
 
     @Override

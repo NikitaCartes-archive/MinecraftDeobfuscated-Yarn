@@ -10,6 +10,7 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.DefaultSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
@@ -47,7 +48,7 @@ extends DefaultSurfaceBuilder {
     @Override
     public void initSeed(long seed) {
         if (this.seed != seed) {
-            ChunkRandom chunkRandom = new ChunkRandom(seed);
+            ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(seed));
             this.noiseSampler = DoublePerlinNoiseSampler.create((AbstractRandom)chunkRandom, -3, 1.0, 1.0, 1.0, 1.0);
         }
         this.seed = seed;

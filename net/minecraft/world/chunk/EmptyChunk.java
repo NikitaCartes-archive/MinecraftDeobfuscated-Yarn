@@ -19,8 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class EmptyChunk
 extends WorldChunk {
-    public EmptyChunk(World world, ChunkPos pos) {
-        super(world, pos);
+    public EmptyChunk(World world, ChunkPos chunkPos) {
+        super(world, chunkPos);
     }
 
     @Override

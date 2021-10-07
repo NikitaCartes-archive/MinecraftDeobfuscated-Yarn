@@ -4,10 +4,9 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -30,10 +29,10 @@ extends Sensor<LivingEntity> {
     }
 
     private Optional<LivingEntity> getNearestVisibleLivingEntity(LivingEntity entity) {
-        return this.getVisibleLivingEntities(entity).flatMap(list -> list.stream().filter(livingEntity2 -> this.matches(entity, (LivingEntity)livingEntity2)).min(Comparator.comparingDouble(entity::squaredDistanceTo)));
+        return this.getVisibleLivingEntities(entity).flatMap(arg -> arg.method_38975(livingEntity2 -> this.matches(entity, (LivingEntity)livingEntity2)));
     }
 
-    protected Optional<List<LivingEntity>> getVisibleLivingEntities(LivingEntity entity) {
+    protected Optional<class_6670> getVisibleLivingEntities(LivingEntity entity) {
         return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
     }
 }

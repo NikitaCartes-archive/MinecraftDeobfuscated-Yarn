@@ -76,16 +76,16 @@ public class ArgumentTypes {
      * 
      * @param id the id of the argument type
      */
-    public static <T extends ArgumentType<?>> void register(String id, Class<T> class_, ArgumentSerializer<T> argumentSerializer) {
+    public static <T extends ArgumentType<?>> void register(String id, Class<T> argClass, ArgumentSerializer<T> serializer) {
         Identifier identifier = new Identifier(id);
-        if (CLASS_MAP.containsKey(class_)) {
-            throw new IllegalArgumentException("Class " + class_.getName() + " already has a serializer!");
+        if (CLASS_MAP.containsKey(argClass)) {
+            throw new IllegalArgumentException("Class " + argClass.getName() + " already has a serializer!");
         }
         if (ID_MAP.containsKey(identifier)) {
             throw new IllegalArgumentException("'" + identifier + "' is already a registered serializer!");
         }
-        Entry<T> entry = new Entry<T>(class_, argumentSerializer, identifier);
-        CLASS_MAP.put(class_, entry);
+        Entry<T> entry = new Entry<T>(argClass, serializer, identifier);
+        CLASS_MAP.put(argClass, entry);
         ID_MAP.put(identifier, entry);
     }
 
@@ -141,19 +141,19 @@ public class ArgumentTypes {
     }
 
     @Nullable
-    private static Entry<?> byClass(ArgumentType<?> argumentType) {
-        return CLASS_MAP.get(argumentType.getClass());
+    private static Entry<?> byClass(ArgumentType<?> type) {
+        return CLASS_MAP.get(type.getClass());
     }
 
-    public static <T extends ArgumentType<?>> void toPacket(PacketByteBuf packetByteBuf, T argumentType) {
-        Entry<?> entry = ArgumentTypes.byClass(argumentType);
+    public static <T extends ArgumentType<?>> void toPacket(PacketByteBuf buf, T type) {
+        Entry<?> entry = ArgumentTypes.byClass(type);
         if (entry == null) {
-            LOGGER.error("Could not serialize {} ({}) - will not be sent to client!", (Object)argumentType, (Object)argumentType.getClass());
-            packetByteBuf.writeIdentifier(new Identifier(""));
+            LOGGER.error("Could not serialize {} ({}) - will not be sent to client!", (Object)type, (Object)type.getClass());
+            buf.writeIdentifier(new Identifier(""));
             return;
         }
-        packetByteBuf.writeIdentifier(entry.id);
-        entry.serializer.toPacket(argumentType, packetByteBuf);
+        buf.writeIdentifier(entry.id);
+        entry.serializer.toPacket(type, buf);
     }
 
     @Nullable
@@ -167,23 +167,23 @@ public class ArgumentTypes {
         return entry.serializer.fromPacket(buf);
     }
 
-    private static <T extends ArgumentType<?>> void toJson(JsonObject jsonObject, T argumentType) {
-        Entry<?> entry = ArgumentTypes.byClass(argumentType);
+    private static <T extends ArgumentType<?>> void toJson(JsonObject json, T type) {
+        Entry<?> entry = ArgumentTypes.byClass(type);
         if (entry == null) {
-            LOGGER.error("Could not serialize argument {} ({})!", (Object)argumentType, (Object)argumentType.getClass());
-            jsonObject.addProperty("type", "unknown");
+            LOGGER.error("Could not serialize argument {} ({})!", (Object)type, (Object)type.getClass());
+            json.addProperty("type", "unknown");
         } else {
-            jsonObject.addProperty("type", "argument");
-            jsonObject.addProperty("parser", entry.id.toString());
-            JsonObject jsonObject2 = new JsonObject();
-            entry.serializer.toJson(argumentType, jsonObject2);
-            if (jsonObject2.size() > 0) {
-                jsonObject.add("properties", jsonObject2);
+            json.addProperty("type", "argument");
+            json.addProperty("parser", entry.id.toString());
+            JsonObject jsonObject = new JsonObject();
+            entry.serializer.toJson(type, jsonObject);
+            if (jsonObject.size() > 0) {
+                json.add("properties", jsonObject);
             }
         }
     }
 
-    public static <S> JsonObject toJson(CommandDispatcher<S> commandDispatcher, CommandNode<S> commandNode) {
+    public static <S> JsonObject toJson(CommandDispatcher<S> dispatcher, CommandNode<S> commandNode) {
         Collection<String> collection;
         JsonObject jsonObject = new JsonObject();
         if (commandNode instanceof RootCommandNode) {
@@ -198,7 +198,7 @@ public class ArgumentTypes {
         }
         JsonObject jsonObject2 = new JsonObject();
         for (CommandNode<S> commandNode2 : commandNode.getChildren()) {
-            jsonObject2.add(commandNode2.getName(), ArgumentTypes.toJson(commandDispatcher, commandNode2));
+            jsonObject2.add(commandNode2.getName(), ArgumentTypes.toJson(dispatcher, commandNode2));
         }
         if (jsonObject2.size() > 0) {
             jsonObject.add("children", jsonObject2);
@@ -206,7 +206,7 @@ public class ArgumentTypes {
         if (commandNode.getCommand() != null) {
             jsonObject.addProperty("executable", true);
         }
-        if (commandNode.getRedirect() != null && !(collection = commandDispatcher.getPath(commandNode.getRedirect())).isEmpty()) {
+        if (commandNode.getRedirect() != null && !(collection = dispatcher.getPath(commandNode.getRedirect())).isEmpty()) {
             JsonArray jsonArray = new JsonArray();
             for (String string : collection) {
                 jsonArray.add(string);
@@ -216,8 +216,8 @@ public class ArgumentTypes {
         return jsonObject;
     }
 
-    public static boolean hasClass(ArgumentType<?> argumentType) {
-        return ArgumentTypes.byClass(argumentType) != null;
+    public static boolean hasClass(ArgumentType<?> type) {
+        return ArgumentTypes.byClass(type) != null;
     }
 
     public static <T> Set<ArgumentType<?>> getAllArgumentTypes(CommandNode<T> node) {
@@ -246,10 +246,10 @@ public class ArgumentTypes {
         public final ArgumentSerializer<T> serializer;
         public final Identifier id;
 
-        Entry(Class<T> class_, ArgumentSerializer<T> argumentSerializer, Identifier identifier) {
-            this.argClass = class_;
-            this.serializer = argumentSerializer;
-            this.id = identifier;
+        Entry(Class<T> argClass, ArgumentSerializer<T> serializer, Identifier id) {
+            this.argClass = argClass;
+            this.serializer = serializer;
+            this.id = id;
         }
     }
 }

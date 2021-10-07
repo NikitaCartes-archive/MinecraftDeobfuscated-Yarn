@@ -25,8 +25,7 @@ public class DefaultBiomeFeatures {
     }
 
     public static void addDefaultLakes(GenerationSettings.Builder builder) {
-        builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_WATER);
-        builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_LAVA);
+        DefaultBiomeFeatures.addDesertLakes(builder);
     }
 
     public static void addDesertLakes(GenerationSettings.Builder builder) {
@@ -35,6 +34,7 @@ public class DefaultBiomeFeatures {
 
     public static void addDungeons(GenerationSettings.Builder builder) {
         builder.feature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, ConfiguredFeatures.MONSTER_ROOM);
+        builder.feature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, ConfiguredFeatures.MONSTER_ROOM_DEEP);
     }
 
     public static void addMineables(GenerationSettings.Builder builder) {
@@ -67,10 +67,12 @@ public class DefaultBiomeFeatures {
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_IRON_MIDDLE);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_IRON_SMALL);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_GOLD);
+        builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_GOLD_LOWER);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_REDSTONE);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_REDSTONE_LOWER);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_DIAMOND);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_DIAMOND_LARGE);
+        builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_DIAMOND_BURIED);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_LAPIS);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_LAPIS_BURIED);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, largeCopperOreBlob ? ConfiguredFeatures.ORE_COPPER_LARGE : ConfiguredFeatures.ORE_COPPER);
@@ -108,11 +110,11 @@ public class DefaultBiomeFeatures {
     }
 
     public static void addSweetBerryBushesSnowy(GenerationSettings.Builder builder) {
-        builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_BERRY_DECORATED);
+        builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_BERRY_RARE);
     }
 
     public static void addSweetBerryBushes(GenerationSettings.Builder builder) {
-        builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_BERRY_SPARSE);
+        builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_BERRY_COMMON);
     }
 
     public static void addBamboo(GenerationSettings.Builder builder) {
@@ -381,16 +383,12 @@ public class DefaultBiomeFeatures {
 
     public static void addCaveMobs(SpawnSettings.Builder builder) {
         builder.spawn(SpawnGroup.AMBIENT, new SpawnSettings.SpawnEntry(EntityType.BAT, 10, 8, 8));
-        DefaultBiomeFeatures.addCaveWaterMobs(builder);
+        builder.spawn(SpawnGroup.UNDERGROUND_WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.GLOW_SQUID, 10, 4, 6));
     }
 
     public static void addBatsAndMonsters(SpawnSettings.Builder builder) {
         DefaultBiomeFeatures.addCaveMobs(builder);
         DefaultBiomeFeatures.addMonsters(builder, 95, 5, 100, false);
-    }
-
-    public static void addCaveWaterMobs(SpawnSettings.Builder builder) {
-        builder.spawn(SpawnGroup.UNDERGROUND_WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.GLOW_SQUID, 10, 4, 6));
     }
 
     public static void addOceanMobs(SpawnSettings.Builder builder, int squidWeight, int squidMaxGroupSize, int codWeight) {
@@ -430,14 +428,16 @@ public class DefaultBiomeFeatures {
         builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.HUSK, 80, 4, 4));
     }
 
-    public static void method_38941(SpawnSettings.Builder builder) {
+    public static void addDripstoneCaveMobs(SpawnSettings.Builder builder) {
         DefaultBiomeFeatures.addCaveMobs(builder);
-        DefaultBiomeFeatures.addMonsters(builder, 95, 5, 100, true);
+        int i = 95;
+        DefaultBiomeFeatures.addMonsters(builder, 95, 5, 100, false);
+        builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.DROWNED, 95, 4, 4));
     }
 
-    public static void addMonsters(SpawnSettings.Builder builder, int zombieWeight, int zombieVillagerWeight, int skeletonWeight, boolean bl) {
+    public static void addMonsters(SpawnSettings.Builder builder, int zombieWeight, int zombieVillagerWeight, int skeletonWeight, boolean drowned) {
         builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
-        builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(bl ? EntityType.DROWNED : EntityType.ZOMBIE, zombieWeight, 4, 4));
+        builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(drowned ? EntityType.DROWNED : EntityType.ZOMBIE, zombieWeight, 4, 4));
         builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIE_VILLAGER, zombieVillagerWeight, 1, 1));
         builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SKELETON, skeletonWeight, 4, 4));
         builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.CREEPER, 100, 4, 4));

@@ -25,33 +25,33 @@ import net.minecraft.util.Identifier;
 
 public class StorageDataObject
 implements DataCommandObject {
-    static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(StorageDataObject.of(commandContext).getIds(), suggestionsBuilder);
-    public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType((String)string){
-        final /* synthetic */ String field_20859;
+    static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestIdentifiers(StorageDataObject.of(context).getIds(), builder);
+    public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = argumentName -> new DataCommand.ObjectType((String)argumentName){
+        final /* synthetic */ String argumentName;
         {
-            this.field_20859 = string;
+            this.argumentName = string;
         }
 
         @Override
         public DataCommandObject getObject(CommandContext<ServerCommandSource> context) {
-            return new StorageDataObject(StorageDataObject.of(context), IdentifierArgumentType.getIdentifier(context, this.field_20859));
+            return new StorageDataObject(StorageDataObject.of(context), IdentifierArgumentType.getIdentifier(context, this.argumentName));
         }
 
         @Override
         public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(ArgumentBuilder<ServerCommandSource, ?> argument, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> argumentAdder) {
-            return argument.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("storage").then(argumentAdder.apply(CommandManager.argument(this.field_20859, IdentifierArgumentType.identifier()).suggests(SUGGESTION_PROVIDER))));
+            return argument.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("storage").then(argumentAdder.apply(CommandManager.argument(this.argumentName, IdentifierArgumentType.identifier()).suggests(SUGGESTION_PROVIDER))));
         }
     };
     private final DataCommandStorage storage;
     private final Identifier id;
 
-    static DataCommandStorage of(CommandContext<ServerCommandSource> commandContext) {
-        return commandContext.getSource().getServer().getDataCommandStorage();
+    static DataCommandStorage of(CommandContext<ServerCommandSource> context) {
+        return context.getSource().getServer().getDataCommandStorage();
     }
 
-    StorageDataObject(DataCommandStorage dataCommandStorage, Identifier identifier) {
-        this.storage = dataCommandStorage;
-        this.id = identifier;
+    StorageDataObject(DataCommandStorage storage, Identifier id) {
+        this.storage = storage;
+        this.id = id;
     }
 
     @Override

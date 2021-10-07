@@ -3,6 +3,7 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
+import java.util.function.Function;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
@@ -20,8 +21,12 @@ implements Packet<ClientPlayPacketListener> {
     @Nullable
     private final NbtCompound nbt;
 
+    public static BlockEntityUpdateS2CPacket create(BlockEntity blockEntity, Function<BlockEntity, NbtCompound> nbtGetter) {
+        return new BlockEntityUpdateS2CPacket(blockEntity.getPos(), blockEntity.getType(), nbtGetter.apply(blockEntity));
+    }
+
     public static BlockEntityUpdateS2CPacket create(BlockEntity blockEntity) {
-        return new BlockEntityUpdateS2CPacket(blockEntity.getPos(), blockEntity.getType(), blockEntity.toInitialChunkDataNbt());
+        return BlockEntityUpdateS2CPacket.create(blockEntity, BlockEntity::toInitialChunkDataNbt);
     }
 
     private BlockEntityUpdateS2CPacket(BlockPos pos, BlockEntityType<?> blockEntityType, NbtCompound nbt) {

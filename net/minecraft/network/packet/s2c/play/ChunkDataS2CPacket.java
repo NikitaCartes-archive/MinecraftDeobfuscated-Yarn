@@ -57,11 +57,11 @@ implements Packet<ClientPlayPacketListener> {
         return this.chunkZ;
     }
 
-    public ChunkData method_38598() {
+    public ChunkData getChunkData() {
         return this.chunkData;
     }
 
-    public LightData method_38599() {
+    public LightData getLightData() {
         return this.lightData;
     }
 }

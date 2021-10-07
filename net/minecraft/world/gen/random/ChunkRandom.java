@@ -4,19 +4,21 @@
 package net.minecraft.world.gen.random;
 
 import java.util.Random;
+import java.util.function.LongFunction;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
+import net.minecraft.world.gen.random.RandomDeriver;
+import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
 public class ChunkRandom
 extends Random
 implements AbstractRandom {
+    private final AbstractRandom baseRandom;
     private int sampleCount;
 
-    public ChunkRandom() {
-    }
-
-    public ChunkRandom(long seed) {
-        super(seed);
+    public ChunkRandom(AbstractRandom baseRandom) {
+        super(0L);
+        this.baseRandom = baseRandom;
     }
 
     public int getSampleCount() {
@@ -25,13 +27,31 @@ implements AbstractRandom {
 
     @Override
     public AbstractRandom derive() {
-        return new AtomicSimpleRandom(this.nextLong());
+        return this.baseRandom.derive();
+    }
+
+    @Override
+    public RandomDeriver createBlockPosRandomDeriver() {
+        return this.baseRandom.createBlockPosRandomDeriver();
     }
 
     @Override
     public int next(int count) {
         ++this.sampleCount;
-        return super.next(count);
+        AbstractRandom abstractRandom = this.baseRandom;
+        if (abstractRandom instanceof AtomicSimpleRandom) {
+            AtomicSimpleRandom atomicSimpleRandom = (AtomicSimpleRandom)abstractRandom;
+            return atomicSimpleRandom.next(count);
+        }
+        return (int)(this.baseRandom.nextLong() >>> 64 - count);
+    }
+
+    @Override
+    public synchronized void setSeed(long l) {
+        if (this.baseRandom == null) {
+            return;
+        }
+        this.baseRandom.setSeed(l);
     }
 
     /**
@@ -118,6 +138,21 @@ implements AbstractRandom {
 
     public static Random getSlimeRandom(int chunkX, int chunkZ, long worldSeed, long scrambler) {
         return new Random(worldSeed + (long)(chunkX * chunkX * 4987142) + (long)(chunkX * 5947611) + (long)(chunkZ * chunkZ) * 4392871L + (long)(chunkZ * 389711) ^ scrambler);
+    }
+
+    public static enum RandomProvider {
+        LEGACY(AtomicSimpleRandom::new),
+        XOROSHIRO(Xoroshiro128PlusPlusRandom::new);
+
+        private final LongFunction<AbstractRandom> provider;
+
+        private RandomProvider(LongFunction<AbstractRandom> provider) {
+            this.provider = provider;
+        }
+
+        public AbstractRandom create(long seed) {
+            return this.provider.apply(seed);
+        }
     }
 }
 

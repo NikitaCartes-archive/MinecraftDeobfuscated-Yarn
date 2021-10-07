@@ -13,6 +13,7 @@ import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
@@ -64,7 +65,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         if (this.seed != seed || this.shoreNoise == null || this.surfaceNoises.isEmpty() || this.underLavaNoises.isEmpty()) {
             this.surfaceNoises = AbstractNetherSurfaceBuilder.createNoisesForStates(this.getSurfaceStates(), seed);
             this.underLavaNoises = AbstractNetherSurfaceBuilder.createNoisesForStates(this.getUnderLavaStates(), seed + (long)this.surfaceNoises.size());
-            this.shoreNoise = new OctavePerlinNoiseSampler((AbstractRandom)new ChunkRandom(seed + (long)this.surfaceNoises.size() + (long)this.underLavaNoises.size()), ImmutableList.of(Integer.valueOf(0)));
+            this.shoreNoise = new OctavePerlinNoiseSampler((AbstractRandom)new ChunkRandom(new AtomicSimpleRandom(seed + (long)this.surfaceNoises.size() + (long)this.underLavaNoises.size())), ImmutableList.of(Integer.valueOf(0)));
         }
         this.seed = seed;
     }
@@ -72,7 +73,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     private static ImmutableMap<BlockState, OctavePerlinNoiseSampler> createNoisesForStates(ImmutableList<BlockState> states, long seed) {
         ImmutableMap.Builder<BlockState, OctavePerlinNoiseSampler> builder = new ImmutableMap.Builder<BlockState, OctavePerlinNoiseSampler>();
         for (BlockState blockState : states) {
-            builder.put(blockState, new OctavePerlinNoiseSampler((AbstractRandom)new ChunkRandom(seed), ImmutableList.of(Integer.valueOf(-4))));
+            builder.put(blockState, new OctavePerlinNoiseSampler((AbstractRandom)new ChunkRandom(new AtomicSimpleRandom(seed)), ImmutableList.of(Integer.valueOf(-4))));
             ++seed;
         }
         return builder.build();

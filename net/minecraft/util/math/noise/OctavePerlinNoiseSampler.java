@@ -17,6 +17,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +66,7 @@ implements NoiseSampler {
     }
 
     private OctavePerlinNoiseSampler(AbstractRandom random, IntSortedSet octaves) {
-        this(random, octaves, ChunkRandom::new);
+        this(random, octaves, (long l) -> new ChunkRandom(new AtomicSimpleRandom(l)));
     }
 
     private OctavePerlinNoiseSampler(AbstractRandom random, IntSortedSet octaves, LongFunction<AbstractRandom> randomFunction) {
@@ -73,7 +74,7 @@ implements NoiseSampler {
     }
 
     protected OctavePerlinNoiseSampler(AbstractRandom random, Pair<Integer, DoubleList> offsetAndAmplitudes) {
-        this(random, offsetAndAmplitudes, ChunkRandom::new);
+        this(random, offsetAndAmplitudes, (long l) -> new ChunkRandom(new AtomicSimpleRandom(l)));
     }
 
     protected OctavePerlinNoiseSampler(AbstractRandom random, Pair<Integer, DoubleList> pair, LongFunction<AbstractRandom> randomFunction) {

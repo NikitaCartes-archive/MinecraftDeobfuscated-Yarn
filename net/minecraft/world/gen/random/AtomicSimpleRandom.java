@@ -8,6 +8,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.thread.LockHelper;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.BaseSimpleRandom;
+import net.minecraft.world.gen.random.GaussianGenerator;
 
 public class AtomicSimpleRandom
 implements BaseSimpleRandom {
@@ -16,8 +17,7 @@ implements BaseSimpleRandom {
     private static final long MULTIPLIER = 25214903917L;
     private static final long INCREMENT = 11L;
     private final AtomicLong seed = new AtomicLong();
-    private double nextNextGaussian;
-    private boolean hasNextGaussian;
+    private final GaussianGenerator gaussianGenerator = new GaussianGenerator(this);
 
     public AtomicSimpleRandom(long seed) {
         this.setSeed(seed);
@@ -29,9 +29,14 @@ implements BaseSimpleRandom {
     }
 
     @Override
+    public net.minecraft.world.gen.random.RandomDeriver createBlockPosRandomDeriver() {
+        return new RandomDeriver(this.nextLong());
+    }
+
+    @Override
     public void setSeed(long l) {
         if (!this.seed.compareAndSet(this.seed.get(), (l ^ 0x5DEECE66DL) & 0xFFFFFFFFFFFFL)) {
-            throw LockHelper.crash("SimpleRandomSource", null);
+            throw LockHelper.crash("LegacyRandomSource", null);
         }
     }
 
@@ -40,28 +45,36 @@ implements BaseSimpleRandom {
         long m;
         long l = this.seed.get();
         if (!this.seed.compareAndSet(l, m = l * 25214903917L + 11L & 0xFFFFFFFFFFFFL)) {
-            throw LockHelper.crash("SimpleRandomSource", null);
+            throw LockHelper.crash("LegacyRandomSource", null);
         }
         return (int)(m >> 48 - bits);
     }
 
     @Override
     public double nextGaussian() {
-        double e;
-        double d;
-        double f;
-        if (this.hasNextGaussian) {
-            this.hasNextGaussian = false;
-            return this.nextNextGaussian;
+        return this.gaussianGenerator.next();
+    }
+
+    public static class RandomDeriver
+    implements net.minecraft.world.gen.random.RandomDeriver {
+        private final long seed;
+
+        public RandomDeriver(long seed) {
+            this.seed = seed;
         }
-        do {
-            d = 2.0 * this.nextDouble() - 1.0;
-            e = 2.0 * this.nextDouble() - 1.0;
-        } while ((f = MathHelper.square(d) + MathHelper.square(e)) >= 1.0 || f == 0.0);
-        double g = Math.sqrt(-2.0 * Math.log(f) / f);
-        this.nextNextGaussian = e * g;
-        this.hasNextGaussian = true;
-        return d * g;
+
+        @Override
+        public AbstractRandom createRandom(int x, int y, int z) {
+            long l = MathHelper.hashCode(x, y, z);
+            long m = l ^ this.seed;
+            return new AtomicSimpleRandom(m);
+        }
+
+        @Override
+        public AbstractRandom createRandom(String string) {
+            int i = string.hashCode();
+            return new AtomicSimpleRandom((long)i ^ this.seed);
+        }
     }
 }
 

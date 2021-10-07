@@ -68,7 +68,9 @@ import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import net.minecraft.world.gen.feature.SwampHutFeature;
 import net.minecraft.world.gen.feature.VillageFeature;
 import net.minecraft.world.gen.feature.WoodlandMansionFeature;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -183,7 +185,7 @@ public class StructureFeature<C extends FeatureConfig> {
         int i = config.getSpacing();
         int j = ChunkSectionPos.getSectionCoord(searchStartPos.getX());
         int k = ChunkSectionPos.getSectionCoord(searchStartPos.getZ());
-        ChunkRandom chunkRandom = new ChunkRandom();
+        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
         block0: for (int l = 0; l <= searchRadius; ++l) {
             for (int m = -l; m <= l; ++m) {
                 boolean bl = m == -l || m == l;
@@ -270,7 +272,7 @@ public class StructureFeature<C extends FeatureConfig> {
         ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, chunkRandom2, pos.x, pos.z);
         if (pos.x == chunkPos.x && pos.z == chunkPos.z && this.shouldStartAt(generator, biomeSource, worldSeed, chunkRandom2, pos, chunkPos, featureConfig, heightLimitView)) {
             class_6626 lv = new class_6626();
-            this.field_34929.generatePieces(lv, featureConfig, new class_6622.class_6623(dynamicRegistryManager, generator, manager, pos, predicate, heightLimitView, Util.make(new ChunkRandom(), chunkRandom -> chunkRandom.setCarverSeed(worldSeed, chunkPos.x, chunkPos.z)), worldSeed));
+            this.field_34929.generatePieces(lv, featureConfig, new class_6622.class_6623(dynamicRegistryManager, generator, manager, pos, predicate, heightLimitView, Util.make(new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed())), chunkRandom -> chunkRandom.setCarverSeed(worldSeed, chunkPos.x, chunkPos.z)), worldSeed));
             StructureStart structureStart = new StructureStart(this, pos, i, lv.method_38714());
             if (structureStart.hasChildren()) {
                 return structureStart;

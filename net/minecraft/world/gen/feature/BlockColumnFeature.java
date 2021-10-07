@@ -6,8 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.BlockColumnFeatureConfig;
@@ -23,7 +21,7 @@ extends Feature<BlockColumnFeatureConfig> {
     @Override
     public boolean generate(FeatureContext<BlockColumnFeatureConfig> context) {
         int l;
-        StructureWorldAccess worldAccess = context.getWorld();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockColumnFeatureConfig blockColumnFeatureConfig = context.getConfig();
         Random random = context.getRandom();
         int i = blockColumnFeatureConfig.layers().size();
@@ -38,14 +36,11 @@ extends Feature<BlockColumnFeatureConfig> {
         }
         BlockPos.Mutable mutable = context.getOrigin().mutableCopy();
         BlockPos.Mutable mutable2 = mutable.mutableCopy().move(blockColumnFeatureConfig.direction());
-        BlockState blockState = worldAccess.getBlockState(mutable);
         for (l = 0; l < j; ++l) {
-            BlockState blockState2 = blockState;
-            if (!(blockState2.isAir() || blockColumnFeatureConfig.allowWater() || blockState2.getFluidState().isIn(FluidTags.WATER))) {
+            if (!blockColumnFeatureConfig.allowedPlacement().test(structureWorldAccess, mutable2)) {
                 BlockColumnFeature.method_38906(is, j, l, blockColumnFeatureConfig.prioritizeTip());
                 break;
             }
-            blockState = worldAccess.getBlockState(mutable2);
             mutable2.move(blockColumnFeatureConfig.direction());
         }
         for (l = 0; l < i; ++l) {
@@ -53,7 +48,7 @@ extends Feature<BlockColumnFeatureConfig> {
             if (m == 0) continue;
             BlockColumnFeatureConfig.Layer layer = blockColumnFeatureConfig.layers().get(l);
             for (int n = 0; n < m; ++n) {
-                worldAccess.setBlockState(mutable, layer.state().getBlockState(random, mutable), Block.NOTIFY_LISTENERS);
+                structureWorldAccess.setBlockState(mutable, layer.state().getBlockState(random, mutable), Block.NOTIFY_LISTENERS);
                 mutable.move(blockColumnFeatureConfig.direction());
             }
         }
@@ -63,9 +58,9 @@ extends Feature<BlockColumnFeatureConfig> {
     private static void method_38906(int[] is, int i, int j, boolean bl) {
         int q;
         int k = i - j;
-        int l = bl ? -1 : 1;
-        int m = bl ? is.length - 1 : 0;
-        int n = bl ? -1 : is.length;
+        int l = bl ? 1 : -1;
+        int m = bl ? 0 : is.length - 1;
+        int n = bl ? is.length : -1;
         for (int o = m; o != n && k > 0; k -= q, o += l) {
             int p = is[o];
             q = Math.min(p, k);

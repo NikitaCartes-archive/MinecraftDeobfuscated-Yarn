@@ -90,26 +90,26 @@ public class BrewingRecipeRegistry {
         return false;
     }
 
-    public static ItemStack craft(ItemStack input, ItemStack ingredient) {
-        if (!ingredient.isEmpty()) {
+    public static ItemStack craft(ItemStack ingredient, ItemStack input) {
+        if (!input.isEmpty()) {
             Recipe<Object> recipe;
             int i;
-            Potion potion = PotionUtil.getPotion(ingredient);
-            Item item = ingredient.getItem();
+            Potion potion = PotionUtil.getPotion(input);
+            Item item = input.getItem();
             int j = ITEM_RECIPES.size();
             for (i = 0; i < j; ++i) {
                 recipe = ITEM_RECIPES.get(i);
-                if (recipe.input != item || !recipe.ingredient.test(input)) continue;
+                if (recipe.input != item || !recipe.ingredient.test(ingredient)) continue;
                 return PotionUtil.setPotion(new ItemStack((ItemConvertible)recipe.output), potion);
             }
             j = POTION_RECIPES.size();
             for (i = 0; i < j; ++i) {
                 recipe = POTION_RECIPES.get(i);
-                if (recipe.input != potion || !recipe.ingredient.test(input)) continue;
+                if (recipe.input != potion || !recipe.ingredient.test(ingredient)) continue;
                 return PotionUtil.setPotion(new ItemStack(item), (Potion)recipe.output);
             }
         }
-        return ingredient;
+        return input;
     }
 
     public static void registerDefaults() {

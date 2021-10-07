@@ -84,6 +84,7 @@ import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
+import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
@@ -301,6 +302,8 @@ extends PacketListener {
     public void onSetTradeOffers(SetTradeOffersS2CPacket var1);
 
     public void onChunkLoadDistance(ChunkLoadDistanceS2CPacket var1);
+
+    public void onSimulationDistance(SimulationDistanceS2CPacket var1);
 
     public void onChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket var1);
 

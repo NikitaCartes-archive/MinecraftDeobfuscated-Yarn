@@ -29,17 +29,17 @@ extends Task<LivingEntity> {
     protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
         Brain<?> brain = entity.getBrain();
         Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.MEETING_POINT);
-        return world.getRandom().nextInt(100) == 0 && optional.isPresent() && world.getRegistryKey() == optional.get().getDimension() && optional.get().getPos().isWithinDistance(entity.getPos(), 4.0) && brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().stream().anyMatch(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
+        return world.getRandom().nextInt(100) == 0 && optional.isPresent() && world.getRegistryKey() == optional.get().getDimension() && optional.get().getPos().isWithinDistance(entity.getPos(), 4.0) && brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().method_38981(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
     }
 
     @Override
     protected void run(ServerWorld world, LivingEntity entity, long time) {
         Brain<?> brain = entity.getBrain();
-        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> list.stream().filter(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType())).filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= 32.0).findFirst().ifPresent(livingEntity -> {
+        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).flatMap(arg -> arg.method_38975(livingEntity2 -> EntityType.VILLAGER.equals(livingEntity2.getType()) && livingEntity2.squaredDistanceTo(entity) <= 32.0)).ifPresent(livingEntity -> {
             brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
             brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)livingEntity, true));
             brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget((Entity)livingEntity, false), 0.3f, 1));
-        }));
+        });
     }
 }
 

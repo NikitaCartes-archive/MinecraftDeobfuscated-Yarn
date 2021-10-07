@@ -172,13 +172,13 @@ public class HoglinBrain {
         if (hoglin.getBrain().hasActivity(Activity.AVOID) && target.getType() == EntityType.PIGLIN) {
             return;
         }
-        if (!Sensor.testAttackableTargetPredicate(hoglin, target)) {
-            return;
-        }
         if (target.getType() == EntityType.HOGLIN) {
             return;
         }
         if (LookTargetUtil.isNewTargetTooFar(hoglin, target, 4.0)) {
+            return;
+        }
+        if (!Sensor.testAttackableTargetPredicate(hoglin, target)) {
             return;
         }
         HoglinBrain.setAttackTarget(hoglin, target);

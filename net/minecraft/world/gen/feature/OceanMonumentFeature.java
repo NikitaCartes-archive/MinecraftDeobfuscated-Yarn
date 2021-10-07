@@ -23,7 +23,9 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 
 public class OceanMonumentFeature
 extends StructureFeature<DefaultFeatureConfig> {
@@ -71,7 +73,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         if (arg.method_38708()) {
             return arg;
         }
-        ChunkRandom chunkRandom = new ChunkRandom();
+        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
         chunkRandom.setCarverSeed(l, chunkPos.x, chunkPos.z);
         StructurePiece structurePiece = OceanMonumentFeature.method_38681(chunkPos, chunkRandom);
         class_6626 lv = new class_6626();

@@ -3,12 +3,14 @@
  */
 package net.minecraft.world.chunk;
 
+import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.world.chunk.EntryMissingException;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
+import org.apache.commons.lang3.Validate;
 
 /**
  * A palette that stores the possible entries in an array and maps them
@@ -22,15 +24,20 @@ implements Palette<T> {
     private final int indexBits;
     private int size;
 
-    public ArrayPalette(IndexedIterable<T> idList, int bits, PaletteResizeListener<T> listener) {
+    public ArrayPalette(IndexedIterable<T> idList, int bits, PaletteResizeListener<T> listener, List<T> list) {
         this.idList = idList;
         this.array = new Object[1 << bits];
         this.indexBits = bits;
         this.listener = listener;
+        Validate.isTrue(list.size() <= this.array.length, "Can't initialize LinearPalette of size %d with %d entries", this.array.length, list.size());
+        for (int i = 0; i < list.size(); ++i) {
+            this.array[i] = list.get(i);
+        }
+        this.size = list.size();
     }
 
-    public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener) {
-        return new ArrayPalette<A>(idList, bits, listener);
+    public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list) {
+        return new ArrayPalette<A>(idList, bits, listener, list);
     }
 
     @Override

@@ -13,6 +13,7 @@ import java.util.Set;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -51,27 +52,31 @@ extends Sensor<LivingEntity> {
         int i = 0;
         ArrayList<AbstractPiglinEntity> list = Lists.newArrayList();
         ArrayList<AbstractPiglinEntity> list2 = Lists.newArrayList();
-        List list3 = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of());
-        for (LivingEntity livingEntity : list3) {
-            if (livingEntity instanceof HoglinEntity) {
-                HoglinEntity hoglinEntity = (HoglinEntity)livingEntity;
-                if (hoglinEntity.isBaby() && !optional3.isPresent()) {
+        class_6670 lv = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
+        for (LivingEntity livingEntity2 : lv.method_38978(livingEntity -> true)) {
+            LivingEntity livingEntity3 = livingEntity2;
+            if (livingEntity3 instanceof HoglinEntity) {
+                HoglinEntity hoglinEntity = (HoglinEntity)livingEntity3;
+                if (hoglinEntity.isBaby() && optional3.isEmpty()) {
                     optional3 = Optional.of(hoglinEntity);
                     continue;
                 }
                 if (!hoglinEntity.isAdult()) continue;
                 ++i;
-                if (optional2.isPresent() || !hoglinEntity.canBeHunted()) continue;
+                if (!optional2.isEmpty() || !hoglinEntity.canBeHunted()) continue;
                 optional2 = Optional.of(hoglinEntity);
                 continue;
             }
-            if (livingEntity instanceof PiglinBruteEntity) {
-                list.add((PiglinBruteEntity)livingEntity);
+            livingEntity3 = livingEntity2;
+            if (livingEntity3 instanceof PiglinBruteEntity) {
+                PiglinBruteEntity piglinBruteEntity = (PiglinBruteEntity)livingEntity3;
+                list.add(piglinBruteEntity);
                 continue;
             }
-            if (livingEntity instanceof PiglinEntity) {
-                PiglinEntity piglinEntity = (PiglinEntity)livingEntity;
-                if (piglinEntity.isBaby() && !optional4.isPresent()) {
+            livingEntity3 = livingEntity2;
+            if (livingEntity3 instanceof PiglinEntity) {
+                PiglinEntity piglinEntity = (PiglinEntity)livingEntity3;
+                if (piglinEntity.isBaby() && optional4.isEmpty()) {
                     optional4 = Optional.of(piglinEntity);
                     continue;
                 }
@@ -79,26 +84,29 @@ extends Sensor<LivingEntity> {
                 list.add(piglinEntity);
                 continue;
             }
-            if (livingEntity instanceof PlayerEntity) {
-                PlayerEntity playerEntity = (PlayerEntity)livingEntity;
-                if (!optional6.isPresent() && entity.canTarget(livingEntity) && !PiglinBrain.wearsGoldArmor(playerEntity)) {
+            livingEntity3 = livingEntity2;
+            if (livingEntity3 instanceof PlayerEntity) {
+                PlayerEntity playerEntity = (PlayerEntity)livingEntity3;
+                if (optional6.isEmpty() && !PiglinBrain.wearsGoldArmor(playerEntity) && entity.canTarget(livingEntity2)) {
                     optional6 = Optional.of(playerEntity);
                 }
-                if (optional7.isPresent() || playerEntity.isSpectator() || !PiglinBrain.isGoldHoldingPlayer(playerEntity)) continue;
+                if (!optional7.isEmpty() || playerEntity.isSpectator() || !PiglinBrain.isGoldHoldingPlayer(playerEntity)) continue;
                 optional7 = Optional.of(playerEntity);
                 continue;
             }
-            if (!optional.isPresent() && (livingEntity instanceof WitherSkeletonEntity || livingEntity instanceof WitherEntity)) {
-                optional = Optional.of((MobEntity)livingEntity);
+            if (optional.isEmpty() && (livingEntity2 instanceof WitherSkeletonEntity || livingEntity2 instanceof WitherEntity)) {
+                optional = Optional.of((MobEntity)livingEntity2);
                 continue;
             }
-            if (optional5.isPresent() || !PiglinBrain.isZombified(livingEntity.getType())) continue;
-            optional5 = Optional.of(livingEntity);
+            if (!optional5.isEmpty() || !PiglinBrain.isZombified(livingEntity2.getType())) continue;
+            optional5 = Optional.of(livingEntity2);
         }
-        List list4 = brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of());
-        for (LivingEntity livingEntity2 : list4) {
-            if (!(livingEntity2 instanceof AbstractPiglinEntity) || !((AbstractPiglinEntity)livingEntity2).isAdult()) continue;
-            list2.add((AbstractPiglinEntity)livingEntity2);
+        List list3 = brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of());
+        for (LivingEntity livingEntity2 : list3) {
+            AbstractPiglinEntity abstractPiglinEntity;
+            LivingEntity livingEntity4 = livingEntity2;
+            if (!(livingEntity4 instanceof AbstractPiglinEntity) || !(abstractPiglinEntity = (AbstractPiglinEntity)livingEntity4).isAdult()) continue;
+            list2.add(abstractPiglinEntity);
         }
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_NEMESIS, optional);
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, optional2);

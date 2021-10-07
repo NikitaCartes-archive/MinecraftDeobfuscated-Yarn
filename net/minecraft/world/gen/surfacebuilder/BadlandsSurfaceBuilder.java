@@ -14,6 +14,7 @@ import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
@@ -104,7 +105,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
             this.initLayerBlocks(seed);
         }
         if (this.seed != seed || this.heightCutoffNoise == null || this.heightNoise == null) {
-            ChunkRandom chunkRandom = new ChunkRandom(seed);
+            ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(seed));
             this.heightCutoffNoise = new OctaveSimplexNoiseSampler((AbstractRandom)chunkRandom, IntStream.rangeClosed(-3, 0));
             this.heightNoise = new OctaveSimplexNoiseSampler((AbstractRandom)chunkRandom, ImmutableList.of(Integer.valueOf(0)));
         }
@@ -125,7 +126,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         int i;
         this.layerBlocks = new BlockState[64];
         Arrays.fill(this.layerBlocks, TERRACOTTA);
-        ChunkRandom chunkRandom = new ChunkRandom(seed);
+        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(seed));
         this.layerNoise = new OctaveSimplexNoiseSampler((AbstractRandom)chunkRandom, ImmutableList.of(Integer.valueOf(0)));
         for (i = 0; i < 64; ++i) {
             if ((i += chunkRandom.nextInt(5) + 1) >= 64) continue;

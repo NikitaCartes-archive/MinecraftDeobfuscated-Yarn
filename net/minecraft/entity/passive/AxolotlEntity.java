@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
@@ -502,6 +503,10 @@ Bucketable {
     @Override
     public boolean canImmediatelyDespawn(double distanceSquared) {
         return !this.isFromBucket() && !this.hasCustomName();
+    }
+
+    public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
+        return world.getBlockState(pos).isOf(Blocks.WATER) && world.getBlockState(pos.down()).isOf(Blocks.CLAY);
     }
 
     static class AxolotlMoveControl

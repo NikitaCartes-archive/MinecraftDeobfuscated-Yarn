@@ -38,7 +38,6 @@ implements Nameable {
     private DyeColor baseColor;
     @Nullable
     private NbtList patternListTag;
-    private boolean patternListTagRead;
     @Nullable
     private List<Pair<BannerPattern, DyeColor>> patterns;
 
@@ -63,11 +62,14 @@ implements Nameable {
     }
 
     public void readFrom(ItemStack stack, DyeColor baseColor) {
-        this.patternListTag = BannerBlockEntity.getPatternListTag(stack);
         this.baseColor = baseColor;
+        this.method_38992(stack);
+    }
+
+    public void method_38992(ItemStack itemStack) {
+        this.patternListTag = BannerBlockEntity.getPatternListTag(itemStack);
         this.patterns = null;
-        this.patternListTagRead = true;
-        this.customName = stack.hasCustomName() ? stack.getName() : null;
+        this.customName = itemStack.hasCustomName() ? itemStack.getName() : null;
     }
 
     @Override
@@ -107,7 +109,6 @@ implements Nameable {
         }
         this.patternListTag = nbt.getList(PATTERNS_KEY, 10);
         this.patterns = null;
-        this.patternListTagRead = true;
     }
 
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
@@ -128,7 +129,7 @@ implements Nameable {
     }
 
     public List<Pair<BannerPattern, DyeColor>> getPatterns() {
-        if (this.patterns == null && this.patternListTagRead) {
+        if (this.patterns == null) {
             this.patterns = BannerBlockEntity.getPatternsFromNbt(this.baseColor, this.patternListTag);
         }
         return this.patterns;

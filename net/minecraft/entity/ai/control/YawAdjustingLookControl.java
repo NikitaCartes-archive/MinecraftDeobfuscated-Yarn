@@ -25,8 +25,8 @@ extends LookControl {
 
     @Override
     public void tick() {
-        if (this.pending) {
-            this.pending = false;
+        if (this.field_35103 > 0) {
+            --this.field_35103;
             this.getTargetYaw().ifPresent(yaw -> {
                 this.entity.headYaw = this.changeAngle(this.entity.headYaw, yaw.floatValue() + 20.0f, this.maxYawChange);
             });

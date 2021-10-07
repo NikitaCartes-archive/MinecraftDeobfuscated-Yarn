@@ -3,11 +3,13 @@
  */
 package net.minecraft.world.chunk;
 
+import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,9 +23,13 @@ implements Palette<T> {
     private T entry;
     private final PaletteResizeListener<T> listener;
 
-    public SingularPalette(IndexedIterable<T> idList, PaletteResizeListener<T> listener) {
+    public SingularPalette(IndexedIterable<T> idList, PaletteResizeListener<T> listener, List<T> list) {
         this.idList = idList;
         this.listener = listener;
+        if (list.size() > 0) {
+            Validate.isTrue(list.size() <= 1, "Can't initialize SingleValuePalette with %d values.", list.size());
+            this.entry = list.get(0);
+        }
     }
 
     /**
@@ -31,8 +37,8 @@ implements Palette<T> {
      * 
      * @param bitSize {@code 0}, as this palette has only 2<sup>0</sup>=1 entry
      */
-    public static <A> Palette<A> create(int bitSize, IndexedIterable<A> idList, PaletteResizeListener<A> listener) {
-        return new SingularPalette<A>(idList, listener);
+    public static <A> Palette<A> create(int bitSize, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list) {
+        return new SingularPalette<A>(idList, listener, list);
     }
 
     @Override

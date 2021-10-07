@@ -4,32 +4,28 @@
 package net.minecraft.world.gen.blockpredicate;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
+import net.minecraft.world.gen.blockpredicate.OffsetPredicate;
 
 class ReplaceableBlockPredicate
-implements BlockPredicate {
-    public static final ReplaceableBlockPredicate INSTANCE = new ReplaceableBlockPredicate();
-    public static final Codec<ReplaceableBlockPredicate> CODEC = Codec.unit(() -> INSTANCE);
+extends OffsetPredicate {
+    public static final Codec<ReplaceableBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> ReplaceableBlockPredicate.method_39013(instance).apply(instance, ReplaceableBlockPredicate::new));
 
-    private ReplaceableBlockPredicate() {
+    public ReplaceableBlockPredicate(BlockPos blockPos) {
+        super(blockPos);
     }
 
     @Override
-    public boolean test(StructureWorldAccess structureWorldAccess, BlockPos blockPos) {
-        return structureWorldAccess.getBlockState(blockPos).getMaterial().isReplaceable();
+    protected boolean test(BlockState state) {
+        return state.getMaterial().isReplaceable();
     }
 
     @Override
     public BlockPredicateType<?> getType() {
         return BlockPredicateType.REPLACEABLE;
-    }
-
-    @Override
-    public /* synthetic */ boolean test(Object world, Object pos) {
-        return this.test((StructureWorldAccess)world, (BlockPos)pos);
     }
 }
 

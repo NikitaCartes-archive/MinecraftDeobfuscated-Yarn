@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.chunk;
 
+import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
@@ -72,7 +73,7 @@ public interface Palette<T> {
     public int getSize();
 
     public static interface Factory {
-        public <A> Palette<A> create(int var1, IndexedIterable<A> var2, PaletteResizeListener<A> var3);
+        public <A> Palette<A> create(int var1, IndexedIterable<A> var2, PaletteResizeListener<A> var3, List<A> var4);
     }
 }
 
