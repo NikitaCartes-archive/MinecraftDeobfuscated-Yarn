@@ -28,6 +28,7 @@ public final class GameJoinS2CPacket extends Record implements Packet {
 	private final long sha256Seed;
 	private final int maxPlayers;
 	private final int viewDistance;
+	private final int simulationDistance;
 	private final boolean reducedDebugInfo;
 	private final boolean showDeathScreen;
 	private final boolean debugWorld;
@@ -44,6 +45,7 @@ public final class GameJoinS2CPacket extends Record implements Packet {
 			(DimensionType)((Supplier)buf.decode(DimensionType.REGISTRY_CODEC)).get(),
 			RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier()),
 			buf.readLong(),
+			buf.readVarInt(),
 			buf.readVarInt(),
 			buf.readVarInt(),
 			buf.readBoolean(),
@@ -65,10 +67,11 @@ public final class GameJoinS2CPacket extends Record implements Packet {
 		long l,
 		int maxPlayers,
 		int chunkLoadDistance,
-		boolean reducedDebugInfo,
-		boolean showDeathScreen,
-		boolean debugWorld,
-		boolean flatWorld
+		int i,
+		boolean bl2,
+		boolean bl3,
+		boolean bl4,
+		boolean bl5
 	) {
 		this.playerEntityId = playerEntityId;
 		this.hardcore = bl;
@@ -81,10 +84,11 @@ public final class GameJoinS2CPacket extends Record implements Packet {
 		this.sha256Seed = l;
 		this.maxPlayers = maxPlayers;
 		this.viewDistance = chunkLoadDistance;
-		this.reducedDebugInfo = reducedDebugInfo;
-		this.showDeathScreen = showDeathScreen;
-		this.debugWorld = debugWorld;
-		this.flatWorld = flatWorld;
+		this.simulationDistance = i;
+		this.reducedDebugInfo = bl2;
+		this.showDeathScreen = bl3;
+		this.debugWorld = bl4;
+		this.flatWorld = bl5;
 	}
 
 	@Override
@@ -100,6 +104,7 @@ public final class GameJoinS2CPacket extends Record implements Packet {
 		buf.writeLong(this.sha256Seed);
 		buf.writeVarInt(this.maxPlayers);
 		buf.writeVarInt(this.viewDistance);
+		buf.writeVarInt(this.simulationDistance);
 		buf.writeBoolean(this.reducedDebugInfo);
 		buf.writeBoolean(this.showDeathScreen);
 		buf.writeBoolean(this.debugWorld);
@@ -111,19 +116,19 @@ public final class GameJoinS2CPacket extends Record implements Packet {
 	}
 
 	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",GameJoinS2CPacket,"playerId;hardcore;gameType;previousGameType;levels;registryHolder;dimensionType;dimension;seed;maxPlayers;chunkRadius;reducedDebugInfo;showDeathScreen;isDebug;isFlat",GameJoinS2CPacket::playerEntityId,GameJoinS2CPacket::hardcore,GameJoinS2CPacket::gameMode,GameJoinS2CPacket::previousGameMode,GameJoinS2CPacket::dimensionIds,GameJoinS2CPacket::registryManager,GameJoinS2CPacket::dimensionType,GameJoinS2CPacket::dimensionId,GameJoinS2CPacket::sha256Seed,GameJoinS2CPacket::maxPlayers,GameJoinS2CPacket::viewDistance,GameJoinS2CPacket::reducedDebugInfo,GameJoinS2CPacket::showDeathScreen,GameJoinS2CPacket::debugWorld,GameJoinS2CPacket::flatWorld>(
+		return ObjectMethods.bootstrap<"toString",GameJoinS2CPacket,"playerId;hardcore;gameType;previousGameType;levels;registryHolder;dimensionType;dimension;seed;maxPlayers;chunkRadius;simulationDistance;reducedDebugInfo;showDeathScreen;isDebug;isFlat",GameJoinS2CPacket::playerEntityId,GameJoinS2CPacket::hardcore,GameJoinS2CPacket::gameMode,GameJoinS2CPacket::previousGameMode,GameJoinS2CPacket::dimensionIds,GameJoinS2CPacket::registryManager,GameJoinS2CPacket::dimensionType,GameJoinS2CPacket::dimensionId,GameJoinS2CPacket::sha256Seed,GameJoinS2CPacket::maxPlayers,GameJoinS2CPacket::viewDistance,GameJoinS2CPacket::simulationDistance,GameJoinS2CPacket::reducedDebugInfo,GameJoinS2CPacket::showDeathScreen,GameJoinS2CPacket::debugWorld,GameJoinS2CPacket::flatWorld>(
 			this
 		);
 	}
 
 	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",GameJoinS2CPacket,"playerId;hardcore;gameType;previousGameType;levels;registryHolder;dimensionType;dimension;seed;maxPlayers;chunkRadius;reducedDebugInfo;showDeathScreen;isDebug;isFlat",GameJoinS2CPacket::playerEntityId,GameJoinS2CPacket::hardcore,GameJoinS2CPacket::gameMode,GameJoinS2CPacket::previousGameMode,GameJoinS2CPacket::dimensionIds,GameJoinS2CPacket::registryManager,GameJoinS2CPacket::dimensionType,GameJoinS2CPacket::dimensionId,GameJoinS2CPacket::sha256Seed,GameJoinS2CPacket::maxPlayers,GameJoinS2CPacket::viewDistance,GameJoinS2CPacket::reducedDebugInfo,GameJoinS2CPacket::showDeathScreen,GameJoinS2CPacket::debugWorld,GameJoinS2CPacket::flatWorld>(
+		return ObjectMethods.bootstrap<"hashCode",GameJoinS2CPacket,"playerId;hardcore;gameType;previousGameType;levels;registryHolder;dimensionType;dimension;seed;maxPlayers;chunkRadius;simulationDistance;reducedDebugInfo;showDeathScreen;isDebug;isFlat",GameJoinS2CPacket::playerEntityId,GameJoinS2CPacket::hardcore,GameJoinS2CPacket::gameMode,GameJoinS2CPacket::previousGameMode,GameJoinS2CPacket::dimensionIds,GameJoinS2CPacket::registryManager,GameJoinS2CPacket::dimensionType,GameJoinS2CPacket::dimensionId,GameJoinS2CPacket::sha256Seed,GameJoinS2CPacket::maxPlayers,GameJoinS2CPacket::viewDistance,GameJoinS2CPacket::simulationDistance,GameJoinS2CPacket::reducedDebugInfo,GameJoinS2CPacket::showDeathScreen,GameJoinS2CPacket::debugWorld,GameJoinS2CPacket::flatWorld>(
 			this
 		);
 	}
 
 	public final boolean equals(Object object) {
-		return ObjectMethods.bootstrap<"equals",GameJoinS2CPacket,"playerId;hardcore;gameType;previousGameType;levels;registryHolder;dimensionType;dimension;seed;maxPlayers;chunkRadius;reducedDebugInfo;showDeathScreen;isDebug;isFlat",GameJoinS2CPacket::playerEntityId,GameJoinS2CPacket::hardcore,GameJoinS2CPacket::gameMode,GameJoinS2CPacket::previousGameMode,GameJoinS2CPacket::dimensionIds,GameJoinS2CPacket::registryManager,GameJoinS2CPacket::dimensionType,GameJoinS2CPacket::dimensionId,GameJoinS2CPacket::sha256Seed,GameJoinS2CPacket::maxPlayers,GameJoinS2CPacket::viewDistance,GameJoinS2CPacket::reducedDebugInfo,GameJoinS2CPacket::showDeathScreen,GameJoinS2CPacket::debugWorld,GameJoinS2CPacket::flatWorld>(
+		return ObjectMethods.bootstrap<"equals",GameJoinS2CPacket,"playerId;hardcore;gameType;previousGameType;levels;registryHolder;dimensionType;dimension;seed;maxPlayers;chunkRadius;simulationDistance;reducedDebugInfo;showDeathScreen;isDebug;isFlat",GameJoinS2CPacket::playerEntityId,GameJoinS2CPacket::hardcore,GameJoinS2CPacket::gameMode,GameJoinS2CPacket::previousGameMode,GameJoinS2CPacket::dimensionIds,GameJoinS2CPacket::registryManager,GameJoinS2CPacket::dimensionType,GameJoinS2CPacket::dimensionId,GameJoinS2CPacket::sha256Seed,GameJoinS2CPacket::maxPlayers,GameJoinS2CPacket::viewDistance,GameJoinS2CPacket::simulationDistance,GameJoinS2CPacket::reducedDebugInfo,GameJoinS2CPacket::showDeathScreen,GameJoinS2CPacket::debugWorld,GameJoinS2CPacket::flatWorld>(
 			this, object
 		);
 	}
@@ -171,6 +176,10 @@ public final class GameJoinS2CPacket extends Record implements Packet {
 
 	public int viewDistance() {
 		return this.viewDistance;
+	}
+
+	public int simulationDistance() {
+		return this.simulationDistance;
 	}
 
 	public boolean reducedDebugInfo() {

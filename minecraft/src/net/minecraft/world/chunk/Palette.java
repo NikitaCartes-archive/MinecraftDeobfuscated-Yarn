@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
@@ -82,6 +83,6 @@ public interface Palette<T> {
 		 * @param listener the resize listener, called when this palette runs out of capacity when
 		 * assigning index to new entries
 		 */
-		<A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener);
+		<A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list);
 	}
 }

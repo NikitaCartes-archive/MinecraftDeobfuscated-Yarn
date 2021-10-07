@@ -206,6 +206,7 @@ import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
+import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
@@ -300,6 +301,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private TagManager tagManager = TagManager.EMPTY;
 	private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
 	private int chunkLoadDistance = 3;
+	private int simulationDistance = 3;
 	private final Random random = new Random();
 	private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher<>();
 	private final RecipeManager recipeManager = new RecipeManager();
@@ -345,12 +347,22 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		RegistryKey<World> registryKey = packet.dimensionId();
 		DimensionType dimensionType = packet.dimensionType();
 		this.chunkLoadDistance = packet.viewDistance();
+		this.simulationDistance = packet.simulationDistance();
 		boolean bl = packet.debugWorld();
 		boolean bl2 = packet.flatWorld();
 		ClientWorld.Properties properties = new ClientWorld.Properties(Difficulty.NORMAL, packet.hardcore(), bl2);
 		this.worldProperties = properties;
 		this.world = new ClientWorld(
-			this, properties, registryKey, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.sha256Seed()
+			this,
+			properties,
+			registryKey,
+			dimensionType,
+			this.chunkLoadDistance,
+			this.simulationDistance,
+			this.client::getProfiler,
+			this.client.worldRenderer,
+			bl,
+			packet.sha256Seed()
 		);
 		this.client.joinWorld(this.world);
 		if (this.client.player == null) {
@@ -615,8 +627,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onChunkData(ChunkDataS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.method_38539(packet.getX(), packet.getZ(), packet.method_38598());
-		this.method_38540(packet.getX(), packet.getZ(), packet.method_38599());
+		this.method_38539(packet.getX(), packet.getZ(), packet.getChunkData());
+		this.method_38540(packet.getX(), packet.getZ(), packet.getLightData());
 	}
 
 	private void method_38539(int i, int j, ChunkData chunkData) {
@@ -914,7 +926,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
 			this.worldProperties = properties;
 			this.world = new ClientWorld(
-				this, properties, registryKey, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed()
+				this,
+				properties,
+				registryKey,
+				dimensionType,
+				this.chunkLoadDistance,
+				this.simulationDistance,
+				this.client::getProfiler,
+				this.client.worldRenderer,
+				bl,
+				packet.getSha256Seed()
 			);
 			this.world.setScoreboard(scoreboard);
 			this.world.putMapStates(map);
@@ -2188,6 +2209,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.chunkLoadDistance = packet.getDistance();
 		this.client.options.setServerViewDistance(this.chunkLoadDistance);
 		this.world.getChunkManager().updateLoadDistance(packet.getDistance());
+	}
+
+	@Override
+	public void onSimulationDistance(SimulationDistanceS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.simulationDistance = packet.simulationDistance();
+		this.world.setSimulationDistance(this.simulationDistance);
 	}
 
 	@Override

@@ -1,12 +1,10 @@
 package net.minecraft.block.entity;
 
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +17,6 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	private boolean powered;
 	private boolean auto;
 	private boolean conditionMet;
-	private boolean needsUpdatePacket;
 	private final CommandBlockExecutor commandExecutor = new CommandBlockExecutor() {
 		@Override
 		public void setCommand(String command) {
@@ -79,16 +76,6 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		this.powered = nbt.getBoolean("powered");
 		this.conditionMet = nbt.getBoolean("conditionMet");
 		this.setAuto(nbt.getBoolean("auto"));
-	}
-
-	@Nullable
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		if (this.needsUpdatePacket()) {
-			this.setNeedsUpdatePacket(false);
-			return BlockEntityUpdateS2CPacket.create(this);
-		} else {
-			return null;
-		}
 	}
 
 	@Override
@@ -152,14 +139,6 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		}
 
 		return this.conditionMet;
-	}
-
-	public boolean needsUpdatePacket() {
-		return this.needsUpdatePacket;
-	}
-
-	public void setNeedsUpdatePacket(boolean needsUpdatePacket) {
-		this.needsUpdatePacket = needsUpdatePacket;
 	}
 
 	public CommandBlockBlockEntity.Type getCommandBlockType() {

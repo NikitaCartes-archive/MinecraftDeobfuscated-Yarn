@@ -3,9 +3,7 @@ package net.minecraft.world.gen.random;
 public interface AbstractRandom {
 	AbstractRandom derive();
 
-	default BlockPosRandomDeriver createBlockPosRandomDeriver() {
-		return new BlockPosRandomDeriver(this.nextLong());
-	}
+	RandomDeriver createBlockPosRandomDeriver();
 
 	void setSeed(long seed);
 

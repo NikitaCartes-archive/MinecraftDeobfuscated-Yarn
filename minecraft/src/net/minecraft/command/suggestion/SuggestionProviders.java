@@ -20,27 +20,23 @@ public class SuggestionProviders {
 	private static final Map<Identifier, SuggestionProvider<CommandSource>> REGISTRY = Maps.<Identifier, SuggestionProvider<CommandSource>>newHashMap();
 	private static final Identifier ASK_SERVER_NAME = new Identifier("ask_server");
 	public static final SuggestionProvider<CommandSource> ASK_SERVER = register(
-		ASK_SERVER_NAME, (commandContext, suggestionsBuilder) -> commandContext.getSource().getCompletions(commandContext, suggestionsBuilder)
+		ASK_SERVER_NAME, (context, builder) -> context.getSource().getCompletions(context, builder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> ALL_RECIPES = register(
-		new Identifier("all_recipes"),
-		(commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(commandContext.getSource().getRecipeIds(), suggestionsBuilder)
+		new Identifier("all_recipes"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRecipeIds(), builder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> AVAILABLE_SOUNDS = register(
-		new Identifier("available_sounds"),
-		(commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(commandContext.getSource().getSoundIds(), suggestionsBuilder)
+		new Identifier("available_sounds"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getSoundIds(), builder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> ALL_BIOMES = register(
 		new Identifier("available_biomes"),
-		(commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(
-				commandContext.getSource().getRegistryManager().get(Registry.BIOME_KEY).getIds(), suggestionsBuilder
-			)
+		(context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRegistryManager().get(Registry.BIOME_KEY).getIds(), builder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = register(
 		new Identifier("summonable_entities"),
-		(commandContext, suggestionsBuilder) -> CommandSource.suggestFromIdentifier(
+		(context, builder) -> CommandSource.suggestFromIdentifier(
 				Registry.ENTITY_TYPE.stream().filter(EntityType::isSummonable),
-				suggestionsBuilder,
+				builder,
 				EntityType::getId,
 				entityType -> new TranslatableText(Util.createTranslationKey("entity", EntityType.getId(entityType)))
 			)
@@ -71,14 +67,14 @@ public class SuggestionProviders {
 		private final SuggestionProvider<CommandSource> provider;
 		final Identifier name;
 
-		public LocalProvider(Identifier name, SuggestionProvider<CommandSource> suggestionProvider) {
-			this.provider = suggestionProvider;
+		public LocalProvider(Identifier name, SuggestionProvider<CommandSource> provider) {
+			this.provider = provider;
 			this.name = name;
 		}
 
 		@Override
-		public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSource> commandContext, SuggestionsBuilder suggestionsBuilder) throws CommandSyntaxException {
-			return this.provider.getSuggestions(commandContext, suggestionsBuilder);
+		public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+			return this.provider.getSuggestions(context, builder);
 		}
 	}
 }

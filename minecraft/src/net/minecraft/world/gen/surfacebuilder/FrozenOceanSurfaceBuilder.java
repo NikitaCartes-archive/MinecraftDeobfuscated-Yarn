@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.BlockColumn;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
@@ -135,7 +136,7 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 	@Override
 	public void initSeed(long seed) {
 		if (this.seed != seed || this.icebergNoise == null || this.icebergCutoffNoise == null) {
-			ChunkRandom chunkRandom = new ChunkRandom(seed);
+			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(seed));
 			this.icebergNoise = new OctaveSimplexNoiseSampler(chunkRandom, IntStream.rangeClosed(-3, 0));
 			this.icebergCutoffNoise = new OctaveSimplexNoiseSampler(chunkRandom, ImmutableList.of(0));
 		}

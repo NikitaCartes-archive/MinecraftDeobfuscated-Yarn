@@ -3,6 +3,7 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DyeColor;
@@ -30,11 +31,10 @@ public abstract class AbstractBannerBlock extends BlockWithEntity {
 
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-		if (itemStack.hasCustomName()) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof BannerBlockEntity) {
-				((BannerBlockEntity)blockEntity).setCustomName(itemStack.getName());
-			}
+		if (world.isClient) {
+			world.getBlockEntity(pos, BlockEntityType.BANNER).ifPresent(bannerBlockEntity -> bannerBlockEntity.method_38992(itemStack));
+		} else if (itemStack.hasCustomName()) {
+			world.getBlockEntity(pos, BlockEntityType.BANNER).ifPresent(bannerBlockEntity -> bannerBlockEntity.setCustomName(itemStack.getName()));
 		}
 	}
 

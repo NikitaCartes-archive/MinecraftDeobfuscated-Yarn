@@ -90,6 +90,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -161,6 +162,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public double prevZ;
 	private Vec3d pos;
 	private BlockPos blockPos;
+	private ChunkPos field_35101;
 	private Vec3d velocity = Vec3d.ZERO;
 	private float yaw;
 	private float pitch;
@@ -245,6 +247,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.dimensions = type.getDimensions();
 		this.pos = Vec3d.ZERO;
 		this.blockPos = BlockPos.ORIGIN;
+		this.field_35101 = ChunkPos.field_35107;
 		this.trackedPosition = Vec3d.ZERO;
 		this.dataTracker = new DataTracker(this);
 		this.dataTracker.startTracking(FLAGS, (byte)0);
@@ -3082,7 +3085,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public ChunkPos getChunkPos() {
-		return new ChunkPos(this.blockPos);
+		return this.field_35101;
 	}
 
 	public Vec3d getVelocity() {
@@ -3157,6 +3160,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			int k = MathHelper.floor(z);
 			if (i != this.blockPos.getX() || j != this.blockPos.getY() || k != this.blockPos.getZ()) {
 				this.blockPos = new BlockPos(i, j, k);
+				if (ChunkSectionPos.getSectionCoord(i) != this.field_35101.x || ChunkSectionPos.getSectionCoord(k) != this.field_35101.z) {
+					this.field_35101 = new ChunkPos(this.blockPos);
+				}
 			}
 
 			this.entityChangeListener.updateEntityPosition();

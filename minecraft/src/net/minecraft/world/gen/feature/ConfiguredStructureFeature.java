@@ -15,7 +15,9 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
 	public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE
@@ -58,7 +60,7 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 				worldSeed,
 				chunkPos,
 				i,
-				new ChunkRandom(),
+				new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed())),
 				structureConfig,
 				this.config,
 				heightLimitView,

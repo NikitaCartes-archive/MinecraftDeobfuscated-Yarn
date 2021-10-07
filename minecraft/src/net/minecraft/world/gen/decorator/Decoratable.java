@@ -83,10 +83,14 @@ public interface Decoratable<R> {
 	}
 
 	default R method_38670(Block block) {
-		return this.decorate(Decorator.BLOCK_SURVIVES_FILTER.configure(new BlockSurvivesFilterDecoratorConfig(block.getDefaultState())));
+		return this.method_38994(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN));
 	}
 
 	default R method_38872() {
-		return this.decorate(Decorator.BLOCK_FILTER.configure(new BlockFilterDecoratorConfig(BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN))));
+		return this.method_38994(BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN));
+	}
+
+	default R method_38994(BlockPredicate blockPredicate) {
+		return this.decorate(Decorator.BLOCK_FILTER.configure(new BlockFilterDecoratorConfig(blockPredicate)));
 	}
 }

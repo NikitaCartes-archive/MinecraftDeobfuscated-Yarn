@@ -16,7 +16,9 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
 	public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
@@ -73,7 +75,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		if (arg.method_38708()) {
 			return arg;
 		} else {
-			ChunkRandom chunkRandom = new ChunkRandom();
+			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
 			chunkRandom.setCarverSeed(l, chunkPos.x, chunkPos.z);
 			StructurePiece structurePiece = method_38681(chunkPos, chunkRandom);
 			class_6626 lv = new class_6626();

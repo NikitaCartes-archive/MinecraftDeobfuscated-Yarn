@@ -4,59 +4,45 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.lang.runtime.ObjectMethods;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.registry.Registry;
 
 public final class RandomPatchFeatureConfig extends Record implements FeatureConfig {
 	private final int tries;
 	private final int xzSpread;
 	private final int ySpread;
-	private final Set<Block> allowedOn;
-	private final Set<BlockState> disallowedOn;
-	private final boolean onlyInAir;
 	private final Supplier<ConfiguredFeature<?, ?>> feature;
 	public static final Codec<RandomPatchFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.POSITIVE_INT.fieldOf("tries").orElse(128).forGetter(RandomPatchFeatureConfig::tries),
 					Codecs.NONNEGATIVE_INT.fieldOf("xz_spread").orElse(7).forGetter(RandomPatchFeatureConfig::xzSpread),
 					Codecs.NONNEGATIVE_INT.fieldOf("y_spread").orElse(3).forGetter(RandomPatchFeatureConfig::ySpread),
-					Registry.BLOCK.listOf().xmap(Set::copyOf, List::copyOf).fieldOf("allowed_on").forGetter(RandomPatchFeatureConfig::allowedOn),
-					BlockState.CODEC.listOf().xmap(Set::copyOf, List::copyOf).fieldOf("disallowed_on").forGetter(RandomPatchFeatureConfig::disallowedOn),
-					Codec.BOOL.fieldOf("only_in_air").forGetter(RandomPatchFeatureConfig::onlyInAir),
 					ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(RandomPatchFeatureConfig::feature)
 				)
 				.apply(instance, RandomPatchFeatureConfig::new)
 	);
 
-	public RandomPatchFeatureConfig(int i, int j, int k, Set<Block> blacklist, Set<BlockState> set, boolean bl, Supplier<ConfiguredFeature<?, ?>> supplier) {
+	public RandomPatchFeatureConfig(int i, int j, int k, Supplier<ConfiguredFeature<?, ?>> supplier) {
 		this.tries = i;
 		this.xzSpread = j;
 		this.ySpread = k;
-		this.allowedOn = blacklist;
-		this.disallowedOn = set;
-		this.onlyInAir = bl;
 		this.feature = supplier;
 	}
 
 	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",RandomPatchFeatureConfig,"tries;xzSpread;ySpread;allowedOn;disallowedOn;onlyInAir;feature",RandomPatchFeatureConfig::tries,RandomPatchFeatureConfig::xzSpread,RandomPatchFeatureConfig::ySpread,RandomPatchFeatureConfig::allowedOn,RandomPatchFeatureConfig::disallowedOn,RandomPatchFeatureConfig::onlyInAir,RandomPatchFeatureConfig::feature>(
+		return ObjectMethods.bootstrap<"toString",RandomPatchFeatureConfig,"tries;xzSpread;ySpread;feature",RandomPatchFeatureConfig::tries,RandomPatchFeatureConfig::xzSpread,RandomPatchFeatureConfig::ySpread,RandomPatchFeatureConfig::feature>(
 			this
 		);
 	}
 
 	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",RandomPatchFeatureConfig,"tries;xzSpread;ySpread;allowedOn;disallowedOn;onlyInAir;feature",RandomPatchFeatureConfig::tries,RandomPatchFeatureConfig::xzSpread,RandomPatchFeatureConfig::ySpread,RandomPatchFeatureConfig::allowedOn,RandomPatchFeatureConfig::disallowedOn,RandomPatchFeatureConfig::onlyInAir,RandomPatchFeatureConfig::feature>(
+		return ObjectMethods.bootstrap<"hashCode",RandomPatchFeatureConfig,"tries;xzSpread;ySpread;feature",RandomPatchFeatureConfig::tries,RandomPatchFeatureConfig::xzSpread,RandomPatchFeatureConfig::ySpread,RandomPatchFeatureConfig::feature>(
 			this
 		);
 	}
 
 	public final boolean equals(Object object) {
-		return ObjectMethods.bootstrap<"equals",RandomPatchFeatureConfig,"tries;xzSpread;ySpread;allowedOn;disallowedOn;onlyInAir;feature",RandomPatchFeatureConfig::tries,RandomPatchFeatureConfig::xzSpread,RandomPatchFeatureConfig::ySpread,RandomPatchFeatureConfig::allowedOn,RandomPatchFeatureConfig::disallowedOn,RandomPatchFeatureConfig::onlyInAir,RandomPatchFeatureConfig::feature>(
+		return ObjectMethods.bootstrap<"equals",RandomPatchFeatureConfig,"tries;xzSpread;ySpread;feature",RandomPatchFeatureConfig::tries,RandomPatchFeatureConfig::xzSpread,RandomPatchFeatureConfig::ySpread,RandomPatchFeatureConfig::feature>(
 			this, object
 		);
 	}
@@ -71,18 +57,6 @@ public final class RandomPatchFeatureConfig extends Record implements FeatureCon
 
 	public int ySpread() {
 		return this.ySpread;
-	}
-
-	public Set<Block> allowedOn() {
-		return this.allowedOn;
-	}
-
-	public Set<BlockState> disallowedOn() {
-		return this.disallowedOn;
-	}
-
-	public boolean onlyInAir() {
-		return this.onlyInAir;
 	}
 
 	public Supplier<ConfiguredFeature<?, ?>> feature() {

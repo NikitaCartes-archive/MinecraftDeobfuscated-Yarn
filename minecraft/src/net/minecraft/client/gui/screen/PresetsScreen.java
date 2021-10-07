@@ -296,7 +296,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.tunnelers_dream"),
 			Blocks.STONE,
-			BiomeKeys.MOUNTAINS,
+			BiomeKeys.WINDSWEPT_HILLS,
 			Arrays.asList(StructureFeature.MINESHAFT),
 			true,
 			true,
@@ -336,7 +336,7 @@ public class PresetsScreen extends Screen {
 		addPreset(
 			new TranslatableText("createWorld.customize.preset.snowy_kingdom"),
 			Blocks.SNOW,
-			BiomeKeys.SNOWY_TUNDRA,
+			BiomeKeys.SNOWY_PLAINS,
 			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.IGLOO),
 			false,
 			false,

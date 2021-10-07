@@ -86,17 +86,12 @@ public class LookAtEntityGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.lookTime = 40 + this.mob.getRandom().nextInt(40);
+		this.lookTime = this.getTickCount(40 + this.mob.getRandom().nextInt(40));
 	}
 
 	@Override
 	public void stop() {
 		this.target = null;
-	}
-
-	@Override
-	public boolean shouldRunEveryTick() {
-		return true;
 	}
 
 	@Override

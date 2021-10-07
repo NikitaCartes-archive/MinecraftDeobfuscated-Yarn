@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.BlockColumn;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
@@ -89,7 +90,7 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	@Override
 	public void initSeed(long seed) {
 		if (this.seed != seed || this.noise == null) {
-			this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(seed), IntStream.rangeClosed(-3, 0));
+			this.noise = new OctavePerlinNoiseSampler(new ChunkRandom(new AtomicSimpleRandom(seed)), IntStream.rangeClosed(-3, 0));
 		}
 
 		this.seed = seed;

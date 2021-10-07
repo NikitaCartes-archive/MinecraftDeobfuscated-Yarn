@@ -268,7 +268,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			applyExplosionDecay(
 				ore,
 				ItemEntry.builder(Items.RAW_COPPER)
-					.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 3.0F)))
+					.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 5.0F)))
 					.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
 			)
 		);

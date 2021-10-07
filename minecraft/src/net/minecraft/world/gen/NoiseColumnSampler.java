@@ -24,8 +24,8 @@ import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import net.minecraft.world.gen.random.AbstractRandom;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
-import net.minecraft.world.gen.random.BlockPosRandomDeriver;
+import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomDeriver;
 
 /**
  * Samples noise values for use in chunk generation.
@@ -55,9 +55,10 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 	private final double densityOffset;
 	private final int field_34682;
 	private final DoublePerlinNoiseSampler field_34683;
-	private final DoublePerlinNoiseSampler field_34684;
+	private final DoublePerlinNoiseSampler field_35131;
+	private final DoublePerlinNoiseSampler field_35132;
 	private final DoublePerlinNoiseSampler field_34685;
-	private final BlockPosRandomDeriver field_34686;
+	private final RandomDeriver field_34686;
 	private final NoiseSampler noiseSampler;
 	private final DoublePerlinNoiseSampler field_34633;
 	private final DoublePerlinNoiseSampler field_34634;
@@ -87,7 +88,7 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 	private final ChunkNoiseSampler.ValueSamplerFactory oreFrequencyNoiseSampler;
 	private final ChunkNoiseSampler.ValueSamplerFactory firstOrePlacementNoiseSampler;
 	private final ChunkNoiseSampler.ValueSamplerFactory secondOrePlacementNoiseSampler;
-	private final BlockPosRandomDeriver field_34662;
+	private final RandomDeriver field_34662;
 	private final ChunkNoiseSampler.ValueSamplerFactory noodleCavesFrequencyNoiseSampler;
 	private final ChunkNoiseSampler.ValueSamplerFactory noodleCavesWeightReducingNoiseSampler;
 	private final ChunkNoiseSampler.ValueSamplerFactory noodleCavesFirstWeightNoiseSampler;
@@ -101,7 +102,8 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		GenerationShapeConfig config,
 		MultiNoiseParameters noiseParameters,
 		boolean hasNoiseCaves,
-		long seed
+		long seed,
+		ChunkRandom.RandomProvider randomProvider
 	) {
 		this.verticalNoiseResolution = verticalNoiseResolution;
 		this.noiseSizeY = noiseSizeY;
@@ -110,15 +112,15 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		this.densityOffset = config.getDensityOffset();
 		int i = config.getMinimumY();
 		this.field_34682 = MathHelper.floorDiv(i, verticalNoiseResolution);
-		AbstractRandom abstractRandom = new AtomicSimpleRandom(seed);
-		AbstractRandom abstractRandom2 = new AtomicSimpleRandom(seed);
+		AbstractRandom abstractRandom = randomProvider.create(seed);
+		AbstractRandom abstractRandom2 = randomProvider.create(seed);
 		AbstractRandom abstractRandom3 = config.method_38413() ? abstractRandom2 : abstractRandom.derive();
 		this.noise = new InterpolatedNoiseSampler(abstractRandom3, config.getSampling(), horizontalNoiseResolution, verticalNoiseResolution);
 		this.noiseSampler = (NoiseSampler)(config.hasSimplexSurfaceNoise()
 			? new OctaveSimplexNoiseSampler(abstractRandom2, IntStream.rangeClosed(-3, 0))
 			: new OctavePerlinNoiseSampler(abstractRandom2, IntStream.rangeClosed(-3, 0)));
 		if (config.hasIslandNoiseOverride()) {
-			AbstractRandom abstractRandom4 = new AtomicSimpleRandom(seed);
+			AbstractRandom abstractRandom4 = randomProvider.create(seed);
 			abstractRandom4.skip(17292);
 			this.islandNoise = new SimplexNoiseSampler(abstractRandom4);
 		} else {
@@ -127,9 +129,10 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 
 		AbstractRandom abstractRandom4 = abstractRandom.derive();
 		this.field_34683 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -3, 1.0);
-		this.field_34684 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -3, 0.2, 2.0, 1.0);
+		this.field_35131 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -7, 1.0);
 		this.field_34685 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -1, 1.0, 0.0);
 		this.field_34686 = abstractRandom4.createBlockPosRandomDeriver();
+		this.field_35132 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -4, 1.0);
 		abstractRandom4 = abstractRandom.derive();
 		this.field_34634 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -7, 1.0, 1.0);
 		this.field_34635 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -8, 1.0);
@@ -148,14 +151,14 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		this.field_34633 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -8, 1.0);
 		this.field_34648 = DoublePerlinNoiseSampler.create(abstractRandom4.derive(), -8, 0.5, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 2.0, 0.0);
 		this.hasNoiseCaves = hasNoiseCaves;
-		this.temperatureNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed), noiseParameters.temperature());
-		this.humidityNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 1L), noiseParameters.humidity());
-		this.continentalnessNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 2L), noiseParameters.continentalness());
-		this.erosionNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 3L), noiseParameters.erosion());
-		this.weirdnessNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 4L), noiseParameters.weirdness());
-		this.shiftNoise = DoublePerlinNoiseSampler.create(new AtomicSimpleRandom(seed + 5L), noiseParameters.shift());
+		this.temperatureNoise = DoublePerlinNoiseSampler.create(randomProvider.create(seed), noiseParameters.temperature());
+		this.humidityNoise = DoublePerlinNoiseSampler.create(randomProvider.create(seed + 1L), noiseParameters.humidity());
+		this.continentalnessNoise = DoublePerlinNoiseSampler.create(randomProvider.create(seed + 2L), noiseParameters.continentalness());
+		this.erosionNoise = DoublePerlinNoiseSampler.create(randomProvider.create(seed + 3L), noiseParameters.erosion());
+		this.weirdnessNoise = DoublePerlinNoiseSampler.create(randomProvider.create(seed + 4L), noiseParameters.weirdness());
+		this.shiftNoise = DoublePerlinNoiseSampler.create(randomProvider.create(seed + 5L), noiseParameters.shift());
 		this.field_34681 = DoublePerlinNoiseSampler.create(
-			new AtomicSimpleRandom(seed + 6L), -16, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+			randomProvider.create(seed + 6L), -16, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
 		);
 		this.intialNoiseSampler = chunkNoiseSampler -> chunkNoiseSampler.createNoiseInterpolator(
 				(x, y, z) -> this.sampleNoiseColumn(x, y, z, chunkNoiseSampler.getTerrainNoisePoint(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(z)))
@@ -354,7 +357,8 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 				chunkNoiseSampler,
 				new ChunkPos(i, j),
 				this.field_34683,
-				this.field_34684,
+				this.field_35131,
+				this.field_35132,
 				this.field_34685,
 				this.field_34686,
 				this,
@@ -416,11 +420,11 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 	}
 
 	public double sampleTemperatureNoise(double x, double y, double z) {
-		return this.temperatureNoise.sample(x, y, z);
+		return this.temperatureNoise.sample(x, 0.0, z);
 	}
 
 	public double sampleHumidityNoise(double x, double y, double z) {
-		return this.humidityNoise.sample(x, y, z);
+		return this.humidityNoise.sample(x, 0.0, z);
 	}
 
 	public double sampleContinentalnessNoise(double x, double y, double z) {

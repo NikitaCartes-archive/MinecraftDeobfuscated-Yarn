@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.util.annotation.Debug;
@@ -62,7 +63,7 @@ public final class Spline<C> implements ToFloatFunction<C> {
 		return "["
 			+ (String)IntStream.range(0, locations.length)
 				.mapToDouble(i -> (double)locations[i])
-				.mapToObj(d -> String.format("%.3f", d))
+				.mapToObj(d -> String.format(Locale.ROOT, "%.3f", d))
 				.collect(Collectors.joining(", "))
 			+ "]";
 	}
@@ -154,7 +155,7 @@ public final class Spline<C> implements ToFloatFunction<C> {
 		}
 
 		public String toString() {
-			return String.format("k=%.3f", this.value);
+			return String.format(Locale.ROOT, "k=%.3f", this.value);
 		}
 	}
 }

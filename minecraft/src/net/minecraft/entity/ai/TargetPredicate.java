@@ -83,7 +83,7 @@ public class TargetPredicate {
 					}
 				}
 
-				if (this.respectsVisibility && baseEntity instanceof MobEntity && !((MobEntity)baseEntity).getVisibilityCache().canSee(targetEntity)) {
+				if (this.respectsVisibility && baseEntity instanceof MobEntity mobEntity && !mobEntity.getVisibilityCache().canSee(targetEntity)) {
 					return false;
 				}
 			}

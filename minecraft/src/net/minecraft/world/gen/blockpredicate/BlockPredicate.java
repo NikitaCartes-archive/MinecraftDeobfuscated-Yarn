@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.function.BiPredicate;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -38,27 +39,39 @@ public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockP
 		return anyOf(List.of(first, second));
 	}
 
-	static BlockPredicate matchingBlocks(List<Block> blocks, BlockPos pos) {
-		return new MatchingBlocksBlockPredicate(blocks, pos);
+	static BlockPredicate matchingBlocks(List<Block> blocks, BlockPos offset) {
+		return new MatchingBlocksBlockPredicate(offset, blocks);
 	}
 
-	static BlockPredicate matchingBlock(Block block, BlockPos pos) {
-		return matchingBlocks(List.of(block), pos);
+	static BlockPredicate matchingBlock(Block block, BlockPos offset) {
+		return matchingBlocks(List.of(block), offset);
 	}
 
-	static BlockPredicate matchingFluids(List<Fluid> fluids, BlockPos pos) {
-		return new MatchingFluidsBlockPredicate(fluids, pos);
+	static BlockPredicate matchingFluids(List<Fluid> fluids, BlockPos offset) {
+		return new MatchingFluidsBlockPredicate(offset, fluids);
 	}
 
-	static BlockPredicate matchingFluid(Fluid fluid, BlockPos pos) {
-		return matchingFluids(List.of(fluid), pos);
+	static BlockPredicate matchingFluid(Fluid fluid, BlockPos offset) {
+		return matchingFluids(List.of(fluid), offset);
 	}
 
 	static BlockPredicate not(BlockPredicate predicate) {
 		return new NotBlockPredicate(predicate);
 	}
 
+	static BlockPredicate replaceable(BlockPos offset) {
+		return new ReplaceableBlockPredicate(offset);
+	}
+
 	static BlockPredicate replaceable() {
-		return ReplaceableBlockPredicate.INSTANCE;
+		return replaceable(BlockPos.ORIGIN);
+	}
+
+	static BlockPredicate wouldSurvive(BlockState state, BlockPos offset) {
+		return new WouldSurviveBlockPredicate(offset, state);
+	}
+
+	static BlockPredicate alwaysTrue() {
+		return AlwaysTrueBlockPredicate.instance;
 	}
 }

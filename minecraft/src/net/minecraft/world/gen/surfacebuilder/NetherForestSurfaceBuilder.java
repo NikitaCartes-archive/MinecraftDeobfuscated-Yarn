@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.BlockColumn;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
@@ -80,7 +81,7 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 	@Override
 	public void initSeed(long seed) {
 		if (this.seed != seed || this.surfaceNoise == null) {
-			this.surfaceNoise = new OctavePerlinNoiseSampler(new ChunkRandom(seed), ImmutableList.of(0));
+			this.surfaceNoise = new OctavePerlinNoiseSampler(new ChunkRandom(new AtomicSimpleRandom(seed)), ImmutableList.of(0));
 		}
 
 		this.seed = seed;

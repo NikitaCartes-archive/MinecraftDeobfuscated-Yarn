@@ -156,37 +156,37 @@ public class ConfiguredStructureFeatures {
 		Set<RegistryKey<Biome>> set4 = ImmutableSet.<RegistryKey<Biome>>builder().add(BiomeKeys.RIVER).add(BiomeKeys.FROZEN_RIVER).build();
 		Set<RegistryKey<Biome>> set5 = ImmutableSet.<RegistryKey<Biome>>builder()
 			.add(BiomeKeys.MEADOW)
-			.add(BiomeKeys.SNOWCAPPED_PEAKS)
-			.add(BiomeKeys.LOFTY_PEAKS)
+			.add(BiomeKeys.FROZEN_PEAKS)
+			.add(BiomeKeys.JAGGED_PEAKS)
 			.add(BiomeKeys.STONY_PEAKS)
 			.add(BiomeKeys.SNOWY_SLOPES)
 			.build();
 		Set<RegistryKey<Biome>> set6 = ImmutableSet.<RegistryKey<Biome>>builder()
-			.add(BiomeKeys.BADLANDS_PLATEAU)
+			.add(BiomeKeys.BADLANDS)
 			.add(BiomeKeys.ERODED_BADLANDS)
-			.add(BiomeKeys.WOODED_BADLANDS_PLATEAU)
+			.add(BiomeKeys.WOODED_BADLANDS)
 			.build();
 		Set<RegistryKey<Biome>> set7 = ImmutableSet.<RegistryKey<Biome>>builder()
-			.add(BiomeKeys.MOUNTAINS)
-			.add(BiomeKeys.WOODED_MOUNTAINS)
-			.add(BiomeKeys.GRAVELLY_MOUNTAINS)
+			.add(BiomeKeys.WINDSWEPT_HILLS)
+			.add(BiomeKeys.WINDSWEPT_FOREST)
+			.add(BiomeKeys.WINDSWEPT_GRAVELLY_HILLS)
 			.build();
 		Set<RegistryKey<Biome>> set8 = ImmutableSet.<RegistryKey<Biome>>builder()
 			.add(BiomeKeys.TAIGA)
 			.add(BiomeKeys.SNOWY_TAIGA)
-			.add(BiomeKeys.GIANT_TREE_TAIGA)
-			.add(BiomeKeys.GIANT_SPRUCE_TAIGA)
+			.add(BiomeKeys.OLD_GROWTH_PINE_TAIGA)
+			.add(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA)
 			.build();
 		Set<RegistryKey<Biome>> set9 = ImmutableSet.<RegistryKey<Biome>>builder()
 			.add(BiomeKeys.BAMBOO_JUNGLE)
 			.add(BiomeKeys.JUNGLE)
-			.add(BiomeKeys.JUNGLE_EDGE)
+			.add(BiomeKeys.SPARSE_JUNGLE)
 			.build();
 		Set<RegistryKey<Biome>> set10 = ImmutableSet.<RegistryKey<Biome>>builder()
 			.add(BiomeKeys.FOREST)
 			.add(BiomeKeys.FLOWER_FOREST)
 			.add(BiomeKeys.BIRCH_FOREST)
-			.add(BiomeKeys.TALL_BIRCH_FOREST)
+			.add(BiomeKeys.OLD_GROWTH_BIRCH_FOREST)
 			.add(BiomeKeys.DARK_FOREST)
 			.add(BiomeKeys.GROVE)
 			.build();
@@ -200,14 +200,14 @@ public class ConfiguredStructureFeatures {
 		register(registrar, BURIED_TREASURE, set3);
 		register(registrar, DESERT_PYRAMID, BiomeKeys.DESERT);
 		register(registrar, IGLOO, BiomeKeys.SNOWY_TAIGA);
-		register(registrar, IGLOO, BiomeKeys.SNOWY_TUNDRA);
+		register(registrar, IGLOO, BiomeKeys.SNOWY_PLAINS);
 		register(registrar, IGLOO, BiomeKeys.SNOWY_SLOPES);
 		register(registrar, JUNGLE_PYRAMID, BiomeKeys.BAMBOO_JUNGLE);
 		register(registrar, JUNGLE_PYRAMID, BiomeKeys.JUNGLE);
 		register(registrar, MINESHAFT, set2);
 		register(registrar, MINESHAFT, set4);
 		register(registrar, MINESHAFT, set3);
-		register(registrar, MINESHAFT, BiomeKeys.STONE_SHORE);
+		register(registrar, MINESHAFT, BiomeKeys.STONY_SHORE);
 		register(registrar, MINESHAFT, set5);
 		register(registrar, MINESHAFT, set7);
 		register(registrar, MINESHAFT, set8);
@@ -215,10 +215,10 @@ public class ConfiguredStructureFeatures {
 		register(registrar, MINESHAFT, set10);
 		register(registrar, MINESHAFT, BiomeKeys.MUSHROOM_FIELDS);
 		register(registrar, MINESHAFT, BiomeKeys.ICE_SPIKES);
-		register(registrar, MINESHAFT, BiomeKeys.SHATTERED_SAVANNA);
+		register(registrar, MINESHAFT, BiomeKeys.WINDSWEPT_SAVANNA);
 		register(registrar, MINESHAFT, BiomeKeys.DESERT);
 		register(registrar, MINESHAFT, BiomeKeys.SAVANNA);
-		register(registrar, MINESHAFT, BiomeKeys.SNOWY_TUNDRA);
+		register(registrar, MINESHAFT, BiomeKeys.SNOWY_PLAINS);
 		register(registrar, MINESHAFT, BiomeKeys.PLAINS);
 		register(registrar, MINESHAFT, BiomeKeys.SUNFLOWER_PLAINS);
 		register(registrar, MINESHAFT, BiomeKeys.SWAMP);
@@ -240,7 +240,7 @@ public class ConfiguredStructureFeatures {
 		register(registrar, PILLAGER_OUTPOST, BiomeKeys.DESERT);
 		register(registrar, PILLAGER_OUTPOST, BiomeKeys.PLAINS);
 		register(registrar, PILLAGER_OUTPOST, BiomeKeys.SAVANNA);
-		register(registrar, PILLAGER_OUTPOST, BiomeKeys.SNOWY_TUNDRA);
+		register(registrar, PILLAGER_OUTPOST, BiomeKeys.SNOWY_PLAINS);
 		register(registrar, PILLAGER_OUTPOST, BiomeKeys.TAIGA);
 		register(registrar, PILLAGER_OUTPOST, set5);
 		register(registrar, PILLAGER_OUTPOST, BiomeKeys.GROVE);
@@ -251,8 +251,8 @@ public class ConfiguredStructureFeatures {
 		register(registrar, RUINED_PORTAL_MOUNTAIN, set6);
 		register(registrar, RUINED_PORTAL_MOUNTAIN, set7);
 		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.SAVANNA_PLATEAU);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.SHATTERED_SAVANNA);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.STONE_SHORE);
+		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.WINDSWEPT_SAVANNA);
+		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.STONY_SHORE);
 		register(registrar, RUINED_PORTAL_MOUNTAIN, set5);
 		register(registrar, RUINED_PORTAL, BiomeKeys.MUSHROOM_FIELDS);
 		register(registrar, RUINED_PORTAL, BiomeKeys.ICE_SPIKES);
@@ -263,7 +263,7 @@ public class ConfiguredStructureFeatures {
 		register(registrar, RUINED_PORTAL, BiomeKeys.DRIPSTONE_CAVES);
 		register(registrar, RUINED_PORTAL, BiomeKeys.LUSH_CAVES);
 		register(registrar, RUINED_PORTAL, BiomeKeys.SAVANNA);
-		register(registrar, RUINED_PORTAL, BiomeKeys.SNOWY_TUNDRA);
+		register(registrar, RUINED_PORTAL, BiomeKeys.SNOWY_PLAINS);
 		register(registrar, RUINED_PORTAL, BiomeKeys.PLAINS);
 		register(registrar, RUINED_PORTAL, BiomeKeys.SUNFLOWER_PLAINS);
 		register(registrar, SHIPWRECK_BEACHED, set3);
@@ -273,63 +273,9 @@ public class ConfiguredStructureFeatures {
 		register(registrar, VILLAGE_PLAINS, BiomeKeys.PLAINS);
 		register(registrar, VILLAGE_PLAINS, BiomeKeys.MEADOW);
 		register(registrar, VILLAGE_SAVANNA, BiomeKeys.SAVANNA);
-		register(registrar, VILLAGE_SNOWY, BiomeKeys.SNOWY_TUNDRA);
+		register(registrar, VILLAGE_SNOWY, BiomeKeys.SNOWY_PLAINS);
 		register(registrar, VILLAGE_TAIGA, BiomeKeys.TAIGA);
 		register(registrar, MANSION, BiomeKeys.DARK_FOREST);
-		register(registrar, DESERT_PYRAMID, BiomeKeys.DESERT_HILLS);
-		register(registrar, JUNGLE_PYRAMID, BiomeKeys.BAMBOO_JUNGLE_HILLS);
-		register(registrar, JUNGLE_PYRAMID, BiomeKeys.JUNGLE_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.BAMBOO_JUNGLE_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.BIRCH_FOREST_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.DARK_FOREST_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.DESERT_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.DESERT_LAKES);
-		register(registrar, MINESHAFT, BiomeKeys.GIANT_SPRUCE_TAIGA_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.GIANT_TREE_TAIGA_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.JUNGLE_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.MODIFIED_GRAVELLY_MOUNTAINS);
-		register(registrar, MINESHAFT, BiomeKeys.MODIFIED_JUNGLE);
-		register(registrar, MINESHAFT, BiomeKeys.MODIFIED_JUNGLE_EDGE);
-		register(registrar, MINESHAFT, BiomeKeys.MOUNTAIN_EDGE);
-		register(registrar, MINESHAFT, BiomeKeys.MUSHROOM_FIELD_SHORE);
-		register(registrar, MINESHAFT, BiomeKeys.SHATTERED_SAVANNA_PLATEAU);
-		register(registrar, MINESHAFT, BiomeKeys.SNOWY_MOUNTAINS);
-		register(registrar, MINESHAFT, BiomeKeys.SNOWY_TAIGA_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.SNOWY_TAIGA_MOUNTAINS);
-		register(registrar, MINESHAFT, BiomeKeys.SWAMP_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.TAIGA_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.TAIGA_MOUNTAINS);
-		register(registrar, MINESHAFT, BiomeKeys.TALL_BIRCH_HILLS);
-		register(registrar, MINESHAFT, BiomeKeys.WOODED_HILLS);
-		register(registrar, MINESHAFT_MESA, BiomeKeys.BADLANDS);
-		register(registrar, MINESHAFT_MESA, BiomeKeys.MODIFIED_BADLANDS_PLATEAU);
-		register(registrar, MINESHAFT_MESA, BiomeKeys.MODIFIED_WOODED_BADLANDS_PLATEAU);
-		register(registrar, RUINED_PORTAL_DESERT, BiomeKeys.DESERT_HILLS);
-		register(registrar, RUINED_PORTAL_DESERT, BiomeKeys.DESERT_LAKES);
-		register(registrar, RUINED_PORTAL_JUNGLE, BiomeKeys.BAMBOO_JUNGLE_HILLS);
-		register(registrar, RUINED_PORTAL_JUNGLE, BiomeKeys.JUNGLE_HILLS);
-		register(registrar, RUINED_PORTAL_JUNGLE, BiomeKeys.MODIFIED_JUNGLE);
-		register(registrar, RUINED_PORTAL_JUNGLE, BiomeKeys.MODIFIED_JUNGLE_EDGE);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.MODIFIED_BADLANDS_PLATEAU);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.MODIFIED_GRAVELLY_MOUNTAINS);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.MODIFIED_WOODED_BADLANDS_PLATEAU);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.MOUNTAIN_EDGE);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.SHATTERED_SAVANNA_PLATEAU);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.SNOWY_MOUNTAINS);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.SNOWY_TAIGA_MOUNTAINS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.BADLANDS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.BIRCH_FOREST_HILLS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.DARK_FOREST_HILLS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.GIANT_SPRUCE_TAIGA_HILLS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.GIANT_TREE_TAIGA_HILLS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.MUSHROOM_FIELD_SHORE);
-		register(registrar, RUINED_PORTAL, BiomeKeys.SNOWY_TAIGA_HILLS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.TAIGA_HILLS);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.TAIGA_MOUNTAINS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.TALL_BIRCH_HILLS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.WOODED_HILLS);
-		register(registrar, RUINED_PORTAL_SWAMP, BiomeKeys.SWAMP_HILLS);
-		register(registrar, MANSION, BiomeKeys.DARK_FOREST_HILLS);
 		register(registrar, FORTRESS, set11);
 		register(registrar, NETHER_FOSSIL, BiomeKeys.SOUL_SAND_VALLEY);
 		register(registrar, BASTION_REMNANT, BiomeKeys.CRIMSON_FOREST);

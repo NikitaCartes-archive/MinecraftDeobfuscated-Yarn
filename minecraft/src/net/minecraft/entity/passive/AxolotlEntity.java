@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
@@ -546,6 +547,10 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	@Override
 	public boolean canImmediatelyDespawn(double distanceSquared) {
 		return !this.isFromBucket() && !this.hasCustomName();
+	}
+
+	public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
+		return world.getBlockState(pos).isOf(Blocks.WATER) && world.getBlockState(pos.down()).isOf(Blocks.CLAY);
 	}
 
 	public static class AxolotlData extends PassiveEntity.PassiveData {

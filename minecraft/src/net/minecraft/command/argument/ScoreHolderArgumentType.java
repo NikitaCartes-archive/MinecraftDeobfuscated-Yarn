@@ -40,7 +40,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("argument.scoreHolder.empty")
 	);
-	private static final byte field_32470 = 1;
+	private static final byte MULTIPLE_TYPE_MASK = 1;
 	final boolean multiple;
 
 	public ScoreHolderArgumentType(boolean multiple) {
@@ -95,8 +95,8 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 
 			String string = stringReader.getString().substring(i, stringReader.getCursor());
 			if (string.equals("*")) {
-				return (serverCommandSource, supplier) -> {
-					Collection<String> collectionxx = (Collection)supplier.get();
+				return (source, players) -> {
+					Collection<String> collectionxx = (Collection)players.get();
 					if (collectionxx.isEmpty()) {
 						throw EMPTY_SCORE_HOLDER_EXCEPTION.create();
 					} else {
@@ -105,7 +105,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 				};
 			} else {
 				Collection<String> collection = Collections.singleton(string);
-				return (serverCommandSource, supplier) -> collection;
+				return (source, players) -> collection;
 			}
 		}
 	}
@@ -117,7 +117,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 
 	@FunctionalInterface
 	public interface ScoreHolder {
-		Collection<String> getNames(ServerCommandSource source, Supplier<Collection<String>> supplier) throws CommandSyntaxException;
+		Collection<String> getNames(ServerCommandSource source, Supplier<Collection<String>> players) throws CommandSyntaxException;
 	}
 
 	public static class SelectorScoreHolder implements ScoreHolderArgumentType.ScoreHolder {
