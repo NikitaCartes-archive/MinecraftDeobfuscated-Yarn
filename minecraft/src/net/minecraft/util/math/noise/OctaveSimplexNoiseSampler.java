@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.util.List;
 import java.util.stream.IntStream;
 import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class OctaveSimplexNoiseSampler implements NoiseSampler {
@@ -48,7 +49,7 @@ public class OctaveSimplexNoiseSampler implements NoiseSampler {
 
 				if (j > 0) {
 					long n = (long)(simplexNoiseSampler.sample(simplexNoiseSampler.originX, simplexNoiseSampler.originY, simplexNoiseSampler.originZ) * 9.223372E18F);
-					AbstractRandom abstractRandom = new ChunkRandom(n);
+					AbstractRandom abstractRandom = new ChunkRandom(new AtomicSimpleRandom(n));
 
 					for (int o = l - 1; o >= 0; o--) {
 						if (o < k && octaves.contains(l - o)) {

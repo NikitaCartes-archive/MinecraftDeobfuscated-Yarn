@@ -370,11 +370,15 @@ public class ChunkBuilder {
 
 		void setNoCullingBlockEntities(Set<BlockEntity> noCullingBlockEntities) {
 			Set<BlockEntity> set = Sets.<BlockEntity>newHashSet(noCullingBlockEntities);
-			Set<BlockEntity> set2 = Sets.<BlockEntity>newHashSet(this.blockEntities);
-			set.removeAll(this.blockEntities);
-			set2.removeAll(noCullingBlockEntities);
-			this.blockEntities.clear();
-			this.blockEntities.addAll(noCullingBlockEntities);
+			Set<BlockEntity> set2;
+			synchronized (this.blockEntities) {
+				set2 = Sets.<BlockEntity>newHashSet(this.blockEntities);
+				set.removeAll(this.blockEntities);
+				set2.removeAll(noCullingBlockEntities);
+				this.blockEntities.clear();
+				this.blockEntities.addAll(noCullingBlockEntities);
+			}
+
 			ChunkBuilder.this.worldRenderer.updateNoCullingBlockEntities(set2, set);
 		}
 

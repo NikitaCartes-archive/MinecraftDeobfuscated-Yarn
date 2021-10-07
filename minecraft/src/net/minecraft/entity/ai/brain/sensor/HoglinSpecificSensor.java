@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -33,17 +34,20 @@ public class HoglinSpecificSensor extends Sensor<HoglinEntity> {
 		Optional<PiglinEntity> optional = Optional.empty();
 		int i = 0;
 		List<HoglinEntity> list = Lists.<HoglinEntity>newArrayList();
+		class_6670 lv = (class_6670)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
 
-		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(Lists.newArrayList())) {
-			if (livingEntity instanceof PiglinEntity && !livingEntity.isBaby()) {
+		for (LivingEntity livingEntity : lv.method_38978(
+			livingEntityx -> !livingEntityx.isBaby() && (livingEntityx instanceof PiglinEntity || livingEntityx instanceof HoglinEntity)
+		)) {
+			if (livingEntity instanceof PiglinEntity piglinEntity) {
 				i++;
-				if (!optional.isPresent()) {
-					optional = Optional.of((PiglinEntity)livingEntity);
+				if (optional.isEmpty()) {
+					optional = Optional.of(piglinEntity);
 				}
 			}
 
-			if (livingEntity instanceof HoglinEntity && !livingEntity.isBaby()) {
-				list.add((HoglinEntity)livingEntity);
+			if (livingEntity instanceof HoglinEntity hoglinEntity2) {
+				list.add(hoglinEntity2);
 			}
 		}
 

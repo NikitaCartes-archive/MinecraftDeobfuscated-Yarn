@@ -390,7 +390,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 						profiler.push("checkDespawn");
 						entity.checkDespawn();
 						profiler.pop();
-						if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().isSimulating(ChunkPos.toLong(entity.getBlockPos()))) {
+						if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().isSimulating(entity.getChunkPos().toLong())) {
 							Entity entity2 = entity.getVehicle();
 							if (entity2 != null) {
 								if (!entity2.isRemoved() && entity2.hasPassenger(entity)) {

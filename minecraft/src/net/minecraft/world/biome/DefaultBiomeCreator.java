@@ -954,9 +954,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultVegetation(builder2);
 		DefaultBiomeFeatures.addSprings(builder2);
 		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
-		Biome.Builder builder3 = new Biome.Builder()
-			.precipitation(cold ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
-			.category(mountains ? Biome.Category.NONE : Biome.Category.BEACH);
+		Biome.Builder builder3 = new Biome.Builder().precipitation(cold ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN).category(Biome.Category.BEACH);
 		return builder3.temperature(depth)
 			.downfall(scale)
 			.effects(
@@ -1321,7 +1319,6 @@ public class DefaultBiomeCreator {
 	public static Biome composeStonyPeaksSettings() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.STONY_PEAKS);
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
-		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 1, 3));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		DefaultBiomeFeatures.addLandCarvers(builder);
 		DefaultBiomeFeatures.addDefaultLakes(builder);
@@ -1414,6 +1411,7 @@ public class DefaultBiomeCreator {
 	public static Biome createLushCaves() {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		builder.spawn(SpawnGroup.AXOLOTLS, new SpawnSettings.SpawnEntry(EntityType.AXOLOTL, 10, 4, 6));
+		builder.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.TROPICAL_FISH, 25, 8, 8));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
@@ -1440,7 +1438,7 @@ public class DefaultBiomeCreator {
 
 	public static Biome createDripstoneCaves() {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
-		DefaultBiomeFeatures.method_38941(builder);
+		DefaultBiomeFeatures.addDripstoneCaveMobs(builder);
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.STONE);
 		DefaultBiomeFeatures.addLandCarvers(builder2);
 		DefaultBiomeFeatures.addDefaultLakes(builder2);

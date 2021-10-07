@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.class_6670;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
@@ -58,38 +59,39 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		int i = 0;
 		List<AbstractPiglinEntity> list = Lists.<AbstractPiglinEntity>newArrayList();
 		List<AbstractPiglinEntity> list2 = Lists.<AbstractPiglinEntity>newArrayList();
+		class_6670 lv = (class_6670)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
 
-		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of())) {
+		for (LivingEntity livingEntity : lv.method_38978(livingEntityx -> true)) {
 			if (livingEntity instanceof HoglinEntity) {
 				HoglinEntity hoglinEntity = (HoglinEntity)livingEntity;
-				if (hoglinEntity.isBaby() && !optional3.isPresent()) {
+				if (hoglinEntity.isBaby() && optional3.isEmpty()) {
 					optional3 = Optional.of(hoglinEntity);
 				} else if (hoglinEntity.isAdult()) {
 					i++;
-					if (!optional2.isPresent() && hoglinEntity.canBeHunted()) {
+					if (optional2.isEmpty() && hoglinEntity.canBeHunted()) {
 						optional2 = Optional.of(hoglinEntity);
 					}
 				}
-			} else if (livingEntity instanceof PiglinBruteEntity) {
-				list.add((PiglinBruteEntity)livingEntity);
+			} else if (livingEntity instanceof PiglinBruteEntity piglinBruteEntity) {
+				list.add(piglinBruteEntity);
 			} else if (livingEntity instanceof PiglinEntity) {
 				PiglinEntity piglinEntity = (PiglinEntity)livingEntity;
-				if (piglinEntity.isBaby() && !optional4.isPresent()) {
+				if (piglinEntity.isBaby() && optional4.isEmpty()) {
 					optional4 = Optional.of(piglinEntity);
 				} else if (piglinEntity.isAdult()) {
 					list.add(piglinEntity);
 				}
 			} else if (livingEntity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)livingEntity;
-				if (!optional6.isPresent() && entity.canTarget(livingEntity) && !PiglinBrain.wearsGoldArmor(playerEntity)) {
+				if (optional6.isEmpty() && !PiglinBrain.wearsGoldArmor(playerEntity) && entity.canTarget(livingEntity)) {
 					optional6 = Optional.of(playerEntity);
 				}
 
-				if (!optional7.isPresent() && !playerEntity.isSpectator() && PiglinBrain.isGoldHoldingPlayer(playerEntity)) {
+				if (optional7.isEmpty() && !playerEntity.isSpectator() && PiglinBrain.isGoldHoldingPlayer(playerEntity)) {
 					optional7 = Optional.of(playerEntity);
 				}
-			} else if (optional.isPresent() || !(livingEntity instanceof WitherSkeletonEntity) && !(livingEntity instanceof WitherEntity)) {
-				if (!optional5.isPresent() && PiglinBrain.isZombified(livingEntity.getType())) {
+			} else if (!optional.isEmpty() || !(livingEntity instanceof WitherSkeletonEntity) && !(livingEntity instanceof WitherEntity)) {
+				if (optional5.isEmpty() && PiglinBrain.isZombified(livingEntity.getType())) {
 					optional5 = Optional.of(livingEntity);
 				}
 			} else {
@@ -98,8 +100,11 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		}
 
 		for (LivingEntity livingEntity2 : (List)brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {
-			if (livingEntity2 instanceof AbstractPiglinEntity && ((AbstractPiglinEntity)livingEntity2).isAdult()) {
-				list2.add((AbstractPiglinEntity)livingEntity2);
+			if (livingEntity2 instanceof AbstractPiglinEntity) {
+				AbstractPiglinEntity abstractPiglinEntity = (AbstractPiglinEntity)livingEntity2;
+				if (abstractPiglinEntity.isAdult()) {
+					list2.add(abstractPiglinEntity);
+				}
 			}
 		}
 

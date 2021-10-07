@@ -131,7 +131,6 @@ public class FlatChunkGeneratorConfig {
 		GenerationSettings generationSettings = biome.getGenerationSettings();
 		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(generationSettings.getSurfaceBuilder());
 		if (this.hasLakes) {
-			builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_WATER);
 			builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_LAVA);
 		}
 

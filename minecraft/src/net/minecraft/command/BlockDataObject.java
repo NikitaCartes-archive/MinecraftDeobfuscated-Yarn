@@ -23,10 +23,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class BlockDataObject implements DataCommandObject {
 	static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.block.invalid"));
-	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType() {
+	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = argumentName -> new DataCommand.ObjectType() {
 			@Override
 			public DataCommandObject getObject(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-				BlockPos blockPos = BlockPosArgumentType.getLoadedBlockPos(context, string + "Pos");
+				BlockPos blockPos = BlockPosArgumentType.getLoadedBlockPos(context, argumentName + "Pos");
 				BlockEntity blockEntity = context.getSource().getWorld().getBlockEntity(blockPos);
 				if (blockEntity == null) {
 					throw BlockDataObject.INVALID_BLOCK_EXCEPTION.create();
@@ -41,7 +41,7 @@ public class BlockDataObject implements DataCommandObject {
 			) {
 				return argument.then(
 					CommandManager.literal("block")
-						.then((ArgumentBuilder<ServerCommandSource, ?>)argumentAdder.apply(CommandManager.argument(string + "Pos", BlockPosArgumentType.blockPos())))
+						.then((ArgumentBuilder<ServerCommandSource, ?>)argumentAdder.apply(CommandManager.argument(argumentName + "Pos", BlockPosArgumentType.blockPos())))
 				);
 			}
 		};

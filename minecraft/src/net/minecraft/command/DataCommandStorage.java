@@ -24,17 +24,14 @@ public class DataCommandStorage {
 
 	public NbtCompound get(Identifier id) {
 		String string = id.getNamespace();
-		DataCommandStorage.PersistentState persistentState = this.stateManager
-			.get(nbtCompound -> this.createStorage(string).readNbt(nbtCompound), getSaveKey(string));
+		DataCommandStorage.PersistentState persistentState = this.stateManager.get(data -> this.createStorage(string).readNbt(data), getSaveKey(string));
 		return persistentState != null ? persistentState.get(id.getPath()) : new NbtCompound();
 	}
 
 	public void set(Identifier id, NbtCompound nbt) {
 		String string = id.getNamespace();
 		this.stateManager
-			.<DataCommandStorage.PersistentState>getOrCreate(
-				nbtCompound -> this.createStorage(string).readNbt(nbtCompound), () -> this.createStorage(string), getSaveKey(string)
-			)
+			.<DataCommandStorage.PersistentState>getOrCreate(data -> this.createStorage(string).readNbt(data), () -> this.createStorage(string), getSaveKey(string))
 			.set(id.getPath(), nbt);
 	}
 
@@ -63,7 +60,7 @@ public class DataCommandStorage {
 		@Override
 		public NbtCompound writeNbt(NbtCompound nbt) {
 			NbtCompound nbtCompound = new NbtCompound();
-			this.map.forEach((string, nbtCompound2) -> nbtCompound.put(string, nbtCompound2.copy()));
+			this.map.forEach((key, value) -> nbtCompound.put(key, value.copy()));
 			nbt.put("contents", nbtCompound);
 			return nbt;
 		}
@@ -84,7 +81,7 @@ public class DataCommandStorage {
 		}
 
 		public Stream<Identifier> getIds(String namespace) {
-			return this.map.keySet().stream().map(string2 -> new Identifier(namespace, string2));
+			return this.map.keySet().stream().map(key -> new Identifier(namespace, key));
 		}
 	}
 }

@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.class_6670;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -40,7 +40,7 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 
 	@Override
 	public boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return this.shouldRunPredicate.test(entity) && this.getVisibleMobs(entity).stream().anyMatch(this::test);
+		return this.shouldRunPredicate.test(entity) && this.getVisibleMobs(entity).method_38981(this::test);
 	}
 
 	@Override
@@ -48,23 +48,18 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 		super.run(world, entity, time);
 		Brain<?> brain = entity.getBrain();
 		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
-			.ifPresent(
-				list -> list.stream()
-						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance)
-						.filter(this::test)
-						.findFirst()
-						.ifPresent(livingEntityx -> {
-							brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntityx);
-							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntityx, true));
-						})
-			);
+			.flatMap(arg -> arg.method_38975(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance && this.test(livingEntity2)))
+			.ifPresent(livingEntity -> {
+				brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
+				brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
+			});
 	}
 
 	private boolean test(LivingEntity entity) {
 		return this.entityType.equals(entity.getType()) && this.predicate.test(entity);
 	}
 
-	private List<LivingEntity> getVisibleMobs(LivingEntity entity) {
-		return (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
+	private class_6670 getVisibleMobs(LivingEntity entity) {
+		return (class_6670)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
 	}
 }

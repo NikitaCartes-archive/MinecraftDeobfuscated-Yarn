@@ -202,9 +202,9 @@ public class HoglinBrain {
 
 	private static void targetEnemy(HoglinEntity hoglin, LivingEntity target) {
 		if (!hoglin.getBrain().hasActivity(Activity.AVOID) || target.getType() != EntityType.PIGLIN) {
-			if (Sensor.testAttackableTargetPredicate(hoglin, target)) {
-				if (target.getType() != EntityType.HOGLIN) {
-					if (!LookTargetUtil.isNewTargetTooFar(hoglin, target, 4.0)) {
+			if (target.getType() != EntityType.HOGLIN) {
+				if (!LookTargetUtil.isNewTargetTooFar(hoglin, target, 4.0)) {
+					if (Sensor.testAttackableTargetPredicate(hoglin, target)) {
 						setAttackTarget(hoglin, target);
 						askAdultsForHelp(hoglin, target);
 					}

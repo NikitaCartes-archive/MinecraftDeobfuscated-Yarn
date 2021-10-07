@@ -212,8 +212,8 @@ public class FilledMapItem extends NetworkSyncedItem {
 		return !fluidState.isEmpty() && !state.isSideSolidFullSquare(world, pos, Direction.UP) ? fluidState.getBlockState() : state;
 	}
 
-	private static boolean hasPositiveDepth(Biome[] biomes, int scale, int x, int z) {
-		return true;
+	private static boolean isAquaticBiome(boolean[] biomes, int scale, int x, int z) {
+		return biomes[x * scale + z * scale * 128 * scale];
 	}
 
 	public static void fillExplorationMap(ServerWorld world, ItemStack map) {
@@ -223,54 +223,78 @@ public class FilledMapItem extends NetworkSyncedItem {
 				int i = 1 << mapState.scale;
 				int j = mapState.centerX;
 				int k = mapState.centerZ;
-				Biome[] biomes = new Biome[128 * i * 128 * i];
+				boolean[] bls = new boolean[128 * i * 128 * i];
 
 				for (int l = 0; l < 128 * i; l++) {
 					for (int m = 0; m < 128 * i; m++) {
-						biomes[l * 128 * i + m] = world.getBiome(new BlockPos((j / i - 64) * i + m, 0, (k / i - 64) * i + l));
+						Biome.Category category = world.getBiome(new BlockPos((j / i - 64) * i + m, 0, (k / i - 64) * i + l)).getCategory();
+						bls[l * 128 * i + m] = category == Biome.Category.OCEAN || category == Biome.Category.RIVER || category == Biome.Category.SWAMP;
 					}
 				}
 
 				for (int l = 0; l < 128; l++) {
 					for (int m = 0; m < 128; m++) {
 						if (l > 0 && m > 0 && l < 127 && m < 127) {
-							Biome biome = biomes[l * i + m * i * 128 * i];
 							int n = 8;
-							if (hasPositiveDepth(biomes, i, l - 1, m - 1)) {
+							if (!isAquaticBiome(bls, i, l - 1, m - 1)) {
 								n--;
 							}
 
-							if (hasPositiveDepth(biomes, i, l - 1, m + 1)) {
+							if (!isAquaticBiome(bls, i, l - 1, m + 1)) {
 								n--;
 							}
 
-							if (hasPositiveDepth(biomes, i, l - 1, m)) {
+							if (!isAquaticBiome(bls, i, l - 1, m)) {
 								n--;
 							}
 
-							if (hasPositiveDepth(biomes, i, l + 1, m - 1)) {
+							if (!isAquaticBiome(bls, i, l + 1, m - 1)) {
 								n--;
 							}
 
-							if (hasPositiveDepth(biomes, i, l + 1, m + 1)) {
+							if (!isAquaticBiome(bls, i, l + 1, m + 1)) {
 								n--;
 							}
 
-							if (hasPositiveDepth(biomes, i, l + 1, m)) {
+							if (!isAquaticBiome(bls, i, l + 1, m)) {
 								n--;
 							}
 
-							if (hasPositiveDepth(biomes, i, l, m - 1)) {
+							if (!isAquaticBiome(bls, i, l, m - 1)) {
 								n--;
 							}
 
-							if (hasPositiveDepth(biomes, i, l, m + 1)) {
+							if (!isAquaticBiome(bls, i, l, m + 1)) {
 								n--;
 							}
 
 							MapColor.Brightness brightness = MapColor.Brightness.LOWEST;
 							MapColor mapColor = MapColor.CLEAR;
-							if (n > 0) {
+							if (isAquaticBiome(bls, i, l, m)) {
+								mapColor = MapColor.ORANGE;
+								if (n > 7 && m % 2 == 0) {
+									switch ((l + (int)(MathHelper.sin((float)m + 0.0F) * 7.0F)) / 8 % 5) {
+										case 0:
+										case 4:
+											brightness = MapColor.Brightness.LOW;
+											break;
+										case 1:
+										case 3:
+											brightness = MapColor.Brightness.NORMAL;
+											break;
+										case 2:
+											brightness = MapColor.Brightness.HIGH;
+									}
+								} else if (n > 7) {
+									mapColor = MapColor.CLEAR;
+								} else if (n > 5) {
+									brightness = MapColor.Brightness.NORMAL;
+								} else if (n > 3) {
+									brightness = MapColor.Brightness.LOW;
+								} else if (n > 1) {
+									brightness = MapColor.Brightness.LOW;
+								}
+							} else if (n > 0) {
 								mapColor = MapColor.BROWN;
 								if (n > 3) {
 									brightness = MapColor.Brightness.NORMAL;

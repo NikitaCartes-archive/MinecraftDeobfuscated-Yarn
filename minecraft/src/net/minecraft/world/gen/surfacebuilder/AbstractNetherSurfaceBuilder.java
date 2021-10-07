@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.BlockColumn;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
@@ -85,7 +86,7 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 			this.surfaceNoises = createNoisesForStates(this.getSurfaceStates(), seed);
 			this.underLavaNoises = createNoisesForStates(this.getUnderLavaStates(), seed + (long)this.surfaceNoises.size());
 			this.shoreNoise = new OctavePerlinNoiseSampler(
-				new ChunkRandom(seed + (long)this.surfaceNoises.size() + (long)this.underLavaNoises.size()), ImmutableList.of(0)
+				new ChunkRandom(new AtomicSimpleRandom(seed + (long)this.surfaceNoises.size() + (long)this.underLavaNoises.size())), ImmutableList.of(0)
 			);
 		}
 
@@ -96,7 +97,7 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 		Builder<BlockState, OctavePerlinNoiseSampler> builder = new Builder<>();
 
 		for (BlockState blockState : states) {
-			builder.put(blockState, new OctavePerlinNoiseSampler(new ChunkRandom(seed), ImmutableList.of(-4)));
+			builder.put(blockState, new OctavePerlinNoiseSampler(new ChunkRandom(new AtomicSimpleRandom(seed)), ImmutableList.of(-4)));
 			seed++;
 		}
 

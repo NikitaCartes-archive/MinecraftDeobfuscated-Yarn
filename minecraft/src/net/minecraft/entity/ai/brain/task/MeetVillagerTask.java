@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.List;
 import java.util.Optional;
+import net.minecraft.class_6670;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -41,25 +41,19 @@ public class MeetVillagerTask extends Task<LivingEntity> {
 			&& optional.isPresent()
 			&& world.getRegistryKey() == ((GlobalPos)optional.get()).getDimension()
 			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(entity.getPos(), 4.0)
-			&& ((List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
-				.stream()
-				.anyMatch(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
+			&& ((class_6670)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
+				.method_38981(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
 	}
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
 		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
-			.ifPresent(
-				list -> list.stream()
-						.filter(livingEntityx -> EntityType.VILLAGER.equals(livingEntityx.getType()))
-						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= 32.0)
-						.findFirst()
-						.ifPresent(livingEntityx -> {
-							brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntityx);
-							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntityx, true));
-							brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(livingEntityx, false), 0.3F, 1));
-						})
-			);
+			.flatMap(arg -> arg.method_38975(livingEntity2 -> EntityType.VILLAGER.equals(livingEntity2.getType()) && livingEntity2.squaredDistanceTo(entity) <= 32.0))
+			.ifPresent(livingEntity -> {
+				brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
+				brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
+				brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(livingEntity, false), 0.3F, 1));
+			});
 	}
 }

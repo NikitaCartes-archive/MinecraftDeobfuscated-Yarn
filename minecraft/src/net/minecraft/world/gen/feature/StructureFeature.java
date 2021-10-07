@@ -40,7 +40,9 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -208,7 +210,7 @@ public class StructureFeature<C extends FeatureConfig> {
 		int k = ChunkSectionPos.getSectionCoord(searchStartPos.getZ());
 		int l = 0;
 
-		for (ChunkRandom chunkRandom = new ChunkRandom(); l <= searchRadius; l++) {
+		for (ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed())); l <= searchRadius; l++) {
 			for (int m = -l; m <= l; m++) {
 				boolean bl = m == -l || m == l;
 
@@ -339,7 +341,7 @@ public class StructureFeature<C extends FeatureConfig> {
 						pos,
 						predicate,
 						heightLimitView,
-						Util.make(new ChunkRandom(), chunkRandomx -> chunkRandomx.setCarverSeed(worldSeed, pos.x, pos.z)),
+						Util.make(new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed())), chunkRandomx -> chunkRandomx.setCarverSeed(worldSeed, pos.x, pos.z)),
 						worldSeed
 					)
 				);

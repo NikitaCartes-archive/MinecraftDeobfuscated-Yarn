@@ -59,45 +59,43 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 
 	public void render(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		List<Pair<BannerPattern, DyeColor>> list = bannerBlockEntity.getPatterns();
-		if (list != null) {
-			float g = 0.6666667F;
-			boolean bl = bannerBlockEntity.getWorld() == null;
-			matrixStack.push();
-			long l;
-			if (bl) {
-				l = 0L;
+		float g = 0.6666667F;
+		boolean bl = bannerBlockEntity.getWorld() == null;
+		matrixStack.push();
+		long l;
+		if (bl) {
+			l = 0L;
+			matrixStack.translate(0.5, 0.5, 0.5);
+			this.pillar.visible = true;
+		} else {
+			l = bannerBlockEntity.getWorld().getTime();
+			BlockState blockState = bannerBlockEntity.getCachedState();
+			if (blockState.getBlock() instanceof BannerBlock) {
 				matrixStack.translate(0.5, 0.5, 0.5);
+				float h = (float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F;
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
 				this.pillar.visible = true;
 			} else {
-				l = bannerBlockEntity.getWorld().getTime();
-				BlockState blockState = bannerBlockEntity.getCachedState();
-				if (blockState.getBlock() instanceof BannerBlock) {
-					matrixStack.translate(0.5, 0.5, 0.5);
-					float h = (float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F;
-					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
-					this.pillar.visible = true;
-				} else {
-					matrixStack.translate(0.5, -0.16666667F, 0.5);
-					float h = -((Direction)blockState.get(WallBannerBlock.FACING)).asRotation();
-					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
-					matrixStack.translate(0.0, -0.3125, -0.4375);
-					this.pillar.visible = false;
-				}
+				matrixStack.translate(0.5, -0.16666667F, 0.5);
+				float h = -((Direction)blockState.get(WallBannerBlock.FACING)).asRotation();
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+				matrixStack.translate(0.0, -0.3125, -0.4375);
+				this.pillar.visible = false;
 			}
-
-			matrixStack.push();
-			matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
-			VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-			this.pillar.render(matrixStack, vertexConsumer, i, j);
-			this.crossbar.render(matrixStack, vertexConsumer, i, j);
-			BlockPos blockPos = bannerBlockEntity.getPos();
-			float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
-			this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
-			this.banner.pivotY = -32.0F;
-			renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
-			matrixStack.pop();
-			matrixStack.pop();
 		}
+
+		matrixStack.push();
+		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
+		VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
+		this.pillar.render(matrixStack, vertexConsumer, i, j);
+		this.crossbar.render(matrixStack, vertexConsumer, i, j);
+		BlockPos blockPos = bannerBlockEntity.getPos();
+		float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
+		this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
+		this.banner.pivotY = -32.0F;
+		renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
+		matrixStack.pop();
+		matrixStack.pop();
 	}
 
 	public static void renderCanvas(

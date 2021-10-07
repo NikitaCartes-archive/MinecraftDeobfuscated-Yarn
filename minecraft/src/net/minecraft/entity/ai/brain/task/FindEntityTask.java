@@ -1,8 +1,9 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+import net.minecraft.class_6670;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -52,13 +53,13 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	public static <T extends LivingEntity> FindEntityTask<LivingEntity, T> create(
 		EntityType<? extends T> entityType, int maxDistance, MemoryModuleType<T> targetModule, float speed, int completionRange
 	) {
-		return new FindEntityTask<>(entityType, maxDistance, livingEntity -> true, livingEntity -> true, targetModule, speed, completionRange);
+		return new FindEntityTask<>(entityType, maxDistance, entity -> true, entity -> true, targetModule, speed, completionRange);
 	}
 
 	public static <T extends LivingEntity> FindEntityTask<LivingEntity, T> create(
 		EntityType<? extends T> entityType, int maxDistance, Predicate<T> condition, MemoryModuleType<T> moduleType, float speed, int completionRange
 	) {
-		return new FindEntityTask<>(entityType, maxDistance, livingEntity -> true, condition, moduleType, speed, completionRange);
+		return new FindEntityTask<>(entityType, maxDistance, entity -> true, condition, moduleType, speed, completionRange);
 	}
 
 	@Override
@@ -67,8 +68,8 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	}
 
 	private boolean anyVisibleTo(E entity) {
-		List<LivingEntity> list = (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
-		return list.stream().anyMatch(this::testPredicate);
+		class_6670 lv = (class_6670)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
+		return lv.method_38981(this::testPredicate);
 	}
 
 	private boolean testPredicate(LivingEntity entity) {
@@ -78,19 +79,18 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	@Override
 	protected void run(ServerWorld world, E entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
-			.ifPresent(
-				list -> list.stream()
-						.filter(livingEntityx -> this.entityType.equals(livingEntityx.getType()))
-						.map(livingEntityx -> livingEntityx)
-						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance)
-						.filter(this.predicate)
-						.findFirst()
-						.ifPresent(livingEntityx -> {
-							brain.remember(this.targetModule, (T)livingEntityx);
-							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntityx, true));
-							brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(livingEntityx, false), this.speed, this.completionRange));
-						})
-			);
+		Optional<class_6670> optional = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+		if (!optional.isEmpty()) {
+			class_6670 lv = (class_6670)optional.get();
+			lv.method_38975(target -> this.shouldTarget(entity, target)).ifPresent(target -> {
+				brain.remember(this.targetModule, (T)target);
+				brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
+				brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(target, false), this.speed, this.completionRange));
+			});
+		}
+	}
+
+	private boolean shouldTarget(E self, LivingEntity target) {
+		return this.entityType.equals(target.getType()) && target.squaredDistanceTo(self) <= (double)this.maxSquaredDistance && this.predicate.test(target);
 	}
 }

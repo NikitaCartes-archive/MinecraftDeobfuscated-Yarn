@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.List;
 import java.util.Optional;
+import net.minecraft.class_6670;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -92,11 +92,12 @@ public class BreedTask extends Task<AnimalEntity> {
 	}
 
 	private Optional<? extends AnimalEntity> findBreedTarget(AnimalEntity animal) {
-		return ((List)animal.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
-			.stream()
-			.filter(livingEntity -> livingEntity.getType() == this.targetType)
-			.map(livingEntity -> (AnimalEntity)livingEntity)
-			.filter(animal::canBreedWith)
-			.findFirst();
+		return ((class_6670)animal.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).method_38975(livingEntity -> {
+			if (livingEntity.getType() == this.targetType && livingEntity instanceof AnimalEntity animalEntity2 && animal.canBreedWith(animalEntity2)) {
+				return true;
+			}
+
+			return false;
+		}).map(AnimalEntity.class::cast);
 	}
 }

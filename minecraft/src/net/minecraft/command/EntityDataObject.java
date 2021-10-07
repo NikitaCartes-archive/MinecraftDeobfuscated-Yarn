@@ -23,10 +23,10 @@ import net.minecraft.text.TranslatableText;
 
 public class EntityDataObject implements DataCommandObject {
 	private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.entity.invalid"));
-	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType() {
+	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = argumentName -> new DataCommand.ObjectType() {
 			@Override
 			public DataCommandObject getObject(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-				return new EntityDataObject(EntityArgumentType.getEntity(context, string));
+				return new EntityDataObject(EntityArgumentType.getEntity(context, argumentName));
 			}
 
 			@Override
@@ -35,7 +35,7 @@ public class EntityDataObject implements DataCommandObject {
 			) {
 				return argument.then(
 					CommandManager.literal("entity")
-						.then((ArgumentBuilder<ServerCommandSource, ?>)argumentAdder.apply(CommandManager.argument(string, EntityArgumentType.entity())))
+						.then((ArgumentBuilder<ServerCommandSource, ?>)argumentAdder.apply(CommandManager.argument(argumentName, EntityArgumentType.entity())))
 				);
 			}
 		};

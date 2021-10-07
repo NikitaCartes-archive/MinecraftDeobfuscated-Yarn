@@ -54,7 +54,9 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 
 /**
  * In charge of shaping, adding biome specific surface blocks, and carving chunks,
@@ -238,7 +240,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 				.stream()
 				.collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
 			ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> immutableList = this.populationSource.method_38115();
-			ChunkRandom chunkRandom = new ChunkRandom();
+			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
 			long s = chunkRandom.setPopulationSeed(world.getSeed(), k, l);
 
 			try {

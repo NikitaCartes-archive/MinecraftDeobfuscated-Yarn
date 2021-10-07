@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
@@ -15,7 +16,7 @@ public class IdListPalette<T> implements Palette<T> {
 		this.idList = idList;
 	}
 
-	public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener) {
+	public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list) {
 		return new IdListPalette<>(idList);
 	}
 

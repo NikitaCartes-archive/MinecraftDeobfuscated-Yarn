@@ -10,6 +10,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class TheEndBiomeSource extends BiomeSource {
@@ -55,7 +56,7 @@ public class TheEndBiomeSource extends BiomeSource {
 		this.midlandsBiome = midlandsBiome;
 		this.smallIslandsBiome = smallIslandsBiome;
 		this.barrensBiome = barrensBiome;
-		ChunkRandom chunkRandom = new ChunkRandom(seed);
+		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(seed));
 		chunkRandom.skip(17292);
 		this.noise = new SimplexNoiseSampler(chunkRandom);
 	}

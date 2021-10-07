@@ -14,8 +14,8 @@ import net.minecraft.command.argument.serialize.LongArgumentSerializer;
 import net.minecraft.command.argument.serialize.StringArgumentSerializer;
 
 public class BrigadierArgumentTypes {
-	private static final byte field_33081 = 1;
-	private static final byte field_33082 = 2;
+	private static final byte HAS_MIN_MASK = 1;
+	private static final byte HAS_MAX_MASK = 2;
 
 	public static void register() {
 		ArgumentTypes.register("brigadier:bool", BoolArgumentType.class, new ConstantArgumentSerializer(BoolArgumentType::bool));

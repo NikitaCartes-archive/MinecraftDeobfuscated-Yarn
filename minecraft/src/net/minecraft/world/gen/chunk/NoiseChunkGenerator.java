@@ -8,7 +8,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -55,8 +54,10 @@ import net.minecraft.world.gen.feature.OceanMonumentFeature;
 import net.minecraft.world.gen.feature.PillagerOutpostFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.SwampHutFeature;
+import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 
 public final class NoiseChunkGenerator extends ChunkGenerator {
 	public static final Codec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.create(
@@ -70,6 +71,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	private static final BlockState AIR = Blocks.AIR.getDefaultState();
 	private static final BlockState[] EMPTY = new BlockState[0];
 	private static final int field_34589 = 8;
+	private static final int field_35129 = 5;
 	private final int verticalNoiseResolution;
 	private final int horizontalNoiseResolution;
 	private final int noiseSizeX;
@@ -107,14 +109,27 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			generationShapeConfig,
 			chunkGeneratorSettings.getMultiNoiseParameters(),
 			chunkGeneratorSettings.hasNoiseCaves(),
-			seed
+			seed,
+			chunkGeneratorSettings.method_38999()
 		);
 		Builder<BlockSource> builder = ImmutableList.builder();
+		AbstractRandom abstractRandom = chunkGeneratorSettings.method_38997(seed);
+		int i = chunkGeneratorSettings.getBedrockFloorY();
+		if (i > -5 && i < this.worldHeight) {
+			int j = this.getMinimumY() + i;
+			builder.add(new DeepslateBlockSource(abstractRandom.createBlockPosRandomDeriver(), Blocks.BEDROCK.getDefaultState(), null, j, j + 5));
+		}
+
+		int j = chunkGeneratorSettings.getBedrockCeilingY();
+		if (j > -5 && j < this.worldHeight) {
+			int k = this.getMinimumY() + this.worldHeight - 1 + j;
+			builder.add(new DeepslateBlockSource(abstractRandom.createBlockPosRandomDeriver(), null, Blocks.BEDROCK.getDefaultState(), k - 5, k));
+		}
+
 		builder.add(ChunkNoiseSampler::sampleInitialNoiseBlockState);
 		builder.add(ChunkNoiseSampler::sampleOreVeins);
 		if (chunkGeneratorSettings.hasDeepslate()) {
-			AtomicSimpleRandom atomicSimpleRandom = new AtomicSimpleRandom(seed);
-			builder.add(new DeepslateBlockSource(atomicSimpleRandom.createBlockPosRandomDeriver(), Blocks.DEEPSLATE.getDefaultState()));
+			builder.add(new DeepslateBlockSource(abstractRandom.createBlockPosRandomDeriver(), Blocks.DEEPSLATE.getDefaultState(), null, -8, 0));
 		}
 
 		this.blockStateSampler = new ChainedBlockSource(builder.build());
@@ -274,7 +289,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		int i = chunkPos.x;
 		int j = chunkPos.z;
 		if (!SharedConstants.method_37896(chunkPos.getStartX(), chunkPos.getStartZ())) {
-			ChunkRandom chunkRandom = new ChunkRandom();
+			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
 			chunkRandom.setTerrainSeed(i, j);
 			final ChunkPos chunkPos2 = chunk.getPos();
 			int k = chunkPos2.getStartX();
@@ -332,42 +347,6 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 					biome.buildSurface(chunkRandom, blockColumn, s, t, u, e, this.defaultBlock, blockState, this.getSeaLevel(), w, region.getSeed());
 				}
 			}
-
-			this.buildBedrock(chunk, chunkRandom);
-		}
-	}
-
-	private void buildBedrock(Chunk chunk, Random random) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int i = chunk.getPos().getStartX();
-		int j = chunk.getPos().getStartZ();
-		ChunkGeneratorSettings chunkGeneratorSettings = (ChunkGeneratorSettings)this.settings.get();
-		int k = chunkGeneratorSettings.getGenerationShapeConfig().getMinimumY();
-		int l = k + chunkGeneratorSettings.getBedrockFloorY();
-		int m = this.worldHeight - 1 + k - chunkGeneratorSettings.getBedrockCeilingY();
-		int n = 5;
-		int o = chunk.getBottomY();
-		int p = chunk.getTopY();
-		boolean bl = m + 5 - 1 >= o && m < p;
-		boolean bl2 = l + 5 - 1 >= o && l < p;
-		if (bl || bl2) {
-			for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
-				if (bl) {
-					for (int q = 0; q < 5; q++) {
-						if (q <= random.nextInt(5)) {
-							chunk.setBlockState(mutable.set(blockPos.getX(), m - q, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
-						}
-					}
-				}
-
-				if (bl2) {
-					for (int qx = 4; qx >= 0; qx--) {
-						if (qx <= random.nextInt(5)) {
-							chunk.setBlockState(mutable.set(blockPos.getX(), l + qx, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
-						}
-					}
-				}
-			}
 		}
 	}
 
@@ -376,7 +355,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep
 	) {
 		BiomeAccess biomeAccess2 = biomeAccess.withSource((ix, jx, kx) -> this.populationSource.getBiome(ix, jx, kx, this.getMultiNoiseSampler()));
-		ChunkRandom chunkRandom = new ChunkRandom();
+		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
 		int i = 8;
 		ChunkPos chunkPos = chunk.getPos();
 		CarverContext carverContext = new CarverContext(this, chunk);
@@ -599,7 +578,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		if (!((ChunkGeneratorSettings)this.settings.get()).isMobGenerationDisabled()) {
 			ChunkPos chunkPos = region.getCenterPos();
 			Biome biome = region.getBiome(chunkPos.getStartPos());
-			ChunkRandom chunkRandom = new ChunkRandom();
+			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
 			chunkRandom.setPopulationSeed(region.getSeed(), chunkPos.getStartX(), chunkPos.getStartZ());
 			SpawnHelper.populateEntities(region, biome, chunkPos, chunkRandom);
 		}

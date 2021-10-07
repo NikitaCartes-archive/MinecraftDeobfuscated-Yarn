@@ -21,22 +21,22 @@ import net.minecraft.world.WorldView;
 public class AmethystClusterBlock extends AmethystBlock implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final DirectionProperty FACING = Properties.FACING;
-	protected final VoxelShape NORTH_SHAPE;
-	protected final VoxelShape SOUTH_SHAPE;
-	protected final VoxelShape EAST_SHAPE;
-	protected final VoxelShape WEST_SHAPE;
-	protected final VoxelShape UP_SHAPE;
-	protected final VoxelShape DOWN_SHAPE;
+	protected final VoxelShape northShape;
+	protected final VoxelShape southShape;
+	protected final VoxelShape eastShape;
+	protected final VoxelShape westShape;
+	protected final VoxelShape upShape;
+	protected final VoxelShape downShape;
 
 	public AmethystClusterBlock(int height, int xzOffset, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, Direction.UP));
-		this.UP_SHAPE = Block.createCuboidShape((double)xzOffset, 0.0, (double)xzOffset, (double)(16 - xzOffset), (double)height, (double)(16 - xzOffset));
-		this.DOWN_SHAPE = Block.createCuboidShape((double)xzOffset, (double)(16 - height), (double)xzOffset, (double)(16 - xzOffset), 16.0, (double)(16 - xzOffset));
-		this.NORTH_SHAPE = Block.createCuboidShape((double)xzOffset, (double)xzOffset, (double)(16 - height), (double)(16 - xzOffset), (double)(16 - xzOffset), 16.0);
-		this.SOUTH_SHAPE = Block.createCuboidShape((double)xzOffset, (double)xzOffset, 0.0, (double)(16 - xzOffset), (double)(16 - xzOffset), (double)height);
-		this.EAST_SHAPE = Block.createCuboidShape(0.0, (double)xzOffset, (double)xzOffset, (double)height, (double)(16 - xzOffset), (double)(16 - xzOffset));
-		this.WEST_SHAPE = Block.createCuboidShape((double)(16 - height), (double)xzOffset, (double)xzOffset, 16.0, (double)(16 - xzOffset), (double)(16 - xzOffset));
+		this.upShape = Block.createCuboidShape((double)xzOffset, 0.0, (double)xzOffset, (double)(16 - xzOffset), (double)height, (double)(16 - xzOffset));
+		this.downShape = Block.createCuboidShape((double)xzOffset, (double)(16 - height), (double)xzOffset, (double)(16 - xzOffset), 16.0, (double)(16 - xzOffset));
+		this.northShape = Block.createCuboidShape((double)xzOffset, (double)xzOffset, (double)(16 - height), (double)(16 - xzOffset), (double)(16 - xzOffset), 16.0);
+		this.southShape = Block.createCuboidShape((double)xzOffset, (double)xzOffset, 0.0, (double)(16 - xzOffset), (double)(16 - xzOffset), (double)height);
+		this.eastShape = Block.createCuboidShape(0.0, (double)xzOffset, (double)xzOffset, (double)height, (double)(16 - xzOffset), (double)(16 - xzOffset));
+		this.westShape = Block.createCuboidShape((double)(16 - height), (double)xzOffset, (double)xzOffset, 16.0, (double)(16 - xzOffset), (double)(16 - xzOffset));
 	}
 
 	@Override
@@ -44,18 +44,18 @@ public class AmethystClusterBlock extends AmethystBlock implements Waterloggable
 		Direction direction = state.get(FACING);
 		switch (direction) {
 			case NORTH:
-				return this.NORTH_SHAPE;
+				return this.northShape;
 			case SOUTH:
-				return this.SOUTH_SHAPE;
+				return this.southShape;
 			case EAST:
-				return this.EAST_SHAPE;
+				return this.eastShape;
 			case WEST:
-				return this.WEST_SHAPE;
+				return this.westShape;
 			case DOWN:
-				return this.DOWN_SHAPE;
+				return this.downShape;
 			case UP:
 			default:
-				return this.UP_SHAPE;
+				return this.upShape;
 		}
 	}
 

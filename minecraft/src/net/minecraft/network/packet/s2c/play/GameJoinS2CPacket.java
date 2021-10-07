@@ -26,6 +26,7 @@ public record GameJoinS2CPacket() implements Packet {
 	private final long sha256Seed;
 	private final int maxPlayers;
 	private final int viewDistance;
+	private final int simulationDistance;
 	private final boolean reducedDebugInfo;
 	private final boolean showDeathScreen;
 	private final boolean debugWorld;
@@ -42,6 +43,7 @@ public record GameJoinS2CPacket() implements Packet {
 			(DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get(),
 			RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier()),
 			buf.readLong(),
+			buf.readVarInt(),
 			buf.readVarInt(),
 			buf.readVarInt(),
 			buf.readBoolean(),
@@ -63,10 +65,11 @@ public record GameJoinS2CPacket() implements Packet {
 		long l,
 		int maxPlayers,
 		int chunkLoadDistance,
-		boolean reducedDebugInfo,
-		boolean showDeathScreen,
-		boolean debugWorld,
-		boolean flatWorld
+		int i,
+		boolean bl2,
+		boolean bl3,
+		boolean bl4,
+		boolean bl5
 	) {
 		this.playerEntityId = playerEntityId;
 		this.hardcore = bl;
@@ -79,10 +82,11 @@ public record GameJoinS2CPacket() implements Packet {
 		this.sha256Seed = l;
 		this.maxPlayers = maxPlayers;
 		this.viewDistance = chunkLoadDistance;
-		this.reducedDebugInfo = reducedDebugInfo;
-		this.showDeathScreen = showDeathScreen;
-		this.debugWorld = debugWorld;
-		this.flatWorld = flatWorld;
+		this.simulationDistance = i;
+		this.reducedDebugInfo = bl2;
+		this.showDeathScreen = bl3;
+		this.debugWorld = bl4;
+		this.flatWorld = bl5;
 	}
 
 	@Override
@@ -98,6 +102,7 @@ public record GameJoinS2CPacket() implements Packet {
 		buf.writeLong(this.sha256Seed);
 		buf.writeVarInt(this.maxPlayers);
 		buf.writeVarInt(this.viewDistance);
+		buf.writeVarInt(this.simulationDistance);
 		buf.writeBoolean(this.reducedDebugInfo);
 		buf.writeBoolean(this.showDeathScreen);
 		buf.writeBoolean(this.debugWorld);

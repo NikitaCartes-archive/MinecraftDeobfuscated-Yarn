@@ -14,8 +14,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BuiltinBiomes;
 
 public class EmptyChunk extends WorldChunk {
-	public EmptyChunk(World world, ChunkPos pos) {
-		super(world, pos);
+	public EmptyChunk(World world, ChunkPos chunkPos) {
+		super(world, chunkPos);
 	}
 
 	@Override

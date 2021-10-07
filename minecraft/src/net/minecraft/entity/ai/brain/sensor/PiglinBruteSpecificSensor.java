@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -24,19 +25,14 @@ public class PiglinBruteSpecificSensor extends Sensor<LivingEntity> {
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		Brain<?> brain = entity.getBrain();
-		Optional<MobEntity> optional = Optional.empty();
 		List<AbstractPiglinEntity> list = Lists.<AbstractPiglinEntity>newArrayList();
+		class_6670 lv = (class_6670)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
+		Optional<MobEntity> optional = lv.method_38975(livingEntityx -> livingEntityx instanceof WitherSkeletonEntity || livingEntityx instanceof WitherEntity)
+			.map(MobEntity.class::cast);
 
-		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of())) {
-			if (livingEntity instanceof WitherSkeletonEntity || livingEntity instanceof WitherEntity) {
-				optional = Optional.of((MobEntity)livingEntity);
-				break;
-			}
-		}
-
-		for (LivingEntity livingEntity2 : (List)brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {
-			if (livingEntity2 instanceof AbstractPiglinEntity && ((AbstractPiglinEntity)livingEntity2).isAdult()) {
-				list.add((AbstractPiglinEntity)livingEntity2);
+		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {
+			if (livingEntity instanceof AbstractPiglinEntity && ((AbstractPiglinEntity)livingEntity).isAdult()) {
+				list.add((AbstractPiglinEntity)livingEntity);
 			}
 		}
 

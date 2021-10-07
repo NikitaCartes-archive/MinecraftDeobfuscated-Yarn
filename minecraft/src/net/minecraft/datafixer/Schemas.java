@@ -147,6 +147,7 @@ import net.minecraft.datafixer.fix.WorldGenSettingsHeightAndBiomeFix;
 import net.minecraft.datafixer.fix.WorldUuidFix;
 import net.minecraft.datafixer.fix.WriteAndReadFix;
 import net.minecraft.datafixer.fix.ZombieVillagerXpRebuildFix;
+import net.minecraft.datafixer.mapping.LegacyBiomeMapping;
 import net.minecraft.datafixer.mapping.LegacyCoralBlockMapping;
 import net.minecraft.datafixer.mapping.LegacyCoralFanBlockMapping;
 import net.minecraft.datafixer.mapping.LegacyDyeItemMapping;
@@ -788,6 +789,8 @@ public class Schemas {
 		builder.addFixer(new ChunkHeightAndBiomeFix(schema145));
 		Schema schema146 = builder.addSchema(2833, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new WorldGenSettingsDisallowOldCustomWorldsFix(schema146));
+		Schema schema147 = builder.addSchema(2838, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BiomeRenameFix(schema147, false, "Caves and Cliffs biome renames", LegacyBiomeMapping.MAP));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

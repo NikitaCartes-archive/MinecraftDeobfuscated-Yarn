@@ -1,12 +1,12 @@
 package net.minecraft.entity.ai.brain.task;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_6670;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -30,13 +30,17 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 
 public class LookTargetUtil {
+	private LookTargetUtil() {
+	}
+
 	public static void lookAtAndWalkTowardsEachOther(LivingEntity first, LivingEntity second, float speed) {
 		lookAtEachOther(first, second);
 		walkTowardsEachOther(first, second, speed);
 	}
 
 	public static boolean canSee(Brain<?> brain, LivingEntity target) {
-		return brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).filter(list -> list.contains(target)).isPresent();
+		Optional<class_6670> optional = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+		return optional.isPresent() && ((class_6670)optional.get()).method_38972(target);
 	}
 
 	public static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryModuleType, EntityType<?> entityType) {
@@ -93,14 +97,14 @@ public class LookTargetUtil {
 			.orElse(center);
 	}
 
-	public static boolean isTargetWithinAttackRange(MobEntity source, LivingEntity target, int rangedWeaponReachReduction) {
-		Item item = source.getMainHandStack().getItem();
-		if (item instanceof RangedWeaponItem && source.canUseRangedWeapon((RangedWeaponItem)item)) {
-			int i = ((RangedWeaponItem)item).getRange() - rangedWeaponReachReduction;
-			return source.isInRange(target, (double)i);
-		} else {
-			return isTargetWithinMeleeRange(source, target);
+	public static boolean isTargetWithinAttackRange(MobEntity mobEntity, LivingEntity target, int rangedWeaponReachReduction) {
+		Item item = mobEntity.getMainHandStack().getItem();
+		if (item instanceof RangedWeaponItem rangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item)) {
+			int i = rangedWeaponItem.getRange() - rangedWeaponReachReduction;
+			return mobEntity.isInRange(target, (double)i);
 		}
+
+		return isTargetWithinMeleeRange(mobEntity, target);
 	}
 
 	public static boolean isTargetWithinMeleeRange(MobEntity source, LivingEntity target) {
@@ -117,7 +121,7 @@ public class LookTargetUtil {
 	 */
 	public static boolean isNewTargetTooFar(LivingEntity source, LivingEntity target, double extraDistance) {
 		Optional<LivingEntity> optional = source.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			return false;
 		} else {
 			double d = source.squaredDistanceTo(((LivingEntity)optional.get()).getPos());
@@ -128,11 +132,13 @@ public class LookTargetUtil {
 
 	public static boolean isVisibleInMemory(LivingEntity source, LivingEntity target) {
 		Brain<?> brain = source.getBrain();
-		return !brain.hasMemoryModule(MemoryModuleType.VISIBLE_MOBS) ? false : ((List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).contains(target);
+		return !brain.hasMemoryModule(MemoryModuleType.VISIBLE_MOBS)
+			? false
+			: ((class_6670)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).method_38972(target);
 	}
 
 	public static LivingEntity getCloserEntity(LivingEntity source, Optional<LivingEntity> first, LivingEntity second) {
-		return !first.isPresent() ? second : getCloserEntity(source, (LivingEntity)first.get(), second);
+		return first.isEmpty() ? second : getCloserEntity(source, (LivingEntity)first.get(), second);
 	}
 
 	public static LivingEntity getCloserEntity(LivingEntity source, LivingEntity first, LivingEntity second) {
@@ -143,7 +149,7 @@ public class LookTargetUtil {
 
 	public static Optional<LivingEntity> getEntity(LivingEntity entity, MemoryModuleType<UUID> uuidMemoryModule) {
 		Optional<UUID> optional = entity.getBrain().getOptionalMemory(uuidMemoryModule);
-		return optional.map(uUID -> ((ServerWorld)entity.world).getEntity(uUID)).map(entityx -> entityx instanceof LivingEntity ? (LivingEntity)entityx : null);
+		return optional.map(uUID -> ((ServerWorld)entity.world).getEntity(uUID)).map(entityx -> entityx instanceof LivingEntity livingEntity ? livingEntity : null);
 	}
 
 	public static Stream<VillagerEntity> streamSeenVillagers(VillagerEntity villager, Predicate<VillagerEntity> filter) {

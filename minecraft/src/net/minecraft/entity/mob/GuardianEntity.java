@@ -474,7 +474,7 @@ public class GuardianEntity extends HostileEntity {
 				double r = lookControl.getLookX();
 				double s = lookControl.getLookY();
 				double t = lookControl.getLookZ();
-				if (!lookControl.isPending()) {
+				if (!lookControl.method_38970()) {
 					r = o;
 					s = p;
 					t = q;

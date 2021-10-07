@@ -28,23 +28,9 @@ import net.minecraft.world.biome.BiomeKeys;
 
 public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
 	public static final LootCondition.Builder NEEDS_JUNGLE_BIOME = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE));
-	public static final LootCondition.Builder NEEDS_JUNGLE_HILLS_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE_HILLS)
-	);
-	public static final LootCondition.Builder NEEDS_JUNGLE_EDGE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BiomeKeys.JUNGLE_EDGE)
-	);
+	public static final LootCondition.Builder field_35165 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.SPARSE_JUNGLE));
 	public static final LootCondition.Builder NEEDS_BAMBOO_JUNGLE_BIOME = LocationCheckLootCondition.builder(
 		LocationPredicate.Builder.create().biome(BiomeKeys.BAMBOO_JUNGLE)
-	);
-	public static final LootCondition.Builder NEEDS_MODIFIED_JUNGLE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BiomeKeys.MODIFIED_JUNGLE)
-	);
-	public static final LootCondition.Builder NEEDS_MODIFIED_JUNGLE_EDGE_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BiomeKeys.MODIFIED_JUNGLE_EDGE)
-	);
-	public static final LootCondition.Builder NEEDS_BAMBOO_JUNGLE_HILLS_BIOME = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.create().biome(BiomeKeys.BAMBOO_JUNGLE_HILLS)
 	);
 
 	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
@@ -94,18 +80,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 						.with(ItemEntry.builder(Items.INK_SAC).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(10.0F))))
 						.with(ItemEntry.builder(Blocks.TRIPWIRE_HOOK).weight(10))
 						.with(ItemEntry.builder(Items.ROTTEN_FLESH).weight(10))
-						.with(
-							ItemEntry.builder(Blocks.BAMBOO)
-								.conditionally(
-									NEEDS_JUNGLE_BIOME.or(NEEDS_JUNGLE_HILLS_BIOME)
-										.or(NEEDS_JUNGLE_EDGE_BIOME)
-										.or(NEEDS_BAMBOO_JUNGLE_BIOME)
-										.or(NEEDS_MODIFIED_JUNGLE_BIOME)
-										.or(NEEDS_MODIFIED_JUNGLE_EDGE_BIOME)
-										.or(NEEDS_BAMBOO_JUNGLE_HILLS_BIOME)
-								)
-								.weight(10)
-						)
+						.with(ItemEntry.builder(Blocks.BAMBOO).conditionally(NEEDS_JUNGLE_BIOME.or(field_35165).or(NEEDS_BAMBOO_JUNGLE_BIOME)).weight(10))
 				)
 		);
 		biConsumer.accept(

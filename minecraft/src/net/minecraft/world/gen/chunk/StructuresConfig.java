@@ -40,7 +40,7 @@ public class StructuresConfig {
 	 * bad default configuration will be used instead (see below).
 	 */
 	public static final ImmutableMap<StructureFeature<?>, StructureConfig> DEFAULT_STRUCTURES = ImmutableMap.<StructureFeature<?>, StructureConfig>builder()
-		.put(StructureFeature.VILLAGE, new StructureConfig(32, 8, 10387312))
+		.put(StructureFeature.VILLAGE, new StructureConfig(34, 8, 10387312))
 		.put(StructureFeature.DESERT_PYRAMID, new StructureConfig(32, 8, 14357617))
 		.put(StructureFeature.IGLOO, new StructureConfig(32, 8, 14357618))
 		.put(StructureFeature.JUNGLE_PYRAMID, new StructureConfig(32, 8, 14357619))

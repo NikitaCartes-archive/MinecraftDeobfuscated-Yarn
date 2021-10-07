@@ -85,12 +85,11 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		PalettedContainer.PaletteProvider paletteProvider,
 		PalettedContainer.DataProvider<T> dataProvider,
 		PaletteStorage storage,
-		List<T> entries
+		List<T> list
 	) {
 		this.idList = idList;
 		this.paletteProvider = paletteProvider;
-		Palette<T> palette = dataProvider.factory().create(dataProvider.bits(), idList, this);
-		entries.forEach(palette::index);
+		Palette<T> palette = dataProvider.factory().create(dataProvider.bits(), idList, this, list);
 		this.data = new PalettedContainer.Data(dataProvider, storage, palette);
 	}
 
@@ -394,7 +393,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 
 		public PalettedContainer.Data<T> createData(IndexedIterable<T> idList, PaletteResizeListener<T> listener, int size, @Nullable long[] storage) {
 			PaletteStorage paletteStorage = (PaletteStorage)(this.bits == 0 ? new EmptyPaletteStorage(size) : new PackedIntegerArray(this.bits, size, storage));
-			Palette<T> palette = this.factory.create(this.bits, idList, listener);
+			Palette<T> palette = this.factory.create(this.bits, idList, listener, List.of());
 			return new PalettedContainer.Data(this, paletteStorage, palette);
 		}
 	}

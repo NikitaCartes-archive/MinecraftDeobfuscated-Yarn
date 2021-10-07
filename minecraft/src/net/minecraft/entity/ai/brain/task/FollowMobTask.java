@@ -1,12 +1,13 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+import net.minecraft.class_6670;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -16,6 +17,7 @@ import net.minecraft.tag.Tag;
 public class FollowMobTask extends Task<LivingEntity> {
 	private final Predicate<LivingEntity> predicate;
 	private final float maxDistanceSquared;
+	private Optional<LivingEntity> field_35102 = Optional.empty();
 
 	public FollowMobTask(Tag<EntityType<?>> entityType, float maxDistance) {
 		this(livingEntity -> livingEntity.getType().isIn(entityType), maxDistance);
@@ -41,19 +43,14 @@ public class FollowMobTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return ((List)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).stream().anyMatch(this.predicate);
+		class_6670 lv = (class_6670)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
+		this.field_35102 = lv.method_38975(this.predicate.and(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared));
+		return this.field_35102.isPresent();
 	}
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
-			.ifPresent(
-				list -> list.stream()
-						.filter(this.predicate)
-						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared)
-						.findFirst()
-						.ifPresent(livingEntityx -> brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntityx, true)))
-			);
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)this.field_35102.get(), true));
+		this.field_35102 = Optional.empty();
 	}
 }

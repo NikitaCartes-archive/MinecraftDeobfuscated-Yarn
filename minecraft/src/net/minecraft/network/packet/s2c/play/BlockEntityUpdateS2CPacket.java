@@ -1,5 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -16,8 +17,12 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	@Nullable
 	private final NbtCompound nbt;
 
+	public static BlockEntityUpdateS2CPacket create(BlockEntity blockEntity, Function<BlockEntity, NbtCompound> nbtGetter) {
+		return new BlockEntityUpdateS2CPacket(blockEntity.getPos(), blockEntity.getType(), (NbtCompound)nbtGetter.apply(blockEntity));
+	}
+
 	public static BlockEntityUpdateS2CPacket create(BlockEntity blockEntity) {
-		return new BlockEntityUpdateS2CPacket(blockEntity.getPos(), blockEntity.getType(), blockEntity.toInitialChunkDataNbt());
+		return create(blockEntity, BlockEntity::toInitialChunkDataNbt);
 	}
 
 	private BlockEntityUpdateS2CPacket(BlockPos pos, BlockEntityType<?> blockEntityType, NbtCompound nbt) {

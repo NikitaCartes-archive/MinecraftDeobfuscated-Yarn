@@ -3,29 +3,27 @@ package net.minecraft.world.gen.blockpredicate;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.StructureWorldAccess;
 
-class MatchingFluidsBlockPredicate implements BlockPredicate {
+class MatchingFluidsBlockPredicate extends OffsetPredicate {
 	private final List<Fluid> fluids;
-	private final BlockPos pos;
 	public static final Codec<MatchingFluidsBlockPredicate> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					Registry.FLUID.listOf().fieldOf("fluids").forGetter(matchingFluidsBlockPredicate -> matchingFluidsBlockPredicate.fluids),
-					BlockPos.CODEC.fieldOf("offset").forGetter(matchingFluidsBlockPredicate -> matchingFluidsBlockPredicate.pos)
-				)
+		instance -> method_39013(instance)
+				.and(Registry.FLUID.listOf().fieldOf("fluids").forGetter(matchingFluidsBlockPredicate -> matchingFluidsBlockPredicate.fluids))
 				.apply(instance, MatchingFluidsBlockPredicate::new)
 	);
 
-	public MatchingFluidsBlockPredicate(List<Fluid> fluids, BlockPos pos) {
+	public MatchingFluidsBlockPredicate(BlockPos offset, List<Fluid> fluids) {
+		super(offset);
 		this.fluids = fluids;
-		this.pos = pos;
 	}
 
-	public boolean test(StructureWorldAccess structureWorldAccess, BlockPos blockPos) {
-		return this.fluids.contains(structureWorldAccess.getFluidState(blockPos.add(this.pos)).getFluid());
+	@Override
+	protected boolean test(BlockState state) {
+		return this.fluids.contains(state.getFluidState().getFluid());
 	}
 
 	@Override

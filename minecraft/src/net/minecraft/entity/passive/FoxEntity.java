@@ -1438,18 +1438,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	public static enum Type {
-		RED(
-			0,
-			"red",
-			BiomeKeys.TAIGA,
-			BiomeKeys.TAIGA_HILLS,
-			BiomeKeys.TAIGA_MOUNTAINS,
-			BiomeKeys.GIANT_TREE_TAIGA,
-			BiomeKeys.GIANT_SPRUCE_TAIGA,
-			BiomeKeys.GIANT_TREE_TAIGA_HILLS,
-			BiomeKeys.GIANT_SPRUCE_TAIGA_HILLS
-		),
-		SNOW(1, "snow", BiomeKeys.SNOWY_TAIGA, BiomeKeys.SNOWY_TAIGA_HILLS, BiomeKeys.SNOWY_TAIGA_MOUNTAINS);
+		RED(0, "red", BiomeKeys.TAIGA, BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA),
+		SNOW(1, "snow", BiomeKeys.SNOWY_TAIGA);
 
 		private static final FoxEntity.Type[] TYPES = (FoxEntity.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(FoxEntity.Type::getId))

@@ -17,6 +17,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.MultiNoiseParameters;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public final class ChunkGeneratorSettings {
 	public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(
@@ -34,11 +36,13 @@ public final class ChunkGeneratorSettings {
 					Codec.BOOL.fieldOf("noise_caves_enabled").forGetter(ChunkGeneratorSettings::hasNoiseCaves),
 					Codec.BOOL.fieldOf("deepslate_enabled").forGetter(ChunkGeneratorSettings::hasDeepslate),
 					Codec.BOOL.fieldOf("ore_veins_enabled").forGetter(ChunkGeneratorSettings::hasOreVeins),
-					Codec.BOOL.fieldOf("noodle_caves_enabled").forGetter(ChunkGeneratorSettings::hasNoodleCaves)
+					Codec.BOOL.fieldOf("noodle_caves_enabled").forGetter(ChunkGeneratorSettings::hasNoodleCaves),
+					Codec.BOOL.fieldOf("legacy_random_source").forGetter(ChunkGeneratorSettings::method_38998)
 				)
 				.apply(instance, ChunkGeneratorSettings::new)
 	);
 	public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
+	private final ChunkRandom.RandomProvider field_35130;
 	private final StructuresConfig structuresConfig;
 	private final GenerationShapeConfig generationShapeConfig;
 	private final MultiNoiseParameters multiNoiseParameters;
@@ -78,7 +82,8 @@ public final class ChunkGeneratorSettings {
 		boolean noiseCaves,
 		boolean deepslate,
 		boolean oreVeins,
-		boolean noodleCaves
+		boolean noodleCaves,
+		boolean bl
 	) {
 		this.structuresConfig = structuresConfig;
 		this.generationShapeConfig = generationShapeConfig;
@@ -94,6 +99,7 @@ public final class ChunkGeneratorSettings {
 		this.deepslate = deepslate;
 		this.oreVeins = oreVeins;
 		this.noodleCaves = noodleCaves;
+		this.field_35130 = bl ? ChunkRandom.RandomProvider.LEGACY : ChunkRandom.RandomProvider.XOROSHIRO;
 	}
 
 	public StructuresConfig getStructuresConfig() {
@@ -168,6 +174,18 @@ public final class ChunkGeneratorSettings {
 		return this.noodleCaves;
 	}
 
+	public boolean method_38998() {
+		return this.field_35130 == ChunkRandom.RandomProvider.LEGACY;
+	}
+
+	public AbstractRandom method_38997(long l) {
+		return this.method_38999().create(l);
+	}
+
+	public ChunkRandom.RandomProvider method_38999() {
+		return this.field_35130;
+	}
+
 	public boolean equals(RegistryKey<ChunkGeneratorSettings> registryKey) {
 		return Objects.equals(this, BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.get(registryKey));
 	}
@@ -219,7 +237,8 @@ public final class ChunkGeneratorSettings {
 			false,
 			false,
 			false,
-			false
+			false,
+			true
 		);
 	}
 
@@ -262,7 +281,8 @@ public final class ChunkGeneratorSettings {
 			false,
 			false,
 			false,
-			false
+			false,
+			true
 		);
 	}
 
@@ -288,8 +308,8 @@ public final class ChunkGeneratorSettings {
 				false
 			),
 			new MultiNoiseParameters(
-				new DoublePerlinNoiseSampler.NoiseParameters(-9 + i, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0),
-				new DoublePerlinNoiseSampler.NoiseParameters(-7 + i, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0),
+				new DoublePerlinNoiseSampler.NoiseParameters(-10 + i, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0),
+				new DoublePerlinNoiseSampler.NoiseParameters(-8 + i, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0),
 				new DoublePerlinNoiseSampler.NoiseParameters(-9 + i, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0),
 				new DoublePerlinNoiseSampler.NoiseParameters(-9 + i, 1.0, 1.0, 0.0, 1.0, 1.0),
 				new DoublePerlinNoiseSampler.NoiseParameters(-7 + i, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0),
@@ -301,6 +321,7 @@ public final class ChunkGeneratorSettings {
 			0,
 			63,
 			false,
+			true,
 			true,
 			true,
 			true,

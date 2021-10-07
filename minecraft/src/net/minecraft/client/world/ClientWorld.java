@@ -107,6 +107,7 @@ public class ClientWorld extends World {
 	});
 	private final ClientChunkManager chunkManager;
 	private final Deque<Runnable> chunkUpdaters = Queues.<Runnable>newArrayDeque();
+	private int simulationDistance;
 
 	public ClientWorld(
 		ClientPlayNetworkHandler netHandler,
@@ -114,18 +115,20 @@ public class ClientWorld extends World {
 		RegistryKey<World> registryRef,
 		DimensionType dimensionType,
 		int loadDistance,
-		Supplier<Profiler> profiler,
+		int i,
+		Supplier<Profiler> supplier,
 		WorldRenderer worldRenderer,
-		boolean debugWorld,
-		long seed
+		boolean bl,
+		long l
 	) {
-		super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
+		super(properties, registryRef, dimensionType, supplier, true, bl, l);
 		this.netHandler = netHandler;
 		this.chunkManager = new ClientChunkManager(this, loadDistance);
 		this.clientWorldProperties = properties;
 		this.worldRenderer = worldRenderer;
 		this.skyProperties = SkyProperties.byDimensionType(dimensionType);
 		this.setSpawnPos(new BlockPos(8, 64, 8), 0.0F);
+		this.simulationDistance = i;
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
 	}
@@ -200,6 +203,11 @@ public class ClientWorld extends World {
 		});
 		profiler.pop();
 		this.tickBlockEntities();
+	}
+
+	@Override
+	public boolean shouldUpdatePostDeath(Entity entity) {
+		return entity.getChunkPos().getChebyshevDistance(this.client.player.getChunkPos()) <= this.simulationDistance;
 	}
 
 	public void tickEntity(Entity entity) {
@@ -781,6 +789,14 @@ public class ClientWorld extends World {
 	@Override
 	public void addBlockBreakParticles(BlockPos pos, BlockState state) {
 		this.client.particleManager.addBlockBreakParticles(pos, state);
+	}
+
+	public void setSimulationDistance(int simulationDistance) {
+		this.simulationDistance = simulationDistance;
+	}
+
+	public int getSimulationDistance() {
+		return this.simulationDistance;
 	}
 
 	@Environment(EnvType.CLIENT)

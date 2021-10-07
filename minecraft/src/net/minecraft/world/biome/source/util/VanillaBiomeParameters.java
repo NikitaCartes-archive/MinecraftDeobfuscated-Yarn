@@ -29,8 +29,8 @@ public final class VanillaBiomeParameters {
 		MultiNoiseUtil.ParameterRange.of(0.55F, 1.0F)
 	};
 	private final MultiNoiseUtil.ParameterRange[] HUMIDITY_PARAMETERS = new MultiNoiseUtil.ParameterRange[]{
-		MultiNoiseUtil.ParameterRange.of(-1.0F, -0.3F),
-		MultiNoiseUtil.ParameterRange.of(-0.3F, -0.1F),
+		MultiNoiseUtil.ParameterRange.of(-1.0F, -0.35F),
+		MultiNoiseUtil.ParameterRange.of(-0.35F, -0.1F),
 		MultiNoiseUtil.ParameterRange.of(-0.1F, 0.1F),
 		MultiNoiseUtil.ParameterRange.of(0.1F, 0.3F),
 		MultiNoiseUtil.ParameterRange.of(0.3F, 1.0F)
@@ -61,37 +61,37 @@ public final class VanillaBiomeParameters {
 		{BiomeKeys.FROZEN_OCEAN, BiomeKeys.COLD_OCEAN, BiomeKeys.OCEAN, BiomeKeys.LUKEWARM_OCEAN, BiomeKeys.WARM_OCEAN}
 	};
 	private final RegistryKey<Biome>[][] COMMON_BIOMES = new RegistryKey[][]{
-		{BiomeKeys.SNOWY_TUNDRA, BiomeKeys.SNOWY_TUNDRA, BiomeKeys.SNOWY_TUNDRA, BiomeKeys.SNOWY_TAIGA, BiomeKeys.SNOWY_TAIGA},
-		{BiomeKeys.PLAINS, BiomeKeys.PLAINS, BiomeKeys.FOREST, BiomeKeys.TAIGA, BiomeKeys.GIANT_SPRUCE_TAIGA},
-		{BiomeKeys.PLAINS, BiomeKeys.PLAINS, BiomeKeys.FOREST, BiomeKeys.BIRCH_FOREST, BiomeKeys.DARK_FOREST},
+		{BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_TAIGA, BiomeKeys.TAIGA},
+		{BiomeKeys.PLAINS, BiomeKeys.PLAINS, BiomeKeys.FOREST, BiomeKeys.TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA},
+		{BiomeKeys.FLOWER_FOREST, BiomeKeys.PLAINS, BiomeKeys.FOREST, BiomeKeys.BIRCH_FOREST, BiomeKeys.DARK_FOREST},
 		{BiomeKeys.SAVANNA, BiomeKeys.SAVANNA, BiomeKeys.FOREST, BiomeKeys.JUNGLE, BiomeKeys.JUNGLE},
-		{BiomeKeys.DESERT, BiomeKeys.DESERT, BiomeKeys.DESERT, BiomeKeys.JUNGLE_EDGE, BiomeKeys.JUNGLE}
+		{BiomeKeys.DESERT, BiomeKeys.DESERT, BiomeKeys.DESERT, BiomeKeys.DESERT, BiomeKeys.DESERT}
 	};
 	private final RegistryKey<Biome>[][] UNCOMMON_BIOMES = new RegistryKey[][]{
 		{BiomeKeys.ICE_SPIKES, null, BiomeKeys.SNOWY_TAIGA, null, null},
-		{null, null, null, null, BiomeKeys.GIANT_TREE_TAIGA},
-		{null, BiomeKeys.SUNFLOWER_PLAINS, BiomeKeys.FLOWER_FOREST, BiomeKeys.TALL_BIRCH_FOREST, null},
-		{null, null, BiomeKeys.PLAINS, BiomeKeys.PLAINS, null},
-		{null, null, null, BiomeKeys.PLAINS, BiomeKeys.BAMBOO_JUNGLE}
+		{null, null, null, null, BiomeKeys.OLD_GROWTH_PINE_TAIGA},
+		{BiomeKeys.SUNFLOWER_PLAINS, null, null, BiomeKeys.OLD_GROWTH_BIRCH_FOREST, null},
+		{null, null, BiomeKeys.PLAINS, BiomeKeys.SPARSE_JUNGLE, BiomeKeys.BAMBOO_JUNGLE},
+		{null, null, null, null, null}
 	};
 	private final RegistryKey<Biome>[][] NEAR_MOUNTAIN_BIOMES = new RegistryKey[][]{
-		{BiomeKeys.SNOWY_TUNDRA, BiomeKeys.SNOWY_TUNDRA, BiomeKeys.SNOWY_TUNDRA, BiomeKeys.SNOWY_TAIGA, BiomeKeys.SNOWY_TAIGA},
-		{BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.FOREST, BiomeKeys.TAIGA, BiomeKeys.GIANT_SPRUCE_TAIGA},
+		{BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_TAIGA, BiomeKeys.SNOWY_TAIGA},
+		{BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.FOREST, BiomeKeys.TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA},
 		{BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.DARK_FOREST},
 		{BiomeKeys.SAVANNA_PLATEAU, BiomeKeys.SAVANNA_PLATEAU, BiomeKeys.FOREST, BiomeKeys.FOREST, BiomeKeys.JUNGLE},
-		{BiomeKeys.BADLANDS, BiomeKeys.BADLANDS, BiomeKeys.BADLANDS, BiomeKeys.WOODED_BADLANDS_PLATEAU, BiomeKeys.WOODED_BADLANDS_PLATEAU}
+		{BiomeKeys.BADLANDS, BiomeKeys.BADLANDS, BiomeKeys.BADLANDS, BiomeKeys.WOODED_BADLANDS, BiomeKeys.WOODED_BADLANDS}
 	};
 	private final RegistryKey<Biome>[][] SPECIAL_NEAR_MOUNTAIN_BIOMES = new RegistryKey[][]{
 		{BiomeKeys.ICE_SPIKES, null, null, null, null},
-		{null, null, BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.GIANT_TREE_TAIGA},
+		{null, null, BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.OLD_GROWTH_PINE_TAIGA},
 		{null, null, BiomeKeys.FOREST, BiomeKeys.BIRCH_FOREST, null},
 		{null, null, null, null, null},
 		{BiomeKeys.ERODED_BADLANDS, BiomeKeys.ERODED_BADLANDS, null, null, null}
 	};
 	private final RegistryKey<Biome>[][] HILL_BIOMES = new RegistryKey[][]{
-		{BiomeKeys.GRAVELLY_MOUNTAINS, BiomeKeys.GRAVELLY_MOUNTAINS, BiomeKeys.MOUNTAINS, BiomeKeys.WOODED_MOUNTAINS, BiomeKeys.WOODED_MOUNTAINS},
-		{BiomeKeys.GRAVELLY_MOUNTAINS, BiomeKeys.GRAVELLY_MOUNTAINS, BiomeKeys.MOUNTAINS, BiomeKeys.WOODED_MOUNTAINS, BiomeKeys.WOODED_MOUNTAINS},
-		{BiomeKeys.MOUNTAINS, BiomeKeys.MOUNTAINS, BiomeKeys.MOUNTAINS, BiomeKeys.WOODED_MOUNTAINS, BiomeKeys.WOODED_MOUNTAINS},
+		{BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST},
+		{BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST},
+		{BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST},
 		{null, null, null, null, null},
 		{null, null, null, null, null}
 	};
@@ -394,7 +394,7 @@ public final class VanillaBiomeParameters {
 			MultiNoiseUtil.ParameterRange.combine(this.EROSION_PARAMETERS[0], this.EROSION_PARAMETERS[2]),
 			weirdness,
 			0.0F,
-			BiomeKeys.STONE_SHORE
+			BiomeKeys.STONY_SHORE
 		);
 		this.writeBiomeParameters(
 			parameters,
@@ -558,7 +558,7 @@ public final class VanillaBiomeParameters {
 			MultiNoiseUtil.ParameterRange.combine(this.EROSION_PARAMETERS[0], this.EROSION_PARAMETERS[2]),
 			weirdness,
 			0.0F,
-			BiomeKeys.STONE_SHORE
+			BiomeKeys.STONY_SHORE
 		);
 		this.writeBiomeParameters(
 			parameters,
@@ -686,7 +686,7 @@ public final class VanillaBiomeParameters {
 			MultiNoiseUtil.ParameterRange.combine(this.EROSION_PARAMETERS[0], this.EROSION_PARAMETERS[1]),
 			weirdness,
 			0.0F,
-			weirdness.max() < 0L ? BiomeKeys.STONE_SHORE : BiomeKeys.FROZEN_RIVER
+			weirdness.max() < 0L ? BiomeKeys.STONY_SHORE : BiomeKeys.FROZEN_RIVER
 		);
 		this.writeBiomeParameters(
 			parameters,
@@ -696,7 +696,7 @@ public final class VanillaBiomeParameters {
 			MultiNoiseUtil.ParameterRange.combine(this.EROSION_PARAMETERS[0], this.EROSION_PARAMETERS[1]),
 			weirdness,
 			0.0F,
-			weirdness.max() < 0L ? BiomeKeys.STONE_SHORE : BiomeKeys.RIVER
+			weirdness.max() < 0L ? BiomeKeys.STONY_SHORE : BiomeKeys.RIVER
 		);
 		this.writeBiomeParameters(
 			parameters,
@@ -833,7 +833,7 @@ public final class VanillaBiomeParameters {
 	}
 
 	private RegistryKey<Biome> getBiomeOrShatteredSavanna(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness, RegistryKey<Biome> biome) {
-		return temperature > 1 && humidity < 4 && weirdness.max() >= 0L ? BiomeKeys.SHATTERED_SAVANNA : biome;
+		return temperature > 1 && humidity < 4 && weirdness.max() >= 0L ? BiomeKeys.WINDSWEPT_SAVANNA : biome;
 	}
 
 	private RegistryKey<Biome> getFlatShoreBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
@@ -853,7 +853,7 @@ public final class VanillaBiomeParameters {
 		if (humidity < 2) {
 			return weirdness.max() < 0L ? BiomeKeys.ERODED_BADLANDS : BiomeKeys.BADLANDS;
 		} else {
-			return humidity < 3 ? BiomeKeys.BADLANDS : BiomeKeys.WOODED_BADLANDS_PLATEAU;
+			return humidity < 3 ? BiomeKeys.BADLANDS : BiomeKeys.WOODED_BADLANDS;
 		}
 	}
 
@@ -868,7 +868,7 @@ public final class VanillaBiomeParameters {
 
 	private RegistryKey<Biome> getPeakBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (temperature <= 2) {
-			return weirdness.max() < 0L ? BiomeKeys.LOFTY_PEAKS : BiomeKeys.SNOWCAPPED_PEAKS;
+			return weirdness.max() < 0L ? BiomeKeys.JAGGED_PEAKS : BiomeKeys.FROZEN_PEAKS;
 		} else {
 			return temperature == 3 ? BiomeKeys.STONY_PEAKS : this.getBadlandsBiome(humidity, weirdness);
 		}

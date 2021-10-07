@@ -45,6 +45,7 @@ import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
@@ -175,6 +176,7 @@ public abstract class PlayerManager {
 				BiomeAccess.hashSeed(serverWorld2.getSeed()),
 				this.getMaxPlayerCount(),
 				this.viewDistance,
+				this.simulationDistance,
 				bl2,
 				!bl,
 				serverWorld2.isDebugWorld(),
@@ -820,6 +822,7 @@ public abstract class PlayerManager {
 
 	public void setSimulationDistance(int simulationDistance) {
 		this.simulationDistance = simulationDistance;
+		this.sendToAll(new SimulationDistanceS2CPacket(simulationDistance));
 
 		for (ServerWorld serverWorld : this.server.getWorlds()) {
 			if (serverWorld != null) {

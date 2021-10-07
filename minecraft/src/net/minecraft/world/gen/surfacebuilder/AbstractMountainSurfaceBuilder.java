@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.BlockColumn;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public abstract class AbstractMountainSurfaceBuilder extends DefaultSurfaceBuilder {
@@ -61,7 +62,7 @@ public abstract class AbstractMountainSurfaceBuilder extends DefaultSurfaceBuild
 	@Override
 	public void initSeed(long seed) {
 		if (this.seed != seed) {
-			ChunkRandom chunkRandom = new ChunkRandom(seed);
+			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(seed));
 			this.noiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -3, 1.0, 1.0, 1.0, 1.0);
 		}
 

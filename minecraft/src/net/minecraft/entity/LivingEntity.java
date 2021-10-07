@@ -407,7 +407,7 @@ public abstract class LivingEntity extends Entity {
 			this.timeUntilRegen--;
 		}
 
-		if (this.isDead()) {
+		if (this.isDead() && this.world.shouldUpdatePostDeath(this)) {
 			this.updatePostDeath();
 		}
 

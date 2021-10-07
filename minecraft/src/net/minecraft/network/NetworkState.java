@@ -146,6 +146,7 @@ import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
+import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
@@ -270,6 +271,7 @@ public enum NetworkState {
 					.register(EntityPassengersSetS2CPacket.class, EntityPassengersSetS2CPacket::new)
 					.register(TeamS2CPacket.class, TeamS2CPacket::new)
 					.register(ScoreboardPlayerUpdateS2CPacket.class, ScoreboardPlayerUpdateS2CPacket::new)
+					.register(SimulationDistanceS2CPacket.class, SimulationDistanceS2CPacket::new)
 					.register(SubtitleS2CPacket.class, SubtitleS2CPacket::new)
 					.register(WorldTimeUpdateS2CPacket.class, WorldTimeUpdateS2CPacket::new)
 					.register(TitleS2CPacket.class, TitleS2CPacket::new)

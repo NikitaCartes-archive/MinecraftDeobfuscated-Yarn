@@ -60,9 +60,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 			return new BlockPredicateArgumentType.BlockPredicate() {
 				@Override
 				public Predicate<CachedBlockPosition> create(TagManager manager) throws CommandSyntaxException {
-					Tag<Block> tag = manager.getTag(
-						Registry.BLOCK_KEY, identifier, identifierx -> BlockPredicateArgumentType.UNKNOWN_TAG_EXCEPTION.create(identifierx.toString())
-					);
+					Tag<Block> tag = manager.getTag(Registry.BLOCK_KEY, identifier, id -> BlockPredicateArgumentType.UNKNOWN_TAG_EXCEPTION.create(id.toString()));
 					return new BlockPredicateArgumentType.TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
 				}
 

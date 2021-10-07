@@ -476,6 +476,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 	}
 
+	public boolean shouldUpdatePostDeath(Entity entity) {
+		return true;
+	}
+
 	public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, Explosion.DestructionType destructionType) {
 		return this.createExplosion(entity, null, null, x, y, z, power, false, destructionType);
 	}
@@ -606,11 +610,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				list.add(entity);
 			}
 
-			if (entity instanceof EnderDragonEntity) {
-				for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
-					T entity2 = filter.downcast(enderDragonPart);
-					if (entity2 != null && predicate.test(entity2)) {
-						list.add(entity2);
+			if (entity instanceof EnderDragonEntity enderDragonEntity) {
+				for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
+					T entity3 = filter.downcast(enderDragonPart);
+					if (entity3 != null && predicate.test(entity3)) {
+						list.add(entity3);
 					}
 				}
 			}

@@ -1,9 +1,11 @@
 package net.minecraft.world.chunk;
 
+import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
+import org.apache.commons.lang3.Validate;
 
 /**
  * A palette that only holds a unique entry. Useful for void chunks or a
@@ -15,9 +17,13 @@ public class SingularPalette<T> implements Palette<T> {
 	private T entry;
 	private final PaletteResizeListener<T> listener;
 
-	public SingularPalette(IndexedIterable<T> idList, PaletteResizeListener<T> listener) {
+	public SingularPalette(IndexedIterable<T> idList, PaletteResizeListener<T> listener, List<T> list) {
 		this.idList = idList;
 		this.listener = listener;
+		if (list.size() > 0) {
+			Validate.isTrue(list.size() <= 1, "Can't initialize SingleValuePalette with %d values.", (long)list.size());
+			this.entry = (T)list.get(0);
+		}
 	}
 
 	/**
@@ -25,8 +31,8 @@ public class SingularPalette<T> implements Palette<T> {
 	 * 
 	 * @param bitSize {@code 0}, as this palette has only 2<sup>0</sup>=1 entry
 	 */
-	public static <A> Palette<A> create(int bitSize, IndexedIterable<A> idList, PaletteResizeListener<A> listener) {
-		return new SingularPalette<>(idList, listener);
+	public static <A> Palette<A> create(int bitSize, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list) {
+		return new SingularPalette<>(idList, listener, list);
 	}
 
 	@Override

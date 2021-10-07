@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.minecraft.class_6670;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -639,13 +640,11 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	private void notifyDeath(Entity killer) {
-		if (this.world instanceof ServerWorld) {
-			Optional<List<LivingEntity>> optional = this.brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
-			if (optional.isPresent()) {
-				ServerWorld serverWorld = (ServerWorld)this.world;
-				((List)optional.get())
-					.stream()
-					.filter(entity -> entity instanceof InteractionObserver)
+		if (this.world instanceof ServerWorld serverWorld) {
+			Optional<class_6670> optional = this.brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+			if (!optional.isEmpty()) {
+				((class_6670)optional.get())
+					.method_38978(InteractionObserver.class::isInstance)
 					.forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)livingEntity));
 			}
 		}

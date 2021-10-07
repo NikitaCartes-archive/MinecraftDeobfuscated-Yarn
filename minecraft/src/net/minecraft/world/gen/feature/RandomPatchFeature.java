@@ -2,10 +2,8 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
@@ -26,19 +24,11 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 
 		for (int l = 0; l < randomPatchFeatureConfig.tries(); l++) {
 			mutable.set(blockPos, random.nextInt(j) - random.nextInt(j), random.nextInt(k) - random.nextInt(k), random.nextInt(j) - random.nextInt(j));
-			if (method_38907(structureWorldAccess, mutable, randomPatchFeatureConfig)
-				&& ((ConfiguredFeature)randomPatchFeatureConfig.feature().get()).generate(structureWorldAccess, context.getGenerator(), random, mutable)) {
+			if (((ConfiguredFeature)randomPatchFeatureConfig.feature().get()).generate(structureWorldAccess, context.getGenerator(), random, mutable)) {
 				i++;
 			}
 		}
 
 		return i > 0;
-	}
-
-	public static boolean method_38907(WorldAccess worldAccess, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
-		BlockState blockState = worldAccess.getBlockState(blockPos.down());
-		return (!randomPatchFeatureConfig.onlyInAir() || worldAccess.isAir(blockPos))
-			&& (randomPatchFeatureConfig.allowedOn().isEmpty() || randomPatchFeatureConfig.allowedOn().contains(blockState.getBlock()))
-			&& !randomPatchFeatureConfig.disallowedOn().contains(blockState);
 	}
 }

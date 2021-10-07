@@ -1,13 +1,13 @@
 package net.minecraft.entity.mob;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.entity.Entity;
 
 public class MobVisibilityCache {
 	private final MobEntity owner;
-	private final List<Entity> visibleEntities = Lists.<Entity>newArrayList();
-	private final List<Entity> invisibleEntities = Lists.<Entity>newArrayList();
+	private final IntSet visibleEntities = new IntOpenHashSet();
+	private final IntSet invisibleEntities = new IntOpenHashSet();
 
 	public MobVisibilityCache(MobEntity owner) {
 		this.owner = owner;
@@ -19,18 +19,19 @@ public class MobVisibilityCache {
 	}
 
 	public boolean canSee(Entity entity) {
-		if (this.visibleEntities.contains(entity)) {
+		int i = entity.getId();
+		if (this.visibleEntities.contains(i)) {
 			return true;
-		} else if (this.invisibleEntities.contains(entity)) {
+		} else if (this.invisibleEntities.contains(i)) {
 			return false;
 		} else {
 			this.owner.world.getProfiler().push("hasLineOfSight");
 			boolean bl = this.owner.canSee(entity);
 			this.owner.world.getProfiler().pop();
 			if (bl) {
-				this.visibleEntities.add(entity);
+				this.visibleEntities.add(i);
 			} else {
-				this.invisibleEntities.add(entity);
+				this.invisibleEntities.add(i);
 			}
 
 			return bl;

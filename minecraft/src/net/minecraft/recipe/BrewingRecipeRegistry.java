@@ -99,15 +99,15 @@ public class BrewingRecipeRegistry {
 		return false;
 	}
 
-	public static ItemStack craft(ItemStack input, ItemStack ingredient) {
-		if (!ingredient.isEmpty()) {
-			Potion potion = PotionUtil.getPotion(ingredient);
-			Item item = ingredient.getItem();
+	public static ItemStack craft(ItemStack ingredient, ItemStack input) {
+		if (!input.isEmpty()) {
+			Potion potion = PotionUtil.getPotion(input);
+			Item item = input.getItem();
 			int i = 0;
 
 			for (int j = ITEM_RECIPES.size(); i < j; i++) {
 				BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe<Item>)ITEM_RECIPES.get(i);
-				if (recipe.input == item && recipe.ingredient.test(input)) {
+				if (recipe.input == item && recipe.ingredient.test(ingredient)) {
 					return PotionUtil.setPotion(new ItemStack(recipe.output), potion);
 				}
 			}
@@ -116,13 +116,13 @@ public class BrewingRecipeRegistry {
 
 			for (int jx = POTION_RECIPES.size(); i < jx; i++) {
 				BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe<Potion>)POTION_RECIPES.get(i);
-				if (recipe.input == potion && recipe.ingredient.test(input)) {
+				if (recipe.input == potion && recipe.ingredient.test(ingredient)) {
 					return PotionUtil.setPotion(new ItemStack(item), recipe.output);
 				}
 			}
 		}
 
-		return ingredient;
+		return input;
 	}
 
 	public static void registerDefaults() {

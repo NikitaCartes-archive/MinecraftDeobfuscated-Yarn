@@ -19,6 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class GeodeFeature extends Feature<GeodeFeatureConfig> {
@@ -38,7 +39,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		int j = geodeFeatureConfig.maxGenOffset;
 		List<Pair<BlockPos, Integer>> list = Lists.<Pair<BlockPos, Integer>>newLinkedList();
 		int k = geodeFeatureConfig.distributionPoints.get(random);
-		ChunkRandom chunkRandom = new ChunkRandom(structureWorldAccess.getSeed());
+		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(structureWorldAccess.getSeed()));
 		DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -4, 1.0);
 		List<BlockPos> list2 = Lists.<BlockPos>newLinkedList();
 		double d = (double)k / (double)geodeFeatureConfig.outerWallDistance.getMax();

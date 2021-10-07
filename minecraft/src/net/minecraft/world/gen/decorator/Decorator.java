@@ -36,9 +36,6 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<EnvironmentScanDecoratorConfig> ENVIRONMENT_SCAN = register(
 		"environment_scan", new EnvironmentScanDecorator(EnvironmentScanDecoratorConfig.CODEC)
 	);
-	public static final Decorator<BlockSurvivesFilterDecoratorConfig> BLOCK_SURVIVES_FILTER = register(
-		"block_survives_filter", new BlockSurvivesFilterDecorator(BlockSurvivesFilterDecoratorConfig.CODEC)
-	);
 	public static final Decorator<BlockFilterDecoratorConfig> BLOCK_FILTER = register("block_filter", new BlockFilterDecorator(BlockFilterDecoratorConfig.CODEC));
 	private final Codec<ConfiguredDecorator<DC>> codec;
 

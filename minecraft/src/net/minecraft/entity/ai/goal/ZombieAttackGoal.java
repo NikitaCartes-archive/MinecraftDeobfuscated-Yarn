@@ -24,11 +24,6 @@ public class ZombieAttackGoal extends MeleeAttackGoal {
 	}
 
 	@Override
-	public boolean shouldRunEveryTick() {
-		return true;
-	}
-
-	@Override
 	public void tick() {
 		super.tick();
 		this.ticks++;

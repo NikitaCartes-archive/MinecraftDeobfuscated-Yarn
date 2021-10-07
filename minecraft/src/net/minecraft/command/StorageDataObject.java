@@ -18,13 +18,13 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class StorageDataObject implements DataCommandObject {
-	static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(
-			of(commandContext).getIds(), suggestionsBuilder
+	static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestIdentifiers(
+			of(context).getIds(), builder
 		);
-	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType() {
+	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = argumentName -> new DataCommand.ObjectType() {
 			@Override
 			public DataCommandObject getObject(CommandContext<ServerCommandSource> context) {
-				return new StorageDataObject(StorageDataObject.of(context), IdentifierArgumentType.getIdentifier(context, string));
+				return new StorageDataObject(StorageDataObject.of(context), IdentifierArgumentType.getIdentifier(context, argumentName));
 			}
 
 			@Override
@@ -35,7 +35,7 @@ public class StorageDataObject implements DataCommandObject {
 					CommandManager.literal("storage")
 						.then(
 							(ArgumentBuilder<ServerCommandSource, ?>)argumentAdder.apply(
-								CommandManager.argument(string, IdentifierArgumentType.identifier()).suggests(StorageDataObject.SUGGESTION_PROVIDER)
+								CommandManager.argument(argumentName, IdentifierArgumentType.identifier()).suggests(StorageDataObject.SUGGESTION_PROVIDER)
 							)
 						)
 				);
@@ -44,13 +44,13 @@ public class StorageDataObject implements DataCommandObject {
 	private final DataCommandStorage storage;
 	private final Identifier id;
 
-	static DataCommandStorage of(CommandContext<ServerCommandSource> commandContext) {
-		return commandContext.getSource().getServer().getDataCommandStorage();
+	static DataCommandStorage of(CommandContext<ServerCommandSource> context) {
+		return context.getSource().getServer().getDataCommandStorage();
 	}
 
-	StorageDataObject(DataCommandStorage dataCommandStorage, Identifier identifier) {
-		this.storage = dataCommandStorage;
-		this.id = identifier;
+	StorageDataObject(DataCommandStorage storage, Identifier id) {
+		this.storage = storage;
+		this.id = id;
 	}
 
 	@Override

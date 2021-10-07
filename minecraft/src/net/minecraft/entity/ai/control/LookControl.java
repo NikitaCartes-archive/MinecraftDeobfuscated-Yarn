@@ -14,7 +14,7 @@ public class LookControl implements Control {
 	protected final MobEntity entity;
 	protected float maxYawChange;
 	protected float maxPitchChange;
-	protected boolean pending;
+	protected int field_35103;
 	protected double x;
 	protected double y;
 	protected double z;
@@ -45,7 +45,7 @@ public class LookControl implements Control {
 		this.z = z;
 		this.maxYawChange = maxYawChange;
 		this.maxPitchChange = maxPitchChange;
-		this.pending = true;
+		this.field_35103 = 2;
 	}
 
 	public void tick() {
@@ -53,8 +53,8 @@ public class LookControl implements Control {
 			this.entity.setPitch(0.0F);
 		}
 
-		if (this.pending) {
-			this.pending = false;
+		if (this.field_35103 > 0) {
+			this.field_35103--;
 			this.getTargetYaw().ifPresent(yaw -> this.entity.headYaw = this.changeAngle(this.entity.headYaw, yaw, this.maxYawChange));
 			this.getTargetPitch().ifPresent(pitch -> this.entity.setPitch(this.changeAngle(this.entity.getPitch(), pitch, this.maxPitchChange)));
 		} else {
@@ -74,8 +74,8 @@ public class LookControl implements Control {
 		return true;
 	}
 
-	public boolean isPending() {
-		return this.pending;
+	public boolean method_38970() {
+		return this.field_35103 > 0;
 	}
 
 	public double getLookX() {

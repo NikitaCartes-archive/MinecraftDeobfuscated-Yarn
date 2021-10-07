@@ -917,6 +917,13 @@ public class MathHelper {
 		return Math.sqrt((double)(x * x) + y * y + (double)(z * z));
 	}
 
+	/**
+	 * {@return {@code a} rounded down to the nearest multiple of {@code b}}
+	 */
+	public static int roundDownToMultiple(double a, int i) {
+		return floor(a / (double)i) * i;
+	}
+
 	static {
 		for (int i = 0; i < 257; i++) {
 			double d = (double)i / 256.0;

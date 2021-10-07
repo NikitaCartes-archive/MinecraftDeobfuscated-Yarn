@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
-import java.util.List;
 import java.util.Optional;
+import net.minecraft.class_6670;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -129,7 +129,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	private Optional<? extends LivingEntity> getHoglinTarget() {
-		return ((List)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of())).stream().filter(this::shouldAttack).findFirst();
+		return ((class_6670)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971())).method_38975(this::shouldAttack);
 	}
 
 	private boolean shouldAttack(LivingEntity livingEntity) {

@@ -48,6 +48,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
@@ -828,13 +829,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	private void sendBlockEntityUpdate(BlockEntity blockEntity) {
-		Packet<?> packet = blockEntity.toUpdatePacket();
-		if (packet != null) {
-			this.networkHandler.sendPacket(packet);
-		}
-	}
-
 	@Override
 	public void sendPickup(Entity item, int count) {
 		super.sendPickup(item, count);
@@ -1041,8 +1035,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
-		commandBlock.setNeedsUpdatePacket(true);
-		this.sendBlockEntityUpdate(commandBlock);
+		this.networkHandler.sendPacket(BlockEntityUpdateS2CPacket.create(commandBlock, BlockEntity::createNbt));
 	}
 
 	@Override
