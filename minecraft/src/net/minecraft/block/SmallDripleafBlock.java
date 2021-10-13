@@ -136,7 +136,7 @@ public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, 
 	}
 
 	@Override
-	public float method_37247() {
+	public float getVerticalModelOffsetMultiplier() {
 		return 0.1F;
 	}
 }

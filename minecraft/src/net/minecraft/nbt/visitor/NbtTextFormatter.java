@@ -46,19 +46,19 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
 	private static final String KEY_VALUE_SEPARATOR = String.valueOf(':');
 	private static final String ENTRY_SEPARATOR = String.valueOf(',');
-	private static final String field_33272 = "[";
-	private static final String field_33273 = "]";
-	private static final String field_33274 = ";";
-	private static final String field_33275 = " ";
-	private static final String field_33276 = "{";
-	private static final String field_33277 = "}";
-	private static final String field_33278 = "\n";
+	private static final String SQUARE_OPEN_BRACKET = "[";
+	private static final String SQUARE_CLOSE_BRACKET = "]";
+	private static final String SEMICOLON = ";";
+	private static final String SPACE = " ";
+	private static final String CURLY_OPEN_BRACKET = "{";
+	private static final String CURLY_CLOSE_BRACKET = "}";
+	private static final String NEW_LINE = "\n";
 	private final String prefix;
 	private final int indentationLevel;
 	private Text result = LiteralText.EMPTY;
 
-	public NbtTextFormatter(String string, int indentationLevel) {
-		this.prefix = string;
+	public NbtTextFormatter(String prefix, int indentationLevel) {
+		this.prefix = prefix;
 		this.indentationLevel = indentationLevel;
 	}
 

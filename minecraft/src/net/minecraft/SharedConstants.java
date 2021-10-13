@@ -11,17 +11,17 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2838;
+	public static final int WORLD_VERSION = 2839;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "21w40a";
+	public static final String VERSION_NAME = "21w41a";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.18";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 757;
 	@Deprecated
-	public static final int field_29736 = 44;
+	public static final int field_29736 = 45;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2830;
 	private static final int field_29708 = 30;
 	@Deprecated
@@ -159,7 +159,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741868;
+		return 1073741869;
 	}
 
 	public static boolean method_37896(int x, int z) {

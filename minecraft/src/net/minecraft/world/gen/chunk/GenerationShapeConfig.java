@@ -6,34 +6,11 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.DataResult.PartialResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import java.lang.runtime.ObjectMethods;
 import java.util.function.Function;
 import net.minecraft.world.dimension.DimensionType;
 
-public class GenerationShapeConfig {
-	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(GenerationShapeConfig::getMinimumY),
-						Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height").forGetter(GenerationShapeConfig::getHeight),
-						NoiseSamplingConfig.CODEC.fieldOf("sampling").forGetter(GenerationShapeConfig::getSampling),
-						SlideConfig.CODEC.fieldOf("top_slide").forGetter(GenerationShapeConfig::getTopSlide),
-						SlideConfig.CODEC.fieldOf("bottom_slide").forGetter(GenerationShapeConfig::getBottomSlide),
-						Codec.intRange(1, 4).fieldOf("size_horizontal").forGetter(GenerationShapeConfig::getSizeHorizontal),
-						Codec.intRange(1, 4).fieldOf("size_vertical").forGetter(GenerationShapeConfig::getSizeVertical),
-						Codec.DOUBLE.fieldOf("density_factor").forGetter(GenerationShapeConfig::getDensityFactor),
-						Codec.DOUBLE.fieldOf("density_offset").forGetter(GenerationShapeConfig::getDensityOffset),
-						Codec.BOOL.fieldOf("simplex_surface_noise").forGetter(GenerationShapeConfig::hasSimplexSurfaceNoise),
-						Codec.BOOL
-							.optionalFieldOf("random_density_offset", Boolean.valueOf(false), Lifecycle.experimental())
-							.forGetter(GenerationShapeConfig::hasRandomDensityOffset),
-						Codec.BOOL
-							.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
-							.forGetter(GenerationShapeConfig::hasIslandNoiseOverride),
-						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::isAmplified),
-						Codec.BOOL.optionalFieldOf("use_legacy_random", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::method_38413)
-					)
-					.apply(instance, GenerationShapeConfig::new)
-		)
-		.comapFlatMap(GenerationShapeConfig::checkHeight, Function.identity());
+public final class GenerationShapeConfig extends Record {
 	private final int minimumY;
 	private final int height;
 	private final NoiseSamplingConfig sampling;
@@ -43,23 +20,31 @@ public class GenerationShapeConfig {
 	private final int verticalSize;
 	private final double densityFactor;
 	private final double densityOffset;
-	private final boolean simplexSurfaceNoise;
-	private final boolean randomDensityOffset;
 	private final boolean islandNoiseOverride;
 	private final boolean amplified;
-	private final boolean field_34687;
+	private final boolean useLegacyRandom;
+	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(GenerationShapeConfig::minimumY),
+						Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height").forGetter(GenerationShapeConfig::height),
+						NoiseSamplingConfig.CODEC.fieldOf("sampling").forGetter(GenerationShapeConfig::sampling),
+						SlideConfig.CODEC.fieldOf("top_slide").forGetter(GenerationShapeConfig::topSlide),
+						SlideConfig.CODEC.fieldOf("bottom_slide").forGetter(GenerationShapeConfig::bottomSlide),
+						Codec.intRange(1, 4).fieldOf("size_horizontal").forGetter(GenerationShapeConfig::horizontalSize),
+						Codec.intRange(1, 4).fieldOf("size_vertical").forGetter(GenerationShapeConfig::verticalSize),
+						Codec.DOUBLE.fieldOf("density_factor").forGetter(GenerationShapeConfig::densityFactor),
+						Codec.DOUBLE.fieldOf("density_offset").forGetter(GenerationShapeConfig::densityOffset),
+						Codec.BOOL
+							.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
+							.forGetter(GenerationShapeConfig::islandNoiseOverride),
+						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified),
+						Codec.BOOL.optionalFieldOf("use_legacy_random", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::useLegacyRandom)
+					)
+					.apply(instance, GenerationShapeConfig::new)
+		)
+		.comapFlatMap(GenerationShapeConfig::checkHeight, Function.identity());
 
-	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
-		if (config.getMinimumY() + config.getHeight() > DimensionType.MAX_COLUMN_HEIGHT + 1) {
-			return DataResult.error("min_y + height cannot be higher than: " + (DimensionType.MAX_COLUMN_HEIGHT + 1));
-		} else if (config.getHeight() % 16 != 0) {
-			return DataResult.error("height has to be a multiple of 16");
-		} else {
-			return config.getMinimumY() % 16 != 0 ? DataResult.error("min_y has to be a multiple of 16") : DataResult.success(config);
-		}
-	}
-
-	private GenerationShapeConfig(
+	public GenerationShapeConfig(
 		int minimumY,
 		int height,
 		NoiseSamplingConfig sampling,
@@ -71,9 +56,7 @@ public class GenerationShapeConfig {
 		double densityOffset,
 		boolean simplexSurfaceNoise,
 		boolean randomDensityOffset,
-		boolean islandNoiseOverride,
-		boolean amplified,
-		boolean bl
+		boolean islandNoiseOverride
 	) {
 		this.minimumY = minimumY;
 		this.height = height;
@@ -84,11 +67,19 @@ public class GenerationShapeConfig {
 		this.verticalSize = verticalSize;
 		this.densityFactor = densityFactor;
 		this.densityOffset = densityOffset;
-		this.simplexSurfaceNoise = simplexSurfaceNoise;
-		this.randomDensityOffset = randomDensityOffset;
-		this.islandNoiseOverride = islandNoiseOverride;
-		this.amplified = amplified;
-		this.field_34687 = bl;
+		this.islandNoiseOverride = simplexSurfaceNoise;
+		this.amplified = randomDensityOffset;
+		this.useLegacyRandom = islandNoiseOverride;
+	}
+
+	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
+		if (config.minimumY() + config.height() > DimensionType.MAX_COLUMN_HEIGHT + 1) {
+			return DataResult.error("min_y + height cannot be higher than: " + (DimensionType.MAX_COLUMN_HEIGHT + 1));
+		} else if (config.height() % 16 != 0) {
+			return DataResult.error("height has to be a multiple of 16");
+		} else {
+			return config.minimumY() % 16 != 0 ? DataResult.error("min_y has to be a multiple of 16") : DataResult.success(config);
+		}
 	}
 
 	public static GenerationShapeConfig create(
@@ -103,9 +94,7 @@ public class GenerationShapeConfig {
 		double densityOffset,
 		boolean simplexSurfaceNoise,
 		boolean randomDensityOffset,
-		boolean islandNoiseOverride,
-		boolean amplified,
-		boolean bl
+		boolean islandNoiseOverride
 	) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(
 			minimumY,
@@ -119,9 +108,7 @@ public class GenerationShapeConfig {
 			densityOffset,
 			simplexSurfaceNoise,
 			randomDensityOffset,
-			islandNoiseOverride,
-			amplified,
-			bl
+			islandNoiseOverride
 		);
 		checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
 			throw new IllegalStateException(partialResult.message());
@@ -129,63 +116,71 @@ public class GenerationShapeConfig {
 		return generationShapeConfig;
 	}
 
-	public int getMinimumY() {
-		return this.minimumY;
-	}
-
-	public int getHeight() {
-		return this.height;
-	}
-
-	public NoiseSamplingConfig getSampling() {
-		return this.sampling;
-	}
-
-	public SlideConfig getTopSlide() {
-		return this.topSlide;
-	}
-
-	public SlideConfig getBottomSlide() {
-		return this.bottomSlide;
-	}
-
-	public int getSizeHorizontal() {
-		return this.horizontalSize;
-	}
-
-	public int getSizeVertical() {
-		return this.verticalSize;
-	}
-
-	public double getDensityFactor() {
-		return this.densityFactor;
-	}
-
-	public double getDensityOffset() {
-		return this.densityOffset;
-	}
-
 	@Deprecated
-	public boolean hasSimplexSurfaceNoise() {
-		return this.simplexSurfaceNoise;
-	}
-
-	@Deprecated
-	public boolean hasRandomDensityOffset() {
-		return this.randomDensityOffset;
-	}
-
-	@Deprecated
-	public boolean hasIslandNoiseOverride() {
+	public boolean islandNoiseOverride() {
 		return this.islandNoiseOverride;
 	}
 
 	@Deprecated
-	public boolean isAmplified() {
+	public boolean amplified() {
 		return this.amplified;
 	}
 
-	public boolean method_38413() {
-		return this.field_34687;
+	public final String toString() {
+		return ObjectMethods.bootstrap<"toString",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified;useLegacyRandom",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified,GenerationShapeConfig::useLegacyRandom>(
+			this
+		);
+	}
+
+	public final int hashCode() {
+		return ObjectMethods.bootstrap<"hashCode",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified;useLegacyRandom",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified,GenerationShapeConfig::useLegacyRandom>(
+			this
+		);
+	}
+
+	public final boolean equals(Object object) {
+		return ObjectMethods.bootstrap<"equals",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified;useLegacyRandom",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified,GenerationShapeConfig::useLegacyRandom>(
+			this, object
+		);
+	}
+
+	public int minimumY() {
+		return this.minimumY;
+	}
+
+	public int height() {
+		return this.height;
+	}
+
+	public NoiseSamplingConfig sampling() {
+		return this.sampling;
+	}
+
+	public SlideConfig topSlide() {
+		return this.topSlide;
+	}
+
+	public SlideConfig bottomSlide() {
+		return this.bottomSlide;
+	}
+
+	public int horizontalSize() {
+		return this.horizontalSize;
+	}
+
+	public int verticalSize() {
+		return this.verticalSize;
+	}
+
+	public double densityFactor() {
+		return this.densityFactor;
+	}
+
+	public double densityOffset() {
+		return this.densityOffset;
+	}
+
+	public boolean useLegacyRandom() {
+		return this.useLegacyRandom;
 	}
 }

@@ -31,11 +31,11 @@ public class SplashOverlay extends Overlay {
 	private static final int MONOCHROME_BLACK = BackgroundHelper.ColorMixer.getArgb(255, 0, 0, 0);
 	private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.monochromeLogo ? MONOCHROME_BLACK : MOJANG_RED;
 	private static final int field_32251 = 240;
-	private static final float field_32252 = 60.0F;
+	private static final float LOGO_RIGHT_HALF_V = 60.0F;
 	private static final int field_32253 = 60;
 	private static final int field_32254 = 120;
-	private static final float field_32255 = 0.0625F;
-	private static final float field_32256 = 0.95F;
+	private static final float LOGO_OVERLAP = 0.0625F;
+	private static final float PROGRESS_LERP_DELTA = 0.95F;
 	public static final long RELOAD_COMPLETE_FADE_DURATION = 1000L;
 	public static final long RELOAD_START_FADE_DURATION = 500L;
 	private final MinecraftClient client;

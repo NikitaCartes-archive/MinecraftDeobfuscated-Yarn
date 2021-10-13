@@ -105,9 +105,9 @@ public class EntityPredicate {
 		EntityEquipmentPredicate equipment,
 		PlayerPredicate player,
 		FishingHookPredicate fishingHook,
-		LightningBoltPredicate lightningBoltPredicate,
+		LightningBoltPredicate lightningBolt,
 		EntityPredicate vehicle,
-		EntityPredicate entityPredicate,
+		EntityPredicate passenger,
 		EntityPredicate targetedEntity,
 		@Nullable String team,
 		@Nullable Identifier catType
@@ -122,9 +122,9 @@ public class EntityPredicate {
 		this.equipment = equipment;
 		this.player = player;
 		this.fishingHook = fishingHook;
-		this.lightningBolt = lightningBoltPredicate;
+		this.lightningBolt = lightningBolt;
 		this.vehicle = vehicle;
-		this.passenger = entityPredicate;
+		this.passenger = passenger;
 		this.targetedEntity = targetedEntity;
 		this.team = team;
 		this.catType = catType;

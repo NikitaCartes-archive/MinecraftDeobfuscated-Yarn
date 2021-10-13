@@ -74,11 +74,11 @@ public class ServerChunkManager extends ChunkManager {
 		Executor workerExecutor,
 		ChunkGenerator chunkGenerator,
 		int viewDistance,
-		int i,
-		boolean bl,
+		int simulationDistance,
+		boolean dsync,
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		ChunkStatusChangeListener chunkStatusChangeListener,
-		Supplier<PersistentStateManager> supplier
+		Supplier<PersistentStateManager> persistentStateManagerFactory
 	) {
 		this.world = world;
 		this.mainThreadExecutor = new ServerChunkManager.MainThreadExecutor(world);
@@ -98,13 +98,13 @@ public class ServerChunkManager extends ChunkManager {
 			chunkGenerator,
 			worldGenerationProgressListener,
 			chunkStatusChangeListener,
-			supplier,
+			persistentStateManagerFactory,
 			viewDistance,
-			bl
+			dsync
 		);
 		this.lightingProvider = this.threadedAnvilChunkStorage.getLightingProvider();
 		this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
-		this.ticketManager.setSimulationDistance(i);
+		this.ticketManager.setSimulationDistance(simulationDistance);
 		this.initChunkCaches();
 	}
 
@@ -339,6 +339,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	private void tickChunks() {
 		long l = this.world.getTime();
+		long m = l - this.lastMobSpawningTime;
 		this.lastMobSpawningTime = l;
 		boolean bl = this.world.isDebugWorld();
 		if (bl) {
@@ -350,28 +351,27 @@ public class ServerChunkManager extends ChunkManager {
 			int i = this.world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED);
 			boolean bl2 = worldProperties.getTime() % 400L == 0L;
 			profiler.push("naturalSpawnCount");
-			int j = this.ticketManager.getSpawningChunkCount();
+			int j = this.ticketManager.getTickedChunkCount();
 			SpawnHelper.Info info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded, new SpawnDensityCapper(this.threadedAnvilChunkStorage));
 			this.spawnInfo = info;
 			profiler.swap("filteringLoadedChunks");
-			List<ServerChunkManager.class_6635> list = Lists.newArrayListWithCapacity(j);
+			List<ServerChunkManager.ChunkWithHolder> list = Lists.newArrayListWithCapacity(j);
 
 			for(ChunkHolder chunkHolder : this.threadedAnvilChunkStorage.entryIterator()) {
 				WorldChunk worldChunk = chunkHolder.getWorldChunk();
 				if (worldChunk != null) {
-					list.add(new ServerChunkManager.class_6635(worldChunk, chunkHolder));
+					list.add(new ServerChunkManager.ChunkWithHolder(worldChunk, chunkHolder));
 				}
 			}
 
 			profiler.swap("spawnAndTick");
 			boolean bl3 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
-			long m = l - this.lastMobSpawningTime;
 			Collections.shuffle(list);
 
-			for(ServerChunkManager.class_6635 lv : list) {
-				WorldChunk worldChunk2 = lv.chunk;
+			for(ServerChunkManager.ChunkWithHolder chunkWithHolder : list) {
+				WorldChunk worldChunk2 = chunkWithHolder.chunk;
 				ChunkPos chunkPos = worldChunk2.getPos();
-				if (this.world.method_37115(chunkPos) && this.threadedAnvilChunkStorage.method_38783(chunkPos)) {
+				if (this.world.shouldTickEntity(chunkPos) && this.threadedAnvilChunkStorage.shouldTick(chunkPos)) {
 					worldChunk2.increaseInhabitedTime(m);
 					if (bl3 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(chunkPos)) {
 						SpawnHelper.spawn(this.world, worldChunk2, info, this.spawnAnimals, this.spawnMonsters, bl2);
@@ -387,7 +387,7 @@ public class ServerChunkManager extends ChunkManager {
 			}
 
 			profiler.swap("broadcast");
-			list.forEach(arg -> arg.holder.flushUpdates(arg.chunk));
+			list.forEach(chunk -> chunk.holder.flushUpdates(chunk.chunk));
 			profiler.pop();
 			profiler.pop();
 			this.threadedAnvilChunkStorage.tickEntityMovement();
@@ -412,7 +412,7 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	public ChunkGenerator getChunkGenerator() {
-		return this.threadedAnvilChunkStorage.method_37897();
+		return this.threadedAnvilChunkStorage.getChunkGenerator();
 	}
 
 	@Override
@@ -521,6 +521,42 @@ public class ServerChunkManager extends ChunkManager {
 		return this.spawnInfo;
 	}
 
+	static final class ChunkWithHolder extends Record {
+		final WorldChunk chunk;
+		final ChunkHolder holder;
+
+		ChunkWithHolder(WorldChunk worldChunk, ChunkHolder chunkHolder) {
+			this.chunk = worldChunk;
+			this.holder = chunkHolder;
+		}
+
+		public final String toString() {
+			return ObjectMethods.bootstrap<"toString",ServerChunkManager.ChunkWithHolder,"chunk;holder",ServerChunkManager.ChunkWithHolder::chunk,ServerChunkManager.ChunkWithHolder::holder>(
+				this
+			);
+		}
+
+		public final int hashCode() {
+			return ObjectMethods.bootstrap<"hashCode",ServerChunkManager.ChunkWithHolder,"chunk;holder",ServerChunkManager.ChunkWithHolder::chunk,ServerChunkManager.ChunkWithHolder::holder>(
+				this
+			);
+		}
+
+		public final boolean equals(Object object) {
+			return ObjectMethods.bootstrap<"equals",ServerChunkManager.ChunkWithHolder,"chunk;holder",ServerChunkManager.ChunkWithHolder::chunk,ServerChunkManager.ChunkWithHolder::holder>(
+				this, object
+			);
+		}
+
+		public WorldChunk chunk() {
+			return this.chunk;
+		}
+
+		public ChunkHolder holder() {
+			return this.holder;
+		}
+	}
+
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
 		MainThreadExecutor(World world) {
 			super("Chunk source main thread executor for " + world.getRegistryKey().getValue());
@@ -560,42 +596,6 @@ public class ServerChunkManager extends ChunkManager {
 				ServerChunkManager.this.lightingProvider.tick();
 				return super.runTask();
 			}
-		}
-	}
-
-	static final class class_6635 extends Record {
-		final WorldChunk chunk;
-		final ChunkHolder holder;
-
-		class_6635(WorldChunk worldChunk, ChunkHolder chunkHolder) {
-			this.chunk = worldChunk;
-			this.holder = chunkHolder;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",ServerChunkManager.class_6635,"chunk;holder",ServerChunkManager.class_6635::chunk,ServerChunkManager.class_6635::holder>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",ServerChunkManager.class_6635,"chunk;holder",ServerChunkManager.class_6635::chunk,ServerChunkManager.class_6635::holder>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",ServerChunkManager.class_6635,"chunk;holder",ServerChunkManager.class_6635::chunk,ServerChunkManager.class_6635::holder>(
-				this, object
-			);
-		}
-
-		public WorldChunk chunk() {
-			return this.chunk;
-		}
-
-		public ChunkHolder holder() {
-			return this.holder;
 		}
 	}
 }

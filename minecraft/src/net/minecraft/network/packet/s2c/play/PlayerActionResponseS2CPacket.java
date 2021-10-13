@@ -22,12 +22,12 @@ public final class PlayerActionResponseS2CPacket extends Record implements Packe
 		this(pos, state, action, approved);
 	}
 
-	public PlayerActionResponseS2CPacket(BlockPos blockPos, BlockState blockState, PlayerActionC2SPacket.Action action, boolean bl) {
-		blockPos = blockPos.toImmutable();
-		this.pos = blockPos;
-		this.state = blockState;
+	public PlayerActionResponseS2CPacket(BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved) {
+		pos = pos.toImmutable();
+		this.pos = pos;
+		this.state = state;
 		this.action = action;
-		this.approved = bl;
+		this.approved = approved;
 	}
 
 	public PlayerActionResponseS2CPacket(PacketByteBuf buf) {

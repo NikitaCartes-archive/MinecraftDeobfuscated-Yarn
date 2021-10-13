@@ -13,12 +13,6 @@ public interface class_6621 {
 	};
 
 	void afterPlace(
-		StructureWorldAccess structureWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockBox blockBox,
-		ChunkPos chunkPos,
-		class_6624 arg
+		StructureWorldAccess world, StructureAccessor structures, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos pos, class_6624 arg
 	);
 }

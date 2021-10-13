@@ -102,7 +102,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Items.HONEY_BOTTLE,
 		Items.GLOW_BERRIES
 	};
-	private static final Item[] field_33964 = new Item[]{
+	private static final Item[] AXE_ITEMS = new Item[]{
 		Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE
 	};
 
@@ -341,7 +341,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				"wax_off",
 				ItemUsedOnBlockCriterion.Conditions.create(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).keySet()).build()),
-					ItemPredicate.Builder.create().items(field_33964)
+					ItemPredicate.Builder.create().items(AXE_ITEMS)
 				)
 			)
 			.build(consumer, "husbandry/wax_off");
@@ -451,11 +451,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 
 	private Advancement.Task requireAllCatsTamed(Advancement.Task task) {
 		CatEntity.TEXTURES
-			.forEach(
-				(integer, identifier) -> task.criterion(
-						identifier.getPath(), TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().type(identifier).build())
-					)
-			);
+			.forEach((type, id) -> task.criterion(id.getPath(), TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().type(id).build())));
 		return task;
 	}
 }

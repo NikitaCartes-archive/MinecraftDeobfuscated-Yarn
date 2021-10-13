@@ -430,7 +430,7 @@ public abstract class PlayerManager {
 		player.getWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
 		BlockPos blockPos = player.getSpawnPointPosition();
 		float f = player.getSpawnAngle();
-		boolean bl = player.isSpawnPointSet();
+		boolean bl = player.isSpawnForced();
 		ServerWorld serverWorld = this.server.getWorld(player.getSpawnPointDimension());
 		Optional<Vec3d> optional;
 		if (serverWorld != null && blockPos != null) {

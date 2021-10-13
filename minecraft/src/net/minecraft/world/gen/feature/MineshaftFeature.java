@@ -11,9 +11,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -50,13 +52,15 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			);
 			arg.addPiece(mineshaftRoom);
 			mineshaftRoom.fillOpenings(mineshaftRoom, arg, arg2.random());
+			int i = arg2.chunkGenerator().getSeaLevel();
 			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
-				int i = -5;
-				BlockBox blockBox = arg.method_38721();
-				int j = arg2.chunkGenerator().getSeaLevel() - blockBox.getMaxY() + blockBox.getBlockCountY() / 2 - -5;
-				arg.method_38715(j);
+				BlockPos blockPos = arg.method_38721().getCenter();
+				int j = arg2.chunkGenerator().getHeight(blockPos.getX(), blockPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, arg2.heightAccessor());
+				int k = j <= i ? i : MathHelper.nextBetween(arg2.random(), i, j);
+				int l = k - blockPos.getY();
+				arg.method_38715(l);
 			} else {
-				arg.method_38716(arg2.chunkGenerator().getSeaLevel(), arg2.chunkGenerator().getMinimumY(), arg2.random(), 10);
+				arg.method_38716(i, arg2.chunkGenerator().getMinimumY(), arg2.random(), 10);
 			}
 		}
 	}

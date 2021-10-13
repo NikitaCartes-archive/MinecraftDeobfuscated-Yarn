@@ -10,7 +10,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType BARRIER = register("barrier", false);
 	public static final DefaultParticleType LIGHT = register("light", false);
 	public static final ParticleType<BlockStateParticleEffect> BLOCK = register(
-		"block", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::method_29128
+		"block", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
 	);
 	public static final DefaultParticleType BUBBLE = register("bubble", false);
 	public static final DefaultParticleType CLOUD = register("cloud", false);
@@ -35,7 +35,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType EXPLOSION_EMITTER = register("explosion_emitter", true);
 	public static final DefaultParticleType EXPLOSION = register("explosion", true);
 	public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = register(
-		"falling_dust", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::method_29128
+		"falling_dust", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
 	);
 	public static final DefaultParticleType FIREWORK = register("firework", false);
 	public static final DefaultParticleType FISHING = register("fishing", false);
@@ -48,7 +48,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType HEART = register("heart", false);
 	public static final DefaultParticleType INSTANT_EFFECT = register("instant_effect", false);
 	public static final ParticleType<ItemStackParticleEffect> ITEM = register(
-		"item", ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect::method_29136
+		"item", ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect::createCodec
 	);
 	public static final ParticleType<VibrationParticleEffect> VIBRATION = register(
 		"vibration", VibrationParticleEffect.PARAMETERS_FACTORY, particleType -> VibrationParticleEffect.CODEC

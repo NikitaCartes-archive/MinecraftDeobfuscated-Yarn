@@ -25,19 +25,19 @@ public class TimedTaskRunner {
 		return this;
 	}
 
-	public TimedTaskRunner method_36076(int i) {
-		return this.method_36077(i, () -> {
+	public TimedTaskRunner expectMinDuration(int minDuration) {
+		return this.expectMinDurationAndRun(minDuration, () -> {
 		});
 	}
 
-	public TimedTaskRunner method_36085(Runnable task) {
+	public TimedTaskRunner createAndAddReported(Runnable task) {
 		this.tasks.add(TimedTask.create(() -> this.tryRun(task)));
 		return this;
 	}
 
-	public TimedTaskRunner method_36077(int delay, Runnable task) {
+	public TimedTaskRunner expectMinDurationAndRun(int minDuration, Runnable task) {
 		this.tasks.add(TimedTask.create(() -> {
-			if (this.test.getTick() < this.tick + (long)delay) {
+			if (this.test.getTick() < this.tick + (long)minDuration) {
 				throw new GameTestException("Waiting");
 			} else {
 				this.tryRun(task);
@@ -46,9 +46,9 @@ public class TimedTaskRunner {
 		return this;
 	}
 
-	public TimedTaskRunner method_36084(int i, Runnable task) {
+	public TimedTaskRunner expectMinDurationOrRun(int minDuration, Runnable task) {
 		this.tasks.add(TimedTask.create(() -> {
-			if (this.test.getTick() < this.tick + (long)i) {
+			if (this.test.getTick() < this.tick + (long)minDuration) {
 				this.tryRun(task);
 				throw new GameTestException("Waiting");
 			}
@@ -56,15 +56,15 @@ public class TimedTaskRunner {
 		return this;
 	}
 
-	public void method_36075() {
+	public void completeIfSuccessful() {
 		this.tasks.add(TimedTask.create(this.test::completeIfSuccessful));
 	}
 
-	public void method_36080(Supplier<Exception> supplier) {
-		this.tasks.add(TimedTask.create(() -> this.test.fail((Throwable)supplier.get())));
+	public void fail(Supplier<Exception> exceptionSupplier) {
+		this.tasks.add(TimedTask.create(() -> this.test.fail((Throwable)exceptionSupplier.get())));
 	}
 
-	public TimedTaskRunner.Trigger method_36083() {
+	public TimedTaskRunner.Trigger createAndAddTrigger() {
 		TimedTaskRunner.Trigger trigger = new TimedTaskRunner.Trigger();
 		this.tasks.add(TimedTask.create(() -> trigger.trigger(this.test.getTick())));
 		return trigger;

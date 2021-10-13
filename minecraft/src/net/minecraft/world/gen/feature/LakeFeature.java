@@ -8,9 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.LightType;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class LakeFeature extends Feature<SingleStateFeatureConfig> {
@@ -100,24 +98,6 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 								if (bl2) {
 									structureWorldAccess.getBlockTickScheduler().schedule(blockPos2, CAVE_AIR.getBlock(), 0);
 									this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos2);
-								}
-							}
-						}
-					}
-				}
-
-				for(int j = 0; j < 16; ++j) {
-					for(int s = 0; s < 16; ++s) {
-						for(int t = 4; t < 8; ++t) {
-							if (bls[(j * 16 + s) * 8 + t]) {
-								BlockPos blockPos2 = blockPos.add(j, t - 1, s);
-								if (isSoil(structureWorldAccess.getBlockState(blockPos2)) && structureWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) > 0) {
-									Biome biome = structureWorldAccess.getBiome(blockPos2);
-									if (biome.getGenerationSettings().getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
-										structureWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), Block.NOTIFY_LISTENERS);
-									} else {
-										structureWorldAccess.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
-									}
 								}
 							}
 						}

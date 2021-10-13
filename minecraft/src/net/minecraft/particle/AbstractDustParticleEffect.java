@@ -9,8 +9,8 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
 public abstract class AbstractDustParticleEffect implements ParticleEffect {
-	public static final float field_33114 = 0.01F;
-	public static final float field_33115 = 4.0F;
+	public static final float MIN_SCALE = 0.01F;
+	public static final float MAX_SCALE = 4.0F;
 	protected final Vec3f color;
 	protected final float scale;
 
@@ -19,13 +19,13 @@ public abstract class AbstractDustParticleEffect implements ParticleEffect {
 		this.scale = MathHelper.clamp(scale, 0.01F, 4.0F);
 	}
 
-	public static Vec3f readColor(StringReader stringReader) throws CommandSyntaxException {
-		stringReader.expect(' ');
-		float f = stringReader.readFloat();
-		stringReader.expect(' ');
-		float g = stringReader.readFloat();
-		stringReader.expect(' ');
-		float h = stringReader.readFloat();
+	public static Vec3f readColor(StringReader reader) throws CommandSyntaxException {
+		reader.expect(' ');
+		float f = reader.readFloat();
+		reader.expect(' ');
+		float g = reader.readFloat();
+		reader.expect(' ');
+		float h = reader.readFloat();
 		return new Vec3f(f, g, h);
 	}
 

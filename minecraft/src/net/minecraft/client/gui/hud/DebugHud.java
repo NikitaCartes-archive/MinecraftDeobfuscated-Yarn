@@ -333,7 +333,7 @@ public class DebugHud extends DrawableHelper {
 							+ m
 							+ ", "
 							+ (String)Stream.of(SpawnGroup.values())
-								.map(spawnGroup -> Character.toUpperCase(spawnGroup.getName().charAt(0)) + ": " + object2IntMap.getInt(spawnGroup))
+								.map(group -> Character.toUpperCase(group.getName().charAt(0)) + ": " + object2IntMap.getInt(group))
 								.collect(Collectors.joining(", "))
 					);
 				} else {
@@ -365,9 +365,7 @@ public class DebugHud extends DrawableHelper {
 
 	private World getWorld() {
 		return DataFixUtils.orElse(
-			Optional.ofNullable(this.client.getServer())
-				.flatMap(integratedServer -> Optional.ofNullable(integratedServer.getWorld(this.client.world.getRegistryKey()))),
-			this.client.world
+			Optional.ofNullable(this.client.getServer()).flatMap(server -> Optional.ofNullable(server.getWorld(this.client.world.getRegistryKey()))), this.client.world
 		);
 	}
 

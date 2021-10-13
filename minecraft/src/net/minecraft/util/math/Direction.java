@@ -28,7 +28,7 @@ public enum Direction implements StringIdentifiable {
 	EAST(5, 4, 3, "east", Direction.AxisDirection.POSITIVE, Direction.Axis.X, new Vec3i(1, 0, 0));
 
 	public static final Codec<Direction> CODEC = StringIdentifiable.createCodec(Direction::values, Direction::byName);
-	public static final Codec<Direction> field_35088 = CODEC.flatXmap(Direction::validateVertical, Direction::validateVertical);
+	public static final Codec<Direction> VERTICAL_CODEC = CODEC.flatXmap(Direction::validateVertical, Direction::validateVertical);
 	private final int id;
 	private final int idOpposite;
 	private final int idHorizontal;

@@ -197,7 +197,7 @@ public final class SpawnHelper {
 		} else if (world.getSpawnPos().isWithinDistance(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5), 24.0)) {
 			return false;
 		} else {
-			return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.method_37118(pos);
+			return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.shouldTickEntity(pos);
 		}
 	}
 
@@ -321,9 +321,7 @@ public final class SpawnHelper {
 			BlockPos blockPos2 = pos.down();
 			switch(location) {
 				case IN_WATER:
-					return fluidState.isIn(FluidTags.WATER)
-						&& world.getFluidState(blockPos2).isIn(FluidTags.WATER)
-						&& !world.getBlockState(blockPos).isSolidBlock(world, blockPos);
+					return fluidState.isIn(FluidTags.WATER) && !world.getBlockState(blockPos).isSolidBlock(world, blockPos);
 				case IN_LAVA:
 					return fluidState.isIn(FluidTags.LAVA);
 				case ON_GROUND:

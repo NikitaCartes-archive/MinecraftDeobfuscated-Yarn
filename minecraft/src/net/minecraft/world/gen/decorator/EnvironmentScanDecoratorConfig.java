@@ -13,7 +13,7 @@ public final class EnvironmentScanDecoratorConfig extends Record implements Deco
 	private final int maxSteps;
 	public static final Codec<EnvironmentScanDecoratorConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Direction.field_35088.fieldOf("direction_of_search").forGetter(EnvironmentScanDecoratorConfig::directionOfSearch),
+					Direction.VERTICAL_CODEC.fieldOf("direction_of_search").forGetter(EnvironmentScanDecoratorConfig::directionOfSearch),
 					BlockPredicate.BASE_CODEC.fieldOf("target_condition").forGetter(EnvironmentScanDecoratorConfig::targetCondition),
 					Codec.intRange(1, 32).fieldOf("max_steps").forGetter(EnvironmentScanDecoratorConfig::maxSteps)
 				)

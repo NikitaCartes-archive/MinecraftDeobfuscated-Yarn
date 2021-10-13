@@ -113,9 +113,7 @@ public abstract class DrawableHelper {
 		RenderSystem.enableTexture();
 	}
 
-	protected static void fillGradient(
-		Matrix4f matrix, BufferBuilder bufferBuilder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd
-	) {
+	protected static void fillGradient(Matrix4f matrix, BufferBuilder builder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd) {
 		float f = (float)(colorStart >> 24 & 0xFF) / 255.0F;
 		float g = (float)(colorStart >> 16 & 0xFF) / 255.0F;
 		float h = (float)(colorStart >> 8 & 0xFF) / 255.0F;
@@ -124,10 +122,10 @@ public abstract class DrawableHelper {
 		float k = (float)(colorEnd >> 16 & 0xFF) / 255.0F;
 		float l = (float)(colorEnd >> 8 & 0xFF) / 255.0F;
 		float m = (float)(colorEnd & 0xFF) / 255.0F;
-		bufferBuilder.vertex(matrix, (float)endX, (float)startY, (float)z).color(g, h, i, f).next();
-		bufferBuilder.vertex(matrix, (float)startX, (float)startY, (float)z).color(g, h, i, f).next();
-		bufferBuilder.vertex(matrix, (float)startX, (float)endY, (float)z).color(k, l, m, j).next();
-		bufferBuilder.vertex(matrix, (float)endX, (float)endY, (float)z).color(k, l, m, j).next();
+		builder.vertex(matrix, (float)endX, (float)startY, (float)z).color(g, h, i, f).next();
+		builder.vertex(matrix, (float)startX, (float)startY, (float)z).color(g, h, i, f).next();
+		builder.vertex(matrix, (float)startX, (float)endY, (float)z).color(k, l, m, j).next();
+		builder.vertex(matrix, (float)endX, (float)endY, (float)z).color(k, l, m, j).next();
 	}
 
 	public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
@@ -211,10 +209,10 @@ public abstract class DrawableHelper {
 	 * @param v the top-most coordinate of the texture region
 	 * @param width the width of the rectangle
 	 * @param height the height of the rectangle
-	 * @param textureHeight the height of the entire texture
 	 * @param textureWidth the width of the entire texture
+	 * @param textureHeight the height of the entire texture
 	 */
-	public static void drawTexture(MatrixStack matrices, int x, int y, int z, float u, float v, int width, int height, int textureHeight, int textureWidth) {
+	public static void drawTexture(MatrixStack matrices, int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight) {
 		drawTexture(matrices, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
 	}
 

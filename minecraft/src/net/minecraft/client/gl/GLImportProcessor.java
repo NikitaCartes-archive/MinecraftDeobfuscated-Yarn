@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.FileNameUtil;
+import net.minecraft.util.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 
@@ -64,7 +64,7 @@ public abstract class GLImportProcessor {
 					String string4 = path + string2;
 					String string5 = this.loadImport(bl, string4);
 					if (!Strings.isEmpty(string5)) {
-						if (!ChatUtil.endsWithLineBreak(string5)) {
+						if (!StringHelper.endsWithLineBreak(string5)) {
 							string5 = string5 + System.lineSeparator();
 						}
 
@@ -82,7 +82,7 @@ public abstract class GLImportProcessor {
 						list.add(string + string3 + string6);
 					}
 
-					int k = ChatUtil.countLines(source.substring(0, matcher.end(1)));
+					int k = StringHelper.countLines(source.substring(0, matcher.end(1)));
 					string = String.format(Locale.ROOT, "#line %d %d", k, i);
 					j = matcher.end(1);
 				}

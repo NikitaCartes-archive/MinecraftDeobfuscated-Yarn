@@ -16,8 +16,8 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -70,7 +70,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof CommandBlockBlockEntity commandBlockBlockEntity) {
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
-			boolean bl = !ChatUtil.isEmpty(commandBlockExecutor.getCommand());
+			boolean bl = !StringHelper.isEmpty(commandBlockExecutor.getCommand());
 			CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
 			boolean bl2 = commandBlockBlockEntity.isConditionMet();
 			if (type == CommandBlockBlockEntity.Type.AUTO) {

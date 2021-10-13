@@ -40,9 +40,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
@@ -154,7 +154,7 @@ public class DebugInfoSender {
 		Set<String> set = (Set)brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
 		buf.writeCollection(set, PacketByteBuf::writeString);
 		buf.writeCollection(listMemories(entity, l), (bufx, memory) -> {
-			String string = ChatUtil.truncate(memory, 255, true);
+			String string = StringHelper.truncate(memory, 255, true);
 			bufx.writeString(string);
 		});
 		if (entity instanceof VillagerEntity) {

@@ -1,22 +1,16 @@
 package net.minecraft.util.math.noise;
 
-import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.util.List;
-import java.util.stream.IntStream;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
-public class OctaveSimplexNoiseSampler implements NoiseSampler {
+public class OctaveSimplexNoiseSampler {
 	private final SimplexNoiseSampler[] octaveSamplers;
 	private final double persistence;
 	private final double lacunarity;
-
-	public OctaveSimplexNoiseSampler(AbstractRandom random, IntStream octaves) {
-		this(random, (List<Integer>)octaves.boxed().collect(ImmutableList.toImmutableList()));
-	}
 
 	public OctaveSimplexNoiseSampler(AbstractRandom random, List<Integer> octaves) {
 		this(random, new IntRBTreeSet(octaves));
@@ -81,10 +75,5 @@ public class OctaveSimplexNoiseSampler implements NoiseSampler {
 		}
 
 		return d;
-	}
-
-	@Override
-	public double sample(double x, double y, double yScale, double yMax) {
-		return this.sample(x, y, true) * 0.55;
 	}
 }

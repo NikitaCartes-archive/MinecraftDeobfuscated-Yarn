@@ -403,7 +403,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 			int j = i + BiomeCoords.fromBlock(this.getHeight()) - 1;
 			int k = MathHelper.clamp(biomeY, i, j);
 			int l = this.getSectionIndex(BiomeCoords.toBlock(k));
-			return this.sectionArray[l].method_38293(biomeX & 3, k & 3, biomeZ & 3);
+			return this.sectionArray[l].getBiome(biomeX & 3, k & 3, biomeZ & 3);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Getting biome");
 			CrashReportSection crashReportSection = crashReport.addElement("Biome being got");

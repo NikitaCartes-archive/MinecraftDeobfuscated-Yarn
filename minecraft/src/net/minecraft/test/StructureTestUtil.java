@@ -48,7 +48,7 @@ import org.apache.logging.log4j.Logger;
 
 public class StructureTestUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final String field_33173 = "gameteststructures";
+	public static final String TEST_STRUCTURES_DIRECTORY_NAME = "gameteststructures";
 	public static String testStructuresDirectoryName = "gameteststructures";
 	private static final int field_33174 = 4;
 
@@ -281,16 +281,10 @@ public class StructureTestUtil {
 	private static void resetBlock(int altitude, BlockPos pos, ServerWorld world) {
 		BlockState blockState = null;
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(world.getRegistryManager().get(Registry.BIOME_KEY));
-		if (flatChunkGeneratorConfig instanceof FlatChunkGeneratorConfig) {
-			List<BlockState> list = flatChunkGeneratorConfig.getLayerBlocks();
-			int i = pos.getY() - world.getBottomY();
-			if (pos.getY() < altitude && i > 0 && i <= list.size()) {
-				blockState = (BlockState)list.get(i - 1);
-			}
-		} else if (pos.getY() == altitude - 1) {
-			blockState = world.getBiome(pos).getGenerationSettings().getSurfaceConfig().getTopMaterial();
-		} else if (pos.getY() < altitude - 1) {
-			blockState = world.getBiome(pos).getGenerationSettings().getSurfaceConfig().getUnderMaterial();
+		List<BlockState> list = flatChunkGeneratorConfig.getLayerBlocks();
+		int i = pos.getY() - world.getBottomY();
+		if (pos.getY() < altitude && i > 0 && i <= list.size()) {
+			blockState = (BlockState)list.get(i - 1);
 		}
 
 		if (blockState == null) {

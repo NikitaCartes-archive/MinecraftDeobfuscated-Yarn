@@ -6,7 +6,6 @@ import com.mojang.serialization.Lifecycle;
 import java.net.Proxy;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.Schemas;
@@ -245,10 +244,5 @@ public class TestServer extends MinecraftServer {
 	@Override
 	public boolean isHost(GameProfile profile) {
 		return false;
-	}
-
-	@Override
-	public Optional<String> getModdedStatusMessage() {
-		return Optional.empty();
 	}
 }

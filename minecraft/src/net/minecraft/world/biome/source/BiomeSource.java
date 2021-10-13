@@ -1,7 +1,6 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.TopologicalSorts;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -30,7 +28,6 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public abstract class BiomeSource {
 	public static final Codec<BiomeSource> CODEC = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::getCodec, Function.identity());
-	private final ImmutableSet<BlockState> topMaterials;
 	private final List<Biome> biomes;
 	private final ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> field_34469;
 
@@ -40,9 +37,6 @@ public abstract class BiomeSource {
 
 	protected BiomeSource(List<Biome> list) {
 		this.biomes = list;
-		this.topMaterials = (ImmutableSet)list.stream()
-			.map(biome -> biome.getGenerationSettings().getSurfaceConfig().getTopMaterial())
-			.collect(ImmutableSet.toImmutableSet());
 
 		final class class_6543 extends Record {
 			private final int step;
@@ -207,10 +201,6 @@ public abstract class BiomeSource {
 	}
 
 	public abstract Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler);
-
-	public boolean method_38113(BlockState blockState) {
-		return this.topMaterials.contains(blockState);
-	}
 
 	public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
 	}

@@ -32,7 +32,7 @@ public abstract class AbstractNoiseBlockStateProvider extends BlockStateProvider
 		this.seed = seed;
 		this.noiseParameters = noiseParameters;
 		this.scale = scale;
-		this.noiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(new AtomicSimpleRandom(seed)), noiseParameters);
+		this.noiseSampler = DoublePerlinNoiseSampler.method_39123(new ChunkRandom(new AtomicSimpleRandom(seed)), noiseParameters);
 	}
 
 	protected double getNoiseValue(BlockPos pos, double scale) {

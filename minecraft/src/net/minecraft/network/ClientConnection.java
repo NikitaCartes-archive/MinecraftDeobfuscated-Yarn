@@ -213,10 +213,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	private void sendInternal(
-		Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback, NetworkState networkState, NetworkState networkState2
+		Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback, NetworkState packetState, NetworkState currentState
 	) {
-		if (networkState != networkState2) {
-			this.setState(networkState);
+		if (packetState != currentState) {
+			this.setState(packetState);
 		}
 
 		ChannelFuture channelFuture = this.channel.writeAndFlush(packet);

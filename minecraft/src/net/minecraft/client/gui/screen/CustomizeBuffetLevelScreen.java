@@ -58,7 +58,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList
 					.children()
 					.stream()
-					.filter(buffetBiomeItem -> Objects.equals(buffetBiomeItem.biome, this.biome))
+					.filter(entry -> Objects.equals(entry.biome, this.biome))
 					.findFirst()
 					.orElse(null)
 			);

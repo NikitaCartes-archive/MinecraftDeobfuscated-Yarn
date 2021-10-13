@@ -54,7 +54,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public void renderIcon(MatrixStack matrices, float f, int i) {
+	public void renderIcon(MatrixStack matrices, float brightness, int alpha) {
 		RenderSystem.setShaderTexture(0, SpectatorHud.SPECTATOR_TEXTURE);
 		DrawableHelper.drawTexture(matrices, 0, 0, 16.0F, 0.0F, 16, 16, 256, 256);
 	}
@@ -107,17 +107,17 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public void renderIcon(MatrixStack matrices, float f, int i) {
+		public void renderIcon(MatrixStack matrices, float brightness, int alpha) {
 			Integer integer = this.team.getColor().getColorValue();
 			if (integer != null) {
-				float g = (float)(integer >> 16 & 0xFF) / 255.0F;
-				float h = (float)(integer >> 8 & 0xFF) / 255.0F;
-				float j = (float)(integer & 0xFF) / 255.0F;
-				DrawableHelper.fill(matrices, 1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
+				float f = (float)(integer >> 16 & 0xFF) / 255.0F;
+				float g = (float)(integer >> 8 & 0xFF) / 255.0F;
+				float h = (float)(integer & 0xFF) / 255.0F;
+				DrawableHelper.fill(matrices, 1, 1, 15, 15, MathHelper.packRgb(f * brightness, g * brightness, h * brightness) | alpha << 24);
 			}
 
 			RenderSystem.setShaderTexture(0, this.skinId);
-			RenderSystem.setShaderColor(f, f, f, (float)i / 255.0F);
+			RenderSystem.setShaderColor(brightness, brightness, brightness, (float)alpha / 255.0F);
 			DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
 			DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
 		}

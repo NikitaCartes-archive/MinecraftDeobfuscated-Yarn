@@ -99,14 +99,18 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
-		boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
-			&& isSpawnDark(world, pos, random)
-			&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
-		if (!Objects.equals(optional, Optional.of(BiomeKeys.RIVER)) && !Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_RIVER))) {
-			return random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl;
+		if (!world.getFluidState(pos.down()).isIn(FluidTags.WATER)) {
+			return false;
 		} else {
-			return random.nextInt(15) == 0 && bl;
+			Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
+			boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
+				&& isSpawnDark(world, pos, random)
+				&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
+			if (!Objects.equals(optional, Optional.of(BiomeKeys.RIVER)) && !Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_RIVER))) {
+				return random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl;
+			} else {
+				return random.nextInt(15) == 0 && bl;
+			}
 		}
 	}
 

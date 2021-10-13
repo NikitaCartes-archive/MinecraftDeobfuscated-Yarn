@@ -18,9 +18,9 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -69,7 +69,7 @@ public class WrittenBookItem extends Item {
 		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null) {
 			String string = nbtCompound.getString("title");
-			if (!ChatUtil.isEmpty(string)) {
+			if (!StringHelper.isEmpty(string)) {
 				return new LiteralText(string);
 			}
 		}
@@ -82,7 +82,7 @@ public class WrittenBookItem extends Item {
 		if (stack.hasNbt()) {
 			NbtCompound nbtCompound = stack.getNbt();
 			String string = nbtCompound.getString("author");
-			if (!ChatUtil.isEmpty(string)) {
+			if (!StringHelper.isEmpty(string)) {
 				tooltip.add(new TranslatableText("book.byAuthor", string).formatted(Formatting.GRAY));
 			}
 

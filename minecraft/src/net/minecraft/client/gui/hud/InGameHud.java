@@ -61,9 +61,9 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -441,7 +441,7 @@ public class InGameHud extends DrawableHelper {
 		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
 		if (!collection.isEmpty()) {
 			Screen j = this.client.currentScreen;
-			if (j instanceof AbstractInventoryScreen abstractInventoryScreen && abstractInventoryScreen.method_38934()) {
+			if (j instanceof AbstractInventoryScreen abstractInventoryScreen && abstractInventoryScreen.hideStatusEffectHud()) {
 				return;
 			}
 
@@ -646,7 +646,7 @@ public class InGameHud extends DrawableHelper {
 		if (this.client.world.getTime() >= 120500L) {
 			text = DEMO_EXPIRED_MESSAGE;
 		} else {
-			text = new TranslatableText("demo.remainingTime", ChatUtil.ticksToString((int)(120500L - this.client.world.getTime())));
+			text = new TranslatableText("demo.remainingTime", StringHelper.formatTicks((int)(120500L - this.client.world.getTime())));
 		}
 
 		int i = this.getTextRenderer().getWidth(text);
