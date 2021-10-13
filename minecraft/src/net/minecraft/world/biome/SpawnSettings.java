@@ -26,13 +26,7 @@ public class SpawnSettings {
 	public static final Logger LOGGER = LogManager.getLogger();
 	private static final float field_30983 = 0.1F;
 	public static final Pool<SpawnSettings.SpawnEntry> EMPTY_ENTRY_POOL = Pool.empty();
-	public static final SpawnSettings INSTANCE = new SpawnSettings(
-		0.1F,
-		(Map<SpawnGroup, Pool<SpawnSettings.SpawnEntry>>)Stream.of(SpawnGroup.values())
-			.collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> EMPTY_ENTRY_POOL)),
-		ImmutableMap.of(),
-		false
-	);
+	public static final SpawnSettings INSTANCE = new SpawnSettings.Builder().build();
 	public static final MapCodec<SpawnSettings> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.floatRange(0.0F, 0.9999999F).optionalFieldOf("creature_spawn_probability", 0.1F).forGetter(spawnSettings -> spawnSettings.creatureSpawnProbability),

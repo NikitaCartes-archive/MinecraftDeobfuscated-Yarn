@@ -11,7 +11,7 @@ public interface BlockPredicateType<P extends BlockPredicate> {
 	BlockPredicateType<AnyOfBlockPredicate> ANY_OF = register("any_of", AnyOfBlockPredicate.CODEC);
 	BlockPredicateType<AllOfBlockPredicate> ALL_OF = register("all_of", AllOfBlockPredicate.CODEC);
 	BlockPredicateType<NotBlockPredicate> NOT = register("not", NotBlockPredicate.CODEC);
-	BlockPredicateType<AlwaysTrueBlockPredicate> TRUE = register("true", AlwaysTrueBlockPredicate.CODEC);
+	BlockPredicateType<TrueBlockPredicate> TRUE = register("true", TrueBlockPredicate.CODEC);
 
 	Codec<P> codec();
 

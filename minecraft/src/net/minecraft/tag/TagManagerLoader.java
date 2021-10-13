@@ -87,9 +87,9 @@ public class TagManagerLoader implements ResourceReloader {
 		private final RequiredTagList<T> requirement;
 		final CompletableFuture<? extends TagGroup<T>> groupLoadFuture;
 
-		RequiredGroup(RequiredTagList<T> requiredTagList, CompletableFuture<? extends TagGroup<T>> completableFuture) {
-			this.requirement = requiredTagList;
-			this.groupLoadFuture = completableFuture;
+		RequiredGroup(RequiredTagList<T> requirement, CompletableFuture<? extends TagGroup<T>> groupLoadFuture) {
+			this.requirement = requirement;
+			this.groupLoadFuture = groupLoadFuture;
 		}
 
 		public void addTo(TagManager.Builder builder) {

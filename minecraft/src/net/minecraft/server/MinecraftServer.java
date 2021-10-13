@@ -52,7 +52,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
-import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -84,7 +83,6 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.LiteralText;
@@ -92,6 +90,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
+import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.Unit;
@@ -178,7 +177,7 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final String field_34982 = "vanilla";
+	public static final String VANILLA = "vanilla";
 	private static final float field_33212 = 0.8F;
 	private static final int field_33213 = 100;
 	public static final int field_33206 = 50;
@@ -341,7 +340,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		boolean bl = false;
 		Finishable finishable = FlightProfiler.INSTANCE.startWorldLoadProfiling();
 		this.loadWorldResourcePack();
-		this.saveProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
+		this.saveProperties.addServerBrand(this.getServerModName(), this.getModStatus().isModded());
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldGenerationProgressListener);
 		this.updateDifficulty();
@@ -473,15 +472,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				LOGGER.warn("Unable to find spawn biome");
 			}
 
-			boolean bl = false;
-
-			for (Block block : BlockTags.VALID_SPAWN.values()) {
-				if (biomeSource.method_38113(block.getDefaultState())) {
-					bl = true;
-					break;
-				}
-			}
-
 			int i = chunkGenerator.getSpawnHeight(world);
 			if (i < world.getBottomY()) {
 				BlockPos blockPos2 = chunkPos.getStartPos();
@@ -497,7 +487,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			for (int o = 0; o < 1024; o++) {
 				if (j > -16 && j <= 16 && k > -16 && k <= 16) {
-					BlockPos blockPos3 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k), bl);
+					BlockPos blockPos3 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k));
 					if (blockPos3 != null) {
 						worldProperties.setSpawnPos(blockPos3, 0.0F);
 						break;
@@ -628,7 +618,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
 		if (flush) {
 			for (ServerWorld serverWorld3 : this.getWorlds()) {
-				LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", serverWorld3.getChunkManager().threadedAnvilChunkStorage.method_37476());
+				LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", serverWorld3.getChunkManager().threadedAnvilChunkStorage.getSaveDir());
 			}
 
 			LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
@@ -1051,7 +1041,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public abstract SystemDetails addExtraSystemDetails(SystemDetails details);
 
-	public abstract Optional<String> getModdedStatusMessage();
+	public ModStatus getModStatus() {
+		return ModStatus.check("vanilla", this::getServerModName, "Server", MinecraftServer.class);
+	}
 
 	@Override
 	public void sendSystemMessage(Text message, UUID sender) {

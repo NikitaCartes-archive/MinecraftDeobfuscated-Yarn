@@ -30,14 +30,14 @@ public class AdvancementWidget extends DrawableHelper {
 	private static final int field_32287 = 0;
 	private static final int field_32288 = 200;
 	private static final int field_32289 = 26;
-	private static final int field_32290 = 8;
-	private static final int field_32291 = 5;
-	private static final int field_32292 = 26;
+	private static final int ICON_OFFSET_X = 8;
+	private static final int ICON_OFFSET_Y = 5;
+	private static final int ICON_SIZE = 26;
 	private static final int field_32293 = 3;
 	private static final int field_32294 = 5;
-	private static final int field_32295 = 32;
-	private static final int field_32296 = 9;
-	private static final int field_32297 = 163;
+	private static final int TITLE_OFFSET_X = 32;
+	private static final int TITLE_OFFSET_Y = 9;
+	private static final int TITLE_MAX_WIDTH = 163;
 	private static final int[] SPLIT_OFFSET_CANDIDATES = new int[]{0, 10, -10, 25, -25};
 	private final AdvancementTab tab;
 	private final Advancement advancement;
@@ -110,15 +110,15 @@ public class AdvancementWidget extends DrawableHelper {
 		return advancement != null && advancement.getDisplay() != null ? this.tab.getWidget(advancement) : null;
 	}
 
-	public void renderLines(MatrixStack matrices, int x, int y, boolean bl) {
+	public void renderLines(MatrixStack matrices, int x, int y, boolean border) {
 		if (this.parent != null) {
 			int i = x + this.parent.x + 13;
 			int j = x + this.parent.x + 26 + 4;
 			int k = y + this.parent.y + 13;
 			int l = x + this.x + 13;
 			int m = y + this.y + 13;
-			int n = bl ? -16777216 : -1;
-			if (bl) {
+			int n = border ? -16777216 : -1;
+			if (border) {
 				this.drawHorizontalLine(matrices, j, i, k - 1, n);
 				this.drawHorizontalLine(matrices, j + 1, i, k, n);
 				this.drawHorizontalLine(matrices, j, i, k + 1, n);
@@ -135,7 +135,7 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 
 		for (AdvancementWidget advancementWidget : this.children) {
-			advancementWidget.renderLines(matrices, x, y, bl);
+			advancementWidget.renderLines(matrices, x, y, border);
 		}
 	}
 
@@ -219,9 +219,9 @@ public class AdvancementWidget extends DrawableHelper {
 		int n = 32 + this.description.size() * 9;
 		if (!this.description.isEmpty()) {
 			if (bl2) {
-				this.method_2324(matrices, m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
+				this.renderDescriptionBackground(matrices, m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
 			} else {
-				this.method_2324(matrices, m, l, this.width, n, 10, 200, 26, 0, 52);
+				this.renderDescriptionBackground(matrices, m, l, this.width, n, 10, 200, 26, 0, 52);
 			}
 		}
 
@@ -255,34 +255,82 @@ public class AdvancementWidget extends DrawableHelper {
 		this.client.getItemRenderer().renderInGui(this.display.getIcon(), originX + this.x + 8, originY + this.y + 5);
 	}
 
-	protected void method_2324(MatrixStack matrices, int x, int y, int i, int j, int k, int l, int m, int n, int o) {
-		this.drawTexture(matrices, x, y, n, o, k, k);
-		this.method_2321(matrices, x + k, y, i - k - k, k, n + k, o, l - k - k, m);
-		this.drawTexture(matrices, x + i - k, y, n + l - k, o, k, k);
-		this.drawTexture(matrices, x, y + j - k, n, o + m - k, k, k);
-		this.method_2321(matrices, x + k, y + j - k, i - k - k, k, n + k, o + m - k, l - k - k, m);
-		this.drawTexture(matrices, x + i - k, y + j - k, n + l - k, o + m - k, k, k);
-		this.method_2321(matrices, x, y + k, k, j - k - k, n, o + k, l, m - k - k);
-		this.method_2321(matrices, x + k, y + k, i - k - k, j - k - k, n + k, o + k, l - k - k, m - k - k);
-		this.method_2321(matrices, x + i - k, y + k, k, j - k - k, n + l - k, o + k, l, m - k - k);
+	/**
+	 * Renders the description background.
+	 * 
+	 * @implNote This splits the area into 9 parts (4 corners, 4 edges and 1
+	 * central box) and draws each of them.
+	 */
+	protected void renderDescriptionBackground(
+		MatrixStack matrices, int x, int y, int width, int height, int cornerSize, int textureWidth, int textureHeight, int u, int v
+	) {
+		this.drawTexture(matrices, x, y, u, v, cornerSize, cornerSize);
+		this.drawTextureRepeatedly(
+			matrices, x + cornerSize, y, width - cornerSize - cornerSize, cornerSize, u + cornerSize, v, textureWidth - cornerSize - cornerSize, textureHeight
+		);
+		this.drawTexture(matrices, x + width - cornerSize, y, u + textureWidth - cornerSize, v, cornerSize, cornerSize);
+		this.drawTexture(matrices, x, y + height - cornerSize, u, v + textureHeight - cornerSize, cornerSize, cornerSize);
+		this.drawTextureRepeatedly(
+			matrices,
+			x + cornerSize,
+			y + height - cornerSize,
+			width - cornerSize - cornerSize,
+			cornerSize,
+			u + cornerSize,
+			v + textureHeight - cornerSize,
+			textureWidth - cornerSize - cornerSize,
+			textureHeight
+		);
+		this.drawTexture(
+			matrices, x + width - cornerSize, y + height - cornerSize, u + textureWidth - cornerSize, v + textureHeight - cornerSize, cornerSize, cornerSize
+		);
+		this.drawTextureRepeatedly(
+			matrices, x, y + cornerSize, cornerSize, height - cornerSize - cornerSize, u, v + cornerSize, textureWidth, textureHeight - cornerSize - cornerSize
+		);
+		this.drawTextureRepeatedly(
+			matrices,
+			x + cornerSize,
+			y + cornerSize,
+			width - cornerSize - cornerSize,
+			height - cornerSize - cornerSize,
+			u + cornerSize,
+			v + cornerSize,
+			textureWidth - cornerSize - cornerSize,
+			textureHeight - cornerSize - cornerSize
+		);
+		this.drawTextureRepeatedly(
+			matrices,
+			x + width - cornerSize,
+			y + cornerSize,
+			cornerSize,
+			height - cornerSize - cornerSize,
+			u + textureWidth - cornerSize,
+			v + cornerSize,
+			textureWidth,
+			textureHeight - cornerSize - cornerSize
+		);
 	}
 
-	protected void method_2321(MatrixStack matrices, int x, int y, int i, int j, int k, int l, int m, int n) {
-		int o = 0;
+	/**
+	 * Draws a textured rectangle repeatedly to cover the area of {@code
+	 * width} and {@code height}. The last texture is clipped to fit the area.
+	 */
+	protected void drawTextureRepeatedly(MatrixStack matrices, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
+		int i = 0;
 
-		while (o < i) {
-			int p = x + o;
-			int q = Math.min(m, i - o);
-			int r = 0;
+		while (i < width) {
+			int j = x + i;
+			int k = Math.min(textureWidth, width - i);
+			int l = 0;
 
-			while (r < j) {
-				int s = y + r;
-				int t = Math.min(n, j - r);
-				this.drawTexture(matrices, p, s, k, l, q, t);
-				r += n;
+			while (l < height) {
+				int m = y + l;
+				int n = Math.min(textureHeight, height - l);
+				this.drawTexture(matrices, j, m, u, v, k, n);
+				l += textureHeight;
 			}
 
-			o += m;
+			i += textureWidth;
 		}
 	}
 

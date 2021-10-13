@@ -49,13 +49,13 @@ public class NbtOrderedStringFormatter implements NbtElementVisitor {
 	private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
 	private static final String KEY_VALUE_SEPARATOR = String.valueOf(':');
 	private static final String ENTRY_SEPARATOR = String.valueOf(',');
-	private static final String field_33234 = "[";
-	private static final String field_33235 = "]";
-	private static final String field_33236 = ";";
-	private static final String field_33237 = " ";
-	private static final String field_33238 = "{";
-	private static final String field_33239 = "}";
-	private static final String field_33240 = "\n";
+	private static final String SQUARE_OPEN_BRACKET = "[";
+	private static final String SQUARE_CLOSE_BRACKET = "]";
+	private static final String SEMICOLON = ";";
+	private static final String SPACE = " ";
+	private static final String CURLY_OPEN_BRACKET = "{";
+	private static final String CURLY_CLOSE_BRACKET = "}";
+	private static final String NEW_LINE = "\n";
 	private final String prefix;
 	private final int indentationLevel;
 	private final List<String> pathParts;
@@ -65,8 +65,8 @@ public class NbtOrderedStringFormatter implements NbtElementVisitor {
 		this("    ", 0, Lists.<String>newArrayList());
 	}
 
-	public NbtOrderedStringFormatter(String string, int indentationLevel, List<String> pathParts) {
-		this.prefix = string;
+	public NbtOrderedStringFormatter(String prefix, int indentationLevel, List<String> pathParts) {
+		this.prefix = prefix;
 		this.indentationLevel = indentationLevel;
 		this.pathParts = pathParts;
 	}

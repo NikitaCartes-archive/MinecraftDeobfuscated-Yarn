@@ -20,8 +20,8 @@ import net.minecraft.util.math.MathHelper;
 public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCallback {
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	public static final Identifier SPECTATOR_TEXTURE = new Identifier("textures/gui/spectator_widgets.png");
-	private static final long field_32215 = 5000L;
-	private static final long field_32216 = 2000L;
+	private static final long FADE_OUT_DELAY = 5000L;
+	private static final long FADE_OUT_DURATION = 2000L;
 	private final MinecraftClient client;
 	private long lastInteractionTime;
 	@Nullable

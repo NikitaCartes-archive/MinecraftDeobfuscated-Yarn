@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class ChatScreen extends Screen {
-	public static final int field_32237 = 7;
+	public static final int SHIFT_SCROLL_AMOUNT = 7;
 	private static final Text USAGE_TEXT = new TranslatableText("chat_screen.usage");
 	private String chatLastMessage = "";
 	private int messageHistorySize = -1;

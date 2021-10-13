@@ -29,10 +29,10 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class GameModeSelectionScreen extends Screen {
 	static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
-	private static final int field_32310 = 128;
-	private static final int field_32311 = 128;
-	private static final int field_32312 = 26;
-	private static final int field_32313 = 5;
+	private static final int TEXTURE_WIDTH = 128;
+	private static final int TEXTURE_HEIGHT = 128;
+	private static final int BUTTON_SIZE = 26;
+	private static final int ICON_OFFSET = 5;
 	private static final int field_32314 = 31;
 	private static final int field_32315 = 5;
 	private static final int UI_WIDTH = GameModeSelectionScreen.GameModeSelection.values().length * 31 - 5;

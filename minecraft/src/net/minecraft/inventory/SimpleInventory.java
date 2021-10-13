@@ -37,9 +37,9 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		this.listeners.add(listener);
 	}
 
-	public void removeListener(InventoryChangedListener inventoryChangedListener) {
+	public void removeListener(InventoryChangedListener listener) {
 		if (this.listeners != null) {
-			this.listeners.remove(inventoryChangedListener);
+			this.listeners.remove(listener);
 		}
 	}
 

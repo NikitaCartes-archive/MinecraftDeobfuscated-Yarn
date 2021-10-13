@@ -304,7 +304,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 	/**
 	 * Places the surface blocks of the biomes after the noise has been generated.
 	 */
-	public abstract void buildSurface(ChunkRegion region, StructureAccessor structureAccessor, Chunk chunk);
+	public abstract void buildSurface(ChunkRegion region, StructureAccessor structures, Chunk chunk);
 
 	public abstract void populateEntities(ChunkRegion region);
 

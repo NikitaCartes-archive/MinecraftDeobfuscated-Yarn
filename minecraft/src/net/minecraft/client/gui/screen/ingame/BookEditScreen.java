@@ -51,7 +51,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 public class BookEditScreen extends Screen {
 	private static final int MAX_TEXT_WIDTH = 114;
 	private static final int MAX_TEXT_HEIGHT = 128;
-	private static final int field_32325 = 250;
+	private static final int DOUBLE_CLICK_MAX_DELAY = 250;
 	private static final int WIDTH = 192;
 	private static final int HEIGHT = 192;
 	private static final Text EDIT_TITLE_TEXT = new TranslatableText("book.editTitle");
@@ -549,15 +549,15 @@ public class BookEditScreen extends Screen {
 			MutableInt mutableInt = new MutableInt();
 			MutableBoolean mutableBoolean = new MutableBoolean();
 			TextHandler textHandler = this.textRenderer.getTextHandler();
-			textHandler.wrapLines(string, 114, Style.EMPTY, true, (style, ix, jx) -> {
-				int k = mutableInt.getAndIncrement();
-				String string2x = string.substring(ix, jx);
-				mutableBoolean.setValue(string2x.endsWith("\n"));
-				String string3 = StringUtils.stripEnd(string2x, " \n");
-				int lx = k * 9;
-				BookEditScreen.Position positionx = this.absolutePositionToScreenPosition(new BookEditScreen.Position(0, lx));
-				intList.add(ix);
-				list.add(new BookEditScreen.Line(style, string3, positionx.x, positionx.y));
+			textHandler.wrapLines(string, 114, Style.EMPTY, true, (style, start, end) -> {
+				int ix = mutableInt.getAndIncrement();
+				String stringx = string.substring(start, end);
+				mutableBoolean.setValue(stringx.endsWith("\n"));
+				String string2x = StringUtils.stripEnd(stringx, " \n");
+				int jx = ix * 9;
+				BookEditScreen.Position positionx = this.absolutePositionToScreenPosition(new BookEditScreen.Position(0, jx));
+				intList.add(start);
+				list.add(new BookEditScreen.Line(style, string2x, positionx.x, positionx.y));
 			});
 			int[] is = intList.toIntArray();
 			boolean bl = i == string.length();

@@ -355,7 +355,7 @@ public class MoreOptionsDialog implements Drawable {
 		RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
 			.encodeStart(registryReadingOps, this.generatorOptions)
-			.flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));
+			.flatMap(json -> GeneratorOptions.CODEC.parse(registryOps, json));
 		dataResult.resultOrPartial(Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error)).ifPresent(generatorOptions -> {
 			this.generatorOptions = generatorOptions;
 			this.registryManager = impl;

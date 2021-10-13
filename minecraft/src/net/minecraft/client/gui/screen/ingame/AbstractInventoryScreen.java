@@ -32,46 +32,46 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 		this.drawStatusEffects(matrices, mouseX, mouseY);
 	}
 
-	public boolean method_38934() {
+	public boolean hideStatusEffectHud() {
 		int i = this.x + this.backgroundWidth + 2;
 		int j = this.width - i;
 		return j >= 32;
 	}
 
-	private void drawStatusEffects(MatrixStack matrices, int i, int j) {
-		int k = this.x + this.backgroundWidth + 2;
-		int l = this.width - k;
+	private void drawStatusEffects(MatrixStack matrices, int mouseX, int mouseY) {
+		int i = this.x + this.backgroundWidth + 2;
+		int j = this.width - i;
 		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
-		if (!collection.isEmpty() && l >= 32) {
+		if (!collection.isEmpty() && j >= 32) {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			boolean bl = l >= 120;
-			int m = 33;
+			boolean bl = j >= 120;
+			int k = 33;
 			if (collection.size() > 5) {
-				m = 132 / (collection.size() - 1);
+				k = 132 / (collection.size() - 1);
 			}
 
 			Iterable<StatusEffectInstance> iterable = Ordering.natural().sortedCopy(collection);
-			this.drawStatusEffectBackgrounds(matrices, k, m, iterable, bl);
-			this.drawStatusEffectSprites(matrices, k, m, iterable, bl);
+			this.drawStatusEffectBackgrounds(matrices, i, k, iterable, bl);
+			this.drawStatusEffectSprites(matrices, i, k, iterable, bl);
 			if (bl) {
-				this.drawStatusEffectDescriptions(matrices, k, m, iterable);
-			} else if (i >= k && i <= k + 33) {
-				int n = this.y;
+				this.drawStatusEffectDescriptions(matrices, i, k, iterable);
+			} else if (mouseX >= i && mouseX <= i + 33) {
+				int l = this.y;
 				StatusEffectInstance statusEffectInstance = null;
 
 				for (StatusEffectInstance statusEffectInstance2 : iterable) {
-					if (j >= n && j <= n + m) {
+					if (mouseY >= l && mouseY <= l + k) {
 						statusEffectInstance = statusEffectInstance2;
 					}
 
-					n += m;
+					l += k;
 				}
 
 				if (statusEffectInstance != null) {
 					List<Text> list = List.of(
 						this.getStatusEffectDescription(statusEffectInstance), new LiteralText(StatusEffectUtil.durationToString(statusEffectInstance, 1.0F))
 					);
-					this.renderTooltip(matrices, list, Optional.empty(), i, j);
+					this.renderTooltip(matrices, list, Optional.empty(), mouseX, mouseY);
 				}
 			}
 		}

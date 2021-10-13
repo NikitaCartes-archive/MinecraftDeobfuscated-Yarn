@@ -62,7 +62,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 					break;
 				}
 
-				if (this.world.method_37117(scheduledTick.pos)) {
+				if (this.world.isTickingFutureReady(scheduledTick.pos)) {
 					iterator.remove();
 					this.scheduledTickActions.remove(scheduledTick);
 					this.currentTickActions.add(scheduledTick);

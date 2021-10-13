@@ -82,15 +82,31 @@ public interface Decoratable<R> {
 		return this.decorate(Decorator.SQUARE.configure(NopeDecoratorConfig.INSTANCE));
 	}
 
-	default R method_38670(Block block) {
-		return this.method_38994(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN));
+	/**
+	 * Applies the {@code block_filter} decorator, configured so that the feature will
+	 * only generate if a given block could be placed at its location.
+	 * 
+	 * @param block the block to check for
+	 */
+	default R wouldSurvive(Block block) {
+		return this.applyBlockFilter(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN));
 	}
 
-	default R method_38872() {
-		return this.method_38994(BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN));
+	/**
+	 * Applies the {@code block_filter} decorator, configured so the feature can only
+	 * generate if it is in air.
+	 */
+	default R onlyInAir() {
+		return this.applyBlockFilter(BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN));
 	}
 
-	default R method_38994(BlockPredicate blockPredicate) {
-		return this.decorate(Decorator.BLOCK_FILTER.configure(new BlockFilterDecoratorConfig(blockPredicate)));
+	/**
+	 * Applies the {@code block_filter} decorator, which will only generate a feature if
+	 * a given predicate matches.
+	 * 
+	 * @param predicate the block predicate that has to match for the feature to generate
+	 */
+	default R applyBlockFilter(BlockPredicate predicate) {
+		return this.decorate(Decorator.BLOCK_FILTER.configure(new BlockFilterDecoratorConfig(predicate)));
 	}
 }

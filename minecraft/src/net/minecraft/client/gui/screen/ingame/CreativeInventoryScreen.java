@@ -55,8 +55,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
 	private static final String TAB_TEXTURE_PREFIX = "textures/gui/container/creative_inventory/tab_";
 	private static final String CUSTOM_CREATIVE_LOCK_KEY = "CustomCreativeLock";
-	private static final int field_32337 = 5;
-	private static final int field_32338 = 9;
+	private static final int ROWS_COUNT = 5;
+	private static final int COLUMNS_COUNT = 9;
 	private static final int TAB_WIDTH = 28;
 	private static final int TAB_HEIGHT = 32;
 	private static final int SCROLLBAR_WIDTH = 12;

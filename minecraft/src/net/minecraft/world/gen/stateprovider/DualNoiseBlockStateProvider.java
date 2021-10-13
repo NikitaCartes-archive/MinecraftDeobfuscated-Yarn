@@ -44,7 +44,7 @@ public class DualNoiseBlockStateProvider extends NoiseBlockStateProvider {
 		this.variety = variety;
 		this.slowNoiseParameters = slowNoiseParameters;
 		this.slowScale = slowScale;
-		this.slowNoiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(new AtomicSimpleRandom(seed)), slowNoiseParameters);
+		this.slowNoiseSampler = DoublePerlinNoiseSampler.method_39123(new ChunkRandom(new AtomicSimpleRandom(seed)), slowNoiseParameters);
 	}
 
 	@Override

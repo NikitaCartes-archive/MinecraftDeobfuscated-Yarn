@@ -10,8 +10,8 @@ import net.minecraft.world.StructureWorldAccess;
 public abstract class OffsetPredicate implements BlockPredicate {
 	protected final BlockPos offset;
 
-	protected static <P extends OffsetPredicate> P1<Mu<P>, BlockPos> method_39013(Instance<P> instance) {
-		return instance.group(BlockPos.CODEC.optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(offsetPredicate -> offsetPredicate.offset));
+	protected static <P extends OffsetPredicate> P1<Mu<P>, BlockPos> registerOffsetField(Instance<P> instance) {
+		return instance.group(BlockPos.CODEC.optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(predicate -> predicate.offset));
 	}
 
 	protected OffsetPredicate(BlockPos offset) {

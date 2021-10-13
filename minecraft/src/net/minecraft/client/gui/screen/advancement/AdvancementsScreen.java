@@ -23,14 +23,14 @@ import net.minecraft.util.Identifier;
 public class AdvancementsScreen extends Screen implements ClientAdvancementManager.Listener {
 	private static final Identifier WINDOW_TEXTURE = new Identifier("textures/gui/advancements/window.png");
 	private static final Identifier TABS_TEXTURE = new Identifier("textures/gui/advancements/tabs.png");
-	public static final int field_32298 = 252;
-	public static final int field_32299 = 140;
-	private static final int field_32306 = 9;
-	private static final int field_32307 = 18;
-	public static final int field_32300 = 234;
-	public static final int field_32301 = 113;
-	private static final int field_32308 = 8;
-	private static final int field_32309 = 6;
+	public static final int WINDOW_WIDTH = 252;
+	public static final int WINDOW_HEIGHT = 140;
+	private static final int PAGE_OFFSET_X = 9;
+	private static final int PAGE_OFFSET_Y = 18;
+	public static final int PAGE_WIDTH = 234;
+	public static final int PAGE_HEIGHT = 113;
+	private static final int TITLE_OFFSET_X = 8;
+	private static final int TITLE_OFFSET_Y = 6;
 	public static final int field_32302 = 16;
 	public static final int field_32303 = 16;
 	public static final int field_32304 = 14;
@@ -104,7 +104,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		int j = (this.height - 140) / 2;
 		this.renderBackground(matrices);
 		this.drawAdvancementTree(matrices, mouseX, mouseY, i, j);
-		this.drawWidgets(matrices, i, j);
+		this.drawWindow(matrices, i, j);
 		this.drawWidgetTooltip(matrices, mouseX, mouseY, i, j);
 	}
 
@@ -144,7 +144,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		}
 	}
 
-	public void drawWidgets(MatrixStack matrices, int x, int y) {
+	public void drawWindow(MatrixStack matrices, int x, int y) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);

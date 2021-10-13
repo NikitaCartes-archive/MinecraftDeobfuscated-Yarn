@@ -337,7 +337,8 @@ public class Keyboard {
 			}
 
 			Screen screen = this.client.currentScreen;
-			if (action == 1 && (!(this.client.currentScreen instanceof KeybindsScreen) || ((KeybindsScreen)screen).field_34800 <= Util.getMeasuringTimeMs() - 20L)) {
+			if (action == 1
+				&& (!(this.client.currentScreen instanceof KeybindsScreen) || ((KeybindsScreen)screen).lastKeyCodeUpdateTime <= Util.getMeasuringTimeMs() - 20L)) {
 				if (this.client.options.keyFullscreen.matchesKey(key, scancode)) {
 					this.client.getWindow().toggleFullscreen();
 					this.client.options.fullscreen = this.client.getWindow().isFullscreen();

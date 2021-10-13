@@ -22,20 +22,20 @@ public class ChunkSection {
 	private short nonEmptyBlockCount;
 	private short randomTickableBlockCount;
 	private short nonEmptyFluidCount;
-	private final PalettedContainer<BlockState> container;
-	private final PalettedContainer<Biome> field_34556;
+	private final PalettedContainer<BlockState> blockStateContainer;
+	private final PalettedContainer<Biome> biomeContainer;
 
-	public ChunkSection(int i, PalettedContainer<BlockState> palettedContainer, PalettedContainer<Biome> palettedContainer2) {
+	public ChunkSection(int i, PalettedContainer<BlockState> blockStateContainer, PalettedContainer<Biome> biomeContainer) {
 		this.yOffset = blockCoordFromChunkCoord(i);
-		this.container = palettedContainer;
-		this.field_34556 = palettedContainer2;
+		this.blockStateContainer = blockStateContainer;
+		this.biomeContainer = biomeContainer;
 		this.calculateCounts();
 	}
 
-	public ChunkSection(int i, Registry<Biome> registry) {
+	public ChunkSection(int i, Registry<Biome> biomeRegistry) {
 		this.yOffset = blockCoordFromChunkCoord(i);
-		this.container = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
-		this.field_34556 = new PalettedContainer<>(registry, registry.getOrThrow(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
+		this.blockStateContainer = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
+		this.biomeContainer = new PalettedContainer<>(biomeRegistry, biomeRegistry.getOrThrow(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
 	}
 
 	public static int blockCoordFromChunkCoord(int chunkPos) {
@@ -43,19 +43,19 @@ public class ChunkSection {
 	}
 
 	public BlockState getBlockState(int x, int y, int z) {
-		return this.container.get(x, y, z);
+		return this.blockStateContainer.get(x, y, z);
 	}
 
 	public FluidState getFluidState(int x, int y, int z) {
-		return this.container.get(x, y, z).getFluidState();
+		return this.blockStateContainer.get(x, y, z).getFluidState();
 	}
 
 	public void lock() {
-		this.container.lock();
+		this.blockStateContainer.lock();
 	}
 
 	public void unlock() {
-		this.container.unlock();
+		this.blockStateContainer.unlock();
 	}
 
 	public BlockState setBlockState(int x, int y, int z, BlockState state) {
@@ -65,9 +65,9 @@ public class ChunkSection {
 	public BlockState setBlockState(int x, int y, int z, BlockState state, boolean lock) {
 		BlockState blockState;
 		if (lock) {
-			blockState = this.container.swap(x, y, z, state);
+			blockState = this.blockStateContainer.swap(x, y, z, state);
 		} else {
-			blockState = this.container.swapUnsafe(x, y, z, state);
+			blockState = this.blockStateContainer.swapUnsafe(x, y, z, state);
 		}
 
 		FluidState fluidState = blockState.getFluidState();
@@ -121,7 +121,7 @@ public class ChunkSection {
 		this.nonEmptyBlockCount = 0;
 		this.randomTickableBlockCount = 0;
 		this.nonEmptyFluidCount = 0;
-		this.container.count((state, count) -> {
+		this.blockStateContainer.count((state, count) -> {
 			FluidState fluidState = state.getFluidState();
 			if (!state.isAir()) {
 				this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + count);
@@ -139,40 +139,40 @@ public class ChunkSection {
 		});
 	}
 
-	public PalettedContainer<BlockState> getContainer() {
-		return this.container;
+	public PalettedContainer<BlockState> getBlockStateContainer() {
+		return this.blockStateContainer;
 	}
 
-	public PalettedContainer<Biome> method_38294() {
-		return this.field_34556;
+	public PalettedContainer<Biome> getBiomeContainer() {
+		return this.biomeContainer;
 	}
 
 	public void fromPacket(PacketByteBuf buf) {
 		this.nonEmptyBlockCount = buf.readShort();
-		this.container.readPacket(buf);
-		this.field_34556.readPacket(buf);
+		this.blockStateContainer.readPacket(buf);
+		this.biomeContainer.readPacket(buf);
 	}
 
 	public void toPacket(PacketByteBuf buf) {
 		buf.writeShort(this.nonEmptyBlockCount);
-		this.container.writePacket(buf);
-		this.field_34556.writePacket(buf);
+		this.blockStateContainer.writePacket(buf);
+		this.biomeContainer.writePacket(buf);
 	}
 
 	public int getPacketSize() {
-		return 2 + this.container.getPacketSize() + this.field_34556.getPacketSize();
+		return 2 + this.blockStateContainer.getPacketSize() + this.biomeContainer.getPacketSize();
 	}
 
 	public boolean hasAny(Predicate<BlockState> predicate) {
-		return this.container.hasAny(predicate);
+		return this.blockStateContainer.hasAny(predicate);
 	}
 
-	public Biome method_38293(int x, int y, int z) {
-		return this.field_34556.get(x, y, z);
+	public Biome getBiome(int x, int y, int z) {
+		return this.biomeContainer.get(x, y, z);
 	}
 
 	public void method_38291(BiomeSource source, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
-		PalettedContainer<Biome> palettedContainer = this.method_38294();
+		PalettedContainer<Biome> palettedContainer = this.getBiomeContainer();
 		palettedContainer.lock();
 
 		try {

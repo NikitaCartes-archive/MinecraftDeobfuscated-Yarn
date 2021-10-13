@@ -24,13 +24,13 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeFlatLevelScreen extends Screen {
-	private static final int field_32239 = 128;
-	private static final int field_32240 = 18;
-	private static final int field_32241 = 20;
-	private static final int field_32242 = 1;
-	private static final int field_32243 = 1;
-	private static final int field_32244 = 2;
-	private static final int field_32245 = 2;
+	private static final int ICON_TEXTURE_SIZE = 128;
+	private static final int ICON_SIZE = 18;
+	private static final int BUTTON_HEIGHT = 20;
+	private static final int ICON_BACKGROUND_OFFSET_X = 1;
+	private static final int ICON_BACKGROUND_OFFSET_Y = 1;
+	private static final int ICON_OFFSET_X = 2;
+	private static final int ICON_OFFSET_Y = 2;
 	protected final CreateWorldScreen parent;
 	private final Consumer<FlatChunkGeneratorConfig> configConsumer;
 	FlatChunkGeneratorConfig config;

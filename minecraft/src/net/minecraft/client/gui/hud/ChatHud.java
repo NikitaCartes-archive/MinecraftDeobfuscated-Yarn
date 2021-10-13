@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ChatHud extends DrawableHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_32180 = 100;
+	private static final int MAX_MESSAGES = 100;
 	private final MinecraftClient client;
 	private final List<String> messageHistory = Lists.<String>newArrayList();
 	private final List<ChatHudLine<Text>> messages = Lists.<ChatHudLine<Text>>newArrayList();

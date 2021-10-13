@@ -25,8 +25,8 @@ public class ItemStackParticleEffect implements ParticleEffect {
 	private final ParticleType<ItemStackParticleEffect> type;
 	private final ItemStack stack;
 
-	public static Codec<ItemStackParticleEffect> method_29136(ParticleType<ItemStackParticleEffect> particleType) {
-		return ItemStack.CODEC.xmap(itemStack -> new ItemStackParticleEffect(particleType, itemStack), itemStackParticleEffect -> itemStackParticleEffect.stack);
+	public static Codec<ItemStackParticleEffect> createCodec(ParticleType<ItemStackParticleEffect> type) {
+		return ItemStack.CODEC.xmap(stack -> new ItemStackParticleEffect(type, stack), effect -> effect.stack);
 	}
 
 	public ItemStackParticleEffect(ParticleType<ItemStackParticleEffect> type, ItemStack stack) {

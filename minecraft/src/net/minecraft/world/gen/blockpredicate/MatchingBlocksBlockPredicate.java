@@ -11,8 +11,8 @@ import net.minecraft.util.registry.Registry;
 class MatchingBlocksBlockPredicate extends OffsetPredicate {
 	private final List<Block> blocks;
 	public static final Codec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.create(
-		instance -> method_39013(instance)
-				.and(Registry.BLOCK.listOf().fieldOf("blocks").forGetter(matchingBlocksBlockPredicate -> matchingBlocksBlockPredicate.blocks))
+		instance -> registerOffsetField(instance)
+				.and(Registry.BLOCK.listOf().fieldOf("blocks").forGetter(predicate -> predicate.blocks))
 				.apply(instance, MatchingBlocksBlockPredicate::new)
 	);
 

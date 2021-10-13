@@ -321,8 +321,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					this.client
 						.setScreen(
 							new ConfirmScreen(
-								bl -> {
-									if (bl) {
+								confirmed -> {
+									if (confirmed) {
 										try {
 											this.start();
 										} catch (Exception var3x) {

@@ -9,28 +9,28 @@ import java.util.List;
 
 public class SplitterHandler extends ByteToMessageDecoder {
 	@Override
-	protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) {
-		byteBuf.markReaderIndex();
+	protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> objects) {
+		buf.markReaderIndex();
 		byte[] bs = new byte[3];
 
 		for (int i = 0; i < bs.length; i++) {
-			if (!byteBuf.isReadable()) {
-				byteBuf.resetReaderIndex();
+			if (!buf.isReadable()) {
+				buf.resetReaderIndex();
 				return;
 			}
 
-			bs[i] = byteBuf.readByte();
+			bs[i] = buf.readByte();
 			if (bs[i] >= 0) {
 				PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.wrappedBuffer(bs));
 
 				try {
 					int j = packetByteBuf.readVarInt();
-					if (byteBuf.readableBytes() >= j) {
-						list.add(byteBuf.readBytes(j));
+					if (buf.readableBytes() >= j) {
+						objects.add(buf.readBytes(j));
 						return;
 					}
 
-					byteBuf.resetReaderIndex();
+					buf.resetReaderIndex();
 				} finally {
 					packetByteBuf.release();
 				}

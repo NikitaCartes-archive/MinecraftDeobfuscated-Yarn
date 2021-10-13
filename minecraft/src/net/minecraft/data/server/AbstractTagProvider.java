@@ -46,7 +46,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			.forEach(
 				(id, builder) -> {
 					List<Tag.TrackedEntry> list = (List<Tag.TrackedEntry>)builder.streamEntries()
-						.filter(trackedEntry -> !trackedEntry.getEntry().canAdd(this.registry::containsId, this.tagBuilders::containsKey))
+						.filter(tag -> !tag.getEntry().canAdd(this.registry::containsId, this.tagBuilders::containsKey))
 						.collect(Collectors.toList());
 					if (!list.isEmpty()) {
 						throw new IllegalArgumentException(

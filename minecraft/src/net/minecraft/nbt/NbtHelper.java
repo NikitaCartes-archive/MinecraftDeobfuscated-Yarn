@@ -33,8 +33,8 @@ import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -101,7 +101,7 @@ public final class NbtHelper {
 	}
 
 	public static NbtCompound writeGameProfile(NbtCompound compound, GameProfile profile) {
-		if (!ChatUtil.isEmpty(profile.getName())) {
+		if (!StringHelper.isEmpty(profile.getName())) {
 			compound.putString("Name", profile.getName());
 		}
 

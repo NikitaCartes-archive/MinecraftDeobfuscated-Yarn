@@ -7,7 +7,7 @@ import net.minecraft.world.StructureWorldAccess;
 
 class NotBlockPredicate implements BlockPredicate {
 	public static final Codec<NotBlockPredicate> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(BlockPredicate.BASE_CODEC.fieldOf("predicate").forGetter(notBlockPredicate -> notBlockPredicate.predicate))
+		instance -> instance.group(BlockPredicate.BASE_CODEC.fieldOf("predicate").forGetter(predicate -> predicate.predicate))
 				.apply(instance, NotBlockPredicate::new)
 	);
 	private final BlockPredicate predicate;

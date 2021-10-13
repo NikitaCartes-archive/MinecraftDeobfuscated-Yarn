@@ -19,6 +19,7 @@ import net.minecraft.util.collection.EmptyPaletteStorage;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.collection.PaletteStorage;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.thread.AtomicStack;
 import net.minecraft.util.thread.LockHelper;
@@ -69,10 +70,10 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	 * @param provider the palette provider that controls how the data are serialized and what
 	 * types of palette are used for what entry bit sizes
 	 */
-	public static <T> Codec<PalettedContainer<T>> createCodec(IndexedIterable<T> idList, Codec<T> entryCodec, PalettedContainer.PaletteProvider provider) {
+	public static <T> Codec<PalettedContainer<T>> createCodec(IndexedIterable<T> idList, Codec<T> entryCodec, PalettedContainer.PaletteProvider provider, T object) {
 		return RecordCodecBuilder.create(
 				instance -> instance.group(
-							entryCodec.listOf().fieldOf("palette").forGetter(PalettedContainer.Serialized::paletteEntries),
+							entryCodec.mapResult(Codecs.method_39028(object)).listOf().fieldOf("palette").forGetter(PalettedContainer.Serialized::paletteEntries),
 							Codec.LONG_STREAM.optionalFieldOf("data").forGetter(PalettedContainer.Serialized::storage)
 						)
 						.apply(instance, PalettedContainer.Serialized::new)
@@ -112,7 +113,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		PalettedContainer.DataProvider<T> dataProvider = this.paletteProvider.createDataProvider(this.idList, bits);
 		return previousData != null && dataProvider.equals(previousData.configuration())
 			? previousData
-			: dataProvider.createData(this.idList, this, this.paletteProvider.getContainerSize(), null);
+			: dataProvider.createData(this.idList, this, this.paletteProvider.getContainerSize());
 	}
 
 	@Override
@@ -222,13 +223,18 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 			}
 
 			long[] ls = ((LongStream)optional.get()).toArray();
-			if (dataProvider.factory() == PalettedContainer.PaletteProvider.ID_LIST) {
-				Palette<T> palette = new BiMapPalette<>(idList, j, (ix, object) -> 0, list);
-				PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, provider.getContainerSize(), ls);
-				IntStream intStream = IntStream.range(0, packedIntegerArray.getSize()).map(ix -> idList.getRawId(palette.get(packedIntegerArray.get(ix))));
-				paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, intStream);
-			} else {
-				paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, ls);
+
+			try {
+				if (dataProvider.factory() == PalettedContainer.PaletteProvider.ID_LIST) {
+					Palette<T> palette = new BiMapPalette<>(idList, j, (ix, object) -> 0, list);
+					PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, provider.getContainerSize(), ls);
+					IntStream intStream = IntStream.range(0, packedIntegerArray.getSize()).map(ix -> idList.getRawId(palette.get(packedIntegerArray.get(ix))));
+					paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, intStream);
+				} else {
+					paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, ls);
+				}
+			} catch (PackedIntegerArray.class_6685 var13) {
+				return DataResult.error("Failed to read PalettedContainer: " + var13.getMessage());
 			}
 		}
 
@@ -391,8 +397,8 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 			this.bits = i;
 		}
 
-		public PalettedContainer.Data<T> createData(IndexedIterable<T> idList, PaletteResizeListener<T> listener, int size, @Nullable long[] storage) {
-			PaletteStorage paletteStorage = (PaletteStorage)(this.bits == 0 ? new EmptyPaletteStorage(size) : new PackedIntegerArray(this.bits, size, storage));
+		public PalettedContainer.Data<T> createData(IndexedIterable<T> idList, PaletteResizeListener<T> listener, int size) {
+			PaletteStorage paletteStorage = (PaletteStorage)(this.bits == 0 ? new EmptyPaletteStorage(size) : new PackedIntegerArray(this.bits, size));
 			Palette<T> palette = this.factory.create(this.bits, idList, listener, List.of());
 			return new PalettedContainer.Data(this, paletteStorage, palette);
 		}

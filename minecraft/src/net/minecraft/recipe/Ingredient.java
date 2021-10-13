@@ -178,8 +178,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 	static class StackEntry implements Ingredient.Entry {
 		private final ItemStack stack;
 
-		StackEntry(ItemStack itemStack) {
-			this.stack = itemStack;
+		StackEntry(ItemStack stack) {
+			this.stack = stack;
 		}
 
 		@Override

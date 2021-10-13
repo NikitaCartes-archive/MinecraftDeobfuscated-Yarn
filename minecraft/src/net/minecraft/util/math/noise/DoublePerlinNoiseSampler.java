@@ -1,5 +1,6 @@
 package net.minecraft.util.math.noise;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
@@ -15,21 +16,42 @@ public class DoublePerlinNoiseSampler {
 	private final OctavePerlinNoiseSampler firstSampler;
 	private final OctavePerlinNoiseSampler secondSampler;
 
+	@Deprecated
+	public static DoublePerlinNoiseSampler method_39122(AbstractRandom abstractRandom, int i, double... ds) {
+		return new DoublePerlinNoiseSampler(abstractRandom, i, new DoubleArrayList(ds), false);
+	}
+
+	@Deprecated
+	public static DoublePerlinNoiseSampler method_39123(AbstractRandom abstractRandom, DoublePerlinNoiseSampler.NoiseParameters noiseParameters) {
+		return method_39121(abstractRandom, noiseParameters.getFirstOctave(), noiseParameters.getAmplitudes());
+	}
+
+	@Deprecated
+	public static DoublePerlinNoiseSampler method_39121(AbstractRandom abstractRandom, int i, DoubleList doubleList) {
+		return new DoublePerlinNoiseSampler(abstractRandom, i, doubleList, false);
+	}
+
 	public static DoublePerlinNoiseSampler create(AbstractRandom random, int offset, double... octaves) {
-		return new DoublePerlinNoiseSampler(random, offset, new DoubleArrayList(octaves));
+		return new DoublePerlinNoiseSampler(random, offset, new DoubleArrayList(octaves), true);
 	}
 
 	public static DoublePerlinNoiseSampler create(AbstractRandom random, DoublePerlinNoiseSampler.NoiseParameters parameters) {
-		return create(random, parameters.getFirstOctave(), parameters.getAmplitudes());
+		return new DoublePerlinNoiseSampler(random, parameters.getFirstOctave(), parameters.getAmplitudes(), true);
 	}
 
 	public static DoublePerlinNoiseSampler create(AbstractRandom random, int offset, DoubleList octaves) {
-		return new DoublePerlinNoiseSampler(random, offset, octaves);
+		return new DoublePerlinNoiseSampler(random, offset, octaves, true);
 	}
 
-	private DoublePerlinNoiseSampler(AbstractRandom random, int offset, DoubleList octaves) {
-		this.firstSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
-		this.secondSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
+	private DoublePerlinNoiseSampler(AbstractRandom random, int offset, DoubleList octaves, boolean bl) {
+		if (bl) {
+			this.firstSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
+			this.secondSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
+		} else {
+			this.firstSampler = OctavePerlinNoiseSampler.method_39126(random, offset, octaves);
+			this.secondSampler = OctavePerlinNoiseSampler.method_39126(random, offset, octaves);
+		}
+
 		int i = Integer.MAX_VALUE;
 		int j = Integer.MIN_VALUE;
 		DoubleListIterator doubleListIterator = octaves.iterator();
@@ -61,6 +83,16 @@ public class DoublePerlinNoiseSampler {
 		return new DoublePerlinNoiseSampler.NoiseParameters(this.firstSampler.method_38477(), this.firstSampler.method_38478());
 	}
 
+	@VisibleForTesting
+	public void addDebugInfo(StringBuilder info) {
+		info.append("NormalNoise {");
+		info.append("first: ");
+		this.firstSampler.addDebugInfo(info);
+		info.append(", second: ");
+		this.secondSampler.addDebugInfo(info);
+		info.append("}");
+	}
+
 	public static class NoiseParameters {
 		private final int firstOctave;
 		private final DoubleList amplitudes;
@@ -77,9 +109,10 @@ public class DoublePerlinNoiseSampler {
 			this.amplitudes = new DoubleArrayList(amplitudes);
 		}
 
-		public NoiseParameters(int firstOctave, double... amplitudes) {
+		public NoiseParameters(int firstOctave, double d, double... ds) {
 			this.firstOctave = firstOctave;
-			this.amplitudes = new DoubleArrayList(amplitudes);
+			this.amplitudes = new DoubleArrayList(ds);
+			this.amplitudes.add(0, d);
 		}
 
 		public int getFirstOctave() {

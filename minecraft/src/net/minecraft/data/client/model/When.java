@@ -32,14 +32,14 @@ public interface When extends Supplier<JsonElement> {
 		private final When.LogicalOperator operator;
 		private final List<When> components;
 
-		LogicalCondition(When.LogicalOperator logicalOperator, List<When> list) {
-			this.operator = logicalOperator;
-			this.components = list;
+		LogicalCondition(When.LogicalOperator operator, List<When> components) {
+			this.operator = operator;
+			this.components = components;
 		}
 
 		@Override
 		public void validate(StateManager<?, ?> stateManager) {
-			this.components.forEach(when -> when.validate(stateManager));
+			this.components.forEach(component -> component.validate(stateManager));
 		}
 
 		public JsonElement get() {
@@ -91,20 +91,20 @@ public interface When extends Supplier<JsonElement> {
 			return this;
 		}
 
-		public final <T extends Comparable<T>> When.PropertyCondition method_35871(Property<T> property, T comparable) {
-			this.set(property, "!" + property.name(comparable));
+		public final <T extends Comparable<T>> When.PropertyCondition setNegated(Property<T> property, T value) {
+			this.set(property, "!" + property.name(value));
 			return this;
 		}
 
 		@SafeVarargs
-		public final <T extends Comparable<T>> When.PropertyCondition method_35872(Property<T> property, T comparable, T... comparables) {
-			this.set(property, "!" + name(property, comparable, comparables));
+		public final <T extends Comparable<T>> When.PropertyCondition setNegated(Property<T> property, T value, T... otherValues) {
+			this.set(property, "!" + name(property, value, otherValues));
 			return this;
 		}
 
 		public JsonElement get() {
 			JsonObject jsonObject = new JsonObject();
-			this.properties.forEach((property, string) -> jsonObject.addProperty(property.getName(), string));
+			this.properties.forEach((property, value) -> jsonObject.addProperty(property.getName(), value));
 			return jsonObject;
 		}
 

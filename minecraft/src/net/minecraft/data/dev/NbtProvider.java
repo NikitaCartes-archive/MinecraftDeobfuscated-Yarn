@@ -26,7 +26,7 @@ public class NbtProvider implements DataProvider {
 		Path path = this.root.getOutput();
 
 		for (Path path2 : this.root.getInputs()) {
-			Files.walk(path2).filter(pathx -> pathx.toString().endsWith(".nbt")).forEach(path3 -> convertNbtToSnbt(path3, this.getLocation(path2, path3), path));
+			Files.walk(path2).filter(pathx -> pathx.toString().endsWith(".nbt")).forEach(pathx -> convertNbtToSnbt(pathx, this.getLocation(path2, pathx), path));
 		}
 	}
 

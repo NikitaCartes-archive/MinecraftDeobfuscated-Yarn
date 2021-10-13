@@ -190,11 +190,11 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		@Nullable
 		CommandNode<CommandSource> node;
 
-		CommandNodeData(@Nullable ArgumentBuilder<CommandSource, ?> argumentBuilder, byte b, int i, int[] is) {
+		CommandNodeData(@Nullable ArgumentBuilder<CommandSource, ?> argumentBuilder, byte flags, int redirectNodeIndex, int[] childNodeIndices) {
 			this.argumentBuilder = argumentBuilder;
-			this.flags = b;
-			this.redirectNodeIndex = i;
-			this.childNodeIndices = is;
+			this.flags = flags;
+			this.redirectNodeIndex = redirectNodeIndex;
+			this.childNodeIndices = childNodeIndices;
 		}
 
 		public boolean build(List<CommandTreeS2CPacket.CommandNodeData> list) {

@@ -55,13 +55,13 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	public void readFrom(ItemStack stack, DyeColor baseColor) {
 		this.baseColor = baseColor;
-		this.method_38992(stack);
+		this.readFrom(stack);
 	}
 
-	public void method_38992(ItemStack itemStack) {
-		this.patternListTag = getPatternListTag(itemStack);
+	public void readFrom(ItemStack stack) {
+		this.patternListTag = getPatternListTag(stack);
 		this.patterns = null;
-		this.customName = itemStack.hasCustomName() ? itemStack.getName() : null;
+		this.customName = stack.hasCustomName() ? stack.getName() : null;
 	}
 
 	@Override

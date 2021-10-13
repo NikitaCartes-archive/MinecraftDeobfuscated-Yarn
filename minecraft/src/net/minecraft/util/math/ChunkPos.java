@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 public class ChunkPos {
 	public static final long MARKER = toLong(1875016, 1875016);
-	public static final ChunkPos field_35107 = new ChunkPos(0, 0);
+	public static final ChunkPos ORIGIN = new ChunkPos(0, 0);
 	private static final long field_30953 = 32L;
 	private static final long field_30954 = 4294967295L;
 	private static final int field_30955 = 5;

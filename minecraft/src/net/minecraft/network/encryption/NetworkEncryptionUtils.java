@@ -16,12 +16,12 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class NetworkEncryptionUtils {
-	private static final String field_29830 = "AES";
-	private static final int field_29831 = 128;
-	private static final String field_29832 = "RSA";
-	private static final int field_29833 = 1024;
-	private static final String field_29834 = "ISO_8859_1";
-	private static final String field_29835 = "SHA-1";
+	private static final String AES = "AES";
+	private static final int AES_KEY_LENGTH = 128;
+	private static final String RSA = "RSA";
+	private static final int RSA_KEY_LENGTH = 1024;
+	private static final String ISO_8859_1 = "ISO_8859_1";
+	private static final String SHA1 = "SHA-1";
 
 	public static SecretKey generateKey() throws NetworkEncryptionException {
 		try {
@@ -51,19 +51,19 @@ public class NetworkEncryptionUtils {
 		}
 	}
 
-	private static byte[] hash(byte[]... bs) throws Exception {
+	private static byte[] hash(byte[]... bytes) throws Exception {
 		MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
 
-		for (byte[] cs : bs) {
-			messageDigest.update(cs);
+		for (byte[] bs : bytes) {
+			messageDigest.update(bs);
 		}
 
 		return messageDigest.digest();
 	}
 
-	public static PublicKey readEncodedPublicKey(byte[] bs) throws NetworkEncryptionException {
+	public static PublicKey readEncodedPublicKey(byte[] bytes) throws NetworkEncryptionException {
 		try {
-			EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(bs);
+			EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(bytes);
 			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			return keyFactory.generatePublic(encodedKeySpec);
 		} catch (Exception var3) {

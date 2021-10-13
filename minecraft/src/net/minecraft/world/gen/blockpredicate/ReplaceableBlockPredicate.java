@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 
 class ReplaceableBlockPredicate extends OffsetPredicate {
 	public static final Codec<ReplaceableBlockPredicate> CODEC = RecordCodecBuilder.create(
-		instance -> method_39013(instance).apply(instance, ReplaceableBlockPredicate::new)
+		instance -> registerOffsetField(instance).apply(instance, ReplaceableBlockPredicate::new)
 	);
 
 	public ReplaceableBlockPredicate(BlockPos blockPos) {

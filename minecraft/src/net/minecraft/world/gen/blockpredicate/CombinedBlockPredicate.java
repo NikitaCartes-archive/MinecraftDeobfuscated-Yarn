@@ -12,10 +12,9 @@ abstract class CombinedBlockPredicate implements BlockPredicate {
 		this.predicates = predicates;
 	}
 
-	public static <T extends CombinedBlockPredicate> Codec<T> buildCodec(Function<List<BlockPredicate>, T> function) {
+	public static <T extends CombinedBlockPredicate> Codec<T> buildCodec(Function<List<BlockPredicate>, T> combiner) {
 		return RecordCodecBuilder.create(
-			instance -> instance.group(BlockPredicate.BASE_CODEC.listOf().fieldOf("predicates").forGetter(combinedBlockPredicate -> combinedBlockPredicate.predicates))
-					.apply(instance, function)
+			instance -> instance.group(BlockPredicate.BASE_CODEC.listOf().fieldOf("predicates").forGetter(predicate -> predicate.predicates)).apply(instance, combiner)
 		);
 	}
 }

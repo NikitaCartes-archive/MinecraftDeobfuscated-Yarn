@@ -131,7 +131,7 @@ public class UpgradeData {
 			this.centerIndicesToUpgrade[i] = null;
 			if (is != null && is.length > 0) {
 				Direction[] directions = Direction.values();
-				PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
+				PalettedContainer<BlockState> palettedContainer = chunkSection.getBlockStateContainer();
 
 				for (int j : is) {
 					int k = j & 15;

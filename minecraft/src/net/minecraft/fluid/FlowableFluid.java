@@ -62,14 +62,14 @@ public abstract class FlowableFluid extends Fluid {
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			mutable.set(pos, direction);
 			FluidState fluidState = world.getFluidState(mutable);
-			if (this.method_15748(fluidState)) {
+			if (this.isEmptyOrThis(fluidState)) {
 				float f = fluidState.getHeight();
 				float g = 0.0F;
 				if (f == 0.0F) {
 					if (!world.getBlockState(mutable).getMaterial().blocksMovement()) {
 						BlockPos blockPos = mutable.down();
 						FluidState fluidState2 = world.getFluidState(blockPos);
-						if (this.method_15748(fluidState2)) {
+						if (this.isEmptyOrThis(fluidState2)) {
 							f = fluidState2.getHeight();
 							if (f > 0.0F) {
 								g = state.getHeight() - (f - 0.8888889F);
@@ -101,7 +101,7 @@ public abstract class FlowableFluid extends Fluid {
 		return vec3d.normalize();
 	}
 
-	private boolean method_15748(FluidState state) {
+	private boolean isEmptyOrThis(FluidState state) {
 		return state.isEmpty() || state.getFluid().matchesType(this);
 	}
 

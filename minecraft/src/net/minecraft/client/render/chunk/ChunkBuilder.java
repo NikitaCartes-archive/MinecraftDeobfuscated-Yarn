@@ -36,6 +36,7 @@ import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
@@ -45,7 +46,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.thread.TaskExecutor;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
@@ -56,7 +56,14 @@ public class ChunkBuilder {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_32831 = 4;
 	private static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT_NORMAL = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
-	private final PriorityQueue<ChunkBuilder.BuiltChunk.Task> rebuildQueue = Queues.newPriorityQueue();
+	private static final int field_35300 = 2;
+	private final PriorityQueue<ChunkBuilder.BuiltChunk.Task> prioritizedTaskQueue = Queues.newPriorityQueue();
+	private final Queue<ChunkBuilder.BuiltChunk.Task> taskQueue = Queues.<ChunkBuilder.BuiltChunk.Task>newArrayDeque();
+	/**
+	 * The number of tasks it can poll from {@link #prioritizedTaskQueue}
+	 * before polling from {@link #taskQueue} first instead.
+	 */
+	private int processablePrioritizedTaskCount = 2;
 	private final Queue<BlockBufferBuilderStorage> threadBuffers;
 	private final Queue<Runnable> uploadQueue = Queues.<Runnable>newConcurrentLinkedQueue();
 	private volatile int queuedTaskCount;
@@ -64,11 +71,11 @@ public class ChunkBuilder {
 	final BlockBufferBuilderStorage buffers;
 	private final TaskExecutor<Runnable> mailbox;
 	private final Executor executor;
-	World world;
+	ClientWorld world;
 	final WorldRenderer worldRenderer;
 	private Vec3d cameraPosition = Vec3d.ZERO;
 
-	public ChunkBuilder(World world, WorldRenderer worldRenderer, Executor executor, boolean is64Bits, BlockBufferBuilderStorage buffers) {
+	public ChunkBuilder(ClientWorld world, WorldRenderer worldRenderer, Executor executor, boolean is64Bits, BlockBufferBuilderStorage buffers) {
 		this.world = world;
 		this.worldRenderer = worldRenderer;
 		int i = Math.max(
@@ -103,16 +110,16 @@ public class ChunkBuilder {
 		this.mailbox.send(this::scheduleRunTasks);
 	}
 
-	public void setWorld(World world) {
+	public void setWorld(ClientWorld world) {
 		this.world = world;
 	}
 
 	private void scheduleRunTasks() {
 		if (!this.threadBuffers.isEmpty()) {
-			ChunkBuilder.BuiltChunk.Task task = (ChunkBuilder.BuiltChunk.Task)this.rebuildQueue.poll();
+			ChunkBuilder.BuiltChunk.Task task = this.pollTask();
 			if (task != null) {
 				BlockBufferBuilderStorage blockBufferBuilderStorage = (BlockBufferBuilderStorage)this.threadBuffers.poll();
-				this.queuedTaskCount = this.rebuildQueue.size();
+				this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
 				this.bufferCount = this.threadBuffers.size();
 				CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferBuilderStorage)), this.executor)
 					.thenCompose(completableFuture -> completableFuture)
@@ -135,6 +142,26 @@ public class ChunkBuilder {
 						}
 					});
 			}
+		}
+	}
+
+	@Nullable
+	private ChunkBuilder.BuiltChunk.Task pollTask() {
+		if (this.processablePrioritizedTaskCount <= 0) {
+			ChunkBuilder.BuiltChunk.Task task = (ChunkBuilder.BuiltChunk.Task)this.taskQueue.poll();
+			if (task != null) {
+				this.processablePrioritizedTaskCount = 2;
+				return task;
+			}
+		}
+
+		ChunkBuilder.BuiltChunk.Task task = (ChunkBuilder.BuiltChunk.Task)this.prioritizedTaskQueue.poll();
+		if (task != null) {
+			this.processablePrioritizedTaskCount--;
+			return task;
+		} else {
+			this.processablePrioritizedTaskCount = 2;
+			return (ChunkBuilder.BuiltChunk.Task)this.taskQueue.poll();
 		}
 	}
 
@@ -179,8 +206,13 @@ public class ChunkBuilder {
 
 	public void send(ChunkBuilder.BuiltChunk.Task task) {
 		this.mailbox.send(() -> {
-			this.rebuildQueue.offer(task);
-			this.queuedTaskCount = this.rebuildQueue.size();
+			if (task.prioritized) {
+				this.prioritizedTaskQueue.offer(task);
+			} else {
+				this.taskQueue.offer(task);
+			}
+
+			this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
 			this.scheduleRunTasks();
 		});
 	}
@@ -195,8 +227,15 @@ public class ChunkBuilder {
 	}
 
 	private void clear() {
-		while (!this.rebuildQueue.isEmpty()) {
-			ChunkBuilder.BuiltChunk.Task task = (ChunkBuilder.BuiltChunk.Task)this.rebuildQueue.poll();
+		while (!this.prioritizedTaskQueue.isEmpty()) {
+			ChunkBuilder.BuiltChunk.Task task = (ChunkBuilder.BuiltChunk.Task)this.prioritizedTaskQueue.poll();
+			if (task != null) {
+				task.cancel();
+			}
+		}
+
+		while (!this.taskQueue.isEmpty()) {
+			ChunkBuilder.BuiltChunk.Task task = (ChunkBuilder.BuiltChunk.Task)this.taskQueue.poll();
 			if (task != null) {
 				task.cancel();
 			}
@@ -342,24 +381,31 @@ public class ChunkBuilder {
 			}
 		}
 
-		protected void cancel() {
+		protected boolean cancel() {
+			boolean bl = false;
 			if (this.rebuildTask != null) {
 				this.rebuildTask.cancel();
 				this.rebuildTask = null;
+				bl = true;
 			}
 
 			if (this.sortTask != null) {
 				this.sortTask.cancel();
 				this.sortTask = null;
+				bl = true;
 			}
+
+			return bl;
 		}
 
 		public ChunkBuilder.BuiltChunk.Task createRebuildTask() {
-			this.cancel();
+			boolean bl = this.cancel();
 			BlockPos blockPos = this.origin.toImmutable();
 			int i = 1;
 			ChunkRendererRegion chunkRendererRegion = ChunkRendererRegion.create(ChunkBuilder.this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
-			this.rebuildTask = new ChunkBuilder.BuiltChunk.RebuildTask(this.getSquaredCameraDistance(), chunkRendererRegion);
+			this.rebuildTask = new ChunkBuilder.BuiltChunk.RebuildTask(
+				this.getSquaredCameraDistance(), chunkRendererRegion, bl || this.data.get() != ChunkBuilder.ChunkData.EMPTY
+			);
 			return this.rebuildTask;
 		}
 
@@ -392,8 +438,8 @@ public class ChunkBuilder {
 			@Nullable
 			protected ChunkRendererRegion region;
 
-			public RebuildTask(double distance, @Nullable ChunkRendererRegion region) {
-				super(distance);
+			public RebuildTask(double distance, @Nullable ChunkRendererRegion region, boolean prioritized) {
+				super(distance, prioritized);
 				this.region = region;
 			}
 
@@ -541,7 +587,7 @@ public class ChunkBuilder {
 			private final ChunkBuilder.ChunkData data;
 
 			public SortTask(double distance, ChunkBuilder.ChunkData data) {
-				super(distance);
+				super(distance, true);
 				this.data = data;
 			}
 
@@ -605,9 +651,11 @@ public class ChunkBuilder {
 		abstract class Task implements Comparable<ChunkBuilder.BuiltChunk.Task> {
 			protected final double distance;
 			protected final AtomicBoolean cancelled = new AtomicBoolean(false);
+			protected final boolean prioritized;
 
-			public Task(double distance) {
+			public Task(double distance, boolean prioritized) {
 				this.distance = distance;
+				this.prioritized = prioritized;
 			}
 
 			public abstract CompletableFuture<ChunkBuilder.Result> run(BlockBufferBuilderStorage buffers);

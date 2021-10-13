@@ -12,10 +12,7 @@ public class DustParticleEffect extends AbstractDustParticleEffect {
 	public static final Vec3f RED = new Vec3f(Vec3d.unpackRgb(16711680));
 	public static final DustParticleEffect DEFAULT = new DustParticleEffect(RED, 1.0F);
 	public static final Codec<DustParticleEffect> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					Vec3f.CODEC.fieldOf("color").forGetter(dustParticleEffect -> dustParticleEffect.color),
-					Codec.FLOAT.fieldOf("scale").forGetter(dustParticleEffect -> dustParticleEffect.scale)
-				)
+		instance -> instance.group(Vec3f.CODEC.fieldOf("color").forGetter(effect -> effect.color), Codec.FLOAT.fieldOf("scale").forGetter(effect -> effect.scale))
 				.apply(instance, DustParticleEffect::new)
 	);
 	public static final ParticleEffect.Factory<DustParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<DustParticleEffect>() {

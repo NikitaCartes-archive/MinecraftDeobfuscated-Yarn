@@ -1,144 +1,345 @@
 package net.minecraft.world.gen.surfacebuilder;
 
-import com.mojang.serialization.Codec;
-import java.util.Random;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.Material;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.HeightContext;
+import net.minecraft.world.gen.NoiseColumnSampler;
+import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.chunk.BlockColumn;
+import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
+import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.random.RandomDeriver;
 
-/**
- * Places the top blocks of a biome during chunk generation.
- */
-public abstract class SurfaceBuilder<C extends SurfaceConfig> {
-	private static final BlockState DIRT = Blocks.DIRT.getDefaultState();
-	private static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
-	private static final BlockState PODZOL = Blocks.PODZOL.getDefaultState();
-	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
-	private static final BlockState STONE = Blocks.STONE.getDefaultState();
-	private static final BlockState COARSE_DIRT = Blocks.COARSE_DIRT.getDefaultState();
-	private static final BlockState SAND = Blocks.SAND.getDefaultState();
-	private static final BlockState RED_SAND = Blocks.RED_SAND.getDefaultState();
+public class SurfaceBuilder {
+	private static final DoublePerlinNoiseSampler.NoiseParameters TERRACOTTA_BANDS_OFFSET_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.0);
+	private static final DoublePerlinNoiseSampler.NoiseParameters SURFACE_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0, 1.0, 1.0);
+	private static final DoublePerlinNoiseSampler.NoiseParameters ICEBERG_AND_BADLANDS_PILLAR_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(
+		-3, 1.0, 1.0, 1.0, 1.0
+	);
+	private static final DoublePerlinNoiseSampler.NoiseParameters ICEBERG_AND_BADLANDS_PILLAR_ROOF_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(
+		0, 1.0
+	);
+	private static final int field_35273 = 8;
+	private static final int field_35274 = 15;
 	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
-	private static final BlockState MYCELIUM = Blocks.MYCELIUM.getDefaultState();
-	private static final BlockState SOUL_SAND = Blocks.SOUL_SAND.getDefaultState();
-	private static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
-	private static final BlockState END_STONE = Blocks.END_STONE.getDefaultState();
-	private static final BlockState CRIMSON_NYLIUM = Blocks.CRIMSON_NYLIUM.getDefaultState();
-	private static final BlockState WARPED_NYLIUM = Blocks.WARPED_NYLIUM.getDefaultState();
-	private static final BlockState NETHER_WART_BLOCK = Blocks.NETHER_WART_BLOCK.getDefaultState();
-	private static final BlockState WARPED_WART_BLOCK = Blocks.WARPED_WART_BLOCK.getDefaultState();
-	private static final BlockState BLACKSTONE = Blocks.BLACKSTONE.getDefaultState();
-	private static final BlockState BASALT = Blocks.BASALT.getDefaultState();
-	private static final BlockState MAGMA_BLOCK = Blocks.MAGMA_BLOCK.getDefaultState();
+	private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
+	private static final BlockState TERRACOTTA = Blocks.TERRACOTTA.getDefaultState();
+	private static final BlockState YELLOW_TERRACOTTA = Blocks.YELLOW_TERRACOTTA.getDefaultState();
+	private static final BlockState BROWN_TERRACOTTA = Blocks.BROWN_TERRACOTTA.getDefaultState();
+	private static final BlockState RED_TERRACOTTA = Blocks.RED_TERRACOTTA.getDefaultState();
+	private static final BlockState LIGHT_GRAY_TERRACOTTA = Blocks.LIGHT_GRAY_TERRACOTTA.getDefaultState();
+	private static final BlockState PACKED_ICE = Blocks.PACKED_ICE.getDefaultState();
 	private static final BlockState SNOW_BLOCK = Blocks.SNOW_BLOCK.getDefaultState();
-	public static final TernarySurfaceConfig PODZOL_CONFIG = new TernarySurfaceConfig(PODZOL, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig GRAVEL_CONFIG = new TernarySurfaceConfig(GRAVEL, GRAVEL, GRAVEL);
-	public static final TernarySurfaceConfig GRASS_CONFIG = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig STONE_CONFIG = new TernarySurfaceConfig(STONE, STONE, GRAVEL);
-	public static final TernarySurfaceConfig COARSE_DIRT_CONFIG = new TernarySurfaceConfig(COARSE_DIRT, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig SAND_CONFIG = new TernarySurfaceConfig(SAND, SAND, GRAVEL);
-	public static final TernarySurfaceConfig GRASS_SAND_UNDERWATER_CONFIG = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, SAND);
-	public static final TernarySurfaceConfig SAND_SAND_UNDERWATER_CONFIG = new TernarySurfaceConfig(SAND, SAND, SAND);
-	public static final TernarySurfaceConfig BADLANDS_CONFIG = new TernarySurfaceConfig(RED_SAND, WHITE_TERRACOTTA, GRAVEL);
-	public static final TernarySurfaceConfig MYCELIUM_CONFIG = new TernarySurfaceConfig(MYCELIUM, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig NETHER_CONFIG = new TernarySurfaceConfig(NETHERRACK, NETHERRACK, NETHERRACK);
-	public static final TernarySurfaceConfig SOUL_SAND_CONFIG = new TernarySurfaceConfig(SOUL_SAND, SOUL_SAND, SOUL_SAND);
-	public static final TernarySurfaceConfig END_CONFIG = new TernarySurfaceConfig(END_STONE, END_STONE, END_STONE);
-	public static final TernarySurfaceConfig CRIMSON_NYLIUM_CONFIG = new TernarySurfaceConfig(CRIMSON_NYLIUM, NETHERRACK, NETHER_WART_BLOCK);
-	public static final TernarySurfaceConfig WARPED_NYLIUM_CONFIG = new TernarySurfaceConfig(WARPED_NYLIUM, NETHERRACK, WARPED_WART_BLOCK);
-	public static final TernarySurfaceConfig BASALT_DELTA_CONFIG = new TernarySurfaceConfig(BLACKSTONE, BASALT, MAGMA_BLOCK);
-	public static final TernarySurfaceConfig DIRT_SNOW_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, DIRT, GRAVEL);
-	public static final TernarySurfaceConfig SNOW_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, GRAVEL);
-	public static final TernarySurfaceConfig LOFTY_PEAKS_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, STONE, STONE);
-	public static final TernarySurfaceConfig SNOW_PEAKS_CONFIG = new TernarySurfaceConfig(SNOW_BLOCK, SNOW_BLOCK, STONE);
-	public static final SurfaceBuilder<TernarySurfaceConfig> DEFAULT = register("default", new DefaultSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> MOUNTAIN = register("mountain", new MountainSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> SHATTERED_SAVANNA = register(
-		"shattered_savanna", new ShatteredSavannaSurfaceBuilder(TernarySurfaceConfig.CODEC)
-	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> GRAVELLY_MOUNTAIN = register(
-		"gravelly_mountain", new GravellyMountainSurfaceBuilder(TernarySurfaceConfig.CODEC)
-	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> GIANT_TREE_TAIGA = register(
-		"giant_tree_taiga", new GiantTreeTaigaSurfaceBuilder(TernarySurfaceConfig.CODEC)
-	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> SWAMP = register("swamp", new SwampSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> BADLANDS = register("badlands", new BadlandsSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> WOODED_BADLANDS = register(
-		"wooded_badlands", new WoodedBadlandsSurfaceBuilder(TernarySurfaceConfig.CODEC)
-	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> ERODED_BADLANDS = register(
-		"eroded_badlands", new ErodedBadlandsSurfaceBuilder(TernarySurfaceConfig.CODEC)
-	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> FROZEN_OCEAN = register("frozen_ocean", new FrozenOceanSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> NETHER = register("nether", new NetherSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> NETHER_FOREST = register("nether_forest", new NetherForestSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> SOUL_SAND_VALLEY = register(
-		"soul_sand_valley", new SoulSandValleySurfaceBuilder(TernarySurfaceConfig.CODEC)
-	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> BASALT_DELTAS = register("basalt_deltas", new BasaltDeltasSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> GROVE = register("grove", new GroveSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> SNOWCAPPED_PEAKS = register(
-		"snowcapped_peaks", new SnowcappedPeaksSurfaceBuilder(TernarySurfaceConfig.CODEC)
-	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = register("nope", new NopeSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> SNOWY_SLOPES = register("snowy_slopes", new SnowySlopesSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> LOFTY_PEAKS = register("lofty_peaks", new LoftyPeaksSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> STONY_PEAKS = register("stony_peaks", new StonyPeaksSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	public static final SurfaceBuilder<TernarySurfaceConfig> STONE_SHORE = register("stone_shore", new StoneShoreSurfaceBuilder(TernarySurfaceConfig.CODEC));
-	private final Codec<ConfiguredSurfaceBuilder<C>> codec;
+	private final NoiseColumnSampler noiseColumnSampler;
+	private final BlockState defaultBlock;
+	private final int seaLevel;
+	private final BlockState[] terracottaBands;
+	private final DoublePerlinNoiseSampler terracottaBandsOffsetNoise;
+	private final DoublePerlinNoiseSampler icebergAndBadlandsPillarNoise;
+	private final DoublePerlinNoiseSampler icebergAndBadlandsPillarRoofNoise;
+	private final Map<String, DoublePerlinNoiseSampler> noiseSamplers = new ConcurrentHashMap();
+	private final RandomDeriver randomDeriver;
+	private final DoublePerlinNoiseSampler surfaceNoise;
 
-	private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String id, F surfaceBuilder) {
-		return Registry.register(Registry.SURFACE_BUILDER, id, surfaceBuilder);
+	public SurfaceBuilder(NoiseColumnSampler noiseColumnSampler, BlockState defaultBlock, int seaLevel, long seed, ChunkRandom.RandomProvider randomProvider) {
+		this.noiseColumnSampler = noiseColumnSampler;
+		this.defaultBlock = defaultBlock;
+		this.seaLevel = seaLevel;
+		this.randomDeriver = randomProvider.create(seed).createBlockPosRandomDeriver();
+		this.terracottaBandsOffsetNoise = DoublePerlinNoiseSampler.create(
+			this.randomDeriver.createRandom("clay_bands_offset"), TERRACOTTA_BANDS_OFFSET_NOISE_PARAMETERS
+		);
+		this.terracottaBands = createTerracottaBands(this.randomDeriver.createRandom("clay_bands"));
+		this.surfaceNoise = DoublePerlinNoiseSampler.create(this.randomDeriver.createRandom("surface"), SURFACE_NOISE_PARAMETERS);
+		this.icebergAndBadlandsPillarNoise = DoublePerlinNoiseSampler.create(
+			this.randomDeriver.createRandom("iceberg_and_badlands_pillar"), ICEBERG_AND_BADLANDS_PILLAR_NOISE_PARAMETERS
+		);
+		this.icebergAndBadlandsPillarRoofNoise = DoublePerlinNoiseSampler.create(
+			this.randomDeriver.createRandom("iceberg_and_badlands_pillar_roof"), ICEBERG_AND_BADLANDS_PILLAR_ROOF_NOISE_PARAMETERS
+		);
 	}
 
-	public SurfaceBuilder(Codec<C> codec) {
-		this.codec = codec.fieldOf("config").<ConfiguredSurfaceBuilder<C>>xmap(this::withConfig, ConfiguredSurfaceBuilder::getConfig).codec();
+	protected DoublePerlinNoiseSampler getNoiseSampler(String name, DoublePerlinNoiseSampler.NoiseParameters noiseParameters) {
+		return (DoublePerlinNoiseSampler)this.noiseSamplers
+			.computeIfAbsent(name, namex -> DoublePerlinNoiseSampler.create(this.randomDeriver.createRandom(new Identifier(namex)), noiseParameters));
 	}
 
-	public Codec<ConfiguredSurfaceBuilder<C>> getCodec() {
-		return this.codec;
+	public void buildSurface(
+		BiomeAccess biomeAccess,
+		Registry<Biome> biomeRegistry,
+		boolean useLegacyRandom,
+		HeightContext context,
+		Chunk chunk,
+		ChunkNoiseSampler chunkNoiseSampler,
+		MaterialRules.MaterialRule surfaceRule
+	) {
+		final BlockPos.Mutable mutable = new BlockPos.Mutable();
+		final ChunkPos chunkPos = chunk.getPos();
+		int i = chunkPos.getStartX();
+		int j = chunkPos.getStartZ();
+		BlockColumn blockColumn = new BlockColumn() {
+			@Override
+			public BlockState getState(int y) {
+				return chunk.getBlockState(mutable.setY(y));
+			}
+
+			@Override
+			public void setState(int y, BlockState state) {
+				chunk.setBlockState(mutable.setY(y), state, false);
+			}
+
+			public String toString() {
+				return "ChunkBlockColumn " + chunkPos;
+			}
+		};
+		MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(this, context);
+		MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)surfaceRule.apply(materialRuleContext);
+		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
+
+		for (int k = 0; k < 16; k++) {
+			for (int l = 0; l < 16; l++) {
+				int m = i + k;
+				int n = j + l;
+				int o = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, k, l) + 1;
+				AbstractRandom abstractRandom = this.randomDeriver.createRandom(m, 0, n);
+				double d = this.surfaceNoise.sample((double)m, 0.0, (double)n);
+				mutable.setX(m).setZ(n);
+				int p = this.noiseColumnSampler.method_38383(m, n, chunkNoiseSampler.getInterpolatedTerrainNoisePoint(m, n));
+				int q = p - 8;
+				Biome biome = biomeAccess.getBiome(mutable2.set(m, useLegacyRandom ? 0 : o, n));
+				RegistryKey<Biome> registryKey = (RegistryKey<Biome>)biomeRegistry.getKey(biome)
+					.orElseThrow(() -> new IllegalStateException("Unregistered biome: " + biome));
+				if (registryKey == BiomeKeys.ERODED_BADLANDS) {
+					this.method_39102(q, d, blockColumn, m, n, o);
+				}
+
+				int r = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, k, l) + 1;
+				int s = (int)(d * 2.75 + 3.0 + abstractRandom.nextDouble() * 0.25);
+				int t;
+				int u;
+				if (registryKey != BiomeKeys.BASALT_DELTAS
+					&& registryKey != BiomeKeys.SOUL_SAND_VALLEY
+					&& registryKey != BiomeKeys.WARPED_FOREST
+					&& registryKey != BiomeKeys.CRIMSON_FOREST
+					&& registryKey != BiomeKeys.NETHER_WASTES) {
+					t = r;
+					u = q;
+				} else {
+					t = 127;
+					u = 0;
+				}
+
+				int v = registryKey != BiomeKeys.WOODED_BADLANDS && registryKey != BiomeKeys.BADLANDS ? Integer.MAX_VALUE : 15;
+				materialRuleContext.initWorldDependentPredicates(chunk, m, n, s);
+				int w = 0;
+				int x = 0;
+				int y = Integer.MIN_VALUE;
+				int z = Integer.MAX_VALUE;
+
+				for (int aa = t; aa >= u && x < v; aa--) {
+					BlockState blockState = blockColumn.getState(aa);
+					if (blockState.isAir()) {
+						w = 0;
+						y = Integer.MIN_VALUE;
+					} else if (!blockState.isOf(this.defaultBlock.getBlock())) {
+						if (y == Integer.MIN_VALUE) {
+							y = aa + 1;
+						}
+					} else {
+						if (materialRuleContext.needsCeilingStoneDepth() && z >= aa) {
+							z = Integer.MIN_VALUE;
+
+							for (int ab = aa - 1; ab >= u; ab--) {
+								BlockState blockState2 = blockColumn.getState(ab);
+								if (!blockState2.isOf(this.defaultBlock.getBlock())) {
+									z = ab + 1;
+									break;
+								}
+							}
+						}
+
+						w++;
+						x++;
+						int abx = aa - z + 1;
+						Biome biome2 = biomeAccess.getBiome(mutable2.set(m, aa, n));
+						RegistryKey<Biome> registryKey2 = (RegistryKey<Biome>)biomeRegistry.getKey(biome2)
+							.orElseThrow(() -> new IllegalStateException("Unregistered biome: " + biome));
+						materialRuleContext.initContextDependentPredicates(registryKey2, biome2, s, w, abx, y, m, aa, n);
+						BlockState blockState3 = blockStateRule.tryApply(m, aa, n);
+						if (blockState3 != null) {
+							blockColumn.setState(aa, this.getBlockStateToPlace(blockColumn, aa, blockState3, (double)y));
+						}
+					}
+				}
+
+				if (registryKey == BiomeKeys.FROZEN_OCEAN || registryKey == BiomeKeys.DEEP_FROZEN_OCEAN) {
+					this.method_39104(q, biome, d, blockColumn, mutable2, m, n, o);
+				}
+			}
+		}
 	}
 
-	public ConfiguredSurfaceBuilder<C> withConfig(C config) {
-		return new ConfiguredSurfaceBuilder<>(this, config);
+	@Deprecated
+	public Optional<BlockState> method_39110(
+		MaterialRules.MaterialRule rule, CarverContext context, Biome biome, RegistryKey<Biome> biomeKey, Chunk chunk, BlockPos pos, boolean bl
+	) {
+		MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(this, context);
+		MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)rule.apply(materialRuleContext);
+		AbstractRandom abstractRandom = this.randomDeriver.createRandom(pos.getX(), 0, pos.getZ());
+		double d = this.surfaceNoise.sample((double)pos.getX(), 0.0, (double)pos.getZ());
+		int i = (int)(d * 2.75 + 3.0 + abstractRandom.nextDouble() * 0.25);
+		materialRuleContext.initWorldDependentPredicates(chunk, pos.getX(), pos.getZ(), i);
+		materialRuleContext.initContextDependentPredicates(biomeKey, biome, i, 1, 1, bl ? pos.getY() + 1 : Integer.MIN_VALUE, pos.getX(), pos.getY(), pos.getZ());
+		BlockState blockState = blockStateRule.tryApply(pos.getX(), pos.getY(), pos.getZ());
+		return Optional.ofNullable(blockState);
 	}
 
-	/**
-	 * Places the surface blocks for the given column.
-	 * 
-	 * @param random the Random instance, seeded with a hash of the x and z coordinates
-	 * @param column the current column being surface built
-	 * @param biome the biome in the column that is being surface built
-	 * @param x X coordinate of the column
-	 * @param z Z coordinate of the column
-	 * @param height height of the column retrieved using {@link net.minecraft.world.Heightmap.Type#WORLD_SURFACE_WG}, and will never be lower than the sea level
-	 * @param noise noise value at this column. Has a range of {@code (-8, 8)} but follows a normal distribution so most values will be around {@code (-2, 2)}
-	 * @param defaultBlock default block of the chunk generator, used to know which block to replace with the surface blocks
-	 * @param defaultFluid default fluid of the chunk generator
-	 * @param seaLevel the sea level of the chunk generator
-	 */
-	public abstract void generate(
-		Random random,
-		BlockColumn column,
-		Biome biome,
-		int x,
-		int z,
-		int height,
-		double noise,
-		BlockState defaultBlock,
-		BlockState defaultFluid,
-		int seaLevel,
-		int i,
-		long seed,
-		C config
-	);
+	private void method_39102(int i, double d, BlockColumn chunk, int x, int z, int j) {
+		double e = Math.min(Math.abs(d * 8.25), this.icebergAndBadlandsPillarNoise.sample((double)x * 0.25, 0.0, (double)z * 0.25) * 15.0);
+		if (!(e <= 0.0)) {
+			double f = 0.001953125;
+			double g = Math.abs(this.icebergAndBadlandsPillarRoofNoise.sample((double)x * 0.001953125, 0.0, (double)z * 0.001953125));
+			double h = 64.0 + Math.min(e * e * 2.5, Math.ceil(g * 50.0) + 14.0);
+			int k = Math.max(j, (int)h + 1);
 
-	/**
-	 * Runs before {@link #generate} and allows for custom noise to be initialized.
-	 */
-	public void initSeed(long seed) {
+			for (int l = k; l >= i; l--) {
+				BlockState blockState = chunk.getState(l);
+				if (blockState.isOf(this.defaultBlock.getBlock())) {
+					break;
+				}
+
+				if (blockState.isOf(Blocks.WATER)) {
+					return;
+				}
+			}
+
+			for (int l = k; l >= i; l--) {
+				if (chunk.getState(l).isAir() && l < (int)h) {
+					chunk.setState(l, this.defaultBlock);
+				}
+			}
+		}
+	}
+
+	private void method_39104(int i, Biome biome, double d, BlockColumn chunk, BlockPos.Mutable mutablePos, int x, int z, int surfaceY) {
+		float f = biome.getTemperature(mutablePos.set(x, 63, z));
+		double e = Math.min(Math.abs(d * 8.25), this.icebergAndBadlandsPillarNoise.sample((double)x * 0.1, 0.0, (double)z * 0.1) * 15.0);
+		if (!(e <= 1.8)) {
+			double g = 0.09765625;
+			double h = Math.abs(this.icebergAndBadlandsPillarRoofNoise.sample((double)x * 0.09765625, 0.0, (double)z * 0.09765625));
+			double j = Math.min(e * e * 1.2, Math.ceil(h * 40.0) + 14.0);
+			if (f > 0.1F) {
+				j -= 2.0;
+			}
+
+			double k;
+			if (j > 2.0) {
+				j += (double)this.seaLevel;
+				k = (double)this.seaLevel - j - 7.0;
+			} else {
+				j = 0.0;
+				k = 0.0;
+			}
+
+			double l = j;
+			AbstractRandom abstractRandom = this.randomDeriver.createRandom(x, 0, z);
+			int m = 2 + abstractRandom.nextInt(4);
+			int n = this.seaLevel + 18 + abstractRandom.nextInt(10);
+			int o = 0;
+
+			for (int p = Math.max(surfaceY, (int)j + 1); p >= i; p--) {
+				if (chunk.getState(p).isAir() && p < (int)l && abstractRandom.nextDouble() > 0.01
+					|| chunk.getState(p).getMaterial() == Material.WATER && p > (int)k && p < this.seaLevel && k != 0.0 && abstractRandom.nextDouble() > 0.15) {
+					if (o <= m && p > n) {
+						chunk.setState(p, SNOW_BLOCK);
+						o++;
+					} else {
+						chunk.setState(p, PACKED_ICE);
+					}
+				}
+			}
+		}
+	}
+
+	private BlockState getBlockStateToPlace(BlockColumn chunk, int y, BlockState state, double waterHeight) {
+		if ((double)y <= waterHeight && state.isOf(Blocks.GRASS_BLOCK)) {
+			return Blocks.DIRT.getDefaultState();
+		} else if (chunk.getState(y - 1).isOf(this.defaultBlock.getBlock())) {
+			return state;
+		} else if (state.isOf(Blocks.SAND)) {
+			return Blocks.SANDSTONE.getDefaultState();
+		} else if (state.isOf(Blocks.RED_SAND)) {
+			return Blocks.RED_SANDSTONE.getDefaultState();
+		} else {
+			return state.isOf(Blocks.GRAVEL) ? Blocks.STONE.getDefaultState() : state;
+		}
+	}
+
+	private static BlockState[] createTerracottaBands(AbstractRandom random) {
+		BlockState[] blockStates = new BlockState[64];
+		Arrays.fill(blockStates, TERRACOTTA);
+
+		for (int i = 0; i < blockStates.length; i++) {
+			i += random.nextInt(5) + 1;
+			if (i < blockStates.length) {
+				blockStates[i] = ORANGE_TERRACOTTA;
+			}
+		}
+
+		addTerracottaBands(random, blockStates, 1, YELLOW_TERRACOTTA);
+		addTerracottaBands(random, blockStates, 2, BROWN_TERRACOTTA);
+		addTerracottaBands(random, blockStates, 1, RED_TERRACOTTA);
+		int ix = random.nextInt(3) + 3;
+		int j = 0;
+
+		for (int k = 0; j < ix && k < blockStates.length; k += random.nextInt(16) + 4) {
+			blockStates[k] = WHITE_TERRACOTTA;
+			if (k - 1 > 0 && random.nextBoolean()) {
+				blockStates[k - 1] = LIGHT_GRAY_TERRACOTTA;
+			}
+
+			if (k + 1 < blockStates.length && random.nextBoolean()) {
+				blockStates[k + 1] = LIGHT_GRAY_TERRACOTTA;
+			}
+
+			j++;
+		}
+
+		return blockStates;
+	}
+
+	private static void addTerracottaBands(AbstractRandom random, BlockState[] terracottaBands, int minBandSize, BlockState state) {
+		int i = random.nextInt(4) + 2;
+
+		for (int j = 0; j < i; j++) {
+			int k = minBandSize + random.nextInt(3);
+			int l = random.nextInt(terracottaBands.length);
+
+			for (int m = 0; l + m < terracottaBands.length && m < k; m++) {
+				terracottaBands[l + m] = state;
+			}
+		}
+	}
+
+	protected BlockState getTerracottaBlock(int x, int y, int z) {
+		int i = (int)Math.round(this.terracottaBandsOffsetNoise.sample((double)x, 0.0, (double)z) * 2.0);
+		return this.terracottaBands[(y + i + this.terracottaBands.length) % this.terracottaBands.length];
 	}
 }

@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.chunk;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -19,6 +20,8 @@ import net.minecraft.world.gen.MultiNoiseParameters;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.surfacebuilder.MaterialRules;
+import net.minecraft.world.gen.surfacebuilder.VanillaSurfaceRules;
 
 public final class ChunkGeneratorSettings {
 	public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(
@@ -28,6 +31,7 @@ public final class ChunkGeneratorSettings {
 					MultiNoiseParameters.CODEC.fieldOf("octaves").forGetter(ChunkGeneratorSettings::getMultiNoiseParameters),
 					BlockState.CODEC.fieldOf("default_block").forGetter(ChunkGeneratorSettings::getDefaultBlock),
 					BlockState.CODEC.fieldOf("default_fluid").forGetter(ChunkGeneratorSettings::getDefaultFluid),
+					MaterialRules.MaterialRule.CODEC.fieldOf("surface_rule").forGetter(ChunkGeneratorSettings::getSurfaceRule),
 					Codec.INT.fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorSettings::getBedrockCeilingY),
 					Codec.INT.fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorSettings::getBedrockFloorY),
 					Codec.INT.fieldOf("sea_level").forGetter(ChunkGeneratorSettings::getSeaLevel),
@@ -48,6 +52,7 @@ public final class ChunkGeneratorSettings {
 	private final MultiNoiseParameters multiNoiseParameters;
 	private final BlockState defaultBlock;
 	private final BlockState defaultFluid;
+	private final MaterialRules.MaterialRule surfaceRule;
 	private final int bedrockCeilingY;
 	private final int bedrockFloorY;
 	private final int seaLevel;
@@ -58,7 +63,7 @@ public final class ChunkGeneratorSettings {
 	private final boolean oreVeins;
 	private final boolean noodleCaves;
 	public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("overworld"));
-	public static final RegistryKey<ChunkGeneratorSettings> field_35051 = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("large_biomes"));
+	public static final RegistryKey<ChunkGeneratorSettings> LARGE_BIOMES = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("large_biomes"));
 	public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("amplified"));
 	public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("nether"));
 	public static final RegistryKey<ChunkGeneratorSettings> END = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("end"));
@@ -66,7 +71,8 @@ public final class ChunkGeneratorSettings {
 	public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(
 		Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("floating_islands")
 	);
-	private static final ChunkGeneratorSettings INSTANCE = register(OVERWORLD, createSurfaceSettings(new StructuresConfig(true), false, false));
+	@VisibleForTesting
+	static final ChunkGeneratorSettings INSTANCE = register(OVERWORLD, createSurfaceSettings(new StructuresConfig(true), false, false, false));
 
 	private ChunkGeneratorSettings(
 		StructuresConfig structuresConfig,
@@ -74,9 +80,10 @@ public final class ChunkGeneratorSettings {
 		MultiNoiseParameters multiNoiseParameters,
 		BlockState defaultBlock,
 		BlockState defaultFluid,
+		MaterialRules.MaterialRule surfaceRule,
+		int bedrockCeilingY,
 		int bedrockFloorY,
 		int seaLevel,
-		int minSurfaceLevel,
 		boolean mobGenerationDisabled,
 		boolean aquifers,
 		boolean noiseCaves,
@@ -90,9 +97,10 @@ public final class ChunkGeneratorSettings {
 		this.multiNoiseParameters = multiNoiseParameters;
 		this.defaultBlock = defaultBlock;
 		this.defaultFluid = defaultFluid;
-		this.bedrockCeilingY = bedrockFloorY;
-		this.bedrockFloorY = seaLevel;
-		this.seaLevel = minSurfaceLevel;
+		this.surfaceRule = surfaceRule;
+		this.bedrockCeilingY = bedrockCeilingY;
+		this.bedrockFloorY = bedrockFloorY;
+		this.seaLevel = seaLevel;
 		this.mobGenerationDisabled = mobGenerationDisabled;
 		this.aquifers = aquifers;
 		this.noiseCaves = noiseCaves;
@@ -120,6 +128,10 @@ public final class ChunkGeneratorSettings {
 
 	public BlockState getDefaultFluid() {
 		return this.defaultFluid;
+	}
+
+	public MaterialRules.MaterialRule getSurfaceRule() {
+		return this.surfaceRule;
 	}
 
 	/**
@@ -213,8 +225,6 @@ public final class ChunkGeneratorSettings {
 				1,
 				0.0,
 				0.0,
-				true,
-				false,
 				bl2,
 				false,
 				true
@@ -229,6 +239,7 @@ public final class ChunkGeneratorSettings {
 			),
 			defaultBlock,
 			defaultFluid,
+			VanillaSurfaceRules.getEndStoneRule(),
 			Integer.MIN_VALUE,
 			Integer.MIN_VALUE,
 			0,
@@ -259,8 +270,6 @@ public final class ChunkGeneratorSettings {
 				-0.030078125,
 				false,
 				false,
-				false,
-				false,
 				true
 			),
 			new MultiNoiseParameters(
@@ -273,6 +282,7 @@ public final class ChunkGeneratorSettings {
 			),
 			defaultBlock,
 			defaultFluid,
+			VanillaSurfaceRules.createNetherSurfaceRule(),
 			0,
 			0,
 			32,
@@ -286,7 +296,8 @@ public final class ChunkGeneratorSettings {
 		);
 	}
 
-	private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, boolean bl) {
+	@VisibleForTesting
+	public static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, boolean bl, boolean bl2) {
 		int i = bl ? -2 : 0;
 		double d = 0.9999999814507745;
 		return new ChunkGeneratorSettings(
@@ -301,8 +312,6 @@ public final class ChunkGeneratorSettings {
 				2,
 				1.0,
 				-0.51875,
-				true,
-				true,
 				false,
 				amplified,
 				false
@@ -317,6 +326,7 @@ public final class ChunkGeneratorSettings {
 			),
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),
+			VanillaSurfaceRules.createOverworldSurfaceRule(),
 			Integer.MIN_VALUE,
 			0,
 			63,
@@ -326,13 +336,13 @@ public final class ChunkGeneratorSettings {
 			true,
 			true,
 			true,
-			true
+			bl2
 		);
 	}
 
 	static {
-		register(field_35051, createSurfaceSettings(new StructuresConfig(true), false, true));
-		register(AMPLIFIED, createSurfaceSettings(new StructuresConfig(true), true, false));
+		register(LARGE_BIOMES, createSurfaceSettings(new StructuresConfig(true), false, true, false));
+		register(AMPLIFIED, createSurfaceSettings(new StructuresConfig(true), true, false, false));
 		register(NETHER, createUndergroundSettings(new StructuresConfig(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState()));
 		register(END, createIslandSettings(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), true, true));
 		register(CAVES, createUndergroundSettings(new StructuresConfig(true), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState()));

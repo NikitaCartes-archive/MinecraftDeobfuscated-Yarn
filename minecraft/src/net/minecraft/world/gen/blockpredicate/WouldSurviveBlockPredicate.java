@@ -9,21 +9,21 @@ import net.minecraft.world.StructureWorldAccess;
 public class WouldSurviveBlockPredicate implements BlockPredicate {
 	public static final Codec<WouldSurviveBlockPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockPos.CODEC.optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(wouldSurviveBlockPredicate -> wouldSurviveBlockPredicate.pos),
-					BlockState.CODEC.fieldOf("state").forGetter(wouldSurviveBlockPredicate -> wouldSurviveBlockPredicate.state)
+					BlockPos.CODEC.optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(predicate -> predicate.offset),
+					BlockState.CODEC.fieldOf("state").forGetter(predicate -> predicate.state)
 				)
 				.apply(instance, WouldSurviveBlockPredicate::new)
 	);
-	private final BlockPos pos;
+	private final BlockPos offset;
 	private final BlockState state;
 
-	protected WouldSurviveBlockPredicate(BlockPos pos, BlockState state) {
-		this.pos = pos;
+	protected WouldSurviveBlockPredicate(BlockPos offset, BlockState state) {
+		this.offset = offset;
 		this.state = state;
 	}
 
 	public boolean test(StructureWorldAccess structureWorldAccess, BlockPos blockPos) {
-		return this.state.canPlaceAt(structureWorldAccess, blockPos.add(this.pos));
+		return this.state.canPlaceAt(structureWorldAccess, blockPos.add(this.offset));
 	}
 
 	@Override

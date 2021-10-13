@@ -12,7 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.util.ChatUtil;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -64,7 +64,7 @@ public class SkullBlockEntity extends BlockEntity {
 			this.setOwner(NbtHelper.toGameProfile(nbt.getCompound("SkullOwner")));
 		} else if (nbt.contains("ExtraType", NbtElement.STRING_TYPE)) {
 			String string = nbt.getString("ExtraType");
-			if (!ChatUtil.isEmpty(string)) {
+			if (!StringHelper.isEmpty(string)) {
 				this.setOwner(new GameProfile(null, string));
 			}
 		}
@@ -114,7 +114,7 @@ public class SkullBlockEntity extends BlockEntity {
 
 	public static void loadProperties(@Nullable GameProfile owner, Consumer<GameProfile> callback) {
 		if (owner != null
-			&& !ChatUtil.isEmpty(owner.getName())
+			&& !StringHelper.isEmpty(owner.getName())
 			&& (!owner.isComplete() || !owner.getProperties().containsKey("textures"))
 			&& userCache != null
 			&& sessionService != null) {

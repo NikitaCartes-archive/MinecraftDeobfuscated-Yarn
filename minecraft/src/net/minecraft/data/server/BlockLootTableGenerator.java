@@ -443,38 +443,42 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).conditionally(WITH_SHEARS).with(ItemEntry.builder(drop)));
 	}
 
-	private static LootTable.Builder method_37108(Block block) {
+	private static LootTable.Builder glowLichenDrops(Block glowLichen) {
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
 					.with(
 						(LootPoolEntry.Builder<?>)applyExplosionDecay(
-							block,
-							ItemEntry.builder(block)
+							glowLichen,
+							ItemEntry.builder(glowLichen)
 								.conditionally(WITH_SHEARS)
 								.apply(
 									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.EAST, true)))
+										.conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.EAST, true)))
 								)
 								.apply(
 									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.WEST, true)))
+										.conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.WEST, true)))
 								)
 								.apply(
 									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.NORTH, true)))
+										.conditionally(
+											BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.NORTH, true))
+										)
 								)
 								.apply(
 									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.SOUTH, true)))
+										.conditionally(
+											BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.SOUTH, true))
+										)
 								)
 								.apply(
 									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.UP, true)))
+										.conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.UP, true)))
 								)
 								.apply(
 									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.DOWN, true)))
+										.conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.DOWN, true)))
 								)
 								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(-1.0F), true))
 						)
@@ -1487,7 +1491,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.SEAGRASS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.VINE, BlockLootTableGenerator::dropsWithShears);
-		this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::method_37108);
+		this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::glowLichenDrops);
 		this.addDrop(Blocks.HANGING_ROOTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.SMALL_DRIPLEAF, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.TALL_SEAGRASS, seagrassDrops(Blocks.SEAGRASS));
@@ -1819,7 +1823,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	public void addPottedPlantDrop(Block block) {
-		this.addDrop(block, blockx -> pottedPlantDrops(((FlowerPotBlock)blockx).getContent()));
+		this.addDrop(block, flowerPot -> pottedPlantDrops(((FlowerPotBlock)flowerPot).getContent()));
 	}
 
 	public void addDropWithSilkTouch(Block block, Block drop) {

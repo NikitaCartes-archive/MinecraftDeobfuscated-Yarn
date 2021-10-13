@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class TestUtil {
-	private static final int field_33152 = 100;
+	private static final int MAX_BATCH_SIZE = 100;
 	public static final int field_33148 = 2;
 	public static final int field_33149 = 5;
 	public static final int field_33150 = 6;

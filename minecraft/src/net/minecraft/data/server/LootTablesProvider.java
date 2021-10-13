@@ -48,28 +48,28 @@ public class LootTablesProvider implements DataProvider {
 	public void run(DataCache cache) {
 		Path path = this.root.getOutput();
 		Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
-		this.lootTypeGenerators.forEach(pair -> ((Consumer)((Supplier)pair.getFirst()).get()).accept((BiConsumer)(identifierx, builder) -> {
-				if (map.put(identifierx, builder.type((LootContextType)pair.getSecond()).build()) != null) {
-					throw new IllegalStateException("Duplicate loot table " + identifierx);
+		this.lootTypeGenerators.forEach(generator -> ((Consumer)((Supplier)generator.getFirst()).get()).accept((BiConsumer)(id, builder) -> {
+				if (map.put(id, builder.type((LootContextType)generator.getSecond()).build()) != null) {
+					throw new IllegalStateException("Duplicate loot table " + id);
 				}
 			}));
-		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, identifierx -> null, map::get);
+		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, id -> null, map::get);
 
 		for (Identifier identifier : Sets.difference(LootTables.getAll(), map.keySet())) {
 			lootTableReporter.report("Missing built-in table: " + identifier);
 		}
 
-		map.forEach((identifierx, lootTable) -> LootManager.validate(lootTableReporter, identifierx, lootTable));
+		map.forEach((id, table) -> LootManager.validate(lootTableReporter, id, table));
 		Multimap<String, String> multimap = lootTableReporter.getMessages();
 		if (!multimap.isEmpty()) {
-			multimap.forEach((string, string2) -> LOGGER.warn("Found validation problem in {}: {}", string, string2));
+			multimap.forEach((name, message) -> LOGGER.warn("Found validation problem in {}: {}", name, message));
 			throw new IllegalStateException("Failed to validate loot tables, see logs");
 		} else {
-			map.forEach((identifierx, lootTable) -> {
-				Path path2 = getOutput(path, identifierx);
+			map.forEach((id, table) -> {
+				Path path2 = getOutput(path, id);
 
 				try {
-					DataProvider.writeToPath(GSON, cache, LootManager.toJson(lootTable), path2);
+					DataProvider.writeToPath(GSON, cache, LootManager.toJson(table), path2);
 				} catch (IOException var6) {
 					LOGGER.error("Couldn't save loot table {}", path2, var6);
 				}

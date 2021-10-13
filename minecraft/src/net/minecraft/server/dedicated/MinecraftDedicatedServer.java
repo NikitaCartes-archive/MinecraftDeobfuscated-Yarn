@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -294,7 +293,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public SystemDetails addExtraSystemDetails(SystemDetails details) {
-		details.addSection("Is Modded", (Supplier<String>)(() -> (String)this.getModdedStatusMessage().orElse("Unknown (can't tell)")));
+		details.addSection("Is Modded", (Supplier<String>)(() -> this.getModStatus().getMessage()));
 		details.addSection("Type", (Supplier<String>)(() -> "Dedicated Server (map_server.txt)"));
 		return details;
 	}
@@ -332,12 +331,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (writer != null) {
 			writer.close();
 		}
-	}
-
-	@Override
-	public Optional<String> getModdedStatusMessage() {
-		String string = this.getServerModName();
-		return !"vanilla".equals(string) ? Optional.of("Definitely; Server brand changed to '" + string + "'") : Optional.empty();
 	}
 
 	@Override

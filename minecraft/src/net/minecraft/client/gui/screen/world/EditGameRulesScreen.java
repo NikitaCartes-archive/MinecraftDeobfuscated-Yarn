@@ -109,8 +109,8 @@ public class EditGameRulesScreen extends Screen {
 		@Nullable
 		final List<OrderedText> description;
 
-		public AbstractRuleWidget(@Nullable List<OrderedText> list) {
-			this.description = list;
+		public AbstractRuleWidget(@Nullable List<OrderedText> description) {
+			this.description = description;
 		}
 	}
 
@@ -285,7 +285,7 @@ public class EditGameRulesScreen extends Screen {
 							.entrySet()
 							.stream()
 							.sorted(java.util.Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName)))
-							.forEach(entryx -> this.addEntry((EditGameRulesScreen.AbstractRuleWidget)entryx.getValue()));
+							.forEach(e -> this.addEntry((EditGameRulesScreen.AbstractRuleWidget)e.getValue()));
 					}
 				);
 		}

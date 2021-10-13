@@ -59,7 +59,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public void renderIcon(MatrixStack matrices, float f, int i) {
+	public void renderIcon(MatrixStack matrices, float brightness, int alpha) {
 		RenderSystem.setShaderTexture(0, SpectatorHud.SPECTATOR_TEXTURE);
 		DrawableHelper.drawTexture(matrices, 0, 0, 0.0F, 0.0F, 16, 16, 256, 256);
 	}

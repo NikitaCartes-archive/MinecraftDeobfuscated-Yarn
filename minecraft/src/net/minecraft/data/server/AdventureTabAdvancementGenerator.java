@@ -48,10 +48,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
 public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
-	private static final int field_35091 = 384;
-	private static final int field_35092 = 320;
-	private static final int field_35093 = -64;
-	private static final int field_35094 = 5;
+	private static final int OVERWORLD_HEIGHT = 384;
+	private static final int OVERWORLD_MAX_Y = 320;
+	private static final int OVERWORLD_MIN_Y = -64;
+	private static final int OVERWORLD_BEDROCK_LAYER_HEIGHT = 5;
 	private static final List<RegistryKey<Biome>> BIOMES = ImmutableList.of(
 		BiomeKeys.RIVER,
 		BiomeKeys.SWAMP,
@@ -211,7 +211,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion(
 				"trade_at_world_height",
-				VillagerTradeCriterion.Conditions.method_38914(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))))
+				VillagerTradeCriterion.Conditions.create(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))))
 			)
 			.build(consumer, "adventure/trade_at_world_height");
 		Advancement advancement4 = this.requireListedMobsKilled(Advancement.Task.create())

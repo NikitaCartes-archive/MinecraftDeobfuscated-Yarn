@@ -212,9 +212,9 @@ public class CreateWorldScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("selectWorld.gameRules"),
-				button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
+				button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optionalGameRules -> {
 						this.client.setScreen(this);
-						optional.ifPresent(gameRules -> this.gameRules = gameRules);
+						optionalGameRules.ifPresent(gameRules -> this.gameRules = gameRules);
 					}))
 			)
 		);
@@ -472,7 +472,7 @@ public class CreateWorldScreen extends Screen {
 					serverResourceManager.close();
 				}, this.client)
 				.handle(
-					(void_, throwable) -> {
+					(v, throwable) -> {
 						if (throwable != null) {
 							LOGGER.warn("Failed to validate datapack", throwable);
 							this.client

@@ -18,7 +18,7 @@ import org.lwjgl.glfw.GLFW;
 public class KeybindsScreen extends GameOptionsScreen {
 	@Nullable
 	public KeyBinding selectedKeyBinding;
-	public long field_34800;
+	public long lastKeyCodeUpdateTime;
 	private ControlsListWidget controlsList;
 	private ButtonWidget resetAllButton;
 
@@ -31,7 +31,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 		this.controlsList = new ControlsListWidget(this, this.client);
 		this.addSelectableChild(this.controlsList);
 		this.resetAllButton = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, new TranslatableText("controls.resetAll"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, new TranslatableText("controls.resetAll"), button -> {
 				for (KeyBinding keyBinding : this.gameOptions.keysAll) {
 					keyBinding.setBoundKey(keyBinding.getDefaultKey());
 				}
@@ -39,9 +39,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 				KeyBinding.updateKeysByCode();
 			})
 		);
-		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.DONE, buttonWidget -> this.client.setScreen(this.parent))
-		);
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
 	}
 
 	@Override
@@ -66,7 +64,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 			}
 
 			this.selectedKeyBinding = null;
-			this.field_34800 = Util.getMeasuringTimeMs();
+			this.lastKeyCodeUpdateTime = Util.getMeasuringTimeMs();
 			KeyBinding.updateKeysByCode();
 			return true;
 		} else {

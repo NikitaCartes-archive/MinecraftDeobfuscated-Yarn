@@ -1,6 +1,7 @@
 package net.minecraft.util.registry;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -26,6 +27,10 @@ public class RegistryKey<T> {
 	 * The identifier of the value in the registry specified by {@link #registry}.
 	 */
 	private final Identifier value;
+
+	public static <T> Codec<RegistryKey<T>> createCodec(RegistryKey<? extends Registry<T>> registry) {
+		return Identifier.CODEC.xmap(id -> of(registry, id), RegistryKey::getValue);
+	}
 
 	/**
 	 * Creates a registry key for a value in a registry with a registry key for

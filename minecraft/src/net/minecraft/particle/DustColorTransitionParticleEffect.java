@@ -15,9 +15,9 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 	public static final DustColorTransitionParticleEffect DEFAULT = new DustColorTransitionParticleEffect(SCULK_BLUE, DustParticleEffect.RED, 1.0F);
 	public static final Codec<DustColorTransitionParticleEffect> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Vec3f.CODEC.fieldOf("fromColor").forGetter(dustColorTransitionParticleEffect -> dustColorTransitionParticleEffect.color),
-					Vec3f.CODEC.fieldOf("toColor").forGetter(dustColorTransitionParticleEffect -> dustColorTransitionParticleEffect.toColor),
-					Codec.FLOAT.fieldOf("scale").forGetter(dustColorTransitionParticleEffect -> dustColorTransitionParticleEffect.scale)
+					Vec3f.CODEC.fieldOf("fromColor").forGetter(effect -> effect.color),
+					Vec3f.CODEC.fieldOf("toColor").forGetter(effect -> effect.toColor),
+					Codec.FLOAT.fieldOf("scale").forGetter(effect -> effect.scale)
 				)
 				.apply(instance, DustColorTransitionParticleEffect::new)
 	);

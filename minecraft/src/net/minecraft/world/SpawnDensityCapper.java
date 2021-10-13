@@ -22,12 +22,12 @@ public class SpawnDensityCapper {
 	}
 
 	private List<ServerPlayerEntity> getMobSpawnablePlayers(ChunkPos chunkPos) {
-		return this.chunkPosToMobSpawnablePlayers.computeIfAbsent(chunkPos.toLong(), l -> this.threadedAnvilChunkStorage.method_37907(chunkPos));
+		return this.chunkPosToMobSpawnablePlayers.computeIfAbsent(chunkPos.toLong(), pos -> this.threadedAnvilChunkStorage.getPlayersWatchingChunk(chunkPos));
 	}
 
 	public void increaseDensity(ChunkPos chunkPos, SpawnGroup spawnGroup) {
 		for (ServerPlayerEntity serverPlayerEntity : this.getMobSpawnablePlayers(chunkPos)) {
-			((SpawnDensityCapper.DensityCap)this.playersToDensityCap.computeIfAbsent(serverPlayerEntity, serverPlayerEntityx -> new SpawnDensityCapper.DensityCap()))
+			((SpawnDensityCapper.DensityCap)this.playersToDensityCap.computeIfAbsent(serverPlayerEntity, player -> new SpawnDensityCapper.DensityCap()))
 				.increaseDensity(spawnGroup);
 		}
 	}
@@ -47,7 +47,7 @@ public class SpawnDensityCapper {
 		private final Object2IntMap<SpawnGroup> spawnGroupsToDensity = new Object2IntOpenHashMap<>(SpawnGroup.values().length);
 
 		public void increaseDensity(SpawnGroup spawnGroup) {
-			this.spawnGroupsToDensity.computeInt(spawnGroup, (spawnGroupx, integer) -> integer == null ? 1 : integer + 1);
+			this.spawnGroupsToDensity.computeInt(spawnGroup, (group, density) -> density == null ? 1 : density + 1);
 		}
 
 		public boolean canSpawn(SpawnGroup spawnGroup) {

@@ -11,8 +11,8 @@ import net.minecraft.util.registry.Registry;
 class MatchingFluidsBlockPredicate extends OffsetPredicate {
 	private final List<Fluid> fluids;
 	public static final Codec<MatchingFluidsBlockPredicate> CODEC = RecordCodecBuilder.create(
-		instance -> method_39013(instance)
-				.and(Registry.FLUID.listOf().fieldOf("fluids").forGetter(matchingFluidsBlockPredicate -> matchingFluidsBlockPredicate.fluids))
+		instance -> registerOffsetField(instance)
+				.and(Registry.FLUID.listOf().fieldOf("fluids").forGetter(predicate -> predicate.fluids))
 				.apply(instance, MatchingFluidsBlockPredicate::new)
 	);
 

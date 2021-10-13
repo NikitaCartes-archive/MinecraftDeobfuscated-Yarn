@@ -46,8 +46,8 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 			return new VillagerTradeCriterion.Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, ItemPredicate.ANY);
 		}
 
-		public static VillagerTradeCriterion.Conditions method_38914(EntityPredicate.Builder builder) {
-			return new VillagerTradeCriterion.Conditions(EntityPredicate.Extended.ofLegacy(builder.build()), EntityPredicate.Extended.EMPTY, ItemPredicate.ANY);
+		public static VillagerTradeCriterion.Conditions create(EntityPredicate.Builder playerPredicate) {
+			return new VillagerTradeCriterion.Conditions(EntityPredicate.Extended.ofLegacy(playerPredicate.build()), EntityPredicate.Extended.EMPTY, ItemPredicate.ANY);
 		}
 
 		public boolean matches(LootContext merchantContext, ItemStack stack) {

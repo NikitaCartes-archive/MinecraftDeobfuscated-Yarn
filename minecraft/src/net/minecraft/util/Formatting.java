@@ -10,6 +10,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+/**
+ * An enum holding formattings.
+ * 
+ * <p>There are two types of formattings, color and modifier. Color formattings
+ * are associated with a specific color, while modifier formattings modify the
+ * style, such as by bolding the text. {@link #RESET} is a special formatting
+ * and is not classified as either of these two.
+ */
 public enum Formatting {
 	BLACK("BLACK", '0', 0, 0),
 	DARK_BLUE("DARK_BLUE", '1', 1, 170),
@@ -34,7 +42,7 @@ public enum Formatting {
 	ITALIC("ITALIC", 'o', true),
 	RESET("RESET", 'r', -1, null);
 
-	public static final char field_33292 = '§';
+	public static final char FORMATTING_CODE_PREFIX = '§';
 	private static final Map<String, Formatting> BY_NAME = (Map<String, Formatting>)Arrays.stream(values())
 		.collect(Collectors.toMap(f -> sanitize(f.name), f -> f));
 	private static final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]");
@@ -67,27 +75,48 @@ public enum Formatting {
 		this.stringValue = "§" + code;
 	}
 
+	/**
+	 * {@return the code to be placed after the {@value FORMATTING_CODE_PREFIX} when this format is converted to a string}
+	 */
 	public char getCode() {
 		return this.code;
 	}
 
+	/**
+	 * {@return the color index for the formatting, or {@code -1} to indicate no color}
+	 * 
+	 * @apiNote This is also used to calculate scoreboard team display slot IDs.
+	 */
 	public int getColorIndex() {
 		return this.colorIndex;
 	}
 
+	/**
+	 * {@return true if the formatting is a modifier, false otherwise}
+	 */
 	public boolean isModifier() {
 		return this.modifier;
 	}
 
+	/**
+	 * {@return true if the formatting is associated with a color, false otherwise}
+	 */
 	public boolean isColor() {
 		return !this.modifier && this != RESET;
 	}
 
+	/**
+	 * {@return the color of the formatted text, or {@code null} if the formatting
+	 * has no associated color}
+	 */
 	@Nullable
 	public Integer getColorValue() {
 		return this.colorValue;
 	}
 
+	/**
+	 * {@return the name of the formatting}
+	 */
 	public String getName() {
 		return this.name().toLowerCase(Locale.ROOT);
 	}
@@ -96,16 +125,28 @@ public enum Formatting {
 		return this.stringValue;
 	}
 
+	/**
+	 * {@return the {@code text} with all formatting codes removed}
+	 * 
+	 * @see StringHelper#stripTextFormat
+	 */
 	@Nullable
 	public static String strip(@Nullable String string) {
 		return string == null ? null : FORMATTING_CODE_PATTERN.matcher(string).replaceAll("");
 	}
 
+	/**
+	 * {@return the formatting with the name {@code name}, or {@code null} if there is none}
+	 */
 	@Nullable
 	public static Formatting byName(@Nullable String name) {
 		return name == null ? null : (Formatting)BY_NAME.get(sanitize(name));
 	}
 
+	/**
+	 * {@return the formatting with the color index {@code colorIndex},
+	 * or {@code null} if there is none}
+	 */
 	@Nullable
 	public static Formatting byColorIndex(int colorIndex) {
 		if (colorIndex < 0) {
@@ -121,6 +162,9 @@ public enum Formatting {
 		}
 	}
 
+	/**
+	 * {@return the formatting with the code {@code code}, or {@code null} if there is none}
+	 */
 	@Nullable
 	public static Formatting byCode(char code) {
 		char c = Character.toString(code).toLowerCase(Locale.ROOT).charAt(0);
@@ -134,6 +178,12 @@ public enum Formatting {
 		return null;
 	}
 
+	/**
+	 * {@return the list of formattings matching the given condition}
+	 * 
+	 * @param colors whether or not to include color formattings
+	 * @param modifiers whether or not to include modifier formattings
+	 */
 	public static Collection<String> getNames(boolean colors, boolean modifiers) {
 		List<String> list = Lists.<String>newArrayList();
 

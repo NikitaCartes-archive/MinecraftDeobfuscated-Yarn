@@ -46,13 +46,13 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class PresetsScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final int field_32263 = 128;
-	private static final int field_32264 = 18;
-	private static final int field_32265 = 20;
-	private static final int field_32266 = 1;
-	private static final int field_32267 = 1;
-	private static final int field_32268 = 2;
-	private static final int field_32269 = 2;
+	private static final int ICON_TEXTURE_SIZE = 128;
+	private static final int ICON_SIZE = 18;
+	private static final int BUTTON_HEIGHT = 20;
+	private static final int ICON_BACKGROUND_OFFSET_X = 1;
+	private static final int ICON_BACKGROUND_OFFSET_Y = 1;
+	private static final int ICON_OFFSET_X = 2;
+	private static final int ICON_OFFSET_Y = 2;
 	static final List<PresetsScreen.SuperflatPreset> PRESETS = Lists.<PresetsScreen.SuperflatPreset>newArrayList();
 	private static final RegistryKey<Biome> BIOME_KEY = BiomeKeys.PLAINS;
 	final CustomizeFlatLevelScreen parent;

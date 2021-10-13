@@ -16,7 +16,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 
 @Environment(EnvType.CLIENT)
 public class LevelLoadingScreen extends Screen {
-	private static final long field_32246 = 2000L;
+	private static final long NARRATION_DELAY = 2000L;
 	private final WorldGenerationProgressTracker progressProvider;
 	private long lastNarrationTime = -1L;
 	private boolean done;
@@ -83,29 +83,31 @@ public class LevelLoadingScreen extends Screen {
 		drawCenteredText(matrices, this.textRenderer, this.getPercentage(), i, j - 9 / 2 - 30, 16777215);
 	}
 
-	public static void drawChunkMap(MatrixStack matrices, WorldGenerationProgressTracker progressProvider, int i, int j, int k, int l) {
-		int m = k + l;
-		int n = progressProvider.getCenterSize();
-		int o = n * m - l;
-		int p = progressProvider.getSize();
-		int q = p * m - l;
-		int r = i - q / 2;
-		int s = j - q / 2;
-		int t = o / 2 + 1;
-		int u = -16772609;
-		if (l != 0) {
-			fill(matrices, i - t, j - t, i - t + 1, j + t, -16772609);
-			fill(matrices, i + t - 1, j - t, i + t, j + t, -16772609);
-			fill(matrices, i - t, j - t, i + t, j - t + 1, -16772609);
-			fill(matrices, i - t, j + t - 1, i + t, j + t, -16772609);
+	public static void drawChunkMap(
+		MatrixStack matrices, WorldGenerationProgressTracker progressProvider, int centerX, int centerY, int pixelSize, int pixelMargin
+	) {
+		int i = pixelSize + pixelMargin;
+		int j = progressProvider.getCenterSize();
+		int k = j * i - pixelMargin;
+		int l = progressProvider.getSize();
+		int m = l * i - pixelMargin;
+		int n = centerX - m / 2;
+		int o = centerY - m / 2;
+		int p = k / 2 + 1;
+		int q = -16772609;
+		if (pixelMargin != 0) {
+			fill(matrices, centerX - p, centerY - p, centerX - p + 1, centerY + p, -16772609);
+			fill(matrices, centerX + p - 1, centerY - p, centerX + p, centerY + p, -16772609);
+			fill(matrices, centerX - p, centerY - p, centerX + p, centerY - p + 1, -16772609);
+			fill(matrices, centerX - p, centerY + p - 1, centerX + p, centerY + p, -16772609);
 		}
 
-		for (int v = 0; v < p; v++) {
-			for (int w = 0; w < p; w++) {
-				ChunkStatus chunkStatus = progressProvider.getChunkStatus(v, w);
-				int x = r + v * m;
-				int y = s + w * m;
-				fill(matrices, x, y, x + k, y + k, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
+		for (int r = 0; r < l; r++) {
+			for (int s = 0; s < l; s++) {
+				ChunkStatus chunkStatus = progressProvider.getChunkStatus(r, s);
+				int t = n + r * i;
+				int u = o + s * i;
+				fill(matrices, t, u, t + pixelSize, u + pixelSize, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
 			}
 		}
 	}

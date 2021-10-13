@@ -276,10 +276,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					int q = (o - k + 16) * 32 + p - i + 16;
 					double r = (double)this.field_20794[q] * 0.5;
 					double s = (double)this.field_20795[q] * 0.5;
-					mutable.set(p, 0, o);
+					int t = world.getTopY(Heightmap.Type.MOTION_BLOCKING, p, o);
+					mutable.set(p, t, o);
 					Biome biome = world.getBiome(mutable);
 					if (biome.getPrecipitation() != Biome.Precipitation.NONE) {
-						int t = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, mutable).getY();
 						int u = j - l;
 						int v = j + l;
 						if (u < t) {
@@ -857,7 +857,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		if (!hasForcedFrustum) {
-			if (this.field_34810) {
+			if (this.field_34810 && (this.field_34808 == null || this.field_34808.isDone())) {
 				this.client.getProfiler().push("full_update_schedule");
 				this.field_34810 = false;
 				boolean bl2 = bl;
@@ -977,7 +977,11 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 			for (Direction direction2 : DIRECTIONS) {
 				ChunkBuilder.BuiltChunk builtChunk2 = this.getAdjacentChunk(blockPos, builtChunk, direction2);
-				if (builtChunk2 != null && (!bl || !chunkInfo.canCull(direction2.getOpposite()))) {
+				if (builtChunk2 == null) {
+					if (!this.method_38553(blockPos, builtChunk)) {
+						this.field_34811.set(System.currentTimeMillis() + 500L);
+					}
+				} else if (!bl || !chunkInfo.canCull(direction2.getOpposite())) {
 					if (bl && chunkInfo.hasAnyDirection()) {
 						ChunkBuilder.ChunkData chunkData = builtChunk.getData();
 						boolean bl3 = false;
@@ -1073,7 +1077,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		BlockPos blockPos2 = builtChunk.getOrigin();
 		int k = ChunkSectionPos.getSectionCoord(blockPos2.getX());
 		int l = ChunkSectionPos.getSectionCoord(blockPos2.getZ());
-		return !ThreadedAnvilChunkStorage.method_37898(k, l, i, j, this.viewDistance - 2);
+		return !ThreadedAnvilChunkStorage.isWithinDistance(k, l, i, j, this.viewDistance - 2);
 	}
 
 	private void captureFrustum(Matrix4f modelMatrix, Matrix4f matrix4f, double x, double y, double z, Frustum frustum) {
@@ -1122,7 +1126,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.blockEntityRenderDispatcher.configure(this.world, camera, this.client.crosshairTarget);
 		this.entityRenderDispatcher.configure(this.world, camera, this.client.targetedEntity);
 		Profiler profiler = this.world.getProfiler();
-		profiler.swap("chunk_update_queue");
+		profiler.swap("light_update_queue");
 		this.world.runQueuedChunkUpdates();
 		profiler.swap("light_updates");
 		boolean bl = this.world.method_38743();
@@ -1153,7 +1157,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		BackgroundRenderer.setFogBlack();
 		RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
 		float g = gameRenderer.getViewDistance();
-		boolean bl3 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
+		boolean bl3 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		profiler.swap("sky");
 		RenderSystem.setShader(GameRenderer::getPositionShader);
@@ -1168,7 +1172,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f, matrix4f);
 		this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f, matrix4f);
 		this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f, matrix4f);
-		if (this.world.getSkyProperties().isDarkened()) {
+		if (this.world.getDimensionEffects().isDarkened()) {
 			DiffuseLighting.enableForLevel(matrices.peek().getModel());
 		} else {
 			DiffuseLighting.disableForLevel(matrices.peek().getModel());
@@ -1836,9 +1840,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	public void renderSky(MatrixStack matrices, Matrix4f matrix4f, float f, Runnable runnable) {
 		runnable.run();
-		if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.END) {
+		if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
 			this.renderEndSky(matrices);
-		} else if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.NORMAL) {
+		} else if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.NORMAL) {
 			RenderSystem.disableTexture();
 			Vec3d vec3d = this.world.method_23777(this.client.gameRenderer.getCamera().getPos(), f);
 			float g = (float)vec3d.x;
@@ -1852,7 +1856,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.lightSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			float[] fs = this.world.getSkyProperties().getFogColorOverride(this.world.getSkyAngle(f), f);
+			float[] fs = this.world.getDimensionEffects().getFogColorOverride(this.world.getSkyAngle(f), f);
 			if (fs != null) {
 				RenderSystem.setShader(GameRenderer::getPositionColorShader);
 				RenderSystem.disableTexture();
@@ -1938,7 +1942,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				matrices.pop();
 			}
 
-			if (this.world.getSkyProperties().isAlternateSkyColor()) {
+			if (this.world.getDimensionEffects().isAlternateSkyColor()) {
 				RenderSystem.setShaderColor(g * 0.2F + 0.04F, h * 0.2F + 0.04F, i * 0.6F + 0.1F, 1.0F);
 			} else {
 				RenderSystem.setShaderColor(g, h, i, 1.0F);
@@ -1950,7 +1954,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	public void renderClouds(MatrixStack matrices, Matrix4f matrix4f, float f, double d, double e, double g) {
-		float h = this.world.getSkyProperties().getCloudsHeight();
+		float h = this.world.getDimensionEffects().getCloudsHeight();
 		if (!Float.isNaN(h)) {
 			RenderSystem.disableCull();
 			RenderSystem.enableBlend();

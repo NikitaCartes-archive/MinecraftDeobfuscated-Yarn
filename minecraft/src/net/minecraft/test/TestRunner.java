@@ -57,7 +57,7 @@ public class TestRunner {
 			Pair<GameTestBatch, Collection<GameTestState>> pair = (Pair<GameTestBatch, Collection<GameTestState>>)this.batches.get(index);
 			final GameTestBatch gameTestBatch = pair.getFirst();
 			Collection<GameTestState> collection = pair.getSecond();
-			Map<GameTestState, BlockPos> map = this.method_29401(collection);
+			Map<GameTestState, BlockPos> map = this.alignTestStructures(collection);
 			String string = gameTestBatch.getId();
 			LOGGER.info("Running test batch '{}' ({} tests)...", string, collection.size());
 			gameTestBatch.startBatch(this.world);
@@ -92,7 +92,7 @@ public class TestRunner {
 		}
 	}
 
-	private Map<GameTestState, BlockPos> method_29401(Collection<GameTestState> gameTests) {
+	private Map<GameTestState, BlockPos> alignTestStructures(Collection<GameTestState> gameTests) {
 		Map<GameTestState, BlockPos> map = Maps.<GameTestState, BlockPos>newHashMap();
 		int i = 0;
 		Box box = new Box(this.reusablePos);

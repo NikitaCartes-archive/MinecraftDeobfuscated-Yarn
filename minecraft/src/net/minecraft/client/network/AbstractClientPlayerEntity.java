@@ -16,8 +16,8 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 
@@ -103,7 +103,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
 			AbstractTexture var4 = new PlayerSkinTexture(
 				null,
-				String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(playerName)),
+				String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", StringHelper.stripTextFormat(playerName)),
 				DefaultSkinHelper.getTexture(getOfflinePlayerUuid(playerName)),
 				true,
 				null
@@ -113,7 +113,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	}
 
 	public static Identifier getSkinId(String playerName) {
-		return new Identifier("skins/" + Hashing.sha1().hashUnencodedChars(ChatUtil.stripTextFormat(playerName)));
+		return new Identifier("skins/" + Hashing.sha1().hashUnencodedChars(StringHelper.stripTextFormat(playerName)));
 	}
 
 	public String getModel() {

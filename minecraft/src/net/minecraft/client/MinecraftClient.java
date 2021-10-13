@@ -216,6 +216,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
+import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.TimeHelper;
@@ -664,7 +665,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private String getWindowTitle() {
 		StringBuilder stringBuilder = new StringBuilder("Minecraft");
-		if (isModded()) {
+		if (getModStatus().isModded()) {
 			stringBuilder.append("*");
 		}
 
@@ -696,13 +697,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	/**
-	 * Checks if this client is modded.
-	 * 
-	 * <p>This checks the client's brand and if the MinecraftClient's class is still signed.
-	 */
-	public static boolean isModded() {
-		return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
+	public static ModStatus getModStatus() {
+		return ModStatus.check("vanilla", ClientBrandRetriever::getClientModName, "Client", MinecraftClient.class);
 	}
 
 	private void handleResourceReloadException(Throwable exception) {
@@ -2438,19 +2434,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			"GL debug messages", (Supplier<String>)(() -> GlDebug.isDebugMessageEnabled() ? String.join("\n", GlDebug.collectDebugMessages()) : "<disabled>")
 		);
 		systemDetails.addSection("Using VBOs", (Supplier<String>)(() -> "Yes"));
-		systemDetails.addSection(
-			"Is Modded",
-			(Supplier<String>)(() -> {
-				String stringx = ClientBrandRetriever.getClientModName();
-				if (!"vanilla".equals(stringx)) {
-					return "Definitely; Client brand changed to '" + stringx + "'";
-				} else {
-					return MinecraftClient.class.getSigners() == null
-						? "Very likely; Jar signature invalidated"
-						: "Probably not. Jar signature remains and client brand is untouched.";
-				}
-			})
-		);
+		systemDetails.addSection("Is Modded", (Supplier<String>)(() -> getModStatus().getMessage()));
 		systemDetails.addSection("Type", "Client (map_client.txt)");
 		if (options != null) {
 			if (instance != null) {

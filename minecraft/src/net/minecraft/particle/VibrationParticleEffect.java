@@ -13,8 +13,7 @@ import net.minecraft.world.event.BlockPositionSource;
 
 public class VibrationParticleEffect implements ParticleEffect {
 	public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Vibration.CODEC.fieldOf("vibration").forGetter(vibrationParticleEffect -> vibrationParticleEffect.vibration))
-				.apply(instance, VibrationParticleEffect::new)
+		instance -> instance.group(Vibration.CODEC.fieldOf("vibration").forGetter(effect -> effect.vibration)).apply(instance, VibrationParticleEffect::new)
 	);
 	public static final ParticleEffect.Factory<VibrationParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<VibrationParticleEffect>() {
 		public VibrationParticleEffect read(ParticleType<VibrationParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {

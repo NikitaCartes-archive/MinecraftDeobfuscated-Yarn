@@ -98,8 +98,8 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	private static int getLevel(SortedArraySet<ChunkTicket<?>> sortedArraySet) {
-		return !sortedArraySet.isEmpty() ? sortedArraySet.first().getLevel() : ThreadedAnvilChunkStorage.MAX_LEVEL + 1;
+	private static int getLevel(SortedArraySet<ChunkTicket<?>> tickets) {
+		return !tickets.isEmpty() ? tickets.first().getLevel() : ThreadedAnvilChunkStorage.MAX_LEVEL + 1;
 	}
 
 	protected abstract boolean isUnloaded(long pos);
@@ -110,7 +110,7 @@ public abstract class ChunkTicketManager {
 	@Nullable
 	protected abstract ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i);
 
-	public boolean tick(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
+	public boolean tick(ThreadedAnvilChunkStorage tacs) {
 		this.distanceFromNearestPlayerTracker.updateLevels();
 		this.simulationDistanceTracker.updateLevels();
 		this.nearbyChunkTicketUpdater.updateLevels();
@@ -120,7 +120,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		if (!this.chunkHolders.isEmpty()) {
-			this.chunkHolders.forEach(chunkHolderx -> chunkHolderx.tick(threadedAnvilChunkStorage, this.mainThreadExecutor));
+			this.chunkHolders.forEach(chunkHolderx -> chunkHolderx.tick(tacs, this.mainThreadExecutor));
 			this.chunkHolders.clear();
 			return true;
 		} else {
@@ -130,7 +130,7 @@ public abstract class ChunkTicketManager {
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
 					if (this.getTicketSet(l).stream().anyMatch(chunkTicket -> chunkTicket.getType() == ChunkTicketType.PLAYER)) {
-						ChunkHolder chunkHolder = threadedAnvilChunkStorage.getCurrentChunkHolder(l);
+						ChunkHolder chunkHolder = tacs.getCurrentChunkHolder(l);
 						if (chunkHolder == null) {
 							throw new IllegalStateException();
 						}
@@ -188,9 +188,9 @@ public abstract class ChunkTicketManager {
 		this.simulationDistanceTracker.add(l, chunkTicket);
 	}
 
-	public <T> void removeTicket(ChunkTicketType<T> type, ChunkPos chunkPos, int radius, T argument) {
+	public <T> void removeTicket(ChunkTicketType<T> type, ChunkPos pos, int radius, T argument) {
 		ChunkTicket<T> chunkTicket = new ChunkTicket<>(type, 33 - radius, argument);
-		long l = chunkPos.toLong();
+		long l = pos.toLong();
 		this.removeTicket(l, chunkTicket);
 		this.simulationDistanceTracker.remove(l, chunkTicket);
 	}
@@ -199,9 +199,9 @@ public abstract class ChunkTicketManager {
 		return this.ticketsByPosition.computeIfAbsent(position, l -> SortedArraySet.create(4));
 	}
 
-	protected void setChunkForced(ChunkPos chunkPos, boolean forced) {
-		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.FORCED, 31, chunkPos);
-		long l = chunkPos.toLong();
+	protected void setChunkForced(ChunkPos pos, boolean forced) {
+		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.FORCED, 31, pos);
+		long l = pos.toLong();
 		if (forced) {
 			this.addTicket(l, chunkTicket);
 			this.simulationDistanceTracker.add(l, chunkTicket);
@@ -261,23 +261,23 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	public int getSpawningChunkCount() {
+	public int getTickedChunkCount() {
 		this.distanceFromNearestPlayerTracker.updateLevels();
 		return this.distanceFromNearestPlayerTracker.distanceFromNearestPlayer.size();
 	}
 
-	public boolean method_20800(long l) {
+	public boolean shouldTick(long chunkPos) {
 		this.distanceFromNearestPlayerTracker.updateLevels();
-		return this.distanceFromNearestPlayerTracker.distanceFromNearestPlayer.containsKey(l);
+		return this.distanceFromNearestPlayerTracker.distanceFromNearestPlayer.containsKey(chunkPos);
 	}
 
 	public String toDumpString() {
 		return this.levelUpdateListener.getDebugString();
 	}
 
-	private void method_34876(String string) {
+	private void dump(String path) {
 		try {
-			FileOutputStream fileOutputStream = new FileOutputStream(new File(string));
+			FileOutputStream fileOutputStream = new FileOutputStream(new File(path));
 
 			try {
 				for (Entry<SortedArraySet<ChunkTicket<?>>> entry : this.ticketsByPosition.long2ObjectEntrySet()) {
@@ -306,7 +306,7 @@ public abstract class ChunkTicketManager {
 	}
 
 	@VisibleForTesting
-	SimulationDistanceLevelPropagator method_38631() {
+	SimulationDistanceLevelPropagator getSimulationDistanceTracker() {
 		return this.simulationDistanceTracker;
 	}
 
@@ -354,15 +354,15 @@ public abstract class ChunkTicketManager {
 			this.applyPendingUpdates(Integer.MAX_VALUE);
 		}
 
-		private void method_34878(String string) {
+		private void dump(String path) {
 			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(new File(string));
+				FileOutputStream fileOutputStream = new FileOutputStream(new File(path));
 
 				try {
 					for (it.unimi.dsi.fastutil.longs.Long2ByteMap.Entry entry : this.distanceFromNearestPlayer.long2ByteEntrySet()) {
 						ChunkPos chunkPos = new ChunkPos(entry.getLongKey());
-						String string2 = Byte.toString(entry.getByteValue());
-						fileOutputStream.write((chunkPos.x + "\t" + chunkPos.z + "\t" + string2 + "\n").getBytes(StandardCharsets.UTF_8));
+						String string = Byte.toString(entry.getByteValue());
+						fileOutputStream.write((chunkPos.x + "\t" + chunkPos.z + "\t" + string + "\n").getBytes(StandardCharsets.UTF_8));
 					}
 				} catch (Throwable var8) {
 					try {

@@ -8,9 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.LightType;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class LakeFeature extends Feature<SingleStateFeatureConfig> {
@@ -106,28 +104,10 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 					}
 				}
 
-				for (int j = 0; j < 16; j++) {
-					for (int s = 0; s < 16; s++) {
-						for (int txx = 4; txx < 8; txx++) {
-							if (bls[(j * 16 + s) * 8 + txx]) {
-								BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
-								if (isSoil(structureWorldAccess.getBlockState(blockPos2)) && structureWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
-									Biome biome = structureWorldAccess.getBiome(blockPos2);
-									if (biome.getGenerationSettings().getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
-										structureWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), Block.NOTIFY_LISTENERS);
-									} else {
-										structureWorldAccess.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
-									}
-								}
-							}
-						}
-					}
-				}
-
 				if (singleStateFeatureConfig.state.getMaterial() == Material.WATER) {
 					for (int j = 0; j < 16; j++) {
 						for (int s = 0; s < 16; s++) {
-							int txxx = 4;
+							int txx = 4;
 							BlockPos blockPos2 = blockPos.add(j, 4, s);
 							if (structureWorldAccess.getBiome(blockPos2).canSetIce(structureWorldAccess, blockPos2, false)) {
 								structureWorldAccess.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), Block.NOTIFY_LISTENERS);

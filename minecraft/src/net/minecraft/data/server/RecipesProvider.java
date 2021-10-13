@@ -96,21 +96,17 @@ public class RecipesProvider implements DataProvider {
 		Path path = this.root.getOutput();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		generate(
-			recipeJsonProvider -> {
-				if (!set.add(recipeJsonProvider.getRecipeId())) {
-					throw new IllegalStateException("Duplicate recipe " + recipeJsonProvider.getRecipeId());
+			provider -> {
+				if (!set.add(provider.getRecipeId())) {
+					throw new IllegalStateException("Duplicate recipe " + provider.getRecipeId());
 				} else {
 					saveRecipe(
-						cache,
-						recipeJsonProvider.toJson(),
-						path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/recipes/" + recipeJsonProvider.getRecipeId().getPath() + ".json")
+						cache, provider.toJson(), path.resolve("data/" + provider.getRecipeId().getNamespace() + "/recipes/" + provider.getRecipeId().getPath() + ".json")
 					);
-					JsonObject jsonObject = recipeJsonProvider.toAdvancementJson();
+					JsonObject jsonObject = provider.toAdvancementJson();
 					if (jsonObject != null) {
 						saveRecipeAdvancement(
-							cache,
-							jsonObject,
-							path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/advancements/" + recipeJsonProvider.getAdvancementId().getPath() + ".json")
+							cache, jsonObject, path.resolve("data/" + provider.getRecipeId().getNamespace() + "/advancements/" + provider.getAdvancementId().getPath() + ".json")
 						);
 					}
 				}

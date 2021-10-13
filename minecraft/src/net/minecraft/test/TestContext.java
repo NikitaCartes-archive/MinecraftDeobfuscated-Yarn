@@ -120,10 +120,10 @@ public class TestContext {
 		return this.spawnMob(type, new Vec3d((double)x, (double)y, (double)z));
 	}
 
-	public TimedTaskRunner method_35967(MobEntity entity, BlockPos pos, float f) {
-		return this.createTimedTaskRunner().method_36077(2, () -> {
+	public TimedTaskRunner startMovingTowards(MobEntity entity, BlockPos pos, float speed) {
+		return this.createTimedTaskRunner().expectMinDurationAndRun(2, () -> {
 			Path path = entity.getNavigation().findPathTo(this.getAbsolutePos(pos), 0);
-			entity.getNavigation().startMovingAlong(path, (double)f);
+			entity.getNavigation().startMovingAlong(path, (double)speed);
 		});
 	}
 
@@ -132,7 +132,7 @@ public class TestContext {
 	}
 
 	public void pushButton(BlockPos pos) {
-		this.checkBlockState(pos, blockStatex -> blockStatex.isIn(BlockTags.BUTTONS), () -> "Expected button");
+		this.checkBlockState(pos, state -> state.isIn(BlockTags.BUTTONS), () -> "Expected button");
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		AbstractButtonBlock abstractButtonBlock = (AbstractButtonBlock)blockState.getBlock();
@@ -145,7 +145,7 @@ public class TestContext {
 		blockState.onUse(this.getWorld(), this.createMockPlayer(), Hand.MAIN_HAND, new BlockHitResult(Vec3d.ofCenter(blockPos), Direction.NORTH, blockPos, true));
 	}
 
-	public LivingEntity method_35966(LivingEntity entity) {
+	public LivingEntity drown(LivingEntity entity) {
 		entity.setAir(0);
 		entity.setHealth(0.25F);
 		return entity;
@@ -250,7 +250,7 @@ public class TestContext {
 	}
 
 	public <T extends Comparable<T>> void checkBlockProperty(BlockPos pos, Property<T> property, Predicate<T> predicate, String errorMessage) {
-		this.checkBlockState(pos, blockState -> predicate.test(blockState.get(property)), () -> errorMessage);
+		this.checkBlockState(pos, state -> predicate.test(state.get(property)), () -> errorMessage);
 	}
 
 	public void checkBlockState(BlockPos pos, Predicate<BlockState> predicate, Supplier<String> errorMessageSupplier) {
@@ -295,7 +295,7 @@ public class TestContext {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(entity.getType(), new Box(blockPos), Entity::isAlive);
 		list.stream()
-			.filter(entity2 -> entity2 == entity)
+			.filter(e -> e == entity)
 			.findFirst()
 			.orElseThrow(() -> new PositionedException("Expected " + entity.getType().getUntranslatedName(), blockPos, pos, this.test.getTick()));
 	}
@@ -426,44 +426,44 @@ public class TestContext {
 		}
 	}
 
-	public void method_35950(long l, BlockPos blockPos, Item item) {
-		this.runAtTick(l, () -> this.expectContainerWith(blockPos, item));
+	public void expectContainerWith(long delay, BlockPos pos, Item item) {
+		this.runAtTick(delay, () -> this.expectContainerWith(pos, item));
 	}
 
-	public void method_35949(long l, BlockPos blockPos) {
-		this.runAtTick(l, () -> this.expectEmptyContainer(blockPos));
+	public void expectEmptyContainer(long delay, BlockPos pos) {
+		this.runAtTick(delay, () -> this.expectEmptyContainer(pos));
 	}
 
-	public <E extends Entity, T> void method_36015(BlockPos blockPos, EntityType<E> entityType, Function<E, T> function, T object) {
-		this.addInstantFinalTask(() -> this.expectEntityWithData(blockPos, entityType, function, object));
+	public <E extends Entity, T> void expectEntityWithDataEnd(BlockPos pos, EntityType<E> type, Function<E, T> entityDataGetter, T data) {
+		this.addInstantFinalTask(() -> this.expectEntityWithData(pos, type, entityDataGetter, data));
 	}
 
-	public <E extends Entity> void method_35958(E entity, Predicate<E> predicate, String string) {
+	public <E extends Entity> void testEntity(E entity, Predicate<E> predicate, String testName) {
 		if (!predicate.test(entity)) {
-			throw new GameTestException("Entity " + entity + " failed " + string + " test");
+			throw new GameTestException("Entity " + entity + " failed " + testName + " test");
 		}
 	}
 
-	public <E extends Entity, T> void method_35957(E entity, Function<E, T> function, String string, T object) {
-		T object2 = (T)function.apply(entity);
-		if (!object2.equals(object)) {
-			throw new GameTestException("Entity " + entity + " value " + string + "=" + object2 + " is not equal to expected " + object);
+	public <E extends Entity, T> void testEntityProperty(E entity, Function<E, T> propertyGetter, String propertyName, T expectedValue) {
+		T object = (T)propertyGetter.apply(entity);
+		if (!object.equals(expectedValue)) {
+			throw new GameTestException("Entity " + entity + " value " + propertyName + "=" + object + " is not equal to expected " + expectedValue);
 		}
 	}
 
-	public void method_36037(EntityType<?> type, int x, int y, int z) {
-		this.method_36038(type, new BlockPos(x, y, z));
+	public void expectEntityAtEnd(EntityType<?> type, int x, int y, int z) {
+		this.expectEntityAtEnd(type, new BlockPos(x, y, z));
 	}
 
-	public void method_36038(EntityType<?> type, BlockPos pos) {
+	public void expectEntityAtEnd(EntityType<?> type, BlockPos pos) {
 		this.addInstantFinalTask(() -> this.expectEntityAt(type, pos));
 	}
 
-	public void method_36042(EntityType<?> type, int x, int y, int z) {
-		this.method_36043(type, new BlockPos(x, y, z));
+	public void dontExpectEntityAtEnd(EntityType<?> type, int x, int y, int z) {
+		this.dontExpectEntityAtEnd(type, new BlockPos(x, y, z));
 	}
 
-	public void method_36043(EntityType<?> type, BlockPos pos) {
+	public void dontExpectEntityAtEnd(EntityType<?> type, BlockPos pos) {
 		this.addInstantFinalTask(() -> this.dontExpectEntityAt(type, pos));
 	}
 
@@ -481,17 +481,17 @@ public class TestContext {
 
 	public void addFinalTask(Runnable runnable) {
 		this.markFinalCause();
-		this.test.createTimedTaskRunner().createAndAdd(0L, runnable).method_36075();
+		this.test.createTimedTaskRunner().createAndAdd(0L, runnable).completeIfSuccessful();
 	}
 
 	public void addInstantFinalTask(Runnable runnable) {
 		this.markFinalCause();
-		this.test.createTimedTaskRunner().createAndAdd(runnable).method_36075();
+		this.test.createTimedTaskRunner().createAndAdd(runnable).completeIfSuccessful();
 	}
 
 	public void addFinalTaskWithDuration(int duration, Runnable runnable) {
 		this.markFinalCause();
-		this.test.createTimedTaskRunner().createAndAdd((long)duration, runnable).method_36075();
+		this.test.createTimedTaskRunner().createAndAdd((long)duration, runnable).completeIfSuccessful();
 	}
 
 	public void runAtTick(long tick, Runnable runnable) {
@@ -520,12 +520,12 @@ public class TestContext {
 		throw new GameTestException(message);
 	}
 
-	public void method_36028(Runnable runnable) {
-		this.test.createTimedTaskRunner().createAndAdd(runnable).method_36080(() -> new GameTestException("Fail conditions met"));
+	public void addTask(Runnable task) {
+		this.test.createTimedTaskRunner().createAndAdd(task).fail(() -> new GameTestException("Fail conditions met"));
 	}
 
-	public void method_36035(Runnable runnable) {
-		LongStream.range(this.test.getTick(), (long)this.test.getTicksLeft()).forEach(l -> this.test.runAtTick(l, runnable::run));
+	public void runAtEveryTick(Runnable task) {
+		LongStream.range(this.test.getTick(), (long)this.test.getTicksLeft()).forEach(tick -> this.test.runAtTick(tick, task::run));
 	}
 
 	public TimedTaskRunner createTimedTaskRunner() {
@@ -558,14 +558,14 @@ public class TestContext {
 		return this.test.getBoundingBox();
 	}
 
-	private Box method_36053() {
+	private Box getRelativeTestBox() {
 		Box box = this.test.getBoundingBox();
 		return box.offset(BlockPos.ORIGIN.subtract(this.getAbsolutePos(BlockPos.ORIGIN)));
 	}
 
-	public void method_35998(Consumer<BlockPos> consumer) {
-		Box box = this.method_36053();
-		BlockPos.Mutable.stream(box.offset(0.0, 1.0, 0.0)).forEach(consumer);
+	public void forEachRelativePos(Consumer<BlockPos> posConsumer) {
+		Box box = this.getRelativeTestBox();
+		BlockPos.Mutable.stream(box.offset(0.0, 1.0, 0.0)).forEach(posConsumer);
 	}
 
 	public void method_36040(Runnable runnable) {

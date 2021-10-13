@@ -2227,7 +2227,7 @@ public abstract class LivingEntity extends Entity {
 				BlockPos blockPos = this.getVelocityAffectingPos();
 				float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
 				float fxx = this.onGround ? p * 0.91F : 0.91F;
-				Vec3d vec3d6 = this.method_26318(movementInput, p);
+				Vec3d vec3d6 = this.applyMovementInput(movementInput, p);
 				double q = vec3d6.y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
@@ -2267,17 +2267,17 @@ public abstract class LivingEntity extends Entity {
 		entity.limbAngle = entity.limbAngle + entity.limbDistance;
 	}
 
-	public Vec3d method_26318(Vec3d vec3d, float f) {
-		this.updateVelocity(this.getMovementSpeed(f), vec3d);
+	public Vec3d applyMovementInput(Vec3d movementInput, float slipperiness) {
+		this.updateVelocity(this.getMovementSpeed(slipperiness), movementInput);
 		this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
 		this.move(MovementType.SELF, this.getVelocity());
-		Vec3d vec3d2 = this.getVelocity();
+		Vec3d vec3d = this.getVelocity();
 		if ((this.horizontalCollision || this.jumping)
 			&& (this.isClimbing() || this.getBlockStateAtPos().isOf(Blocks.POWDER_SNOW) && PowderSnowBlock.canWalkOnPowderSnow(this))) {
-			vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
+			vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
 		}
 
-		return vec3d2;
+		return vec3d;
 	}
 
 	public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {
@@ -3273,6 +3273,11 @@ public abstract class LivingEntity extends Entity {
 		return (Boolean)this.getSleepingPosition().map(pos -> this.world.getBlockState(pos).getBlock() instanceof BedBlock).orElse(false);
 	}
 
+	/**
+	 * Wakes this entity up.
+	 * 
+	 * @see net.minecraft.entity.player.PlayerEntity#wakeUp(boolean, boolean) a more specific overload for players
+	 */
 	public void wakeUp() {
 		this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(pos -> {
 			BlockState blockState = this.world.getBlockState(pos);

@@ -25,15 +25,15 @@ public class NarratorManager implements ClientChatListener {
 	private final Narrator narrator = Narrator.getNarrator();
 
 	@Override
-	public void onChatMessage(MessageType messageType, Text message, UUID sender) {
+	public void onChatMessage(MessageType type, Text message, UUID sender) {
 		NarratorMode narratorMode = getNarratorOption();
 		if (narratorMode != NarratorMode.OFF) {
 			if (!this.narrator.active()) {
 				this.debugPrintMessage(message.getString());
 			} else {
 				if (narratorMode == NarratorMode.ALL
-					|| narratorMode == NarratorMode.CHAT && messageType == MessageType.CHAT
-					|| narratorMode == NarratorMode.SYSTEM && messageType == MessageType.SYSTEM) {
+					|| narratorMode == NarratorMode.CHAT && type == MessageType.CHAT
+					|| narratorMode == NarratorMode.SYSTEM && type == MessageType.SYSTEM) {
 					Text text;
 					if (message instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)message).getKey())) {
 						text = new TranslatableText("chat.type.text.narrate", ((TranslatableText)message).getArgs());
@@ -43,7 +43,7 @@ public class NarratorManager implements ClientChatListener {
 
 					String string = text.getString();
 					this.debugPrintMessage(string);
-					this.narrator.say(string, messageType.interruptsNarration());
+					this.narrator.say(string, type.interruptsNarration());
 				}
 			}
 		}

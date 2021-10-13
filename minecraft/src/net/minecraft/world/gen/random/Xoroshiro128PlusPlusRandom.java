@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.random;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -120,6 +121,12 @@ public class Xoroshiro128PlusPlusRandom implements AbstractRandom {
 			long l = Longs.fromBytes(bs[0], bs[1], bs[2], bs[3], bs[4], bs[5], bs[6], bs[7]);
 			long m = Longs.fromBytes(bs[8], bs[9], bs[10], bs[11], bs[12], bs[13], bs[14], bs[15]);
 			return new Xoroshiro128PlusPlusRandom(l ^ this.seedLo, m ^ this.seedHi);
+		}
+
+		@VisibleForTesting
+		@Override
+		public void addDebugInfo(StringBuilder info) {
+			info.append("seedLo: ").append(this.seedLo).append(", seedHi: ").append(this.seedHi);
 		}
 	}
 }

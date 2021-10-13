@@ -390,9 +390,9 @@ public enum NetworkState {
 		return new NetworkState.PacketHandlerInitializer();
 	}
 
-	private NetworkState(int id, NetworkState.PacketHandlerInitializer packetHandlerInitializer) {
+	private NetworkState(int id, NetworkState.PacketHandlerInitializer initializer) {
 		this.stateId = id;
-		this.packetHandlers = packetHandlerInitializer.packetHandlers;
+		this.packetHandlers = initializer.packetHandlers;
 	}
 
 	@Nullable
@@ -428,15 +428,15 @@ public enum NetworkState {
 			STATES[i - -1] = networkState;
 			networkState.packetHandlers
 				.forEach(
-					(networkSide, packetHandler) -> packetHandler.getPacketTypes()
+					(side, handler) -> handler.getPacketTypes()
 							.forEach(
-								class_ -> {
-									if (HANDLER_STATE_MAP.containsKey(class_) && HANDLER_STATE_MAP.get(class_) != networkState) {
+								packetClass -> {
+									if (HANDLER_STATE_MAP.containsKey(packetClass) && HANDLER_STATE_MAP.get(packetClass) != networkState) {
 										throw new IllegalStateException(
-											"Packet " + class_ + " is already assigned to protocol " + HANDLER_STATE_MAP.get(class_) + " - can't reassign to " + networkState
+											"Packet " + packetClass + " is already assigned to protocol " + HANDLER_STATE_MAP.get(packetClass) + " - can't reassign to " + networkState
 										);
 									} else {
-										HANDLER_STATE_MAP.put(class_, networkState);
+										HANDLER_STATE_MAP.put(packetClass, networkState);
 									}
 								}
 							)
@@ -445,12 +445,10 @@ public enum NetworkState {
 	}
 
 	static class PacketHandler<T extends PacketListener> {
-		private final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(
-			new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
-		);
+		private final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(new Object2IntOpenHashMap<>(), map -> map.defaultReturnValue(-1));
 		private final List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories = Lists.<Function<PacketByteBuf, ? extends Packet<T>>>newArrayList();
 
-		public <P extends Packet<T>> NetworkState.PacketHandler<T> register(Class<P> type, Function<PacketByteBuf, P> function) {
+		public <P extends Packet<T>> NetworkState.PacketHandler<T> register(Class<P> type, Function<PacketByteBuf, P> packetFactory) {
 			int i = this.packetFactories.size();
 			int j = this.packetIds.put(type, i);
 			if (j != -1) {
@@ -458,7 +456,7 @@ public enum NetworkState {
 				LogManager.getLogger().fatal(string);
 				throw new IllegalArgumentException(string);
 			} else {
-				this.packetFactories.add(function);
+				this.packetFactories.add(packetFactory);
 				return this;
 			}
 		}

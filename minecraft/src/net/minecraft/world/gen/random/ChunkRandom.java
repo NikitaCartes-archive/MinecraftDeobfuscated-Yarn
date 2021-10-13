@@ -39,18 +39,6 @@ public class ChunkRandom extends Random implements AbstractRandom {
 	}
 
 	/**
-	 * Seeds the randomizer to generate the surface terrain blocks (such as grass, sand, etc.)
-	 * and the bedrock patterns.
-	 * 
-	 * <p>Note that the terrain seed does not depend on the world seed and only gets affected by
-	 * chunk coordinates.
-	 */
-	public void setTerrainSeed(int chunkX, int chunkZ) {
-		long l = (long)chunkX * 341873128712L + (long)chunkZ * 132897987541L;
-		this.setSeed(l);
-	}
-
-	/**
 	 * Seeds the randomizer to create population features such as decorators and animals.
 	 * 
 	 * <p>This method takes in the world seed and the negative-most block coordinates of the

@@ -21,7 +21,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
-import net.minecraft.util.ChatUtil;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.WorldSavePath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,7 +48,7 @@ public class ServerConfigHandler {
 	}
 
 	private static void lookupProfile(MinecraftServer server, Collection<String> bannedPlayers, ProfileLookupCallback callback) {
-		String[] strings = (String[])bannedPlayers.stream().filter(stringx -> !ChatUtil.isEmpty(stringx)).toArray(String[]::new);
+		String[] strings = (String[])bannedPlayers.stream().filter(stringx -> !StringHelper.isEmpty(stringx)).toArray(String[]::new);
 		if (server.isOnlineMode()) {
 			server.getGameProfileRepo().findProfilesByNames(strings, Agent.MINECRAFT, callback);
 		} else {
@@ -241,7 +241,7 @@ public class ServerConfigHandler {
 
 	@Nullable
 	public static UUID getPlayerUuidByName(MinecraftServer server, String name) {
-		if (!ChatUtil.isEmpty(name) && name.length() <= 16) {
+		if (!StringHelper.isEmpty(name) && name.length() <= 16) {
 			Optional<UUID> optional = server.getUserCache().findByName(name).map(GameProfile::getId);
 			if (optional.isPresent()) {
 				return (UUID)optional.get();

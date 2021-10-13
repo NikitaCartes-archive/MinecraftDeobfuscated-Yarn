@@ -95,8 +95,7 @@ import net.minecraft.world.gen.feature.size.FeatureSizeType;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 import net.minecraft.world.gen.heightprovider.HeightProviderType;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
-import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
-import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -211,9 +210,6 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<BlockPredicateType<?>>> BLOCK_PREDICATE_TYPE_KEY = createRegistryKey("block_predicate_type");
 	public static final Registry<BlockPredicateType<?>> BLOCK_PREDICATE_TYPE = create(BLOCK_PREDICATE_TYPE_KEY, () -> BlockPredicateType.NOT);
 	public static final RegistryKey<Registry<ChunkGeneratorSettings>> CHUNK_GENERATOR_SETTINGS_KEY = createRegistryKey("worldgen/noise_settings");
-	public static final RegistryKey<Registry<ConfiguredSurfaceBuilder<?>>> CONFIGURED_SURFACE_BUILDER_KEY = createRegistryKey(
-		"worldgen/configured_surface_builder"
-	);
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_KEY = createRegistryKey("worldgen/configured_carver");
 	public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE_KEY = createRegistryKey("worldgen/configured_feature");
 	public static final RegistryKey<Registry<ConfiguredStructureFeature<?, ?>>> CONFIGURED_STRUCTURE_FEATURE_KEY = createRegistryKey(
@@ -222,8 +218,6 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = createRegistryKey("worldgen/processor_list");
 	public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = createRegistryKey("worldgen/template_pool");
 	public static final RegistryKey<Registry<Biome>> BIOME_KEY = createRegistryKey("worldgen/biome");
-	public static final RegistryKey<Registry<SurfaceBuilder<?>>> SURFACE_BUILD_KEY = createRegistryKey("worldgen/surface_builder");
-	public static final Registry<SurfaceBuilder<?>> SURFACE_BUILDER = create(SURFACE_BUILD_KEY, () -> SurfaceBuilder.DEFAULT);
 	public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = createRegistryKey("worldgen/carver");
 	public static final Registry<Carver<?>> CARVER = create(CARVER_KEY, () -> Carver.CAVE);
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = createRegistryKey("worldgen/feature");
@@ -241,6 +235,10 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<FeatureSizeType<?>>> FEATURE_SIZE_TYPE_KEY = createRegistryKey("worldgen/feature_size_type");
 	public static final RegistryKey<Registry<Codec<? extends BiomeSource>>> BIOME_SOURCE_KEY = createRegistryKey("worldgen/biome_source");
 	public static final RegistryKey<Registry<Codec<? extends ChunkGenerator>>> CHUNK_GENERATOR_KEY = createRegistryKey("worldgen/chunk_generator");
+	public static final RegistryKey<Registry<Codec<? extends MaterialRules.MaterialCondition>>> MATERIAL_CONDITION_KEY = createRegistryKey(
+		"worldgen/material_condition"
+	);
+	public static final RegistryKey<Registry<Codec<? extends MaterialRules.MaterialRule>>> MATERIAL_RULE_KEY = createRegistryKey("worldgen/material_rule");
 	public static final RegistryKey<Registry<StructureProcessorType<?>>> STRUCTURE_PROCESSOR_KEY = createRegistryKey("worldgen/structure_processor");
 	public static final RegistryKey<Registry<StructurePoolElementType<?>>> STRUCTURE_POOL_ELEMENT_KEY = createRegistryKey("worldgen/structure_pool_element");
 	public static final Registry<BlockStateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = create(
@@ -252,6 +250,12 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final Registry<FeatureSizeType<?>> FEATURE_SIZE_TYPE = create(FEATURE_SIZE_TYPE_KEY, () -> FeatureSizeType.TWO_LAYERS_FEATURE_SIZE);
 	public static final Registry<Codec<? extends BiomeSource>> BIOME_SOURCE = create(BIOME_SOURCE_KEY, Lifecycle.stable(), () -> BiomeSource.CODEC);
 	public static final Registry<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = create(CHUNK_GENERATOR_KEY, Lifecycle.stable(), () -> ChunkGenerator.CODEC);
+	public static final Registry<Codec<? extends MaterialRules.MaterialCondition>> MATERIAL_CONDITION = create(
+		MATERIAL_CONDITION_KEY, MaterialRules.MaterialCondition::registerAndGetDefault
+	);
+	public static final Registry<Codec<? extends MaterialRules.MaterialRule>> MATERIAL_RULE = create(
+		MATERIAL_RULE_KEY, MaterialRules.MaterialRule::registerAndGetDefault
+	);
 	public static final Registry<StructureProcessorType<?>> STRUCTURE_PROCESSOR = create(STRUCTURE_PROCESSOR_KEY, () -> StructureProcessorType.BLOCK_IGNORE);
 	public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = create(
 		STRUCTURE_POOL_ELEMENT_KEY, () -> StructurePoolElementType.EMPTY_POOL_ELEMENT
@@ -320,17 +324,23 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	@Override
 	public <U> DataResult<Pair<T, U>> decode(DynamicOps<U> dynamicOps, U object) {
 		return dynamicOps.compressMaps()
-			? dynamicOps.getNumberValue(object).flatMap(number -> {
-				T objectx = this.get(number.intValue());
-				return objectx == null ? DataResult.error("Unknown registry id: " + number) : DataResult.success(objectx, this.getEntryLifecycle(objectx));
-			}).map(objectx -> Pair.of(objectx, dynamicOps.empty()))
+			? dynamicOps.getNumberValue(object)
+				.flatMap(
+					number -> {
+						T objectx = this.get(number.intValue());
+						return objectx == null
+							? DataResult.error("Unknown registry id in " + this.registryKey + ": " + number)
+							: DataResult.success(objectx, this.getEntryLifecycle(objectx));
+					}
+				)
+				.map(objectx -> Pair.of(objectx, dynamicOps.empty()))
 			: Identifier.CODEC
 				.decode(dynamicOps, object)
 				.flatMap(
 					pair -> {
 						T objectx = this.get((Identifier)pair.getFirst());
 						return objectx == null
-							? DataResult.error("Unknown registry key: " + pair.getFirst())
+							? DataResult.error("Unknown registry key in " + this.registryKey + ": " + pair.getFirst())
 							: DataResult.success(Pair.of(objectx, pair.getSecond()), this.getEntryLifecycle(objectx));
 					}
 				);
@@ -340,7 +350,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public <U> DataResult<U> encode(T object, DynamicOps<U> dynamicOps, U object2) {
 		Identifier identifier = this.getId(object);
 		if (identifier == null) {
-			return DataResult.error("Unknown registry element " + object);
+			return DataResult.error("Unknown registry element in " + this.registryKey + ":" + object);
 		} else {
 			return dynamicOps.compressMaps()
 				? dynamicOps.mergeToPrimitive(object2, dynamicOps.createInt(this.getRawId(object))).setLifecycle(this.lifecycle)
@@ -390,7 +400,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public T getOrThrow(RegistryKey<T> key) {
 		T object = this.get(key);
 		if (object == null) {
-			throw new IllegalStateException("Missing: " + key);
+			throw new IllegalStateException("Missing key in " + this.registryKey + ": " + key);
 		} else {
 			return object;
 		}

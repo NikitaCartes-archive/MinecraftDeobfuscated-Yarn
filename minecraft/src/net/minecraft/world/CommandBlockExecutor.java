@@ -14,7 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ChatUtil;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -121,7 +121,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		} else {
 			this.successCount = 0;
 			MinecraftServer minecraftServer = this.getWorld().getServer();
-			if (minecraftServer.areCommandBlocksEnabled() && !ChatUtil.isEmpty(this.command)) {
+			if (minecraftServer.areCommandBlocksEnabled() && !StringHelper.isEmpty(this.command)) {
 				try {
 					this.lastOutput = null;
 					ServerCommandSource serverCommandSource = this.getSource().withConsumer((commandContext, bl, i) -> {

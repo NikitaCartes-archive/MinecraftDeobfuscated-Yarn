@@ -199,17 +199,17 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 			boolean bl3 = entityTrackingStatus2.shouldTick();
 			boolean bl4 = trackingStatus.shouldTick();
 			if (bl3 && !bl4) {
-				group.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this::stopTicking);
+				group.stream().filter(entity -> !entity.isPlayer()).forEach(this::stopTicking);
 			}
 
 			if (bl && !bl2) {
-				group.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this::stopTracking);
+				group.stream().filter(entity -> !entity.isPlayer()).forEach(this::stopTracking);
 			} else if (!bl && bl2) {
-				group.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this::startTracking);
+				group.stream().filter(entity -> !entity.isPlayer()).forEach(this::startTracking);
 			}
 
 			if (!bl3 && bl4) {
-				group.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this::startTicking);
+				group.stream().filter(entity -> !entity.isPlayer()).forEach(this::startTicking);
 			}
 		});
 	}
@@ -352,16 +352,16 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		return this.lookup;
 	}
 
-	public boolean method_37254(BlockPos blockPos) {
-		return this.trackingStatuses.get(ChunkPos.toLong(blockPos)).shouldTick();
+	public boolean shouldTick(BlockPos pos) {
+		return this.trackingStatuses.get(ChunkPos.toLong(pos)).shouldTick();
 	}
 
-	public boolean method_37253(ChunkPos chunkPos) {
-		return this.trackingStatuses.get(chunkPos.toLong()).shouldTick();
+	public boolean shouldTick(ChunkPos pos) {
+		return this.trackingStatuses.get(pos.toLong()).shouldTick();
 	}
 
-	public boolean method_37252(long l) {
-		return this.managedStatuses.get(l) == ServerEntityManager.Status.LOADED;
+	public boolean isLoaded(long chunkPos) {
+		return this.managedStatuses.get(chunkPos) == ServerEntityManager.Status.LOADED;
 	}
 
 	public void dump(Writer writer) throws IOException {

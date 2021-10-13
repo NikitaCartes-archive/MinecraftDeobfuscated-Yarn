@@ -333,7 +333,7 @@ public class WorldChunk extends Chunk {
 		} else {
 			return !(this.world instanceof ServerWorld serverWorld)
 				? true
-				: this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && serverWorld.method_37116(ChunkPos.toLong(pos));
+				: this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && serverWorld.isChunkLoaded(ChunkPos.toLong(pos));
 		}
 	}
 

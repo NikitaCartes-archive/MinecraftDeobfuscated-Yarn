@@ -18,8 +18,8 @@ import net.minecraft.util.Identifier;
 public class BossBarHud extends DrawableHelper {
 	private static final Identifier BARS_TEXTURE = new Identifier("textures/gui/bars.png");
 	private static final int WIDTH = 182;
-	private static final int field_32178 = 5;
-	private static final int field_32179 = 80;
+	private static final int HEIGHT = 5;
+	private static final int NOTCHED_BAR_OVERLAY_V = 80;
 	private final MinecraftClient client;
 	final Map<UUID, ClientBossBar> bossBars = Maps.<UUID, ClientBossBar>newLinkedHashMap();
 
