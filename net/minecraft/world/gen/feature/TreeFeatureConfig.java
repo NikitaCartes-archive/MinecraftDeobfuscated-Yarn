@@ -30,16 +30,16 @@ implements FeatureConfig {
     public final boolean ignoreVines;
     public final boolean forceDirt;
 
-    protected TreeFeatureConfig(BlockStateProvider trunkProvider, TrunkPlacer trunkPlacer, BlockStateProvider foliageProvider, FoliagePlacer foliagePlacer, BlockStateProvider blockStateProvider, FeatureSize featureSize, List<TreeDecorator> list, boolean bl, boolean bl2) {
+    protected TreeFeatureConfig(BlockStateProvider trunkProvider, TrunkPlacer trunkPlacer, BlockStateProvider foliageProvider, FoliagePlacer foliagePlacer, BlockStateProvider dirtProvider, FeatureSize minimumSize, List<TreeDecorator> decorators, boolean ignoreVines, boolean forceDirt) {
         this.trunkProvider = trunkProvider;
         this.trunkPlacer = trunkPlacer;
         this.foliageProvider = foliageProvider;
         this.foliagePlacer = foliagePlacer;
-        this.dirtProvider = blockStateProvider;
-        this.minimumSize = featureSize;
-        this.decorators = list;
-        this.ignoreVines = bl;
-        this.forceDirt = bl2;
+        this.dirtProvider = dirtProvider;
+        this.minimumSize = minimumSize;
+        this.decorators = decorators;
+        this.ignoreVines = ignoreVines;
+        this.forceDirt = forceDirt;
     }
 
     public static class Builder {
@@ -53,13 +53,13 @@ implements FeatureConfig {
         private boolean ignoreVines;
         private boolean forceDirt;
 
-        public Builder(BlockStateProvider trunkProvider, TrunkPlacer trunkPlacer, BlockStateProvider foliageProvider, FoliagePlacer foliagePlacer, FeatureSize featureSize) {
+        public Builder(BlockStateProvider trunkProvider, TrunkPlacer trunkPlacer, BlockStateProvider foliageProvider, FoliagePlacer foliagePlacer, FeatureSize minimumSize) {
             this.trunkProvider = trunkProvider;
             this.trunkPlacer = trunkPlacer;
             this.foliageProvider = foliageProvider;
             this.dirtProvider = BlockStateProvider.of(Blocks.DIRT);
             this.foliagePlacer = foliagePlacer;
-            this.minimumSize = featureSize;
+            this.minimumSize = minimumSize;
         }
 
         public Builder dirtProvider(BlockStateProvider dirtProvider) {

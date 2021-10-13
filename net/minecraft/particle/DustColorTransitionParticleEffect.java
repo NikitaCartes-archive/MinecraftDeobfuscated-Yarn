@@ -24,7 +24,7 @@ public class DustColorTransitionParticleEffect
 extends AbstractDustParticleEffect {
     public static final Vec3f SCULK_BLUE = new Vec3f(Vec3d.unpackRgb(3790560));
     public static final DustColorTransitionParticleEffect DEFAULT = new DustColorTransitionParticleEffect(SCULK_BLUE, DustParticleEffect.RED, 1.0f);
-    public static final Codec<DustColorTransitionParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Vec3f.CODEC.fieldOf("fromColor")).forGetter(dustColorTransitionParticleEffect -> dustColorTransitionParticleEffect.color), ((MapCodec)Vec3f.CODEC.fieldOf("toColor")).forGetter(dustColorTransitionParticleEffect -> dustColorTransitionParticleEffect.toColor), ((MapCodec)Codec.FLOAT.fieldOf("scale")).forGetter(dustColorTransitionParticleEffect -> Float.valueOf(dustColorTransitionParticleEffect.scale))).apply((Applicative<DustColorTransitionParticleEffect, ?>)instance, DustColorTransitionParticleEffect::new));
+    public static final Codec<DustColorTransitionParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Vec3f.CODEC.fieldOf("fromColor")).forGetter(effect -> effect.color), ((MapCodec)Vec3f.CODEC.fieldOf("toColor")).forGetter(effect -> effect.toColor), ((MapCodec)Codec.FLOAT.fieldOf("scale")).forGetter(effect -> Float.valueOf(effect.scale))).apply((Applicative<DustColorTransitionParticleEffect, ?>)instance, DustColorTransitionParticleEffect::new));
     public static final ParticleEffect.Factory<DustColorTransitionParticleEffect> FACTORY = new ParticleEffect.Factory<DustColorTransitionParticleEffect>(){
 
         @Override

@@ -27,9 +27,9 @@ import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -167,7 +167,7 @@ extends BlockEntity {
     }
 
     public void setStructureName(@Nullable String name) {
-        this.setStructureName(ChatUtil.isEmpty(name) ? null : Identifier.tryParse(name));
+        this.setStructureName(StringHelper.isEmpty(name) ? null : Identifier.tryParse(name));
     }
 
     public void setStructureName(@Nullable Identifier structureName) {
@@ -362,7 +362,7 @@ extends BlockEntity {
         Vec3i vec3i;
         boolean bl2;
         BlockPos blockPos = this.getPos();
-        if (!ChatUtil.isEmpty(structure.getAuthor())) {
+        if (!StringHelper.isEmpty(structure.getAuthor())) {
             this.author = structure.getAuthor();
         }
         if (!(bl2 = this.size.equals(vec3i = structure.getSize()))) {

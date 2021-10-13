@@ -12,7 +12,7 @@ import net.minecraft.world.gen.blockpredicate.OffsetPredicate;
 
 class ReplaceableBlockPredicate
 extends OffsetPredicate {
-    public static final Codec<ReplaceableBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> ReplaceableBlockPredicate.method_39013(instance).apply(instance, ReplaceableBlockPredicate::new));
+    public static final Codec<ReplaceableBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> ReplaceableBlockPredicate.registerOffsetField(instance).apply(instance, ReplaceableBlockPredicate::new));
 
     public ReplaceableBlockPredicate(BlockPos blockPos) {
         super(blockPos);

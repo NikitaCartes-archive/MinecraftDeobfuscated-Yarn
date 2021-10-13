@@ -134,10 +134,10 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -506,7 +506,7 @@ ServerPlayPacketListener {
                 commandBlockBlockEntity.updateCommandBlock();
             }
             commandBlockExecutor.markDirty();
-            if (!ChatUtil.isEmpty(string)) {
+            if (!StringHelper.isEmpty(string)) {
                 this.player.sendSystemMessage(new TranslatableText("advMode.setCommand.success", string), Util.NIL_UUID);
             }
         }

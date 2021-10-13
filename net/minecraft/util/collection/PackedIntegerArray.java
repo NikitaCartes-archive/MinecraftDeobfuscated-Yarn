@@ -5,7 +5,6 @@ package net.minecraft.util.collection;
 
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
-import net.minecraft.util.Util;
 import net.minecraft.util.collection.PaletteStorage;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -58,7 +57,7 @@ implements PaletteStorage {
         int j = (size + this.elementsPerLong - 1) / this.elementsPerLong;
         if (data != null) {
             if (data.length != j) {
-                throw Util.throwOrPause(new RuntimeException("Invalid length given for storage, got: " + data.length + " but expected: " + j));
+                throw new class_6685("Invalid length given for storage, got: " + data.length + " but expected: " + j);
             }
             this.data = data;
         } else {
@@ -128,6 +127,13 @@ implements PaletteStorage {
                 if (++i < this.size) continue;
                 return;
             }
+        }
+    }
+
+    public static class class_6685
+    extends RuntimeException {
+        class_6685(String string) {
+            super(string);
         }
     }
 }

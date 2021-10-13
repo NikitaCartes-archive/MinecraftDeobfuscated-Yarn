@@ -48,7 +48,7 @@ implements DataProvider {
         this.tagBuilders.clear();
         this.configure();
         this.tagBuilders.forEach((id, builder) -> {
-            List list = builder.streamEntries().filter(trackedEntry -> !trackedEntry.getEntry().canAdd(this.registry::containsId, this.tagBuilders::containsKey)).collect(Collectors.toList());
+            List list = builder.streamEntries().filter(tag -> !tag.getEntry().canAdd(this.registry::containsId, this.tagBuilders::containsKey)).collect(Collectors.toList());
             if (!list.isEmpty()) {
                 throw new IllegalArgumentException(String.format("Couldn't define tag %s as it is missing following references: %s", id, list.stream().map(Objects::toString).collect(Collectors.joining(","))));
             }

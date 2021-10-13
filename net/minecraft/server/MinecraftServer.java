@@ -58,7 +58,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
-import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -99,7 +98,6 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.LiteralText;
@@ -107,6 +105,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
+import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.Unit;
@@ -198,7 +197,7 @@ implements SnooperListener,
 CommandOutput,
 AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final String field_34982 = "vanilla";
+    public static final String VANILLA = "vanilla";
     private static final float field_33212 = 0.8f;
     private static final int field_33213 = 100;
     public static final int field_33206 = 50;
@@ -343,7 +342,7 @@ AutoCloseable {
         boolean bl = false;
         Finishable finishable = FlightProfiler.INSTANCE.startWorldLoadProfiling();
         this.loadWorldResourcePack();
-        this.saveProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
+        this.saveProperties.addServerBrand(this.getServerModName(), this.getModStatus().isModded());
         WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
         this.createWorlds(worldGenerationProgressListener);
         this.updateDifficulty();
@@ -438,12 +437,6 @@ AutoCloseable {
         if (blockPos == null) {
             LOGGER.warn("Unable to find spawn biome");
         }
-        boolean bl = false;
-        for (Block block : BlockTags.VALID_SPAWN.values()) {
-            if (!biomeSource.method_38113(block.getDefaultState())) continue;
-            bl = true;
-            break;
-        }
         if ((i = chunkGenerator.getSpawnHeight(world)) < world.getBottomY()) {
             BlockPos blockPos2 = chunkPos.getStartPos();
             i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX() + 8, blockPos2.getZ() + 8);
@@ -456,7 +449,7 @@ AutoCloseable {
         int n = 32;
         for (int o = 0; o < 1024; ++o) {
             BlockPos blockPos3;
-            if (j > -16 && j <= 16 && k > -16 && k <= 16 && (blockPos3 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k), bl)) != null) {
+            if (j > -16 && j <= 16 && k > -16 && k <= 16 && (blockPos3 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k))) != null) {
                 worldProperties.setSpawnPos(blockPos3, 0.0f);
                 break;
             }
@@ -569,7 +562,7 @@ AutoCloseable {
         this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
         if (flush) {
             for (ServerWorld serverWorld3 : this.getWorlds()) {
-                LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", (Object)serverWorld3.getChunkManager().threadedAnvilChunkStorage.method_37476());
+                LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", (Object)serverWorld3.getChunkManager().threadedAnvilChunkStorage.getSaveDir());
             }
             LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
         }
@@ -914,7 +907,7 @@ AutoCloseable {
 
     @DontObfuscate
     public String getServerModName() {
-        return field_34982;
+        return VANILLA;
     }
 
     public SystemDetails addSystemDetails(SystemDetails details) {
@@ -941,7 +934,9 @@ AutoCloseable {
 
     public abstract SystemDetails addExtraSystemDetails(SystemDetails var1);
 
-    public abstract Optional<String> getModdedStatusMessage();
+    public ModStatus getModStatus() {
+        return ModStatus.check(VANILLA, this::getServerModName, "Server", MinecraftServer.class);
+    }
 
     @Override
     public void sendSystemMessage(Text message, UUID sender) {
@@ -1367,8 +1362,8 @@ AutoCloseable {
     public static DataPackSettings loadDataPacks(ResourcePackManager resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode) {
         resourcePackManager.scanPacks();
         if (safeMode) {
-            resourcePackManager.setEnabledProfiles(Collections.singleton(field_34982));
-            return new DataPackSettings(ImmutableList.of(field_34982), ImmutableList.of());
+            resourcePackManager.setEnabledProfiles(Collections.singleton(VANILLA));
+            return new DataPackSettings(ImmutableList.of(VANILLA), ImmutableList.of());
         }
         LinkedHashSet<String> set = Sets.newLinkedHashSet();
         for (String string : dataPackSettings.getEnabled()) {
@@ -1386,7 +1381,7 @@ AutoCloseable {
         }
         if (set.isEmpty()) {
             LOGGER.info("No datapacks selected, forcing vanilla");
-            set.add(field_34982);
+            set.add(VANILLA);
         }
         resourcePackManager.setEnabledProfiles(set);
         return MinecraftServer.createDataPackSettings(resourcePackManager);

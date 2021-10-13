@@ -9,12 +9,12 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
 
-class AlwaysTrueBlockPredicate
+class TrueBlockPredicate
 implements BlockPredicate {
-    public static AlwaysTrueBlockPredicate instance = new AlwaysTrueBlockPredicate();
-    public static final Codec<AlwaysTrueBlockPredicate> CODEC = Codec.unit(() -> instance);
+    public static TrueBlockPredicate INSTANCE = new TrueBlockPredicate();
+    public static final Codec<TrueBlockPredicate> CODEC = Codec.unit(() -> INSTANCE);
 
-    private AlwaysTrueBlockPredicate() {
+    private TrueBlockPredicate() {
     }
 
     @Override

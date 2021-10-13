@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -22,6 +21,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -213,7 +213,7 @@ extends SchoolingFishEntity {
     }
 
     public static boolean canTropicalFishSpawn(EntityType<TropicalFishEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
-        return world.getBlockState(pos).isOf(Blocks.WATER) && (Objects.equals(world.getBiomeKey(pos), Optional.of(BiomeKeys.LUSH_CAVES)) || WaterCreatureEntity.canSpawn(type, world, reason, pos, random));
+        return world.getFluidState(pos.down()).isIn(FluidTags.WATER) && (Objects.equals(world.getBiomeKey(pos), Optional.of(BiomeKeys.LUSH_CAVES)) || WaterCreatureEntity.canSpawn(type, world, reason, pos, random));
     }
 
     static enum Variety {

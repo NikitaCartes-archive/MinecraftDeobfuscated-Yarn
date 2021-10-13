@@ -32,7 +32,7 @@ implements DataProvider {
     public void run(DataCache cache) throws IOException {
         Path path2 = this.root.getOutput();
         for (Path path22 : this.root.getInputs()) {
-            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".nbt")).forEach(path3 -> NbtProvider.convertNbtToSnbt(path3, this.getLocation(path22, (Path)path3), path2));
+            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".nbt")).forEach(path -> NbtProvider.convertNbtToSnbt(path, this.getLocation(path22, (Path)path), path2));
         }
     }
 

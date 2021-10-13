@@ -897,8 +897,8 @@ public class MathHelper {
     /**
      * {@return {@code a} rounded down to the nearest multiple of {@code b}}
      */
-    public static int roundDownToMultiple(double a, int i) {
-        return MathHelper.floor(a / (double)i) * i;
+    public static int roundDownToMultiple(double a, int b) {
+        return MathHelper.floor(a / (double)b) * b;
     }
 
     static {

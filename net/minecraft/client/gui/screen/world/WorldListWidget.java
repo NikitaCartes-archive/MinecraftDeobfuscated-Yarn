@@ -291,8 +291,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     this.start();
                 }, mutableText, text, false));
             } else if (this.level.isFutureLevel()) {
-                this.client.setScreen(new ConfirmScreen(bl -> {
-                    if (bl) {
+                this.client.setScreen(new ConfirmScreen(confirmed -> {
+                    if (confirmed) {
                         try {
                             this.start();
                         } catch (Exception exception) {

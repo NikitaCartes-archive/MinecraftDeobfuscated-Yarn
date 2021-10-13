@@ -36,7 +36,7 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
-import net.minecraft.util.ChatUtil;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.WorldSavePath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,7 +60,7 @@ public class ServerConfigHandler {
     }
 
     private static void lookupProfile(MinecraftServer server, Collection<String> bannedPlayers, ProfileLookupCallback callback) {
-        String[] strings = (String[])bannedPlayers.stream().filter(string -> !ChatUtil.isEmpty(string)).toArray(String[]::new);
+        String[] strings = (String[])bannedPlayers.stream().filter(string -> !StringHelper.isEmpty(string)).toArray(String[]::new);
         if (server.isOnlineMode()) {
             server.getGameProfileRepo().findProfilesByNames(strings, Agent.MINECRAFT, callback);
         } else {
@@ -245,7 +245,7 @@ public class ServerConfigHandler {
 
     @Nullable
     public static UUID getPlayerUuidByName(final MinecraftServer server, String name) {
-        if (ChatUtil.isEmpty(name) || name.length() > 16) {
+        if (StringHelper.isEmpty(name) || name.length() > 16) {
             try {
                 return UUID.fromString(name);
             } catch (IllegalArgumentException illegalArgumentException) {

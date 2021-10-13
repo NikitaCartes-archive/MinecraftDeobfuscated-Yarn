@@ -79,7 +79,7 @@ public class EntityPredicate {
         this.catType = catType;
     }
 
-    EntityPredicate(EntityTypePredicate type, DistancePredicate distance, LocationPredicate location, LocationPredicate steppingOn, EntityEffectPredicate effects, NbtPredicate nbt, EntityFlagsPredicate flags, EntityEquipmentPredicate equipment, PlayerPredicate player, FishingHookPredicate fishingHook, LightningBoltPredicate lightningBoltPredicate, EntityPredicate vehicle, EntityPredicate entityPredicate, EntityPredicate targetedEntity, @Nullable String team, @Nullable Identifier catType) {
+    EntityPredicate(EntityTypePredicate type, DistancePredicate distance, LocationPredicate location, LocationPredicate steppingOn, EntityEffectPredicate effects, NbtPredicate nbt, EntityFlagsPredicate flags, EntityEquipmentPredicate equipment, PlayerPredicate player, FishingHookPredicate fishingHook, LightningBoltPredicate lightningBolt, EntityPredicate vehicle, EntityPredicate passenger, EntityPredicate targetedEntity, @Nullable String team, @Nullable Identifier catType) {
         this.type = type;
         this.distance = distance;
         this.location = location;
@@ -90,9 +90,9 @@ public class EntityPredicate {
         this.equipment = equipment;
         this.player = player;
         this.fishingHook = fishingHook;
-        this.lightningBolt = lightningBoltPredicate;
+        this.lightningBolt = lightningBolt;
         this.vehicle = vehicle;
-        this.passenger = entityPredicate;
+        this.passenger = passenger;
         this.targetedEntity = targetedEntity;
         this.team = team;
         this.catType = catType;

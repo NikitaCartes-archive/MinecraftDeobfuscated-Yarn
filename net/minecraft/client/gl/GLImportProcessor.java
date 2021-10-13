@@ -11,8 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.FileNameUtil;
+import net.minecraft.util.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.Nullable;
@@ -65,7 +65,7 @@ public abstract class GLImportProcessor {
             String string4 = path + string2;
             Object string5 = this.loadImport(bl, string4);
             if (!Strings.isEmpty((CharSequence)string5)) {
-                if (!ChatUtil.endsWithLineBreak((String)string5)) {
+                if (!StringHelper.endsWithLineBreak((String)string5)) {
                     string5 = (String)string5 + System.lineSeparator();
                 }
                 ++context.line;
@@ -80,7 +80,7 @@ public abstract class GLImportProcessor {
                 String string6 = bl ? String.format("/*#moj_import \"%s\"*/", string2) : String.format("/*#moj_import <%s>*/", string2);
                 list.add(string + string3 + string6);
             }
-            k = ChatUtil.countLines(source.substring(0, matcher.end(1)));
+            k = StringHelper.countLines(source.substring(0, matcher.end(1)));
             string = String.format(Locale.ROOT, "#line %d %d", k, i);
             j = matcher.end(1);
         }

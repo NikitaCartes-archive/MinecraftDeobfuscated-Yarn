@@ -56,7 +56,7 @@ public class BookEditScreen
 extends Screen {
     private static final int MAX_TEXT_WIDTH = 114;
     private static final int MAX_TEXT_HEIGHT = 128;
-    private static final int field_32325 = 250;
+    private static final int DOUBLE_CLICK_MAX_DELAY = 250;
     private static final int WIDTH = 192;
     private static final int HEIGHT = 192;
     private static final Text EDIT_TITLE_TEXT = new TranslatableText("book.editTitle");
@@ -542,37 +542,37 @@ extends Screen {
         if (string.isEmpty()) {
             return PageContent.EMPTY;
         }
-        int i2 = this.currentPageSelectionManager.getSelectionStart();
-        int j2 = this.currentPageSelectionManager.getSelectionEnd();
+        int i = this.currentPageSelectionManager.getSelectionStart();
+        int j = this.currentPageSelectionManager.getSelectionEnd();
         IntArrayList intList = new IntArrayList();
         ArrayList list = Lists.newArrayList();
         MutableInt mutableInt = new MutableInt();
         MutableBoolean mutableBoolean = new MutableBoolean();
         TextHandler textHandler = this.textRenderer.getTextHandler();
-        textHandler.wrapLines(string, 114, Style.EMPTY, true, (style, i, j) -> {
-            int k = mutableInt.getAndIncrement();
-            String string2 = string.substring(i, j);
-            mutableBoolean.setValue(string2.endsWith("\n"));
-            String string3 = StringUtils.stripEnd(string2, " \n");
-            int l = k * this.textRenderer.fontHeight;
-            Position position = this.absolutePositionToScreenPosition(new Position(0, l));
-            intList.add(i);
-            list.add(new Line(style, string3, position.x, position.y));
+        textHandler.wrapLines(string, 114, Style.EMPTY, true, (style, start, end) -> {
+            int i = mutableInt.getAndIncrement();
+            String string = string.substring(start, end);
+            mutableBoolean.setValue(string.endsWith("\n"));
+            String string2 = StringUtils.stripEnd(string, " \n");
+            int j = i * this.textRenderer.fontHeight;
+            Position position = this.absolutePositionToScreenPosition(new Position(0, j));
+            intList.add(start);
+            list.add(new Line(style, string2, position.x, position.y));
         });
         int[] is = intList.toIntArray();
-        boolean bl2 = bl = i2 == string.length();
+        boolean bl2 = bl = i == string.length();
         if (bl && mutableBoolean.isTrue()) {
             position = new Position(0, list.size() * this.textRenderer.fontHeight);
         } else {
-            int k = BookEditScreen.getLineFromOffset(is, i2);
-            l = this.textRenderer.getWidth(string.substring(is[k], i2));
+            int k = BookEditScreen.getLineFromOffset(is, i);
+            l = this.textRenderer.getWidth(string.substring(is[k], i));
             position = new Position(l, k * this.textRenderer.fontHeight);
         }
         ArrayList<Rect2i> list2 = Lists.newArrayList();
-        if (i2 != j2) {
+        if (i != j) {
             int o;
-            l = Math.min(i2, j2);
-            int m = Math.max(i2, j2);
+            l = Math.min(i, j);
+            int m = Math.max(i, j);
             int n = BookEditScreen.getLineFromOffset(is, l);
             if (n == (o = BookEditScreen.getLineFromOffset(is, m))) {
                 int p = n * this.textRenderer.fontHeight;

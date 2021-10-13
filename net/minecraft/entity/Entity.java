@@ -176,7 +176,7 @@ CommandOutput {
     public double prevZ;
     private Vec3d pos;
     private BlockPos blockPos;
-    private ChunkPos field_35101;
+    private ChunkPos chunkPos;
     private Vec3d velocity = Vec3d.ZERO;
     private float yaw;
     private float pitch;
@@ -187,7 +187,7 @@ CommandOutput {
     public boolean horizontalCollision;
     public boolean verticalCollision;
     public boolean field_34927;
-    private static final float field_34928 = 0.0063f;
+    private static final float field_34928 = 0.0064f;
     public boolean velocityModified;
     protected Vec3d movementMultiplier = Vec3d.ZERO;
     @Nullable
@@ -261,7 +261,7 @@ CommandOutput {
         this.dimensions = type.getDimensions();
         this.pos = Vec3d.ZERO;
         this.blockPos = BlockPos.ORIGIN;
-        this.field_35101 = ChunkPos.field_35107;
+        this.chunkPos = ChunkPos.ORIGIN;
         this.trackedPosition = Vec3d.ZERO;
         this.dataTracker = new DataTracker(this);
         this.dataTracker.startTracking(FLAGS, (byte)0);
@@ -613,7 +613,7 @@ CommandOutput {
         this.world.getProfiler().push("rest");
         this.horizontalCollision = !MathHelper.approximatelyEquals(movement.x, vec3d.x) || !MathHelper.approximatelyEquals(movement.z, vec3d.z);
         this.verticalCollision = movement.y != vec3d.y;
-        this.field_34927 = movement.subtract(vec3d).lengthSquared() < (double)0.0063f;
+        this.field_34927 = movement.subtract(vec3d).lengthSquared() < (double)0.0064f;
         this.onGround = this.verticalCollision && movement.y < 0.0;
         BlockPos blockPos = this.getLandingPos();
         BlockState blockState = this.world.getBlockState(blockPos);
@@ -2903,7 +2903,7 @@ CommandOutput {
     }
 
     public ChunkPos getChunkPos() {
-        return this.field_35101;
+        return this.chunkPos;
     }
 
     public Vec3d getVelocity() {
@@ -2978,8 +2978,8 @@ CommandOutput {
             int k = MathHelper.floor(z);
             if (i != this.blockPos.getX() || j != this.blockPos.getY() || k != this.blockPos.getZ()) {
                 this.blockPos = new BlockPos(i, j, k);
-                if (ChunkSectionPos.getSectionCoord(i) != this.field_35101.x || ChunkSectionPos.getSectionCoord(k) != this.field_35101.z) {
-                    this.field_35101 = new ChunkPos(this.blockPos);
+                if (ChunkSectionPos.getSectionCoord(i) != this.chunkPos.x || ChunkSectionPos.getSectionCoord(k) != this.chunkPos.z) {
+                    this.chunkPos = new ChunkPos(this.blockPos);
                 }
             }
             this.entityChangeListener.updateEntityPosition();

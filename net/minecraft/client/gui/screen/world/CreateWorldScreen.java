@@ -172,9 +172,9 @@ extends Screen {
             this.cheatsEnabled = cheatsEnabled;
         }));
         this.dataPacksButton = this.addDrawableChild(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.openPackScreen()));
-        this.gameRulesButton = this.addDrawableChild(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
+        this.gameRulesButton = this.addDrawableChild(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optionalGameRules -> {
             this.client.setScreen(this);
-            optional.ifPresent(gameRules -> {
+            optionalGameRules.ifPresent(gameRules -> {
                 this.gameRules = gameRules;
             });
         }))));
@@ -398,7 +398,7 @@ extends Screen {
             this.dataPackSettings = dataPackSettings;
             this.moreOptionsDialog.loadDatapacks((ServerResourceManager)serverResourceManager);
             serverResourceManager.close();
-        }, (Executor)this.client)).handle((void_, throwable) -> {
+        }, (Executor)this.client)).handle((v, throwable) -> {
             if (throwable != null) {
                 LOGGER.warn("Failed to validate datapack", (Throwable)throwable);
                 this.client.send(() -> this.client.setScreen(new ConfirmScreen(confirmed -> {

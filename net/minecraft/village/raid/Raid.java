@@ -276,7 +276,7 @@ public class Raid {
                     boolean bl3;
                     bl2 = this.preCalculatedRavagerSpawnLocation.isPresent();
                     boolean bl4 = bl3 = !bl2 && this.preRaidTicks % 5 == 0;
-                    if (bl2 && !this.world.method_37118(this.preCalculatedRavagerSpawnLocation.get())) {
+                    if (bl2 && !this.world.shouldTickEntity(this.preCalculatedRavagerSpawnLocation.get())) {
                         bl3 = true;
                     }
                     if (bl3) {
@@ -568,7 +568,7 @@ public class Raid {
             mutable.set(k, m, l);
             if (this.world.isNearOccupiedPointOfInterest(mutable) && proximity < 2) continue;
             int n = 10;
-            if (!this.world.isRegionLoaded(mutable.getX() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getZ() + 10) || !this.world.method_37118(mutable) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (!this.world.getBlockState((BlockPos)mutable.down()).isOf(Blocks.SNOW) || !this.world.getBlockState(mutable).isAir())) continue;
+            if (!this.world.isRegionLoaded(mutable.getX() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getZ() + 10) || !this.world.shouldTickEntity(mutable) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (!this.world.getBlockState((BlockPos)mutable.down()).isOf(Blocks.SNOW) || !this.world.getBlockState(mutable).isAir())) continue;
             return mutable;
         }
         return null;

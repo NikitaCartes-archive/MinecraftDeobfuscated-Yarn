@@ -16,7 +16,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.util.ChatUtil;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -69,7 +69,7 @@ extends BlockEntity {
         super.readNbt(nbt);
         if (nbt.contains(SKULL_OWNER_KEY, 10)) {
             this.setOwner(NbtHelper.toGameProfile(nbt.getCompound(SKULL_OWNER_KEY)));
-        } else if (nbt.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = nbt.getString("ExtraType"))) {
+        } else if (nbt.contains("ExtraType", 8) && !StringHelper.isEmpty(string = nbt.getString("ExtraType"))) {
             this.setOwner(new GameProfile(null, string));
         }
     }
@@ -123,7 +123,7 @@ extends BlockEntity {
     }
 
     public static void loadProperties(@Nullable GameProfile owner, Consumer<GameProfile> callback) {
-        if (owner == null || ChatUtil.isEmpty(owner.getName()) || owner.isComplete() && owner.getProperties().containsKey("textures") || userCache == null || sessionService == null) {
+        if (owner == null || StringHelper.isEmpty(owner.getName()) || owner.isComplete() && owner.getProperties().containsKey("textures") || userCache == null || sessionService == null) {
             callback.accept(owner);
             return;
         }

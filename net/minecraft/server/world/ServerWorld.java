@@ -1062,7 +1062,7 @@ implements StructureWorldAccess {
     public void dump(Path path) throws IOException {
         ThreadedAnvilChunkStorage threadedAnvilChunkStorage = this.getChunkManager().threadedAnvilChunkStorage;
         try (BufferedWriter writer = Files.newBufferedWriter(path.resolve("stats.txt"), new OpenOption[0]);){
-            writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getSpawningChunkCount()));
+            writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getTickedChunkCount()));
             SpawnHelper.Info info = this.getChunkManager().getSpawnInfo();
             if (info != null) {
                 for (Object2IntMap.Entry entry : info.getGroupToCount().object2IntEntrySet()) {
@@ -1223,21 +1223,21 @@ implements StructureWorldAccess {
         return "Chunks[S] W: " + this.chunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
     }
 
-    public boolean method_37116(long l) {
-        return this.entityManager.method_37252(l);
+    public boolean isChunkLoaded(long chunkPos) {
+        return this.entityManager.isLoaded(chunkPos);
     }
 
-    public boolean method_37117(BlockPos blockPos) {
-        long l = ChunkPos.toLong(blockPos);
-        return this.method_37116(l) && this.chunkManager.isTickingFutureReady(l);
+    public boolean isTickingFutureReady(BlockPos pos) {
+        long l = ChunkPos.toLong(pos);
+        return this.isChunkLoaded(l) && this.chunkManager.isTickingFutureReady(l);
     }
 
-    public boolean method_37118(BlockPos blockPos) {
-        return this.entityManager.method_37254(blockPos);
+    public boolean shouldTickEntity(BlockPos pos) {
+        return this.entityManager.shouldTick(pos);
     }
 
-    public boolean method_37115(ChunkPos chunkPos) {
-        return this.entityManager.method_37253(chunkPos);
+    public boolean shouldTickEntity(ChunkPos pos) {
+        return this.entityManager.shouldTick(pos);
     }
 
     @Override

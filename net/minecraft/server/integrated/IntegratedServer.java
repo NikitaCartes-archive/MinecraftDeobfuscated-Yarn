@@ -11,13 +11,11 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ServerResourceManager;
@@ -27,6 +25,7 @@ import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.integrated.IntegratedPlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
@@ -150,24 +149,13 @@ extends MinecraftServer {
     @Override
     public SystemDetails addExtraSystemDetails(SystemDetails details) {
         details.addSection("Type", "Integrated Server (map_client.txt)");
-        details.addSection("Is Modded", () -> this.getModdedStatusMessage().orElse("Probably not. Jar signature remains and both client + server brands are untouched."));
+        details.addSection("Is Modded", () -> this.getModStatus().getMessage());
         return details;
     }
 
     @Override
-    public Optional<String> getModdedStatusMessage() {
-        String string = ClientBrandRetriever.getClientModName();
-        if (!string.equals("vanilla")) {
-            return Optional.of("Definitely; Client brand changed to '" + string + "'");
-        }
-        string = this.getServerModName();
-        if (!"vanilla".equals(string)) {
-            return Optional.of("Definitely; Server brand changed to '" + string + "'");
-        }
-        if (MinecraftClient.class.getSigners() == null) {
-            return Optional.of("Very likely; Jar signature invalidated");
-        }
-        return Optional.empty();
+    public ModStatus getModStatus() {
+        return MinecraftClient.getModStatus().combine(super.getModStatus());
     }
 
     @Override

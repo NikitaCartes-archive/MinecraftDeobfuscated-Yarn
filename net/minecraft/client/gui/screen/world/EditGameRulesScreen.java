@@ -146,9 +146,9 @@ extends Screen {
                     map.computeIfAbsent(key.getCategory(), category -> Maps.newHashMap()).put(key, widgetFactory.create(text, (List<OrderedText>)((Object)list), (String)string3, rule));
                 }
             });
-            map.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry2 -> {
-                this.addEntry(new RuleCategoryWidget(new TranslatableText(((GameRules.Category)((Object)((Object)entry2.getKey()))).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)));
-                ((Map)entry2.getValue()).entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName))).forEach(entry -> this.addEntry((AbstractRuleWidget)entry.getValue()));
+            map.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
+                this.addEntry(new RuleCategoryWidget(new TranslatableText(((GameRules.Category)((Object)((Object)entry.getKey()))).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)));
+                ((Map)entry.getValue()).entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName))).forEach(e -> this.addEntry((AbstractRuleWidget)e.getValue()));
             });
         }
 
@@ -293,8 +293,8 @@ extends Screen {
         @Nullable
         final List<OrderedText> description;
 
-        public AbstractRuleWidget(@Nullable List<OrderedText> list) {
-            this.description = list;
+        public AbstractRuleWidget(@Nullable List<OrderedText> description) {
+            this.description = description;
         }
     }
 }

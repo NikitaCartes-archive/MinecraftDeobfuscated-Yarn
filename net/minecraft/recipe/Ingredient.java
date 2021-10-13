@@ -206,8 +206,8 @@ implements Predicate<ItemStack> {
     implements Entry {
         private final ItemStack stack;
 
-        StackEntry(ItemStack itemStack) {
-            this.stack = itemStack;
+        StackEntry(ItemStack stack) {
+            this.stack = stack;
         }
 
         @Override

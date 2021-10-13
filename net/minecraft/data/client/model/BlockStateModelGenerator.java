@@ -85,13 +85,13 @@ public class BlockStateModelGenerator {
      * function that creates a block state variant for connection on that
      * direction with a given connection model.
      */
-    public static final Map<BooleanProperty, Function<Identifier, BlockStateVariant>> CONNECTION_VARIANT_FUNCTIONS = Util.make(Maps.newHashMap(), hashMap -> {
-        hashMap.put(Properties.NORTH, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier));
-        hashMap.put(Properties.EAST, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true));
-        hashMap.put(Properties.SOUTH, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true));
-        hashMap.put(Properties.WEST, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true));
-        hashMap.put(Properties.UP, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true));
-        hashMap.put(Properties.DOWN, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true));
+    public static final Map<BooleanProperty, Function<Identifier, BlockStateVariant>> CONNECTION_VARIANT_FUNCTIONS = Util.make(Maps.newHashMap(), map -> {
+        map.put(Properties.NORTH, id -> BlockStateVariant.create().put(VariantSettings.MODEL, id));
+        map.put(Properties.EAST, id -> BlockStateVariant.create().put(VariantSettings.MODEL, id).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true));
+        map.put(Properties.SOUTH, id -> BlockStateVariant.create().put(VariantSettings.MODEL, id).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true));
+        map.put(Properties.WEST, id -> BlockStateVariant.create().put(VariantSettings.MODEL, id).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true));
+        map.put(Properties.UP, id -> BlockStateVariant.create().put(VariantSettings.MODEL, id).put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true));
+        map.put(Properties.DOWN, id -> BlockStateVariant.create().put(VariantSettings.MODEL, id).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true));
     });
 
     private static BlockStateSupplier createStoneState(Block block, Identifier modelId, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
@@ -608,7 +608,7 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, identifier));
     }
 
-    private void method_37317(Block block) {
+    private void registerPottedAzaleaBush(Block block) {
         Identifier identifier = Models.TEMPLATE_POTTED_AZALEA_BUSH.upload(block, Texture.sideAndTop(block), this.modelCollector);
         this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, identifier));
     }
@@ -738,7 +738,7 @@ public class BlockStateModelGenerator {
     }
 
     private void registerPointedDripstone() {
-        this.registerItemModel(Blocks.POINTED_DRIPSTONE.asItem());
+        this.excludeFromSimpleItemModelGeneration(Blocks.POINTED_DRIPSTONE);
         BlockStateVariantMap.DoubleProperty<Direction, Thickness> doubleProperty = BlockStateVariantMap.create(Properties.VERTICAL_DIRECTION, Properties.THICKNESS);
         for (Thickness thickness : Thickness.values()) {
             doubleProperty.register(Direction.UP, thickness, this.getDripstoneVariant(Direction.UP, thickness));
@@ -1269,8 +1269,8 @@ public class BlockStateModelGenerator {
         this.registerSimpleState(Blocks.SPORE_BLOSSOM);
         this.registerAzalea(Blocks.AZALEA);
         this.registerAzalea(Blocks.FLOWERING_AZALEA);
-        this.method_37317(Blocks.POTTED_AZALEA_BUSH);
-        this.method_37317(Blocks.POTTED_FLOWERING_AZALEA_BUSH);
+        this.registerPottedAzaleaBush(Blocks.POTTED_AZALEA_BUSH);
+        this.registerPottedAzaleaBush(Blocks.POTTED_FLOWERING_AZALEA_BUSH);
         this.registerCaveVines();
         this.registerCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
         this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);

@@ -45,6 +45,7 @@ import net.minecraft.client.render.chunk.ChunkOcclusionData;
 import net.minecraft.client.render.chunk.ChunkOcclusionDataBuilder;
 import net.minecraft.client.render.chunk.ChunkRendererRegion;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
@@ -54,7 +55,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.thread.TaskExecutor;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
@@ -66,7 +66,14 @@ public class ChunkBuilder {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int field_32831 = 4;
     private static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT_NORMAL = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
-    private final PriorityQueue<BuiltChunk.Task> rebuildQueue = Queues.newPriorityQueue();
+    private static final int field_35300 = 2;
+    private final PriorityQueue<BuiltChunk.Task> prioritizedTaskQueue = Queues.newPriorityQueue();
+    private final Queue<BuiltChunk.Task> taskQueue = Queues.newArrayDeque();
+    /**
+     * The number of tasks it can poll from {@link #prioritizedTaskQueue}
+     * before polling from {@link #taskQueue} first instead.
+     */
+    private int processablePrioritizedTaskCount = 2;
     private final Queue<BlockBufferBuilderStorage> threadBuffers;
     private final Queue<Runnable> uploadQueue = Queues.newConcurrentLinkedQueue();
     private volatile int queuedTaskCount;
@@ -74,11 +81,11 @@ public class ChunkBuilder {
     final BlockBufferBuilderStorage buffers;
     private final TaskExecutor<Runnable> mailbox;
     private final Executor executor;
-    World world;
+    ClientWorld world;
     final WorldRenderer worldRenderer;
     private Vec3d cameraPosition = Vec3d.ZERO;
 
-    public ChunkBuilder(World world, WorldRenderer worldRenderer, Executor executor, boolean is64Bits, BlockBufferBuilderStorage buffers) {
+    public ChunkBuilder(ClientWorld world, WorldRenderer worldRenderer, Executor executor, boolean is64Bits, BlockBufferBuilderStorage buffers) {
         this.world = world;
         this.worldRenderer = worldRenderer;
         int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / (RenderLayer.getBlockLayers().stream().mapToInt(RenderLayer::getExpectedBufferSize).sum() * 4) - 1);
@@ -106,7 +113,7 @@ public class ChunkBuilder {
         this.mailbox.send(this::scheduleRunTasks);
     }
 
-    public void setWorld(World world) {
+    public void setWorld(ClientWorld world) {
         this.world = world;
     }
 
@@ -114,12 +121,12 @@ public class ChunkBuilder {
         if (this.threadBuffers.isEmpty()) {
             return;
         }
-        BuiltChunk.Task task = this.rebuildQueue.poll();
+        BuiltChunk.Task task = this.pollTask();
         if (task == null) {
             return;
         }
         BlockBufferBuilderStorage blockBufferBuilderStorage = this.threadBuffers.poll();
-        this.queuedTaskCount = this.rebuildQueue.size();
+        this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
         this.bufferCount = this.threadBuffers.size();
         ((CompletableFuture)CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferBuilderStorage)), this.executor).thenCompose(completableFuture -> completableFuture)).whenComplete((result, throwable) -> {
             if (throwable != null) {
@@ -138,6 +145,22 @@ public class ChunkBuilder {
                 this.scheduleRunTasks();
             });
         });
+    }
+
+    @Nullable
+    private BuiltChunk.Task pollTask() {
+        BuiltChunk.Task task;
+        if (this.processablePrioritizedTaskCount <= 0 && (task = this.taskQueue.poll()) != null) {
+            this.processablePrioritizedTaskCount = 2;
+            return task;
+        }
+        task = this.prioritizedTaskQueue.poll();
+        if (task != null) {
+            --this.processablePrioritizedTaskCount;
+            return task;
+        }
+        this.processablePrioritizedTaskCount = 2;
+        return this.taskQueue.poll();
     }
 
     public String getDebugString() {
@@ -181,8 +204,12 @@ public class ChunkBuilder {
 
     public void send(BuiltChunk.Task task) {
         this.mailbox.send(() -> {
-            this.rebuildQueue.offer(task);
-            this.queuedTaskCount = this.rebuildQueue.size();
+            if (task.prioritized) {
+                this.prioritizedTaskQueue.offer(task);
+            } else {
+                this.taskQueue.offer(task);
+            }
+            this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
             this.scheduleRunTasks();
         });
     }
@@ -196,8 +223,14 @@ public class ChunkBuilder {
     }
 
     private void clear() {
-        while (!this.rebuildQueue.isEmpty()) {
-            BuiltChunk.Task task = this.rebuildQueue.poll();
+        BuiltChunk.Task task;
+        while (!this.prioritizedTaskQueue.isEmpty()) {
+            task = this.prioritizedTaskQueue.poll();
+            if (task == null) continue;
+            task.cancel();
+        }
+        while (!this.taskQueue.isEmpty()) {
+            task = this.taskQueue.poll();
             if (task == null) continue;
             task.cancel();
         }
@@ -334,23 +367,27 @@ public class ChunkBuilder {
             return true;
         }
 
-        protected void cancel() {
+        protected boolean cancel() {
+            boolean bl = false;
             if (this.rebuildTask != null) {
                 this.rebuildTask.cancel();
                 this.rebuildTask = null;
+                bl = true;
             }
             if (this.sortTask != null) {
                 this.sortTask.cancel();
                 this.sortTask = null;
+                bl = true;
             }
+            return bl;
         }
 
         public Task createRebuildTask() {
-            this.cancel();
+            boolean bl = this.cancel();
             BlockPos blockPos = this.origin.toImmutable();
             boolean i = true;
             ChunkRendererRegion chunkRendererRegion = ChunkRendererRegion.create(ChunkBuilder.this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
-            this.rebuildTask = new RebuildTask(this.getSquaredCameraDistance(), chunkRendererRegion);
+            this.rebuildTask = new RebuildTask(this.getSquaredCameraDistance(), chunkRendererRegion, bl || this.data.get() != ChunkData.EMPTY);
             return this.rebuildTask;
         }
 
@@ -387,7 +424,7 @@ public class ChunkBuilder {
             private final ChunkData data;
 
             public SortTask(double distance, ChunkData data) {
-                super(distance);
+                super(distance, true);
                 this.data = data;
             }
 
@@ -445,9 +482,11 @@ public class ChunkBuilder {
         implements Comparable<Task> {
             protected final double distance;
             protected final AtomicBoolean cancelled = new AtomicBoolean(false);
+            protected final boolean prioritized;
 
-            public Task(double distance) {
+            public Task(double distance, boolean prioritized) {
                 this.distance = distance;
+                this.prioritized = prioritized;
             }
 
             public abstract CompletableFuture<Result> run(BlockBufferBuilderStorage var1);
@@ -473,8 +512,8 @@ public class ChunkBuilder {
             @Nullable
             protected ChunkRendererRegion region;
 
-            public RebuildTask(@Nullable double distance, ChunkRendererRegion region) {
-                super(distance);
+            public RebuildTask(@Nullable double distance, ChunkRendererRegion region, boolean prioritized) {
+                super(distance, prioritized);
                 this.region = region;
             }
 

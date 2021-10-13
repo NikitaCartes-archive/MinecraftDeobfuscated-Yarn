@@ -51,19 +51,19 @@ implements NbtElementVisitor {
     private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
     private static final String KEY_VALUE_SEPARATOR = String.valueOf(':');
     private static final String ENTRY_SEPARATOR = String.valueOf(',');
-    private static final String field_33272 = "[";
-    private static final String field_33273 = "]";
-    private static final String field_33274 = ";";
-    private static final String field_33275 = " ";
-    private static final String field_33276 = "{";
-    private static final String field_33277 = "}";
-    private static final String field_33278 = "\n";
+    private static final String SQUARE_OPEN_BRACKET = "[";
+    private static final String SQUARE_CLOSE_BRACKET = "]";
+    private static final String SEMICOLON = ";";
+    private static final String SPACE = " ";
+    private static final String CURLY_OPEN_BRACKET = "{";
+    private static final String CURLY_CLOSE_BRACKET = "}";
+    private static final String NEW_LINE = "\n";
     private final String prefix;
     private final int indentationLevel;
     private Text result = LiteralText.EMPTY;
 
-    public NbtTextFormatter(String string, int indentationLevel) {
-        this.prefix = string;
+    public NbtTextFormatter(String prefix, int indentationLevel) {
+        this.prefix = prefix;
         this.indentationLevel = indentationLevel;
     }
 
@@ -118,44 +118,44 @@ implements NbtElementVisitor {
     @Override
     public void visitByteArray(NbtByteArray element) {
         MutableText text = new LiteralText("B").formatted(TYPE_SUFFIX_COLOR);
-        MutableText mutableText = new LiteralText(field_33272).append(text).append(field_33274);
+        MutableText mutableText = new LiteralText(SQUARE_OPEN_BRACKET).append(text).append(SEMICOLON);
         byte[] bs = element.getByteArray();
         for (int i = 0; i < bs.length; ++i) {
             MutableText mutableText2 = new LiteralText(String.valueOf(bs[i])).formatted(NUMBER_COLOR);
-            mutableText.append(field_33275).append(mutableText2).append(text);
+            mutableText.append(SPACE).append(mutableText2).append(text);
             if (i == bs.length - 1) continue;
             mutableText.append(ENTRY_SEPARATOR);
         }
-        mutableText.append(field_33273);
+        mutableText.append(SQUARE_CLOSE_BRACKET);
         this.result = mutableText;
     }
 
     @Override
     public void visitIntArray(NbtIntArray element) {
         MutableText text = new LiteralText("I").formatted(TYPE_SUFFIX_COLOR);
-        MutableText mutableText = new LiteralText(field_33272).append(text).append(field_33274);
+        MutableText mutableText = new LiteralText(SQUARE_OPEN_BRACKET).append(text).append(SEMICOLON);
         int[] is = element.getIntArray();
         for (int i = 0; i < is.length; ++i) {
-            mutableText.append(field_33275).append(new LiteralText(String.valueOf(is[i])).formatted(NUMBER_COLOR));
+            mutableText.append(SPACE).append(new LiteralText(String.valueOf(is[i])).formatted(NUMBER_COLOR));
             if (i == is.length - 1) continue;
             mutableText.append(ENTRY_SEPARATOR);
         }
-        mutableText.append(field_33273);
+        mutableText.append(SQUARE_CLOSE_BRACKET);
         this.result = mutableText;
     }
 
     @Override
     public void visitLongArray(NbtLongArray element) {
         MutableText text = new LiteralText("L").formatted(TYPE_SUFFIX_COLOR);
-        MutableText mutableText = new LiteralText(field_33272).append(text).append(field_33274);
+        MutableText mutableText = new LiteralText(SQUARE_OPEN_BRACKET).append(text).append(SEMICOLON);
         long[] ls = element.getLongArray();
         for (int i = 0; i < ls.length; ++i) {
             MutableText text2 = new LiteralText(String.valueOf(ls[i])).formatted(NUMBER_COLOR);
-            mutableText.append(field_33275).append(text2).append(text);
+            mutableText.append(SPACE).append(text2).append(text);
             if (i == ls.length - 1) continue;
             mutableText.append(ENTRY_SEPARATOR);
         }
-        mutableText.append(field_33273);
+        mutableText.append(SQUARE_CLOSE_BRACKET);
         this.result = mutableText;
     }
 
@@ -166,34 +166,34 @@ implements NbtElementVisitor {
             return;
         }
         if (SINGLE_LINE_ELEMENT_TYPES.contains(element.getHeldType()) && element.size() <= 8) {
-            String string = ENTRY_SEPARATOR + field_33275;
-            LiteralText mutableText = new LiteralText(field_33272);
+            String string = ENTRY_SEPARATOR + SPACE;
+            LiteralText mutableText = new LiteralText(SQUARE_OPEN_BRACKET);
             for (int i = 0; i < element.size(); ++i) {
                 if (i != 0) {
                     mutableText.append(string);
                 }
                 mutableText.append(new NbtTextFormatter(this.prefix, this.indentationLevel).apply(element.get(i)));
             }
-            mutableText.append(field_33273);
+            mutableText.append(SQUARE_CLOSE_BRACKET);
             this.result = mutableText;
             return;
         }
-        LiteralText mutableText2 = new LiteralText(field_33272);
+        LiteralText mutableText2 = new LiteralText(SQUARE_OPEN_BRACKET);
         if (!this.prefix.isEmpty()) {
-            mutableText2.append(field_33278);
+            mutableText2.append(NEW_LINE);
         }
         for (int j = 0; j < element.size(); ++j) {
             LiteralText mutableText3 = new LiteralText(Strings.repeat(this.prefix, this.indentationLevel + 1));
             mutableText3.append(new NbtTextFormatter(this.prefix, this.indentationLevel + 1).apply(element.get(j)));
             if (j != element.size() - 1) {
-                mutableText3.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? field_33275 : field_33278);
+                mutableText3.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? SPACE : NEW_LINE);
             }
             mutableText2.append(mutableText3);
         }
         if (!this.prefix.isEmpty()) {
-            mutableText2.append(field_33278).append(Strings.repeat(this.prefix, this.indentationLevel));
+            mutableText2.append(NEW_LINE).append(Strings.repeat(this.prefix, this.indentationLevel));
         }
-        mutableText2.append(field_33273);
+        mutableText2.append(SQUARE_CLOSE_BRACKET);
         this.result = mutableText2;
     }
 
@@ -203,7 +203,7 @@ implements NbtElementVisitor {
             this.result = new LiteralText("{}");
             return;
         }
-        LiteralText mutableText = new LiteralText(field_33276);
+        LiteralText mutableText = new LiteralText(CURLY_OPEN_BRACKET);
         Collection<String> collection = compound.getKeys();
         if (LOGGER.isDebugEnabled()) {
             ArrayList<String> list = Lists.newArrayList(compound.getKeys());
@@ -211,21 +211,21 @@ implements NbtElementVisitor {
             collection = list;
         }
         if (!this.prefix.isEmpty()) {
-            mutableText.append(field_33278);
+            mutableText.append(NEW_LINE);
         }
         Iterator iterator = collection.iterator();
         while (iterator.hasNext()) {
             String string = (String)iterator.next();
-            MutableText mutableText2 = new LiteralText(Strings.repeat(this.prefix, this.indentationLevel + 1)).append(NbtTextFormatter.escapeName(string)).append(KEY_VALUE_SEPARATOR).append(field_33275).append(new NbtTextFormatter(this.prefix, this.indentationLevel + 1).apply(compound.get(string)));
+            MutableText mutableText2 = new LiteralText(Strings.repeat(this.prefix, this.indentationLevel + 1)).append(NbtTextFormatter.escapeName(string)).append(KEY_VALUE_SEPARATOR).append(SPACE).append(new NbtTextFormatter(this.prefix, this.indentationLevel + 1).apply(compound.get(string)));
             if (iterator.hasNext()) {
-                mutableText2.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? field_33275 : field_33278);
+                mutableText2.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? SPACE : NEW_LINE);
             }
             mutableText.append(mutableText2);
         }
         if (!this.prefix.isEmpty()) {
-            mutableText.append(field_33278).append(Strings.repeat(this.prefix, this.indentationLevel));
+            mutableText.append(NEW_LINE).append(Strings.repeat(this.prefix, this.indentationLevel));
         }
-        mutableText.append(field_33277);
+        mutableText.append(CURLY_CLOSE_BRACKET);
         this.result = mutableText;
     }
 

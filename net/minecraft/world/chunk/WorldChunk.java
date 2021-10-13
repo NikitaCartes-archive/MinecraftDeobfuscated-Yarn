@@ -292,7 +292,7 @@ extends Chunk {
         World world = this.world;
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
-            return this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && serverWorld.method_37116(ChunkPos.toLong(pos));
+            return this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && serverWorld.isChunkLoaded(ChunkPos.toLong(pos));
         }
         return true;
     }

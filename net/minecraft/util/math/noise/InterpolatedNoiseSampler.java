@@ -3,6 +3,7 @@
  */
 package net.minecraft.util.math.noise;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.stream.IntStream;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
@@ -23,7 +24,7 @@ implements ChunkNoiseSampler.ColumnSampler {
     private final int field_34756;
     private final int field_34757;
 
-    public InterpolatedNoiseSampler(OctavePerlinNoiseSampler lowerInterpolatedNoise, OctavePerlinNoiseSampler upperInterpolatedNoise, OctavePerlinNoiseSampler interpolationNoise, NoiseSamplingConfig noiseSamplingConfig, int i, int j) {
+    private InterpolatedNoiseSampler(OctavePerlinNoiseSampler lowerInterpolatedNoise, OctavePerlinNoiseSampler upperInterpolatedNoise, OctavePerlinNoiseSampler interpolationNoise, NoiseSamplingConfig noiseSamplingConfig, int i, int j) {
         this.lowerInterpolatedNoise = lowerInterpolatedNoise;
         this.upperInterpolatedNoise = upperInterpolatedNoise;
         this.interpolationNoise = interpolationNoise;
@@ -75,6 +76,17 @@ implements ChunkNoiseSampler.ColumnSampler {
             g /= 2.0;
         }
         return MathHelper.clampedLerp(d / 512.0, e / 512.0, h) / 128.0;
+    }
+
+    @VisibleForTesting
+    public void addDebugInfo(StringBuilder info) {
+        info.append("BlendedNoise{minLimitNoise=");
+        this.lowerInterpolatedNoise.addDebugInfo(info);
+        info.append(", maxLimitNoise=");
+        this.upperInterpolatedNoise.addDebugInfo(info);
+        info.append(", mainNoise=");
+        this.interpolationNoise.addDebugInfo(info);
+        info.append(String.format(", xzScale=%.3f, yScale=%.3f, xzMainScale=%.3f, yMainScale=%.3f, cellWidth=%d, cellHeight=%d", this.field_34752, this.field_34753, this.field_34754, this.field_34755, this.field_34756, this.field_34757)).append('}');
     }
 }
 

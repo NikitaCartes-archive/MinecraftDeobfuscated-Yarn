@@ -38,8 +38,8 @@ public class ScreenNarrator {
             }
 
             @Override
-            public /* synthetic */ void accept(Object object) {
-                this.accept((String)object);
+            public /* synthetic */ void accept(Object sentence) {
+                this.accept((String)sentence);
             }
         };
         this.narrations.forEach((partIndex, message) -> {

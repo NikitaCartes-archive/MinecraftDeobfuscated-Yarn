@@ -21,11 +21,11 @@ public record PlayerActionResponseS2CPacket(BlockPos pos, BlockState state, Play
         this(pos, state, action, approved);
     }
 
-    public PlayerActionResponseS2CPacket(BlockPos blockPos, BlockState blockState, PlayerActionC2SPacket.Action action, boolean bl) {
-        this.pos = blockPos = blockPos.toImmutable();
-        this.state = blockState;
+    public PlayerActionResponseS2CPacket(BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved) {
+        this.pos = pos = pos.toImmutable();
+        this.state = state;
         this.action = action;
-        this.approved = bl;
+        this.approved = approved;
     }
 
     public PlayerActionResponseS2CPacket(PacketByteBuf buf) {

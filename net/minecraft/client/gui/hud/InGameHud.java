@@ -73,9 +73,9 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -427,7 +427,7 @@ extends DrawableHelper {
         AbstractInventoryScreen abstractInventoryScreen;
         Screen screen;
         Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
-        if (collection.isEmpty() || (screen = this.client.currentScreen) instanceof AbstractInventoryScreen && (abstractInventoryScreen = (AbstractInventoryScreen)screen).method_38934()) {
+        if (collection.isEmpty() || (screen = this.client.currentScreen) instanceof AbstractInventoryScreen && (abstractInventoryScreen = (AbstractInventoryScreen)screen).hideStatusEffectHud()) {
             return;
         }
         RenderSystem.enableBlend();
@@ -609,7 +609,7 @@ extends DrawableHelper {
 
     public void renderDemoTimer(MatrixStack matrices) {
         this.client.getProfiler().push("demo");
-        Text text = this.client.world.getTime() >= 120500L ? DEMO_EXPIRED_MESSAGE : new TranslatableText("demo.remainingTime", ChatUtil.ticksToString((int)(120500L - this.client.world.getTime())));
+        Text text = this.client.world.getTime() >= 120500L ? DEMO_EXPIRED_MESSAGE : new TranslatableText("demo.remainingTime", StringHelper.formatTicks((int)(120500L - this.client.world.getTime())));
         int i = this.getTextRenderer().getWidth(text);
         this.getTextRenderer().drawWithShadow(matrices, text, (float)(this.scaledWidth - i - 10), 5.0f, 0xFFFFFF);
         this.client.getProfiler().pop();

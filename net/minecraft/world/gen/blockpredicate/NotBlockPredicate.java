@@ -14,7 +14,7 @@ import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
 
 class NotBlockPredicate
 implements BlockPredicate {
-    public static final Codec<NotBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPredicate.BASE_CODEC.fieldOf("predicate")).forGetter(notBlockPredicate -> notBlockPredicate.predicate)).apply((Applicative<NotBlockPredicate, ?>)instance, NotBlockPredicate::new));
+    public static final Codec<NotBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPredicate.BASE_CODEC.fieldOf("predicate")).forGetter(predicate -> predicate.predicate)).apply((Applicative<NotBlockPredicate, ?>)instance, NotBlockPredicate::new));
     private final BlockPredicate predicate;
 
     public NotBlockPredicate(BlockPredicate predicate) {

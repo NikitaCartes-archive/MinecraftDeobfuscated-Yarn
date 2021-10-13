@@ -147,7 +147,7 @@ Waterloggable {
     }
 
     @Override
-    public float method_37247() {
+    public float getVerticalModelOffsetMultiplier() {
         return 0.1f;
     }
 }

@@ -45,7 +45,7 @@ public class DimensionType {
     public static final Identifier OVERWORLD_ID = new Identifier("overworld");
     public static final Identifier THE_NETHER_ID = new Identifier("the_nether");
     public static final Identifier THE_END_ID = new Identifier("the_end");
-    public static final Codec<DimensionType> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.LONG.optionalFieldOf("fixed_time").xmap(optional -> optional.map(OptionalLong::of).orElseGet(OptionalLong::empty), optionalLong -> optionalLong.isPresent() ? Optional.of(optionalLong.getAsLong()) : Optional.empty()).forGetter(dimensionType -> dimensionType.fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::isUltrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::isNatural), ((MapCodec)Codec.doubleRange(1.0E-5f, 3.0E7).fieldOf("coordinate_scale")).forGetter(DimensionType::getCoordinateScale), ((MapCodec)Codec.BOOL.fieldOf("piglin_safe")).forGetter(DimensionType::isPiglinSafe), ((MapCodec)Codec.BOOL.fieldOf("bed_works")).forGetter(DimensionType::isBedWorking), ((MapCodec)Codec.BOOL.fieldOf("respawn_anchor_works")).forGetter(DimensionType::isRespawnAnchorWorking), ((MapCodec)Codec.BOOL.fieldOf("has_raids")).forGetter(DimensionType::hasRaids), ((MapCodec)Codec.intRange(MIN_HEIGHT, MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(DimensionType::getMinimumY), ((MapCodec)Codec.intRange(16, MAX_HEIGHT).fieldOf("height")).forGetter(DimensionType::getHeight), ((MapCodec)Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height")).forGetter(DimensionType::getLogicalHeight), ((MapCodec)Identifier.CODEC.fieldOf("infiniburn")).forGetter(dimensionType -> dimensionType.infiniburn), ((MapCodec)Identifier.CODEC.fieldOf("effects")).orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.skyProperties), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(dimensionType -> Float.valueOf(dimensionType.ambientLight))).apply((Applicative<DimensionType, ?>)instance, DimensionType::new)).comapFlatMap(DimensionType::checkHeight, Function.identity());
+    public static final Codec<DimensionType> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.LONG.optionalFieldOf("fixed_time").xmap(optional -> optional.map(OptionalLong::of).orElseGet(OptionalLong::empty), optionalLong -> optionalLong.isPresent() ? Optional.of(optionalLong.getAsLong()) : Optional.empty()).forGetter(dimensionType -> dimensionType.fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::isUltrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::isNatural), ((MapCodec)Codec.doubleRange(1.0E-5f, 3.0E7).fieldOf("coordinate_scale")).forGetter(DimensionType::getCoordinateScale), ((MapCodec)Codec.BOOL.fieldOf("piglin_safe")).forGetter(DimensionType::isPiglinSafe), ((MapCodec)Codec.BOOL.fieldOf("bed_works")).forGetter(DimensionType::isBedWorking), ((MapCodec)Codec.BOOL.fieldOf("respawn_anchor_works")).forGetter(DimensionType::isRespawnAnchorWorking), ((MapCodec)Codec.BOOL.fieldOf("has_raids")).forGetter(DimensionType::hasRaids), ((MapCodec)Codec.intRange(MIN_HEIGHT, MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(DimensionType::getMinimumY), ((MapCodec)Codec.intRange(16, MAX_HEIGHT).fieldOf("height")).forGetter(DimensionType::getHeight), ((MapCodec)Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height")).forGetter(DimensionType::getLogicalHeight), ((MapCodec)Identifier.CODEC.fieldOf("infiniburn")).forGetter(dimensionType -> dimensionType.infiniburn), ((MapCodec)Identifier.CODEC.fieldOf("effects")).orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.effects), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(dimensionType -> Float.valueOf(dimensionType.ambientLight))).apply((Applicative<DimensionType, ?>)instance, DimensionType::new)).comapFlatMap(DimensionType::checkHeight, Function.identity());
     private static final int field_31440 = 8;
     public static final float[] MOON_SIZES = new float[]{1.0f, 0.75f, 0.5f, 0.25f, 0.0f, 0.25f, 0.5f, 0.75f};
     public static final RegistryKey<DimensionType> OVERWORLD_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld"));
@@ -72,7 +72,7 @@ public class DimensionType {
     private final int height;
     private final int logicalHeight;
     private final Identifier infiniburn;
-    private final Identifier skyProperties;
+    private final Identifier effects;
     private final float ambientLight;
     private final transient float[] brightnessByLightLevel;
 
@@ -95,12 +95,12 @@ public class DimensionType {
         return DataResult.success(type);
     }
 
-    private DimensionType(OptionalLong fixedTime, boolean hasSkylight, boolean hasCeiling, boolean ultrawarm, boolean natural, double coordinateScale, boolean piglinSafe, boolean bedWorks, boolean respawnAnchorWorks, boolean hasRaids, int minimumY, int height, int logicalHeight, Identifier infiniburn, Identifier skyProperties, float ambientLight) {
-        this(fixedTime, hasSkylight, hasCeiling, ultrawarm, natural, coordinateScale, false, piglinSafe, bedWorks, respawnAnchorWorks, hasRaids, minimumY, height, logicalHeight, infiniburn, skyProperties, ambientLight);
+    private DimensionType(OptionalLong fixedTime, boolean hasSkylight, boolean hasCeiling, boolean ultrawarm, boolean natural, double coordinateScale, boolean piglinSafe, boolean bedWorks, boolean respawnAnchorWorks, boolean hasRaids, int minimumY, int height, int logicalHeight, Identifier infiniburn, Identifier effects, float ambientLight) {
+        this(fixedTime, hasSkylight, hasCeiling, ultrawarm, natural, coordinateScale, false, piglinSafe, bedWorks, respawnAnchorWorks, hasRaids, minimumY, height, logicalHeight, infiniburn, effects, ambientLight);
     }
 
-    public static DimensionType create(OptionalLong fixedTime, boolean hasSkylight, boolean hasCeiling, boolean ultrawarm, boolean natural, double coordinateScale, boolean hasEnderDragonFight, boolean piglinSafe, boolean bedWorks, boolean respawnAnchorWorks, boolean hasRaids, int minimumY, int height, int logicalHeight, Identifier identifier, Identifier infiniburn, float f) {
-        DimensionType dimensionType = new DimensionType(fixedTime, hasSkylight, hasCeiling, ultrawarm, natural, coordinateScale, hasEnderDragonFight, piglinSafe, bedWorks, respawnAnchorWorks, hasRaids, minimumY, height, logicalHeight, identifier, infiniburn, f);
+    public static DimensionType create(OptionalLong fixedTime, boolean hasSkylight, boolean hasCeiling, boolean ultrawarm, boolean natural, double coordinateScale, boolean hasEnderDragonFight, boolean piglinSafe, boolean bedWorks, boolean respawnAnchorWorks, boolean hasRaids, int minimumY, int height, int logicalHeight, Identifier infiniburn, Identifier effects, float ambientLight) {
+        DimensionType dimensionType = new DimensionType(fixedTime, hasSkylight, hasCeiling, ultrawarm, natural, coordinateScale, hasEnderDragonFight, piglinSafe, bedWorks, respawnAnchorWorks, hasRaids, minimumY, height, logicalHeight, infiniburn, effects, ambientLight);
         DimensionType.checkHeight(dimensionType).error().ifPresent(partialResult -> {
             throw new IllegalStateException(partialResult.message());
         });
@@ -108,7 +108,7 @@ public class DimensionType {
     }
 
     @Deprecated
-    private DimensionType(OptionalLong fixedTime, boolean hasSkylight, boolean hasCeiling, boolean ultrawarm, boolean natural, double coordinateScale, boolean hasEnderDragonFight, boolean piglinSafe, boolean bedWorks, boolean respawnAnchorWorks, boolean hasRaids, int minimumY, int height, int logicalHeight, Identifier identifier, Identifier infiniburn, float f) {
+    private DimensionType(OptionalLong fixedTime, boolean hasSkylight, boolean hasCeiling, boolean ultrawarm, boolean natural, double coordinateScale, boolean hasEnderDragonFight, boolean piglinSafe, boolean bedWorks, boolean respawnAnchorWorks, boolean hasRaids, int minimumY, int height, int logicalHeight, Identifier infiniburn, Identifier effects, float ambientLight) {
         this.fixedTime = fixedTime;
         this.hasSkyLight = hasSkylight;
         this.hasCeiling = hasCeiling;
@@ -123,10 +123,10 @@ public class DimensionType {
         this.minimumY = minimumY;
         this.height = height;
         this.logicalHeight = logicalHeight;
-        this.infiniburn = identifier;
-        this.skyProperties = infiniburn;
-        this.ambientLight = f;
-        this.brightnessByLightLevel = DimensionType.computeBrightnessByLightLevel(f);
+        this.infiniburn = infiniburn;
+        this.effects = effects;
+        this.ambientLight = ambientLight;
+        this.brightnessByLightLevel = DimensionType.computeBrightnessByLightLevel(ambientLight);
     }
 
     private static float[] computeBrightnessByLightLevel(float ambientLight) {
@@ -290,15 +290,20 @@ public class DimensionType {
         return tag != null ? tag : BlockTags.INFINIBURN_OVERWORLD;
     }
 
-    public Identifier getSkyProperties() {
-        return this.skyProperties;
+    /**
+     * {@return the ID of this dimension's {@linkplain net.minecraft.client.render.DimensionEffects effects}}
+     * 
+     * @see net.minecraft.client.render.DimensionEffects#byDimensionType(DimensionType)
+     */
+    public Identifier getEffects() {
+        return this.effects;
     }
 
     public boolean equals(DimensionType dimensionType) {
         if (this == dimensionType) {
             return true;
         }
-        return this.hasSkyLight == dimensionType.hasSkyLight && this.hasCeiling == dimensionType.hasCeiling && this.ultrawarm == dimensionType.ultrawarm && this.natural == dimensionType.natural && this.coordinateScale == dimensionType.coordinateScale && this.hasEnderDragonFight == dimensionType.hasEnderDragonFight && this.piglinSafe == dimensionType.piglinSafe && this.bedWorks == dimensionType.bedWorks && this.respawnAnchorWorks == dimensionType.respawnAnchorWorks && this.hasRaids == dimensionType.hasRaids && this.minimumY == dimensionType.minimumY && this.height == dimensionType.height && this.logicalHeight == dimensionType.logicalHeight && Float.compare(dimensionType.ambientLight, this.ambientLight) == 0 && this.fixedTime.equals(dimensionType.fixedTime) && this.infiniburn.equals(dimensionType.infiniburn) && this.skyProperties.equals(dimensionType.skyProperties);
+        return this.hasSkyLight == dimensionType.hasSkyLight && this.hasCeiling == dimensionType.hasCeiling && this.ultrawarm == dimensionType.ultrawarm && this.natural == dimensionType.natural && this.coordinateScale == dimensionType.coordinateScale && this.hasEnderDragonFight == dimensionType.hasEnderDragonFight && this.piglinSafe == dimensionType.piglinSafe && this.bedWorks == dimensionType.bedWorks && this.respawnAnchorWorks == dimensionType.respawnAnchorWorks && this.hasRaids == dimensionType.hasRaids && this.minimumY == dimensionType.minimumY && this.height == dimensionType.height && this.logicalHeight == dimensionType.logicalHeight && Float.compare(dimensionType.ambientLight, this.ambientLight) == 0 && this.fixedTime.equals(dimensionType.fixedTime) && this.infiniburn.equals(dimensionType.infiniburn) && this.effects.equals(dimensionType.effects);
     }
 }
 

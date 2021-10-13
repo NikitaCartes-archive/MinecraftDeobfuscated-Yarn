@@ -42,8 +42,8 @@ implements ParticleEffect {
     private final ParticleType<BlockStateParticleEffect> type;
     private final BlockState blockState;
 
-    public static Codec<BlockStateParticleEffect> method_29128(ParticleType<BlockStateParticleEffect> particleType) {
-        return BlockState.CODEC.xmap(blockState -> new BlockStateParticleEffect(particleType, (BlockState)blockState), blockStateParticleEffect -> blockStateParticleEffect.blockState);
+    public static Codec<BlockStateParticleEffect> createCodec(ParticleType<BlockStateParticleEffect> type) {
+        return BlockState.CODEC.xmap(state -> new BlockStateParticleEffect(type, (BlockState)state), effect -> effect.blockState);
     }
 
     public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> type, BlockState blockState) {

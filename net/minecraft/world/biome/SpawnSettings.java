@@ -30,7 +30,7 @@ public class SpawnSettings {
     public static final Logger LOGGER = LogManager.getLogger();
     private static final float field_30983 = 0.1f;
     public static final Pool<SpawnEntry> EMPTY_ENTRY_POOL = Pool.empty();
-    public static final SpawnSettings INSTANCE = new SpawnSettings(0.1f, (Map<SpawnGroup, Pool<SpawnEntry>>)Stream.of(SpawnGroup.values()).collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> EMPTY_ENTRY_POOL)), ImmutableMap.of(), false);
+    public static final SpawnSettings INSTANCE = new Builder().build();
     public static final MapCodec<SpawnSettings> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(Codec.floatRange(0.0f, 0.9999999f).optionalFieldOf("creature_spawn_probability", Float.valueOf(0.1f)).forGetter(spawnSettings -> Float.valueOf(spawnSettings.creatureSpawnProbability)), Codec.simpleMap(SpawnGroup.CODEC, Pool.createCodec(SpawnEntry.CODEC).promotePartial((Consumer)Util.addPrefix("Spawn data: ", LOGGER::error)), StringIdentifiable.toKeyable(SpawnGroup.values())).fieldOf("spawners").forGetter(spawnSettings -> spawnSettings.spawners), Codec.simpleMap(Registry.ENTITY_TYPE, SpawnDensity.CODEC, Registry.ENTITY_TYPE).fieldOf("spawn_costs").forGetter(spawnSettings -> spawnSettings.spawnCosts), ((MapCodec)Codec.BOOL.fieldOf("player_spawn_friendly")).orElse(false).forGetter(SpawnSettings::isPlayerSpawnFriendly)).apply((Applicative<SpawnSettings, ?>)instance, SpawnSettings::new));
     private final float creatureSpawnProbability;
     private final Map<SpawnGroup, Pool<SpawnEntry>> spawners;

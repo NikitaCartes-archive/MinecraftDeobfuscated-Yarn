@@ -19,8 +19,8 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -105,13 +105,13 @@ extends PlayerEntity {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
         AbstractTexture abstractTexture = textureManager.getOrDefault(id, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
-            abstractTexture = new PlayerSkinTexture(null, String.format(SKIN_URL, ChatUtil.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
+            abstractTexture = new PlayerSkinTexture(null, String.format(SKIN_URL, StringHelper.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
             textureManager.registerTexture(id, abstractTexture);
         }
     }
 
     public static Identifier getSkinId(String playerName) {
-        return new Identifier("skins/" + Hashing.sha1().hashUnencodedChars(ChatUtil.stripTextFormat(playerName)));
+        return new Identifier("skins/" + Hashing.sha1().hashUnencodedChars(StringHelper.stripTextFormat(playerName)));
     }
 
     public String getModel() {

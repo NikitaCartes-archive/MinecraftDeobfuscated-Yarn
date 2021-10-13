@@ -226,8 +226,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).conditionally(WITH_SHEARS).with(ItemEntry.builder(drop)));
     }
 
-    private static LootTable.Builder method_37108(Block block) {
-        return LootTable.builder().pool(LootPool.builder().with((LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).conditionally(WITH_SHEARS)).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.EAST, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.WEST, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.NORTH, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.SOUTH, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.UP, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.DOWN, true))))).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(-1.0f), true)))));
+    private static LootTable.Builder glowLichenDrops(Block glowLichen) {
+        return LootTable.builder().pool(LootPool.builder().with((LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(glowLichen, ((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(glowLichen).conditionally(WITH_SHEARS)).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.EAST, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.WEST, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.NORTH, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.SOUTH, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.UP, true))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f), true).conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.DOWN, true))))).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(-1.0f), true)))));
     }
 
     private static LootTable.Builder leavesDrop(Block leaves, Block drop, float ... chance) {
@@ -981,7 +981,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.SEAGRASS, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.VINE, BlockLootTableGenerator::dropsWithShears);
-        this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::method_37108);
+        this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::glowLichenDrops);
         this.addDrop(Blocks.HANGING_ROOTS, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.SMALL_DRIPLEAF, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.TALL_SEAGRASS, BlockLootTableGenerator.seagrassDrops(Blocks.SEAGRASS));
@@ -1127,8 +1127,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         return BlockLootTableGenerator.dropsWithProperty(block, DoorBlock.HALF, DoubleBlockHalf.LOWER);
     }
 
-    public void addPottedPlantDrop(Block block2) {
-        this.addDrop(block2, (Block block) -> BlockLootTableGenerator.pottedPlantDrops(((FlowerPotBlock)block).getContent()));
+    public void addPottedPlantDrop(Block block) {
+        this.addDrop(block, (Block flowerPot) -> BlockLootTableGenerator.pottedPlantDrops(((FlowerPotBlock)flowerPot).getContent()));
     }
 
     public void addDropWithSilkTouch(Block block, Block drop) {

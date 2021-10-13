@@ -109,25 +109,25 @@ public abstract class Carver<C extends CarverConfig> {
     }
 
     protected boolean carveAtPoint(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, class_6643 arg, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, AquiferSampler aquiferSampler, MutableBoolean mutableBoolean) {
-        BlockState blockState = chunk.getBlockState(mutable);
-        if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
+        BlockState blockState2 = chunk.getBlockState(mutable);
+        if (blockState2.isOf(Blocks.GRASS_BLOCK) || blockState2.isOf(Blocks.MYCELIUM)) {
             mutableBoolean.setTrue();
         }
-        if (!this.canAlwaysCarveBlock(blockState) && !Carver.isDebug(config)) {
+        if (!this.canAlwaysCarveBlock(blockState2) && !Carver.isDebug(config)) {
             return false;
         }
-        BlockState blockState2 = this.getState(context, config, mutable, aquiferSampler);
-        if (blockState2 == null) {
+        BlockState blockState22 = this.getState(context, config, mutable, aquiferSampler);
+        if (blockState22 == null) {
             return false;
         }
-        chunk.setBlockState(mutable, blockState2, false);
-        if (aquiferSampler.needsFluidTick() && !blockState2.getFluidState().isEmpty()) {
-            chunk.getFluidTickScheduler().schedule(mutable, blockState2.getFluidState().getFluid(), 0);
+        chunk.setBlockState(mutable, blockState22, false);
+        if (aquiferSampler.needsFluidTick() && !blockState22.getFluidState().isEmpty()) {
+            chunk.getFluidTickScheduler().schedule(mutable, blockState22.getFluidState().getFluid(), 0);
         }
         if (mutableBoolean.isTrue()) {
             mutable2.set((Vec3i)mutable, Direction.DOWN);
             if (chunk.getBlockState(mutable2).isOf(Blocks.DIRT)) {
-                chunk.setBlockState(mutable2, posToBiome.apply(mutable).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
+                context.method_39114(posToBiome.apply(mutable2), chunk, mutable2, !blockState22.getFluidState().isEmpty()).ifPresent(blockState -> chunk.setBlockState(mutable2, (BlockState)blockState, false));
             }
         }
         return true;

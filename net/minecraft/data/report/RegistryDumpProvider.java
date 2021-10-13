@@ -28,7 +28,7 @@ implements DataProvider {
     @Override
     public void run(DataCache cache) throws IOException {
         JsonObject jsonObject = new JsonObject();
-        Registry.REGISTRIES.getIds().forEach(identifier -> jsonObject.add(identifier.toString(), RegistryDumpProvider.toJson(Registry.REGISTRIES.get((Identifier)identifier))));
+        Registry.REGISTRIES.getIds().forEach(id -> jsonObject.add(id.toString(), RegistryDumpProvider.toJson(Registry.REGISTRIES.get((Identifier)id))));
         Path path = this.generator.getOutput().resolve("reports/registries.json");
         DataProvider.writeToPath(GSON, cache, jsonObject, path);
     }

@@ -298,14 +298,14 @@ public class ChunkHolder {
     private void method_31409(ThreadedAnvilChunkStorage threadedAnvilChunkStorage, CompletableFuture<Either<WorldChunk, Unloaded>> completableFuture, Executor executor, LevelType levelType) {
         this.field_26930.cancel(false);
         CompletableFuture completableFuture2 = new CompletableFuture();
-        completableFuture2.thenRunAsync(() -> threadedAnvilChunkStorage.method_31414(this.pos, levelType), executor);
+        completableFuture2.thenRunAsync(() -> threadedAnvilChunkStorage.onChunkStatusChange(this.pos, levelType), executor);
         this.field_26930 = completableFuture2;
         completableFuture.thenAccept(either -> either.ifLeft(worldChunk -> completableFuture2.complete(null)));
     }
 
     private void method_31408(ThreadedAnvilChunkStorage threadedAnvilChunkStorage, LevelType levelType) {
         this.field_26930.cancel(false);
-        threadedAnvilChunkStorage.method_31414(this.pos, levelType);
+        threadedAnvilChunkStorage.onChunkStatusChange(this.pos, levelType);
     }
 
     protected void tick(ThreadedAnvilChunkStorage chunkStorage, Executor executor) {

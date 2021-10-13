@@ -139,5 +139,20 @@ public interface HeightLimitView {
     default public int sectionIndexToCoord(int index) {
         return index + this.getBottomSectionCoord();
     }
+
+    public static HeightLimitView create(final int bottomY, final int height) {
+        return new HeightLimitView(){
+
+            @Override
+            public int getHeight() {
+                return height;
+            }
+
+            @Override
+            public int getBottomY() {
+                return bottomY;
+            }
+        };
+    }
 }
 

@@ -196,9 +196,9 @@ public enum NetworkState {
         return new PacketHandlerInitializer();
     }
 
-    private NetworkState(int id, PacketHandlerInitializer packetHandlerInitializer) {
+    private NetworkState(int id, PacketHandlerInitializer initializer) {
         this.stateId = id;
-        this.packetHandlers = packetHandlerInitializer.packetHandlers;
+        this.packetHandlers = initializer.packetHandlers;
     }
 
     @Nullable
@@ -236,11 +236,11 @@ public enum NetworkState {
                 throw new Error("Invalid protocol ID " + i);
             }
             NetworkState.STATES[i - -1] = networkState;
-            networkState.packetHandlers.forEach((networkSide, packetHandler) -> packetHandler.getPacketTypes().forEach(class_ -> {
-                if (HANDLER_STATE_MAP.containsKey(class_) && HANDLER_STATE_MAP.get(class_) != networkState) {
-                    throw new IllegalStateException("Packet " + class_ + " is already assigned to protocol " + (Object)((Object)HANDLER_STATE_MAP.get(class_)) + " - can't reassign to " + networkState);
+            networkState.packetHandlers.forEach((side, handler) -> handler.getPacketTypes().forEach(packetClass -> {
+                if (HANDLER_STATE_MAP.containsKey(packetClass) && HANDLER_STATE_MAP.get(packetClass) != networkState) {
+                    throw new IllegalStateException("Packet " + packetClass + " is already assigned to protocol " + (Object)((Object)HANDLER_STATE_MAP.get(packetClass)) + " - can't reassign to " + networkState);
                 }
-                HANDLER_STATE_MAP.put((Class<Packet<?>>)class_, networkState);
+                HANDLER_STATE_MAP.put((Class<Packet<?>>)packetClass, networkState);
             }));
         }
     }
@@ -258,13 +258,13 @@ public enum NetworkState {
     }
 
     static class PacketHandler<T extends PacketListener> {
-        private final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(new Object2IntOpenHashMap(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1));
+        private final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(new Object2IntOpenHashMap(), map -> map.defaultReturnValue(-1));
         private final List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories = Lists.newArrayList();
 
         PacketHandler() {
         }
 
-        public <P extends Packet<T>> PacketHandler<T> register(Class<P> type, Function<PacketByteBuf, P> function) {
+        public <P extends Packet<T>> PacketHandler<T> register(Class<P> type, Function<PacketByteBuf, P> packetFactory) {
             int i = this.packetFactories.size();
             int j = this.packetIds.put((Class<Packet<T>>)type, i);
             if (j != -1) {
@@ -272,7 +272,7 @@ public enum NetworkState {
                 LogManager.getLogger().fatal(string);
                 throw new IllegalArgumentException(string);
             }
-            this.packetFactories.add(function);
+            this.packetFactories.add(packetFactory);
             return this;
         }
 

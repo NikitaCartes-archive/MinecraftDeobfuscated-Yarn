@@ -196,7 +196,7 @@ extends PlayerEntity {
     private RegistryKey<World> spawnPointDimension = World.OVERWORLD;
     @Nullable
     private BlockPos spawnPointPosition;
-    private boolean spawnPointSet;
+    private boolean spawnForced;
     private float spawnAngle;
     private final TextStream textStream;
     private boolean filterText;
@@ -281,7 +281,7 @@ extends PlayerEntity {
                 int q = (o + n * p) % k;
                 int r = q % (i * 2 + 1);
                 int s = q / (i * 2 + 1);
-                BlockPos blockPos2 = SpawnLocating.findOverworldSpawn(world, blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
+                BlockPos blockPos2 = SpawnLocating.findOverworldSpawn(world, blockPos.getX() + r - i, blockPos.getZ() + s - i);
                 if (blockPos2 == null) continue;
                 this.refreshPositionAndAngles(blockPos2, 0.0f, 0.0f);
                 if (!world.isSpaceEmpty(this)) {
@@ -317,7 +317,7 @@ extends PlayerEntity {
         }
         if (nbt.contains("SpawnX", 99) && nbt.contains("SpawnY", 99) && nbt.contains("SpawnZ", 99)) {
             this.spawnPointPosition = new BlockPos(nbt.getInt("SpawnX"), nbt.getInt("SpawnY"), nbt.getInt("SpawnZ"));
-            this.spawnPointSet = nbt.getBoolean("SpawnForced");
+            this.spawnForced = nbt.getBoolean("SpawnForced");
             this.spawnAngle = nbt.getFloat("SpawnAngle");
             if (nbt.contains("SpawnDimension")) {
                 this.spawnPointDimension = World.CODEC.parse(NbtOps.INSTANCE, nbt.get("SpawnDimension")).resultOrPartial(LOGGER::error).orElse(World.OVERWORLD);
@@ -353,7 +353,7 @@ extends PlayerEntity {
             nbt.putInt("SpawnX", this.spawnPointPosition.getX());
             nbt.putInt("SpawnY", this.spawnPointPosition.getY());
             nbt.putInt("SpawnZ", this.spawnPointPosition.getZ());
-            nbt.putBoolean("SpawnForced", this.spawnPointSet);
+            nbt.putBoolean("SpawnForced", this.spawnForced);
             nbt.putFloat("SpawnAngle", this.spawnAngle);
             Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("SpawnDimension", (NbtElement)nbtElement));
         }
@@ -833,11 +833,11 @@ extends PlayerEntity {
     }
 
     @Override
-    public void wakeUp(boolean bl, boolean updateSleepingPlayers) {
+    public void wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers) {
         if (this.isSleeping()) {
             this.getWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, EntityAnimationS2CPacket.WAKE_UP));
         }
-        super.wakeUp(bl, updateSleepingPlayers);
+        super.wakeUp(skipSleepTimer, updateSleepingPlayers);
         if (this.networkHandler != null) {
             this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
         }
@@ -1367,11 +1367,19 @@ extends PlayerEntity {
         return this.spawnPointDimension;
     }
 
-    public boolean isSpawnPointSet() {
-        return this.spawnPointSet;
+    public boolean isSpawnForced() {
+        return this.spawnForced;
     }
 
-    public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean spawnPointSet, boolean sendMessage) {
+    /**
+     * Sets the player's spawn point.
+     * 
+     * @param sendMessage if {@code true}, a game message about the spawn point change will be sent
+     * @param forced whether the new spawn point is {@linkplain #isSpawnForced() forced}
+     * @param pos the new spawn point, or {@code null} if resetting to the world spawn
+     * @param dimension the new spawn dimension
+     */
+    public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean forced, boolean sendMessage) {
         if (pos != null) {
             boolean bl;
             boolean bl2 = bl = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
@@ -1381,12 +1389,12 @@ extends PlayerEntity {
             this.spawnPointPosition = pos;
             this.spawnPointDimension = dimension;
             this.spawnAngle = angle;
-            this.spawnPointSet = spawnPointSet;
+            this.spawnForced = forced;
         } else {
             this.spawnPointPosition = null;
             this.spawnPointDimension = World.OVERWORLD;
             this.spawnAngle = 0.0f;
-            this.spawnPointSet = false;
+            this.spawnForced = false;
         }
     }
 

@@ -13,6 +13,6 @@ import net.minecraft.world.gen.decorator.DecoratorConfig;
 
 public record EnvironmentScanDecoratorConfig(Direction directionOfSearch, BlockPredicate targetCondition, int maxSteps) implements DecoratorConfig
 {
-    public static final Codec<EnvironmentScanDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Direction.field_35088.fieldOf("direction_of_search")).forGetter(EnvironmentScanDecoratorConfig::directionOfSearch), ((MapCodec)BlockPredicate.BASE_CODEC.fieldOf("target_condition")).forGetter(EnvironmentScanDecoratorConfig::targetCondition), ((MapCodec)Codec.intRange(1, 32).fieldOf("max_steps")).forGetter(EnvironmentScanDecoratorConfig::maxSteps)).apply((Applicative<EnvironmentScanDecoratorConfig, ?>)instance, EnvironmentScanDecoratorConfig::new));
+    public static final Codec<EnvironmentScanDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Direction.VERTICAL_CODEC.fieldOf("direction_of_search")).forGetter(EnvironmentScanDecoratorConfig::directionOfSearch), ((MapCodec)BlockPredicate.BASE_CODEC.fieldOf("target_condition")).forGetter(EnvironmentScanDecoratorConfig::targetCondition), ((MapCodec)Codec.intRange(1, 32).fieldOf("max_steps")).forGetter(EnvironmentScanDecoratorConfig::maxSteps)).apply((Applicative<EnvironmentScanDecoratorConfig, ?>)instance, EnvironmentScanDecoratorConfig::new));
 }
 

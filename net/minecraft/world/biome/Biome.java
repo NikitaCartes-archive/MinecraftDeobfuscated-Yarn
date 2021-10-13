@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
@@ -42,11 +41,9 @@ import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.BiomeParticleConfig;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.biome.SpawnSettings;
-import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
-import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -189,12 +186,6 @@ public final class Biome {
         double d = MathHelper.clamp(this.weather.temperature, 0.0f, 1.0f);
         double e = MathHelper.clamp(this.weather.downfall, 0.0f, 1.0f);
         return FoliageColors.getColor(d, e);
-    }
-
-    public void buildSurface(Random random, BlockColumn chunk, int x, int z, int worldHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, int i, long seed) {
-        ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder = this.generationSettings.getSurfaceBuilder().get();
-        configuredSurfaceBuilder.initSeed(seed);
-        configuredSurfaceBuilder.generate(random, chunk, this, x, z, worldHeight, noise, defaultBlock, defaultFluid, seaLevel, i, seed);
     }
 
     public final float getDownfall() {

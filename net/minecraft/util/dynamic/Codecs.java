@@ -23,6 +23,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.util.Util;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 /**
  * A few extensions for {@link Codec} or {@link DynamicOps}.
@@ -74,6 +75,30 @@ public class Codecs {
             }
             return Either.right(object);
         });
+    }
+
+    public static <A> Codec.ResultFunction<A> method_39028(final A object) {
+        return new Codec.ResultFunction<A>(){
+
+            @Override
+            public <T> DataResult<Pair<A, T>> apply(DynamicOps<T> dynamicOps, T object2, DataResult<Pair<A, T>> dataResult) {
+                MutableObject mutableObject = new MutableObject();
+                Optional optional = dataResult.resultOrPartial(mutableObject::setValue);
+                if (optional.isPresent()) {
+                    return dataResult;
+                }
+                return DataResult.error("(" + (String)mutableObject.getValue() + " -> using default)", Pair.of(object, object2));
+            }
+
+            @Override
+            public <T> DataResult<T> coApply(DynamicOps<T> dynamicOps, A object2, DataResult<T> dataResult) {
+                return dataResult;
+            }
+
+            public String toString() {
+                return "OrElsePartial[" + object + "]";
+            }
+        };
     }
 
     private static <N extends Number> Function<N, DataResult<N>> createRangeChecker(N min, N max, Function<N, String> messageFactory) {

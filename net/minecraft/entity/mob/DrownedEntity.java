@@ -106,6 +106,9 @@ implements RangedAttackMob {
 
     public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         boolean bl;
+        if (!world.getFluidState(pos.down()).isIn(FluidTags.WATER)) {
+            return false;
+        }
         Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
         boolean bl2 = bl = world.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(world, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
         if (Objects.equals(optional, Optional.of(BiomeKeys.RIVER)) || Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_RIVER))) {

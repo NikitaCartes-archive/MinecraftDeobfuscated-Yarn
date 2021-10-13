@@ -267,7 +267,7 @@ implements Drawable {
         DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
         RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, this.registryManager);
         RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), (DynamicRegistryManager)impl);
-        DataResult dataResult = GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.generatorOptions).flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));
+        DataResult dataResult = GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.generatorOptions).flatMap(json -> GeneratorOptions.CODEC.parse(registryOps, json));
         dataResult.resultOrPartial(Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error)).ifPresent(generatorOptions -> {
             this.generatorOptions = generatorOptions;
             this.registryManager = impl;

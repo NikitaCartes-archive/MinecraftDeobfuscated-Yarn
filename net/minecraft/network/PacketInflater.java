@@ -30,14 +30,14 @@ extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
-        if (byteBuf.readableBytes() == 0) {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> objects) throws Exception {
+        if (buf.readableBytes() == 0) {
             return;
         }
-        PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf);
+        PacketByteBuf packetByteBuf = new PacketByteBuf(buf);
         int i = packetByteBuf.readVarInt();
         if (i == 0) {
-            list.add(packetByteBuf.readBytes(packetByteBuf.readableBytes()));
+            objects.add(packetByteBuf.readBytes(packetByteBuf.readableBytes()));
             return;
         }
         if (this.rejectsBadPackets) {
@@ -53,7 +53,7 @@ extends ByteToMessageDecoder {
         this.inflater.setInput(bs);
         byte[] cs = new byte[i];
         this.inflater.inflate(cs);
-        list.add(Unpooled.wrappedBuffer(cs));
+        objects.add(Unpooled.wrappedBuffer(cs));
         this.inflater.reset();
     }
 

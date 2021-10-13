@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.gen.random;
 
+import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.random.AbstractRandom;
@@ -16,8 +17,11 @@ public interface RandomDeriver {
         return this.createRandom(id.toString());
     }
 
+    public AbstractRandom createRandom(String var1);
+
     public AbstractRandom createRandom(int var1, int var2, int var3);
 
-    public AbstractRandom createRandom(String var1);
+    @VisibleForTesting
+    public void addDebugInfo(StringBuilder var1);
 }
 

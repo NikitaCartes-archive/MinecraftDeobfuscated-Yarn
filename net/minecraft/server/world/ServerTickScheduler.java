@@ -63,7 +63,7 @@ implements TickScheduler<T> {
         while (i > 0 && iterator.hasNext()) {
             scheduledTick = iterator.next();
             if (scheduledTick.time > this.world.getTime()) break;
-            if (!this.world.method_37117(scheduledTick.pos)) continue;
+            if (!this.world.isTickingFutureReady(scheduledTick.pos)) continue;
             iterator.remove();
             this.scheduledTickActions.remove(scheduledTick);
             this.currentTickActions.add(scheduledTick);

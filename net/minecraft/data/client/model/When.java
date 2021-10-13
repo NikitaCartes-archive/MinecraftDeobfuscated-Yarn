@@ -62,21 +62,21 @@ extends Supplier<JsonElement> {
             return this;
         }
 
-        public final <T extends Comparable<T>> PropertyCondition method_35871(Property<T> property, T comparable) {
-            this.set(property, "!" + property.name(comparable));
+        public final <T extends Comparable<T>> PropertyCondition setNegated(Property<T> property, T value) {
+            this.set(property, "!" + property.name(value));
             return this;
         }
 
         @SafeVarargs
-        public final <T extends Comparable<T>> PropertyCondition method_35872(Property<T> property, T comparable, T ... comparables) {
-            this.set(property, "!" + PropertyCondition.name(property, comparable, comparables));
+        public final <T extends Comparable<T>> PropertyCondition setNegated(Property<T> property, T value, T ... otherValues) {
+            this.set(property, "!" + PropertyCondition.name(property, value, otherValues));
             return this;
         }
 
         @Override
         public JsonElement get() {
             JsonObject jsonObject = new JsonObject();
-            this.properties.forEach((property, string) -> jsonObject.addProperty(property.getName(), (String)string));
+            this.properties.forEach((property, value) -> jsonObject.addProperty(property.getName(), (String)value));
             return jsonObject;
         }
 
@@ -99,14 +99,14 @@ extends Supplier<JsonElement> {
         private final LogicalOperator operator;
         private final List<When> components;
 
-        LogicalCondition(LogicalOperator logicalOperator, List<When> list) {
-            this.operator = logicalOperator;
-            this.components = list;
+        LogicalCondition(LogicalOperator operator, List<When> components) {
+            this.operator = operator;
+            this.components = components;
         }
 
         @Override
         public void validate(StateManager<?, ?> stateManager) {
-            this.components.forEach(when -> when.validate(stateManager));
+            this.components.forEach(component -> component.validate(stateManager));
         }
 
         @Override

@@ -3,8 +3,10 @@
  */
 package net.minecraft.util.math.noise;
 
+import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
+import net.minecraft.world.gen.NoiseHelper;
 import net.minecraft.world.gen.random.AbstractRandom;
 
 public final class PerlinNoiseSampler {
@@ -148,6 +150,11 @@ public final class PerlinNoiseSampler {
         ds[1] = ds[1] + am;
         ds[2] = ds[2] + an;
         return MathHelper.lerp3(z, aa, ab, d, e, f, g, h, w, x, y);
+    }
+
+    @VisibleForTesting
+    public void addDebugInfo(StringBuilder info) {
+        NoiseHelper.method_39119(info, this.originX, this.originY, this.originZ, this.permutations);
     }
 }
 

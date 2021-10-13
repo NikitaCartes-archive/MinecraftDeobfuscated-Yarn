@@ -1181,18 +1181,31 @@ extends LivingEntity {
     public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
     }
 
+    /**
+     * Tries to start sleeping on a block.
+     * 
+     * @return an {@link Either.Right} if successful, otherwise an {@link Either.Left} containing the failure reason
+     * 
+     * @param pos the position of the bed block
+     */
     public Either<SleepFailureReason, Unit> trySleep(BlockPos pos) {
         this.sleep(pos);
         this.sleepTimer = 0;
         return Either.right(Unit.INSTANCE);
     }
 
-    public void wakeUp(boolean bl, boolean updateSleepingPlayers) {
+    /**
+     * Wakes this player up.
+     * 
+     * @param updateSleepingPlayers if {@code true} and called on the logical server, sends sleeping status updates to all players
+     * @param skipSleepTimer if {@code true}, the {@linkplain #sleepTimer sleep timer} will be set straight to 0 instead of 100
+     */
+    public void wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers) {
         super.wakeUp();
         if (this.world instanceof ServerWorld && updateSleepingPlayers) {
             ((ServerWorld)this.world).updateSleepingPlayers();
         }
-        this.sleepTimer = bl ? 0 : 100;
+        this.sleepTimer = skipSleepTimer ? 0 : 100;
     }
 
     @Override
@@ -1200,33 +1213,47 @@ extends LivingEntity {
         this.wakeUp(true, true);
     }
 
-    public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, float f, boolean bl, boolean bl2) {
+    /**
+     * Finds the precise respawn position from a {@link BlockPos} in a world.
+     * Also applies respawning effects on the spawn point blocks
+     * such as decreasing respawn anchor charges.
+     * 
+     * <p>If {@code forced} is {@code false}, this method will only apply to
+     * respawn anchors and beds. If it's {@code true}, a respawn point can be anywhere
+     * as long as the player can spawn inside the necessary blocks.
+     * 
+     * @param alive if {@code true}, the player is alive, otherwise respawning after a death
+     * @param forced {@code true} if the spawn point is forced, {@code false} otherwise
+     * @param pos the spawn point as a {@link BlockPos}
+     * @param world the world where the spawn point is located
+     */
+    public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive) {
         BlockState blockState = world.getBlockState(pos);
         Block block = blockState.getBlock();
         if (block instanceof RespawnAnchorBlock && blockState.get(RespawnAnchorBlock.CHARGES) > 0 && RespawnAnchorBlock.isNether(world)) {
             Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
-            if (!bl2 && optional.isPresent()) {
+            if (!alive && optional.isPresent()) {
                 world.setBlockState(pos, (BlockState)blockState.with(RespawnAnchorBlock.CHARGES, blockState.get(RespawnAnchorBlock.CHARGES) - 1), Block.NOTIFY_ALL);
             }
             return optional;
         }
         if (block instanceof BedBlock && BedBlock.isBedWorking(world)) {
-            return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, f);
+            return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, angle);
         }
-        if (!bl) {
+        if (!forced) {
             return Optional.empty();
         }
-        boolean bl3 = block.canMobSpawnInside();
-        boolean bl4 = world.getBlockState(pos.up()).getBlock().canMobSpawnInside();
-        if (bl3 && bl4) {
+        boolean bl = block.canMobSpawnInside();
+        boolean bl2 = world.getBlockState(pos.up()).getBlock().canMobSpawnInside();
+        if (bl && bl2) {
             return Optional.of(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 0.1, (double)pos.getZ() + 0.5));
         }
         return Optional.empty();
     }
 
     /**
-     * Returns whether this player has been sleeping long enough to count towards
-     * resetting the time of day and weather of the server.
+     * {@return whether this player has been sleeping long enough to count towards
+     * resetting the time of day and weather of the server}
      */
     public boolean isSleepingLongEnough() {
         return this.isSleeping() && this.sleepTimer >= 100;
@@ -1930,19 +1957,19 @@ extends LivingEntity {
         NOT_SAFE(new TranslatableText("block.minecraft.bed.not_safe"));
 
         @Nullable
-        private final Text text;
+        private final Text message;
 
         private SleepFailureReason() {
-            this.text = null;
+            this.message = null;
         }
 
-        private SleepFailureReason(Text text) {
-            this.text = text;
+        private SleepFailureReason(Text message) {
+            this.message = message;
         }
 
         @Nullable
-        public Text toText() {
-            return this.text;
+        public Text getMessage() {
+            return this.message;
         }
     }
 }

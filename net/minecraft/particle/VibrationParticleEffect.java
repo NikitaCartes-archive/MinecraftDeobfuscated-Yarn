@@ -21,7 +21,7 @@ import net.minecraft.world.event.BlockPositionSource;
 
 public class VibrationParticleEffect
 implements ParticleEffect {
-    public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Vibration.CODEC.fieldOf("vibration")).forGetter(vibrationParticleEffect -> vibrationParticleEffect.vibration)).apply((Applicative<VibrationParticleEffect, ?>)instance, VibrationParticleEffect::new));
+    public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Vibration.CODEC.fieldOf("vibration")).forGetter(effect -> effect.vibration)).apply((Applicative<VibrationParticleEffect, ?>)instance, VibrationParticleEffect::new));
     public static final ParticleEffect.Factory<VibrationParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<VibrationParticleEffect>(){
 
         @Override

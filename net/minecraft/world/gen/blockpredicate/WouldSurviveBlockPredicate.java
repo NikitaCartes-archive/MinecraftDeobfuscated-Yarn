@@ -15,18 +15,18 @@ import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
 
 public class WouldSurviveBlockPredicate
 implements BlockPredicate {
-    public static final Codec<WouldSurviveBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(BlockPos.CODEC.optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(wouldSurviveBlockPredicate -> wouldSurviveBlockPredicate.pos), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(wouldSurviveBlockPredicate -> wouldSurviveBlockPredicate.state)).apply((Applicative<WouldSurviveBlockPredicate, ?>)instance, WouldSurviveBlockPredicate::new));
-    private final BlockPos pos;
+    public static final Codec<WouldSurviveBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(BlockPos.CODEC.optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(predicate -> predicate.offset), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(predicate -> predicate.state)).apply((Applicative<WouldSurviveBlockPredicate, ?>)instance, WouldSurviveBlockPredicate::new));
+    private final BlockPos offset;
     private final BlockState state;
 
-    protected WouldSurviveBlockPredicate(BlockPos pos, BlockState state) {
-        this.pos = pos;
+    protected WouldSurviveBlockPredicate(BlockPos offset, BlockState state) {
+        this.offset = offset;
         this.state = state;
     }
 
     @Override
     public boolean test(StructureWorldAccess structureWorldAccess, BlockPos blockPos) {
-        return this.state.canPlaceAt(structureWorldAccess, blockPos.add(this.pos));
+        return this.state.canPlaceAt(structureWorldAccess, blockPos.add(this.offset));
     }
 
     @Override

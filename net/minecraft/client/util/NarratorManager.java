@@ -29,7 +29,7 @@ implements ClientChatListener {
     private final Narrator narrator = Narrator.getNarrator();
 
     @Override
-    public void onChatMessage(MessageType messageType, Text message, UUID sender) {
+    public void onChatMessage(MessageType type, Text message, UUID sender) {
         NarratorMode narratorMode = NarratorManager.getNarratorOption();
         if (narratorMode == NarratorMode.OFF) {
             return;
@@ -38,11 +38,11 @@ implements ClientChatListener {
             this.debugPrintMessage(message.getString());
             return;
         }
-        if (narratorMode == NarratorMode.ALL || narratorMode == NarratorMode.CHAT && messageType == MessageType.CHAT || narratorMode == NarratorMode.SYSTEM && messageType == MessageType.SYSTEM) {
+        if (narratorMode == NarratorMode.ALL || narratorMode == NarratorMode.CHAT && type == MessageType.CHAT || narratorMode == NarratorMode.SYSTEM && type == MessageType.SYSTEM) {
             Text text = message instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)message).getKey()) ? new TranslatableText("chat.type.text.narrate", ((TranslatableText)message).getArgs()) : message;
             String string = text.getString();
             this.debugPrintMessage(string);
-            this.narrator.say(string, messageType.interruptsNarration());
+            this.narrator.say(string, type.interruptsNarration());
         }
     }
 

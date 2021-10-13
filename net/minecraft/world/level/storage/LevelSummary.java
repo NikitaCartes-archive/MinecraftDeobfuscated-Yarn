@@ -10,8 +10,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.StringHelper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.SaveVersionInfo;
@@ -86,7 +86,7 @@ implements Comparable<LevelSummary> {
     }
 
     public MutableText getVersion() {
-        if (ChatUtil.isEmpty(this.versionInfo.getVersionName())) {
+        if (StringHelper.isEmpty(this.versionInfo.getVersionName())) {
             return new TranslatableText("selectWorld.versionUnknown");
         }
         return new LiteralText(this.versionInfo.getVersionName());

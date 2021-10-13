@@ -56,9 +56,9 @@ extends ButtonWidget {
         private final int u;
         private final int v;
 
-        private IconLocation(int j, int k) {
-            this.u = j;
-            this.v = k;
+        private IconLocation(int u, int v) {
+            this.u = u;
+            this.v = v;
         }
 
         public int getU() {

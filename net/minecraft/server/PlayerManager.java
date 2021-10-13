@@ -380,7 +380,7 @@ public abstract class PlayerManager {
         player.getWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
         BlockPos blockPos = player.getSpawnPointPosition();
         float f = player.getSpawnAngle();
-        boolean bl = player.isSpawnPointSet();
+        boolean bl = player.isSpawnForced();
         ServerWorld serverWorld = this.server.getWorld(player.getSpawnPointDimension());
         Optional<Object> optional = serverWorld != null && blockPos != null ? PlayerEntity.findRespawnPosition(serverWorld, blockPos, f, bl, alive) : Optional.empty();
         ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.getOverworld();

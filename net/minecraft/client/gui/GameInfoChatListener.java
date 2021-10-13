@@ -21,7 +21,7 @@ implements ClientChatListener {
     }
 
     @Override
-    public void onChatMessage(MessageType messageType, Text message, UUID sender) {
+    public void onChatMessage(MessageType type, Text message, UUID sender) {
         this.client.inGameHud.setOverlayMessage(message, false);
     }
 }

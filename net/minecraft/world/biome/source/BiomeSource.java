@@ -4,7 +4,6 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -22,7 +21,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.TopologicalSorts;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -38,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BiomeSource {
     public static final Codec<BiomeSource> CODEC;
-    private final ImmutableSet<BlockState> topMaterials;
     private final List<Biome> biomes;
     private final ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> field_34469;
 
@@ -51,13 +48,12 @@ public abstract class BiomeSource {
         }
         ArrayList<class_6543> list2;
         this.biomes = list;
-        this.topMaterials = list.stream().map(biome -> biome.getGenerationSettings().getSurfaceConfig().getTopMaterial()).collect(ImmutableSet.toImmutableSet());
         HashMap<class_6543, Set> map = Maps.newHashMap();
         int i = 0;
-        for (Biome biome2 : list) {
+        for (Biome biome : list) {
             int j;
             list2 = Lists.newArrayList();
-            List<List<Supplier<ConfiguredFeature<?, ?>>>> list3 = biome2.getGenerationSettings().getFeatures();
+            List<List<Supplier<ConfiguredFeature<?, ?>>>> list3 = biome.getGenerationSettings().getFeatures();
             i = Math.max(i, list3.size());
             for (j = 0; j < list3.size(); ++j) {
                 for (Supplier supplier : (List)list3.get(j)) {
@@ -166,10 +162,6 @@ public abstract class BiomeSource {
     }
 
     public abstract Biome getBiome(int var1, int var2, int var3, MultiNoiseUtil.MultiNoiseSampler var4);
-
-    public boolean method_38113(BlockState blockState) {
-        return this.topMaterials.contains(blockState);
-    }
 
     public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
     }

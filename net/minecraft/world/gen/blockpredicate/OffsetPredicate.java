@@ -14,8 +14,8 @@ public abstract class OffsetPredicate
 implements BlockPredicate {
     protected final BlockPos offset;
 
-    protected static <P extends OffsetPredicate> Products.P1<RecordCodecBuilder.Mu<P>, BlockPos> method_39013(RecordCodecBuilder.Instance<P> instance) {
-        return instance.group(BlockPos.CODEC.optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(offsetPredicate -> offsetPredicate.offset));
+    protected static <P extends OffsetPredicate> Products.P1<RecordCodecBuilder.Mu<P>, BlockPos> registerOffsetField(RecordCodecBuilder.Instance<P> instance) {
+        return instance.group(BlockPos.CODEC.optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(predicate -> predicate.offset));
     }
 
     protected OffsetPredicate(BlockPos offset) {

@@ -32,9 +32,9 @@ extends ElementListWidget<Entry> {
     final KeybindsScreen parent;
     int maxKeyNameLength;
 
-    public ControlsListWidget(KeybindsScreen keybindsScreen, MinecraftClient client) {
-        super(client, keybindsScreen.width + 45, keybindsScreen.height, 20, keybindsScreen.height - 32, 20);
-        this.parent = keybindsScreen;
+    public ControlsListWidget(KeybindsScreen parent, MinecraftClient client) {
+        super(client, parent.width + 45, parent.height, 20, parent.height - 32, 20);
+        this.parent = parent;
         Object[] keyBindings = ArrayUtils.clone(client.options.keysAll);
         Arrays.sort(keyBindings);
         String string = null;

@@ -106,7 +106,7 @@ extends HandledScreen<MerchantScreenHandler> {
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        MerchantScreen.drawTexture(matrices, i, j, this.getZOffset(), 0.0f, 0.0f, this.backgroundWidth, this.backgroundHeight, 256, 512);
+        MerchantScreen.drawTexture(matrices, i, j, this.getZOffset(), 0.0f, 0.0f, this.backgroundWidth, this.backgroundHeight, 512, 256);
         TradeOfferList tradeOfferList = ((MerchantScreenHandler)this.handler).getRecipes();
         if (!tradeOfferList.isEmpty()) {
             int k = this.selectedIndex;
@@ -117,7 +117,7 @@ extends HandledScreen<MerchantScreenHandler> {
             if (tradeOffer.isDisabled()) {
                 RenderSystem.setShaderTexture(0, TEXTURE);
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                MerchantScreen.drawTexture(matrices, this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0f, 0.0f, 28, 21, 256, 512);
+                MerchantScreen.drawTexture(matrices, this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0f, 0.0f, 28, 21, 512, 256);
             }
         }
     }
@@ -130,7 +130,7 @@ extends HandledScreen<MerchantScreenHandler> {
         if (i >= 5) {
             return;
         }
-        MerchantScreen.drawTexture(matrices, x + 136, y + 16, this.getZOffset(), 0.0f, 186.0f, 102, 5, 256, 512);
+        MerchantScreen.drawTexture(matrices, x + 136, y + 16, this.getZOffset(), 0.0f, 186.0f, 102, 5, 512, 256);
         int k = VillagerData.getLowerLevelExperience(i);
         if (j < k || !VillagerData.canLevelUp(i)) {
             return;
@@ -138,11 +138,11 @@ extends HandledScreen<MerchantScreenHandler> {
         int l = 100;
         float f = 100.0f / (float)(VillagerData.getUpperLevelExperience(i) - k);
         int m = Math.min(MathHelper.floor(f * (float)(j - k)), 100);
-        MerchantScreen.drawTexture(matrices, x + 136, y + 16, this.getZOffset(), 0.0f, 191.0f, m + 1, 5, 256, 512);
+        MerchantScreen.drawTexture(matrices, x + 136, y + 16, this.getZOffset(), 0.0f, 191.0f, m + 1, 5, 512, 256);
         int n = ((MerchantScreenHandler)this.handler).getMerchantRewardedExperience();
         if (n > 0) {
             int o = Math.min(MathHelper.floor((float)n * f), 100 - m);
-            MerchantScreen.drawTexture(matrices, x + 136 + m + 1, y + 16 + 1, this.getZOffset(), 2.0f, 182.0f, o, 3, 256, 512);
+            MerchantScreen.drawTexture(matrices, x + 136 + m + 1, y + 16 + 1, this.getZOffset(), 2.0f, 182.0f, o, 3, 512, 256);
         }
     }
 
@@ -156,9 +156,9 @@ extends HandledScreen<MerchantScreenHandler> {
             if (this.indexStartOffset == i - 1) {
                 m = 113;
             }
-            MerchantScreen.drawTexture(matrices, x + 94, y + 18 + m, this.getZOffset(), 0.0f, 199.0f, 6, 27, 256, 512);
+            MerchantScreen.drawTexture(matrices, x + 94, y + 18 + m, this.getZOffset(), 0.0f, 199.0f, 6, 27, 512, 256);
         } else {
-            MerchantScreen.drawTexture(matrices, x + 94, y + 18, this.getZOffset(), 6.0f, 199.0f, 6, 27, 256, 512);
+            MerchantScreen.drawTexture(matrices, x + 94, y + 18, this.getZOffset(), 6.0f, 199.0f, 6, 27, 512, 256);
         }
     }
 
@@ -224,9 +224,9 @@ extends HandledScreen<MerchantScreenHandler> {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
         if (tradeOffer.isDisabled()) {
-            MerchantScreen.drawTexture(matrices, x + 5 + 35 + 20, y + 3, this.getZOffset(), 25.0f, 171.0f, 10, 9, 256, 512);
+            MerchantScreen.drawTexture(matrices, x + 5 + 35 + 20, y + 3, this.getZOffset(), 25.0f, 171.0f, 10, 9, 512, 256);
         } else {
-            MerchantScreen.drawTexture(matrices, x + 5 + 35 + 20, y + 3, this.getZOffset(), 15.0f, 171.0f, 10, 9, 256, 512);
+            MerchantScreen.drawTexture(matrices, x + 5 + 35 + 20, y + 3, this.getZOffset(), 15.0f, 171.0f, 10, 9, 512, 256);
         }
     }
 
@@ -240,7 +240,7 @@ extends HandledScreen<MerchantScreenHandler> {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, TEXTURE);
             this.setZOffset(this.getZOffset() + 300);
-            MerchantScreen.drawTexture(matrices, x + 7, y + 12, this.getZOffset(), 0.0f, 176.0f, 9, 2, 256, 512);
+            MerchantScreen.drawTexture(matrices, x + 7, y + 12, this.getZOffset(), 0.0f, 176.0f, 9, 2, 512, 256);
             this.setZOffset(this.getZOffset() - 300);
         }
     }

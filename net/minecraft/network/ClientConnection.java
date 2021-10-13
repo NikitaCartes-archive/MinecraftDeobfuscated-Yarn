@@ -221,9 +221,9 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         }
     }
 
-    private void sendInternal(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback, NetworkState networkState, NetworkState networkState2) {
-        if (networkState != networkState2) {
-            this.setState(networkState);
+    private void sendInternal(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback, NetworkState packetState, NetworkState currentState) {
+        if (packetState != currentState) {
+            this.setState(packetState);
         }
         ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
         if (callback != null) {

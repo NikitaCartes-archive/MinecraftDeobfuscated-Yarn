@@ -63,6 +63,7 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.BuiltChunkStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.render.FpsSmoother;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.GameRenderer;
@@ -74,7 +75,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.Shader;
-import net.minecraft.client.render.SkyProperties;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
@@ -309,10 +309,10 @@ AutoCloseable {
                 int q = (o - k + 16) * 32 + p - i + 16;
                 double r = (double)this.field_20794[q] * 0.5;
                 double s = (double)this.field_20795[q] * 0.5;
-                mutable.set(p, 0, o);
+                int t = world.getTopY(Heightmap.Type.MOTION_BLOCKING, p, o);
+                mutable.set(p, t, o);
                 Biome biome = world.getBiome(mutable);
                 if (biome.getPrecipitation() == Biome.Precipitation.NONE) continue;
-                int t = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, mutable).getY();
                 int u = j - l;
                 int v = j + l;
                 if (u < t) {
@@ -788,7 +788,7 @@ AutoCloseable {
             bl = false;
         }
         if (!hasForcedFrustum) {
-            if (this.field_34810) {
+            if (this.field_34810 && (this.field_34808 == null || this.field_34808.isDone())) {
                 this.client.getProfiler().push("full_update_schedule");
                 this.field_34810 = false;
                 boolean bl2 = bl;
@@ -882,7 +882,12 @@ AutoCloseable {
                 ChunkInfo chunkInfo2;
                 ChunkBuilder.BuiltChunk builtChunk3;
                 ChunkBuilder.BuiltChunk builtChunk2 = this.getAdjacentChunk(blockPos, builtChunk, direction2);
-                if (builtChunk2 == null || bl && chunkInfo.canCull(direction2.getOpposite())) continue;
+                if (builtChunk2 == null) {
+                    if (this.method_38553(blockPos, builtChunk)) continue;
+                    this.field_34811.set(System.currentTimeMillis() + 500L);
+                    continue;
+                }
+                if (bl && chunkInfo.canCull(direction2.getOpposite())) continue;
                 if (bl && chunkInfo.hasAnyDirection()) {
                     ChunkBuilder.ChunkData chunkData = builtChunk.getData();
                     boolean bl3 = false;
@@ -948,7 +953,7 @@ AutoCloseable {
         int j = ChunkSectionPos.getSectionCoord(blockPos.getZ());
         BlockPos blockPos2 = builtChunk.getOrigin();
         int k = ChunkSectionPos.getSectionCoord(blockPos2.getX());
-        return !ThreadedAnvilChunkStorage.method_37898(k, l = ChunkSectionPos.getSectionCoord(blockPos2.getZ()), i, j, this.viewDistance - 2);
+        return !ThreadedAnvilChunkStorage.isWithinDistance(k, l = ChunkSectionPos.getSectionCoord(blockPos2.getZ()), i, j, this.viewDistance - 2);
     }
 
     private void captureFrustum(Matrix4f modelMatrix, Matrix4f matrix4f, double x, double y, double z, Frustum frustum) {
@@ -993,7 +998,7 @@ AutoCloseable {
         this.blockEntityRenderDispatcher.configure(this.world, camera, this.client.crosshairTarget);
         this.entityRenderDispatcher.configure(this.world, camera, this.client.targetedEntity);
         Profiler profiler = this.world.getProfiler();
-        profiler.swap("chunk_update_queue");
+        profiler.swap("light_update_queue");
         this.world.runQueuedChunkUpdates();
         profiler.swap("light_updates");
         boolean bl = this.world.method_38743();
@@ -1021,7 +1026,7 @@ AutoCloseable {
         BackgroundRenderer.setFogBlack();
         RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
         float g = gameRenderer.getViewDistance();
-        boolean bl32 = this.client.world.getSkyProperties().useThickFog(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
+        boolean bl32 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
         profiler.swap("sky");
         RenderSystem.setShader(GameRenderer::getPositionShader);
         this.renderSky(matrices, matrix4f, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl32));
@@ -1035,7 +1040,7 @@ AutoCloseable {
         this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f, matrix4f);
         this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f, matrix4f);
         this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f, matrix4f);
-        if (this.world.getSkyProperties().isDarkened()) {
+        if (this.world.getDimensionEffects().isDarkened()) {
             DiffuseLighting.enableForLevel(matrices.peek().getModel());
         } else {
             DiffuseLighting.disableForLevel(matrices.peek().getModel());
@@ -1593,11 +1598,11 @@ AutoCloseable {
         float l;
         float j;
         runnable.run();
-        if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.END) {
+        if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
             this.renderEndSky(matrices);
             return;
         }
-        if (this.client.world.getSkyProperties().getSkyType() != SkyProperties.SkyType.NORMAL) {
+        if (this.client.world.getDimensionEffects().getSkyType() != DimensionEffects.SkyType.NORMAL) {
             return;
         }
         RenderSystem.disableTexture();
@@ -1613,7 +1618,7 @@ AutoCloseable {
         this.lightSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        float[] fs = this.world.getSkyProperties().getFogColorOverride(this.world.getSkyAngle(f), f);
+        float[] fs = this.world.getDimensionEffects().getFogColorOverride(this.world.getSkyAngle(f), f);
         if (fs != null) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.disableTexture();
@@ -1694,7 +1699,7 @@ AutoCloseable {
             this.darkSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
             matrices.pop();
         }
-        if (this.world.getSkyProperties().isAlternateSkyColor()) {
+        if (this.world.getDimensionEffects().isAlternateSkyColor()) {
             RenderSystem.setShaderColor(g * 0.2f + 0.04f, h * 0.2f + 0.04f, i * 0.6f + 0.1f, 1.0f);
         } else {
             RenderSystem.setShaderColor(g, h, i, 1.0f);
@@ -1704,7 +1709,7 @@ AutoCloseable {
     }
 
     public void renderClouds(MatrixStack matrices, Matrix4f matrix4f, float f, double d, double e, double g) {
-        float h = this.world.getSkyProperties().getCloudsHeight();
+        float h = this.world.getDimensionEffects().getCloudsHeight();
         if (Float.isNaN(h)) {
             return;
         }

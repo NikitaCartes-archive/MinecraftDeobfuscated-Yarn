@@ -47,9 +47,9 @@ implements SpectatorMenuCommand {
     }
 
     @Override
-    public void renderIcon(MatrixStack matrices, float f, int i) {
+    public void renderIcon(MatrixStack matrices, float brightness, int alpha) {
         RenderSystem.setShaderTexture(0, this.skinId);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, (float)i / 255.0f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, (float)alpha / 255.0f);
         DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
         DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
     }

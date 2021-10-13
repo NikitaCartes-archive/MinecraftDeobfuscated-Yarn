@@ -286,7 +286,7 @@ extends HostileEntity {
     }
 
     public static boolean canSpawn(EntityType<? extends GuardianEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return !(random.nextInt(20) != 0 && world.isSkyVisibleAllowingSea(pos) || world.getDifficulty() == Difficulty.PEACEFUL || spawnReason != SpawnReason.SPAWNER && !world.getFluidState(pos).isIn(FluidTags.WATER));
+        return !(random.nextInt(20) != 0 && world.isSkyVisibleAllowingSea(pos) || world.getDifficulty() == Difficulty.PEACEFUL || spawnReason != SpawnReason.SPAWNER && !world.getFluidState(pos).isIn(FluidTags.WATER) || !world.getFluidState(pos.down()).isIn(FluidTags.WATER));
     }
 
     @Override

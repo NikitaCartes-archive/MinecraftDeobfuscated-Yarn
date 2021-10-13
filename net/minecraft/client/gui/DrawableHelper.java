@@ -113,7 +113,7 @@ public abstract class DrawableHelper {
         RenderSystem.enableTexture();
     }
 
-    protected static void fillGradient(Matrix4f matrix, BufferBuilder bufferBuilder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd) {
+    protected static void fillGradient(Matrix4f matrix, BufferBuilder builder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd) {
         float f = (float)(colorStart >> 24 & 0xFF) / 255.0f;
         float g = (float)(colorStart >> 16 & 0xFF) / 255.0f;
         float h = (float)(colorStart >> 8 & 0xFF) / 255.0f;
@@ -122,10 +122,10 @@ public abstract class DrawableHelper {
         float k = (float)(colorEnd >> 16 & 0xFF) / 255.0f;
         float l = (float)(colorEnd >> 8 & 0xFF) / 255.0f;
         float m = (float)(colorEnd & 0xFF) / 255.0f;
-        bufferBuilder.vertex(matrix, endX, startY, z).color(g, h, i, f).next();
-        bufferBuilder.vertex(matrix, startX, startY, z).color(g, h, i, f).next();
-        bufferBuilder.vertex(matrix, startX, endY, z).color(k, l, m, j).next();
-        bufferBuilder.vertex(matrix, endX, endY, z).color(k, l, m, j).next();
+        builder.vertex(matrix, endX, startY, z).color(g, h, i, f).next();
+        builder.vertex(matrix, startX, startY, z).color(g, h, i, f).next();
+        builder.vertex(matrix, startX, endY, z).color(k, l, m, j).next();
+        builder.vertex(matrix, endX, endY, z).color(k, l, m, j).next();
     }
 
     public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
@@ -201,13 +201,13 @@ public abstract class DrawableHelper {
      * @param y the Y coordinate of the rectangle
      * @param x the X coordinate of the rectangle
      * @param matrices the matrix stack used for rendering
-     * @param textureWidth the width of the entire texture
      * @param textureHeight the height of the entire texture
+     * @param textureWidth the width of the entire texture
      * @param height the height of the rectangle
      * @param width the width of the rectangle
      * @param v the top-most coordinate of the texture region
      */
-    public static void drawTexture(MatrixStack matrices, int x, int y, int z, float u, float v, int width, int height, int textureHeight, int textureWidth) {
+    public static void drawTexture(MatrixStack matrices, int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight) {
         DrawableHelper.drawTexture(matrices, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
     }
 

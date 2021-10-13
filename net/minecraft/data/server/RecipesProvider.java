@@ -83,14 +83,14 @@ implements DataProvider {
     public void run(DataCache cache) {
         Path path = this.root.getOutput();
         HashSet set = Sets.newHashSet();
-        RecipesProvider.generate(recipeJsonProvider -> {
-            if (!set.add(recipeJsonProvider.getRecipeId())) {
-                throw new IllegalStateException("Duplicate recipe " + recipeJsonProvider.getRecipeId());
+        RecipesProvider.generate(provider -> {
+            if (!set.add(provider.getRecipeId())) {
+                throw new IllegalStateException("Duplicate recipe " + provider.getRecipeId());
             }
-            RecipesProvider.saveRecipe(cache, recipeJsonProvider.toJson(), path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/recipes/" + recipeJsonProvider.getRecipeId().getPath() + ".json"));
-            JsonObject jsonObject = recipeJsonProvider.toAdvancementJson();
+            RecipesProvider.saveRecipe(cache, provider.toJson(), path.resolve("data/" + provider.getRecipeId().getNamespace() + "/recipes/" + provider.getRecipeId().getPath() + ".json"));
+            JsonObject jsonObject = provider.toAdvancementJson();
             if (jsonObject != null) {
-                RecipesProvider.saveRecipeAdvancement(cache, jsonObject, path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/advancements/" + recipeJsonProvider.getAdvancementId().getPath() + ".json"));
+                RecipesProvider.saveRecipeAdvancement(cache, jsonObject, path.resolve("data/" + provider.getRecipeId().getNamespace() + "/advancements/" + provider.getAdvancementId().getPath() + ".json"));
             }
         });
         RecipesProvider.saveRecipeAdvancement(cache, Advancement.Task.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(), path.resolve("data/minecraft/advancements/recipes/root.json"));

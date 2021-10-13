@@ -248,9 +248,9 @@ extends Screen {
         RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
-        this.drawWithOutline(i, j, (integer, integer2) -> {
-            this.drawTexture(matrices, integer + 0, (int)integer2, 0, 0, 155, 44);
-            this.drawTexture(matrices, integer + 155, (int)integer2, 0, 45, 155, 44);
+        this.drawWithOutline(i, j, (x, y) -> {
+            this.drawTexture(matrices, x + 0, (int)y, 0, 0, 155, 44);
+            this.drawTexture(matrices, x + 155, (int)y, 0, 45, 155, 44);
         });
         RenderSystem.disableBlend();
         RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);

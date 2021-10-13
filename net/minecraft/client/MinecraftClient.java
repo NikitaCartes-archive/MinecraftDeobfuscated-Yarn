@@ -226,6 +226,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
+import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.TimeHelper;
@@ -643,7 +644,7 @@ WindowEventHandler {
 
     private String getWindowTitle() {
         StringBuilder stringBuilder = new StringBuilder("Minecraft");
-        if (MinecraftClient.isModded()) {
+        if (MinecraftClient.getModStatus().isModded()) {
             stringBuilder.append("*");
         }
         stringBuilder.append(" ");
@@ -673,13 +674,8 @@ WindowEventHandler {
         }
     }
 
-    /**
-     * Checks if this client is modded.
-     * 
-     * <p>This checks the client's brand and if the MinecraftClient's class is still signed.
-     */
-    public static boolean isModded() {
-        return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
+    public static ModStatus getModStatus() {
+        return ModStatus.check("vanilla", ClientBrandRetriever::getClientModName, "Client", MinecraftClient.class);
     }
 
     private void handleResourceReloadException(Throwable exception) {
@@ -2125,16 +2121,7 @@ WindowEventHandler {
         systemDetails.addSection("GL Caps", RenderSystem::getCapsString);
         systemDetails.addSection("GL debug messages", () -> GlDebug.isDebugMessageEnabled() ? String.join((CharSequence)"\n", GlDebug.collectDebugMessages()) : "<disabled>");
         systemDetails.addSection("Using VBOs", () -> "Yes");
-        systemDetails.addSection("Is Modded", () -> {
-            String string = ClientBrandRetriever.getClientModName();
-            if (!"vanilla".equals(string)) {
-                return "Definitely; Client brand changed to '" + string + "'";
-            }
-            if (MinecraftClient.class.getSigners() == null) {
-                return "Very likely; Jar signature invalidated";
-            }
-            return "Probably not. Jar signature remains and client brand is untouched.";
-        });
+        systemDetails.addSection("Is Modded", () -> MinecraftClient.getModStatus().getMessage());
         systemDetails.addSection("Type", "Client (map_client.txt)");
         if (options != null) {
             String string;

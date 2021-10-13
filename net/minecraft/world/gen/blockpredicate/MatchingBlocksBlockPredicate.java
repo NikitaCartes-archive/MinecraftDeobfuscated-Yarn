@@ -18,7 +18,7 @@ import net.minecraft.world.gen.blockpredicate.OffsetPredicate;
 class MatchingBlocksBlockPredicate
 extends OffsetPredicate {
     private final List<Block> blocks;
-    public static final Codec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingBlocksBlockPredicate.method_39013(instance).and(((MapCodec)Registry.BLOCK.listOf().fieldOf("blocks")).forGetter(matchingBlocksBlockPredicate -> matchingBlocksBlockPredicate.blocks)).apply((Applicative<MatchingBlocksBlockPredicate, ?>)instance, MatchingBlocksBlockPredicate::new));
+    public static final Codec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingBlocksBlockPredicate.registerOffsetField(instance).and(((MapCodec)Registry.BLOCK.listOf().fieldOf("blocks")).forGetter(predicate -> predicate.blocks)).apply((Applicative<MatchingBlocksBlockPredicate, ?>)instance, MatchingBlocksBlockPredicate::new));
 
     public MatchingBlocksBlockPredicate(BlockPos offset, List<Block> blocks) {
         super(offset);

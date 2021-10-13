@@ -70,13 +70,13 @@ extends Fluid {
         for (Direction direction : Direction.Type.HORIZONTAL) {
             mutable.set((Vec3i)pos, direction);
             FluidState fluidState = world.getFluidState(mutable);
-            if (!this.method_15748(fluidState)) continue;
+            if (!this.isEmptyOrThis(fluidState)) continue;
             float f = fluidState.getHeight();
             float g = 0.0f;
             if (f == 0.0f) {
                 Vec3i blockPos;
                 FluidState fluidState2;
-                if (!world.getBlockState(mutable).getMaterial().blocksMovement() && this.method_15748(fluidState2 = world.getFluidState((BlockPos)(blockPos = mutable.down()))) && (f = fluidState2.getHeight()) > 0.0f) {
+                if (!world.getBlockState(mutable).getMaterial().blocksMovement() && this.isEmptyOrThis(fluidState2 = world.getFluidState((BlockPos)(blockPos = mutable.down()))) && (f = fluidState2.getHeight()) > 0.0f) {
                     g = state.getHeight() - (f - 0.8888889f);
                 }
             } else if (f > 0.0f) {
@@ -98,7 +98,7 @@ extends Fluid {
         return vec3d.normalize();
     }
 
-    private boolean method_15748(FluidState state) {
+    private boolean isEmptyOrThis(FluidState state) {
         return state.isEmpty() || state.getFluid().matchesType(this);
     }
 

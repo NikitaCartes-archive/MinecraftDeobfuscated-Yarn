@@ -506,7 +506,7 @@ Bucketable {
     }
 
     public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
-        return world.getBlockState(pos).isOf(Blocks.WATER) && world.getBlockState(pos.down()).isOf(Blocks.CLAY);
+        return world.getBlockState(pos.down()).isOf(Blocks.CLAY);
     }
 
     static class AxolotlMoveControl

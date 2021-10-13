@@ -19,8 +19,8 @@ implements BlockPredicate {
         this.predicates = predicates;
     }
 
-    public static <T extends CombinedBlockPredicate> Codec<T> buildCodec(Function<List<BlockPredicate>, T> function) {
-        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPredicate.BASE_CODEC.listOf().fieldOf("predicates")).forGetter(combinedBlockPredicate -> combinedBlockPredicate.predicates)).apply((Applicative<CombinedBlockPredicate, ?>)instance, function));
+    public static <T extends CombinedBlockPredicate> Codec<T> buildCodec(Function<List<BlockPredicate>, T> combiner) {
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPredicate.BASE_CODEC.listOf().fieldOf("predicates")).forGetter(predicate -> predicate.predicates)).apply((Applicative<CombinedBlockPredicate, ?>)instance, combiner));
     }
 }
 

@@ -51,26 +51,26 @@ implements DataProvider {
     public void run(DataCache cache) {
         Path path = this.root.getOutput();
         HashMap<Identifier, LootTable> map = Maps.newHashMap();
-        this.lootTypeGenerators.forEach(pair -> ((Consumer)((Supplier)pair.getFirst()).get()).accept((identifier, builder) -> {
-            if (map.put((Identifier)identifier, builder.type((LootContextType)pair.getSecond()).build()) != null) {
-                throw new IllegalStateException("Duplicate loot table " + identifier);
+        this.lootTypeGenerators.forEach(generator -> ((Consumer)((Supplier)generator.getFirst()).get()).accept((id, builder) -> {
+            if (map.put((Identifier)id, builder.type((LootContextType)generator.getSecond()).build()) != null) {
+                throw new IllegalStateException("Duplicate loot table " + id);
             }
         }));
-        LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, identifier -> null, map::get);
+        LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, id -> null, map::get);
         Sets.SetView<Identifier> set = Sets.difference(LootTables.getAll(), map.keySet());
-        for (Identifier identifier2 : set) {
-            lootTableReporter.report("Missing built-in table: " + identifier2);
+        for (Identifier identifier : set) {
+            lootTableReporter.report("Missing built-in table: " + identifier);
         }
-        map.forEach((identifier, lootTable) -> LootManager.validate(lootTableReporter, identifier, lootTable));
+        map.forEach((id, table) -> LootManager.validate(lootTableReporter, id, table));
         Multimap<String, String> multimap = lootTableReporter.getMessages();
         if (!multimap.isEmpty()) {
-            multimap.forEach((string, string2) -> LOGGER.warn("Found validation problem in {}: {}", string, string2));
+            multimap.forEach((name, message) -> LOGGER.warn("Found validation problem in {}: {}", name, message));
             throw new IllegalStateException("Failed to validate loot tables, see logs");
         }
-        map.forEach((identifier, lootTable) -> {
-            Path path2 = LootTablesProvider.getOutput(path, identifier);
+        map.forEach((id, table) -> {
+            Path path2 = LootTablesProvider.getOutput(path, id);
             try {
-                DataProvider.writeToPath(GSON, cache, LootManager.toJson(lootTable), path2);
+                DataProvider.writeToPath(GSON, cache, LootManager.toJson(table), path2);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save loot table {}", (Object)path2, (Object)iOException);
             }

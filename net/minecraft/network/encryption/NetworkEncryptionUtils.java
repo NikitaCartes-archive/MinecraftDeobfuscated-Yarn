@@ -19,16 +19,16 @@ import javax.crypto.spec.SecretKeySpec;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 
 public class NetworkEncryptionUtils {
-    private static final String field_29830 = "AES";
-    private static final int field_29831 = 128;
-    private static final String field_29832 = "RSA";
-    private static final int field_29833 = 1024;
-    private static final String field_29834 = "ISO_8859_1";
-    private static final String field_29835 = "SHA-1";
+    private static final String AES = "AES";
+    private static final int AES_KEY_LENGTH = 128;
+    private static final String RSA = "RSA";
+    private static final int RSA_KEY_LENGTH = 1024;
+    private static final String ISO_8859_1 = "ISO_8859_1";
+    private static final String SHA1 = "SHA-1";
 
     public static SecretKey generateKey() throws NetworkEncryptionException {
         try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(field_29830);
+            KeyGenerator keyGenerator = KeyGenerator.getInstance(AES);
             keyGenerator.init(128);
             return keyGenerator.generateKey();
         } catch (Exception exception) {
@@ -38,7 +38,7 @@ public class NetworkEncryptionUtils {
 
     public static KeyPair generateServerKeyPair() throws NetworkEncryptionException {
         try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(field_29832);
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(RSA);
             keyPairGenerator.initialize(1024);
             return keyPairGenerator.generateKeyPair();
         } catch (Exception exception) {
@@ -48,24 +48,24 @@ public class NetworkEncryptionUtils {
 
     public static byte[] generateServerId(String baseServerId, PublicKey publicKey, SecretKey secretKey) throws NetworkEncryptionException {
         try {
-            return NetworkEncryptionUtils.hash(baseServerId.getBytes(field_29834), secretKey.getEncoded(), publicKey.getEncoded());
+            return NetworkEncryptionUtils.hash(baseServerId.getBytes(ISO_8859_1), secretKey.getEncoded(), publicKey.getEncoded());
         } catch (Exception exception) {
             throw new NetworkEncryptionException(exception);
         }
     }
 
-    private static byte[] hash(byte[] ... bs) throws Exception {
-        MessageDigest messageDigest = MessageDigest.getInstance(field_29835);
-        for (byte[] cs : bs) {
-            messageDigest.update(cs);
+    private static byte[] hash(byte[] ... bytes) throws Exception {
+        MessageDigest messageDigest = MessageDigest.getInstance(SHA1);
+        for (byte[] bs : bytes) {
+            messageDigest.update(bs);
         }
         return messageDigest.digest();
     }
 
-    public static PublicKey readEncodedPublicKey(byte[] bs) throws NetworkEncryptionException {
+    public static PublicKey readEncodedPublicKey(byte[] bytes) throws NetworkEncryptionException {
         try {
-            X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(bs);
-            KeyFactory keyFactory = KeyFactory.getInstance(field_29832);
+            X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(bytes);
+            KeyFactory keyFactory = KeyFactory.getInstance(RSA);
             return keyFactory.generatePublic(encodedKeySpec);
         } catch (Exception exception) {
             throw new NetworkEncryptionException(exception);
@@ -75,7 +75,7 @@ public class NetworkEncryptionUtils {
     public static SecretKey decryptSecretKey(PrivateKey privateKey, byte[] encryptedSecretKey) throws NetworkEncryptionException {
         byte[] bs = NetworkEncryptionUtils.decrypt(privateKey, encryptedSecretKey);
         try {
-            return new SecretKeySpec(bs, field_29830);
+            return new SecretKeySpec(bs, AES);
         } catch (Exception exception) {
             throw new NetworkEncryptionException(exception);
         }

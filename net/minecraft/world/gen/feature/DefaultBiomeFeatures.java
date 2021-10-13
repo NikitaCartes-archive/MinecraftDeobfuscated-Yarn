@@ -16,19 +16,6 @@ public class DefaultBiomeFeatures {
         builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE);
         builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE_EXTRA_UNDERGROUND);
         builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CANYON);
-    }
-
-    public static void addOceanCarvers(GenerationSettings.Builder builder) {
-        builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE);
-        builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE_EXTRA_UNDERGROUND);
-        builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CANYON);
-    }
-
-    public static void addDefaultLakes(GenerationSettings.Builder builder) {
-        DefaultBiomeFeatures.addDesertLakes(builder);
-    }
-
-    public static void addDesertLakes(GenerationSettings.Builder builder) {
         builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_LAVA);
     }
 
@@ -172,11 +159,11 @@ public class DefaultBiomeFeatures {
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_CLAY);
     }
 
-    public static void addMountainTrees(GenerationSettings.Builder builder) {
+    public static void addWindsweptHillsTrees(GenerationSettings.Builder builder) {
         builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_MOUNTAIN);
     }
 
-    public static void addExtraMountainTrees(GenerationSettings.Builder builder) {
+    public static void addWindsweptForestTrees(GenerationSettings.Builder builder) {
         builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_MOUNTAIN_EDGE);
     }
 
@@ -184,7 +171,7 @@ public class DefaultBiomeFeatures {
         builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_JUNGLE);
     }
 
-    public static void addJungleEdgeTrees(GenerationSettings.Builder builder) {
+    public static void addSparseJungleTrees(GenerationSettings.Builder builder) {
         builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_JUNGLE_EDGE);
     }
 
@@ -204,7 +191,7 @@ public class DefaultBiomeFeatures {
         builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_TALL_GRASS);
     }
 
-    public static void addShatteredSavannaGrass(GenerationSettings.Builder builder) {
+    public static void addWindsweptSavannaGrass(GenerationSettings.Builder builder) {
         builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_GRASS_NORMAL);
     }
 
@@ -340,8 +327,8 @@ public class DefaultBiomeFeatures {
     }
 
     public static void addSprings(GenerationSettings.Builder builder) {
-        builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_WATER);
-        builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
+        builder.feature(GenerationStep.Feature.FLUID_SPRINGS, ConfiguredFeatures.SPRING_WATER);
+        builder.feature(GenerationStep.Feature.FLUID_SPRINGS, ConfiguredFeatures.SPRING_LAVA);
     }
 
     public static void addIcebergs(GenerationSettings.Builder builder) {

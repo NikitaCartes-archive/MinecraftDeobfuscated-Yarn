@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.gen.random;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.thread.LockHelper;
@@ -74,6 +75,12 @@ implements BaseSimpleRandom {
         public AbstractRandom createRandom(String string) {
             int i = string.hashCode();
             return new AtomicSimpleRandom((long)i ^ this.seed);
+        }
+
+        @Override
+        @VisibleForTesting
+        public void addDebugInfo(StringBuilder info) {
+            info.append("LegacyPositionalRandomFactory{").append(this.seed).append("}");
         }
     }
 }

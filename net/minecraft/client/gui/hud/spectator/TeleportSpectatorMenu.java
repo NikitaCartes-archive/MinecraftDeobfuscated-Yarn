@@ -65,7 +65,7 @@ SpectatorMenuCommand {
     }
 
     @Override
-    public void renderIcon(MatrixStack matrices, float f, int i) {
+    public void renderIcon(MatrixStack matrices, float brightness, int alpha) {
         RenderSystem.setShaderTexture(0, SpectatorHud.SPECTATOR_TEXTURE);
         DrawableHelper.drawTexture(matrices, 0, 0, 0.0f, 0.0f, 16, 16, 256, 256);
     }

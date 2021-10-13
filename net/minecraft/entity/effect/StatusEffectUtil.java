@@ -6,7 +6,7 @@ package net.minecraft.entity.effect;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.ChatUtil;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.MathHelper;
 
 public final class StatusEffectUtil {
@@ -15,7 +15,7 @@ public final class StatusEffectUtil {
             return "**:**";
         }
         int i = MathHelper.floor((float)effect.getDuration() * multiplier);
-        return ChatUtil.ticksToString(i);
+        return StringHelper.formatTicks(i);
     }
 
     public static boolean hasHaste(LivingEntity entity) {

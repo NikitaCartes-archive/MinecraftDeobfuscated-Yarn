@@ -21,7 +21,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public class ConfirmScreen
 extends Screen {
-    private static final int field_33535 = 90;
+    private static final int MESSAGE_Y = 90;
     private final Text message;
     private MultilineText messageSplit = MultilineText.EMPTY;
     protected Text yesTranslated;

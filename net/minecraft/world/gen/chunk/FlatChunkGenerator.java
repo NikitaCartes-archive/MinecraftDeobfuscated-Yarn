@@ -53,7 +53,7 @@ extends ChunkGenerator {
     }
 
     @Override
-    public void buildSurface(ChunkRegion region, StructureAccessor structureAccessor, Chunk chunk) {
+    public void buildSurface(ChunkRegion region, StructureAccessor structures, Chunk chunk) {
     }
 
     @Override

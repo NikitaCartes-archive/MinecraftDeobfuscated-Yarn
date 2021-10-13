@@ -29,25 +29,25 @@ extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
-        int i = byteBuf.readableBytes();
+    protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> objects) throws Exception {
+        int i = buf.readableBytes();
         if (i == 0) {
             return;
         }
-        PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf);
+        PacketByteBuf packetByteBuf = new PacketByteBuf(buf);
         int j = packetByteBuf.readVarInt();
-        Packet<?> packet = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getPacketHandler(this.side, j, packetByteBuf);
+        Packet<?> packet = ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getPacketHandler(this.side, j, packetByteBuf);
         if (packet == null) {
             throw new IOException("Bad packet id " + j);
         }
-        int k = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId();
-        FlightProfiler.INSTANCE.onPacketReceived(() -> "%d/%d (%s)".formatted(k, j, packet.getClass().getSimpleName()), channelHandlerContext.channel().remoteAddress(), i);
+        int k = ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId();
+        FlightProfiler.INSTANCE.onPacketReceived(() -> "%d/%d (%s)".formatted(k, j, packet.getClass().getSimpleName()), ctx.channel().remoteAddress(), i);
         if (packetByteBuf.readableBytes() > 0) {
-            throw new IOException("Packet " + channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId() + "/" + j + " (" + packet.getClass().getSimpleName() + ") was larger than I expected, found " + packetByteBuf.readableBytes() + " bytes extra whilst reading packet " + j);
+            throw new IOException("Packet " + ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId() + "/" + j + " (" + packet.getClass().getSimpleName() + ") was larger than I expected, found " + packetByteBuf.readableBytes() + " bytes extra whilst reading packet " + j);
         }
-        list.add(packet);
+        objects.add(packet);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(MARKER, " IN: [{}:{}] {}", (Object)channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), (Object)j, (Object)packet.getClass().getName());
+            LOGGER.debug(MARKER, " IN: [{}:{}] {}", (Object)ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), (Object)j, (Object)packet.getClass().getName());
         }
     }
 }

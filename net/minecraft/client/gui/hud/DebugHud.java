@@ -247,7 +247,7 @@ extends DrawableHelper {
             if (info != null) {
                 Object2IntMap<SpawnGroup> object2IntMap = info.getGroupToCount();
                 int m = info.getSpawningChunkCount();
-                list.add("SC: " + m + ", " + Stream.of(SpawnGroup.values()).map(spawnGroup -> Character.toUpperCase(spawnGroup.getName().charAt(0)) + ": " + object2IntMap.getInt(spawnGroup)).collect(Collectors.joining(", ")));
+                list.add("SC: " + m + ", " + Stream.of(SpawnGroup.values()).map(group -> Character.toUpperCase(group.getName().charAt(0)) + ": " + object2IntMap.getInt(group)).collect(Collectors.joining(", ")));
             } else {
                 list.add("SC: N/A");
             }
@@ -278,7 +278,7 @@ extends DrawableHelper {
     }
 
     private World getWorld() {
-        return DataFixUtils.orElse(Optional.ofNullable(this.client.getServer()).flatMap(integratedServer -> Optional.ofNullable(integratedServer.getWorld(this.client.world.getRegistryKey()))), this.client.world);
+        return DataFixUtils.orElse(Optional.ofNullable(this.client.getServer()).flatMap(server -> Optional.ofNullable(server.getWorld(this.client.world.getRegistryKey()))), this.client.world);
     }
 
     @Nullable

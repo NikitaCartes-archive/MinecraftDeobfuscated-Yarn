@@ -6,6 +6,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,9 +15,11 @@ import net.minecraft.class_6622;
 import net.minecraft.class_6626;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -44,13 +47,15 @@ extends StructureFeature<MineshaftFeatureConfig> {
         MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, arg2.random(), arg2.chunkPos().getOffsetX(2), arg2.chunkPos().getOffsetZ(2), mineshaftFeatureConfig.type);
         arg.addPiece(mineshaftRoom);
         mineshaftRoom.fillOpenings(mineshaftRoom, arg, arg2.random());
+        int i = arg2.chunkGenerator().getSeaLevel();
         if (mineshaftFeatureConfig.type == Type.MESA) {
-            int i = -5;
-            BlockBox blockBox = arg.method_38721();
-            int j = arg2.chunkGenerator().getSeaLevel() - blockBox.getMaxY() + blockBox.getBlockCountY() / 2 - -5;
-            arg.method_38715(j);
+            BlockPos blockPos = arg.method_38721().getCenter();
+            int j = arg2.chunkGenerator().getHeight(blockPos.getX(), blockPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, arg2.heightAccessor());
+            int k = j <= i ? i : MathHelper.nextBetween((Random)arg2.random(), i, j);
+            int l = k - blockPos.getY();
+            arg.method_38715(l);
         } else {
-            arg.method_38716(arg2.chunkGenerator().getSeaLevel(), arg2.chunkGenerator().getMinimumY(), arg2.random(), 10);
+            arg.method_38716(i, arg2.chunkGenerator().getMinimumY(), arg2.random(), 10);
         }
     }
 
