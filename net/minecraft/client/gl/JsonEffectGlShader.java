@@ -165,7 +165,7 @@ AutoCloseable {
         return effectProgram;
     }
 
-    public static GlBlendState deserializeBlendState(JsonObject json) {
+    public static GlBlendState deserializeBlendState(@Nullable JsonObject json) {
         if (json == null) {
             return new GlBlendState();
         }
@@ -217,7 +217,7 @@ AutoCloseable {
     }
 
     public void disable() {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         GlProgramManager.useProgram(0);
         activeProgramRef = -1;
         activeShader = null;
@@ -230,7 +230,7 @@ AutoCloseable {
     }
 
     public void enable() {
-        RenderSystem.assertThread(RenderSystem::isOnGameThread);
+        RenderSystem.assertOnGameThread();
         this.uniformStateDirty = false;
         activeShader = this;
         this.blendState.enable();
@@ -261,19 +261,19 @@ AutoCloseable {
 
     @Nullable
     public GlUniform getUniformByName(String name) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         return this.uniformByName.get(name);
     }
 
     public Uniform getUniformByNameOrDummy(String name) {
-        RenderSystem.assertThread(RenderSystem::isOnGameThread);
+        RenderSystem.assertOnGameThread();
         GlUniform glUniform = this.getUniformByName(name);
         return glUniform == null ? DEFAULT_UNIFORM : glUniform;
     }
 
     private void finalizeUniformsAndSamplers() {
         int i;
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         IntArrayList intList = new IntArrayList();
         for (i = 0; i < this.samplerNames.size(); ++i) {
             String string = this.samplerNames.get(i);

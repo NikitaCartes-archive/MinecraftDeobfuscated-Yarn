@@ -54,7 +54,7 @@ public abstract class Framebuffer {
     }
 
     private void resizeInternal(int width, int height, boolean getError) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         GlStateManager._enableDepthTest();
         if (this.fbo >= 0) {
             this.delete();
@@ -64,7 +64,7 @@ public abstract class Framebuffer {
     }
 
     public void delete() {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         this.endRead();
         this.endWrite();
         if (this.depthAttachment > -1) {
@@ -83,7 +83,7 @@ public abstract class Framebuffer {
     }
 
     public void copyDepthFrom(Framebuffer framebuffer) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         GlStateManager._glBindFramebuffer(36008, framebuffer.fbo);
         GlStateManager._glBindFramebuffer(36009, this.fbo);
         GlStateManager._glBlitFrameBuffer(0, 0, framebuffer.textureWidth, framebuffer.textureHeight, 0, 0, this.textureWidth, this.textureHeight, 256, 9728);
@@ -91,7 +91,7 @@ public abstract class Framebuffer {
     }
 
     public void initFbo(int width, int height, boolean getError) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         int i = RenderSystem.maxSupportedTextureSize();
         if (width <= 0 || width > i || height <= 0 || height > i) {
             throw new IllegalArgumentException("Window " + width + "x" + height + " size out of bounds (max. size: " + i + ")");
@@ -128,7 +128,7 @@ public abstract class Framebuffer {
     }
 
     public void setTexFilter(int i) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         this.texFilter = i;
         GlStateManager._bindTexture(this.colorAttachment);
         GlStateManager._texParameter(3553, 10241, i);
@@ -137,7 +137,7 @@ public abstract class Framebuffer {
     }
 
     public void checkFramebufferStatus() {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         int i = GlStateManager.glCheckFramebufferStatus(36160);
         if (i == 36053) {
             return;
@@ -164,12 +164,12 @@ public abstract class Framebuffer {
     }
 
     public void method_35610() {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         GlStateManager._bindTexture(this.colorAttachment);
     }
 
     public void endRead() {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         GlStateManager._bindTexture(0);
     }
 
@@ -182,7 +182,7 @@ public abstract class Framebuffer {
     }
 
     private void bind(boolean updateViewport) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         GlStateManager._glBindFramebuffer(36160, this.fbo);
         if (updateViewport) {
             GlStateManager._viewport(0, 0, this.viewportWidth, this.viewportHeight);
@@ -209,7 +209,7 @@ public abstract class Framebuffer {
     }
 
     public void draw(int width, int height, boolean bl) {
-        RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
+        RenderSystem.assertOnGameThreadOrInit();
         if (!RenderSystem.isInInitPhase()) {
             RenderSystem.recordRenderCall(() -> this.drawInternal(width, height, bl));
         } else {
@@ -218,7 +218,7 @@ public abstract class Framebuffer {
     }
 
     private void drawInternal(int width, int height, boolean disableBlend) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         GlStateManager._colorMask(true, true, true, false);
         GlStateManager._disableDepthTest();
         GlStateManager._depthMask(false);
@@ -257,7 +257,7 @@ public abstract class Framebuffer {
     }
 
     public void clear(boolean getError) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         this.beginWrite(true);
         GlStateManager._clearColor(this.clearColor[0], this.clearColor[1], this.clearColor[2], this.clearColor[3]);
         int i = 16384;

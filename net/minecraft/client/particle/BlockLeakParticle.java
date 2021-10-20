@@ -30,8 +30,8 @@ extends SpriteBillboardParticle {
     private final Fluid fluid;
     protected boolean obsidianTear;
 
-    BlockLeakParticle(ClientWorld clientWorld, double d, double e, double f, Fluid fluid) {
-        super(clientWorld, d, e, f);
+    BlockLeakParticle(ClientWorld world, double x, double y, double z, Fluid fluid) {
+        super(world, x, y, z);
         this.setBoundingBoxSpacing(0.01f, 0.01f);
         this.gravityStrength = 0.06f;
         this.fluid = fluid;

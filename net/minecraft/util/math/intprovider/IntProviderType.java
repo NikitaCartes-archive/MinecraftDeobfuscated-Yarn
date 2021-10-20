@@ -6,6 +6,7 @@ package net.minecraft.util.math.intprovider;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.intprovider.ClampedIntProvider;
+import net.minecraft.util.math.intprovider.ClampedNormalIntProvider;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -18,6 +19,7 @@ public interface IntProviderType<P extends IntProvider> {
     public static final IntProviderType<BiasedToBottomIntProvider> BIASED_TO_BOTTOM = IntProviderType.register("biased_to_bottom", BiasedToBottomIntProvider.CODEC);
     public static final IntProviderType<ClampedIntProvider> CLAMPED = IntProviderType.register("clamped", ClampedIntProvider.CODEC);
     public static final IntProviderType<WeightedListIntProvider> WEIGHTED_LIST = IntProviderType.register("weighted_list", WeightedListIntProvider.CODEC);
+    public static final IntProviderType<ClampedNormalIntProvider> CLAMPED_NORMAL = IntProviderType.register("clamped_normal", ClampedNormalIntProvider.CODEC);
 
     public Codec<P> codec();
 

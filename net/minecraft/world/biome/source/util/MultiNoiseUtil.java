@@ -19,11 +19,15 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.gen.NoiseColumnSampler;
 import org.jetbrains.annotations.Nullable;
 
 public class MultiNoiseUtil {
     private static final boolean field_34477 = false;
+    private static final float field_35359 = 10000.0f;
     @VisibleForTesting
     protected static final int HYPERCUBE_DIMENSION = 7;
 
@@ -45,6 +49,10 @@ public class MultiNoiseUtil {
 
     public static float method_38666(long l) {
         return (float)l / 10000.0f;
+    }
+
+    public static BlockPos findFittestPosition(List<NoiseHypercube> noises, NoiseColumnSampler sampler) {
+        return new FittestPositionFinder(noises, (NoiseColumnSampler)sampler).bestResult.location();
     }
 
     public record NoiseValuePoint(long temperatureNoise, long humidityNoise, long continentalnessNoise, long erosionNoise, long depth, long weirdnessNoise) {
@@ -120,8 +128,55 @@ public class MultiNoiseUtil {
         }
     }
 
+    static class FittestPositionFinder {
+        Result bestResult;
+
+        FittestPositionFinder(List<NoiseHypercube> noises, NoiseColumnSampler sampler) {
+            this.bestResult = FittestPositionFinder.calculateFitness(noises, sampler, 0, 0);
+            this.findFittest(noises, sampler, 2048.0f, 512.0f);
+            this.findFittest(noises, sampler, 512.0f, 32.0f);
+        }
+
+        private void findFittest(List<NoiseHypercube> noises, NoiseColumnSampler sampler, float maxDistance, float step) {
+            float f = 0.0f;
+            float g = step;
+            BlockPos blockPos = this.bestResult.location();
+            while (g <= maxDistance) {
+                int j;
+                int i = blockPos.getX() + (int)(Math.sin(f) * (double)g);
+                Result result = FittestPositionFinder.calculateFitness(noises, sampler, i, j = blockPos.getZ() + (int)(Math.cos(f) * (double)g));
+                if (result.fitness() < this.bestResult.fitness()) {
+                    this.bestResult = result;
+                }
+                if (!((double)(f += step / g) > Math.PI * 2)) continue;
+                f = 0.0f;
+                g += step;
+            }
+        }
+
+        private static Result calculateFitness(List<NoiseHypercube> noises, NoiseColumnSampler sampler, int x, int z) {
+            double d = MathHelper.square(2500.0);
+            int i = 2;
+            long l = (long)((double)MathHelper.square(10000.0f) * Math.pow((double)(MathHelper.square((long)x) + MathHelper.square((long)z)) / d, 2.0));
+            NoiseValuePoint noiseValuePoint = sampler.sample(BiomeCoords.fromBlock(x), 0, BiomeCoords.fromBlock(z));
+            NoiseValuePoint noiseValuePoint2 = new NoiseValuePoint(noiseValuePoint.temperatureNoise(), noiseValuePoint.humidityNoise(), noiseValuePoint.continentalnessNoise(), noiseValuePoint.erosionNoise(), 0L, noiseValuePoint.weirdnessNoise());
+            long m = Long.MAX_VALUE;
+            for (NoiseHypercube noiseHypercube : noises) {
+                m = Math.min(m, noiseHypercube.getSquaredDistance(noiseValuePoint2));
+            }
+            return new Result(new BlockPos(x, 0, z), l + m);
+        }
+
+        record Result(BlockPos location, long fitness) {
+        }
+    }
+
     public static interface MultiNoiseSampler {
         public NoiseValuePoint sample(int var1, int var2, int var3);
+
+        default public BlockPos findBestSpawnPosition() {
+            return BlockPos.ORIGIN;
+        }
     }
 
     public static class Entries<T> {

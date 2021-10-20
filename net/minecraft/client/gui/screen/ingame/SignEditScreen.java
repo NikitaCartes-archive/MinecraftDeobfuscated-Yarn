@@ -157,7 +157,7 @@ extends Screen {
         int j = this.selectionManager.getSelectionStart();
         int k = this.selectionManager.getSelectionEnd();
         int l = this.currentRow * 10 - this.text.length * 5;
-        Matrix4f matrix4f = matrices.peek().getModel();
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
         for (m = 0; m < this.text.length; ++m) {
             string = this.text[m];
             if (string == null) continue;

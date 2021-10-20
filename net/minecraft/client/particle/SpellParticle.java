@@ -25,7 +25,7 @@ extends SpriteBillboardParticle {
 
     SpellParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
         super(clientWorld, d, e, f, 0.5 - RANDOM.nextDouble(), h, 0.5 - RANDOM.nextDouble());
-        this.field_28786 = 0.96f;
+        this.velocityMultiplier = 0.96f;
         this.gravityStrength = -0.1f;
         this.field_28787 = true;
         this.spriteProvider = spriteProvider;

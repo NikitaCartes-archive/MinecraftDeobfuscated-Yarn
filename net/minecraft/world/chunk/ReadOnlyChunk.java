@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_6643;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -32,6 +31,7 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
@@ -243,7 +243,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public class_6643 getCarvingMask(GenerationStep.Carver carver) {
+    public CarvingMask getCarvingMask(GenerationStep.Carver carver) {
         if (this.field_34554) {
             return super.getCarvingMask(carver);
         }
@@ -251,7 +251,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public class_6643 getOrCreateCarvingMask(GenerationStep.Carver carver) {
+    public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver carver) {
         if (this.field_34554) {
             return super.getOrCreateCarvingMask(carver);
         }

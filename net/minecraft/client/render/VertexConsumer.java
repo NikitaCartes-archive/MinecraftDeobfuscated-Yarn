@@ -74,8 +74,8 @@ public interface VertexConsumer {
         int[] js = quad.getVertexData();
         Vec3i vec3i = quad.getFace().getVector();
         Vec3f vec3f = new Vec3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
-        Matrix4f matrix4f = matrixEntry.getModel();
-        vec3f.transform(matrixEntry.getNormal());
+        Matrix4f matrix4f = matrixEntry.getPositionMatrix();
+        vec3f.transform(matrixEntry.getNormalMatrix());
         int i = 8;
         int j = js.length / 8;
         try (MemoryStack memoryStack = MemoryStack.stackPush();){

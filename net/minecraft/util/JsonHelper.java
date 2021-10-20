@@ -23,6 +23,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 public class JsonHelper {
@@ -112,7 +113,9 @@ public class JsonHelper {
         throw new JsonSyntaxException("Missing " + element + ", expected to find a string");
     }
 
-    public static String getString(JsonObject object, String element, String defaultStr) {
+    @Nullable
+    @Contract(value="_,_,!null->!null;_,_,null->_")
+    public static String getString(JsonObject object, String element, @Nullable String defaultStr) {
         if (object.has(element)) {
             return JsonHelper.asString(object.get(element), element);
         }
@@ -134,7 +137,9 @@ public class JsonHelper {
         throw new JsonSyntaxException("Missing " + key + ", expected to find an item");
     }
 
-    public static Item getItem(JsonObject object, String key, Item defaultItem) {
+    @Nullable
+    @Contract(value="_,_,!null->!null;_,_,null->_")
+    public static Item getItem(JsonObject object, String key, @Nullable Item defaultItem) {
         if (object.has(key)) {
             return JsonHelper.asItem(object.get(key), key);
         }
@@ -365,7 +370,9 @@ public class JsonHelper {
         throw new JsonSyntaxException("Missing " + element + ", expected to find a JsonObject");
     }
 
-    public static JsonObject getObject(JsonObject object, String element, JsonObject defaultObject) {
+    @Nullable
+    @Contract(value="_,_,!null->!null;_,_,null->_")
+    public static JsonObject getObject(JsonObject object, String element, @Nullable JsonObject defaultObject) {
         if (object.has(element)) {
             return JsonHelper.asObject(object.get(element), element);
         }
@@ -387,6 +394,7 @@ public class JsonHelper {
     }
 
     @Nullable
+    @Contract(value="_,_,!null->!null;_,_,null->_")
     public static JsonArray getArray(JsonObject object, String name, @Nullable JsonArray defaultArray) {
         if (object.has(name)) {
             return JsonHelper.asArray(object.get(name), name);
@@ -408,14 +416,16 @@ public class JsonHelper {
         throw new JsonSyntaxException("Missing " + element);
     }
 
-    public static <T> T deserialize(JsonObject object, String element, T defaultValue, JsonDeserializationContext context, Class<? extends T> type) {
+    @Nullable
+    @Contract(value="_,_,!null,_,_->!null;_,_,null,_,_->_")
+    public static <T> T deserialize(JsonObject object, String element, @Nullable T defaultValue, JsonDeserializationContext context, Class<? extends T> type) {
         if (object.has(element)) {
             return JsonHelper.deserialize(object.get(element), element, context, type);
         }
         return defaultValue;
     }
 
-    public static String getType(JsonElement element) {
+    public static String getType(@Nullable JsonElement element) {
         String string = StringUtils.abbreviateMiddle(String.valueOf(element), "...", 10);
         if (element == null) {
             return "null (missing)";

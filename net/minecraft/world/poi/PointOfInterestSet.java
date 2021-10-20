@@ -126,8 +126,8 @@ public class PointOfInterestSet {
             Short2ObjectOpenHashMap<PointOfInterest> short2ObjectMap = new Short2ObjectOpenHashMap<PointOfInterest>(this.pointsOfInterestByPos);
             this.clear();
             consumer.accept((pos, poiType) -> {
-                short s = ChunkSectionPos.packLocal(pos);
-                PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(s, i -> new PointOfInterest((BlockPos)pos, (PointOfInterestType)poiType, this.updateListener));
+                short s2 = ChunkSectionPos.packLocal(pos);
+                PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(s2, s -> new PointOfInterest((BlockPos)pos, (PointOfInterestType)poiType, this.updateListener));
                 this.add(pointOfInterest);
             });
             this.valid = true;

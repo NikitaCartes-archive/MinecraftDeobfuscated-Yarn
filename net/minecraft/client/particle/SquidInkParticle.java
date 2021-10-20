@@ -19,7 +19,7 @@ public class SquidInkParticle
 extends AnimatedParticle {
     SquidInkParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, int j, SpriteProvider spriteProvider) {
         super(clientWorld, d, e, f, spriteProvider, 0.0f);
-        this.field_28786 = 0.92f;
+        this.velocityMultiplier = 0.92f;
         this.scale = 0.5f;
         this.setColorAlpha(1.0f);
         this.setColor(BackgroundHelper.ColorMixer.getRed(j), BackgroundHelper.ColorMixer.getGreen(j), BackgroundHelper.ColorMixer.getBlue(j));

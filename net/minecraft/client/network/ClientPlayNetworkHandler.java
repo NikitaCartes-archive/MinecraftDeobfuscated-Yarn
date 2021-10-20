@@ -955,7 +955,7 @@ implements ClientPlayPacketListener {
             if (packet.getSyncId() == 0 && PlayerScreenHandler.method_36211(i)) {
                 ItemStack itemStack2;
                 if (!itemStack.isEmpty() && ((itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack()).isEmpty() || itemStack2.getCount() < itemStack.getCount())) {
-                    itemStack.setCooldown(5);
+                    itemStack.setBobbingAnimationTime(5);
                 }
                 playerEntity.playerScreenHandler.setStackInSlot(i, packet.getRevision(), itemStack);
             } else if (!(packet.getSyncId() != playerEntity.currentScreenHandler.syncId || packet.getSyncId() == 0 && bl)) {

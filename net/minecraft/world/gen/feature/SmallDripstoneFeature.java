@@ -4,12 +4,12 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.Optional;
 import java.util.Random;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SmallDripstoneFeatureConfig;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
@@ -23,74 +23,49 @@ extends Feature<SmallDripstoneFeatureConfig> {
 
     @Override
     public boolean generate(FeatureContext<SmallDripstoneFeatureConfig> context) {
-        StructureWorldAccess structureWorldAccess = context.getWorld();
+        StructureWorldAccess worldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
         Random random = context.getRandom();
         SmallDripstoneFeatureConfig smallDripstoneFeatureConfig = context.getConfig();
-        if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
+        Optional<Direction> optional = SmallDripstoneFeature.method_39175(worldAccess, blockPos, random);
+        if (optional.isEmpty()) {
             return false;
         }
-        int i = MathHelper.nextBetween(random, 1, smallDripstoneFeatureConfig.maxPlacements);
-        boolean bl = false;
-        for (int j = 0; j < i; ++j) {
-            BlockPos blockPos2 = SmallDripstoneFeature.randomPos(random, blockPos, smallDripstoneFeatureConfig);
-            if (!SmallDripstoneFeature.generate(structureWorldAccess, random, blockPos2, smallDripstoneFeatureConfig)) continue;
-            bl = true;
-        }
-        return bl;
-    }
-
-    private static boolean generate(StructureWorldAccess world, Random random, BlockPos pos, SmallDripstoneFeatureConfig config) {
-        Direction direction = Direction.random(random);
-        Direction direction2 = random.nextBoolean() ? Direction.UP : Direction.DOWN;
-        BlockPos.Mutable mutable = pos.mutableCopy();
-        for (int i = 0; i < config.emptySpaceSearchRadius; ++i) {
-            if (!DripstoneHelper.canGenerate(world, mutable)) {
-                return false;
-            }
-            if (SmallDripstoneFeature.generateDripstone(world, random, mutable, direction2, config)) {
-                return true;
-            }
-            if (SmallDripstoneFeature.generateDripstone(world, random, mutable, direction2.getOpposite(), config)) {
-                return true;
-            }
-            mutable.move(direction);
-        }
-        return false;
-    }
-
-    private static boolean generateDripstone(StructureWorldAccess world, Random random, BlockPos pos, Direction direction, SmallDripstoneFeatureConfig config) {
-        if (!DripstoneHelper.canGenerate(world, pos)) {
-            return false;
-        }
-        BlockPos blockPos = pos.offset(direction.getOpposite());
-        BlockState blockState = world.getBlockState(blockPos);
-        if (!DripstoneHelper.canReplace(blockState)) {
-            return false;
-        }
-        SmallDripstoneFeature.generateDripstoneBlocks(world, random, blockPos);
-        int i = random.nextFloat() < config.chanceOfTallerDripstone && DripstoneHelper.canGenerate(world, pos.offset(direction)) ? 2 : 1;
-        DripstoneHelper.generatePointedDripstone(world, pos, direction, i, false);
+        BlockPos blockPos2 = blockPos.offset(optional.get().getOpposite());
+        SmallDripstoneFeature.generateDripstoneBlocks(worldAccess, random, blockPos2, smallDripstoneFeatureConfig);
+        int i = random.nextFloat() < smallDripstoneFeatureConfig.chanceOfTallerDripstone && DripstoneHelper.canGenerate(worldAccess.getBlockState(blockPos.offset(optional.get()))) ? 2 : 1;
+        DripstoneHelper.generatePointedDripstone(worldAccess, blockPos, optional.get(), i, false);
         return true;
     }
 
-    private static void generateDripstoneBlocks(StructureWorldAccess world, Random random, BlockPos pos) {
-        DripstoneHelper.generateDripstoneBlock(world, pos);
-        for (Direction direction : Direction.Type.HORIZONTAL) {
-            if (random.nextFloat() < 0.3f) continue;
-            BlockPos blockPos = pos.offset(direction);
-            DripstoneHelper.generateDripstoneBlock(world, blockPos);
-            if (random.nextBoolean()) continue;
-            BlockPos blockPos2 = blockPos.offset(Direction.random(random));
-            DripstoneHelper.generateDripstoneBlock(world, blockPos2);
-            if (random.nextBoolean()) continue;
-            BlockPos blockPos3 = blockPos2.offset(Direction.random(random));
-            DripstoneHelper.generateDripstoneBlock(world, blockPos3);
+    private static Optional<Direction> method_39175(WorldAccess worldAccess, BlockPos blockPos, Random random) {
+        boolean bl = DripstoneHelper.canReplace(worldAccess.getBlockState(blockPos.up()));
+        boolean bl2 = DripstoneHelper.canReplace(worldAccess.getBlockState(blockPos.down()));
+        if (bl && bl2) {
+            return Optional.of(random.nextBoolean() ? Direction.DOWN : Direction.UP);
         }
+        if (bl) {
+            return Optional.of(Direction.DOWN);
+        }
+        if (bl2) {
+            return Optional.of(Direction.UP);
+        }
+        return Optional.empty();
     }
 
-    private static BlockPos randomPos(Random random, BlockPos pos, SmallDripstoneFeatureConfig config) {
-        return pos.add(MathHelper.nextBetween(random, -config.maxOffsetFromOrigin, config.maxOffsetFromOrigin), MathHelper.nextBetween(random, -config.maxOffsetFromOrigin, config.maxOffsetFromOrigin), MathHelper.nextBetween(random, -config.maxOffsetFromOrigin, config.maxOffsetFromOrigin));
+    private static void generateDripstoneBlocks(WorldAccess worldAccess, Random random, BlockPos pos, SmallDripstoneFeatureConfig smallDripstoneFeatureConfig) {
+        DripstoneHelper.generateDripstoneBlock(worldAccess, pos);
+        for (Direction direction : Direction.Type.HORIZONTAL) {
+            if (random.nextFloat() > smallDripstoneFeatureConfig.field_35416) continue;
+            BlockPos blockPos = pos.offset(direction);
+            DripstoneHelper.generateDripstoneBlock(worldAccess, blockPos);
+            if (random.nextFloat() > smallDripstoneFeatureConfig.field_35417) continue;
+            BlockPos blockPos2 = blockPos.offset(Direction.random(random));
+            DripstoneHelper.generateDripstoneBlock(worldAccess, blockPos2);
+            if (random.nextFloat() > smallDripstoneFeatureConfig.field_35418) continue;
+            BlockPos blockPos3 = blockPos2.offset(Direction.random(random));
+            DripstoneHelper.generateDripstoneBlock(worldAccess, blockPos3);
+        }
     }
 }
 

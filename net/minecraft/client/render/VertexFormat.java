@@ -6,7 +6,6 @@ package net.minecraft.client.render;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -54,7 +53,7 @@ public class VertexFormat {
     }
 
     public ImmutableList<String> getShaderAttributes() {
-        return ((ImmutableSet)this.elementMap.keySet()).asList();
+        return ((ImmutableCollection)((Object)this.elementMap.keySet())).asList();
     }
 
     public boolean equals(Object o) {

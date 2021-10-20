@@ -12,7 +12,6 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6643;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -27,6 +26,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.CarverContext;
+import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.carver.CaveCarver;
 import net.minecraft.world.gen.carver.CaveCarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
@@ -69,7 +69,7 @@ public abstract class Carver<C extends CarverConfig> {
         return 4;
     }
 
-    protected boolean carveRegion(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, AquiferSampler aquiferSampler, double d, double e, double f, double g, double h, class_6643 arg, SkipPredicate skipPredicate) {
+    protected boolean carveRegion(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, AquiferSampler aquiferSampler, double d, double e, double f, double g, double h, CarvingMask carvingMask, SkipPredicate skipPredicate) {
         ChunkPos chunkPos = chunk.getPos();
         double i = chunkPos.getCenterX();
         double j = chunkPos.getCenterZ();
@@ -98,17 +98,17 @@ public abstract class Carver<C extends CarverConfig> {
                 MutableBoolean mutableBoolean = new MutableBoolean(false);
                 for (int z = q; z > p; --z) {
                     double aa = ((double)z - 0.5 - e) / h;
-                    if (skipPredicate.shouldSkip(context, v, aa, y, z) || arg.method_38868(t, z, w) && !Carver.isDebug(config)) continue;
-                    arg.method_38865(t, z, w);
+                    if (skipPredicate.shouldSkip(context, v, aa, y, z) || carvingMask.get(t, z, w) && !Carver.isDebug(config)) continue;
+                    carvingMask.set(t, z, w);
                     mutable.set(u, z, x);
-                    bl |= this.carveAtPoint(context, config, chunk, posToBiome, arg, mutable, mutable2, aquiferSampler, mutableBoolean);
+                    bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, mutable, mutable2, aquiferSampler, mutableBoolean);
                 }
             }
         }
         return bl;
     }
 
-    protected boolean carveAtPoint(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, class_6643 arg, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, AquiferSampler aquiferSampler, MutableBoolean mutableBoolean) {
+    protected boolean carveAtPoint(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, CarvingMask carvingMask, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, AquiferSampler aquiferSampler, MutableBoolean mutableBoolean) {
         BlockState blockState2 = chunk.getBlockState(mutable);
         if (blockState2.isOf(Blocks.GRASS_BLOCK) || blockState2.isOf(Blocks.MYCELIUM)) {
             mutableBoolean.setTrue();
@@ -162,7 +162,7 @@ public abstract class Carver<C extends CarverConfig> {
         return state;
     }
 
-    public abstract boolean carve(CarverContext var1, C var2, Chunk var3, Function<BlockPos, Biome> var4, Random var5, AquiferSampler var6, ChunkPos var7, class_6643 var8);
+    public abstract boolean carve(CarverContext var1, C var2, Chunk var3, Function<BlockPos, Biome> var4, Random var5, AquiferSampler var6, ChunkPos var7, CarvingMask var8);
 
     public abstract boolean shouldCarve(C var1, Random var2);
 

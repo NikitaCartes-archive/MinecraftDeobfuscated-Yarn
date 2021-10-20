@@ -170,7 +170,7 @@ implements StatsListener {
         public GeneralStatsListWidget(MinecraftClient client) {
             super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
             ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<Stat<Identifier>>(Stats.CUSTOM.iterator());
-            objectArrayList.sort(Comparator.comparing(stat -> I18n.translate(StatsScreen.getStatTranslationKey(stat), new Object[0])));
+            objectArrayList.sort((Comparator<Stat<Identifier>>)Comparator.comparing(stat -> I18n.translate(StatsScreen.getStatTranslationKey(stat), new Object[0])));
             for (Stat stat2 : objectArrayList) {
                 this.addEntry(new Entry(stat2));
             }

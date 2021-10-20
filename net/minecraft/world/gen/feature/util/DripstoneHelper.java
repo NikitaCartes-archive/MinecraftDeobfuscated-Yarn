@@ -69,21 +69,21 @@ public class DripstoneHelper {
         }
     }
 
-    protected static void generatePointedDripstone(StructureWorldAccess world, BlockPos pos, Direction direction, int height, boolean merge) {
+    protected static void generatePointedDripstone(WorldAccess worldAccess, BlockPos pos, Direction direction, int height, boolean merge) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         DripstoneHelper.getDripstoneThickness(direction, height, merge, state -> {
             if (state.isOf(Blocks.POINTED_DRIPSTONE)) {
-                state = (BlockState)state.with(PointedDripstoneBlock.WATERLOGGED, world.isWater(mutable));
+                state = (BlockState)state.with(PointedDripstoneBlock.WATERLOGGED, worldAccess.isWater(mutable));
             }
-            world.setBlockState(mutable, (BlockState)state, Block.NOTIFY_LISTENERS);
+            worldAccess.setBlockState(mutable, (BlockState)state, Block.NOTIFY_LISTENERS);
             mutable.move(direction);
         });
     }
 
-    protected static boolean generateDripstoneBlock(StructureWorldAccess world, BlockPos pos) {
-        BlockState blockState = world.getBlockState(pos);
+    protected static boolean generateDripstoneBlock(WorldAccess worldAccess, BlockPos pos) {
+        BlockState blockState = worldAccess.getBlockState(pos);
         if (blockState.isIn(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS)) {
-            world.setBlockState(pos, Blocks.DRIPSTONE_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
+            worldAccess.setBlockState(pos, Blocks.DRIPSTONE_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
             return true;
         }
         return false;

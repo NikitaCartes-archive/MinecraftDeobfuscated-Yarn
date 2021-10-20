@@ -956,10 +956,10 @@ AutoCloseable {
         return !ThreadedAnvilChunkStorage.isWithinDistance(k, l = ChunkSectionPos.getSectionCoord(blockPos2.getZ()), i, j, this.viewDistance - 2);
     }
 
-    private void captureFrustum(Matrix4f modelMatrix, Matrix4f matrix4f, double x, double y, double z, Frustum frustum) {
+    private void captureFrustum(Matrix4f positionMatrix, Matrix4f matrix4f, double x, double y, double z, Frustum frustum) {
         this.capturedFrustum = frustum;
         Matrix4f matrix4f2 = matrix4f.copy();
-        matrix4f2.multiply(modelMatrix);
+        matrix4f2.multiply(positionMatrix);
         matrix4f2.invert();
         this.capturedFrustumPosition.x = x;
         this.capturedFrustumPosition.y = y;
@@ -979,7 +979,7 @@ AutoCloseable {
     }
 
     public void setupFrustum(MatrixStack matrices, Vec3d pos, Matrix4f projectionMatrix) {
-        Matrix4f matrix4f = matrices.peek().getModel();
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
         double d = pos.getX();
         double e = pos.getY();
         double f = pos.getZ();
@@ -1007,7 +1007,7 @@ AutoCloseable {
         double d = vec3d.getX();
         double e = vec3d.getY();
         double f = vec3d.getZ();
-        Matrix4f matrix4f2 = matrices.peek().getModel();
+        Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
         profiler.swap("culling");
         boolean bl3 = bl2 = this.capturedFrustum != null;
         if (bl2) {
@@ -1041,9 +1041,9 @@ AutoCloseable {
         this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f, matrix4f);
         this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f, matrix4f);
         if (this.world.getDimensionEffects().isDarkened()) {
-            DiffuseLighting.enableForLevel(matrices.peek().getModel());
+            DiffuseLighting.enableForLevel(matrices.peek().getPositionMatrix());
         } else {
-            DiffuseLighting.disableForLevel(matrices.peek().getModel());
+            DiffuseLighting.disableForLevel(matrices.peek().getPositionMatrix());
         }
         profiler.swap("entities");
         this.regularEntityCount = 0;
@@ -1104,7 +1104,7 @@ AutoCloseable {
                 SortedSet sortedSet = (SortedSet)this.blockBreakingProgressions.get(blockPos.asLong());
                 if (sortedSet != null && !sortedSet.isEmpty() && (m = ((BlockBreakingInfo)sortedSet.last()).getStage()) >= 0) {
                     MatrixStack.Entry entry = matrices.peek();
-                    OverlayVertexConsumer vertexConsumer = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(m)), entry.getModel(), entry.getNormal());
+                    OverlayVertexConsumer vertexConsumer = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(m)), entry.getPositionMatrix(), entry.getNormalMatrix());
                     vertexConsumerProvider2 = renderLayer -> {
                         VertexConsumer vertexConsumer2 = immediate.getBuffer(renderLayer);
                         if (renderLayer.hasCrumbling()) {
@@ -1154,7 +1154,7 @@ AutoCloseable {
             matrices.push();
             matrices.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - f);
             MatrixStack.Entry entry3 = matrices.peek();
-            OverlayVertexConsumer vertexConsumer2 = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(p)), entry3.getModel(), entry3.getNormal());
+            OverlayVertexConsumer vertexConsumer2 = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(p)), entry3.getPositionMatrix(), entry3.getNormalMatrix());
             this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrices, vertexConsumer2);
             matrices.pop();
         }
@@ -1171,7 +1171,7 @@ AutoCloseable {
         }
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        matrixStack.method_34425(matrices.peek().getModel());
+        matrixStack.method_34425(matrices.peek().getPositionMatrix());
         RenderSystem.applyModelViewMatrix();
         this.client.debugRenderer.render(matrices, immediate, d, e, f);
         matrixStack.pop();
@@ -1217,7 +1217,7 @@ AutoCloseable {
             this.client.particleManager.renderParticles(matrices, immediate, lightmapTextureManager, camera, tickDelta);
         }
         matrixStack.push();
-        matrixStack.method_34425(matrices.peek().getModel());
+        matrixStack.method_34425(matrices.peek().getPositionMatrix());
         RenderSystem.applyModelViewMatrix();
         if (this.client.options.getCloudRenderMode() != CloudRenderMode.OFF) {
             if (this.transparencyShader != null) {
@@ -1270,7 +1270,7 @@ AutoCloseable {
     }
 
     private void renderLayer(RenderLayer renderLayer, MatrixStack matrices, double d, double e, double f, Matrix4f matrix4f) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         renderLayer.startDrawing();
         if (renderLayer == RenderLayer.getTranslucent()) {
             this.client.getProfiler().push("translucent_sort");
@@ -1301,7 +1301,7 @@ AutoCloseable {
             shader.addSampler("Sampler" + k, l);
         }
         if (shader.modelViewMat != null) {
-            shader.modelViewMat.set(matrices.peek().getModel());
+            shader.modelViewMat.set(matrices.peek().getPositionMatrix());
         }
         if (shader.projectionMat != null) {
             shader.projectionMat.set(matrix4f);
@@ -1576,7 +1576,7 @@ AutoCloseable {
             if (i == 5) {
                 matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0f));
             }
-            Matrix4f matrix4f = matrices.peek().getModel();
+            Matrix4f matrix4f = matrices.peek().getPositionMatrix();
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(matrix4f, -100.0f, -100.0f, -100.0f).texture(0.0f, 0.0f).color(40, 40, 40, 255).next();
             bufferBuilder.vertex(matrix4f, -100.0f, -100.0f, 100.0f).texture(0.0f, 16.0f).color(40, 40, 40, 255).next();
@@ -1615,7 +1615,7 @@ AutoCloseable {
         RenderSystem.depthMask(false);
         RenderSystem.setShaderColor(g, h, i, 1.0f);
         Shader shader = RenderSystem.getShader();
-        this.lightSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
+        this.lightSkyBuffer.setShader(matrices.peek().getPositionMatrix(), matrix4f, shader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         float[] fs = this.world.getDimensionEffects().getFogColorOverride(this.world.getSkyAngle(f), f);
@@ -1631,7 +1631,7 @@ AutoCloseable {
             float k = fs[0];
             l = fs[1];
             float m = fs[2];
-            Matrix4f matrix4f2 = matrices.peek().getModel();
+            Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
             bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
             bufferBuilder.vertex(matrix4f2, 0.0f, 100.0f, 0.0f).color(k, l, m, fs[3]).next();
             n = 16;
@@ -1652,7 +1652,7 @@ AutoCloseable {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, j);
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0f));
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(f) * 360.0f));
-        Matrix4f matrix4f3 = matrices.peek().getModel();
+        Matrix4f matrix4f3 = matrices.peek().getPositionMatrix();
         l = 30.0f;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, SUN);
@@ -1684,7 +1684,7 @@ AutoCloseable {
         if (v > 0.0f) {
             RenderSystem.setShaderColor(v, v, v, v);
             BackgroundRenderer.method_23792();
-            this.starsBuffer.setShader(matrices.peek().getModel(), matrix4f, GameRenderer.getPositionShader());
+            this.starsBuffer.setShader(matrices.peek().getPositionMatrix(), matrix4f, GameRenderer.getPositionShader());
             runnable.run();
         }
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -1696,7 +1696,7 @@ AutoCloseable {
         if (d < 0.0) {
             matrices.push();
             matrices.translate(0.0, 12.0, 0.0);
-            this.darkSkyBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
+            this.darkSkyBuffer.setShader(matrices.peek().getPositionMatrix(), matrix4f, shader);
             matrices.pop();
         }
         if (this.world.getDimensionEffects().isAlternateSkyColor()) {
@@ -1768,7 +1768,7 @@ AutoCloseable {
                     RenderSystem.colorMask(true, true, true, true);
                 }
                 Shader shader = RenderSystem.getShader();
-                this.cloudsBuffer.setShader(matrices.peek().getModel(), matrix4f, shader);
+                this.cloudsBuffer.setShader(matrices.peek().getPositionMatrix(), matrix4f, shader);
             }
         }
         matrices.pop();
@@ -2033,8 +2033,8 @@ AutoCloseable {
             float r = (float)(o - l);
             float s = (float)(p - m);
             float t = MathHelper.sqrt(q * q + r * r + s * s);
-            vertexConsumer.vertex(entry.getModel(), (float)(k + d), (float)(l + e), (float)(m + f)).color(g, h, i, j).normal(entry.getNormal(), q /= t, r /= t, s /= t).next();
-            vertexConsumer.vertex(entry.getModel(), (float)(n + d), (float)(o + e), (float)(p + f)).color(g, h, i, j).normal(entry.getNormal(), q, r, s).next();
+            vertexConsumer.vertex(entry.getPositionMatrix(), (float)(k + d), (float)(l + e), (float)(m + f)).color(g, h, i, j).normal(entry.getNormalMatrix(), q /= t, r /= t, s /= t).next();
+            vertexConsumer.vertex(entry.getPositionMatrix(), (float)(n + d), (float)(o + e), (float)(p + f)).color(g, h, i, j).normal(entry.getNormalMatrix(), q, r, s).next();
         });
     }
 
@@ -2067,8 +2067,8 @@ AutoCloseable {
      * <p>Note the coordinates the box spans are relative to current translation of the matrices.
      */
     public static void drawBox(MatrixStack matrices, VertexConsumer vertexConsumer, double x1, double y1, double z1, double x2, double y2, double z2, float red, float green, float blue, float alpha, float xAxisRed, float yAxisGreen, float zAxisBlue) {
-        Matrix4f matrix4f = matrices.peek().getModel();
-        Matrix3f matrix3f = matrices.peek().getNormal();
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+        Matrix3f matrix3f = matrices.peek().getNormalMatrix();
         float f = (float)x1;
         float g = (float)y1;
         float h = (float)z1;

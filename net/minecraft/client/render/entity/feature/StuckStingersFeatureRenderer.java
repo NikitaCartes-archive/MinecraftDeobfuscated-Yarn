@@ -55,8 +55,8 @@ extends StuckObjectsFeatureRenderer<T, M> {
         for (int n = 0; n < 4; ++n) {
             matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             MatrixStack.Entry entry = matrices.peek();
-            Matrix4f matrix4f = entry.getModel();
-            Matrix3f matrix3f = entry.getNormal();
+            Matrix4f matrix4f = entry.getPositionMatrix();
+            Matrix3f matrix3f = entry.getNormalMatrix();
             StuckStingersFeatureRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, -4.5f, -1, 0.0f, 0.0f, light);
             StuckStingersFeatureRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, 4.5f, -1, 0.125f, 0.0f, light);
             StuckStingersFeatureRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, 4.5f, 1, 0.125f, 0.0625f, light);

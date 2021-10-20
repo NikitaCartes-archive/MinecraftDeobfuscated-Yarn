@@ -130,7 +130,7 @@ implements AutoCloseable {
         if (this.vertexCount == 0) {
             return;
         }
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         BufferRenderer.unbindAll();
         for (int i = 0; i < 12; ++i) {
             int j = RenderSystem.getShaderTexture(i);
@@ -183,7 +183,7 @@ implements AutoCloseable {
         if (this.vertexCount == 0) {
             return;
         }
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         this.bindVertexArray();
         this.bind();
         this.elementFormat.startDrawing();

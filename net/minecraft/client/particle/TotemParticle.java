@@ -17,7 +17,7 @@ public class TotemParticle
 extends AnimatedParticle {
     TotemParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
         super(clientWorld, d, e, f, spriteProvider, 1.25f);
-        this.field_28786 = 0.6f;
+        this.velocityMultiplier = 0.6f;
         this.velocityX = g;
         this.velocityY = h;
         this.velocityZ = i;

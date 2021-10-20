@@ -382,7 +382,7 @@ AutoCloseable {
     }
 
     public void loadShaders(ResourceManager manager) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         ArrayList<Program> list = Lists.newArrayList();
         list.addAll(Program.Type.FRAGMENT.getProgramCache().values());
         list.addAll(Program.Type.VERTEX.getProgramCache().values());
@@ -564,7 +564,7 @@ AutoCloseable {
     }
 
     private void clearShaders() {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         this.shaders.values().forEach(Shader::close);
         this.shaders.clear();
     }
@@ -752,8 +752,8 @@ AutoCloseable {
         }
         this.loadProjectionMatrix(this.getBasicProjectionMatrix(this.getFov(camera, tickDelta, false)));
         MatrixStack.Entry entry = matrices.peek();
-        entry.getModel().loadIdentity();
-        entry.getNormal().loadIdentity();
+        entry.getPositionMatrix().loadIdentity();
+        entry.getNormalMatrix().loadIdentity();
         matrices.push();
         this.bobViewWhenHurt(matrices, tickDelta);
         if (this.client.options.bobView) {
@@ -781,13 +781,13 @@ AutoCloseable {
 
     public Matrix4f getBasicProjectionMatrix(double d) {
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.peek().getModel().loadIdentity();
+        matrixStack.peek().getPositionMatrix().loadIdentity();
         if (this.zoom != 1.0f) {
             matrixStack.translate(this.zoomX, -this.zoomY, 0.0);
             matrixStack.scale(this.zoom, this.zoom, 1.0f);
         }
-        matrixStack.peek().getModel().multiply(Matrix4f.viewboxMatrix(d, (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05f, this.method_32796()));
-        return matrixStack.peek().getModel();
+        matrixStack.peek().getPositionMatrix().multiply(Matrix4f.viewboxMatrix(d, (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05f, this.method_32796()));
+        return matrixStack.peek().getPositionMatrix();
     }
 
     public float method_32796() {
@@ -972,7 +972,7 @@ AutoCloseable {
         this.viewDistance = this.client.options.getViewDistance() * 16;
         MatrixStack matrixStack = new MatrixStack();
         double d = this.getFov(camera, tickDelta, true);
-        matrixStack.peek().getModel().multiply(this.getBasicProjectionMatrix(d));
+        matrixStack.peek().getPositionMatrix().multiply(this.getBasicProjectionMatrix(d));
         this.bobViewWhenHurt(matrixStack, tickDelta);
         if (this.client.options.bobView) {
             this.bobView(matrixStack, tickDelta);
@@ -987,7 +987,7 @@ AutoCloseable {
             float h = -((float)this.ticks + tickDelta) * (float)i;
             matrixStack.multiply(vec3f.getDegreesQuaternion(h));
         }
-        Matrix4f matrix4f = matrixStack.peek().getModel();
+        Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
         this.loadProjectionMatrix(matrix4f);
         camera.update(this.client.world, this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity(), !this.client.options.getPerspective().isFirstPerson(), this.client.options.getPerspective().isFrontView(), tickDelta);
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));

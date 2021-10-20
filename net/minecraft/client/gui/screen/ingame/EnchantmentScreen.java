@@ -97,8 +97,8 @@ extends HandledScreen<EnchantmentScreenHandler> {
         RenderSystem.setProjectionMatrix(matrix4f);
         matrices.push();
         MatrixStack.Entry entry = matrices.peek();
-        entry.getModel().loadIdentity();
-        entry.getNormal().loadIdentity();
+        entry.getPositionMatrix().loadIdentity();
+        entry.getNormalMatrix().loadIdentity();
         matrices.translate(0.0, 3.3f, 1984.0);
         float f = 5.0f;
         matrices.scale(5.0f, 5.0f, 5.0f);

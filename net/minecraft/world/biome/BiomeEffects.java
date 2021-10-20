@@ -19,6 +19,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeParticleConfig;
+import org.jetbrains.annotations.Nullable;
 
 public class BiomeEffects {
     public static final Codec<BiomeEffects> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("fog_color")).forGetter(biomeEffects -> biomeEffects.fogColor), ((MapCodec)Codec.INT.fieldOf("water_color")).forGetter(biomeEffects -> biomeEffects.waterColor), ((MapCodec)Codec.INT.fieldOf("water_fog_color")).forGetter(biomeEffects -> biomeEffects.waterFogColor), ((MapCodec)Codec.INT.fieldOf("sky_color")).forGetter(biomeEffects -> biomeEffects.skyColor), Codec.INT.optionalFieldOf("foliage_color").forGetter(biomeEffects -> biomeEffects.foliageColor), Codec.INT.optionalFieldOf("grass_color").forGetter(biomeEffects -> biomeEffects.grassColor), GrassColorModifier.CODEC.optionalFieldOf("grass_color_modifier", GrassColorModifier.NONE).forGetter(biomeEffects -> biomeEffects.grassColorModifier), BiomeParticleConfig.CODEC.optionalFieldOf("particle").forGetter(biomeEffects -> biomeEffects.particleConfig), SoundEvent.CODEC.optionalFieldOf("ambient_sound").forGetter(biomeEffects -> biomeEffects.loopSound), BiomeMoodSound.CODEC.optionalFieldOf("mood_sound").forGetter(biomeEffects -> biomeEffects.moodSound), BiomeAdditionsSound.CODEC.optionalFieldOf("additions_sound").forGetter(biomeEffects -> biomeEffects.additionsSound), MusicSound.CODEC.optionalFieldOf("music").forGetter(biomeEffects -> biomeEffects.music)).apply((Applicative<BiomeEffects, ?>)instance, BiomeEffects::new));
@@ -248,8 +249,8 @@ public class BiomeEffects {
             return this;
         }
 
-        public Builder music(MusicSound music) {
-            this.musicSound = Optional.of(music);
+        public Builder music(@Nullable MusicSound music) {
+            this.musicSound = Optional.ofNullable(music);
             return this;
         }
 

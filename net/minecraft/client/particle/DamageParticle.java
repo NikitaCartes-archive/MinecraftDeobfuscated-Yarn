@@ -20,7 +20,7 @@ extends SpriteBillboardParticle {
     DamageParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
         super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
         float j;
-        this.field_28786 = 0.7f;
+        this.velocityMultiplier = 0.7f;
         this.gravityStrength = 0.5f;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;

@@ -225,7 +225,7 @@ Nameable {
             return i;
         }
         itemStack.increment(j);
-        itemStack.setCooldown(5);
+        itemStack.setBobbingAnimationTime(5);
         return i -= j;
     }
 
@@ -282,7 +282,7 @@ Nameable {
             }
             if (slot >= 0) {
                 this.main.set(slot, stack.copy());
-                this.main.get(slot).setCooldown(5);
+                this.main.get(slot).setBobbingAnimationTime(5);
                 stack.setCount(0);
                 return true;
             }

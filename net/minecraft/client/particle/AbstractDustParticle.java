@@ -19,7 +19,7 @@ extends SpriteBillboardParticle {
 
     protected AbstractDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, T abstractDustParticleEffect, SpriteProvider spriteProvider) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
-        this.field_28786 = 0.96f;
+        this.velocityMultiplier = 0.96f;
         this.field_28787 = true;
         this.spriteProvider = spriteProvider;
         this.velocityX *= (double)0.1f;

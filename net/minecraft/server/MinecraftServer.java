@@ -151,7 +151,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionOptions;
@@ -285,6 +284,7 @@ AutoCloseable {
     private ServerResourceManager serverResourceManager;
     private final StructureManager structureManager;
     protected final SaveProperties saveProperties;
+    private volatile boolean saving;
 
     public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
         AtomicReference<MinecraftServer> atomicReference = new AtomicReference<MinecraftServer>();
@@ -375,7 +375,7 @@ AutoCloseable {
         DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
         if (dimensionOptions == null) {
             dimensionType = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY);
-            chunkGenerator = GeneratorOptions.createOverworldGenerator(this.registryManager.get(Registry.BIOME_KEY), this.registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY), new Random().nextLong());
+            chunkGenerator = GeneratorOptions.createOverworldGenerator(this.registryManager, new Random().nextLong());
         } else {
             dimensionType = dimensionOptions.getDimensionType();
             chunkGenerator = dimensionOptions.getChunkGenerator();
@@ -423,23 +423,16 @@ AutoCloseable {
     }
 
     private static void setupSpawn(ServerWorld world, ServerWorldProperties worldProperties, boolean bonusChest, boolean debugWorld) {
-        int i;
-        ChunkPos chunkPos;
         if (debugWorld) {
             worldProperties.setSpawnPos(BlockPos.ORIGIN.up(80), 0.0f);
             return;
         }
         ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
-        BiomeSource biomeSource = chunkGenerator.getBiomeSource();
-        Random random = new Random(world.getSeed());
-        BlockPos blockPos = biomeSource.locateBiome(0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random, chunkGenerator.getMultiNoiseSampler());
-        ChunkPos chunkPos2 = chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
-        if (blockPos == null) {
-            LOGGER.warn("Unable to find spawn biome");
-        }
-        if ((i = chunkGenerator.getSpawnHeight(world)) < world.getBottomY()) {
-            BlockPos blockPos2 = chunkPos.getStartPos();
-            i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX() + 8, blockPos2.getZ() + 8);
+        ChunkPos chunkPos = new ChunkPos(chunkGenerator.getMultiNoiseSampler().findBestSpawnPosition());
+        int i = chunkGenerator.getSpawnHeight(world);
+        if (i < world.getBottomY()) {
+            BlockPos blockPos = chunkPos.getStartPos();
+            i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos.getX() + 8, blockPos.getZ() + 8);
         }
         worldProperties.setSpawnPos(chunkPos.getStartPos().add(8, i, 8), 0.0f);
         int j = 0;
@@ -448,9 +441,9 @@ AutoCloseable {
         int m = -1;
         int n = 32;
         for (int o = 0; o < 1024; ++o) {
-            BlockPos blockPos3;
-            if (j > -16 && j <= 16 && k > -16 && k <= 16 && (blockPos3 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k))) != null) {
-                worldProperties.setSpawnPos(blockPos3, 0.0f);
+            BlockPos blockPos2;
+            if (j > -16 && j <= 16 && k > -16 && k <= 16 && (blockPos2 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k))) != null) {
+                worldProperties.setSpawnPos(blockPos2, 0.0f);
                 break;
             }
             if (j == k || j < 0 && j == -k || j > 0 && j == 1 - k) {
@@ -569,6 +562,20 @@ AutoCloseable {
         return bl;
     }
 
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
+    public boolean saveAll(boolean suppressLogs, boolean flush, boolean force) {
+        try {
+            this.saving = true;
+            this.getPlayerManager().saveAllPlayerData();
+            boolean bl = this.save(suppressLogs, flush, force);
+            return bl;
+        } finally {
+            this.saving = false;
+        }
+    }
+
     @Override
     public void close() {
         this.shutdown();
@@ -579,6 +586,7 @@ AutoCloseable {
         if (this.getNetworkIo() != null) {
             this.getNetworkIo().stop();
         }
+        this.saving = true;
         if (this.playerManager != null) {
             LOGGER.info("Saving players");
             this.playerManager.saveAllPlayerData();
@@ -598,6 +606,7 @@ AutoCloseable {
                 LOGGER.error("Exception closing the level", (Throwable)iOException);
             }
         }
+        this.saving = false;
         if (this.snooper.isActive()) {
             this.snooper.cancel();
         }
@@ -790,8 +799,7 @@ AutoCloseable {
         if (this.ticks % 6000 == 0) {
             LOGGER.debug("Autosave started");
             this.profiler.push("save");
-            this.playerManager.saveAllPlayerData();
-            this.save(true, false, false);
+            this.saveAll(true, false, false);
             this.profiler.pop();
             LOGGER.debug("Autosave finished");
         }
@@ -1706,6 +1714,10 @@ AutoCloseable {
     @Nullable
     public Text getResourcePackPrompt() {
         return null;
+    }
+
+    public boolean isSaving() {
+        return this.saving;
     }
 
     public boolean isDebugRunning() {

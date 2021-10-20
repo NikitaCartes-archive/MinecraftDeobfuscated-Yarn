@@ -22,14 +22,14 @@ extends BlockStateProvider {
     protected final DoublePerlinNoiseSampler noiseSampler;
 
     protected static <P extends AbstractNoiseBlockStateProvider> Products.P3<RecordCodecBuilder.Mu<P>, Long, DoublePerlinNoiseSampler.NoiseParameters, Float> fillCodecFields(RecordCodecBuilder.Instance<P> instance) {
-        return instance.group(((MapCodec)Codec.LONG.fieldOf("seed")).forGetter(abstractNoiseBlockStateProvider -> abstractNoiseBlockStateProvider.seed), ((MapCodec)DoublePerlinNoiseSampler.NoiseParameters.CODEC.fieldOf("noise")).forGetter(abstractNoiseBlockStateProvider -> abstractNoiseBlockStateProvider.noiseParameters), ((MapCodec)Codecs.POSITIVE_FLOAT.fieldOf("scale")).forGetter(abstractNoiseBlockStateProvider -> Float.valueOf(abstractNoiseBlockStateProvider.scale)));
+        return instance.group(((MapCodec)Codec.LONG.fieldOf("seed")).forGetter(abstractNoiseBlockStateProvider -> abstractNoiseBlockStateProvider.seed), ((MapCodec)DoublePerlinNoiseSampler.NoiseParameters.field_35424.fieldOf("noise")).forGetter(abstractNoiseBlockStateProvider -> abstractNoiseBlockStateProvider.noiseParameters), ((MapCodec)Codecs.POSITIVE_FLOAT.fieldOf("scale")).forGetter(abstractNoiseBlockStateProvider -> Float.valueOf(abstractNoiseBlockStateProvider.scale)));
     }
 
     protected AbstractNoiseBlockStateProvider(long seed, DoublePerlinNoiseSampler.NoiseParameters noiseParameters, float scale) {
         this.seed = seed;
         this.noiseParameters = noiseParameters;
         this.scale = scale;
-        this.noiseSampler = DoublePerlinNoiseSampler.method_39123(new ChunkRandom(new AtomicSimpleRandom(seed)), noiseParameters);
+        this.noiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(new AtomicSimpleRandom(seed)), noiseParameters);
     }
 
     protected double getNoiseValue(BlockPos pos, double scale) {

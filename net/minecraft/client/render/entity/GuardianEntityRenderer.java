@@ -114,8 +114,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             float ar = m * 2.5f + aq;
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
             MatrixStack.Entry entry = matrixStack.peek();
-            Matrix4f matrix4f = entry.getModel();
-            Matrix3f matrix3f = entry.getNormal();
+            Matrix4f matrix4f = entry.getPositionMatrix();
+            Matrix3f matrix3f = entry.getNormalMatrix();
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, af, an, ag, s, t, u, 0.4999f, ar);
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, af, 0.0f, ag, s, t, u, 0.4999f, aq);
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, ah, 0.0f, ai, s, t, u, 0.0f, aq);
@@ -136,8 +136,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         }
     }
 
-    private static void method_23173(VertexConsumer vertexConsumer, Matrix4f modelMatrix, Matrix3f normalMatrix, float x, float y, float z, int red, int green, int blue, float u, float v) {
-        vertexConsumer.vertex(modelMatrix, x, y, z).color(red, green, blue, 255).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE).normal(normalMatrix, 0.0f, 1.0f, 0.0f).next();
+    private static void method_23173(VertexConsumer vertexConsumer, Matrix4f positionMatrix, Matrix3f normalMatrix, float x, float y, float z, int red, int green, int blue, float u, float v) {
+        vertexConsumer.vertex(positionMatrix, x, y, z).color(red, green, blue, 255).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE).normal(normalMatrix, 0.0f, 1.0f, 0.0f).next();
     }
 
     @Override

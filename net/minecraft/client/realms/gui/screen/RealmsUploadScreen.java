@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
@@ -383,7 +384,7 @@ extends RealmsScreen {
         TarArchiveEntry tarArchiveEntry = new TarArchiveEntry(file, string);
         tOut.putArchiveEntry(tarArchiveEntry);
         if (file.isFile()) {
-            IOUtils.copy(new FileInputStream(file), tOut);
+            IOUtils.copy(new FileInputStream(file), (OutputStream)tOut);
             tOut.closeArchiveEntry();
         } else {
             tOut.closeArchiveEntry();

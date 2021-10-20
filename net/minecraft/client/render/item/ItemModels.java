@@ -10,11 +10,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,18 +23,6 @@ public class ItemModels {
 
     public ItemModels(BakedModelManager modelManager) {
         this.modelManager = modelManager;
-    }
-
-    public Sprite getModelParticleSprite(ItemConvertible item) {
-        return this.getModelParticleSprite(new ItemStack(item));
-    }
-
-    public Sprite getModelParticleSprite(ItemStack stack) {
-        BakedModel bakedModel = this.getModel(stack);
-        if (bakedModel == this.modelManager.getMissingModel() && stack.getItem() instanceof BlockItem) {
-            return this.modelManager.getBlockModels().getModelParticleSprite(((BlockItem)stack.getItem()).getBlock().getDefaultState());
-        }
-        return bakedModel.getParticleSprite();
     }
 
     public BakedModel getModel(ItemStack stack) {

@@ -21,9 +21,9 @@ extends SpriteBillboardParticle {
     static final Random RANDOM = new Random();
     private final SpriteProvider spriteProvider;
 
-    GlowParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-        super(clientWorld, d, e, f, g, h, i);
-        this.field_28786 = 0.96f;
+    GlowParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+        super(world, x, y, z, velocityX, velocityY, velocityZ);
+        this.velocityMultiplier = 0.96f;
         this.field_28787 = true;
         this.spriteProvider = spriteProvider;
         this.scale *= 0.75f;

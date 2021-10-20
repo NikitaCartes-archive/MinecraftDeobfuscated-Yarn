@@ -43,6 +43,8 @@ import net.minecraft.world.gen.decorator.NopeDecorator;
 import net.minecraft.world.gen.decorator.NopeDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecorator;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.decorator.ScatterDecorator;
+import net.minecraft.world.gen.decorator.ScatterDecoratorConfig;
 import net.minecraft.world.gen.decorator.SquareDecorator;
 import net.minecraft.world.gen.decorator.SurfaceRelativeThresholdDecorator;
 import net.minecraft.world.gen.decorator.SurfaceRelativeThresholdDecoratorConfig;
@@ -57,6 +59,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<NopeDecoratorConfig> SQUARE = Decorator.register("square", new SquareDecorator(NopeDecoratorConfig.CODEC));
     public static final Decorator<NopeDecoratorConfig> DARK_OAK_TREE = Decorator.register("dark_oak_tree", new DarkOakTreeDecorator(NopeDecoratorConfig.CODEC));
     public static final Decorator<NopeDecoratorConfig> ICEBERG = Decorator.register("iceberg", new IcebergDecorator(NopeDecoratorConfig.CODEC));
+    public static final Decorator<ScatterDecoratorConfig> SCATTER = Decorator.register("scatter", new ScatterDecorator(ScatterDecoratorConfig.CODEC));
     public static final Decorator<ChanceDecoratorConfig> CHANCE = Decorator.register("chance", new ChanceDecorator(ChanceDecoratorConfig.CODEC));
     public static final Decorator<CountConfig> COUNT = Decorator.register("count", new CountDecorator(CountConfig.CODEC));
     public static final Decorator<CountNoiseDecoratorConfig> COUNT_NOISE = Decorator.register("count_noise", new CountNoiseDecorator(CountNoiseDecoratorConfig.CODEC));

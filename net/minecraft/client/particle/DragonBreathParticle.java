@@ -28,12 +28,12 @@ extends SpriteBillboardParticle {
     private boolean reachedGround;
     private final SpriteProvider spriteProvider;
 
-    DragonBreathParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-        super(clientWorld, d, e, f);
-        this.field_28786 = 0.96f;
-        this.velocityX = g;
-        this.velocityY = h;
-        this.velocityZ = i;
+    DragonBreathParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+        super(world, x, y, z);
+        this.velocityMultiplier = 0.96f;
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
+        this.velocityZ = velocityZ;
         this.colorRed = MathHelper.nextFloat(this.random, 0.7176471f, 0.8745098f);
         this.colorGreen = MathHelper.nextFloat(this.random, 0.0f, 0.0f);
         this.colorBlue = MathHelper.nextFloat(this.random, 0.8235294f, 0.9764706f);
@@ -67,10 +67,10 @@ extends SpriteBillboardParticle {
             this.velocityX *= 1.1;
             this.velocityZ *= 1.1;
         }
-        this.velocityX *= (double)this.field_28786;
-        this.velocityZ *= (double)this.field_28786;
+        this.velocityX *= (double)this.velocityMultiplier;
+        this.velocityZ *= (double)this.velocityMultiplier;
         if (this.reachedGround) {
-            this.velocityY *= (double)this.field_28786;
+            this.velocityY *= (double)this.velocityMultiplier;
         }
     }
 

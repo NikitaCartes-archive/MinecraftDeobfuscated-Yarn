@@ -27,7 +27,7 @@ extends SpriteBillboardParticle {
         this.scale *= this.random.nextFloat() * 0.6f + 0.2f;
         this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
         this.collidesWithWorld = false;
-        this.field_28786 = 1.0f;
+        this.velocityMultiplier = 1.0f;
         this.gravityStrength = 0.0f;
     }
 
@@ -38,7 +38,7 @@ extends SpriteBillboardParticle {
         this.scale *= this.random.nextFloat() * 0.6f + 0.6f;
         this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
         this.collidesWithWorld = false;
-        this.field_28786 = 1.0f;
+        this.velocityMultiplier = 1.0f;
         this.gravityStrength = 0.0f;
     }
 

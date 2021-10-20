@@ -22,7 +22,7 @@ extends Decorator<CarvingMaskDecoratorConfig> {
     @Override
     public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, CarvingMaskDecoratorConfig carvingMaskDecoratorConfig, BlockPos blockPos) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
-        return decoratorContext.getOrCreateCarvingMask(chunkPos, carvingMaskDecoratorConfig.carver).method_38866(chunkPos);
+        return decoratorContext.getOrCreateCarvingMask(chunkPos, carvingMaskDecoratorConfig.carver).streamBlockPos(chunkPos);
     }
 
     @Override

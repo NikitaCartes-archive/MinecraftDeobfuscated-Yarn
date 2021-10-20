@@ -33,6 +33,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Matrix4f;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ShaderEffect
@@ -337,7 +338,8 @@ implements AutoCloseable {
         return this.name;
     }
 
-    private Framebuffer getTarget(String name) {
+    @Nullable
+    private Framebuffer getTarget(@Nullable String name) {
         if (name == null) {
             return null;
         }

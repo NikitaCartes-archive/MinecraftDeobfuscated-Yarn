@@ -298,7 +298,7 @@ AutoCloseable {
     }
 
     public void unbind() {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         GlProgramManager.useProgram(0);
         activeShaderId = -1;
         activeShader = null;
@@ -312,7 +312,7 @@ AutoCloseable {
     }
 
     public void bind() {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         this.dirty = false;
         activeShader = this;
         this.blendState.enable();
@@ -353,19 +353,19 @@ AutoCloseable {
 
     @Nullable
     public GlUniform getUniform(String name) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         return this.loadedUniforms.get(name);
     }
 
     public Uniform getUniformOrDefault(String name) {
-        RenderSystem.assertThread(RenderSystem::isOnGameThread);
+        RenderSystem.assertOnGameThread();
         GlUniform glUniform = this.getUniform(name);
         return glUniform == null ? DEFAULT_UNIFORM : glUniform;
     }
 
     private void loadReferences() {
         int i;
-        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        RenderSystem.assertOnRenderThread();
         IntArrayList intList = new IntArrayList();
         for (i = 0; i < this.samplerNames.size(); ++i) {
             String string = this.samplerNames.get(i);

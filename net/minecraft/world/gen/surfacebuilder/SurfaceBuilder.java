@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -26,16 +25,13 @@ import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
+import net.minecraft.world.gen.noise.NoiseParametersKeys;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 
 public class SurfaceBuilder {
-    private static final DoublePerlinNoiseSampler.NoiseParameters TERRACOTTA_BANDS_OFFSET_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-9, 1.0, new double[0]);
-    private static final DoublePerlinNoiseSampler.NoiseParameters SURFACE_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0, 1.0, 1.0);
-    private static final DoublePerlinNoiseSampler.NoiseParameters ICEBERG_AND_BADLANDS_PILLAR_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-3, 1.0, 1.0, 1.0, 1.0);
-    private static final DoublePerlinNoiseSampler.NoiseParameters ICEBERG_AND_BADLANDS_PILLAR_ROOF_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(0, 1.0, new double[0]);
     private static final int field_35273 = 8;
     private static final int field_35274 = 15;
     private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
@@ -54,24 +50,26 @@ public class SurfaceBuilder {
     private final DoublePerlinNoiseSampler terracottaBandsOffsetNoise;
     private final DoublePerlinNoiseSampler icebergAndBadlandsPillarNoise;
     private final DoublePerlinNoiseSampler icebergAndBadlandsPillarRoofNoise;
-    private final Map<String, DoublePerlinNoiseSampler> noiseSamplers = new ConcurrentHashMap<String, DoublePerlinNoiseSampler>();
+    private final Registry<DoublePerlinNoiseSampler.NoiseParameters> field_35415;
+    private final Map<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler> noiseSamplers = new ConcurrentHashMap<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler>();
     private final RandomDeriver randomDeriver;
     private final DoublePerlinNoiseSampler surfaceNoise;
 
-    public SurfaceBuilder(NoiseColumnSampler noiseColumnSampler, BlockState defaultBlock, int seaLevel, long seed, ChunkRandom.RandomProvider randomProvider) {
+    public SurfaceBuilder(NoiseColumnSampler noiseColumnSampler, Registry<DoublePerlinNoiseSampler.NoiseParameters> registry, BlockState blockState, int i, long l, ChunkRandom.RandomProvider randomProvider) {
         this.noiseColumnSampler = noiseColumnSampler;
-        this.defaultBlock = defaultBlock;
-        this.seaLevel = seaLevel;
-        this.randomDeriver = randomProvider.create(seed).createBlockPosRandomDeriver();
-        this.terracottaBandsOffsetNoise = DoublePerlinNoiseSampler.create(this.randomDeriver.createRandom("clay_bands_offset"), TERRACOTTA_BANDS_OFFSET_NOISE_PARAMETERS);
+        this.field_35415 = registry;
+        this.defaultBlock = blockState;
+        this.seaLevel = i;
+        this.randomDeriver = randomProvider.create(l).createBlockPosRandomDeriver();
+        this.terracottaBandsOffsetNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.CLAY_BANDS_OFFSET);
         this.terracottaBands = SurfaceBuilder.createTerracottaBands(this.randomDeriver.createRandom("clay_bands"));
-        this.surfaceNoise = DoublePerlinNoiseSampler.create(this.randomDeriver.createRandom("surface"), SURFACE_NOISE_PARAMETERS);
-        this.icebergAndBadlandsPillarNoise = DoublePerlinNoiseSampler.create(this.randomDeriver.createRandom("iceberg_and_badlands_pillar"), ICEBERG_AND_BADLANDS_PILLAR_NOISE_PARAMETERS);
-        this.icebergAndBadlandsPillarRoofNoise = DoublePerlinNoiseSampler.create(this.randomDeriver.createRandom("iceberg_and_badlands_pillar_roof"), ICEBERG_AND_BADLANDS_PILLAR_ROOF_NOISE_PARAMETERS);
+        this.surfaceNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.SURFACE);
+        this.icebergAndBadlandsPillarNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_AND_BADLANDS_PILLAR);
+        this.icebergAndBadlandsPillarRoofNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_AND_BADLANDS_PILLAR_ROOF);
     }
 
-    protected DoublePerlinNoiseSampler getNoiseSampler(String name2, DoublePerlinNoiseSampler.NoiseParameters noiseParameters) {
-        return this.noiseSamplers.computeIfAbsent(name2, name -> DoublePerlinNoiseSampler.create(this.randomDeriver.createRandom(new Identifier((String)name)), noiseParameters));
+    protected DoublePerlinNoiseSampler getNoiseSampler(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey) {
+        return this.noiseSamplers.computeIfAbsent(registryKey, registryKey2 -> NoiseParametersKeys.method_39173(this.field_35415, this.randomDeriver, registryKey));
     }
 
     public void buildSurface(BiomeAccess biomeAccess, Registry<Biome> biomeRegistry, boolean useLegacyRandom, HeightContext context, final Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, MaterialRules.MaterialRule surfaceRule) {

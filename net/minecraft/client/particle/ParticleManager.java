@@ -35,6 +35,7 @@ import net.minecraft.client.particle.AshParticle;
 import net.minecraft.client.particle.BlockDustParticle;
 import net.minecraft.client.particle.BlockFallingDustParticle;
 import net.minecraft.client.particle.BlockLeakParticle;
+import net.minecraft.client.particle.BlockMarkerParticle;
 import net.minecraft.client.particle.BubbleColumnUpParticle;
 import net.minecraft.client.particle.BubblePopParticle;
 import net.minecraft.client.particle.CampfireSmokeParticle;
@@ -57,7 +58,6 @@ import net.minecraft.client.particle.FireworksSparkParticle;
 import net.minecraft.client.particle.FishingParticle;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.particle.GlowParticle;
-import net.minecraft.client.particle.ItemBillboardParticle;
 import net.minecraft.client.particle.LargeFireSmokeParticle;
 import net.minecraft.client.particle.LavaEmberParticle;
 import net.minecraft.client.particle.NoteParticle;
@@ -144,8 +144,7 @@ implements ResourceReloader {
     private void registerDefaultFactories() {
         this.registerFactory(ParticleTypes.AMBIENT_ENTITY_EFFECT, SpellParticle.EntityAmbientFactory::new);
         this.registerFactory(ParticleTypes.ANGRY_VILLAGER, EmotionParticle.AngryVillagerFactory::new);
-        this.registerFactory(ParticleTypes.BARRIER, new ItemBillboardParticle.BarrierFactory());
-        this.registerFactory(ParticleTypes.LIGHT, new ItemBillboardParticle.LightFactory());
+        this.registerFactory(ParticleTypes.BLOCK_MARKER, new BlockMarkerParticle.Factory());
         this.registerFactory(ParticleTypes.BLOCK, new BlockDustParticle.Factory());
         this.registerFactory(ParticleTypes.BUBBLE, WaterBubbleParticle.Factory::new);
         this.registerFactory(ParticleTypes.BUBBLE_COLUMN_UP, BubbleColumnUpParticle.Factory::new);
@@ -397,7 +396,7 @@ implements ResourceReloader {
         RenderSystem.enableDepthTest();
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        matrixStack.method_34425(matrices.peek().getModel());
+        matrixStack.method_34425(matrices.peek().getPositionMatrix());
         RenderSystem.applyModelViewMatrix();
         for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
             Iterable iterable = this.particles.get(particleTextureSheet);
@@ -516,7 +515,7 @@ implements ResourceReloader {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class SimpleSpriteProvider
+    static class SimpleSpriteProvider
     implements SpriteProvider {
         private List<Sprite> sprites;
 

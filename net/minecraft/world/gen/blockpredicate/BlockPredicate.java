@@ -13,13 +13,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.blockpredicate.AllOfBlockPredicate;
+import net.minecraft.world.gen.blockpredicate.AlwaysTrueBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.AnyOfBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
 import net.minecraft.world.gen.blockpredicate.MatchingBlocksBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.MatchingFluidsBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.NotBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.ReplaceableBlockPredicate;
-import net.minecraft.world.gen.blockpredicate.TrueBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.WouldSurviveBlockPredicate;
 
 public interface BlockPredicate
@@ -85,7 +85,7 @@ extends BiPredicate<StructureWorldAccess, BlockPos> {
     }
 
     public static BlockPredicate alwaysTrue() {
-        return TrueBlockPredicate.INSTANCE;
+        return AlwaysTrueBlockPredicate.instance;
     }
 }
 

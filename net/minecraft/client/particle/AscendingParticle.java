@@ -19,7 +19,7 @@ extends SpriteBillboardParticle {
     protected AscendingParticle(ClientWorld world, double x, double y, double z, float randomVelocityXMultiplier, float randomVelocityYMultiplier, float randomVelocityZMultiplier, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider, float colorMultiplier, int baseMaxAge, float gravityStrength, boolean collidesWithWorld) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         float f;
-        this.field_28786 = 0.96f;
+        this.velocityMultiplier = 0.96f;
         this.gravityStrength = gravityStrength;
         this.field_28787 = true;
         this.spriteProvider = spriteProvider;

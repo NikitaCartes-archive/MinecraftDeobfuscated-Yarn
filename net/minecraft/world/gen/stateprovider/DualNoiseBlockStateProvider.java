@@ -23,7 +23,7 @@ import net.minecraft.world.gen.stateprovider.NoiseBlockStateProvider;
 
 public class DualNoiseBlockStateProvider
 extends NoiseBlockStateProvider {
-    public static final Codec<DualNoiseBlockStateProvider> DUAL_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Range.createRangedCodec(Codec.INT, 1, 64).fieldOf("variety")).forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.variety), ((MapCodec)DoublePerlinNoiseSampler.NoiseParameters.CODEC.fieldOf("slow_noise")).forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.slowNoiseParameters), ((MapCodec)Codecs.POSITIVE_FLOAT.fieldOf("slow_scale")).forGetter(dualNoiseBlockStateProvider -> Float.valueOf(dualNoiseBlockStateProvider.slowScale))).and(DualNoiseBlockStateProvider.fillNoiseCodecFields(instance)).apply(instance, DualNoiseBlockStateProvider::new));
+    public static final Codec<DualNoiseBlockStateProvider> DUAL_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Range.createRangedCodec(Codec.INT, 1, 64).fieldOf("variety")).forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.variety), ((MapCodec)DoublePerlinNoiseSampler.NoiseParameters.field_35424.fieldOf("slow_noise")).forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.slowNoiseParameters), ((MapCodec)Codecs.POSITIVE_FLOAT.fieldOf("slow_scale")).forGetter(dualNoiseBlockStateProvider -> Float.valueOf(dualNoiseBlockStateProvider.slowScale))).and(DualNoiseBlockStateProvider.fillNoiseCodecFields(instance)).apply(instance, DualNoiseBlockStateProvider::new));
     private final Range<Integer> variety;
     private final DoublePerlinNoiseSampler.NoiseParameters slowNoiseParameters;
     private final float slowScale;
@@ -34,7 +34,7 @@ extends NoiseBlockStateProvider {
         this.variety = variety;
         this.slowNoiseParameters = slowNoiseParameters;
         this.slowScale = slowScale;
-        this.slowNoiseSampler = DoublePerlinNoiseSampler.method_39123(new ChunkRandom(new AtomicSimpleRandom(seed)), slowNoiseParameters);
+        this.slowNoiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(new AtomicSimpleRandom(seed)), slowNoiseParameters);
     }
 
     @Override

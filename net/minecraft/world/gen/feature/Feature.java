@@ -180,7 +180,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<GeodeFeatureConfig> GEODE = Feature.register("geode", new GeodeFeature(GeodeFeatureConfig.CODEC));
     public static final Feature<DripstoneClusterFeatureConfig> DRIPSTONE_CLUSTER = Feature.register("dripstone_cluster", new DripstoneClusterFeature(DripstoneClusterFeatureConfig.CODEC));
     public static final Feature<LargeDripstoneFeatureConfig> LARGE_DRIPSTONE = Feature.register("large_dripstone", new LargeDripstoneFeature(LargeDripstoneFeatureConfig.CODEC));
-    public static final Feature<SmallDripstoneFeatureConfig> SMALL_DRIPSTONE = Feature.register("small_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC));
+    public static final Feature<SmallDripstoneFeatureConfig> POINTED_DRIPSTONE = Feature.register("pointed_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC));
     private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
     private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {

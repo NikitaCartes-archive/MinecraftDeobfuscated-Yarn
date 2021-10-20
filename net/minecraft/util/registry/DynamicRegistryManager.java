@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.UnboundedMapCodec;
@@ -18,7 +19,9 @@ import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.dynamic.RegistryOps;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
@@ -47,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
  * or configuration of dynamic registries.
  */
 public abstract class DynamicRegistryManager {
-    private static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogManager.getLogger();
     static final Map<RegistryKey<? extends Registry<?>>, Info<?>> INFOS = Util.make(() -> {
         ImmutableMap.Builder<RegistryKey<Registry<?>>, Info<?>> builder = ImmutableMap.builder();
         DynamicRegistryManager.register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
@@ -58,6 +61,7 @@ public abstract class DynamicRegistryManager {
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
         DynamicRegistryManager.register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
+        DynamicRegistryManager.register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.field_35424);
         return builder.build();
     });
     private static final Impl BUILTIN = Util.make(() -> {
@@ -228,6 +232,14 @@ public abstract class DynamicRegistryManager {
 
         public Impl() {
             this(INFOS.keySet().stream().collect(Collectors.toMap(Function.identity(), Impl::createRegistry)));
+        }
+
+        public static DynamicRegistryManager method_39199(Dynamic<?> dynamic) {
+            return new Impl(INFOS.keySet().stream().collect(Collectors.toMap(Function.identity(), registryKey -> Impl.method_39201(registryKey, dynamic))));
+        }
+
+        private static <E> SimpleRegistry<?> method_39201(RegistryKey<? extends Registry<?>> registryKey, Dynamic<?> dynamic) {
+            return (SimpleRegistry)RegistryLookupCodec.of(registryKey).codec().parse(dynamic).resultOrPartial(Util.addPrefix(registryKey + " registry: ", LOGGER::error)).orElseThrow(() -> new IllegalStateException("Failed to get " + registryKey + " registry"));
         }
 
         private Impl(Map<? extends RegistryKey<? extends Registry<?>>, ? extends SimpleRegistry<?>> registries) {

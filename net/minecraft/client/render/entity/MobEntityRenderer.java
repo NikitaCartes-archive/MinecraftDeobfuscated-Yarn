@@ -76,7 +76,7 @@ extends LivingEntityRenderer<T, M> {
         float l = (float)(vec3d.z - i);
         float m = 0.025f;
         VertexConsumer vertexConsumer = provider.getBuffer(RenderLayer.getLeash());
-        Matrix4f matrix4f = matrices.peek().getModel();
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
         float n = MathHelper.fastInverseSqrt(j * j + l * l) * 0.025f / 2.0f;
         float o = l * n;
         float p = j * n;
@@ -95,7 +95,7 @@ extends LivingEntityRenderer<T, M> {
         matrices.pop();
     }
 
-    private static void renderLeashPiece(VertexConsumer vertexConsumer, Matrix4f modelMatrix, float f, float g, float h, int leashedEntityBlockLight, int holdingEntityBlockLight, int leashedEntitySkyLight, int holdingEntitySkyLight, float i, float j, float k, float l, int pieceIndex, boolean isLeashKnot) {
+    private static void renderLeashPiece(VertexConsumer vertexConsumer, Matrix4f positionMatrix, float f, float g, float h, int leashedEntityBlockLight, int holdingEntityBlockLight, int leashedEntitySkyLight, int holdingEntitySkyLight, float i, float j, float k, float l, int pieceIndex, boolean isLeashKnot) {
         float m = (float)pieceIndex / 24.0f;
         int n = (int)MathHelper.lerp(m, leashedEntityBlockLight, holdingEntityBlockLight);
         int o = (int)MathHelper.lerp(m, leashedEntitySkyLight, holdingEntitySkyLight);
@@ -107,8 +107,8 @@ extends LivingEntityRenderer<T, M> {
         float u = f * m;
         float v = g > 0.0f ? g * m * m : g - g * (1.0f - m) * (1.0f - m);
         float w = h * m;
-        vertexConsumer.vertex(modelMatrix, u - k, v + j, w + l).color(r, s, t, 1.0f).light(p).next();
-        vertexConsumer.vertex(modelMatrix, u + k, v + i - j, w - l).color(r, s, t, 1.0f).light(p).next();
+        vertexConsumer.vertex(positionMatrix, u - k, v + j, w + l).color(r, s, t, 1.0f).light(p).next();
+        vertexConsumer.vertex(positionMatrix, u + k, v + i - j, w - l).color(r, s, t, 1.0f).light(p).next();
     }
 }
 

@@ -22,7 +22,7 @@ extends SpriteBillboardParticle {
         super(world, x, y, z);
         float g;
         this.gravityStrength = -0.1f;
-        this.field_28786 = 0.9f;
+        this.velocityMultiplier = 0.9f;
         this.spriteProvider = spriteProvider;
         this.velocityX = d + (Math.random() * 2.0 - 1.0) * (double)0.05f;
         this.velocityY = e + (Math.random() * 2.0 - 1.0) * (double)0.05f;

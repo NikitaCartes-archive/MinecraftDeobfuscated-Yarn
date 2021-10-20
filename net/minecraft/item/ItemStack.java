@@ -197,7 +197,7 @@ public final class ItemStack {
     private static final int field_30903 = 0;
     private static final Style LORE_STYLE = Style.EMPTY.withColor(Formatting.DARK_PURPLE).withItalic(true);
     private int count;
-    private int cooldown;
+    private int bobbingAnimationTime;
     @Deprecated
     private final Item item;
     /**
@@ -488,7 +488,7 @@ public final class ItemStack {
             return EMPTY;
         }
         ItemStack itemStack = new ItemStack(this.getItem(), this.count);
-        itemStack.setCooldown(this.getCooldown());
+        itemStack.setBobbingAnimationTime(this.getBobbingAnimationTime());
         if (this.nbt != null) {
             itemStack.nbt = this.nbt.copy();
         }
@@ -578,8 +578,8 @@ public final class ItemStack {
     }
 
     public void inventoryTick(World world, Entity entity, int slot, boolean selected) {
-        if (this.cooldown > 0) {
-            --this.cooldown;
+        if (this.bobbingAnimationTime > 0) {
+            --this.bobbingAnimationTime;
         }
         if (this.getItem() != null) {
             this.getItem().inventoryTick(this, world, entity, slot, selected);
@@ -1039,12 +1039,12 @@ public final class ItemStack {
         return this.destroyChecker.check(this, tagManager, pos);
     }
 
-    public int getCooldown() {
-        return this.cooldown;
+    public int getBobbingAnimationTime() {
+        return this.bobbingAnimationTime;
     }
 
-    public void setCooldown(int cooldown) {
-        this.cooldown = cooldown;
+    public void setBobbingAnimationTime(int bobbingAnimationTime) {
+        this.bobbingAnimationTime = bobbingAnimationTime;
     }
 
     /**

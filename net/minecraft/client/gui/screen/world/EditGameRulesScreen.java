@@ -134,7 +134,7 @@ extends Screen {
                     MutableText text3 = new TranslatableText("editGamerule.default", new LiteralText(string)).formatted(Formatting.GRAY);
                     String string2 = key.getTranslationKey() + ".description";
                     if (I18n.hasTranslation(string2)) {
-                        ImmutableCollection.ArrayBasedBuilder builder = ImmutableList.builder().add(text2.asOrderedText());
+                        ImmutableCollection.Builder builder = ImmutableList.builder().add(text2.asOrderedText());
                         TranslatableText text4 = new TranslatableText(string2);
                         EditGameRulesScreen.this.textRenderer.wrapLines(text4, 150).forEach(((ImmutableList.Builder)builder)::add);
                         list = ((ImmutableList.Builder)((ImmutableList.Builder)builder).add(text3.asOrderedText())).build();

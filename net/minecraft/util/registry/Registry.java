@@ -72,6 +72,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
 import net.minecraft.util.math.intprovider.IntProviderType;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.MutableRegistry;
@@ -224,6 +225,7 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = Registry.createRegistryKey("worldgen/processor_list");
     public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = Registry.createRegistryKey("worldgen/template_pool");
     public static final RegistryKey<Registry<Biome>> BIOME_KEY = Registry.createRegistryKey("worldgen/biome");
+    public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_WORLDGEN = Registry.createRegistryKey("worldgen/noise");
     public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = Registry.createRegistryKey("worldgen/carver");
     public static final Registry<Carver<?>> CARVER = Registry.create(CARVER_KEY, () -> Carver.CAVE);
     public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = Registry.createRegistryKey("worldgen/feature");
@@ -312,6 +314,10 @@ IndexedIterable<T> {
         return this.registryKey;
     }
 
+    public Lifecycle method_39198() {
+        return this.lifecycle;
+    }
+
     public String toString() {
         return "Registry[" + this.registryKey + " (" + this.lifecycle + ")]";
     }
@@ -369,7 +375,7 @@ IndexedIterable<T> {
     /**
      * Gets the lifecycle of a registry entry.
      */
-    protected abstract Lifecycle getEntryLifecycle(T var1);
+    public abstract Lifecycle getEntryLifecycle(T var1);
 
     public abstract Lifecycle getLifecycle();
 
@@ -414,7 +420,11 @@ IndexedIterable<T> {
     }
 
     public static <V, T extends V> T register(Registry<V> registry, Identifier id, T entry) {
-        return ((MutableRegistry)registry).add(RegistryKey.of(registry.registryKey, id), entry, Lifecycle.stable());
+        return Registry.method_39197(registry, RegistryKey.of(registry.registryKey, id), entry);
+    }
+
+    public static <V, T extends V> T method_39197(Registry<V> registry, RegistryKey<V> registryKey, T object) {
+        return ((MutableRegistry)registry).add(registryKey, object, Lifecycle.stable());
     }
 
     public static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {

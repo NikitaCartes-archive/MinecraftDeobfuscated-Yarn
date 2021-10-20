@@ -25,7 +25,7 @@ implements AutoCloseable {
     public void setFilter(boolean bilinear, boolean mipmap) {
         int j;
         int i;
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         this.bilinear = bilinear;
         this.mipmap = mipmap;
         if (bilinear) {
@@ -41,7 +41,7 @@ implements AutoCloseable {
     }
 
     public int getGlId() {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         if (this.glId == -1) {
             this.glId = TextureUtil.generateTextureId();
         }

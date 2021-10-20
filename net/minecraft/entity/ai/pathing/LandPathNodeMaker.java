@@ -285,7 +285,7 @@ extends PathNodeMaker {
     }
 
     private boolean checkBoxCollision(Box box) {
-        return this.collidedBoxes.computeIfAbsent(box, box2 -> !this.cachedWorld.isSpaceEmpty(this.entity, box));
+        return this.collidedBoxes.computeIfAbsent(box, object -> !this.cachedWorld.isSpaceEmpty(this.entity, box));
     }
 
     @Override

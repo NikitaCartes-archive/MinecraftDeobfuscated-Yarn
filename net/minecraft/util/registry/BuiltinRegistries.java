@@ -12,6 +12,7 @@ import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -25,6 +26,7 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
+import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,6 +53,7 @@ public class BuiltinRegistries {
     public static final Registry<StructurePool> STRUCTURE_POOL = BuiltinRegistries.addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);
     public static final Registry<Biome> BIOME = BuiltinRegistries.addRegistry(Registry.BIOME_KEY, () -> BuiltinBiomes.PLAINS);
     public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = BuiltinRegistries.addRegistry(Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::getInstance);
+    public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = BuiltinRegistries.addRegistry(Registry.NOISE_WORLDGEN, BuiltinNoiseParameters::init);
 
     private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<T> defaultValueSupplier) {
         return BuiltinRegistries.addRegistry(registryRef, Lifecycle.stable(), defaultValueSupplier);
@@ -72,11 +75,15 @@ public class BuiltinRegistries {
     }
 
     public static <V, T extends V> T add(Registry<V> registry, Identifier id, T object) {
-        return ((MutableRegistry)registry).add(RegistryKey.of(registry.getKey(), id), object, Lifecycle.stable());
+        return BuiltinRegistries.add(registry, RegistryKey.of(registry.getKey(), id), object);
     }
 
-    public static <V, T extends V> T set(Registry<V> registry, RegistryKey<V> registryKey, T object) {
-        return ((MutableRegistry)registry).add(registryKey, object, Lifecycle.stable());
+    public static <V, T extends V> T add(Registry<V> registry, RegistryKey<V> key, T object) {
+        return ((MutableRegistry)registry).add(key, object, Lifecycle.stable());
+    }
+
+    public static <V, T extends V> T set(Registry<V> registry, RegistryKey<V> key, T object) {
+        return ((MutableRegistry)registry).add(key, object, Lifecycle.stable());
     }
 
     public static void init() {

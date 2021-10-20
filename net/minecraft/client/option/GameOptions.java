@@ -148,6 +148,7 @@ public class GameOptions {
     public boolean sprintToggled;
     public boolean skipMultiplayerWarning;
     public boolean hideMatchedNames = true;
+    public boolean showAutosaveIndicator = true;
     /**
      * A key binding for moving forward.
      * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_W the W key} by default.
@@ -426,6 +427,7 @@ public class GameOptions {
         this.joinedFirstServer = visitor.visitBoolean("joinedFirstServer", this.joinedFirstServer);
         this.hideBundleTutorial = visitor.visitBoolean("hideBundleTutorial", this.hideBundleTutorial);
         this.syncChunkWrites = visitor.visitBoolean("syncChunkWrites", this.syncChunkWrites);
+        this.showAutosaveIndicator = visitor.visitBoolean("showAutosaveIndicator", this.showAutosaveIndicator);
         for (KeyBinding keyBinding : this.keysAll) {
             String string2;
             String string = keyBinding.getBoundKeyTranslationKey();

@@ -9,7 +9,6 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6643;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -19,6 +18,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.CarverContext;
+import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 
 public class ConfiguredCarver<WC extends CarverConfig> {
@@ -41,11 +41,11 @@ public class ConfiguredCarver<WC extends CarverConfig> {
         return this.carver.shouldCarve(this.config, random);
     }
 
-    public boolean carve(CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, AquiferSampler aquiferSampler, ChunkPos pos, class_6643 arg) {
+    public boolean carve(CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, AquiferSampler aquiferSampler, ChunkPos pos, CarvingMask carvingMask) {
         if (SharedConstants.method_37896(chunk.getPos().getStartX(), chunk.getPos().getStartZ())) {
             return false;
         }
-        return this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, arg);
+        return this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, carvingMask);
     }
 }
 

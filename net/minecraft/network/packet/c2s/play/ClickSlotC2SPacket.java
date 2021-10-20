@@ -6,6 +6,7 @@ package net.minecraft.network.packet.c2s.play;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.util.function.IntFunction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -39,7 +40,8 @@ implements Packet<ServerPlayPacketListener> {
         this.slot = buf2.readShort();
         this.button = buf2.readByte();
         this.actionType = buf2.readEnumConstant(SlotActionType.class);
-        this.modifiedStacks = Int2ObjectMaps.unmodifiable(buf2.readMap(PacketByteBuf.getMaxValidator(Int2ObjectOpenHashMap::new, 128), buf -> buf.readShort(), PacketByteBuf::readItemStack));
+        IntFunction<Int2ObjectOpenHashMap> intFunction = PacketByteBuf.getMaxValidator(Int2ObjectOpenHashMap::new, 128);
+        this.modifiedStacks = Int2ObjectMaps.unmodifiable(buf2.readMap(intFunction, buf -> buf.readShort(), PacketByteBuf::readItemStack));
         this.stack = buf2.readItemStack();
     }
 

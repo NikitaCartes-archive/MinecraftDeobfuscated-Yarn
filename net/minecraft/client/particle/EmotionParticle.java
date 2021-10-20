@@ -20,7 +20,7 @@ extends SpriteBillboardParticle {
     EmotionParticle(ClientWorld clientWorld, double d, double e, double f) {
         super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
         this.field_28787 = true;
-        this.field_28786 = 0.86f;
+        this.velocityMultiplier = 0.86f;
         this.velocityX *= (double)0.01f;
         this.velocityY *= (double)0.01f;
         this.velocityZ *= (double)0.01f;

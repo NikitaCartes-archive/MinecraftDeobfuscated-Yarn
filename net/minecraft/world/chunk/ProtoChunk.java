@@ -15,7 +15,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_6643;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -35,6 +34,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.CarvingMask;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +47,7 @@ extends Chunk {
     private volatile ChunkStatus status = ChunkStatus.EMPTY;
     private final List<NbtCompound> entities = Lists.newArrayList();
     private final List<BlockPos> lightSources = Lists.newArrayList();
-    private final Map<GenerationStep.Carver, class_6643> carvingMasks = new Object2ObjectArrayMap<GenerationStep.Carver, class_6643>();
+    private final Map<GenerationStep.Carver, CarvingMask> carvingMasks = new Object2ObjectArrayMap<GenerationStep.Carver, CarvingMask>();
 
     public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world, Registry<Biome> registry) {
         this(pos, upgradeData, null, new ChunkTickScheduler<Block>(block -> block == null || block.getDefaultState().isAir(), pos, world), new ChunkTickScheduler<Fluid>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos, world), world, registry);
@@ -245,16 +245,16 @@ extends Chunk {
     }
 
     @Nullable
-    public class_6643 getCarvingMask(GenerationStep.Carver carver) {
+    public CarvingMask getCarvingMask(GenerationStep.Carver carver) {
         return this.carvingMasks.get(carver);
     }
 
-    public class_6643 getOrCreateCarvingMask(GenerationStep.Carver carver2) {
-        return this.carvingMasks.computeIfAbsent(carver2, carver -> new class_6643(this.getHeight(), this.getBottomY()));
+    public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver carver2) {
+        return this.carvingMasks.computeIfAbsent(carver2, carver -> new CarvingMask(this.getHeight(), this.getBottomY()));
     }
 
-    public void setCarvingMask(GenerationStep.Carver carver, class_6643 arg) {
-        this.carvingMasks.put(carver, arg);
+    public void setCarvingMask(GenerationStep.Carver carver, CarvingMask carvingMask) {
+        this.carvingMasks.put(carver, carvingMask);
     }
 
     public void setLightingProvider(LightingProvider lightingProvider) {

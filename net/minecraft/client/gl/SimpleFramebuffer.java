@@ -13,7 +13,7 @@ public class SimpleFramebuffer
 extends Framebuffer {
     public SimpleFramebuffer(int width, int height, boolean useDepth, boolean getError) {
         super(useDepth);
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+        RenderSystem.assertOnRenderThreadOrInit();
         this.resize(width, height, getError);
     }
 }

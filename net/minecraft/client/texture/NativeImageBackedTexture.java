@@ -35,7 +35,7 @@ extends AbstractTexture {
     }
 
     public NativeImageBackedTexture(int width, int height, boolean useStb) {
-        RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
+        RenderSystem.assertOnGameThreadOrInit();
         this.image = new NativeImage(width, height, useStb);
         TextureUtil.prepareImage(this.getGlId(), this.image.getWidth(), this.image.getHeight());
     }

@@ -1275,8 +1275,7 @@ public class BlockStateModelGenerator {
         this.registerCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
         this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
         this.registerItemModel(Items.BARRIER);
-        this.registerBuiltinWithParticle(Blocks.LIGHT, Items.LIGHT);
-        this.registerLightModel();
+        this.method_39204();
         this.registerBuiltinWithParticle(Blocks.STRUCTURE_VOID, Items.STRUCTURE_VOID);
         this.registerItemModel(Items.STRUCTURE_VOID);
         this.registerBuiltinWithParticle(Blocks.MOVING_PISTON, Texture.getSubId(Blocks.PISTON, "_side"));
@@ -1673,12 +1672,16 @@ public class BlockStateModelGenerator {
         SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel((Item)spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
     }
 
-    private void registerLightModel() {
+    private void method_39204() {
         this.excludeFromSimpleItemModelGeneration(Blocks.LIGHT);
+        BlockStateVariantMap.SingleProperty<Integer> singleProperty = BlockStateVariantMap.create(Properties.LEVEL_15);
         for (int i = 0; i < 16; ++i) {
             String string = String.format("_%02d", i);
-            Models.GENERATED.upload(ModelIds.getItemSubModelId(Items.LIGHT, string), Texture.layer0(Texture.getSubId(Items.LIGHT, string)), this.modelCollector);
+            Identifier identifier = Texture.getSubId(Items.LIGHT, string);
+            singleProperty.register((Integer)i, BlockStateVariant.create().put(VariantSettings.MODEL, Models.PARTICLE.upload(Blocks.LIGHT, string, Texture.particle(identifier), this.modelCollector)));
+            Models.GENERATED.upload(ModelIds.getItemSubModelId(Items.LIGHT, string), Texture.layer0(identifier), this.modelCollector);
         }
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.LIGHT).coordinate(singleProperty));
     }
 
     private void registerCandle(Block candle, Block block) {

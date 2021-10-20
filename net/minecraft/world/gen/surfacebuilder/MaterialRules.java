@@ -62,12 +62,12 @@ public class MaterialRules {
         return new BiomeMaterialCondition(biomes);
     }
 
-    public static MaterialCondition noiseThreshold(String name, DoublePerlinNoiseSampler.NoiseParameters noiseParameters, double minThreshold) {
-        return MaterialRules.noiseThreshold(name, noiseParameters, minThreshold, Double.POSITIVE_INFINITY);
+    public static MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d) {
+        return MaterialRules.noiseThreshold(registryKey, d, Double.POSITIVE_INFINITY);
     }
 
-    public static MaterialCondition noiseThreshold(String name, DoublePerlinNoiseSampler.NoiseParameters noiseParameters, double minThreshold, double maxThreshold) {
-        return new NoiseThresholdMaterialCondition(name, noiseParameters, minThreshold, maxThreshold);
+    public static MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d, double e) {
+        return new NoiseThresholdMaterialCondition(registryKey, d, e);
     }
 
     public static MaterialCondition steepSlope() {
@@ -235,9 +235,9 @@ public class MaterialRules {
         }
     }
 
-    record NoiseThresholdMaterialCondition(String name, DoublePerlinNoiseSampler.NoiseParameters noise, double minThreshold, double maxThreshold) implements MaterialCondition
+    record NoiseThresholdMaterialCondition(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise, double minThreshold, double maxThreshold) implements MaterialCondition
     {
-        static final Codec<NoiseThresholdMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.STRING.fieldOf("name")).forGetter(NoiseThresholdMaterialCondition::name), ((MapCodec)DoublePerlinNoiseSampler.NoiseParameters.CODEC.fieldOf("noise")).forGetter(NoiseThresholdMaterialCondition::noise), ((MapCodec)Codec.DOUBLE.fieldOf("min_threshold")).forGetter(NoiseThresholdMaterialCondition::minThreshold), ((MapCodec)Codec.DOUBLE.fieldOf("max_threshold")).forGetter(NoiseThresholdMaterialCondition::maxThreshold)).apply((Applicative<NoiseThresholdMaterialCondition, ?>)instance, NoiseThresholdMaterialCondition::new));
+        static final Codec<NoiseThresholdMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)RegistryKey.createCodec(Registry.NOISE_WORLDGEN).fieldOf("noise")).forGetter(NoiseThresholdMaterialCondition::noise), ((MapCodec)Codec.DOUBLE.fieldOf("min_threshold")).forGetter(NoiseThresholdMaterialCondition::minThreshold), ((MapCodec)Codec.DOUBLE.fieldOf("max_threshold")).forGetter(NoiseThresholdMaterialCondition::maxThreshold)).apply((Applicative<NoiseThresholdMaterialCondition, ?>)instance, NoiseThresholdMaterialCondition::new));
 
         @Override
         public Codec<? extends MaterialCondition> codec() {
@@ -246,7 +246,7 @@ public class MaterialRules {
 
         @Override
         public BooleanSupplier apply(MaterialRuleContext materialRuleContext) {
-            final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.surfaceBuilder.getNoiseSampler(this.name, this.noise);
+            final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.surfaceBuilder.getNoiseSampler(this.noise);
             class NoiseThresholdPredicate
             extends LazyAbstractPredicate<MaterialRulePos> {
                 NoiseThresholdPredicate() {

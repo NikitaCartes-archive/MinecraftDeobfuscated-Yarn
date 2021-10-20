@@ -11,17 +11,17 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class SmallDripstoneFeatureConfig
 implements FeatureConfig {
-    public static final Codec<SmallDripstoneFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, 100).fieldOf("max_placements")).orElse(5).forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.maxPlacements), ((MapCodec)Codec.intRange(0, 20).fieldOf("empty_space_search_radius")).orElse(10).forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.emptySpaceSearchRadius), ((MapCodec)Codec.intRange(0, 20).fieldOf("max_offset_from_origin")).orElse(2).forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.maxOffsetFromOrigin), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("chance_of_taller_dripstone")).orElse(Float.valueOf(0.2f)).forGetter(smallDripstoneFeatureConfig -> Float.valueOf(smallDripstoneFeatureConfig.chanceOfTallerDripstone))).apply((Applicative<SmallDripstoneFeatureConfig, ?>)instance, SmallDripstoneFeatureConfig::new));
-    public final int maxPlacements;
-    public final int emptySpaceSearchRadius;
-    public final int maxOffsetFromOrigin;
+    public static final Codec<SmallDripstoneFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("chance_of_taller_dripstone")).orElse(Float.valueOf(0.2f)).forGetter(smallDripstoneFeatureConfig -> Float.valueOf(smallDripstoneFeatureConfig.chanceOfTallerDripstone)), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("chance_of_directional_spread")).orElse(Float.valueOf(0.7f)).forGetter(smallDripstoneFeatureConfig -> Float.valueOf(smallDripstoneFeatureConfig.field_35416)), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("chance_of_spread_radius2")).orElse(Float.valueOf(0.5f)).forGetter(smallDripstoneFeatureConfig -> Float.valueOf(smallDripstoneFeatureConfig.field_35417)), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("chance_of_spread_radius3")).orElse(Float.valueOf(0.5f)).forGetter(smallDripstoneFeatureConfig -> Float.valueOf(smallDripstoneFeatureConfig.field_35418))).apply((Applicative<SmallDripstoneFeatureConfig, ?>)instance, SmallDripstoneFeatureConfig::new));
     public final float chanceOfTallerDripstone;
+    public final float field_35416;
+    public final float field_35417;
+    public final float field_35418;
 
-    public SmallDripstoneFeatureConfig(int maxPlacements, int emptySpaceSearchRadius, int maxOffsetFromOrigin, float chanceOfTallerDripstone) {
-        this.maxPlacements = maxPlacements;
-        this.emptySpaceSearchRadius = emptySpaceSearchRadius;
-        this.maxOffsetFromOrigin = maxOffsetFromOrigin;
-        this.chanceOfTallerDripstone = chanceOfTallerDripstone;
+    public SmallDripstoneFeatureConfig(float f, float g, float h, float chanceOfTallerDripstone) {
+        this.chanceOfTallerDripstone = f;
+        this.field_35416 = g;
+        this.field_35417 = h;
+        this.field_35418 = chanceOfTallerDripstone;
     }
 }
 

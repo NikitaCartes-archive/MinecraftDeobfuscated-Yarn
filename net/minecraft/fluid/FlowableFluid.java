@@ -245,29 +245,29 @@ extends Fluid {
         return (short)((i + 128 & 0xFF) << 8 | j + 128 & 0xFF);
     }
 
-    protected int method_15742(WorldView world, BlockPos blockPos, int i2, Direction direction, BlockState blockState, BlockPos blockPos2, Short2ObjectMap<Pair<BlockState, FluidState>> short2ObjectMap, Short2BooleanMap short2BooleanMap) {
+    protected int method_15742(WorldView world, BlockPos blockPos, int i, Direction direction, BlockState blockState, BlockPos blockPos2, Short2ObjectMap<Pair<BlockState, FluidState>> short2ObjectMap, Short2BooleanMap short2BooleanMap) {
         int j = 1000;
         for (Direction direction2 : Direction.Type.HORIZONTAL) {
             int k;
             if (direction2 == direction) continue;
             BlockPos blockPos3 = blockPos.offset(direction2);
-            short s = FlowableFluid.method_15747(blockPos2, blockPos3);
-            Pair pair = short2ObjectMap.computeIfAbsent(s, i -> {
+            short s2 = FlowableFluid.method_15747(blockPos2, blockPos3);
+            Pair pair = short2ObjectMap.computeIfAbsent(s2, s -> {
                 BlockState blockState = world.getBlockState(blockPos3);
                 return Pair.of(blockState, blockState.getFluidState());
             });
             BlockState blockState2 = (BlockState)pair.getFirst();
             FluidState fluidState = (FluidState)pair.getSecond();
             if (!this.canFlowThrough(world, this.getFlowing(), blockPos, blockState, direction2, blockPos3, blockState2, fluidState)) continue;
-            boolean bl = short2BooleanMap.computeIfAbsent(s, i -> {
+            boolean bl = short2BooleanMap.computeIfAbsent(s2, s -> {
                 BlockPos blockPos2 = blockPos3.down();
                 BlockState blockState2 = world.getBlockState(blockPos2);
                 return this.method_15736(world, this.getFlowing(), blockPos3, blockState2, blockPos2, blockState2);
             });
             if (bl) {
-                return i2;
+                return i;
             }
-            if (i2 >= this.getFlowSpeed(world) || (k = this.method_15742(world, blockPos3, i2 + 1, direction2.getOpposite(), blockState2, blockPos2, short2ObjectMap, short2BooleanMap)) >= j) continue;
+            if (i >= this.getFlowSpeed(world) || (k = this.method_15742(world, blockPos3, i + 1, direction2.getOpposite(), blockState2, blockPos2, short2ObjectMap, short2BooleanMap)) >= j) continue;
             j = k;
         }
         return j;
@@ -305,14 +305,14 @@ extends Fluid {
     }
 
     protected Map<Direction, FluidState> getSpread(WorldView world, BlockPos pos, BlockState state) {
-        int i2 = 1000;
+        int i = 1000;
         EnumMap<Direction, FluidState> map = Maps.newEnumMap(Direction.class);
         Short2ObjectOpenHashMap<Pair<BlockState, FluidState>> short2ObjectMap = new Short2ObjectOpenHashMap<Pair<BlockState, FluidState>>();
         Short2BooleanOpenHashMap short2BooleanMap = new Short2BooleanOpenHashMap();
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos = pos.offset(direction);
-            short s = FlowableFluid.method_15747(pos, blockPos);
-            Pair pair = short2ObjectMap.computeIfAbsent(s, i -> {
+            short s2 = FlowableFluid.method_15747(pos, blockPos);
+            Pair pair = short2ObjectMap.computeIfAbsent(s2, s -> {
                 BlockState blockState = world.getBlockState(blockPos);
                 return Pair.of(blockState, blockState.getFluidState());
             });
@@ -321,17 +321,17 @@ extends Fluid {
             FluidState fluidState2 = this.getUpdatedState(world, blockPos, blockState);
             if (!this.canFlowThrough(world, fluidState2.getFluid(), pos, state, direction, blockPos, blockState, fluidState)) continue;
             BlockPos blockPos2 = blockPos.down();
-            boolean bl = short2BooleanMap.computeIfAbsent(s, i -> {
+            boolean bl = short2BooleanMap.computeIfAbsent(s2, s -> {
                 BlockState blockState2 = world.getBlockState(blockPos2);
                 return this.method_15736(world, this.getFlowing(), blockPos, blockState, blockPos2, blockState2);
             });
             int j = bl ? 0 : this.method_15742(world, blockPos, 1, direction.getOpposite(), blockState, pos, short2ObjectMap, short2BooleanMap);
-            if (j < i2) {
+            if (j < i) {
                 map.clear();
             }
-            if (j > i2) continue;
+            if (j > i) continue;
             map.put(direction, fluidState2);
-            i2 = j;
+            i = j;
         }
         return map;
     }

@@ -21,7 +21,7 @@ extends SpriteBillboardParticle {
     BubbleColumnUpParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
         super(clientWorld, d, e, f);
         this.gravityStrength = -0.125f;
-        this.field_28786 = 0.85f;
+        this.velocityMultiplier = 0.85f;
         this.setBoundingBoxSpacing(0.02f, 0.02f);
         this.scale *= this.random.nextFloat() * 0.6f + 0.2f;
         this.velocityX = g * (double)0.2f + (Math.random() * 2.0 - 1.0) * (double)0.02f;

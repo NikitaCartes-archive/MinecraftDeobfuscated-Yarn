@@ -21,7 +21,7 @@ extends SpriteBillboardParticle {
     protected SnowflakeParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z);
         this.gravityStrength = 0.225f;
-        this.field_28786 = 1.0f;
+        this.velocityMultiplier = 1.0f;
         this.spriteProvider = spriteProvider;
         this.velocityX = velocityX + (Math.random() * 2.0 - 1.0) * (double)0.05f;
         this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * (double)0.05f;

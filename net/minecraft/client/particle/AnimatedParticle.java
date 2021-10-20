@@ -21,7 +21,7 @@ extends SpriteBillboardParticle {
 
     protected AnimatedParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider, float upwardsAcceleration) {
         super(world, x, y, z);
-        this.field_28786 = 0.91f;
+        this.velocityMultiplier = 0.91f;
         this.gravityStrength = upwardsAcceleration;
         this.spriteProvider = spriteProvider;
     }

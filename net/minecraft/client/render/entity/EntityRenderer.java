@@ -103,7 +103,7 @@ public abstract class EntityRenderer<T extends Entity> {
         matrices.translate(0.0, f, 0.0);
         matrices.multiply(this.dispatcher.getRotation());
         matrices.scale(-0.025f, -0.025f, 0.025f);
-        Matrix4f matrix4f = matrices.peek().getModel();
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
         float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);
         int j = (int)(g * 255.0f) << 24;
         TextRenderer textRenderer = this.getTextRenderer();

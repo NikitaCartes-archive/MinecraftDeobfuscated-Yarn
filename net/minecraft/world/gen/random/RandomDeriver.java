@@ -14,6 +14,9 @@ public interface RandomDeriver {
     }
 
     default public AbstractRandom createRandom(Identifier id) {
+        if (id.getNamespace().equals("minecraft")) {
+            return this.createRandom(id.getPath());
+        }
         return this.createRandom(id.toString());
     }
 

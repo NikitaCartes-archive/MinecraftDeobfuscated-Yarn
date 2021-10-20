@@ -53,8 +53,8 @@ extends EntityRenderer<FishingBobberEntity> {
         matrixStack.multiply(this.dispatcher.getRotation());
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         MatrixStack.Entry entry = matrixStack.peek();
-        Matrix4f matrix4f = entry.getModel();
-        Matrix3f matrix3f = entry.getNormal();
+        Matrix4f matrix4f = entry.getPositionMatrix();
+        Matrix3f matrix3f = entry.getNormalMatrix();
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
         FishingBobberEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
         FishingBobberEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
@@ -121,7 +121,7 @@ extends EntityRenderer<FishingBobberEntity> {
         float l = y * (g * g + g) * 0.5f + 0.25f - i;
         float m = z * g - j;
         float n = MathHelper.sqrt(k * k + l * l + m * m);
-        buffer.vertex(normal.getModel(), h, i, j).color(0, 0, 0, 255).normal(normal.getNormal(), k /= n, l /= n, m /= n).next();
+        buffer.vertex(normal.getPositionMatrix(), h, i, j).color(0, 0, 0, 255).normal(normal.getNormalMatrix(), k /= n, l /= n, m /= n).next();
     }
 
     @Override

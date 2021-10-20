@@ -1134,6 +1134,7 @@ public class Items {
     public static final Item MUSIC_DISC_WARD = Items.register("music_disc_ward", (Item)new MusicDiscItem(10, SoundEvents.MUSIC_DISC_WARD, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item MUSIC_DISC_11 = Items.register("music_disc_11", (Item)new MusicDiscItem(11, SoundEvents.MUSIC_DISC_11, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item MUSIC_DISC_WAIT = Items.register("music_disc_wait", (Item)new MusicDiscItem(12, SoundEvents.MUSIC_DISC_WAIT, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
+    public static final Item MUSIC_DISC_OTHERSIDE = Items.register("music_disc_otherside", (Item)new MusicDiscItem(14, SoundEvents.MUSIC_DISC_OTHERSIDE, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item MUSIC_DISC_PIGSTEP = Items.register("music_disc_pigstep", (Item)new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PIGSTEP, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item TRIDENT = Items.register("trident", (Item)new TridentItem(new Item.Settings().maxDamage(250).group(ItemGroup.COMBAT)));
     public static final Item PHANTOM_MEMBRANE = Items.register("phantom_membrane", new Item(new Item.Settings().group(ItemGroup.BREWING)));
