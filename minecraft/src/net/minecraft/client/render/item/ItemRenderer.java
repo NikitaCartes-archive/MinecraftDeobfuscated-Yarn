@@ -142,9 +142,9 @@ public class ItemRenderer implements SynchronousResourceReloader {
 					matrices.push();
 					MatrixStack.Entry entry = matrices.peek();
 					if (renderMode == ModelTransformation.Mode.GUI) {
-						entry.getModel().multiply(0.5F);
+						entry.getPositionMatrix().multiply(0.5F);
 					} else if (renderMode.isFirstPerson()) {
-						entry.getModel().multiply(0.75F);
+						entry.getPositionMatrix().multiply(0.75F);
 					}
 
 					if (bl2) {
@@ -177,13 +177,13 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 	public static VertexConsumer getCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
 		return VertexConsumers.union(
-			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()), provider.getBuffer(layer)
+			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry.getPositionMatrix(), entry.getNormalMatrix()), provider.getBuffer(layer)
 		);
 	}
 
 	public static VertexConsumer getDirectCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
 		return VertexConsumers.union(
-			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry.getModel(), entry.getNormal()), provider.getBuffer(layer)
+			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry.getPositionMatrix(), entry.getNormalMatrix()), provider.getBuffer(layer)
 		);
 	}
 
@@ -378,7 +378,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 					(float)(y + 6 + 3),
 					16777215,
 					true,
-					matrixStack.peek().getModel(),
+					matrixStack.peek().getPositionMatrix(),
 					immediate,
 					false,
 					0,

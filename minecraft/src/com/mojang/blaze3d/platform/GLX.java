@@ -34,14 +34,14 @@ public class GLX {
 	private static String cpuInfo;
 
 	public static String getOpenGLVersionString() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		return GLFW.glfwGetCurrentContext() == 0L
 			? "NO CONTEXT"
 			: GlStateManager._getString(7937) + " GL version " + GlStateManager._getString(7938) + ", " + GlStateManager._getString(7936);
 	}
 
 	public static int _getRefreshRate(Window window) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		long l = GLFW.glfwGetWindowMonitor(window.getHandle());
 		if (l == 0L) {
 			l = GLFW.glfwGetPrimaryMonitor();
@@ -52,12 +52,12 @@ public class GLX {
 	}
 
 	public static String _getLWJGLVersion() {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		return Version.getVersion();
 	}
 
 	public static LongSupplier _initGlfw() {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		Window.acceptError((integer, stringx) -> {
 			throw new IllegalStateException(String.format("GLFW error before init: [0x%X]%s", integer, stringx));
 		});
@@ -78,7 +78,7 @@ public class GLX {
 	}
 
 	public static void _setGlfwErrorCallback(GLFWErrorCallbackI callback) {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback(callback);
 		if (gLFWErrorCallback != null) {
 			gLFWErrorCallback.free();
@@ -90,7 +90,7 @@ public class GLX {
 	}
 
 	public static void _init(int debugVerbosity, boolean debugSync) {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 
 		try {
 			CentralProcessor centralProcessor = new SystemInfo().getHardware().getProcessor();
@@ -106,7 +106,7 @@ public class GLX {
 	}
 
 	public static void _renderCrosshair(int size, boolean drawX, boolean drawY, boolean drawZ) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		GlStateManager._disableTexture();
 		GlStateManager._depthMask(false);
 		GlStateManager._disableCull();

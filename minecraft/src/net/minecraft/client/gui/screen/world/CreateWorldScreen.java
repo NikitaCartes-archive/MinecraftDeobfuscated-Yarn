@@ -47,7 +47,6 @@ import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -132,12 +131,7 @@ public class CreateWorldScreen extends Screen {
 		return new CreateWorldScreen(
 			parent,
 			DataPackSettings.SAFE_MODE,
-			new MoreOptionsDialog(
-				impl,
-				GeneratorOptions.getDefaultOptions(impl.get(Registry.DIMENSION_TYPE_KEY), impl.get(Registry.BIOME_KEY), impl.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY)),
-				Optional.of(GeneratorType.DEFAULT),
-				OptionalLong.empty()
-			)
+			new MoreOptionsDialog(impl, GeneratorOptions.getDefaultOptions(impl), Optional.of(GeneratorType.DEFAULT), OptionalLong.empty())
 		);
 	}
 

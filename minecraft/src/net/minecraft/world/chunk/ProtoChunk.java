@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_6643;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -29,6 +28,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.CarvingMask;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +39,7 @@ public class ProtoChunk extends Chunk {
 	private volatile ChunkStatus status = ChunkStatus.EMPTY;
 	private final List<NbtCompound> entities = Lists.<NbtCompound>newArrayList();
 	private final List<BlockPos> lightSources = Lists.<BlockPos>newArrayList();
-	private final Map<GenerationStep.Carver, class_6643> carvingMasks = new Object2ObjectArrayMap<>();
+	private final Map<GenerationStep.Carver, CarvingMask> carvingMasks = new Object2ObjectArrayMap<>();
 
 	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world, Registry<Biome> registry) {
 		this(
@@ -265,16 +265,16 @@ public class ProtoChunk extends Chunk {
 	}
 
 	@Nullable
-	public class_6643 getCarvingMask(GenerationStep.Carver carver) {
-		return (class_6643)this.carvingMasks.get(carver);
+	public CarvingMask getCarvingMask(GenerationStep.Carver carver) {
+		return (CarvingMask)this.carvingMasks.get(carver);
 	}
 
-	public class_6643 getOrCreateCarvingMask(GenerationStep.Carver carver) {
-		return (class_6643)this.carvingMasks.computeIfAbsent(carver, carverx -> new class_6643(this.getHeight(), this.getBottomY()));
+	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver carver) {
+		return (CarvingMask)this.carvingMasks.computeIfAbsent(carver, carverx -> new CarvingMask(this.getHeight(), this.getBottomY()));
 	}
 
-	public void setCarvingMask(GenerationStep.Carver carver, class_6643 arg) {
-		this.carvingMasks.put(carver, arg);
+	public void setCarvingMask(GenerationStep.Carver carver, CarvingMask carvingMask) {
+		this.carvingMasks.put(carver, carvingMask);
 	}
 
 	public void setLightingProvider(LightingProvider lightingProvider) {

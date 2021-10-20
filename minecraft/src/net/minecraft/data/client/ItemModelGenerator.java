@@ -194,6 +194,7 @@ public class ItemModelGenerator {
 		this.register(Items.MUSIC_DISC_STRAD, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_WAIT, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_WARD, Models.GENERATED);
+		this.register(Items.MUSIC_DISC_OTHERSIDE, Models.GENERATED);
 		this.register(Items.MUTTON, Models.GENERATED);
 		this.register(Items.NAME_TAG, Models.GENERATED);
 		this.register(Items.NAUTILUS_SHELL, Models.GENERATED);

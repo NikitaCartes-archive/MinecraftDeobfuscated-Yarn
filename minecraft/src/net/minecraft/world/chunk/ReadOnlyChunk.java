@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Map;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_6643;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -25,6 +24,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 /**
@@ -226,7 +226,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public class_6643 getCarvingMask(GenerationStep.Carver carver) {
+	public CarvingMask getCarvingMask(GenerationStep.Carver carver) {
 		if (this.field_34554) {
 			return super.getCarvingMask(carver);
 		} else {
@@ -235,7 +235,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public class_6643 getOrCreateCarvingMask(GenerationStep.Carver carver) {
+	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver carver) {
 		if (this.field_34554) {
 			return super.getOrCreateCarvingMask(carver);
 		} else {

@@ -36,7 +36,7 @@ public class DefaultBiomeFeatures {
 	public static void addDripstone(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.LOCAL_MODIFICATIONS, ConfiguredFeatures.LARGE_DRIPSTONE);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.DRIPSTONE_CLUSTER);
-		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SMALL_DRIPSTONE);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.POINTED_DRIPSTONE);
 	}
 
 	public static void addDefaultOres(GenerationSettings.Builder builder) {

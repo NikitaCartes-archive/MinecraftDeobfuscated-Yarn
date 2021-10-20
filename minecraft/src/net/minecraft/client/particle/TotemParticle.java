@@ -9,7 +9,7 @@ import net.minecraft.particle.DefaultParticleType;
 public class TotemParticle extends AnimatedParticle {
 	TotemParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
 		super(clientWorld, d, e, f, spriteProvider, 1.25F);
-		this.field_28786 = 0.6F;
+		this.velocityMultiplier = 0.6F;
 		this.velocityX = g;
 		this.velocityY = h;
 		this.velocityZ = i;

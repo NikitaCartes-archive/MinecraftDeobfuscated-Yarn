@@ -12,7 +12,7 @@ public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 	protected ExplosionSmokeParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
 		super(world, x, y, z);
 		this.gravityStrength = -0.1F;
-		this.field_28786 = 0.9F;
+		this.velocityMultiplier = 0.9F;
 		this.spriteProvider = spriteProvider;
 		this.velocityX = d + (Math.random() * 2.0 - 1.0) * 0.05F;
 		this.velocityY = e + (Math.random() * 2.0 - 1.0) * 0.05F;

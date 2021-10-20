@@ -1,6 +1,7 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -25,7 +26,7 @@ public class SpawnDensityCapper {
 
 	private List<ServerPlayerEntity> getMobSpawnablePlayers(ChunkPos chunkPos) {
 		return (List<ServerPlayerEntity>)this.chunkPosToMobSpawnablePlayers
-			.computeIfAbsent(chunkPos.toLong(), pos -> this.threadedAnvilChunkStorage.getPlayersWatchingChunk(chunkPos));
+			.computeIfAbsent(chunkPos.toLong(), (Long2ObjectFunction)(pos -> this.threadedAnvilChunkStorage.getPlayersWatchingChunk(chunkPos)));
 	}
 
 	public void increaseDensity(ChunkPos chunkPos, SpawnGroup spawnGroup) {

@@ -28,13 +28,13 @@ public class Program {
 	}
 
 	public void attachTo(GlShader program) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		GlStateManager.glAttachShader(program.getProgramRef(), this.getShaderRef());
 	}
 
 	public void release() {
 		if (this.shaderRef != -1) {
-			RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+			RenderSystem.assertOnRenderThread();
 			GlStateManager.glDeleteShader(this.shaderRef);
 			this.shaderRef = -1;
 			this.shaderType.getProgramCache().remove(this.name);
@@ -46,7 +46,7 @@ public class Program {
 	}
 
 	public static Program createFromResource(Program.Type type, String name, InputStream stream, String domain, GLImportProcessor loader) throws IOException {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		int i = loadProgram(type, name, stream, domain, loader);
 		Program program = new Program(type, i, name);
 		type.getProgramCache().put(name, program);

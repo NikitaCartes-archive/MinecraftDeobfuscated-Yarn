@@ -7,10 +7,11 @@ import net.minecraft.util.registry.Registry;
 public class ParticleTypes {
 	public static final DefaultParticleType AMBIENT_ENTITY_EFFECT = register("ambient_entity_effect", false);
 	public static final DefaultParticleType ANGRY_VILLAGER = register("angry_villager", false);
-	public static final DefaultParticleType BARRIER = register("barrier", false);
-	public static final DefaultParticleType LIGHT = register("light", false);
 	public static final ParticleType<BlockStateParticleEffect> BLOCK = register(
 		"block", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
+	);
+	public static final ParticleType<BlockStateParticleEffect> BLOCK_MARKER = register(
+		"block_marker", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
 	);
 	public static final DefaultParticleType BUBBLE = register("bubble", false);
 	public static final DefaultParticleType CLOUD = register("cloud", false);

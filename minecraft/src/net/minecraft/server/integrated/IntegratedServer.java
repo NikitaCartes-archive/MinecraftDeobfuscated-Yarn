@@ -40,7 +40,7 @@ public class IntegratedServer extends MinecraftServer {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_34964 = 2;
 	private final MinecraftClient client;
-	private boolean paused;
+	private boolean paused = true;
 	private int lanPort = -1;
 	@Nullable
 	private GameMode forcedGameMode;
@@ -98,17 +98,17 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		boolean bl = this.paused;
-		this.paused = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
+		this.paused = MinecraftClient.getInstance().isPaused();
 		Profiler profiler = this.getProfiler();
 		if (!bl && this.paused) {
 			profiler.push("autoSave");
 			LOGGER.info("Saving and pausing game...");
-			this.getPlayerManager().saveAllPlayerData();
-			this.save(false, false, false);
+			this.saveAll(false, false, false);
 			profiler.pop();
 		}
 
-		if (this.paused) {
+		boolean bl2 = MinecraftClient.getInstance().getNetworkHandler() != null;
+		if (bl2 && this.paused) {
 			this.incrementTotalWorldTimeStat();
 		} else {
 			super.tick(shouldKeepTicking);

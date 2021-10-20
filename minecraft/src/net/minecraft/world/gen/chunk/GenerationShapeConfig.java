@@ -22,7 +22,6 @@ public final class GenerationShapeConfig extends Record {
 	private final double densityOffset;
 	private final boolean islandNoiseOverride;
 	private final boolean amplified;
-	private final boolean useLegacyRandom;
 	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(GenerationShapeConfig::minimumY),
@@ -37,8 +36,7 @@ public final class GenerationShapeConfig extends Record {
 						Codec.BOOL
 							.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
 							.forGetter(GenerationShapeConfig::islandNoiseOverride),
-						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified),
-						Codec.BOOL.optionalFieldOf("use_legacy_random", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::useLegacyRandom)
+						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified)
 					)
 					.apply(instance, GenerationShapeConfig::new)
 		)
@@ -55,8 +53,7 @@ public final class GenerationShapeConfig extends Record {
 		double densityFactor,
 		double densityOffset,
 		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset,
-		boolean islandNoiseOverride
+		boolean randomDensityOffset
 	) {
 		this.minimumY = minimumY;
 		this.height = height;
@@ -69,7 +66,6 @@ public final class GenerationShapeConfig extends Record {
 		this.densityOffset = densityOffset;
 		this.islandNoiseOverride = simplexSurfaceNoise;
 		this.amplified = randomDensityOffset;
-		this.useLegacyRandom = islandNoiseOverride;
 	}
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
@@ -93,22 +89,10 @@ public final class GenerationShapeConfig extends Record {
 		double densityFactor,
 		double densityOffset,
 		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset,
-		boolean islandNoiseOverride
+		boolean randomDensityOffset
 	) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(
-			minimumY,
-			height,
-			sampling,
-			topSlide,
-			bottomSlide,
-			horizontalSize,
-			verticalSize,
-			densityFactor,
-			densityOffset,
-			simplexSurfaceNoise,
-			randomDensityOffset,
-			islandNoiseOverride
+			minimumY, height, sampling, topSlide, bottomSlide, horizontalSize, verticalSize, densityFactor, densityOffset, simplexSurfaceNoise, randomDensityOffset
 		);
 		checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
 			throw new IllegalStateException(partialResult.message());
@@ -127,19 +111,19 @@ public final class GenerationShapeConfig extends Record {
 	}
 
 	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified;useLegacyRandom",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified,GenerationShapeConfig::useLegacyRandom>(
+		return ObjectMethods.bootstrap<"toString",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified>(
 			this
 		);
 	}
 
 	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified;useLegacyRandom",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified,GenerationShapeConfig::useLegacyRandom>(
+		return ObjectMethods.bootstrap<"hashCode",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified>(
 			this
 		);
 	}
 
 	public final boolean equals(Object object) {
-		return ObjectMethods.bootstrap<"equals",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified;useLegacyRandom",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified,GenerationShapeConfig::useLegacyRandom>(
+		return ObjectMethods.bootstrap<"equals",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified>(
 			this, object
 		);
 	}
@@ -178,9 +162,5 @@ public final class GenerationShapeConfig extends Record {
 
 	public double densityOffset() {
 		return this.densityOffset;
-	}
-
-	public boolean useLegacyRandom() {
-		return this.useLegacyRandom;
 	}
 }

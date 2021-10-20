@@ -125,7 +125,7 @@ public class GlDebug {
 	}
 
 	public static void enableDebug(int verbosity, boolean sync) {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		if (verbosity > 0) {
 			GLCapabilities gLCapabilities = GL.getCapabilities();
 			if (gLCapabilities.GL_KHR_debug) {

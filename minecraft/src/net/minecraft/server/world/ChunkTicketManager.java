@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntMaps;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
@@ -198,7 +199,7 @@ public abstract class ChunkTicketManager {
 	}
 
 	private SortedArraySet<ChunkTicket<?>> getTicketSet(long position) {
-		return (SortedArraySet<ChunkTicket<?>>)this.ticketsByPosition.computeIfAbsent(position, l -> SortedArraySet.create(4));
+		return (SortedArraySet<ChunkTicket<?>>)this.ticketsByPosition.computeIfAbsent(position, (Long2ObjectFunction)(l -> SortedArraySet.create(4)));
 	}
 
 	protected void setChunkForced(ChunkPos pos, boolean forced) {
@@ -216,7 +217,7 @@ public abstract class ChunkTicketManager {
 	public void handleChunkEnter(ChunkSectionPos pos, ServerPlayerEntity player) {
 		ChunkPos chunkPos = pos.toChunkPos();
 		long l = chunkPos.toLong();
-		this.playersByChunkPos.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(player);
+		this.playersByChunkPos.computeIfAbsent(l, (Long2ObjectFunction<? extends ObjectOpenHashSet<ServerPlayerEntity>>)(lx -> new ObjectOpenHashSet())).add(player);
 		this.distanceFromNearestPlayerTracker.updateLevel(l, 0, true);
 		this.nearbyChunkTicketUpdater.updateLevel(l, 0, true);
 		this.simulationDistanceTracker.add(ChunkTicketType.PLAYER, chunkPos, this.getPlayerSimulationLevel(), chunkPos);

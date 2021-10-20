@@ -22,7 +22,7 @@ public class AbstractDustParticle<T extends AbstractDustParticleEffect> extends 
 		SpriteProvider spriteProvider
 	) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ);
-		this.field_28786 = 0.96F;
+		this.velocityMultiplier = 0.96F;
 		this.field_28787 = true;
 		this.spriteProvider = spriteProvider;
 		this.velocityX *= 0.1F;

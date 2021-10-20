@@ -112,7 +112,7 @@ public class VillagerGossips {
 
 	public void startGossip(UUID target, VillageGossipType type, int value) {
 		VillagerGossips.Reputation reputation = this.getReputationFor(target);
-		reputation.associatedGossip.mergeInt(type, value, (integer, integer2) -> this.mergeReputation(type, integer, integer2));
+		reputation.associatedGossip.mergeInt(type, value, (i, j) -> this.mergeReputation(type, i, j));
 		reputation.clamp(type);
 		if (reputation.isObsolete()) {
 			this.entityReputation.remove(target);

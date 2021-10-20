@@ -219,7 +219,7 @@ public class HeldItemRenderer {
 		Integer integer = FilledMapItem.getMapId(stack);
 		MapState mapState = FilledMapItem.getMapState(integer, this.client.world);
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(mapState == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
-		Matrix4f matrix4f = matrices.peek().getModel();
+		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 		vertexConsumer.vertex(matrix4f, -7.0F, 135.0F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(swingProgress).next();
 		vertexConsumer.vertex(matrix4f, 135.0F, 135.0F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(swingProgress).next();
 		vertexConsumer.vertex(matrix4f, 135.0F, -7.0F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(swingProgress).next();

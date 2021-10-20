@@ -108,7 +108,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.MUSIC_DISC_11,
 				Items.MUSIC_DISC_WAIT
 			);
-		this.getOrCreateTagBuilder(ItemTags.MUSIC_DISCS).addTag(ItemTags.CREEPER_DROP_MUSIC_DISCS).add(Items.MUSIC_DISC_PIGSTEP);
+		this.getOrCreateTagBuilder(ItemTags.MUSIC_DISCS).addTag(ItemTags.CREEPER_DROP_MUSIC_DISCS).add(Items.MUSIC_DISC_PIGSTEP).add(Items.MUSIC_DISC_OTHERSIDE);
 		this.getOrCreateTagBuilder(ItemTags.COALS).add(Items.COAL, Items.CHARCOAL);
 		this.getOrCreateTagBuilder(ItemTags.ARROWS).add(Items.ARROW, Items.TIPPED_ARROW, Items.SPECTRAL_ARROW);
 		this.getOrCreateTagBuilder(ItemTags.LECTERN_BOOKS).add(Items.WRITTEN_BOOK, Items.WRITABLE_BOOK);

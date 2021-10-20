@@ -59,7 +59,7 @@ public final class Window implements AutoCloseable {
 	private boolean vsync;
 
 	public Window(WindowEventHandler eventHandler, MonitorTracker monitorTracker, WindowSettings settings, @Nullable String videoMode, String title) {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		this.monitorTracker = monitorTracker;
 		this.throwOnGlError();
 		this.setPhase("Pre startup");
@@ -109,7 +109,7 @@ public final class Window implements AutoCloseable {
 	}
 
 	public int getRefreshRate() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		return GLX._getRefreshRate(this);
 	}
 
@@ -118,7 +118,7 @@ public final class Window implements AutoCloseable {
 	}
 
 	public static void acceptError(BiConsumer<Integer, String> consumer) {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			PointerBuffer pointerBuffer = memoryStack.mallocPointer(1);
@@ -132,7 +132,7 @@ public final class Window implements AutoCloseable {
 	}
 
 	public void setIcon(InputStream icon16, InputStream icon32) {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			if (icon16 == null) {
@@ -176,7 +176,7 @@ public final class Window implements AutoCloseable {
 
 	@Nullable
 	private ByteBuffer readImage(InputStream in, IntBuffer x, IntBuffer y, IntBuffer channels) throws IOException {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		ByteBuffer byteBuffer = null;
 
 		ByteBuffer var6;
@@ -198,12 +198,12 @@ public final class Window implements AutoCloseable {
 	}
 
 	private void throwOnGlError() {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		GLFW.glfwSetErrorCallback(Window::throwGlError);
 	}
 
 	private static void throwGlError(int error, long description) {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		String string = "GLFW error " + error + ": " + MemoryUtil.memUTF8(description);
 		TinyFileDialogs.tinyfd_messageBox(
 			"Minecraft", string + ".\n\nPlease make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).", "ok", "error", false
@@ -212,7 +212,7 @@ public final class Window implements AutoCloseable {
 	}
 
 	public void logGlError(int error, long description) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		String string = MemoryUtil.memUTF8(description);
 		LOGGER.error("########## GL ERROR ##########");
 		LOGGER.error("@ {}", this.phase);
@@ -227,13 +227,13 @@ public final class Window implements AutoCloseable {
 	}
 
 	public void setVsync(boolean vsync) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+		RenderSystem.assertOnRenderThreadOrInit();
 		this.vsync = vsync;
 		GLFW.glfwSwapInterval(vsync ? 1 : 0);
 	}
 
 	public void close() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		Callbacks.glfwFreeCallbacks(this.handle);
 		this.errorCallback.close();
 		GLFW.glfwDestroyWindow(this.handle);
@@ -260,7 +260,7 @@ public final class Window implements AutoCloseable {
 	}
 
 	private void updateFramebufferSize() {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		int[] is = new int[1];
 		int[] js = new int[1];
 		GLFW.glfwGetFramebufferSize(this.handle, is, js);
@@ -322,7 +322,7 @@ public final class Window implements AutoCloseable {
 	}
 
 	private void updateWindowRegion() {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		boolean bl = GLFW.glfwGetWindowMonitor(this.handle) != 0L;
 		if (this.fullscreen) {
 			Monitor monitor = this.monitorTracker.getMonitor(this);
@@ -369,7 +369,7 @@ public final class Window implements AutoCloseable {
 	}
 
 	private void updateFullscreen(boolean vsync) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 
 		try {
 			this.updateWindowRegion();

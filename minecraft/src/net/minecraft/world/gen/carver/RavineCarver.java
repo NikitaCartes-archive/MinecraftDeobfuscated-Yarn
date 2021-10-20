@@ -3,7 +3,6 @@ package net.minecraft.world.gen.carver;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_6643;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -28,7 +27,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		Random random,
 		AquiferSampler aquiferSampler,
 		ChunkPos chunkPos,
-		class_6643 arg
+		CarvingMask carvingMask
 	) {
 		int i = (this.getBranchFactor() * 2 - 1) * 16;
 		double d = (double)chunkPos.getOffsetX(random.nextInt(16));
@@ -40,7 +39,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		float k = ravineCarverConfig.shape.thickness.get(random);
 		int l = (int)((float)i * ravineCarverConfig.shape.distanceFactor.get(random));
 		int m = 0;
-		this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), aquiferSampler, d, (double)j, e, k, f, g, 0, l, h, arg);
+		this.carveRavine(carverContext, ravineCarverConfig, chunk, function, random.nextLong(), aquiferSampler, d, (double)j, e, k, f, g, 0, l, h, carvingMask);
 		return true;
 	}
 
@@ -60,7 +59,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		int branchStartIndex,
 		int branchCount,
 		double yawPitchRatio,
-		class_6643 arg
+		CarvingMask carvingMask
 	) {
 		Random random = new Random(seed);
 		float[] fs = this.createHorizontalStretchFactors(context, config, random);
@@ -100,7 +99,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 					z,
 					d,
 					e,
-					arg,
+					carvingMask,
 					(contextx, dx, ex, fx, yx) -> this.isPositionExcluded(contextx, fs, dx, ex, fx, yx)
 				);
 			}

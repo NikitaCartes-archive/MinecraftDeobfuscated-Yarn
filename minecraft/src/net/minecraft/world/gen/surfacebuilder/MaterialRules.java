@@ -61,14 +61,12 @@ public class MaterialRules {
 		return new MaterialRules.BiomeMaterialCondition(biomes);
 	}
 
-	public static MaterialRules.MaterialCondition noiseThreshold(String name, DoublePerlinNoiseSampler.NoiseParameters noiseParameters, double minThreshold) {
-		return noiseThreshold(name, noiseParameters, minThreshold, Double.POSITIVE_INFINITY);
+	public static MaterialRules.MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d) {
+		return noiseThreshold(registryKey, d, Double.POSITIVE_INFINITY);
 	}
 
-	public static MaterialRules.MaterialCondition noiseThreshold(
-		String name, DoublePerlinNoiseSampler.NoiseParameters noiseParameters, double minThreshold, double maxThreshold
-	) {
-		return new MaterialRules.NoiseThresholdMaterialCondition(name, noiseParameters, minThreshold, maxThreshold);
+	public static MaterialRules.MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d, double e) {
+		return new MaterialRules.NoiseThresholdMaterialCondition(registryKey, d, e);
 	}
 
 	public static MaterialRules.MaterialCondition steepSlope() {
@@ -716,23 +714,20 @@ public class MaterialRules {
 	}
 
 	static final class NoiseThresholdMaterialCondition extends Record implements MaterialRules.MaterialCondition {
-		private final String name;
-		private final DoublePerlinNoiseSampler.NoiseParameters noise;
+		private final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise;
 		final double minThreshold;
 		final double maxThreshold;
 		static final Codec<MaterialRules.NoiseThresholdMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.STRING.fieldOf("name").forGetter(MaterialRules.NoiseThresholdMaterialCondition::name),
-						DoublePerlinNoiseSampler.NoiseParameters.CODEC.fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
+						RegistryKey.createCodec(Registry.NOISE_WORLDGEN).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
 						Codec.DOUBLE.fieldOf("min_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::minThreshold),
 						Codec.DOUBLE.fieldOf("max_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::maxThreshold)
 					)
 					.apply(instance, MaterialRules.NoiseThresholdMaterialCondition::new)
 		);
 
-		NoiseThresholdMaterialCondition(String string, DoublePerlinNoiseSampler.NoiseParameters noiseParameters, double d, double e) {
-			this.name = string;
-			this.noise = noiseParameters;
+		NoiseThresholdMaterialCondition(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d, double e) {
+			this.noise = registryKey;
 			this.minThreshold = d;
 			this.maxThreshold = e;
 		}
@@ -743,7 +738,7 @@ public class MaterialRules {
 		}
 
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
-			final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.surfaceBuilder.getNoiseSampler(this.name, this.noise);
+			final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.surfaceBuilder.getNoiseSampler(this.noise);
 
 			class NoiseThresholdPredicate extends MaterialRules.LazyAbstractPredicate<MaterialRules.MaterialRulePos> {
 				protected boolean test(MaterialRules.MaterialRulePos materialRulePos) {
@@ -758,28 +753,24 @@ public class MaterialRules {
 		}
 
 		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.NoiseThresholdMaterialCondition,"name;noise;minThreshold;maxThreshold",MaterialRules.NoiseThresholdMaterialCondition::name,MaterialRules.NoiseThresholdMaterialCondition::noise,MaterialRules.NoiseThresholdMaterialCondition::minThreshold,MaterialRules.NoiseThresholdMaterialCondition::maxThreshold>(
+			return ObjectMethods.bootstrap<"toString",MaterialRules.NoiseThresholdMaterialCondition,"noise;minThreshold;maxThreshold",MaterialRules.NoiseThresholdMaterialCondition::noise,MaterialRules.NoiseThresholdMaterialCondition::minThreshold,MaterialRules.NoiseThresholdMaterialCondition::maxThreshold>(
 				this
 			);
 		}
 
 		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.NoiseThresholdMaterialCondition,"name;noise;minThreshold;maxThreshold",MaterialRules.NoiseThresholdMaterialCondition::name,MaterialRules.NoiseThresholdMaterialCondition::noise,MaterialRules.NoiseThresholdMaterialCondition::minThreshold,MaterialRules.NoiseThresholdMaterialCondition::maxThreshold>(
+			return ObjectMethods.bootstrap<"hashCode",MaterialRules.NoiseThresholdMaterialCondition,"noise;minThreshold;maxThreshold",MaterialRules.NoiseThresholdMaterialCondition::noise,MaterialRules.NoiseThresholdMaterialCondition::minThreshold,MaterialRules.NoiseThresholdMaterialCondition::maxThreshold>(
 				this
 			);
 		}
 
 		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.NoiseThresholdMaterialCondition,"name;noise;minThreshold;maxThreshold",MaterialRules.NoiseThresholdMaterialCondition::name,MaterialRules.NoiseThresholdMaterialCondition::noise,MaterialRules.NoiseThresholdMaterialCondition::minThreshold,MaterialRules.NoiseThresholdMaterialCondition::maxThreshold>(
+			return ObjectMethods.bootstrap<"equals",MaterialRules.NoiseThresholdMaterialCondition,"noise;minThreshold;maxThreshold",MaterialRules.NoiseThresholdMaterialCondition::noise,MaterialRules.NoiseThresholdMaterialCondition::minThreshold,MaterialRules.NoiseThresholdMaterialCondition::maxThreshold>(
 				this, object
 			);
 		}
 
-		public String name() {
-			return this.name;
-		}
-
-		public DoublePerlinNoiseSampler.NoiseParameters noise() {
+		public RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise() {
 			return this.noise;
 		}
 

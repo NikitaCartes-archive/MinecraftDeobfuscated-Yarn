@@ -17,7 +17,7 @@ public class WindowFramebuffer extends Framebuffer {
 
 	public WindowFramebuffer(int width, int height) {
 		super(true);
-		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+		RenderSystem.assertOnRenderThreadOrInit();
 		if (!RenderSystem.isOnRenderThread()) {
 			RenderSystem.recordRenderCall(() -> this.initSize(width, height));
 		} else {
@@ -26,7 +26,7 @@ public class WindowFramebuffer extends Framebuffer {
 	}
 
 	private void initSize(int width, int height) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+		RenderSystem.assertOnRenderThreadOrInit();
 		WindowFramebuffer.Size size = this.findSuitableSize(width, height);
 		this.fbo = GlStateManager.glGenFramebuffers();
 		GlStateManager._glBindFramebuffer(36160, this.fbo);
@@ -53,7 +53,7 @@ public class WindowFramebuffer extends Framebuffer {
 	}
 
 	private WindowFramebuffer.Size findSuitableSize(int width, int height) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+		RenderSystem.assertOnRenderThreadOrInit();
 		this.colorAttachment = TextureUtil.generateTextureId();
 		this.depthAttachment = TextureUtil.generateTextureId();
 		WindowFramebuffer.Attachment attachment = WindowFramebuffer.Attachment.NONE;
@@ -77,7 +77,7 @@ public class WindowFramebuffer extends Framebuffer {
 	}
 
 	private boolean supportColor(WindowFramebuffer.Size size) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+		RenderSystem.assertOnRenderThreadOrInit();
 		GlStateManager._getError();
 		GlStateManager._bindTexture(this.colorAttachment);
 		GlStateManager._texImage2D(3553, 0, 32856, size.width, size.height, 0, 6408, 5121, null);
@@ -85,7 +85,7 @@ public class WindowFramebuffer extends Framebuffer {
 	}
 
 	private boolean supportsDepth(WindowFramebuffer.Size size) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+		RenderSystem.assertOnRenderThreadOrInit();
 		GlStateManager._getError();
 		GlStateManager._bindTexture(this.depthAttachment);
 		GlStateManager._texImage2D(3553, 0, 6402, size.width, size.height, 0, 6402, 5126, null);
@@ -117,7 +117,7 @@ public class WindowFramebuffer extends Framebuffer {
 		}
 
 		static List<WindowFramebuffer.Size> findCompatible(int width, int height) {
-			RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+			RenderSystem.assertOnRenderThreadOrInit();
 			int i = RenderSystem.maxSupportedTextureSize();
 			return width > 0 && width <= i && height > 0 && height <= i
 				? ImmutableList.of(new WindowFramebuffer.Size(width, height), WindowFramebuffer.DEFAULT)

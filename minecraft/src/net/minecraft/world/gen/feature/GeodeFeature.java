@@ -40,7 +40,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		List<Pair<BlockPos, Integer>> list = Lists.<Pair<BlockPos, Integer>>newLinkedList();
 		int k = geodeFeatureConfig.distributionPoints.get(random);
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(structureWorldAccess.getSeed()));
-		DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.method_39122(chunkRandom, -4, 1.0);
+		DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -4, 1.0);
 		List<BlockPos> list2 = Lists.<BlockPos>newLinkedList();
 		double d = (double)k / (double)geodeFeatureConfig.outerWallDistance.getMax();
 		GeodeLayerThicknessConfig geodeLayerThicknessConfig = geodeFeatureConfig.layerThicknessConfig;

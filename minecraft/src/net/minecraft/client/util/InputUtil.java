@@ -1,6 +1,7 @@
 package net.minecraft.client.util;
 
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.lang.invoke.MethodHandle;
@@ -331,7 +332,7 @@ public class InputUtil {
 		}
 
 		public InputUtil.Key createFromCode(int code) {
-			return this.map.computeIfAbsent(code, codex -> {
+			return this.map.computeIfAbsent(code, (Int2ObjectFunction<? extends InputUtil.Key>)(codex -> {
 				int i = codex;
 				if (this == MOUSE) {
 					i = codex + 1;
@@ -339,7 +340,7 @@ public class InputUtil {
 
 				String string = this.name + "." + i;
 				return new InputUtil.Key(string, this, codex);
-			});
+			}));
 		}
 
 		static {

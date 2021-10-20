@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import javax.annotation.Nullable;
@@ -27,12 +28,12 @@ public class ChunkSectionCache implements AutoCloseable {
 		if (i >= 0 && i < this.world.countVerticalSections()) {
 			long l = ChunkSectionPos.toLong(pos);
 			if (this.cachedSection == null || this.sectionPos != l) {
-				this.cachedSection = this.cache.computeIfAbsent(l, lx -> {
+				this.cachedSection = this.cache.computeIfAbsent(l, (Long2ObjectFunction<? extends ChunkSection>)(lx -> {
 					Chunk chunk = this.world.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 					ChunkSection chunkSection = chunk.getSection(i);
 					chunkSection.lock();
 					return chunkSection;
-				});
+				}));
 				this.sectionPos = l;
 			}
 

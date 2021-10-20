@@ -52,7 +52,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		Option.ENTITY_SHADOWS,
 		Option.DISTORTION_EFFECT_SCALE,
 		Option.ENTITY_DISTANCE_SCALING,
-		Option.FOV_EFFECT_SCALE
+		Option.FOV_EFFECT_SCALE,
+		Option.SHOW_AUTOSAVE_INDICATOR
 	};
 	private ButtonListWidget list;
 	private final VideoWarningManager warningManager;
