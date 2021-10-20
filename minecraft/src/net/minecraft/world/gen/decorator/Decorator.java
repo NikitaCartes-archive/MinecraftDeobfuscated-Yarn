@@ -15,6 +15,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<NopeDecoratorConfig> SQUARE = register("square", new SquareDecorator(NopeDecoratorConfig.CODEC));
 	public static final Decorator<NopeDecoratorConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeDecorator(NopeDecoratorConfig.CODEC));
 	public static final Decorator<NopeDecoratorConfig> ICEBERG = register("iceberg", new IcebergDecorator(NopeDecoratorConfig.CODEC));
+	public static final Decorator<ScatterDecoratorConfig> SCATTER = register("scatter", new ScatterDecorator(ScatterDecoratorConfig.CODEC));
 	public static final Decorator<ChanceDecoratorConfig> CHANCE = register("chance", new ChanceDecorator(ChanceDecoratorConfig.CODEC));
 	public static final Decorator<CountConfig> COUNT = register("count", new CountDecorator(CountConfig.CODEC));
 	public static final Decorator<CountNoiseDecoratorConfig> COUNT_NOISE = register("count_noise", new CountNoiseDecorator(CountNoiseDecoratorConfig.CODEC));

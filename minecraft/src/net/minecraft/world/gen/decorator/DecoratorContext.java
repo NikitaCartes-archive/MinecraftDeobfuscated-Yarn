@@ -1,6 +1,5 @@
 package net.minecraft.world.gen.decorator;
 
-import net.minecraft.class_6643;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -9,6 +8,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.HeightContext;
+import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DecoratorContext extends HeightContext {
@@ -23,7 +23,7 @@ public class DecoratorContext extends HeightContext {
 		return this.world.getTopY(heightmap, x, z);
 	}
 
-	public class_6643 getOrCreateCarvingMask(ChunkPos chunkPos, GenerationStep.Carver carver) {
+	public CarvingMask getOrCreateCarvingMask(ChunkPos chunkPos, GenerationStep.Carver carver) {
 		return ((ProtoChunk)this.world.getChunk(chunkPos.x, chunkPos.z)).getOrCreateCarvingMask(carver);
 	}
 

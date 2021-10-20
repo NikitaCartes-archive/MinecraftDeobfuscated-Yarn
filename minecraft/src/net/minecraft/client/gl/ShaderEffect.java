@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -334,7 +335,8 @@ public class ShaderEffect implements AutoCloseable {
 		return this.name;
 	}
 
-	private Framebuffer getTarget(String name) {
+	@Nullable
+	private Framebuffer getTarget(@Nullable String name) {
 		if (name == null) {
 			return null;
 		} else {

@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.pathing;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.entity.mob.MobEntity;
@@ -38,7 +39,7 @@ public abstract class PathNodeMaker {
 	}
 
 	protected PathNode getNode(int x, int y, int z) {
-		return this.pathNodeCache.computeIfAbsent(PathNode.hash(x, y, z), l -> new PathNode(x, y, z));
+		return this.pathNodeCache.computeIfAbsent(PathNode.hash(x, y, z), (Int2ObjectFunction<? extends PathNode>)(l -> new PathNode(x, y, z)));
 	}
 
 	public abstract PathNode getStart();

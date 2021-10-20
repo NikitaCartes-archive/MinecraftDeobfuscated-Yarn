@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
@@ -26,7 +27,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
@@ -332,28 +332,28 @@ public class DimensionType {
 		return registryManager;
 	}
 
-	private static ChunkGenerator createEndGenerator(Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed) {
-		return new NoiseChunkGenerator(new TheEndBiomeSource(biomeRegistry, seed), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.END));
-	}
-
-	private static ChunkGenerator createNetherGenerator(Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed) {
-		return new NoiseChunkGenerator(
-			MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(biomeRegistry), seed, () -> chunkGeneratorSettingsRegistry.getOrThrow(ChunkGeneratorSettings.NETHER)
-		);
-	}
-
-	public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(
-		Registry<DimensionType> dimensionRegistry, Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed
-	) {
+	public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager dynamicRegistryManager, long l) {
 		SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental());
+		Registry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
+		Registry<Biome> registry2 = dynamicRegistryManager.get(Registry.BIOME_KEY);
+		Registry<ChunkGeneratorSettings> registry3 = dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
+		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry4 = dynamicRegistryManager.get(Registry.NOISE_WORLDGEN);
 		simpleRegistry.add(
 			DimensionOptions.NETHER,
-			new DimensionOptions(() -> dimensionRegistry.getOrThrow(THE_NETHER_REGISTRY_KEY), createNetherGenerator(biomeRegistry, chunkGeneratorSettingsRegistry, seed)),
+			new DimensionOptions(
+				() -> registry.getOrThrow(THE_NETHER_REGISTRY_KEY),
+				new NoiseChunkGenerator(
+					registry4, MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.NETHER)
+				)
+			),
 			Lifecycle.stable()
 		);
 		simpleRegistry.add(
 			DimensionOptions.END,
-			new DimensionOptions(() -> dimensionRegistry.getOrThrow(THE_END_REGISTRY_KEY), createEndGenerator(biomeRegistry, chunkGeneratorSettingsRegistry, seed)),
+			new DimensionOptions(
+				() -> registry.getOrThrow(THE_END_REGISTRY_KEY),
+				new NoiseChunkGenerator(registry4, new TheEndBiomeSource(registry2, l), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.END))
+			),
 			Lifecycle.stable()
 		);
 		return simpleRegistry;

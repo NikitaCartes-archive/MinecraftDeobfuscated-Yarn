@@ -210,8 +210,8 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		}
 
 		Vec3d vec3d = entity.getRotationVec(tickDelta);
-		Matrix4f matrix4f = matrices.peek().getModel();
-		Matrix3f matrix3f = matrices.peek().getNormal();
+		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+		Matrix3f matrix3f = matrices.peek().getNormalMatrix();
 		vertices.vertex(matrix4f, 0.0F, entity.getStandingEyeHeight(), 0.0F)
 			.color(0, 0, 255, 255)
 			.normal(matrix3f, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z)
@@ -264,12 +264,12 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	}
 
 	private static void drawFireVertex(MatrixStack.Entry entry, VertexConsumer vertices, float x, float y, float z, float u, float v) {
-		vertices.vertex(entry.getModel(), x, y, z)
+		vertices.vertex(entry.getPositionMatrix(), x, y, z)
 			.color(255, 255, 255, 255)
 			.texture(u, v)
 			.overlay(0, 10)
 			.light(LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE)
-			.normal(entry.getNormal(), 0.0F, 1.0F, 0.0F)
+			.normal(entry.getNormalMatrix(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 
@@ -339,12 +339,12 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	}
 
 	private static void drawShadowVertex(MatrixStack.Entry entry, VertexConsumer vertices, float alpha, float x, float y, float z, float u, float v) {
-		vertices.vertex(entry.getModel(), x, y, z)
+		vertices.vertex(entry.getPositionMatrix(), x, y, z)
 			.color(1.0F, 1.0F, 1.0F, alpha)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
-			.normal(entry.getNormal(), 0.0F, 1.0F, 0.0F)
+			.normal(entry.getNormalMatrix(), 0.0F, 1.0F, 0.0F)
 			.next();
 	}
 

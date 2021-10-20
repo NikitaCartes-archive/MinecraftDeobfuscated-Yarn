@@ -78,7 +78,7 @@ public class BufferRenderer {
 		int vertexCount,
 		boolean textured
 	) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		buffer.clear();
 		if (count > 0) {
 			int i = count * vertexFormat.getVertexSize();
@@ -169,7 +169,7 @@ public class BufferRenderer {
 	 * Similar to a regular draw, however this method will skip rendering shaders.
 	 */
 	public static void postDraw(BufferBuilder builder) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = builder.popData();
 		BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
 		ByteBuffer byteBuffer = pair.getSecond();

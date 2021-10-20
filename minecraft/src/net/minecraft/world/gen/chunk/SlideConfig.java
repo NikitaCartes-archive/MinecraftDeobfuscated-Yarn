@@ -18,10 +18,10 @@ public class SlideConfig {
 	private final int size;
 	private final int offset;
 
-	public SlideConfig(double d, int i, int j) {
-		this.target = d;
-		this.size = i;
-		this.offset = j;
+	public SlideConfig(double target, int size, int offset) {
+		this.target = target;
+		this.size = size;
+		this.offset = offset;
 	}
 
 	public double method_38414(double d, int i) {

@@ -2,6 +2,7 @@ package net.minecraft.world.chunk;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Map;
@@ -147,7 +148,8 @@ public class WorldChunk extends Chunk {
 
 	@Override
 	public GameEventDispatcher getGameEventDispatcher(int ySectionCoord) {
-		return this.gameEventDispatchers.computeIfAbsent(ySectionCoord, sectionCoord -> new SimpleGameEventDispatcher(this.world));
+		return this.gameEventDispatchers
+			.computeIfAbsent(ySectionCoord, (Int2ObjectFunction<? extends GameEventDispatcher>)(sectionCoord -> new SimpleGameEventDispatcher(this.world)));
 	}
 
 	@Override

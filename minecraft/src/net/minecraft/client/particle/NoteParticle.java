@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 public class NoteParticle extends SpriteBillboardParticle {
 	NoteParticle(ClientWorld clientWorld, double d, double e, double f, double g) {
 		super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
-		this.field_28786 = 0.66F;
+		this.velocityMultiplier = 0.66F;
 		this.field_28787 = true;
 		this.velocityX *= 0.01F;
 		this.velocityY *= 0.01F;

@@ -527,6 +527,11 @@ public abstract class Option {
 		gameOptions -> gameOptions.hideLightningFlashes,
 		(gameOptions, option, hideLightningFlashes) -> gameOptions.hideLightningFlashes = hideLightningFlashes
 	);
+	public static final CyclingOption<Boolean> SHOW_AUTOSAVE_INDICATOR = CyclingOption.create(
+		"options.autosaveIndicator",
+		gameOptions -> gameOptions.showAutosaveIndicator,
+		(gameOptions, option, showAutosaveIndicator) -> gameOptions.showAutosaveIndicator = showAutosaveIndicator
+	);
 	private final Text key;
 
 	public Option(String key) {

@@ -1028,7 +1028,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				if (!itemStack.isEmpty()) {
 					ItemStack itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack();
 					if (itemStack2.isEmpty() || itemStack2.getCount() < itemStack.getCount()) {
-						itemStack.setCooldown(5);
+						itemStack.setBobbingAnimationTime(5);
 					}
 				}
 

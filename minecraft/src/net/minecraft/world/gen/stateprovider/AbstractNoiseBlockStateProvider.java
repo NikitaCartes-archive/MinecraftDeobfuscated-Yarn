@@ -21,7 +21,7 @@ public abstract class AbstractNoiseBlockStateProvider extends BlockStateProvider
 	) {
 		return instance.group(
 			Codec.LONG.fieldOf("seed").forGetter(abstractNoiseBlockStateProvider -> abstractNoiseBlockStateProvider.seed),
-			DoublePerlinNoiseSampler.NoiseParameters.CODEC
+			DoublePerlinNoiseSampler.NoiseParameters.field_35424
 				.fieldOf("noise")
 				.forGetter(abstractNoiseBlockStateProvider -> abstractNoiseBlockStateProvider.noiseParameters),
 			Codecs.POSITIVE_FLOAT.fieldOf("scale").forGetter(abstractNoiseBlockStateProvider -> abstractNoiseBlockStateProvider.scale)
@@ -32,7 +32,7 @@ public abstract class AbstractNoiseBlockStateProvider extends BlockStateProvider
 		this.seed = seed;
 		this.noiseParameters = noiseParameters;
 		this.scale = scale;
-		this.noiseSampler = DoublePerlinNoiseSampler.method_39123(new ChunkRandom(new AtomicSimpleRandom(seed)), noiseParameters);
+		this.noiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(new AtomicSimpleRandom(seed)), noiseParameters);
 	}
 
 	protected double getNoiseValue(BlockPos pos, double scale) {

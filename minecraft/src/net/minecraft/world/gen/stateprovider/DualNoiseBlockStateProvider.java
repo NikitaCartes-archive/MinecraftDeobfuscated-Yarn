@@ -18,7 +18,7 @@ public class DualNoiseBlockStateProvider extends NoiseBlockStateProvider {
 	public static final Codec<DualNoiseBlockStateProvider> DUAL_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Range.createRangedCodec(Codec.INT, 1, 64).fieldOf("variety").forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.variety),
-					DoublePerlinNoiseSampler.NoiseParameters.CODEC
+					DoublePerlinNoiseSampler.NoiseParameters.field_35424
 						.fieldOf("slow_noise")
 						.forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.slowNoiseParameters),
 					Codecs.POSITIVE_FLOAT.fieldOf("slow_scale").forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.slowScale)
@@ -44,7 +44,7 @@ public class DualNoiseBlockStateProvider extends NoiseBlockStateProvider {
 		this.variety = variety;
 		this.slowNoiseParameters = slowNoiseParameters;
 		this.slowScale = slowScale;
-		this.slowNoiseSampler = DoublePerlinNoiseSampler.method_39123(new ChunkRandom(new AtomicSimpleRandom(seed)), slowNoiseParameters);
+		this.slowNoiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(new AtomicSimpleRandom(seed)), slowNoiseParameters);
 	}
 
 	@Override

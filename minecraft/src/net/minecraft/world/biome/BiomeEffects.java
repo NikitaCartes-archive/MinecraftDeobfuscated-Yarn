@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.MusicSound;
@@ -213,8 +214,8 @@ public class BiomeEffects {
 			return this;
 		}
 
-		public BiomeEffects.Builder music(MusicSound music) {
-			this.musicSound = Optional.of(music);
+		public BiomeEffects.Builder music(@Nullable MusicSound music) {
+			this.musicSound = Optional.ofNullable(music);
 			return this;
 		}
 

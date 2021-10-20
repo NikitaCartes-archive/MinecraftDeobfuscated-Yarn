@@ -71,6 +71,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
 import net.minecraft.util.math.intprovider.IntProviderType;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 import net.minecraft.world.World;
@@ -218,6 +219,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = createRegistryKey("worldgen/processor_list");
 	public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = createRegistryKey("worldgen/template_pool");
 	public static final RegistryKey<Registry<Biome>> BIOME_KEY = createRegistryKey("worldgen/biome");
+	public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_WORLDGEN = createRegistryKey("worldgen/noise");
 	public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = createRegistryKey("worldgen/carver");
 	public static final Registry<Carver<?>> CARVER = create(CARVER_KEY, () -> Carver.CAVE);
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = createRegistryKey("worldgen/feature");
@@ -317,6 +319,10 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 		return this.registryKey;
 	}
 
+	public Lifecycle method_39198() {
+		return this.lifecycle;
+	}
+
 	public String toString() {
 		return "Registry[" + this.registryKey + " (" + this.lifecycle + ")]";
 	}
@@ -380,7 +386,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	/**
 	 * Gets the lifecycle of a registry entry.
 	 */
-	protected abstract Lifecycle getEntryLifecycle(T entry);
+	public abstract Lifecycle getEntryLifecycle(T entry);
 
 	public abstract Lifecycle getLifecycle();
 
@@ -426,7 +432,11 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	}
 
 	public static <V, T extends V> T register(Registry<V> registry, Identifier id, T entry) {
-		return ((MutableRegistry)registry).add(RegistryKey.of(registry.registryKey, id), entry, Lifecycle.stable());
+		return method_39197(registry, RegistryKey.of(registry.registryKey, id), entry);
+	}
+
+	public static <V, T extends V> T method_39197(Registry<V> registry, RegistryKey<V> registryKey, T object) {
+		return ((MutableRegistry)registry).add(registryKey, object, Lifecycle.stable());
 	}
 
 	public static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {

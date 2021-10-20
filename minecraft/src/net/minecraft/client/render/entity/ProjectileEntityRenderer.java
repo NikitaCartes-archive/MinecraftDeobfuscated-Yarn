@@ -46,8 +46,8 @@ public abstract class ProjectileEntityRenderer<T extends PersistentProjectileEnt
 		matrixStack.translate(-4.0, 0.0, 0.0);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(this.getTexture(persistentProjectileEntity)));
 		MatrixStack.Entry entry = matrixStack.peek();
-		Matrix4f matrix4f = entry.getModel();
-		Matrix3f matrix3f = entry.getNormal();
+		Matrix4f matrix4f = entry.getPositionMatrix();
+		Matrix3f matrix3f = entry.getNormalMatrix();
 		this.vertex(matrix4f, matrix3f, vertexConsumer, -7, -2, -2, 0.0F, 0.15625F, -1, 0, 0, i);
 		this.vertex(matrix4f, matrix3f, vertexConsumer, -7, -2, 2, 0.15625F, 0.15625F, -1, 0, 0, i);
 		this.vertex(matrix4f, matrix3f, vertexConsumer, -7, 2, 2, 0.15625F, 0.3125F, -1, 0, 0, i);
@@ -70,7 +70,7 @@ public abstract class ProjectileEntityRenderer<T extends PersistentProjectileEnt
 	}
 
 	public void vertex(
-		Matrix4f modelMatrix,
+		Matrix4f positionMatrix,
 		Matrix3f normalMatrix,
 		VertexConsumer vertexConsumer,
 		int x,
@@ -83,7 +83,7 @@ public abstract class ProjectileEntityRenderer<T extends PersistentProjectileEnt
 		int normalY,
 		int light
 	) {
-		vertexConsumer.vertex(modelMatrix, (float)x, (float)y, (float)z)
+		vertexConsumer.vertex(positionMatrix, (float)x, (float)y, (float)z)
 			.color(255, 255, 255, 255)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)

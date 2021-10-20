@@ -429,7 +429,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 */
 	private int itemUseCooldown;
 	protected int attackCooldown;
-	private boolean paused;
+	private volatile boolean paused;
 	private float pausedTickDelta;
 	private long lastMetricsSampleTime = Util.getMeasuringTimeNano();
 	private long nextDebugInfoUpdateTime;
@@ -1677,10 +1677,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.profiler.push("gui");
-		if (!this.paused) {
-			this.inGameHud.tick();
-		}
-
+		this.inGameHud.method_39191(this.paused);
 		this.profiler.pop();
 		this.gameRenderer.updateTargetedEntity(1.0F);
 		this.tutorialManager.tick(this.world, this.crosshairTarget);

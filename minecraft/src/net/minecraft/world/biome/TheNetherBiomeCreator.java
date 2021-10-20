@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.world.biome;
 
 import net.minecraft.client.sound.MusicType;
 import net.minecraft.entity.EntityType;
@@ -7,19 +7,13 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeEffects;
-import net.minecraft.world.biome.BiomeParticleConfig;
-import net.minecraft.world.biome.DefaultBiomeCreator;
-import net.minecraft.world.biome.GenerationSettings;
-import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 
-public class class_6727 {
-	public static Biome method_39146() {
+public class TheNetherBiomeCreator {
+	public static Biome createNetherWastes() {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 50, 4, 4))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 100, 4, 4))
@@ -52,7 +46,7 @@ public class class_6727 {
 					.waterColor(4159204)
 					.waterFogColor(329011)
 					.fogColor(3344392)
-					.skyColor(DefaultBiomeCreator.getSkyColor(2.0F))
+					.skyColor(OverworldBiomeCreator.getSkyColor(2.0F))
 					.loopSound(SoundEvents.AMBIENT_NETHER_WASTES_LOOP)
 					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD, 6000, 8, 2.0))
 					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_NETHER_WASTES_ADDITIONS, 0.0111))
@@ -64,7 +58,7 @@ public class class_6727 {
 			.build();
 	}
 
-	public static Biome method_39147() {
+	public static Biome createSoulSandValley() {
 		double d = 0.7;
 		double e = 0.15;
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
@@ -101,7 +95,7 @@ public class class_6727 {
 					.waterColor(4159204)
 					.waterFogColor(329011)
 					.fogColor(1787717)
-					.skyColor(DefaultBiomeCreator.getSkyColor(2.0F))
+					.skyColor(OverworldBiomeCreator.getSkyColor(2.0F))
 					.particleConfig(new BiomeParticleConfig(ParticleTypes.ASH, 0.00625F))
 					.loopSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_LOOP)
 					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD, 6000, 8, 2.0))
@@ -114,7 +108,7 @@ public class class_6727 {
 			.build();
 	}
 
-	public static Biome method_39148() {
+	public static Biome createBasaltDeltas() {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 40, 1, 1))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 100, 2, 5))
@@ -150,7 +144,7 @@ public class class_6727 {
 					.waterColor(4159204)
 					.waterFogColor(329011)
 					.fogColor(6840176)
-					.skyColor(DefaultBiomeCreator.getSkyColor(2.0F))
+					.skyColor(OverworldBiomeCreator.getSkyColor(2.0F))
 					.particleConfig(new BiomeParticleConfig(ParticleTypes.WHITE_ASH, 0.118093334F))
 					.loopSound(SoundEvents.AMBIENT_BASALT_DELTAS_LOOP)
 					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_BASALT_DELTAS_MOOD, 6000, 8, 2.0))
@@ -163,7 +157,7 @@ public class class_6727 {
 			.build();
 	}
 
-	public static Biome method_39149() {
+	public static Biome createCrimsonForest() {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 1, 2, 4))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.HOGLIN, 9, 3, 4))
@@ -194,7 +188,7 @@ public class class_6727 {
 					.waterColor(4159204)
 					.waterFogColor(329011)
 					.fogColor(3343107)
-					.skyColor(DefaultBiomeCreator.getSkyColor(2.0F))
+					.skyColor(OverworldBiomeCreator.getSkyColor(2.0F))
 					.particleConfig(new BiomeParticleConfig(ParticleTypes.CRIMSON_SPORE, 0.025F))
 					.loopSound(SoundEvents.AMBIENT_CRIMSON_FOREST_LOOP)
 					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_CRIMSON_FOREST_MOOD, 6000, 8, 2.0))
@@ -207,7 +201,7 @@ public class class_6727 {
 			.build();
 	}
 
-	public static Biome method_39150() {
+	public static Biome createWarpedForest() {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
@@ -239,7 +233,7 @@ public class class_6727 {
 					.waterColor(4159204)
 					.waterFogColor(329011)
 					.fogColor(1705242)
-					.skyColor(DefaultBiomeCreator.getSkyColor(2.0F))
+					.skyColor(OverworldBiomeCreator.getSkyColor(2.0F))
 					.particleConfig(new BiomeParticleConfig(ParticleTypes.WARPED_SPORE, 0.01428F))
 					.loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP)
 					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD, 6000, 8, 2.0))

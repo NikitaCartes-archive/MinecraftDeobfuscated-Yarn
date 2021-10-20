@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 public class SquidInkParticle extends AnimatedParticle {
 	SquidInkParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, int j, SpriteProvider spriteProvider) {
 		super(clientWorld, d, e, f, spriteProvider, 0.0F);
-		this.field_28786 = 0.92F;
+		this.velocityMultiplier = 0.92F;
 		this.scale = 0.5F;
 		this.setColorAlpha(1.0F);
 		this.setColor((float)BackgroundHelper.ColorMixer.getRed(j), (float)BackgroundHelper.ColorMixer.getGreen(j), (float)BackgroundHelper.ColorMixer.getBlue(j));

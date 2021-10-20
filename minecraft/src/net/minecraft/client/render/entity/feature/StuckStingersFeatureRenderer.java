@@ -53,8 +53,8 @@ public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends Play
 		for (int n = 0; n < 4; n++) {
 			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 			MatrixStack.Entry entry = matrices.peek();
-			Matrix4f matrix4f = entry.getModel();
-			Matrix3f matrix3f = entry.getNormal();
+			Matrix4f matrix4f = entry.getPositionMatrix();
+			Matrix3f matrix3f = entry.getNormalMatrix();
 			produceVertex(vertexConsumer, matrix4f, matrix3f, -4.5F, -1, 0.0F, 0.0F, light);
 			produceVertex(vertexConsumer, matrix4f, matrix3f, 4.5F, -1, 0.125F, 0.0F, light);
 			produceVertex(vertexConsumer, matrix4f, matrix3f, 4.5F, 1, 0.125F, 0.0625F, light);

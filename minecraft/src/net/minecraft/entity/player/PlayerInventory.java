@@ -244,7 +244,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		} else {
 			i -= j;
 			itemStack.increment(j);
-			itemStack.setCooldown(5);
+			itemStack.setBobbingAnimationTime(5);
 			return i;
 		}
 	}
@@ -291,7 +291,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 					if (slot >= 0) {
 						this.main.set(slot, stack.copy());
-						this.main.get(slot).setCooldown(5);
+						this.main.get(slot).setBobbingAnimationTime(5);
 						stack.setCount(0);
 						return true;
 					} else if (this.player.getAbilities().creativeMode) {

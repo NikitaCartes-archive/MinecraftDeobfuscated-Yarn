@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Contract;
 
 public class JsonHelper {
 	private static final Gson GSON = new GsonBuilder().create();
@@ -80,7 +81,9 @@ public class JsonHelper {
 		}
 	}
 
-	public static String getString(JsonObject object, String element, String defaultStr) {
+	@Nullable
+	@Contract("_,_,!null->!null;_,_,null->_")
+	public static String getString(JsonObject object, String element, @Nullable String defaultStr) {
 		return object.has(element) ? asString(object.get(element), element) : defaultStr;
 	}
 
@@ -103,7 +106,9 @@ public class JsonHelper {
 		}
 	}
 
-	public static Item getItem(JsonObject object, String key, Item defaultItem) {
+	@Nullable
+	@Contract("_,_,!null->!null;_,_,null->_")
+	public static Item getItem(JsonObject object, String key, @Nullable Item defaultItem) {
 		return object.has(key) ? asItem(object.get(key), key) : defaultItem;
 	}
 
@@ -323,7 +328,9 @@ public class JsonHelper {
 		}
 	}
 
-	public static JsonObject getObject(JsonObject object, String element, JsonObject defaultObject) {
+	@Nullable
+	@Contract("_,_,!null->!null;_,_,null->_")
+	public static JsonObject getObject(JsonObject object, String element, @Nullable JsonObject defaultObject) {
 		return object.has(element) ? asObject(object.get(element), element) : defaultObject;
 	}
 
@@ -344,6 +351,7 @@ public class JsonHelper {
 	}
 
 	@Nullable
+	@Contract("_,_,!null->!null;_,_,null->_")
 	public static JsonArray getArray(JsonObject object, String name, @Nullable JsonArray defaultArray) {
 		return object.has(name) ? asArray(object.get(name), name) : defaultArray;
 	}
@@ -364,11 +372,13 @@ public class JsonHelper {
 		}
 	}
 
-	public static <T> T deserialize(JsonObject object, String element, T defaultValue, JsonDeserializationContext context, Class<? extends T> type) {
+	@Nullable
+	@Contract("_,_,!null,_,_->!null;_,_,null,_,_->_")
+	public static <T> T deserialize(JsonObject object, String element, @Nullable T defaultValue, JsonDeserializationContext context, Class<? extends T> type) {
 		return object.has(element) ? deserialize(object.get(element), element, context, type) : defaultValue;
 	}
 
-	public static String getType(JsonElement element) {
+	public static String getType(@Nullable JsonElement element) {
 		String string = StringUtils.abbreviateMiddle(String.valueOf(element), "...", 10);
 		if (element == null) {
 			return "null (missing)";

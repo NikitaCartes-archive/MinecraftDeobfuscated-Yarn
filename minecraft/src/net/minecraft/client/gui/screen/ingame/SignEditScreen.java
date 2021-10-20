@@ -150,7 +150,7 @@ public class SignEditScreen extends Screen {
 		int j = this.selectionManager.getSelectionStart();
 		int k = this.selectionManager.getSelectionEnd();
 		int l = this.currentRow * 10 - this.text.length * 5;
-		Matrix4f matrix4f = matrices.peek().getModel();
+		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 
 		for (int m = 0; m < this.text.length; m++) {
 			String string = this.text[m];

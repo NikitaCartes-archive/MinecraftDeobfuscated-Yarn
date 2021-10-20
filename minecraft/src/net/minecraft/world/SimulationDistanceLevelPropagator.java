@@ -3,6 +3,7 @@ package net.minecraft.world;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import java.util.ArrayList;
@@ -23,7 +24,8 @@ public class SimulationDistanceLevelPropagator extends ChunkPosDistanceLevelProp
 	}
 
 	private SortedArraySet<ChunkTicket<?>> getTickets(long pos) {
-		return this.tickets.computeIfAbsent(pos, p -> SortedArraySet.create(4));
+		return this.tickets
+			.computeIfAbsent(pos, (Long2ObjectFunction<? extends SortedArraySet<ChunkTicket<?>>>)(p -> (SortedArraySet<ChunkTicket<?>>)SortedArraySet.create(4)));
 	}
 
 	private int getLevel(SortedArraySet<ChunkTicket<?>> ticket) {

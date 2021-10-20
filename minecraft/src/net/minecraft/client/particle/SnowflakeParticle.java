@@ -14,7 +14,7 @@ public class SnowflakeParticle extends SpriteBillboardParticle {
 	) {
 		super(world, x, y, z);
 		this.gravityStrength = 0.225F;
-		this.field_28786 = 1.0F;
+		this.velocityMultiplier = 1.0F;
 		this.spriteProvider = spriteProvider;
 		this.velocityX = velocityX + (Math.random() * 2.0 - 1.0) * 0.05F;
 		this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * 0.05F;

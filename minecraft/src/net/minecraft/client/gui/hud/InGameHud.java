@@ -54,6 +54,7 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -89,6 +90,7 @@ public class InGameHud extends DrawableHelper {
 	private static final Identifier SPYGLASS_SCOPE = new Identifier("textures/misc/spyglass_scope.png");
 	private static final Identifier POWDER_SNOW_OUTLINE = new Identifier("textures/misc/powder_snow_outline.png");
 	private static final Text DEMO_EXPIRED_MESSAGE = new TranslatableText("demo.demoExpired");
+	private static final Text SAVING_LEVEL_TEXT = new TranslatableText("menu.savingLevel");
 	private static final int WHITE = 16777215;
 	private static final float field_32168 = 5.0F;
 	private static final int field_32169 = 10;
@@ -97,6 +99,7 @@ public class InGameHud extends DrawableHelper {
 	private static final float field_32172 = 0.2F;
 	private static final int field_33942 = 9;
 	private static final int field_33943 = 8;
+	private static final float field_35431 = 0.2F;
 	private final Random random = new Random();
 	private final MinecraftClient client;
 	private final ItemRenderer itemRenderer;
@@ -128,6 +131,8 @@ public class InGameHud extends DrawableHelper {
 	private long heartJumpEndTick;
 	private int scaledWidth;
 	private int scaledHeight;
+	private float field_35428;
+	private float field_35429;
 	private final Map<MessageType, List<ClientChatListener>> listeners = Maps.<MessageType, List<ClientChatListener>>newHashMap();
 	private float spyglassScale;
 
@@ -364,6 +369,8 @@ public class InGameHud extends DrawableHelper {
 				this.playerListHud.setVisible(true);
 				this.playerListHud.render(matrices, this.scaledWidth, scoreboard, scoreboardObjective2);
 			}
+
+			this.renderAutosaveIndicator(matrices);
 		}
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1106,7 +1113,7 @@ public class InGameHud extends DrawableHelper {
 	private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed) {
 		if (!stack.isEmpty()) {
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
-			float f = (float)stack.getCooldown() - tickDelta;
+			float f = (float)stack.getBobbingAnimationTime() - tickDelta;
 			if (f > 0.0F) {
 				float g = 1.0F + f / 5.0F;
 				matrixStack.push();
@@ -1127,7 +1134,14 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	public void tick() {
+	public void method_39191(boolean bl) {
+		this.method_39193();
+		if (!bl) {
+			this.tick();
+		}
+	}
+
+	private void tick() {
 		if (this.overlayRemaining > 0) {
 			this.overlayRemaining--;
 		}
@@ -1158,6 +1172,13 @@ public class InGameHud extends DrawableHelper {
 
 			this.currentStack = itemStack;
 		}
+	}
+
+	private void method_39193() {
+		MinecraftServer minecraftServer = this.client.getServer();
+		boolean bl = minecraftServer != null && minecraftServer.isSaving();
+		this.field_35429 = this.field_35428;
+		this.field_35428 = MathHelper.lerp(0.2F, this.field_35428, bl ? 1.0F : 0.0F);
 	}
 
 	public void setRecordPlayingOverlay(Text description) {
@@ -1253,6 +1274,18 @@ public class InGameHud extends DrawableHelper {
 
 	public void resetDebugHudChunk() {
 		this.debugHud.resetChunk();
+	}
+
+	private void renderAutosaveIndicator(MatrixStack matrices) {
+		if (this.client.options.showAutosaveIndicator && (this.field_35428 > 0.0F || this.field_35429 > 0.0F)) {
+			int i = MathHelper.floor(255.0F * MathHelper.clamp(MathHelper.lerp(this.client.getTickDelta(), this.field_35429, this.field_35428), 0.0F, 1.0F));
+			if (i > 8) {
+				TextRenderer textRenderer = this.getTextRenderer();
+				int j = textRenderer.getWidth(SAVING_LEVEL_TEXT);
+				int k = 16777215 | i << 24 & 0xFF000000;
+				textRenderer.drawWithShadow(matrices, SAVING_LEVEL_TEXT, (float)(this.scaledWidth - j - 10), (float)(this.scaledHeight - 15), k);
+			}
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

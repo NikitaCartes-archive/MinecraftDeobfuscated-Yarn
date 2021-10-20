@@ -12,7 +12,7 @@ public class BubbleColumnUpParticle extends SpriteBillboardParticle {
 	BubbleColumnUpParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 		super(clientWorld, d, e, f);
 		this.gravityStrength = -0.125F;
-		this.field_28786 = 0.85F;
+		this.velocityMultiplier = 0.85F;
 		this.setBoundingBoxSpacing(0.02F, 0.02F);
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.2F);
 		this.velocityX = g * 0.2F + (Math.random() * 2.0 - 1.0) * 0.02F;

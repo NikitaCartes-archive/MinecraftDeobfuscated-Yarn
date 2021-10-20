@@ -653,6 +653,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(ItemEntry.builder(Items.SADDLE).weight(20))
 						.with(ItemEntry.builder(Items.GOLDEN_APPLE).weight(15))
 						.with(ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE).weight(2))
+						.with(ItemEntry.builder(Items.MUSIC_DISC_OTHERSIDE).weight(2))
 						.with(ItemEntry.builder(Items.MUSIC_DISC_13).weight(15))
 						.with(ItemEntry.builder(Items.MUSIC_DISC_CAT).weight(15))
 						.with(ItemEntry.builder(Items.NAME_TAG).weight(20))
@@ -743,6 +744,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(ItemEntry.builder(Items.IRON_HORSE_ARMOR))
 						.with(ItemEntry.builder(Items.GOLDEN_HORSE_ARMOR))
 						.with(ItemEntry.builder(Items.DIAMOND_HORSE_ARMOR))
+						.with(ItemEntry.builder(Items.MUSIC_DISC_OTHERSIDE))
 						.with(ItemEntry.builder(Items.BOOK).apply(EnchantWithLevelsLootFunction.builder(ConstantLootNumberProvider.create(30.0F)).allowTreasureEnchantments()))
 				)
 		);

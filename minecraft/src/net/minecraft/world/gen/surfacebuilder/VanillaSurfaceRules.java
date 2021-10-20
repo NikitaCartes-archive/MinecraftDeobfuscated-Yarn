@@ -2,9 +2,9 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.noise.NoiseParametersKeys;
 
 public class VanillaSurfaceRules {
 	private static final MaterialRules.MaterialRule AIR = block(Blocks.AIR);
@@ -57,24 +57,30 @@ public class VanillaSurfaceRules {
 		MaterialRules.MaterialCondition materialCondition12 = MaterialRules.steepSlope();
 		MaterialRules.MaterialRule materialRule = MaterialRules.sequence(
 			MaterialRules.condition(
-				MaterialRules.biome(BiomeKeys.STONY_PEAKS), MaterialRules.sequence(MaterialRules.condition(noiseThreshold("calcite", -6, -0.0125, 0.0125), CALCITE), STONE)
+				MaterialRules.biome(BiomeKeys.STONY_PEAKS),
+				MaterialRules.sequence(MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.CALCITE, -0.0125, 0.0125), CALCITE), STONE)
 			),
 			MaterialRules.condition(
-				MaterialRules.biome(BiomeKeys.STONY_SHORE), MaterialRules.sequence(MaterialRules.condition(noiseThreshold("gravel", -5, -0.05, 0.05), GRAVEL), STONE)
+				MaterialRules.biome(BiomeKeys.STONY_SHORE),
+				MaterialRules.sequence(MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.GRAVEL, -0.05, 0.05), GRAVEL), STONE)
 			),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.WINDSWEPT_HILLS), MaterialRules.condition(surfaceNoiseThreshold(1.0), STONE)),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.WARM_OCEAN, BiomeKeys.DEEP_WARM_OCEAN, BiomeKeys.DESERT, BiomeKeys.BEACH, BiomeKeys.SNOWY_BEACH), SAND),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.DRIPSTONE_CAVES), STONE)
 		);
-		MaterialRules.MaterialRule materialRule2 = MaterialRules.condition(noiseThreshold("powder_snow_under", -3, 0.45, 0.58), POWDER_SNOW);
-		MaterialRules.MaterialRule materialRule3 = MaterialRules.condition(noiseThreshold("powder_snow_surface", -3, 0.35, 0.6), POWDER_SNOW);
+		MaterialRules.MaterialRule materialRule2 = MaterialRules.condition(
+			MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW_UNDER, 0.45, 0.58), POWDER_SNOW
+		);
+		MaterialRules.MaterialRule materialRule3 = MaterialRules.condition(
+			MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW_SURFACE, 0.35, 0.6), POWDER_SNOW
+		);
 		MaterialRules.MaterialRule materialRule4 = MaterialRules.sequence(
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.FROZEN_PEAKS),
 				MaterialRules.sequence(
 					MaterialRules.condition(materialCondition12, PACKED_ICE),
-					MaterialRules.condition(noiseThreshold("packed_ice_under", -4, -0.5, 0.2), PACKED_ICE),
-					MaterialRules.condition(noiseThreshold("ice_under", -1, -0.0625, 0.025), ICE),
+					MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.PACKED_ICE, -0.5, 0.2), PACKED_ICE),
+					MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.ICE, -0.0625, 0.025), ICE),
 					SNOW_BLOCK
 				)
 			),
@@ -101,8 +107,8 @@ public class VanillaSurfaceRules {
 				MaterialRules.biome(BiomeKeys.FROZEN_PEAKS),
 				MaterialRules.sequence(
 					MaterialRules.condition(materialCondition12, PACKED_ICE),
-					MaterialRules.condition(noiseThreshold("packed_ice_surface", -4, 0.0, 0.2), PACKED_ICE),
-					MaterialRules.condition(noiseThreshold("ice_surface", -1, 0.0, 0.025), ICE),
+					MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.PACKED_ICE, 0.0, 0.2), PACKED_ICE),
+					MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.ICE, 0.0, 0.025), ICE),
 					SNOW_BLOCK
 				)
 			),
@@ -134,15 +140,9 @@ public class VanillaSurfaceRules {
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.MUSHROOM_FIELDS), MYCELIUM),
 			GRASS_BLOCK
 		);
-		MaterialRules.MaterialCondition materialCondition13 = MaterialRules.noiseThreshold(
-			"surface", new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0, 1.0, 1.0), -0.909, -0.5454
-		);
-		MaterialRules.MaterialCondition materialCondition14 = MaterialRules.noiseThreshold(
-			"surface", new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0, 1.0, 1.0), -0.1818, 0.1818
-		);
-		MaterialRules.MaterialCondition materialCondition15 = MaterialRules.noiseThreshold(
-			"surface", new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0, 1.0, 1.0), 0.5454, 0.909
-		);
+		MaterialRules.MaterialCondition materialCondition13 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.909, -0.5454);
+		MaterialRules.MaterialCondition materialCondition14 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.1818, 0.1818);
+		MaterialRules.MaterialCondition materialCondition15 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, 0.5454, 0.909);
 		return MaterialRules.sequence(
 			MaterialRules.condition(
 				MaterialRules.STONE_DEPTH_FLOOR,
@@ -164,8 +164,7 @@ public class VanillaSurfaceRules {
 						MaterialRules.condition(
 							materialCondition5,
 							MaterialRules.condition(
-								MaterialRules.not(materialCondition6),
-								MaterialRules.condition(MaterialRules.noiseThreshold("swamp", new DoublePerlinNoiseSampler.NoiseParameters(-2, 1.0), 0.0), WATER)
+								MaterialRules.not(materialCondition6), MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE_SWAMP, 0.0), WATER)
 							)
 						)
 					)
@@ -243,24 +242,12 @@ public class VanillaSurfaceRules {
 		MaterialRules.MaterialCondition materialCondition3 = MaterialRules.aboveYWithStoneDepth(YOffset.fixed(30), 0);
 		MaterialRules.MaterialCondition materialCondition4 = MaterialRules.not(MaterialRules.aboveYWithStoneDepth(YOffset.fixed(35), 0));
 		MaterialRules.MaterialCondition materialCondition5 = MaterialRules.hole();
-		MaterialRules.MaterialCondition materialCondition6 = MaterialRules.noiseThreshold(
-			"soul_sand_layer", new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.013333333333333334), -0.012
-		);
-		MaterialRules.MaterialCondition materialCondition7 = MaterialRules.noiseThreshold(
-			"gravel_layer", new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.013333333333333334), -0.012
-		);
-		MaterialRules.MaterialCondition materialCondition8 = MaterialRules.noiseThreshold(
-			"patch", new DoublePerlinNoiseSampler.NoiseParameters(-5, 1.0, 0.0, 0.0, 0.0, 0.0, 0.013333333333333334), -0.012
-		);
-		MaterialRules.MaterialCondition materialCondition9 = MaterialRules.noiseThreshold(
-			"netherrack", new DoublePerlinNoiseSampler.NoiseParameters(-3, 1.0, 0.0, 0.0, 0.35), 0.54
-		);
-		MaterialRules.MaterialCondition materialCondition10 = MaterialRules.noiseThreshold(
-			"nether_wart", new DoublePerlinNoiseSampler.NoiseParameters(-3, 1.0, 0.0, 0.0, 0.9), 1.17
-		);
-		MaterialRules.MaterialCondition materialCondition11 = MaterialRules.noiseThreshold(
-			"nether_state_selector", new DoublePerlinNoiseSampler.NoiseParameters(-4, 1.0), 0.0
-		);
+		MaterialRules.MaterialCondition materialCondition6 = MaterialRules.noiseThreshold(NoiseParametersKeys.SOUL_SAND_LAYER, -0.012);
+		MaterialRules.MaterialCondition materialCondition7 = MaterialRules.noiseThreshold(NoiseParametersKeys.GRAVEL_LAYER, -0.012);
+		MaterialRules.MaterialCondition materialCondition8 = MaterialRules.noiseThreshold(NoiseParametersKeys.PATCH, -0.012);
+		MaterialRules.MaterialCondition materialCondition9 = MaterialRules.noiseThreshold(NoiseParametersKeys.NETHERRACK, 0.54);
+		MaterialRules.MaterialCondition materialCondition10 = MaterialRules.noiseThreshold(NoiseParametersKeys.NETHER_WART, 1.17);
+		MaterialRules.MaterialCondition materialCondition11 = MaterialRules.noiseThreshold(NoiseParametersKeys.NETHER_STATE_SELECTOR, 0.0);
 		MaterialRules.MaterialRule materialRule = MaterialRules.condition(
 			materialCondition8, MaterialRules.condition(materialCondition3, MaterialRules.condition(materialCondition4, GRAVEL))
 		);
@@ -341,11 +328,7 @@ public class VanillaSurfaceRules {
 		return END_STONE;
 	}
 
-	private static MaterialRules.MaterialCondition noiseThreshold(String name, int i, double minThreshold, double maxThreshold) {
-		return MaterialRules.noiseThreshold(name, new DoublePerlinNoiseSampler.NoiseParameters(-3 + i, 1.0, 1.0, 1.0, 1.0), minThreshold, maxThreshold);
-	}
-
 	private static MaterialRules.MaterialCondition surfaceNoiseThreshold(double min) {
-		return MaterialRules.noiseThreshold("surface", new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0, 1.0, 1.0), min / 8.25, Double.POSITIVE_INFINITY);
+		return MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, min / 8.25, Double.MAX_VALUE);
 	}
 }

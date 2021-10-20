@@ -21,8 +21,8 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	private final Fluid fluid;
 	protected boolean obsidianTear;
 
-	BlockLeakParticle(ClientWorld clientWorld, double d, double e, double f, Fluid fluid) {
-		super(clientWorld, d, e, f);
+	BlockLeakParticle(ClientWorld world, double x, double y, double z, Fluid fluid) {
+		super(world, x, y, z);
 		this.setBoundingBoxSpacing(0.01F, 0.01F);
 		this.gravityStrength = 0.06F;
 		this.fluid = fluid;

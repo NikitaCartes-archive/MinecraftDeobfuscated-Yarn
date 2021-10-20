@@ -46,7 +46,7 @@ public abstract class Particle {
 	protected float colorAlpha = 1.0F;
 	protected float angle;
 	protected float prevAngle;
-	protected float field_28786 = 0.98F;
+	protected float velocityMultiplier = 0.98F;
 	protected boolean field_28787 = false;
 
 	protected Particle(ClientWorld world, double x, double y, double z) {
@@ -121,9 +121,9 @@ public abstract class Particle {
 				this.velocityZ *= 1.1;
 			}
 
-			this.velocityX = this.velocityX * (double)this.field_28786;
-			this.velocityY = this.velocityY * (double)this.field_28786;
-			this.velocityZ = this.velocityZ * (double)this.field_28786;
+			this.velocityX = this.velocityX * (double)this.velocityMultiplier;
+			this.velocityY = this.velocityY * (double)this.velocityMultiplier;
+			this.velocityZ = this.velocityZ * (double)this.velocityMultiplier;
 			if (this.onGround) {
 				this.velocityX *= 0.7F;
 				this.velocityZ *= 0.7F;

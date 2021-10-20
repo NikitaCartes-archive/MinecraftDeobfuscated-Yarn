@@ -3,6 +3,7 @@ package net.minecraft.server.world;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Either;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -43,14 +44,18 @@ public class LevelPrioritizedQueue<T> {
 			}
 
 			if (list != null && !list.isEmpty()) {
-				((List)((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(toLevel)).computeIfAbsent(pos.toLong(), l -> Lists.newArrayList())).addAll(list);
+				((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(toLevel))
+					.computeIfAbsent(pos.toLong(), (Long2ObjectFunction<? extends List>)(l -> Lists.newArrayList()))
+					.addAll(list);
 				this.firstNonEmptyLevel = Math.min(this.firstNonEmptyLevel, toLevel);
 			}
 		}
 	}
 
 	protected void add(Optional<T> element, long pos, int level) {
-		((List)((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(level)).computeIfAbsent(pos, l -> Lists.newArrayList())).add(element);
+		((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(level))
+			.computeIfAbsent(pos, (Long2ObjectFunction<? extends List>)(l -> Lists.newArrayList()))
+			.add(element);
 		this.firstNonEmptyLevel = Math.min(this.firstNonEmptyLevel, level);
 	}
 

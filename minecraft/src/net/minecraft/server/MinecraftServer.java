@@ -136,7 +136,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionOptions;
@@ -268,6 +267,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private ServerResourceManager serverResourceManager;
 	private final StructureManager structureManager;
 	protected final SaveProperties saveProperties;
+	private volatile boolean saving;
 
 	public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
 		AtomicReference<S> atomicReference = new AtomicReference();
@@ -376,9 +376,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		DimensionType dimensionType;
 		if (dimensionOptions == null) {
 			dimensionType = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY);
-			chunkGenerator = GeneratorOptions.createOverworldGenerator(
-				this.registryManager.get(Registry.BIOME_KEY), this.registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY), new Random().nextLong()
-			);
+			chunkGenerator = GeneratorOptions.createOverworldGenerator(this.registryManager, new Random().nextLong());
 		} else {
 			dimensionType = dimensionOptions.getDimensionType();
 			chunkGenerator = dimensionOptions.getChunkGenerator();
@@ -462,20 +460,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			worldProperties.setSpawnPos(BlockPos.ORIGIN.up(80), 0.0F);
 		} else {
 			ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
-			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
-			Random random = new Random(world.getSeed());
-			BlockPos blockPos = biomeSource.locateBiome(
-				0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random, chunkGenerator.getMultiNoiseSampler()
-			);
-			ChunkPos chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
-			if (blockPos == null) {
-				LOGGER.warn("Unable to find spawn biome");
-			}
-
+			ChunkPos chunkPos = new ChunkPos(chunkGenerator.getMultiNoiseSampler().findBestSpawnPosition());
 			int i = chunkGenerator.getSpawnHeight(world);
 			if (i < world.getBottomY()) {
-				BlockPos blockPos2 = chunkPos.getStartPos();
-				i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX() + 8, blockPos2.getZ() + 8);
+				BlockPos blockPos = chunkPos.getStartPos();
+				i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos.getX() + 8, blockPos.getZ() + 8);
 			}
 
 			worldProperties.setSpawnPos(chunkPos.getStartPos().add(8, i, 8), 0.0F);
@@ -487,9 +476,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			for (int o = 0; o < 1024; o++) {
 				if (j > -16 && j <= 16 && k > -16 && k <= 16) {
-					BlockPos blockPos3 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k));
-					if (blockPos3 != null) {
-						worldProperties.setSpawnPos(blockPos3, 0.0F);
+					BlockPos blockPos2 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k));
+					if (blockPos2 != null) {
+						worldProperties.setSpawnPos(blockPos2, 0.0F);
 						break;
 					}
 				}
@@ -627,6 +616,19 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return bl;
 	}
 
+	public boolean saveAll(boolean suppressLogs, boolean flush, boolean force) {
+		boolean var4;
+		try {
+			this.saving = true;
+			this.getPlayerManager().saveAllPlayerData();
+			var4 = this.save(suppressLogs, flush, force);
+		} finally {
+			this.saving = false;
+		}
+
+		return var4;
+	}
+
 	@Override
 	public void close() {
 		this.shutdown();
@@ -638,6 +640,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.getNetworkIo().stop();
 		}
 
+		this.saving = true;
 		if (this.playerManager != null) {
 			LOGGER.info("Saving players");
 			this.playerManager.saveAllPlayerData();
@@ -664,6 +667,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 		}
 
+		this.saving = false;
 		if (this.snooper.isActive()) {
 			this.snooper.cancel();
 		}
@@ -871,8 +875,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		if (this.ticks % 6000 == 0) {
 			LOGGER.debug("Autosave started");
 			this.profiler.push("save");
-			this.playerManager.saveAllPlayerData();
-			this.save(true, false, false);
+			this.saveAll(true, false, false);
 			this.profiler.pop();
 			LOGGER.debug("Autosave finished");
 		}
@@ -1941,6 +1944,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Nullable
 	public Text getResourcePackPrompt() {
 		return null;
+	}
+
+	public boolean isSaving() {
+		return this.saving;
 	}
 
 	public boolean isDebugRunning() {

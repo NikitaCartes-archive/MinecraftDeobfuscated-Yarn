@@ -2,6 +2,7 @@ package net.minecraft.client.font;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -52,18 +53,22 @@ public class FontStorage implements AutoCloseable {
 		}
 
 		Set<Font> set = Sets.<Font>newHashSet();
-		intSet.forEach(codePoint -> {
-			for (Font fontx : fonts) {
-				Glyph glyph = (Glyph)(codePoint == 32 ? SPACE : fontx.getGlyph(codePoint));
-				if (glyph != null) {
-					set.add(fontx);
-					if (glyph != BlankGlyph.INSTANCE) {
-						this.charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), i -> new IntArrayList()).add(codePoint);
+		intSet.forEach(
+			codePoint -> {
+				for (Font fontx : fonts) {
+					Glyph glyph = (Glyph)(codePoint == 32 ? SPACE : fontx.getGlyph(codePoint));
+					if (glyph != null) {
+						set.add(fontx);
+						if (glyph != BlankGlyph.INSTANCE) {
+							this.charactersByWidth
+								.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), (Int2ObjectFunction<? extends IntList>)(i -> new IntArrayList()))
+								.add(codePoint);
+						}
+						break;
 					}
-					break;
 				}
 			}
-		});
+		);
 		fonts.stream().filter(set::contains).forEach(this.fonts::add);
 	}
 
@@ -89,7 +94,8 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	public Glyph getGlyph(int codePoint) {
-		return this.glyphCache.computeIfAbsent(codePoint, codePointx -> (Glyph)(codePointx == 32 ? SPACE : this.getRenderableGlyph(codePointx)));
+		return this.glyphCache
+			.computeIfAbsent(codePoint, (Int2ObjectFunction<? extends Glyph>)(codePointx -> (Glyph)(codePointx == 32 ? SPACE : this.getRenderableGlyph(codePointx))));
 	}
 
 	private RenderableGlyph getRenderableGlyph(int codePoint) {
@@ -105,7 +111,10 @@ public class FontStorage implements AutoCloseable {
 
 	public GlyphRenderer getGlyphRenderer(int i) {
 		return this.glyphRendererCache
-			.computeIfAbsent(i, ix -> (GlyphRenderer)(ix == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph(ix))));
+			.computeIfAbsent(
+				i,
+				(Int2ObjectFunction<? extends GlyphRenderer>)(ix -> (GlyphRenderer)(ix == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph(ix))))
+			);
 	}
 
 	private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {

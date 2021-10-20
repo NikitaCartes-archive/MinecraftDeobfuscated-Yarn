@@ -56,8 +56,8 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		MatrixStack matrices, VertexConsumer vertexConsumer, PaintingEntity entity, int width, int height, Sprite paintingSprite, Sprite backSprite
 	) {
 		MatrixStack.Entry entry = matrices.peek();
-		Matrix4f matrix4f = entry.getModel();
-		Matrix3f matrix3f = entry.getNormal();
+		Matrix4f matrix4f = entry.getPositionMatrix();
+		Matrix3f matrix3f = entry.getNormalMatrix();
 		float f = (float)(-width) / 2.0F;
 		float g = (float)(-height) / 2.0F;
 		float h = 0.5F;
@@ -138,7 +138,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 	}
 
 	private void vertex(
-		Matrix4f modelMatrix,
+		Matrix4f positionMatrix,
 		Matrix3f normalMatrix,
 		VertexConsumer vertexConsumer,
 		float x,
@@ -151,7 +151,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		int normalZ,
 		int light
 	) {
-		vertexConsumer.vertex(modelMatrix, x, y, z)
+		vertexConsumer.vertex(positionMatrix, x, y, z)
 			.color(255, 255, 255, 255)
 			.texture(u, v)
 			.overlay(OverlayTexture.DEFAULT_UV)

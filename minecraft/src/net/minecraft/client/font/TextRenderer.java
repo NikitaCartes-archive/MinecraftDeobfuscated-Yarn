@@ -40,6 +40,7 @@ import net.minecraft.util.math.Vec3f;
 public class TextRenderer {
 	private static final float field_32166 = 0.01F;
 	private static final Vec3f FORWARD_SHIFT = new Vec3f(0.0F, 0.0F, 0.03F);
+	public static final int field_35427 = 8;
 	/**
 	 * The font height of the text that is rendered by the text renderer.
 	 */
@@ -61,49 +62,49 @@ public class TextRenderer {
 	 * @param color the text color in the 0xAARRGGBB format
 	 */
 	public int drawWithShadow(MatrixStack matrices, String text, float x, float y, int color) {
-		return this.draw(text, x, y, color, matrices.peek().getModel(), true, this.isRightToLeft());
+		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), true, this.isRightToLeft());
 	}
 
 	/**
 	 * @param color the text color in the 0xAARRGGBB format
 	 */
 	public int drawWithShadow(MatrixStack matrices, String text, float x, float y, int color, boolean rightToLeft) {
-		return this.draw(text, x, y, color, matrices.peek().getModel(), true, rightToLeft);
+		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), true, rightToLeft);
 	}
 
 	/**
 	 * @param color the text color in the 0xAARRGGBB format
 	 */
 	public int draw(MatrixStack matrices, String text, float x, float y, int color) {
-		return this.draw(text, x, y, color, matrices.peek().getModel(), false, this.isRightToLeft());
+		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), false, this.isRightToLeft());
 	}
 
 	/**
 	 * @param color the text color in the 0xAARRGGBB format
 	 */
 	public int drawWithShadow(MatrixStack matrices, OrderedText text, float x, float y, int color) {
-		return this.draw(text, x, y, color, matrices.peek().getModel(), true);
+		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), true);
 	}
 
 	/**
 	 * @param color the text color in the 0xAARRGGBB format
 	 */
 	public int drawWithShadow(MatrixStack matrices, Text text, float x, float y, int color) {
-		return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getModel(), true);
+		return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getPositionMatrix(), true);
 	}
 
 	/**
 	 * @param color the text color in the 0xAARRGGBB format
 	 */
 	public int draw(MatrixStack matrices, OrderedText text, float x, float y, int color) {
-		return this.draw(text, x, y, color, matrices.peek().getModel(), false);
+		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), false);
 	}
 
 	/**
 	 * @param color the text color in the 0xAARRGGBB format
 	 */
 	public int draw(MatrixStack matrices, Text text, float x, float y, int color) {
-		return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getModel(), false);
+		return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getPositionMatrix(), false);
 	}
 
 	public String mirror(String text) {

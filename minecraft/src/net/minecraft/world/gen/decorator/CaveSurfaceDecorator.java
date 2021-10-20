@@ -4,8 +4,11 @@ import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.world.gen.feature.util.CaveSurface;
@@ -15,6 +18,14 @@ public class CaveSurfaceDecorator extends Decorator<CaveSurfaceDecoratorConfig> 
 		super(codec);
 	}
 
+	public static boolean method_39183(BlockState blockState) {
+		return blockState.isAir() || blockState.isOf(Blocks.WATER);
+	}
+
+	private static Predicate<BlockState> method_39184(boolean bl) {
+		return bl ? CaveSurfaceDecorator::method_39183 : AbstractBlock.AbstractBlockState::isAir;
+	}
+
 	public Stream<BlockPos> getPositions(
 		DecoratorContext decoratorContext, Random random, CaveSurfaceDecoratorConfig caveSurfaceDecoratorConfig, BlockPos blockPos
 	) {
@@ -22,7 +33,7 @@ public class CaveSurfaceDecorator extends Decorator<CaveSurfaceDecoratorConfig> 
 			decoratorContext.getWorld(),
 			blockPos,
 			caveSurfaceDecoratorConfig.searchRange,
-			AbstractBlock.AbstractBlockState::isAir,
+			method_39184(caveSurfaceDecoratorConfig.field_35422),
 			blockState -> blockState.getMaterial().isSolid()
 		);
 		if (optional.isEmpty()) {

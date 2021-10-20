@@ -5,7 +5,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.registry.Registry;
 
 public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -37,10 +36,6 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public ParticleS2CPacket(PacketByteBuf buf) {
 		ParticleType<?> particleType = Registry.PARTICLE_TYPE.get(buf.readInt());
-		if (particleType == null) {
-			particleType = ParticleTypes.BARRIER;
-		}
-
 		this.longDistance = buf.readBoolean();
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();

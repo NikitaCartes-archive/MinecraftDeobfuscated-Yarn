@@ -1,5 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
 import it.unimi.dsi.fastutil.shorts.ShortSet;
 import java.util.function.BiConsumer;
 import net.minecraft.block.Block;
@@ -34,10 +35,10 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 		this.blockStates = new BlockState[i];
 		int j = 0;
 
-		for (short s : positions) {
+		for (ShortIterator var7 = positions.iterator(); var7.hasNext(); j++) {
+			short s = (Short)var7.next();
 			this.positions[j] = s;
 			this.blockStates[j] = section.getBlockState(ChunkSectionPos.unpackLocalX(s), ChunkSectionPos.unpackLocalY(s), ChunkSectionPos.unpackLocalZ(s));
-			j++;
 		}
 	}
 

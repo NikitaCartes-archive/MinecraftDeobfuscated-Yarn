@@ -161,7 +161,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	private static void setTextureFilter(boolean blur, boolean mipmap) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+		RenderSystem.assertOnRenderThreadOrInit();
 		if (blur) {
 			GlStateManager._texParameter(3553, 10241, mipmap ? 9987 : 9729);
 			GlStateManager._texParameter(3553, 10240, 9729);
@@ -245,7 +245,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void setLuminance(int x, int y, byte luminance) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		if (!this.format.hasLuminance()) {
 			throw new IllegalArgumentException(String.format("setPixelLuminance only works on image with luminance; have %s", this.format));
 		} else if (this.isOutOfBounds(x, y)) {
@@ -258,7 +258,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public byte getRed(int x, int y) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		if (!this.format.hasRedChannel()) {
 			throw new IllegalArgumentException(String.format("no red or luminance in %s", this.format));
 		} else if (this.isOutOfBounds(x, y)) {
@@ -270,7 +270,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public byte getGreen(int x, int y) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		if (!this.format.hasGreenChannel()) {
 			throw new IllegalArgumentException(String.format("no green or luminance in %s", this.format));
 		} else if (this.isOutOfBounds(x, y)) {
@@ -282,7 +282,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public byte getBlue(int x, int y) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		if (!this.format.hasBlueChannel()) {
 			throw new IllegalArgumentException(String.format("no blue or luminance in %s", this.format));
 		} else if (this.isOutOfBounds(x, y)) {
@@ -413,7 +413,7 @@ public final class NativeImage implements AutoCloseable {
 		boolean mipmap,
 		boolean close
 	) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+		RenderSystem.assertOnRenderThreadOrInit();
 		this.checkAllocated();
 		setTextureFilter(blur, mipmap);
 		if (width == this.getWidth()) {
@@ -437,7 +437,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void loadFromTextureImage(int level, boolean removeAlpha) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		this.checkAllocated();
 		this.format.setPackAlignment();
 		GlStateManager._getTexImage(3553, level, this.format.toGl(), 5121, this.pointer);
@@ -451,7 +451,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void readDepthComponent(float unused) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		if (this.format.getChannelCount() != 1) {
 			throw new IllegalStateException("Depth buffer must be stored in NativeImage with 1 component.");
 		} else {
@@ -466,7 +466,7 @@ public final class NativeImage implements AutoCloseable {
 	 * method is not used in vanilla, and its side effects are not yet known.
 	 */
 	public void drawPixels() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		this.format.setUnpackAlignment();
 		GlStateManager._glDrawPixels(this.width, this.height, this.format.toGl(), 5121, this.pointer);
 	}
@@ -787,12 +787,12 @@ public final class NativeImage implements AutoCloseable {
 		}
 
 		public void setPackAlignment() {
-			RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+			RenderSystem.assertOnRenderThread();
 			GlStateManager._pixelStore(3333, this.getChannelCount());
 		}
 
 		public void setUnpackAlignment() {
-			RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+			RenderSystem.assertOnRenderThreadOrInit();
 			GlStateManager._pixelStore(3317, this.getChannelCount());
 		}
 

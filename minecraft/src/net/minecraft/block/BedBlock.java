@@ -334,7 +334,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	private static int[][] getAroundAndOnBedOffets(Direction bedDirection, Direction respawnDirection) {
-		return ArrayUtils.addAll(getAroundBedOffsets(bedDirection, respawnDirection), getOnBedOffsets(bedDirection));
+		return ArrayUtils.addAll((int[][])getAroundBedOffsets(bedDirection, respawnDirection), (int[][])getOnBedOffsets(bedDirection));
 	}
 
 	private static int[][] getAroundBedOffsets(Direction bedDirection, Direction respawnDirection) {

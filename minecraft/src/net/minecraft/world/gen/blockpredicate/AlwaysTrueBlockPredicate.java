@@ -5,11 +5,11 @@ import java.util.function.Supplier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 
-class TrueBlockPredicate implements BlockPredicate {
-	public static TrueBlockPredicate INSTANCE = new TrueBlockPredicate();
-	public static final Codec<TrueBlockPredicate> CODEC = Codec.unit((Supplier<TrueBlockPredicate>)(() -> INSTANCE));
+class AlwaysTrueBlockPredicate implements BlockPredicate {
+	public static AlwaysTrueBlockPredicate instance = new AlwaysTrueBlockPredicate();
+	public static final Codec<AlwaysTrueBlockPredicate> CODEC = Codec.unit((Supplier<AlwaysTrueBlockPredicate>)(() -> instance));
 
-	private TrueBlockPredicate() {
+	private AlwaysTrueBlockPredicate() {
 	}
 
 	public boolean test(StructureWorldAccess structureWorldAccess, BlockPos blockPos) {

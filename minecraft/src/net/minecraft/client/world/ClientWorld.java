@@ -9,6 +9,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -16,7 +17,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -30,11 +30,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
@@ -108,6 +111,7 @@ public class ClientWorld extends World {
 	private final ClientChunkManager chunkManager;
 	private final Deque<Runnable> chunkUpdaters = Queues.<Runnable>newArrayDeque();
 	private int simulationDistance;
+	private static final Set<Item> BLOCK_MARKER_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
 
 	public ClientWorld(
 		ClientPlayNetworkHandler netHandler,
@@ -299,34 +303,29 @@ public class ClientWorld extends World {
 	public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {
 		int i = 32;
 		Random random = new Random();
-		ClientWorld.BlockParticle blockParticle = this.getBlockParticle();
+		Block block = this.getBlockParticle();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int j = 0; j < 667; j++) {
-			this.randomBlockDisplayTick(centerX, centerY, centerZ, 16, random, blockParticle, mutable);
-			this.randomBlockDisplayTick(centerX, centerY, centerZ, 32, random, blockParticle, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 16, random, block, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 32, random, block, mutable);
 		}
 	}
 
 	@Nullable
-	private ClientWorld.BlockParticle getBlockParticle() {
+	private Block getBlockParticle() {
 		if (this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE) {
 			ItemStack itemStack = this.client.player.getMainHandStack();
-			if (itemStack.getItem() == Items.BARRIER) {
-				return ClientWorld.BlockParticle.BARRIER;
-			}
-
-			if (itemStack.getItem() == Items.LIGHT) {
-				return ClientWorld.BlockParticle.LIGHT;
+			Item item = itemStack.getItem();
+			if (BLOCK_MARKER_ITEMS.contains(item) && item instanceof BlockItem blockItem) {
+				return blockItem.getBlock();
 			}
 		}
 
 		return null;
 	}
 
-	public void randomBlockDisplayTick(
-		int centerX, int centerY, int centerZ, int radius, Random random, @Nullable ClientWorld.BlockParticle blockParticle, BlockPos.Mutable pos
-	) {
+	public void randomBlockDisplayTick(int centerX, int centerY, int centerZ, int radius, Random random, @Nullable Block block, BlockPos.Mutable pos) {
 		int i = centerX + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int j = centerY + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int k = centerZ + this.random.nextInt(radius) - this.random.nextInt(radius);
@@ -344,8 +343,8 @@ public class ClientWorld extends World {
 			}
 		}
 
-		if (blockParticle != null && blockState.getBlock() == blockParticle.block) {
-			this.addParticle(blockParticle.particle, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
+		if (block == blockState.getBlock()) {
+			this.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK_MARKER, blockState), (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
 		}
 
 		if (!blockState.isFullCube(this, pos)) {
@@ -797,20 +796,6 @@ public class ClientWorld extends World {
 
 	public int getSimulationDistance() {
 		return this.simulationDistance;
-	}
-
-	@Environment(EnvType.CLIENT)
-	static enum BlockParticle {
-		BARRIER(Blocks.BARRIER, ParticleTypes.BARRIER),
-		LIGHT(Blocks.LIGHT, ParticleTypes.LIGHT);
-
-		final Block block;
-		final ParticleEffect particle;
-
-		private BlockParticle(Block block, ParticleEffect particle) {
-			this.block = block;
-			this.particle = particle;
-		}
 	}
 
 	@Environment(EnvType.CLIENT)

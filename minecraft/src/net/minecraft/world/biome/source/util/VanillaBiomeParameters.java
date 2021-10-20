@@ -1,6 +1,7 @@
 package net.minecraft.world.biome.source.util;
 
 import com.mojang.datafixers.util.Pair;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
 import net.minecraft.util.registry.RegistryKey;
@@ -95,6 +96,31 @@ public final class VanillaBiomeParameters {
 		{null, null, null, null, null},
 		{null, null, null, null, null}
 	};
+
+	public List<MultiNoiseUtil.NoiseHypercube> getSpawnSuitabilityNoises() {
+		MultiNoiseUtil.ParameterRange parameterRange = MultiNoiseUtil.ParameterRange.of(0.0F);
+		float f = 0.16F;
+		return List.of(
+			new MultiNoiseUtil.NoiseHypercube(
+				this.DEFAULT_PARAMETER,
+				this.DEFAULT_PARAMETER,
+				MultiNoiseUtil.ParameterRange.combine(this.RIVER_CONTINENTALNESS, this.DEFAULT_PARAMETER),
+				this.DEFAULT_PARAMETER,
+				parameterRange,
+				MultiNoiseUtil.ParameterRange.of(-1.0F, -0.16F),
+				0L
+			),
+			new MultiNoiseUtil.NoiseHypercube(
+				this.DEFAULT_PARAMETER,
+				this.DEFAULT_PARAMETER,
+				MultiNoiseUtil.ParameterRange.combine(this.RIVER_CONTINENTALNESS, this.DEFAULT_PARAMETER),
+				this.DEFAULT_PARAMETER,
+				parameterRange,
+				MultiNoiseUtil.ParameterRange.of(0.16F, 1.0F),
+				0L
+			)
+		);
+	}
 
 	public void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
 		if (SharedConstants.DEBUG_BIOME_SOURCE) {
@@ -845,7 +871,7 @@ public final class VanillaBiomeParameters {
 		if (temperature == 0) {
 			return BiomeKeys.SNOWY_BEACH;
 		} else {
-			return temperature == 4 && humidity < 3 ? BiomeKeys.DESERT : BiomeKeys.BEACH;
+			return temperature == 4 ? BiomeKeys.DESERT : BiomeKeys.BEACH;
 		}
 	}
 

@@ -39,9 +39,9 @@ public class InterpolatedNoiseSampler implements ChunkNoiseSampler.ColumnSampler
 
 	public InterpolatedNoiseSampler(AbstractRandom random, NoiseSamplingConfig noiseSamplingConfig, int i, int j) {
 		this(
-			new OctavePerlinNoiseSampler(random, IntStream.rangeClosed(-15, 0)),
-			new OctavePerlinNoiseSampler(random, IntStream.rangeClosed(-15, 0)),
-			new OctavePerlinNoiseSampler(random, IntStream.rangeClosed(-7, 0)),
+			OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-15, 0)),
+			OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-15, 0)),
+			OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-7, 0)),
 			noiseSamplingConfig,
 			i,
 			j

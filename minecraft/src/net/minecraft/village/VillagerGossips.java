@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
@@ -112,7 +113,7 @@ public class VillagerGossips {
 
 	public void startGossip(UUID target, VillageGossipType type, int value) {
 		VillagerGossips.Reputation reputation = this.getReputationFor(target);
-		reputation.associatedGossip.mergeInt(type, value, (integer, integer2) -> this.mergeReputation(type, integer, integer2));
+		reputation.associatedGossip.mergeInt(type, value, (IntBinaryOperator)((i, j) -> this.mergeReputation(type, i, j)));
 		reputation.clamp(type);
 		if (reputation.isObsolete()) {
 			this.entityReputation.remove(target);

@@ -72,6 +72,6 @@ public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockP
 	}
 
 	static BlockPredicate alwaysTrue() {
-		return TrueBlockPredicate.INSTANCE;
+		return AlwaysTrueBlockPredicate.instance;
 	}
 }

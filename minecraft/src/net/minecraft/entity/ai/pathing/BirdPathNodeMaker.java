@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.pathing;
 
 import com.google.common.collect.ImmutableSet;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.EnumSet;
@@ -282,7 +283,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		return this.pathNodes
 			.computeIfAbsent(
 				BlockPos.asLong(x, y, z),
-				l -> this.getNodeType(
+				(Long2ObjectFunction<? extends PathNodeType>)(l -> this.getNodeType(
 						this.cachedWorld,
 						x,
 						y,
@@ -293,7 +294,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 						this.entityBlockZSize,
 						this.canOpenDoors(),
 						this.canEnterOpenDoors()
-					)
+					))
 			);
 	}
 

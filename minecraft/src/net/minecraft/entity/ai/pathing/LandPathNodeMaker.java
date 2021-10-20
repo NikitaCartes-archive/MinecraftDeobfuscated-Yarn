@@ -1,7 +1,9 @@
 package net.minecraft.entity.ai.pathing;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanFunction;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import java.util.EnumSet;
@@ -338,7 +340,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	private boolean checkBoxCollision(Box box) {
-		return (Boolean)this.collidedBoxes.computeIfAbsent(box, box2 -> !this.cachedWorld.isSpaceEmpty(this.entity, box));
+		return this.collidedBoxes.computeIfAbsent(box, (Object2BooleanFunction<? super Box>)(object -> !this.cachedWorld.isSpaceEmpty(this.entity, box)));
 	}
 
 	@Override
@@ -438,9 +440,9 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		return this.nodeTypes
 			.computeIfAbsent(
 				BlockPos.asLong(x, y, z),
-				l -> this.getNodeType(
+				(Long2ObjectFunction<? extends PathNodeType>)(l -> this.getNodeType(
 						this.cachedWorld, x, y, z, entity, this.entityBlockXSize, this.entityBlockYSize, this.entityBlockZSize, this.canOpenDoors(), this.canEnterOpenDoors()
-					)
+					))
 			);
 	}
 

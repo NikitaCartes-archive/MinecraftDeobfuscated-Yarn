@@ -169,7 +169,7 @@ public class JsonEffectGlShader implements EffectGlShader, AutoCloseable {
 		}
 	}
 
-	public static GlBlendState deserializeBlendState(JsonObject json) {
+	public static GlBlendState deserializeBlendState(@Nullable JsonObject json) {
 		if (json == null) {
 			return new GlBlendState();
 		} else {
@@ -236,7 +236,7 @@ public class JsonEffectGlShader implements EffectGlShader, AutoCloseable {
 	}
 
 	public void disable() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		GlProgramManager.useProgram(0);
 		activeProgramRef = -1;
 		activeShader = null;
@@ -251,7 +251,7 @@ public class JsonEffectGlShader implements EffectGlShader, AutoCloseable {
 	}
 
 	public void enable() {
-		RenderSystem.assertThread(RenderSystem::isOnGameThread);
+		RenderSystem.assertOnGameThread();
 		this.uniformStateDirty = false;
 		activeShader = this;
 		this.blendState.enable();
@@ -286,18 +286,18 @@ public class JsonEffectGlShader implements EffectGlShader, AutoCloseable {
 
 	@Nullable
 	public GlUniform getUniformByName(String name) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		return (GlUniform)this.uniformByName.get(name);
 	}
 
 	public Uniform getUniformByNameOrDummy(String name) {
-		RenderSystem.assertThread(RenderSystem::isOnGameThread);
+		RenderSystem.assertOnGameThread();
 		GlUniform glUniform = this.getUniformByName(name);
 		return (Uniform)(glUniform == null ? DEFAULT_UNIFORM : glUniform);
 	}
 
 	private void finalizeUniformsAndSamplers() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		IntList intList = new IntArrayList();
 
 		for (int i = 0; i < this.samplerNames.size(); i++) {

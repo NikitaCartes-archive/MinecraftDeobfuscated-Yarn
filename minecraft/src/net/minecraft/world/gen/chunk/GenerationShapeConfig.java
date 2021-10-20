@@ -19,7 +19,6 @@ public record GenerationShapeConfig() {
 	private final double densityOffset;
 	private final boolean islandNoiseOverride;
 	private final boolean amplified;
-	private final boolean useLegacyRandom;
 	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(GenerationShapeConfig::minimumY),
@@ -34,8 +33,7 @@ public record GenerationShapeConfig() {
 						Codec.BOOL
 							.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
 							.forGetter(GenerationShapeConfig::islandNoiseOverride),
-						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified),
-						Codec.BOOL.optionalFieldOf("use_legacy_random", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::useLegacyRandom)
+						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified)
 					)
 					.apply(instance, GenerationShapeConfig::new)
 		)
@@ -52,8 +50,7 @@ public record GenerationShapeConfig() {
 		double densityFactor,
 		double densityOffset,
 		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset,
-		boolean islandNoiseOverride
+		boolean randomDensityOffset
 	) {
 		this.minimumY = minimumY;
 		this.height = height;
@@ -66,7 +63,6 @@ public record GenerationShapeConfig() {
 		this.densityOffset = densityOffset;
 		this.islandNoiseOverride = simplexSurfaceNoise;
 		this.amplified = randomDensityOffset;
-		this.useLegacyRandom = islandNoiseOverride;
 	}
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
@@ -90,22 +86,10 @@ public record GenerationShapeConfig() {
 		double densityFactor,
 		double densityOffset,
 		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset,
-		boolean islandNoiseOverride
+		boolean randomDensityOffset
 	) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(
-			minimumY,
-			height,
-			sampling,
-			topSlide,
-			bottomSlide,
-			horizontalSize,
-			verticalSize,
-			densityFactor,
-			densityOffset,
-			simplexSurfaceNoise,
-			randomDensityOffset,
-			islandNoiseOverride
+			minimumY, height, sampling, topSlide, bottomSlide, horizontalSize, verticalSize, densityFactor, densityOffset, simplexSurfaceNoise, randomDensityOffset
 		);
 		checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
 			throw new IllegalStateException(partialResult.message());

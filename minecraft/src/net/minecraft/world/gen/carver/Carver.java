@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_6643;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -111,7 +110,7 @@ public abstract class Carver<C extends CarverConfig> {
 		double f,
 		double g,
 		double h,
-		class_6643 arg,
+		CarvingMask carvingMask,
 		Carver.SkipPredicate skipPredicate
 	) {
 		ChunkPos chunkPos = chunk.getPos();
@@ -143,10 +142,10 @@ public abstract class Carver<C extends CarverConfig> {
 
 						for (int z = q; z > p; z--) {
 							double aa = ((double)z - 0.5 - e) / h;
-							if (!skipPredicate.shouldSkip(context, v, aa, y, z) && (!arg.method_38868(t, z, w) || isDebug(config))) {
-								arg.method_38865(t, z, w);
+							if (!skipPredicate.shouldSkip(context, v, aa, y, z) && (!carvingMask.get(t, z, w) || isDebug(config))) {
+								carvingMask.set(t, z, w);
 								mutable.set(u, z, x);
-								bl |= this.carveAtPoint(context, config, chunk, posToBiome, arg, mutable, mutable2, aquiferSampler, mutableBoolean);
+								bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, mutable, mutable2, aquiferSampler, mutableBoolean);
 							}
 						}
 					}
@@ -164,7 +163,7 @@ public abstract class Carver<C extends CarverConfig> {
 		C config,
 		Chunk chunk,
 		Function<BlockPos, Biome> posToBiome,
-		class_6643 arg,
+		CarvingMask carvingMask,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
 		AquiferSampler aquiferSampler,
@@ -233,7 +232,7 @@ public abstract class Carver<C extends CarverConfig> {
 		Random random,
 		AquiferSampler aquiferSampler,
 		ChunkPos pos,
-		class_6643 arg
+		CarvingMask carvingMask
 	);
 
 	public abstract boolean shouldCarve(C config, Random random);

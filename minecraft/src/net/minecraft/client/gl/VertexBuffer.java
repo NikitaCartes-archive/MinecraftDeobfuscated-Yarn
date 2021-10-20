@@ -119,7 +119,7 @@ public class VertexBuffer implements AutoCloseable {
 
 	public void innerSetShader(Matrix4f viewMatrix, Matrix4f projectionMatrix, Shader shader) {
 		if (this.vertexCount != 0) {
-			RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+			RenderSystem.assertOnRenderThread();
 			BufferRenderer.unbindAll();
 
 			for (int i = 0; i < 12; i++) {
@@ -183,7 +183,7 @@ public class VertexBuffer implements AutoCloseable {
 
 	public void drawVertices() {
 		if (this.vertexCount != 0) {
-			RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+			RenderSystem.assertOnRenderThread();
 			this.bindVertexArray();
 			this.bind();
 			this.elementFormat.startDrawing();

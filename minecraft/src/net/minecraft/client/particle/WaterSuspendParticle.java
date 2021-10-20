@@ -17,7 +17,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.2F);
 		this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
 		this.collidesWithWorld = false;
-		this.field_28786 = 1.0F;
+		this.velocityMultiplier = 1.0F;
 		this.gravityStrength = 0.0F;
 	}
 
@@ -28,7 +28,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.6F);
 		this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
 		this.collidesWithWorld = false;
-		this.field_28786 = 1.0F;
+		this.velocityMultiplier = 1.0F;
 		this.gravityStrength = 0.0F;
 	}
 

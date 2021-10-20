@@ -106,7 +106,7 @@ public class MapRenderer implements AutoCloseable {
 			int i = 0;
 			int j = 0;
 			float f = 0.0F;
-			Matrix4f matrix4f = matrices.peek().getModel();
+			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(this.renderLayer);
 			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(light).next();
 			vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(light).next();
@@ -126,7 +126,7 @@ public class MapRenderer implements AutoCloseable {
 					float h = (float)(b / 16 + 0) / 16.0F;
 					float l = (float)(b % 16 + 1) / 16.0F;
 					float m = (float)(b / 16 + 1) / 16.0F;
-					Matrix4f matrix4f2 = matrices.peek().getModel();
+					Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
 					float n = -0.001F;
 					VertexConsumer vertexConsumer2 = vertexConsumers.getBuffer(MapRenderer.MAP_ICONS_RENDER_LAYER);
 					vertexConsumer2.vertex(matrix4f2, -1.0F, 1.0F, (float)k * -0.001F).color(255, 255, 255, 255).texture(g, h).light(light).next();
@@ -145,7 +145,7 @@ public class MapRenderer implements AutoCloseable {
 						);
 						matrices.scale(p, p, 1.0F);
 						matrices.translate(0.0, 0.0, -0.1F);
-						textRenderer.draw(text, 0.0F, 0.0F, -1, false, matrices.peek().getModel(), vertexConsumers, false, Integer.MIN_VALUE, light);
+						textRenderer.draw(text, 0.0F, 0.0F, -1, false, matrices.peek().getPositionMatrix(), vertexConsumers, false, Integer.MIN_VALUE, light);
 						matrices.pop();
 					}
 

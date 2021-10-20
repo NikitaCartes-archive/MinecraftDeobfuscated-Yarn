@@ -3,8 +3,10 @@ package net.minecraft.fluid;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.Short2BooleanFunction;
 import it.unimi.dsi.fastutil.shorts.Short2BooleanMap;
 import it.unimi.dsi.fastutil.shorts.Short2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectFunction;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import java.util.Map;
@@ -274,18 +276,18 @@ public abstract class FlowableFluid extends Fluid {
 			if (direction2 != direction) {
 				BlockPos blockPos3 = blockPos.offset(direction2);
 				short s = method_15747(blockPos2, blockPos3);
-				Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, ix -> {
+				Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, (Short2ObjectFunction<? extends Pair<BlockState, FluidState>>)(sx -> {
 					BlockState blockStatex = world.getBlockState(blockPos3);
 					return Pair.of(blockStatex, blockStatex.getFluidState());
-				});
+				}));
 				BlockState blockState2 = pair.getFirst();
 				FluidState fluidState = pair.getSecond();
 				if (this.canFlowThrough(world, this.getFlowing(), blockPos, blockState, direction2, blockPos3, blockState2, fluidState)) {
-					boolean bl = short2BooleanMap.computeIfAbsent(s, ix -> {
+					boolean bl = short2BooleanMap.computeIfAbsent(s, (Short2BooleanFunction)(sx -> {
 						BlockPos blockPos2x = blockPos3.down();
 						BlockState blockState2x = world.getBlockState(blockPos2x);
 						return this.method_15736(world, this.getFlowing(), blockPos3, blockState2, blockPos2x, blockState2x);
-					});
+					}));
 					if (bl) {
 						return i;
 					}
@@ -348,19 +350,19 @@ public abstract class FlowableFluid extends Fluid {
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos = pos.offset(direction);
 			short s = method_15747(pos, blockPos);
-			Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, ix -> {
+			Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, (Short2ObjectFunction<? extends Pair<BlockState, FluidState>>)(sx -> {
 				BlockState blockStatex = world.getBlockState(blockPos);
 				return Pair.of(blockStatex, blockStatex.getFluidState());
-			});
+			}));
 			BlockState blockState = pair.getFirst();
 			FluidState fluidState = pair.getSecond();
 			FluidState fluidState2 = this.getUpdatedState(world, blockPos, blockState);
 			if (this.canFlowThrough(world, fluidState2.getFluid(), pos, state, direction, blockPos, blockState, fluidState)) {
 				BlockPos blockPos2 = blockPos.down();
-				boolean bl = short2BooleanMap.computeIfAbsent(s, ix -> {
+				boolean bl = short2BooleanMap.computeIfAbsent(s, (Short2BooleanFunction)(sx -> {
 					BlockState blockState2 = world.getBlockState(blockPos2);
 					return this.method_15736(world, this.getFlowing(), blockPos, blockState, blockPos2, blockState2);
-				});
+				}));
 				int j;
 				if (bl) {
 					j = 0;

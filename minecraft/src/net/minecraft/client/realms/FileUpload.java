@@ -20,8 +20,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.dto.UploadInfo;
 import net.minecraft.client.realms.gui.screen.UploadResult;
 import net.minecraft.client.util.Session;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
@@ -164,7 +164,7 @@ public class FileUpload {
 	}
 
 	private long getRetryDelaySeconds(HttpResponse response) {
-		return (Long)Optional.ofNullable(response.getFirstHeader("Retry-After")).map(Header::getValue).map(Long::valueOf).orElse(0L);
+		return (Long)Optional.ofNullable(response.getFirstHeader("Retry-After")).map(NameValuePair::getValue).map(Long::valueOf).orElse(0L);
 	}
 
 	public boolean isFinished() {

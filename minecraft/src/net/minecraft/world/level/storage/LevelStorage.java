@@ -45,17 +45,13 @@ import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashMemoryReserve;
-import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
@@ -113,30 +109,10 @@ public class LevelStorage {
 
 		Dynamic<T> dynamic2 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic, version, SharedConstants.getGameVersion().getWorldVersion());
 		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC.parse(dynamic2);
-		return Pair.of(
-			(GeneratorOptions)dataResult.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error))
-				.orElseGet(
-					() -> {
-						Registry<DimensionType> registry = (Registry<DimensionType>)RegistryLookupCodec.of(Registry.DIMENSION_TYPE_KEY)
-							.codec()
-							.parse(dynamic2)
-							.resultOrPartial(Util.addPrefix("Dimension type registry: ", LOGGER::error))
-							.orElseThrow(() -> new IllegalStateException("Failed to get dimension registry"));
-						Registry<Biome> registry2 = (Registry<Biome>)RegistryLookupCodec.of(Registry.BIOME_KEY)
-							.codec()
-							.parse(dynamic2)
-							.resultOrPartial(Util.addPrefix("Biome registry: ", LOGGER::error))
-							.orElseThrow(() -> new IllegalStateException("Failed to get biome registry"));
-						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)RegistryLookupCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY)
-							.codec()
-							.parse(dynamic2)
-							.resultOrPartial(Util.addPrefix("Noise settings registry: ", LOGGER::error))
-							.orElseThrow(() -> new IllegalStateException("Failed to get noise settings registry"));
-						return GeneratorOptions.getDefaultOptions(registry, registry2, registry3);
-					}
-				),
-			dataResult.lifecycle()
-		);
+		return Pair.of((GeneratorOptions)dataResult.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).orElseGet(() -> {
+			DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.Impl.method_39199(dynamic2);
+			return GeneratorOptions.getDefaultOptions(dynamicRegistryManager);
+		}), dataResult.lifecycle());
 	}
 
 	private static DataPackSettings parseDataPackSettings(Dynamic<?> dynamic) {

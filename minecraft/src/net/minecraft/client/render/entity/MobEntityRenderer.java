@@ -62,7 +62,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float l = (float)(vec3d.z - i);
 		float m = 0.025F;
 		VertexConsumer vertexConsumer = provider.getBuffer(RenderLayer.getLeash());
-		Matrix4f matrix4f = matrices.peek().getModel();
+		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 		float n = MathHelper.fastInverseSqrt(j * j + l * l) * 0.025F / 2.0F;
 		float o = l * n;
 		float p = j * n;
@@ -86,7 +86,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 
 	private static void renderLeashPiece(
 		VertexConsumer vertexConsumer,
-		Matrix4f modelMatrix,
+		Matrix4f positionMatrix,
 		float f,
 		float g,
 		float h,
@@ -112,7 +112,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float u = f * m;
 		float v = g > 0.0F ? g * m * m : g - g * (1.0F - m) * (1.0F - m);
 		float w = h * m;
-		vertexConsumer.vertex(modelMatrix, u - k, v + j, w + l).color(r, s, t, 1.0F).light(p).next();
-		vertexConsumer.vertex(modelMatrix, u + k, v + i - j, w - l).color(r, s, t, 1.0F).light(p).next();
+		vertexConsumer.vertex(positionMatrix, u - k, v + j, w + l).color(r, s, t, 1.0F).light(p).next();
+		vertexConsumer.vertex(positionMatrix, u + k, v + i - j, w - l).color(r, s, t, 1.0F).light(p).next();
 	}
 }

@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_6625;
-import net.minecraft.class_6643;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -49,6 +48,7 @@ import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import org.apache.logging.log4j.LogManager;
@@ -235,7 +235,7 @@ public class ChunkSerializer {
 
 			for (String string2 : nbtCompound5.getKeys()) {
 				GenerationStep.Carver carver = GenerationStep.Carver.valueOf(string2);
-				protoChunk2.setCarvingMask(carver, new class_6643(nbtCompound5.getLongArray(string2), chunk.getBottomY()));
+				protoChunk2.setCarvingMask(carver, new CarvingMask(nbtCompound5.getLongArray(string2), chunk.getBottomY()));
 			}
 
 			return protoChunk2;
@@ -325,9 +325,9 @@ public class ChunkSerializer {
 			NbtCompound nbtCompound4 = new NbtCompound();
 
 			for (GenerationStep.Carver carver : GenerationStep.Carver.values()) {
-				class_6643 lv = protoChunk.getCarvingMask(carver);
-				if (lv != null) {
-					nbtCompound4.putLongArray(carver.toString(), lv.method_38864());
+				CarvingMask carvingMask = protoChunk.getCarvingMask(carver);
+				if (carvingMask != null) {
+					nbtCompound4.putLongArray(carver.toString(), carvingMask.getMask());
 				}
 			}
 

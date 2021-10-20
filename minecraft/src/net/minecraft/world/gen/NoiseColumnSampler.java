@@ -1,25 +1,29 @@
 package net.minecraft.world.gen;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.biome.source.util.TerrainNoisePoint;
+import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
+import net.minecraft.world.gen.noise.NoiseParametersKeys;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
@@ -41,45 +45,6 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 	private static final float field_34677 = 0.02F;
 	private static final float field_34678 = -0.3F;
 	private static final double field_34679 = 1.5;
-	private static final DoublePerlinNoiseSampler.NoiseParameters AQUIFER_BARRIER_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-3, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters AQUIFER_FLUID_LEVEL_FLOODEDNESS_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(
-		-7, 1.0
-	);
-	private static final DoublePerlinNoiseSampler.NoiseParameters AQUIFER_LAVA_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-1, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters AQUIFER_FLUID_LEVEL_SPREAD_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(
-		-4, 1.0
-	);
-	private static final DoublePerlinNoiseSampler.NoiseParameters PILLAR_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters PILLAR_RARENESS_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters PILLAR_THICKNESS_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_2D_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_2D_ELEVATION_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_2D_MODULATOR_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-11, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_2D_THICKNESS_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-11, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_3D_FIRST_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_3D_SECOND_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_3D_RARITY_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-11, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_3D_THICKNESS_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_ROUGHNESS_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-5, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SPAGHETTI_ROUGHNESS_MODULATOR_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(
-		-8, 1.0
-	);
-	private static final DoublePerlinNoiseSampler.NoiseParameters CAVE_ENTRANCE_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 0.4, 0.5, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters CAVE_LAYER_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters CAVE_CHEESE_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(
-		-8, 0.5, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 2.0, 0.0
-	);
-	private static final DoublePerlinNoiseSampler.NoiseParameters JAGGED_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(
-		-16, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
-	);
-	private static final DoublePerlinNoiseSampler.NoiseParameters ORE_FREQUENCY_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters FIRST_ORE_PLACEMENT_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters SECOND_ORE_PLACEMENT_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters ORE_GAP_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-5, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters NOODLE_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters NOODLE_THICKNESS_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-8, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters NOODLE_RIDGE_FIRST_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0);
-	private static final DoublePerlinNoiseSampler.NoiseParameters NOODLE_RIDGE_SECOND_NOISE_PARAMETERS = new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0);
 	private final int verticalNoiseResolution;
 	private final int noiseSizeY;
 	private final GenerationShapeConfig config;
@@ -120,32 +85,26 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 	private final DoublePerlinNoiseSampler weirdnessNoise;
 	private final DoublePerlinNoiseSampler shiftNoise;
 	private final DoublePerlinNoiseSampler oreGapNoise;
-	private final DoublePerlinNoiseSampler oreFrequencyNoiseSampler;
 	private final ChunkNoiseSampler.ValueSamplerFactory oreFrequencyNoiseSamplerFactory;
-	private final DoublePerlinNoiseSampler firstOrePlacementNoise;
 	private final ChunkNoiseSampler.ValueSamplerFactory firstOrePlacementNoiseFactory;
-	private final DoublePerlinNoiseSampler secondOrePlacementNoise;
 	private final ChunkNoiseSampler.ValueSamplerFactory secondOrePlacementNoiseFactory;
-	private final DoublePerlinNoiseSampler noodleNoise;
 	private final ChunkNoiseSampler.ValueSamplerFactory noodleNoiseFactory;
-	private final DoublePerlinNoiseSampler noodleThicknessNoise;
 	private final ChunkNoiseSampler.ValueSamplerFactory noodleThicknessNoiseFactory;
-	private final DoublePerlinNoiseSampler noodleRidgeFirstNoise;
 	private final ChunkNoiseSampler.ValueSamplerFactory noodleRidgeFirstNoiseFactory;
-	private final DoublePerlinNoiseSampler noodleRidgeSecondNoise;
 	private final ChunkNoiseSampler.ValueSamplerFactory noodleRidgeSecondNoiseFactory;
 	private final RandomDeriver aquiferRandomDeriver;
 	private final RandomDeriver oreRandomDeriver;
 	private final RandomDeriver depthBasedLayerRandomDeriver;
+	private final List<MultiNoiseUtil.NoiseHypercube> spawnSuitabilityNoises = new VanillaBiomeParameters().getSpawnSuitabilityNoises();
 
 	public NoiseColumnSampler(
 		int horizontalNoiseResolution,
 		int verticalNoiseResolution,
 		int noiseSizeY,
 		GenerationShapeConfig config,
-		MultiNoiseParameters noiseParameters,
 		boolean hasNoiseCaves,
 		long seed,
+		Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry,
 		ChunkRandom.RandomProvider randomProvider
 	) {
 		this.verticalNoiseResolution = verticalNoiseResolution;
@@ -173,125 +132,71 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		double d = 2.6666666666666665;
 		int l = i + 4;
 		int m = i + config.height();
+		RandomDeriver randomDeriver = randomProvider.create(seed).createBlockPosRandomDeriver();
 		if (randomProvider != ChunkRandom.RandomProvider.LEGACY) {
-			RandomDeriver randomDeriver = randomProvider.create(seed).createBlockPosRandomDeriver();
 			this.terrainNoise = new InterpolatedNoiseSampler(
 				randomDeriver.createRandom("terrain"), config.sampling(), horizontalNoiseResolution, verticalNoiseResolution
 			);
-			this.aquiferBarrierNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("aquifer_barrier"), AQUIFER_BARRIER_NOISE_PARAMETERS);
-			this.aquiferFluidLevelFloodednessNoise = DoublePerlinNoiseSampler.create(
-				randomDeriver.createRandom("aquifer_fluid_level_floodedness"), AQUIFER_FLUID_LEVEL_FLOODEDNESS_NOISE_PARAMETERS
-			);
-			this.aquiferLavaNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("aquifer_lava"), AQUIFER_LAVA_NOISE_PARAMETERS);
-			this.aquiferRandomDeriver = randomDeriver.createRandom("aquifer").createBlockPosRandomDeriver();
-			this.aquiferFluidLevelSpreadNoise = DoublePerlinNoiseSampler.create(
-				randomDeriver.createRandom("aquifer_fluid_level_spread"), AQUIFER_FLUID_LEVEL_SPREAD_NOISE_PARAMETERS
-			);
-			this.pillarNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("pillar"), PILLAR_NOISE_PARAMETERS);
-			this.pillarRarenessNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("pillar_rareness"), PILLAR_RARENESS_NOISE_PARAMETERS);
-			this.pillarThicknessNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("pillar_thickness"), PILLAR_THICKNESS_NOISE_PARAMETERS);
-			this.spaghetti2dNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("spaghetti_2d"), SPAGHETTI_2D_NOISE_PARAMETERS);
-			this.spaghetti2dElevationNoise = DoublePerlinNoiseSampler.create(
-				randomDeriver.createRandom("spaghetti_2d_elevation"), SPAGHETTI_2D_ELEVATION_NOISE_PARAMETERS
-			);
-			this.spaghetti2dModulatorNoise = DoublePerlinNoiseSampler.create(
-				randomDeriver.createRandom("spaghetti_2d_modulator"), SPAGHETTI_2D_MODULATOR_NOISE_PARAMETERS
-			);
-			this.spaghetti2dThicknessNoise = DoublePerlinNoiseSampler.create(
-				randomDeriver.createRandom("spaghetti_2d_thickness"), SPAGHETTI_2D_THICKNESS_NOISE_PARAMETERS
-			);
-			this.spaghetti3dFirstNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("spaghetti_3d_1"), SPAGHETTI_3D_FIRST_NOISE_PARAMETERS);
-			this.spaghetti3dSecondNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("spaghetti_3d_2"), SPAGHETTI_3D_SECOND_NOISE_PARAMETERS);
-			this.spaghetti3dRarityNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("spaghetti_3d_rarity"), SPAGHETTI_3D_RARITY_NOISE_PARAMETERS);
-			this.spaghetti3dThicknessNoise = DoublePerlinNoiseSampler.create(
-				randomDeriver.createRandom("spaghetti_3d_thickness"), SPAGHETTI_3D_THICKNESS_NOISE_PARAMETERS
-			);
-			this.spaghettiRoughnessNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("spaghetti_roughness"), SPAGHETTI_ROUGHNESS_NOISE_PARAMETERS);
-			this.spaghettiRoughnessModulatorNoise = DoublePerlinNoiseSampler.create(
-				randomDeriver.createRandom("spaghetti_roughness_modulator"), SPAGHETTI_ROUGHNESS_MODULATOR_NOISE_PARAMETERS
-			);
-			this.caveEntranceNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("cave_entrance"), CAVE_ENTRANCE_NOISE_PARAMETERS);
-			this.caveLayerNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("cave_layer"), CAVE_LAYER_NOISE_PARAMETERS);
-			this.caveCheeseNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("cave_cheese"), CAVE_CHEESE_NOISE_PARAMETERS);
-			this.temperatureNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("temperature"), noiseParameters.temperature());
-			this.humidityNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("vegetation"), noiseParameters.humidity());
-			this.continentalnessNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("continentalness"), noiseParameters.continentalness());
-			this.erosionNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("erosion"), noiseParameters.erosion());
-			this.weirdnessNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("ridge"), noiseParameters.weirdness());
-			this.shiftNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("offset"), noiseParameters.shift());
-			this.oreFrequencyNoiseSampler = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("ore_veininess"), ORE_FREQUENCY_NOISE_PARAMETERS);
-			this.oreFrequencyNoiseSamplerFactory = createNoiseSamplerFactory(this.oreFrequencyNoiseSampler, j, k, 0, 1.5);
-			this.firstOrePlacementNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("ore_vein_a"), FIRST_ORE_PLACEMENT_NOISE_PARAMETERS);
-			this.firstOrePlacementNoiseFactory = createNoiseSamplerFactory(this.firstOrePlacementNoise, j, k, 0, 4.0);
-			this.secondOrePlacementNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("ore_vein_b"), SECOND_ORE_PLACEMENT_NOISE_PARAMETERS);
-			this.secondOrePlacementNoiseFactory = createNoiseSamplerFactory(this.secondOrePlacementNoise, j, k, 0, 4.0);
-			this.oreGapNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("ore_gap"), ORE_GAP_NOISE_PARAMETERS);
-			this.oreRandomDeriver = randomDeriver.createRandom("ore").createBlockPosRandomDeriver();
-			this.noodleNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("noodle"), NOODLE_NOISE_PARAMETERS);
-			this.noodleNoiseFactory = createNoiseSamplerFactory(this.noodleNoise, l, m, -1, 1.0);
-			this.noodleThicknessNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("noodle_thickness"), NOODLE_THICKNESS_NOISE_PARAMETERS);
-			this.noodleThicknessNoiseFactory = createNoiseSamplerFactory(this.noodleThicknessNoise, l, m, 0, 1.0);
-			this.noodleRidgeFirstNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("noodle_ridge_a"), NOODLE_RIDGE_FIRST_NOISE_PARAMETERS);
-			this.noodleRidgeFirstNoiseFactory = createNoiseSamplerFactory(this.noodleRidgeFirstNoise, l, m, 0, 2.6666666666666665);
-			this.noodleRidgeSecondNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("noodle_ridge_b"), NOODLE_RIDGE_SECOND_NOISE_PARAMETERS);
-			this.noodleRidgeSecondNoiseFactory = createNoiseSamplerFactory(this.noodleRidgeSecondNoise, l, m, 0, 2.6666666666666665);
-			this.jaggedNoise = DoublePerlinNoiseSampler.create(randomDeriver.createRandom("jagged"), JAGGED_NOISE_PARAMETERS);
-			this.depthBasedLayerRandomDeriver = randomDeriver.createRandom("depth_based_layer").createBlockPosRandomDeriver();
+			this.temperatureNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.TEMPERATURE);
+			this.humidityNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.VEGETATION);
+			this.shiftNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.OFFSET);
 		} else {
 			AbstractRandom abstractRandom2 = randomProvider.create(seed);
-			AbstractRandom abstractRandom3 = randomProvider.create(seed);
-			AbstractRandom abstractRandom4 = config.useLegacyRandom() ? abstractRandom3 : abstractRandom2.derive();
-			this.terrainNoise = new InterpolatedNoiseSampler(abstractRandom4, config.sampling(), horizontalNoiseResolution, verticalNoiseResolution);
-			AbstractRandom abstractRandom5 = abstractRandom2.derive();
-			this.aquiferBarrierNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom5.derive(), AQUIFER_BARRIER_NOISE_PARAMETERS);
-			this.aquiferFluidLevelFloodednessNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom5.derive(), AQUIFER_FLUID_LEVEL_FLOODEDNESS_NOISE_PARAMETERS);
-			this.aquiferLavaNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom5.derive(), AQUIFER_LAVA_NOISE_PARAMETERS);
-			this.aquiferRandomDeriver = abstractRandom5.createBlockPosRandomDeriver();
-			this.aquiferFluidLevelSpreadNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom5.derive(), AQUIFER_FLUID_LEVEL_SPREAD_NOISE_PARAMETERS);
-			AbstractRandom abstractRandom6 = abstractRandom2.derive();
-			this.pillarNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), PILLAR_NOISE_PARAMETERS);
-			this.pillarRarenessNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), PILLAR_RARENESS_NOISE_PARAMETERS);
-			this.pillarThicknessNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), PILLAR_THICKNESS_NOISE_PARAMETERS);
-			this.spaghetti2dNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_2D_NOISE_PARAMETERS);
-			this.spaghetti2dElevationNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_2D_ELEVATION_NOISE_PARAMETERS);
-			this.spaghetti2dModulatorNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_2D_MODULATOR_NOISE_PARAMETERS);
-			this.spaghetti2dThicknessNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_2D_THICKNESS_NOISE_PARAMETERS);
-			this.spaghetti3dFirstNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_3D_FIRST_NOISE_PARAMETERS);
-			this.spaghetti3dSecondNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_3D_SECOND_NOISE_PARAMETERS);
-			this.spaghetti3dRarityNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_3D_RARITY_NOISE_PARAMETERS);
-			this.spaghetti3dThicknessNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_3D_THICKNESS_NOISE_PARAMETERS);
-			this.spaghettiRoughnessNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_ROUGHNESS_NOISE_PARAMETERS);
-			this.spaghettiRoughnessModulatorNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), SPAGHETTI_ROUGHNESS_MODULATOR_NOISE_PARAMETERS);
-			this.caveEntranceNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), CAVE_ENTRANCE_NOISE_PARAMETERS);
-			this.caveLayerNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), CAVE_LAYER_NOISE_PARAMETERS);
-			this.caveCheeseNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom6.derive(), CAVE_CHEESE_NOISE_PARAMETERS);
-			this.temperatureNoise = DoublePerlinNoiseSampler.method_39123(randomProvider.create(seed), noiseParameters.temperature());
-			this.humidityNoise = DoublePerlinNoiseSampler.method_39123(randomProvider.create(seed + 1L), noiseParameters.humidity());
-			this.continentalnessNoise = DoublePerlinNoiseSampler.method_39123(randomProvider.create(seed + 2L), noiseParameters.continentalness());
-			this.erosionNoise = DoublePerlinNoiseSampler.method_39123(randomProvider.create(seed + 3L), noiseParameters.erosion());
-			this.weirdnessNoise = DoublePerlinNoiseSampler.method_39123(randomProvider.create(seed + 4L), noiseParameters.weirdness());
-			this.shiftNoise = DoublePerlinNoiseSampler.method_39123(randomProvider.create(seed + 5L), noiseParameters.shift());
-			this.jaggedNoise = DoublePerlinNoiseSampler.method_39123(randomProvider.create(seed + 6L), JAGGED_NOISE_PARAMETERS);
-			AbstractRandom abstractRandom7 = abstractRandom2.derive();
-			this.oreFrequencyNoiseSampler = DoublePerlinNoiseSampler.method_39123(abstractRandom7.derive(), ORE_FREQUENCY_NOISE_PARAMETERS);
-			this.oreFrequencyNoiseSamplerFactory = createNoiseSamplerFactory(this.oreFrequencyNoiseSampler, j, k, 0, 1.5);
-			this.firstOrePlacementNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom7.derive(), FIRST_ORE_PLACEMENT_NOISE_PARAMETERS);
-			this.firstOrePlacementNoiseFactory = createNoiseSamplerFactory(this.firstOrePlacementNoise, j, k, 0, 4.0);
-			this.secondOrePlacementNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom7.derive(), SECOND_ORE_PLACEMENT_NOISE_PARAMETERS);
-			this.secondOrePlacementNoiseFactory = createNoiseSamplerFactory(this.secondOrePlacementNoise, j, k, 0, 4.0);
-			this.oreGapNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom7.derive(), ORE_GAP_NOISE_PARAMETERS);
-			this.oreRandomDeriver = abstractRandom7.createBlockPosRandomDeriver();
-			AbstractRandom abstractRandom8 = abstractRandom2.derive();
-			this.noodleNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom8.derive(), NOODLE_NOISE_PARAMETERS);
-			this.noodleNoiseFactory = createNoiseSamplerFactory(this.noodleNoise, l, m, -1, 1.0);
-			this.noodleThicknessNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom8.derive(), NOODLE_THICKNESS_NOISE_PARAMETERS);
-			this.noodleThicknessNoiseFactory = createNoiseSamplerFactory(this.noodleThicknessNoise, l, m, 0, 1.0);
-			this.noodleRidgeFirstNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom8.derive(), NOODLE_RIDGE_FIRST_NOISE_PARAMETERS);
-			this.noodleRidgeFirstNoiseFactory = createNoiseSamplerFactory(this.noodleRidgeFirstNoise, l, m, 0, 2.6666666666666665);
-			this.noodleRidgeSecondNoise = DoublePerlinNoiseSampler.method_39123(abstractRandom8.derive(), NOODLE_RIDGE_SECOND_NOISE_PARAMETERS);
-			this.noodleRidgeSecondNoiseFactory = createNoiseSamplerFactory(this.noodleRidgeSecondNoise, l, m, 0, 2.6666666666666665);
-			this.depthBasedLayerRandomDeriver = randomProvider.create(seed).createBlockPosRandomDeriver();
+			this.terrainNoise = new InterpolatedNoiseSampler(randomProvider.create(seed), config.sampling(), horizontalNoiseResolution, verticalNoiseResolution);
+			this.temperatureNoise = DoublePerlinNoiseSampler.createLegacy(randomProvider.create(seed), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
+			this.humidityNoise = DoublePerlinNoiseSampler.createLegacy(randomProvider.create(seed + 1L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
+			this.shiftNoise = DoublePerlinNoiseSampler.create(
+				randomDeriver.createRandom(NoiseParametersKeys.OFFSET.getValue()), new DoublePerlinNoiseSampler.NoiseParameters(0, 0.0)
+			);
 		}
+
+		this.aquiferRandomDeriver = randomDeriver.createRandom("aquifer").createBlockPosRandomDeriver();
+		this.oreRandomDeriver = randomDeriver.createRandom("ore").createBlockPosRandomDeriver();
+		this.depthBasedLayerRandomDeriver = randomDeriver.createRandom("depth_based_layer").createBlockPosRandomDeriver();
+		this.aquiferBarrierNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.AQUIFER_BARRIER);
+		this.aquiferFluidLevelFloodednessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.AQUIFER_FLUID_LEVEL_FLOODEDNESS);
+		this.aquiferLavaNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.AQUIFER_LAVA);
+		this.aquiferFluidLevelSpreadNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.AQUIFER_FLUID_LEVEL_SPREAD);
+		this.pillarNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.PILLAR);
+		this.pillarRarenessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.PILLAR_RARENESS);
+		this.pillarThicknessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.PILLAR_THICKNESS);
+		this.spaghetti2dNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_2D);
+		this.spaghetti2dElevationNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_2D_ELEVATION);
+		this.spaghetti2dModulatorNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_2D_MODULATOR);
+		this.spaghetti2dThicknessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_2D_THICKNESS);
+		this.spaghetti3dFirstNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_3D_1);
+		this.spaghetti3dSecondNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_3D_2);
+		this.spaghetti3dRarityNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_3D_RARITY);
+		this.spaghetti3dThicknessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_3D_THICKNESS);
+		this.spaghettiRoughnessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_ROUGHNESS);
+		this.spaghettiRoughnessModulatorNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.SPAGHETTI_ROUGHNESS_MODULATOR);
+		this.caveEntranceNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.CAVE_ENTRANCE);
+		this.caveLayerNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.CAVE_LAYER);
+		this.caveCheeseNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.CAVE_CHEESE);
+		this.continentalnessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.CONTINENTALNESS);
+		this.erosionNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.EROSION);
+		this.weirdnessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.RIDGE);
+		this.oreFrequencyNoiseSamplerFactory = createNoiseSamplerFactory(
+			NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.ORE_VEININESS), j, k, 0, 1.5
+		);
+		this.firstOrePlacementNoiseFactory = createNoiseSamplerFactory(
+			NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.ORE_VEIN_A), j, k, 0, 4.0
+		);
+		this.secondOrePlacementNoiseFactory = createNoiseSamplerFactory(
+			NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.ORE_VEIN_B), j, k, 0, 4.0
+		);
+		this.oreGapNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.ORE_GAP);
+		this.noodleNoiseFactory = createNoiseSamplerFactory(NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.NOODLE), l, m, -1, 1.0);
+		this.noodleThicknessNoiseFactory = createNoiseSamplerFactory(
+			NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.NOODLE_THICKNESS), l, m, 0, 1.0
+		);
+		this.noodleRidgeFirstNoiseFactory = createNoiseSamplerFactory(
+			NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.NOODLE_RIDGE_A), l, m, 0, 2.6666666666666665
+		);
+		this.noodleRidgeSecondNoiseFactory = createNoiseSamplerFactory(
+			NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.NOODLE_RIDGE_B), l, m, 0, 2.6666666666666665
+		);
+		this.jaggedNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.JAGGED);
 	}
 
 	private static ChunkNoiseSampler.ValueSamplerFactory createNoiseSamplerFactory(
@@ -488,10 +393,10 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		float g = (float)this.sampleErosionNoise(d, 0.0, e);
 		float h = (float)this.sampleWeirdnessNoise(d, 0.0, e);
 		double l = (double)this.terrainParameters.getOffset(this.terrainParameters.createNoisePoint(f, g, h));
-		return this.method_38378(i, j, k, d, e, f, g, h, l);
+		return this.sample(i, j, k, d, e, f, g, h, l);
 	}
 
-	public MultiNoiseUtil.NoiseValuePoint method_38378(
+	public MultiNoiseUtil.NoiseValuePoint sample(
 		int x, int y, int z, double noiseX, double noiseZ, float continentalness, float erosion, float weirdness, double offset
 	) {
 		double d = (double)y + this.sampleShiftNoise(y, z, x);
@@ -520,6 +425,11 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 				(double)this.terrainParameters.getPeak(noisePoint)
 			);
 		}
+	}
+
+	@Override
+	public BlockPos findBestSpawnPosition() {
+		return MultiNoiseUtil.findFittestPosition(this.spawnSuitabilityNoises, this);
 	}
 
 	public double sampleShiftNoise(int x, int y, int z) {
@@ -634,89 +544,6 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 	private double sampleSpaghettiRoughnessNoise(int x, int y, int z) {
 		double d = NoiseHelper.lerpFromProgress(this.spaghettiRoughnessModulatorNoise, (double)x, (double)y, (double)z, 0.0, 0.1);
 		return (0.4 - Math.abs(this.spaghettiRoughnessNoise.sample((double)x, (double)y, (double)z))) * d;
-	}
-
-	@VisibleForTesting
-	public void addDebugInfo(StringBuilder info) {
-		info.append("blended: ");
-		this.terrainNoise.addDebugInfo(info);
-		info.append("\n").append("jagged: ");
-		this.jaggedNoise.addDebugInfo(info);
-		info.append("\n").append("barrier: ");
-		this.aquiferBarrierNoise.addDebugInfo(info);
-		info.append("\n").append("fluid level floodedness: ");
-		this.aquiferFluidLevelFloodednessNoise.addDebugInfo(info);
-		info.append("\n").append("lava: ");
-		this.aquiferLavaNoise.addDebugInfo(info);
-		info.append("\n").append("aquifer positional: ");
-		this.aquiferRandomDeriver.addDebugInfo(info);
-		info.append("\n").append("fluid level spread: ");
-		this.aquiferFluidLevelSpreadNoise.addDebugInfo(info);
-		info.append("\n").append("layer: ");
-		this.caveLayerNoise.addDebugInfo(info);
-		info.append("\n").append("pillar: ");
-		this.pillarNoise.addDebugInfo(info);
-		info.append("\n").append("pillar rareness: ");
-		this.pillarRarenessNoise.addDebugInfo(info);
-		info.append("\n").append("pillar thickness: ");
-		this.pillarThicknessNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti 2d: ");
-		this.spaghetti2dNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti 2d elev: ");
-		this.spaghetti2dElevationNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti 2d rare: ");
-		this.spaghetti2dModulatorNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti 2d thick: ");
-		this.spaghetti2dThicknessNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti 3d 1: ");
-		this.spaghetti3dFirstNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti 3d 2: ");
-		this.spaghetti3dSecondNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti 3d rarity: ");
-		this.spaghetti3dRarityNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti 3d thickness: ");
-		this.spaghetti3dThicknessNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti roughness: ");
-		this.spaghettiRoughnessNoise.addDebugInfo(info);
-		info.append("\n").append("spaghetti roughness modulator: ");
-		this.spaghettiRoughnessModulatorNoise.addDebugInfo(info);
-		info.append("\n").append("big entrance: ");
-		this.caveEntranceNoise.addDebugInfo(info);
-		info.append("\n").append("cheese: ");
-		this.caveCheeseNoise.addDebugInfo(info);
-		info.append("\n").append("temp: ");
-		this.temperatureNoise.addDebugInfo(info);
-		info.append("\n").append("humidity: ");
-		this.humidityNoise.addDebugInfo(info);
-		info.append("\n").append("continentalness: ");
-		this.continentalnessNoise.addDebugInfo(info);
-		info.append("\n").append("erosion: ");
-		this.erosionNoise.addDebugInfo(info);
-		info.append("\n").append("weirdness: ");
-		this.weirdnessNoise.addDebugInfo(info);
-		info.append("\n").append("offset: ");
-		this.shiftNoise.addDebugInfo(info);
-		info.append("\n").append("gap noise: ");
-		this.oreGapNoise.addDebugInfo(info);
-		info.append("\n").append("veininess: ");
-		this.oreFrequencyNoiseSampler.addDebugInfo(info);
-		info.append("\n").append("vein a: ");
-		this.firstOrePlacementNoise.addDebugInfo(info);
-		info.append("\n").append("vein b: ");
-		this.secondOrePlacementNoise.addDebugInfo(info);
-		info.append("\n").append("vein positional: ");
-		this.oreRandomDeriver.addDebugInfo(info);
-		info.append("\n").append("noodle toggle: ");
-		this.noodleNoise.addDebugInfo(info);
-		info.append("\n").append("noodle thickness: ");
-		this.noodleThicknessNoise.addDebugInfo(info);
-		info.append("\n").append("noodle ridge a: ");
-		this.noodleRidgeFirstNoise.addDebugInfo(info);
-		info.append("\n").append("noodle ridge b: ");
-		this.noodleRidgeSecondNoise.addDebugInfo(info);
-		info.append("\n").append("depth based layer: ");
-		this.depthBasedLayerRandomDeriver.addDebugInfo(info);
-		info.append("\n");
 	}
 
 	public RandomDeriver getDepthBasedLayerRandomDeriver() {

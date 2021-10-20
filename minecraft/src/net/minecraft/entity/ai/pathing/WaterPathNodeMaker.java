@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.pathing;
 
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.Map;
@@ -104,7 +105,8 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 	}
 
 	protected PathNodeType method_38489(int i, int j, int k) {
-		return this.field_34767.computeIfAbsent(BlockPos.asLong(i, j, k), l -> this.getDefaultNodeType(this.cachedWorld, i, j, k));
+		return this.field_34767
+			.computeIfAbsent(BlockPos.asLong(i, j, k), (Long2ObjectFunction<? extends PathNodeType>)(l -> this.getDefaultNodeType(this.cachedWorld, i, j, k)));
 	}
 
 	@Override

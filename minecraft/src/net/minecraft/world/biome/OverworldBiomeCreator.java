@@ -1,28 +1,40 @@
 package net.minecraft.world.biome;
 
+import javax.annotation.Nullable;
+import net.minecraft.client.sound.MusicType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.sound.MusicSound;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 
-public class DefaultBiomeCreator {
+public class OverworldBiomeCreator {
 	protected static final int field_35340 = 4159204;
 	protected static final int field_35341 = 329011;
 	private static final int field_35342 = 12638463;
+	@Nullable
+	private static final MusicSound field_35436 = null;
 
-	public static int getSkyColor(float temperature) {
+	protected static int getSkyColor(float temperature) {
 		float f = temperature / 3.0F;
 		f = MathHelper.clamp(f, -1.0F, 1.0F);
 		return MathHelper.hsvToRgb(0.62222224F - f * 0.05F, 0.5F + f * 0.1F, 1.0F);
 	}
 
 	private static Biome method_39152(
-		Biome.Precipitation precipitation, Biome.Category category, float f, float g, SpawnSettings.Builder builder, GenerationSettings.Builder builder2
+		Biome.Precipitation precipitation,
+		Biome.Category category,
+		float f,
+		float g,
+		SpawnSettings.Builder builder,
+		GenerationSettings.Builder builder2,
+		@Nullable MusicSound musicSound
 	) {
-		return method_39151(precipitation, category, f, g, 4159204, 329011, builder, builder2);
+		return method_39151(precipitation, category, f, g, 4159204, 329011, builder, builder2, musicSound);
 	}
 
 	private static Biome method_39151(
@@ -33,14 +45,24 @@ public class DefaultBiomeCreator {
 		int i,
 		int j,
 		SpawnSettings.Builder builder,
-		GenerationSettings.Builder builder2
+		GenerationSettings.Builder builder2,
+		@Nullable MusicSound musicSound
 	) {
 		return new Biome.Builder()
 			.precipitation(precipitation)
 			.category(category)
 			.temperature(f)
 			.downfall(g)
-			.effects(new BiomeEffects.Builder().waterColor(i).waterFogColor(j).fogColor(12638463).skyColor(getSkyColor(f)).moodSound(BiomeMoodSound.CAVE).build())
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(i)
+					.waterFogColor(j)
+					.fogColor(12638463)
+					.skyColor(getSkyColor(f))
+					.moodSound(BiomeMoodSound.CAVE)
+					.music(musicSound)
+					.build()
+			)
 			.spawnSettings(builder.build())
 			.generationSettings(builder2.build())
 			.build();
@@ -80,7 +102,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
 		DefaultBiomeFeatures.addDefaultVegetation(builder2);
 		DefaultBiomeFeatures.addSweetBerryBushes(builder2);
-		return method_39152(Biome.Precipitation.RAIN, Biome.Category.TAIGA, bl ? 0.25F : 0.3F, 0.8F, builder, builder2);
+		return method_39152(Biome.Precipitation.RAIN, Biome.Category.TAIGA, bl ? 0.25F : 0.3F, 0.8F, builder, builder2, field_35436);
 	}
 
 	public static Biome createSparseJungle() {
@@ -132,7 +154,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
 		DefaultBiomeFeatures.addDefaultVegetation(builder2);
 		DefaultBiomeFeatures.addJungleVegetation(builder2);
-		return method_39152(Biome.Precipitation.RAIN, Biome.Category.JUNGLE, 0.95F, depth, builder, builder2);
+		return method_39152(Biome.Precipitation.RAIN, Biome.Category.JUNGLE, 0.95F, depth, builder, builder2, field_35436);
 	}
 
 	public static Biome createWindsweptHills(boolean bl) {
@@ -156,7 +178,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultVegetation(builder2);
 		DefaultBiomeFeatures.addEmeraldOre(builder2);
 		DefaultBiomeFeatures.addInfestedStone(builder2);
-		return method_39152(Biome.Precipitation.RAIN, Biome.Category.EXTREME_HILLS, 0.2F, 0.3F, builder, builder2);
+		return method_39152(Biome.Precipitation.RAIN, Biome.Category.EXTREME_HILLS, 0.2F, 0.3F, builder, builder2, field_35436);
 	}
 
 	public static Biome createDesert() {
@@ -173,7 +195,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
 		DefaultBiomeFeatures.addDesertVegetation(builder2);
 		DefaultBiomeFeatures.addDesertFeatures(builder2);
-		return method_39152(Biome.Precipitation.NONE, Biome.Category.DESERT, 2.0F, 0.0F, builder, builder2);
+		return method_39152(Biome.Precipitation.NONE, Biome.Category.DESERT, 2.0F, 0.0F, builder, builder2, field_35436);
 	}
 
 	public static Biome createPlains(boolean bl, boolean bl2, boolean bl3) {
@@ -217,7 +239,13 @@ public class DefaultBiomeCreator {
 
 		float f = bl2 ? 0.0F : 0.8F;
 		return method_39152(
-			bl2 ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN, bl2 ? Biome.Category.ICY : Biome.Category.PLAINS, f, bl2 ? 0.5F : 0.4F, builder, builder2
+			bl2 ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN,
+			bl2 ? Biome.Category.ICY : Biome.Category.PLAINS,
+			f,
+			bl2 ? 0.5F : 0.4F,
+			builder,
+			builder2,
+			field_35436
 		);
 	}
 
@@ -231,7 +259,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addMushroomFieldsFeatures(builder2);
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
 		DefaultBiomeFeatures.addDefaultVegetation(builder2);
-		return method_39152(Biome.Precipitation.RAIN, Biome.Category.MUSHROOM, 0.9F, 1.0F, builder, builder2);
+		return method_39152(Biome.Precipitation.RAIN, Biome.Category.MUSHROOM, 0.9F, 1.0F, builder, builder2, field_35436);
 	}
 
 	public static Biome createSavanna(boolean bl, boolean windswept) {
@@ -273,7 +301,7 @@ public class DefaultBiomeCreator {
 			f = 1.2F;
 		}
 
-		return method_39152(Biome.Precipitation.NONE, Biome.Category.SAVANNA, f, 0.0F, builder2, builder);
+		return method_39152(Biome.Precipitation.NONE, Biome.Category.SAVANNA, f, 0.0F, builder2, builder, field_35436);
 	}
 
 	public static Biome createNormalBadlands(boolean bl) {
@@ -313,7 +341,7 @@ public class DefaultBiomeCreator {
 	}
 
 	private static Biome createOcean(SpawnSettings.Builder spawnSettings, int waterColor, int waterFogColor, GenerationSettings.Builder builder) {
-		return method_39151(Biome.Precipitation.RAIN, Biome.Category.OCEAN, 0.5F, 0.5F, waterColor, waterFogColor, spawnSettings, builder);
+		return method_39151(Biome.Precipitation.RAIN, Biome.Category.OCEAN, 0.5F, 0.5F, waterColor, waterFogColor, spawnSettings, builder, field_35436);
 	}
 
 	private static GenerationSettings.Builder createOceanGenerationSettings() {
@@ -466,7 +494,7 @@ public class DefaultBiomeCreator {
 		}
 
 		float f = bl ? 0.6F : 0.7F;
-		return method_39152(Biome.Precipitation.RAIN, Biome.Category.FOREST, f, bl ? 0.6F : 0.8F, builder2, builder);
+		return method_39152(Biome.Precipitation.RAIN, Biome.Category.FOREST, f, bl ? 0.6F : 0.8F, builder2, builder, field_35436);
 	}
 
 	public static Biome createTaiga(boolean cold) {
@@ -498,7 +526,15 @@ public class DefaultBiomeCreator {
 		}
 
 		return method_39151(
-			cold ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN, Biome.Category.TAIGA, f, cold ? 0.4F : 0.8F, cold ? 4020182 : 4159204, 329011, builder, builder2
+			cold ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN,
+			Biome.Category.TAIGA,
+			f,
+			cold ? 0.4F : 0.8F,
+			cold ? 4020182 : 4159204,
+			329011,
+			builder,
+			builder2,
+			field_35436
 		);
 	}
 
@@ -592,7 +628,7 @@ public class DefaultBiomeCreator {
 
 		float f = bl ? 0.0F : 0.5F;
 		return method_39151(
-			bl ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN, Biome.Category.RIVER, f, 0.5F, bl ? 3750089 : 4159204, 329011, builder, builder2
+			bl ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN, Biome.Category.RIVER, f, 0.5F, bl ? 3750089 : 4159204, 329011, builder, builder2, field_35436
 		);
 	}
 
@@ -622,14 +658,22 @@ public class DefaultBiomeCreator {
 		}
 
 		return method_39151(
-			bl ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN, Biome.Category.BEACH, f, bl3 ? 0.4F : 0.3F, bl ? 4020182 : 4159204, 329011, builder, builder2
+			bl ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN,
+			Biome.Category.BEACH,
+			f,
+			bl3 ? 0.4F : 0.3F,
+			bl ? 4020182 : 4159204,
+			329011,
+			builder,
+			builder2,
+			field_35436
 		);
 	}
 
 	public static Biome createTheVoid() {
 		GenerationSettings.Builder builder = new GenerationSettings.Builder();
 		builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, ConfiguredFeatures.VOID_START_PLATFORM);
-		return method_39152(Biome.Precipitation.NONE, Biome.Category.NONE, 0.5F, 0.5F, new SpawnSettings.Builder(), builder);
+		return method_39152(Biome.Precipitation.NONE, Biome.Category.NONE, 0.5F, 0.5F, new SpawnSettings.Builder(), builder, field_35436);
 	}
 
 	public static Biome createMeadow() {
@@ -646,7 +690,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addMeadowFlowers(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
 		DefaultBiomeFeatures.addInfestedStone(builder);
-		return method_39151(Biome.Precipitation.RAIN, Biome.Category.MOUNTAIN, 0.5F, 0.8F, 937679, 329011, builder2, builder);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_MEADOW);
+		return method_39151(Biome.Precipitation.RAIN, Biome.Category.MOUNTAIN, 0.5F, 0.8F, 937679, 329011, builder2, builder, musicSound);
 	}
 
 	public static Biome createFrozenPeaks() {
@@ -659,7 +704,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
 		DefaultBiomeFeatures.addInfestedStone(builder);
-		return method_39152(Biome.Precipitation.SNOW, Biome.Category.MOUNTAIN, -0.7F, 0.9F, builder2, builder);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_FROZEN_PEAKS);
+		return method_39152(Biome.Precipitation.SNOW, Biome.Category.MOUNTAIN, -0.7F, 0.9F, builder2, builder, musicSound);
 	}
 
 	public static Biome createJaggedPeaks() {
@@ -672,7 +718,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
 		DefaultBiomeFeatures.addInfestedStone(builder);
-		return method_39152(Biome.Precipitation.SNOW, Biome.Category.MOUNTAIN, -0.7F, 0.9F, builder2, builder);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_JAGGED_PEAKS);
+		return method_39152(Biome.Precipitation.SNOW, Biome.Category.MOUNTAIN, -0.7F, 0.9F, builder2, builder, musicSound);
 	}
 
 	public static Biome createStonyPeaks() {
@@ -684,7 +731,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
 		DefaultBiomeFeatures.addInfestedStone(builder);
-		return method_39152(Biome.Precipitation.RAIN, Biome.Category.MOUNTAIN, 1.0F, 0.3F, builder2, builder);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_STONY_PEAKS);
+		return method_39152(Biome.Precipitation.RAIN, Biome.Category.MOUNTAIN, 1.0F, 0.3F, builder2, builder, musicSound);
 	}
 
 	public static Biome createSnowySlopes() {
@@ -699,7 +747,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultVegetation(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
 		DefaultBiomeFeatures.addInfestedStone(builder);
-		return method_39152(Biome.Precipitation.SNOW, Biome.Category.MOUNTAIN, -0.3F, 0.9F, builder2, builder);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_SNOWY_SLOPES);
+		return method_39152(Biome.Precipitation.SNOW, Biome.Category.MOUNTAIN, -0.3F, 0.9F, builder2, builder, musicSound);
 	}
 
 	public static Biome createGrove() {
@@ -717,7 +766,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultVegetation(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
 		DefaultBiomeFeatures.addInfestedStone(builder);
-		return method_39152(Biome.Precipitation.SNOW, Biome.Category.FOREST, -0.2F, 0.8F, builder2, builder);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_GROVE);
+		return method_39152(Biome.Precipitation.SNOW, Biome.Category.FOREST, -0.2F, 0.8F, builder2, builder, musicSound);
 	}
 
 	public static Biome createLushCaves() {
@@ -732,7 +782,8 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addClayOre(builder2);
 		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		DefaultBiomeFeatures.addLushCavesDecoration(builder2);
-		return method_39152(Biome.Precipitation.RAIN, Biome.Category.UNDERGROUND, 0.5F, 0.5F, builder, builder2);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_LUSH_CAVES);
+		return method_39152(Biome.Precipitation.RAIN, Biome.Category.UNDERGROUND, 0.5F, 0.5F, builder, builder2, musicSound);
 	}
 
 	public static Biome createDripstoneCaves() {
@@ -747,6 +798,7 @@ public class DefaultBiomeCreator {
 		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
 		DefaultBiomeFeatures.addDefaultVegetation(builder2);
 		DefaultBiomeFeatures.addDripstone(builder2);
-		return method_39152(Biome.Precipitation.RAIN, Biome.Category.UNDERGROUND, 0.8F, 0.4F, builder, builder2);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_DRIPSTONE_CAVES);
+		return method_39152(Biome.Precipitation.RAIN, Biome.Category.UNDERGROUND, 0.8F, 0.4F, builder, builder2, musicSound);
 	}
 }

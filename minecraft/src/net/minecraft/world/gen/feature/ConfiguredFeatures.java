@@ -28,6 +28,7 @@ import net.minecraft.util.math.floatprovider.ClampedNormalFloatProvider;
 import net.minecraft.util.math.floatprovider.UniformFloatProvider;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.intprovider.ClampedIntProvider;
+import net.minecraft.util.math.intprovider.ClampedNormalIntProvider;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -55,6 +56,7 @@ import net.minecraft.world.gen.decorator.EnvironmentScanDecoratorConfig;
 import net.minecraft.world.gen.decorator.HeightmapDecoratorConfig;
 import net.minecraft.world.gen.decorator.NopeDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.decorator.ScatterDecoratorConfig;
 import net.minecraft.world.gen.decorator.SurfaceRelativeThresholdDecoratorConfig;
 import net.minecraft.world.gen.decorator.WaterDepthThresholdDecoratorConfig;
 import net.minecraft.world.gen.feature.size.ThreeLayersFeatureSize;
@@ -494,9 +496,9 @@ public class ConfiguredFeatures {
 					)
 				)
 			)
-			.uniformRange(YOffset.getBottom(), YOffset.getTop())
+			.uniformRange(YOffset.getBottom(), YOffset.fixed(192))
 			.spreadHorizontally()
-			.repeat(40)
+			.repeat(25)
 	);
 	public static final ConfiguredFeature<?, ?> PILE_HAY = register(
 		"pile_hay", Feature.BLOCK_PILE.configure(new BlockPileFeatureConfig(new PillarBlockStateProvider(Blocks.HAY_BLOCK)))
@@ -962,7 +964,7 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<?, ?> ORE_GOLD_EXTRA = register(
 		"ore_gold_extra",
-		Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9)).uniformRange(YOffset.fixed(32), YOffset.fixed(79)).spreadHorizontally().repeat(20)
+		Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9)).uniformRange(YOffset.fixed(32), YOffset.fixed(256)).spreadHorizontally().repeat(50)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_GOLD = register(
 		"ore_gold",
@@ -1094,10 +1096,28 @@ public class ConfiguredFeatures {
 			.spreadHorizontally()
 			.repeat(UniformIntProvider.create(7, 35))
 	);
-	public static final ConfiguredFeature<?, ?> SMALL_DRIPSTONE = register(
-		"small_dripstone",
-		Feature.SMALL_DRIPSTONE
-			.configure(new SmallDripstoneFeatureConfig(5, 10, 2, 0.2F))
+	public static final ConfiguredFeature<?, ?> POINTED_DRIPSTONE = register(
+		"pointed_dripstone",
+		Feature.SIMPLE_RANDOM_SELECTOR
+			.configure(
+				new SimpleRandomFeatureConfig(
+					ImmutableList.of(
+						() -> Feature.POINTED_DRIPSTONE
+								.configure(new SmallDripstoneFeatureConfig(0.2F, 0.7F, 0.5F, 0.5F))
+								.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.FLOOR, 12, true))),
+						() -> Feature.POINTED_DRIPSTONE
+								.configure(new SmallDripstoneFeatureConfig(0.2F, 0.7F, 0.5F, 0.5F))
+								.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12, true)))
+					)
+				)
+			)
+			.decorate(
+				Decorator.SCATTER
+					.configure(
+						new ScatterDecoratorConfig(ClampedNormalIntProvider.method_39156(0.0F, 3.0F, -10, 10), ClampedNormalIntProvider.method_39156(0.0F, 0.6F, -2, 2))
+					)
+			)
+			.repeat(UniformIntProvider.create(1, 5))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_120)
 			.spreadHorizontally()
 			.repeat(UniformIntProvider.create(140, 220))
@@ -1788,7 +1808,7 @@ public class ConfiguredFeatures {
 					2
 				)
 			)
-			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12)))
+			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12, false)))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_120)
 			.spreadHorizontally()
 	);
@@ -1846,7 +1866,7 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<?, ?> CAVE_VINES = register(
 		"cave_vines",
-		CAVE_VINE.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12)))
+		CAVE_VINE.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12, false)))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_120)
 			.spreadHorizontally()
 			.repeat(157)
@@ -1905,7 +1925,7 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<?, ?> LUSH_CAVES_VEGETATION = register(
 		"lush_caves_vegetation",
-		MOSS_PATCH.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.FLOOR, 12)))
+		MOSS_PATCH.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.FLOOR, 12, false)))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_120)
 			.spreadHorizontally()
 			.repeat(104)
@@ -1965,7 +1985,7 @@ public class ConfiguredFeatures {
 		"lush_caves_clay",
 		Feature.RANDOM_BOOLEAN_SELECTOR
 			.configure(new RandomBooleanFeatureConfig(() -> CLAY_WITH_DRIPLEAVES, () -> CLAY_POOL_WITH_DRIPLEAVES))
-			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.FLOOR, 12)))
+			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.FLOOR, 12, false)))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_120)
 			.spreadHorizontally()
 			.repeat(52)
@@ -1990,7 +2010,7 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<?, ?> LUSH_CAVES_CEILING_VEGETATION = register(
 		"lush_caves_ceiling_vegetation",
-		MOSS_PATCH_CEILING.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12)))
+		MOSS_PATCH_CEILING.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12, false)))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_120)
 			.spreadHorizontally()
 			.repeat(104)
@@ -1999,7 +2019,7 @@ public class ConfiguredFeatures {
 		"spore_blossom",
 		Feature.SIMPLE_BLOCK
 			.configure(new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.SPORE_BLOSSOM)))
-			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12)))
+			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12, false)))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_120)
 			.spreadHorizontally()
 			.repeat(21)
@@ -2201,7 +2221,23 @@ public class ConfiguredFeatures {
 					)
 		);
 		public static final SpringFeatureConfig LAVA_SPRING_CONFIG = new SpringFeatureConfig(
-			Fluids.LAVA.getDefaultState(), true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DEEPSLATE, Blocks.TUFF)
+			Fluids.LAVA.getDefaultState(),
+			true,
+			4,
+			1,
+			ImmutableSet.of(
+				Blocks.STONE,
+				Blocks.GRANITE,
+				Blocks.DIORITE,
+				Blocks.ANDESITE,
+				Blocks.DEEPSLATE,
+				Blocks.TUFF,
+				Blocks.CALCITE,
+				Blocks.DIRT,
+				Blocks.SNOW_BLOCK,
+				Blocks.POWDER_SNOW,
+				Blocks.PACKED_ICE
+			)
 		);
 		public static final SpringFeatureConfig ENCLOSED_NETHER_SPRING_CONFIG = new SpringFeatureConfig(
 			Fluids.LAVA.getDefaultState(), false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK)

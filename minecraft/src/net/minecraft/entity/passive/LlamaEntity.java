@@ -164,7 +164,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Override
 	public double getMountedHeightOffset() {
-		return (double)this.getHeight() * 0.67;
+		return (double)this.getHeight() * 0.6;
 	}
 
 	@Override

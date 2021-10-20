@@ -1445,6 +1445,9 @@ public class Items {
 	public static final Item MUSIC_DISC_WAIT = register(
 		"music_disc_wait", new MusicDiscItem(12, SoundEvents.MUSIC_DISC_WAIT, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
 	);
+	public static final Item MUSIC_DISC_OTHERSIDE = register(
+		"music_disc_otherside", new MusicDiscItem(14, SoundEvents.MUSIC_DISC_OTHERSIDE, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+	);
 	public static final Item MUSIC_DISC_PIGSTEP = register(
 		"music_disc_pigstep", new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PIGSTEP, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
 	);

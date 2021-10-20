@@ -232,8 +232,8 @@ public final class ModelPart {
 		}
 
 		public void renderCuboid(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-			Matrix4f matrix4f = entry.getModel();
-			Matrix3f matrix3f = entry.getNormal();
+			Matrix4f matrix4f = entry.getPositionMatrix();
+			Matrix3f matrix3f = entry.getNormalMatrix();
 
 			for (ModelPart.Quad quad : this.sides) {
 				Vec3f vec3f = quad.direction.copy();

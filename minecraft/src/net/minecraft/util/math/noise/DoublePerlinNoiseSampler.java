@@ -7,6 +7,9 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
 import java.util.List;
+import java.util.function.Supplier;
+import net.minecraft.util.dynamic.RegistryElementCodec;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.random.AbstractRandom;
 
 public class DoublePerlinNoiseSampler {
@@ -17,18 +20,8 @@ public class DoublePerlinNoiseSampler {
 	private final OctavePerlinNoiseSampler secondSampler;
 
 	@Deprecated
-	public static DoublePerlinNoiseSampler method_39122(AbstractRandom abstractRandom, int i, double... ds) {
-		return new DoublePerlinNoiseSampler(abstractRandom, i, new DoubleArrayList(ds), false);
-	}
-
-	@Deprecated
-	public static DoublePerlinNoiseSampler method_39123(AbstractRandom abstractRandom, DoublePerlinNoiseSampler.NoiseParameters noiseParameters) {
-		return method_39121(abstractRandom, noiseParameters.getFirstOctave(), noiseParameters.getAmplitudes());
-	}
-
-	@Deprecated
-	public static DoublePerlinNoiseSampler method_39121(AbstractRandom abstractRandom, int i, DoubleList doubleList) {
-		return new DoublePerlinNoiseSampler(abstractRandom, i, doubleList, false);
+	public static DoublePerlinNoiseSampler createLegacy(AbstractRandom random, DoublePerlinNoiseSampler.NoiseParameters parameters) {
+		return new DoublePerlinNoiseSampler(random, parameters.getFirstOctave(), parameters.getAmplitudes(), false);
 	}
 
 	public static DoublePerlinNoiseSampler create(AbstractRandom random, int offset, double... octaves) {
@@ -43,13 +36,13 @@ public class DoublePerlinNoiseSampler {
 		return new DoublePerlinNoiseSampler(random, offset, octaves, true);
 	}
 
-	private DoublePerlinNoiseSampler(AbstractRandom random, int offset, DoubleList octaves, boolean bl) {
-		if (bl) {
+	private DoublePerlinNoiseSampler(AbstractRandom random, int offset, DoubleList octaves, boolean xoroshiro) {
+		if (xoroshiro) {
 			this.firstSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
 			this.secondSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
 		} else {
-			this.firstSampler = OctavePerlinNoiseSampler.method_39126(random, offset, octaves);
-			this.secondSampler = OctavePerlinNoiseSampler.method_39126(random, offset, octaves);
+			this.firstSampler = OctavePerlinNoiseSampler.createLegacy(random, offset, octaves);
+			this.secondSampler = OctavePerlinNoiseSampler.createLegacy(random, offset, octaves);
 		}
 
 		int i = Integer.MAX_VALUE;
@@ -79,8 +72,8 @@ public class DoublePerlinNoiseSampler {
 		return (this.firstSampler.sample(x, y, z) + this.secondSampler.sample(d, e, f)) * this.amplitude;
 	}
 
-	public DoublePerlinNoiseSampler.NoiseParameters method_38475() {
-		return new DoublePerlinNoiseSampler.NoiseParameters(this.firstSampler.method_38477(), this.firstSampler.method_38478());
+	public DoublePerlinNoiseSampler.NoiseParameters copy() {
+		return new DoublePerlinNoiseSampler.NoiseParameters(this.firstSampler.getFirstOctave(), this.firstSampler.getAmplitudes());
 	}
 
 	@VisibleForTesting
@@ -96,23 +89,24 @@ public class DoublePerlinNoiseSampler {
 	public static class NoiseParameters {
 		private final int firstOctave;
 		private final DoubleList amplitudes;
-		public static final Codec<DoublePerlinNoiseSampler.NoiseParameters> CODEC = RecordCodecBuilder.create(
+		public static final Codec<DoublePerlinNoiseSampler.NoiseParameters> field_35424 = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.INT.fieldOf("firstOctave").forGetter(DoublePerlinNoiseSampler.NoiseParameters::getFirstOctave),
 						Codec.DOUBLE.listOf().fieldOf("amplitudes").forGetter(DoublePerlinNoiseSampler.NoiseParameters::getAmplitudes)
 					)
 					.apply(instance, DoublePerlinNoiseSampler.NoiseParameters::new)
 		);
+		public static final Codec<Supplier<DoublePerlinNoiseSampler.NoiseParameters>> CODEC = RegistryElementCodec.of(Registry.NOISE_WORLDGEN, field_35424);
 
 		public NoiseParameters(int firstOctave, List<Double> amplitudes) {
 			this.firstOctave = firstOctave;
 			this.amplitudes = new DoubleArrayList(amplitudes);
 		}
 
-		public NoiseParameters(int firstOctave, double d, double... ds) {
+		public NoiseParameters(int firstOctave, double firstAmplitude, double... amplitudes) {
 			this.firstOctave = firstOctave;
-			this.amplitudes = new DoubleArrayList(ds);
-			this.amplitudes.add(0, d);
+			this.amplitudes = new DoubleArrayList(amplitudes);
+			this.amplitudes.add(0, firstAmplitude);
 		}
 
 		public int getFirstOctave() {

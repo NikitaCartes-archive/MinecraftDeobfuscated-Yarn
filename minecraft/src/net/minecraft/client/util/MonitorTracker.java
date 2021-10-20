@@ -16,7 +16,7 @@ public class MonitorTracker {
 	private final MonitorFactory monitorFactory;
 
 	public MonitorTracker(MonitorFactory monitorFactory) {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		this.monitorFactory = monitorFactory;
 		GLFW.glfwSetMonitorCallback(this::handleMonitorEvent);
 		PointerBuffer pointerBuffer = GLFW.glfwGetMonitors();
@@ -29,7 +29,7 @@ public class MonitorTracker {
 	}
 
 	private void handleMonitorEvent(long monitor, int event) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		if (event == 262145) {
 			this.pointerToMonitorMap.put(monitor, this.monitorFactory.createMonitor(monitor));
 		} else if (event == 262146) {
@@ -39,7 +39,7 @@ public class MonitorTracker {
 
 	@Nullable
 	public Monitor getMonitor(long l) {
-		RenderSystem.assertThread(RenderSystem::isInInitPhase);
+		RenderSystem.assertInInitPhase();
 		return this.pointerToMonitorMap.get(l);
 	}
 
@@ -87,7 +87,7 @@ public class MonitorTracker {
 	}
 
 	public void stop() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		GLFWMonitorCallback gLFWMonitorCallback = GLFW.glfwSetMonitorCallback(null);
 		if (gLFWMonitorCallback != null) {
 			gLFWMonitorCallback.free();

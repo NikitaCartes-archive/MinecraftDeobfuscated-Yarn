@@ -25,14 +25,14 @@ public class EffectProgram extends Program {
 	}
 
 	public void attachTo(EffectGlShader program) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		this.refCount++;
 		this.attachTo(program);
 	}
 
 	@Override
 	public void release() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		this.refCount--;
 		if (this.refCount <= 0) {
 			super.release();
@@ -40,7 +40,7 @@ public class EffectProgram extends Program {
 	}
 
 	public static EffectProgram createFromResource(Program.Type type, String name, InputStream stream, String domain) throws IOException {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		RenderSystem.assertOnRenderThread();
 		int i = loadProgram(type, name, stream, domain, LOADER);
 		EffectProgram effectProgram = new EffectProgram(type, i, name);
 		type.getProgramCache().put(name, effectProgram);

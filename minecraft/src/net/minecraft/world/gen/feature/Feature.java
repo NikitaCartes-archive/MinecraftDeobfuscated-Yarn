@@ -109,8 +109,8 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<LargeDripstoneFeatureConfig> LARGE_DRIPSTONE = register(
 		"large_dripstone", new LargeDripstoneFeature(LargeDripstoneFeatureConfig.CODEC)
 	);
-	public static final Feature<SmallDripstoneFeatureConfig> SMALL_DRIPSTONE = register(
-		"small_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC)
+	public static final Feature<SmallDripstoneFeatureConfig> POINTED_DRIPSTONE = register(
+		"pointed_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC)
 	);
 	private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 

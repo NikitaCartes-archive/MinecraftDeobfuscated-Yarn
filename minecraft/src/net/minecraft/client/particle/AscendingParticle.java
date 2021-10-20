@@ -28,7 +28,7 @@ public class AscendingParticle extends SpriteBillboardParticle {
 		boolean collidesWithWorld
 	) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
-		this.field_28786 = 0.96F;
+		this.velocityMultiplier = 0.96F;
 		this.gravityStrength = gravityStrength;
 		this.field_28787 = true;
 		this.spriteProvider = spriteProvider;

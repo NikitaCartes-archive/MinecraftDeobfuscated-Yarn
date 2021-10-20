@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.chunk;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.List;
@@ -133,7 +134,10 @@ public class ChunkNoiseSampler {
 		return i >= 0 && j >= 0 && i < k && j < k
 			? this.terrainNoisePoint[i][j]
 			: this.terrainNoisePoints
-				.computeIfAbsent(ChunkPos.toLong(x, z), pos -> createMultiNoisePoint(columnSampler, ChunkPos.getPackedX(pos), ChunkPos.getPackedZ(pos)).terrainNoisePoint);
+				.computeIfAbsent(
+					ChunkPos.toLong(x, z),
+					(Long2ObjectFunction<? extends TerrainNoisePoint>)(pos -> createMultiNoisePoint(columnSampler, ChunkPos.getPackedX(pos), ChunkPos.getPackedZ(pos)).terrainNoisePoint)
+				);
 	}
 
 	public TerrainNoisePoint getInterpolatedTerrainNoisePoint(int x, int z) {

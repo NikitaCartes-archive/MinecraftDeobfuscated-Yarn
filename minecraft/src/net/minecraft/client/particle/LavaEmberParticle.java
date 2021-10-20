@@ -11,7 +11,7 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 	LavaEmberParticle(ClientWorld clientWorld, double d, double e, double f) {
 		super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
 		this.gravityStrength = 0.75F;
-		this.field_28786 = 0.999F;
+		this.velocityMultiplier = 0.999F;
 		this.velocityX *= 0.8F;
 		this.velocityY *= 0.8F;
 		this.velocityZ *= 0.8F;

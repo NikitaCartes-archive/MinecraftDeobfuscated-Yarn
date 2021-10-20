@@ -59,7 +59,7 @@ public abstract class DrawableHelper {
 	}
 
 	public static void fill(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
-		fill(matrices.peek().getModel(), x1, y1, x2, y2, color);
+		fill(matrices.peek().getPositionMatrix(), x1, y1, x2, y2, color);
 	}
 
 	private static void fill(Matrix4f matrix, int x1, int y1, int x2, int y2, int color) {
@@ -107,7 +107,7 @@ public abstract class DrawableHelper {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		fillGradient(matrices.peek().getModel(), bufferBuilder, startX, startY, endX, endY, z, colorStart, colorEnd);
+		fillGradient(matrices.peek().getPositionMatrix(), bufferBuilder, startX, startY, endX, endY, z, colorStart, colorEnd);
 		tessellator.draw();
 		RenderSystem.disableBlend();
 		RenderSystem.enableTexture();
@@ -172,7 +172,7 @@ public abstract class DrawableHelper {
 	}
 
 	public static void drawSprite(MatrixStack matrices, int x, int y, int z, int width, int height, Sprite sprite) {
-		drawTexturedQuad(matrices.peek().getModel(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
+		drawTexturedQuad(matrices.peek().getPositionMatrix(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
 	}
 
 	/**
@@ -261,7 +261,7 @@ public abstract class DrawableHelper {
 		MatrixStack matrices, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight
 	) {
 		drawTexturedQuad(
-			matrices.peek().getModel(),
+			matrices.peek().getPositionMatrix(),
 			x0,
 			x1,
 			y0,

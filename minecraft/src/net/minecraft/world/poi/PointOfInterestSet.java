@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectFunction;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import java.util.List;
@@ -129,11 +130,15 @@ public class PointOfInterestSet {
 		if (!this.valid) {
 			Short2ObjectMap<PointOfInterest> short2ObjectMap = new Short2ObjectOpenHashMap<>(this.pointsOfInterestByPos);
 			this.clear();
-			consumer.accept((BiConsumer)(pos, poiType) -> {
-				short s = ChunkSectionPos.packLocal(pos);
-				PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(s, i -> new PointOfInterest(pos, poiType, this.updateListener));
-				this.add(pointOfInterest);
-			});
+			consumer.accept(
+				(BiConsumer)(pos, poiType) -> {
+					short s = ChunkSectionPos.packLocal(pos);
+					PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(
+						s, (Short2ObjectFunction<? extends PointOfInterest>)(sx -> new PointOfInterest(pos, poiType, this.updateListener))
+					);
+					this.add(pointOfInterest);
+				}
+			);
 			this.valid = true;
 			this.updateListener.run();
 		}

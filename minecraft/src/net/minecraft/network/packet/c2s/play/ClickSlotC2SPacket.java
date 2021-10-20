@@ -3,6 +3,7 @@ package net.minecraft.network.packet.c2s.play;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.util.function.IntFunction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -35,9 +36,8 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.slot = buf.readShort();
 		this.button = buf.readByte();
 		this.actionType = buf.readEnumConstant(SlotActionType.class);
-		this.modifiedStacks = Int2ObjectMaps.unmodifiable(
-			buf.readMap(PacketByteBuf.getMaxValidator(Int2ObjectOpenHashMap::new, 128), bufx -> Integer.valueOf(bufx.readShort()), PacketByteBuf::readItemStack)
-		);
+		IntFunction<Int2ObjectOpenHashMap<ItemStack>> intFunction = PacketByteBuf.getMaxValidator(Int2ObjectOpenHashMap::new, 128);
+		this.modifiedStacks = Int2ObjectMaps.unmodifiable(buf.readMap(intFunction, bufx -> Integer.valueOf(bufx.readShort()), PacketByteBuf::readItemStack));
 		this.stack = buf.readItemStack();
 	}
 

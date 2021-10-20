@@ -80,7 +80,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	public <K> VillagerResourceMetadata.HatType getHatType(
 		Object2ObjectMap<K, VillagerResourceMetadata.HatType> hatLookUp, String keyType, DefaultedRegistry<K> registry, K key
 	) {
-		return (VillagerResourceMetadata.HatType)hatLookUp.computeIfAbsent(key, k -> {
+		return hatLookUp.computeIfAbsent(key, k -> {
 			try {
 				Resource resource = this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key)));
 
