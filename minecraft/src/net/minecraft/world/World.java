@@ -98,6 +98,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final WorldBorder border;
 	private final BiomeAccess biomeAccess;
 	private final RegistryKey<World> registryKey;
+	private long tickOrder;
 
 	protected World(
 		MutableWorldProperties properties,
@@ -954,5 +955,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				}
 			}
 		}
+	}
+
+	@Override
+	public long getTickOrder() {
+		return (long)(this.tickOrder++);
 	}
 }

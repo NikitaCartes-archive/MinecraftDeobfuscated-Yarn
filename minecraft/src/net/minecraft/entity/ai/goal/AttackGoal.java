@@ -4,6 +4,9 @@ import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 
+/**
+ * Goal that causes its mob to follow and attack its selected target.
+ */
 public class AttackGoal extends Goal {
 	private final MobEntity mob;
 	private LivingEntity target;

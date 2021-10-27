@@ -111,28 +111,28 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			MatrixStack.Entry entry = matrixStack.peek();
 			Matrix4f matrix4f = entry.getPositionMatrix();
 			Matrix3f matrix3f = entry.getNormalMatrix();
-			method_23173(vertexConsumer, matrix4f, matrix3f, af, m, ag, s, t, u, 0.4999F, ar);
-			method_23173(vertexConsumer, matrix4f, matrix3f, af, 0.0F, ag, s, t, u, 0.4999F, aq);
-			method_23173(vertexConsumer, matrix4f, matrix3f, ah, 0.0F, ai, s, t, u, 0.0F, aq);
-			method_23173(vertexConsumer, matrix4f, matrix3f, ah, m, ai, s, t, u, 0.0F, ar);
-			method_23173(vertexConsumer, matrix4f, matrix3f, aj, m, ak, s, t, u, 0.4999F, ar);
-			method_23173(vertexConsumer, matrix4f, matrix3f, aj, 0.0F, ak, s, t, u, 0.4999F, aq);
-			method_23173(vertexConsumer, matrix4f, matrix3f, al, 0.0F, am, s, t, u, 0.0F, aq);
-			method_23173(vertexConsumer, matrix4f, matrix3f, al, m, am, s, t, u, 0.0F, ar);
+			vertex(vertexConsumer, matrix4f, matrix3f, af, m, ag, s, t, u, 0.4999F, ar);
+			vertex(vertexConsumer, matrix4f, matrix3f, af, 0.0F, ag, s, t, u, 0.4999F, aq);
+			vertex(vertexConsumer, matrix4f, matrix3f, ah, 0.0F, ai, s, t, u, 0.0F, aq);
+			vertex(vertexConsumer, matrix4f, matrix3f, ah, m, ai, s, t, u, 0.0F, ar);
+			vertex(vertexConsumer, matrix4f, matrix3f, aj, m, ak, s, t, u, 0.4999F, ar);
+			vertex(vertexConsumer, matrix4f, matrix3f, aj, 0.0F, ak, s, t, u, 0.4999F, aq);
+			vertex(vertexConsumer, matrix4f, matrix3f, al, 0.0F, am, s, t, u, 0.0F, aq);
+			vertex(vertexConsumer, matrix4f, matrix3f, al, m, am, s, t, u, 0.0F, ar);
 			float as = 0.0F;
 			if (guardianEntity.age % 2 == 0) {
 				as = 0.5F;
 			}
 
-			method_23173(vertexConsumer, matrix4f, matrix3f, x, m, y, s, t, u, 0.5F, as + 0.5F);
-			method_23173(vertexConsumer, matrix4f, matrix3f, z, m, aa, s, t, u, 1.0F, as + 0.5F);
-			method_23173(vertexConsumer, matrix4f, matrix3f, ad, m, ae, s, t, u, 1.0F, as);
-			method_23173(vertexConsumer, matrix4f, matrix3f, ab, m, ac, s, t, u, 0.5F, as);
+			vertex(vertexConsumer, matrix4f, matrix3f, x, m, y, s, t, u, 0.5F, as + 0.5F);
+			vertex(vertexConsumer, matrix4f, matrix3f, z, m, aa, s, t, u, 1.0F, as + 0.5F);
+			vertex(vertexConsumer, matrix4f, matrix3f, ad, m, ae, s, t, u, 1.0F, as);
+			vertex(vertexConsumer, matrix4f, matrix3f, ab, m, ac, s, t, u, 0.5F, as);
 			matrixStack.pop();
 		}
 	}
 
-	private static void method_23173(
+	private static void vertex(
 		VertexConsumer vertexConsumer, Matrix4f positionMatrix, Matrix3f normalMatrix, float x, float y, float z, int red, int green, int blue, float u, float v
 	) {
 		vertexConsumer.vertex(positionMatrix, x, y, z)

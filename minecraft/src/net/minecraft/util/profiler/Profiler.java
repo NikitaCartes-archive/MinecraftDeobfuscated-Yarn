@@ -21,6 +21,10 @@ public interface Profiler {
 
 	void markSampleType(SampleType type);
 
+	default void visit(String marker) {
+		this.visit(marker, 1);
+	}
+
 	/**
 	 * Increment the visit count for a marker.
 	 * 
@@ -29,7 +33,11 @@ public interface Profiler {
 	 * 
 	 * @param marker a unique marker
 	 */
-	void visit(String marker);
+	void visit(String marker, int i);
+
+	default void visit(Supplier<String> markerGetter) {
+		this.visit(markerGetter, 1);
+	}
 
 	/**
 	 * Increment the visit count for a marker.
@@ -42,7 +50,7 @@ public interface Profiler {
 	 * 
 	 * @param markerGetter the getter for a unique marker
 	 */
-	void visit(Supplier<String> markerGetter);
+	void visit(Supplier<String> markerGetter, int i);
 
 	static Profiler union(Profiler a, Profiler b) {
 		if (a == DummyProfiler.INSTANCE) {
@@ -98,15 +106,15 @@ public interface Profiler {
 				}
 
 				@Override
-				public void visit(String marker) {
-					a.visit(marker);
-					b.visit(marker);
+				public void visit(String marker, int i) {
+					a.visit(marker, i);
+					b.visit(marker, i);
 				}
 
 				@Override
-				public void visit(Supplier<String> markerGetter) {
-					a.visit(markerGetter);
-					b.visit(markerGetter);
+				public void visit(Supplier<String> markerGetter, int i) {
+					a.visit(markerGetter, i);
+					b.visit(markerGetter, i);
 				}
 			};
 		}

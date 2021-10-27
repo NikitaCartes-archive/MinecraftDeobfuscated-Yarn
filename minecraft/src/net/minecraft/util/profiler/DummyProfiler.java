@@ -45,11 +45,11 @@ public class DummyProfiler implements ReadableProfiler {
 	}
 
 	@Override
-	public void visit(String marker) {
+	public void visit(String marker, int i) {
 	}
 
 	@Override
-	public void visit(Supplier<String> markerGetter) {
+	public void visit(Supplier<String> markerGetter, int i) {
 	}
 
 	@Override

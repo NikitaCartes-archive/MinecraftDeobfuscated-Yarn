@@ -52,7 +52,7 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 public interface ServerPlayPacketListener extends PacketListener {
 	void onHandSwing(HandSwingC2SPacket packet);
 
-	void onGameMessage(ChatMessageC2SPacket packet);
+	void onChatMessage(ChatMessageC2SPacket packet);
 
 	void onClientStatus(ClientStatusC2SPacket packet);
 
@@ -76,7 +76,7 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onPong(PlayPongC2SPacket packet);
 
-	void onPlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet);
+	void onUpdatePlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet);
 
 	void onPlayerAction(PlayerActionC2SPacket packet);
 
@@ -88,7 +88,7 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onCreativeInventoryAction(CreativeInventoryActionC2SPacket packet);
 
-	void onSignUpdate(UpdateSignC2SPacket packet);
+	void onUpdateSign(UpdateSignC2SPacket packet);
 
 	void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet);
 
@@ -122,9 +122,9 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onUpdateBeacon(UpdateBeaconC2SPacket packet);
 
-	void onStructureBlockUpdate(UpdateStructureBlockC2SPacket packet);
+	void onUpdateStructureBlock(UpdateStructureBlockC2SPacket packet);
 
-	void onMerchantTradeSelect(SelectMerchantTradeC2SPacket packet);
+	void onSelectMerchantTrade(SelectMerchantTradeC2SPacket packet);
 
 	void onBookUpdate(BookUpdateC2SPacket packet);
 
@@ -132,7 +132,7 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onQueryBlockNbt(QueryBlockNbtC2SPacket packet);
 
-	void onJigsawUpdate(UpdateJigsawC2SPacket packet);
+	void onUpdateJigsaw(UpdateJigsawC2SPacket packet);
 
 	void onJigsawGenerating(JigsawGeneratingC2SPacket packet);
 

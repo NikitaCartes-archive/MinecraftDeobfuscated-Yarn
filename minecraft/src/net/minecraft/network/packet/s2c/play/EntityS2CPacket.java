@@ -55,7 +55,7 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEntityUpdate(this);
+		clientPlayPacketListener.onEntity(this);
 	}
 
 	public String toString() {

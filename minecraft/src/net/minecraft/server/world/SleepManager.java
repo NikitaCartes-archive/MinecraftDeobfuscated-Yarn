@@ -43,7 +43,7 @@ public class SleepManager {
 	 * @param players the list of all players in a world where the night would be skipped
 	 */
 	public boolean canResetTime(int percentage, List<ServerPlayerEntity> players) {
-		int i = (int)players.stream().filter(PlayerEntity::isSleepingLongEnough).count();
+		int i = (int)players.stream().filter(PlayerEntity::canResetTimeBySleeping).count();
 		return i >= this.getNightSkippingRequirement(percentage);
 	}
 

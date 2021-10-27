@@ -45,7 +45,6 @@ public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> SNOWY_BEACH = register("snowy_beach");
 	public static final RegistryKey<Biome> STONY_SHORE = register("stony_shore");
 	public static final RegistryKey<Biome> WARM_OCEAN = register("warm_ocean");
-	public static final RegistryKey<Biome> DEEP_WARM_OCEAN = register("deep_warm_ocean");
 	public static final RegistryKey<Biome> LUKEWARM_OCEAN = register("lukewarm_ocean");
 	public static final RegistryKey<Biome> DEEP_LUKEWARM_OCEAN = register("deep_lukewarm_ocean");
 	public static final RegistryKey<Biome> OCEAN = register("ocean");

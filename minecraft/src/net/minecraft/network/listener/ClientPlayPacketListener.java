@@ -130,7 +130,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onUnlockRecipes(UnlockRecipesS2CPacket packet);
 
-	void onBlockDestroyProgress(BlockBreakingProgressS2CPacket packet);
+	void onBlockBreakingProgress(BlockBreakingProgressS2CPacket packet);
 
 	void onSignEditorOpen(SignEditorOpenS2CPacket packet);
 
@@ -180,7 +180,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onGameJoin(GameJoinS2CPacket packet);
 
-	void onEntityUpdate(EntityS2CPacket packet);
+	void onEntity(EntityS2CPacket packet);
 
 	void onPlayerPositionLook(PlayerPositionLookS2CPacket packet);
 
@@ -194,21 +194,21 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onEntitiesDestroy(EntitiesDestroyS2CPacket packet);
 
-	void onRemoveEntityEffect(RemoveEntityStatusEffectS2CPacket packet);
+	void onRemoveEntityStatusEffect(RemoveEntityStatusEffectS2CPacket packet);
 
 	void onPlayerRespawn(PlayerRespawnS2CPacket packet);
 
 	void onEntitySetHeadYaw(EntitySetHeadYawS2CPacket packet);
 
-	void onHeldItemChange(UpdateSelectedSlotS2CPacket packet);
+	void onUpdateSelectedSlot(UpdateSelectedSlotS2CPacket packet);
 
 	void onScoreboardDisplay(ScoreboardDisplayS2CPacket packet);
 
 	void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket packet);
 
-	void onVelocityUpdate(EntityVelocityUpdateS2CPacket packet);
+	void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet);
 
-	void onEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet);
+	void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet);
 
 	void onExperienceBarUpdate(ExperienceBarUpdateS2CPacket packet);
 
@@ -286,7 +286,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onLookAt(LookAtS2CPacket packet);
 
-	void onTagQuery(NbtQueryResponseS2CPacket packet);
+	void onNbtQueryResponse(NbtQueryResponseS2CPacket packet);
 
 	void onLightUpdate(LightUpdateS2CPacket packet);
 

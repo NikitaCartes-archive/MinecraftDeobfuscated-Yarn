@@ -26,7 +26,7 @@ public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onGameMessage(this);
+		serverPlayPacketListener.onChatMessage(this);
 	}
 
 	public String getChatMessage() {

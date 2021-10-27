@@ -30,7 +30,7 @@ public class BlockBreakingProgressS2CPacket implements Packet<ClientPlayPacketLi
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onBlockDestroyProgress(this);
+		clientPlayPacketListener.onBlockBreakingProgress(this);
 	}
 
 	public int getEntityId() {

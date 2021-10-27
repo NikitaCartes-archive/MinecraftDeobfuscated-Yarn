@@ -48,7 +48,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 
 	private <E extends Entity> void renderLeash(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider provider, E holdingEntity) {
 		matrices.push();
-		Vec3d vec3d = holdingEntity.method_30951(tickDelta);
+		Vec3d vec3d = holdingEntity.getLeashPos(tickDelta);
 		double d = (double)(MathHelper.lerp(tickDelta, entity.bodyYaw, entity.prevBodyYaw) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
 		Vec3d vec3d2 = entity.getLeashOffset();
 		double e = Math.cos(d) * vec3d2.z + Math.sin(d) * vec3d2.x;

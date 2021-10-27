@@ -327,6 +327,10 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.FLUID_SPRINGS, ConfiguredFeatures.SPRING_LAVA);
 	}
 
+	public static void method_39420(GenerationSettings.Builder builder) {
+		builder.feature(GenerationStep.Feature.FLUID_SPRINGS, ConfiguredFeatures.SPRING_LAVA_FROZEN);
+	}
+
 	public static void addIcebergs(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.LOCAL_MODIFICATIONS, ConfiguredFeatures.ICEBERG_PACKED);
 		builder.feature(GenerationStep.Feature.LOCAL_MODIFICATIONS, ConfiguredFeatures.ICEBERG_BLUE);

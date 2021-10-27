@@ -33,14 +33,14 @@ public class BedBlockEntityFix extends DataFix {
 			throw new IllegalStateException("Tile entity type is not a list type.");
 		} else {
 			ListType<?> listType = (ListType)type3;
-			return this.method_15506(type2, listType);
+			return this.fix(type2, listType);
 		}
 	}
 
-	private <TE> TypeRewriteRule method_15506(Type<?> type, ListType<TE> listType) {
-		Type<TE> type2 = listType.getElement();
-		OpticFinder<?> opticFinder = DSL.fieldFinder("Level", type);
-		OpticFinder<List<TE>> opticFinder2 = DSL.fieldFinder("TileEntities", listType);
+	private <TE> TypeRewriteRule fix(Type<?> level, ListType<TE> blockEntities) {
+		Type<TE> type = blockEntities.getElement();
+		OpticFinder<?> opticFinder = DSL.fieldFinder("Level", level);
+		OpticFinder<List<TE>> opticFinder2 = DSL.fieldFinder("TileEntities", blockEntities);
 		int i = 416;
 		return TypeRewriteRule.seq(
 			this.fixTypeEverywhere(
@@ -78,7 +78,7 @@ public class BedBlockEntityFix extends DataFix {
 								map.put(dynamic2.createString("z"), dynamic2.createInt(q + (j << 4)));
 								map.put(dynamic2.createString("color"), dynamic2.createShort((short)14));
 								list.add(
-									((Pair)type2.read(dynamic2.createMap(map)).result().orElseThrow(() -> new IllegalStateException("Could not parse newly created bed block entity.")))
+									((Pair)type.read(dynamic2.createMap(map)).result().orElseThrow(() -> new IllegalStateException("Could not parse newly created bed block entity.")))
 										.getFirst()
 								);
 							}

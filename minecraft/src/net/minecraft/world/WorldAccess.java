@@ -13,6 +13,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.tick.OrderedTick;
+import net.minecraft.world.tick.QueryableTickScheduler;
 
 public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	@Override
@@ -20,9 +22,35 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 		return this.getLevelProperties().getTimeOfDay();
 	}
 
-	TickScheduler<Block> getBlockTickScheduler();
+	long getTickOrder();
 
-	TickScheduler<Fluid> getFluidTickScheduler();
+	QueryableTickScheduler<Block> getBlockTickScheduler();
+
+	private <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay, TickPriority priority) {
+		return new OrderedTick(type, pos, this.getLevelProperties().getTime() + (long)delay, priority, this.getTickOrder());
+	}
+
+	private <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay) {
+		return new OrderedTick(type, pos, this.getLevelProperties().getTime() + (long)delay, this.getTickOrder());
+	}
+
+	default void createAndScheduleBlockTick(BlockPos pos, Block block, int delay, TickPriority priority) {
+		this.getBlockTickScheduler().scheduleTick(this.createOrderedTick(pos, block, delay, priority));
+	}
+
+	default void createAndScheduleBlockTick(BlockPos pos, Block block, int delay) {
+		this.getBlockTickScheduler().scheduleTick(this.createOrderedTick(pos, block, delay));
+	}
+
+	QueryableTickScheduler<Fluid> getFluidTickScheduler();
+
+	default void createAndScheduleFluidTick(BlockPos pos, Fluid fluid, int delay, TickPriority priority) {
+		this.getFluidTickScheduler().scheduleTick(this.createOrderedTick(pos, fluid, delay, priority));
+	}
+
+	default void createAndScheduleFluidTick(BlockPos pos, Fluid fluid, int delay) {
+		this.getFluidTickScheduler().scheduleTick(this.createOrderedTick(pos, fluid, delay));
+	}
 
 	WorldProperties getLevelProperties();
 
@@ -52,10 +80,6 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
 
 	void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data);
-
-	default int getLogicalHeight() {
-		return this.getDimension().getLogicalHeight();
-	}
 
 	default void syncWorldEvent(int eventId, BlockPos pos, int data) {
 		this.syncWorldEvent(null, eventId, pos, data);

@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.lang.runtime.ObjectMethods;
 import java.util.function.Function;
+import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.dimension.DimensionType;
 
 public final class GenerationShapeConfig extends Record {
@@ -22,6 +23,7 @@ public final class GenerationShapeConfig extends Record {
 	private final double densityOffset;
 	private final boolean islandNoiseOverride;
 	private final boolean amplified;
+	private final VanillaTerrainParameters terrainShaper;
 	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(GenerationShapeConfig::minimumY),
@@ -36,7 +38,8 @@ public final class GenerationShapeConfig extends Record {
 						Codec.BOOL
 							.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
 							.forGetter(GenerationShapeConfig::islandNoiseOverride),
-						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified)
+						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified),
+						VanillaTerrainParameters.field_35456.fieldOf("terrain_shaper").forGetter(GenerationShapeConfig::terrainShaper)
 					)
 					.apply(instance, GenerationShapeConfig::new)
 		)
@@ -53,7 +56,8 @@ public final class GenerationShapeConfig extends Record {
 		double densityFactor,
 		double densityOffset,
 		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset
+		boolean randomDensityOffset,
+		VanillaTerrainParameters vanillaTerrainParameters
 	) {
 		this.minimumY = minimumY;
 		this.height = height;
@@ -66,6 +70,7 @@ public final class GenerationShapeConfig extends Record {
 		this.densityOffset = densityOffset;
 		this.islandNoiseOverride = simplexSurfaceNoise;
 		this.amplified = randomDensityOffset;
+		this.terrainShaper = vanillaTerrainParameters;
 	}
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
@@ -89,10 +94,22 @@ public final class GenerationShapeConfig extends Record {
 		double densityFactor,
 		double densityOffset,
 		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset
+		boolean randomDensityOffset,
+		VanillaTerrainParameters vanillaTerrainParameters
 	) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(
-			minimumY, height, sampling, topSlide, bottomSlide, horizontalSize, verticalSize, densityFactor, densityOffset, simplexSurfaceNoise, randomDensityOffset
+			minimumY,
+			height,
+			sampling,
+			topSlide,
+			bottomSlide,
+			horizontalSize,
+			verticalSize,
+			densityFactor,
+			densityOffset,
+			simplexSurfaceNoise,
+			randomDensityOffset,
+			vanillaTerrainParameters
 		);
 		checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
 			throw new IllegalStateException(partialResult.message());
@@ -111,19 +128,19 @@ public final class GenerationShapeConfig extends Record {
 	}
 
 	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified>(
+		return ObjectMethods.bootstrap<"toString",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified;terrainShaper",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified,GenerationShapeConfig::terrainShaper>(
 			this
 		);
 	}
 
 	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified>(
+		return ObjectMethods.bootstrap<"hashCode",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified;terrainShaper",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified,GenerationShapeConfig::terrainShaper>(
 			this
 		);
 	}
 
 	public final boolean equals(Object object) {
-		return ObjectMethods.bootstrap<"equals",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified>(
+		return ObjectMethods.bootstrap<"equals",GenerationShapeConfig,"minY;height;noiseSamplingSettings;topSlideSettings;bottomSlideSettings;noiseSizeHorizontal;noiseSizeVertical;densityFactor;densityOffset;islandNoiseOverride;isAmplified;terrainShaper",GenerationShapeConfig::minimumY,GenerationShapeConfig::height,GenerationShapeConfig::sampling,GenerationShapeConfig::topSlide,GenerationShapeConfig::bottomSlide,GenerationShapeConfig::horizontalSize,GenerationShapeConfig::verticalSize,GenerationShapeConfig::densityFactor,GenerationShapeConfig::densityOffset,GenerationShapeConfig::islandNoiseOverride,GenerationShapeConfig::amplified,GenerationShapeConfig::terrainShaper>(
 			this, object
 		);
 	}
@@ -162,5 +179,9 @@ public final class GenerationShapeConfig extends Record {
 
 	public double densityOffset() {
 		return this.densityOffset;
+	}
+
+	public VanillaTerrainParameters terrainShaper() {
+		return this.terrainShaper;
 	}
 }

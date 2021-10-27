@@ -22,8 +22,8 @@ public class ChunkRandom extends Random implements AbstractRandom {
 	}
 
 	@Override
-	public RandomDeriver createBlockPosRandomDeriver() {
-		return this.baseRandom.createBlockPosRandomDeriver();
+	public RandomDeriver createRandomDeriver() {
+		return this.baseRandom.createRandomDeriver();
 	}
 
 	public int next(int count) {

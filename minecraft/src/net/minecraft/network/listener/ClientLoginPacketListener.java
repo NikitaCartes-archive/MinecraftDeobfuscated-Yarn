@@ -9,7 +9,7 @@ import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 public interface ClientLoginPacketListener extends PacketListener {
 	void onHello(LoginHelloS2CPacket packet);
 
-	void onLoginSuccess(LoginSuccessS2CPacket packet);
+	void onSuccess(LoginSuccessS2CPacket packet);
 
 	void onDisconnect(LoginDisconnectS2CPacket packet);
 

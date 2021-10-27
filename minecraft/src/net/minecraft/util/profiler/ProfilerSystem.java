@@ -145,13 +145,13 @@ public class ProfilerSystem implements ReadableProfiler {
 	}
 
 	@Override
-	public void visit(String marker) {
-		this.getCurrentInfo().counts.addTo(marker, 1L);
+	public void visit(String marker, int i) {
+		this.getCurrentInfo().counts.addTo(marker, (long)i);
 	}
 
 	@Override
-	public void visit(Supplier<String> markerGetter) {
-		this.getCurrentInfo().counts.addTo((String)markerGetter.get(), 1L);
+	public void visit(Supplier<String> markerGetter, int i) {
+		this.getCurrentInfo().counts.addTo((String)markerGetter.get(), (long)i);
 	}
 
 	@Override

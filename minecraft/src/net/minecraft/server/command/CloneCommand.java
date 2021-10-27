@@ -312,7 +312,7 @@ public class CloneCommand {
 						serverWorld.updateNeighbors(blockInfo2.pos, blockInfo2.state.getBlock());
 					}
 
-					serverWorld.getBlockTickScheduler().copyScheduledTicks(blockBox, blockPos2);
+					serverWorld.getBlockTickScheduler().scheduleTicks(blockBox, blockPos2);
 					if (l == 0) {
 						throw FAILED_EXCEPTION.create();
 					} else {

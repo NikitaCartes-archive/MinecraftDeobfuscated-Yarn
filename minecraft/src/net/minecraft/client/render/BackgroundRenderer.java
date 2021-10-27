@@ -177,7 +177,7 @@ public class BackgroundRenderer {
 		RenderSystem.clearColor(red, green, blue, 0.0F);
 	}
 
-	public static void method_23792() {
+	public static void clearFog() {
 		RenderSystem.setShaderFogStart(Float.MAX_VALUE);
 	}
 

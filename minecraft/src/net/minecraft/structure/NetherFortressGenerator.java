@@ -908,7 +908,7 @@ public class NetherFortressGenerator {
 			this.addBlock(world, Blocks.LAVA.getDefaultState(), 6, 5, 6, boundingBox);
 			BlockPos blockPos = this.offsetPos(6, 5, 6);
 			if (boundingBox.contains(blockPos)) {
-				world.getFluidTickScheduler().schedule(blockPos, Fluids.LAVA, 0);
+				world.createAndScheduleFluidTick(blockPos, Fluids.LAVA, 0);
 			}
 		}
 	}

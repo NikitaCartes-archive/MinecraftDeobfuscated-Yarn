@@ -3,13 +3,17 @@ package net.minecraft.world.gen.random;
 public interface AbstractRandom {
 	AbstractRandom derive();
 
-	RandomDeriver createBlockPosRandomDeriver();
+	RandomDeriver createRandomDeriver();
 
 	void setSeed(long seed);
 
 	int nextInt();
 
 	int nextInt(int bound);
+
+	default int nextBetween(int min, int max) {
+		return this.nextInt(max - min + 1) + min;
+	}
 
 	long nextLong();
 

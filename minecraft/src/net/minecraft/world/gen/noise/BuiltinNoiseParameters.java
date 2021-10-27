@@ -15,7 +15,7 @@ public class BuiltinNoiseParameters {
 		register(NoiseParametersKeys.AQUIFER_BARRIER, -3, 1.0);
 		register(NoiseParametersKeys.AQUIFER_FLUID_LEVEL_FLOODEDNESS, -7, 1.0);
 		register(NoiseParametersKeys.AQUIFER_LAVA, -1, 1.0);
-		register(NoiseParametersKeys.AQUIFER_FLUID_LEVEL_SPREAD, -4, 1.0);
+		register(NoiseParametersKeys.AQUIFER_FLUID_LEVEL_SPREAD, -5, 1.0);
 		register(NoiseParametersKeys.PILLAR, -7, 1.0, 1.0);
 		register(NoiseParametersKeys.PILLAR_RARENESS, -8, 1.0);
 		register(NoiseParametersKeys.PILLAR_THICKNESS, -8, 1.0);
@@ -41,10 +41,14 @@ public class BuiltinNoiseParameters {
 		register(NoiseParametersKeys.NOODLE_RIDGE_A, -7, 1.0);
 		register(NoiseParametersKeys.NOODLE_RIDGE_B, -7, 1.0);
 		register(NoiseParametersKeys.JAGGED, -16, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
-		register(NoiseParametersKeys.CLAY_BANDS_OFFSET, -9, 1.0);
-		register(NoiseParametersKeys.SURFACE, -7, 1.0, 1.0, 1.0, 1.0);
-		register(NoiseParametersKeys.ICEBERG_AND_BADLANDS_PILLAR, -3, 1.0, 1.0, 1.0, 1.0);
-		register(NoiseParametersKeys.ICEBERG_AND_BADLANDS_PILLAR_ROOF, 0, 1.0);
+		register(NoiseParametersKeys.SURFACE, -6, 1.0, 1.0, 1.0);
+		register(NoiseParametersKeys.CLAY_BANDS_OFFSET, -8, 1.0);
+		register(NoiseParametersKeys.BADLANDS_PILLAR, -2, 1.0, 1.0, 1.0, 1.0);
+		register(NoiseParametersKeys.BADLANDS_PILLAR_ROOF, -8, 1.0);
+		register(NoiseParametersKeys.BADLANDS_SURFACE, -6, 1.0, 1.0, 1.0);
+		register(NoiseParametersKeys.ICEBERG_PILLAR, -6, 1.0, 1.0, 1.0, 1.0);
+		register(NoiseParametersKeys.ICEBERG_PILLAR_ROOF, -3, 1.0);
+		register(NoiseParametersKeys.ICEBERG_SURFACE, -6, 1.0, 1.0, 1.0);
 		register(NoiseParametersKeys.SURFACE_SWAMP, -2, 1.0);
 		register(NoiseParametersKeys.CALCITE, -9, 1.0, 1.0, 1.0, 1.0);
 		register(NoiseParametersKeys.GRAVEL, -8, 1.0, 1.0, 1.0, 1.0);

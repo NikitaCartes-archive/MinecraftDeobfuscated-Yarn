@@ -29,7 +29,7 @@ public class RemoveEntityStatusEffectS2CPacket implements Packet<ClientPlayPacke
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onRemoveEntityEffect(this);
+		clientPlayPacketListener.onRemoveEntityStatusEffect(this);
 	}
 
 	@Nullable

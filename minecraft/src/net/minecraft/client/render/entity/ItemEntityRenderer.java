@@ -57,7 +57,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		ItemStack itemStack = itemEntity.getStack();
 		int j = itemStack.isEmpty() ? 187 : Item.getRawId(itemStack.getItem()) + itemStack.getDamage();
 		this.random.setSeed((long)j);
-		BakedModel bakedModel = this.itemRenderer.getHeldItemModel(itemStack, itemEntity.world, null, itemEntity.getId());
+		BakedModel bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.world, null, itemEntity.getId());
 		boolean bl = bakedModel.hasDepth();
 		int k = this.getRenderedAmount(itemStack);
 		float h = 0.25F;

@@ -913,6 +913,10 @@ public class MathHelper {
 		return mean + (float)random.nextGaussian() * deviation;
 	}
 
+	public static double hypot(int a, double b) {
+		return Math.sqrt((double)(a * a) + b * b);
+	}
+
 	public static double magnitude(int x, double y, int z) {
 		return Math.sqrt((double)(x * x) + y * y + (double)(z * z));
 	}

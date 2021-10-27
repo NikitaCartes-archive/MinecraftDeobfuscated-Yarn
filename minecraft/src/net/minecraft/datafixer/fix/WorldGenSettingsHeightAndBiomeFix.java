@@ -16,8 +16,8 @@ import net.minecraft.datafixer.TypeReferences;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class WorldGenSettingsHeightAndBiomeFix extends DataFix {
-	private static final String field_35031 = "WorldGenSettingsHeightAndBiomeFix";
-	public static final String field_35030 = "has_increased_height_already";
+	private static final String NAME = "WorldGenSettingsHeightAndBiomeFix";
+	public static final String HAS_INCREASED_HEIGHT_ALREADY_KEY = "has_increased_height_already";
 
 	public WorldGenSettingsHeightAndBiomeFix(Schema schema) {
 		super(schema, true);
@@ -79,7 +79,7 @@ public class WorldGenSettingsHeightAndBiomeFix extends DataFix {
 													)
 													: dynamicxx;
 											} else if ("minecraft:flat".equals(string)) {
-												return bl2 ? dynamicxx : dynamicxx.update("settings", dynamicxxx -> dynamicxxx.update("layers", WorldGenSettingsHeightAndBiomeFix::method_38828));
+												return bl2 ? dynamicxx : dynamicxx.update("settings", dynamicxxx -> dynamicxxx.update("layers", WorldGenSettingsHeightAndBiomeFix::fillWithAir));
 											} else {
 												return dynamicxx;
 											}
@@ -94,7 +94,7 @@ public class WorldGenSettingsHeightAndBiomeFix extends DataFix {
 		);
 	}
 
-	private static Dynamic<?> method_38828(Dynamic<?> dynamic) {
+	private static Dynamic<?> fillWithAir(Dynamic<?> dynamic) {
 		Dynamic<?> dynamic2 = dynamic.createMap(
 			ImmutableMap.of(dynamic.createString("height"), dynamic.createInt(64), dynamic.createString("block"), dynamic.createString("minecraft:air"))
 		);

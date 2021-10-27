@@ -46,7 +46,7 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onJigsawUpdate(this);
+		serverPlayPacketListener.onUpdateJigsaw(this);
 	}
 
 	public BlockPos getPos() {

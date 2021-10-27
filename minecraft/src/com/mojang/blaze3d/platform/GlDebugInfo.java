@@ -4,14 +4,10 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.GlInfoConsumer;
 import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public class GlDebugInfo {
-	public static void feedTo(GlInfoConsumer consumer) {
-	}
-
 	public static ByteBuffer allocateMemory(int size) {
 		return MemoryUtil.memAlloc(size);
 	}

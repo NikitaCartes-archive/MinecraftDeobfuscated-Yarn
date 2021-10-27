@@ -48,7 +48,7 @@ public class FindWalkTargetTask extends Task<PathAwareEntity> {
 
 	private void updateWalkTarget(PathAwareEntity entity, ChunkSectionPos pos) {
 		Optional<Vec3d> optional = Optional.ofNullable(
-			NoPenaltyTargeting.find(entity, this.maxHorizontalDistance, this.maxVerticalDistance, Vec3d.ofBottomCenter(pos.getCenterPos()), (float) (Math.PI / 2))
+			NoPenaltyTargeting.findTo(entity, this.maxHorizontalDistance, this.maxVerticalDistance, Vec3d.ofBottomCenter(pos.getCenterPos()), (float) (Math.PI / 2))
 		);
 		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}

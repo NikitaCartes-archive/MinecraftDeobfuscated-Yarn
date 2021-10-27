@@ -3,6 +3,7 @@ package net.minecraft.world;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -43,6 +44,8 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.tick.MultiTickScheduler;
+import net.minecraft.world.tick.QueryableTickScheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,8 +59,8 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final WorldProperties levelProperties;
 	private final Random random;
 	private final DimensionType dimension;
-	private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getBlockTickScheduler());
-	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getFluidTickScheduler());
+	private final MultiTickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getBlockTickScheduler());
+	private final MultiTickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getFluidTickScheduler());
 	private final BiomeAccess biomeAccess;
 	private final ChunkPos lowerCorner;
 	private final ChunkPos upperCorner;
@@ -74,7 +77,8 @@ public class ChunkRegion implements StructureWorldAccess {
 	 */
 	private final int placementRadius;
 	@Nullable
-	private Supplier<String> field_33756;
+	private Supplier<String> currentlyGeneratingStructureName;
+	private final AtomicLong tickOrder = new AtomicLong();
 
 	public ChunkRegion(ServerWorld world, List<Chunk> chunks, ChunkStatus status, int placementRadius) {
 		this.status = status;
@@ -104,8 +108,8 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public void method_36972(@Nullable Supplier<String> supplier) {
-		this.field_33756 = supplier;
+	public void setCurrentlyGeneratingStructureName(@Nullable Supplier<String> structureName) {
+		this.currentlyGeneratingStructureName = structureName;
 	}
 
 	@Override
@@ -257,7 +261,7 @@ public class ChunkRegion implements StructureWorldAccess {
 					+ pos
 					+ ", status: "
 					+ this.status
-					+ (this.field_33756 == null ? "" : ", currently generating: " + (String)this.field_33756.get())
+					+ (this.currentlyGeneratingStructureName == null ? "" : ", currently generating: " + (String)this.currentlyGeneratingStructureName.get())
 			);
 			return false;
 		}
@@ -371,12 +375,12 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public TickScheduler<Block> getBlockTickScheduler() {
+	public QueryableTickScheduler<Block> getBlockTickScheduler() {
 		return this.blockTickScheduler;
 	}
 
 	@Override
-	public TickScheduler<Fluid> getFluidTickScheduler() {
+	public QueryableTickScheduler<Fluid> getFluidTickScheduler() {
 		return this.fluidTickScheduler;
 	}
 
@@ -454,5 +458,10 @@ public class ChunkRegion implements StructureWorldAccess {
 	@Override
 	public int getHeight() {
 		return this.world.getHeight();
+	}
+
+	@Override
+	public long getTickOrder() {
+		return this.tickOrder.getAndIncrement();
 	}
 }

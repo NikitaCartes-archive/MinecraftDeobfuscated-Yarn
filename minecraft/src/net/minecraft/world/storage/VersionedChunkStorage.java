@@ -1,8 +1,10 @@
 package net.minecraft.world.storage;
 
 import com.mojang.datafixers.DataFixer;
+import com.mojang.serialization.Codec;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -15,6 +17,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.FeatureUpdater;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class VersionedChunkStorage implements AutoCloseable {
 	private final StorageIoWorker worker;
@@ -27,7 +30,12 @@ public class VersionedChunkStorage implements AutoCloseable {
 		this.worker = new StorageIoWorker(directory, dsync, "chunk");
 	}
 
-	public NbtCompound updateChunkNbt(RegistryKey<World> worldKey, Supplier<PersistentStateManager> persistentStateManagerFactory, NbtCompound nbt) {
+	public NbtCompound updateChunkNbt(
+		RegistryKey<World> worldKey,
+		Supplier<PersistentStateManager> persistentStateManagerFactory,
+		NbtCompound nbt,
+		Optional<RegistryKey<Codec<? extends ChunkGenerator>>> optional
+	) {
 		int i = getDataVersion(nbt);
 		int j = 1493;
 		if (i < 1493) {
@@ -41,13 +49,19 @@ public class VersionedChunkStorage implements AutoCloseable {
 			}
 		}
 
-		nbt.getCompound("Level").putString("__dimension", worldKey.getValue().toString());
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putString("dimension", worldKey.getValue().toString());
+		if (optional.isPresent()) {
+			nbtCompound.putString("generator", ((RegistryKey)optional.get()).getValue().toString());
+		}
+
+		nbt.put("__context", nbtCompound);
 		nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, Math.max(1493, i));
 		if (i < SharedConstants.getGameVersion().getWorldVersion()) {
 			nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 		}
 
-		nbt.getCompound("Level").remove("__dimension");
+		nbt.remove("__context");
 		return nbt;
 	}
 
