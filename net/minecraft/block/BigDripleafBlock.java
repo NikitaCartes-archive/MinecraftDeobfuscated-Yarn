@@ -31,6 +31,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -125,7 +126,7 @@ Waterloggable {
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        return blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) || blockState.isOf(this) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+        return blockState.isOf(this) || blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) || blockState.isIn(BlockTags.BIG_DRIPLEAF_PLACEABLE);
     }
 
     @Override
@@ -134,7 +135,7 @@ Waterloggable {
             return Blocks.AIR.getDefaultState();
         }
         if (state.get(WATERLOGGED).booleanValue()) {
-            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction == Direction.UP && neighborState.isOf(this)) {
             return Blocks.BIG_DRIPLEAF_STEM.getStateWithProperties(state);
@@ -213,7 +214,7 @@ Waterloggable {
             BigDripleafBlock.playTiltSound(world, pos, sound);
         }
         if ((i = NEXT_TILT_DELAYS.getInt(tilt)) != -1) {
-            world.getBlockTickScheduler().schedule(pos, this, i);
+            world.createAndScheduleBlockTick(pos, this, i);
         }
     }
 

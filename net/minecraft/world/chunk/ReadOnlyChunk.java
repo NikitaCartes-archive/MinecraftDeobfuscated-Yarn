@@ -12,19 +12,17 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ProtoChunk;
@@ -32,7 +30,10 @@ import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.tick.BasicTickScheduler;
+import net.minecraft.world.tick.EmptyTickSchedulers;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -44,7 +45,7 @@ extends ProtoChunk {
     private final boolean field_34554;
 
     public ReadOnlyChunk(WorldChunk wrapped, boolean bl) {
-        super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped.heightLimitView, wrapped.getWorld().getRegistryManager().get(Registry.BIOME_KEY));
+        super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped.heightLimitView, wrapped.getWorld().getRegistryManager().get(Registry.BIOME_KEY), wrapped.getBlendingData());
         this.wrapped = wrapped;
         this.field_34554 = bl;
     }
@@ -233,13 +234,29 @@ extends ProtoChunk {
     }
 
     @Override
-    public TickScheduler<Block> getBlockTickScheduler() {
-        return new ChunkTickScheduler<Block>(block -> block.getDefaultState().isAir(), this.getPos(), this);
+    public BasicTickScheduler<Block> getBlockTickScheduler() {
+        return EmptyTickSchedulers.getReadOnlyTickScheduler();
     }
 
     @Override
-    public TickScheduler<Fluid> getFluidTickScheduler() {
-        return new ChunkTickScheduler<Fluid>(fluid -> fluid == Fluids.EMPTY, this.getPos(), this);
+    public BasicTickScheduler<Fluid> getFluidTickScheduler() {
+        return EmptyTickSchedulers.getReadOnlyTickScheduler();
+    }
+
+    @Override
+    public Chunk.TickSchedulers getTickSchedulers() {
+        return this.wrapped.getTickSchedulers();
+    }
+
+    @Override
+    @Nullable
+    public Blender getBlender() {
+        return this.wrapped.getBlender();
+    }
+
+    @Override
+    public void setBlender(Blender blender) {
+        this.wrapped.setBlender(blender);
     }
 
     @Override

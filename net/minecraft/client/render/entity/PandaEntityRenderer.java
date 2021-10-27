@@ -57,28 +57,28 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
             if (i < 8) {
                 float m = (float)(90 * i) / 7.0f;
                 float n = (float)(90 * j) / 7.0f;
-                float o = this.method_4086(m, n, j, h, 8.0f);
+                float o = this.getAngle(m, n, j, h, 8.0f);
                 matrixStack.translate(0.0, (l + 0.2f) * (o / 90.0f), 0.0);
                 matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
             } else if (i < 16) {
                 float m = ((float)i - 8.0f) / 7.0f;
                 float n = 90.0f + 90.0f * m;
                 float p = 90.0f + 90.0f * ((float)j - 8.0f) / 7.0f;
-                float o = this.method_4086(n, p, j, h, 16.0f);
+                float o = this.getAngle(n, p, j, h, 16.0f);
                 matrixStack.translate(0.0, l + 0.2f + (l - 0.2f) * (o - 90.0f) / 90.0f, 0.0);
                 matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
             } else if ((float)i < 24.0f) {
                 float m = ((float)i - 16.0f) / 7.0f;
                 float n = 180.0f + 90.0f * m;
                 float p = 180.0f + 90.0f * ((float)j - 16.0f) / 7.0f;
-                float o = this.method_4086(n, p, j, h, 24.0f);
+                float o = this.getAngle(n, p, j, h, 24.0f);
                 matrixStack.translate(0.0, l + l * (270.0f - o) / 90.0f, 0.0);
                 matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
             } else if (i < 32) {
                 float m = ((float)i - 24.0f) / 7.0f;
                 float n = 270.0f + 90.0f * m;
                 float p = 270.0f + 90.0f * ((float)j - 24.0f) / 7.0f;
-                float o = this.method_4086(n, p, j, h, 32.0f);
+                float o = this.getAngle(n, p, j, h, 32.0f);
                 matrixStack.translate(0.0, l * ((360.0f - o) / 90.0f), 0.0);
                 matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
             }
@@ -102,7 +102,7 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         }
     }
 
-    private float method_4086(float f, float g, int i, float h, float j) {
+    private float getAngle(float f, float g, int i, float h, float j) {
         if ((float)i < j) {
             return MathHelper.lerp(h, f, g);
         }

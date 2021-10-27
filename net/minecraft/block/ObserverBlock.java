@@ -51,7 +51,7 @@ extends FacingBlock {
             world.setBlockState(pos, (BlockState)state.with(POWERED, false), Block.NOTIFY_LISTENERS);
         } else {
             world.setBlockState(pos, (BlockState)state.with(POWERED, true), Block.NOTIFY_LISTENERS);
-            world.getBlockTickScheduler().schedule(pos, this, 2);
+            world.createAndScheduleBlockTick(pos, this, 2);
         }
         this.updateNeighbors(world, pos, state);
     }
@@ -65,8 +65,8 @@ extends FacingBlock {
     }
 
     private void scheduleTick(WorldAccess world, BlockPos pos) {
-        if (!world.isClient() && !world.getBlockTickScheduler().isScheduled(pos, this)) {
-            world.getBlockTickScheduler().schedule(pos, this, 2);
+        if (!world.isClient() && !world.getBlockTickScheduler().isQueued(pos, this)) {
+            world.createAndScheduleBlockTick(pos, this, 2);
         }
     }
 
@@ -100,7 +100,7 @@ extends FacingBlock {
         if (state.isOf(oldState.getBlock())) {
             return;
         }
-        if (!world.isClient() && state.get(POWERED).booleanValue() && !world.getBlockTickScheduler().isScheduled(pos, this)) {
+        if (!world.isClient() && state.get(POWERED).booleanValue() && !world.getBlockTickScheduler().isQueued(pos, this)) {
             BlockState blockState = (BlockState)state.with(POWERED, false);
             world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
             this.updateNeighbors(world, pos, blockState);
@@ -112,7 +112,7 @@ extends FacingBlock {
         if (state.isOf(newState.getBlock())) {
             return;
         }
-        if (!world.isClient && state.get(POWERED).booleanValue() && world.getBlockTickScheduler().isScheduled(pos, this)) {
+        if (!world.isClient && state.get(POWERED).booleanValue() && world.getBlockTickScheduler().isQueued(pos, this)) {
             this.updateNeighbors(world, pos, (BlockState)state.with(POWERED, false));
         }
     }

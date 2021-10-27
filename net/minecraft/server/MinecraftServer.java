@@ -13,7 +13,6 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.longs.LongIterator;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.BufferedWriter;
@@ -135,8 +134,6 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
-import net.minecraft.util.snooper.Snooper;
-import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
@@ -192,15 +189,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class MinecraftServer
 extends ReentrantThreadExecutor<ServerTask>
-implements SnooperListener,
-CommandOutput,
+implements CommandOutput,
 AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final String VANILLA = "vanilla";
     private static final float field_33212 = 0.8f;
     private static final int field_33213 = 100;
     public static final int field_33206 = 50;
-    private static final int field_33214 = 6000;
     private static final int field_33215 = 2000;
     private static final int field_33216 = 15000;
     public static final String LEVEL_PROTOCOL_NAME = "level";
@@ -218,7 +213,6 @@ AutoCloseable {
     private static final long MILLISECONDS_PER_TICK = 50L;
     protected final LevelStorage.Session session;
     protected final WorldSaveHandler saveHandler;
-    private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
     private final List<Runnable> serverGuiTickables = Lists.newArrayList();
     private Recorder recorder = DummyRecorder.INSTANCE;
     private Profiler profiler = this.recorder.getProfiler();
@@ -607,9 +601,6 @@ AutoCloseable {
             }
         }
         this.saving = false;
-        if (this.snooper.isActive()) {
-            this.snooper.cancel();
-        }
         this.serverResourceManager.close();
         try {
             this.session.close();
@@ -803,14 +794,6 @@ AutoCloseable {
             this.profiler.pop();
             LOGGER.debug("Autosave finished");
         }
-        this.profiler.push("snooper");
-        if (!this.snooper.isActive() && this.ticks > 100) {
-            this.snooper.method_5482();
-        }
-        if (this.ticks % 6000 == 0) {
-            this.snooper.update();
-        }
-        this.profiler.pop();
         this.profiler.push("tallying");
         long l2 = Util.getMeasuringTimeNano() - l;
         this.lastTickLengths[this.ticks % 100] = l2;
@@ -1076,46 +1059,6 @@ AutoCloseable {
         this.resourcePackHash = hash;
     }
 
-    @Override
-    public void addSnooperInfo(Snooper snooper) {
-        snooper.addInfo("whitelist_enabled", false);
-        snooper.addInfo("whitelist_count", 0);
-        if (this.playerManager != null) {
-            snooper.addInfo("players_current", this.getCurrentPlayerCount());
-            snooper.addInfo("players_max", this.getMaxPlayerCount());
-            snooper.addInfo("players_seen", this.saveHandler.getSavedPlayerIds().length);
-        }
-        snooper.addInfo("uses_auth", this.onlineMode);
-        snooper.addInfo("gui_state", this.hasGui() ? "enabled" : "disabled");
-        snooper.addInfo("run_time", (Util.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
-        snooper.addInfo("avg_tick_ms", (int)(MathHelper.average(this.lastTickLengths) * 1.0E-6));
-        int i = 0;
-        for (ServerWorld serverWorld : this.getWorlds()) {
-            if (serverWorld == null) continue;
-            snooper.addInfo("world[" + i + "][dimension]", serverWorld.getRegistryKey().getValue());
-            snooper.addInfo("world[" + i + "][mode]", (Object)this.saveProperties.getGameMode());
-            snooper.addInfo("world[" + i + "][difficulty]", (Object)serverWorld.getDifficulty());
-            snooper.addInfo("world[" + i + "][hardcore]", this.saveProperties.isHardcore());
-            snooper.addInfo("world[" + i + "][height]", serverWorld.getTopY());
-            snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
-            ++i;
-        }
-        snooper.addInfo("worlds", i);
-    }
-
-    @Override
-    public void addInitialSnooperInfo(Snooper snooper) {
-        snooper.addInitialInfo("singleplayer", this.isSingleplayer());
-        snooper.addInitialInfo("server_brand", this.getServerModName());
-        snooper.addInitialInfo("gui_supported", GraphicsEnvironment.isHeadless() ? "headless" : "supported");
-        snooper.addInitialInfo("dedicated", this.isDedicated());
-    }
-
-    @Override
-    public boolean isSnooperEnabled() {
-        return true;
-    }
-
     /**
      * Checks whether this server is a dedicated server.
      * 
@@ -1249,10 +1192,6 @@ AutoCloseable {
      */
     public int getTicks() {
         return this.ticks;
-    }
-
-    public Snooper getSnooper() {
-        return this.snooper;
     }
 
     public int getSpawnProtectionRadius() {

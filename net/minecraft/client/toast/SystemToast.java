@@ -82,11 +82,11 @@ implements Toast {
             this.drawPart(matrices, manager, i, 32 - m, k - m, m);
         }
         if (this.lines == null) {
-            manager.getGame().textRenderer.draw(matrices, this.title, 18.0f, 12.0f, -256);
+            manager.getClient().textRenderer.draw(matrices, this.title, 18.0f, 12.0f, -256);
         } else {
-            manager.getGame().textRenderer.draw(matrices, this.title, 18.0f, 7.0f, -256);
+            manager.getClient().textRenderer.draw(matrices, this.title, 18.0f, 7.0f, -256);
             for (k = 0; k < this.lines.size(); ++k) {
-                manager.getGame().textRenderer.draw(matrices, this.lines.get(k), 18.0f, (float)(18 + k * 12), -1);
+                manager.getClient().textRenderer.draw(matrices, this.lines.get(k), 18.0f, (float)(18 + k * 12), -1);
             }
         }
         return startTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;

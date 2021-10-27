@@ -3,6 +3,7 @@
  */
 package net.minecraft.util.dynamic;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.kinds.Applicative;
@@ -175,6 +176,10 @@ public class Codecs {
         };
     }
 
+    public static <A> Codec<A> method_39240(Supplier<Codec<A>> supplier) {
+        return new class_6739<A>(supplier);
+    }
+
     static final class Xor<F, S>
     implements Codec<Either<F, S>> {
         private final Codec<F> first;
@@ -277,6 +282,23 @@ public class Codecs {
         @Override
         public /* synthetic */ DataResult encode(Object object, DynamicOps dynamicOps, Object object2) {
             return this.encode((Either)object, dynamicOps, object2);
+        }
+    }
+
+    record class_6739<A>(Supplier<Codec<A>> delegate) implements Codec
+    {
+        class_6739 {
+            supplier = Suppliers.memoize(supplier::get);
+        }
+
+        @Override
+        public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> dynamicOps, T object) {
+            return this.delegate.get().decode(dynamicOps, object);
+        }
+
+        @Override
+        public <T> DataResult<T> encode(A object, DynamicOps<T> dynamicOps, T object2) {
+            return this.delegate.get().encode(object, dynamicOps, object2);
         }
     }
 }

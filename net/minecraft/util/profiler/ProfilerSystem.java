@@ -151,13 +151,13 @@ implements ReadableProfiler {
     }
 
     @Override
-    public void visit(String marker) {
-        this.getCurrentInfo().counts.addTo(marker, 1L);
+    public void visit(String marker, int i) {
+        this.getCurrentInfo().counts.addTo(marker, i);
     }
 
     @Override
-    public void visit(Supplier<String> markerGetter) {
-        this.getCurrentInfo().counts.addTo(markerGetter.get(), 1L);
+    public void visit(Supplier<String> markerGetter, int i) {
+        this.getCurrentInfo().counts.addTo(markerGetter.get(), i);
     }
 
     @Override

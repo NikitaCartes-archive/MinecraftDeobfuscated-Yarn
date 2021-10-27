@@ -45,10 +45,14 @@ public class NoiseParametersKeys {
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> NOODLE_RIDGE_A = NoiseParametersKeys.register("noodle_ridge_a");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> NOODLE_RIDGE_B = NoiseParametersKeys.register("noodle_ridge_b");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> JAGGED = NoiseParametersKeys.register("jagged");
-    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CLAY_BANDS_OFFSET = NoiseParametersKeys.register("clay_bands_offset");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SURFACE = NoiseParametersKeys.register("surface");
-    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_AND_BADLANDS_PILLAR = NoiseParametersKeys.register("iceberg_and_badlands_pillar");
-    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_AND_BADLANDS_PILLAR_ROOF = NoiseParametersKeys.register("iceberg_and_badlands_pillar_roof");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CLAY_BANDS_OFFSET = NoiseParametersKeys.register("clay_bands_offset");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_PILLAR = NoiseParametersKeys.register("badlands_pillar");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_PILLAR_ROOF = NoiseParametersKeys.register("badlands_pillar_roof");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_SURFACE = NoiseParametersKeys.register("badlands_surface");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_PILLAR = NoiseParametersKeys.register("iceberg_pillar");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_PILLAR_ROOF = NoiseParametersKeys.register("iceberg_pillar_roof");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_SURFACE = NoiseParametersKeys.register("iceberg_surface");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SURFACE_SWAMP = NoiseParametersKeys.register("surface_swamp");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CALCITE = NoiseParametersKeys.register("calcite");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> GRAVEL = NoiseParametersKeys.register("gravel");

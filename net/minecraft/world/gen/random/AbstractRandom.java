@@ -8,13 +8,17 @@ import net.minecraft.world.gen.random.RandomDeriver;
 public interface AbstractRandom {
     public AbstractRandom derive();
 
-    public RandomDeriver createBlockPosRandomDeriver();
+    public RandomDeriver createRandomDeriver();
 
     public void setSeed(long var1);
 
     public int nextInt();
 
     public int nextInt(int var1);
+
+    default public int nextBetween(int min, int max) {
+        return this.nextInt(max - min + 1) + min;
+    }
 
     public long nextLong();
 

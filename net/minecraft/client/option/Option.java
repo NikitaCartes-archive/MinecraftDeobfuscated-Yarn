@@ -27,7 +27,7 @@ import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.LogarithmicOption;
 import net.minecraft.client.option.NarratorMode;
 import net.minecraft.client.option.ParticlesMode;
-import net.minecraft.client.render.PrioritizeChunkUpdatesMode;
+import net.minecraft.client.render.ChunkBuilderMode;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
@@ -224,8 +224,16 @@ public abstract class Option {
         gameOptions.ao = aoMode;
         MinecraftClient.getInstance().worldRenderer.reload();
     });
-    public static final CyclingOption<PrioritizeChunkUpdatesMode> PRIORITIZE_CHUNK_UPDATES_MODE = CyclingOption.create("options.prioritizeChunkUpdates", PrioritizeChunkUpdatesMode.values(), prioritizeChunkUpdatesMode -> new TranslatableText(prioritizeChunkUpdatesMode.getName()), gameOptions -> gameOptions.prioritizeChunkUpdatesMode, (gameOptions, option, prioritizeChunkUpdateMode) -> {
-        gameOptions.prioritizeChunkUpdatesMode = prioritizeChunkUpdateMode;
+    private static final Text CHUNK_BUILDER_THREADED_TEXT = new TranslatableText("options.prioritizeChunkUpdates.none.tooltip");
+    private static final Text CHUNK_BUILDER_SEMI_BLOCKING_TEXT = new TranslatableText("options.prioritizeChunkUpdates.byPlayer.tooltip");
+    private static final Text CHUNK_BUILDER_FULLY_BLOCKING_TEXT = new TranslatableText("options.prioritizeChunkUpdates.nearby.tooltip");
+    public static final CyclingOption<ChunkBuilderMode> CHUNK_BUILDER_MODE = CyclingOption.create("options.prioritizeChunkUpdates", ChunkBuilderMode.values(), chunkBuilderMode -> new TranslatableText(chunkBuilderMode.getName()), gameOptions -> gameOptions.chunkBuilderMode, (gameOptions, option, chunkBuilderMode) -> {
+        gameOptions.chunkBuilderMode = chunkBuilderMode;
+    }).tooltip(minecraftClient -> chunkBuilderMode -> switch (chunkBuilderMode) {
+        case ChunkBuilderMode.NONE -> minecraftClient.textRenderer.wrapLines(CHUNK_BUILDER_THREADED_TEXT, 200);
+        case ChunkBuilderMode.PLAYER_AFFECTED -> minecraftClient.textRenderer.wrapLines(CHUNK_BUILDER_SEMI_BLOCKING_TEXT, 200);
+        case ChunkBuilderMode.NEARBY -> minecraftClient.textRenderer.wrapLines(CHUNK_BUILDER_FULLY_BLOCKING_TEXT, 200);
+        default -> ImmutableList.of();
     });
     public static final CyclingOption<AttackIndicator> ATTACK_INDICATOR = CyclingOption.create("options.attackIndicator", AttackIndicator.values(), attackIndicator -> new TranslatableText(attackIndicator.getTranslationKey()), gameOptions -> gameOptions.attackIndicator, (gameOptions, option, attackIndicator) -> {
         gameOptions.attackIndicator = attackIndicator;
@@ -363,14 +371,6 @@ public abstract class Option {
     });
     public static final CyclingOption<Boolean> SUBTITLES = CyclingOption.create("options.showSubtitles", gameOptions -> gameOptions.showSubtitles, (gameOptions, option, showSubtitles) -> {
         gameOptions.showSubtitles = showSubtitles;
-    });
-    public static final CyclingOption<Boolean> SNOOPER = CyclingOption.create("options.snooper", gameOptions -> {
-        if (gameOptions.snooperEnabled) {
-            // empty if block
-        }
-        return false;
-    }, (gameOptions, option, snooperEnabled) -> {
-        gameOptions.snooperEnabled = snooperEnabled;
     });
     private static final Text TOGGLE_TEXT = new TranslatableText("options.key.toggle");
     private static final Text HOLD_TEXT = new TranslatableText("options.key.hold");

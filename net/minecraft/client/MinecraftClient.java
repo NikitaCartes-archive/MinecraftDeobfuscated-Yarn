@@ -6,7 +6,6 @@ package net.minecraft.client;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Queues;
-import com.google.common.hash.Hashing;
 import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -29,7 +28,6 @@ import java.io.UncheckedIOException;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
@@ -260,8 +258,6 @@ import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.TickTimeTracker;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.snooper.Snooper;
-import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
@@ -270,7 +266,6 @@ import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -322,8 +317,7 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 @Environment(value=EnvType.CLIENT)
 public class MinecraftClient
 extends ReentrantThreadExecutor<Runnable>
-implements SnooperListener,
-WindowEventHandler {
+implements WindowEventHandler {
     private static MinecraftClient instance;
     private static final Logger LOGGER;
     public static final boolean IS_SYSTEM_MAC;
@@ -346,7 +340,6 @@ WindowEventHandler {
     private final WindowProvider windowProvider;
     private final Window window;
     private final RenderTickCounter renderTickCounter = new RenderTickCounter(20.0f, 0L);
-    private final Snooper snooper = new Snooper("client", this, Util.getMeasuringTimeMs());
     private final BufferBuilderStorage bufferBuilders;
     public final WorldRenderer worldRenderer;
     private final EntityRenderDispatcher entityRenderDispatcher;
@@ -1035,7 +1028,7 @@ WindowEventHandler {
         RenderSystem.applyModelViewMatrix();
         RenderSystem.clear(16640, IS_SYSTEM_MAC);
         this.framebuffer.beginWrite(true);
-        BackgroundRenderer.method_23792();
+        BackgroundRenderer.clearFog();
         this.profiler.push("display");
         RenderSystem.enableTexture();
         RenderSystem.enableCull();
@@ -1089,9 +1082,6 @@ WindowEventHandler {
             this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d", currentFps, (double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : Integer.valueOf(this.options.maxFps), this.options.enableVsync ? " vsync" : "", this.options.graphicsMode.toString(), this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.biomeBlendRadius);
             this.nextDebugInfoUpdateTime += 1000L;
             this.fpsCounter = 0;
-            this.snooper.update();
-            if (this.snooper.isActive()) continue;
-            this.snooper.method_5482();
         }
         this.profiler.pop();
     }
@@ -1160,7 +1150,7 @@ WindowEventHandler {
     public void cleanUpAfterCrash() {
         try {
             CrashMemoryReserve.releaseMemory();
-            this.worldRenderer.method_3267();
+            this.worldRenderer.cleanUp();
         } catch (Throwable throwable) {
             // empty catch block
         }
@@ -2155,67 +2145,6 @@ WindowEventHandler {
         return this.submit(this::reloadResources).thenCompose(completableFuture -> completableFuture);
     }
 
-    @Override
-    public void addSnooperInfo(Snooper snooper) {
-        snooper.addInfo("fps", currentFps);
-        snooper.addInfo("vsync_enabled", this.options.enableVsync);
-        snooper.addInfo("display_frequency", this.window.getRefreshRate());
-        snooper.addInfo("display_type", this.window.isFullscreen() ? "fullscreen" : "windowed");
-        snooper.addInfo("run_time", (Util.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
-        snooper.addInfo("current_action", this.getCurrentAction());
-        snooper.addInfo("language", this.options.language == null ? "en_us" : this.options.language);
-        String string = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN ? "little" : "big";
-        snooper.addInfo("endianness", string);
-        snooper.addInfo("subtitles", this.options.showSubtitles);
-        snooper.addInfo("touch", this.options.touchscreen ? "touch" : "mouse");
-        int i = 0;
-        for (ResourcePackProfile resourcePackProfile : this.resourcePackManager.getEnabledProfiles()) {
-            if (resourcePackProfile.isAlwaysEnabled() || resourcePackProfile.isPinned()) continue;
-            snooper.addInfo("resource_pack[" + i++ + "]", resourcePackProfile.getName());
-        }
-        snooper.addInfo("resource_packs", i);
-        if (this.server != null) {
-            snooper.addInfo("snooper_partner", this.server.getSnooper().getToken());
-        }
-    }
-
-    private String getCurrentAction() {
-        if (this.server != null) {
-            if (this.server.isRemote()) {
-                return "hosting_lan";
-            }
-            return "singleplayer";
-        }
-        if (this.currentServerEntry != null) {
-            if (this.currentServerEntry.isLocal()) {
-                return "playing_lan";
-            }
-            return "multiplayer";
-        }
-        return "out_of_game";
-    }
-
-    @Override
-    public void addInitialSnooperInfo(Snooper snooper) {
-        snooper.addInitialInfo("client_brand", ClientBrandRetriever.getClientModName());
-        snooper.addInitialInfo("launched_version", this.gameVersion);
-        MinecraftClient.addGlInfo(snooper);
-        snooper.addInitialInfo("gl_max_texture_size", RenderSystem.maxSupportedTextureSize());
-        GameProfile gameProfile = this.session.getProfile();
-        if (gameProfile.getId() != null) {
-            snooper.addInitialInfo("uuid", Hashing.sha1().hashBytes(gameProfile.getId().toString().getBytes(Charsets.ISO_8859_1)).toString());
-        }
-    }
-
-    private static void addGlInfo(Snooper snooper) {
-        GlDebugInfo.feedTo(snooper::addInitialInfo);
-    }
-
-    @Override
-    public boolean isSnooperEnabled() {
-        return this.options.snooperEnabled;
-    }
-
     public void setCurrentServerEntry(@Nullable ServerInfo serverEntry) {
         this.currentServerEntry = serverEntry;
     }
@@ -2241,10 +2170,6 @@ WindowEventHandler {
     @Nullable
     public IntegratedServer getServer() {
         return this.server;
-    }
-
-    public Snooper getSnooper() {
-        return this.snooper;
     }
 
     public Session getSession() {

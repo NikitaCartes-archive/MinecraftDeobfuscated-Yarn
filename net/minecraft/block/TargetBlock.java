@@ -52,7 +52,7 @@ extends Block {
         int j;
         int i = TargetBlock.calculatePower(hitResult, hitResult.getPos());
         int n = j = entity instanceof PersistentProjectileEntity ? 20 : 8;
-        if (!world.getBlockTickScheduler().isScheduled(hitResult.getBlockPos(), state.getBlock())) {
+        if (!world.getBlockTickScheduler().isQueued(hitResult.getBlockPos(), state.getBlock())) {
             TargetBlock.setPower(world, state, i, hitResult.getBlockPos(), j);
         }
         return i;
@@ -70,7 +70,7 @@ extends Block {
 
     private static void setPower(WorldAccess world, BlockState state, int power, BlockPos pos, int delay) {
         world.setBlockState(pos, (BlockState)state.with(POWER, power), Block.NOTIFY_ALL);
-        world.getBlockTickScheduler().schedule(pos, state.getBlock(), delay);
+        world.createAndScheduleBlockTick(pos, state.getBlock(), delay);
     }
 
     @Override
@@ -100,7 +100,7 @@ extends Block {
         if (world.isClient() || state.isOf(oldState.getBlock())) {
             return;
         }
-        if (state.get(POWER) > 0 && !world.getBlockTickScheduler().isScheduled(pos, this)) {
+        if (state.get(POWER) > 0 && !world.getBlockTickScheduler().isQueued(pos, this)) {
             world.setBlockState(pos, (BlockState)state.with(POWER, 0), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
         }
     }

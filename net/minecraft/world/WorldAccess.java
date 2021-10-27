@@ -17,10 +17,12 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.LunarWorldView;
 import net.minecraft.world.RegistryWorldView;
-import net.minecraft.world.TickScheduler;
+import net.minecraft.world.TickPriority;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.tick.OrderedTick;
+import net.minecraft.world.tick.QueryableTickScheduler;
 import org.jetbrains.annotations.Nullable;
 
 public interface WorldAccess
@@ -31,9 +33,35 @@ LunarWorldView {
         return this.getLevelProperties().getTimeOfDay();
     }
 
-    public TickScheduler<Block> getBlockTickScheduler();
+    public long getTickOrder();
 
-    public TickScheduler<Fluid> getFluidTickScheduler();
+    public QueryableTickScheduler<Block> getBlockTickScheduler();
+
+    private <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay, TickPriority priority) {
+        return new OrderedTick<T>(type, pos, this.getLevelProperties().getTime() + (long)delay, priority, this.getTickOrder());
+    }
+
+    private <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay) {
+        return new OrderedTick<T>(type, pos, this.getLevelProperties().getTime() + (long)delay, this.getTickOrder());
+    }
+
+    default public void createAndScheduleBlockTick(BlockPos pos, Block block, int delay, TickPriority priority) {
+        this.getBlockTickScheduler().scheduleTick(this.createOrderedTick(pos, block, delay, priority));
+    }
+
+    default public void createAndScheduleBlockTick(BlockPos pos, Block block, int delay) {
+        this.getBlockTickScheduler().scheduleTick(this.createOrderedTick(pos, block, delay));
+    }
+
+    public QueryableTickScheduler<Fluid> getFluidTickScheduler();
+
+    default public void createAndScheduleFluidTick(BlockPos pos, Fluid fluid, int delay, TickPriority priority) {
+        this.getFluidTickScheduler().scheduleTick(this.createOrderedTick(pos, fluid, delay, priority));
+    }
+
+    default public void createAndScheduleFluidTick(BlockPos pos, Fluid fluid, int delay) {
+        this.getFluidTickScheduler().scheduleTick(this.createOrderedTick(pos, fluid, delay));
+    }
 
     public WorldProperties getLevelProperties();
 
@@ -63,10 +91,6 @@ LunarWorldView {
     public void addParticle(ParticleEffect var1, double var2, double var4, double var6, double var8, double var10, double var12);
 
     public void syncWorldEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
-
-    default public int getLogicalHeight() {
-        return this.getDimension().getLogicalHeight();
-    }
 
     default public void syncWorldEvent(int eventId, BlockPos pos, int data) {
         this.syncWorldEvent(null, eventId, pos, data);

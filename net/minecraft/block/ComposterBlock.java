@@ -201,7 +201,7 @@ implements InventoryProvider {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (state.get(LEVEL) == 7) {
-            world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
+            world.createAndScheduleBlockTick(pos, state.getBlock(), 20);
         }
     }
 
@@ -266,7 +266,7 @@ implements InventoryProvider {
             BlockState blockState = (BlockState)state.with(LEVEL, j);
             world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
             if (j == 7) {
-                world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
+                world.createAndScheduleBlockTick(pos, state.getBlock(), 20);
             }
             return blockState;
         }

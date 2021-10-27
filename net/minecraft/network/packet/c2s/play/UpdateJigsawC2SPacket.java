@@ -49,7 +49,7 @@ implements Packet<ServerPlayPacketListener> {
 
     @Override
     public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-        serverPlayPacketListener.onJigsawUpdate(this);
+        serverPlayPacketListener.onUpdateJigsaw(this);
     }
 
     public BlockPos getPos() {

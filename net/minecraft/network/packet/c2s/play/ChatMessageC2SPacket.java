@@ -30,7 +30,7 @@ implements Packet<ServerPlayPacketListener> {
 
     @Override
     public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-        serverPlayPacketListener.onGameMessage(this);
+        serverPlayPacketListener.onChatMessage(this);
     }
 
     public String getChatMessage() {

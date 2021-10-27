@@ -85,7 +85,7 @@ public class ConfiguredStructureFeatures {
     }
 
     public static void registerAll(BiConsumer<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> registrar) {
-        ImmutableCollection set = ((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().add(BiomeKeys.DEEP_FROZEN_OCEAN)).add(BiomeKeys.DEEP_COLD_OCEAN)).add(BiomeKeys.DEEP_OCEAN)).add(BiomeKeys.DEEP_LUKEWARM_OCEAN)).add(BiomeKeys.DEEP_WARM_OCEAN)).build();
+        ImmutableCollection set = ((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().add(BiomeKeys.DEEP_FROZEN_OCEAN)).add(BiomeKeys.DEEP_COLD_OCEAN)).add(BiomeKeys.DEEP_OCEAN)).add(BiomeKeys.DEEP_LUKEWARM_OCEAN)).build();
         ImmutableCollection set2 = ((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().add(BiomeKeys.FROZEN_OCEAN)).add(BiomeKeys.OCEAN)).add(BiomeKeys.COLD_OCEAN)).add(BiomeKeys.LUKEWARM_OCEAN)).add(BiomeKeys.WARM_OCEAN)).addAll((Iterable)set)).build();
         ImmutableCollection set3 = ((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().add(BiomeKeys.BEACH)).add(BiomeKeys.SNOWY_BEACH)).build();
         ImmutableCollection set4 = ((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().add(BiomeKeys.RIVER)).add(BiomeKeys.FROZEN_RIVER)).build();
@@ -135,7 +135,6 @@ public class ConfiguredStructureFeatures {
         ConfiguredStructureFeatures.register(registrar, OCEAN_RUIN_WARM, BiomeKeys.LUKEWARM_OCEAN);
         ConfiguredStructureFeatures.register(registrar, OCEAN_RUIN_WARM, BiomeKeys.WARM_OCEAN);
         ConfiguredStructureFeatures.register(registrar, OCEAN_RUIN_WARM, BiomeKeys.DEEP_LUKEWARM_OCEAN);
-        ConfiguredStructureFeatures.register(registrar, OCEAN_RUIN_WARM, BiomeKeys.DEEP_WARM_OCEAN);
         ConfiguredStructureFeatures.register(registrar, PILLAGER_OUTPOST, BiomeKeys.DESERT);
         ConfiguredStructureFeatures.register(registrar, PILLAGER_OUTPOST, BiomeKeys.PLAINS);
         ConfiguredStructureFeatures.register(registrar, PILLAGER_OUTPOST, BiomeKeys.SAVANNA);

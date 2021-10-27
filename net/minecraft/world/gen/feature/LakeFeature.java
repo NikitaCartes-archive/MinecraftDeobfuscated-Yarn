@@ -87,7 +87,7 @@ extends Feature<SingleStateFeatureConfig> {
                     boolean bl2 = t >= 4;
                     structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
                     if (!bl2) continue;
-                    structureWorldAccess.getBlockTickScheduler().schedule(blockPos2, CAVE_AIR.getBlock(), 0);
+                    structureWorldAccess.createAndScheduleBlockTick(blockPos2, CAVE_AIR.getBlock(), 0);
                     this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos2);
                 }
             }

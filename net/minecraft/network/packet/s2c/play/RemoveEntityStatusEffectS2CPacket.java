@@ -34,7 +34,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onRemoveEntityEffect(this);
+        clientPlayPacketListener.onRemoveEntityStatusEffect(this);
     }
 
     @Nullable

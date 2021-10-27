@@ -52,7 +52,7 @@ extends Task<VillagerEntity> {
                 Vec3d vec3d = null;
                 int j = 1000;
                 for (i = 0; i < 1000 && (vec3d == null || this.exceedsMaxRange(villagerEntity, GlobalPos.create(serverWorld.getRegistryKey(), new BlockPos(vec3d)))); ++i) {
-                    vec3d = NoPenaltyTargeting.find(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), 1.5707963705062866);
+                    vec3d = NoPenaltyTargeting.findTo(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), 1.5707963705062866);
                 }
                 if (i == 1000) {
                     this.giveUp(villagerEntity, l);

@@ -52,14 +52,14 @@ extends Block {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.UP && neighborState.isOf(Blocks.WATER)) {
-            world.getBlockTickScheduler().schedule(pos, this, 20);
+            world.createAndScheduleBlockTick(pos, this, 20);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        world.getBlockTickScheduler().schedule(pos, this, 20);
+        world.createAndScheduleBlockTick(pos, this, 20);
     }
 
     @Override

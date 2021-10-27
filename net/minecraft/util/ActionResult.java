@@ -14,6 +14,10 @@ public enum ActionResult {
      * performance.
      */
     CONSUME,
+    /**
+     * Indicates an action is performed but no animation should accompany the
+     * performance and no statistic should be incremented.
+     */
     CONSUME_PARTIAL,
     /**
      * Indicates an action is not performed but allows other actions to
@@ -42,6 +46,10 @@ public enum ActionResult {
         return this == SUCCESS;
     }
 
+    /**
+     * Returns whether action performance should increment an item's 'used'
+     * statistic.
+     */
     public boolean shouldIncrementStat() {
         return this == SUCCESS || this == CONSUME;
     }

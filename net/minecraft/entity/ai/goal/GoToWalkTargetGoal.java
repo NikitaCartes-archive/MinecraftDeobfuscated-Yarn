@@ -28,7 +28,7 @@ extends Goal {
         if (this.mob.isInWalkTargetRange()) {
             return false;
         }
-        Vec3d vec3d = NoPenaltyTargeting.find(this.mob, 16, 7, Vec3d.ofBottomCenter(this.mob.getPositionTarget()), 1.5707963705062866);
+        Vec3d vec3d = NoPenaltyTargeting.findTo(this.mob, 16, 7, Vec3d.ofBottomCenter(this.mob.getPositionTarget()), 1.5707963705062866);
         if (vec3d == null) {
             return false;
         }

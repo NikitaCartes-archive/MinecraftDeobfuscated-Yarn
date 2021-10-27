@@ -33,7 +33,7 @@ implements Packet<ServerPlayPacketListener> {
 
     @Override
     public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-        serverPlayPacketListener.onPlayerAbilities(this);
+        serverPlayPacketListener.onUpdatePlayerAbilities(this);
     }
 
     public boolean isFlying() {

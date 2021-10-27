@@ -192,7 +192,7 @@ implements SynchronousResourceReloader {
         }
     }
 
-    public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
+    public BakedModel getModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
         BakedModel bakedModel = stack.isOf(Items.TRIDENT) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : (stack.isOf(Items.SPYGLASS) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass_in_hand#inventory")) : this.models.getModel(stack));
         ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
         BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity, seed);
@@ -207,12 +207,12 @@ implements SynchronousResourceReloader {
         if (item.isEmpty()) {
             return;
         }
-        BakedModel bakedModel = this.getHeldItemModel(item, world, entity, seed);
+        BakedModel bakedModel = this.getModel(item, world, entity, seed);
         this.renderItem(item, renderMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel);
     }
 
     public void renderGuiItemIcon(ItemStack stack, int x, int y) {
-        this.renderGuiItemModel(stack, x, y, this.getHeldItemModel(stack, null, null, 0));
+        this.renderGuiItemModel(stack, x, y, this.getModel(stack, null, null, 0));
     }
 
     protected void renderGuiItemModel(ItemStack stack, int x, int y, BakedModel model) {
@@ -285,7 +285,7 @@ implements SynchronousResourceReloader {
         if (itemStack.isEmpty()) {
             return;
         }
-        BakedModel bakedModel = this.getHeldItemModel(itemStack, null, entity, seed);
+        BakedModel bakedModel = this.getModel(itemStack, null, entity, seed);
         this.zOffset = bakedModel.hasDepth() ? this.zOffset + 50.0f + (float)depth : this.zOffset + 50.0f;
         try {
             this.renderGuiItemModel(itemStack, x, y, bakedModel);

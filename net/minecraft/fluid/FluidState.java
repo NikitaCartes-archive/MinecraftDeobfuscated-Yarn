@@ -105,6 +105,10 @@ extends State<Fluid, FluidState> {
         return this.getFluid().isIn(tag);
     }
 
+    public boolean isOf(Fluid fluid) {
+        return this.getFluid() == fluid;
+    }
+
     public float getBlastResistance() {
         return this.getFluid().getBlastResistance();
     }

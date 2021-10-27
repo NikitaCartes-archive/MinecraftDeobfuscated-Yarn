@@ -381,9 +381,9 @@ extends PatrolEntity {
         public void tick() {
             if (this.raider.getNavigation().isIdle()) {
                 Vec3d vec3d = Vec3d.ofBottomCenter(this.home);
-                Vec3d vec3d2 = NoPenaltyTargeting.find(this.raider, 16, 7, vec3d, 0.3141592741012573);
+                Vec3d vec3d2 = NoPenaltyTargeting.findTo(this.raider, 16, 7, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
-                    vec3d2 = NoPenaltyTargeting.find(this.raider, 8, 7, vec3d, 1.5707963705062866);
+                    vec3d2 = NoPenaltyTargeting.findTo(this.raider, 8, 7, vec3d, 1.5707963705062866);
                 }
                 if (vec3d2 == null) {
                     this.finished = true;

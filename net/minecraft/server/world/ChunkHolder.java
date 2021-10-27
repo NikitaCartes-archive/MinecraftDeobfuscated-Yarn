@@ -309,7 +309,6 @@ public class ChunkHolder {
     }
 
     protected void tick(ThreadedAnvilChunkStorage chunkStorage, Executor executor) {
-        CompletableFuture<Either<Chunk, Unloaded>> completableFuture;
         ChunkStatus chunkStatus = ChunkHolder.getTargetStatusForLevel(this.lastTickLevel);
         ChunkStatus chunkStatus2 = ChunkHolder.getTargetStatusForLevel(this.level);
         boolean bl = this.lastTickLevel <= ThreadedAnvilChunkStorage.MAX_LEVEL;
@@ -318,7 +317,7 @@ public class ChunkHolder {
         LevelType levelType2 = ChunkHolder.getLevelType(this.level);
         if (bl) {
             int i;
-            Either either2 = Either.right(new Unloaded(){
+            Either either = Either.right(new Unloaded(){
 
                 public String toString() {
                     return "Unloaded ticket level " + ChunkHolder.this.pos;
@@ -326,9 +325,9 @@ public class ChunkHolder {
             });
             int n = i = bl2 ? chunkStatus2.getIndex() + 1 : 0;
             while (i <= chunkStatus.getIndex()) {
-                completableFuture = this.futuresByStatus.get(i);
+                CompletableFuture<Either<Chunk, Unloaded>> completableFuture = this.futuresByStatus.get(i);
                 if (completableFuture == null) {
-                    this.futuresByStatus.set(i, CompletableFuture.completedFuture(either2));
+                    this.futuresByStatus.set(i, CompletableFuture.completedFuture(either));
                 }
                 ++i;
             }
@@ -342,9 +341,8 @@ public class ChunkHolder {
             this.combineSavingFuture(this.accessibleFuture, "full");
         }
         if (bl3 && !bl4) {
-            completableFuture = this.accessibleFuture;
+            this.accessibleFuture.complete(UNLOADED_WORLD_CHUNK);
             this.accessibleFuture = UNLOADED_WORLD_CHUNK_FUTURE;
-            this.combineSavingFuture((CompletableFuture<? extends Either<? extends Chunk, Unloaded>>)completableFuture.thenApply(either -> either.ifLeft(chunkStorage::enableTickSchedulers)), "unfull");
         }
         boolean bl5 = levelType.isAfter(LevelType.TICKING);
         boolean bl6 = levelType2.isAfter(LevelType.TICKING);

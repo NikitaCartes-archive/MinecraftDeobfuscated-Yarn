@@ -40,7 +40,7 @@ implements AbstractRandom {
     }
 
     @Override
-    public net.minecraft.world.gen.random.RandomDeriver createBlockPosRandomDeriver() {
+    public net.minecraft.world.gen.random.RandomDeriver createRandomDeriver() {
         return new RandomDeriver(this.implementation.next(), this.implementation.next());
     }
 
@@ -59,7 +59,19 @@ implements AbstractRandom {
         if (i <= 0) {
             throw new IllegalArgumentException("Bound must be positive");
         }
-        return Math.abs((int)(this.implementation.next() % (long)i));
+        long l = Integer.toUnsignedLong(this.nextInt());
+        long m = l * (long)i;
+        long n = m & 0xFFFFFFFFL;
+        if (n < (long)i) {
+            int j = Integer.remainderUnsigned(~i + 1, i);
+            while (n < (long)j) {
+                l = Integer.toUnsignedLong(this.nextInt());
+                m = l * (long)i;
+                n = m & 0xFFFFFFFFL;
+            }
+        }
+        long o = m >> 32;
+        return (int)o;
     }
 
     @Override

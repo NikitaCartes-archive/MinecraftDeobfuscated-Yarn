@@ -46,7 +46,7 @@ extends Goal {
             if (((RaiderEntity)this.actor).age % 20 == ((Entity)this.actor).getId() % 2) {
                 this.includeFreeRaiders(raid);
             }
-            if (!((PathAwareEntity)this.actor).isNavigating() && (vec3d = NoPenaltyTargeting.find(this.actor, 15, 4, Vec3d.ofBottomCenter(raid.getCenter()), 1.5707963705062866)) != null) {
+            if (!((PathAwareEntity)this.actor).isNavigating() && (vec3d = NoPenaltyTargeting.findTo(this.actor, 15, 4, Vec3d.ofBottomCenter(raid.getCenter()), 1.5707963705062866)) != null) {
                 ((MobEntity)this.actor).getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
             }
         }

@@ -130,7 +130,7 @@ extends AbstractFireBlock {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         boolean bl2;
-        world.getBlockTickScheduler().schedule(pos, this, FireBlock.getFireTickDelay(world.random));
+        world.createAndScheduleBlockTick(pos, this, FireBlock.getFireTickDelay(world.random));
         if (!world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
             return;
         }
@@ -265,7 +265,7 @@ extends AbstractFireBlock {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onBlockAdded(state, world, pos, oldState, notify);
-        world.getBlockTickScheduler().schedule(pos, this, FireBlock.getFireTickDelay(world.random));
+        world.createAndScheduleBlockTick(pos, this, FireBlock.getFireTickDelay(world.random));
     }
 
     private static int getFireTickDelay(Random random) {

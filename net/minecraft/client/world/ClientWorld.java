@@ -31,7 +31,6 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.world.BiomeColorCache;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientEntityManager;
-import net.minecraft.client.world.DummyClientTickScheduler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -77,7 +76,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.MutableWorldProperties;
-import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
@@ -90,6 +88,8 @@ import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.level.ColorResolver;
+import net.minecraft.world.tick.EmptyTickSchedulers;
+import net.minecraft.world.tick.QueryableTickScheduler;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -123,15 +123,15 @@ extends World {
     private int simulationDistance;
     private static final Set<Item> BLOCK_MARKER_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
 
-    public ClientWorld(ClientPlayNetworkHandler netHandler, Properties properties, RegistryKey<World> registryRef, DimensionType dimensionType, int loadDistance, int i, Supplier<Profiler> supplier, WorldRenderer worldRenderer, boolean bl, long l) {
-        super(properties, registryRef, dimensionType, supplier, true, bl, l);
+    public ClientWorld(ClientPlayNetworkHandler netHandler, Properties properties, RegistryKey<World> registryRef, DimensionType dimensionType, int loadDistance, int simulationDistance, Supplier<Profiler> profiler, WorldRenderer worldRenderer, boolean debugWorld, long seed) {
+        super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
         this.netHandler = netHandler;
         this.chunkManager = new ClientChunkManager(this, loadDistance);
         this.clientWorldProperties = properties;
         this.worldRenderer = worldRenderer;
         this.dimensionEffects = DimensionEffects.byDimensionType(dimensionType);
         this.setSpawnPos(new BlockPos(8, 64, 8), 0.0f);
-        this.simulationDistance = i;
+        this.simulationDistance = simulationDistance;
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
     }
@@ -439,13 +439,13 @@ extends World {
     }
 
     @Override
-    public TickScheduler<Block> getBlockTickScheduler() {
-        return DummyClientTickScheduler.get();
+    public QueryableTickScheduler<Block> getBlockTickScheduler() {
+        return EmptyTickSchedulers.getClientTickScheduler();
     }
 
     @Override
-    public TickScheduler<Fluid> getFluidTickScheduler() {
-        return DummyClientTickScheduler.get();
+    public QueryableTickScheduler<Fluid> getFluidTickScheduler() {
+        return EmptyTickSchedulers.getClientTickScheduler();
     }
 
     @Override

@@ -435,7 +435,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onVelocityUpdate(EntityVelocityUpdateS2CPacket packet) {
+    public void onEntityVelocityUpdate(EntityVelocityUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = this.world.getEntityById(packet.getId());
         if (entity == null) {
@@ -490,7 +490,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onHeldItemChange(UpdateSelectedSlotS2CPacket packet) {
+    public void onUpdateSelectedSlot(UpdateSelectedSlotS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         if (PlayerInventory.isValidHotbarIndex(packet.getSlot())) {
             this.client.player.getInventory().selectedSlot = packet.getSlot();
@@ -498,7 +498,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onEntityUpdate(EntityS2CPacket packet) {
+    public void onEntity(EntityS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = packet.getEntity(this.world);
         if (entity == null) {
@@ -1013,7 +1013,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet) {
+    public void onEntityEquipmentUpdate(EntityEquipmentUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = this.world.getEntityById(packet.getId());
         if (entity != null) {
@@ -1034,7 +1034,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onBlockDestroyProgress(BlockBreakingProgressS2CPacket packet) {
+    public void onBlockBreakingProgress(BlockBreakingProgressS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         this.client.world.setBlockBreakingInfo(packet.getEntityId(), packet.getPos(), packet.getProgress());
     }
@@ -1177,7 +1177,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onTagQuery(NbtQueryResponseS2CPacket packet) {
+    public void onNbtQueryResponse(NbtQueryResponseS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         if (!this.dataQueryHandler.handleQueryResponse(packet.getTransactionId(), packet.getNbt())) {
             LOGGER.debug("Got unhandled response to tag query {}", (Object)packet.getTransactionId());
@@ -1393,7 +1393,7 @@ implements ClientPlayPacketListener {
     }
 
     @Override
-    public void onRemoveEntityEffect(RemoveEntityStatusEffectS2CPacket packet) {
+    public void onRemoveEntityStatusEffect(RemoveEntityStatusEffectS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = packet.getEntity(this.world);
         if (entity instanceof LivingEntity) {
@@ -1643,7 +1643,7 @@ implements ClientPlayPacketListener {
                 }
                 this.client.debugRenderer.structureDebugRenderer.addStructure(blockBox, list, list2, dimensionType);
             } else if (CustomPayloadS2CPacket.DEBUG_WORLDGEN_ATTEMPT.equals(identifier)) {
-                ((WorldGenAttemptDebugRenderer)this.client.debugRenderer.worldGenAttemptDebugRenderer).method_3872(packetByteBuf.readBlockPos(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
+                ((WorldGenAttemptDebugRenderer)this.client.debugRenderer.worldGenAttemptDebugRenderer).addBox(packetByteBuf.readBlockPos(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
             } else if (CustomPayloadS2CPacket.DEBUG_VILLAGE_SECTIONS.equals(identifier)) {
                 int m;
                 int i = packetByteBuf.readInt();

@@ -113,7 +113,7 @@ implements ClientLoginPacketListener {
     }
 
     @Override
-    public void onLoginSuccess(LoginSuccessS2CPacket packet) {
+    public void onSuccess(LoginSuccessS2CPacket packet) {
         this.statusConsumer.accept(new TranslatableText("connect.joining"));
         this.profile = packet.getProfile();
         this.connection.setState(NetworkState.PLAY);

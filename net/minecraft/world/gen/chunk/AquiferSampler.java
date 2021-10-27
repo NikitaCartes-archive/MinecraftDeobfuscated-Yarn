@@ -12,6 +12,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.random.AbstractRandom;
@@ -20,8 +21,6 @@ import org.apache.commons.lang3.mutable.MutableDouble;
 import org.jetbrains.annotations.Nullable;
 
 public interface AquiferSampler {
-    public static final int field_35121 = -4096;
-
     public static AquiferSampler aquifer(ChunkNoiseSampler chunkNoiseSampler, ChunkPos chunkPos, DoublePerlinNoiseSampler edgeDensityNoise, DoublePerlinNoiseSampler doublePerlinNoiseSampler, DoublePerlinNoiseSampler doublePerlinNoiseSampler2, DoublePerlinNoiseSampler fluidTypeNoise, RandomDeriver randomDeriver, NoiseColumnSampler columnSampler, int i, int j, FluidLevelSampler fluidLevelSampler) {
         return new Impl(chunkNoiseSampler, chunkPos, edgeDensityNoise, doublePerlinNoiseSampler, doublePerlinNoiseSampler2, fluidTypeNoise, randomDeriver, columnSampler, i, j, fluidLevelSampler);
     }
@@ -78,7 +77,7 @@ public interface AquiferSampler {
         private final int startZ;
         private final int sizeX;
         private final int sizeZ;
-        private static final int[][] field_34581 = new int[][]{{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {3, 0}, {-3, 0}, {0, 3}, {0, -3}, {2, 2}, {2, -2}, {-2, 2}, {-2, 2}};
+        private static final int[][] field_34581 = new int[][]{{-2, -1}, {-1, -1}, {0, -1}, {1, -1}, {-3, 0}, {-2, 0}, {-1, 0}, {0, 0}, {1, 0}, {-2, 1}, {-1, 1}, {0, 1}, {1, 1}};
 
         Impl(ChunkNoiseSampler chunkNoiseSampler, ChunkPos chunkPos, DoublePerlinNoiseSampler edgeDensityNoise, DoublePerlinNoiseSampler doublePerlinNoiseSampler, DoublePerlinNoiseSampler doublePerlinNoiseSampler2, DoublePerlinNoiseSampler fluidTypeNoise, RandomDeriver randomDeriver, NoiseColumnSampler columnSampler, int i, int j, FluidLevelSampler fluidLevelSampler) {
             this.chunkNoiseSampler = chunkNoiseSampler;
@@ -325,7 +324,7 @@ public interface AquiferSampler {
             }
             double h = MathHelper.lerpFromProgress(d, 1.0, 0.0, -0.8, 0.4);
             if (f <= h) {
-                return new FluidLevel(-4096, fluidLevel.state);
+                return new FluidLevel(DimensionType.field_35479, fluidLevel.state);
             }
             int r = 16;
             int s = 40;
@@ -350,7 +349,7 @@ public interface AquiferSampler {
                 int n = 40;
                 int o = Math.floorDiv(i, 64);
                 double d = this.fluidTypeNoise.sample(o, p = Math.floorDiv(j, 40), q = Math.floorDiv(k, 64));
-                if (Math.abs(d) > 0.22) {
+                if (Math.abs(d) > 0.3) {
                     return Blocks.LAVA.getDefaultState();
                 }
             }

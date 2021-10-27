@@ -36,7 +36,7 @@ extends Block {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (!this.isInWater(world, pos)) {
-            world.getBlockTickScheduler().schedule(pos, this, 60 + world.getRandom().nextInt(40));
+            world.createAndScheduleBlockTick(pos, this, 60 + world.getRandom().nextInt(40));
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -54,7 +54,7 @@ extends Block {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         if (!this.isInWater(ctx.getWorld(), ctx.getBlockPos())) {
-            ctx.getWorld().getBlockTickScheduler().schedule(ctx.getBlockPos(), this, 60 + ctx.getWorld().getRandom().nextInt(40));
+            ctx.getWorld().createAndScheduleBlockTick(ctx.getBlockPos(), this, 60 + ctx.getWorld().getRandom().nextInt(40));
         }
         return this.getDefaultState();
     }

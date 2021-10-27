@@ -37,7 +37,7 @@ implements Packet<ServerPlayPacketListener> {
 
     @Override
     public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-        serverPlayPacketListener.onSignUpdate(this);
+        serverPlayPacketListener.onUpdateSign(this);
     }
 
     public BlockPos getPos() {

@@ -31,7 +31,6 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -157,17 +156,6 @@ extends MinecraftServer {
     @Override
     public ModStatus getModStatus() {
         return MinecraftClient.getModStatus().combine(super.getModStatus());
-    }
-
-    @Override
-    public void addSnooperInfo(Snooper snooper) {
-        super.addSnooperInfo(snooper);
-        snooper.addInfo("snooper_partner", this.client.getSnooper().getToken());
-    }
-
-    @Override
-    public boolean isSnooperEnabled() {
-        return MinecraftClient.getInstance().isSnooperEnabled();
     }
 
     @Override

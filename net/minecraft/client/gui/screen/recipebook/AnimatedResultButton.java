@@ -49,7 +49,7 @@ extends ClickableWidget {
 
     public void showResultCollection(RecipeResultCollection resultCollection, RecipeBookResults results) {
         this.resultCollection = resultCollection;
-        this.craftingScreenHandler = (AbstractRecipeScreenHandler)results.getMinecraftClient().player.currentScreenHandler;
+        this.craftingScreenHandler = (AbstractRecipeScreenHandler)results.getClient().player.currentScreenHandler;
         this.recipeBook = results.getRecipeBook();
         List<Recipe<?>> list = resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
         for (Recipe<?> recipe : list) {

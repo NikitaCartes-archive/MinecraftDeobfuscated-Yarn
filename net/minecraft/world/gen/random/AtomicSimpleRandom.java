@@ -30,7 +30,7 @@ implements BaseSimpleRandom {
     }
 
     @Override
-    public net.minecraft.world.gen.random.RandomDeriver createBlockPosRandomDeriver() {
+    public net.minecraft.world.gen.random.RandomDeriver createRandomDeriver() {
         return new RandomDeriver(this.nextLong());
     }
 

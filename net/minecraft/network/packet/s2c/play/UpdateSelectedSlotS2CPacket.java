@@ -26,7 +26,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onHeldItemChange(this);
+        clientPlayPacketListener.onUpdateSelectedSlot(this);
     }
 
     public int getSlot() {

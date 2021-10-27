@@ -22,9 +22,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public class LevelFlatGeneratorInfoFix
 extends DataFix {
-    private static final String field_29905 = "generatorOptions";
+    private static final String GENERATOR_OPTIONS_KEY = "generatorOptions";
     @VisibleForTesting
-    static final String field_29904 = "minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;1;village";
+    static final String SUPERFLAT_PRESET = "minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;1;village";
     private static final Splitter SPLIT_ON_SEMICOLON = Splitter.on(';').limit(5);
     private static final Splitter SPLIT_ON_COMMA = Splitter.on(',');
     private static final Splitter SPLIT_ON_LOWER_X = Splitter.on('x').limit(2);
@@ -42,7 +42,7 @@ extends DataFix {
 
     private Dynamic<?> fixGeneratorOptions(Dynamic<?> dynamic2) {
         if (dynamic2.get("generatorName").asString("").equalsIgnoreCase("flat")) {
-            return dynamic2.update(field_29905, dynamic -> DataFixUtils.orElse(dynamic.asString().map(this::fixFlatGeneratorOptions).map(dynamic::createString).result(), dynamic));
+            return dynamic2.update(GENERATOR_OPTIONS_KEY, dynamic -> DataFixUtils.orElse(dynamic.asString().map(this::fixFlatGeneratorOptions).map(dynamic::createString).result(), dynamic));
         }
         return dynamic2;
     }
@@ -52,7 +52,7 @@ extends DataFix {
         String string2;
         int i;
         if (generatorOptions.isEmpty()) {
-            return field_29904;
+            return SUPERFLAT_PRESET;
         }
         Iterator<String> iterator = SPLIT_ON_SEMICOLON.split(generatorOptions).iterator();
         String string3 = iterator.next();
@@ -64,7 +64,7 @@ extends DataFix {
             string2 = string3;
         }
         if (i < 0 || i > 3) {
-            return field_29904;
+            return SUPERFLAT_PRESET;
         }
         StringBuilder stringBuilder = new StringBuilder();
         Splitter splitter = i < 3 ? SPLIT_ON_LOWER_X : SPLIT_ON_ASTERISK;

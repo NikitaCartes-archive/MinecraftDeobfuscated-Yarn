@@ -22,20 +22,20 @@ import net.minecraft.util.math.BlockPos;
 @Environment(value=EnvType.CLIENT)
 public class WorldGenAttemptDebugRenderer
 implements DebugRenderer.Renderer {
-    private final List<BlockPos> field_4640 = Lists.newArrayList();
-    private final List<Float> field_4635 = Lists.newArrayList();
-    private final List<Float> field_4637 = Lists.newArrayList();
-    private final List<Float> field_4639 = Lists.newArrayList();
-    private final List<Float> field_4636 = Lists.newArrayList();
-    private final List<Float> field_4638 = Lists.newArrayList();
+    private final List<BlockPos> positions = Lists.newArrayList();
+    private final List<Float> sizes = Lists.newArrayList();
+    private final List<Float> alphas = Lists.newArrayList();
+    private final List<Float> reds = Lists.newArrayList();
+    private final List<Float> greens = Lists.newArrayList();
+    private final List<Float> blues = Lists.newArrayList();
 
-    public void method_3872(BlockPos blockPos, float f, float g, float h, float i, float j) {
-        this.field_4640.add(blockPos);
-        this.field_4635.add(Float.valueOf(f));
-        this.field_4637.add(Float.valueOf(j));
-        this.field_4639.add(Float.valueOf(g));
-        this.field_4636.add(Float.valueOf(h));
-        this.field_4638.add(Float.valueOf(i));
+    public void addBox(BlockPos pos, float size, float red, float green, float blue, float alpha) {
+        this.positions.add(pos);
+        this.sizes.add(Float.valueOf(size));
+        this.alphas.add(Float.valueOf(alpha));
+        this.reds.add(Float.valueOf(red));
+        this.greens.add(Float.valueOf(green));
+        this.blues.add(Float.valueOf(blue));
     }
 
     @Override
@@ -47,11 +47,11 @@ implements DebugRenderer.Renderer {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
-        for (int i = 0; i < this.field_4640.size(); ++i) {
-            BlockPos blockPos = this.field_4640.get(i);
-            Float float_ = this.field_4635.get(i);
+        for (int i = 0; i < this.positions.size(); ++i) {
+            BlockPos blockPos = this.positions.get(i);
+            Float float_ = this.sizes.get(i);
             float f = float_.floatValue() / 2.0f;
-            WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos.getX() + 0.5f - f) - cameraX, (double)((float)blockPos.getY() + 0.5f - f) - cameraY, (double)((float)blockPos.getZ() + 0.5f - f) - cameraZ, (double)((float)blockPos.getX() + 0.5f + f) - cameraX, (double)((float)blockPos.getY() + 0.5f + f) - cameraY, (double)((float)blockPos.getZ() + 0.5f + f) - cameraZ, this.field_4639.get(i).floatValue(), this.field_4636.get(i).floatValue(), this.field_4638.get(i).floatValue(), this.field_4637.get(i).floatValue());
+            WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos.getX() + 0.5f - f) - cameraX, (double)((float)blockPos.getY() + 0.5f - f) - cameraY, (double)((float)blockPos.getZ() + 0.5f - f) - cameraZ, (double)((float)blockPos.getX() + 0.5f + f) - cameraX, (double)((float)blockPos.getY() + 0.5f + f) - cameraY, (double)((float)blockPos.getZ() + 0.5f + f) - cameraZ, this.reds.get(i).floatValue(), this.greens.get(i).floatValue(), this.blues.get(i).floatValue(), this.alphas.get(i).floatValue());
         }
         tessellator.draw();
         RenderSystem.enableTexture();

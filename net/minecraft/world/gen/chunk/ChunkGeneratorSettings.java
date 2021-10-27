@@ -20,6 +20,7 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.biome.source.util.VanillaTerrainParametersCreator;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
 import net.minecraft.world.gen.chunk.SlideConfig;
@@ -174,19 +175,19 @@ public final class ChunkGeneratorSettings {
     }
 
     private static ChunkGeneratorSettings createIslandSettings(StructuresConfig structuresConfig, BlockState defaultBlock, BlockState defaultFluid, boolean bl, boolean bl2) {
-        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, 0.0, 0.0, bl2, false), defaultBlock, defaultFluid, VanillaSurfaceRules.getEndStoneRule(), Integer.MIN_VALUE, Integer.MIN_VALUE, 0, bl, false, false, false, false, false, true);
+        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, 0.0, 0.0, bl2, false, VanillaTerrainParametersCreator.createIslandParameters()), defaultBlock, defaultFluid, VanillaSurfaceRules.getEndStoneRule(), Integer.MIN_VALUE, Integer.MIN_VALUE, 0, bl, false, false, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createUndergroundSettings(StructuresConfig structuresConfig, BlockState defaultBlock, BlockState defaultFluid) {
         HashMap<StructureFeature<?>, StructureConfig> map = Maps.newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
         map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
-        return new ChunkGeneratorSettings(new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, 0.0, -0.030078125, false, false), defaultBlock, defaultFluid, VanillaSurfaceRules.createNetherSurfaceRule(), 0, 0, 32, false, false, false, false, false, false, true);
+        return new ChunkGeneratorSettings(new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, 0.0, -0.030078125, false, false, VanillaTerrainParametersCreator.createUndergroundParameters()), defaultBlock, defaultFluid, VanillaSurfaceRules.createNetherSurfaceRule(), 0, 0, 32, false, false, false, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, boolean bl) {
         int i = bl ? -2 : 0;
         double d = 0.9999999814507745;
-        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0), new SlideConfig(-0.078125, 2, 8), new SlideConfig(0.1171875, 3, 0), 1, 2, 1.0, -0.51875, false, amplified), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createOverworldSurfaceRule(), Integer.MIN_VALUE, 0, 63, false, true, true, true, true, true, false);
+        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0), new SlideConfig(-0.078125, 2, 8), new SlideConfig(0.1171875, 3, 0), 1, 2, 1.0, 0.0, false, amplified, VanillaTerrainParametersCreator.createSurfaceParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createOverworldSurfaceRule(), Integer.MIN_VALUE, 0, 63, false, true, true, true, true, true, false);
     }
 
     static {

@@ -136,7 +136,7 @@ implements BlockEntityProvider {
         int n = j = blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
         if (i != j || state.get(POWERED).booleanValue() != this.hasPower(world, pos, state)) {
             TickPriority tickPriority = this.isTargetNotAligned(world, pos, state) ? TickPriority.HIGH : TickPriority.NORMAL;
-            world.getBlockTickScheduler().schedule(pos, this, 2, tickPriority);
+            world.createAndScheduleBlockTick(pos, this, 2, tickPriority);
         }
     }
 

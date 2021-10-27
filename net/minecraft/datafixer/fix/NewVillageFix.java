@@ -28,10 +28,10 @@ extends DataFix {
     protected TypeRewriteRule makeRule() {
         CompoundList.CompoundListType<String, ?> compoundListType = DSL.compoundList(DSL.string(), this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE));
         OpticFinder opticFinder = compoundListType.finder();
-        return this.method_17334(compoundListType);
+        return this.fix(compoundListType);
     }
 
-    private <SF> TypeRewriteRule method_17334(CompoundList.CompoundListType<String, SF> compoundListType) {
+    private <SF> TypeRewriteRule fix(CompoundList.CompoundListType<String, SF> compoundListType) {
         Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK);
         Type<?> type2 = this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE);
         OpticFinder<?> opticFinder = type.findField("Level");

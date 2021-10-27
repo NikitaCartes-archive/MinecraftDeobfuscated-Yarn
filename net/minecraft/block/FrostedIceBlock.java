@@ -45,11 +45,11 @@ extends IceBlock {
                 mutable.set((Vec3i)pos, direction);
                 BlockState blockState = world.getBlockState(mutable);
                 if (!blockState.isOf(this) || this.increaseAge(blockState, world, mutable)) continue;
-                world.getBlockTickScheduler().schedule(mutable, this, MathHelper.nextInt(random, 20, 40));
+                world.createAndScheduleBlockTick(mutable, this, MathHelper.nextInt(random, 20, 40));
             }
             return;
         }
-        world.getBlockTickScheduler().schedule(pos, this, MathHelper.nextInt(random, 20, 40));
+        world.createAndScheduleBlockTick(pos, this, MathHelper.nextInt(random, 20, 40));
     }
 
     private boolean increaseAge(BlockState state, World world, BlockPos pos) {

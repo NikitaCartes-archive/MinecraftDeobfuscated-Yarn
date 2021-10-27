@@ -61,7 +61,6 @@ import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
@@ -311,18 +310,6 @@ implements DedicatedServer {
     @Override
     public boolean isNetherAllowed() {
         return this.getProperties().allowNether;
-    }
-
-    @Override
-    public void addSnooperInfo(Snooper snooper) {
-        snooper.addInfo("whitelist_enabled", this.getPlayerManager().isWhitelistEnabled());
-        snooper.addInfo("whitelist_count", this.getPlayerManager().getWhitelistedNames().length);
-        super.addSnooperInfo(snooper);
-    }
-
-    @Override
-    public boolean isSnooperEnabled() {
-        return this.getProperties().snooperEnabled;
     }
 
     public void enqueueCommand(String command, ServerCommandSource commandSource) {

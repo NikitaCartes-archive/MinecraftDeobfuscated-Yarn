@@ -29,7 +29,7 @@ extends DataFix {
         Type<?> type3 = type2.findField("SpawnData").type();
         OpticFinder<?> opticFinder2 = type.findField("SpawnPotentials");
         Type<?> type4 = type2.findField("SpawnPotentials").type();
-        return this.fixTypeEverywhereTyped("Fix mob spawner data structure", type, type2, (Typed<?> typed2) -> typed2.updateTyped(opticFinder, type3, typed -> this.method_37974(type3, (Typed<?>)typed)).updateTyped(opticFinder2, type4, typed -> this.method_37976(type4, (Typed<?>)typed)));
+        return this.fixTypeEverywhereTyped("Fix mob spawner data structure", type, type2, (Typed<?> typed2) -> typed2.updateTyped(opticFinder, type3, typed -> this.method_37974(type3, (Typed<?>)typed)).updateTyped(opticFinder2, type4, typed -> this.fixSpawner(type4, (Typed<?>)typed)));
     }
 
     private <T> Typed<T> method_37974(Type<T> type, Typed<?> typed) {
@@ -37,7 +37,7 @@ extends DataFix {
         return new Typed(type, dynamicOps, Pair.of(typed.getValue(), new Dynamic(dynamicOps)));
     }
 
-    private <T> Typed<T> method_37976(Type<T> type, Typed<?> typed) {
+    private <T> Typed<T> fixSpawner(Type<T> type, Typed<?> typed) {
         DynamicOps<?> dynamicOps = typed.getOps();
         List list = (List)typed.getValue();
         List<Pair> list2 = list.stream().map(object -> {

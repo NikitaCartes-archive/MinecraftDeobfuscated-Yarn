@@ -4,8 +4,10 @@
 package net.minecraft.world.storage;
 
 import com.mojang.datafixers.DataFixer;
+import com.mojang.serialization.Codec;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
@@ -16,6 +18,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.FeatureUpdater;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.storage.StorageIoWorker;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +34,7 @@ implements AutoCloseable {
         this.worker = new StorageIoWorker(directory, dsync, "chunk");
     }
 
-    public NbtCompound updateChunkNbt(RegistryKey<World> worldKey, Supplier<PersistentStateManager> persistentStateManagerFactory, NbtCompound nbt) {
+    public NbtCompound updateChunkNbt(RegistryKey<World> worldKey, Supplier<PersistentStateManager> persistentStateManagerFactory, NbtCompound nbt, Optional<RegistryKey<Codec<? extends ChunkGenerator>>> optional) {
         int i = VersionedChunkStorage.getDataVersion(nbt);
         int j = 1493;
         if (i < 1493 && (nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, i, 1493)).getCompound("Level").getBoolean("hasLegacyStructureData")) {
@@ -40,12 +43,17 @@ implements AutoCloseable {
             }
             nbt = this.featureUpdater.getUpdatedReferences(nbt);
         }
-        nbt.getCompound("Level").putString("__dimension", worldKey.getValue().toString());
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putString("dimension", worldKey.getValue().toString());
+        if (optional.isPresent()) {
+            nbtCompound.putString("generator", optional.get().getValue().toString());
+        }
+        nbt.put("__context", nbtCompound);
         nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, Math.max(1493, i));
         if (i < SharedConstants.getGameVersion().getWorldVersion()) {
             nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
         }
-        nbt.getCompound("Level").remove("__dimension");
+        nbt.remove("__context");
         return nbt;
     }
 

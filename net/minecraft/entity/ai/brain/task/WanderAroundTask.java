@@ -122,7 +122,7 @@ extends Task<MobEntity> {
             if (this.path != null) {
                 return true;
             }
-            Vec3d vec3d = NoPenaltyTargeting.find((PathAwareEntity)entity, 10, 7, Vec3d.ofBottomCenter(blockPos), 1.5707963705062866);
+            Vec3d vec3d = NoPenaltyTargeting.findTo((PathAwareEntity)entity, 10, 7, Vec3d.ofBottomCenter(blockPos), 1.5707963705062866);
             if (vec3d != null) {
                 this.path = entity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
                 return this.path != null;

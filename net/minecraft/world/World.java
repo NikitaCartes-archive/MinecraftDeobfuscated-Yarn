@@ -111,6 +111,7 @@ AutoCloseable {
     private final WorldBorder border;
     private final BiomeAccess biomeAccess;
     private final RegistryKey<World> registryKey;
+    private long tickOrder;
 
     protected World(MutableWorldProperties properties, RegistryKey<World> registryRef, final DimensionType dimensionType, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed) {
         this.profiler = profiler;
@@ -890,6 +891,11 @@ AutoCloseable {
                 }
             }
         }
+    }
+
+    @Override
+    public long getTickOrder() {
+        return this.tickOrder++;
     }
 
     @Override

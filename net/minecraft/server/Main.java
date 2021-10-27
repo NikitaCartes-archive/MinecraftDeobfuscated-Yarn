@@ -3,7 +3,6 @@
  */
 package net.minecraft.server;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
@@ -54,10 +53,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.profiling.jfr.InstanceType;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
-import net.minecraft.world.World;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -170,7 +167,7 @@ public class Main {
                 saveProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
             }
             if (optionSet.has(optionSpec5)) {
-                Main.forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions().getWorlds());
+                Main.forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions());
             }
             session.backupLevelDataFile(impl, saveProperties);
             SaveProperties saveProperties2 = saveProperties;
@@ -201,9 +198,9 @@ public class Main {
         }
     }
 
-    private static void forceUpgradeWorld(LevelStorage.Session session, DataFixer dataFixer, boolean eraseCache, BooleanSupplier booleanSupplier, ImmutableSet<RegistryKey<World>> worlds) {
+    private static void forceUpgradeWorld(LevelStorage.Session session, DataFixer dataFixer, boolean eraseCache, BooleanSupplier continueCheck, GeneratorOptions generatorOptions) {
         LOGGER.info("Forcing world upgrade!");
-        WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, worlds, eraseCache);
+        WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, generatorOptions, eraseCache);
         Text text = null;
         while (!worldUpdater.isDone()) {
             int i;
@@ -216,7 +213,7 @@ public class Main {
                 int j = worldUpdater.getUpgradedChunkCount() + worldUpdater.getSkippedChunkCount();
                 LOGGER.info("{}% completed ({} / {} chunks)...", (Object)MathHelper.floor((float)j / (float)i * 100.0f), (Object)j, (Object)i);
             }
-            if (!booleanSupplier.getAsBoolean()) {
+            if (!continueCheck.getAsBoolean()) {
                 worldUpdater.cancel();
                 continue;
             }

@@ -144,10 +144,10 @@ implements Waterloggable {
         if (world.isClient() || state.isOf(oldState.getBlock())) {
             return;
         }
-        if (state.get(POWER) > 0 && !world.getBlockTickScheduler().isScheduled(pos, this)) {
+        if (state.get(POWER) > 0 && !world.getBlockTickScheduler().isQueued(pos, this)) {
             world.setBlockState(pos, (BlockState)state.with(POWER, 0), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
         }
-        world.getBlockTickScheduler().schedule(new BlockPos(pos), state.getBlock(), 1);
+        world.createAndScheduleBlockTick(new BlockPos(pos), state.getBlock(), 1);
     }
 
     @Override
@@ -164,7 +164,7 @@ implements Waterloggable {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
-            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -228,7 +228,7 @@ implements Waterloggable {
 
     public static void setCooldown(World world, BlockPos pos, BlockState state) {
         world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.COOLDOWN)).with(POWER, 0), Block.NOTIFY_ALL);
-        world.getBlockTickScheduler().schedule(new BlockPos(pos), state.getBlock(), 1);
+        world.createAndScheduleBlockTick(new BlockPos(pos), state.getBlock(), 1);
         if (!state.get(WATERLOGGED).booleanValue()) {
             world.playSound(null, pos, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING_STOP, SoundCategory.BLOCKS, 1.0f, world.random.nextFloat() * 0.2f + 0.8f);
         }
@@ -237,7 +237,7 @@ implements Waterloggable {
 
     public static void setActive(World world, BlockPos pos, BlockState state, int power) {
         world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)).with(POWER, power), Block.NOTIFY_ALL);
-        world.getBlockTickScheduler().schedule(new BlockPos(pos), state.getBlock(), 40);
+        world.createAndScheduleBlockTick(new BlockPos(pos), state.getBlock(), 40);
         SculkSensorBlock.updateNeighbors(world, pos);
         if (!state.get(WATERLOGGED).booleanValue()) {
             world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING, SoundCategory.BLOCKS, 1.0f, world.random.nextFloat() * 0.2f + 0.8f);

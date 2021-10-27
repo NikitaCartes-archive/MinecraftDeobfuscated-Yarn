@@ -65,7 +65,7 @@ extends DataFix {
                         int i = dynamic.get("x").asInt(0);
                         int j = dynamic.get("y").asInt(0);
                         int k = dynamic.get("z").asInt(0);
-                        short s = ChunkToProtoChunkFix.method_15675(i, j, k);
+                        short s = ChunkToProtoChunkFix.packChunkSectionPos(i, j, k);
                         ((ShortList)list.get(j >> 4)).add(s);
                     });
                     dynamic2 = dynamic2.set("ToBeTicked", dynamic2.createList(list.stream().map(shortList -> dynamic22.createList(shortList.stream().map(dynamic22::createShort)))));
@@ -78,8 +78,8 @@ extends DataFix {
         })), this.writeAndRead("Structure biome inject", this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE), this.getOutputSchema().getType(TypeReferences.STRUCTURE_FEATURE)));
     }
 
-    private static short method_15675(int i, int j, int k) {
-        return (short)(i & 0xF | (j & 0xF) << 4 | (k & 0xF) << 8);
+    private static short packChunkSectionPos(int x, int y, int z) {
+        return (short)(x & 0xF | (y & 0xF) << 4 | (z & 0xF) << 8);
     }
 }
 

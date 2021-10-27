@@ -90,7 +90,7 @@ extends ChunkManager {
     }
 
     @Nullable
-    public WorldChunk loadChunkFromPacket(int x, int z, PacketByteBuf packetByteBuf, NbtCompound nbtCompound, Consumer<ChunkData.BlockEntityVisitor> consumer) {
+    public WorldChunk loadChunkFromPacket(int x, int z, PacketByteBuf buf, NbtCompound nbt, Consumer<ChunkData.BlockEntityVisitor> consumer) {
         if (!this.chunks.isInRadius(x, z)) {
             LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", (Object)x, (Object)z);
             return null;
@@ -100,10 +100,10 @@ extends ChunkManager {
         ChunkPos chunkPos = new ChunkPos(x, z);
         if (!ClientChunkManager.positionEquals(worldChunk, x, z)) {
             worldChunk = new WorldChunk(this.world, chunkPos);
-            worldChunk.loadFromPacket(packetByteBuf, nbtCompound, consumer);
+            worldChunk.loadFromPacket(buf, nbt, consumer);
             this.chunks.set(i, worldChunk);
         } else {
-            worldChunk.loadFromPacket(packetByteBuf, nbtCompound, consumer);
+            worldChunk.loadFromPacket(buf, nbt, consumer);
         }
         this.world.resetChunkColor(chunkPos);
         return worldChunk;

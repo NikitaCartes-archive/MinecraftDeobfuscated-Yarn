@@ -100,12 +100,12 @@ extends AnimalEntity {
 
     @Override
     protected boolean hasWings() {
-        return this.field_28627 > this.field_28639;
+        return this.speed > this.field_28639;
     }
 
     @Override
     protected void addFlapEffects() {
-        this.field_28639 = this.field_28627 + this.maxWingDeviation / 2.0f;
+        this.field_28639 = this.speed + this.maxWingDeviation / 2.0f;
     }
 
     @Override

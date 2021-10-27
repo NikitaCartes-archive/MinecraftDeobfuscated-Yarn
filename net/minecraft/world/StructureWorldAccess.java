@@ -26,7 +26,7 @@ extends ServerWorldAccess {
         return true;
     }
 
-    default public void method_36972(@Nullable Supplier<String> supplier) {
+    default public void setCurrentlyGeneratingStructureName(@Nullable Supplier<String> structureName) {
     }
 }
 

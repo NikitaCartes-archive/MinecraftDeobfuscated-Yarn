@@ -201,7 +201,7 @@ public class DebugRenderer {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.translate((float)(x - d), (float)(y - e) + 0.07f, (float)(z - f));
-        matrixStack.method_34425(new Matrix4f(camera.getRotation()));
+        matrixStack.multiplyPositionMatrix(new Matrix4f(camera.getRotation()));
         matrixStack.scale(size, -size, size);
         RenderSystem.enableTexture();
         if (visibleThroughObjects) {

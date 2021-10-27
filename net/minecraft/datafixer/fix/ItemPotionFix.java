@@ -22,7 +22,7 @@ public class ItemPotionFix
 extends DataFix {
     private static final int field_29885 = 16384;
     private static final String[] ID_TO_POTIONS = DataFixUtils.make(new String[128], strings -> {
-        strings[0] = field_29884;
+        strings[0] = WATER;
         strings[1] = "minecraft:regeneration";
         strings[2] = "minecraft:swiftness";
         strings[3] = "minecraft:fire_resistance";
@@ -151,7 +151,7 @@ extends DataFix {
         strings[126] = "minecraft:long_invisibility";
         strings[127] = null;
     });
-    public static final String field_29884 = "minecraft:water";
+    public static final String WATER = "minecraft:water";
 
     public ItemPotionFix(Schema outputSchema, boolean changesType) {
         super(outputSchema, changesType);
@@ -174,7 +174,7 @@ extends DataFix {
                     Optional<String> optional3 = dynamic2.get("Potion").asString().result();
                     if (!optional3.isPresent()) {
                         String string = ID_TO_POTIONS[s & 0x7F];
-                        Typed<?> typed3 = optional2.get().set(DSL.remainderFinder(), dynamic2.set("Potion", dynamic2.createString(string == null ? field_29884 : string)));
+                        Typed<?> typed3 = optional2.get().set(DSL.remainderFinder(), dynamic2.set("Potion", dynamic2.createString(string == null ? WATER : string)));
                         typed2 = typed2.set(opticFinder2, typed3);
                         if ((s & 0x4000) == 16384) {
                             typed2 = typed2.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), "minecraft:splash_potion"));

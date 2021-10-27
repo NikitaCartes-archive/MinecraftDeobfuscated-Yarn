@@ -38,7 +38,7 @@ implements Packet<ClientLoginPacketListener> {
 
     @Override
     public void apply(ClientLoginPacketListener clientLoginPacketListener) {
-        clientLoginPacketListener.onLoginSuccess(this);
+        clientLoginPacketListener.onSuccess(this);
     }
 
     public GameProfile getProfile() {

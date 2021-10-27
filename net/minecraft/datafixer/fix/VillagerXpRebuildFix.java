@@ -45,20 +45,20 @@ extends DataFix {
             int i = dynamic.get("VillagerData").get("level").asInt(0);
             Typed<?> typed22 = typed2;
             if ((i == 0 || i == 1) && (i = MathHelper.clamp((j = typed2.getOptionalTyped(opticFinder2).flatMap(typed -> typed.getOptionalTyped(opticFinder3)).map(typed -> typed.getAllTyped(opticFinder4).size()).orElse(0).intValue()) / 2, 1, 5)) > 1) {
-                typed22 = VillagerXpRebuildFix.method_20487(typed22, i);
+                typed22 = VillagerXpRebuildFix.fixLevel(typed22, i);
             }
             if (!(optional = dynamic.get("Xp").asNumber().result()).isPresent()) {
-                typed22 = VillagerXpRebuildFix.method_20490(typed22, i);
+                typed22 = VillagerXpRebuildFix.fixXp(typed22, i);
             }
             return typed22;
         }));
     }
 
-    private static Typed<?> method_20487(Typed<?> typed, int i) {
+    private static Typed<?> fixLevel(Typed<?> typed, int i) {
         return typed.update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("VillagerData", dynamic -> dynamic.set("level", dynamic.createInt(i))));
     }
 
-    private static Typed<?> method_20490(Typed<?> typed, int i) {
+    private static Typed<?> fixXp(Typed<?> typed, int i) {
         int j = VillagerXpRebuildFix.levelToXp(i);
         return typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("Xp", dynamic.createInt(j)));
     }

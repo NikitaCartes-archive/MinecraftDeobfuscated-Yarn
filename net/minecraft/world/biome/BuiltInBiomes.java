@@ -60,7 +60,6 @@ public abstract class BuiltinBiomes {
         BuiltinBiomes.register(BiomeKeys.SNOWY_BEACH, OverworldBiomeCreator.createBeach(true, false));
         BuiltinBiomes.register(BiomeKeys.STONY_SHORE, OverworldBiomeCreator.createBeach(false, true));
         BuiltinBiomes.register(BiomeKeys.WARM_OCEAN, OverworldBiomeCreator.createWarmOcean());
-        BuiltinBiomes.register(BiomeKeys.DEEP_WARM_OCEAN, OverworldBiomeCreator.createDeepWarmOcean());
         BuiltinBiomes.register(BiomeKeys.LUKEWARM_OCEAN, OverworldBiomeCreator.createLukewarmOcean(false));
         BuiltinBiomes.register(BiomeKeys.DEEP_LUKEWARM_OCEAN, OverworldBiomeCreator.createLukewarmOcean(true));
         BuiltinBiomes.register(BiomeKeys.OCEAN, OverworldBiomeCreator.createNormalOcean(false));

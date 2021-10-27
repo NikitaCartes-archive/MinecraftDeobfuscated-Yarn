@@ -60,7 +60,7 @@ extends Goal {
         if (this.targetEntity == null) {
             return false;
         }
-        Vec3d vec3d = NoPenaltyTargeting.find(this.mob, 16, 7, ((Entity)this.targetEntity).getPos());
+        Vec3d vec3d = NoPenaltyTargeting.findFrom(this.mob, 16, 7, ((Entity)this.targetEntity).getPos());
         if (vec3d == null) {
             return false;
         }

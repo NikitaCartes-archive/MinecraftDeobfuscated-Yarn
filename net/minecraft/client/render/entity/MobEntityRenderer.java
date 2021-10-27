@@ -62,7 +62,7 @@ extends LivingEntityRenderer<T, M> {
     private <E extends Entity> void renderLeash(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider provider, E holdingEntity) {
         int u;
         matrices.push();
-        Vec3d vec3d = holdingEntity.method_30951(tickDelta);
+        Vec3d vec3d = holdingEntity.getLeashPos(tickDelta);
         double d = (double)(MathHelper.lerp(tickDelta, ((MobEntity)entity).bodyYaw, ((MobEntity)entity).prevBodyYaw) * ((float)Math.PI / 180)) + 1.5707963267948966;
         Vec3d vec3d2 = ((Entity)entity).getLeashOffset();
         double e = Math.cos(d) * vec3d2.z + Math.sin(d) * vec3d2.x;

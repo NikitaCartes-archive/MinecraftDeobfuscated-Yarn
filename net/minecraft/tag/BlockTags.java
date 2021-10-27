@@ -119,6 +119,7 @@ public final class BlockTags {
     public static final Tag.Identified<Block> MOSS_REPLACEABLE = BlockTags.register("moss_replaceable");
     public static final Tag.Identified<Block> LUSH_GROUND_REPLACEABLE = BlockTags.register("lush_ground_replaceable");
     public static final Tag.Identified<Block> SMALL_DRIPLEAF_PLACEABLE = BlockTags.register("small_dripleaf_placeable");
+    public static final Tag.Identified<Block> BIG_DRIPLEAF_PLACEABLE = BlockTags.register("big_dripleaf_placeable");
     public static final Tag.Identified<Block> SNOW = BlockTags.register("snow");
     public static final Tag.Identified<Block> AXE_MINEABLE = BlockTags.register("mineable/axe");
     public static final Tag.Identified<Block> HOE_MINEABLE = BlockTags.register("mineable/hoe");

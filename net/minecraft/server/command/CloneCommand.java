@@ -25,12 +25,12 @@ import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.tick.WorldTickScheduler;
 import org.jetbrains.annotations.Nullable;
 
 public class CloneCommand {
@@ -125,7 +125,7 @@ public class CloneCommand {
         for (BlockInfo blockInfo2 : list5) {
             serverWorld.updateNeighbors(blockInfo2.pos, blockInfo2.state.getBlock());
         }
-        ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).copyScheduledTicks(blockBox, blockPos2);
+        ((WorldTickScheduler)serverWorld.getBlockTickScheduler()).scheduleTicks(blockBox, blockPos2);
         if (l == 0) {
             throw FAILED_EXCEPTION.create();
         }

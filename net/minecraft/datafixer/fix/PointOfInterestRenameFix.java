@@ -27,14 +27,14 @@ extends DataFix {
         if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.POI_CHUNK))) {
             throw new IllegalStateException("Poi type is not what was expected.");
         }
-        return this.fixTypeEverywhere("POI rename", type, dynamicOps -> pair -> pair.mapSecond(this::method_23299));
+        return this.fixTypeEverywhere("POI rename", type, dynamicOps -> pair -> pair.mapSecond(this::fixPointsOfInterest));
     }
 
-    private <T> Dynamic<T> method_23299(Dynamic<T> dynamic2) {
-        return dynamic2.update("Sections", dynamic -> dynamic.updateMapValues(pair -> pair.mapSecond(dynamic2 -> dynamic2.update("Records", dynamic -> DataFixUtils.orElse(this.method_23304((Dynamic)dynamic), dynamic)))));
+    private <T> Dynamic<T> fixPointsOfInterest(Dynamic<T> dynamic2) {
+        return dynamic2.update("Sections", dynamic -> dynamic.updateMapValues(pair -> pair.mapSecond(dynamic2 -> dynamic2.update("Records", dynamic -> DataFixUtils.orElse(this.fixPointOfInterest((Dynamic)dynamic), dynamic)))));
     }
 
-    private <T> Optional<Dynamic<T>> method_23304(Dynamic<T> dynamic) {
+    private <T> Optional<Dynamic<T>> fixPointOfInterest(Dynamic<T> dynamic) {
         return dynamic.asStreamOpt().map(stream -> dynamic.createList(stream.map(dynamic2 -> dynamic2.update("type", dynamic -> DataFixUtils.orElse(dynamic.asString().map(this::rename).map(dynamic::createString).result(), dynamic))))).result();
     }
 

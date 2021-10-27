@@ -37,7 +37,7 @@ implements Waterloggable {
 
     protected void checkLivingConditions(BlockState state, WorldAccess world, BlockPos pos) {
         if (!CoralParentBlock.isInWater(state, world, pos)) {
-            world.getBlockTickScheduler().schedule(pos, this, 60 + world.getRandom().nextInt(40));
+            world.createAndScheduleBlockTick(pos, this, 60 + world.getRandom().nextInt(40));
         }
     }
 
@@ -67,7 +67,7 @@ implements Waterloggable {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
-            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction == Direction.DOWN && !this.canPlaceAt(state, world, pos)) {
             return Blocks.AIR.getDefaultState();

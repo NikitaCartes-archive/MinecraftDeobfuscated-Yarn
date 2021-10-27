@@ -19,14 +19,14 @@ extends DataFix {
 
     @Override
     public TypeRewriteRule makeRule() {
-        return this.writeFixAndRead("SavedDataVillageCropFix", this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE), this.getOutputSchema().getType(TypeReferences.STRUCTURE_FEATURE), this::method_5152);
+        return this.writeFixAndRead("SavedDataVillageCropFix", this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE), this.getOutputSchema().getType(TypeReferences.STRUCTURE_FEATURE), this::fix);
     }
 
-    private <T> Dynamic<T> method_5152(Dynamic<T> dynamic) {
-        return dynamic.update("Children", SavedDataVillageCropFix::method_5157);
+    private <T> Dynamic<T> fix(Dynamic<T> dynamic) {
+        return dynamic.update("Children", SavedDataVillageCropFix::fixVillageChildren);
     }
 
-    private static <T> Dynamic<T> method_5157(Dynamic<T> dynamic) {
+    private static <T> Dynamic<T> fixVillageChildren(Dynamic<T> dynamic) {
         return dynamic.asStreamOpt().map(SavedDataVillageCropFix::fixVillageChildren).map(dynamic::createList).result().orElse(dynamic);
     }
 

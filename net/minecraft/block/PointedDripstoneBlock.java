@@ -102,20 +102,20 @@ Waterloggable {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
-            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction != Direction.UP && direction != Direction.DOWN) {
             return state;
         }
         Direction direction2 = state.get(VERTICAL_DIRECTION);
-        if (direction2 == Direction.DOWN && world.getBlockTickScheduler().isScheduled(pos, this)) {
+        if (direction2 == Direction.DOWN && world.getBlockTickScheduler().isQueued(pos, this)) {
             return state;
         }
         if (direction == direction2.getOpposite() && !this.canPlaceAt(state, world, pos)) {
             if (direction2 == Direction.DOWN) {
                 this.scheduleFall(state, world, pos);
             } else {
-                world.getBlockTickScheduler().schedule(pos, this, 1);
+                world.createAndScheduleBlockTick(pos, this, 1);
             }
             return state;
         }
@@ -202,7 +202,7 @@ Waterloggable {
         int i = blockPos.getY() - blockPos2.getY();
         int j = 50 + i;
         BlockState blockState = world.getBlockState(blockPos2);
-        world.getBlockTickScheduler().schedule(blockPos2, blockState.getBlock(), j);
+        world.createAndScheduleBlockTick(blockPos2, blockState.getBlock(), j);
     }
 
     @Override
@@ -288,7 +288,7 @@ Waterloggable {
         }
         BlockPos.Mutable mutable = blockPos.mutableCopy();
         while (PointedDripstoneBlock.isPointingDown(world.getBlockState(mutable))) {
-            world.getBlockTickScheduler().schedule(mutable, this, 2);
+            world.createAndScheduleBlockTick(mutable, this, 2);
             mutable.move(Direction.UP);
         }
     }

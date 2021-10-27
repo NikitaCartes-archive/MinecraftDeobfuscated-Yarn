@@ -31,8 +31,8 @@ implements AbstractRandom {
     }
 
     @Override
-    public RandomDeriver createBlockPosRandomDeriver() {
-        return this.baseRandom.createBlockPosRandomDeriver();
+    public RandomDeriver createRandomDeriver() {
+        return this.baseRandom.createRandomDeriver();
     }
 
     @Override

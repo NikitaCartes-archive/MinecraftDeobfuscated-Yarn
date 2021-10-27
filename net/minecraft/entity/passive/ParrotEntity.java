@@ -352,13 +352,13 @@ implements Flutterer {
 
     @Override
     protected boolean hasWings() {
-        return this.field_28627 > this.field_28640;
+        return this.speed > this.field_28640;
     }
 
     @Override
     protected void addFlapEffects() {
         this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1.0f);
-        this.field_28640 = this.field_28627 + this.maxWingDeviation / 2.0f;
+        this.field_28640 = this.speed + this.maxWingDeviation / 2.0f;
     }
 
     @Override

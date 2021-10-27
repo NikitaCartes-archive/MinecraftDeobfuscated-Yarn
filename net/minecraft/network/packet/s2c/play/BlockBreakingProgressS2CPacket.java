@@ -35,7 +35,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onBlockDestroyProgress(this);
+        clientPlayPacketListener.onBlockBreakingProgress(this);
     }
 
     public int getEntityId() {

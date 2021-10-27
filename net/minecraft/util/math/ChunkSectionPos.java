@@ -20,7 +20,7 @@ public class ChunkSectionPos
 extends Vec3i {
     public static final int field_33096 = 4;
     public static final int field_33097 = 16;
-    private static final int field_33100 = 15;
+    public static final int field_33100 = 15;
     public static final int field_33098 = 8;
     public static final int field_33099 = 15;
     private static final int field_33101 = 22;

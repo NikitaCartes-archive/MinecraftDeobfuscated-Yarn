@@ -565,7 +565,7 @@ ServerPlayPacketListener {
     }
 
     @Override
-    public void onStructureBlockUpdate(UpdateStructureBlockC2SPacket packet) {
+    public void onUpdateStructureBlock(UpdateStructureBlockC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
         if (!this.player.isCreativeLevelTwoOp()) {
             return;
@@ -619,7 +619,7 @@ ServerPlayPacketListener {
     }
 
     @Override
-    public void onJigsawUpdate(UpdateJigsawC2SPacket packet) {
+    public void onUpdateJigsaw(UpdateJigsawC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
         if (!this.player.isCreativeLevelTwoOp()) {
             return;
@@ -654,7 +654,7 @@ ServerPlayPacketListener {
     }
 
     @Override
-    public void onMerchantTradeSelect(SelectMerchantTradeC2SPacket packet) {
+    public void onSelectMerchantTrade(SelectMerchantTradeC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
         int i = packet.getTradeId();
         ScreenHandler screenHandler = this.player.currentScreenHandler;
@@ -1069,7 +1069,7 @@ ServerPlayPacketListener {
     }
 
     @Override
-    public void onGameMessage(ChatMessageC2SPacket packet) {
+    public void onChatMessage(ChatMessageC2SPacket packet) {
         String string = StringUtils.normalizeSpace(packet.getChatMessage());
         for (int i = 0; i < string.length(); ++i) {
             if (SharedConstants.isValidChar(string.charAt(i))) continue;
@@ -1325,7 +1325,7 @@ ServerPlayPacketListener {
     }
 
     @Override
-    public void onSignUpdate(UpdateSignC2SPacket packet) {
+    public void onUpdateSign(UpdateSignC2SPacket packet) {
         List<String> list2 = Stream.of(packet.getText()).map(Formatting::strip).collect(Collectors.toList());
         this.filterTexts(list2, list -> this.onSignUpdate(packet, (List<TextStream.Message>)list));
     }
@@ -1370,7 +1370,7 @@ ServerPlayPacketListener {
     }
 
     @Override
-    public void onPlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet) {
+    public void onUpdatePlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
         this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().allowFlying;
     }

@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 public class MaterialRules {
     public static final MaterialCondition STONE_DEPTH_FLOOR = new StoneDepthMaterialCondition(false, VerticalSurfaceType.FLOOR);
     public static final MaterialCondition STONE_DEPTH_FLOOR_WITH_RUN_DEPTH = new StoneDepthMaterialCondition(true, VerticalSurfaceType.FLOOR);
+    public static final MaterialCondition field_35494 = new StoneDepthMaterialCondition(false, VerticalSurfaceType.CEILING);
     public static final MaterialCondition STONE_DEPTH_CEILING = new StoneDepthMaterialCondition(true, VerticalSurfaceType.CEILING);
 
     public static MaterialCondition not(MaterialCondition target) {
@@ -483,9 +484,6 @@ public class MaterialRules {
             }
             StoneDepthPredicate stoneDepthPredicate = new StoneDepthPredicate();
             materialRuleContext.contextDependentPredicates.add(stoneDepthPredicate);
-            if (bl) {
-                materialRuleContext.needsCeilingStoneDepth = true;
-            }
             return stoneDepthPredicate;
         }
 
@@ -615,7 +613,6 @@ public class MaterialRules {
         final List<Predicate<RegistryKey<Biome>>> biomeDependentPredicates = new ObjectArrayList<Predicate<RegistryKey<Biome>>>();
         final List<Predicate<MaterialRulePos>> positionalPredicates = new ObjectArrayList<Predicate<MaterialRulePos>>();
         final List<Predicate<SurfaceContext>> contextDependentPredicates = new ObjectArrayList<Predicate<SurfaceContext>>();
-        boolean needsCeilingStoneDepth;
         final HeightContext heightContext;
 
         protected MaterialRuleContext(SurfaceBuilder surfaceBuilder, HeightContext heightContext) {
@@ -641,10 +638,6 @@ public class MaterialRules {
                 predicate2.init(surfaceContext);
             }
             this.biomeTemperaturePredicate.init(new BiomeTemperaturePredicate.BiomeTemperatureContext(biome, x, y, z));
-        }
-
-        protected boolean needsCeilingStoneDepth() {
-            return this.needsCeilingStoneDepth;
         }
 
         static class BiomeTemperaturePredicate

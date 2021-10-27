@@ -34,6 +34,7 @@ import net.minecraft.world.gen.carver.NetherCaveCarver;
 import net.minecraft.world.gen.carver.RavineCarver;
 import net.minecraft.world.gen.carver.RavineCarverConfig;
 import net.minecraft.world.gen.chunk.AquiferSampler;
+import net.minecraft.world.tick.OrderedTick;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
@@ -122,7 +123,7 @@ public abstract class Carver<C extends CarverConfig> {
         }
         chunk.setBlockState(mutable, blockState22, false);
         if (aquiferSampler.needsFluidTick() && !blockState22.getFluidState().isEmpty()) {
-            chunk.getFluidTickScheduler().schedule(mutable, blockState22.getFluidState().getFluid(), 0);
+            chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockState22.getFluidState().getFluid(), mutable, 0L));
         }
         if (mutableBoolean.isTrue()) {
             mutable2.set((Vec3i)mutable, Direction.DOWN);

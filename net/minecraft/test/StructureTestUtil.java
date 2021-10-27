@@ -32,7 +32,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -47,6 +46,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
+import net.minecraft.world.tick.WorldTickScheduler;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -161,7 +161,7 @@ public class StructureTestUtil {
         StructureTestUtil.forceLoadNearbyChunks(pos, world);
         StructureTestUtil.clearArea(blockBox, pos.getY(), world);
         StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.placeStructure(structureName, blockPos, rotation, world, bl);
-        ((ServerTickScheduler)world.getBlockTickScheduler()).getScheduledTicks(blockBox, true, false);
+        ((WorldTickScheduler)world.getBlockTickScheduler()).clearNextTicks(blockBox);
         world.clearUpdatesInArea(blockBox);
         return structureBlockBlockEntity;
     }
@@ -180,7 +180,7 @@ public class StructureTestUtil {
     public static void clearArea(BlockBox area, int altitude, ServerWorld world) {
         BlockBox blockBox = new BlockBox(area.getMinX() - 2, area.getMinY() - 3, area.getMinZ() - 3, area.getMaxX() + 3, area.getMaxY() + 20, area.getMaxZ() + 3);
         BlockPos.stream(blockBox).forEach(pos -> StructureTestUtil.resetBlock(altitude, pos, world));
-        ((ServerTickScheduler)world.getBlockTickScheduler()).getScheduledTicks(blockBox, true, false);
+        ((WorldTickScheduler)world.getBlockTickScheduler()).clearNextTicks(blockBox);
         world.clearUpdatesInArea(blockBox);
         Box box = new Box(blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ(), blockBox.getMaxX(), blockBox.getMaxY(), blockBox.getMaxZ());
         List<Entity> list = world.getEntitiesByClass(Entity.class, box, entity -> !(entity instanceof PlayerEntity));

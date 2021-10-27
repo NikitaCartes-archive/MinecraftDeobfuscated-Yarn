@@ -21,6 +21,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_6748;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
@@ -36,12 +37,13 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
-import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.chunk.BelowZeroRetrogen;
+import net.minecraft.world.chunk.BlendingData;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.UpgradeData;
@@ -49,9 +51,12 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.chunk.AquiferSampler;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.tick.BasicTickScheduler;
+import net.minecraft.world.tick.SerializableTickScheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -75,6 +80,8 @@ StructureHolder {
     @Nullable
     protected ChunkNoiseSampler chunkNoiseSampler;
     protected final UpgradeData upgradeData;
+    @Nullable
+    protected Blender blender;
     protected final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
     private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.newHashMap();
     private final Map<StructureFeature<?>, LongSet> structureReferences = Maps.newHashMap();
@@ -82,18 +89,17 @@ StructureHolder {
     protected final Map<BlockPos, BlockEntity> blockEntities = Maps.newHashMap();
     protected final HeightLimitView heightLimitView;
     protected final ChunkSection[] sectionArray;
-    protected TickScheduler<Block> blockTickScheduler;
-    protected TickScheduler<Fluid> fluidTickScheduler;
+    @Nullable
+    protected final BlendingData blendingData;
 
-    public Chunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView heightLimitView, Registry<Biome> biome, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, TickScheduler<Block> blockTickScheduler, TickScheduler<Fluid> fluidTickScheduler) {
+    public Chunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView heightLimitView, Registry<Biome> biome, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable BlendingData blendingData) {
         this.pos = pos;
         this.upgradeData = upgradeData;
         this.heightLimitView = heightLimitView;
         this.sectionArray = new ChunkSection[heightLimitView.countVerticalSections()];
         this.inhabitedTime = inhabitedTime;
         this.postProcessingLists = new ShortList[heightLimitView.countVerticalSections()];
-        this.blockTickScheduler = blockTickScheduler;
-        this.fluidTickScheduler = fluidTickScheduler;
+        this.blendingData = blendingData;
         if (sectionArrayInitializer != null) {
             if (this.sectionArray.length == sectionArrayInitializer.length) {
                 System.arraycopy(sectionArrayInitializer, 0, this.sectionArray, 0, this.sectionArray.length);
@@ -162,6 +168,10 @@ StructureHolder {
 
     public Heightmap getHeightmap(Heightmap.Type type2) {
         return this.heightmaps.computeIfAbsent(type2, type -> new Heightmap(this, (Heightmap.Type)type));
+    }
+
+    public boolean hasHeightmap(Heightmap.Type type) {
+        return this.heightmaps.get(type) != null;
     }
 
     public int sampleHeightmap(Heightmap.Type type, int x, int z) {
@@ -291,16 +301,32 @@ StructureHolder {
 
     public abstract Stream<BlockPos> getLightSourcesStream();
 
-    public TickScheduler<Block> getBlockTickScheduler() {
-        return this.blockTickScheduler;
-    }
+    public abstract BasicTickScheduler<Block> getBlockTickScheduler();
 
-    public TickScheduler<Fluid> getFluidTickScheduler() {
-        return this.fluidTickScheduler;
-    }
+    public abstract BasicTickScheduler<Fluid> getFluidTickScheduler();
+
+    public abstract TickSchedulers getTickSchedulers();
 
     public UpgradeData getUpgradeData() {
         return this.upgradeData;
+    }
+
+    public boolean usesOldNoise() {
+        return this.blendingData != null && this.blendingData.isOldNoise();
+    }
+
+    @Nullable
+    public BlendingData getBlendingData() {
+        return this.blendingData;
+    }
+
+    @Nullable
+    public Blender getBlender() {
+        return this.blender;
+    }
+
+    public void setBlender(Blender blender) {
+        this.blender = blender;
     }
 
     public long getInhabitedTime() {
@@ -341,9 +367,9 @@ StructureHolder {
         return this.heightLimitView.getHeight();
     }
 
-    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(int minimumY, int height, int x, int z, int horizontalNoiseResolution, int verticalNoiseResolutuion, NoiseColumnSampler noiseColumnSampler, Supplier<ChunkNoiseSampler.ColumnSampler> supplier, Supplier<ChunkGeneratorSettings> settings, AquiferSampler.FluidLevelSampler fluidLevelSampler) {
+    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(int minimumY, int height, int x, int z, int horizontalNoiseResolution, int verticalNoiseResolutuion, NoiseColumnSampler noiseColumnSampler, Supplier<ChunkNoiseSampler.ColumnSampler> supplier, Supplier<ChunkGeneratorSettings> settings, AquiferSampler.FluidLevelSampler fluidLevelSampler, class_6748 arg) {
         if (this.chunkNoiseSampler == null) {
-            this.chunkNoiseSampler = new ChunkNoiseSampler(horizontalNoiseResolution, verticalNoiseResolutuion, 16 / horizontalNoiseResolution, height, minimumY, noiseColumnSampler, x, z, supplier.get(), settings, fluidLevelSampler);
+            this.chunkNoiseSampler = new ChunkNoiseSampler(horizontalNoiseResolution, verticalNoiseResolutuion, 16 / horizontalNoiseResolution, height, minimumY, noiseColumnSampler, x, z, supplier.get(), settings, fluidLevelSampler, arg);
         }
         return this.chunkNoiseSampler;
     }
@@ -384,6 +410,14 @@ StructureHolder {
 
     public boolean hasStructureReferences() {
         return !this.structureReferences.isEmpty();
+    }
+
+    @Nullable
+    public BelowZeroRetrogen getBelowZeroRetrogen() {
+        return null;
+    }
+
+    public record TickSchedulers(SerializableTickScheduler<Block> blocks, SerializableTickScheduler<Fluid> fluids) {
     }
 }
 

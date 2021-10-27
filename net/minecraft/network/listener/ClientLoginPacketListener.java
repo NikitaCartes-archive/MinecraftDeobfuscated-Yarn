@@ -14,7 +14,7 @@ public interface ClientLoginPacketListener
 extends PacketListener {
     public void onHello(LoginHelloS2CPacket var1);
 
-    public void onLoginSuccess(LoginSuccessS2CPacket var1);
+    public void onSuccess(LoginSuccessS2CPacket var1);
 
     public void onDisconnect(LoginDisconnectS2CPacket var1);
 

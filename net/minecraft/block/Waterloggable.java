@@ -32,7 +32,7 @@ FluidFillable {
         if (!state.get(Properties.WATERLOGGED).booleanValue() && fluidState.getFluid() == Fluids.WATER) {
             if (!world.isClient()) {
                 world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, true), Block.NOTIFY_ALL);
-                world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
+                world.createAndScheduleFluidTick(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
             }
             return true;
         }

@@ -12,8 +12,8 @@ import net.minecraft.datafixer.fix.ChoiceFix;
 
 public class VillagerFollowRangeFix
 extends ChoiceFix {
-    private static final double field_29912 = 16.0;
-    private static final double field_29913 = 48.0;
+    private static final double OLD_RANGE = 16.0;
+    private static final double NEW_RANGE = 48.0;
 
     public VillagerFollowRangeFix(Schema schema) {
         super(schema, false, "Villager Follow Range Fix", TypeReferences.ENTITY, "minecraft:villager");
@@ -21,10 +21,10 @@ extends ChoiceFix {
 
     @Override
     protected Typed<?> transform(Typed<?> inputType) {
-        return inputType.update(DSL.remainderFinder(), VillagerFollowRangeFix::method_27914);
+        return inputType.update(DSL.remainderFinder(), VillagerFollowRangeFix::fix);
     }
 
-    private static Dynamic<?> method_27914(Dynamic<?> dynamic) {
+    private static Dynamic<?> fix(Dynamic<?> dynamic) {
         return dynamic.update("Attributes", dynamic22 -> dynamic.createList(dynamic22.asStream().map(dynamic -> {
             if (!dynamic.get("Name").asString("").equals("generic.follow_range") || dynamic.get("Base").asDouble(0.0) != 16.0) {
                 return dynamic;

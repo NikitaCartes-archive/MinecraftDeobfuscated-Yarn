@@ -96,7 +96,7 @@ public abstract class ViewerCountManager {
     }
 
     private static void scheduleBlockTick(World world, BlockPos pos, BlockState state) {
-        world.getBlockTickScheduler().schedule(pos, state.getBlock(), 5);
+        world.createAndScheduleBlockTick(pos, state.getBlock(), 5);
     }
 }
 

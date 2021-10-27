@@ -108,7 +108,7 @@ extends AbstractRailBlock {
             world.scheduleBlockRerenderIfNeeded(pos, state, blockState);
         }
         if (bl2) {
-            world.getBlockTickScheduler().schedule(pos, this, 20);
+            world.createAndScheduleBlockTick(pos, this, 20);
         }
         world.updateComparators(pos, this);
     }

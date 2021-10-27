@@ -33,7 +33,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onTagQuery(this);
+        clientPlayPacketListener.onNbtQueryResponse(this);
     }
 
     public int getTransactionId() {

@@ -13,6 +13,22 @@ import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 
+/**
+ * A stack of transformation matrices used to specify how things are
+ * {@linkplain #translate translated}, {@linkplain #scale scaled} or
+ * {@linkplain #multiply rotated} in 3D space. Each entry consists of a
+ * {@linkplain Entry#getPositionMatrix position matrix} and a {@linkplain
+ * Entry#getNormalMatrix normal matrix}.
+ * 
+ * <p>By putting matrices in a stack, a transformation can be expressed
+ * relative to another. You can {@linkplain #push push}, transform, render
+ * and {@linkplain #pop pop}, which allows you to restore the original
+ * state after rendering.
+ * 
+ * <p>An entry of identity matrix is pushed when a stack is created. This
+ * means that a stack is {@linkplain #isEmpty empty} if and only if the
+ * stack contains exactly one entry.
+ */
 @Environment(value=EnvType.CLIENT)
 public class MatrixStack {
     private final Deque<Entry> stack = Util.make(Queues.newArrayDeque(), stack -> {
@@ -23,11 +39,17 @@ public class MatrixStack {
         stack.add(new Entry(matrix4f, matrix3f));
     });
 
+    /**
+     * Applies the translation transformation to the top entry.
+     */
     public void translate(double x, double y, double z) {
         Entry entry = this.stack.getLast();
         entry.positionMatrix.multiplyByTranslation((float)x, (float)y, (float)z);
     }
 
+    /**
+     * Applies the scale transformation to the top entry.
+     */
     public void scale(float x, float y, float z) {
         Entry entry = this.stack.getLast();
         entry.positionMatrix.multiply(Matrix4f.scale(x, y, z));
@@ -44,37 +66,58 @@ public class MatrixStack {
         entry.normalMatrix.multiply(Matrix3f.scale(i * f, i * g, i * h));
     }
 
+    /**
+     * Applies the rotation transformation to the top entry.
+     */
     public void multiply(Quaternion quaternion) {
         Entry entry = this.stack.getLast();
         entry.positionMatrix.multiply(quaternion);
         entry.normalMatrix.multiply(quaternion);
     }
 
+    /**
+     * Pushes a copy of the top entry onto this stack.
+     */
     public void push() {
         Entry entry = this.stack.getLast();
         this.stack.addLast(new Entry(entry.positionMatrix.copy(), entry.normalMatrix.copy()));
     }
 
+    /**
+     * Removes the entry at the top of this stack.
+     */
     public void pop() {
         this.stack.removeLast();
     }
 
+    /**
+     * {@return the entry at the top of this stack}
+     */
     public Entry peek() {
         return this.stack.getLast();
     }
 
+    /**
+     * {@return whether this stack contains exactly one entry}
+     */
     public boolean isEmpty() {
         return this.stack.size() == 1;
     }
 
+    /**
+     * Sets the top entry to be the identity matrix.
+     */
     public void loadIdentity() {
         Entry entry = this.stack.getLast();
         entry.positionMatrix.loadIdentity();
         entry.normalMatrix.loadIdentity();
     }
 
-    public void method_34425(Matrix4f matrix4f) {
-        this.stack.getLast().positionMatrix.multiply(matrix4f);
+    /**
+     * Multiplies the top position matrix with the given matrix.
+     */
+    public void multiplyPositionMatrix(Matrix4f matrix) {
+        this.stack.getLast().positionMatrix.multiply(matrix);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -82,9 +125,9 @@ public class MatrixStack {
         final Matrix4f positionMatrix;
         final Matrix3f normalMatrix;
 
-        Entry(Matrix4f matrix4f, Matrix3f matrix3f) {
-            this.positionMatrix = matrix4f;
-            this.normalMatrix = matrix3f;
+        Entry(Matrix4f positionMatrix, Matrix3f normalMatrix) {
+            this.positionMatrix = positionMatrix;
+            this.normalMatrix = normalMatrix;
         }
 
         public Matrix4f getPositionMatrix() {

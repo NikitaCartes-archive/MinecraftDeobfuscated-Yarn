@@ -58,7 +58,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onEntityUpdate(this);
+        clientPlayPacketListener.onEntity(this);
     }
 
     public String toString() {

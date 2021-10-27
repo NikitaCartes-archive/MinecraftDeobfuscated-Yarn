@@ -140,8 +140,8 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public Vec3d method_30951(float f) {
-        return this.getLerpedPos(f).add(0.0, 0.2, 0.0);
+    public Vec3d getLeashPos(float delta) {
+        return this.getLerpedPos(delta).add(0.0, 0.2, 0.0);
     }
 
     @Override

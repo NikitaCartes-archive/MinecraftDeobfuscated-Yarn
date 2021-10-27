@@ -842,7 +842,7 @@ AutoCloseable {
             float f;
             this.client.getProfiler().swap("gui");
             if (this.client.player != null && (f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && this.client.options.distortionEffectScale < 1.0f) {
-                this.method_31136(f * (1.0f - this.client.options.distortionEffectScale));
+                this.renderNausea(f * (1.0f - this.client.options.distortionEffectScale));
             }
             if (!this.client.options.hudHidden || this.client.currentScreen != null) {
                 this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), tickDelta);
@@ -1050,31 +1050,31 @@ AutoCloseable {
         RenderSystem.disableDepthTest();
     }
 
-    private void method_31136(float f) {
+    private void renderNausea(float distortionStrength) {
         int i = this.client.getWindow().getScaledWidth();
         int j = this.client.getWindow().getScaledHeight();
-        double d = MathHelper.lerp((double)f, 2.0, 1.0);
-        float g = 0.2f * f;
-        float h = 0.4f * f;
-        float k = 0.2f * f;
+        double d = MathHelper.lerp((double)distortionStrength, 2.0, 1.0);
+        float f = 0.2f * distortionStrength;
+        float g = 0.4f * distortionStrength;
+        float h = 0.2f * distortionStrength;
         double e = (double)i * d;
-        double l = (double)j * d;
-        double m = ((double)i - e) / 2.0;
-        double n = ((double)j - l) / 2.0;
+        double k = (double)j * d;
+        double l = ((double)i - e) / 2.0;
+        double m = ((double)j - k) / 2.0;
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-        RenderSystem.setShaderColor(g, h, k, 1.0f);
+        RenderSystem.setShaderColor(f, g, h, 1.0f);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, NAUSEA_OVERLAY);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(m, n + l, -90.0).texture(0.0f, 1.0f).next();
-        bufferBuilder.vertex(m + e, n + l, -90.0).texture(1.0f, 1.0f).next();
-        bufferBuilder.vertex(m + e, n, -90.0).texture(1.0f, 0.0f).next();
-        bufferBuilder.vertex(m, n, -90.0).texture(0.0f, 0.0f).next();
+        bufferBuilder.vertex(l, m + k, -90.0).texture(0.0f, 1.0f).next();
+        bufferBuilder.vertex(l + e, m + k, -90.0).texture(1.0f, 1.0f).next();
+        bufferBuilder.vertex(l + e, m, -90.0).texture(1.0f, 0.0f).next();
+        bufferBuilder.vertex(l, m, -90.0).texture(0.0f, 0.0f).next();
         tessellator.draw();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.defaultBlendFunc();

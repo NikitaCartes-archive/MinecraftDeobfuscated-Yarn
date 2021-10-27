@@ -47,7 +47,7 @@ import net.minecraft.client.option.Option;
 import net.minecraft.client.option.ParticlesMode;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.option.StickyKeyBinding;
-import net.minecraft.client.render.PrioritizeChunkUpdatesMode;
+import net.minecraft.client.render.ChunkBuilderMode;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
@@ -93,7 +93,7 @@ public class GameOptions {
     public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
     public GraphicsMode graphicsMode = GraphicsMode.FANCY;
     public AoMode ao = AoMode.MAX;
-    public PrioritizeChunkUpdatesMode prioritizeChunkUpdatesMode = PrioritizeChunkUpdatesMode.NONE;
+    public ChunkBuilderMode chunkBuilderMode = ChunkBuilderMode.NONE;
     public List<String> resourcePacks = Lists.newArrayList();
     public List<String> incompatibleResourcePacks = Lists.newArrayList();
     public ChatVisibility chatVisibility = ChatVisibility.FULL;
@@ -138,7 +138,6 @@ public class GameOptions {
     public boolean discreteMouseScroll;
     public boolean realmsNotifications = true;
     public boolean reducedDebugInfo;
-    public boolean snooperEnabled = true;
     public boolean showSubtitles;
     public boolean backgroundForChatOnly = true;
     public boolean touchscreen;
@@ -366,7 +365,6 @@ public class GameOptions {
         this.invertYMouse = visitor.visitBoolean("invertYMouse", this.invertYMouse);
         this.realmsNotifications = visitor.visitBoolean("realmsNotifications", this.realmsNotifications);
         this.reducedDebugInfo = visitor.visitBoolean("reducedDebugInfo", this.reducedDebugInfo);
-        this.snooperEnabled = visitor.visitBoolean("snooperEnabled", this.snooperEnabled);
         this.showSubtitles = visitor.visitBoolean("showSubtitles", this.showSubtitles);
         this.touchscreen = visitor.visitBoolean("touchscreen", this.touchscreen);
         this.fullscreen = visitor.visitBoolean("fullscreen", this.fullscreen);
@@ -389,7 +387,7 @@ public class GameOptions {
         this.difficulty = visitor.visitObject("difficulty", this.difficulty, Difficulty::byOrdinal, Difficulty::getId);
         this.graphicsMode = visitor.visitObject("graphicsMode", this.graphicsMode, GraphicsMode::byId, GraphicsMode::getId);
         this.ao = visitor.visitObject("ao", this.ao, GameOptions::loadAo, ao -> Integer.toString(ao.getId()));
-        this.prioritizeChunkUpdatesMode = visitor.visitObject("prioritizeChunkUpdates", this.prioritizeChunkUpdatesMode, PrioritizeChunkUpdatesMode::get, PrioritizeChunkUpdatesMode::getId);
+        this.chunkBuilderMode = visitor.visitObject("prioritizeChunkUpdates", this.chunkBuilderMode, ChunkBuilderMode::get, ChunkBuilderMode::getId);
         this.biomeBlendRadius = visitor.visitInt("biomeBlendRadius", this.biomeBlendRadius);
         this.cloudRenderMode = visitor.visitObject("renderClouds", this.cloudRenderMode, GameOptions::loadCloudRenderMode, GameOptions::saveCloudRenderMode);
         this.resourcePacks = visitor.visitObject("resourcePacks", this.resourcePacks, GameOptions::parseList, GSON::toJson);
@@ -795,7 +793,7 @@ public class GameOptions {
     }
 
     public String collectProfiledOptions() {
-        ImmutableCollection immutableList = ((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)ImmutableList.builder().add(Pair.of("ao", String.valueOf((Object)this.ao)))).add(Pair.of("biomeBlendRadius", String.valueOf(this.biomeBlendRadius)))).add(Pair.of("enableVsync", String.valueOf(this.enableVsync)))).add(Pair.of("entityDistanceScaling", String.valueOf(this.entityDistanceScaling)))).add(Pair.of("entityShadows", String.valueOf(this.entityShadows)))).add(Pair.of("forceUnicodeFont", String.valueOf(this.forceUnicodeFont)))).add(Pair.of("fov", String.valueOf(this.fov)))).add(Pair.of("fovEffectScale", String.valueOf(this.fovEffectScale)))).add(Pair.of("prioritizeChunkUpdates", String.valueOf((Object)this.prioritizeChunkUpdatesMode)))).add(Pair.of("fullscreen", String.valueOf(this.fullscreen)))).add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution)))).add(Pair.of("gamma", String.valueOf(this.gamma)))).add(Pair.of("glDebugVerbosity", String.valueOf(this.glDebugVerbosity)))).add(Pair.of("graphicsMode", String.valueOf((Object)this.graphicsMode)))).add(Pair.of("guiScale", String.valueOf(this.guiScale)))).add(Pair.of("maxFps", String.valueOf(this.maxFps)))).add(Pair.of("mipmapLevels", String.valueOf(this.mipmapLevels)))).add(Pair.of("narrator", String.valueOf((Object)this.narrator)))).add(Pair.of("overrideHeight", String.valueOf(this.overrideHeight)))).add(Pair.of("overrideWidth", String.valueOf(this.overrideWidth)))).add(Pair.of("particles", String.valueOf((Object)this.particles)))).add(Pair.of("reducedDebugInfo", String.valueOf(this.reducedDebugInfo)))).add(Pair.of("renderClouds", String.valueOf((Object)this.cloudRenderMode)))).add(Pair.of("renderDistance", String.valueOf(this.viewDistance)))).add(Pair.of("simulationDistance", String.valueOf(this.simulationDistance)))).add(Pair.of("resourcePacks", String.valueOf(this.resourcePacks)))).add(Pair.of("screenEffectScale", String.valueOf(this.distortionEffectScale)))).add(Pair.of("syncChunkWrites", String.valueOf(this.syncChunkWrites)))).add(Pair.of("useNativeTransport", String.valueOf(this.useNativeTransport)))).add(Pair.of("soundDevice", String.valueOf(this.soundDevice)))).build();
+        ImmutableCollection immutableList = ((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)ImmutableList.builder().add(Pair.of("ao", String.valueOf((Object)this.ao)))).add(Pair.of("biomeBlendRadius", String.valueOf(this.biomeBlendRadius)))).add(Pair.of("enableVsync", String.valueOf(this.enableVsync)))).add(Pair.of("entityDistanceScaling", String.valueOf(this.entityDistanceScaling)))).add(Pair.of("entityShadows", String.valueOf(this.entityShadows)))).add(Pair.of("forceUnicodeFont", String.valueOf(this.forceUnicodeFont)))).add(Pair.of("fov", String.valueOf(this.fov)))).add(Pair.of("fovEffectScale", String.valueOf(this.fovEffectScale)))).add(Pair.of("prioritizeChunkUpdates", String.valueOf((Object)this.chunkBuilderMode)))).add(Pair.of("fullscreen", String.valueOf(this.fullscreen)))).add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution)))).add(Pair.of("gamma", String.valueOf(this.gamma)))).add(Pair.of("glDebugVerbosity", String.valueOf(this.glDebugVerbosity)))).add(Pair.of("graphicsMode", String.valueOf((Object)this.graphicsMode)))).add(Pair.of("guiScale", String.valueOf(this.guiScale)))).add(Pair.of("maxFps", String.valueOf(this.maxFps)))).add(Pair.of("mipmapLevels", String.valueOf(this.mipmapLevels)))).add(Pair.of("narrator", String.valueOf((Object)this.narrator)))).add(Pair.of("overrideHeight", String.valueOf(this.overrideHeight)))).add(Pair.of("overrideWidth", String.valueOf(this.overrideWidth)))).add(Pair.of("particles", String.valueOf((Object)this.particles)))).add(Pair.of("reducedDebugInfo", String.valueOf(this.reducedDebugInfo)))).add(Pair.of("renderClouds", String.valueOf((Object)this.cloudRenderMode)))).add(Pair.of("renderDistance", String.valueOf(this.viewDistance)))).add(Pair.of("simulationDistance", String.valueOf(this.simulationDistance)))).add(Pair.of("resourcePacks", String.valueOf(this.resourcePacks)))).add(Pair.of("screenEffectScale", String.valueOf(this.distortionEffectScale)))).add(Pair.of("syncChunkWrites", String.valueOf(this.syncChunkWrites)))).add(Pair.of("useNativeTransport", String.valueOf(this.useNativeTransport)))).add(Pair.of("soundDevice", String.valueOf(this.soundDevice)))).build();
         return immutableList.stream().map(option -> (String)option.getFirst() + ": " + (String)option.getSecond()).collect(Collectors.joining(System.lineSeparator()));
     }
 

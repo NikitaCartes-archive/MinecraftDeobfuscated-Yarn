@@ -28,7 +28,7 @@ implements BaseSimpleRandom {
     }
 
     @Override
-    public RandomDeriver createBlockPosRandomDeriver() {
+    public RandomDeriver createRandomDeriver() {
         return new AtomicSimpleRandom.RandomDeriver(this.nextLong());
     }
 

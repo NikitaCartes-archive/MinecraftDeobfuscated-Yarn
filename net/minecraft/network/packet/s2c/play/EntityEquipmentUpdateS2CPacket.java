@@ -52,7 +52,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onEquipmentUpdate(this);
+        clientPlayPacketListener.onEntityEquipmentUpdate(this);
     }
 
     public int getId() {

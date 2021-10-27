@@ -56,7 +56,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onVelocityUpdate(this);
+        clientPlayPacketListener.onEntityVelocityUpdate(this);
     }
 
     public int getId() {

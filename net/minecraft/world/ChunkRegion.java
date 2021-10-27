@@ -6,6 +6,7 @@ package net.minecraft.world;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
@@ -36,9 +37,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.MultiTickScheduler;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.TickScheduler;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -51,6 +50,8 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.tick.MultiTickScheduler;
+import net.minecraft.world.tick.QueryableTickScheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -66,8 +67,8 @@ implements StructureWorldAccess {
     private final WorldProperties levelProperties;
     private final Random random;
     private final DimensionType dimension;
-    private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<Block>(pos -> this.getChunk((BlockPos)pos).getBlockTickScheduler());
-    private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<Fluid>(pos -> this.getChunk((BlockPos)pos).getFluidTickScheduler());
+    private final MultiTickScheduler<Block> blockTickScheduler = new MultiTickScheduler(pos -> this.getChunk((BlockPos)pos).getBlockTickScheduler());
+    private final MultiTickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler(pos -> this.getChunk((BlockPos)pos).getFluidTickScheduler());
     private final BiomeAccess biomeAccess;
     private final ChunkPos lowerCorner;
     private final ChunkPos upperCorner;
@@ -84,7 +85,8 @@ implements StructureWorldAccess {
      */
     private final int placementRadius;
     @Nullable
-    private Supplier<String> field_33756;
+    private Supplier<String> currentlyGeneratingStructureName;
+    private final AtomicLong tickOrder = new AtomicLong();
 
     public ChunkRegion(ServerWorld world, List<Chunk> chunks, ChunkStatus status, int placementRadius) {
         this.status = status;
@@ -113,8 +115,8 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public void method_36972(@Nullable Supplier<String> supplier) {
-        this.field_33756 = supplier;
+    public void setCurrentlyGeneratingStructureName(@Nullable Supplier<String> structureName) {
+        this.currentlyGeneratingStructureName = structureName;
     }
 
     @Override
@@ -243,7 +245,7 @@ implements StructureWorldAccess {
         int k = Math.abs(this.centerPos.x - i);
         int l = Math.abs(this.centerPos.z - j);
         if (k > this.placementRadius || l > this.placementRadius) {
-            Util.error("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + pos + ", status: " + this.status + (String)(this.field_33756 == null ? "" : ", currently generating: " + this.field_33756.get()));
+            Util.error("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + pos + ", status: " + this.status + (String)(this.currentlyGeneratingStructureName == null ? "" : ", currently generating: " + this.currentlyGeneratingStructureName.get()));
             return false;
         }
         return true;
@@ -352,12 +354,12 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public TickScheduler<Block> getBlockTickScheduler() {
+    public QueryableTickScheduler<Block> getBlockTickScheduler() {
         return this.blockTickScheduler;
     }
 
     @Override
-    public TickScheduler<Fluid> getFluidTickScheduler() {
+    public QueryableTickScheduler<Fluid> getFluidTickScheduler() {
         return this.fluidTickScheduler;
     }
 
@@ -434,6 +436,11 @@ implements StructureWorldAccess {
     @Override
     public int getHeight() {
         return this.world.getHeight();
+    }
+
+    @Override
+    public long getTickOrder() {
+        return this.tickOrder.getAndIncrement();
     }
 }
 

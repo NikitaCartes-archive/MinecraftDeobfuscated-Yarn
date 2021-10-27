@@ -19,7 +19,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.world.DummyClientTickScheduler;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -28,9 +27,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.server.world.SimpleTickScheduler;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -39,11 +36,10 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.BlendingData;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
@@ -54,6 +50,9 @@ import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.SimpleGameEventDispatcher;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
+import net.minecraft.world.tick.BasicTickScheduler;
+import net.minecraft.world.tick.ChunkTickScheduler;
+import net.minecraft.world.tick.WorldTickScheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -90,13 +89,15 @@ extends Chunk {
     @Nullable
     private Consumer<WorldChunk> loadToWorldConsumer;
     private final Int2ObjectMap<GameEventDispatcher> gameEventDispatchers;
+    private final ChunkTickScheduler<Block> blockTickScheduler;
+    private final ChunkTickScheduler<Fluid> fluidTickScheduler;
 
     public WorldChunk(World world, ChunkPos pos) {
-        this(world, pos, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
+        this(world, pos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<Block>(), new ChunkTickScheduler<Fluid>(), 0L, null, null, null);
     }
 
-    public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, TickScheduler<Block> blockTickScheduler, TickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
-        super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), inhabitedTime, sectionArrayInitializer, blockTickScheduler, fluidTickScheduler);
+    public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, ChunkTickScheduler<Block> blockTickScheduler, ChunkTickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable Consumer<WorldChunk> loadToWorldConsumer, @Nullable BlendingData blendingData) {
+        super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), inhabitedTime, sectionArrayInitializer, blendingData);
         this.world = world;
         this.gameEventDispatchers = new Int2ObjectOpenHashMap<GameEventDispatcher>();
         for (Heightmap.Type type : Heightmap.Type.values()) {
@@ -104,10 +105,12 @@ extends Chunk {
             this.heightmaps.put(type, new Heightmap(this, type));
         }
         this.loadToWorldConsumer = loadToWorldConsumer;
+        this.blockTickScheduler = blockTickScheduler;
+        this.fluidTickScheduler = fluidTickScheduler;
     }
 
     public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
-        this(world, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.getBlockTickScheduler(), protoChunk.getFluidTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), loadToWorldConsumer);
+        this(world, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.getBlockProtoTickScheduler(), protoChunk.getFluidProtoTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), loadToWorldConsumer, protoChunk.getBlendingData());
         for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
             this.setBlockEntity(blockEntity);
         }
@@ -123,6 +126,21 @@ extends Chunk {
         }
         this.setLightOn(protoChunk.isLightOn());
         this.needsSaving = true;
+    }
+
+    @Override
+    public BasicTickScheduler<Block> getBlockTickScheduler() {
+        return this.blockTickScheduler;
+    }
+
+    @Override
+    public BasicTickScheduler<Fluid> getFluidTickScheduler() {
+        return this.fluidTickScheduler;
+    }
+
+    @Override
+    public Chunk.TickSchedulers getTickSchedulers() {
+        return new Chunk.TickSchedulers(this.blockTickScheduler, this.fluidTickScheduler);
     }
 
     @Override
@@ -372,20 +390,20 @@ extends Chunk {
         return false;
     }
 
-    public void loadFromPacket(PacketByteBuf packetByteBuf, NbtCompound nbtCompound2, Consumer<ChunkData.BlockEntityVisitor> consumer) {
+    public void loadFromPacket(PacketByteBuf buf, NbtCompound nbt2, Consumer<ChunkData.BlockEntityVisitor> consumer) {
         this.clear();
         for (ChunkSection chunkSection : this.sectionArray) {
-            chunkSection.fromPacket(packetByteBuf);
+            chunkSection.fromPacket(buf);
         }
         for (Heightmap.Type type : Heightmap.Type.values()) {
             String string = type.getName();
-            if (!nbtCompound2.contains(string, 12)) continue;
-            this.setHeightmap(type, nbtCompound2.getLongArray(string));
+            if (!nbt2.contains(string, 12)) continue;
+            this.setHeightmap(type, nbt2.getLongArray(string));
         }
-        consumer.accept((blockPos, blockEntityType, nbtCompound) -> {
-            BlockEntity blockEntity = this.getBlockEntity(blockPos, CreationType.IMMEDIATE);
-            if (blockEntity != null && nbtCompound != null && blockEntity.getType() == blockEntityType) {
-                blockEntity.readNbt(nbtCompound);
+        consumer.accept((pos, blockEntityType, nbt) -> {
+            BlockEntity blockEntity = this.getBlockEntity(pos, CreationType.IMMEDIATE);
+            if (blockEntity != null && nbt != null && blockEntity.getType() == blockEntityType) {
+                blockEntity.readNbt(nbt);
             }
         });
     }
@@ -419,7 +437,6 @@ extends Chunk {
             }
             this.postProcessingLists[i].clear();
         }
-        this.disableTickSchedulers();
         for (BlockPos blockPos2 : ImmutableList.copyOf(this.blockEntityNbts.keySet())) {
             this.getBlockEntity(blockPos2);
         }
@@ -450,32 +467,19 @@ extends Chunk {
         return blockEntity;
     }
 
-    public void disableTickSchedulers() {
-        if (this.blockTickScheduler instanceof ChunkTickScheduler) {
-            ((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), pos -> this.getBlockState((BlockPos)pos).getBlock());
-            this.blockTickScheduler = DummyClientTickScheduler.get();
-        } else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
-            ((SimpleTickScheduler)this.blockTickScheduler).scheduleTo(this.world.getBlockTickScheduler());
-            this.blockTickScheduler = DummyClientTickScheduler.get();
-        }
-        if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
-            ((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), pos -> this.getFluidState((BlockPos)pos).getFluid());
-            this.fluidTickScheduler = DummyClientTickScheduler.get();
-        } else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
-            ((SimpleTickScheduler)this.fluidTickScheduler).scheduleTo(this.world.getFluidTickScheduler());
-            this.fluidTickScheduler = DummyClientTickScheduler.get();
-        }
+    public void disableTickSchedulers(long time) {
+        this.blockTickScheduler.disable(time);
+        this.fluidTickScheduler.disable(time);
     }
 
-    public void enableTickSchedulers(ServerWorld world) {
-        if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
-            this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, ((ServerTickScheduler)world.getBlockTickScheduler()).getScheduledTicksInChunk(this.pos, true, false), world.getTime());
-            this.setShouldSave(true);
-        }
-        if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
-            this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, ((ServerTickScheduler)world.getFluidTickScheduler()).getScheduledTicksInChunk(this.pos, true, false), world.getTime());
-            this.setShouldSave(true);
-        }
+    public void addChunkTickSchedulers(ServerWorld world) {
+        ((WorldTickScheduler)world.getBlockTickScheduler()).addChunkTickScheduler(this.pos, this.blockTickScheduler);
+        ((WorldTickScheduler)world.getFluidTickScheduler()).addChunkTickScheduler(this.pos, this.fluidTickScheduler);
+    }
+
+    public void removeChunkTickSchedulers(ServerWorld world) {
+        ((WorldTickScheduler)world.getBlockTickScheduler()).removeChunkTickScheduler(this.pos);
+        ((WorldTickScheduler)world.getFluidTickScheduler()).removeChunkTickScheduler(this.pos);
     }
 
     @Override

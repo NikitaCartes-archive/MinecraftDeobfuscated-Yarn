@@ -429,12 +429,12 @@ extends WaterCreatureEntity {
             if (this.dolphin.isNearTarget() || this.dolphin.getNavigation().isIdle()) {
                 BlockPos blockPos;
                 Vec3d vec3d = Vec3d.ofCenter(this.dolphin.getTreasurePos());
-                Vec3d vec3d2 = NoPenaltyTargeting.find(this.dolphin, 16, 1, vec3d, 0.3926991f);
+                Vec3d vec3d2 = NoPenaltyTargeting.findTo(this.dolphin, 16, 1, vec3d, 0.3926991f);
                 if (vec3d2 == null) {
-                    vec3d2 = NoPenaltyTargeting.find(this.dolphin, 8, 4, vec3d, 1.5707963705062866);
+                    vec3d2 = NoPenaltyTargeting.findTo(this.dolphin, 8, 4, vec3d, 1.5707963705062866);
                 }
                 if (!(vec3d2 == null || world.getFluidState(blockPos = new BlockPos(vec3d2)).isIn(FluidTags.WATER) && world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.WATER))) {
-                    vec3d2 = NoPenaltyTargeting.find(this.dolphin, 8, 5, vec3d, 1.5707963705062866);
+                    vec3d2 = NoPenaltyTargeting.findTo(this.dolphin, 8, 5, vec3d, 1.5707963705062866);
                 }
                 if (vec3d2 == null) {
                     this.noPathToStructure = true;

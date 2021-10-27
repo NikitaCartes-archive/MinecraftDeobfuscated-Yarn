@@ -69,8 +69,8 @@ public class FluidRenderer {
         return FluidRenderer.isSideCovered(world, direction.getOpposite(), 1.0f, pos, state);
     }
 
-    public static boolean method_29708(BlockRenderView world, BlockPos pos, FluidState state, BlockState blockState, Direction direction) {
-        return !FluidRenderer.isOppositeSideCovered(world, pos, blockState, direction) && !FluidRenderer.isSameFluid(world, pos, direction, state);
+    public static boolean shouldRenderSide(BlockRenderView world, BlockPos pos, FluidState fluidState, BlockState blockState, Direction direction) {
+        return !FluidRenderer.isOppositeSideCovered(world, pos, blockState, direction) && !FluidRenderer.isSameFluid(world, pos, direction, fluidState);
     }
 
     public boolean render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state) {
@@ -92,11 +92,11 @@ public class FluidRenderer {
         float g = (float)(i >> 8 & 0xFF) / 255.0f;
         float h = (float)(i & 0xFF) / 255.0f;
         boolean bl2 = !FluidRenderer.isSameFluid(world, pos, Direction.UP, state);
-        boolean bl3 = FluidRenderer.method_29708(world, pos, state, blockState, Direction.DOWN) && !FluidRenderer.isSideCovered(world, pos, Direction.DOWN, 0.8888889f);
-        boolean bl4 = FluidRenderer.method_29708(world, pos, state, blockState, Direction.NORTH);
-        boolean bl5 = FluidRenderer.method_29708(world, pos, state, blockState, Direction.SOUTH);
-        boolean bl6 = FluidRenderer.method_29708(world, pos, state, blockState, Direction.WEST);
-        boolean bl7 = FluidRenderer.method_29708(world, pos, state, blockState, Direction.EAST);
+        boolean bl3 = FluidRenderer.shouldRenderSide(world, pos, state, blockState, Direction.DOWN) && !FluidRenderer.isSideCovered(world, pos, Direction.DOWN, 0.8888889f);
+        boolean bl4 = FluidRenderer.shouldRenderSide(world, pos, state, blockState, Direction.NORTH);
+        boolean bl5 = FluidRenderer.shouldRenderSide(world, pos, state, blockState, Direction.SOUTH);
+        boolean bl6 = FluidRenderer.shouldRenderSide(world, pos, state, blockState, Direction.WEST);
+        boolean bl7 = FluidRenderer.shouldRenderSide(world, pos, state, blockState, Direction.EAST);
         if (!(bl2 || bl3 || bl7 || bl6 || bl4 || bl5)) {
             return false;
         }

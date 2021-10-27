@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.gui.screen.world;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -22,6 +21,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.updater.WorldUpdater;
@@ -49,8 +49,7 @@ extends Screen {
         try {
             SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
             storageSession.backupLevelDataFile(impl, saveProperties);
-            ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
-            OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutableSet);
+            OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, saveProperties.getGeneratorOptions());
             if (integratedResourceManager != null) {
                 integratedResourceManager.close();
             }
@@ -72,10 +71,10 @@ extends Screen {
         }
     }
 
-    private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, LevelInfo levelInfo, boolean eraseCache, ImmutableSet<RegistryKey<World>> worlds) {
+    private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, LevelInfo levelInfo, boolean eraseCache, GeneratorOptions generatorOptions) {
         super(new TranslatableText("optimizeWorld.title", levelInfo.getLevelName()));
         this.callback = callback;
-        this.updater = new WorldUpdater(storageSession, dataFixer, worlds, eraseCache);
+        this.updater = new WorldUpdater(storageSession, dataFixer, generatorOptions, eraseCache);
     }
 
     @Override

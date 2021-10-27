@@ -172,7 +172,7 @@ public class RecipeBookResults {
         }
     }
 
-    public MinecraftClient getMinecraftClient() {
+    public MinecraftClient getClient() {
         return this.client;
     }
 

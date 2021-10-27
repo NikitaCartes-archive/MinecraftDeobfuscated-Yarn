@@ -38,7 +38,7 @@ extends Goal {
         if (this.target.squaredDistanceTo(this.mob) > (double)(this.maxDistance * this.maxDistance)) {
             return false;
         }
-        Vec3d vec3d = NoPenaltyTargeting.find(this.mob, 16, 7, this.target.getPos(), 1.5707963705062866);
+        Vec3d vec3d = NoPenaltyTargeting.findTo(this.mob, 16, 7, this.target.getPos(), 1.5707963705062866);
         if (vec3d == null) {
             return false;
         }

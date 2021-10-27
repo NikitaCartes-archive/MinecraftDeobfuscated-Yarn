@@ -15,7 +15,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -58,7 +57,7 @@ extends HorizontalFacingBlock {
         } else if (!bl) {
             world.setBlockState(pos, (BlockState)state.with(POWERED, true), Block.NOTIFY_LISTENERS);
             if (!bl2) {
-                ((ServerTickScheduler)world.getBlockTickScheduler()).schedule(pos, this, this.getUpdateDelayInternal(state), TickPriority.VERY_HIGH);
+                world.createAndScheduleBlockTick(pos, this, this.getUpdateDelayInternal(state), TickPriority.VERY_HIGH);
             }
         }
     }
@@ -106,7 +105,7 @@ extends HorizontalFacingBlock {
             } else if (bl) {
                 tickPriority = TickPriority.VERY_HIGH;
             }
-            world.getBlockTickScheduler().schedule(pos, this, this.getUpdateDelayInternal(state), tickPriority);
+            world.createAndScheduleBlockTick(pos, this, this.getUpdateDelayInternal(state), tickPriority);
         }
     }
 
@@ -163,7 +162,7 @@ extends HorizontalFacingBlock {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
         if (this.hasPower(world, pos, state)) {
-            world.getBlockTickScheduler().schedule(pos, this, 1);
+            world.createAndScheduleBlockTick(pos, this, 1);
         }
     }
 

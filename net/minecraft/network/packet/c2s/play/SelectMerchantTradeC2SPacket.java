@@ -26,7 +26,7 @@ implements Packet<ServerPlayPacketListener> {
 
     @Override
     public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-        serverPlayPacketListener.onMerchantTradeSelect(this);
+        serverPlayPacketListener.onSelectMerchantTrade(this);
     }
 
     public int getTradeId() {

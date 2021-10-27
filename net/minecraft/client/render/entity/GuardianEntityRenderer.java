@@ -116,27 +116,27 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             MatrixStack.Entry entry = matrixStack.peek();
             Matrix4f matrix4f = entry.getPositionMatrix();
             Matrix3f matrix3f = entry.getNormalMatrix();
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, af, an, ag, s, t, u, 0.4999f, ar);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, af, 0.0f, ag, s, t, u, 0.4999f, aq);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, ah, 0.0f, ai, s, t, u, 0.0f, aq);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, ah, an, ai, s, t, u, 0.0f, ar);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, aj, an, ak, s, t, u, 0.4999f, ar);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, aj, 0.0f, ak, s, t, u, 0.4999f, aq);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, al, 0.0f, am, s, t, u, 0.0f, aq);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, al, an, am, s, t, u, 0.0f, ar);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, af, an, ag, s, t, u, 0.4999f, ar);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, af, 0.0f, ag, s, t, u, 0.4999f, aq);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, ah, 0.0f, ai, s, t, u, 0.0f, aq);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, ah, an, ai, s, t, u, 0.0f, ar);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, aj, an, ak, s, t, u, 0.4999f, ar);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, aj, 0.0f, ak, s, t, u, 0.4999f, aq);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, al, 0.0f, am, s, t, u, 0.0f, aq);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, al, an, am, s, t, u, 0.0f, ar);
             float as = 0.0f;
             if (guardianEntity.age % 2 == 0) {
                 as = 0.5f;
             }
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, x, an, y, s, t, u, 0.5f, as + 0.5f);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, z, an, aa, s, t, u, 1.0f, as + 0.5f);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, ad, an, ae, s, t, u, 1.0f, as);
-            GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, matrix3f, ab, an, ac, s, t, u, 0.5f, as);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, x, an, y, s, t, u, 0.5f, as + 0.5f);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, z, an, aa, s, t, u, 1.0f, as + 0.5f);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, ad, an, ae, s, t, u, 1.0f, as);
+            GuardianEntityRenderer.vertex(vertexConsumer, matrix4f, matrix3f, ab, an, ac, s, t, u, 0.5f, as);
             matrixStack.pop();
         }
     }
 
-    private static void method_23173(VertexConsumer vertexConsumer, Matrix4f positionMatrix, Matrix3f normalMatrix, float x, float y, float z, int red, int green, int blue, float u, float v) {
+    private static void vertex(VertexConsumer vertexConsumer, Matrix4f positionMatrix, Matrix3f normalMatrix, float x, float y, float z, int red, int green, int blue, float u, float v) {
         vertexConsumer.vertex(positionMatrix, x, y, z).color(red, green, blue, 255).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE).normal(normalMatrix, 0.0f, 1.0f, 0.0f).next();
     }
 
