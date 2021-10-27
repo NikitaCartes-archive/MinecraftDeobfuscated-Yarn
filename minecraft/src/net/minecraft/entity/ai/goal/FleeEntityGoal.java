@@ -84,7 +84,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 		if (this.targetEntity == null) {
 			return false;
 		} else {
-			Vec3d vec3d = NoPenaltyTargeting.find(this.mob, 16, 7, this.targetEntity.getPos());
+			Vec3d vec3d = NoPenaltyTargeting.findFrom(this.mob, 16, 7, this.targetEntity.getPos());
 			if (vec3d == null) {
 				return false;
 			} else if (this.targetEntity.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.targetEntity.squaredDistanceTo(this.mob)) {

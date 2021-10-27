@@ -140,7 +140,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (!state.canPlaceAt(world, pos)) {
-			world.getBlockTickScheduler().schedule(pos, this, 1);
+			world.createAndScheduleBlockTick(pos, this, 1);
 		}
 
 		if (direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO) && (Integer)neighborState.get(AGE) > (Integer)state.get(AGE)) {

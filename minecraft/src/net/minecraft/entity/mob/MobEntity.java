@@ -81,12 +81,37 @@ public abstract class MobEntity extends LivingEntity {
 	private static final int AI_DISABLED_FLAG = 1;
 	private static final int LEFT_HANDED_FLAG = 2;
 	private static final int ATTACKING_FLAG = 4;
-	public static final float field_30091 = 0.15F;
-	public static final float field_30083 = 0.55F;
-	public static final float field_30084 = 0.5F;
-	public static final float field_30085 = 0.25F;
+	/**
+	 * The base chance (before applying local difficulty) that this mob will spawn with equipment.
+	 * 
+	 * @see MobEntity#initEquipment
+	 */
+	public static final float BASE_SPAWN_EQUIPMENT_CHANCE = 0.15F;
+	/**
+	 * Used by Zombies to control the chance that they spawn with the ability to pick up loot.
+	 * 
+	 * @see ZombieEntity#initialize
+	 */
+	public static final float DEFAULT_CAN_PICKUP_LOOT_CHANCE = 0.55F;
+	/**
+	 * The base chance (before applying difficulty) that a mob's equipped armor can become enchanted.
+	 * 
+	 * @see MobEntity#enchantEquipment
+	 */
+	public static final float BASE_ENCHANTED_ARMOR_CHANCE = 0.5F;
+	/**
+	 * The base chance (before applying difficulty) that a mob's equipped item can become enchanted.
+	 * 
+	 * @see MobEntity#enchantMainHandItem
+	 */
+	public static final float BASE_ENCHANTED_MAIN_HAND_EQUIPMENT_CHANCE = 0.25F;
 	public static final String LEASH_KEY = "Leash";
-	private static final int field_30087 = 1;
+	/**
+	 * The minimum additional experience a mob will drop per item of equipment they have.
+	 * 
+	 * @see MobEntity#getXpToDrop
+	 */
+	private static final int MINIMUM_DROPPED_XP_PER_EQUIPMENT = 1;
 	public static final float DEFAULT_DROP_CHANCE = 0.085F;
 	public static final int field_35039 = 2;
 	public int ambientSoundChance;
@@ -96,7 +121,16 @@ public abstract class MobEntity extends LivingEntity {
 	protected JumpControl jumpControl;
 	private final BodyControl bodyControl;
 	protected EntityNavigation navigation;
+	/**
+	 * Contains actions the entity can perform. These may consume, for example, the target
+	 * entity as determined during the {@link MobEntity#targetSelector}'s execution.
+	 */
 	protected final GoalSelector goalSelector;
+	/**
+	 * Contains goals used to select this entity's target.
+	 * Actions in this queue are executed first so the selected target is available
+	 * to the rest of the AI's goals.
+	 */
 	protected final GoalSelector targetSelector;
 	@Nullable
 	private LivingEntity target;

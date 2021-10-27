@@ -32,7 +32,7 @@ public class Xoroshiro128PlusPlusRandom implements AbstractRandom {
 	}
 
 	@Override
-	public net.minecraft.world.gen.random.RandomDeriver createBlockPosRandomDeriver() {
+	public net.minecraft.world.gen.random.RandomDeriver createRandomDeriver() {
 		return new Xoroshiro128PlusPlusRandom.RandomDeriver(this.implementation.next(), this.implementation.next());
 	}
 
@@ -51,7 +51,18 @@ public class Xoroshiro128PlusPlusRandom implements AbstractRandom {
 		if (i <= 0) {
 			throw new IllegalArgumentException("Bound must be positive");
 		} else {
-			return Math.abs((int)(this.implementation.next() % (long)i));
+			long l = Integer.toUnsignedLong(this.nextInt());
+			long m = l * (long)i;
+			long n = m & 4294967295L;
+			if (n < (long)i) {
+				for (int j = Integer.remainderUnsigned(~i + 1, i); n < (long)j; n = m & 4294967295L) {
+					l = Integer.toUnsignedLong(this.nextInt());
+					m = l * (long)i;
+				}
+			}
+
+			long o = m >> 32;
+			return (int)o;
 		}
 	}
 

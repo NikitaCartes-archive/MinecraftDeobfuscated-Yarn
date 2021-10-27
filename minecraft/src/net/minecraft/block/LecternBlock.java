@@ -177,7 +177,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	public static void setPowered(World world, BlockPos pos, BlockState state) {
 		setPowered(world, pos, state, true);
-		world.getBlockTickScheduler().schedule(pos, state.getBlock(), 2);
+		world.createAndScheduleBlockTick(pos, state.getBlock(), 2);
 		world.syncWorldEvent(WorldEvents.LECTERN_BOOK_PAGE_TURNED, pos, 0);
 	}
 

@@ -384,7 +384,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		@Override
 		public void tick() {
 			if (this.drowned.getY() < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.hasFinishedCurrentPath())) {
-				Vec3d vec3d = NoPenaltyTargeting.find(
+				Vec3d vec3d = NoPenaltyTargeting.findTo(
 					this.drowned, 4, 8, new Vec3d(this.drowned.getX(), (double)(this.minY - 1), this.drowned.getZ()), (float) (Math.PI / 2)
 				);
 				if (vec3d == null) {

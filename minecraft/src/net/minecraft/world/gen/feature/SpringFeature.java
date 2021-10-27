@@ -72,7 +72,7 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 
 				if (j == springFeatureConfig.rockCount && k == springFeatureConfig.holeCount) {
 					structureWorldAccess.setBlockState(blockPos, springFeatureConfig.state.getBlockState(), Block.NOTIFY_LISTENERS);
-					structureWorldAccess.getFluidTickScheduler().schedule(blockPos, springFeatureConfig.state.getFluid(), 0);
+					structureWorldAccess.createAndScheduleFluidTick(blockPos, springFeatureConfig.state.getFluid(), 0);
 					i++;
 				}
 

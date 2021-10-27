@@ -45,28 +45,28 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 			if (i < 8) {
 				float m = (float)(90 * i) / 7.0F;
 				float n = (float)(90 * j) / 7.0F;
-				float o = this.method_4086(m, n, j, h, 8.0F);
+				float o = this.getAngle(m, n, j, h, 8.0F);
 				matrixStack.translate(0.0, (double)((l + 0.2F) * (o / 90.0F)), 0.0);
 				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
 			} else if (i < 16) {
 				float m = ((float)i - 8.0F) / 7.0F;
 				float n = 90.0F + 90.0F * m;
 				float p = 90.0F + 90.0F * ((float)j - 8.0F) / 7.0F;
-				float o = this.method_4086(n, p, j, h, 16.0F);
+				float o = this.getAngle(n, p, j, h, 16.0F);
 				matrixStack.translate(0.0, (double)(l + 0.2F + (l - 0.2F) * (o - 90.0F) / 90.0F), 0.0);
 				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
 			} else if ((float)i < 24.0F) {
 				float m = ((float)i - 16.0F) / 7.0F;
 				float n = 180.0F + 90.0F * m;
 				float p = 180.0F + 90.0F * ((float)j - 16.0F) / 7.0F;
-				float o = this.method_4086(n, p, j, h, 24.0F);
+				float o = this.getAngle(n, p, j, h, 24.0F);
 				matrixStack.translate(0.0, (double)(l + l * (270.0F - o) / 90.0F), 0.0);
 				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
 			} else if (i < 32) {
 				float m = ((float)i - 24.0F) / 7.0F;
 				float n = 270.0F + 90.0F * m;
 				float p = 270.0F + 90.0F * ((float)j - 24.0F) / 7.0F;
-				float o = this.method_4086(n, p, j, h, 32.0F);
+				float o = this.getAngle(n, p, j, h, 32.0F);
 				matrixStack.translate(0.0, (double)(l * ((360.0F - o) / 90.0F)), 0.0);
 				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
 			}
@@ -94,7 +94,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 		}
 	}
 
-	private float method_4086(float f, float g, int i, float h, float j) {
+	private float getAngle(float f, float g, int i, float h, float j) {
 		return (float)i < j ? MathHelper.lerp(h, f, g) : f;
 	}
 }

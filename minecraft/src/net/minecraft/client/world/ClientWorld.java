@@ -71,7 +71,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.MutableWorldProperties;
-import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -82,6 +81,8 @@ import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.level.ColorResolver;
+import net.minecraft.world.tick.EmptyTickSchedulers;
+import net.minecraft.world.tick.QueryableTickScheduler;
 
 @Environment(EnvType.CLIENT)
 public class ClientWorld extends World {
@@ -119,20 +120,20 @@ public class ClientWorld extends World {
 		RegistryKey<World> registryRef,
 		DimensionType dimensionType,
 		int loadDistance,
-		int i,
-		Supplier<Profiler> supplier,
+		int simulationDistance,
+		Supplier<Profiler> profiler,
 		WorldRenderer worldRenderer,
-		boolean bl,
-		long l
+		boolean debugWorld,
+		long seed
 	) {
-		super(properties, registryRef, dimensionType, supplier, true, bl, l);
+		super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
 		this.netHandler = netHandler;
 		this.chunkManager = new ClientChunkManager(this, loadDistance);
 		this.clientWorldProperties = properties;
 		this.worldRenderer = worldRenderer;
 		this.dimensionEffects = DimensionEffects.byDimensionType(dimensionType);
 		this.setSpawnPos(new BlockPos(8, 64, 8), 0.0F);
-		this.simulationDistance = i;
+		this.simulationDistance = simulationDistance;
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
 	}
@@ -470,13 +471,13 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public TickScheduler<Block> getBlockTickScheduler() {
-		return DummyClientTickScheduler.get();
+	public QueryableTickScheduler<Block> getBlockTickScheduler() {
+		return EmptyTickSchedulers.getClientTickScheduler();
 	}
 
 	@Override
-	public TickScheduler<Fluid> getFluidTickScheduler() {
-		return DummyClientTickScheduler.get();
+	public QueryableTickScheduler<Fluid> getFluidTickScheduler() {
+		return EmptyTickSchedulers.getClientTickScheduler();
 	}
 
 	public ClientChunkManager getChunkManager() {

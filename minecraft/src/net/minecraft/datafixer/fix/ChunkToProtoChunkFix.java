@@ -77,7 +77,7 @@ public class ChunkToProtoChunkFix extends DataFix {
 										int ix = dynamicx.get("x").asInt(0);
 										int j = dynamicx.get("y").asInt(0);
 										int k = dynamicx.get("z").asInt(0);
-										short s = method_15675(ix, j, k);
+										short s = packChunkSectionPos(ix, j, k);
 										((ShortList)list.get(j >> 4)).add(s);
 									});
 									dynamic = dynamic.set(
@@ -100,7 +100,7 @@ public class ChunkToProtoChunkFix extends DataFix {
 		);
 	}
 
-	private static short method_15675(int i, int j, int k) {
-		return (short)(i & 15 | (j & 15) << 4 | (k & 15) << 8);
+	private static short packChunkSectionPos(int x, int y, int z) {
+		return (short)(x & 15 | (y & 15) << 4 | (z & 15) << 8);
 	}
 }

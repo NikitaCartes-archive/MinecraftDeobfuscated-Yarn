@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -17,6 +18,8 @@ import net.minecraft.util.math.ChunkPos;
 @Environment(EnvType.CLIENT)
 public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
+	private static final int field_35557 = BackgroundHelper.ColorMixer.getArgb(255, 0, 155, 155);
+	private static final int field_35558 = BackgroundHelper.ColorMixer.getArgb(255, 255, 255, 0);
 
 	public ChunkBorderDebugRenderer(MinecraftClient client) {
 		this.client = client;
@@ -49,35 +52,38 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		for (int i = 2; i < 16; i += 2) {
+			int j = i % 4 == 0 ? field_35557 : field_35558;
 			bufferBuilder.vertex(f + (double)i, d, g).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			bufferBuilder.vertex(f + (double)i, d, g).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(f + (double)i, e, g).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(f + (double)i, d, g).color(j).next();
+			bufferBuilder.vertex(f + (double)i, e, g).color(j).next();
 			bufferBuilder.vertex(f + (double)i, e, g).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 			bufferBuilder.vertex(f + (double)i, d, g + 16.0).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			bufferBuilder.vertex(f + (double)i, d, g + 16.0).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(f + (double)i, e, g + 16.0).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(f + (double)i, d, g + 16.0).color(j).next();
+			bufferBuilder.vertex(f + (double)i, e, g + 16.0).color(j).next();
 			bufferBuilder.vertex(f + (double)i, e, g + 16.0).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 		}
 
 		for (int i = 2; i < 16; i += 2) {
+			int j = i % 4 == 0 ? field_35557 : field_35558;
 			bufferBuilder.vertex(f, d, g + (double)i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			bufferBuilder.vertex(f, d, g + (double)i).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(f, e, g + (double)i).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(f, d, g + (double)i).color(j).next();
+			bufferBuilder.vertex(f, e, g + (double)i).color(j).next();
 			bufferBuilder.vertex(f, e, g + (double)i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 			bufferBuilder.vertex(f + 16.0, d, g + (double)i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			bufferBuilder.vertex(f + 16.0, d, g + (double)i).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(f + 16.0, e, g + (double)i).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(f + 16.0, d, g + (double)i).color(j).next();
+			bufferBuilder.vertex(f + 16.0, e, g + (double)i).color(j).next();
 			bufferBuilder.vertex(f + 16.0, e, g + (double)i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 		}
 
 		for (int i = this.client.world.getBottomY(); i <= this.client.world.getTopY(); i += 2) {
 			double h = (double)i - cameraY;
+			int k = i % 8 == 0 ? field_35557 : field_35558;
 			bufferBuilder.vertex(f, h, g).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			bufferBuilder.vertex(f, h, g).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(f, h, g + 16.0).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(f + 16.0, h, g + 16.0).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(f + 16.0, h, g).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(f, h, g).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(f, h, g).color(k).next();
+			bufferBuilder.vertex(f, h, g + 16.0).color(k).next();
+			bufferBuilder.vertex(f + 16.0, h, g + 16.0).color(k).next();
+			bufferBuilder.vertex(f + 16.0, h, g).color(k).next();
+			bufferBuilder.vertex(f, h, g).color(k).next();
 			bufferBuilder.vertex(f, h, g).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 		}
 

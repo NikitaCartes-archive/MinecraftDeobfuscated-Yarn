@@ -43,7 +43,7 @@ public class ObserverBlock extends FacingBlock {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), Block.NOTIFY_LISTENERS);
 		} else {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
-			world.getBlockTickScheduler().schedule(pos, this, 2);
+			world.createAndScheduleBlockTick(pos, this, 2);
 		}
 
 		this.updateNeighbors(world, pos, state);
@@ -61,8 +61,8 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	private void scheduleTick(WorldAccess world, BlockPos pos) {
-		if (!world.isClient() && !world.getBlockTickScheduler().isScheduled(pos, this)) {
-			world.getBlockTickScheduler().schedule(pos, this, 2);
+		if (!world.isClient() && !world.getBlockTickScheduler().isQueued(pos, this)) {
+			world.createAndScheduleBlockTick(pos, this, 2);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class ObserverBlock extends FacingBlock {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!state.isOf(oldState.getBlock())) {
-			if (!world.isClient() && (Boolean)state.get(POWERED) && !world.getBlockTickScheduler().isScheduled(pos, this)) {
+			if (!world.isClient() && (Boolean)state.get(POWERED) && !world.getBlockTickScheduler().isQueued(pos, this)) {
 				BlockState blockState = state.with(POWERED, Boolean.valueOf(false));
 				world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 				this.updateNeighbors(world, pos, blockState);
@@ -102,7 +102,7 @@ public class ObserverBlock extends FacingBlock {
 	@Override
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
-			if (!world.isClient && (Boolean)state.get(POWERED) && world.getBlockTickScheduler().isScheduled(pos, this)) {
+			if (!world.isClient && (Boolean)state.get(POWERED) && world.getBlockTickScheduler().isQueued(pos, this)) {
 				this.updateNeighbors(world, pos, state.with(POWERED, Boolean.valueOf(false)));
 			}
 		}

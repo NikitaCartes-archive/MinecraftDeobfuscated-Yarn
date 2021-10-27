@@ -183,8 +183,17 @@ public class GeneratorOptions {
 		return (ImmutableSet<RegistryKey<World>>)this.getDimensions()
 			.getEntries()
 			.stream()
-			.map(entry -> RegistryKey.of(Registry.WORLD_KEY, ((RegistryKey)entry.getKey()).getValue()))
+			.map(Entry::getKey)
+			.map(GeneratorOptions::method_39334)
 			.collect(ImmutableSet.toImmutableSet());
+	}
+
+	public static RegistryKey<World> method_39334(RegistryKey<DimensionOptions> registryKey) {
+		return RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());
+	}
+
+	public static RegistryKey<DimensionOptions> method_39335(RegistryKey<World> registryKey) {
+		return RegistryKey.of(Registry.DIMENSION_KEY, registryKey.getValue());
 	}
 
 	public boolean isDebugWorld() {

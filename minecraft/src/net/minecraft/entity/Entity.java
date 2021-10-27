@@ -128,17 +128,37 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	private static final AtomicInteger CURRENT_ID = new AtomicInteger();
 	private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
-	public static final int field_29987 = 60;
-	public static final int field_29988 = 300;
-	public static final int field_29989 = 1024;
-	public static final double field_29990 = 0.5000001;
+	/**
+	 * @see Entity#removePassenger
+	 */
+	public static final int MAX_RIDING_COOLDOWN = 60;
+	/**
+	 * @see Entity#getDefaultNetherPortalCooldown
+	 * @see Entity#getMaxAir
+	 */
+	public static final int DEFAULT_PORTAL_COOLDOWN = 300;
+	/**
+	 * @see Entity#addScoreboardTag
+	 * @see Entity#readNbt
+	 */
+	public static final int MAX_SCOREBOARD_TAGS = 1024;
+	/**
+	 * @see Entity#getVelocityAffectingPos
+	 */
+	public static final double VELOCITY_AFFECTING_POS_Y_OFFSET = 0.5000001;
 	public static final float field_29991 = 0.11111111F;
-	public static final int field_29992 = 140;
-	public static final int field_29993 = 40;
+	/**
+	 * @see Entity#getMinFreezeDamageTicks
+	 */
+	public static final int DEFAULT_MIN_FREEZE_DAMAGE_TICKS = 140;
+	/**
+	 * @see LivingEntity#tickMovement
+	 */
+	public static final int FREEZING_DAMAGE_INTERVAL = 40;
 	private static final Box NULL_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	private static final double field_29984 = 0.014;
-	private static final double field_29982 = 0.007;
-	private static final double field_29983 = 0.0023333333333333335;
+	private static final double SPEED_IN_WATER = 0.014;
+	private static final double SPEED_IN_LAVA_IN_NETHER = 0.007;
+	private static final double SPEED_IN_LAVA = 0.0023333333333333335;
 	public static final String UUID_KEY = "UUID";
 	private static double renderDistanceMultiplier = 1.0;
 	private final EntityType<?> type;
@@ -171,18 +191,31 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected boolean onGround;
 	public boolean horizontalCollision;
 	public boolean verticalCollision;
-	public boolean field_34927;
-	private static final float field_34928 = 0.0064F;
+	/**
+	 * Whether the collision velocity (speed at which the entity hit a given surface)
+	 * is lower than {@link Entity#MAX_SOFT_COLLISION_SPEED}.
+	 */
+	public boolean collidedSoftly;
+	/**
+	 * Collisions at a speed lower than this are considered "soft".
+	 * Used by players to determine whether to stop sprinting when hitting a wall.
+	 */
+	private static final float MAX_SOFT_COLLISION_SPEED = 0.0064F;
 	public boolean velocityModified;
 	protected Vec3d movementMultiplier = Vec3d.ZERO;
 	@Nullable
 	private Entity.RemovalReason removalReason;
-	public static final float field_29973 = 0.6F;
+	/**
+	 * The factor by which an entity's speed is reduced every tick.
+	 * <p>
+	 * For example: {@code horizontalSpeed = velocity.horizontalSpeed() * FRICTION_RATE}
+	 */
+	public static final float DEFAULT_FRICTION = 0.6F;
 	public static final float field_29974 = 1.8F;
 	public float prevHorizontalSpeed;
 	public float horizontalSpeed;
 	public float distanceTraveled;
-	public float field_28627;
+	public float speed;
 	public float fallDistance;
 	private float nextStepSoundDistance = 1.0F;
 	public double lastRenderX;
@@ -236,7 +269,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public boolean inPowderSnow;
 	public boolean wasInPowderSnow;
 	public boolean wasOnFire;
-	private float field_26997;
+	private float lastChimeIntensity;
 	private int lastChimeAge;
 	private boolean hasVisualFire;
 
@@ -603,7 +636,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			this.world.getProfiler().push("rest");
 			this.horizontalCollision = !MathHelper.approximatelyEquals(movement.x, vec3d.x) || !MathHelper.approximatelyEquals(movement.z, vec3d.z);
 			this.verticalCollision = movement.y != vec3d.y;
-			this.field_34927 = movement.subtract(vec3d).lengthSquared() < 0.0064F;
+			this.collidedSoftly = movement.subtract(vec3d).lengthSquared() < 0.0064F;
 			this.onGround = this.verticalCollision && movement.y < 0.0;
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
@@ -634,7 +667,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					double d = vec3d.x;
 					double e = vec3d.y;
 					double f = vec3d.z;
-					this.field_28627 = (float)((double)this.field_28627 + vec3d.length() * 0.6);
+					this.speed = (float)((double)this.speed + vec3d.length() * 0.6);
 					if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
 						e = 0.0;
 					}
@@ -990,10 +1023,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	private void playAmethystChimeSound(BlockState state) {
 		if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.lastChimeAge + 20) {
-			this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997F, (double)(this.age - this.lastChimeAge)));
-			this.field_26997 = Math.min(1.0F, this.field_26997 + 0.07F);
-			float f = 0.5F + this.field_26997 * this.random.nextFloat() * 1.2F;
-			float g = 0.1F + this.field_26997 * 1.2F;
+			this.lastChimeIntensity = (float)((double)this.lastChimeIntensity * Math.pow(0.997F, (double)(this.age - this.lastChimeAge)));
+			this.lastChimeIntensity = Math.min(1.0F, this.lastChimeIntensity + 0.07F);
+			float f = 0.5F + this.lastChimeIntensity * this.random.nextFloat() * 1.2F;
+			float g = 0.1F + this.lastChimeIntensity * 1.2F;
 			this.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, g, f);
 			this.lastChimeAge = this.age;
 		}
@@ -2937,7 +2970,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.prevYaw = this.getYaw();
 	}
 
-	public boolean updateMovementInFluid(Tag<Fluid> tag, double d) {
+	public boolean updateMovementInFluid(Tag<Fluid> tag, double speed) {
 		if (this.isRegionUnloaded()) {
 			return false;
 		} else {
@@ -2948,7 +2981,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			int l = MathHelper.ceil(box.maxY);
 			int m = MathHelper.floor(box.minZ);
 			int n = MathHelper.ceil(box.maxZ);
-			double e = 0.0;
+			double d = 0.0;
 			boolean bl = this.isPushedByFluids();
 			boolean bl2 = false;
 			Vec3d vec3d = Vec3d.ZERO;
@@ -2961,14 +2994,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 						mutable.set(p, q, r);
 						FluidState fluidState = this.world.getFluidState(mutable);
 						if (fluidState.isIn(tag)) {
-							double f = (double)((float)q + fluidState.getHeight(this.world, mutable));
-							if (f >= box.minY) {
+							double e = (double)((float)q + fluidState.getHeight(this.world, mutable));
+							if (e >= box.minY) {
 								bl2 = true;
-								e = Math.max(f - box.minY, e);
+								d = Math.max(e - box.minY, d);
 								if (bl) {
 									Vec3d vec3d2 = fluidState.getVelocity(this.world, mutable);
-									if (e < 0.4) {
-										vec3d2 = vec3d2.multiply(e);
+									if (d < 0.4) {
+										vec3d2 = vec3d2.multiply(d);
 									}
 
 									vec3d = vec3d.add(vec3d2);
@@ -2990,8 +3023,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 
 				Vec3d vec3d3 = this.getVelocity();
-				vec3d = vec3d.multiply(d * 1.0);
-				double g = 0.003;
+				vec3d = vec3d.multiply(speed * 1.0);
+				double f = 0.003;
 				if (Math.abs(vec3d3.x) < 0.003 && Math.abs(vec3d3.z) < 0.003 && vec3d.length() < 0.0045000000000000005) {
 					vec3d = vec3d.normalize().multiply(0.0045000000000000005);
 				}
@@ -2999,7 +3032,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.setVelocity(this.getVelocity().add(vec3d));
 			}
 
-			this.fluidHeight.put(tag, e);
+			this.fluidHeight.put(tag, d);
 			return bl2;
 		}
 	}
@@ -3166,8 +3199,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public void checkDespawn() {
 	}
 
-	public Vec3d method_30951(float f) {
-		return this.getLerpedPos(f).add(0.0, (double)this.standingEyeHeight * 0.7, 0.0);
+	public Vec3d getLeashPos(float delta) {
+		return this.getLerpedPos(delta).add(0.0, (double)this.standingEyeHeight * 0.7, 0.0);
 	}
 
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {

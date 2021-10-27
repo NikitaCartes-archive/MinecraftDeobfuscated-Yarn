@@ -891,7 +891,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 				if (this.client.player != null) {
 					float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
 					if (f > 0.0F && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && this.client.options.distortionEffectScale < 1.0F) {
-						this.method_31136(f * (1.0F - this.client.options.distortionEffectScale));
+						this.renderNausea(f * (1.0F - this.client.options.distortionEffectScale));
 					}
 				}
 
@@ -1140,31 +1140,31 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		}
 	}
 
-	private void method_31136(float f) {
+	private void renderNausea(float distortionStrength) {
 		int i = this.client.getWindow().getScaledWidth();
 		int j = this.client.getWindow().getScaledHeight();
-		double d = MathHelper.lerp((double)f, 2.0, 1.0);
-		float g = 0.2F * f;
-		float h = 0.4F * f;
-		float k = 0.2F * f;
+		double d = MathHelper.lerp((double)distortionStrength, 2.0, 1.0);
+		float f = 0.2F * distortionStrength;
+		float g = 0.4F * distortionStrength;
+		float h = 0.2F * distortionStrength;
 		double e = (double)i * d;
-		double l = (double)j * d;
-		double m = ((double)i - e) / 2.0;
-		double n = ((double)j - l) / 2.0;
+		double k = (double)j * d;
+		double l = ((double)i - e) / 2.0;
+		double m = ((double)j - k) / 2.0;
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-		RenderSystem.setShaderColor(g, h, k, 1.0F);
+		RenderSystem.setShaderColor(f, g, h, 1.0F);
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, NAUSEA_OVERLAY);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-		bufferBuilder.vertex(m, n + l, -90.0).texture(0.0F, 1.0F).next();
-		bufferBuilder.vertex(m + e, n + l, -90.0).texture(1.0F, 1.0F).next();
-		bufferBuilder.vertex(m + e, n, -90.0).texture(1.0F, 0.0F).next();
-		bufferBuilder.vertex(m, n, -90.0).texture(0.0F, 0.0F).next();
+		bufferBuilder.vertex(l, m + k, -90.0).texture(0.0F, 1.0F).next();
+		bufferBuilder.vertex(l + e, m + k, -90.0).texture(1.0F, 1.0F).next();
+		bufferBuilder.vertex(l + e, m, -90.0).texture(1.0F, 0.0F).next();
+		bufferBuilder.vertex(l, m, -90.0).texture(0.0F, 0.0F).next();
 		tessellator.draw();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.defaultBlendFunc();

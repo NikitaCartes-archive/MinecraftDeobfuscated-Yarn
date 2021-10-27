@@ -436,6 +436,14 @@ public class ConfiguredFeatures {
 			.spreadHorizontally()
 			.repeat(20)
 	);
+	public static final ConfiguredFeature<?, ?> SPRING_LAVA_FROZEN = register(
+		"spring_lava_frozen",
+		Feature.SPRING_FEATURE
+			.configure(ConfiguredFeatures.Configs.field_35560)
+			.range(new RangeDecoratorConfig(VeryBiasedToBottomHeightProvider.create(YOffset.getBottom(), YOffset.belowTop(8), 8)))
+			.spreadHorizontally()
+			.repeat(20)
+	);
 	public static final ConfiguredFeature<?, ?> SPRING_DELTA = register(
 		"spring_delta",
 		Feature.SPRING_FEATURE
@@ -2225,19 +2233,10 @@ public class ConfiguredFeatures {
 			true,
 			4,
 			1,
-			ImmutableSet.of(
-				Blocks.STONE,
-				Blocks.GRANITE,
-				Blocks.DIORITE,
-				Blocks.ANDESITE,
-				Blocks.DEEPSLATE,
-				Blocks.TUFF,
-				Blocks.CALCITE,
-				Blocks.DIRT,
-				Blocks.SNOW_BLOCK,
-				Blocks.POWDER_SNOW,
-				Blocks.PACKED_ICE
-			)
+			ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DEEPSLATE, Blocks.TUFF, Blocks.CALCITE, Blocks.DIRT)
+		);
+		public static final SpringFeatureConfig field_35560 = new SpringFeatureConfig(
+			Fluids.LAVA.getDefaultState(), true, 4, 1, ImmutableSet.of(Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW, Blocks.PACKED_ICE)
 		);
 		public static final SpringFeatureConfig ENCLOSED_NETHER_SPRING_CONFIG = new SpringFeatureConfig(
 			Fluids.LAVA.getDefaultState(), false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK)

@@ -21,7 +21,7 @@ public class SelectMerchantTradeC2SPacket implements Packet<ServerPlayPacketList
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onMerchantTradeSelect(this);
+		serverPlayPacketListener.onSelectMerchantTrade(this);
 	}
 
 	public int getTradeId() {

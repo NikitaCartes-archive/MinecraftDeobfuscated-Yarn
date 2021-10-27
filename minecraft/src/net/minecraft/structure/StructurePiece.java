@@ -199,7 +199,7 @@ public abstract class StructurePiece {
 				world.setBlockState(blockPos, block, Block.NOTIFY_LISTENERS);
 				FluidState fluidState = world.getFluidState(blockPos);
 				if (!fluidState.isEmpty()) {
-					world.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
+					world.createAndScheduleFluidTick(blockPos, fluidState.getFluid(), 0);
 				}
 
 				if (BLOCKS_NEEDING_POST_PROCESSING.contains(block.getBlock())) {

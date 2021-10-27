@@ -91,7 +91,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 		}
 
 		if (bl2) {
-			world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.getTickRate());
+			world.createAndScheduleBlockTick(new BlockPos(pos), this, this.getTickRate());
 		}
 	}
 

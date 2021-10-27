@@ -720,7 +720,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		if (this.isSprinting()) {
 			boolean bl6 = !this.input.hasForwardMovement() || !bl5;
-			boolean bl7 = bl6 || this.horizontalCollision && !this.field_34927 || this.isTouchingWater() && !this.isSubmergedInWater();
+			boolean bl7 = bl6 || this.horizontalCollision && !this.collidedSoftly || this.isTouchingWater() && !this.isSubmergedInWater();
 			if (this.isSwimming()) {
 				if (!this.onGround && !this.input.sneaking && bl6 || !this.isTouchingWater()) {
 					this.setSprinting(false);
@@ -1070,15 +1070,15 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public Vec3d method_30951(float f) {
+	public Vec3d getLeashPos(float delta) {
 		if (this.client.options.getPerspective().isFirstPerson()) {
-			float g = MathHelper.lerp(f * 0.5F, this.getYaw(), this.prevYaw) * (float) (Math.PI / 180.0);
-			float h = MathHelper.lerp(f * 0.5F, this.getPitch(), this.prevPitch) * (float) (Math.PI / 180.0);
+			float f = MathHelper.lerp(delta * 0.5F, this.getYaw(), this.prevYaw) * (float) (Math.PI / 180.0);
+			float g = MathHelper.lerp(delta * 0.5F, this.getPitch(), this.prevPitch) * (float) (Math.PI / 180.0);
 			double d = this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0;
 			Vec3d vec3d = new Vec3d(0.39 * d, -0.6, 0.3);
-			return vec3d.rotateX(-h).rotateY(-g).add(this.getCameraPosVec(f));
+			return vec3d.rotateX(-g).rotateY(-f).add(this.getCameraPosVec(delta));
 		} else {
-			return super.method_30951(f);
+			return super.getLeashPos(delta);
 		}
 	}
 

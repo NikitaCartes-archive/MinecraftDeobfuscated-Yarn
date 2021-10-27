@@ -36,7 +36,7 @@ public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> 
 	}
 
 	public void apply(ClientLoginPacketListener clientLoginPacketListener) {
-		clientLoginPacketListener.onLoginSuccess(this);
+		clientLoginPacketListener.onSuccess(this);
 	}
 
 	public GameProfile getProfile() {

@@ -39,18 +39,18 @@ public class RecipeToast implements Toast {
 			RenderSystem.setShaderTexture(0, TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			manager.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
-			manager.getGame().textRenderer.draw(matrices, TITLE, 30.0F, 7.0F, -11534256);
-			manager.getGame().textRenderer.draw(matrices, DESCRIPTION, 30.0F, 18.0F, -16777216);
+			manager.getClient().textRenderer.draw(matrices, TITLE, 30.0F, 7.0F, -11534256);
+			manager.getClient().textRenderer.draw(matrices, DESCRIPTION, 30.0F, 18.0F, -16777216);
 			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(startTime / Math.max(1L, 5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
 			ItemStack itemStack = recipe.createIcon();
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
 			matrixStack.scale(0.6F, 0.6F, 1.0F);
 			RenderSystem.applyModelViewMatrix();
-			manager.getGame().getItemRenderer().renderInGui(itemStack, 3, 3);
+			manager.getClient().getItemRenderer().renderInGui(itemStack, 3, 3);
 			matrixStack.pop();
 			RenderSystem.applyModelViewMatrix();
-			manager.getGame().getItemRenderer().renderInGui(recipe.getOutput(), 8, 8);
+			manager.getClient().getItemRenderer().renderInGui(recipe.getOutput(), 8, 8);
 			return startTime - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		}
 	}

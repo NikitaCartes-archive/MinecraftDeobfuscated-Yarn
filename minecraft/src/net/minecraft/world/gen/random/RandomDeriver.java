@@ -10,7 +10,7 @@ public interface RandomDeriver {
 	}
 
 	default AbstractRandom createRandom(Identifier id) {
-		return id.getNamespace().equals("minecraft") ? this.createRandom(id.getPath()) : this.createRandom(id.toString());
+		return this.createRandom(id.toString());
 	}
 
 	AbstractRandom createRandom(String string);

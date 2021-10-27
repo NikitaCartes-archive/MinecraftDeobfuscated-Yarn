@@ -142,7 +142,6 @@ public class ConfiguredStructureFeatures {
 			.add(BiomeKeys.DEEP_COLD_OCEAN)
 			.add(BiomeKeys.DEEP_OCEAN)
 			.add(BiomeKeys.DEEP_LUKEWARM_OCEAN)
-			.add(BiomeKeys.DEEP_WARM_OCEAN)
 			.build();
 		Set<RegistryKey<Biome>> set2 = ImmutableSet.<RegistryKey<Biome>>builder()
 			.add(BiomeKeys.FROZEN_OCEAN)
@@ -236,7 +235,6 @@ public class ConfiguredStructureFeatures {
 		register(registrar, OCEAN_RUIN_WARM, BiomeKeys.LUKEWARM_OCEAN);
 		register(registrar, OCEAN_RUIN_WARM, BiomeKeys.WARM_OCEAN);
 		register(registrar, OCEAN_RUIN_WARM, BiomeKeys.DEEP_LUKEWARM_OCEAN);
-		register(registrar, OCEAN_RUIN_WARM, BiomeKeys.DEEP_WARM_OCEAN);
 		register(registrar, PILLAGER_OUTPOST, BiomeKeys.DESERT);
 		register(registrar, PILLAGER_OUTPOST, BiomeKeys.PLAINS);
 		register(registrar, PILLAGER_OUTPOST, BiomeKeys.SAVANNA);

@@ -21,6 +21,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.AquiferSampler;
+import net.minecraft.world.tick.OrderedTick;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
@@ -183,7 +184,7 @@ public abstract class Carver<C extends CarverConfig> {
 			} else {
 				chunk.setBlockState(mutable, blockState2, false);
 				if (aquiferSampler.needsFluidTick() && !blockState2.getFluidState().isEmpty()) {
-					chunk.getFluidTickScheduler().schedule(mutable, blockState2.getFluidState().getFluid(), 0);
+					chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockState2.getFluidState().getFluid(), mutable, 0L));
 				}
 
 				if (mutableBoolean.isTrue()) {

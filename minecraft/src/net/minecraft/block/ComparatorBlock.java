@@ -126,7 +126,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			int j = blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
 			if (i != j || (Boolean)state.get(POWERED) != this.hasPower(world, pos, state)) {
 				TickPriority tickPriority = this.isTargetNotAligned(world, pos, state) ? TickPriority.HIGH : TickPriority.NORMAL;
-				world.getBlockTickScheduler().schedule(pos, this, 2, tickPriority);
+				world.createAndScheduleBlockTick(pos, this, 2, tickPriority);
 			}
 		}
 	}

@@ -5,6 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
+import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.dimension.DimensionType;
 
 public record GenerationShapeConfig() {
@@ -19,6 +20,7 @@ public record GenerationShapeConfig() {
 	private final double densityOffset;
 	private final boolean islandNoiseOverride;
 	private final boolean amplified;
+	private final VanillaTerrainParameters terrainShaper;
 	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(GenerationShapeConfig::minimumY),
@@ -33,7 +35,8 @@ public record GenerationShapeConfig() {
 						Codec.BOOL
 							.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
 							.forGetter(GenerationShapeConfig::islandNoiseOverride),
-						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified)
+						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified),
+						VanillaTerrainParameters.field_35456.fieldOf("terrain_shaper").forGetter(GenerationShapeConfig::terrainShaper)
 					)
 					.apply(instance, GenerationShapeConfig::new)
 		)
@@ -50,7 +53,8 @@ public record GenerationShapeConfig() {
 		double densityFactor,
 		double densityOffset,
 		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset
+		boolean randomDensityOffset,
+		VanillaTerrainParameters vanillaTerrainParameters
 	) {
 		this.minimumY = minimumY;
 		this.height = height;
@@ -63,6 +67,7 @@ public record GenerationShapeConfig() {
 		this.densityOffset = densityOffset;
 		this.islandNoiseOverride = simplexSurfaceNoise;
 		this.amplified = randomDensityOffset;
+		this.terrainShaper = vanillaTerrainParameters;
 	}
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
@@ -86,10 +91,22 @@ public record GenerationShapeConfig() {
 		double densityFactor,
 		double densityOffset,
 		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset
+		boolean randomDensityOffset,
+		VanillaTerrainParameters vanillaTerrainParameters
 	) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(
-			minimumY, height, sampling, topSlide, bottomSlide, horizontalSize, verticalSize, densityFactor, densityOffset, simplexSurfaceNoise, randomDensityOffset
+			minimumY,
+			height,
+			sampling,
+			topSlide,
+			bottomSlide,
+			horizontalSize,
+			verticalSize,
+			densityFactor,
+			densityOffset,
+			simplexSurfaceNoise,
+			randomDensityOffset,
+			vanillaTerrainParameters
 		);
 		checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
 			throw new IllegalStateException(partialResult.message());

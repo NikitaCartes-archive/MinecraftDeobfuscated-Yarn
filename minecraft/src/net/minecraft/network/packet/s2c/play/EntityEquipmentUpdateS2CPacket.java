@@ -49,7 +49,7 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEquipmentUpdate(this);
+		clientPlayPacketListener.onEntityEquipmentUpdate(this);
 	}
 
 	public int getId() {

@@ -147,7 +147,7 @@ public class ItemPotionFix extends DataFix {
 		strings[126] = "minecraft:long_invisibility";
 		strings[127] = null;
 	});
-	public static final String field_29884 = "minecraft:water";
+	public static final String WATER = "minecraft:water";
 
 	public ItemPotionFix(Schema outputSchema, boolean changesType) {
 		super(outputSchema, changesType);

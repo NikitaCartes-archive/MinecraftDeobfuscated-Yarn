@@ -86,7 +86,7 @@ public class OctavePerlinNoiseSampler {
 		int j = -this.firstOctave;
 		this.octaveSamplers = new PerlinNoiseSampler[i];
 		if (xoroshiro) {
-			RandomDeriver randomDeriver = random.createBlockPosRandomDeriver();
+			RandomDeriver randomDeriver = random.createRandomDeriver();
 
 			for (int k = 0; k < i; k++) {
 				if (this.amplitudes.getDouble(k) != 0.0) {

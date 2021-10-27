@@ -65,7 +65,7 @@ public class ToastManager extends DrawableHelper {
 		this.toastQueue.add(toast);
 	}
 
-	public MinecraftClient getGame() {
+	public MinecraftClient getClient() {
 		return this.client;
 	}
 

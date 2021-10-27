@@ -75,7 +75,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!world.isClient) {
-			world.getBlockTickScheduler().schedule(pos, this, 1);
+			world.createAndScheduleBlockTick(pos, this, 1);
 		}
 	}
 
@@ -84,11 +84,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		if (!world.isClient()) {
-			world.getBlockTickScheduler().schedule(pos, this, 1);
+			world.createAndScheduleBlockTick(pos, this, 1);
 		}
 
 		return state;

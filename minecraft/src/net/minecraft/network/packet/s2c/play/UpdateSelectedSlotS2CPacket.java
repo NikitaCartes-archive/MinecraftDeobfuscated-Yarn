@@ -21,7 +21,7 @@ public class UpdateSelectedSlotS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onHeldItemChange(this);
+		clientPlayPacketListener.onUpdateSelectedSlot(this);
 	}
 
 	public int getSlot() {

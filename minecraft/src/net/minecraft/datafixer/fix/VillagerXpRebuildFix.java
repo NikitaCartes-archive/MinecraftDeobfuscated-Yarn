@@ -51,13 +51,13 @@ public class VillagerXpRebuildFix extends DataFix {
 								.orElse(0);
 							i = MathHelper.clamp(j / 2, 1, 5);
 							if (i > 1) {
-								typed2 = method_20487(typedx, i);
+								typed2 = fixLevel(typedx, i);
 							}
 						}
 
 						Optional<Number> optional = dynamic.get("Xp").asNumber().result();
 						if (!optional.isPresent()) {
-							typed2 = method_20490(typed2, i);
+							typed2 = fixXp(typed2, i);
 						}
 
 						return typed2;
@@ -66,11 +66,11 @@ public class VillagerXpRebuildFix extends DataFix {
 		);
 	}
 
-	private static Typed<?> method_20487(Typed<?> typed, int i) {
+	private static Typed<?> fixLevel(Typed<?> typed, int i) {
 		return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("VillagerData", dynamicx -> dynamicx.set("level", dynamicx.createInt(i))));
 	}
 
-	private static Typed<?> method_20490(Typed<?> typed, int i) {
+	private static Typed<?> fixXp(Typed<?> typed, int i) {
 		int j = levelToXp(i);
 		return typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("Xp", dynamic.createInt(j)));
 	}

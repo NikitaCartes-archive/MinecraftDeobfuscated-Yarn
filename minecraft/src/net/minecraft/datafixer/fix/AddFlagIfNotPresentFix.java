@@ -9,28 +9,27 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 
 public class AddFlagIfNotPresentFix extends DataFix {
-	private final String field_35009;
-	private final boolean field_35010;
-	private final String field_35011;
-	private final TypeReference field_35012;
+	private final String description;
+	private final boolean value;
+	private final String key;
+	private final TypeReference typeReference;
 
-	public AddFlagIfNotPresentFix(Schema schema, TypeReference typeReference, String string, boolean bl) {
+	public AddFlagIfNotPresentFix(Schema schema, TypeReference typeReference, String key, boolean value) {
 		super(schema, true);
-		this.field_35010 = bl;
-		this.field_35011 = string;
-		this.field_35009 = "AddFlagIfNotPresentFix_" + this.field_35011 + "=" + this.field_35010 + " for " + schema.getVersionKey();
-		this.field_35012 = typeReference;
+		this.value = value;
+		this.key = key;
+		this.description = "AddFlagIfNotPresentFix_" + this.key + "=" + this.value + " for " + schema.getVersionKey();
+		this.typeReference = typeReference;
 	}
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		Type<?> type = this.getInputSchema().getType(this.field_35012);
+		Type<?> type = this.getInputSchema().getType(this.typeReference);
 		return this.fixTypeEverywhereTyped(
-			this.field_35009,
+			this.description,
 			type,
 			typed -> typed.update(
-					DSL.remainderFinder(),
-					dynamic -> dynamic.set(this.field_35011, DataFixUtils.orElseGet(dynamic.get(this.field_35011).result(), () -> dynamic.createBoolean(this.field_35010)))
+					DSL.remainderFinder(), dynamic -> dynamic.set(this.key, DataFixUtils.orElseGet(dynamic.get(this.key).result(), () -> dynamic.createBoolean(this.value)))
 				)
 		);
 	}

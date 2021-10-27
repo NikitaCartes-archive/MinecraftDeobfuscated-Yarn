@@ -17,18 +17,18 @@ public class WorldUuidFix extends AbstractUuidFix {
 			"LevelUUIDFix",
 			this.getInputSchema().getType(this.typeReference),
 			typed -> typed.updateTyped(DSL.remainderFinder(), typedx -> typedx.update(DSL.remainderFinder(), dynamic -> {
-						dynamic = this.method_26061(dynamic);
-						dynamic = this.method_26060(dynamic);
-						return this.method_26057(dynamic);
+						dynamic = this.fixCustomBossEvents(dynamic);
+						dynamic = this.fixDragonUuid(dynamic);
+						return this.fixWanderingTraderId(dynamic);
 					}))
 		);
 	}
 
-	private Dynamic<?> method_26057(Dynamic<?> dynamic) {
+	private Dynamic<?> fixWanderingTraderId(Dynamic<?> dynamic) {
 		return (Dynamic<?>)updateStringUuid(dynamic, "WanderingTraderId", "WanderingTraderId").orElse(dynamic);
 	}
 
-	private Dynamic<?> method_26060(Dynamic<?> dynamic) {
+	private Dynamic<?> fixDragonUuid(Dynamic<?> dynamic) {
 		return dynamic.update(
 			"DimensionData",
 			dynamicx -> dynamicx.updateMapValues(
@@ -39,7 +39,7 @@ public class WorldUuidFix extends AbstractUuidFix {
 		);
 	}
 
-	private Dynamic<?> method_26061(Dynamic<?> dynamic) {
+	private Dynamic<?> fixCustomBossEvents(Dynamic<?> dynamic) {
 		return dynamic.update(
 			"CustomBossEvents",
 			dynamicx -> dynamicx.updateMapValues(

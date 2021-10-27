@@ -52,82 +52,82 @@ public class ChunkPalettedStorageFix extends DataFix {
 	static final Dynamic<?> FERN_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:large_fern',Properties:{half:'upper'}}");
 	static final Dynamic<?> ROSE_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:rose_bush',Properties:{half:'upper'}}");
 	static final Dynamic<?> PEONY_UPPER = BlockStateFlattening.parseState("{Name:'minecraft:peony',Properties:{half:'upper'}}");
-	static final Map<String, Dynamic<?>> FLOWER_POT = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
-		hashMap.put("minecraft:air0", BlockStateFlattening.parseState("{Name:'minecraft:flower_pot'}"));
-		hashMap.put("minecraft:red_flower0", BlockStateFlattening.parseState("{Name:'minecraft:potted_poppy'}"));
-		hashMap.put("minecraft:red_flower1", BlockStateFlattening.parseState("{Name:'minecraft:potted_blue_orchid'}"));
-		hashMap.put("minecraft:red_flower2", BlockStateFlattening.parseState("{Name:'minecraft:potted_allium'}"));
-		hashMap.put("minecraft:red_flower3", BlockStateFlattening.parseState("{Name:'minecraft:potted_azure_bluet'}"));
-		hashMap.put("minecraft:red_flower4", BlockStateFlattening.parseState("{Name:'minecraft:potted_red_tulip'}"));
-		hashMap.put("minecraft:red_flower5", BlockStateFlattening.parseState("{Name:'minecraft:potted_orange_tulip'}"));
-		hashMap.put("minecraft:red_flower6", BlockStateFlattening.parseState("{Name:'minecraft:potted_white_tulip'}"));
-		hashMap.put("minecraft:red_flower7", BlockStateFlattening.parseState("{Name:'minecraft:potted_pink_tulip'}"));
-		hashMap.put("minecraft:red_flower8", BlockStateFlattening.parseState("{Name:'minecraft:potted_oxeye_daisy'}"));
-		hashMap.put("minecraft:yellow_flower0", BlockStateFlattening.parseState("{Name:'minecraft:potted_dandelion'}"));
-		hashMap.put("minecraft:sapling0", BlockStateFlattening.parseState("{Name:'minecraft:potted_oak_sapling'}"));
-		hashMap.put("minecraft:sapling1", BlockStateFlattening.parseState("{Name:'minecraft:potted_spruce_sapling'}"));
-		hashMap.put("minecraft:sapling2", BlockStateFlattening.parseState("{Name:'minecraft:potted_birch_sapling'}"));
-		hashMap.put("minecraft:sapling3", BlockStateFlattening.parseState("{Name:'minecraft:potted_jungle_sapling'}"));
-		hashMap.put("minecraft:sapling4", BlockStateFlattening.parseState("{Name:'minecraft:potted_acacia_sapling'}"));
-		hashMap.put("minecraft:sapling5", BlockStateFlattening.parseState("{Name:'minecraft:potted_dark_oak_sapling'}"));
-		hashMap.put("minecraft:red_mushroom0", BlockStateFlattening.parseState("{Name:'minecraft:potted_red_mushroom'}"));
-		hashMap.put("minecraft:brown_mushroom0", BlockStateFlattening.parseState("{Name:'minecraft:potted_brown_mushroom'}"));
-		hashMap.put("minecraft:deadbush0", BlockStateFlattening.parseState("{Name:'minecraft:potted_dead_bush'}"));
-		hashMap.put("minecraft:tallgrass2", BlockStateFlattening.parseState("{Name:'minecraft:potted_fern'}"));
-		hashMap.put("minecraft:cactus0", BlockStateFlattening.lookupState(2240));
+	static final Map<String, Dynamic<?>> FLOWER_POT = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
+		map.put("minecraft:air0", BlockStateFlattening.parseState("{Name:'minecraft:flower_pot'}"));
+		map.put("minecraft:red_flower0", BlockStateFlattening.parseState("{Name:'minecraft:potted_poppy'}"));
+		map.put("minecraft:red_flower1", BlockStateFlattening.parseState("{Name:'minecraft:potted_blue_orchid'}"));
+		map.put("minecraft:red_flower2", BlockStateFlattening.parseState("{Name:'minecraft:potted_allium'}"));
+		map.put("minecraft:red_flower3", BlockStateFlattening.parseState("{Name:'minecraft:potted_azure_bluet'}"));
+		map.put("minecraft:red_flower4", BlockStateFlattening.parseState("{Name:'minecraft:potted_red_tulip'}"));
+		map.put("minecraft:red_flower5", BlockStateFlattening.parseState("{Name:'minecraft:potted_orange_tulip'}"));
+		map.put("minecraft:red_flower6", BlockStateFlattening.parseState("{Name:'minecraft:potted_white_tulip'}"));
+		map.put("minecraft:red_flower7", BlockStateFlattening.parseState("{Name:'minecraft:potted_pink_tulip'}"));
+		map.put("minecraft:red_flower8", BlockStateFlattening.parseState("{Name:'minecraft:potted_oxeye_daisy'}"));
+		map.put("minecraft:yellow_flower0", BlockStateFlattening.parseState("{Name:'minecraft:potted_dandelion'}"));
+		map.put("minecraft:sapling0", BlockStateFlattening.parseState("{Name:'minecraft:potted_oak_sapling'}"));
+		map.put("minecraft:sapling1", BlockStateFlattening.parseState("{Name:'minecraft:potted_spruce_sapling'}"));
+		map.put("minecraft:sapling2", BlockStateFlattening.parseState("{Name:'minecraft:potted_birch_sapling'}"));
+		map.put("minecraft:sapling3", BlockStateFlattening.parseState("{Name:'minecraft:potted_jungle_sapling'}"));
+		map.put("minecraft:sapling4", BlockStateFlattening.parseState("{Name:'minecraft:potted_acacia_sapling'}"));
+		map.put("minecraft:sapling5", BlockStateFlattening.parseState("{Name:'minecraft:potted_dark_oak_sapling'}"));
+		map.put("minecraft:red_mushroom0", BlockStateFlattening.parseState("{Name:'minecraft:potted_red_mushroom'}"));
+		map.put("minecraft:brown_mushroom0", BlockStateFlattening.parseState("{Name:'minecraft:potted_brown_mushroom'}"));
+		map.put("minecraft:deadbush0", BlockStateFlattening.parseState("{Name:'minecraft:potted_dead_bush'}"));
+		map.put("minecraft:tallgrass2", BlockStateFlattening.parseState("{Name:'minecraft:potted_fern'}"));
+		map.put("minecraft:cactus0", BlockStateFlattening.lookupState(2240));
 	});
-	static final Map<String, Dynamic<?>> SKULL = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
-		buildSkull(hashMap, 0, "skeleton", "skull");
-		buildSkull(hashMap, 1, "wither_skeleton", "skull");
-		buildSkull(hashMap, 2, "zombie", "head");
-		buildSkull(hashMap, 3, "player", "head");
-		buildSkull(hashMap, 4, "creeper", "head");
-		buildSkull(hashMap, 5, "dragon", "head");
+	static final Map<String, Dynamic<?>> SKULL = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
+		buildSkull(map, 0, "skeleton", "skull");
+		buildSkull(map, 1, "wither_skeleton", "skull");
+		buildSkull(map, 2, "zombie", "head");
+		buildSkull(map, 3, "player", "head");
+		buildSkull(map, 4, "creeper", "head");
+		buildSkull(map, 5, "dragon", "head");
 	});
-	static final Map<String, Dynamic<?>> DOOR = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
-		buildDoor(hashMap, "oak_door", 1024);
-		buildDoor(hashMap, "iron_door", 1136);
-		buildDoor(hashMap, "spruce_door", 3088);
-		buildDoor(hashMap, "birch_door", 3104);
-		buildDoor(hashMap, "jungle_door", 3120);
-		buildDoor(hashMap, "acacia_door", 3136);
-		buildDoor(hashMap, "dark_oak_door", 3152);
+	static final Map<String, Dynamic<?>> DOOR = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
+		buildDoor(map, "oak_door", 1024);
+		buildDoor(map, "iron_door", 1136);
+		buildDoor(map, "spruce_door", 3088);
+		buildDoor(map, "birch_door", 3104);
+		buildDoor(map, "jungle_door", 3120);
+		buildDoor(map, "acacia_door", 3136);
+		buildDoor(map, "dark_oak_door", 3152);
 	});
-	static final Map<String, Dynamic<?>> NOTE_BLOCK = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	static final Map<String, Dynamic<?>> NOTE_BLOCK = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
 		for (int i = 0; i < 26; i++) {
-			hashMap.put("true" + i, BlockStateFlattening.parseState("{Name:'minecraft:note_block',Properties:{powered:'true',note:'" + i + "'}}"));
-			hashMap.put("false" + i, BlockStateFlattening.parseState("{Name:'minecraft:note_block',Properties:{powered:'false',note:'" + i + "'}}"));
+			map.put("true" + i, BlockStateFlattening.parseState("{Name:'minecraft:note_block',Properties:{powered:'true',note:'" + i + "'}}"));
+			map.put("false" + i, BlockStateFlattening.parseState("{Name:'minecraft:note_block',Properties:{powered:'false',note:'" + i + "'}}"));
 		}
 	});
-	private static final Int2ObjectMap<String> COLORS = DataFixUtils.make(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {
-		int2ObjectOpenHashMap.put(0, "white");
-		int2ObjectOpenHashMap.put(1, "orange");
-		int2ObjectOpenHashMap.put(2, "magenta");
-		int2ObjectOpenHashMap.put(3, "light_blue");
-		int2ObjectOpenHashMap.put(4, "yellow");
-		int2ObjectOpenHashMap.put(5, "lime");
-		int2ObjectOpenHashMap.put(6, "pink");
-		int2ObjectOpenHashMap.put(7, "gray");
-		int2ObjectOpenHashMap.put(8, "light_gray");
-		int2ObjectOpenHashMap.put(9, "cyan");
-		int2ObjectOpenHashMap.put(10, "purple");
-		int2ObjectOpenHashMap.put(11, "blue");
-		int2ObjectOpenHashMap.put(12, "brown");
-		int2ObjectOpenHashMap.put(13, "green");
-		int2ObjectOpenHashMap.put(14, "red");
-		int2ObjectOpenHashMap.put(15, "black");
+	private static final Int2ObjectMap<String> COLORS = DataFixUtils.make(new Int2ObjectOpenHashMap<>(), map -> {
+		map.put(0, "white");
+		map.put(1, "orange");
+		map.put(2, "magenta");
+		map.put(3, "light_blue");
+		map.put(4, "yellow");
+		map.put(5, "lime");
+		map.put(6, "pink");
+		map.put(7, "gray");
+		map.put(8, "light_gray");
+		map.put(9, "cyan");
+		map.put(10, "purple");
+		map.put(11, "blue");
+		map.put(12, "brown");
+		map.put(13, "green");
+		map.put(14, "red");
+		map.put(15, "black");
 	});
-	static final Map<String, Dynamic<?>> BED = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	static final Map<String, Dynamic<?>> BED = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
 		for (Entry<String> entry : COLORS.int2ObjectEntrySet()) {
 			if (!Objects.equals(entry.getValue(), "red")) {
-				buildBed(hashMap, entry.getIntKey(), (String)entry.getValue());
+				buildBed(map, entry.getIntKey(), (String)entry.getValue());
 			}
 		}
 	});
-	static final Map<String, Dynamic<?>> BANNER = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	static final Map<String, Dynamic<?>> BANNER = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), map -> {
 		for (Entry<String> entry : COLORS.int2ObjectEntrySet()) {
 			if (!Objects.equals(entry.getValue(), "white")) {
-				buildBanner(hashMap, 15 - entry.getIntKey(), (String)entry.getValue());
+				buildBanner(map, 15 - entry.getIntKey(), (String)entry.getValue());
 			}
 		}
 	});
@@ -372,38 +372,38 @@ public class ChunkPalettedStorageFix extends DataFix {
 		);
 	}
 
-	private static void buildBed(Map<String, Dynamic<?>> out, int i, String string) {
+	private static void buildBed(Map<String, Dynamic<?>> out, int i, String color) {
 		out.put(
-			"southfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'south',occupied:'false',part:'foot'}}")
+			"southfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'foot'}}")
 		);
-		out.put("westfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'west',occupied:'false',part:'foot'}}"));
+		out.put("westfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'false',part:'foot'}}"));
 		out.put(
-			"northfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'north',occupied:'false',part:'foot'}}")
+			"northfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'foot'}}")
 		);
-		out.put("eastfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'east',occupied:'false',part:'foot'}}"));
+		out.put("eastfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'false',part:'foot'}}"));
 		out.put(
-			"southfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'south',occupied:'false',part:'head'}}")
+			"southfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'head'}}")
 		);
-		out.put("westfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'west',occupied:'false',part:'head'}}"));
+		out.put("westfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'false',part:'head'}}"));
 		out.put(
-			"northfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'north',occupied:'false',part:'head'}}")
+			"northfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'head'}}")
 		);
-		out.put("eastfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'east',occupied:'false',part:'head'}}"));
-		out.put("southtruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'south',occupied:'true',part:'head'}}"));
-		out.put("westtruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'west',occupied:'true',part:'head'}}"));
-		out.put("northtruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'north',occupied:'true',part:'head'}}"));
-		out.put("easttruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_bed',Properties:{facing:'east',occupied:'true',part:'head'}}"));
+		out.put("eastfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'false',part:'head'}}"));
+		out.put("southtruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'true',part:'head'}}"));
+		out.put("westtruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'true',part:'head'}}"));
+		out.put("northtruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'true',part:'head'}}"));
+		out.put("easttruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'true',part:'head'}}"));
 	}
 
-	private static void buildBanner(Map<String, Dynamic<?>> out, int i, String string) {
+	private static void buildBanner(Map<String, Dynamic<?>> out, int i, String color) {
 		for (int j = 0; j < 16; j++) {
-			out.put(j + "_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_banner',Properties:{rotation:'" + j + "'}}"));
+			out.put(j + "_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_banner',Properties:{rotation:'" + j + "'}}"));
 		}
 
-		out.put("north_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_wall_banner',Properties:{facing:'north'}}"));
-		out.put("south_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_wall_banner',Properties:{facing:'south'}}"));
-		out.put("west_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_wall_banner',Properties:{facing:'west'}}"));
-		out.put("east_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + string + "_wall_banner',Properties:{facing:'east'}}"));
+		out.put("north_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'north'}}"));
+		out.put("south_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'south'}}"));
+		out.put("west_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'west'}}"));
+		out.put("east_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'east'}}"));
 	}
 
 	public static String getName(Dynamic<?> dynamic) {

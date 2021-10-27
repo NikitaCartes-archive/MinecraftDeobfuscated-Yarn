@@ -37,7 +37,7 @@ public class CoralFanBlock extends DeadCoralFanBlock {
 		} else {
 			this.checkLivingConditions(state, world, pos);
 			if ((Boolean)state.get(WATERLOGGED)) {
-				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
 			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);

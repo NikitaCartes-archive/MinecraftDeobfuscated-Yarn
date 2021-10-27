@@ -71,7 +71,7 @@ public class AmethystClusterBlock extends AmethystBlock implements Waterloggable
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return direction == ((Direction)state.get(FACING)).getOpposite() && !state.canPlaceAt(world, pos)

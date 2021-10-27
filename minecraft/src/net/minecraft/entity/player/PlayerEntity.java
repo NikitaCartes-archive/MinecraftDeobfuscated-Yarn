@@ -1412,7 +1412,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	 * {@return whether this player has been sleeping long enough to count towards
 	 * resetting the time of day and weather of the server}
 	 */
-	public boolean isSleepingLongEnough() {
+	public boolean canResetTimeBySleeping() {
 		return this.isSleeping() && this.sleepTimer >= 100;
 	}
 
@@ -2075,31 +2075,31 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public Vec3d method_30951(float f) {
+	public Vec3d getLeashPos(float delta) {
 		double d = 0.22 * (this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0);
-		float g = MathHelper.lerp(f * 0.5F, this.getPitch(), this.prevPitch) * (float) (Math.PI / 180.0);
-		float h = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * (float) (Math.PI / 180.0);
+		float f = MathHelper.lerp(delta * 0.5F, this.getPitch(), this.prevPitch) * (float) (Math.PI / 180.0);
+		float g = MathHelper.lerp(delta, this.prevBodyYaw, this.bodyYaw) * (float) (Math.PI / 180.0);
 		if (this.isFallFlying() || this.isUsingRiptide()) {
-			Vec3d vec3d = this.getRotationVec(f);
+			Vec3d vec3d = this.getRotationVec(delta);
 			Vec3d vec3d2 = this.getVelocity();
 			double e = vec3d2.horizontalLengthSquared();
-			double i = vec3d.horizontalLengthSquared();
-			float l;
-			if (e > 0.0 && i > 0.0) {
-				double j = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(e * i);
-				double k = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-				l = (float)(Math.signum(k) * Math.acos(j));
+			double h = vec3d.horizontalLengthSquared();
+			float k;
+			if (e > 0.0 && h > 0.0) {
+				double i = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(e * h);
+				double j = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
+				k = (float)(Math.signum(j) * Math.acos(i));
 			} else {
-				l = 0.0F;
+				k = 0.0F;
 			}
 
-			return this.getLerpedPos(f).add(new Vec3d(d, -0.11, 0.85).rotateZ(-l).rotateX(-g).rotateY(-h));
+			return this.getLerpedPos(delta).add(new Vec3d(d, -0.11, 0.85).rotateZ(-k).rotateX(-f).rotateY(-g));
 		} else if (this.isInSwimmingPose()) {
-			return this.getLerpedPos(f).add(new Vec3d(d, 0.2, -0.15).rotateX(-g).rotateY(-h));
+			return this.getLerpedPos(delta).add(new Vec3d(d, 0.2, -0.15).rotateX(-f).rotateY(-g));
 		} else {
-			double m = this.getBoundingBox().getYLength() - 1.0;
+			double l = this.getBoundingBox().getYLength() - 1.0;
 			double e = this.isInSneakingPose() ? -0.2 : 0.07;
-			return this.getLerpedPos(f).add(new Vec3d(d, m, e).rotateY(-h));
+			return this.getLerpedPos(delta).add(new Vec3d(d, l, e).rotateY(-g));
 		}
 	}
 

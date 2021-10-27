@@ -7,18 +7,18 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public enum PrioritizeChunkUpdatesMode {
+public enum ChunkBuilderMode {
 	NONE(0, "options.prioritizeChunkUpdates.none"),
 	PLAYER_AFFECTED(1, "options.prioritizeChunkUpdates.byPlayer"),
 	NEARBY(2, "options.prioritizeChunkUpdates.nearby");
 
-	private static final PrioritizeChunkUpdatesMode[] modes = (PrioritizeChunkUpdatesMode[])Arrays.stream(values())
-		.sorted(Comparator.comparingInt(PrioritizeChunkUpdatesMode::getId))
-		.toArray(PrioritizeChunkUpdatesMode[]::new);
+	private static final ChunkBuilderMode[] modes = (ChunkBuilderMode[])Arrays.stream(values())
+		.sorted(Comparator.comparingInt(ChunkBuilderMode::getId))
+		.toArray(ChunkBuilderMode[]::new);
 	private final int id;
 	private final String name;
 
-	private PrioritizeChunkUpdatesMode(int id, String name) {
+	private ChunkBuilderMode(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -31,7 +31,7 @@ public enum PrioritizeChunkUpdatesMode {
 		return this.name;
 	}
 
-	public static PrioritizeChunkUpdatesMode get(int id) {
+	public static ChunkBuilderMode get(int id) {
 		return modes[MathHelper.floorMod(id, modes.length)];
 	}
 }

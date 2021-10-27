@@ -62,7 +62,7 @@ public class AddTrappedChestFix extends DataFix {
 										for (int i = 0; i < 4096; i++) {
 											int j = listFixer.needsFix(i);
 											if (listFixer.isTarget(j)) {
-												intSet.add(listFixer.method_5077() << 12 | i);
+												intSet.add(listFixer.getY() << 12 | i);
 											}
 										}
 									}

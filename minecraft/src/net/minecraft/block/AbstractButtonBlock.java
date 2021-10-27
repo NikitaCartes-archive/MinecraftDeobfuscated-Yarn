@@ -108,7 +108,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	public void powerOn(BlockState state, World world, BlockPos pos) {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
-		world.getBlockTickScheduler().schedule(pos, this, this.getPressTicks());
+		world.createAndScheduleBlockTick(pos, this, this.getPressTicks());
 	}
 
 	protected void playClickSound(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos, boolean powered) {
@@ -176,7 +176,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		}
 
 		if (bl) {
-			world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.getPressTicks());
+			world.createAndScheduleBlockTick(new BlockPos(pos), this, this.getPressTicks());
 		}
 	}
 

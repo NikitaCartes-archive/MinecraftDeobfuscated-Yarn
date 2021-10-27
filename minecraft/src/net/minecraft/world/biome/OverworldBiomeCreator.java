@@ -410,15 +410,6 @@ public class OverworldBiomeCreator {
 		return createOcean(builder, 4445678, 270131, builder2);
 	}
 
-	public static Biome createDeepWarmOcean() {
-		SpawnSettings.Builder builder = new SpawnSettings.Builder();
-		DefaultBiomeFeatures.addWarmOceanMobs(builder, 5, 1);
-		GenerationSettings.Builder builder2 = createOceanGenerationSettings()
-			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_DEEP_WARM);
-		DefaultBiomeFeatures.addSeagrassOnStone(builder2);
-		return createOcean(builder, 4445678, 270131, builder2);
-	}
-
 	public static Biome createFrozenOcean(boolean monument) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.SQUID, 1, 1, 4))
@@ -700,6 +691,7 @@ public class OverworldBiomeCreator {
 		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 1, 3));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		method_39153(builder);
+		DefaultBiomeFeatures.method_39420(builder);
 		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
@@ -714,6 +706,7 @@ public class OverworldBiomeCreator {
 		builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 1, 3));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		method_39153(builder);
+		DefaultBiomeFeatures.method_39420(builder);
 		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addEmeraldOre(builder);
@@ -742,6 +735,7 @@ public class OverworldBiomeCreator {
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.GOAT, 5, 1, 3));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		method_39153(builder);
+		DefaultBiomeFeatures.method_39420(builder);
 		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addDefaultVegetation(builder);
@@ -760,6 +754,7 @@ public class OverworldBiomeCreator {
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
 		DefaultBiomeFeatures.addBatsAndMonsters(builder2);
 		method_39153(builder);
+		DefaultBiomeFeatures.method_39420(builder);
 		DefaultBiomeFeatures.addDefaultOres(builder);
 		DefaultBiomeFeatures.addDefaultDisks(builder);
 		DefaultBiomeFeatures.addGroveTrees(builder);

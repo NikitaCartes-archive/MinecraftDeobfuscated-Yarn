@@ -16,6 +16,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6748;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
@@ -63,6 +64,7 @@ import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomSeed;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.tick.OrderedTick;
 
 public final class NoiseChunkGenerator extends ChunkGenerator {
 	public static final Codec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.create(
@@ -133,13 +135,13 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		int i = chunkGeneratorSettings.getBedrockFloorY();
 		if (i > -5 && i < this.worldHeight) {
 			int j = this.getMinimumY() + i;
-			builder.add(new LayerTransitionBlockSource(abstractRandom.createBlockPosRandomDeriver(), Blocks.BEDROCK.getDefaultState(), null, j, j + 5));
+			builder.add(new LayerTransitionBlockSource(abstractRandom.createRandomDeriver(), Blocks.BEDROCK.getDefaultState(), null, j, j + 5));
 		}
 
 		int j = chunkGeneratorSettings.getBedrockCeilingY();
 		if (j > -5 && j < this.worldHeight) {
 			int k = this.getMinimumY() + this.worldHeight - 1 + j;
-			builder.add(new LayerTransitionBlockSource(abstractRandom.createBlockPosRandomDeriver(), null, Blocks.BEDROCK.getDefaultState(), k - 5, k));
+			builder.add(new LayerTransitionBlockSource(abstractRandom.createRandomDeriver(), null, Blocks.BEDROCK.getDefaultState(), k - 5, k));
 		}
 
 		builder.add(ChunkNoiseSampler::sampleInitialNoiseBlockState);
@@ -161,14 +163,14 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public CompletableFuture<Chunk> populateBiomes(Executor executor, Registry<Biome> biomeRegistry, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateBiomes(Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
 		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
-			this.method_38327(biomeRegistry, structureAccessor, chunk);
+			this.method_38327(arg, structureAccessor, chunk);
 			return chunk;
 		}), Util.getMainWorkerExecutor());
 	}
 
-	private void method_38327(Registry<Biome> biomeRegistry, StructureAccessor world, Chunk chunk) {
+	private void method_38327(class_6748 arg, StructureAccessor world, Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
 		int i = Math.max(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().minimumY(), chunk.getBottomY());
 		int j = Math.min(
@@ -188,17 +190,10 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			this.noiseColumnSampler,
 			() -> new StructureWeightSampler(world, chunk),
 			this.settings,
-			this.fluidLevelSampler
+			this.fluidLevelSampler,
+			arg
 		);
-		chunk.method_38257(this.biomeSource, (x, y, z) -> {
-			double d = chunkNoiseSampler.getNoiseX(x, z);
-			double e = chunkNoiseSampler.getNoiseZ(x, z);
-			float f = (float)chunkNoiseSampler.getContinentalness(x, z);
-			float g = (float)chunkNoiseSampler.getErosion(x, z);
-			float h = (float)chunkNoiseSampler.getWeirdness(x, z);
-			double ix = chunkNoiseSampler.getTerrainNoisePoint(x, z).offset();
-			return this.noiseColumnSampler.sample(x, y, z, d, e, f, g, h, ix);
-		});
+		chunk.method_38257(this.biomeSource, (ix, y, jx) -> this.noiseColumnSampler.method_39329(ix, y, jx, chunkNoiseSampler.createMultiNoisePoint(ix, jx)));
 	}
 
 	@Override
@@ -272,7 +267,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			n,
 			(xx, y, zx) -> 0.0,
 			this.settings,
-			this.fluidLevelSampler
+			this.fluidLevelSampler,
+			class_6748.method_39336()
 		);
 		chunkNoiseSampler.sampleStartNoise();
 		chunkNoiseSampler.sampleEndNoise(0);
@@ -327,7 +323,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				this.noiseColumnSampler,
 				() -> new StructureWeightSampler(structures, chunk),
 				this.settings,
-				this.fluidLevelSampler
+				this.fluidLevelSampler,
+				class_6748.method_39342(region)
 			);
 			this.surfaceBuilder
 				.buildSurface(
@@ -367,7 +364,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			this.noiseColumnSampler,
 			() -> new StructureWeightSampler(structureAccessor, chunk),
 			this.settings,
-			this.fluidLevelSampler
+			this.fluidLevelSampler,
+			class_6748.method_39342(chunkRegion)
 		);
 		AquiferSampler aquiferSampler = chunkNoiseSampler.getAquiferSampler();
 		CarvingMask carvingMask = ((ProtoChunk)chunk).getOrCreateCarvingMask(generationStep);
@@ -397,7 +395,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public CompletableFuture<Chunk> populateNoise(Executor executor, StructureAccessor accessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateNoise(Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
 		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig();
 		int i = Math.max(generationShapeConfig.minimumY(), chunk.getBottomY());
 		int j = Math.min(generationShapeConfig.minimumY() + generationShapeConfig.height(), chunk.getTopY());
@@ -416,7 +414,9 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				set.add(chunkSection);
 			}
 
-			return CompletableFuture.supplyAsync(Util.debugSupplier("wgen_fill_noise", () -> this.populateNoise(accessor, chunk, k, l)), Util.getMainWorkerExecutor())
+			return CompletableFuture.supplyAsync(
+					Util.debugSupplier("wgen_fill_noise", () -> this.populateNoise(arg, structureAccessor, chunk, k, l)), Util.getMainWorkerExecutor()
+				)
 				.whenCompleteAsync((chunkx, throwable) -> {
 					for (ChunkSection chunkSectionx : set) {
 						chunkSectionx.unlock();
@@ -425,77 +425,78 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		}
 	}
 
-	private Chunk populateNoise(StructureAccessor accessor, Chunk chunk, int startY, int noiseSizeY) {
+	private Chunk populateNoise(class_6748 arg, StructureAccessor structureAccessor, Chunk chunk, int i, int j) {
 		Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
 		Heightmap heightmap2 = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
 		ChunkPos chunkPos = chunk.getPos();
-		int i = chunkPos.getStartX();
-		int j = chunkPos.getStartZ();
+		int k = chunkPos.getStartX();
+		int l = chunkPos.getStartZ();
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
-			startY,
-			noiseSizeY,
 			i,
 			j,
+			k,
+			l,
 			this.horizontalNoiseResolution,
 			this.verticalNoiseResolution,
 			this.noiseColumnSampler,
-			() -> new StructureWeightSampler(accessor, chunk),
+			() -> new StructureWeightSampler(structureAccessor, chunk),
 			this.settings,
-			this.fluidLevelSampler
+			this.fluidLevelSampler,
+			arg
 		);
 		AquiferSampler aquiferSampler = chunkNoiseSampler.getAquiferSampler();
 		chunkNoiseSampler.sampleStartNoise();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int k = 0; k < this.noiseSizeX; k++) {
-			chunkNoiseSampler.sampleEndNoise(k);
+		for (int m = 0; m < this.noiseSizeX; m++) {
+			chunkNoiseSampler.sampleEndNoise(m);
 
-			for (int l = 0; l < this.noiseSizeZ; l++) {
+			for (int n = 0; n < this.noiseSizeZ; n++) {
 				ChunkSection chunkSection = chunk.getSection(chunk.countVerticalSections() - 1);
 
-				for (int m = noiseSizeY - 1; m >= 0; m--) {
-					chunkNoiseSampler.sampleNoiseCorners(m, l);
+				for (int o = j - 1; o >= 0; o--) {
+					chunkNoiseSampler.sampleNoiseCorners(o, n);
 
-					for (int n = this.verticalNoiseResolution - 1; n >= 0; n--) {
-						int o = (startY + m) * this.verticalNoiseResolution + n;
-						int p = o & 15;
-						int q = chunk.getSectionIndex(o);
-						if (chunk.getSectionIndex(chunkSection.getYOffset()) != q) {
-							chunkSection = chunk.getSection(q);
+					for (int p = this.verticalNoiseResolution - 1; p >= 0; p--) {
+						int q = (i + o) * this.verticalNoiseResolution + p;
+						int r = q & 15;
+						int s = chunk.getSectionIndex(q);
+						if (chunk.getSectionIndex(chunkSection.getYOffset()) != s) {
+							chunkSection = chunk.getSection(s);
 						}
 
-						double d = (double)n / (double)this.verticalNoiseResolution;
+						double d = (double)p / (double)this.verticalNoiseResolution;
 						chunkNoiseSampler.sampleNoiseY(d);
 
-						for (int r = 0; r < this.horizontalNoiseResolution; r++) {
-							int s = i + k * this.horizontalNoiseResolution + r;
-							int t = s & 15;
-							double e = (double)r / (double)this.horizontalNoiseResolution;
+						for (int t = 0; t < this.horizontalNoiseResolution; t++) {
+							int u = k + m * this.horizontalNoiseResolution + t;
+							int v = u & 15;
+							double e = (double)t / (double)this.horizontalNoiseResolution;
 							chunkNoiseSampler.sampleNoiseX(e);
 
-							for (int u = 0; u < this.horizontalNoiseResolution; u++) {
-								int v = j + l * this.horizontalNoiseResolution + u;
-								int w = v & 15;
-								double f = (double)u / (double)this.horizontalNoiseResolution;
+							for (int w = 0; w < this.horizontalNoiseResolution; w++) {
+								int x = l + n * this.horizontalNoiseResolution + w;
+								int y = x & 15;
+								double f = (double)w / (double)this.horizontalNoiseResolution;
 								chunkNoiseSampler.sampleNoise(f);
-								BlockState blockState = this.blockStateSampler.apply(chunkNoiseSampler, s, o, v);
+								BlockState blockState = this.blockStateSampler.apply(chunkNoiseSampler, u, q, x);
 								if (blockState == null) {
 									blockState = this.defaultBlock;
 								}
 
-								blockState = this.method_38323(o, s, v, blockState);
-								if (blockState != AIR && !SharedConstants.method_37896(s, v)) {
+								blockState = this.method_38323(q, u, x, blockState);
+								if (blockState != AIR && !SharedConstants.method_37896(u, x)) {
 									if (blockState.getLuminance() != 0 && chunk instanceof ProtoChunk) {
-										mutable.set(s, o, v);
+										mutable.set(u, q, x);
 										((ProtoChunk)chunk).addLightSource(mutable);
 									}
 
-									chunkSection.setBlockState(t, p, w, blockState, false);
-									heightmap.trackUpdate(t, o, w, blockState);
-									heightmap2.trackUpdate(t, o, w, blockState);
+									chunkSection.setBlockState(v, r, y, blockState, false);
+									heightmap.trackUpdate(v, q, y, blockState);
+									heightmap2.trackUpdate(v, q, y, blockState);
 									if (aquiferSampler.needsFluidTick() && !blockState.getFluidState().isEmpty()) {
-										mutable.set(s, o, v);
-										chunk.getFluidTickScheduler().schedule(mutable, blockState.getFluidState().getFluid(), 0);
+										mutable.set(u, q, x);
+										chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockState.getFluidState().getFluid(), mutable, 0L));
 									}
 								}
 							}

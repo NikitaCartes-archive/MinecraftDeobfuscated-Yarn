@@ -13,10 +13,10 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Identifier;
 
 public class EntityPaintingMotiveFix extends ChoiceFix {
-	private static final Map<String, String> RENAMED_MOTIVES = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
-		hashMap.put("donkeykong", "donkey_kong");
-		hashMap.put("burningskull", "burning_skull");
-		hashMap.put("skullandroses", "skull_and_roses");
+	private static final Map<String, String> RENAMED_MOTIVES = DataFixUtils.make(Maps.<String, String>newHashMap(), map -> {
+		map.put("donkeykong", "donkey_kong");
+		map.put("burningskull", "burning_skull");
+		map.put("skullandroses", "skull_and_roses");
 	});
 
 	public EntityPaintingMotiveFix(Schema outputSchema, boolean changesType) {

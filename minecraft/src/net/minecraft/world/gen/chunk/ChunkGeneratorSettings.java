@@ -15,6 +15,7 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.biome.source.util.VanillaTerrainParametersCreator;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
@@ -206,7 +207,18 @@ public final class ChunkGeneratorSettings {
 		return new ChunkGeneratorSettings(
 			structuresConfig,
 			GenerationShapeConfig.create(
-				0, 128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, 0.0, 0.0, bl2, false
+				0,
+				128,
+				new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0),
+				new SlideConfig(-23.4375, 64, -46),
+				new SlideConfig(-0.234375, 7, 1),
+				2,
+				1,
+				0.0,
+				0.0,
+				bl2,
+				false,
+				VanillaTerrainParametersCreator.createIslandParameters()
 			),
 			defaultBlock,
 			defaultFluid,
@@ -230,7 +242,18 @@ public final class ChunkGeneratorSettings {
 		return new ChunkGeneratorSettings(
 			new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map),
 			GenerationShapeConfig.create(
-				0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, 0.0, -0.030078125, false, false
+				0,
+				128,
+				new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0),
+				new SlideConfig(0.9375, 3, 0),
+				new SlideConfig(2.5, 4, -1),
+				1,
+				2,
+				0.0,
+				-0.030078125,
+				false,
+				false,
+				VanillaTerrainParametersCreator.createUndergroundParameters()
 			),
 			defaultBlock,
 			defaultFluid,
@@ -262,9 +285,10 @@ public final class ChunkGeneratorSettings {
 				1,
 				2,
 				1.0,
-				-0.51875,
+				0.0,
 				false,
-				amplified
+				amplified,
+				VanillaTerrainParametersCreator.createSurfaceParameters()
 			),
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),

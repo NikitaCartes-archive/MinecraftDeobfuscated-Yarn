@@ -11,30 +11,30 @@ import java.util.Map;
 import net.minecraft.datafixer.TypeReferences;
 
 public class BlockEntityIdFix extends DataFix {
-	private static final Map<String, String> RENAMED_BLOCK_ENTITIES = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
-		hashMap.put("Airportal", "minecraft:end_portal");
-		hashMap.put("Banner", "minecraft:banner");
-		hashMap.put("Beacon", "minecraft:beacon");
-		hashMap.put("Cauldron", "minecraft:brewing_stand");
-		hashMap.put("Chest", "minecraft:chest");
-		hashMap.put("Comparator", "minecraft:comparator");
-		hashMap.put("Control", "minecraft:command_block");
-		hashMap.put("DLDetector", "minecraft:daylight_detector");
-		hashMap.put("Dropper", "minecraft:dropper");
-		hashMap.put("EnchantTable", "minecraft:enchanting_table");
-		hashMap.put("EndGateway", "minecraft:end_gateway");
-		hashMap.put("EnderChest", "minecraft:ender_chest");
-		hashMap.put("FlowerPot", "minecraft:flower_pot");
-		hashMap.put("Furnace", "minecraft:furnace");
-		hashMap.put("Hopper", "minecraft:hopper");
-		hashMap.put("MobSpawner", "minecraft:mob_spawner");
-		hashMap.put("Music", "minecraft:noteblock");
-		hashMap.put("Piston", "minecraft:piston");
-		hashMap.put("RecordPlayer", "minecraft:jukebox");
-		hashMap.put("Sign", "minecraft:sign");
-		hashMap.put("Skull", "minecraft:skull");
-		hashMap.put("Structure", "minecraft:structure_block");
-		hashMap.put("Trap", "minecraft:dispenser");
+	private static final Map<String, String> RENAMED_BLOCK_ENTITIES = DataFixUtils.make(Maps.<String, String>newHashMap(), map -> {
+		map.put("Airportal", "minecraft:end_portal");
+		map.put("Banner", "minecraft:banner");
+		map.put("Beacon", "minecraft:beacon");
+		map.put("Cauldron", "minecraft:brewing_stand");
+		map.put("Chest", "minecraft:chest");
+		map.put("Comparator", "minecraft:comparator");
+		map.put("Control", "minecraft:command_block");
+		map.put("DLDetector", "minecraft:daylight_detector");
+		map.put("Dropper", "minecraft:dropper");
+		map.put("EnchantTable", "minecraft:enchanting_table");
+		map.put("EndGateway", "minecraft:end_gateway");
+		map.put("EnderChest", "minecraft:ender_chest");
+		map.put("FlowerPot", "minecraft:flower_pot");
+		map.put("Furnace", "minecraft:furnace");
+		map.put("Hopper", "minecraft:hopper");
+		map.put("MobSpawner", "minecraft:mob_spawner");
+		map.put("Music", "minecraft:noteblock");
+		map.put("Piston", "minecraft:piston");
+		map.put("RecordPlayer", "minecraft:jukebox");
+		map.put("Sign", "minecraft:sign");
+		map.put("Skull", "minecraft:skull");
+		map.put("Structure", "minecraft:structure_block");
+		map.put("Trap", "minecraft:dispenser");
 	});
 
 	public BlockEntityIdFix(Schema outputSchema, boolean changesType) {

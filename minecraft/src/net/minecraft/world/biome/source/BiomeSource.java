@@ -2,15 +2,20 @@ package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.objects.Object2IntFunction;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -24,6 +29,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 public abstract class BiomeSource {
 	public static final Codec<BiomeSource> CODEC = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::getCodec, Function.identity());
@@ -31,23 +37,28 @@ public abstract class BiomeSource {
 	private final ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> field_34469;
 
 	protected BiomeSource(Stream<Supplier<Biome>> stream) {
-		this((List<Biome>)stream.map(Supplier::get).collect(ImmutableList.toImmutableList()));
+		this((List<Biome>)stream.map(Supplier::get).distinct().collect(ImmutableList.toImmutableList()));
 	}
 
 	protected BiomeSource(List<Biome> list) {
 		this.biomes = list;
+		Object2IntMap<ConfiguredFeature<?, ?>> object2IntMap = new Object2IntOpenHashMap<>();
+		MutableInt mutableInt = new MutableInt(0);
 
 		record class_6543() {
+			private final int featureIndex;
 			private final int step;
 			private final ConfiguredFeature<?, ?> feature;
 
-			class_6543(int i, ConfiguredFeature<?, ?> configuredFeature) {
-				this.step = i;
+			class_6543(int i, int j, ConfiguredFeature<?, ?> configuredFeature) {
+				this.featureIndex = i;
+				this.step = j;
 				this.feature = configuredFeature;
 			}
 		}
 
-		Map<class_6543, Set<class_6543>> map = Maps.<class_6543, Set<class_6543>>newHashMap();
+		Comparator<class_6543> comparator = Comparator.comparingInt(class_6543::step).thenComparingInt(class_6543::featureIndex);
+		Map<class_6543, Set<class_6543>> map = new TreeMap(comparator);
 		int i = 0;
 
 		for (Biome biome : list) {
@@ -57,20 +68,27 @@ public abstract class BiomeSource {
 
 			for (int j = 0; j < list3.size(); j++) {
 				for (Supplier<ConfiguredFeature<?, ?>> supplier : (List)list3.get(j)) {
-					list2.add(new class_6543(j, (ConfiguredFeature<?, ?>)supplier.get()));
+					ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)supplier.get();
+					list2.add(
+						new class_6543(
+							object2IntMap.computeIfAbsent(configuredFeature, (Object2IntFunction<? super ConfiguredFeature<?, ?>>)(object -> mutableInt.getAndIncrement())),
+							j,
+							configuredFeature
+						)
+					);
 				}
 			}
 
 			for (int j = 0; j < list2.size(); j++) {
-				Set<class_6543> set = (Set<class_6543>)map.computeIfAbsent((class_6543)list2.get(j), arg -> Sets.newHashSet());
+				Set<class_6543> set = (Set<class_6543>)map.computeIfAbsent((class_6543)list2.get(j), arg -> new TreeSet(comparator));
 				if (j < list2.size() - 1) {
 					set.add((class_6543)list2.get(j + 1));
 				}
 			}
 		}
 
-		Set<class_6543> set2 = Sets.<class_6543>newHashSet();
-		Set<class_6543> set3 = Sets.<class_6543>newHashSet();
+		Set<class_6543> set2 = new TreeSet(comparator);
+		Set<class_6543> set3 = new TreeSet(comparator);
 		List<class_6543> list2 = Lists.<class_6543>newArrayList();
 
 		for (class_6543 lv : map.keySet()) {

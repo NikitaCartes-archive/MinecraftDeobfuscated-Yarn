@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6748;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -35,7 +36,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
-import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
@@ -44,9 +44,12 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.chunk.AquiferSampler;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.tick.BasicTickScheduler;
+import net.minecraft.world.tick.SerializableTickScheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,6 +69,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	@Nullable
 	protected ChunkNoiseSampler chunkNoiseSampler;
 	protected final UpgradeData upgradeData;
+	@Nullable
+	protected Blender blender;
 	protected final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
 	private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
 	private final Map<StructureFeature<?>, LongSet> structureReferences = Maps.<StructureFeature<?>, LongSet>newHashMap();
@@ -73,8 +78,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	protected final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	protected final HeightLimitView heightLimitView;
 	protected final ChunkSection[] sectionArray;
-	protected TickScheduler<Block> blockTickScheduler;
-	protected TickScheduler<Fluid> fluidTickScheduler;
+	@Nullable
+	protected final BlendingData blendingData;
 
 	public Chunk(
 		ChunkPos pos,
@@ -83,8 +88,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		Registry<Biome> biome,
 		long inhabitedTime,
 		@Nullable ChunkSection[] sectionArrayInitializer,
-		TickScheduler<Block> blockTickScheduler,
-		TickScheduler<Fluid> fluidTickScheduler
+		@Nullable BlendingData blendingData
 	) {
 		this.pos = pos;
 		this.upgradeData = upgradeData;
@@ -92,8 +96,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		this.sectionArray = new ChunkSection[heightLimitView.countVerticalSections()];
 		this.inhabitedTime = inhabitedTime;
 		this.postProcessingLists = new ShortList[heightLimitView.countVerticalSections()];
-		this.blockTickScheduler = blockTickScheduler;
-		this.fluidTickScheduler = fluidTickScheduler;
+		this.blendingData = blendingData;
 		if (sectionArrayInitializer != null) {
 			if (this.sectionArray.length == sectionArrayInitializer.length) {
 				System.arraycopy(sectionArrayInitializer, 0, this.sectionArray, 0, this.sectionArray.length);
@@ -167,6 +170,10 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	public Heightmap getHeightmap(Heightmap.Type type) {
 		return (Heightmap)this.heightmaps.computeIfAbsent(type, typex -> new Heightmap(this, typex));
+	}
+
+	public boolean hasHeightmap(Heightmap.Type type) {
+		return this.heightmaps.get(type) != null;
 	}
 
 	public int sampleHeightmap(Heightmap.Type type, int x, int z) {
@@ -305,16 +312,32 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	public abstract Stream<BlockPos> getLightSourcesStream();
 
-	public TickScheduler<Block> getBlockTickScheduler() {
-		return this.blockTickScheduler;
-	}
+	public abstract BasicTickScheduler<Block> getBlockTickScheduler();
 
-	public TickScheduler<Fluid> getFluidTickScheduler() {
-		return this.fluidTickScheduler;
-	}
+	public abstract BasicTickScheduler<Fluid> getFluidTickScheduler();
+
+	public abstract Chunk.TickSchedulers getTickSchedulers();
 
 	public UpgradeData getUpgradeData() {
 		return this.upgradeData;
+	}
+
+	public boolean usesOldNoise() {
+		return this.blendingData != null && this.blendingData.isOldNoise();
+	}
+
+	@Nullable
+	public BlendingData getBlendingData() {
+		return this.blendingData;
+	}
+
+	@Nullable
+	public Blender getBlender() {
+		return this.blender;
+	}
+
+	public void setBlender(Blender blender) {
+		this.blender = blender;
 	}
 
 	public long getInhabitedTime() {
@@ -366,7 +389,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		NoiseColumnSampler noiseColumnSampler,
 		Supplier<ChunkNoiseSampler.ColumnSampler> supplier,
 		Supplier<ChunkGeneratorSettings> settings,
-		AquiferSampler.FluidLevelSampler fluidLevelSampler
+		AquiferSampler.FluidLevelSampler fluidLevelSampler,
+		class_6748 arg
 	) {
 		if (this.chunkNoiseSampler == null) {
 			this.chunkNoiseSampler = new ChunkNoiseSampler(
@@ -380,7 +404,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 				z,
 				(ChunkNoiseSampler.ColumnSampler)supplier.get(),
 				settings,
-				fluidLevelSampler
+				fluidLevelSampler,
+				arg
 			);
 		}
 
@@ -425,5 +450,20 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	public boolean hasStructureReferences() {
 		return !this.structureReferences.isEmpty();
+	}
+
+	@Nullable
+	public BelowZeroRetrogen getBelowZeroRetrogen() {
+		return null;
+	}
+
+	public static record TickSchedulers() {
+		private final SerializableTickScheduler<Block> blocks;
+		private final SerializableTickScheduler<Fluid> fluids;
+
+		public TickSchedulers(SerializableTickScheduler<Block> serializableTickScheduler, SerializableTickScheduler<Fluid> serializableTickScheduler2) {
+			this.blocks = serializableTickScheduler;
+			this.fluids = serializableTickScheduler2;
+		}
 	}
 }

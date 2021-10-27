@@ -7,16 +7,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.carver.CarverContext;
@@ -44,8 +48,12 @@ public class SurfaceBuilder {
 	private final int seaLevel;
 	private final BlockState[] terracottaBands;
 	private final DoublePerlinNoiseSampler terracottaBandsOffsetNoise;
-	private final DoublePerlinNoiseSampler icebergAndBadlandsPillarNoise;
-	private final DoublePerlinNoiseSampler icebergAndBadlandsPillarRoofNoise;
+	private final DoublePerlinNoiseSampler field_35495;
+	private final DoublePerlinNoiseSampler field_35496;
+	private final DoublePerlinNoiseSampler field_35497;
+	private final DoublePerlinNoiseSampler field_35498;
+	private final DoublePerlinNoiseSampler field_35499;
+	private final DoublePerlinNoiseSampler field_35500;
 	private final Registry<DoublePerlinNoiseSampler.NoiseParameters> field_35415;
 	private final Map<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler> noiseSamplers = new ConcurrentHashMap();
 	private final RandomDeriver randomDeriver;
@@ -63,12 +71,16 @@ public class SurfaceBuilder {
 		this.field_35415 = registry;
 		this.defaultBlock = blockState;
 		this.seaLevel = i;
-		this.randomDeriver = randomProvider.create(l).createBlockPosRandomDeriver();
+		this.randomDeriver = randomProvider.create(l).createRandomDeriver();
 		this.terracottaBandsOffsetNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.CLAY_BANDS_OFFSET);
-		this.terracottaBands = createTerracottaBands(this.randomDeriver.createRandom("clay_bands"));
+		this.terracottaBands = createTerracottaBands(this.randomDeriver.createRandom(new Identifier("clay_bands")));
 		this.surfaceNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.SURFACE);
-		this.icebergAndBadlandsPillarNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_AND_BADLANDS_PILLAR);
-		this.icebergAndBadlandsPillarRoofNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_AND_BADLANDS_PILLAR_ROOF);
+		this.field_35495 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR);
+		this.field_35496 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR_ROOF);
+		this.field_35497 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.BADLANDS_SURFACE);
+		this.field_35498 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR);
+		this.field_35499 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR_ROOF);
+		this.field_35500 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_SURFACE);
 	}
 
 	protected DoublePerlinNoiseSampler getNoiseSampler(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey) {
@@ -122,7 +134,7 @@ public class SurfaceBuilder {
 				RegistryKey<Biome> registryKey = (RegistryKey<Biome>)biomeRegistry.getKey(biome)
 					.orElseThrow(() -> new IllegalStateException("Unregistered biome: " + biome));
 				if (registryKey == BiomeKeys.ERODED_BADLANDS) {
-					this.method_39102(q, d, blockColumn, m, n, o);
+					this.method_39102(q, d, blockColumn, m, n, o, chunk);
 				}
 
 				int r = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, k, l) + 1;
@@ -153,17 +165,17 @@ public class SurfaceBuilder {
 					if (blockState.isAir()) {
 						w = 0;
 						y = Integer.MIN_VALUE;
-					} else if (!blockState.isOf(this.defaultBlock.getBlock())) {
+					} else if (!blockState.getFluidState().isEmpty()) {
 						if (y == Integer.MIN_VALUE) {
 							y = aa + 1;
 						}
 					} else {
-						if (materialRuleContext.needsCeilingStoneDepth() && z >= aa) {
-							z = Integer.MIN_VALUE;
+						if (z >= aa) {
+							z = DimensionType.field_35479;
 
-							for (int ab = aa - 1; ab >= u; ab--) {
+							for (int ab = aa - 1; ab >= u - 1; ab--) {
 								BlockState blockState2 = blockColumn.getState(ab);
-								if (!blockState2.isOf(this.defaultBlock.getBlock())) {
+								if (!this.method_39333(blockState2)) {
 									z = ab + 1;
 									break;
 								}
@@ -179,7 +191,7 @@ public class SurfaceBuilder {
 						materialRuleContext.initContextDependentPredicates(registryKey2, biome2, s, w, abx, y, m, aa, n);
 						BlockState blockState3 = blockStateRule.tryApply(m, aa, n);
 						if (blockState3 != null) {
-							blockColumn.setState(aa, this.getBlockStateToPlace(blockColumn, aa, blockState3, (double)y));
+							blockColumn.setState(aa, blockState3);
 						}
 					}
 				}
@@ -189,6 +201,10 @@ public class SurfaceBuilder {
 				}
 			}
 		}
+	}
+
+	private boolean method_39333(BlockState blockState) {
+		return !blockState.isAir() && blockState.getFluidState().isEmpty();
 	}
 
 	@Deprecated
@@ -206,28 +222,31 @@ public class SurfaceBuilder {
 		return Optional.ofNullable(blockState);
 	}
 
-	private void method_39102(int i, double d, BlockColumn chunk, int x, int z, int j) {
-		double e = Math.min(Math.abs(d * 8.25), this.icebergAndBadlandsPillarNoise.sample((double)x * 0.25, 0.0, (double)z * 0.25) * 15.0);
-		if (!(e <= 0.0)) {
-			double f = 0.001953125;
-			double g = Math.abs(this.icebergAndBadlandsPillarRoofNoise.sample((double)x * 0.001953125, 0.0, (double)z * 0.001953125));
-			double h = 64.0 + Math.min(e * e * 2.5, Math.ceil(g * 50.0) + 14.0);
-			int k = Math.max(j, (int)h + 1);
+	private void method_39102(int i, double d, BlockColumn chunk, int x, int z, int j, HeightLimitView heightLimitView) {
+		double e = 0.2;
+		double f = Math.min(
+			Math.abs(this.field_35497.sample((double)x, 0.0, (double)z) * 8.25), this.field_35495.sample((double)x * 0.2, 0.0, (double)z * 0.2) * 15.0
+		);
+		if (!(f <= 0.0)) {
+			double g = 0.75;
+			double h = 1.5;
+			double k = Math.abs(this.field_35496.sample((double)x * 0.75, 0.0, (double)z * 0.75) * 1.5);
+			double l = 64.0 + Math.min(f * f * 2.5, Math.ceil(k * 50.0) + 24.0);
+			int m = MathHelper.floor(l);
+			if (j <= m) {
+				for (int n = m; n >= heightLimitView.getBottomY(); n--) {
+					BlockState blockState = chunk.getState(n);
+					if (blockState.isOf(this.defaultBlock.getBlock())) {
+						break;
+					}
 
-			for (int l = k; l >= i; l--) {
-				BlockState blockState = chunk.getState(l);
-				if (blockState.isOf(this.defaultBlock.getBlock())) {
-					break;
+					if (blockState.isOf(Blocks.WATER)) {
+						return;
+					}
 				}
 
-				if (blockState.isOf(Blocks.WATER)) {
-					return;
-				}
-			}
-
-			for (int l = k; l >= i; l--) {
-				if (chunk.getState(l).isAir() && l < (int)h) {
-					chunk.setState(l, this.defaultBlock);
+				for (int n = m; n >= heightLimitView.getBottomY() && chunk.getState(n).isAir(); n--) {
+					chunk.setState(n, this.defaultBlock);
 				}
 			}
 		}
@@ -235,60 +254,50 @@ public class SurfaceBuilder {
 
 	private void method_39104(int i, Biome biome, double d, BlockColumn chunk, BlockPos.Mutable mutablePos, int x, int z, int surfaceY) {
 		float f = biome.getTemperature(mutablePos.set(x, 63, z));
-		double e = Math.min(Math.abs(d * 8.25), this.icebergAndBadlandsPillarNoise.sample((double)x * 0.1, 0.0, (double)z * 0.1) * 15.0);
-		if (!(e <= 1.8)) {
-			double g = 0.09765625;
-			double h = Math.abs(this.icebergAndBadlandsPillarRoofNoise.sample((double)x * 0.09765625, 0.0, (double)z * 0.09765625));
-			double j = Math.min(e * e * 1.2, Math.ceil(h * 40.0) + 14.0);
+		double e = 1.28;
+		double g = Math.min(
+			Math.abs(this.field_35500.sample((double)x, 0.0, (double)z) * 8.25), this.field_35498.sample((double)x * 1.28, 0.0, (double)z * 1.28) * 15.0
+		);
+		if (!(g <= 1.8)) {
+			double h = 1.17;
+			double j = 1.5;
+			double k = Math.abs(this.field_35499.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
+			double l = Math.min(g * g * 1.2, Math.ceil(k * 40.0) + 14.0);
 			if (f > 0.1F) {
-				j -= 2.0;
+				l -= 2.0;
 			}
 
-			double k;
-			if (j > 2.0) {
-				j += (double)this.seaLevel;
-				k = (double)this.seaLevel - j - 7.0;
+			double m;
+			if (l > 2.0) {
+				l += (double)this.seaLevel;
+				m = (double)this.seaLevel - l - 7.0;
 			} else {
-				j = 0.0;
-				k = 0.0;
+				l = 0.0;
+				m = 0.0;
 			}
 
-			double l = j;
+			double n = l;
 			AbstractRandom abstractRandom = this.randomDeriver.createRandom(x, 0, z);
-			int m = 2 + abstractRandom.nextInt(4);
-			int n = this.seaLevel + 18 + abstractRandom.nextInt(10);
-			int o = 0;
+			int o = 2 + abstractRandom.nextInt(4);
+			int p = this.seaLevel + 18 + abstractRandom.nextInt(10);
+			int q = 0;
 
-			for (int p = Math.max(surfaceY, (int)j + 1); p >= i; p--) {
-				if (chunk.getState(p).isAir() && p < (int)l && abstractRandom.nextDouble() > 0.01
-					|| chunk.getState(p).getMaterial() == Material.WATER && p > (int)k && p < this.seaLevel && k != 0.0 && abstractRandom.nextDouble() > 0.15) {
-					if (o <= m && p > n) {
-						chunk.setState(p, SNOW_BLOCK);
-						o++;
+			for (int r = Math.max(surfaceY, (int)l + 1); r >= i; r--) {
+				if (chunk.getState(r).isAir() && r < (int)n && abstractRandom.nextDouble() > 0.01
+					|| chunk.getState(r).getMaterial() == Material.WATER && r > (int)m && r < this.seaLevel && m != 0.0 && abstractRandom.nextDouble() > 0.15) {
+					if (q <= o && r > p) {
+						chunk.setState(r, SNOW_BLOCK);
+						q++;
 					} else {
-						chunk.setState(p, PACKED_ICE);
+						chunk.setState(r, PACKED_ICE);
 					}
 				}
 			}
 		}
 	}
 
-	private BlockState getBlockStateToPlace(BlockColumn chunk, int y, BlockState state, double waterHeight) {
-		if ((double)y <= waterHeight && state.isOf(Blocks.GRASS_BLOCK)) {
-			return Blocks.DIRT.getDefaultState();
-		} else if (chunk.getState(y - 1).isOf(this.defaultBlock.getBlock())) {
-			return state;
-		} else if (state.isOf(Blocks.SAND)) {
-			return Blocks.SANDSTONE.getDefaultState();
-		} else if (state.isOf(Blocks.RED_SAND)) {
-			return Blocks.RED_SANDSTONE.getDefaultState();
-		} else {
-			return state.isOf(Blocks.GRAVEL) ? Blocks.STONE.getDefaultState() : state;
-		}
-	}
-
 	private static BlockState[] createTerracottaBands(AbstractRandom random) {
-		BlockState[] blockStates = new BlockState[64];
+		BlockState[] blockStates = new BlockState[192];
 		Arrays.fill(blockStates, TERRACOTTA);
 
 		for (int i = 0; i < blockStates.length; i++) {
@@ -301,7 +310,7 @@ public class SurfaceBuilder {
 		addTerracottaBands(random, blockStates, 1, YELLOW_TERRACOTTA);
 		addTerracottaBands(random, blockStates, 2, BROWN_TERRACOTTA);
 		addTerracottaBands(random, blockStates, 1, RED_TERRACOTTA);
-		int ix = random.nextInt(3) + 3;
+		int ix = random.nextBetween(9, 15);
 		int j = 0;
 
 		for (int k = 0; j < ix && k < blockStates.length; k += random.nextInt(16) + 4) {
@@ -321,7 +330,7 @@ public class SurfaceBuilder {
 	}
 
 	private static void addTerracottaBands(AbstractRandom random, BlockState[] terracottaBands, int minBandSize, BlockState state) {
-		int i = random.nextInt(4) + 2;
+		int i = random.nextBetween(6, 15);
 
 		for (int j = 0; j < i; j++) {
 			int k = minBandSize + random.nextInt(3);
@@ -334,7 +343,7 @@ public class SurfaceBuilder {
 	}
 
 	protected BlockState getTerracottaBlock(int x, int y, int z) {
-		int i = (int)Math.round(this.terracottaBandsOffsetNoise.sample((double)x, 0.0, (double)z) * 2.0);
+		int i = (int)Math.round(this.terracottaBandsOffsetNoise.sample((double)x, 0.0, (double)z) * 4.0);
 		return this.terracottaBands[(y + i + this.terracottaBands.length) % this.terracottaBands.length];
 	}
 }

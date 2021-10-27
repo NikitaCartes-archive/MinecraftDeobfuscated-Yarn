@@ -36,7 +36,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	private static final Option[] OPTIONS = new Option[]{
 		Option.GRAPHICS,
 		Option.RENDER_DISTANCE,
-		Option.PRIORITIZE_CHUNK_UPDATES_MODE,
+		Option.CHUNK_BUILDER_MODE,
 		Option.SIMULATION_DISTANCE,
 		Option.AO,
 		Option.FRAMERATE_LIMIT,

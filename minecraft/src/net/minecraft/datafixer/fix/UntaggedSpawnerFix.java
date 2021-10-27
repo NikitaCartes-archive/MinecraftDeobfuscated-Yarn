@@ -30,7 +30,7 @@ public class UntaggedSpawnerFix extends DataFix {
 			type,
 			type2,
 			typed -> typed.updateTyped(opticFinder, type3, typedx -> this.method_37974(type3, typedx))
-					.updateTyped(opticFinder2, type4, typedx -> this.method_37976(type4, typedx))
+					.updateTyped(opticFinder2, type4, typedx -> this.fixSpawner(type4, typedx))
 		);
 	}
 
@@ -39,7 +39,7 @@ public class UntaggedSpawnerFix extends DataFix {
 		return new Typed<>(type, dynamicOps, (T)Pair.<Object, Dynamic<?>>of(typed.getValue(), new Dynamic<>(dynamicOps)));
 	}
 
-	private <T> Typed<T> method_37976(Type<T> type, Typed<?> typed) {
+	private <T> Typed<T> fixSpawner(Type<T> type, Typed<?> typed) {
 		DynamicOps<?> dynamicOps = typed.getOps();
 		List<?> list = (List<?>)typed.getValue();
 		List<?> list2 = list.stream().map(object -> {

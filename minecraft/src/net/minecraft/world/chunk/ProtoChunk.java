@@ -22,47 +22,60 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.world.tick.BasicTickScheduler;
+import net.minecraft.world.tick.ChunkTickScheduler;
+import net.minecraft.world.tick.SimpleTickScheduler;
 
 public class ProtoChunk extends Chunk {
-	private static final Logger LOGGER = LogManager.getLogger();
 	@Nullable
 	private volatile LightingProvider lightingProvider;
 	private volatile ChunkStatus status = ChunkStatus.EMPTY;
 	private final List<NbtCompound> entities = Lists.<NbtCompound>newArrayList();
 	private final List<BlockPos> lightSources = Lists.<BlockPos>newArrayList();
 	private final Map<GenerationStep.Carver, CarvingMask> carvingMasks = new Object2ObjectArrayMap<>();
+	@Nullable
+	private BelowZeroRetrogen belowZeroRetrogen;
+	private final SimpleTickScheduler<Block> blockTickScheduler;
+	private final SimpleTickScheduler<Fluid> fluidTickScheduler;
 
-	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world, Registry<Biome> registry) {
-		this(
-			pos,
-			upgradeData,
-			null,
-			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), pos, world),
-			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos, world),
-			world,
-			registry
-		);
+	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world, Registry<Biome> biomeRegistry, @Nullable BlendingData blendingData) {
+		this(pos, upgradeData, null, new SimpleTickScheduler<>(), new SimpleTickScheduler<>(), world, biomeRegistry, blendingData);
 	}
 
 	public ProtoChunk(
 		ChunkPos pos,
 		UpgradeData upgradeData,
-		@Nullable ChunkSection[] chunkSections,
-		ChunkTickScheduler<Block> blockTickScheduler,
-		ChunkTickScheduler<Fluid> fluidTickScheduler,
+		@Nullable ChunkSection[] sections,
+		SimpleTickScheduler<Block> blockTickScheduler,
+		SimpleTickScheduler<Fluid> fluidTickScheduler,
 		HeightLimitView world,
-		Registry<Biome> registry
+		Registry<Biome> biomeRegistry,
+		@Nullable BlendingData blendingData
 	) {
-		super(pos, upgradeData, world, registry, 0L, chunkSections, blockTickScheduler, fluidTickScheduler);
+		super(pos, upgradeData, world, biomeRegistry, 0L, sections, blendingData);
+		this.blockTickScheduler = blockTickScheduler;
+		this.fluidTickScheduler = fluidTickScheduler;
+	}
+
+	@Override
+	public BasicTickScheduler<Block> getBlockTickScheduler() {
+		return this.blockTickScheduler;
+	}
+
+	@Override
+	public BasicTickScheduler<Fluid> getFluidTickScheduler() {
+		return this.fluidTickScheduler;
+	}
+
+	@Override
+	public Chunk.TickSchedulers getTickSchedulers() {
+		return new Chunk.TickSchedulers(this.blockTickScheduler, this.fluidTickScheduler);
 	}
 
 	@Override
@@ -206,6 +219,10 @@ public class ProtoChunk extends Chunk {
 
 	public void setStatus(ChunkStatus status) {
 		this.status = status;
+		if (this.belowZeroRetrogen != null && status.isAtLeast(this.belowZeroRetrogen.getTargetStatus())) {
+			this.setBelowZeroRetrogen(null);
+		}
+
 		this.setShouldSave(true);
 	}
 
@@ -279,5 +296,27 @@ public class ProtoChunk extends Chunk {
 
 	public void setLightingProvider(LightingProvider lightingProvider) {
 		this.lightingProvider = lightingProvider;
+	}
+
+	public void setBelowZeroRetrogen(@Nullable BelowZeroRetrogen belowZeroRetrogen) {
+		this.belowZeroRetrogen = belowZeroRetrogen;
+	}
+
+	@Nullable
+	@Override
+	public BelowZeroRetrogen getBelowZeroRetrogen() {
+		return this.belowZeroRetrogen;
+	}
+
+	private static <T> ChunkTickScheduler<T> createProtoTickScheduler(SimpleTickScheduler<T> tickScheduler) {
+		return new ChunkTickScheduler<>(tickScheduler.getTicks());
+	}
+
+	public ChunkTickScheduler<Block> getBlockProtoTickScheduler() {
+		return createProtoTickScheduler(this.blockTickScheduler);
+	}
+
+	public ChunkTickScheduler<Fluid> getFluidProtoTickScheduler() {
+		return createProtoTickScheduler(this.fluidTickScheduler);
 	}
 }

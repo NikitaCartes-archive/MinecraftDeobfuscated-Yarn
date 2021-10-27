@@ -21,6 +21,6 @@ public interface StructureWorldAccess extends ServerWorldAccess {
 		return true;
 	}
 
-	default void method_36972(@Nullable Supplier<String> supplier) {
+	default void setCurrentlyGeneratingStructureName(@Nullable Supplier<String> structureName) {
 	}
 }

@@ -451,15 +451,15 @@ public class DolphinEntity extends WaterCreatureEntity {
 			World world = this.dolphin.world;
 			if (this.dolphin.isNearTarget() || this.dolphin.getNavigation().isIdle()) {
 				Vec3d vec3d = Vec3d.ofCenter(this.dolphin.getTreasurePos());
-				Vec3d vec3d2 = NoPenaltyTargeting.find(this.dolphin, 16, 1, vec3d, (float) (Math.PI / 8));
+				Vec3d vec3d2 = NoPenaltyTargeting.findTo(this.dolphin, 16, 1, vec3d, (float) (Math.PI / 8));
 				if (vec3d2 == null) {
-					vec3d2 = NoPenaltyTargeting.find(this.dolphin, 8, 4, vec3d, (float) (Math.PI / 2));
+					vec3d2 = NoPenaltyTargeting.findTo(this.dolphin, 8, 4, vec3d, (float) (Math.PI / 2));
 				}
 
 				if (vec3d2 != null) {
 					BlockPos blockPos = new BlockPos(vec3d2);
 					if (!world.getFluidState(blockPos).isIn(FluidTags.WATER) || !world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.WATER)) {
-						vec3d2 = NoPenaltyTargeting.find(this.dolphin, 8, 5, vec3d, (float) (Math.PI / 2));
+						vec3d2 = NoPenaltyTargeting.findTo(this.dolphin, 8, 5, vec3d, (float) (Math.PI / 2));
 					}
 				}
 

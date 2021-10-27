@@ -46,98 +46,109 @@ public class ResetChunksCommand {
 		serverChunkManager.threadedAnvilChunkStorage.method_37904();
 		Vec3d vec3d = source.getPosition();
 		ChunkPos chunkPos = new ChunkPos(new BlockPos(vec3d));
+		int i = chunkPos.z - radius;
+		int j = chunkPos.z + radius;
+		int k = chunkPos.x - radius;
+		int l = chunkPos.x + radius;
 
-		for (int i = chunkPos.z - radius; i <= chunkPos.z + radius; i++) {
-			for (int j = chunkPos.x - radius; j <= chunkPos.x + radius; j++) {
-				ChunkPos chunkPos2 = new ChunkPos(j, i);
-
-				for (BlockPos blockPos : BlockPos.iterate(
-					chunkPos2.getStartX(), serverWorld.getBottomY(), chunkPos2.getStartZ(), chunkPos2.getEndX(), serverWorld.getTopY() - 1, chunkPos2.getEndZ()
-				)) {
-					serverWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.FORCE_STATE);
+		for (int m = i; m <= j; m++) {
+			for (int n = k; n <= l; n++) {
+				ChunkPos chunkPos2 = new ChunkPos(n, m);
+				WorldChunk worldChunk = serverChunkManager.getWorldChunk(n, m, false);
+				if (worldChunk != null) {
+					for (BlockPos blockPos : BlockPos.iterate(
+						chunkPos2.getStartX(), serverWorld.getBottomY(), chunkPos2.getStartZ(), chunkPos2.getEndX(), serverWorld.getTopY() - 1, chunkPos2.getEndZ()
+					)) {
+						serverWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.FORCE_STATE);
+					}
 				}
 			}
 		}
 
 		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(Util.getMainWorkerExecutor(), "worldgen-resetchunks");
-		long l = System.currentTimeMillis();
-		int k = (radius * 2 + 1) * (radius * 2 + 1);
+		long o = System.currentTimeMillis();
+		int p = (radius * 2 + 1) * (radius * 2 + 1);
 
 		for (ChunkStatus chunkStatus : ImmutableList.of(
 			ChunkStatus.BIOMES, ChunkStatus.NOISE, ChunkStatus.SURFACE, ChunkStatus.CARVERS, ChunkStatus.LIQUID_CARVERS, ChunkStatus.FEATURES
 		)) {
-			long m = System.currentTimeMillis();
+			long q = System.currentTimeMillis();
 			CompletableFuture<Unit> completableFuture = CompletableFuture.supplyAsync(() -> Unit.INSTANCE, taskExecutor::send);
 
-			for (int n = chunkPos.z - radius; n <= chunkPos.z + radius; n++) {
-				for (int o = chunkPos.x - radius; o <= chunkPos.x + radius; o++) {
-					ChunkPos chunkPos3 = new ChunkPos(o, n);
-					List<Chunk> list = Lists.<Chunk>newArrayList();
-					int p = Math.max(1, chunkStatus.getTaskMargin());
+			for (int r = chunkPos.z - radius; r <= chunkPos.z + radius; r++) {
+				for (int s = chunkPos.x - radius; s <= chunkPos.x + radius; s++) {
+					ChunkPos chunkPos3 = new ChunkPos(s, r);
+					WorldChunk worldChunk2 = serverChunkManager.getWorldChunk(s, r, false);
+					if (worldChunk2 != null) {
+						List<Chunk> list = Lists.<Chunk>newArrayList();
+						int t = Math.max(1, chunkStatus.getTaskMargin());
 
-					for (int q = chunkPos3.z - p; q <= chunkPos3.z + p; q++) {
-						for (int r = chunkPos3.x - p; r <= chunkPos3.x + p; r++) {
-							Chunk chunk = serverChunkManager.getChunk(r, q, chunkStatus.getPrevious(), true);
-							Chunk chunk2;
-							if (chunk instanceof ReadOnlyChunk) {
-								chunk2 = new ReadOnlyChunk(((ReadOnlyChunk)chunk).getWrappedChunk(), true);
-							} else if (chunk instanceof WorldChunk) {
-								chunk2 = new ReadOnlyChunk((WorldChunk)chunk, true);
-							} else {
-								chunk2 = chunk;
+						for (int u = chunkPos3.z - t; u <= chunkPos3.z + t; u++) {
+							for (int v = chunkPos3.x - t; v <= chunkPos3.x + t; v++) {
+								Chunk chunk = serverChunkManager.getChunk(v, u, chunkStatus.getPrevious(), true);
+								Chunk chunk2;
+								if (chunk instanceof ReadOnlyChunk) {
+									chunk2 = new ReadOnlyChunk(((ReadOnlyChunk)chunk).getWrappedChunk(), true);
+								} else if (chunk instanceof WorldChunk) {
+									chunk2 = new ReadOnlyChunk((WorldChunk)chunk, true);
+								} else {
+									chunk2 = chunk;
+								}
+
+								list.add(chunk2);
 							}
-
-							list.add(chunk2);
 						}
+
+						completableFuture = completableFuture.thenComposeAsync(
+							unit -> chunkStatus.runGenerationTask(
+										taskExecutor::send,
+										serverWorld,
+										serverChunkManager.getChunkGenerator(),
+										serverWorld.getStructureManager(),
+										serverChunkManager.getLightingProvider(),
+										chunkx -> {
+											throw new UnsupportedOperationException("Not creating full chunks here");
+										},
+										list,
+										true
+									)
+									.thenApply(either -> {
+										if (chunkStatus == ChunkStatus.NOISE) {
+											either.left().ifPresent(chunkx -> Heightmap.populateHeightmaps(chunkx, ChunkStatus.POST_CARVER_HEIGHTMAPS));
+										}
+
+										return Unit.INSTANCE;
+									}),
+							taskExecutor::send
+						);
 					}
-
-					completableFuture = completableFuture.thenComposeAsync(
-						unit -> chunkStatus.runGenerationTask(
-									taskExecutor::send,
-									serverWorld,
-									serverWorld.getChunkManager().getChunkGenerator(),
-									serverWorld.getStructureManager(),
-									serverChunkManager.getLightingProvider(),
-									chunkx -> {
-										throw new UnsupportedOperationException("Not creating full chunks here");
-									},
-									list,
-									true
-								)
-								.thenApply(either -> {
-									if (chunkStatus == ChunkStatus.NOISE) {
-										either.left().ifPresent(chunkx -> Heightmap.populateHeightmaps(chunkx, ChunkStatus.POST_CARVER_HEIGHTMAPS));
-									}
-
-									return Unit.INSTANCE;
-								}),
-						taskExecutor::send
-					);
 				}
 			}
 
 			source.getServer().runTasks(completableFuture::isDone);
-			LOGGER.debug(chunkStatus.getId() + " took " + (System.currentTimeMillis() - m) + " ms");
+			LOGGER.debug(chunkStatus.getId() + " took " + (System.currentTimeMillis() - q) + " ms");
 		}
 
-		long s = System.currentTimeMillis();
+		long w = System.currentTimeMillis();
 
-		for (int t = chunkPos.z - radius; t <= chunkPos.z + radius; t++) {
-			for (int u = chunkPos.x - radius; u <= chunkPos.x + radius; u++) {
-				ChunkPos chunkPos4 = new ChunkPos(u, t);
-
-				for (BlockPos blockPos2 : BlockPos.iterate(
-					chunkPos4.getStartX(), serverWorld.getBottomY(), chunkPos4.getStartZ(), chunkPos4.getEndX(), serverWorld.getTopY() - 1, chunkPos4.getEndZ()
-				)) {
-					serverChunkManager.markForUpdate(blockPos2);
+		for (int x = chunkPos.z - radius; x <= chunkPos.z + radius; x++) {
+			for (int y = chunkPos.x - radius; y <= chunkPos.x + radius; y++) {
+				ChunkPos chunkPos4 = new ChunkPos(y, x);
+				WorldChunk worldChunk3 = serverChunkManager.getWorldChunk(y, x, false);
+				if (worldChunk3 != null) {
+					for (BlockPos blockPos2 : BlockPos.iterate(
+						chunkPos4.getStartX(), serverWorld.getBottomY(), chunkPos4.getStartZ(), chunkPos4.getEndX(), serverWorld.getTopY() - 1, chunkPos4.getEndZ()
+					)) {
+						serverChunkManager.markForUpdate(blockPos2);
+					}
 				}
 			}
 		}
 
-		LOGGER.debug("blockChanged took " + (System.currentTimeMillis() - s) + " ms");
-		long m = System.currentTimeMillis() - l;
+		LOGGER.debug("blockChanged took " + (System.currentTimeMillis() - w) + " ms");
+		long q = System.currentTimeMillis() - o;
 		source.sendFeedback(
-			new LiteralText(String.format("%d chunks have been reset. This took %d ms for %d chunks, or %02f ms per chunk", k, m, k, (float)m / (float)k)), true
+			new LiteralText(String.format("%d chunks have been reset. This took %d ms for %d chunks, or %02f ms per chunk", p, q, p, (float)q / (float)p)), true
 		);
 		return 1;
 	}

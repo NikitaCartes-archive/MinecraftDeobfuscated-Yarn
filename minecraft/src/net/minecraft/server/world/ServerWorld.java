@@ -54,7 +54,6 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
@@ -112,7 +111,6 @@ import net.minecraft.world.IdCountsState;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PortalForcer;
-import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.Vibration;
@@ -138,6 +136,7 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.storage.ChunkDataAccess;
 import net.minecraft.world.storage.EntityChunkDataAccess;
+import net.minecraft.world.tick.WorldTickScheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -149,6 +148,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * all players have left and the world does not contain any forced chunks.
 	 */
 	private static final int SERVER_IDLE_COOLDOWN = 300;
+	private static final int MAX_TICKS = 65536;
 	final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
 	private final ServerChunkManager chunkManager;
 	private final MinecraftServer server;
@@ -159,12 +159,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final SleepManager sleepManager;
 	private int idleTimeout;
 	private final PortalForcer portalForcer;
-	private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<>(
-		this, block -> block.getDefaultState().isAir(), Registry.BLOCK::getId, this::tickBlock
-	);
-	private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<>(
-		this, fluid -> fluid == Fluids.EMPTY, Registry.FLUID::getId, this::tickFluid
-	);
+	private final WorldTickScheduler<Block> blockTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady, this.getProfilerSupplier());
+	private final WorldTickScheduler<Fluid> fluidTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady, this.getProfilerSupplier());
 	final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<>();
 	protected final RaidManager raidManager;
 	private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet<>();
@@ -357,8 +353,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.tickTime();
 		profiler.swap("tickPending");
 		if (!this.isDebugWorld()) {
-			this.blockTickScheduler.tick();
-			this.fluidTickScheduler.tick();
+			long l = this.getTime();
+			profiler.push("blockTicks");
+			this.blockTickScheduler.tick(l, 65536, this::tickBlock);
+			profiler.swap("fluidTicks");
+			this.fluidTickScheduler.tick(l, 65536, this::tickFluid);
+			profiler.pop();
 		}
 
 		profiler.swap("raid");
@@ -613,17 +613,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.idleTimeout = 0;
 	}
 
-	private void tickFluid(ScheduledTick<Fluid> tick) {
-		FluidState fluidState = this.getFluidState(tick.pos);
-		if (fluidState.getFluid() == tick.getObject()) {
-			fluidState.onScheduledTick(this, tick.pos);
+	private void tickFluid(BlockPos pos, Fluid fluid) {
+		FluidState fluidState = this.getFluidState(pos);
+		if (fluidState.isOf(fluid)) {
+			fluidState.onScheduledTick(this, pos);
 		}
 	}
 
-	private void tickBlock(ScheduledTick<Block> tick) {
-		BlockState blockState = this.getBlockState(tick.pos);
-		if (blockState.isOf(tick.getObject())) {
-			blockState.scheduledTick(this, tick.pos, this.random);
+	private void tickBlock(BlockPos pos, Block block) {
+		BlockState blockState = this.getBlockState(pos);
+		if (blockState.isOf(block)) {
+			blockState.scheduledTick(this, pos, this.random);
 		}
 	}
 
@@ -796,6 +796,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public void unloadEntities(WorldChunk chunk) {
 		chunk.clear();
+		chunk.removeChunkTickSchedulers(this);
 	}
 
 	public void removePlayer(ServerPlayerEntity player, Entity.RemovalReason reason) {
@@ -854,7 +855,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			);
 	}
 
-	@Override
 	public int getLogicalHeight() {
 		return this.getDimension().getLogicalHeight();
 	}
@@ -946,11 +946,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return blockState.isOf(event.block()) ? blockState.onSyncedBlockEvent(this, event.pos(), event.type(), event.data()) : false;
 	}
 
-	public ServerTickScheduler<Block> getBlockTickScheduler() {
+	public WorldTickScheduler<Block> getBlockTickScheduler() {
 		return this.blockTickScheduler;
 	}
 
-	public ServerTickScheduler<Fluid> getFluidTickScheduler() {
+	public WorldTickScheduler<Fluid> getFluidTickScheduler() {
 		return this.fluidTickScheduler;
 	}
 
@@ -1221,8 +1221,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 			writer.write(String.format("entities: %s\n", this.entityManager.getDebugString()));
 			writer.write(String.format("block_entity_tickers: %d\n", this.blockEntityTickers.size()));
-			writer.write(String.format("block_ticks: %d\n", this.getBlockTickScheduler().getTicks()));
-			writer.write(String.format("fluid_ticks: %d\n", this.getFluidTickScheduler().getTicks()));
+			writer.write(String.format("block_ticks: %d\n", this.getBlockTickScheduler().getTickCount()));
+			writer.write(String.format("fluid_ticks: %d\n", this.getFluidTickScheduler().getTickCount()));
 			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().toDumpString() + "\n");
 			writer.write(String.format("pending_tasks: %d\n", this.getChunkManager().getPendingTasks()));
 		} catch (Throwable var22) {
@@ -1443,8 +1443,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			getTopFive(this.entityManager.getLookup().iterate(), entity -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()),
 			this.blockEntityTickers.size(),
 			getTopFive(this.blockEntityTickers, BlockEntityTickInvoker::getName),
-			this.getBlockTickScheduler().getTicks(),
-			this.getFluidTickScheduler().getTicks(),
+			this.getBlockTickScheduler().getTickCount(),
+			this.getFluidTickScheduler().getTickCount(),
 			this.asString()
 		);
 	}
@@ -1498,6 +1498,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.entityManager.addEntities(entities);
 	}
 
+	public void disableTickSchedulers(WorldChunk chunk) {
+		chunk.disableTickSchedulers(this.getLevelProperties().getTime());
+	}
+
 	@Override
 	public void close() throws IOException {
 		super.close();
@@ -1513,9 +1517,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return this.entityManager.isLoaded(chunkPos);
 	}
 
-	public boolean isTickingFutureReady(BlockPos pos) {
-		long l = ChunkPos.toLong(pos);
-		return this.isChunkLoaded(l) && this.chunkManager.isTickingFutureReady(l);
+	private boolean isTickingFutureReady(long chunkPos) {
+		return this.isChunkLoaded(chunkPos) && this.chunkManager.isTickingFutureReady(chunkPos);
 	}
 
 	public boolean shouldTickEntity(BlockPos pos) {

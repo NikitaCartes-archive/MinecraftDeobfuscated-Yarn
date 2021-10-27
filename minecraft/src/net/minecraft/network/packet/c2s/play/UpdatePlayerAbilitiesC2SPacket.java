@@ -29,7 +29,7 @@ public class UpdatePlayerAbilitiesC2SPacket implements Packet<ServerPlayPacketLi
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onPlayerAbilities(this);
+		serverPlayPacketListener.onUpdatePlayerAbilities(this);
 	}
 
 	public boolean isFlying() {

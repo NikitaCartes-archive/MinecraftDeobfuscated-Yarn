@@ -20,7 +20,7 @@ public class AboveGroundTargeting {
 				if (blockPos == null) {
 					return null;
 				} else {
-					BlockPos blockPos2 = FuzzyTargeting.tryMake(entity, horizontalRange, bl, blockPos);
+					BlockPos blockPos2 = FuzzyTargeting.towardTarget(entity, horizontalRange, bl, blockPos);
 					if (blockPos2 == null) {
 						return null;
 					} else {

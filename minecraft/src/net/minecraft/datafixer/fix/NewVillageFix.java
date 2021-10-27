@@ -26,10 +26,10 @@ public class NewVillageFix extends DataFix {
 	protected TypeRewriteRule makeRule() {
 		CompoundListType<String, ?> compoundListType = DSL.compoundList(DSL.string(), this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE));
 		OpticFinder<? extends List<? extends Pair<String, ?>>> opticFinder = compoundListType.finder();
-		return this.method_17334(compoundListType);
+		return this.fix(compoundListType);
 	}
 
-	private <SF> TypeRewriteRule method_17334(CompoundListType<String, SF> compoundListType) {
+	private <SF> TypeRewriteRule fix(CompoundListType<String, SF> compoundListType) {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK);
 		Type<?> type2 = this.getInputSchema().getType(TypeReferences.STRUCTURE_FEATURE);
 		OpticFinder<?> opticFinder = type.findField("Level");

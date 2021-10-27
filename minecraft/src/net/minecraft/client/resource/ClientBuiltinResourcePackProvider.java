@@ -228,19 +228,21 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	}
 
 	private void deleteOldServerPack() {
-		try {
-			List<File> list = Lists.<File>newArrayList(FileUtils.listFiles(this.serverPacksRoot, TrueFileFilter.TRUE, null));
-			list.sort(LastModifiedFileComparator.LASTMODIFIED_REVERSE);
-			int i = 0;
+		if (this.serverPacksRoot.isDirectory()) {
+			try {
+				List<File> list = Lists.<File>newArrayList(FileUtils.listFiles(this.serverPacksRoot, TrueFileFilter.TRUE, null));
+				list.sort(LastModifiedFileComparator.LASTMODIFIED_REVERSE);
+				int i = 0;
 
-			for (File file : list) {
-				if (i++ >= 10) {
-					LOGGER.info("Deleting old server resource pack {}", file.getName());
-					FileUtils.deleteQuietly(file);
+				for (File file : list) {
+					if (i++ >= 10) {
+						LOGGER.info("Deleting old server resource pack {}", file.getName());
+						FileUtils.deleteQuietly(file);
+					}
 				}
+			} catch (Exception var5) {
+				LOGGER.error("Error while deleting old server resource pack : {}", var5.getMessage());
 			}
-		} catch (IllegalArgumentException var5) {
-			LOGGER.error("Error while deleting old server resource pack : {}", var5.getMessage());
 		}
 	}
 

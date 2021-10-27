@@ -51,7 +51,7 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onVelocityUpdate(this);
+		clientPlayPacketListener.onEntityVelocityUpdate(this);
 	}
 
 	public int getId() {

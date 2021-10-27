@@ -31,7 +31,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.PrioritizeChunkUpdatesMode;
+import net.minecraft.client.render.ChunkBuilderMode;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
@@ -78,7 +78,7 @@ public class GameOptions {
 	public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
 	public GraphicsMode graphicsMode = GraphicsMode.FANCY;
 	public AoMode ao = AoMode.MAX;
-	public PrioritizeChunkUpdatesMode prioritizeChunkUpdatesMode = PrioritizeChunkUpdatesMode.NONE;
+	public ChunkBuilderMode chunkBuilderMode = ChunkBuilderMode.NONE;
 	public List<String> resourcePacks = Lists.<String>newArrayList();
 	public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
 	public ChatVisibility chatVisibility = ChatVisibility.FULL;
@@ -125,7 +125,6 @@ public class GameOptions {
 	public boolean discreteMouseScroll;
 	public boolean realmsNotifications = true;
 	public boolean reducedDebugInfo;
-	public boolean snooperEnabled = true;
 	public boolean showSubtitles;
 	public boolean backgroundForChatOnly = true;
 	public boolean touchscreen;
@@ -393,7 +392,6 @@ public class GameOptions {
 		this.invertYMouse = visitor.visitBoolean("invertYMouse", this.invertYMouse);
 		this.realmsNotifications = visitor.visitBoolean("realmsNotifications", this.realmsNotifications);
 		this.reducedDebugInfo = visitor.visitBoolean("reducedDebugInfo", this.reducedDebugInfo);
-		this.snooperEnabled = visitor.visitBoolean("snooperEnabled", this.snooperEnabled);
 		this.showSubtitles = visitor.visitBoolean("showSubtitles", this.showSubtitles);
 		this.touchscreen = visitor.visitBoolean("touchscreen", this.touchscreen);
 		this.fullscreen = visitor.visitBoolean("fullscreen", this.fullscreen);
@@ -416,9 +414,7 @@ public class GameOptions {
 		this.difficulty = visitor.visitObject("difficulty", this.difficulty, Difficulty::byOrdinal, Difficulty::getId);
 		this.graphicsMode = visitor.visitObject("graphicsMode", this.graphicsMode, GraphicsMode::byId, GraphicsMode::getId);
 		this.ao = visitor.visitObject("ao", this.ao, GameOptions::loadAo, ao -> Integer.toString(ao.getId()));
-		this.prioritizeChunkUpdatesMode = visitor.visitObject(
-			"prioritizeChunkUpdates", this.prioritizeChunkUpdatesMode, PrioritizeChunkUpdatesMode::get, PrioritizeChunkUpdatesMode::getId
-		);
+		this.chunkBuilderMode = visitor.visitObject("prioritizeChunkUpdates", this.chunkBuilderMode, ChunkBuilderMode::get, ChunkBuilderMode::getId);
 		this.biomeBlendRadius = visitor.visitInt("biomeBlendRadius", this.biomeBlendRadius);
 		this.cloudRenderMode = visitor.visitObject("renderClouds", this.cloudRenderMode, GameOptions::loadCloudRenderMode, GameOptions::saveCloudRenderMode);
 		this.resourcePacks = visitor.visitObject("resourcePacks", this.resourcePacks, GameOptions::parseList, GSON::toJson);
@@ -883,7 +879,7 @@ public class GameOptions {
 			.add(Pair.of("forceUnicodeFont", String.valueOf(this.forceUnicodeFont)))
 			.add(Pair.of("fov", String.valueOf(this.fov)))
 			.add(Pair.of("fovEffectScale", String.valueOf(this.fovEffectScale)))
-			.add(Pair.of("prioritizeChunkUpdates", String.valueOf(this.prioritizeChunkUpdatesMode)))
+			.add(Pair.of("prioritizeChunkUpdates", String.valueOf(this.chunkBuilderMode)))
 			.add(Pair.of("fullscreen", String.valueOf(this.fullscreen)))
 			.add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution)))
 			.add(Pair.of("gamma", String.valueOf(this.gamma)))

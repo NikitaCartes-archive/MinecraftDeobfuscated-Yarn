@@ -22,9 +22,9 @@ public class ItemStackUuidFix extends AbstractUuidFix {
 		return this.fixTypeEverywhereTyped("ItemStackUUIDFix", this.getInputSchema().getType(this.typeReference), typed -> {
 			OpticFinder<?> opticFinder2 = typed.getType().findField("tag");
 			return typed.updateTyped(opticFinder2, typed2 -> typed2.update(DSL.remainderFinder(), dynamic -> {
-					dynamic = this.method_26297(dynamic);
+					dynamic = this.fixAttributeModifiers(dynamic);
 					if ((Boolean)typed.getOptional(opticFinder).map(pair -> "minecraft:player_head".equals(pair.getSecond())).orElse(false)) {
-						dynamic = this.method_26298(dynamic);
+						dynamic = this.fixSkullOwner(dynamic);
 					}
 
 					return dynamic;
@@ -32,14 +32,14 @@ public class ItemStackUuidFix extends AbstractUuidFix {
 		});
 	}
 
-	private Dynamic<?> method_26297(Dynamic<?> dynamic) {
+	private Dynamic<?> fixAttributeModifiers(Dynamic<?> dynamic) {
 		return dynamic.update(
 			"AttributeModifiers",
 			dynamic2 -> dynamic.createList(dynamic2.asStream().map(dynamicxx -> (Dynamic)updateRegularMostLeast(dynamicxx, "UUID", "UUID").orElse(dynamicxx)))
 		);
 	}
 
-	private Dynamic<?> method_26298(Dynamic<?> dynamic) {
+	private Dynamic<?> fixSkullOwner(Dynamic<?> dynamic) {
 		return dynamic.update("SkullOwner", dynamicx -> (Dynamic)updateStringUuid(dynamicx, "Id", "Id").orElse(dynamicx));
 	}
 }

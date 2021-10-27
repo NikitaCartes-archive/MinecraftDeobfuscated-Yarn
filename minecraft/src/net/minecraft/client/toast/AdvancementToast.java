@@ -31,23 +31,23 @@ public class AdvancementToast implements Toast {
 		AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
 		manager.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
 		if (advancementDisplay != null) {
-			List<OrderedText> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
+			List<OrderedText> list = manager.getClient().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
 			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;
 			if (list.size() == 1) {
-				manager.getGame().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0F, 7.0F, i | 0xFF000000);
-				manager.getGame().textRenderer.draw(matrices, (OrderedText)list.get(0), 30.0F, 18.0F, -1);
+				manager.getClient().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0F, 7.0F, i | 0xFF000000);
+				manager.getClient().textRenderer.draw(matrices, (OrderedText)list.get(0), 30.0F, 18.0F, -1);
 			} else {
 				int j = 1500;
 				float f = 300.0F;
 				if (startTime < 1500L) {
 					int k = MathHelper.floor(MathHelper.clamp((float)(1500L - startTime) / 300.0F, 0.0F, 1.0F) * 255.0F) << 24 | 67108864;
-					manager.getGame().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0F, 11.0F, i | k);
+					manager.getClient().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0F, 11.0F, i | k);
 				} else {
 					int k = MathHelper.floor(MathHelper.clamp((float)(startTime - 1500L) / 300.0F, 0.0F, 1.0F) * 252.0F) << 24 | 67108864;
 					int l = this.getHeight() / 2 - list.size() * 9 / 2;
 
 					for (OrderedText orderedText : list) {
-						manager.getGame().textRenderer.draw(matrices, orderedText, 30.0F, (float)l, 16777215 | k);
+						manager.getClient().textRenderer.draw(matrices, orderedText, 30.0F, (float)l, 16777215 | k);
 						l += 9;
 					}
 				}
@@ -56,11 +56,11 @@ public class AdvancementToast implements Toast {
 			if (!this.soundPlayed && startTime > 0L) {
 				this.soundPlayed = true;
 				if (advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE) {
-					manager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0F, 1.0F));
+					manager.getClient().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0F, 1.0F));
 				}
 			}
 
-			manager.getGame().getItemRenderer().renderInGui(advancementDisplay.getIcon(), 8, 8);
+			manager.getClient().getItemRenderer().renderInGui(advancementDisplay.getIcon(), 8, 8);
 			return startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		} else {
 			return Toast.Visibility.HIDE;

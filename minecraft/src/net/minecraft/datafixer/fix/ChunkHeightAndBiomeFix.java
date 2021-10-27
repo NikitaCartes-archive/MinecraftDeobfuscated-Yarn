@@ -11,6 +11,7 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.OptionalDynamic;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -24,26 +25,33 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 public class ChunkHeightAndBiomeFix extends DataFix {
-	public static final String field_35015 = "__dimension";
-	private static final String field_35017 = "ChunkHeightAndBiomeFix";
-	private static final int field_35018 = 16;
-	private static final int field_35019 = 24;
-	private static final int field_35020 = -4;
+	public static final String CONTEXT = "__context";
+	private static final String NAME = "ChunkHeightAndBiomeFix";
+	private static final int CHUNK_SECTIONS_IN_OLD_CHUNK = 16;
+	private static final int CHUNK_SECTIONS_IN_NEW_CHUNK = 24;
+	private static final int MIN_CHUNK_SECTION_Y = -4;
 	private static final int field_35021 = 64;
 	private static final int field_35022 = 9;
 	private static final long field_35023 = 511L;
 	private static final int field_35024 = 64;
-	private static final String[] field_35025 = new String[]{
+	private static final String[] HEIGHTMAP_KEYS = new String[]{
 		"WORLD_SURFACE_WG", "WORLD_SURFACE", "WORLD_SURFACE_IGNORE_SNOW", "OCEAN_FLOOR_WG", "OCEAN_FLOOR", "MOTION_BLOCKING", "MOTION_BLOCKING_NO_LEAVES"
 	};
+	private static final Set<String> OLD_NOISE_STATUSES = Set.of(
+		"noise", "surface", "carvers", "liquid_carvers", "features", "light", "spawn", "heightmaps", "full"
+	);
 	private static final int field_35026 = 16;
 	private static final int field_35027 = 64;
 	private static final int field_35028 = 1008;
@@ -70,17 +78,20 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 			typed -> typed.updateTyped(
 					opticFinder,
 					type3,
-					typedx -> {
-						Dynamic<?> dynamic = typedx.get(DSL.remainderFinder());
-						String string = (String)dynamic.get("__dimension").asString().result().orElse("");
+					typed2 -> {
+						Dynamic<?> dynamic = typed2.get(DSL.remainderFinder());
+						OptionalDynamic<?> optionalDynamic = typed.get(DSL.remainderFinder()).get("__context");
+						String string = (String)optionalDynamic.get("dimension").asString().result().orElse("");
+						String string2 = (String)optionalDynamic.get("generator").asString().result().orElse("");
 						boolean bl = "minecraft:overworld".equals(string);
 						MutableBoolean mutableBoolean = new MutableBoolean();
 						int i = bl ? -4 : 0;
-						Dynamic<?>[] dynamics = method_38806(dynamic, bl, i, mutableBoolean);
-						Dynamic<?> dynamic2 = method_38816(
+						Dynamic<?>[] dynamics = fixBiomes(dynamic, bl, i, mutableBoolean);
+						Dynamic<?> dynamic2 = fixPalette(
 							dynamic.createList(Stream.of(dynamic.createMap(ImmutableMap.of(dynamic.createString("Name"), dynamic.createString("minecraft:air")))))
 						);
-						typedx = typedx.updateTyped(
+						MutableObject<Supplier<ProtoChunkTickListFix.class_6741>> mutableObject = new MutableObject<>(() -> null);
+						typed2 = typed2.updateTyped(
 							opticFinder2,
 							type4,
 							typedxx -> {
@@ -93,7 +104,7 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 											Dynamic<?> dynamic3x = DataFixUtils.orElse(
 												dynamic2xx.get("Palette")
 													.result()
-													.flatMap(dynamic2xxx -> dynamic2xx.get("BlockStates").result().map(dynamic2xxxx -> method_38813(dynamic2xxx, dynamic2xxxx))),
+													.flatMap(dynamic2xxx -> dynamic2xx.get("BlockStates").result().map(dynamic2xxxx -> fixPalette(dynamic2xxx, dynamic2xxxx))),
 												dynamic2
 											);
 											Dynamic<?> dynamic4x = dynamic2xx;
@@ -103,6 +114,14 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 											}
 
 											intSet.add(jx);
+											if (dynamic2xx.get("Y").asInt(Integer.MAX_VALUE) == 0) {
+												mutableObject.setValue(() -> {
+													List<? extends Dynamic<?>> listx = dynamic3x.get("palette").asList(Function.identity());
+													long[] ls = dynamic3x.get("data").asLongStream().toArray();
+													return new ProtoChunkTickListFix.class_6741(listx, ls);
+												});
+											}
+
 											return dynamic4x.set("block_states", dynamic3x).remove("Palette").remove("BlockStates");
 										}
 									)
@@ -124,13 +143,15 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 									.getFirst();
 							}
 						);
-						return typedx.update(DSL.remainderFinder(), dynamicx -> method_38807(dynamicx, bl, mutableBoolean.booleanValue()));
+						return typed2.update(
+							DSL.remainderFinder(), dynamicx -> fixLevel(dynamicx, bl, mutableBoolean.booleanValue(), "minecraft:noise".equals(string2), mutableObject.getValue())
+						);
 					}
 				)
 		);
 	}
 
-	private static Dynamic<?>[] method_38806(Dynamic<?> dynamic, boolean bl, int i, MutableBoolean mutableBoolean) {
+	private static Dynamic<?>[] fixBiomes(Dynamic<?> dynamic, boolean bl, int i, MutableBoolean mutableBoolean) {
 		Dynamic<?>[] dynamics = new Dynamic[bl ? 24 : 16];
 		Optional<IntStream> optional = dynamic.get("Biomes").asIntStreamOpt().result();
 		if (optional.isPresent()) {
@@ -138,17 +159,17 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 			mutableBoolean.setValue(is.length == 1536);
 			if (mutableBoolean.booleanValue()) {
 				for (int j = 0; j < 24; j++) {
-					dynamics[j] = method_38803(dynamic, jx -> is[j * 64 + jx]);
+					dynamics[j] = fixBiomes(dynamic, jx -> is[j * 64 + jx]);
 				}
 			} else {
 				for (int j = 0; j < 16; j++) {
 					int k = j - i;
-					dynamics[k] = method_38803(dynamic, jx -> is[j * 64 + jx]);
+					dynamics[k] = fixBiomes(dynamic, jx -> is[j * 64 + jx]);
 				}
 
 				if (bl) {
-					Dynamic<?> dynamic2 = method_38803(dynamic, ix -> is[ix % 16]);
-					Dynamic<?> dynamic3 = method_38803(dynamic, ix -> is[ix % 16 + 1008]);
+					Dynamic<?> dynamic2 = fixBiomes(dynamic, ix -> is[ix % 16]);
+					Dynamic<?> dynamic3 = fixBiomes(dynamic, ix -> is[ix % 16 + 1008]);
 
 					for (int l = 0; l < 4; l++) {
 						dynamics[l] = dynamic2;
@@ -160,29 +181,82 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 				}
 			}
 		} else {
-			Arrays.fill(dynamics, method_38816(dynamic.createList(Stream.of(dynamic.createString("minecraft:plains")))));
+			Arrays.fill(dynamics, fixPalette(dynamic.createList(Stream.of(dynamic.createString("minecraft:plains")))));
 		}
 
 		return dynamics;
 	}
 
-	private static Dynamic<?> method_38807(Dynamic<?> dynamic, boolean bl, boolean bl2) {
+	private static Dynamic<?> fixLevel(Dynamic<?> dynamic, boolean bl, boolean bl2, boolean bl3, Supplier<ProtoChunkTickListFix.class_6741> supplier) {
 		dynamic = dynamic.remove("Biomes");
 		if (!bl) {
-			return method_38799(dynamic, 16, 0);
+			return fixCarvingMasks(dynamic, 16, 0);
 		} else if (bl2) {
-			return method_38799(dynamic, 24, 0);
+			return fixCarvingMasks(dynamic, 24, 0);
 		} else {
-			dynamic = method_38798(dynamic);
-			dynamic = method_38805(dynamic, "Lights");
-			dynamic = method_38805(dynamic, "LiquidsToBeTicked");
-			dynamic = method_38805(dynamic, "PostProcessing");
-			dynamic = method_38805(dynamic, "ToBeTicked");
-			return method_38799(dynamic, 24, 4);
+			dynamic = fixHeightmaps(dynamic);
+			dynamic = fixChunkSectionList(dynamic, "Lights");
+			dynamic = fixChunkSectionList(dynamic, "LiquidsToBeTicked");
+			dynamic = fixChunkSectionList(dynamic, "PostProcessing");
+			dynamic = fixChunkSectionList(dynamic, "ToBeTicked");
+			dynamic = fixCarvingMasks(dynamic, 24, 4);
+			if (!bl3) {
+				return dynamic;
+			} else {
+				Optional<? extends Dynamic<?>> optional = dynamic.get("Status").result();
+				if (optional.isPresent()) {
+					Dynamic<?> dynamic2 = (Dynamic<?>)optional.get();
+					String string = dynamic2.asString("");
+					if (!"empty".equals(string)) {
+						boolean bl4 = OLD_NOISE_STATUSES.contains(string);
+						boolean bl5 = bl4 || "biomes".equals(string);
+						dynamic = dynamic.set(
+							"blending_data",
+							dynamic.createMap(
+								ImmutableMap.of(dynamic.createString("old_biome"), dynamic.createBoolean(bl5), dynamic.createString("old_noise"), dynamic.createBoolean(bl4))
+							)
+						);
+						ProtoChunkTickListFix.class_6741 lv = (ProtoChunkTickListFix.class_6741)supplier.get();
+						if (lv != null) {
+							BitSet bitSet = new BitSet(256);
+
+							for (int i = 0; i < 16; i++) {
+								for (int j = 0; j < 16; j++) {
+									Dynamic<?> dynamic3 = lv.method_39265(j, 0, i);
+									boolean bl6 = dynamic3 != null && "minecraft:bedrock".equals(dynamic3.get("Name").asString(""));
+									if (!bl6) {
+										bitSet.set(i * 16 + j);
+									}
+								}
+							}
+
+							boolean bl7 = bitSet.cardinality() != bitSet.size();
+							if (bl7) {
+								Dynamic<?> dynamic4 = "full".equals(string) ? dynamic.createString("heightmaps") : dynamic2;
+								dynamic = dynamic.set(
+									"below_zero_retrogen",
+									dynamic.createMap(
+										ImmutableMap.of(
+											dynamic.createString("target_status"),
+											dynamic4,
+											dynamic.createString("missing_bedrock"),
+											dynamic.createLongList(LongStream.of(bitSet.toLongArray()))
+										)
+									)
+								);
+								dynamic = dynamic.set("Status", dynamic.createString("empty"));
+								dynamic = dynamic.set("isLightOn", dynamic.createBoolean(false));
+							}
+						}
+					}
+				}
+
+				return dynamic;
+			}
 		}
 	}
 
-	private static Dynamic<?> method_38799(Dynamic<?> dynamic, int i, int j) {
+	private static Dynamic<?> fixCarvingMasks(Dynamic<?> dynamic, int i, int j) {
 		Dynamic<?> dynamic2 = dynamic.get("CarvingMasks").orElseEmptyMap();
 		dynamic2 = dynamic2.updateMapValues(pair -> {
 			long[] ls = BitSet.valueOf(((Dynamic)pair.getSecond()).asByteBuffer().array()).toLongArray();
@@ -193,7 +267,7 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 		return dynamic.set("CarvingMasks", dynamic2);
 	}
 
-	private static Dynamic<?> method_38805(Dynamic<?> dynamic, String string) {
+	private static Dynamic<?> fixChunkSectionList(Dynamic<?> dynamic, String string) {
 		List<Dynamic<?>> list = (List<Dynamic<?>>)dynamic.get(string).orElseEmptyList().asStream().collect(Collectors.toCollection(ArrayList::new));
 		if (list.size() == 24) {
 			return dynamic;
@@ -209,17 +283,17 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 		}
 	}
 
-	private static Dynamic<?> method_38798(Dynamic<?> dynamic) {
+	private static Dynamic<?> fixHeightmaps(Dynamic<?> dynamic) {
 		return dynamic.update("Heightmaps", dynamicx -> {
-			for (String string : field_35025) {
-				dynamicx = dynamicx.update(string, ChunkHeightAndBiomeFix::method_38812);
+			for (String string : HEIGHTMAP_KEYS) {
+				dynamicx = dynamicx.update(string, ChunkHeightAndBiomeFix::fixHeightmap);
 			}
 
 			return dynamicx;
 		});
 	}
 
-	private static Dynamic<?> method_38812(Dynamic<?> dynamic) {
+	private static Dynamic<?> fixHeightmap(Dynamic<?> dynamic) {
 		return dynamic.createLongList(dynamic.asLongStream().map(l -> {
 			long m = 0L;
 
@@ -239,7 +313,7 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 		}));
 	}
 
-	private static Dynamic<?> method_38803(Dynamic<?> dynamic, Int2IntFunction int2IntFunction) {
+	private static Dynamic<?> fixBiomes(Dynamic<?> dynamic, Int2IntFunction int2IntFunction) {
 		Int2IntMap int2IntMap = new Int2IntLinkedOpenHashMap();
 
 		for (int i = 0; i < 64; i++) {
@@ -252,9 +326,9 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 		Dynamic<?> dynamic2 = dynamic.createList(
 			int2IntMap.keySet().stream().map(integer -> dynamic.createString(RAW_BIOME_IDS.getOrDefault(integer.intValue(), "minecraft:plains")))
 		);
-		int j = method_38793(int2IntMap.size());
+		int j = ceilLog2(int2IntMap.size());
 		if (j == 0) {
-			return method_38816(dynamic2);
+			return fixPalette(dynamic2);
 		} else {
 			int k = 64 / j;
 			int l = (64 + k - 1) / k;
@@ -273,24 +347,24 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 			}
 
 			Dynamic<?> dynamic3 = dynamic.createLongList(Arrays.stream(ls));
-			return method_38802(dynamic2, dynamic3);
+			return fixPaletteWithData(dynamic2, dynamic3);
 		}
 	}
 
-	private static Dynamic<?> method_38816(Dynamic<?> dynamic) {
+	private static Dynamic<?> fixPalette(Dynamic<?> dynamic) {
 		return dynamic.createMap(ImmutableMap.of(dynamic.createString("palette"), dynamic));
 	}
 
-	private static Dynamic<?> method_38802(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
+	private static Dynamic<?> fixPaletteWithData(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
 		return dynamic.createMap(ImmutableMap.of(dynamic.createString("palette"), dynamic, dynamic.createString("data"), dynamic2));
 	}
 
-	private static Dynamic<?> method_38813(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
-		return dynamic.asStream().count() == 1L ? method_38816(dynamic) : method_38802(dynamic, dynamic2);
+	private static Dynamic<?> fixPalette(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
+		return dynamic.asStream().count() == 1L ? fixPalette(dynamic) : fixPaletteWithData(dynamic, dynamic2);
 	}
 
-	public static int method_38793(int i) {
-		return i == 0 ? 0 : (int)Math.ceil(Math.log((double)i) / Math.log(2.0));
+	public static int ceilLog2(int value) {
+		return value == 0 ? 0 : (int)Math.ceil(Math.log((double)value) / Math.log(2.0));
 	}
 
 	static {

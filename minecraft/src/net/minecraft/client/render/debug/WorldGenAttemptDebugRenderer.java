@@ -17,20 +17,20 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
-	private final List<BlockPos> field_4640 = Lists.<BlockPos>newArrayList();
-	private final List<Float> field_4635 = Lists.<Float>newArrayList();
-	private final List<Float> field_4637 = Lists.<Float>newArrayList();
-	private final List<Float> field_4639 = Lists.<Float>newArrayList();
-	private final List<Float> field_4636 = Lists.<Float>newArrayList();
-	private final List<Float> field_4638 = Lists.<Float>newArrayList();
+	private final List<BlockPos> positions = Lists.<BlockPos>newArrayList();
+	private final List<Float> sizes = Lists.<Float>newArrayList();
+	private final List<Float> alphas = Lists.<Float>newArrayList();
+	private final List<Float> reds = Lists.<Float>newArrayList();
+	private final List<Float> greens = Lists.<Float>newArrayList();
+	private final List<Float> blues = Lists.<Float>newArrayList();
 
-	public void method_3872(BlockPos blockPos, float f, float g, float h, float i, float j) {
-		this.field_4640.add(blockPos);
-		this.field_4635.add(f);
-		this.field_4637.add(j);
-		this.field_4639.add(g);
-		this.field_4636.add(h);
-		this.field_4638.add(i);
+	public void addBox(BlockPos pos, float size, float red, float green, float blue, float alpha) {
+		this.positions.add(pos);
+		this.sizes.add(size);
+		this.alphas.add(alpha);
+		this.reds.add(red);
+		this.greens.add(green);
+		this.blues.add(blue);
 	}
 
 	@Override
@@ -43,9 +43,9 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
 
-		for (int i = 0; i < this.field_4640.size(); i++) {
-			BlockPos blockPos = (BlockPos)this.field_4640.get(i);
-			Float float_ = (Float)this.field_4635.get(i);
+		for (int i = 0; i < this.positions.size(); i++) {
+			BlockPos blockPos = (BlockPos)this.positions.get(i);
+			Float float_ = (Float)this.sizes.get(i);
 			float f = float_ / 2.0F;
 			WorldRenderer.drawBox(
 				bufferBuilder,
@@ -55,10 +55,10 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 				(double)((float)blockPos.getX() + 0.5F + f) - cameraX,
 				(double)((float)blockPos.getY() + 0.5F + f) - cameraY,
 				(double)((float)blockPos.getZ() + 0.5F + f) - cameraZ,
-				(Float)this.field_4639.get(i),
-				(Float)this.field_4636.get(i),
-				(Float)this.field_4638.get(i),
-				(Float)this.field_4637.get(i)
+				(Float)this.reds.get(i),
+				(Float)this.greens.get(i),
+				(Float)this.blues.get(i),
+				(Float)this.alphas.get(i)
 			);
 		}
 

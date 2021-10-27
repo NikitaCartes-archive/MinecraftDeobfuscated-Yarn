@@ -60,7 +60,7 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -84,7 +84,7 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 	public void setPowered(BlockState state, World world, BlockPos pos) {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
-		world.getBlockTickScheduler().schedule(pos, this, 8);
+		world.createAndScheduleBlockTick(pos, this, 8);
 		world.syncWorldEvent(WorldEvents.ELECTRICITY_SPARKS, pos, ((Direction)state.get(FACING)).getAxis().ordinal());
 	}
 
@@ -121,7 +121,7 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!state.isOf(oldState.getBlock())) {
-			if ((Boolean)state.get(POWERED) && !world.getBlockTickScheduler().isScheduled(pos, this)) {
+			if ((Boolean)state.get(POWERED) && !world.getBlockTickScheduler().isQueued(pos, this)) {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 			}
 		}

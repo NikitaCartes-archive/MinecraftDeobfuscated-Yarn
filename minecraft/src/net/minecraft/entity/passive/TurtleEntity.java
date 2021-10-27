@@ -385,13 +385,13 @@ public class TurtleEntity extends AnimalEntity {
 
 			if (this.turtle.getNavigation().isIdle()) {
 				Vec3d vec3d = Vec3d.ofBottomCenter(blockPos);
-				Vec3d vec3d2 = NoPenaltyTargeting.find(this.turtle, 16, 3, vec3d, (float) (Math.PI / 10));
+				Vec3d vec3d2 = NoPenaltyTargeting.findTo(this.turtle, 16, 3, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
-					vec3d2 = NoPenaltyTargeting.find(this.turtle, 8, 7, vec3d, (float) (Math.PI / 2));
+					vec3d2 = NoPenaltyTargeting.findTo(this.turtle, 8, 7, vec3d, (float) (Math.PI / 2));
 				}
 
 				if (vec3d2 != null && !bl && !this.turtle.world.getBlockState(new BlockPos(vec3d2)).isOf(Blocks.WATER)) {
-					vec3d2 = NoPenaltyTargeting.find(this.turtle, 16, 5, vec3d, (float) (Math.PI / 2));
+					vec3d2 = NoPenaltyTargeting.findTo(this.turtle, 16, 5, vec3d, (float) (Math.PI / 2));
 				}
 
 				if (vec3d2 == null) {
@@ -524,9 +524,9 @@ public class TurtleEntity extends AnimalEntity {
 		public void tick() {
 			if (this.turtle.getNavigation().isIdle()) {
 				Vec3d vec3d = Vec3d.ofBottomCenter(this.turtle.getTravelPos());
-				Vec3d vec3d2 = NoPenaltyTargeting.find(this.turtle, 16, 3, vec3d, (float) (Math.PI / 10));
+				Vec3d vec3d2 = NoPenaltyTargeting.findTo(this.turtle, 16, 3, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
-					vec3d2 = NoPenaltyTargeting.find(this.turtle, 8, 7, vec3d, (float) (Math.PI / 2));
+					vec3d2 = NoPenaltyTargeting.findTo(this.turtle, 8, 7, vec3d, (float) (Math.PI / 2));
 				}
 
 				if (vec3d2 != null) {

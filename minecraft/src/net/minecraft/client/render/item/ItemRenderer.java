@@ -220,7 +220,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		}
 	}
 
-	public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
+	public BakedModel getModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
 		BakedModel bakedModel;
 		if (stack.isOf(Items.TRIDENT)) {
 			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
@@ -254,13 +254,13 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		int seed
 	) {
 		if (!item.isEmpty()) {
-			BakedModel bakedModel = this.getHeldItemModel(item, world, entity, seed);
+			BakedModel bakedModel = this.getModel(item, world, entity, seed);
 			this.renderItem(item, renderMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel);
 		}
 	}
 
 	public void renderGuiItemIcon(ItemStack stack, int x, int y) {
-		this.renderGuiItemModel(stack, x, y, this.getHeldItemModel(stack, null, null, 0));
+		this.renderGuiItemModel(stack, x, y, this.getModel(stack, null, null, 0));
 	}
 
 	protected void renderGuiItemModel(ItemStack stack, int x, int y, BakedModel model) {
@@ -334,7 +334,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 	private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y, int seed, int depth) {
 		if (!itemStack.isEmpty()) {
-			BakedModel bakedModel = this.getHeldItemModel(itemStack, null, entity, seed);
+			BakedModel bakedModel = this.getModel(itemStack, null, entity, seed);
 			this.zOffset = bakedModel.hasDepth() ? this.zOffset + 50.0F + (float)depth : this.zOffset + 50.0F;
 
 			try {

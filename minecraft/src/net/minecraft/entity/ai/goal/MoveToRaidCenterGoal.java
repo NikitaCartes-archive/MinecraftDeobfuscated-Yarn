@@ -46,7 +46,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			}
 
 			if (!this.actor.isNavigating()) {
-				Vec3d vec3d = NoPenaltyTargeting.find(this.actor, 15, 4, Vec3d.ofBottomCenter(raid.getCenter()), (float) (Math.PI / 2));
+				Vec3d vec3d = NoPenaltyTargeting.findTo(this.actor, 15, 4, Vec3d.ofBottomCenter(raid.getCenter()), (float) (Math.PI / 2));
 				if (vec3d != null) {
 					this.actor.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 				}

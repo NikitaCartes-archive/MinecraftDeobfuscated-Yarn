@@ -23,20 +23,20 @@ public abstract class PointOfInterestRenameFix extends DataFix {
 		if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.POI_CHUNK))) {
 			throw new IllegalStateException("Poi type is not what was expected.");
 		} else {
-			return this.fixTypeEverywhere("POI rename", type, dynamicOps -> pair -> pair.mapSecond(this::method_23299));
+			return this.fixTypeEverywhere("POI rename", type, dynamicOps -> pair -> pair.mapSecond(this::fixPointsOfInterest));
 		}
 	}
 
-	private <T> Dynamic<T> method_23299(Dynamic<T> dynamic) {
+	private <T> Dynamic<T> fixPointsOfInterest(Dynamic<T> dynamic) {
 		return dynamic.update(
 			"Sections",
 			dynamicx -> dynamicx.updateMapValues(
-					pair -> pair.mapSecond(dynamicxx -> dynamicxx.update("Records", dynamicxxx -> DataFixUtils.orElse(this.method_23304(dynamicxxx), dynamicxxx)))
+					pair -> pair.mapSecond(dynamicxx -> dynamicxx.update("Records", dynamicxxx -> DataFixUtils.orElse(this.fixPointOfInterest(dynamicxxx), dynamicxxx)))
 				)
 		);
 	}
 
-	private <T> Optional<Dynamic<T>> method_23304(Dynamic<T> dynamic) {
+	private <T> Optional<Dynamic<T>> fixPointOfInterest(Dynamic<T> dynamic) {
 		return dynamic.asStreamOpt()
 			.<Dynamic<T>>map(
 				stream -> dynamic.createList(

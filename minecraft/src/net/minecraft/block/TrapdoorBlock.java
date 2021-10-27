@@ -90,7 +90,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			state = state.cycle(OPEN);
 			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
 			if ((Boolean)state.get(WATERLOGGED)) {
-				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
 			this.playToggleSound(player, world, pos, (Boolean)state.get(OPEN));
@@ -122,7 +122,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
 				if ((Boolean)state.get(WATERLOGGED)) {
-					world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+					world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 				}
 			}
 		}
@@ -161,7 +161,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);

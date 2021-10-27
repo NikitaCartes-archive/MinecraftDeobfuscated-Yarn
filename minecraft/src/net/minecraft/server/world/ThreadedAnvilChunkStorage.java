@@ -519,7 +519,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				this.world.getProfiler().visit("chunkLoad");
 				NbtCompound nbtCompound = this.getUpdatedChunkNbt(pos);
 				if (nbtCompound != null) {
-					boolean bl = nbtCompound.contains("Level", NbtElement.COMPOUND_TYPE) && nbtCompound.getCompound("Level").contains("Status", NbtElement.STRING_TYPE);
+					boolean bl = nbtCompound.contains("Status", NbtElement.STRING_TYPE);
 					if (bl) {
 						Chunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, nbtCompound);
 						this.mark(pos, chunk.getStatus().getChunkType());
@@ -541,7 +541,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 
 			this.markAsProtoChunk(pos);
-			return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(Registry.BIOME_KEY)));
+			return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(Registry.BIOME_KEY), null));
 		}, this.mainThreadExecutor);
 	}
 
@@ -635,6 +635,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				if (this.loadedChunks.add(chunkPos.toLong())) {
 					worldChunk.setLoadedToWorld(true);
 					worldChunk.updateAllBlockEntities();
+					worldChunk.addChunkTickSchedulers(this.world);
 				}
 
 				return worldChunk;
@@ -648,6 +649,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(either -> either.flatMap(list -> {
 				WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
 				worldChunk.runPostProcessing();
+				this.world.disableTickSchedulers(worldChunk);
 				return Either.left(worldChunk);
 			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
 		completableFuture2.thenAcceptAsync(either -> either.ifLeft(worldChunk -> {
@@ -659,11 +661,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> method_31417(ChunkHolder chunkHolder) {
-		return this.getRegion(chunkHolder.getPos(), 1, ChunkStatus::byDistanceFromFull).thenApplyAsync(either -> either.mapLeft(list -> {
-				WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
-				worldChunk.disableTickSchedulers();
-				return worldChunk;
-			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
+		return this.getRegion(chunkHolder.getPos(), 1, ChunkStatus::byDistanceFromFull)
+			.thenApplyAsync(
+				either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)),
+				runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable))
+			);
 	}
 
 	public int getTotalChunksLoadedCount() {
@@ -794,6 +796,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			.addColumn("block_entity_count")
 			.addColumn("ticking_ticket")
 			.addColumn("ticking_level")
+			.addColumn("block_ticks")
+			.addColumn("fluid_ticks")
 			.startBody(writer);
 		SimulationDistanceLevelPropagator simulationDistanceLevelPropagator = this.ticketManager.getSimulationDistanceTracker();
 
@@ -817,7 +821,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				this.shouldTick(chunkPos),
 				optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0),
 				simulationDistanceLevelPropagator.getTickingTicket(l),
-				simulationDistanceLevelPropagator.getLevel(l)
+				simulationDistanceLevelPropagator.getLevel(l),
+				optional2.map(worldChunk -> worldChunk.getBlockTickScheduler().getTickCount()).orElse(0),
+				optional2.map(worldChunk -> worldChunk.getFluidTickScheduler().getTickCount()).orElse(0)
 			);
 		}
 	}
@@ -836,7 +842,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	@Nullable
 	private NbtCompound getUpdatedChunkNbt(ChunkPos pos) throws IOException {
 		NbtCompound nbtCompound = this.getNbt(pos);
-		return nbtCompound == null ? null : this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound);
+		return nbtCompound == null
+			? null
+			: this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound, this.chunkGenerator.method_39301());
 	}
 
 	boolean shouldTick(ChunkPos pos) {
@@ -1168,10 +1176,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	public String getSaveDir() {
 		return this.saveDir;
-	}
-
-	public CompletableFuture<Void> enableTickSchedulers(WorldChunk chunk) {
-		return this.mainThreadExecutor.submit((Runnable)(() -> chunk.enableTickSchedulers(this.world)));
 	}
 
 	void onChunkStatusChange(ChunkPos chunkPos, ChunkHolder.LevelType levelType) {

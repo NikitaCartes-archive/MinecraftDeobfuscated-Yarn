@@ -39,10 +39,10 @@ public class TutorialToast implements Toast {
 		manager.drawTexture(matrices, 0, 0, 0, 96, this.getWidth(), this.getHeight());
 		this.type.drawIcon(matrices, manager, 6, 6);
 		if (this.description == null) {
-			manager.getGame().textRenderer.draw(matrices, this.title, 30.0F, 12.0F, -11534256);
+			manager.getClient().textRenderer.draw(matrices, this.title, 30.0F, 12.0F, -11534256);
 		} else {
-			manager.getGame().textRenderer.draw(matrices, this.title, 30.0F, 7.0F, -11534256);
-			manager.getGame().textRenderer.draw(matrices, this.description, 30.0F, 18.0F, -16777216);
+			manager.getClient().textRenderer.draw(matrices, this.title, 30.0F, 7.0F, -11534256);
+			manager.getClient().textRenderer.draw(matrices, this.description, 30.0F, 18.0F, -16777216);
 		}
 
 		if (this.hasProgressBar) {

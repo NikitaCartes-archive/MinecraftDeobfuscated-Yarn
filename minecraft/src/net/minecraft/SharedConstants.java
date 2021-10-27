@@ -11,17 +11,17 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2840;
+	public static final int WORLD_VERSION = 2844;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "21w42a";
+	public static final String VERSION_NAME = "21w43a";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.18";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 757;
 	@Deprecated
-	public static final int field_29736 = 46;
+	public static final int field_29736 = 47;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2830;
 	private static final int field_29708 = 30;
 	@Deprecated
@@ -34,7 +34,6 @@ public class SharedConstants {
 	public static final boolean field_29744 = false;
 	public static final boolean field_29745 = false;
 	public static final boolean field_33851 = false;
-	public static final boolean field_29746 = false;
 	public static final boolean field_29747 = false;
 	public static final boolean field_35006 = false;
 	public static final boolean field_29748 = false;
@@ -90,6 +89,9 @@ public class SharedConstants {
 	public static final boolean field_29718 = false;
 	public static final boolean field_33555 = false;
 	public static final boolean field_33640 = false;
+	public static final boolean field_35438 = false;
+	public static final boolean field_35439 = false;
+	public static final boolean field_35440 = false;
 	public static final int DEFAULT_PORT = 25565;
 	public static final boolean field_29720 = false;
 	public static final boolean field_29721 = false;
@@ -159,7 +161,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741870;
+		return 1073741871;
 	}
 
 	public static boolean method_37896(int x, int z) {

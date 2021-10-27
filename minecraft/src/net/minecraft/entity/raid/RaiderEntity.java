@@ -362,9 +362,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 		public void tick() {
 			if (this.raider.getNavigation().isIdle()) {
 				Vec3d vec3d = Vec3d.ofBottomCenter(this.home);
-				Vec3d vec3d2 = NoPenaltyTargeting.find(this.raider, 16, 7, vec3d, (float) (Math.PI / 10));
+				Vec3d vec3d2 = NoPenaltyTargeting.findTo(this.raider, 16, 7, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
-					vec3d2 = NoPenaltyTargeting.find(this.raider, 8, 7, vec3d, (float) (Math.PI / 2));
+					vec3d2 = NoPenaltyTargeting.findTo(this.raider, 8, 7, vec3d, (float) (Math.PI / 2));
 				}
 
 				if (vec3d2 == null) {

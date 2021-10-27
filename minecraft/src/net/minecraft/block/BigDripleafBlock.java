@@ -20,6 +20,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -133,7 +134,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		return blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) || blockState.isOf(this) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+		return blockState.isOf(this) || blockState.isOf(Blocks.BIG_DRIPLEAF_STEM) || blockState.isIn(BlockTags.BIG_DRIPLEAF_PLACEABLE);
 	}
 
 	@Override
@@ -144,7 +145,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 			return Blocks.AIR.getDefaultState();
 		} else {
 			if ((Boolean)state.get(WATERLOGGED)) {
-				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
 			return direction == Direction.UP && neighborState.isOf(this)
@@ -224,7 +225,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 
 		int i = NEXT_TILT_DELAYS.getInt(tilt);
 		if (i != -1) {
-			world.getBlockTickScheduler().schedule(pos, this, i);
+			world.createAndScheduleBlockTick(pos, this, i);
 		}
 	}
 

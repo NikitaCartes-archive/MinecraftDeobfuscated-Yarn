@@ -79,12 +79,12 @@ public class SystemToast implements Toast {
 		}
 
 		if (this.lines == null) {
-			manager.getGame().textRenderer.draw(matrices, this.title, 18.0F, 12.0F, -256);
+			manager.getClient().textRenderer.draw(matrices, this.title, 18.0F, 12.0F, -256);
 		} else {
-			manager.getGame().textRenderer.draw(matrices, this.title, 18.0F, 7.0F, -256);
+			manager.getClient().textRenderer.draw(matrices, this.title, 18.0F, 7.0F, -256);
 
 			for (int k = 0; k < this.lines.size(); k++) {
-				manager.getGame().textRenderer.draw(matrices, (OrderedText)this.lines.get(k), 18.0F, (float)(18 + k * 12), -1);
+				manager.getClient().textRenderer.draw(matrices, (OrderedText)this.lines.get(k), 18.0F, (float)(18 + k * 12), -1);
 			}
 		}
 

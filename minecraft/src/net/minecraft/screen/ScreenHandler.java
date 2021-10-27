@@ -477,8 +477,8 @@ public abstract class ScreenHandler {
 						if (itemStack2.getCount() > o) {
 							slot3.setStack(itemStack2.split(o));
 						} else {
-							slot3.setStack(itemStack2);
 							playerInventory.setStack(button, ItemStack.EMPTY);
+							slot3.setStack(itemStack2);
 						}
 					}
 				} else if (slot3.canTakeItems(player) && slot3.canInsert(itemStack2)) {
@@ -490,8 +490,8 @@ public abstract class ScreenHandler {
 							player.dropItem(itemStack, true);
 						}
 					} else {
-						slot3.setStack(itemStack2);
 						playerInventory.setStack(button, itemStack);
+						slot3.setStack(itemStack2);
 						slot3.onTakeItem(player, itemStack);
 					}
 				}

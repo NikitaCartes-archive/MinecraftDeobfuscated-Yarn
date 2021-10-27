@@ -112,6 +112,7 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> MOSS_REPLACEABLE = register("moss_replaceable");
 	public static final Tag.Identified<Block> LUSH_GROUND_REPLACEABLE = register("lush_ground_replaceable");
 	public static final Tag.Identified<Block> SMALL_DRIPLEAF_PLACEABLE = register("small_dripleaf_placeable");
+	public static final Tag.Identified<Block> BIG_DRIPLEAF_PLACEABLE = register("big_dripleaf_placeable");
 	public static final Tag.Identified<Block> SNOW = register("snow");
 	public static final Tag.Identified<Block> AXE_MINEABLE = register("mineable/axe");
 	public static final Tag.Identified<Block> HOE_MINEABLE = register("mineable/hoe");

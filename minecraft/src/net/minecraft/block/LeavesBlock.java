@@ -62,7 +62,7 @@ public class LeavesBlock extends Block {
 	) {
 		int i = getDistanceFromLog(neighborState) + 1;
 		if (i != 1 || (Integer)state.get(DISTANCE) != i) {
-			world.getBlockTickScheduler().schedule(pos, this, 1);
+			world.createAndScheduleBlockTick(pos, this, 1);
 		}
 
 		return state;

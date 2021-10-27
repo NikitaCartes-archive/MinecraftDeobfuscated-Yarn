@@ -28,6 +28,7 @@ public class MaterialRules {
 	public static final MaterialRules.MaterialCondition STONE_DEPTH_FLOOR_WITH_RUN_DEPTH = new MaterialRules.StoneDepthMaterialCondition(
 		true, VerticalSurfaceType.FLOOR
 	);
+	public static final MaterialRules.MaterialCondition field_35494 = new MaterialRules.StoneDepthMaterialCondition(false, VerticalSurfaceType.CEILING);
 	public static final MaterialRules.MaterialCondition STONE_DEPTH_CEILING = new MaterialRules.StoneDepthMaterialCondition(true, VerticalSurfaceType.CEILING);
 
 	public static MaterialRules.MaterialCondition not(MaterialRules.MaterialCondition target) {
@@ -366,7 +367,6 @@ public class MaterialRules {
 		final List<MaterialRules.Predicate<RegistryKey<Biome>>> biomeDependentPredicates = new ObjectArrayList<>();
 		final List<MaterialRules.Predicate<MaterialRules.MaterialRulePos>> positionalPredicates = new ObjectArrayList<>();
 		final List<MaterialRules.Predicate<MaterialRules.SurfaceContext>> contextDependentPredicates = new ObjectArrayList<>();
-		boolean needsCeilingStoneDepth;
 		final HeightContext heightContext;
 
 		protected MaterialRuleContext(SurfaceBuilder surfaceBuilder, HeightContext heightContext) {
@@ -399,10 +399,6 @@ public class MaterialRules {
 			}
 
 			this.biomeTemperaturePredicate.init(new MaterialRules.MaterialRuleContext.BiomeTemperaturePredicate.BiomeTemperatureContext(biome, x, y, z));
-		}
-
-		protected boolean needsCeilingStoneDepth() {
-			return this.needsCeilingStoneDepth;
 		}
 
 		static class BiomeTemperaturePredicate
@@ -663,10 +659,6 @@ public class MaterialRules {
 
 			StoneDepthPredicate stoneDepthPredicate = new StoneDepthPredicate();
 			materialRuleContext.contextDependentPredicates.add(stoneDepthPredicate);
-			if (bl) {
-				materialRuleContext.needsCeilingStoneDepth = true;
-			}
-
 			return stoneDepthPredicate;
 		}
 	}

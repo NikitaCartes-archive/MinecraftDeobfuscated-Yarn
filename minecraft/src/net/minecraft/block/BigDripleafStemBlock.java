@@ -9,6 +9,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -61,8 +62,7 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Ferti
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		BlockState blockState2 = world.getBlockState(pos.up());
-		return (blockState.isOf(this) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP))
-			&& (blockState2.isOf(this) || blockState2.isOf(Blocks.BIG_DRIPLEAF));
+		return (blockState.isOf(this) || blockState.isIn(BlockTags.BIG_DRIPLEAF_PLACEABLE)) && (blockState2.isOf(this) || blockState2.isOf(Blocks.BIG_DRIPLEAF));
 	}
 
 	protected static boolean placeStemAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
@@ -78,11 +78,11 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Ferti
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((direction == Direction.DOWN || direction == Direction.UP) && !state.canPlaceAt(world, pos)) {
-			world.getBlockTickScheduler().schedule(pos, this, 1);
+			world.createAndScheduleBlockTick(pos, this, 1);
 		}
 
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);

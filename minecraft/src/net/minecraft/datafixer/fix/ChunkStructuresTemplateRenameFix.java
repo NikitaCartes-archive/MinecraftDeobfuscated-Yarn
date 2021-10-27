@@ -132,13 +132,11 @@ public class ChunkStructuresTemplateRenameFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			"ChunkStructuresTemplateRenameFix",
 			type,
-			typed -> typed.updateTyped(
-					opticFinder, typed2 -> typed2.update(DSL.remainderFinder(), dynamic -> this.method_15671(typed.get(DSL.remainderFinder()), dynamic))
-				)
+			typed -> typed.updateTyped(opticFinder, typed2 -> typed2.update(DSL.remainderFinder(), dynamic -> this.fix(typed.get(DSL.remainderFinder()), dynamic)))
 		);
 	}
 
-	private Dynamic<?> method_15671(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
+	private Dynamic<?> fix(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
 		String string = dynamic.get("id").asString("");
 		if (STRUCTURES.containsKey(string)) {
 			Pair<String, ImmutableMap<String, String>> pair = STRUCTURES.get(string);

@@ -152,7 +152,7 @@ public class StructureTestUtil {
 		forceLoadNearbyChunks(pos, world);
 		clearArea(blockBox, pos.getY(), world);
 		StructureBlockBlockEntity structureBlockBlockEntity = placeStructure(structureName, blockPos, rotation, world, bl);
-		world.getBlockTickScheduler().getScheduledTicks(blockBox, true, false);
+		world.getBlockTickScheduler().clearNextTicks(blockBox);
 		world.clearUpdatesInArea(blockBox);
 		return structureBlockBlockEntity;
 	}
@@ -172,7 +172,7 @@ public class StructureTestUtil {
 	public static void clearArea(BlockBox area, int altitude, ServerWorld world) {
 		BlockBox blockBox = new BlockBox(area.getMinX() - 2, area.getMinY() - 3, area.getMinZ() - 3, area.getMaxX() + 3, area.getMaxY() + 20, area.getMaxZ() + 3);
 		BlockPos.stream(blockBox).forEach(pos -> resetBlock(altitude, pos, world));
-		world.getBlockTickScheduler().getScheduledTicks(blockBox, true, false);
+		world.getBlockTickScheduler().clearNextTicks(blockBox);
 		world.clearUpdatesInArea(blockBox);
 		Box box = new Box(
 			(double)blockBox.getMinX(),

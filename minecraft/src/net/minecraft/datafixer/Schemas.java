@@ -40,6 +40,7 @@ import net.minecraft.datafixer.fix.CauldronRenameFix;
 import net.minecraft.datafixer.fix.ChoiceFix;
 import net.minecraft.datafixer.fix.ChoiceTypesFix;
 import net.minecraft.datafixer.fix.ChunkHeightAndBiomeFix;
+import net.minecraft.datafixer.fix.ChunkLevelTagRenameFix;
 import net.minecraft.datafixer.fix.ChunkLightRemoveFix;
 import net.minecraft.datafixer.fix.ChunkPalettedStorageFix;
 import net.minecraft.datafixer.fix.ChunkStatusFix;
@@ -120,6 +121,7 @@ import net.minecraft.datafixer.fix.OptionsLowerCaseLanguageFix;
 import net.minecraft.datafixer.fix.PersistentStateUuidFix;
 import net.minecraft.datafixer.fix.PlayerUuidFix;
 import net.minecraft.datafixer.fix.PointOfInterestReorganizationFix;
+import net.minecraft.datafixer.fix.ProtoChunkTickListFix;
 import net.minecraft.datafixer.fix.RecipeFix;
 import net.minecraft.datafixer.fix.RecipeRenameFix;
 import net.minecraft.datafixer.fix.RecipeRenamingFix;
@@ -201,6 +203,7 @@ import net.minecraft.datafixer.schema.Schema2704;
 import net.minecraft.datafixer.schema.Schema2707;
 import net.minecraft.datafixer.schema.Schema2831;
 import net.minecraft.datafixer.schema.Schema2832;
+import net.minecraft.datafixer.schema.Schema2842;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -791,6 +794,12 @@ public class Schemas {
 		builder.addFixer(new WorldGenSettingsDisallowOldCustomWorldsFix(schema146));
 		Schema schema147 = builder.addSchema(2838, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BiomeRenameFix(schema147, false, "Caves and Cliffs biome renames", LegacyBiomeMapping.MAP));
+		Schema schema148 = builder.addSchema(2841, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ProtoChunkTickListFix(schema148));
+		Schema schema149 = builder.addSchema(2842, Schema2842::new);
+		builder.addFixer(new ChunkLevelTagRenameFix(schema149));
+		Schema schema150 = builder.addSchema(2843, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BiomeRenameFix(schema150, false, "Remove Deep Warm Ocean", Map.of("minecraft:deep_warm_ocean", "minecraft:warm_ocean")));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

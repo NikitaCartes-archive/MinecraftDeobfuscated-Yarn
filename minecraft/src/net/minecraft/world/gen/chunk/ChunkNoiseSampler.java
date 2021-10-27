@@ -7,8 +7,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.class_6748;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.source.BiomeCoords;
@@ -26,16 +26,12 @@ public class ChunkNoiseSampler {
 	private final int biomeX;
 	private final int biomeZ;
 	final List<ChunkNoiseSampler.NoiseInterpolator> interpolators;
-	private final double[][] noiseX;
-	private final double[][] noiseZ;
-	private final double[][] continentalness;
-	private final double[][] weirdness;
-	private final double[][] erosion;
-	private final TerrainNoisePoint[][] terrainNoisePoint;
+	private final NoiseColumnSampler.class_6747[][] field_35486;
 	private final Long2ObjectMap<TerrainNoisePoint> terrainNoisePoints = new Long2ObjectOpenHashMap<>();
 	private final AquiferSampler aquiferSampler;
 	private final ChunkNoiseSampler.BlockStateSampler initialNoiseBlockStateSampler;
 	private final ChunkNoiseSampler.BlockStateSampler oreVeinSampler;
+	private final class_6748 field_35487;
 
 	public ChunkNoiseSampler(
 		int horizontalNoiseResolution,
@@ -48,7 +44,8 @@ public class ChunkNoiseSampler {
 		int z,
 		ChunkNoiseSampler.ColumnSampler columnSampler,
 		Supplier<ChunkGeneratorSettings> settings,
-		AquiferSampler.FluidLevelSampler fluidLevelSampler
+		AquiferSampler.FluidLevelSampler fluidLevelSampler,
+		class_6748 arg
 	) {
 		this.horizontalNoiseResolution = horizontalNoiseResolution;
 		this.verticalNoiseResolution = verticalNoiseResolution;
@@ -61,31 +58,16 @@ public class ChunkNoiseSampler {
 		this.biomeX = BiomeCoords.fromBlock(x);
 		this.biomeZ = BiomeCoords.fromBlock(z);
 		int i = BiomeCoords.fromBlock(horizontalSize * horizontalNoiseResolution);
-		this.noiseX = new double[i + 1][];
-		this.noiseZ = new double[i + 1][];
-		this.continentalness = new double[i + 1][];
-		this.weirdness = new double[i + 1][];
-		this.erosion = new double[i + 1][];
-		this.terrainNoisePoint = new TerrainNoisePoint[i + 1][];
+		this.field_35486 = new NoiseColumnSampler.class_6747[i + 1][];
+		this.field_35487 = arg;
 
 		for (int j = 0; j <= i; j++) {
 			int k = this.biomeX + j;
-			this.noiseX[j] = new double[i + 1];
-			this.noiseZ[j] = new double[i + 1];
-			this.continentalness[j] = new double[i + 1];
-			this.weirdness[j] = new double[i + 1];
-			this.erosion[j] = new double[i + 1];
-			this.terrainNoisePoint[j] = new TerrainNoisePoint[i + 1];
+			this.field_35486[j] = new NoiseColumnSampler.class_6747[i + 1];
 
 			for (int l = 0; l <= i; l++) {
 				int m = this.biomeZ + l;
-				ChunkNoiseSampler.MultiNoisePoint multiNoisePoint = createMultiNoisePoint(noiseColumnSampler, k, m);
-				this.noiseX[j][l] = multiNoisePoint.noiseX;
-				this.noiseZ[j][l] = multiNoisePoint.noiseZ;
-				this.continentalness[j][l] = multiNoisePoint.continentalness;
-				this.weirdness[j][l] = multiNoisePoint.weirdness;
-				this.erosion[j][l] = multiNoisePoint.erosion;
-				this.terrainNoisePoint[j][l] = multiNoisePoint.terrainNoisePoint;
+				this.field_35486[j][l] = noiseColumnSampler.method_39330(k, m, arg);
 			}
 		}
 
@@ -98,55 +80,31 @@ public class ChunkNoiseSampler {
 		this.oreVeinSampler = noiseColumnSampler.createOreVeinSampler(this, ((ChunkGeneratorSettings)settings.get()).hasOreVeins());
 	}
 
-	@Debug
-	public static ChunkNoiseSampler.MultiNoisePoint createMultiNoisePoint(NoiseColumnSampler noiseColumnSampler, int x, int z) {
-		return new ChunkNoiseSampler.MultiNoisePoint(noiseColumnSampler, x, z);
+	public NoiseColumnSampler.class_6747 createMultiNoisePoint(int x, int z) {
+		return this.field_35486[x - this.biomeX][z - this.biomeZ];
 	}
 
-	public double getNoiseX(int x, int z) {
-		return this.noiseX[x - this.biomeX][z - this.biomeZ];
-	}
-
-	public double getNoiseZ(int x, int z) {
-		return this.noiseZ[x - this.biomeX][z - this.biomeZ];
-	}
-
-	public double getContinentalness(int x, int z) {
-		return this.continentalness[x - this.biomeX][z - this.biomeZ];
-	}
-
-	public double getWeirdness(int x, int z) {
-		return this.weirdness[x - this.biomeX][z - this.biomeZ];
-	}
-
-	public double getErosion(int x, int z) {
-		return this.erosion[x - this.biomeX][z - this.biomeZ];
-	}
-
-	public TerrainNoisePoint getTerrainNoisePoint(int x, int z) {
-		return this.terrainNoisePoint[x - this.biomeX][z - this.biomeZ];
-	}
-
-	public TerrainNoisePoint getTerrainNoisePoint(NoiseColumnSampler columnSampler, int x, int z) {
+	public TerrainNoisePoint getTerrainNoisePoint(NoiseColumnSampler noiseColumnSampler, int x, int z) {
 		int i = x - this.biomeX;
 		int j = z - this.biomeZ;
-		int k = this.terrainNoisePoint.length;
+		int k = this.field_35486.length;
 		return i >= 0 && j >= 0 && i < k && j < k
-			? this.terrainNoisePoint[i][j]
+			? this.field_35486[i][j].terrainInfo()
 			: this.terrainNoisePoints
 				.computeIfAbsent(
 					ChunkPos.toLong(x, z),
-					(Long2ObjectFunction<? extends TerrainNoisePoint>)(pos -> createMultiNoisePoint(columnSampler, ChunkPos.getPackedX(pos), ChunkPos.getPackedZ(pos)).terrainNoisePoint)
+					(Long2ObjectFunction<? extends TerrainNoisePoint>)(l -> noiseColumnSampler.method_39330(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), this.field_35487)
+							.terrainInfo())
 				);
 	}
 
 	public TerrainNoisePoint getInterpolatedTerrainNoisePoint(int x, int z) {
 		int i = BiomeCoords.fromBlock(x) - this.biomeX;
 		int j = BiomeCoords.fromBlock(z) - this.biomeZ;
-		TerrainNoisePoint terrainNoisePoint = this.terrainNoisePoint[i][j];
-		TerrainNoisePoint terrainNoisePoint2 = this.terrainNoisePoint[i][j + 1];
-		TerrainNoisePoint terrainNoisePoint3 = this.terrainNoisePoint[i + 1][j];
-		TerrainNoisePoint terrainNoisePoint4 = this.terrainNoisePoint[i + 1][j + 1];
+		TerrainNoisePoint terrainNoisePoint = this.field_35486[i][j].terrainInfo();
+		TerrainNoisePoint terrainNoisePoint2 = this.field_35486[i][j + 1].terrainInfo();
+		TerrainNoisePoint terrainNoisePoint3 = this.field_35486[i + 1][j].terrainInfo();
+		TerrainNoisePoint terrainNoisePoint4 = this.field_35486[i + 1][j + 1].terrainInfo();
 		double d = (double)Math.floorMod(x, 4) / 4.0;
 		double e = (double)Math.floorMod(z, 4) / 4.0;
 		double f = MathHelper.lerp2(d, e, terrainNoisePoint.offset(), terrainNoisePoint3.offset(), terrainNoisePoint2.offset(), terrainNoisePoint4.offset());
@@ -157,6 +115,10 @@ public class ChunkNoiseSampler {
 
 	public ChunkNoiseSampler.NoiseInterpolator createNoiseInterpolator(ChunkNoiseSampler.ColumnSampler columnSampler) {
 		return new ChunkNoiseSampler.NoiseInterpolator(columnSampler);
+	}
+
+	public class_6748 method_39327() {
+		return this.field_35487;
 	}
 
 	public void sampleStartNoise() {
@@ -210,27 +172,6 @@ public class ChunkNoiseSampler {
 	@FunctionalInterface
 	public interface ColumnSampler {
 		double calculateNoise(int x, int y, int z);
-	}
-
-	public static final class MultiNoisePoint {
-		final double noiseX;
-		final double noiseZ;
-		final double continentalness;
-		final double weirdness;
-		final double erosion;
-		@Debug
-		public final TerrainNoisePoint terrainNoisePoint;
-
-		MultiNoisePoint(NoiseColumnSampler noiseColumnSampler, int x, int z) {
-			this.noiseX = (double)x + noiseColumnSampler.sampleShiftNoise(x, 0, z);
-			this.noiseZ = (double)z + noiseColumnSampler.sampleShiftNoise(z, x, 0);
-			this.continentalness = noiseColumnSampler.sampleContinentalnessNoise(this.noiseX, 0.0, this.noiseZ);
-			this.weirdness = noiseColumnSampler.sampleWeirdnessNoise(this.noiseX, 0.0, this.noiseZ);
-			this.erosion = noiseColumnSampler.sampleErosionNoise(this.noiseX, 0.0, this.noiseZ);
-			this.terrainNoisePoint = noiseColumnSampler.createTerrainNoisePoint(
-				BiomeCoords.toBlock(x), BiomeCoords.toBlock(z), (float)this.continentalness, (float)this.weirdness, (float)this.erosion
-			);
-		}
 	}
 
 	public class NoiseInterpolator implements ChunkNoiseSampler.ValueSampler {

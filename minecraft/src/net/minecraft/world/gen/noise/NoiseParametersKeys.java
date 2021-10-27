@@ -42,10 +42,14 @@ public class NoiseParametersKeys {
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> NOODLE_RIDGE_A = register("noodle_ridge_a");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> NOODLE_RIDGE_B = register("noodle_ridge_b");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> JAGGED = register("jagged");
-	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CLAY_BANDS_OFFSET = register("clay_bands_offset");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SURFACE = register("surface");
-	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_AND_BADLANDS_PILLAR = register("iceberg_and_badlands_pillar");
-	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_AND_BADLANDS_PILLAR_ROOF = register("iceberg_and_badlands_pillar_roof");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CLAY_BANDS_OFFSET = register("clay_bands_offset");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_PILLAR = register("badlands_pillar");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_PILLAR_ROOF = register("badlands_pillar_roof");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_SURFACE = register("badlands_surface");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_PILLAR = register("iceberg_pillar");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_PILLAR_ROOF = register("iceberg_pillar_roof");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICEBERG_SURFACE = register("iceberg_surface");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SURFACE_SWAMP = register("surface_swamp");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CALCITE = register("calcite");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> GRAVEL = register("gravel");

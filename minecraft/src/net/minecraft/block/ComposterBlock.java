@@ -215,7 +215,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if ((Integer)state.get(LEVEL) == 7) {
-			world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
+			world.createAndScheduleBlockTick(pos, state.getBlock(), 20);
 		}
 	}
 
@@ -285,7 +285,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			BlockState blockState = state.with(LEVEL, Integer.valueOf(j));
 			world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
 			if (j == 7) {
-				world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
+				world.createAndScheduleBlockTick(pos, state.getBlock(), 20);
 			}
 
 			return blockState;

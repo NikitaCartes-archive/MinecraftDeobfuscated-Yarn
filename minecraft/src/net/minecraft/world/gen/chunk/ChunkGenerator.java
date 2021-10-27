@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6748;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -145,9 +146,13 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 	protected abstract Codec<? extends ChunkGenerator> getCodec();
 
+	public Optional<RegistryKey<Codec<? extends ChunkGenerator>>> method_39301() {
+		return Registry.CHUNK_GENERATOR.getKey(this.getCodec());
+	}
+
 	public abstract ChunkGenerator withSeed(long seed);
 
-	public CompletableFuture<Chunk> populateBiomes(Executor executor, Registry<Biome> biomeRegistry, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateBiomes(Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
 		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
 			chunk.method_38257(this.biomeSource, this.getMultiNoiseSampler());
 			return chunk;
@@ -256,7 +261,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 							Supplier<String> supplier = () -> (String)registry2.getKey(structureFeature).map(Object::toString).orElseGet(structureFeature::toString);
 
 							try {
-								world.method_36972(supplier);
+								world.setCurrentlyGeneratingStructureName(supplier);
 								structureAccessor.method_38853(ChunkSectionPos.from(blockPos), structureFeature)
 									.forEach(
 										structureStart -> structureStart.generateStructure(
@@ -279,7 +284,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 							chunkRandom.setDecoratorSeed(s, v, u);
 
 							try {
-								world.method_36972(supplier2);
+								world.setCurrentlyGeneratingStructureName(supplier2);
 								configuredFeature.generate(Optional.of(configuredFeature), world, this, chunkRandom, blockPos);
 							} catch (Exception var32) {
 								CrashReport crashReport2 = CrashReport.create(var32, "Feature placement");
@@ -292,7 +297,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 					}
 				}
 
-				world.method_36972(null);
+				world.setCurrentlyGeneratingStructureName(null);
 			} catch (Exception var33) {
 				CrashReport crashReport3 = CrashReport.create(var33, "Biome decoration");
 				crashReport3.addElement("Generation").add("CenterX", i).add("CenterZ", j).add("Seed", s);
@@ -438,7 +443,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 	/**
 	 * Generates the base shape of the chunk out of the basic block states as decided by this chunk generator's config.
 	 */
-	public abstract CompletableFuture<Chunk> populateNoise(Executor executor, StructureAccessor accessor, Chunk chunk);
+	public abstract CompletableFuture<Chunk> populateNoise(Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk);
 
 	public abstract int getSeaLevel();
 

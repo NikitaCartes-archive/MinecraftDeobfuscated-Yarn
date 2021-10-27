@@ -132,11 +132,11 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!world.isClient() && !state.isOf(oldState.getBlock())) {
-			if ((Integer)state.get(POWER) > 0 && !world.getBlockTickScheduler().isScheduled(pos, this)) {
+			if ((Integer)state.get(POWER) > 0 && !world.getBlockTickScheduler().isQueued(pos, this)) {
 				world.setBlockState(pos, state.with(POWER, Integer.valueOf(0)), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 			}
 
-			world.getBlockTickScheduler().schedule(new BlockPos(pos), state.getBlock(), 1);
+			world.createAndScheduleBlockTick(new BlockPos(pos), state.getBlock(), 1);
 		}
 	}
 
@@ -156,7 +156,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -217,7 +217,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 
 	public static void setCooldown(World world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.COOLDOWN).with(POWER, Integer.valueOf(0)), Block.NOTIFY_ALL);
-		world.getBlockTickScheduler().schedule(new BlockPos(pos), state.getBlock(), 1);
+		world.createAndScheduleBlockTick(new BlockPos(pos), state.getBlock(), 1);
 		if (!(Boolean)state.get(WATERLOGGED)) {
 			world.playSound(null, pos, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING_STOP, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.2F + 0.8F);
 		}
@@ -227,7 +227,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 
 	public static void setActive(World world, BlockPos pos, BlockState state, int power) {
 		world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE).with(POWER, Integer.valueOf(power)), Block.NOTIFY_ALL);
-		world.getBlockTickScheduler().schedule(new BlockPos(pos), state.getBlock(), 40);
+		world.createAndScheduleBlockTick(new BlockPos(pos), state.getBlock(), 40);
 		updateNeighbors(world, pos);
 		if (!(Boolean)state.get(WATERLOGGED)) {
 			world.playSound(

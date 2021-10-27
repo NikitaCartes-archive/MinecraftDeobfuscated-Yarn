@@ -93,7 +93,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			int y = 16;
 
 			for (int z = 0; z <= 16; z++) {
-				method_23172(v, w, x, vertexConsumer2, entry2, percentage(z, 16), percentage(z + 1, 16));
+				renderFishingLine(v, w, x, vertexConsumer2, entry2, percentage(z, 16), percentage(z + 1, 16));
 			}
 
 			matrixStack.pop();
@@ -115,18 +115,18 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			.next();
 	}
 
-	private static void method_23172(float x, float y, float z, VertexConsumer buffer, MatrixStack.Entry normal, float f, float g) {
-		float h = x * f;
-		float i = y * (f * f + f) * 0.5F + 0.25F;
-		float j = z * f;
-		float k = x * g - h;
-		float l = y * (g * g + g) * 0.5F + 0.25F - i;
-		float m = z * g - j;
-		float n = MathHelper.sqrt(k * k + l * l + m * m);
-		k /= n;
-		l /= n;
-		m /= n;
-		buffer.vertex(normal.getPositionMatrix(), h, i, j).color(0, 0, 0, 255).normal(normal.getNormalMatrix(), k, l, m).next();
+	private static void renderFishingLine(float x, float y, float z, VertexConsumer buffer, MatrixStack.Entry matrices, float segmentStart, float segmentEnd) {
+		float f = x * segmentStart;
+		float g = y * (segmentStart * segmentStart + segmentStart) * 0.5F + 0.25F;
+		float h = z * segmentStart;
+		float i = x * segmentEnd - f;
+		float j = y * (segmentEnd * segmentEnd + segmentEnd) * 0.5F + 0.25F - g;
+		float k = z * segmentEnd - h;
+		float l = MathHelper.sqrt(i * i + j * j + k * k);
+		i /= l;
+		j /= l;
+		k /= l;
+		buffer.vertex(matrices.getPositionMatrix(), f, g, h).color(0, 0, 0, 255).normal(matrices.getNormalMatrix(), i, j, k).next();
 	}
 
 	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {

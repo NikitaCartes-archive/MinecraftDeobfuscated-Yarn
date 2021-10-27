@@ -96,7 +96,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 								boolean bl2 = tx >= 4;
 								structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
 								if (bl2) {
-									structureWorldAccess.getBlockTickScheduler().schedule(blockPos2, CAVE_AIR.getBlock(), 0);
+									structureWorldAccess.createAndScheduleBlockTick(blockPos2, CAVE_AIR.getBlock(), 0);
 									this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos2);
 								}
 							}

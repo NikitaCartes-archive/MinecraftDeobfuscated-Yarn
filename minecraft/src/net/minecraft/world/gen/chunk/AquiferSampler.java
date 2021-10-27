@@ -10,14 +10,13 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 import org.apache.commons.lang3.mutable.MutableDouble;
 
 public interface AquiferSampler {
-	int field_35121 = -4096;
-
 	static AquiferSampler aquifer(
 		ChunkNoiseSampler chunkNoiseSampler,
 		ChunkPos chunkPos,
@@ -111,7 +110,7 @@ public interface AquiferSampler {
 		private final int sizeX;
 		private final int sizeZ;
 		private static final int[][] field_34581 = new int[][]{
-			{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {3, 0}, {-3, 0}, {0, 3}, {0, -3}, {2, 2}, {2, -2}, {-2, 2}, {-2, 2}
+			{-2, -1}, {-1, -1}, {0, -1}, {1, -1}, {-3, 0}, {-2, 0}, {-1, 0}, {0, 0}, {1, 0}, {-2, 1}, {-1, 1}, {0, 1}, {1, 1}
 		};
 
 		Impl(
@@ -402,7 +401,7 @@ public interface AquiferSampler {
 			} else {
 				double h = MathHelper.lerpFromProgress(d, 1.0, 0.0, -0.8, 0.4);
 				if (f <= h) {
-					return new AquiferSampler.FluidLevel(-4096, fluidLevel.state);
+					return new AquiferSampler.FluidLevel(DimensionType.field_35479, fluidLevel.state);
 				} else {
 					int r = 16;
 					int s = 40;
@@ -429,7 +428,7 @@ public interface AquiferSampler {
 				int p = Math.floorDiv(j, 40);
 				int q = Math.floorDiv(k, 64);
 				double d = this.fluidTypeNoise.sample((double)o, (double)p, (double)q);
-				if (Math.abs(d) > 0.22) {
+				if (Math.abs(d) > 0.3) {
 					return Blocks.LAVA.getDefaultState();
 				}
 			}

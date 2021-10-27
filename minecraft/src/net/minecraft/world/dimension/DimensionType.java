@@ -36,6 +36,8 @@ public class DimensionType {
 	public static final int MAX_HEIGHT = (1 << SIZE_BITS_Y) - 32;
 	public static final int MAX_COLUMN_HEIGHT = (MAX_HEIGHT >> 1) - 1;
 	public static final int MIN_HEIGHT = MAX_COLUMN_HEIGHT - MAX_HEIGHT + 1;
+	public static final int field_35478 = MAX_COLUMN_HEIGHT << 4;
+	public static final int field_35479 = MIN_HEIGHT << 4;
 	public static final Identifier OVERWORLD_ID = new Identifier("overworld");
 	public static final Identifier THE_NETHER_ID = new Identifier("the_nether");
 	public static final Identifier THE_END_ID = new Identifier("the_end");

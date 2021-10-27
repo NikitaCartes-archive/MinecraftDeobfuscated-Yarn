@@ -44,7 +44,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			} else if (!bl) {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 				if (!bl2) {
-					world.getBlockTickScheduler().schedule(pos, this, this.getUpdateDelayInternal(state), TickPriority.VERY_HIGH);
+					world.createAndScheduleBlockTick(pos, this, this.getUpdateDelayInternal(state), TickPriority.VERY_HIGH);
 				}
 			}
 		}
@@ -91,7 +91,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 					tickPriority = TickPriority.VERY_HIGH;
 				}
 
-				world.getBlockTickScheduler().schedule(pos, this, this.getUpdateDelayInternal(state), tickPriority);
+				world.createAndScheduleBlockTick(pos, this, this.getUpdateDelayInternal(state), tickPriority);
 			}
 		}
 	}
@@ -149,7 +149,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
 		if (this.hasPower(world, pos, state)) {
-			world.getBlockTickScheduler().schedule(pos, this, 1);
+			world.createAndScheduleBlockTick(pos, this, 1);
 		}
 	}
 

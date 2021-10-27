@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.world;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -20,6 +19,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.updater.WorldUpdater;
@@ -47,19 +47,18 @@ public class OptimizeWorldScreen extends Screen {
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 
 		try {
-			OptimizeWorldScreen var9;
+			OptimizeWorldScreen var8;
 			try (MinecraftClient.IntegratedResourceManager integratedResourceManager = client.createIntegratedResourceManager(
 					impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, storageSession
 				)) {
 				SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
 				storageSession.backupLevelDataFile(impl, saveProperties);
-				ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
-				var9 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutableSet);
+				var8 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, saveProperties.getGeneratorOptions());
 			}
 
-			return var9;
-		} catch (Exception var12) {
-			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var12);
+			return var8;
+		} catch (Exception var11) {
+			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var11);
 			return null;
 		}
 	}
@@ -70,11 +69,11 @@ public class OptimizeWorldScreen extends Screen {
 		LevelStorage.Session storageSession,
 		LevelInfo levelInfo,
 		boolean eraseCache,
-		ImmutableSet<RegistryKey<World>> worlds
+		GeneratorOptions generatorOptions
 	) {
 		super(new TranslatableText("optimizeWorld.title", levelInfo.getLevelName()));
 		this.callback = callback;
-		this.updater = new WorldUpdater(storageSession, dataFixer, worlds, eraseCache);
+		this.updater = new WorldUpdater(storageSession, dataFixer, generatorOptions, eraseCache);
 	}
 
 	@Override

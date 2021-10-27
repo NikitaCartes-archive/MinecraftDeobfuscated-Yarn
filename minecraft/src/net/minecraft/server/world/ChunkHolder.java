@@ -363,9 +363,8 @@ public class ChunkHolder {
 		}
 
 		if (bl3 && !bl4) {
-			CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = this.accessibleFuture;
+			this.accessibleFuture.complete(UNLOADED_WORLD_CHUNK);
 			this.accessibleFuture = UNLOADED_WORLD_CHUNK_FUTURE;
-			this.combineSavingFuture(completableFuture.thenApply(either -> either.ifLeft(chunkStorage::enableTickSchedulers)), "unfull");
 		}
 
 		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.TICKING);

@@ -20,11 +20,11 @@ public class EntityRedundantChanceTagsFix extends DataFix {
 	public TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
 			"EntityRedundantChanceTagsFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
-					if (method_30073(dynamic.get("HandDropChances"), 2)) {
+					if (hasZeroDropChance(dynamic.get("HandDropChances"), 2)) {
 						dynamic = dynamic.remove("HandDropChances");
 					}
 
-					if (method_30073(dynamic.get("ArmorDropChances"), 4)) {
+					if (hasZeroDropChance(dynamic.get("ArmorDropChances"), 4)) {
 						dynamic = dynamic.remove("ArmorDropChances");
 					}
 
@@ -33,7 +33,7 @@ public class EntityRedundantChanceTagsFix extends DataFix {
 		);
 	}
 
-	private static boolean method_30073(OptionalDynamic<?> optionalDynamic, int i) {
+	private static boolean hasZeroDropChance(OptionalDynamic<?> optionalDynamic, int i) {
 		return (Boolean)optionalDynamic.flatMap(field_25695::parse)
 			.map(list -> list.size() == i && list.stream().allMatch(float_ -> float_ == 0.0F))
 			.result()
