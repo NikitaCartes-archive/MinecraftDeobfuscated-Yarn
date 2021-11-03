@@ -15,9 +15,9 @@ public enum FontType {
 	TTF("ttf", TrueTypeFontLoader::fromJson),
 	LEGACY_UNICODE("legacy_unicode", UnicodeTextureFont.Loader::fromJson);
 
-	private static final Map<String, FontType> REGISTRY = Util.make(Maps.newHashMap(), hashMap -> {
+	private static final Map<String, FontType> REGISTRY = Util.make(Maps.newHashMap(), map -> {
 		for(FontType fontType : values()) {
-			hashMap.put(fontType.id, fontType);
+			map.put(fontType.id, fontType);
 		}
 	});
 	private final String id;

@@ -1258,6 +1258,16 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.addTag(BlockTags.LEAVES)
 			.addTag(BlockTags.LOGS);
 		this.getOrCreateTagBuilder(BlockTags.GEODE_INVALID_BLOCKS).add(Blocks.BEDROCK, Blocks.WATER, Blocks.LAVA, Blocks.ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE);
+		this.getOrCreateTagBuilder(BlockTags.ANIMALS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK);
+		this.getOrCreateTagBuilder(BlockTags.AXOLOTLS_SPAWNABLE_ON).add(Blocks.CLAY);
+		this.getOrCreateTagBuilder(BlockTags.GOATS_SPAWNABLE_ON)
+			.add(Blocks.STONE, Blocks.SNOW, Blocks.POWDER_SNOW, Blocks.SNOW_BLOCK, Blocks.PACKED_ICE, Blocks.GRAVEL);
+		this.getOrCreateTagBuilder(BlockTags.MOOSHROOMS_SPAWNABLE_ON).add(Blocks.MYCELIUM);
+		this.getOrCreateTagBuilder(BlockTags.PARROTS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.AIR).addTag(BlockTags.LEAVES).addTag(BlockTags.LOGS);
+		this.getOrCreateTagBuilder(BlockTags.POLAR_BEARS_SPAWNABLE_ON_IN_FROZEN_OCEAN).add(Blocks.ICE);
+		this.getOrCreateTagBuilder(BlockTags.RABBITS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.SAND);
+		this.getOrCreateTagBuilder(BlockTags.FOXES_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT);
+		this.getOrCreateTagBuilder(BlockTags.WOLVES_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK);
 	}
 
 	@Override

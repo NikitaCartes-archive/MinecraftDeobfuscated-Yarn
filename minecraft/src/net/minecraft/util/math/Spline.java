@@ -21,7 +21,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 
 public interface Spline<C> extends ToFloatFunction<C> {
 	@Debug
-	String method_39225();
+	String getDebugString();
 
 	static <C> Codec<Spline<C>> method_39232(Codec<ToFloatFunction<C>> codec) {
 		MutableObject<Codec<Spline<C>>> mutableObject = new MutableObject<>();
@@ -65,7 +65,7 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		Codec<class_6737<C>> codec2 = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.FLOAT.fieldOf("location").forGetter(class_6737::location),
-						Codecs.method_39240(mutableObject::getValue).fieldOf("value").forGetter(class_6737::value),
+						Codecs.createLazy(mutableObject::getValue).fieldOf("value").forGetter(class_6737::value),
 						Codec.FLOAT.fieldOf("derivative").forGetter(class_6737::derivative)
 					)
 					.apply(instance, (f, spline, g) -> new class_6737(f, spline, g))
@@ -108,6 +108,10 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		return mutableObject.getValue();
 	}
 
+	static <C> Spline<C> method_39427(float f) {
+		return new Spline.FixedFloatFunction<>(f);
+	}
+
 	static <C> Spline.Builder<C> builder(ToFloatFunction<C> locationFunction) {
 		return new Spline.Builder<>(locationFunction);
 	}
@@ -126,12 +130,12 @@ public interface Spline<C> extends ToFloatFunction<C> {
 			return this.add(location, new Spline.FixedFloatFunction<>(value), derivative);
 		}
 
-		public Spline.Builder<C> add(float location, Spline<C> spline, float derivative) {
+		public Spline.Builder<C> add(float location, Spline<C> value, float derivative) {
 			if (!this.locations.isEmpty() && location <= this.locations.getFloat(this.locations.size() - 1)) {
 				throw new IllegalArgumentException("Please register points in ascending order");
 			} else {
 				this.locations.add(location);
-				this.values.add(spline);
+				this.values.add(value);
 				this.derivatives.add(derivative);
 				return this;
 			}
@@ -160,7 +164,7 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		}
 
 		@Override
-		public String method_39225() {
+		public String getDebugString() {
 			return String.format("k=%.3f", this.value);
 		}
 
@@ -226,7 +230,7 @@ public interface Spline<C> extends ToFloatFunction<C> {
 
 		@VisibleForTesting
 		@Override
-		public String method_39225() {
+		public String getDebugString() {
 			return "Spline{coordinate="
 				+ this.coordinate
 				+ ", locations="
@@ -234,7 +238,7 @@ public interface Spline<C> extends ToFloatFunction<C> {
 				+ ", derivatives="
 				+ this.method_39238(this.derivatives)
 				+ ", values="
-				+ (String)this.values.stream().map(Spline::method_39225).collect(Collectors.joining(", ", "[", "]"))
+				+ (String)this.values.stream().map(Spline::getDebugString).collect(Collectors.joining(", ", "[", "]"))
 				+ "}";
 		}
 

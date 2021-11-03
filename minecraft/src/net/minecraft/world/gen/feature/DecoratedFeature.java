@@ -34,7 +34,7 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 				}
 			}
 
-			if (configuredFeature.generate(optional, structureWorldAccess, chunkGenerator, random, origin)) {
+			if (structureWorldAccess.isValidForSetBlock(origin) && configuredFeature.generate(optional, structureWorldAccess, chunkGenerator, random, origin)) {
 				mutableBoolean.setTrue();
 			}
 		});

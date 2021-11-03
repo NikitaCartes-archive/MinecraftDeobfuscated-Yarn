@@ -16,8 +16,8 @@ public class Clipboard {
 	public static final int field_31905 = 65545;
 	private final ByteBuffer clipboardBuffer = BufferUtils.createByteBuffer(8192);
 
-	public String getClipboard(long window, GLFWErrorCallbackI gLFWErrorCallbackI) {
-		GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback(gLFWErrorCallbackI);
+	public String getClipboard(long window, GLFWErrorCallbackI errorCallback) {
+		GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback(errorCallback);
 		String string = GLFW.glfwGetClipboardString(window);
 		string = string != null ? TextVisitFactory.validateSurrogates(string) : "";
 		GLFWErrorCallback gLFWErrorCallback2 = GLFW.glfwSetErrorCallback(gLFWErrorCallback);

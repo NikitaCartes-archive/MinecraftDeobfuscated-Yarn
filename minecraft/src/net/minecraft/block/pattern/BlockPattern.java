@@ -53,9 +53,9 @@ public class BlockPattern {
 
 	@Nullable
 	@VisibleForTesting
-	public BlockPattern.Result method_35300(WorldView worldView, BlockPos blockPos, Direction direction, Direction direction2) {
-		LoadingCache<BlockPos, CachedBlockPosition> loadingCache = makeCache(worldView, false);
-		return this.testTransform(blockPos, direction, direction2, loadingCache);
+	public BlockPattern.Result testTransform(WorldView world, BlockPos frontTopLeft, Direction forwards, Direction up) {
+		LoadingCache<BlockPos, CachedBlockPosition> loadingCache = makeCache(world, false);
+		return this.testTransform(frontTopLeft, forwards, up, loadingCache);
 	}
 
 	@Nullable

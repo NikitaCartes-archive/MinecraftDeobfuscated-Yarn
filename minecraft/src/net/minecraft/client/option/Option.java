@@ -223,7 +223,7 @@ public abstract class Option {
 	);
 	public static final DoubleOption SIMULATION_DISTANCE = new DoubleOption(
 		"options.simulationDistance",
-		2.0,
+		5.0,
 		16.0,
 		1.0F,
 		gameOptions -> (double)gameOptions.simulationDistance,
@@ -481,6 +481,13 @@ public abstract class Option {
 		"options.realmsNotifications",
 		gameOptions -> gameOptions.realmsNotifications,
 		(gameOptions, option, realmsNotifications) -> gameOptions.realmsNotifications = realmsNotifications
+	);
+	private static final Text ALLOW_SERVER_LISTING_TOOLTIP = new TranslatableText("options.allowServerListing.tooltip");
+	public static final CyclingOption<Boolean> ALLOW_SERVER_LISTING = CyclingOption.create(
+		"options.allowServerListing", ALLOW_SERVER_LISTING_TOOLTIP, gameOptions -> gameOptions.allowServerListing, (gameOptions, option, allowServerListing) -> {
+			gameOptions.allowServerListing = allowServerListing;
+			gameOptions.sendClientSettings();
+		}
 	);
 	public static final CyclingOption<Boolean> REDUCED_DEBUG_INFO = CyclingOption.create(
 		"options.reducedDebugInfo",

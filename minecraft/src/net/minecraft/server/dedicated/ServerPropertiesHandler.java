@@ -49,7 +49,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final long maxTickTime = this.parseLong("max-tick-time", TimeUnit.MINUTES.toMillis(1L));
 	public final int rateLimit = this.getInt("rate-limit", 0);
 	public final int viewDistance = this.getInt("view-distance", 10);
-	public final int field_34883 = this.getInt("simulation-distance", 10);
+	public final int simulationDistance = this.getInt("simulation-distance", 10);
 	public final int maxPlayers = this.getInt("max-players", 20);
 	public final int networkCompressionThreshold = this.getInt("network-compression-threshold", 256);
 	public final boolean broadcastRconToOps = this.parseBoolean("broadcast-rcon-to-ops", true);
@@ -58,6 +58,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean syncChunkWrites = this.parseBoolean("sync-chunk-writes", true);
 	public final boolean enableJmxMonitoring = this.parseBoolean("enable-jmx-monitoring", false);
 	public final boolean enableStatus = this.parseBoolean("enable-status", true);
+	public final boolean hideOnlinePlayers = this.parseBoolean("hide-online-players", false);
 	public final int entityBroadcastRangePercentage = this.transformedParseInt(
 		"entity-broadcast-range-percentage", percentage -> MathHelper.clamp(percentage, 10, 1000), 100
 	);
@@ -77,11 +78,11 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 
 	protected ServerPropertiesHandler create(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
 		ServerPropertiesHandler serverPropertiesHandler = new ServerPropertiesHandler(properties);
-		serverPropertiesHandler.method_37371(dynamicRegistryManager);
+		serverPropertiesHandler.getGeneratorOptions(dynamicRegistryManager);
 		return serverPropertiesHandler;
 	}
 
-	public GeneratorOptions method_37371(DynamicRegistryManager dynamicRegistryManager) {
+	public GeneratorOptions getGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {
 		if (this.generatorOptions == null) {
 			this.generatorOptions = GeneratorOptions.fromProperties(dynamicRegistryManager, this.properties);
 		}

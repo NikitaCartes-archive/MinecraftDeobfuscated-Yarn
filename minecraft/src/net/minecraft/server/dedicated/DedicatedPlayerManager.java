@@ -15,7 +15,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		super(server, tracker, saveHandler, server.getProperties().maxPlayers);
 		ServerPropertiesHandler serverPropertiesHandler = server.getProperties();
 		this.setViewDistance(serverPropertiesHandler.viewDistance);
-		this.setSimulationDistance(serverPropertiesHandler.field_34883);
+		this.setSimulationDistance(serverPropertiesHandler.simulationDistance);
 		super.setWhitelistEnabled(serverPropertiesHandler.whiteList.get());
 		this.loadUserBanList();
 		this.saveUserBanList();

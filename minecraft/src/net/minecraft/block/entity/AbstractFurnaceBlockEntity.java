@@ -236,7 +236,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		nbt.putShort("CookTimeTotal", (short)this.cookTimeTotal);
 		Inventories.writeNbt(nbt, this.inventory);
 		NbtCompound nbtCompound = new NbtCompound();
-		this.recipesUsed.forEach((identifier, integer) -> nbtCompound.putInt(identifier.toString(), integer));
+		this.recipesUsed.forEach((identifier, count) -> nbtCompound.putInt(identifier.toString(), count));
 		nbt.put("RecipesUsed", nbtCompound);
 	}
 

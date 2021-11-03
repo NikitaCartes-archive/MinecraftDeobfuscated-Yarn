@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractTexture implements AutoCloseable {
-	public static final int field_32948 = -1;
+	public static final int DEFAULT_ID = -1;
 	protected int glId = -1;
 	protected boolean bilinear;
 	protected boolean mipmap;
@@ -69,8 +69,8 @@ public abstract class AbstractTexture implements AutoCloseable {
 		}
 	}
 
-	public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
-		textureManager.registerTexture(identifier, this);
+	public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier id, Executor executor) {
+		textureManager.registerTexture(id, this);
 	}
 
 	public void close() {

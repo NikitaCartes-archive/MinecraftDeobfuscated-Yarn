@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
-import java.util.Optional;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -15,9 +15,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 
 public class EntityShapeContext implements ShapeContext {
-	protected static final ShapeContext ABSENT = new EntityShapeContext(
-		false, -Double.MAX_VALUE, ItemStack.EMPTY, ItemStack.EMPTY, fluid -> false, Optional.empty()
-	) {
+	protected static final ShapeContext ABSENT = new EntityShapeContext(false, -Double.MAX_VALUE, ItemStack.EMPTY, ItemStack.EMPTY, fluid -> false, null) {
 		@Override
 		public boolean isAbove(VoxelShape shape, BlockPos pos, boolean defaultValue) {
 			return defaultValue;
@@ -28,10 +26,11 @@ public class EntityShapeContext implements ShapeContext {
 	private final ItemStack heldItem;
 	private final ItemStack boots;
 	private final Predicate<Fluid> walkOnFluidPredicate;
-	private final Optional<Entity> entity;
+	@Nullable
+	private final Entity entity;
 
 	protected EntityShapeContext(
-		boolean descending, double minY, ItemStack boots, ItemStack heldItem, Predicate<Fluid> walkOnFluidPredicate, Optional<Entity> entity
+		boolean descending, double minY, ItemStack boots, ItemStack heldItem, Predicate<Fluid> walkOnFluidPredicate, @Nullable Entity entity
 	) {
 		this.descending = descending;
 		this.minY = minY;
@@ -49,7 +48,7 @@ public class EntityShapeContext implements ShapeContext {
 			entity instanceof LivingEntity ? ((LivingEntity)entity).getEquippedStack(EquipmentSlot.FEET) : ItemStack.EMPTY,
 			entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY,
 			entity instanceof LivingEntity ? ((LivingEntity)entity)::canWalkOnFluid : fluid -> false,
-			Optional.of(entity)
+			entity
 		);
 	}
 
@@ -78,7 +77,8 @@ public class EntityShapeContext implements ShapeContext {
 		return this.minY > (double)pos.getY() + shape.getMax(Direction.Axis.Y) - 1.0E-5F;
 	}
 
-	public Optional<Entity> getEntity() {
+	@Nullable
+	public Entity getEntity() {
 		return this.entity;
 	}
 }

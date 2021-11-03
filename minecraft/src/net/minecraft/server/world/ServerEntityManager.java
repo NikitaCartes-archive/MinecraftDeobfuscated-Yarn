@@ -425,10 +425,10 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		private long sectionPos;
 		private EntityTrackingSection<T> section;
 
-		Listener(T entityLike, long l, EntityTrackingSection<T> entityTrackingSection) {
-			this.entity = entityLike;
+		Listener(T entity, long l, EntityTrackingSection<T> section) {
+			this.entity = entity;
 			this.sectionPos = l;
-			this.section = entityTrackingSection;
+			this.section = section;
 		}
 
 		@Override

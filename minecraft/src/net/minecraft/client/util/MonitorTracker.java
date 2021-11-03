@@ -38,9 +38,9 @@ public class MonitorTracker {
 	}
 
 	@Nullable
-	public Monitor getMonitor(long l) {
+	public Monitor getMonitor(long pointer) {
 		RenderSystem.assertInInitPhase();
-		return this.pointerToMonitorMap.get(l);
+		return this.pointerToMonitorMap.get(pointer);
 	}
 
 	@Nullable

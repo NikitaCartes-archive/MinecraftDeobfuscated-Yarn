@@ -53,6 +53,7 @@ public final class EntityPredicates {
 	public static final Predicate<Entity> EXCEPT_CREATIVE_OR_SPECTATOR = entity -> !(entity instanceof PlayerEntity)
 			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative();
 	public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
+	public static final Predicate<Entity> CAN_COLLIDE = EXCEPT_SPECTATOR.and(Entity::isCollidable);
 
 	private EntityPredicates() {
 	}

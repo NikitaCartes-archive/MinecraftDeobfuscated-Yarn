@@ -1,7 +1,6 @@
 package net.minecraft.world.chunk;
 
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -79,6 +78,11 @@ public class ChunkCache implements BlockView, CollisionView {
 		return this.getChunk(chunkX, chunkZ);
 	}
 
+	@Override
+	public List<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box) {
+		return List.of();
+	}
+
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
@@ -94,16 +98,6 @@ public class ChunkCache implements BlockView, CollisionView {
 			Chunk chunk = this.getChunk(pos);
 			return chunk.getBlockState(pos);
 		}
-	}
-
-	@Override
-	public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-		return Stream.empty();
-	}
-
-	@Override
-	public Stream<VoxelShape> getCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-		return this.getBlockCollisions(entity, box);
 	}
 
 	@Override

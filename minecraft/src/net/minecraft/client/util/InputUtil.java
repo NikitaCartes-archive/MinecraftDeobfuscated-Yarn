@@ -193,12 +193,12 @@ public class InputUtil {
 		GLFWCursorPosCallbackI cursorPosCallback,
 		GLFWMouseButtonCallbackI mouseButtonCallback,
 		GLFWScrollCallbackI scrollCallback,
-		GLFWDropCallbackI gLFWDropCallbackI
+		GLFWDropCallbackI dropCallback
 	) {
 		GLFW.glfwSetCursorPosCallback(handle, cursorPosCallback);
 		GLFW.glfwSetMouseButtonCallback(handle, mouseButtonCallback);
 		GLFW.glfwSetScrollCallback(handle, scrollCallback);
-		GLFW.glfwSetDropCallback(handle, gLFWDropCallbackI);
+		GLFW.glfwSetDropCallback(handle, dropCallback);
 	}
 
 	public static void setCursorParameters(long handler, int inputModeValue, double x, double y) {

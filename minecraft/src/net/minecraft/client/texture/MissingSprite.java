@@ -14,7 +14,7 @@ import net.minecraft.util.Lazy;
 public final class MissingSprite extends Sprite {
 	private static final int field_32950 = 16;
 	private static final int field_32951 = 16;
-	private static final String field_32952 = "missingno";
+	private static final String MISSINGNO_ID = "missingno";
 	private static final Identifier MISSINGNO = new Identifier("missingno");
 	@Nullable
 	private static NativeImageBackedTexture texture;
@@ -40,12 +40,12 @@ public final class MissingSprite extends Sprite {
 		MISSINGNO, 16, 16, new AnimationResourceMetadata(ImmutableList.of(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false)
 	);
 
-	private MissingSprite(SpriteAtlasTexture spriteAtlasTexture, int maxLevel, int atlasWidth, int atlasHeight, int x, int y) {
-		super(spriteAtlasTexture, INFO, maxLevel, atlasWidth, atlasHeight, x, y, IMAGE.get());
+	private MissingSprite(SpriteAtlasTexture texture, int maxLevel, int atlasWidth, int atlasHeight, int x, int y) {
+		super(texture, INFO, maxLevel, atlasWidth, atlasHeight, x, y, IMAGE.get());
 	}
 
-	public static MissingSprite getMissingSprite(SpriteAtlasTexture spriteAtlasTexture, int maxLevel, int atlasWidth, int atlasHeight, int x, int y) {
-		return new MissingSprite(spriteAtlasTexture, maxLevel, atlasWidth, atlasHeight, x, y);
+	public static MissingSprite getMissingSprite(SpriteAtlasTexture texture, int maxLevel, int atlasWidth, int atlasHeight, int x, int y) {
+		return new MissingSprite(texture, maxLevel, atlasWidth, atlasHeight, x, y);
 	}
 
 	public static Identifier getMissingSpriteId() {

@@ -121,7 +121,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public void carve(
-		ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep
+		ChunkRegion chunkRegion, long seed, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep
 	) {
 	}
 

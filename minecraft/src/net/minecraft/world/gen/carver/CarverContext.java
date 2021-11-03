@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.carver;
 
 import java.util.Optional;
+import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -21,8 +22,8 @@ public class CarverContext extends HeightContext {
 	}
 
 	@Deprecated
-	public Optional<BlockState> method_39114(Biome biome, Chunk chunk, BlockPos pos, boolean bl) {
-		return this.chunkGenerator.method_39041(this, biome, chunk, pos, bl);
+	public Optional<BlockState> method_39114(Function<BlockPos, Biome> function, Chunk chunk, BlockPos pos, boolean bl) {
+		return this.chunkGenerator.method_39041(this, function, chunk, pos, bl);
 	}
 
 	@Deprecated

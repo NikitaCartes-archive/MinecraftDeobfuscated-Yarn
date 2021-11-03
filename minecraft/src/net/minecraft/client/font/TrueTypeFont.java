@@ -110,13 +110,13 @@ public class TrueTypeFont implements Font {
 		private final float advance;
 		private final int glyphIndex;
 
-		TtfGlyph(int i, int j, int k, int l, float f, float g, int m) {
-			this.width = j - i;
-			this.height = k - l;
+		TtfGlyph(int x1, int x2, int y2, int y1, float f, float g, int glyphIndex) {
+			this.width = x2 - x1;
+			this.height = y2 - y1;
 			this.advance = f / TrueTypeFont.this.oversample;
-			this.bearingX = (g + (float)i + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
-			this.ascent = (TrueTypeFont.this.ascent - (float)k + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
-			this.glyphIndex = m;
+			this.bearingX = (g + (float)x1 + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
+			this.ascent = (TrueTypeFont.this.ascent - (float)y2 + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
+			this.glyphIndex = glyphIndex;
 		}
 
 		@Override

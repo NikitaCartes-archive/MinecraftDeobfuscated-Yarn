@@ -42,6 +42,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -379,9 +380,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	public static boolean canSpawn(EntityType<RabbitEntity> entity, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		BlockState blockState = world.getBlockState(pos.down());
-		return (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.SAND))
-			&& world.getBaseLightLevel(pos, 0) > 8;
+		return world.getBlockState(pos.down()).isIn(BlockTags.RABBITS_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(world, pos);
 	}
 
 	boolean wantsCarrots() {

@@ -43,7 +43,7 @@ public class ConfiguredCarver<WC extends CarverConfig> {
 		ChunkPos pos,
 		CarvingMask carvingMask
 	) {
-		return SharedConstants.method_37896(chunk.getPos().getStartX(), chunk.getPos().getStartZ())
+		return SharedConstants.method_37896(chunk.getPos())
 			? false
 			: this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, carvingMask);
 	}

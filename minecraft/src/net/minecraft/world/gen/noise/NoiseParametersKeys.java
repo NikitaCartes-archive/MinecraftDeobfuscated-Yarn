@@ -13,6 +13,12 @@ public class NoiseParametersKeys {
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> EROSION = register("erosion");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> RIDGE = register("ridge");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> OFFSET = register("offset");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> TEMPERATURE_LARGE = register("temperature_large");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> VEGETATION_LARGE = register("vegetation_large");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CONTINENTALNESS_LARGE = register("continentalness_large");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> EROSION_LARGE = register("erosion_large");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> RIDGE_LARGE = register("ridge_large");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> OFFSET_LARGE = register("offset_large");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> AQUIFER_BARRIER = register("aquifer_barrier");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> AQUIFER_FLUID_LEVEL_FLOODEDNESS = register("aquifer_fluid_level_floodedness");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> AQUIFER_LAVA = register("aquifer_lava");
@@ -53,8 +59,7 @@ public class NoiseParametersKeys {
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SURFACE_SWAMP = register("surface_swamp");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CALCITE = register("calcite");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> GRAVEL = register("gravel");
-	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> POWDER_SNOW_UNDER = register("powder_snow_under");
-	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> POWDER_SNOW_SURFACE = register("powder_snow_surface");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> POWDER_SNOW = register("powder_snow");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> PACKED_ICE = register("packed_ice");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> ICE = register("ice");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SOUL_SAND_LAYER = register("soul_sand_layer");

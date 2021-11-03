@@ -100,9 +100,9 @@ public class PlayerSkinProvider {
 				}
 			}
 
-			MinecraftClient.getInstance().execute(() -> RenderSystem.recordRenderCall(() -> ImmutableList.of(Type.SKIN, Type.CAPE).forEach(type -> {
-						if (map.containsKey(type)) {
-							this.loadSkin((MinecraftProfileTexture)map.get(type), type, callback);
+			MinecraftClient.getInstance().execute(() -> RenderSystem.recordRenderCall(() -> ImmutableList.of(Type.SKIN, Type.CAPE).forEach(textureType -> {
+						if (map.containsKey(textureType)) {
+							this.loadSkin((MinecraftProfileTexture)map.get(textureType), textureType, callback);
 						}
 					})));
 		};

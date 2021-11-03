@@ -136,7 +136,6 @@ public class Main {
 			FlightProfiler.INSTANCE.start(InstanceType.CLIENT);
 		}
 
-		FlightProfiler.INSTANCE.registerEvents();
 		CrashReport.initCrashReport();
 		Bootstrap.initialize();
 		Bootstrap.logMissing();

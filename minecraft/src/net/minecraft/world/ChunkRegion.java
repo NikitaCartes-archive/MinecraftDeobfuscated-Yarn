@@ -52,7 +52,7 @@ import org.apache.logging.log4j.Logger;
 public class ChunkRegion implements StructureWorldAccess {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<Chunk> chunks;
-	private final ChunkPos centerPos;
+	private final Chunk centerPos;
 	private final int width;
 	private final ServerWorld world;
 	private final long seed;
@@ -87,9 +87,8 @@ public class ChunkRegion implements StructureWorldAccess {
 		if (i * i != chunks.size()) {
 			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
 		} else {
-			ChunkPos chunkPos = ((Chunk)chunks.get(chunks.size() / 2)).getPos();
 			this.chunks = chunks;
-			this.centerPos = chunkPos;
+			this.centerPos = (Chunk)chunks.get(chunks.size() / 2);
 			this.width = i;
 			this.world = world;
 			this.seed = world.getSeed();
@@ -104,7 +103,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	public ChunkPos getCenterPos() {
-		return this.centerPos;
+		return this.centerPos.getPos();
 	}
 
 	@Override
@@ -247,9 +246,17 @@ public class ChunkRegion implements StructureWorldAccess {
 	public boolean isValidForSetBlock(BlockPos pos) {
 		int i = ChunkSectionPos.getSectionCoord(pos.getX());
 		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
-		int k = Math.abs(this.centerPos.x - i);
-		int l = Math.abs(this.centerPos.z - j);
+		ChunkPos chunkPos = this.getCenterPos();
+		int k = Math.abs(chunkPos.x - i);
+		int l = Math.abs(chunkPos.z - j);
 		if (k <= this.placementRadius && l <= this.placementRadius) {
+			if (this.centerPos.hasBelowZeroRetrogen()) {
+				HeightLimitView heightLimitView = this.centerPos.getHeightLimitView();
+				if (pos.getY() < heightLimitView.getBottomY() || pos.getY() >= heightLimitView.getTopY()) {
+					return false;
+				}
+			}
+
 			return true;
 		} else {
 			Util.error(
@@ -447,7 +454,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-		return this.structureAccessor.method_38853(pos, feature);
+		return this.structureAccessor.getStructureStarts(pos, feature);
 	}
 
 	@Override

@@ -194,7 +194,7 @@ public class ConduitBlockEntity extends BlockEntity {
 			blockEntity.targetUuid = null;
 		} else if (blockEntity.targetEntity == null) {
 			List<LivingEntity> list = world.getEntitiesByClass(
-				LivingEntity.class, getAttackZone(pos), livingEntityx -> livingEntityx instanceof Monster && livingEntityx.isTouchingWaterOrRain()
+				LivingEntity.class, getAttackZone(pos), entity -> entity instanceof Monster && entity.isTouchingWaterOrRain()
 			);
 			if (!list.isEmpty()) {
 				blockEntity.targetEntity = (LivingEntity)list.get(world.random.nextInt(list.size()));
@@ -242,13 +242,13 @@ public class ConduitBlockEntity extends BlockEntity {
 
 	@Nullable
 	private static LivingEntity findTargetEntity(World world, BlockPos pos, UUID uuid) {
-		List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, getAttackZone(pos), livingEntity -> livingEntity.getUuid().equals(uuid));
+		List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, getAttackZone(pos), entity -> entity.getUuid().equals(uuid));
 		return list.size() == 1 ? (LivingEntity)list.get(0) : null;
 	}
 
-	private static void spawnNautilusParticles(World world, BlockPos pos, List<BlockPos> activatingBlocks, @Nullable Entity entity, int i) {
+	private static void spawnNautilusParticles(World world, BlockPos pos, List<BlockPos> activatingBlocks, @Nullable Entity entity, int ticks) {
 		Random random = world.random;
-		double d = (double)(MathHelper.sin((float)(i + 35) * 0.1F) / 2.0F + 0.5F);
+		double d = (double)(MathHelper.sin((float)(ticks + 35) * 0.1F) / 2.0F + 0.5F);
 		d = (d * d + d) * 0.3F;
 		Vec3d vec3d = new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 1.5 + d, (double)pos.getZ() + 0.5);
 
@@ -264,10 +264,10 @@ public class ConduitBlockEntity extends BlockEntity {
 
 		if (entity != null) {
 			Vec3d vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ());
-			float j = (-0.5F + random.nextFloat()) * (3.0F + entity.getWidth());
-			float k = -1.0F + random.nextFloat() * entity.getHeight();
+			float i = (-0.5F + random.nextFloat()) * (3.0F + entity.getWidth());
+			float j = -1.0F + random.nextFloat() * entity.getHeight();
 			float f = (-0.5F + random.nextFloat()) * (3.0F + entity.getWidth());
-			Vec3d vec3d3 = new Vec3d((double)j, (double)k, (double)f);
+			Vec3d vec3d3 = new Vec3d((double)i, (double)j, (double)f);
 			world.addParticle(ParticleTypes.NAUTILUS, vec3d2.x, vec3d2.y, vec3d2.z, vec3d3.x, vec3d3.y, vec3d3.z);
 		}
 	}

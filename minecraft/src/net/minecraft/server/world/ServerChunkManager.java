@@ -306,6 +306,8 @@ public class ServerChunkManager extends ChunkManager {
 		ChunkHolder chunkHolder = this.getChunkHolder(pos);
 		if (chunkHolder == null) {
 			return false;
+		} else if (!this.world.shouldTickBlocksInChunk(pos)) {
+			return false;
 		} else {
 			Either<WorldChunk, ChunkHolder.Unloaded> either = (Either)chunkHolder.getTickingFuture().getNow(null);
 			return either != null && either.left().isPresent();

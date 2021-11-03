@@ -31,7 +31,7 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	private static final float field_31217 = 0.9F;
 	private static final float field_31218 = 1.5F;
 	private static final float field_31219 = 2.5F;
-	private static final VoxelShape field_31220 = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, 0.9F, 1.0);
+	private static final VoxelShape FALLING_SHAPE = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, 0.9F, 1.0);
 
 	public PowderSnowBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -81,11 +81,10 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if (context instanceof EntityShapeContext entityShapeContext) {
-			Optional<Entity> optional = entityShapeContext.getEntity();
-			if (optional.isPresent()) {
-				Entity entity = (Entity)optional.get();
+			Entity entity = entityShapeContext.getEntity();
+			if (entity != null) {
 				if (entity.fallDistance > 2.5F) {
-					return field_31220;
+					return FALLING_SHAPE;
 				}
 
 				boolean bl = entity instanceof FallingBlockEntity;
