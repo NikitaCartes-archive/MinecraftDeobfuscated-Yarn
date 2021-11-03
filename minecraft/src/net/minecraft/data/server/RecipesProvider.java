@@ -722,7 +722,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(exporter);
 		offerChiseledBlockRecipe(exporter, Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE_SLAB);
 		offerReversibleCompactingRecipesWithInputItemGroup(
-			exporter, Items.COPPER_INGOT, Items.COPPER_BLOCK, method_36450(Items.COPPER_INGOT), getItemPath(Items.COPPER_INGOT)
+			exporter, Items.COPPER_INGOT, Items.COPPER_BLOCK, getRecipeName(Items.COPPER_INGOT), getItemPath(Items.COPPER_INGOT)
 		);
 		ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 9)
 			.input(Blocks.WAXED_COPPER_BLOCK)
@@ -2978,19 +2978,19 @@ public class RecipesProvider implements DataProvider {
 	 * @param input input item used to craft compacted item, e.g. copper ingot
 	 */
 	private static void offerReversibleCompactingRecipes(Consumer<RecipeJsonProvider> exporter, ItemConvertible compacted, ItemConvertible input) {
-		offerReversibleCompactingRecipes(exporter, compacted, input, method_36450(input), null, method_36450(compacted), null);
+		offerReversibleCompactingRecipes(exporter, compacted, input, getRecipeName(input), null, getRecipeName(compacted), null);
 	}
 
 	private static void offerReversibleCompactingRecipesWithCompactedItemGroup(
 		Consumer<RecipeJsonProvider> exporter, ItemConvertible compacted, ItemConvertible input, String compactedItemId, String compactedItemGroup
 	) {
-		offerReversibleCompactingRecipes(exporter, compacted, input, compactedItemId, compactedItemGroup, method_36450(compacted), null);
+		offerReversibleCompactingRecipes(exporter, compacted, input, compactedItemId, compactedItemGroup, getRecipeName(compacted), null);
 	}
 
 	private static void offerReversibleCompactingRecipesWithInputItemGroup(
 		Consumer<RecipeJsonProvider> exporter, ItemConvertible input, ItemConvertible compacted, String inputItemId, String inputItemGroup
 	) {
-		offerReversibleCompactingRecipes(exporter, input, compacted, method_36450(compacted), null, inputItemId, inputItemGroup);
+		offerReversibleCompactingRecipes(exporter, input, compacted, getRecipeName(compacted), null, inputItemId, inputItemGroup);
 	}
 
 	private static void offerReversibleCompactingRecipes(
@@ -3129,7 +3129,7 @@ public class RecipesProvider implements DataProvider {
 		return Registry.ITEM.getId(item.asItem()).getPath();
 	}
 
-	private static String method_36450(ItemConvertible item) {
+	private static String getRecipeName(ItemConvertible item) {
 		return getItemPath(item);
 	}
 

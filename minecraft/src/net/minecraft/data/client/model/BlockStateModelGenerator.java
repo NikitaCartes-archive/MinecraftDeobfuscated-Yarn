@@ -3494,7 +3494,7 @@ public class BlockStateModelGenerator {
 		this.registerCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
 		this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
 		this.registerItemModel(Items.BARRIER);
-		this.method_39204();
+		this.registerLightBlock();
 		this.registerBuiltinWithParticle(Blocks.STRUCTURE_VOID, Items.STRUCTURE_VOID);
 		this.registerItemModel(Items.STRUCTURE_VOID);
 		this.registerBuiltinWithParticle(Blocks.MOVING_PISTON, Texture.getSubId(Blocks.PISTON, "_side"));
@@ -4037,7 +4037,7 @@ public class BlockStateModelGenerator {
 		SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel(spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
 	}
 
-	private void method_39204() {
+	private void registerLightBlock() {
 		this.excludeFromSimpleItemModelGeneration(Blocks.LIGHT);
 		BlockStateVariantMap.SingleProperty<Integer> singleProperty = BlockStateVariantMap.create(Properties.LEVEL_15);
 
@@ -4053,7 +4053,7 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.LIGHT).coordinate(singleProperty));
 	}
 
-	private void registerCandle(Block candle, Block block) {
+	private void registerCandle(Block candle, Block cake) {
 		this.registerItemModel(candle.asItem());
 		Texture texture = Texture.all(Texture.getId(candle));
 		Texture texture2 = Texture.all(Texture.getSubId(candle, "_lit"));
@@ -4080,9 +4080,9 @@ public class BlockStateModelGenerator {
 							.register(4, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier8))
 					)
 			);
-		Identifier identifier9 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(block, Texture.candleCake(candle, false), this.modelCollector);
-		Identifier identifier10 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(block, "_lit", Texture.candleCake(candle, true), this.modelCollector);
-		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(createBooleanModelMap(Properties.LIT, identifier10, identifier9)));
+		Identifier identifier9 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, Texture.candleCake(candle, false), this.modelCollector);
+		Identifier identifier10 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, "_lit", Texture.candleCake(candle, true), this.modelCollector);
+		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(cake).coordinate(createBooleanModelMap(Properties.LIT, identifier10, identifier9)));
 	}
 
 	class BlockTexturePool {

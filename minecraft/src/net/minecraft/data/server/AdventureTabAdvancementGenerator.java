@@ -1,8 +1,9 @@
 package net.minecraft.data.server;
 
-import com.google.common.collect.ImmutableList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
@@ -41,50 +42,19 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 
 public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	private static final int OVERWORLD_HEIGHT = 384;
 	private static final int OVERWORLD_MAX_Y = 320;
 	private static final int OVERWORLD_MIN_Y = -64;
 	private static final int OVERWORLD_BEDROCK_LAYER_HEIGHT = 5;
-	private static final List<RegistryKey<Biome>> BIOMES = ImmutableList.of(
-		BiomeKeys.RIVER,
-		BiomeKeys.SWAMP,
-		BiomeKeys.DESERT,
-		BiomeKeys.SNOWY_TAIGA,
-		BiomeKeys.BADLANDS,
-		BiomeKeys.FOREST,
-		BiomeKeys.STONY_SHORE,
-		BiomeKeys.SNOWY_PLAINS,
-		BiomeKeys.WOODED_BADLANDS,
-		BiomeKeys.SAVANNA,
-		BiomeKeys.PLAINS,
-		BiomeKeys.FROZEN_RIVER,
-		BiomeKeys.OLD_GROWTH_PINE_TAIGA,
-		BiomeKeys.SNOWY_BEACH,
-		BiomeKeys.SPARSE_JUNGLE,
-		BiomeKeys.WINDSWEPT_HILLS,
-		BiomeKeys.JUNGLE,
-		BiomeKeys.BEACH,
-		BiomeKeys.SAVANNA_PLATEAU,
-		BiomeKeys.DARK_FOREST,
-		BiomeKeys.TAIGA,
-		BiomeKeys.BIRCH_FOREST,
-		BiomeKeys.MUSHROOM_FIELDS,
-		BiomeKeys.WINDSWEPT_FOREST,
-		BiomeKeys.WARM_OCEAN,
-		BiomeKeys.LUKEWARM_OCEAN,
-		BiomeKeys.COLD_OCEAN,
-		BiomeKeys.DEEP_LUKEWARM_OCEAN,
-		BiomeKeys.DEEP_COLD_OCEAN,
-		BiomeKeys.DEEP_FROZEN_OCEAN,
-		BiomeKeys.BAMBOO_JUNGLE
-	);
 	private static final EntityType<?>[] MONSTERS = new EntityType[]{
 		EntityType.BLAZE,
 		EntityType.CAVE_SPIDER,
@@ -169,7 +139,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("slept_in_bed", LocationArrivalCriterion.Conditions.createSleptInBed())
 			.build(consumer, "adventure/sleep_in_bed");
-		requireListedBiomesVisited(Advancement.Task.create(), BIOMES)
+		requireListedBiomesVisited(Advancement.Task.create(), this.getOverworldBiomes())
 			.parent(advancement2)
 			.display(
 				Items.DIAMOND_BOOTS,
@@ -591,6 +561,11 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "adventure/caves_and_cliffs");
+	}
+
+	private List<RegistryKey<Biome>> getOverworldBiomes() {
+		List<Biome> list = MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(BuiltinRegistries.BIOME).getBiomes();
+		return (List<RegistryKey<Biome>>)list.stream().map(BuiltinRegistries.BIOME::getKey).flatMap(Optional::stream).collect(Collectors.toList());
 	}
 
 	private Advancement.Task requireListedMobsKilled(Advancement.Task task) {

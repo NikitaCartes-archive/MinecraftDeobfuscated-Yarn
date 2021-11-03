@@ -345,11 +345,11 @@ public class BeehiveBlockEntity extends BlockEntity {
 		int ticksInHive;
 		final int minOccupationTicks;
 
-		Bee(NbtCompound nbtCompound, int i, int j) {
-			BeehiveBlockEntity.removeIrrelevantNbtKeys(nbtCompound);
-			this.entityData = nbtCompound;
-			this.ticksInHive = i;
-			this.minOccupationTicks = j;
+		Bee(NbtCompound entityData, int ticksInHive, int minOccupationTicks) {
+			BeehiveBlockEntity.removeIrrelevantNbtKeys(entityData);
+			this.entityData = entityData;
+			this.ticksInHive = ticksInHive;
+			this.minOccupationTicks = minOccupationTicks;
 		}
 	}
 

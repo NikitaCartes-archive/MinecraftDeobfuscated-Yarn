@@ -10,17 +10,17 @@ import net.minecraft.util.math.MathHelper;
 public class ClampedNormalFloatProvider extends FloatProvider {
 	public static final Codec<ClampedNormalFloatProvider> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.FLOAT.fieldOf("mean").forGetter(clampedNormalFloatProvider -> clampedNormalFloatProvider.mean),
-						Codec.FLOAT.fieldOf("deviation").forGetter(clampedNormalFloatProvider -> clampedNormalFloatProvider.deviation),
-						Codec.FLOAT.fieldOf("min").forGetter(clampedNormalFloatProvider -> clampedNormalFloatProvider.min),
-						Codec.FLOAT.fieldOf("max").forGetter(clampedNormalFloatProvider -> clampedNormalFloatProvider.max)
+						Codec.FLOAT.fieldOf("mean").forGetter(provider -> provider.mean),
+						Codec.FLOAT.fieldOf("deviation").forGetter(provider -> provider.deviation),
+						Codec.FLOAT.fieldOf("min").forGetter(provider -> provider.min),
+						Codec.FLOAT.fieldOf("max").forGetter(provider -> provider.max)
 					)
 					.apply(instance, ClampedNormalFloatProvider::new)
 		)
 		.comapFlatMap(
-			clampedNormalFloatProvider -> clampedNormalFloatProvider.max < clampedNormalFloatProvider.min
-					? DataResult.error("Max must be larger than min: [" + clampedNormalFloatProvider.min + ", " + clampedNormalFloatProvider.max + "]")
-					: DataResult.success(clampedNormalFloatProvider),
+			provider -> provider.max < provider.min
+					? DataResult.error("Max must be larger than min: [" + provider.min + ", " + provider.max + "]")
+					: DataResult.success(provider),
 			Function.identity()
 		);
 	private float mean;

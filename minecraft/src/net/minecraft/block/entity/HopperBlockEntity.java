@@ -164,21 +164,23 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	private static boolean isInventoryFull(Inventory inventory, Direction direction) {
-		return getAvailableSlots(inventory, direction).allMatch(i -> {
-			ItemStack itemStack = inventory.getStack(i);
+		return getAvailableSlots(inventory, direction).allMatch(slot -> {
+			ItemStack itemStack = inventory.getStack(slot);
 			return itemStack.getCount() >= itemStack.getMaxCount();
 		});
 	}
 
 	private static boolean isInventoryEmpty(Inventory inv, Direction facing) {
-		return getAvailableSlots(inv, facing).allMatch(i -> inv.getStack(i).isEmpty());
+		return getAvailableSlots(inv, facing).allMatch(slot -> inv.getStack(slot).isEmpty());
 	}
 
 	public static boolean extract(World world, Hopper hopper) {
 		Inventory inventory = getInputInventory(world, hopper);
 		if (inventory != null) {
 			Direction direction = Direction.DOWN;
-			return isInventoryEmpty(inventory, direction) ? false : getAvailableSlots(inventory, direction).anyMatch(i -> extract(hopper, inventory, i, direction));
+			return isInventoryEmpty(inventory, direction)
+				? false
+				: getAvailableSlots(inventory, direction).anyMatch(slot -> extract(hopper, inventory, slot, direction));
 		} else {
 			for (ItemEntity itemEntity : getInputItemEntities(world, hopper)) {
 				if (extract(hopper, itemEntity)) {
@@ -247,9 +249,9 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		return !(inv instanceof SidedInventory) || ((SidedInventory)inv).canExtract(slot, stack, facing);
 	}
 
-	private static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, int slot, @Nullable Direction direction) {
+	private static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, int slot, @Nullable Direction side) {
 		ItemStack itemStack = to.getStack(slot);
-		if (canInsert(to, stack, slot, direction)) {
+		if (canInsert(to, stack, slot, side)) {
 			boolean bl = false;
 			boolean bl2 = to.isEmpty();
 			if (itemStack.isEmpty()) {

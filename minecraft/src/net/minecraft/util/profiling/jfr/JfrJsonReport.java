@@ -23,7 +23,7 @@ import net.minecraft.util.profiling.jfr.sample.CpuLoadSample;
 import net.minecraft.util.profiling.jfr.sample.FileIoSample;
 import net.minecraft.util.profiling.jfr.sample.GcHeapSummarySample;
 import net.minecraft.util.profiling.jfr.sample.LongRunningSampleStatistics;
-import net.minecraft.util.profiling.jfr.sample.PacketSample;
+import net.minecraft.util.profiling.jfr.sample.NetworkIoStatistics;
 import net.minecraft.util.profiling.jfr.sample.ServerTickTimeSample;
 import net.minecraft.util.profiling.jfr.sample.ThreadAllocationStatisticsSample;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -118,7 +118,7 @@ public class JfrJsonReport {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			double[] ds = samples.stream().mapToDouble(serverTickTimeSample -> (double)serverTickTimeSample.averageTickMs().toNanos() / 1000000.0).toArray();
+			double[] ds = samples.stream().mapToDouble(sample -> (double)sample.averageTickMs().toNanos() / 1000000.0).toArray();
 			DoubleSummaryStatistics doubleSummaryStatistics = DoubleStream.of(ds).summaryStatistics();
 			jsonObject.addProperty("minMs", doubleSummaryStatistics.getMin());
 			jsonObject.addProperty("averageMs", doubleSummaryStatistics.getAverage());
@@ -160,19 +160,24 @@ public class JfrJsonReport {
 		return jsonObject;
 	}
 
-	private JsonElement collectPacketSection(PacketSample.Statistics statistics) {
+	private JsonElement collectPacketSection(NetworkIoStatistics statistics) {
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("totalBytes", statistics.totalBytes());
-		jsonObject.addProperty("count", statistics.count());
+		jsonObject.addProperty("totalBytes", statistics.getTotalSize());
+		jsonObject.addProperty("count", statistics.getTotalCount());
 		jsonObject.addProperty("bytesPerSecond", statistics.getBytesPerSecond());
 		jsonObject.addProperty("countPerSecond", statistics.getCountPerSecond());
 		JsonArray jsonArray = new JsonArray();
 		jsonObject.add("topContributors", jsonArray);
-		statistics.topContributors().stream().limit(10L).forEach(pair -> {
+		statistics.getTopContributors().forEach(pair -> {
 			JsonObject jsonObjectx = new JsonObject();
 			jsonArray.add(jsonObjectx);
-			jsonObjectx.addProperty("packetName", (String)pair.getFirst());
-			jsonObjectx.addProperty("totalBytes", (Number)pair.getSecond());
+			NetworkIoStatistics.Packet packet = (NetworkIoStatistics.Packet)pair.getFirst();
+			NetworkIoStatistics.PacketStatistics packetStatistics = (NetworkIoStatistics.PacketStatistics)pair.getSecond();
+			jsonObjectx.addProperty("protocolId", packet.protocolId());
+			jsonObjectx.addProperty("packetId", packet.packetId());
+			jsonObjectx.addProperty("packetName", packet.getName());
+			jsonObjectx.addProperty("totalBytes", packetStatistics.totalSize());
+			jsonObjectx.addProperty("count", packetStatistics.totalCount());
 		});
 		return jsonObject;
 	}

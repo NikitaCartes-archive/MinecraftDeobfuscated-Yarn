@@ -113,7 +113,7 @@ public class ItemEntity extends Entity {
 			if (this.world.isClient) {
 				this.noClip = false;
 			} else {
-				this.noClip = !this.world.isSpaceEmpty(this, this.getBoundingBox().contract(1.0E-7), entity -> true);
+				this.noClip = !this.world.isSpaceEmpty(this, this.getBoundingBox().contract(1.0E-7));
 				if (this.noClip) {
 					this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 				}

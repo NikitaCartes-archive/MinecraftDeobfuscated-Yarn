@@ -1120,10 +1120,7 @@ public class ConfiguredFeatures {
 				)
 			)
 			.decorate(
-				Decorator.SCATTER
-					.configure(
-						new ScatterDecoratorConfig(ClampedNormalIntProvider.method_39156(0.0F, 3.0F, -10, 10), ClampedNormalIntProvider.method_39156(0.0F, 0.6F, -2, 2))
-					)
+				Decorator.SCATTER.configure(new ScatterDecoratorConfig(ClampedNormalIntProvider.of(0.0F, 3.0F, -10, 10), ClampedNormalIntProvider.of(0.0F, 0.6F, -2, 2)))
 			)
 			.repeat(UniformIntProvider.create(1, 5))
 			.range(ConfiguredFeatures.Decorators.BOTTOM_TO_120)

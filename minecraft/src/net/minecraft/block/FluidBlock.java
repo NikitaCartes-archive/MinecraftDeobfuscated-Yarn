@@ -31,7 +31,9 @@ public class FluidBlock extends Block implements FluidDrainable {
 	protected final FlowableFluid fluid;
 	private final List<FluidState> statesByLevel;
 	public static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-	public static final ImmutableList<Direction> field_34006 = ImmutableList.of(Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST);
+	public static final ImmutableList<Direction> FLOW_DIRECTIONS = ImmutableList.of(
+		Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
+	);
 
 	protected FluidBlock(FlowableFluid fluid, AbstractBlock.Settings settings) {
 		super(settings);
@@ -129,7 +131,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 		if (this.fluid.isIn(FluidTags.LAVA)) {
 			boolean bl = world.getBlockState(pos.down()).isOf(Blocks.SOUL_SOIL);
 
-			for (Direction direction : field_34006) {
+			for (Direction direction : FLOW_DIRECTIONS) {
 				BlockPos blockPos = pos.offset(direction.getOpposite());
 				if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 					Block block = world.getFluidState(pos).isStill() ? Blocks.OBSIDIAN : Blocks.COBBLESTONE;

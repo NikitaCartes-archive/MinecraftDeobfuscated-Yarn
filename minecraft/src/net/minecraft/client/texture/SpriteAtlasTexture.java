@@ -86,8 +86,8 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 
 	public SpriteAtlasTexture.Data stitch(ResourceManager resourceManager, Stream<Identifier> idStream, Profiler profiler, int mipmapLevel) {
 		profiler.push("preparing");
-		Set<Identifier> set = (Set<Identifier>)idStream.peek(identifier -> {
-			if (identifier == null) {
+		Set<Identifier> set = (Set<Identifier>)idStream.peek(id -> {
+			if (id == null) {
 				throw new IllegalArgumentException("Location cannot be null!");
 			}
 		}).collect(Collectors.toSet());
@@ -136,7 +136,10 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 			CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
 			crashReportSection.add(
 				"Sprites",
-				var16.getSprites().stream().map(info -> String.format("%s[%dx%d]", info.getId(), info.getWidth(), info.getHeight())).collect(Collectors.joining(","))
+				var16.getSprites()
+					.stream()
+					.map(sprite -> String.format("%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight()))
+					.collect(Collectors.joining(","))
 			);
 			crashReportSection.add("Max Texture Size", i);
 			throw new CrashException(crashReport);

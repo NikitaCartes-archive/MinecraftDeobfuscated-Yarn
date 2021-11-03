@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableList.Builder;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
@@ -79,7 +80,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.ReusableStream;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -272,6 +272,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private float lastChimeIntensity;
 	private int lastChimeAge;
 	private boolean hasVisualFire;
+	@Nullable
+	private BlockState blockStateAtPos = null;
 
 	public Entity(EntityType<?> type, World world) {
 		this.type = type;
@@ -462,6 +464,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void baseTick() {
 		this.world.getProfiler().push("entityBaseTick");
+		this.blockStateAtPos = null;
 		if (this.hasVehicle() && this.getVehicle().isRemoved()) {
 			this.stopRiding();
 		}
@@ -832,34 +835,26 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private Vec3d adjustMovementForCollisions(Vec3d movement) {
 		Box box = this.getBoundingBox();
 		ShapeContext shapeContext = ShapeContext.of(this);
-		VoxelShape voxelShape = this.world.getWorldBorder().asVoxelShape();
-		Stream<VoxelShape> stream = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(box.contract(1.0E-7)), BooleanBiFunction.AND)
-			? Stream.empty()
-			: Stream.of(voxelShape);
-		Stream<VoxelShape> stream2 = this.world.getEntityCollisions(this, box.stretch(movement), entity -> true);
-		ReusableStream<VoxelShape> reusableStream = new ReusableStream<>(Stream.concat(stream2, stream));
-		Vec3d vec3d = movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.world, shapeContext, reusableStream);
+		List<VoxelShape> list = this.world.getEntityCollisions(this, box.stretch(movement));
+		Vec3d vec3d = movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.world, shapeContext, list);
 		boolean bl = movement.x != vec3d.x;
 		boolean bl2 = movement.y != vec3d.y;
 		boolean bl3 = movement.z != vec3d.z;
 		boolean bl4 = this.onGround || bl2 && movement.y < 0.0;
 		if (this.stepHeight > 0.0F && bl4 && (bl || bl3)) {
-			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.stepHeight, movement.z), box, this.world, shapeContext, reusableStream);
+			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.stepHeight, movement.z), box, this.world, shapeContext, list);
 			Vec3d vec3d3 = adjustMovementForCollisions(
-				this, new Vec3d(0.0, (double)this.stepHeight, 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, shapeContext, reusableStream
+				this, new Vec3d(0.0, (double)this.stepHeight, 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, shapeContext, list
 			);
 			if (vec3d3.y < (double)this.stepHeight) {
-				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, shapeContext, reusableStream)
-					.add(vec3d3);
+				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, shapeContext, list).add(vec3d3);
 				if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
 					vec3d2 = vec3d4;
 				}
 			}
 
 			if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
-				return vec3d2.add(
-					adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.world, shapeContext, reusableStream)
-				);
+				return vec3d2.add(adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.world, shapeContext, list));
 			}
 		}
 
@@ -867,62 +862,79 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public static Vec3d adjustMovementForCollisions(
-		@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, ShapeContext context, ReusableStream<VoxelShape> collisions
+		@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, ShapeContext context, List<VoxelShape> collisions
 	) {
 		boolean bl = movement.x == 0.0;
 		boolean bl2 = movement.y == 0.0;
 		boolean bl3 = movement.z == 0.0;
-		if ((!bl || !bl2) && (!bl || !bl3) && (!bl2 || !bl3)) {
-			ReusableStream<VoxelShape> reusableStream = new ReusableStream<>(
-				Stream.concat(collisions.stream(), world.getBlockCollisions(entity, entityBoundingBox.stretch(movement)))
-			);
-			return adjustMovementForCollisions(movement, entityBoundingBox, reusableStream);
+		WorldBorder worldBorder = world.getWorldBorder();
+		boolean bl4 = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(movement));
+		boolean bl5 = bl && bl2 || bl && bl3 || bl2 && bl3;
+		if (bl5) {
+			List<VoxelShape> list = (List<VoxelShape>)(bl4
+				? ImmutableList.<VoxelShape>builderWithExpectedSize(collisions.size() + 1).addAll(collisions).add(worldBorder.asVoxelShape()).build()
+				: collisions);
+			return adjustSingleAxisMovementForCollisions(movement, entityBoundingBox, world, context, list);
 		} else {
-			return adjustSingleAxisMovementForCollisions(movement, entityBoundingBox, world, context, collisions);
+			Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(collisions.size() + 1);
+			if (!collisions.isEmpty()) {
+				builder.addAll(collisions);
+			}
+
+			if (bl4) {
+				builder.add(worldBorder.asVoxelShape());
+			}
+
+			builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(movement)));
+			return adjustMovementForCollisions(movement, entityBoundingBox, builder.build());
 		}
 	}
 
-	public static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, ReusableStream<VoxelShape> collisions) {
-		double d = movement.x;
-		double e = movement.y;
-		double f = movement.z;
-		if (e != 0.0) {
-			e = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entityBoundingBox, collisions.stream(), e);
+	private static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions) {
+		if (collisions.isEmpty()) {
+			return movement;
+		} else {
+			double d = movement.x;
+			double e = movement.y;
+			double f = movement.z;
 			if (e != 0.0) {
-				entityBoundingBox = entityBoundingBox.offset(0.0, e, 0.0);
+				e = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entityBoundingBox, collisions, e);
+				if (e != 0.0) {
+					entityBoundingBox = entityBoundingBox.offset(0.0, e, 0.0);
+				}
 			}
-		}
 
-		boolean bl = Math.abs(d) < Math.abs(f);
-		if (bl && f != 0.0) {
-			f = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, entityBoundingBox, collisions.stream(), f);
-			if (f != 0.0) {
-				entityBoundingBox = entityBoundingBox.offset(0.0, 0.0, f);
+			boolean bl = Math.abs(d) < Math.abs(f);
+			if (bl && f != 0.0) {
+				f = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, entityBoundingBox, collisions, f);
+				if (f != 0.0) {
+					entityBoundingBox = entityBoundingBox.offset(0.0, 0.0, f);
+				}
 			}
-		}
 
-		if (d != 0.0) {
-			d = VoxelShapes.calculateMaxOffset(Direction.Axis.X, entityBoundingBox, collisions.stream(), d);
-			if (!bl && d != 0.0) {
-				entityBoundingBox = entityBoundingBox.offset(d, 0.0, 0.0);
+			if (d != 0.0) {
+				d = VoxelShapes.calculateMaxOffset(Direction.Axis.X, entityBoundingBox, collisions, d);
+				if (!bl && d != 0.0) {
+					entityBoundingBox = entityBoundingBox.offset(d, 0.0, 0.0);
+				}
 			}
-		}
 
-		if (!bl && f != 0.0) {
-			f = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, entityBoundingBox, collisions.stream(), f);
-		}
+			if (!bl && f != 0.0) {
+				f = VoxelShapes.calculateMaxOffset(Direction.Axis.Z, entityBoundingBox, collisions, f);
+			}
 
-		return new Vec3d(d, e, f);
+			return new Vec3d(d, e, f);
+		}
 	}
 
-	public static Vec3d adjustSingleAxisMovementForCollisions(
-		Vec3d movement, Box entityBoundingBox, WorldView world, ShapeContext context, ReusableStream<VoxelShape> collisions
+	private static Vec3d adjustSingleAxisMovementForCollisions(
+		Vec3d movement, Box entityBoundingBox, WorldView world, ShapeContext context, List<VoxelShape> collisions
 	) {
 		double d = movement.x;
 		double e = movement.y;
 		double f = movement.z;
 		if (e != 0.0) {
-			e = VoxelShapes.calculatePushVelocity(Direction.Axis.Y, entityBoundingBox, world, e, context, collisions.stream());
+			e = VoxelShapes.calculatePushVelocity(Direction.Axis.Y, entityBoundingBox, world, e, context, collisions);
 			if (e != 0.0) {
 				entityBoundingBox = entityBoundingBox.offset(0.0, e, 0.0);
 			}
@@ -930,21 +942,21 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 		boolean bl = Math.abs(d) < Math.abs(f);
 		if (bl && f != 0.0) {
-			f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions.stream());
+			f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions);
 			if (f != 0.0) {
 				entityBoundingBox = entityBoundingBox.offset(0.0, 0.0, f);
 			}
 		}
 
 		if (d != 0.0) {
-			d = VoxelShapes.calculatePushVelocity(Direction.Axis.X, entityBoundingBox, world, d, context, collisions.stream());
+			d = VoxelShapes.calculatePushVelocity(Direction.Axis.X, entityBoundingBox, world, d, context, collisions);
 			if (!bl && d != 0.0) {
 				entityBoundingBox = entityBoundingBox.offset(d, 0.0, 0.0);
 			}
 		}
 
 		if (!bl && f != 0.0) {
-			f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions.stream());
+			f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions);
 		}
 
 		return new Vec3d(d, e, f);
@@ -3100,7 +3112,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public BlockState getBlockStateAtPos() {
-		return this.world.getBlockState(this.getBlockPos());
+		if (this.blockStateAtPos == null) {
+			this.blockStateAtPos = this.world.getBlockState(this.getBlockPos());
+		}
+
+		return this.blockStateAtPos;
 	}
 
 	public BlockPos getCameraBlockPos() {

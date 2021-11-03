@@ -300,12 +300,10 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 		return (NamedScreenHandlerFactory)this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
 	}
 
-	public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> getAnimationProgressRetriever(
-		ChestAnimationProgress chestAnimationProgress
-	) {
+	public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> getAnimationProgressRetriever(ChestAnimationProgress progress) {
 		return new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction>() {
 			public Float2FloatFunction getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-				return f -> Math.max(chestBlockEntity.getAnimationProgress(f), chestBlockEntity2.getAnimationProgress(f));
+				return tickDelta -> Math.max(chestBlockEntity.getAnimationProgress(tickDelta), chestBlockEntity2.getAnimationProgress(tickDelta));
 			}
 
 			public Float2FloatFunction getFrom(ChestBlockEntity chestBlockEntity) {
@@ -313,7 +311,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			}
 
 			public Float2FloatFunction getFallback() {
-				return chestAnimationProgress::getAnimationProgress;
+				return progress::getAnimationProgress;
 			}
 		};
 	}

@@ -9,15 +9,14 @@ import java.util.function.Function;
 public class BiasedToBottomIntProvider extends IntProvider {
 	public static final Codec<BiasedToBottomIntProvider> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.INT.fieldOf("min_inclusive").forGetter(biasedToBottomIntProvider -> biasedToBottomIntProvider.min),
-						Codec.INT.fieldOf("max_inclusive").forGetter(biasedToBottomIntProvider -> biasedToBottomIntProvider.max)
+						Codec.INT.fieldOf("min_inclusive").forGetter(provider -> provider.min), Codec.INT.fieldOf("max_inclusive").forGetter(provider -> provider.max)
 					)
 					.apply(instance, BiasedToBottomIntProvider::new)
 		)
 		.comapFlatMap(
-			biasedToBottomIntProvider -> biasedToBottomIntProvider.max < biasedToBottomIntProvider.min
-					? DataResult.error("Max must be at least min, min_inclusive: " + biasedToBottomIntProvider.min + ", max_inclusive: " + biasedToBottomIntProvider.max)
-					: DataResult.success(biasedToBottomIntProvider),
+			provider -> provider.max < provider.min
+					? DataResult.error("Max must be at least min, min_inclusive: " + provider.min + ", max_inclusive: " + provider.max)
+					: DataResult.success(provider),
 			Function.identity()
 		);
 	private final int min;

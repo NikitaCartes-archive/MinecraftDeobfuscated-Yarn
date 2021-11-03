@@ -31,7 +31,7 @@ public class DecoderHandler extends ByteToMessageDecoder {
 				throw new IOException("Bad packet id " + j);
 			} else {
 				int k = ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId();
-				FlightProfiler.INSTANCE.onPacketReceived(() -> "%d/%d (%s)".formatted(k, j, packet.getClass().getSimpleName()), ctx.channel().remoteAddress(), i);
+				FlightProfiler.INSTANCE.onPacketReceived(k, j, ctx.channel().remoteAddress(), i);
 				if (packetByteBuf.readableBytes() > 0) {
 					throw new IOException(
 						"Packet "

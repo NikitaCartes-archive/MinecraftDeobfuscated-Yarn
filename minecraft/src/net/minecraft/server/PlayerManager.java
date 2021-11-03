@@ -727,7 +727,7 @@ public abstract class PlayerManager {
 		return this.viewDistance;
 	}
 
-	public int method_38651() {
+	public int getSimulationDistance() {
 		return this.simulationDistance;
 	}
 

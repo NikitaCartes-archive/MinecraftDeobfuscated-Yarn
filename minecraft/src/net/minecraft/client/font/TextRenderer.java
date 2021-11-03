@@ -38,9 +38,9 @@ import net.minecraft.util.math.Vec3f;
  */
 @Environment(EnvType.CLIENT)
 public class TextRenderer {
-	private static final float field_32166 = 0.01F;
+	private static final float Z_INDEX = 0.01F;
 	private static final Vec3f FORWARD_SHIFT = new Vec3f(0.0F, 0.0F, 0.03F);
-	public static final int field_35427 = 8;
+	public static final int ARABIC_SHAPING_LETTERS_SHAPE = 8;
 	/**
 	 * The font height of the text that is rendered by the text renderer.
 	 */
@@ -51,7 +51,7 @@ public class TextRenderer {
 
 	public TextRenderer(Function<Identifier, FontStorage> fontStorageAccessor) {
 		this.fontStorageAccessor = fontStorageAccessor;
-		this.handler = new TextHandler((i, style) -> this.getFontStorage(style.getFont()).getGlyph(i).getAdvance(style.isBold()));
+		this.handler = new TextHandler((codePoint, style) -> this.getFontStorage(style.getFont()).getGlyph(codePoint).getAdvance(style.isBold()));
 	}
 
 	FontStorage getFontStorage(Identifier id) {
@@ -224,14 +224,14 @@ public class TextRenderer {
 					float[] fs = new float[]{x};
 					int l = j;
 					int m = k;
-					text.accept((lx, style, mx) -> {
+					text.accept((index, style, codePoint) -> {
 						boolean bl = style.isBold();
 						FontStorage fontStorage = this.getFontStorage(style.getFont());
-						Glyph glyph = fontStorage.getGlyph(mx);
+						Glyph glyph = fontStorage.getGlyph(codePoint);
 						drawer.x = fs[0] + (float)l * glyph.getShadowOffset();
 						drawer.y = y + (float)m * glyph.getShadowOffset();
 						fs[0] += glyph.getAdvance(bl);
-						return drawer.accept(lx, style.withColor(i), mx);
+						return drawer.accept(index, style.withColor(i), codePoint);
 					});
 				}
 			}

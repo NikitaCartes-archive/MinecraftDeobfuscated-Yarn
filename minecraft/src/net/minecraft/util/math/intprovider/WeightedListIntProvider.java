@@ -9,9 +9,7 @@ import net.minecraft.util.collection.Weighted;
 
 public class WeightedListIntProvider extends IntProvider {
 	public static final Codec<WeightedListIntProvider> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					DataPool.createCodec(IntProvider.VALUE_CODEC).fieldOf("distribution").forGetter(weightedListIntProvider -> weightedListIntProvider.weightedList)
-				)
+		instance -> instance.group(DataPool.createCodec(IntProvider.VALUE_CODEC).fieldOf("distribution").forGetter(provider -> provider.weightedList))
 				.apply(instance, WeightedListIntProvider::new)
 	);
 	private final DataPool<IntProvider> weightedList;

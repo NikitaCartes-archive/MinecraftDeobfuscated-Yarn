@@ -1,8 +1,7 @@
 package net.minecraft.world;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -28,13 +27,13 @@ public interface RegistryWorldView extends EntityView, WorldView, ModifiableTest
 	}
 
 	@Override
-	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-		return EntityView.super.getEntityCollisions(entity, box, predicate);
+	default List<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box) {
+		return EntityView.super.getEntityCollisions(entity, box);
 	}
 
 	@Override
-	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-		return EntityView.super.intersectsEntities(except, shape);
+	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
+		return EntityView.super.intersectsEntities(entity, shape);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class DispenserBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 	private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.make(
-		new Object2ObjectOpenHashMap<>(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior())
+		new Object2ObjectOpenHashMap<>(), map -> map.defaultReturnValue(new ItemDispenserBehavior())
 	);
 	private static final int SCHEDULED_TICK_DELAY = 4;
 

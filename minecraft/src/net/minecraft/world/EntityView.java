@@ -1,10 +1,11 @@
 package net.minecraft.world;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList.Builder;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -82,19 +83,23 @@ public interface EntityView {
 		return this.getEntitiesByClass(entityClass, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
+	default List<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box) {
 		if (box.getAverageSideLength() < 1.0E-7) {
-			return Stream.empty();
+			return List.of();
 		} else {
-			Box box2 = box.expand(1.0E-7);
-			return this.getOtherEntities(
-					entity,
-					box2,
-					predicate.and(entityx -> entityx.getBoundingBox().intersects(box2) && (entity == null ? entityx.isCollidable() : entity.collidesWith(entityx)))
-				)
-				.stream()
-				.map(Entity::getBoundingBox)
-				.map(VoxelShapes::cuboid);
+			Predicate<Entity> predicate = entity == null ? EntityPredicates.CAN_COLLIDE : EntityPredicates.EXCEPT_SPECTATOR.and(entity::collidesWith);
+			List<Entity> list = this.getOtherEntities(entity, box.expand(1.0E-7), predicate);
+			if (list.isEmpty()) {
+				return List.of();
+			} else {
+				Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(list.size());
+
+				for (Entity entity2 : list) {
+					builder.add(VoxelShapes.cuboid(entity2.getBoundingBox()));
+				}
+
+				return builder.build();
+			}
 		}
 	}
 

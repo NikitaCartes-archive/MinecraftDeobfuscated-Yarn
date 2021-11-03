@@ -844,7 +844,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		NbtCompound nbtCompound = this.getNbt(pos);
 		return nbtCompound == null
 			? null
-			: this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound, this.chunkGenerator.method_39301());
+			: this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound, this.chunkGenerator.getCodecKey());
 	}
 
 	boolean shouldTick(ChunkPos pos) {

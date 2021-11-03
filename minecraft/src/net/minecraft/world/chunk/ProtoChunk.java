@@ -18,6 +18,8 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -28,6 +30,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.ChunkTickScheduler;
 import net.minecraft.world.tick.SimpleTickScheduler;
@@ -208,6 +211,20 @@ public class ProtoChunk extends Chunk {
 		}
 	}
 
+	@Override
+	public void setStructureStart(StructureFeature<?> structure, StructureStart<?> start) {
+		BelowZeroRetrogen belowZeroRetrogen = this.getBelowZeroRetrogen();
+		if (belowZeroRetrogen != null && start.hasChildren()) {
+			BlockBox blockBox = start.setBoundingBoxFromChildren();
+			HeightLimitView heightLimitView = this.getHeightLimitView();
+			if (blockBox.getMinY() < heightLimitView.getBottomY() || blockBox.getMaxY() >= heightLimitView.getTopY()) {
+				return;
+			}
+		}
+
+		super.setStructureStart(structure, start);
+	}
+
 	public List<NbtCompound> getEntities() {
 		return this.entities;
 	}
@@ -318,5 +335,10 @@ public class ProtoChunk extends Chunk {
 
 	public ChunkTickScheduler<Fluid> getFluidProtoTickScheduler() {
 		return createProtoTickScheduler(this.fluidTickScheduler);
+	}
+
+	@Override
+	public HeightLimitView getHeightLimitView() {
+		return (HeightLimitView)(this.hasBelowZeroRetrogen() ? BelowZeroRetrogen.BELOW_ZERO_VIEW : this);
 	}
 }

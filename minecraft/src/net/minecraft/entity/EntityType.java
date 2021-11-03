@@ -731,8 +731,8 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 			box = box.stretch(0.0, -1.0, 0.0);
 		}
 
-		Stream<VoxelShape> stream = world.getCollisions(null, box, entity -> true);
-		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, invertY ? -2.0 : -1.0);
+		Iterable<VoxelShape> iterable = world.getCollisions(null, box);
+		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, iterable, invertY ? -2.0 : -1.0);
 	}
 
 	public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable NbtCompound itemNbt) {

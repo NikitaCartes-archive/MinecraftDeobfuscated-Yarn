@@ -54,7 +54,7 @@ public class StonecutterBlock extends Block {
 	@Override
 	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
-			(i, playerInventory, playerEntity) -> new StonecutterScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
+			(syncId, playerInventory, player) -> new StonecutterScreenHandler(syncId, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 

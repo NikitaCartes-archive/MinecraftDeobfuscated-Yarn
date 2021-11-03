@@ -86,7 +86,6 @@ public class Main {
 				return;
 			}
 
-			FlightProfiler.INSTANCE.registerEvents();
 			CrashReport.initCrashReport();
 			if (optionSet.has(optionSpec14)) {
 				FlightProfiler.INSTANCE.start(InstanceType.SERVER);
@@ -168,7 +167,7 @@ public class Main {
 
 			serverResourceManager.loadRegistryTags();
 			RegistryOps<NbtElement> registryOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
-			serverPropertiesLoader.getPropertiesHandler().method_37371(impl);
+			serverPropertiesLoader.getPropertiesHandler().getGeneratorOptions(impl);
 			SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
 			if (saveProperties == null) {
 				LevelInfo levelInfo;
@@ -187,7 +186,9 @@ public class Main {
 						new GameRules(),
 						dataPackSettings2
 					);
-					generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.method_37371(impl).withBonusChest() : serverPropertiesHandler.method_37371(impl);
+					generatorOptions = optionSet.has(optionSpec4)
+						? serverPropertiesHandler.getGeneratorOptions(impl).withBonusChest()
+						: serverPropertiesHandler.getGeneratorOptions(impl);
 				}
 
 				saveProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());

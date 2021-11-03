@@ -99,7 +99,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 		List<ItemFrameEntity> list = world.getEntitiesByClass(
 			ItemFrameEntity.class,
 			new Box((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), (double)(pos.getX() + 1), (double)(pos.getY() + 1), (double)(pos.getZ() + 1)),
-			itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == facing
+			itemFrame -> itemFrame != null && itemFrame.getHorizontalFacing() == facing
 		);
 		return list.size() == 1 ? (ItemFrameEntity)list.get(0) : null;
 	}

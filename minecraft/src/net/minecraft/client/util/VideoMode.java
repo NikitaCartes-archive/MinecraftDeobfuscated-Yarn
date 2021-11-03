@@ -38,13 +38,13 @@ public final class VideoMode {
 		this.refreshRate = buffer.refreshRate();
 	}
 
-	public VideoMode(GLFWVidMode gLFWVidMode) {
-		this.width = gLFWVidMode.width();
-		this.height = gLFWVidMode.height();
-		this.redBits = gLFWVidMode.redBits();
-		this.greenBits = gLFWVidMode.greenBits();
-		this.blueBits = gLFWVidMode.blueBits();
-		this.refreshRate = gLFWVidMode.refreshRate();
+	public VideoMode(GLFWVidMode vidMode) {
+		this.width = vidMode.width();
+		this.height = vidMode.height();
+		this.redBits = vidMode.redBits();
+		this.greenBits = vidMode.greenBits();
+		this.blueBits = vidMode.blueBits();
+		this.refreshRate = vidMode.refreshRate();
 	}
 
 	public int getWidth() {

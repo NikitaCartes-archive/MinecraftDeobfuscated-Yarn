@@ -124,7 +124,7 @@ public final class VanillaBiomeParameters {
 
 	public void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
 		if (SharedConstants.DEBUG_BIOME_SOURCE) {
-			new VanillaTerrainParameters().writeDebugBiomes(parameters);
+			VanillaTerrainParametersCreator.createSurfaceParameters().writeDebugBiomes(parameters);
 		} else {
 			this.writeOceanBiomes(parameters);
 			this.writeLandBiomes(parameters);

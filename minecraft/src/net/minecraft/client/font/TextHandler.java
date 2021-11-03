@@ -186,7 +186,7 @@ public class TextHandler {
 		}, style).orElse(text);
 	}
 
-	public int method_35717(String text, int maxWidth, Style style) {
+	public int getEndingIndex(String text, int maxWidth, Style style) {
 		TextHandler.LineBreakingVisitor lineBreakingVisitor = new TextHandler.LineBreakingVisitor((float)maxWidth);
 		TextVisitFactory.visitFormatted(text, style, lineBreakingVisitor);
 		return lineBreakingVisitor.getEndingIndex();
@@ -263,22 +263,17 @@ public class TextHandler {
 
 	public List<StringVisitable> wrapLines(StringVisitable text, int maxWidth, Style style) {
 		List<StringVisitable> list = Lists.<StringVisitable>newArrayList();
-		this.wrapLines(text, maxWidth, style, (textx, boolean_) -> list.add(textx));
+		this.wrapLines(text, maxWidth, style, (textx, lastLineWrapped) -> list.add(textx));
 		return list;
 	}
 
-	public List<StringVisitable> method_35714(StringVisitable stringVisitable, int maxWidth, Style style, StringVisitable stringVisitable2) {
+	public List<StringVisitable> wrapLines(StringVisitable text, int maxWidth, Style style, StringVisitable wrappedLinePrefix) {
 		List<StringVisitable> list = Lists.<StringVisitable>newArrayList();
-		this.wrapLines(
-			stringVisitable,
-			maxWidth,
-			style,
-			(stringVisitable2x, boolean_) -> list.add(boolean_ ? StringVisitable.concat(stringVisitable2, stringVisitable2x) : stringVisitable2x)
-		);
+		this.wrapLines(text, maxWidth, style, (textx, lastLineWrapped) -> list.add(lastLineWrapped ? StringVisitable.concat(wrappedLinePrefix, textx) : textx));
 		return list;
 	}
 
-	public void wrapLines(StringVisitable text, int maxWidth, Style style, BiConsumer<StringVisitable, Boolean> biConsumer) {
+	public void wrapLines(StringVisitable text, int maxWidth, Style style, BiConsumer<StringVisitable, Boolean> lineConsumer) {
 		List<TextHandler.StyledString> list = Lists.<TextHandler.StyledString>newArrayList();
 		text.visit((stylex, textx) -> {
 			if (!textx.isEmpty()) {
@@ -306,7 +301,7 @@ public class TextHandler {
 					boolean bl6 = bl5 || c == ' ';
 					bl2 = bl5;
 					StringVisitable stringVisitable = lineWrappingCollector.collectLine(i, bl6 ? 1 : 0, style2);
-					biConsumer.accept(stringVisitable, bl3);
+					lineConsumer.accept(stringVisitable, bl3);
 					bl3 = !bl5;
 					bl = true;
 					break;
@@ -318,9 +313,9 @@ public class TextHandler {
 
 		StringVisitable stringVisitable2 = lineWrappingCollector.collectRemainers();
 		if (stringVisitable2 != null) {
-			biConsumer.accept(stringVisitable2, bl3);
+			lineConsumer.accept(stringVisitable2, bl3);
 		} else if (bl2) {
-			biConsumer.accept(StringVisitable.EMPTY, false);
+			lineConsumer.accept(StringVisitable.EMPTY, false);
 		}
 	}
 
@@ -392,7 +387,7 @@ public class TextHandler {
 
 		public LineWrappingCollector(List<TextHandler.StyledString> parts) {
 			this.parts = parts;
-			this.joined = (String)parts.stream().map(styledString -> styledString.literal).collect(Collectors.joining());
+			this.joined = (String)parts.stream().map(part -> part.literal).collect(Collectors.joining());
 		}
 
 		public char charAt(int index) {

@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -10,6 +11,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
@@ -50,6 +52,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
@@ -59,6 +62,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 
 public class WolfEntity extends TameableEntity implements Angerable {
@@ -521,6 +525,10 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
+	}
+
+	public static boolean canSpawn(EntityType<WolfEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		return world.getBlockState(pos.down()).isIn(BlockTags.WOLVES_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(world, pos);
 	}
 
 	class AvoidLlamaGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

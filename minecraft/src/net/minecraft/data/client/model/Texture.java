@@ -274,13 +274,13 @@ public class Texture {
 		return new Texture().put(TextureKey.LIT_LOG, getSubId(block, "_log_lit")).put(TextureKey.FIRE, getSubId(block, "_fire"));
 	}
 
-	public static Texture candleCake(Block block, boolean bl) {
+	public static Texture candleCake(Block block, boolean lit) {
 		return new Texture()
 			.put(TextureKey.PARTICLE, getSubId(Blocks.CAKE, "_side"))
 			.put(TextureKey.BOTTOM, getSubId(Blocks.CAKE, "_bottom"))
 			.put(TextureKey.TOP, getSubId(Blocks.CAKE, "_top"))
 			.put(TextureKey.SIDE, getSubId(Blocks.CAKE, "_side"))
-			.put(TextureKey.CANDLE, getSubId(block, bl ? "_lit" : ""));
+			.put(TextureKey.CANDLE, getSubId(block, lit ? "_lit" : ""));
 	}
 
 	public static Texture cauldron(Identifier content) {

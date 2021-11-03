@@ -127,11 +127,6 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public BlockPos sampleMaxHeightMap(Heightmap.Type type) {
-		return this.wrapped.sampleMaxHeightMap(this.transformHeightmapType(type));
-	}
-
-	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		return this.wrapped.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}

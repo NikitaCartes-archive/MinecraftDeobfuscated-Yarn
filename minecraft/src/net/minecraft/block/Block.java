@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.BlockEntity;
@@ -146,7 +145,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> FACE_CULL_MAP = ThreadLocal.withInitial(() -> {
 		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(2048, 0.25F) {
 			@Override
-			protected void rehash(int i) {
+			protected void rehash(int newN) {
 			}
 		};
 		object2ByteLinkedOpenHashMap.defaultReturnValue((byte)127);
@@ -178,7 +177,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 			return to;
 		} else {
 			for (Entity entity : world.getOtherEntities(null, voxelShape.getBoundingBox())) {
-				double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
+				double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), List.of(voxelShape), -1.0);
 				entity.requestTeleport(entity.getX(), entity.getY() + 1.0 + d, entity.getZ());
 			}
 
@@ -589,8 +588,8 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return this;
 	}
 
-	protected ImmutableMap<BlockState, VoxelShape> getShapesForStates(Function<BlockState, VoxelShape> function) {
-		return (ImmutableMap<BlockState, VoxelShape>)this.stateManager.getStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
+	protected ImmutableMap<BlockState, VoxelShape> getShapesForStates(Function<BlockState, VoxelShape> stateToShape) {
+		return (ImmutableMap<BlockState, VoxelShape>)this.stateManager.getStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), stateToShape));
 	}
 
 	public static final class NeighborGroup {

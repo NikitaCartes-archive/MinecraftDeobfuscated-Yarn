@@ -20,9 +20,9 @@ public enum JigsawOrientation implements StringIdentifiable {
 	NORTH_UP("north_up", Direction.NORTH, Direction.UP),
 	SOUTH_UP("south_up", Direction.SOUTH, Direction.UP);
 
-	private static final Int2ObjectMap<JigsawOrientation> BY_INDEX = Util.make(new Int2ObjectOpenHashMap<>(values().length), int2ObjectOpenHashMap -> {
+	private static final Int2ObjectMap<JigsawOrientation> BY_INDEX = Util.make(new Int2ObjectOpenHashMap<>(values().length), map -> {
 		for (JigsawOrientation jigsawOrientation : values()) {
-			int2ObjectOpenHashMap.put(getIndex(jigsawOrientation.facing, jigsawOrientation.rotation), jigsawOrientation);
+			map.put(getIndex(jigsawOrientation.facing, jigsawOrientation.rotation), jigsawOrientation);
 		}
 	});
 	private final String name;

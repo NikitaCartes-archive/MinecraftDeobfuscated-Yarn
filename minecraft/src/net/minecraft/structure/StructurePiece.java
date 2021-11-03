@@ -103,7 +103,7 @@ public abstract class StructurePiece {
 
 	protected abstract void writeNbt(class_6625 arg, NbtCompound nbt);
 
-	public StructureWeightType method_33882() {
+	public StructureWeightType getWeightType() {
 		return StructureWeightType.BEARD;
 	}
 

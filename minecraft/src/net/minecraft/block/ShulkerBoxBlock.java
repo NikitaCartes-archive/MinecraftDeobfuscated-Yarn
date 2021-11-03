@@ -140,7 +140,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
 		BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
-			builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
+			builder = builder.putDrop(CONTENTS, (context, consumer) -> {
 				for (int i = 0; i < shulkerBoxBlockEntity.size(); i++) {
 					consumer.accept(shulkerBoxBlockEntity.getStack(i));
 				}
@@ -230,7 +230,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		ItemStack itemStack = super.getPickStack(world, pos, state);
-		world.getBlockEntity(pos, BlockEntityType.SHULKER_BOX).ifPresent(shulkerBoxBlockEntity -> shulkerBoxBlockEntity.setStackNbt(itemStack));
+		world.getBlockEntity(pos, BlockEntityType.SHULKER_BOX).ifPresent(blockEntity -> blockEntity.setStackNbt(itemStack));
 		return itemStack;
 	}
 

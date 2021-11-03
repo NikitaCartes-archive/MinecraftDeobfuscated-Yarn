@@ -141,7 +141,7 @@ public class BellBlockEntity extends BlockEntity {
 	}
 
 	private static void applyGlowToRaiders(World world, BlockPos pos, List<LivingEntity> hearingEntities) {
-		hearingEntities.stream().filter(livingEntity -> isRaiderEntity(pos, livingEntity)).forEach(BellBlockEntity::applyGlowToEntity);
+		hearingEntities.stream().filter(entity -> isRaiderEntity(pos, entity)).forEach(BellBlockEntity::applyGlowToEntity);
 	}
 
 	/**
@@ -149,18 +149,17 @@ public class BellBlockEntity extends BlockEntity {
 	 */
 	private static void applyParticlesToRaiders(World world, BlockPos pos, List<LivingEntity> hearingEntities) {
 		MutableInt mutableInt = new MutableInt(16700985);
-		int i = (int)hearingEntities.stream().filter(livingEntity -> pos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
+		int i = (int)hearingEntities.stream().filter(entity -> pos.isWithinDistance(entity.getPos(), 48.0)).count();
 		hearingEntities.stream()
-			.filter(livingEntity -> isRaiderEntity(pos, livingEntity))
+			.filter(entity -> isRaiderEntity(pos, entity))
 			.forEach(
-				livingEntity -> {
+				entity -> {
 					float f = 1.0F;
 					double d = Math.sqrt(
-						(livingEntity.getX() - (double)pos.getX()) * (livingEntity.getX() - (double)pos.getX())
-							+ (livingEntity.getZ() - (double)pos.getZ()) * (livingEntity.getZ() - (double)pos.getZ())
+						(entity.getX() - (double)pos.getX()) * (entity.getX() - (double)pos.getX()) + (entity.getZ() - (double)pos.getZ()) * (entity.getZ() - (double)pos.getZ())
 					);
-					double e = (double)((float)pos.getX() + 0.5F) + 1.0 / d * (livingEntity.getX() - (double)pos.getX());
-					double g = (double)((float)pos.getZ() + 0.5F) + 1.0 / d * (livingEntity.getZ() - (double)pos.getZ());
+					double e = (double)((float)pos.getX() + 0.5F) + 1.0 / d * (entity.getX() - (double)pos.getX());
+					double g = (double)((float)pos.getZ() + 0.5F) + 1.0 / d * (entity.getZ() - (double)pos.getZ());
 					int j = MathHelper.clamp((i - 21) / -2, 3, 15);
 
 					for (int k = 0; k < j; k++) {

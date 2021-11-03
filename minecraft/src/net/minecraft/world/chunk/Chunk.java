@@ -190,23 +190,6 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		return heightmap.get(x & 15, z & 15) - 1;
 	}
 
-	public BlockPos sampleMaxHeightMap(Heightmap.Type type) {
-		int i = this.getBottomY();
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-
-		for (int j = this.pos.getStartX(); j <= this.pos.getEndX(); j++) {
-			for (int k = this.pos.getStartZ(); k <= this.pos.getEndZ(); k++) {
-				int l = this.sampleHeightmap(type, j & 15, k & 15);
-				if (l > i) {
-					i = l;
-					mutable.set(j, l, k);
-				}
-			}
-		}
-
-		return mutable.toImmutable();
-	}
-
 	public ChunkPos getPos() {
 		return this.pos;
 	}
@@ -441,20 +424,29 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		ChunkPos chunkPos = this.getPos();
 		int i = BiomeCoords.fromBlock(chunkPos.getStartX());
 		int j = BiomeCoords.fromBlock(chunkPos.getStartZ());
+		HeightLimitView heightLimitView = this.getHeightLimitView();
 
-		for (int k = 0; k < this.countVerticalSections(); k++) {
-			ChunkSection chunkSection = this.getSection(k);
+		for (int k = heightLimitView.getBottomSectionCoord(); k < heightLimitView.getTopSectionCoord(); k++) {
+			ChunkSection chunkSection = this.getSection(this.sectionCoordToIndex(k));
 			chunkSection.method_38291(source, sampler, i, j);
 		}
 	}
 
 	public boolean hasStructureReferences() {
-		return !this.structureReferences.isEmpty();
+		return !this.getStructureReferences().isEmpty();
 	}
 
 	@Nullable
 	public BelowZeroRetrogen getBelowZeroRetrogen() {
 		return null;
+	}
+
+	public boolean hasBelowZeroRetrogen() {
+		return this.getBelowZeroRetrogen() != null;
+	}
+
+	public HeightLimitView getHeightLimitView() {
+		return this;
 	}
 
 	public static record TickSchedulers() {

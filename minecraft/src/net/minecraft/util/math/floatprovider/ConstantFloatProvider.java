@@ -10,14 +10,10 @@ public class ConstantFloatProvider extends FloatProvider {
 	public static final Codec<ConstantFloatProvider> CODEC = Codec.either(
 			Codec.FLOAT,
 			RecordCodecBuilder.create(
-				instance -> instance.group(Codec.FLOAT.fieldOf("value").forGetter(constantFloatProvider -> constantFloatProvider.value))
-						.apply(instance, ConstantFloatProvider::new)
+				instance -> instance.group(Codec.FLOAT.fieldOf("value").forGetter(provider -> provider.value)).apply(instance, ConstantFloatProvider::new)
 			)
 		)
-		.xmap(
-			either -> either.map(ConstantFloatProvider::create, constantFloatProvider -> constantFloatProvider),
-			constantFloatProvider -> Either.left(constantFloatProvider.value)
-		);
+		.xmap(either -> either.map(ConstantFloatProvider::create, provider -> provider), provider -> Either.left(provider.value));
 	private final float value;
 
 	public static ConstantFloatProvider create(float value) {

@@ -106,14 +106,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 			ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos)),
 			value
 		);
-
-		for (int i = -1; i <= 1; i++) {
-			for (int j = -1; j <= 1; j++) {
-				for (int k = -1; k <= 1; k++) {
-					this.notifySections.add(ChunkSectionPos.fromBlockPos(BlockPos.add(blockPos, j, k, i)));
-				}
-			}
-		}
+		ChunkSectionPos.forEachChunkSectionAround(blockPos, this.notifySections::add);
 	}
 
 	@Override
@@ -156,14 +149,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 				this.storage.put(id, this.createSection(id));
 				this.dirtySections.add(id);
 				this.onLoadSection(id);
-
-				for (int j = -1; j <= 1; j++) {
-					for (int k = -1; k <= 1; k++) {
-						for (int l = -1; l <= 1; l++) {
-							this.notifySections.add(ChunkSectionPos.fromBlockPos(BlockPos.add(id, k, l, j)));
-						}
-					}
-				}
+				ChunkSectionPos.forEachChunkSectionAround(id, this.notifySections::add);
 			}
 		}
 
@@ -180,18 +166,20 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 	}
 
 	protected void removeSection(ChunkLightProvider<?, ?> storage, long sectionPos) {
-		if (storage.getPendingUpdateCount() < 8192) {
-			storage.removePendingUpdateIf(mx -> ChunkSectionPos.fromBlockPos(mx) == sectionPos);
-		} else {
-			int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(sectionPos));
-			int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(sectionPos));
-			int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(sectionPos));
+		if (storage.getPendingUpdateCount() != 0) {
+			if (storage.getPendingUpdateCount() < 8192) {
+				storage.removePendingUpdateIf(mx -> ChunkSectionPos.fromBlockPos(mx) == sectionPos);
+			} else {
+				int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(sectionPos));
+				int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(sectionPos));
+				int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(sectionPos));
 
-			for (int l = 0; l < 16; l++) {
-				for (int m = 0; m < 16; m++) {
-					for (int n = 0; n < 16; n++) {
-						long o = BlockPos.asLong(i + l, j + m, k + n);
-						storage.removePendingUpdate(o);
+				for (int l = 0; l < 16; l++) {
+					for (int m = 0; m < 16; m++) {
+						for (int n = 0; n < 16; n++) {
+							long o = BlockPos.asLong(i + l, j + m, k + n);
+							storage.removePendingUpdate(o);
+						}
 					}
 				}
 			}

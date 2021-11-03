@@ -8,12 +8,14 @@ import net.minecraft.world.gen.noise.NoiseParametersKeys;
 
 public class VanillaSurfaceRules {
 	private static final MaterialRules.MaterialRule AIR = block(Blocks.AIR);
+	private static final MaterialRules.MaterialRule field_35639 = block(Blocks.BEDROCK);
 	private static final MaterialRules.MaterialRule WHITE_TERRACOTTA = block(Blocks.WHITE_TERRACOTTA);
 	private static final MaterialRules.MaterialRule ORANGE_TERRACOTTA = block(Blocks.ORANGE_TERRACOTTA);
 	private static final MaterialRules.MaterialRule TERRACOTTA = block(Blocks.TERRACOTTA);
 	private static final MaterialRules.MaterialRule RED_SAND = block(Blocks.RED_SAND);
 	private static final MaterialRules.MaterialRule field_35561 = block(Blocks.RED_SANDSTONE);
 	private static final MaterialRules.MaterialRule STONE = block(Blocks.STONE);
+	private static final MaterialRules.MaterialRule field_35640 = block(Blocks.DEEPSLATE);
 	private static final MaterialRules.MaterialRule DIRT = block(Blocks.DIRT);
 	private static final MaterialRules.MaterialRule PODZOL = block(Blocks.PODZOL);
 	private static final MaterialRules.MaterialRule COARSE_DIRT = block(Blocks.COARSE_DIRT);
@@ -73,12 +75,8 @@ public class VanillaSurfaceRules {
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.WARM_OCEAN, BiomeKeys.DESERT, BiomeKeys.BEACH, BiomeKeys.SNOWY_BEACH), materialRule2),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.DRIPSTONE_CAVES), STONE)
 		);
-		MaterialRules.MaterialRule materialRule5 = MaterialRules.condition(
-			MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW_UNDER, 0.45, 0.58), POWDER_SNOW
-		);
-		MaterialRules.MaterialRule materialRule6 = MaterialRules.condition(
-			MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW_SURFACE, 0.35, 0.6), POWDER_SNOW
-		);
+		MaterialRules.MaterialRule materialRule5 = MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW, 0.45, 0.58), POWDER_SNOW);
+		MaterialRules.MaterialRule materialRule6 = MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW, 0.35, 0.6), POWDER_SNOW);
 		MaterialRules.MaterialRule materialRule7 = MaterialRules.sequence(
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.FROZEN_PEAKS),
@@ -147,7 +145,7 @@ public class VanillaSurfaceRules {
 		MaterialRules.MaterialCondition materialCondition13 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.909, -0.5454);
 		MaterialRules.MaterialCondition materialCondition14 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.1818, 0.1818);
 		MaterialRules.MaterialCondition materialCondition15 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, 0.5454, 0.909);
-		return MaterialRules.sequence(
+		MaterialRules.MaterialRule materialRule9 = MaterialRules.sequence(
 			MaterialRules.condition(
 				MaterialRules.STONE_DEPTH_FLOOR,
 				MaterialRules.sequence(
@@ -236,6 +234,11 @@ public class VanillaSurfaceRules {
 				)
 			)
 		);
+		return MaterialRules.sequence(
+			MaterialRules.condition(MaterialRules.method_39472("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), field_35639),
+			MaterialRules.condition(MaterialRules.method_39473(), materialRule9),
+			MaterialRules.condition(MaterialRules.method_39472("deepslate", YOffset.fixed(0), YOffset.fixed(8)), field_35640)
+		);
 	}
 
 	public static MaterialRules.MaterialRule createNetherSurfaceRule() {
@@ -254,6 +257,8 @@ public class VanillaSurfaceRules {
 			materialCondition8, MaterialRules.condition(materialCondition3, MaterialRules.condition(materialCondition4, GRAVEL))
 		);
 		return MaterialRules.sequence(
+			MaterialRules.condition(MaterialRules.method_39472("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), field_35639),
+			MaterialRules.condition(MaterialRules.not(MaterialRules.method_39472("bedrock_roof", YOffset.belowTop(5), YOffset.getTop())), field_35639),
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.BASALT_DELTAS),
 				MaterialRules.sequence(

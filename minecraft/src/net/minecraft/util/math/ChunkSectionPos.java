@@ -1,5 +1,6 @@
 package net.minecraft.util.math;
 
+import it.unimi.dsi.fastutil.longs.LongConsumer;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -322,5 +323,39 @@ public class ChunkSectionPos extends Vec3i {
 				}
 			}
 		}, false);
+	}
+
+	public static void forEachChunkSectionAround(BlockPos pos, LongConsumer consumer) {
+		forEachChunkSectionAround(pos.getX(), pos.getY(), pos.getZ(), consumer);
+	}
+
+	public static void forEachChunkSectionAround(long pos, LongConsumer consumer) {
+		forEachChunkSectionAround(BlockPos.unpackLongX(pos), BlockPos.unpackLongY(pos), BlockPos.unpackLongZ(pos), consumer);
+	}
+
+	/**
+	 * Performs an action for each chunk section enclosing a block position
+	 * adjacent to {@code (x, y, z)}.
+	 * 
+	 * @param consumer the consumer that takes the chunk section position as a long
+	 */
+	public static void forEachChunkSectionAround(int x, int y, int z, LongConsumer consumer) {
+		int i = getSectionCoord(x - 1);
+		int j = getSectionCoord(x + 1);
+		int k = getSectionCoord(y - 1);
+		int l = getSectionCoord(y + 1);
+		int m = getSectionCoord(z - 1);
+		int n = getSectionCoord(z + 1);
+		if (i == j && k == l && m == n) {
+			consumer.accept(asLong(i, k, m));
+		} else {
+			for (int o = i; o <= j; o++) {
+				for (int p = k; p <= l; p++) {
+					for (int q = m; q <= n; q++) {
+						consumer.accept(asLong(o, p, q));
+					}
+				}
+			}
+		}
 	}
 }

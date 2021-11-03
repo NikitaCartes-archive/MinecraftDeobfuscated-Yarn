@@ -12,8 +12,8 @@ import org.apache.logging.log4j.Logger;
 public class TrapezoidHeightProvider extends HeightProvider {
 	public static final Codec<TrapezoidHeightProvider> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					YOffset.OFFSET_CODEC.fieldOf("min_inclusive").forGetter(trapezoidHeightProvider -> trapezoidHeightProvider.minOffset),
-					YOffset.OFFSET_CODEC.fieldOf("max_inclusive").forGetter(trapezoidHeightProvider -> trapezoidHeightProvider.maxOffset),
+					YOffset.OFFSET_CODEC.fieldOf("min_inclusive").forGetter(provider -> provider.minOffset),
+					YOffset.OFFSET_CODEC.fieldOf("max_inclusive").forGetter(provider -> provider.maxOffset),
 					Codec.INT.optionalFieldOf("plateau", Integer.valueOf(0)).forGetter(trapezoidHeightProvider -> trapezoidHeightProvider.plateau)
 				)
 				.apply(instance, TrapezoidHeightProvider::new)

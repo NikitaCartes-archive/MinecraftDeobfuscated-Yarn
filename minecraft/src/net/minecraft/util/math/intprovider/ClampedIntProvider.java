@@ -10,16 +10,16 @@ import net.minecraft.util.math.MathHelper;
 public class ClampedIntProvider extends IntProvider {
 	public static final Codec<ClampedIntProvider> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						IntProvider.VALUE_CODEC.fieldOf("source").forGetter(clampedIntProvider -> clampedIntProvider.source),
-						Codec.INT.fieldOf("min_inclusive").forGetter(clampedIntProvider -> clampedIntProvider.min),
-						Codec.INT.fieldOf("max_inclusive").forGetter(clampedIntProvider -> clampedIntProvider.max)
+						IntProvider.VALUE_CODEC.fieldOf("source").forGetter(provider -> provider.source),
+						Codec.INT.fieldOf("min_inclusive").forGetter(provider -> provider.min),
+						Codec.INT.fieldOf("max_inclusive").forGetter(provider -> provider.max)
 					)
 					.apply(instance, ClampedIntProvider::new)
 		)
 		.comapFlatMap(
-			clampedIntProvider -> clampedIntProvider.max < clampedIntProvider.min
-					? DataResult.error("Max must be at least min, min_inclusive: " + clampedIntProvider.min + ", max_inclusive: " + clampedIntProvider.max)
-					: DataResult.success(clampedIntProvider),
+			provider -> provider.max < provider.min
+					? DataResult.error("Max must be at least min, min_inclusive: " + provider.min + ", max_inclusive: " + provider.max)
+					: DataResult.success(provider),
 			Function.identity()
 		);
 	private final IntProvider source;

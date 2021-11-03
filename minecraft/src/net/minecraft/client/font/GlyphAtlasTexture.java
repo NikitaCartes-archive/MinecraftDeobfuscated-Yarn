@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GlyphAtlasTexture extends AbstractTexture {
-	private static final int field_32227 = 256;
+	private static final int SLOT_LENGTH = 256;
 	private final Identifier id;
 	private final RenderLayer textLayer;
 	private final RenderLayer seeThroughTextLayer;

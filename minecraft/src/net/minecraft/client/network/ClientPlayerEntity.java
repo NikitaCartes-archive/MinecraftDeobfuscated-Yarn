@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -454,7 +455,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean wouldCollideAt(BlockPos pos) {
 		Box box = this.getBoundingBox();
 		Box box2 = new Box((double)pos.getX(), box.minY, (double)pos.getZ(), (double)pos.getX() + 1.0, box.maxY, (double)pos.getZ() + 1.0).contract(1.0E-7);
-		return this.world.hasBlockCollision(this, box2, (state, posx) -> state.shouldSuffocate(this.world, posx));
+		return this.world.method_39454(this, box2);
 	}
 
 	@Override
@@ -956,7 +957,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 						Vec3d vec3d11 = vec3d7.subtract(vec3d9);
 						Vec3d vec3d12 = vec3d6.add(vec3d9);
 						Vec3d vec3d13 = vec3d7.add(vec3d9);
-						Iterator<Box> iterator = this.world.getCollisions(this, box, entity -> true).flatMap(voxelShapex -> voxelShapex.getBoundingBoxes().stream()).iterator();
+						Iterable<VoxelShape> iterable = this.world.getCollisions(this, box);
+						Iterator<Box> iterator = StreamSupport.stream(iterable.spliterator(), false).flatMap(voxelShapex -> voxelShapex.getBoundingBoxes().stream()).iterator();
 						float r = Float.MIN_VALUE;
 
 						while (iterator.hasNext()) {

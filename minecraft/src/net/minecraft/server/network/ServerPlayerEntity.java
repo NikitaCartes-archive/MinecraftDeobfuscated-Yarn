@@ -190,6 +190,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private float spawnAngle;
 	private final TextStream textStream;
 	private boolean filterText;
+	private boolean allowServerListing = true;
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
 		public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
@@ -1305,11 +1306,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	public void setClientSettings(ClientSettingsC2SPacket packet) {
-		this.clientChatVisibility = packet.getChatVisibility();
-		this.clientChatColorsEnabled = packet.hasChatColors();
-		this.filterText = packet.shouldFilterText();
-		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)packet.getPlayerModelBitMask());
-		this.getDataTracker().set(MAIN_ARM, (byte)(packet.getMainArm() == Arm.LEFT ? 0 : 1));
+		this.clientChatVisibility = packet.chatVisibility();
+		this.clientChatColorsEnabled = packet.chatColors();
+		this.filterText = packet.filterText();
+		this.allowServerListing = packet.allowsListing();
+		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)packet.playerModelBitMask());
+		this.getDataTracker().set(MAIN_ARM, (byte)(packet.mainArm() == Arm.LEFT ? 0 : 1));
 	}
 
 	public boolean areClientChatColorsEnabled() {
@@ -1634,5 +1636,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 			.getSlotIndex(playerInventory, playerInventory.selectedSlot)
 			.ifPresent(i -> this.currentScreenHandler.setPreviousTrackedSlot(i, playerInventory.getMainHandStack()));
 		return this.dropItem(itemStack, false, true) != null;
+	}
+
+	public boolean allowsServerListing() {
+		return this.allowServerListing;
 	}
 }

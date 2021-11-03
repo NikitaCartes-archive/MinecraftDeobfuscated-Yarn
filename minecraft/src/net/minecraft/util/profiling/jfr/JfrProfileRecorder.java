@@ -1,6 +1,8 @@
 package net.minecraft.util.profiling.jfr;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -8,6 +10,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -19,7 +22,7 @@ import net.minecraft.util.profiling.jfr.sample.ChunkGenerationSample;
 import net.minecraft.util.profiling.jfr.sample.CpuLoadSample;
 import net.minecraft.util.profiling.jfr.sample.FileIoSample;
 import net.minecraft.util.profiling.jfr.sample.GcHeapSummarySample;
-import net.minecraft.util.profiling.jfr.sample.PacketSample;
+import net.minecraft.util.profiling.jfr.sample.NetworkIoStatistics;
 import net.minecraft.util.profiling.jfr.sample.ServerTickTimeSample;
 import net.minecraft.util.profiling.jfr.sample.ThreadAllocationStatisticsSample;
 
@@ -28,8 +31,8 @@ public class JfrProfileRecorder {
 	private Instant endTime = Instant.EPOCH;
 	private final List<ChunkGenerationSample> chunkGenerationSamples = Lists.<ChunkGenerationSample>newArrayList();
 	private final List<CpuLoadSample> cpuLoadSamples = Lists.<CpuLoadSample>newArrayList();
-	private final List<PacketSample> packetReadSamples = Lists.<PacketSample>newArrayList();
-	private final List<PacketSample> packetSentSamples = Lists.<PacketSample>newArrayList();
+	private final Map<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter> receivedPacketsToCounter = Maps.<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter>newHashMap();
+	private final Map<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter> sentPacketsToCounter = Maps.<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter>newHashMap();
 	private final List<FileIoSample> fileWriteSamples = Lists.<FileIoSample>newArrayList();
 	private final List<FileIoSample> fileReadSamples = Lists.<FileIoSample>newArrayList();
 	private int gcCount;
@@ -97,8 +100,8 @@ public class JfrProfileRecorder {
 			this.cpuLoadSamples,
 			GcHeapSummarySample.toStatistics(duration, this.gcHeapSummarySamples, this.gcDuration, this.gcCount),
 			ThreadAllocationStatisticsSample.toAllocationMap(this.threadAllocationStatisticsSamples),
-			PacketSample.toStatistics(duration, this.packetReadSamples),
-			PacketSample.toStatistics(duration, this.packetSentSamples),
+			createNetworkIoStatistics(duration, this.receivedPacketsToCounter),
+			createNetworkIoStatistics(duration, this.sentPacketsToCounter),
 			FileIoSample.toStatistics(duration, this.fileWriteSamples),
 			FileIoSample.toStatistics(duration, this.fileReadSamples),
 			this.chunkGenerationSamples
@@ -127,10 +130,10 @@ public class JfrProfileRecorder {
 					this.serverTickTimeSamples.add(ServerTickTimeSample.fromEvent(event));
 					break;
 				case "minecraft.PacketReceived":
-					this.packetReadSamples.add(PacketSample.fromEvent(event));
+					this.addPacket(event, event.getInt("bytes"), this.receivedPacketsToCounter);
 					break;
 				case "minecraft.PacketSent":
-					this.packetSentSamples.add(PacketSample.fromEvent(event));
+					this.addPacket(event, event.getInt("bytes"), this.sentPacketsToCounter);
 					break;
 				case "jdk.ThreadAllocationStatistics":
 					this.threadAllocationStatisticsSamples.add(ThreadAllocationStatisticsSample.fromEvent(event));
@@ -154,7 +157,38 @@ public class JfrProfileRecorder {
 		});
 	}
 
+	private void addPacket(RecordedEvent event, int bytes, Map<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter> packetsToCounter) {
+		((JfrProfileRecorder.PacketCounter)packetsToCounter.computeIfAbsent(
+				NetworkIoStatistics.Packet.fromEvent(event), packet -> new JfrProfileRecorder.PacketCounter()
+			))
+			.add(bytes);
+	}
+
 	private void addFileIoSample(RecordedEvent event, List<FileIoSample> samples, String bytesKey) {
 		samples.add(new FileIoSample(event.getDuration(), event.getString("path"), event.getLong(bytesKey)));
+	}
+
+	private static NetworkIoStatistics createNetworkIoStatistics(
+		Duration duration, Map<NetworkIoStatistics.Packet, JfrProfileRecorder.PacketCounter> packetsToCounter
+	) {
+		List<Pair<NetworkIoStatistics.Packet, NetworkIoStatistics.PacketStatistics>> list = packetsToCounter.entrySet()
+			.stream()
+			.map(entry -> Pair.of((NetworkIoStatistics.Packet)entry.getKey(), ((JfrProfileRecorder.PacketCounter)entry.getValue()).toStatistics()))
+			.toList();
+		return new NetworkIoStatistics(duration, list);
+	}
+
+	public static final class PacketCounter {
+		private long totalCount;
+		private long totalBytes;
+
+		public void add(int bytes) {
+			this.totalBytes += (long)bytes;
+			this.totalCount++;
+		}
+
+		public NetworkIoStatistics.PacketStatistics toStatistics() {
+			return new NetworkIoStatistics.PacketStatistics(this.totalCount, this.totalBytes);
+		}
 	}
 }

@@ -12,14 +12,10 @@ public class ConstantHeightProvider extends HeightProvider {
 	public static final Codec<ConstantHeightProvider> CONSTANT_CODEC = Codec.either(
 			YOffset.OFFSET_CODEC,
 			RecordCodecBuilder.create(
-				instance -> instance.group(YOffset.OFFSET_CODEC.fieldOf("value").forGetter(constantHeightProvider -> constantHeightProvider.offset))
-						.apply(instance, ConstantHeightProvider::new)
+				instance -> instance.group(YOffset.OFFSET_CODEC.fieldOf("value").forGetter(provider -> provider.offset)).apply(instance, ConstantHeightProvider::new)
 			)
 		)
-		.xmap(
-			either -> either.map(ConstantHeightProvider::create, constantHeightProvider -> constantHeightProvider),
-			constantHeightProvider -> Either.left(constantHeightProvider.offset)
-		);
+		.xmap(either -> either.map(ConstantHeightProvider::create, provider -> provider), provider -> Either.left(provider.offset));
 	private final YOffset offset;
 
 	public static ConstantHeightProvider create(YOffset offset) {

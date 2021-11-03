@@ -1,18 +1,21 @@
 package net.minecraft.world.gen.surfacebuilder;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
@@ -22,6 +25,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.RandomDeriver;
 
 public class MaterialRules {
 	public static final MaterialRules.MaterialCondition STONE_DEPTH_FLOOR = new MaterialRules.StoneDepthMaterialCondition(false, VerticalSurfaceType.FLOOR);
@@ -61,11 +66,15 @@ public class MaterialRules {
 	}
 
 	public static MaterialRules.MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d) {
-		return noiseThreshold(registryKey, d, Double.POSITIVE_INFINITY);
+		return noiseThreshold(registryKey, d, Double.MAX_VALUE);
 	}
 
 	public static MaterialRules.MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d, double e) {
 		return new MaterialRules.NoiseThresholdMaterialCondition(registryKey, d, e);
+	}
+
+	public static MaterialRules.MaterialCondition method_39472(String string, YOffset yOffset, YOffset yOffset2) {
+		return new MaterialRules.VerticalGradientMaterialCondition(new Identifier(string), yOffset, yOffset2);
 	}
 
 	public static MaterialRules.MaterialCondition steepSlope() {
@@ -74,6 +83,10 @@ public class MaterialRules {
 
 	public static MaterialRules.MaterialCondition hole() {
 		return MaterialRules.HoleMaterialCondition.INSTANCE;
+	}
+
+	public static MaterialRules.MaterialCondition method_39473() {
+		return MaterialRules.SurfaceMaterialCondition.INSTANCE;
 	}
 
 	public static MaterialRules.MaterialCondition temperature() {
@@ -121,34 +134,20 @@ public class MaterialRules {
 		}
 
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
-			class AboveYPredicate extends MaterialRules.AbstractPredicate<MaterialRules.SurfaceContext> {
-				protected boolean test(MaterialRules.SurfaceContext surfaceContext) {
-					return surfaceContext.blockY + (AboveYMaterialCondition.this.addStoneDepth ? surfaceContext.stoneDepthAbove : 0)
-						>= AboveYMaterialCondition.this.anchor.getY(materialRuleContext.heightContext)
-							+ surfaceContext.runDepth * AboveYMaterialCondition.this.runDepthMultiplier;
+			class AboveYPredicate extends MaterialRules.FullLazyAbstractPredicate {
+				AboveYPredicate() {
+					super(materialRuleContext);
+				}
+
+				@Override
+				protected boolean test() {
+					return this.context.y + (AboveYMaterialCondition.this.addStoneDepth ? this.context.stoneDepthAbove : 0)
+						>= AboveYMaterialCondition.this.anchor.getY(this.context.heightContext) + this.context.runDepth * AboveYMaterialCondition.this.runDepthMultiplier;
 				}
 			}
 
-			AboveYPredicate aboveYPredicate = new AboveYPredicate();
-			materialRuleContext.contextDependentPredicates.add(aboveYPredicate);
-			return aboveYPredicate;
+			return new AboveYPredicate();
 		}
-	}
-
-	abstract static class AbstractPredicate<S> implements MaterialRules.Predicate<S> {
-		boolean result = false;
-
-		@Override
-		public void init(S context) {
-			this.result = this.test(context);
-		}
-
-		@Override
-		public boolean test() {
-			return this.result;
-		}
-
-		protected abstract boolean test(S context);
 	}
 
 	static record BiomeMaterialCondition() implements MaterialRules.MaterialCondition {
@@ -171,15 +170,18 @@ public class MaterialRules {
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
 			final Set<RegistryKey<Biome>> set = Set.copyOf(this.biomes);
 
-			class BiomePredicate extends MaterialRules.AbstractPredicate<RegistryKey<Biome>> {
-				protected boolean test(RegistryKey<Biome> registryKey) {
-					return set.contains(registryKey);
+			class BiomePredicate extends MaterialRules.FullLazyAbstractPredicate {
+				BiomePredicate() {
+					super(materialRuleContext);
+				}
+
+				@Override
+				protected boolean test() {
+					return set.contains(this.context.biomeKeySupplier.get());
 				}
 			}
 
-			BiomePredicate biomePredicate = new BiomePredicate();
-			materialRuleContext.biomeDependentPredicates.add(biomePredicate);
-			return biomePredicate;
+			return new BiomePredicate();
 		}
 	}
 
@@ -219,7 +221,7 @@ public class MaterialRules {
 	}
 
 	interface BooleanSupplier {
-		boolean test();
+		boolean get();
 	}
 
 	static record ConditionMaterialRule() implements MaterialRules.MaterialRule {
@@ -266,7 +268,18 @@ public class MaterialRules {
 		@Nullable
 		@Override
 		public BlockState tryApply(int i, int j, int k) {
-			return !this.condition.test() ? null : this.followup.tryApply(i, j, k);
+			return !this.condition.get() ? null : this.followup.tryApply(i, j, k);
+		}
+	}
+
+	abstract static class FullLazyAbstractPredicate extends MaterialRules.LazyAbstractPredicate {
+		protected FullLazyAbstractPredicate(MaterialRules.MaterialRuleContext materialRuleContext) {
+			super(materialRuleContext);
+		}
+
+		@Override
+		protected long getCurrentUniqueValue() {
+			return this.context.uniquePosValue;
 		}
 	}
 
@@ -285,6 +298,17 @@ public class MaterialRules {
 		}
 	}
 
+	abstract static class HorizontalLazyAbstractPredicate extends MaterialRules.LazyAbstractPredicate {
+		protected HorizontalLazyAbstractPredicate(MaterialRules.MaterialRuleContext materialRuleContext) {
+			super(materialRuleContext);
+		}
+
+		@Override
+		protected long getCurrentUniqueValue() {
+			return this.context.uniqueHorizontalPosValue;
+		}
+	}
+
 	static record InvertedBooleanSupplier() implements MaterialRules.BooleanSupplier {
 		private final MaterialRules.BooleanSupplier target;
 
@@ -293,37 +317,47 @@ public class MaterialRules {
 		}
 
 		@Override
-		public boolean test() {
-			return !this.target.test();
+		public boolean get() {
+			return !this.target.get();
 		}
 	}
 
-	abstract static class LazyAbstractPredicate<S> implements MaterialRules.Predicate<S> {
-		@Nullable
-		private S context;
+	abstract static class LazyAbstractPredicate implements MaterialRules.BooleanSupplier {
+		protected final MaterialRules.MaterialRuleContext context;
+		private long uniqueValue;
 		@Nullable
 		Boolean result;
 
-		@Override
-		public void init(S context) {
+		protected LazyAbstractPredicate(MaterialRules.MaterialRuleContext context) {
 			this.context = context;
-			this.result = null;
+			this.uniqueValue = this.getCurrentUniqueValue() - 1L;
 		}
 
 		@Override
-		public boolean test() {
-			if (this.result == null) {
-				if (this.context == null) {
-					throw new IllegalStateException("Calling test without update");
+		public boolean get() {
+			long l = this.getCurrentUniqueValue();
+			if (l == this.uniqueValue) {
+				if (this.result == null) {
+					throw new IllegalStateException("Update triggered but the result is null");
+				} else {
+					return this.result;
 				}
-
-				this.result = this.test(this.context);
+			} else {
+				this.uniqueValue = l;
+				this.result = this.test();
+				return this.result;
 			}
-
-			return this.result;
 		}
 
-		protected abstract boolean test(S object);
+		/**
+		 * Returns a unique value for each block position. The result of this predicate
+		 * will not be recalculated until this value changes.
+		 * 
+		 * @return the unique value for this position
+		 */
+		protected abstract long getCurrentUniqueValue();
+
+		protected abstract boolean test();
 	}
 
 	public interface MaterialCondition extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BooleanSupplier> {
@@ -332,12 +366,14 @@ public class MaterialRules {
 		static Codec<? extends MaterialRules.MaterialCondition> registerAndGetDefault() {
 			Registry.register(Registry.MATERIAL_CONDITION, "biome", MaterialRules.BiomeMaterialCondition.CONDITION_CODEC);
 			Registry.register(Registry.MATERIAL_CONDITION, "noise_threshold", MaterialRules.NoiseThresholdMaterialCondition.CONDITION_CODEC);
+			Registry.register(Registry.MATERIAL_CONDITION, "vertical_gradient", MaterialRules.VerticalGradientMaterialCondition.CONDITION_CODEC);
 			Registry.register(Registry.MATERIAL_CONDITION, "y_above", MaterialRules.AboveYMaterialCondition.CONDITION_CODEC);
 			Registry.register(Registry.MATERIAL_CONDITION, "water", MaterialRules.WaterMaterialCondition.CONDITION_CODEC);
 			Registry.register(Registry.MATERIAL_CONDITION, "temperature", MaterialRules.TemperatureMaterialCondition.CONDITION_CODEC);
 			Registry.register(Registry.MATERIAL_CONDITION, "steep", MaterialRules.SteepMaterialCondition.CONDITION_CODEC);
 			Registry.register(Registry.MATERIAL_CONDITION, "not", MaterialRules.NotMaterialCondition.CONDITION_CODEC);
 			Registry.register(Registry.MATERIAL_CONDITION, "hole", MaterialRules.HoleMaterialCondition.CONDITION_CODEC);
+			Registry.register(Registry.MATERIAL_CONDITION, "above_preliminary_surface", MaterialRules.SurfaceMaterialCondition.CONDITION_CODEC);
 			Registry.register(Registry.MATERIAL_CONDITION, "stone_depth", MaterialRules.StoneDepthMaterialCondition.CONDITION_CODEC);
 			return (Codec<? extends MaterialRules.MaterialCondition>)Registry.MATERIAL_CONDITION.iterator().next();
 		}
@@ -361,115 +397,114 @@ public class MaterialRules {
 
 	protected static final class MaterialRuleContext {
 		final SurfaceBuilder surfaceBuilder;
-		final MaterialRules.Predicate<MaterialRules.MaterialRuleContext.BiomeTemperaturePredicate.BiomeTemperatureContext> biomeTemperaturePredicate = new MaterialRules.MaterialRuleContext.BiomeTemperaturePredicate();
-		final MaterialRules.Predicate<MaterialRules.MaterialRuleContext.SteepSlopePredicate.SteepSlopeContext> steepSlopePredicate = new MaterialRules.MaterialRuleContext.SteepSlopePredicate();
-		final MaterialRules.Predicate<Integer> negativeRunDepthPredicate = new MaterialRules.MaterialRuleContext.NegativePredicate();
-		final List<MaterialRules.Predicate<RegistryKey<Biome>>> biomeDependentPredicates = new ObjectArrayList<>();
-		final List<MaterialRules.Predicate<MaterialRules.MaterialRulePos>> positionalPredicates = new ObjectArrayList<>();
-		final List<MaterialRules.Predicate<MaterialRules.SurfaceContext>> contextDependentPredicates = new ObjectArrayList<>();
+		final MaterialRules.BooleanSupplier biomeTemperaturePredicate = new MaterialRules.MaterialRuleContext.BiomeTemperaturePredicate(this);
+		final MaterialRules.BooleanSupplier steepSlopePredicate = new MaterialRules.MaterialRuleContext.SteepSlopePredicate(this);
+		final MaterialRules.BooleanSupplier negativeRunDepthPredicate = new MaterialRules.MaterialRuleContext.NegativeRunDepthPredicate(this);
+		final MaterialRules.BooleanSupplier surfacePredicate = new MaterialRules.MaterialRuleContext.SurfacePredicate();
+		final Chunk chunk;
+		private final Function<BlockPos, Biome> posToBiome;
+		private final Registry<Biome> biomeRegistry;
 		final HeightContext heightContext;
+		long uniqueHorizontalPosValue = -9223372036854775807L;
+		int x;
+		int z;
+		int runDepth;
+		long uniquePosValue = -9223372036854775807L;
+		final BlockPos.Mutable pos = new BlockPos.Mutable();
+		Supplier<Biome> biomeSupplier;
+		Supplier<RegistryKey<Biome>> biomeKeySupplier;
+		int surfaceMinY;
+		int y;
+		int fluidHeight;
+		int stoneDepthBelow;
+		int stoneDepthAbove;
 
-		protected MaterialRuleContext(SurfaceBuilder surfaceBuilder, HeightContext heightContext) {
+		protected MaterialRuleContext(
+			SurfaceBuilder surfaceBuilder, Chunk chunk, Function<BlockPos, Biome> posToBiome, Registry<Biome> biomeRegistry, HeightContext heightContext
+		) {
 			this.surfaceBuilder = surfaceBuilder;
+			this.chunk = chunk;
+			this.posToBiome = posToBiome;
+			this.biomeRegistry = biomeRegistry;
 			this.heightContext = heightContext;
 		}
 
-		protected void initWorldDependentPredicates(Chunk chunk, int x, int z, int runDepth) {
-			MaterialRules.MaterialRulePos materialRulePos = new MaterialRules.MaterialRulePos(x, z);
-
-			for (MaterialRules.Predicate<MaterialRules.MaterialRulePos> predicate : this.positionalPredicates) {
-				predicate.init(materialRulePos);
-			}
-
-			this.steepSlopePredicate.init(new MaterialRules.MaterialRuleContext.SteepSlopePredicate.SteepSlopeContext(chunk, x, z));
-			this.negativeRunDepthPredicate.init(runDepth);
+		protected void initHorizontalContext(int x, int z, int runDepth) {
+			this.uniqueHorizontalPosValue++;
+			this.uniquePosValue++;
+			this.x = x;
+			this.z = z;
+			this.runDepth = runDepth;
 		}
 
-		protected void initContextDependentPredicates(
-			RegistryKey<Biome> biomeKey, Biome biome, int runDepth, int stoneDepthAbove, int stoneDepthBelow, int waterHeight, int x, int y, int z
-		) {
-			for (MaterialRules.Predicate<RegistryKey<Biome>> predicate : this.biomeDependentPredicates) {
-				predicate.init(biomeKey);
-			}
-
-			MaterialRules.SurfaceContext surfaceContext = new MaterialRules.SurfaceContext(y, stoneDepthAbove, stoneDepthBelow, runDepth, waterHeight);
-
-			for (MaterialRules.Predicate<MaterialRules.SurfaceContext> predicate2 : this.contextDependentPredicates) {
-				predicate2.init(surfaceContext);
-			}
-
-			this.biomeTemperaturePredicate.init(new MaterialRules.MaterialRuleContext.BiomeTemperaturePredicate.BiomeTemperatureContext(biome, x, y, z));
+		protected void initVerticalContext(int surfaceMinY, int stoneDepthAbove, int stoneDepthBelow, int fluidHeight, int x, int y, int z) {
+			this.uniquePosValue++;
+			this.biomeSupplier = Suppliers.memoize(() -> (Biome)this.posToBiome.apply(this.pos.set(x, y, z)));
+			this.biomeKeySupplier = Suppliers.memoize(
+				() -> (RegistryKey<Biome>)this.biomeRegistry
+						.getKey((Biome)this.biomeSupplier.get())
+						.orElseThrow(() -> new IllegalStateException("Unregistered biome: " + this.biomeSupplier))
+			);
+			this.surfaceMinY = surfaceMinY;
+			this.y = y;
+			this.fluidHeight = fluidHeight;
+			this.stoneDepthBelow = stoneDepthBelow;
+			this.stoneDepthAbove = stoneDepthAbove;
 		}
 
-		static class BiomeTemperaturePredicate
-			extends MaterialRules.LazyAbstractPredicate<MaterialRules.MaterialRuleContext.BiomeTemperaturePredicate.BiomeTemperatureContext> {
-			protected boolean test(MaterialRules.MaterialRuleContext.BiomeTemperaturePredicate.BiomeTemperatureContext biomeTemperatureContext) {
-				return biomeTemperatureContext.biome
-						.getTemperature(new BlockPos(biomeTemperatureContext.blockX, biomeTemperatureContext.blockY, biomeTemperatureContext.blockZ))
-					< 0.15F;
+		static class BiomeTemperaturePredicate extends MaterialRules.FullLazyAbstractPredicate {
+			BiomeTemperaturePredicate(MaterialRules.MaterialRuleContext materialRuleContext) {
+				super(materialRuleContext);
 			}
 
-			static record BiomeTemperatureContext() {
-				final Biome biome;
-				final int blockX;
-				final int blockY;
-				final int blockZ;
-
-				BiomeTemperatureContext(Biome biome, int i, int j, int k) {
-					this.biome = biome;
-					this.blockX = i;
-					this.blockY = j;
-					this.blockZ = k;
-				}
+			@Override
+			protected boolean test() {
+				return ((Biome)this.context.biomeSupplier.get()).getTemperature(this.context.pos.set(this.context.x, this.context.y, this.context.z)) < 0.15F;
 			}
 		}
 
-		static final class NegativePredicate extends MaterialRules.AbstractPredicate<Integer> {
-			protected boolean test(Integer integer) {
-				return integer <= 0;
+		static final class NegativeRunDepthPredicate extends MaterialRules.HorizontalLazyAbstractPredicate {
+			NegativeRunDepthPredicate(MaterialRules.MaterialRuleContext materialRuleContext) {
+				super(materialRuleContext);
+			}
+
+			@Override
+			protected boolean test() {
+				return this.context.runDepth <= 0;
 			}
 		}
 
-		static class SteepSlopePredicate extends MaterialRules.LazyAbstractPredicate<MaterialRules.MaterialRuleContext.SteepSlopePredicate.SteepSlopeContext> {
-			protected boolean test(MaterialRules.MaterialRuleContext.SteepSlopePredicate.SteepSlopeContext steepSlopeContext) {
-				int i = steepSlopeContext.blockX & 15;
-				int j = steepSlopeContext.blockZ & 15;
+		static class SteepSlopePredicate extends MaterialRules.HorizontalLazyAbstractPredicate {
+			SteepSlopePredicate(MaterialRules.MaterialRuleContext materialRuleContext) {
+				super(materialRuleContext);
+			}
+
+			@Override
+			protected boolean test() {
+				int i = this.context.x & 15;
+				int j = this.context.z & 15;
 				int k = Math.max(j - 1, 0);
 				int l = Math.min(j + 1, 15);
-				int m = steepSlopeContext.chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, i, k);
-				int n = steepSlopeContext.chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, i, l);
+				Chunk chunk = this.context.chunk;
+				int m = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, i, k);
+				int n = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, i, l);
 				if (n >= m + 4) {
 					return true;
 				} else {
 					int o = Math.max(i - 1, 0);
 					int p = Math.min(i + 1, 15);
-					int q = steepSlopeContext.chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, o, j);
-					int r = steepSlopeContext.chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, p, j);
+					int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, o, j);
+					int r = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, p, j);
 					return q >= r + 4;
 				}
 			}
-
-			static record SteepSlopeContext() {
-				final Chunk chunk;
-				final int blockX;
-				final int blockZ;
-
-				SteepSlopeContext(Chunk chunk, int i, int j) {
-					this.chunk = chunk;
-					this.blockX = i;
-					this.blockZ = j;
-				}
-			}
 		}
-	}
 
-	static record MaterialRulePos() {
-		final int blockX;
-		final int blockZ;
-
-		MaterialRulePos(int i, int j) {
-			this.blockX = i;
-			this.blockZ = j;
+		final class SurfacePredicate implements MaterialRules.BooleanSupplier {
+			@Override
+			public boolean get() {
+				return MaterialRuleContext.this.y >= MaterialRuleContext.this.surfaceMinY;
+			}
 		}
 	}
 
@@ -500,16 +535,19 @@ public class MaterialRules {
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
 			final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.surfaceBuilder.getNoiseSampler(this.noise);
 
-			class NoiseThresholdPredicate extends MaterialRules.LazyAbstractPredicate<MaterialRules.MaterialRulePos> {
-				protected boolean test(MaterialRules.MaterialRulePos materialRulePos) {
-					double d = doublePerlinNoiseSampler.sample((double)materialRulePos.blockX, 0.0, (double)materialRulePos.blockZ);
+			class NoiseThresholdPredicate extends MaterialRules.HorizontalLazyAbstractPredicate {
+				NoiseThresholdPredicate() {
+					super(materialRuleContext);
+				}
+
+				@Override
+				protected boolean test() {
+					double d = doublePerlinNoiseSampler.sample((double)this.context.x, 0.0, (double)this.context.z);
 					return d >= NoiseThresholdMaterialCondition.this.minThreshold && d <= NoiseThresholdMaterialCondition.this.maxThreshold;
 				}
 			}
 
-			NoiseThresholdPredicate noiseThresholdPredicate = new NoiseThresholdPredicate();
-			materialRuleContext.positionalPredicates.add(noiseThresholdPredicate);
-			return noiseThresholdPredicate;
+			return new NoiseThresholdPredicate();
 		}
 	}
 
@@ -532,10 +570,6 @@ public class MaterialRules {
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
 			return new MaterialRules.InvertedBooleanSupplier((MaterialRules.BooleanSupplier)this.target.apply(materialRuleContext));
 		}
-	}
-
-	interface Predicate<S> extends MaterialRules.BooleanSupplier {
-		void init(S context);
 	}
 
 	/**
@@ -650,32 +684,34 @@ public class MaterialRules {
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
 			final boolean bl = this.surfaceType == VerticalSurfaceType.CEILING;
 
-			class StoneDepthPredicate extends MaterialRules.AbstractPredicate<MaterialRules.SurfaceContext> {
-				protected boolean test(MaterialRules.SurfaceContext surfaceContext) {
-					return (bl ? surfaceContext.stoneDepthBelow : surfaceContext.stoneDepthAbove)
-						<= 1 + (StoneDepthMaterialCondition.this.addRunDepth ? surfaceContext.runDepth : 0);
+			class StoneDepthPredicate extends MaterialRules.FullLazyAbstractPredicate {
+				StoneDepthPredicate() {
+					super(materialRuleContext);
+				}
+
+				@Override
+				protected boolean test() {
+					return (bl ? this.context.stoneDepthBelow : this.context.stoneDepthAbove)
+						<= 1 + (StoneDepthMaterialCondition.this.addRunDepth ? this.context.runDepth : 0);
 				}
 			}
 
-			StoneDepthPredicate stoneDepthPredicate = new StoneDepthPredicate();
-			materialRuleContext.contextDependentPredicates.add(stoneDepthPredicate);
-			return stoneDepthPredicate;
+			return new StoneDepthPredicate();
 		}
 	}
 
-	static record SurfaceContext() {
-		final int blockY;
-		final int stoneDepthAbove;
-		final int stoneDepthBelow;
-		final int runDepth;
-		final int waterHeight;
+	static enum SurfaceMaterialCondition implements MaterialRules.MaterialCondition {
+		INSTANCE;
 
-		SurfaceContext(int i, int j, int k, int l, int m) {
-			this.blockY = i;
-			this.stoneDepthAbove = j;
-			this.stoneDepthBelow = k;
-			this.runDepth = l;
-			this.waterHeight = m;
+		static final Codec<MaterialRules.SurfaceMaterialCondition> CONDITION_CODEC = Codec.unit(INSTANCE);
+
+		@Override
+		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+			return CONDITION_CODEC;
+		}
+
+		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
+			return materialRuleContext.surfacePredicate;
 		}
 	}
 
@@ -709,6 +745,59 @@ public class MaterialRules {
 		}
 	}
 
+	static record VerticalGradientMaterialCondition() implements MaterialRules.MaterialCondition {
+		private final Identifier randomName;
+		private final YOffset trueAtAndBelow;
+		private final YOffset falseAtAndAbove;
+		static final Codec<MaterialRules.VerticalGradientMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Identifier.CODEC.fieldOf("random_name").forGetter(MaterialRules.VerticalGradientMaterialCondition::randomName),
+						YOffset.OFFSET_CODEC.fieldOf("true_at_and_below").forGetter(MaterialRules.VerticalGradientMaterialCondition::trueAtAndBelow),
+						YOffset.OFFSET_CODEC.fieldOf("false_at_and_above").forGetter(MaterialRules.VerticalGradientMaterialCondition::falseAtAndAbove)
+					)
+					.apply(instance, MaterialRules.VerticalGradientMaterialCondition::new)
+		);
+
+		VerticalGradientMaterialCondition(Identifier identifier, YOffset yOffset, YOffset yOffset2) {
+			this.randomName = identifier;
+			this.trueAtAndBelow = yOffset;
+			this.falseAtAndAbove = yOffset2;
+		}
+
+		@Override
+		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+			return CONDITION_CODEC;
+		}
+
+		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
+			final int i = this.trueAtAndBelow().getY(materialRuleContext.heightContext);
+			final int j = this.falseAtAndAbove().getY(materialRuleContext.heightContext);
+			final RandomDeriver randomDeriver = materialRuleContext.surfaceBuilder.method_39482(this.randomName());
+
+			class VerticalGradientPredicate extends MaterialRules.FullLazyAbstractPredicate {
+				VerticalGradientPredicate() {
+					super(materialRuleContext);
+				}
+
+				@Override
+				protected boolean test() {
+					int i = this.context.y;
+					if (i <= i) {
+						return true;
+					} else if (i >= j) {
+						return false;
+					} else {
+						double d = MathHelper.lerpFromProgress((double)i, (double)i, (double)j, 1.0, 0.0);
+						AbstractRandom abstractRandom = randomDeriver.createRandom(this.context.x, i, this.context.z);
+						return (double)abstractRandom.nextFloat() < d;
+					}
+				}
+			}
+
+			return new VerticalGradientPredicate();
+		}
+	}
+
 	static record WaterMaterialCondition() implements MaterialRules.MaterialCondition {
 		final int offset;
 		final int runDepthMultiplier;
@@ -734,17 +823,20 @@ public class MaterialRules {
 		}
 
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
-			class WaterPredicate extends MaterialRules.AbstractPredicate<MaterialRules.SurfaceContext> {
-				protected boolean test(MaterialRules.SurfaceContext surfaceContext) {
-					return surfaceContext.waterHeight == Integer.MIN_VALUE
-						|| surfaceContext.blockY + (WaterMaterialCondition.this.addStoneDepth ? surfaceContext.stoneDepthAbove : 0)
-							>= surfaceContext.waterHeight + WaterMaterialCondition.this.offset + surfaceContext.runDepth * WaterMaterialCondition.this.runDepthMultiplier;
+			class WaterPredicate extends MaterialRules.FullLazyAbstractPredicate {
+				WaterPredicate() {
+					super(materialRuleContext);
+				}
+
+				@Override
+				protected boolean test() {
+					return this.context.fluidHeight == Integer.MIN_VALUE
+						|| this.context.y + (WaterMaterialCondition.this.addStoneDepth ? this.context.stoneDepthAbove : 0)
+							>= this.context.fluidHeight + WaterMaterialCondition.this.offset + this.context.runDepth * WaterMaterialCondition.this.runDepthMultiplier;
 				}
 			}
 
-			WaterPredicate waterPredicate = new WaterPredicate();
-			materialRuleContext.contextDependentPredicates.add(waterPredicate);
-			return waterPredicate;
+			return new WaterPredicate();
 		}
 	}
 }

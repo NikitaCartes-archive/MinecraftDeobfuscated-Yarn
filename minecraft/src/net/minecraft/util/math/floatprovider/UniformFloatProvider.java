@@ -10,15 +10,14 @@ import net.minecraft.util.math.MathHelper;
 public class UniformFloatProvider extends FloatProvider {
 	public static final Codec<UniformFloatProvider> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.FLOAT.fieldOf("min_inclusive").forGetter(uniformFloatProvider -> uniformFloatProvider.min),
-						Codec.FLOAT.fieldOf("max_exclusive").forGetter(uniformFloatProvider -> uniformFloatProvider.max)
+						Codec.FLOAT.fieldOf("min_inclusive").forGetter(provider -> provider.min), Codec.FLOAT.fieldOf("max_exclusive").forGetter(provider -> provider.max)
 					)
 					.apply(instance, UniformFloatProvider::new)
 		)
 		.comapFlatMap(
-			uniformFloatProvider -> uniformFloatProvider.max <= uniformFloatProvider.min
-					? DataResult.error("Max must be larger than min, min_inclusive: " + uniformFloatProvider.min + ", max_exclusive: " + uniformFloatProvider.max)
-					: DataResult.success(uniformFloatProvider),
+			provider -> provider.max <= provider.min
+					? DataResult.error("Max must be larger than min, min_inclusive: " + provider.min + ", max_exclusive: " + provider.max)
+					: DataResult.success(provider),
 			Function.identity()
 		);
 	private final float min;

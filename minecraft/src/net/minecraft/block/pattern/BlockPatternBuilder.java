@@ -19,7 +19,7 @@ public class BlockPatternBuilder {
 	private int width;
 
 	private BlockPatternBuilder() {
-		this.charMap.put(' ', (Predicate)cachedBlockPosition -> true);
+		this.charMap.put(' ', (Predicate)pos -> true);
 	}
 
 	public BlockPatternBuilder aisle(String... pattern) {

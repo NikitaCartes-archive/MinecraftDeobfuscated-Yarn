@@ -623,35 +623,35 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onChunkData(ChunkDataS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.method_38539(packet.getX(), packet.getZ(), packet.getChunkData());
-		this.method_38540(packet.getX(), packet.getZ(), packet.getLightData());
+		this.loadChunk(packet.getX(), packet.getZ(), packet.getChunkData());
+		this.updateChunk(packet.getX(), packet.getZ(), packet.getLightData());
 	}
 
-	private void method_38539(int i, int j, ChunkData chunkData) {
-		this.world.getChunkManager().loadChunkFromPacket(i, j, chunkData.getSectionsDataBuf(), chunkData.getHeightmap(), chunkData.getBlockEntities(i, j));
+	private void loadChunk(int x, int z, ChunkData chunkData) {
+		this.world.getChunkManager().loadChunkFromPacket(x, z, chunkData.getSectionsDataBuf(), chunkData.getHeightmap(), chunkData.getBlockEntities(x, z));
 	}
 
-	private void method_38540(int i, int j, LightData lightData) {
+	private void updateChunk(int x, int z, LightData lightData) {
 		this.world.enqueueChunkUpdate(() -> {
-			this.readLightData(i, j, lightData);
-			WorldChunk worldChunk = this.world.getChunkManager().getWorldChunk(i, j, false);
+			this.readLightData(x, z, lightData);
+			WorldChunk worldChunk = this.world.getChunkManager().getWorldChunk(x, z, false);
 			if (worldChunk != null) {
-				this.method_38541(worldChunk, i, j);
+				this.scheduleRenderChunk(worldChunk, x, z);
 			}
 		});
 	}
 
-	private void method_38541(WorldChunk worldChunk, int i, int j) {
+	private void scheduleRenderChunk(WorldChunk chunk, int x, int z) {
 		LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
-		ChunkSection[] chunkSections = worldChunk.getSectionArray();
-		ChunkPos chunkPos = worldChunk.getPos();
+		ChunkSection[] chunkSections = chunk.getSectionArray();
+		ChunkPos chunkPos = chunk.getPos();
 		lightingProvider.setColumnEnabled(chunkPos, true);
 
-		for (int k = 0; k < chunkSections.length; k++) {
-			ChunkSection chunkSection = chunkSections[k];
-			int l = this.world.sectionIndexToCoord(k);
-			lightingProvider.setSectionStatus(ChunkSectionPos.from(chunkPos, l), chunkSection.isEmpty());
-			this.world.scheduleBlockRenders(i, l, j);
+		for (int i = 0; i < chunkSections.length; i++) {
+			ChunkSection chunkSection = chunkSections[i];
+			int j = this.world.sectionIndexToCoord(i);
+			lightingProvider.setSectionStatus(ChunkSectionPos.from(chunkPos, j), chunkSection.isEmpty());
+			this.world.scheduleBlockRenders(x, j, z);
 		}
 	}
 
@@ -662,19 +662,19 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int j = packet.getZ();
 		ClientChunkManager clientChunkManager = this.world.getChunkManager();
 		clientChunkManager.unload(i, j);
-		this.method_38544(packet);
+		this.unloadChunk(packet);
 	}
 
-	private void method_38544(UnloadChunkS2CPacket unloadChunkS2CPacket) {
+	private void unloadChunk(UnloadChunkS2CPacket packet) {
 		this.world.enqueueChunkUpdate(() -> {
 			LightingProvider lightingProvider = this.world.getLightingProvider();
 
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
-				this.world.scheduleBlockRenders(unloadChunkS2CPacket.getX(), i, unloadChunkS2CPacket.getZ());
-				lightingProvider.setSectionStatus(ChunkSectionPos.from(unloadChunkS2CPacket.getX(), i, unloadChunkS2CPacket.getZ()), true);
+				this.world.scheduleBlockRenders(packet.getX(), i, packet.getZ());
+				lightingProvider.setSectionStatus(ChunkSectionPos.from(packet.getX(), i, packet.getZ()), true);
 			}
 
-			lightingProvider.setColumnEnabled(new ChunkPos(unloadChunkS2CPacket.getX(), unloadChunkS2CPacket.getZ()), false);
+			lightingProvider.setColumnEnabled(new ChunkPos(packet.getX(), packet.getZ()), false);
 		});
 	}
 

@@ -211,7 +211,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			);
 	}
 
-	private static <T extends Comparable<T> & StringIdentifiable> LootTable.Builder dropsWithProperty(Block drop, Property<T> property, T comparable) {
+	private static <T extends Comparable<T> & StringIdentifiable> LootTable.Builder dropsWithProperty(Block drop, Property<T> property, T value) {
 		return LootTable.builder()
 			.pool(
 				addSurvivesExplosionCondition(
@@ -220,7 +220,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.rolls(ConstantLootNumberProvider.create(1.0F))
 						.with(
 							ItemEntry.builder(drop)
-								.conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(property, comparable)))
+								.conditionally(BlockStatePropertyLootCondition.builder(drop).properties(StatePredicate.Builder.create().exactMatch(property, value)))
 						)
 				)
 			);

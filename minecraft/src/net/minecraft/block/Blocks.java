@@ -1803,7 +1803,7 @@ public class Blocks {
 	public static final Block END_GATEWAY = register(
 		"end_gateway",
 		new EndGatewayBlock(
-			AbstractBlock.Settings.of(Material.PORTAL, MapColor.BLACK).noCollision().luminance(blockStatex -> 15).strength(-1.0F, 3600000.0F).dropsNothing()
+			AbstractBlock.Settings.of(Material.PORTAL, MapColor.BLACK).noCollision().luminance(state -> 15).strength(-1.0F, 3600000.0F).dropsNothing()
 		)
 	);
 	public static final Block REPEATING_COMMAND_BLOCK = register(
@@ -2435,9 +2435,7 @@ public class Blocks {
 	);
 	public static final Block SOUL_LANTERN = register(
 		"soul_lantern",
-		new LanternBlock(
-			AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(3.5F).sounds(BlockSoundGroup.LANTERN).luminance(blockStatex -> 10).nonOpaque()
-		)
+		new LanternBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(3.5F).sounds(BlockSoundGroup.LANTERN).luminance(state -> 10).nonOpaque())
 	);
 	public static final Block CAMPFIRE = register(
 		"campfire",

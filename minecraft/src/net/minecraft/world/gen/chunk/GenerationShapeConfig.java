@@ -16,11 +16,10 @@ public record GenerationShapeConfig() {
 	private final SlideConfig bottomSlide;
 	private final int horizontalSize;
 	private final int verticalSize;
-	private final double densityFactor;
-	private final double densityOffset;
 	private final boolean islandNoiseOverride;
 	private final boolean amplified;
-	private final VanillaTerrainParameters terrainShaper;
+	private final boolean largeBiomes;
+	private final VanillaTerrainParameters terrainParameters;
 	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(GenerationShapeConfig::minimumY),
@@ -30,13 +29,12 @@ public record GenerationShapeConfig() {
 						SlideConfig.CODEC.fieldOf("bottom_slide").forGetter(GenerationShapeConfig::bottomSlide),
 						Codec.intRange(1, 4).fieldOf("size_horizontal").forGetter(GenerationShapeConfig::horizontalSize),
 						Codec.intRange(1, 4).fieldOf("size_vertical").forGetter(GenerationShapeConfig::verticalSize),
-						Codec.DOUBLE.fieldOf("density_factor").forGetter(GenerationShapeConfig::densityFactor),
-						Codec.DOUBLE.fieldOf("density_offset").forGetter(GenerationShapeConfig::densityOffset),
 						Codec.BOOL
 							.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
 							.forGetter(GenerationShapeConfig::islandNoiseOverride),
 						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified),
-						VanillaTerrainParameters.field_35456.fieldOf("terrain_shaper").forGetter(GenerationShapeConfig::terrainShaper)
+						Codec.BOOL.optionalFieldOf("large_biomes", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::largeBiomes),
+						VanillaTerrainParameters.field_35456.fieldOf("terrain_shaper").forGetter(GenerationShapeConfig::terrainParameters)
 					)
 					.apply(instance, GenerationShapeConfig::new)
 		)
@@ -50,10 +48,9 @@ public record GenerationShapeConfig() {
 		SlideConfig bottomSlide,
 		int horizontalSize,
 		int verticalSize,
-		double densityFactor,
-		double densityOffset,
-		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset,
+		boolean bl,
+		boolean bl2,
+		boolean bl3,
 		VanillaTerrainParameters vanillaTerrainParameters
 	) {
 		this.minimumY = minimumY;
@@ -63,11 +60,10 @@ public record GenerationShapeConfig() {
 		this.bottomSlide = bottomSlide;
 		this.horizontalSize = horizontalSize;
 		this.verticalSize = verticalSize;
-		this.densityFactor = densityFactor;
-		this.densityOffset = densityOffset;
-		this.islandNoiseOverride = simplexSurfaceNoise;
-		this.amplified = randomDensityOffset;
-		this.terrainShaper = vanillaTerrainParameters;
+		this.islandNoiseOverride = bl;
+		this.amplified = bl2;
+		this.largeBiomes = bl3;
+		this.terrainParameters = vanillaTerrainParameters;
 	}
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
@@ -88,25 +84,13 @@ public record GenerationShapeConfig() {
 		SlideConfig bottomSlide,
 		int horizontalSize,
 		int verticalSize,
-		double densityFactor,
-		double densityOffset,
-		boolean simplexSurfaceNoise,
-		boolean randomDensityOffset,
-		VanillaTerrainParameters vanillaTerrainParameters
+		boolean islandNoiseOverride,
+		boolean amplified,
+		boolean largeBiomes,
+		VanillaTerrainParameters terrainParameters
 	) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(
-			minimumY,
-			height,
-			sampling,
-			topSlide,
-			bottomSlide,
-			horizontalSize,
-			verticalSize,
-			densityFactor,
-			densityOffset,
-			simplexSurfaceNoise,
-			randomDensityOffset,
-			vanillaTerrainParameters
+			minimumY, height, sampling, topSlide, bottomSlide, horizontalSize, verticalSize, islandNoiseOverride, amplified, largeBiomes, terrainParameters
 		);
 		checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
 			throw new IllegalStateException(partialResult.message());

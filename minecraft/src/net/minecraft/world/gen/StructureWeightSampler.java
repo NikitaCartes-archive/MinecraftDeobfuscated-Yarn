@@ -44,7 +44,7 @@ public class StructureWeightSampler implements ChunkNoiseSampler.ColumnSampler {
 		this.pieces = new ObjectArrayList<>(10);
 
 		for (StructureFeature<?> structureFeature : StructureFeature.LAND_MODIFYING_STRUCTURES) {
-			structureAccessor.method_38853(ChunkSectionPos.from(chunk), structureFeature).forEach(structureStart -> {
+			structureAccessor.getStructureStarts(ChunkSectionPos.from(chunk), structureFeature).forEach(structureStart -> {
 				for (StructurePiece structurePiece : structureStart.getChildren()) {
 					if (structurePiece.intersectsChunk(chunkPos, 12)) {
 						if (structurePiece instanceof PoolStructurePiece) {
@@ -83,7 +83,7 @@ public class StructureWeightSampler implements ChunkNoiseSampler.ColumnSampler {
 			int l = Math.max(0, Math.max(blockBox.getMinX() - i, i - blockBox.getMaxX()));
 			int m = j - (blockBox.getMinY() + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
 			int n = Math.max(0, Math.max(blockBox.getMinZ() - k, k - blockBox.getMaxZ()));
-			StructureWeightType structureWeightType = structurePiece.method_33882();
+			StructureWeightType structureWeightType = structurePiece.getWeightType();
 			if (structureWeightType == StructureWeightType.BURY) {
 				d += getMagnitudeWeight(l, m, n);
 			} else if (structureWeightType == StructureWeightType.BEARD) {

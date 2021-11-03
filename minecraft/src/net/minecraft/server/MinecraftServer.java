@@ -194,6 +194,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackSettings.SAFE_MODE
 	);
 	private static final long MILLISECONDS_PER_TICK = 50L;
+	public static final GameProfile ANONYMOUS_PLAYER_PROFILE = new GameProfile(Util.NIL_UUID, "Anonymous Player");
 	protected final LevelStorage.Session session;
 	protected final WorldSaveHandler saveHandler;
 	private final List<Runnable> serverGuiTickables = Lists.<Runnable>newArrayList();
@@ -852,15 +853,22 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		if (l - this.lastPlayerSampleUpdate >= 5000000000L) {
 			this.lastPlayerSampleUpdate = l;
 			this.metadata.setPlayers(new ServerMetadata.Players(this.getMaxPlayerCount(), this.getCurrentPlayerCount()));
-			GameProfile[] gameProfiles = new GameProfile[Math.min(this.getCurrentPlayerCount(), 12)];
-			int i = MathHelper.nextInt(this.random, 0, this.getCurrentPlayerCount() - gameProfiles.length);
+			if (!this.hideOnlinePlayers()) {
+				GameProfile[] gameProfiles = new GameProfile[Math.min(this.getCurrentPlayerCount(), 12)];
+				int i = MathHelper.nextInt(this.random, 0, this.getCurrentPlayerCount() - gameProfiles.length);
 
-			for (int j = 0; j < gameProfiles.length; j++) {
-				gameProfiles[j] = ((ServerPlayerEntity)this.playerManager.getPlayerList().get(i + j)).getGameProfile();
+				for (int j = 0; j < gameProfiles.length; j++) {
+					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.playerManager.getPlayerList().get(i + j);
+					if (serverPlayerEntity.allowsServerListing()) {
+						gameProfiles[j] = serverPlayerEntity.getGameProfile();
+					} else {
+						gameProfiles[j] = ANONYMOUS_PLAYER_PROFILE;
+					}
+				}
+
+				Collections.shuffle(Arrays.asList(gameProfiles));
+				this.metadata.getPlayers().setSample(gameProfiles);
 			}
-
-			Collections.shuffle(Arrays.asList(gameProfiles));
-			this.metadata.getPlayers().setSample(gameProfiles);
 		}
 
 		if (this.ticks % 6000 == 0) {
@@ -1304,6 +1312,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public boolean acceptsStatusQuery() {
 		return true;
+	}
+
+	public boolean hideOnlinePlayers() {
+		return false;
 	}
 
 	public Proxy getProxy() {

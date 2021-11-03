@@ -5,5 +5,5 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface MonitorFactory {
-	Monitor createMonitor(long l);
+	Monitor createMonitor(long pointer);
 }

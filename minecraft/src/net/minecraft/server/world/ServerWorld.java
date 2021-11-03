@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -164,6 +165,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<>();
 	protected final RaidManager raidManager;
 	private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet<>();
+	private final List<BlockEvent> blockEventQueue = new ArrayList(64);
 	private boolean inBlockTick;
 	private final List<Spawner> spawners;
 	@Nullable
@@ -203,7 +205,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			workerExecutor,
 			chunkGenerator,
 			server.getPlayerManager().getViewDistance(),
-			server.getPlayerManager().method_38651(),
+			server.getPlayerManager().getSimulationDistance(),
 			bl,
 			worldGenerationProgressListener,
 			this.entityManager::updateTrackingStatus,
@@ -214,7 +216,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
 		this.raidManager = this.getPersistentStateManager()
-			.getOrCreate(nbtCompound -> RaidManager.fromNbt(this, nbtCompound), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
+			.getOrCreate(nbt -> RaidManager.fromNbt(this, nbt), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
 		if (!server.isSingleplayer()) {
 			properties.setGameMode(server.getDefaultGameMode());
 		}
@@ -344,7 +346,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			}
 
 			this.wakeSleepingPlayers();
-			if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
+			if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE) && this.isRaining()) {
 				this.resetWeather();
 			}
 		}
@@ -390,7 +392,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 						profiler.push("checkDespawn");
 						entity.checkDespawn();
 						profiler.pop();
-						if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().isSimulating(entity.getChunkPos().toLong())) {
+						if (this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(entity.getChunkPos().toLong())) {
 							Entity entity2 = entity.getVehicle();
 							if (entity2 != null) {
 								if (!entity2.isRemoved() && entity2.hasPassenger(entity)) {
@@ -414,6 +416,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		profiler.push("entityManagement");
 		this.entityManager.tick();
 		profiler.pop();
+	}
+
+	@Override
+	public boolean shouldTickBlocksInChunk(long chunkPos) {
+		return this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickBlocks(chunkPos);
 	}
 
 	protected void tickTime() {
@@ -531,7 +538,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	private Optional<BlockPos> getLightningRodPos(BlockPos pos) {
 		Optional<BlockPos> optional = this.getPointOfInterestStorage()
-			.method_34712(
+			.getNearestPosition(
 				poiType -> poiType == PointOfInterestType.LIGHTNING_ROD,
 				posx -> posx.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, posx.getX(), posx.getZ()) - 1,
 				pos,
@@ -923,22 +930,30 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	private void processSyncedBlockEvents() {
+		this.blockEventQueue.clear();
+
 		while (!this.syncedBlockEventQueue.isEmpty()) {
 			BlockEvent blockEvent = this.syncedBlockEventQueue.removeFirst();
-			if (this.processBlockEvent(blockEvent)) {
-				this.server
-					.getPlayerManager()
-					.sendToAround(
-						null,
-						(double)blockEvent.pos().getX(),
-						(double)blockEvent.pos().getY(),
-						(double)blockEvent.pos().getZ(),
-						64.0,
-						this.getRegistryKey(),
-						new BlockEventS2CPacket(blockEvent.pos(), blockEvent.block(), blockEvent.type(), blockEvent.data())
-					);
+			if (this.shouldTickBlocksInChunk(ChunkPos.toLong(blockEvent.pos()))) {
+				if (this.processBlockEvent(blockEvent)) {
+					this.server
+						.getPlayerManager()
+						.sendToAround(
+							null,
+							(double)blockEvent.pos().getX(),
+							(double)blockEvent.pos().getY(),
+							(double)blockEvent.pos().getZ(),
+							64.0,
+							this.getRegistryKey(),
+							new BlockEventS2CPacket(blockEvent.pos(), blockEvent.block(), blockEvent.type(), blockEvent.data())
+						);
+				}
+			} else {
+				this.blockEventQueue.add(blockEvent);
 			}
 		}
+
+		this.syncedBlockEventQueue.addAll(this.blockEventQueue);
 	}
 
 	private boolean processBlockEvent(BlockEvent event) {
@@ -1426,7 +1441,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-		return this.getStructureAccessor().method_38853(pos, feature);
+		return this.getStructureAccessor().getStructureStarts(pos, feature);
 	}
 
 	@Override

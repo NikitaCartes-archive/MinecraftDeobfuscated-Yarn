@@ -122,9 +122,9 @@ public class WorldUpdater {
 							NbtCompound nbtCompound = versionedChunkStorage.getNbt(chunkPos);
 							if (nbtCompound != null) {
 								int i = VersionedChunkStorage.getDataVersion(nbtCompound);
-								ChunkGenerator chunkGenerator = this.generatorOptions.getDimensions().get(GeneratorOptions.method_39335(registryKey3)).getChunkGenerator();
+								ChunkGenerator chunkGenerator = this.generatorOptions.getDimensions().get(GeneratorOptions.toDimensionOptionsKey(registryKey3)).getChunkGenerator();
 								NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(
-									registryKey3, () -> this.persistentStateManager, nbtCompound, chunkGenerator.method_39301()
+									registryKey3, () -> this.persistentStateManager, nbtCompound, chunkGenerator.getCodecKey()
 								);
 								ChunkPos chunkPos2 = new ChunkPos(nbtCompound2.getInt("xPos"), nbtCompound2.getInt("zPos"));
 								if (!chunkPos2.equals(chunkPos)) {

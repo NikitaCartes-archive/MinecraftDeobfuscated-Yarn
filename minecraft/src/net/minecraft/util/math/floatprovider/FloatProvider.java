@@ -12,10 +12,8 @@ public abstract class FloatProvider {
 		Codec.FLOAT, Registry.FLOAT_PROVIDER_TYPE.dispatch(FloatProvider::getType, FloatProviderType::codec)
 	);
 	public static final Codec<FloatProvider> VALUE_CODEC = FLOAT_CODEC.xmap(
-		either -> either.map(ConstantFloatProvider::create, floatProvider -> floatProvider),
-		floatProvider -> floatProvider.getType() == FloatProviderType.CONSTANT
-				? Either.left(((ConstantFloatProvider)floatProvider).getValue())
-				: Either.right(floatProvider)
+		either -> either.map(ConstantFloatProvider::create, provider -> provider),
+		provider -> provider.getType() == FloatProviderType.CONSTANT ? Either.left(((ConstantFloatProvider)provider).getValue()) : Either.right(provider)
 	);
 
 	public static Codec<FloatProvider> createValidatedCodec(float min, float max) {

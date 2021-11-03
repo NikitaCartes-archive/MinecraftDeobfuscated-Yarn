@@ -13,7 +13,7 @@ import net.minecraft.util.profiling.jfr.sample.CpuLoadSample;
 import net.minecraft.util.profiling.jfr.sample.FileIoSample;
 import net.minecraft.util.profiling.jfr.sample.GcHeapSummarySample;
 import net.minecraft.util.profiling.jfr.sample.LongRunningSampleStatistics;
-import net.minecraft.util.profiling.jfr.sample.PacketSample;
+import net.minecraft.util.profiling.jfr.sample.NetworkIoStatistics;
 import net.minecraft.util.profiling.jfr.sample.ServerTickTimeSample;
 import net.minecraft.util.profiling.jfr.sample.ThreadAllocationStatisticsSample;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -28,8 +28,8 @@ public record JfrProfile() {
 	private final List<CpuLoadSample> cpuLoadSamples;
 	private final GcHeapSummarySample.Statistics gcHeapSummaryStatistics;
 	private final ThreadAllocationStatisticsSample.AllocationMap threadAllocationMap;
-	private final PacketSample.Statistics packetReadStatistics;
-	private final PacketSample.Statistics packetSentStatistics;
+	private final NetworkIoStatistics packetReadStatistics;
+	private final NetworkIoStatistics packetSentStatistics;
 	private final FileIoSample.Statistics fileWriteStatistics;
 	private final FileIoSample.Statistics fileReadStatistics;
 	private final List<ChunkGenerationSample> chunkGenerationSamples;
@@ -43,10 +43,10 @@ public record JfrProfile() {
 		List<CpuLoadSample> list2,
 		GcHeapSummarySample.Statistics statistics,
 		ThreadAllocationStatisticsSample.AllocationMap allocationMap,
-		PacketSample.Statistics statistics2,
-		PacketSample.Statistics statistics3,
-		FileIoSample.Statistics statistics4,
-		FileIoSample.Statistics statistics5,
+		NetworkIoStatistics networkIoStatistics,
+		NetworkIoStatistics networkIoStatistics2,
+		FileIoSample.Statistics statistics2,
+		FileIoSample.Statistics statistics3,
 		List<ChunkGenerationSample> list3
 	) {
 		this.startTime = instant;
@@ -57,10 +57,10 @@ public record JfrProfile() {
 		this.cpuLoadSamples = list2;
 		this.gcHeapSummaryStatistics = statistics;
 		this.threadAllocationMap = allocationMap;
-		this.packetReadStatistics = statistics2;
-		this.packetSentStatistics = statistics3;
-		this.fileWriteStatistics = statistics4;
-		this.fileReadStatistics = statistics5;
+		this.packetReadStatistics = networkIoStatistics;
+		this.packetSentStatistics = networkIoStatistics2;
+		this.fileWriteStatistics = statistics2;
+		this.fileReadStatistics = statistics3;
 		this.chunkGenerationSamples = list3;
 	}
 

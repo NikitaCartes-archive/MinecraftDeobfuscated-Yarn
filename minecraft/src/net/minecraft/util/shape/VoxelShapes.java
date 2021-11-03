@@ -6,9 +6,7 @@ import com.google.common.math.IntMath;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Objects;
-import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
@@ -200,26 +198,24 @@ public final class VoxelShapes {
 		);
 	}
 
-	public static double calculateMaxOffset(Direction.Axis axis, Box box, Stream<VoxelShape> shapes, double maxDist) {
-		Iterator<VoxelShape> iterator = shapes.iterator();
-
-		while (iterator.hasNext()) {
+	public static double calculateMaxOffset(Direction.Axis axis, Box box, Iterable<VoxelShape> shapes, double maxDist) {
+		for (VoxelShape voxelShape : shapes) {
 			if (Math.abs(maxDist) < 1.0E-7) {
 				return 0.0;
 			}
 
-			maxDist = ((VoxelShape)iterator.next()).calculateMaxDistance(axis, box, maxDist);
+			maxDist = voxelShape.calculateMaxDistance(axis, box, maxDist);
 		}
 
 		return maxDist;
 	}
 
-	public static double calculatePushVelocity(Direction.Axis axis, Box box, WorldView world, double initial, ShapeContext context, Stream<VoxelShape> shapes) {
+	public static double calculatePushVelocity(Direction.Axis axis, Box box, WorldView world, double initial, ShapeContext context, Iterable<VoxelShape> shapes) {
 		return calculatePushVelocity(box, world, initial, context, AxisCycleDirection.between(axis, Direction.Axis.Z), shapes);
 	}
 
 	private static double calculatePushVelocity(
-		Box box, WorldView world, double initial, ShapeContext context, AxisCycleDirection direction, Stream<VoxelShape> shapes
+		Box box, WorldView world, double initial, ShapeContext context, AxisCycleDirection direction, Iterable<VoxelShape> shapes
 	) {
 		if (box.getXLength() < 1.0E-6 || box.getYLength() < 1.0E-6 || box.getZLength() < 1.0E-6) {
 			return initial;
@@ -275,9 +271,13 @@ public final class VoxelShapes {
 				}
 			}
 
-			double[] ds = new double[]{initial};
-			shapes.forEach(voxelShape -> ds[0] = voxelShape.calculateMaxDistance(axis3, box, ds[0]));
-			return ds[0];
+			double f = initial;
+
+			for (VoxelShape voxelShape : shapes) {
+				f = voxelShape.calculateMaxDistance(axis3, box, f);
+			}
+
+			return f;
 		}
 	}
 

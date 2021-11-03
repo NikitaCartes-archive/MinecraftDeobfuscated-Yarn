@@ -136,7 +136,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
 		if ((Boolean)state.get(POWERED)) {
-			List<CommandBlockMinecartEntity> list = this.getCarts(world, pos, CommandBlockMinecartEntity.class, entity -> true);
+			List<CommandBlockMinecartEntity> list = this.getCarts(world, pos, CommandBlockMinecartEntity.class, cart -> true);
 			if (!list.isEmpty()) {
 				return ((CommandBlockMinecartEntity)list.get(0)).getCommandExecutor().getSuccessCount();
 			}

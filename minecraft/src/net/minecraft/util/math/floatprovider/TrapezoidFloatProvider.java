@@ -9,20 +9,20 @@ import java.util.function.Function;
 public class TrapezoidFloatProvider extends FloatProvider {
 	public static final Codec<TrapezoidFloatProvider> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.FLOAT.fieldOf("min").forGetter(trapezoidFloatProvider -> trapezoidFloatProvider.min),
-						Codec.FLOAT.fieldOf("max").forGetter(trapezoidFloatProvider -> trapezoidFloatProvider.max),
-						Codec.FLOAT.fieldOf("plateau").forGetter(trapezoidFloatProvider -> trapezoidFloatProvider.plateau)
+						Codec.FLOAT.fieldOf("min").forGetter(provider -> provider.min),
+						Codec.FLOAT.fieldOf("max").forGetter(provider -> provider.max),
+						Codec.FLOAT.fieldOf("plateau").forGetter(provider -> provider.plateau)
 					)
 					.apply(instance, TrapezoidFloatProvider::new)
 		)
 		.comapFlatMap(
-			trapezoidFloatProvider -> {
-				if (trapezoidFloatProvider.max < trapezoidFloatProvider.min) {
-					return DataResult.error("Max must be larger than min: [" + trapezoidFloatProvider.min + ", " + trapezoidFloatProvider.max + "]");
+			provider -> {
+				if (provider.max < provider.min) {
+					return DataResult.error("Max must be larger than min: [" + provider.min + ", " + provider.max + "]");
 				} else {
-					return trapezoidFloatProvider.plateau > trapezoidFloatProvider.max - trapezoidFloatProvider.min
-						? DataResult.error("Plateau can at most be the full span: [" + trapezoidFloatProvider.min + ", " + trapezoidFloatProvider.max + "]")
-						: DataResult.success(trapezoidFloatProvider);
+					return provider.plateau > provider.max - provider.min
+						? DataResult.error("Plateau can at most be the full span: [" + provider.min + ", " + provider.max + "]")
+						: DataResult.success(provider);
 				}
 			},
 			Function.identity()

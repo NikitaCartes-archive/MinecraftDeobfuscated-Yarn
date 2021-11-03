@@ -34,7 +34,7 @@ public class StructureAccessor {
 		}
 	}
 
-	public List<? extends StructureStart<?>> method_38853(ChunkSectionPos chunkSectionPos, StructureFeature<?> structureFeature) {
+	public List<? extends StructureStart<?>> getStructureStarts(ChunkSectionPos chunkSectionPos, StructureFeature<?> structureFeature) {
 		LongSet longSet = this.world
 			.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES)
 			.getStructureReferences(structureFeature);
@@ -73,7 +73,7 @@ public class StructureAccessor {
 	}
 
 	public StructureStart<?> getStructureAt(BlockPos pos, StructureFeature<?> structureFeature) {
-		for (StructureStart<?> structureStart : this.method_38853(ChunkSectionPos.from(pos), structureFeature)) {
+		for (StructureStart<?> structureStart : this.getStructureStarts(ChunkSectionPos.from(pos), structureFeature)) {
 			if (structureStart.setBoundingBoxFromChildren().contains(pos)) {
 				return structureStart;
 			}
@@ -83,7 +83,7 @@ public class StructureAccessor {
 	}
 
 	public StructureStart<?> method_38854(BlockPos blockPos, StructureFeature<?> structureFeature) {
-		for (StructureStart<?> structureStart : this.method_38853(ChunkSectionPos.from(blockPos), structureFeature)) {
+		for (StructureStart<?> structureStart : this.getStructureStarts(ChunkSectionPos.from(blockPos), structureFeature)) {
 			for (StructurePiece structurePiece : structureStart.getChildren()) {
 				if (structurePiece.getBoundingBox().contains(blockPos)) {
 					return structureStart;
@@ -94,8 +94,8 @@ public class StructureAccessor {
 		return StructureStart.DEFAULT;
 	}
 
-	public boolean method_38852(BlockPos blockPos) {
-		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
+	public boolean hasStructureReferences(BlockPos pos) {
+		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(pos);
 		return this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).hasStructureReferences();
 	}
 }

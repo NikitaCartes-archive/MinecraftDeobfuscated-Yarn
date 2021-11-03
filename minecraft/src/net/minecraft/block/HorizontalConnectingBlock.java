@@ -102,21 +102,21 @@ public class HorizontalConnectingBlock extends Block implements Waterloggable {
 	}
 
 	protected int getShapeIndex(BlockState state) {
-		return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(state, blockState -> {
+		return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(state, statex -> {
 			int i = 0;
-			if ((Boolean)blockState.get(NORTH)) {
+			if ((Boolean)statex.get(NORTH)) {
 				i |= getDirectionMask(Direction.NORTH);
 			}
 
-			if ((Boolean)blockState.get(EAST)) {
+			if ((Boolean)statex.get(EAST)) {
 				i |= getDirectionMask(Direction.EAST);
 			}
 
-			if ((Boolean)blockState.get(SOUTH)) {
+			if ((Boolean)statex.get(SOUTH)) {
 				i |= getDirectionMask(Direction.SOUTH);
 			}
 
-			if ((Boolean)blockState.get(WEST)) {
+			if ((Boolean)statex.get(WEST)) {
 				i |= getDirectionMask(Direction.WEST);
 			}
 

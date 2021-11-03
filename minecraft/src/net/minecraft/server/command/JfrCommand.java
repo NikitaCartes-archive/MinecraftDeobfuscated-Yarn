@@ -4,8 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import java.nio.file.Path;
+import java.io.File;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.profiling.jfr.InstanceType;
 
@@ -39,11 +43,14 @@ public class JfrCommand {
 
 	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
 		try {
-			Path path = FlightProfiler.INSTANCE.stop();
-			source.sendFeedback(new TranslatableText("commands.jfr.stopped", path), false);
+			File file = FlightProfiler.INSTANCE.stop().toFile();
+			Text text = new LiteralText(file.getName())
+				.formatted(Formatting.UNDERLINE)
+				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, file.getAbsolutePath())));
+			source.sendFeedback(new TranslatableText("commands.jfr.stopped", text), false);
 			return 1;
-		} catch (Throwable var2) {
-			throw JFR_DUMP_FAILED_EXCEPTION.create(var2.getMessage());
+		} catch (Throwable var3) {
+			throw JFR_DUMP_FAILED_EXCEPTION.create(var3.getMessage());
 		}
 	}
 }

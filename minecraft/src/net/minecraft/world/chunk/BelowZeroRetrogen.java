@@ -8,8 +8,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.LongStream;
 import javax.annotation.Nullable;
+import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.HeightLimitView;
 
 public final class BelowZeroRetrogen {
 	private static final BitSet EMPTY_MISSING_BEDROCK_BIT_SET = new BitSet(0);
@@ -27,6 +30,17 @@ public final class BelowZeroRetrogen {
 				)
 				.apply(instance, BelowZeroRetrogen::new)
 	);
+	public static final HeightLimitView BELOW_ZERO_VIEW = new HeightLimitView() {
+		@Override
+		public int getHeight() {
+			return 64;
+		}
+
+		@Override
+		public int getBottomY() {
+			return -64;
+		}
+	};
 	private final ChunkStatus targetStatus;
 	private final BitSet missingBedrock;
 
@@ -41,11 +55,38 @@ public final class BelowZeroRetrogen {
 		return chunkStatus == ChunkStatus.EMPTY ? null : new BelowZeroRetrogen(chunkStatus, Optional.of(BitSet.valueOf(nbt.getLongArray("missing_bedrock"))));
 	}
 
+	public static void replaceOldBedrock(ProtoChunk chunk) {
+		int i = 4;
+		BlockPos.iterate(0, 0, 0, 15, 4, 15).forEach(pos -> {
+			if (chunk.getBlockState(pos).isOf(Blocks.BEDROCK)) {
+				chunk.setBlockState(pos, Blocks.DEEPSLATE.getDefaultState(), false);
+			}
+		});
+	}
+
+	public void fillColumnWithAirIfMissingBedrock(ProtoChunk chunk) {
+		HeightLimitView heightLimitView = chunk.getHeightLimitView();
+		int i = heightLimitView.getBottomY();
+		int j = heightLimitView.getTopY() - 1;
+
+		for (int k = 0; k < 16; k++) {
+			for (int l = 0; l < 16; l++) {
+				if (this.isMissingBedrockAt(k, l)) {
+					BlockPos.iterate(k, i, l, k, j, l).forEach(pos -> chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false));
+				}
+			}
+		}
+	}
+
 	public ChunkStatus getTargetStatus() {
 		return this.targetStatus;
 	}
 
-	public boolean hasBedrock(int x, int z) {
-		return !this.missingBedrock.get((z & 15) * 16 + (x & 15));
+	public boolean hasMissingBedrock() {
+		return !this.missingBedrock.isEmpty();
+	}
+
+	public boolean isMissingBedrockAt(int x, int z) {
+		return this.missingBedrock.get((z & 15) * 16 + (x & 15));
 	}
 }

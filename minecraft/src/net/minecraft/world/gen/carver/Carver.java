@@ -190,7 +190,7 @@ public abstract class Carver<C extends CarverConfig> {
 				if (mutableBoolean.isTrue()) {
 					mutable2.set(mutable, Direction.DOWN);
 					if (chunk.getBlockState(mutable2).isOf(Blocks.DIRT)) {
-						context.method_39114((Biome)posToBiome.apply(mutable2), chunk, mutable2, !blockState2.getFluidState().isEmpty())
+						context.method_39114(posToBiome, chunk, mutable2, !blockState2.getFluidState().isEmpty())
 							.ifPresent(blockStatex -> chunk.setBlockState(mutable2, blockStatex, false));
 					}
 				}

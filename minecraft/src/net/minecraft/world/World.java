@@ -42,6 +42,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -457,7 +458,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			BlockEntityTickInvoker blockEntityTickInvoker = (BlockEntityTickInvoker)iterator.next();
 			if (blockEntityTickInvoker.isRemoved()) {
 				iterator.remove();
-			} else {
+			} else if (this.shouldTickBlocksInChunk(ChunkPos.toLong(blockEntityTickInvoker.getPos()))) {
 				blockEntityTickInvoker.tick();
 			}
 		}
@@ -478,6 +479,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public boolean shouldUpdatePostDeath(Entity entity) {
+		return true;
+	}
+
+	public boolean shouldTickBlocksInChunk(long chunkPos) {
 		return true;
 	}
 
@@ -586,14 +591,14 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public List<Entity> getOtherEntities(@Nullable Entity except, Box box, Predicate<? super Entity> predicate) {
 		this.getProfiler().visit("getEntities");
 		List<Entity> list = Lists.<Entity>newArrayList();
-		this.getEntityLookup().forEachIntersects(box, entity2 -> {
-			if (entity2 != except && predicate.test(entity2)) {
-				list.add(entity2);
+		this.getEntityLookup().forEachIntersects(box, entity -> {
+			if (entity != except && predicate.test(entity)) {
+				list.add(entity);
 			}
 
-			if (entity2 instanceof EnderDragonEntity) {
-				for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity2).getBodyParts()) {
-					if (entity2 != except && predicate.test(enderDragonPart)) {
+			if (entity instanceof EnderDragonEntity) {
+				for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
+					if (entity != except && predicate.test(enderDragonPart)) {
 						list.add(enderDragonPart);
 					}
 				}

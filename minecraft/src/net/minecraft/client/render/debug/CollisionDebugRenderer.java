@@ -1,8 +1,8 @@
 package net.minecraft.client.render.debug;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -31,7 +31,7 @@ public class CollisionDebugRenderer implements DebugRenderer.Renderer {
 		if (d - this.lastUpdateTime > 1.0E8) {
 			this.lastUpdateTime = d;
 			Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
-			this.collisions = (List<VoxelShape>)entity.world.getCollisions(entity, entity.getBoundingBox().expand(6.0), entityx -> true).collect(Collectors.toList());
+			this.collisions = ImmutableList.copyOf(entity.world.getCollisions(entity, entity.getBoundingBox().expand(6.0)));
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());

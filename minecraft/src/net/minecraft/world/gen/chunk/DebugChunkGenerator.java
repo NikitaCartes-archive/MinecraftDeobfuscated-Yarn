@@ -70,10 +70,11 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void generateFeatures(StructureWorldAccess world, ChunkPos pos, StructureAccessor structureAccessor) {
+	public void generateFeatures(StructureWorldAccess world, Chunk chunk, StructureAccessor structureAccessor) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int i = pos.x;
-		int j = pos.z;
+		ChunkPos chunkPos = chunk.getPos();
+		int i = chunkPos.x;
+		int j = chunkPos.z;
 
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
@@ -124,7 +125,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public void carve(
-		ChunkRegion chunkRegion, long l, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep
+		ChunkRegion chunkRegion, long seed, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep
 	) {
 	}
 

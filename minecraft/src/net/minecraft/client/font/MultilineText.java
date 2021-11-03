@@ -70,7 +70,7 @@ public interface MultilineText {
 		);
 	}
 
-	static MultilineText method_35726(TextRenderer renderer, List<Text> texts) {
+	static MultilineText createFromTexts(TextRenderer renderer, List<Text> texts) {
 		return create(
 			renderer,
 			(List<MultilineText.Line>)texts.stream()

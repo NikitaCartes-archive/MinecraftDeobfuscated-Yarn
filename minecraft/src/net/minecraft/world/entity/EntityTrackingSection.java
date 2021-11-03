@@ -1,18 +1,19 @@
 package net.minecraft.world.entity;
 
+import java.util.Collection;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.collection.TypeFilterableList;
+import net.minecraft.util.math.Box;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * A collection of entities tracked within a chunk section.
  */
-public class EntityTrackingSection<T> {
+public class EntityTrackingSection<T extends EntityLike> {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	private final TypeFilterableList<T> collection;
 	private EntityTrackingStatus status;
@@ -22,27 +23,30 @@ public class EntityTrackingSection<T> {
 		this.collection = new TypeFilterableList<>(entityClass);
 	}
 
-	public void add(T obj) {
-		this.collection.add(obj);
+	public void add(T entityLike) {
+		this.collection.add(entityLike);
 	}
 
-	public boolean remove(T obj) {
-		return this.collection.remove(obj);
+	public boolean remove(T entityLike) {
+		return this.collection.remove(entityLike);
 	}
 
-	public void forEach(Predicate<? super T> predicate, Consumer<T> action) {
-		for (T object : this.collection) {
-			if (predicate.test(object)) {
-				action.accept(object);
+	public void forEach(Box box, Consumer<T> action) {
+		for (T entityLike : this.collection) {
+			if (entityLike.getBoundingBox().intersects(box)) {
+				action.accept(entityLike);
 			}
 		}
 	}
 
-	public <U extends T> void forEach(TypeFilter<T, U> type, Predicate<? super U> filter, Consumer<? super U> action) {
-		for (T object : this.collection.getAllOfType(type.getBaseClass())) {
-			U object2 = type.downcast(object);
-			if (object2 != null && filter.test(object2)) {
-				action.accept(object2);
+	public <U extends T> void forEach(TypeFilter<T, U> type, Box box, Consumer<? super U> action) {
+		Collection<? extends T> collection = this.collection.getAllOfType(type.getBaseClass());
+		if (!collection.isEmpty()) {
+			for (T entityLike : collection) {
+				U entityLike2 = (U)type.downcast(entityLike);
+				if (entityLike2 != null && entityLike.getBoundingBox().intersects(box)) {
+					action.accept(entityLike2);
+				}
 			}
 		}
 	}

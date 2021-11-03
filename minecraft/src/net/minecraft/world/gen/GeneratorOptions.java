@@ -105,26 +105,26 @@ public class GeneratorOptions {
 		);
 	}
 
-	public static GeneratorOptions getDefaultOptions(DynamicRegistryManager dynamicRegistryManager) {
+	public static GeneratorOptions getDefaultOptions(DynamicRegistryManager registryManager) {
 		long l = new Random().nextLong();
 		return new GeneratorOptions(
 			l,
 			true,
 			false,
 			getRegistryWithReplacedOverworldGenerator(
-				dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY),
-				DimensionType.createDefaultDimensionOptions(dynamicRegistryManager, l),
-				createOverworldGenerator(dynamicRegistryManager, l)
+				registryManager.get(Registry.DIMENSION_TYPE_KEY),
+				DimensionType.createDefaultDimensionOptions(registryManager, l),
+				createOverworldGenerator(registryManager, l)
 			)
 		);
 	}
 
-	public static NoiseChunkGenerator createOverworldGenerator(DynamicRegistryManager dynamicRegistryManager, long l) {
+	public static NoiseChunkGenerator createOverworldGenerator(DynamicRegistryManager registryManager, long l) {
 		return new NoiseChunkGenerator(
-			dynamicRegistryManager.get(Registry.NOISE_WORLDGEN),
-			MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(dynamicRegistryManager.get(Registry.BIOME_KEY)),
+			registryManager.get(Registry.NOISE_WORLDGEN),
+			MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(registryManager.get(Registry.BIOME_KEY)),
 			l,
-			() -> dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(ChunkGeneratorSettings.OVERWORLD)
+			() -> registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(ChunkGeneratorSettings.OVERWORLD)
 		);
 	}
 
@@ -184,16 +184,16 @@ public class GeneratorOptions {
 			.getEntries()
 			.stream()
 			.map(Entry::getKey)
-			.map(GeneratorOptions::method_39334)
+			.map(GeneratorOptions::toWorldKey)
 			.collect(ImmutableSet.toImmutableSet());
 	}
 
-	public static RegistryKey<World> method_39334(RegistryKey<DimensionOptions> registryKey) {
-		return RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());
+	public static RegistryKey<World> toWorldKey(RegistryKey<DimensionOptions> dimensionOptionsKey) {
+		return RegistryKey.of(Registry.WORLD_KEY, dimensionOptionsKey.getValue());
 	}
 
-	public static RegistryKey<DimensionOptions> method_39335(RegistryKey<World> registryKey) {
-		return RegistryKey.of(Registry.DIMENSION_KEY, registryKey.getValue());
+	public static RegistryKey<DimensionOptions> toDimensionOptionsKey(RegistryKey<World> worldKey) {
+		return RegistryKey.of(Registry.DIMENSION_KEY, worldKey.getValue());
 	}
 
 	public boolean isDebugWorld() {

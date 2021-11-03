@@ -46,10 +46,10 @@ public class PointOfInterestSet {
 		this(updateListener, true, ImmutableList.of());
 	}
 
-	private PointOfInterestSet(Runnable updateListener, boolean valid, List<PointOfInterest> list) {
+	private PointOfInterestSet(Runnable updateListener, boolean valid, List<PointOfInterest> pois) {
 		this.updateListener = updateListener;
 		this.valid = valid;
-		list.forEach(this::add);
+		pois.forEach(this::add);
 	}
 
 	public Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, PointOfInterestStorage.OccupationStatus occupationStatus) {
@@ -99,8 +99,8 @@ public class PointOfInterestSet {
 
 	@Deprecated
 	@Debug
-	public int method_35157(BlockPos blockPos) {
-		return (Integer)this.get(blockPos).map(PointOfInterest::getFreeTickets).orElse(0);
+	public int getFreeTickets(BlockPos pos) {
+		return (Integer)this.get(pos).map(PointOfInterest::getFreeTickets).orElse(0);
 	}
 
 	public boolean releaseTicket(BlockPos pos) {

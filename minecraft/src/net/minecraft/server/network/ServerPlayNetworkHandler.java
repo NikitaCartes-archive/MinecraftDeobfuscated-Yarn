@@ -885,9 +885,16 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	}
 
 	private boolean isPlayerNotCollidingWithBlocks(WorldView world, Box box) {
-		Stream<VoxelShape> stream = world.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5F), entity -> true);
+		Iterable<VoxelShape> iterable = world.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5F));
 		VoxelShape voxelShape = VoxelShapes.cuboid(box.contract(1.0E-5F));
-		return stream.anyMatch(voxelShape2 -> !VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND));
+
+		for (VoxelShape voxelShape2 : iterable) {
+			if (!VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public void requestTeleportAndDismount(double x, double y, double z, float yaw, float pitch) {
