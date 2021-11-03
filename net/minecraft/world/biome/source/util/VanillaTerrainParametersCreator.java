@@ -3,19 +3,20 @@
  */
 package net.minecraft.world.biome.source.util;
 
+import net.minecraft.util.math.Spline;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 
 public class VanillaTerrainParametersCreator {
     public static VanillaTerrainParameters createSurfaceParameters() {
-        return new VanillaTerrainParameters();
+        return VanillaTerrainParameters.method_39457();
     }
 
     public static VanillaTerrainParameters createUndergroundParameters() {
-        return new VanillaTerrainParameters();
+        return new VanillaTerrainParameters(Spline.method_39427(0.0f), Spline.method_39427(0.0f), Spline.method_39427(0.0f));
     }
 
     public static VanillaTerrainParameters createIslandParameters() {
-        return new VanillaTerrainParameters();
+        return new VanillaTerrainParameters(Spline.method_39427(0.0f), Spline.method_39427(1.0f), Spline.method_39427(0.0f));
     }
 }
 

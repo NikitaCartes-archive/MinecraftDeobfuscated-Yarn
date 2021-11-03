@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 public class UniformHeightProvider
 extends HeightProvider {
-    public static final Codec<UniformHeightProvider> UNIFORM_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)YOffset.OFFSET_CODEC.fieldOf("min_inclusive")).forGetter(uniformHeightProvider -> uniformHeightProvider.minOffset), ((MapCodec)YOffset.OFFSET_CODEC.fieldOf("max_inclusive")).forGetter(uniformHeightProvider -> uniformHeightProvider.maxOffset)).apply((Applicative<UniformHeightProvider, ?>)instance, UniformHeightProvider::new));
+    public static final Codec<UniformHeightProvider> UNIFORM_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)YOffset.OFFSET_CODEC.fieldOf("min_inclusive")).forGetter(provider -> provider.minOffset), ((MapCodec)YOffset.OFFSET_CODEC.fieldOf("max_inclusive")).forGetter(provider -> provider.maxOffset)).apply((Applicative<UniformHeightProvider, ?>)instance, UniformHeightProvider::new));
     private static final Logger LOGGER = LogManager.getLogger();
     private final YOffset minOffset;
     private final YOffset maxOffset;

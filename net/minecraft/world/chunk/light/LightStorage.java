@@ -103,13 +103,7 @@ extends SectionDistanceLevelPropagator {
         }
         ChunkNibbleArray chunkNibbleArray = this.getLightSection(l, true);
         chunkNibbleArray.set(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos)), value);
-        for (int i = -1; i <= 1; ++i) {
-            for (int j = -1; j <= 1; ++j) {
-                for (int k = -1; k <= 1; ++k) {
-                    this.notifySections.add(ChunkSectionPos.fromBlockPos(BlockPos.add(blockPos, j, k, i)));
-                }
-            }
-        }
+        ChunkSectionPos.forEachChunkSectionAround(blockPos, this.notifySections::add);
     }
 
     @Override
@@ -155,13 +149,7 @@ extends SectionDistanceLevelPropagator {
                 ((ChunkToNibbleArrayMap)this.storage).put(id, this.createSection(id));
                 this.dirtySections.add(id);
                 this.onLoadSection(id);
-                for (int j = -1; j <= 1; ++j) {
-                    for (int k = -1; k <= 1; ++k) {
-                        for (int l = -1; l <= 1; ++l) {
-                            this.notifySections.add(ChunkSectionPos.fromBlockPos(BlockPos.add(id, k, l, j)));
-                        }
-                    }
-                }
+                ChunkSectionPos.forEachChunkSectionAround(id, this.notifySections::add);
             }
         }
         if (i != 2 && level >= 2) {
@@ -179,6 +167,9 @@ extends SectionDistanceLevelPropagator {
     }
 
     protected void removeSection(ChunkLightProvider<?, ?> storage, long sectionPos) {
+        if (storage.getPendingUpdateCount() == 0) {
+            return;
+        }
         if (storage.getPendingUpdateCount() < 8192) {
             storage.removePendingUpdateIf(m -> ChunkSectionPos.fromBlockPos(m) == sectionPos);
             return;

@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -179,6 +180,7 @@ implements StructureWorldAccess {
     final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<MobEntity>();
     protected final RaidManager raidManager;
     private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet();
+    private final List<BlockEvent> blockEventQueue = new ArrayList<BlockEvent>(64);
     private boolean inBlockTick;
     private final List<Spawner> spawners;
     @Nullable
@@ -197,12 +199,12 @@ implements StructureWorldAccess {
         DataFixer dataFixer = server.getDataFixer();
         EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(worldKey), "entities"), dataFixer, bl, server);
         this.entityManager = new ServerEntityManager<Entity>(Entity.class, new ServerEntityHandler(), chunkDataAccess);
-        this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().method_38651(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
+        this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().getSimulationDistance(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
         this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
-        this.raidManager = this.getPersistentStateManager().getOrCreate(nbtCompound -> RaidManager.fromNbt(this, nbtCompound), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
+        this.raidManager = this.getPersistentStateManager().getOrCreate(nbt -> RaidManager.fromNbt(this, nbt), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
         if (!server.isSingleplayer()) {
             properties.setGameMode(server.getDefaultGameMode());
         }
@@ -300,7 +302,7 @@ implements StructureWorldAccess {
                 this.setTimeOfDay(l - l % 24000L);
             }
             this.wakeSleepingPlayers();
-            if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
+            if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE) && this.isRaining()) {
                 this.resetWeather();
             }
         }
@@ -345,7 +347,7 @@ implements StructureWorldAccess {
                 profiler.push("checkDespawn");
                 entity.checkDespawn();
                 profiler.pop();
-                if (!this.chunkManager.threadedAnvilChunkStorage.getTicketManager().isSimulating(entity.getChunkPos().toLong())) {
+                if (!this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(entity.getChunkPos().toLong())) {
                     return;
                 }
                 Entity entity2 = entity.getVehicle();
@@ -366,6 +368,11 @@ implements StructureWorldAccess {
         profiler.push("entityManagement");
         this.entityManager.tick();
         profiler.pop();
+    }
+
+    @Override
+    public boolean shouldTickBlocksInChunk(long chunkPos) {
+        return this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickBlocks(chunkPos);
     }
 
     protected void tickTime() {
@@ -470,7 +477,7 @@ implements StructureWorldAccess {
     }
 
     private Optional<BlockPos> getLightningRodPos(BlockPos pos2) {
-        Optional<BlockPos> optional = this.getPointOfInterestStorage().method_34712(poiType -> poiType == PointOfInterestType.LIGHTNING_ROD, pos -> pos.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - 1, pos2, 128, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = this.getPointOfInterestStorage().getNearestPosition(poiType -> poiType == PointOfInterestType.LIGHTNING_ROD, pos -> pos.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - 1, pos2, 128, PointOfInterestStorage.OccupationStatus.ANY);
         return optional.map(pos -> pos.up(1));
     }
 
@@ -810,11 +817,17 @@ implements StructureWorldAccess {
     }
 
     private void processSyncedBlockEvents() {
+        this.blockEventQueue.clear();
         while (!this.syncedBlockEventQueue.isEmpty()) {
             BlockEvent blockEvent = this.syncedBlockEventQueue.removeFirst();
-            if (!this.processBlockEvent(blockEvent)) continue;
-            this.server.getPlayerManager().sendToAround(null, blockEvent.pos().getX(), blockEvent.pos().getY(), blockEvent.pos().getZ(), 64.0, this.getRegistryKey(), new BlockEventS2CPacket(blockEvent.pos(), blockEvent.block(), blockEvent.type(), blockEvent.data()));
+            if (this.shouldTickBlocksInChunk(ChunkPos.toLong(blockEvent.pos()))) {
+                if (!this.processBlockEvent(blockEvent)) continue;
+                this.server.getPlayerManager().sendToAround(null, blockEvent.pos().getX(), blockEvent.pos().getY(), blockEvent.pos().getZ(), 64.0, this.getRegistryKey(), new BlockEventS2CPacket(blockEvent.pos(), blockEvent.block(), blockEvent.type(), blockEvent.data()));
+                continue;
+            }
+            this.blockEventQueue.add(blockEvent);
         }
+        this.syncedBlockEventQueue.addAll((Collection<BlockEvent>)this.blockEventQueue);
     }
 
     private boolean processBlockEvent(BlockEvent event) {
@@ -1160,7 +1173,7 @@ implements StructureWorldAccess {
 
     @Override
     public List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-        return this.getStructureAccessor().method_38853(pos, feature);
+        return this.getStructureAccessor().getStructureStarts(pos, feature);
     }
 
     @Override

@@ -15,7 +15,7 @@ import net.minecraft.util.Unit;
  * code points and formatting codes.
  */
 public class TextVisitFactory {
-    private static final char field_29861 = '\ufffd';
+    private static final char REPLACEMENT_CHARACTER = '\ufffd';
     private static final Optional<Object> VISIT_TERMINATED = Optional.of(Unit.INSTANCE);
 
     private static boolean visitRegularCharacter(Style style, CharacterVisitor visitor, int index, char c) {
@@ -196,8 +196,8 @@ public class TextVisitFactory {
      */
     public static String validateSurrogates(String text) {
         StringBuilder stringBuilder = new StringBuilder();
-        TextVisitFactory.visitForwards(text, Style.EMPTY, (i, style, j) -> {
-            stringBuilder.appendCodePoint(j);
+        TextVisitFactory.visitForwards(text, Style.EMPTY, (index, style, codePoint) -> {
+            stringBuilder.appendCodePoint(codePoint);
             return true;
         });
         return stringBuilder.toString();
@@ -205,8 +205,8 @@ public class TextVisitFactory {
 
     public static String removeFormattingCodes(StringVisitable text) {
         StringBuilder stringBuilder = new StringBuilder();
-        TextVisitFactory.visitFormatted(text, Style.EMPTY, (int i, Style style, int j) -> {
-            stringBuilder.appendCodePoint(j);
+        TextVisitFactory.visitFormatted(text, Style.EMPTY, (int index, Style style, int codePoint) -> {
+            stringBuilder.appendCodePoint(codePoint);
             return true;
         });
         return stringBuilder.toString();

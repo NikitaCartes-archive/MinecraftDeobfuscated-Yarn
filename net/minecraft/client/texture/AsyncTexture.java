@@ -21,9 +21,9 @@ extends ResourceTexture {
     @Nullable
     private CompletableFuture<ResourceTexture.TextureData> future;
 
-    public AsyncTexture(ResourceManager resourceManager, Identifier identifier, Executor executor) {
-        super(identifier);
-        this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, identifier), executor);
+    public AsyncTexture(ResourceManager resourceManager, Identifier id, Executor executor) {
+        super(id);
+        this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, id), executor);
     }
 
     @Override
@@ -37,16 +37,16 @@ extends ResourceTexture {
     }
 
     public CompletableFuture<Void> getLoadCompleteFuture() {
-        return this.future == null ? CompletableFuture.completedFuture(null) : this.future.thenApply(textureData -> null);
+        return this.future == null ? CompletableFuture.completedFuture(null) : this.future.thenApply(texture -> null);
     }
 
     @Override
-    public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
+    public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier id, Executor executor) {
         this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, this.location), Util.getMainWorkerExecutor());
-        this.future.thenRunAsync(() -> textureManager.registerTexture(this.location, this), AsyncTexture.method_22808(executor));
+        this.future.thenRunAsync(() -> textureManager.registerTexture(this.location, this), AsyncTexture.createRenderThreadExecutor(executor));
     }
 
-    private static Executor method_22808(Executor executor) {
+    private static Executor createRenderThreadExecutor(Executor executor) {
         return runnable -> executor.execute(() -> RenderSystem.recordRenderCall(runnable::run));
     }
 }

@@ -62,7 +62,7 @@ extends Block {
     @Override
     @Nullable
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new StonecutterScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE);
+        return new SimpleNamedScreenHandlerFactory((syncId, playerInventory, player) -> new StonecutterScreenHandler(syncId, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE);
     }
 
     @Override

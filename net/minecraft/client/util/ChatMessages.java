@@ -33,9 +33,9 @@ public class ChatMessages {
             return Optional.empty();
         }, Style.EMPTY);
         ArrayList<OrderedText> list = Lists.newArrayList();
-        textRenderer.getTextHandler().wrapLines(textCollector.getCombined(), width, Style.EMPTY, (stringVisitable, boolean_) -> {
-            OrderedText orderedText = Language.getInstance().reorder((StringVisitable)stringVisitable);
-            list.add(boolean_ != false ? OrderedText.concat(SPACES, orderedText) : orderedText);
+        textRenderer.getTextHandler().wrapLines(textCollector.getCombined(), width, Style.EMPTY, (text, lastLineWrapped) -> {
+            OrderedText orderedText = Language.getInstance().reorder((StringVisitable)text);
+            list.add(lastLineWrapped != false ? OrderedText.concat(SPACES, orderedText) : orderedText);
         });
         if (list.isEmpty()) {
             return Lists.newArrayList(OrderedText.EMPTY);

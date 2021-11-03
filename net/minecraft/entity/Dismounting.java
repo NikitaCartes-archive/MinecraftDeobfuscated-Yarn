@@ -33,7 +33,12 @@ public class Dismounting {
     }
 
     public static boolean canPlaceEntityAt(CollisionView world, LivingEntity entity, Box targetBox) {
-        return world.getBlockCollisions(entity, targetBox).allMatch(VoxelShape::isEmpty);
+        Iterable<VoxelShape> iterable = world.getBlockCollisions(entity, targetBox);
+        for (VoxelShape voxelShape : iterable) {
+            if (voxelShape.isEmpty()) continue;
+            return false;
+        }
+        return world.getWorldBorder().contains(targetBox);
     }
 
     public static boolean canPlaceEntityAt(CollisionView world, Vec3d offset, LivingEntity entity, EntityPose pose) {
@@ -73,10 +78,16 @@ public class Dismounting {
             return null;
         }
         Vec3d vec3d = Vec3d.ofCenter(pos, d);
-        if (world.getBlockCollisions(null, entityType.getDimensions().getBoxAt(vec3d)).allMatch(VoxelShape::isEmpty)) {
-            return vec3d;
+        Box box = entityType.getDimensions().getBoxAt(vec3d);
+        Iterable<VoxelShape> iterable = world.getBlockCollisions(null, box);
+        for (VoxelShape voxelShape : iterable) {
+            if (voxelShape.isEmpty()) continue;
+            return null;
         }
-        return null;
+        if (!world.getWorldBorder().contains(box)) {
+            return null;
+        }
+        return vec3d;
     }
 }
 

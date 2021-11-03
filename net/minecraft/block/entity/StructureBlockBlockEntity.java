@@ -263,12 +263,12 @@ extends BlockEntity {
         BlockPos blockPos2 = new BlockPos(blockPos.getX() - 80, this.world.getBottomY(), blockPos.getZ() - 80);
         BlockPos blockPos3 = new BlockPos(blockPos.getX() + 80, this.world.getTopY() - 1, blockPos.getZ() + 80);
         Stream<BlockPos> stream = this.streamCornerPos(blockPos2, blockPos3);
-        return StructureBlockBlockEntity.getStructureBox(blockPos, stream).filter(blockBox -> {
-            int i = blockBox.getMaxX() - blockBox.getMinX();
-            int j = blockBox.getMaxY() - blockBox.getMinY();
-            int k = blockBox.getMaxZ() - blockBox.getMinZ();
+        return StructureBlockBlockEntity.getStructureBox(blockPos, stream).filter(box -> {
+            int i = box.getMaxX() - box.getMinX();
+            int j = box.getMaxY() - box.getMinY();
+            int k = box.getMaxZ() - box.getMinZ();
             if (i > 1 && j > 1 && k > 1) {
-                this.offset = new BlockPos(blockBox.getMinX() - blockPos.getX() + 1, blockBox.getMinY() - blockPos.getY() + 1, blockBox.getMinZ() - blockPos.getZ() + 1);
+                this.offset = new BlockPos(box.getMinX() - blockPos.getX() + 1, box.getMinY() - blockPos.getY() + 1, box.getMinZ() - blockPos.getZ() + 1);
                 this.size = new Vec3i(i - 1, j - 1, k - 1);
                 this.markDirty();
                 BlockState blockState = this.world.getBlockState(blockPos);
@@ -433,8 +433,8 @@ extends BlockEntity {
         return this.toUpdatePacket();
     }
 
-    private static /* synthetic */ void method_35293(ServerWorld serverWorld, BlockPos blockPos) {
-        serverWorld.setBlockState(blockPos, Blocks.STRUCTURE_VOID.getDefaultState(), Block.NOTIFY_LISTENERS);
+    private static /* synthetic */ void setStructureVoid(ServerWorld world, BlockPos pos) {
+        world.setBlockState(pos, Blocks.STRUCTURE_VOID.getDefaultState(), Block.NOTIFY_LISTENERS);
     }
 
     public static enum Action {

@@ -16,7 +16,7 @@ import net.minecraft.util.math.intprovider.IntProviderType;
 
 public class WeightedListIntProvider
 extends IntProvider {
-    public static final Codec<WeightedListIntProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)DataPool.createCodec(IntProvider.VALUE_CODEC).fieldOf("distribution")).forGetter(weightedListIntProvider -> weightedListIntProvider.weightedList)).apply((Applicative<WeightedListIntProvider, ?>)instance, WeightedListIntProvider::new));
+    public static final Codec<WeightedListIntProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)DataPool.createCodec(IntProvider.VALUE_CODEC).fieldOf("distribution")).forGetter(provider -> provider.weightedList)).apply((Applicative<WeightedListIntProvider, ?>)instance, WeightedListIntProvider::new));
     private final DataPool<IntProvider> weightedList;
     private final int min;
     private final int max;

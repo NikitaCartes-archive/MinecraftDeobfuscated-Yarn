@@ -78,7 +78,7 @@ public class ChunkHolder {
     private final LevelUpdateListener levelUpdateListener;
     private final PlayersWatchingChunkProvider playersWatchingChunkProvider;
     private boolean accessible;
-    private boolean field_26744;
+    private boolean noLightingUpdates;
     private CompletableFuture<Void> field_26930 = CompletableFuture.completedFuture(null);
 
     public ChunkHolder(ChunkPos pos, int level, HeightLimitView world, LightingProvider lightingProvider, LevelUpdateListener levelUpdateListener, PlayersWatchingChunkProvider playersWatchingChunkProvider) {
@@ -199,9 +199,9 @@ public class ChunkHolder {
         for (j = 0; j < this.blockUpdatesBySection.length; ++j) {
             i += this.blockUpdatesBySection[j] != null ? this.blockUpdatesBySection[j].size() : 0;
         }
-        this.field_26744 |= i >= 64;
+        this.noLightingUpdates |= i >= 64;
         if (!this.skyLightUpdateBits.isEmpty() || !this.blockLightUpdateBits.isEmpty()) {
-            this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, true), !this.field_26744);
+            this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, true), !this.noLightingUpdates);
             this.skyLightUpdateBits.clear();
             this.blockLightUpdateBits.clear();
         }
@@ -217,7 +217,7 @@ public class ChunkHolder {
                 this.tryUpdateBlockEntityAt(world, blockPos, blockState);
             } else {
                 ChunkSection chunkSection = chunk.getSection(j);
-                ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDeltaUpdateS2CPacket(chunkSectionPos, shortSet, chunkSection, this.field_26744);
+                ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDeltaUpdateS2CPacket(chunkSectionPos, shortSet, chunkSection, this.noLightingUpdates);
                 this.sendPacketToPlayersWatching(chunkDeltaUpdateS2CPacket, false);
                 chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> this.tryUpdateBlockEntityAt(world, (BlockPos)pos, (BlockState)state));
             }

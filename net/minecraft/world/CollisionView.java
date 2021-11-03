@@ -3,10 +3,9 @@
  */
 package net.minecraft.world;
 
+import com.google.common.collect.Iterables;
+import java.util.List;
 import java.util.Optional;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -43,37 +42,53 @@ extends BlockView {
     }
 
     default public boolean isSpaceEmpty(Box box) {
-        return this.isSpaceEmpty(null, box, e -> true);
+        return this.isSpaceEmpty(null, box);
     }
 
     default public boolean isSpaceEmpty(Entity entity) {
-        return this.isSpaceEmpty(entity, entity.getBoundingBox(), e -> true);
+        return this.isSpaceEmpty(entity, entity.getBoundingBox());
     }
 
-    default public boolean isSpaceEmpty(Entity entity, Box box) {
-        return this.isSpaceEmpty(entity, box, e -> true);
+    default public boolean isSpaceEmpty(@Nullable Entity entity, Box box) {
+        for (VoxelShape voxelShape : this.getBlockCollisions(entity, box)) {
+            if (voxelShape.isEmpty()) continue;
+            return false;
+        }
+        if (!this.getEntityCollisions(entity, box).isEmpty()) {
+            return false;
+        }
+        if (entity != null) {
+            VoxelShape voxelShape2 = this.getWorldBorderCollisions(entity, box);
+            return voxelShape2 == null || !VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(box), BooleanBiFunction.AND);
+        }
+        return true;
     }
 
-    default public boolean isSpaceEmpty(@Nullable Entity entity, Box box, Predicate<Entity> filter) {
-        return this.getCollisions(entity, box, filter).allMatch(VoxelShape::isEmpty);
+    public List<VoxelShape> getEntityCollisions(@Nullable Entity var1, Box var2);
+
+    default public Iterable<VoxelShape> getCollisions(@Nullable Entity entity, Box box) {
+        List<VoxelShape> list = this.getEntityCollisions(entity, box);
+        Iterable<VoxelShape> iterable = this.getBlockCollisions(entity, box);
+        return list.isEmpty() ? iterable : Iterables.concat(list, iterable);
     }
 
-    public Stream<VoxelShape> getEntityCollisions(@Nullable Entity var1, Box var2, Predicate<Entity> var3);
-
-    default public Stream<VoxelShape> getCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-        return Stream.concat(this.getBlockCollisions(entity, box), this.getEntityCollisions(entity, box, predicate));
+    default public Iterable<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box) {
+        return () -> new BlockCollisionSpliterator(this, entity, box);
     }
 
-    default public Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box) {
-        return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box), false);
+    @Nullable
+    private VoxelShape getWorldBorderCollisions(Entity entity, Box box) {
+        WorldBorder worldBorder = this.getWorldBorder();
+        return worldBorder.canCollide(entity, box) ? worldBorder.asVoxelShape() : null;
     }
 
-    default public boolean hasBlockCollision(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> predicate) {
-        return !this.getBlockCollisions(entity, box, predicate).allMatch(VoxelShape::isEmpty);
-    }
-
-    default public Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> predicate) {
-        return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box, predicate), false);
+    default public boolean method_39454(@Nullable Entity entity, Box box) {
+        BlockCollisionSpliterator blockCollisionSpliterator = new BlockCollisionSpliterator(this, entity, box, true);
+        while (blockCollisionSpliterator.hasNext()) {
+            if (((VoxelShape)blockCollisionSpliterator.next()).isEmpty()) continue;
+            return true;
+        }
+        return false;
     }
 
     default public Optional<Vec3d> findClosestCollision(@Nullable Entity entity, VoxelShape shape, Vec3d target, double x, double y, double z) {
@@ -81,9 +96,9 @@ extends BlockView {
             return Optional.empty();
         }
         Box box2 = shape.getBoundingBox().expand(x, y, z);
-        VoxelShape voxelShape = this.getBlockCollisions(entity, box2).flatMap(collision -> collision.getBoundingBoxes().stream()).map(box -> box.expand(x / 2.0, y / 2.0, z / 2.0)).map(VoxelShapes::cuboid).reduce(VoxelShapes.empty(), VoxelShapes::union);
-        VoxelShape voxelShape2 = VoxelShapes.combineAndSimplify(shape, voxelShape, BooleanBiFunction.ONLY_FIRST);
-        return voxelShape2.getClosestPointTo(target);
+        VoxelShape voxelShape2 = StreamSupport.stream(this.getBlockCollisions(entity, box2).spliterator(), false).filter(voxelShape -> this.getWorldBorder() == null || this.getWorldBorder().contains(voxelShape.getBoundingBox())).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).map(box -> box.expand(x / 2.0, y / 2.0, z / 2.0)).map(VoxelShapes::cuboid).reduce(VoxelShapes.empty(), VoxelShapes::union);
+        VoxelShape voxelShape22 = VoxelShapes.combineAndSimplify(shape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
+        return voxelShape22.getClosestPointTo(target);
     }
 }
 

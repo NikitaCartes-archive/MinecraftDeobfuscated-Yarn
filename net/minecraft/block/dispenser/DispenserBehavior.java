@@ -83,7 +83,7 @@ import org.apache.logging.log4j.Logger;
 
 public interface DispenserBehavior {
     public static final Logger LOGGER = LogManager.getLogger();
-    public static final DispenserBehavior NOOP = (blockPointer, itemStack) -> itemStack;
+    public static final DispenserBehavior NOOP = (pointer, stack) -> stack;
 
     public ItemStack dispense(BlockPointer var1, ItemStack var2);
 
@@ -120,21 +120,21 @@ public interface DispenserBehavior {
 
             @Override
             protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-                return Util.make(new EggEntity(world, position.getX(), position.getY(), position.getZ()), eggEntity -> eggEntity.setItem(stack));
+                return Util.make(new EggEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
             }
         });
         DispenserBlock.registerBehavior(Items.SNOWBALL, new ProjectileDispenserBehavior(){
 
             @Override
             protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-                return Util.make(new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), snowballEntity -> snowballEntity.setItem(stack));
+                return Util.make(new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
             }
         });
         DispenserBlock.registerBehavior(Items.EXPERIENCE_BOTTLE, new ProjectileDispenserBehavior(){
 
             @Override
             protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-                return Util.make(new ExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ()), experienceBottleEntity -> experienceBottleEntity.setItem(stack));
+                return Util.make(new ExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
             }
 
             @Override
@@ -155,7 +155,7 @@ public interface DispenserBehavior {
 
                     @Override
                     protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-                        return Util.make(new PotionEntity(world, position.getX(), position.getY(), position.getZ()), potionEntity -> potionEntity.setItem(stack));
+                        return Util.make(new PotionEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
                     }
 
                     @Override
@@ -178,7 +178,7 @@ public interface DispenserBehavior {
 
                     @Override
                     protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-                        return Util.make(new PotionEntity(world, position.getX(), position.getY(), position.getZ()), potionEntity -> potionEntity.setItem(stack));
+                        return Util.make(new PotionEntity(world, position.getX(), position.getY(), position.getZ()), entity -> entity.setItem(stack));
                     }
 
                     @Override
@@ -254,10 +254,10 @@ public interface DispenserBehavior {
             @Override
             protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                List<HorseBaseEntity> list = pointer.getWorld().getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntity -> horseBaseEntity.isAlive() && horseBaseEntity.hasArmorSlot());
-                for (HorseBaseEntity horseBaseEntity2 : list) {
-                    if (!horseBaseEntity2.isHorseArmor(stack) || horseBaseEntity2.hasArmorInSlot() || !horseBaseEntity2.isTame()) continue;
-                    horseBaseEntity2.getStackReference(401).set(stack.split(1));
+                List<HorseBaseEntity> list = pointer.getWorld().getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), entity -> entity.isAlive() && entity.hasArmorSlot());
+                for (HorseBaseEntity horseBaseEntity : list) {
+                    if (!horseBaseEntity.isHorseArmor(stack) || horseBaseEntity.hasArmorInSlot() || !horseBaseEntity.isTame()) continue;
+                    horseBaseEntity.getStackReference(401).set(stack.split(1));
                     this.setSuccess(true);
                     return stack;
                 }
@@ -289,9 +289,9 @@ public interface DispenserBehavior {
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                List<AbstractDonkeyEntity> list = pointer.getWorld().getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntity -> abstractDonkeyEntity.isAlive() && !abstractDonkeyEntity.hasChest());
-                for (AbstractDonkeyEntity abstractDonkeyEntity2 : list) {
-                    if (!abstractDonkeyEntity2.isTame() || !abstractDonkeyEntity2.getStackReference(499).set(stack)) continue;
+                List<AbstractDonkeyEntity> list = pointer.getWorld().getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), entity -> entity.isAlive() && !entity.hasChest());
+                for (AbstractDonkeyEntity abstractDonkeyEntity : list) {
+                    if (!abstractDonkeyEntity.isTame() || !abstractDonkeyEntity.getStackReference(499).set(stack)) continue;
                     stack.decrement(1);
                     this.setSuccess(true);
                     return stack;
@@ -331,8 +331,8 @@ public interface DispenserBehavior {
                 double g = random.nextGaussian() * 0.05 + (double)direction.getOffsetX();
                 double h = random.nextGaussian() * 0.05 + (double)direction.getOffsetY();
                 double i = random.nextGaussian() * 0.05 + (double)direction.getOffsetZ();
-                SmallFireballEntity smallFireballEntity2 = new SmallFireballEntity(world, d, e, f, g, h, i);
-                world.spawnEntity(Util.make(smallFireballEntity2, smallFireballEntity -> smallFireballEntity.setItem(stack)));
+                SmallFireballEntity smallFireballEntity = new SmallFireballEntity(world, d, e, f, g, h, i);
+                world.spawnEntity(Util.make(smallFireballEntity, entity -> entity.setItem(stack)));
                 stack.decrement(1);
                 return stack;
             }

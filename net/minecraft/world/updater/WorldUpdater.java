@@ -118,8 +118,8 @@ public class WorldUpdater {
                         if (nbtCompound != null) {
                             boolean bl3;
                             int i = VersionedChunkStorage.getDataVersion(nbtCompound);
-                            ChunkGenerator chunkGenerator = this.generatorOptions.getDimensions().get(GeneratorOptions.method_39335(registryKey)).getChunkGenerator();
-                            NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(registryKey, () -> this.persistentStateManager, nbtCompound, chunkGenerator.method_39301());
+                            ChunkGenerator chunkGenerator = this.generatorOptions.getDimensions().get(GeneratorOptions.toDimensionOptionsKey(registryKey)).getChunkGenerator();
+                            NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(registryKey, () -> this.persistentStateManager, nbtCompound, chunkGenerator.getCodecKey());
                             ChunkPos chunkPos2 = new ChunkPos(nbtCompound2.getInt("xPos"), nbtCompound2.getInt("zPos"));
                             if (!chunkPos2.equals(chunkPos)) {
                                 LOGGER.warn("Chunk {} has invalid position {}", (Object)chunkPos, (Object)chunkPos2);

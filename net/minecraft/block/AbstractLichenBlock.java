@@ -189,7 +189,7 @@ extends Block {
     public boolean trySpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random, boolean postProcess) {
         List<Direction> list = Arrays.asList(DIRECTIONS);
         Collections.shuffle(list, random);
-        return list.stream().anyMatch(direction2 -> this.trySpreadTo(state, world, pos, from, (Direction)direction2, postProcess));
+        return list.stream().anyMatch(to -> this.trySpreadTo(state, world, pos, from, (Direction)to, postProcess));
     }
 
     public boolean trySpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to, boolean postProcess) {

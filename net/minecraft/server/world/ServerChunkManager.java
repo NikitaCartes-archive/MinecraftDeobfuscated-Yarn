@@ -274,6 +274,9 @@ extends ChunkManager {
         if (chunkHolder == null) {
             return false;
         }
+        if (!this.world.shouldTickBlocksInChunk(pos)) {
+            return false;
+        }
         Either either = chunkHolder.getTickingFuture().getNow(null);
         return either != null && either.left().isPresent();
     }

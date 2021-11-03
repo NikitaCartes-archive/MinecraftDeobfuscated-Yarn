@@ -15,14 +15,14 @@ import net.minecraft.util.math.floatprovider.FloatProviderType;
 
 public class TrapezoidFloatProvider
 extends FloatProvider {
-    public static final Codec<TrapezoidFloatProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("min")).forGetter(trapezoidFloatProvider -> Float.valueOf(trapezoidFloatProvider.min)), ((MapCodec)Codec.FLOAT.fieldOf("max")).forGetter(trapezoidFloatProvider -> Float.valueOf(trapezoidFloatProvider.max)), ((MapCodec)Codec.FLOAT.fieldOf("plateau")).forGetter(trapezoidFloatProvider -> Float.valueOf(trapezoidFloatProvider.plateau))).apply((Applicative<TrapezoidFloatProvider, ?>)instance, TrapezoidFloatProvider::new)).comapFlatMap(trapezoidFloatProvider -> {
-        if (trapezoidFloatProvider.max < trapezoidFloatProvider.min) {
-            return DataResult.error("Max must be larger than min: [" + trapezoidFloatProvider.min + ", " + trapezoidFloatProvider.max + "]");
+    public static final Codec<TrapezoidFloatProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("min")).forGetter(provider -> Float.valueOf(provider.min)), ((MapCodec)Codec.FLOAT.fieldOf("max")).forGetter(provider -> Float.valueOf(provider.max)), ((MapCodec)Codec.FLOAT.fieldOf("plateau")).forGetter(provider -> Float.valueOf(provider.plateau))).apply((Applicative<TrapezoidFloatProvider, ?>)instance, TrapezoidFloatProvider::new)).comapFlatMap(provider -> {
+        if (provider.max < provider.min) {
+            return DataResult.error("Max must be larger than min: [" + provider.min + ", " + provider.max + "]");
         }
-        if (trapezoidFloatProvider.plateau > trapezoidFloatProvider.max - trapezoidFloatProvider.min) {
-            return DataResult.error("Plateau can at most be the full span: [" + trapezoidFloatProvider.min + ", " + trapezoidFloatProvider.max + "]");
+        if (provider.plateau > provider.max - provider.min) {
+            return DataResult.error("Plateau can at most be the full span: [" + provider.min + ", " + provider.max + "]");
         }
-        return DataResult.success(trapezoidFloatProvider);
+        return DataResult.success(provider);
     }, Function.identity());
     private final float min;
     private final float max;

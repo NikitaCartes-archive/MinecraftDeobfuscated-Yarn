@@ -7,7 +7,6 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.kinds.Applicative;
-import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -36,7 +35,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 public class Codecs {
     public static final Codec<Integer> NONNEGATIVE_INT = Codecs.rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
     public static final Codec<Integer> POSITIVE_INT = Codecs.rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
-    public static final Codec<Float> POSITIVE_FLOAT = Codecs.method_37928(0.0f, Float.MAX_VALUE, float_ -> "Value must be positive: " + float_);
+    public static final Codec<Float> POSITIVE_FLOAT = Codecs.rangedFloat(0.0f, Float.MAX_VALUE, v -> "Value must be positive: " + v);
 
     /**
      * Returns an exclusive-or codec for {@link Either} instances.
@@ -56,7 +55,7 @@ public class Codecs {
      * @param first the first codec
      * @param second the second codec
      */
-    public static <F, S> Codec<Either<F, S>> xor(Codec<F> first, Codec<S> second) {
+    public static <F, S> Codec<com.mojang.datafixers.util.Either<F, S>> xor(Codec<F> first, Codec<S> second) {
         return new Xor<F, S>(first, second);
     }
 
@@ -67,14 +66,14 @@ public class Codecs {
             return (DataResult)combineFunction.apply(object, object2);
         }), object -> ImmutableList.of(leftFunction.apply(object), rightFunction.apply(object)));
         Codec<Object> codec3 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf(leftFieldName)).forGetter(Pair::getFirst), ((MapCodec)codec.fieldOf(rightFieldName)).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of)).comapFlatMap(pair -> (DataResult)combineFunction.apply(pair.getFirst(), pair.getSecond()), object -> Pair.of(leftFunction.apply(object), rightFunction.apply(object)));
-        Codec<Object> codec4 = new class_6495<Object, Object>(codec2, codec3).xmap(either -> either.map(object -> object, object -> object), Either::left);
+        Codec<Object> codec4 = new Either<Object, Object>(codec2, codec3).xmap(either -> either.map(object -> object, object -> object), com.mojang.datafixers.util.Either::left);
         return Codec.either(codec, codec4).comapFlatMap(either -> either.map(object -> (DataResult)combineFunction.apply(object, object), DataResult::success), object -> {
             Object object3;
             Object object2 = leftFunction.apply(object);
             if (Objects.equals(object2, object3 = rightFunction.apply(object))) {
-                return Either.left(object2);
+                return com.mojang.datafixers.util.Either.left(object2);
             }
-            return Either.right(object);
+            return com.mojang.datafixers.util.Either.right(object);
         });
     }
 
@@ -102,7 +101,7 @@ public class Codecs {
         };
     }
 
-    private static <N extends Number> Function<N, DataResult<N>> createRangeChecker(N min, N max, Function<N, String> messageFactory) {
+    private static <N extends Number> Function<N, DataResult<N>> createIntRangeChecker(N min, N max, Function<N, String> messageFactory) {
         return value -> {
             if (((Comparable)((Object)value)).compareTo(min) >= 0 && ((Comparable)((Object)value)).compareTo(max) <= 0) {
                 return DataResult.success(value);
@@ -112,22 +111,22 @@ public class Codecs {
     }
 
     private static Codec<Integer> rangedInt(int min, int max, Function<Integer, String> messageFactory) {
-        Function<Integer, DataResult<Integer>> function = Codecs.createRangeChecker(min, max, messageFactory);
+        Function<Integer, DataResult<Integer>> function = Codecs.createIntRangeChecker(min, max, messageFactory);
         return Codec.INT.flatXmap(function, function);
     }
 
-    private static <N extends Number> Function<N, DataResult<N>> method_37940(N number, N number2, Function<N, String> function) {
-        return number3 -> {
-            if (((Comparable)((Object)number3)).compareTo(number) > 0 && ((Comparable)((Object)number3)).compareTo(number2) <= 0) {
-                return DataResult.success(number3);
+    private static <N extends Number> Function<N, DataResult<N>> createFloatRangeChecker(N min, N max, Function<N, String> messageFactory) {
+        return value -> {
+            if (((Comparable)((Object)value)).compareTo(min) > 0 && ((Comparable)((Object)value)).compareTo(max) <= 0) {
+                return DataResult.success(value);
             }
-            return DataResult.error((String)function.apply(number3));
+            return DataResult.error((String)messageFactory.apply(value));
         };
     }
 
-    private static Codec<Float> method_37928(float f, float g, Function<Float, String> function) {
-        Function<Float, DataResult<Float>> function2 = Codecs.method_37940(Float.valueOf(f), Float.valueOf(g), function);
-        return Codec.FLOAT.flatXmap(function2, function2);
+    private static Codec<Float> rangedFloat(float min, float max, Function<Float, String> messageFactory) {
+        Function<Float, DataResult<Float>> function = Codecs.createFloatRangeChecker(Float.valueOf(min), Float.valueOf(max), messageFactory);
+        return Codec.FLOAT.flatXmap(function, function);
     }
 
     public static <T> Function<List<T>, DataResult<List<T>>> createNonEmptyListChecker() {
@@ -176,12 +175,12 @@ public class Codecs {
         };
     }
 
-    public static <A> Codec<A> method_39240(Supplier<Codec<A>> supplier) {
-        return new class_6739<A>(supplier);
+    public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
+        return new Lazy<A>(supplier);
     }
 
     static final class Xor<F, S>
-    implements Codec<Either<F, S>> {
+    implements Codec<com.mojang.datafixers.util.Either<F, S>> {
         private final Codec<F> first;
         private final Codec<S> second;
 
@@ -191,9 +190,9 @@ public class Codecs {
         }
 
         @Override
-        public <T> DataResult<Pair<Either<F, S>, T>> decode(DynamicOps<T> ops, T input) {
-            DataResult<Pair<Either<F, S>, T>> dataResult = this.first.decode(ops, input).map((? super R pair) -> pair.mapFirst(Either::left));
-            DataResult<Pair> dataResult2 = this.second.decode(ops, input).map((? super R pair) -> pair.mapFirst(Either::right));
+        public <T> DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> decode(DynamicOps<T> ops, T input) {
+            DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> dataResult = this.first.decode(ops, input).map((? super R pair) -> pair.mapFirst(com.mojang.datafixers.util.Either::left));
+            DataResult<Pair> dataResult2 = this.second.decode(ops, input).map((? super R pair) -> pair.mapFirst(com.mojang.datafixers.util.Either::right));
             Optional<Pair> optional = dataResult.result();
             Optional<Pair> optional2 = dataResult2.result();
             if (optional.isPresent() && optional2.isPresent()) {
@@ -203,7 +202,7 @@ public class Codecs {
         }
 
         @Override
-        public <T> DataResult<T> encode(Either<F, S> either, DynamicOps<T> dynamicOps, T object) {
+        public <T> DataResult<T> encode(com.mojang.datafixers.util.Either<F, S> either, DynamicOps<T> dynamicOps, T object) {
             return either.map(left -> this.first.encode(left, dynamicOps, object), right -> this.second.encode(right, dynamicOps, object));
         }
 
@@ -228,27 +227,27 @@ public class Codecs {
 
         @Override
         public /* synthetic */ DataResult encode(Object input, DynamicOps ops, Object prefix) {
-            return this.encode((Either)input, ops, prefix);
+            return this.encode((com.mojang.datafixers.util.Either)input, ops, prefix);
         }
     }
 
-    static final class class_6495<F, S>
-    implements Codec<Either<F, S>> {
-        private final Codec<F> field_34388;
-        private final Codec<S> field_34389;
+    static final class Either<F, S>
+    implements Codec<com.mojang.datafixers.util.Either<F, S>> {
+        private final Codec<F> first;
+        private final Codec<S> second;
 
-        public class_6495(Codec<F> codec, Codec<S> codec2) {
-            this.field_34388 = codec;
-            this.field_34389 = codec2;
+        public Either(Codec<F> first, Codec<S> second) {
+            this.first = first;
+            this.second = second;
         }
 
         @Override
-        public <T> DataResult<Pair<Either<F, S>, T>> decode(DynamicOps<T> dynamicOps, T object) {
-            DataResult<Pair<Either<F, Pair>, T>> dataResult = this.field_34388.decode(dynamicOps, object).map((? super R pair) -> pair.mapFirst(Either::left));
+        public <T> DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> decode(DynamicOps<T> ops, T input) {
+            DataResult<Pair<com.mojang.datafixers.util.Either<F, Pair>, T>> dataResult = this.first.decode(ops, input).map((? super R pair) -> pair.mapFirst(com.mojang.datafixers.util.Either::left));
             if (!dataResult.error().isPresent()) {
                 return dataResult;
             }
-            DataResult<Pair<Either<F, S>, T>> dataResult2 = this.field_34389.decode(dynamicOps, object).map((? super R pair) -> pair.mapFirst(Either::right));
+            DataResult<Pair<com.mojang.datafixers.util.Either<F, S>, T>> dataResult2 = this.second.decode(ops, input).map((? super R pair) -> pair.mapFirst(com.mojang.datafixers.util.Either::right));
             if (!dataResult2.error().isPresent()) {
                 return dataResult2;
             }
@@ -256,49 +255,49 @@ public class Codecs {
         }
 
         @Override
-        public <T> DataResult<T> encode(Either<F, S> either, DynamicOps<T> dynamicOps, T object) {
-            return either.map(object2 -> this.field_34388.encode(object2, dynamicOps, object), object2 -> this.field_34389.encode(object2, dynamicOps, object));
+        public <T> DataResult<T> encode(com.mojang.datafixers.util.Either<F, S> either, DynamicOps<T> dynamicOps, T object) {
+            return either.map(left -> this.first.encode(left, dynamicOps, object), right -> this.second.encode(right, dynamicOps, object));
         }
 
-        public boolean equals(Object object) {
-            if (this == object) {
+        public boolean equals(Object o) {
+            if (this == o) {
                 return true;
             }
-            if (object == null || this.getClass() != object.getClass()) {
+            if (o == null || this.getClass() != o.getClass()) {
                 return false;
             }
-            class_6495 lv = (class_6495)object;
-            return Objects.equals(this.field_34388, lv.field_34388) && Objects.equals(this.field_34389, lv.field_34389);
+            Either either = (Either)o;
+            return Objects.equals(this.first, either.first) && Objects.equals(this.second, either.second);
         }
 
         public int hashCode() {
-            return Objects.hash(this.field_34388, this.field_34389);
+            return Objects.hash(this.first, this.second);
         }
 
         public String toString() {
-            return "EitherCodec[" + this.field_34388 + ", " + this.field_34389 + "]";
+            return "EitherCodec[" + this.first + ", " + this.second + "]";
         }
 
         @Override
-        public /* synthetic */ DataResult encode(Object object, DynamicOps dynamicOps, Object object2) {
-            return this.encode((Either)object, dynamicOps, object2);
+        public /* synthetic */ DataResult encode(Object input, DynamicOps ops, Object prefix) {
+            return this.encode((com.mojang.datafixers.util.Either)input, ops, prefix);
         }
     }
 
-    record class_6739<A>(Supplier<Codec<A>> delegate) implements Codec
+    record Lazy<A>(Supplier<Codec<A>> delegate) implements Codec
     {
-        class_6739 {
+        Lazy {
             supplier = Suppliers.memoize(supplier::get);
         }
 
         @Override
-        public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> dynamicOps, T object) {
-            return this.delegate.get().decode(dynamicOps, object);
+        public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
+            return this.delegate.get().decode(ops, input);
         }
 
         @Override
-        public <T> DataResult<T> encode(A object, DynamicOps<T> dynamicOps, T object2) {
-            return this.delegate.get().encode(object, dynamicOps, object2);
+        public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
+            return this.delegate.get().encode(input, ops, prefix);
         }
     }
 }

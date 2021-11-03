@@ -56,10 +56,8 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     private final int verticalNoiseResolution;
     private final int noiseSizeY;
     private final GenerationShapeConfig config;
-    private final double densityFactor;
-    private final double densityOffset;
     private final int minY;
-    private final VanillaTerrainParameters terrainParameters = new VanillaTerrainParameters();
+    private final VanillaTerrainParameters terrainParameters;
     private final boolean hasNoiseCaves;
     private final ChunkNoiseSampler.ValueSamplerFactory intialNoiseSampler;
     private final InterpolatedNoiseSampler terrainNoise;
@@ -104,13 +102,13 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     private final RandomDeriver oreRandomDeriver;
     private final RandomDeriver depthBasedLayerRandomDeriver;
     private final List<MultiNoiseUtil.NoiseHypercube> spawnSuitabilityNoises = new VanillaBiomeParameters().getSpawnSuitabilityNoises();
+    private final boolean field_35592;
 
     public NoiseColumnSampler(int horizontalNoiseResolution, int verticalNoiseResolution, int noiseSizeY, GenerationShapeConfig config, boolean hasNoiseCaves, long seed, Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, ChunkRandom.RandomProvider randomProvider) {
         this.verticalNoiseResolution = verticalNoiseResolution;
         this.noiseSizeY = noiseSizeY;
         this.config = config;
-        this.densityFactor = config.densityFactor();
-        this.densityOffset = config.densityOffset();
+        this.terrainParameters = config.terrainParameters();
         int i = config.minimumY();
         this.minY = MathHelper.floorDiv(i, verticalNoiseResolution);
         this.hasNoiseCaves = hasNoiseCaves;
@@ -122,20 +120,21 @@ implements MultiNoiseUtil.MultiNoiseSampler {
         } else {
             this.islandNoise = null;
         }
+        this.field_35592 = config.amplified();
         int j = Stream.of(VeinType.values()).mapToInt(veinType -> veinType.minY).min().orElse(i);
         int k = Stream.of(VeinType.values()).mapToInt(veinType -> veinType.maxY).max().orElse(i);
         float f = 4.0f;
         double d = 2.6666666666666665;
         int l = i + 4;
         int m = i + config.height();
+        boolean bl = config.largeBiomes();
         RandomDeriver randomDeriver = randomProvider.create(seed).createRandomDeriver();
         if (randomProvider != ChunkRandom.RandomProvider.LEGACY) {
             this.terrainNoise = new InterpolatedNoiseSampler(randomDeriver.createRandom(new Identifier("terrain")), config.sampling(), horizontalNoiseResolution, verticalNoiseResolution);
-            this.temperatureNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.TEMPERATURE);
-            this.humidityNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.VEGETATION);
-            this.shiftNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.OFFSET);
+            this.temperatureNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, bl ? NoiseParametersKeys.TEMPERATURE_LARGE : NoiseParametersKeys.TEMPERATURE);
+            this.humidityNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, bl ? NoiseParametersKeys.VEGETATION_LARGE : NoiseParametersKeys.VEGETATION);
+            this.shiftNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, bl ? NoiseParametersKeys.OFFSET_LARGE : NoiseParametersKeys.OFFSET);
         } else {
-            AbstractRandom abstractRandom2 = randomProvider.create(seed);
             this.terrainNoise = new InterpolatedNoiseSampler(randomProvider.create(seed), config.sampling(), horizontalNoiseResolution, verticalNoiseResolution);
             this.temperatureNoise = DoublePerlinNoiseSampler.createLegacy(randomProvider.create(seed), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
             this.humidityNoise = DoublePerlinNoiseSampler.createLegacy(randomProvider.create(seed + 1L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
@@ -164,9 +163,9 @@ implements MultiNoiseUtil.MultiNoiseSampler {
         this.caveEntranceNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.CAVE_ENTRANCE);
         this.caveLayerNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.CAVE_LAYER);
         this.caveCheeseNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.CAVE_CHEESE);
-        this.continentalnessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.CONTINENTALNESS);
-        this.erosionNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.EROSION);
-        this.weirdnessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.RIDGE);
+        this.continentalnessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, bl ? NoiseParametersKeys.CONTINENTALNESS_LARGE : NoiseParametersKeys.CONTINENTALNESS);
+        this.erosionNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, bl ? NoiseParametersKeys.EROSION_LARGE : NoiseParametersKeys.EROSION);
+        this.weirdnessNoise = NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, bl ? NoiseParametersKeys.RIDGE_LARGE : NoiseParametersKeys.RIDGE);
         this.oreFrequencyNoiseSamplerFactory = NoiseColumnSampler.createNoiseSamplerFactory(NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.ORE_VEININESS), j, k, 0, 1.5);
         this.firstOrePlacementNoiseFactory = NoiseColumnSampler.createNoiseSamplerFactory(NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.ORE_VEIN_A), j, k, 0, 4.0);
         this.secondOrePlacementNoiseFactory = NoiseColumnSampler.createNoiseSamplerFactory(NoiseParametersKeys.method_39173(noiseRegistry, randomDeriver, NoiseParametersKeys.ORE_VEIN_B), j, k, 0, 4.0);
@@ -202,8 +201,8 @@ implements MultiNoiseUtil.MultiNoiseSampler {
         double f;
         double e;
         double d;
-        if (this.densityFactor == 0.0 && this.densityOffset == -0.030078125) {
-            d = 0.0;
+        if (this.islandNoise != null) {
+            d = ((double)TheEndBiomeSource.getNoiseAt(this.islandNoise, x / 8, z / 8) - 8.0) / 128.0;
         } else {
             e = bl ? this.method_38409(point.peaks(), x, z) : 0.0;
             f = (this.method_39331(y, point) + e) * point.factor();
@@ -261,7 +260,7 @@ implements MultiNoiseUtil.MultiNoiseSampler {
 
     private double method_39331(int i, TerrainNoisePoint terrainNoisePoint) {
         double d = 1.0 - (double)i / 128.0;
-        return d * this.densityFactor + terrainNoisePoint.offset();
+        return d + terrainNoisePoint.offset();
     }
 
     /**
@@ -372,13 +371,19 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     }
 
     public TerrainNoisePoint createTerrainNoisePoint(int x, int z, float continentalness, float weirdness, float erosion, class_6748 arg) {
-        if (this.islandNoise != null) {
-            double d = TheEndBiomeSource.getNoiseAt(this.islandNoise, x / 8, z / 8) - 8.0f;
-            double e = d > 0.0 ? 0.001953125 : 0.0078125;
-            return new TerrainNoisePoint(d, e, 0.0);
-        }
+        TerrainNoisePoint terrainNoisePoint;
         VanillaTerrainParameters.NoisePoint noisePoint = this.terrainParameters.createNoisePoint(continentalness, erosion, weirdness);
-        return arg.method_39340(x, z, new TerrainNoisePoint(this.terrainParameters.getOffset(noisePoint), this.terrainParameters.getFactor(noisePoint), this.terrainParameters.getPeak(noisePoint)));
+        float f = this.terrainParameters.getOffset(noisePoint);
+        float g = this.terrainParameters.getFactor(noisePoint);
+        float h = this.terrainParameters.getPeak(noisePoint);
+        if (this.field_35592 && (double)f > -0.033203125) {
+            double d = (double)f * 2.0 + 0.166015625;
+            double e = 1.25 - 6.25 / (double)(g + 5.0f);
+            terrainNoisePoint = new TerrainNoisePoint(d, e, h);
+        } else {
+            terrainNoisePoint = new TerrainNoisePoint(f, g, h);
+        }
+        return arg.method_39340(x, z, terrainNoisePoint);
     }
 
     @Override
@@ -403,12 +408,12 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     public double sampleContinentalnessNoise(double x, double y, double z) {
         if (SharedConstants.DEBUG_BIOME_SOURCE) {
             double d;
-            if (SharedConstants.method_37896((int)x * 4, (int)z * 4)) {
+            if (SharedConstants.method_37896(new ChunkPos(BiomeCoords.toChunk(MathHelper.floor(x)), BiomeCoords.toChunk(MathHelper.floor(z))))) {
                 return -1.0;
             }
             return d * d * (double)((d = MathHelper.fractionalPart(x / 2048.0) * 2.0 - 1.0) < 0.0 ? -1 : 1);
         }
-        if (SharedConstants.field_34372) {
+        if (SharedConstants.DEBUG_NOISE) {
             double d = x * 0.005;
             return Math.sin(d + 0.5 * Math.sin(d));
         }
@@ -419,12 +424,12 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     public double sampleErosionNoise(double x, double y, double z) {
         if (SharedConstants.DEBUG_BIOME_SOURCE) {
             double d;
-            if (SharedConstants.method_37896((int)x * 4, (int)z * 4)) {
+            if (SharedConstants.method_37896(new ChunkPos(BiomeCoords.toChunk(MathHelper.floor(x)), BiomeCoords.toChunk(MathHelper.floor(z))))) {
                 return -1.0;
             }
             return d * d * (double)((d = MathHelper.fractionalPart(z / 256.0) * 2.0 - 1.0) < 0.0 ? -1 : 1);
         }
-        if (SharedConstants.field_34372) {
+        if (SharedConstants.DEBUG_NOISE) {
             double d = z * 0.005;
             return Math.sin(d + 0.5 * Math.sin(d));
         }

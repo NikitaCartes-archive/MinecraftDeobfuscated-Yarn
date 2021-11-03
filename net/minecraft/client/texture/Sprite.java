@@ -47,7 +47,7 @@ implements AutoCloseable {
     private final float vMin;
     private final float vMax;
 
-    protected Sprite(SpriteAtlasTexture atlas, Info info, int maxLevel, int atlasWidth, int atlasHeight, int x, int y, NativeImage nativeImage) {
+    protected Sprite(SpriteAtlasTexture atlas, Info info, int maxLevel, int atlasWidth, int atlasHeight, int x, int y, NativeImage image) {
         this.atlas = atlas;
         this.width = info.width;
         this.height = info.height;
@@ -58,10 +58,10 @@ implements AutoCloseable {
         this.uMax = (float)(x + this.width) / (float)atlasWidth;
         this.vMin = (float)y / (float)atlasHeight;
         this.vMax = (float)(y + this.height) / (float)atlasHeight;
-        this.animation = this.createAnimation(info, nativeImage.getWidth(), nativeImage.getHeight(), maxLevel);
+        this.animation = this.createAnimation(info, image.getWidth(), image.getHeight(), maxLevel);
         try {
             try {
-                this.images = MipmapHelper.getMipmapLevelsImages(nativeImage, maxLevel);
+                this.images = MipmapHelper.getMipmapLevelsImages(image, maxLevel);
             } catch (Throwable throwable) {
                 CrashReport crashReport = CrashReport.create(throwable, "Generating mipmaps for frame");
                 CrashReportSection crashReportSection = crashReport.addElement("Frame being iterated");
@@ -70,7 +70,7 @@ implements AutoCloseable {
                     if (stringBuilder.length() > 0) {
                         stringBuilder.append(", ");
                     }
-                    stringBuilder.append(nativeImage.getWidth()).append("x").append(nativeImage.getHeight());
+                    stringBuilder.append(image.getWidth()).append("x").append(image.getHeight());
                     return stringBuilder.toString();
                 });
                 throw new CrashException(crashReport);
@@ -254,8 +254,8 @@ implements AutoCloseable {
         return this.animation;
     }
 
-    public VertexConsumer getTextureSpecificVertexConsumer(VertexConsumer vertexConsumer) {
-        return new SpriteTexturedVertexConsumer(vertexConsumer, this);
+    public VertexConsumer getTextureSpecificVertexConsumer(VertexConsumer consumer) {
+        return new SpriteTexturedVertexConsumer(consumer, this);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -296,9 +296,9 @@ implements AutoCloseable {
         @Nullable
         private final Interpolation interpolation;
 
-        Animation(List<AnimationFrame> list, @Nullable int i, Interpolation interpolation) {
-            this.frames = list;
-            this.frameCount = i;
+        Animation(List<AnimationFrame> frames, @Nullable int frameCount, Interpolation interpolation) {
+            this.frames = frames;
+            this.frameCount = frameCount;
             this.interpolation = interpolation;
         }
 
@@ -349,7 +349,7 @@ implements AutoCloseable {
         }
 
         public IntStream getDistinctFrameCount() {
-            return this.frames.stream().mapToInt(animationFrame -> animationFrame.index).distinct();
+            return this.frames.stream().mapToInt(frame -> frame.index).distinct();
         }
     }
 
@@ -358,9 +358,9 @@ implements AutoCloseable {
         final int index;
         final int time;
 
-        AnimationFrame(int i, int j) {
-            this.index = i;
-            this.time = j;
+        AnimationFrame(int index, int time) {
+            this.index = index;
+            this.time = time;
         }
     }
 
@@ -369,13 +369,13 @@ implements AutoCloseable {
     implements AutoCloseable {
         private final NativeImage[] images;
 
-        Interpolation(Info info, int i) {
-            this.images = new NativeImage[i + 1];
-            for (int j = 0; j < this.images.length; ++j) {
-                int k = info.width >> j;
-                int l = info.height >> j;
-                if (this.images[j] != null) continue;
-                this.images[j] = new NativeImage(k, l, false);
+        Interpolation(Info info, int maxLevel) {
+            this.images = new NativeImage[maxLevel + 1];
+            for (int i = 0; i < this.images.length; ++i) {
+                int j = info.width >> i;
+                int k = info.height >> i;
+                if (this.images[i] != null) continue;
+                this.images[i] = new NativeImage(j, k, false);
             }
         }
 

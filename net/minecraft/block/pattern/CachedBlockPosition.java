@@ -51,7 +51,7 @@ public class CachedBlockPosition {
     }
 
     public static Predicate<CachedBlockPosition> matchesBlockState(Predicate<BlockState> state) {
-        return cachedBlockPosition -> cachedBlockPosition != null && state.test(cachedBlockPosition.getBlockState());
+        return pos -> pos != null && state.test(pos.getBlockState());
     }
 }
 

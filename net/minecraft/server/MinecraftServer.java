@@ -211,6 +211,7 @@ AutoCloseable {
     public static final int MAX_WORLD_BORDER_RADIUS = 29999984;
     public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo("Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackSettings.SAFE_MODE);
     private static final long MILLISECONDS_PER_TICK = 50L;
+    public static final GameProfile ANONYMOUS_PLAYER_PROFILE = new GameProfile(Util.NIL_UUID, "Anonymous Player");
     protected final LevelStorage.Session session;
     protected final WorldSaveHandler saveHandler;
     private final List<Runnable> serverGuiTickables = Lists.newArrayList();
@@ -779,13 +780,16 @@ AutoCloseable {
         if (l - this.lastPlayerSampleUpdate >= 5000000000L) {
             this.lastPlayerSampleUpdate = l;
             this.metadata.setPlayers(new ServerMetadata.Players(this.getMaxPlayerCount(), this.getCurrentPlayerCount()));
-            GameProfile[] gameProfiles = new GameProfile[Math.min(this.getCurrentPlayerCount(), 12)];
-            int i = MathHelper.nextInt(this.random, 0, this.getCurrentPlayerCount() - gameProfiles.length);
-            for (int j = 0; j < gameProfiles.length; ++j) {
-                gameProfiles[j] = this.playerManager.getPlayerList().get(i + j).getGameProfile();
+            if (!this.hideOnlinePlayers()) {
+                GameProfile[] gameProfiles = new GameProfile[Math.min(this.getCurrentPlayerCount(), 12)];
+                int i = MathHelper.nextInt(this.random, 0, this.getCurrentPlayerCount() - gameProfiles.length);
+                for (int j = 0; j < gameProfiles.length; ++j) {
+                    ServerPlayerEntity serverPlayerEntity = this.playerManager.getPlayerList().get(i + j);
+                    gameProfiles[j] = serverPlayerEntity.allowsServerListing() ? serverPlayerEntity.getGameProfile() : ANONYMOUS_PLAYER_PROFILE;
+                }
+                Collections.shuffle(Arrays.asList(gameProfiles));
+                this.metadata.getPlayers().setSample(gameProfiles);
             }
-            Collections.shuffle(Arrays.asList(gameProfiles));
-            this.metadata.getPlayers().setSample(gameProfiles);
         }
         if (this.ticks % 6000 == 0) {
             LOGGER.debug("Autosave started");
@@ -1204,6 +1208,10 @@ AutoCloseable {
 
     public boolean acceptsStatusQuery() {
         return true;
+    }
+
+    public boolean hideOnlinePlayers() {
+        return false;
     }
 
     public Proxy getProxy() {

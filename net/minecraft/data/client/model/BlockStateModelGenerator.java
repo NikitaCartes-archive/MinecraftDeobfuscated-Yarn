@@ -1275,7 +1275,7 @@ public class BlockStateModelGenerator {
         this.registerCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
         this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
         this.registerItemModel(Items.BARRIER);
-        this.method_39204();
+        this.registerLightBlock();
         this.registerBuiltinWithParticle(Blocks.STRUCTURE_VOID, Items.STRUCTURE_VOID);
         this.registerItemModel(Items.STRUCTURE_VOID);
         this.registerBuiltinWithParticle(Blocks.MOVING_PISTON, Texture.getSubId(Blocks.PISTON, "_side"));
@@ -1672,7 +1672,7 @@ public class BlockStateModelGenerator {
         SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel((Item)spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
     }
 
-    private void method_39204() {
+    private void registerLightBlock() {
         this.excludeFromSimpleItemModelGeneration(Blocks.LIGHT);
         BlockStateVariantMap.SingleProperty<Integer> singleProperty = BlockStateVariantMap.create(Properties.LEVEL_15);
         for (int i = 0; i < 16; ++i) {
@@ -1684,7 +1684,7 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.LIGHT).coordinate(singleProperty));
     }
 
-    private void registerCandle(Block candle, Block block) {
+    private void registerCandle(Block candle, Block cake) {
         this.registerItemModel(candle.asItem());
         Texture texture = Texture.all(Texture.getId(candle));
         Texture texture2 = Texture.all(Texture.getSubId(candle, "_lit"));
@@ -1697,9 +1697,9 @@ public class BlockStateModelGenerator {
         Identifier identifier7 = Models.TEMPLATE_THREE_CANDLES.upload(candle, "_three_candles_lit", texture2, this.modelCollector);
         Identifier identifier8 = Models.TEMPLATE_FOUR_CANDLES.upload(candle, "_four_candles_lit", texture2, this.modelCollector);
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(candle).coordinate(BlockStateVariantMap.create(Properties.CANDLES, Properties.LIT).register((Integer)1, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier)).register((Integer)2, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier2)).register((Integer)3, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier3)).register((Integer)4, (Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier4)).register((Integer)1, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier5)).register((Integer)2, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier6)).register((Integer)3, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier7)).register((Integer)4, (Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier8))));
-        Identifier identifier9 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(block, Texture.candleCake(candle, false), this.modelCollector);
-        Identifier identifier10 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(block, "_lit", Texture.candleCake(candle, true), this.modelCollector);
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.LIT, identifier10, identifier9)));
+        Identifier identifier9 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, Texture.candleCake(candle, false), this.modelCollector);
+        Identifier identifier10 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, "_lit", Texture.candleCake(candle, true), this.modelCollector);
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(cake).coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.LIT, identifier10, identifier9)));
     }
 
     @FunctionalInterface

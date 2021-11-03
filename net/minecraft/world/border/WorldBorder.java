@@ -44,6 +44,10 @@ public class WorldBorder {
         return x > this.getBoundWest() && x < this.getBoundEast() && z > this.getBoundNorth() && z < this.getBoundSouth();
     }
 
+    public boolean contains(double x, double z, double d) {
+        return x > this.getBoundWest() - d && x < this.getBoundEast() + d && z > this.getBoundNorth() - d && z < this.getBoundSouth() + d;
+    }
+
     public boolean contains(Box box) {
         return box.maxX > this.getBoundWest() && box.minX < this.getBoundEast() && box.maxZ > this.getBoundNorth() && box.minZ < this.getBoundSouth();
     }
@@ -64,6 +68,11 @@ public class WorldBorder {
         double h = Math.min(f, g);
         h = Math.min(h, d);
         return Math.min(h, e);
+    }
+
+    public boolean canCollide(Entity entity, Box box) {
+        double d = Math.max(MathHelper.absMax(box.getXLength(), box.getZLength()), 1.0);
+        return this.getDistanceInsideBorder(entity) < d * 2.0 && this.contains(entity.getX(), entity.getZ(), d);
     }
 
     public WorldBorderStage getStage() {
@@ -546,16 +555,16 @@ public class WorldBorder {
             return this.sizeLerpTarget;
         }
 
-        public static Properties fromDynamic(DynamicLike<?> dynamicLike, Properties properties) {
-            double d = dynamicLike.get("BorderCenterX").asDouble(properties.centerX);
-            double e = dynamicLike.get("BorderCenterZ").asDouble(properties.centerZ);
-            double f = dynamicLike.get("BorderSize").asDouble(properties.size);
-            long l = dynamicLike.get("BorderSizeLerpTime").asLong(properties.sizeLerpTime);
-            double g = dynamicLike.get("BorderSizeLerpTarget").asDouble(properties.sizeLerpTarget);
-            double h = dynamicLike.get("BorderSafeZone").asDouble(properties.safeZone);
-            double i = dynamicLike.get("BorderDamagePerBlock").asDouble(properties.damagePerBlock);
-            int j = dynamicLike.get("BorderWarningBlocks").asInt(properties.warningBlocks);
-            int k = dynamicLike.get("BorderWarningTime").asInt(properties.warningTime);
+        public static Properties fromDynamic(DynamicLike<?> dynamic, Properties properties) {
+            double d = dynamic.get("BorderCenterX").asDouble(properties.centerX);
+            double e = dynamic.get("BorderCenterZ").asDouble(properties.centerZ);
+            double f = dynamic.get("BorderSize").asDouble(properties.size);
+            long l = dynamic.get("BorderSizeLerpTime").asLong(properties.sizeLerpTime);
+            double g = dynamic.get("BorderSizeLerpTarget").asDouble(properties.sizeLerpTarget);
+            double h = dynamic.get("BorderSafeZone").asDouble(properties.safeZone);
+            double i = dynamic.get("BorderDamagePerBlock").asDouble(properties.damagePerBlock);
+            int j = dynamic.get("BorderWarningBlocks").asInt(properties.warningBlocks);
+            int k = dynamic.get("BorderWarningTime").asInt(properties.warningTime);
             return new Properties(d, e, i, h, j, k, f, l, g);
         }
 

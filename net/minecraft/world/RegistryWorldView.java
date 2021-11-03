@@ -3,9 +3,8 @@
  */
 package net.minecraft.world;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
@@ -38,8 +37,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-        return EntityView.super.getEntityCollisions(entity, box, predicate);
+    default public List<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box) {
+        return EntityView.super.getEntityCollisions(entity, box);
     }
 
     @Override

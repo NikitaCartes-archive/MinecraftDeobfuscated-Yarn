@@ -164,14 +164,14 @@ implements Hopper {
     }
 
     private static boolean isInventoryFull(Inventory inventory, Direction direction) {
-        return HopperBlockEntity.getAvailableSlots(inventory, direction).allMatch(i -> {
-            ItemStack itemStack = inventory.getStack(i);
+        return HopperBlockEntity.getAvailableSlots(inventory, direction).allMatch(slot -> {
+            ItemStack itemStack = inventory.getStack(slot);
             return itemStack.getCount() >= itemStack.getMaxCount();
         });
     }
 
     private static boolean isInventoryEmpty(Inventory inv, Direction facing) {
-        return HopperBlockEntity.getAvailableSlots(inv, facing).allMatch(i -> inv.getStack(i).isEmpty());
+        return HopperBlockEntity.getAvailableSlots(inv, facing).allMatch(slot -> inv.getStack(slot).isEmpty());
     }
 
     public static boolean extract(World world, Hopper hopper) {
@@ -181,7 +181,7 @@ implements Hopper {
             if (HopperBlockEntity.isInventoryEmpty(inventory, direction)) {
                 return false;
             }
-            return HopperBlockEntity.getAvailableSlots(inventory, direction).anyMatch(i -> HopperBlockEntity.extract(hopper, inventory, i, direction));
+            return HopperBlockEntity.getAvailableSlots(inventory, direction).anyMatch(slot -> HopperBlockEntity.extract(hopper, inventory, slot, direction));
         }
         for (ItemEntity itemEntity : HopperBlockEntity.getInputItemEntities(world, hopper)) {
             if (!HopperBlockEntity.extract(hopper, itemEntity)) continue;
@@ -244,9 +244,9 @@ implements Hopper {
         return !(inv instanceof SidedInventory) || ((SidedInventory)inv).canExtract(slot, stack, facing);
     }
 
-    private static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, int slot, @Nullable Direction direction) {
+    private static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, int slot, @Nullable Direction side) {
         ItemStack itemStack = to.getStack(slot);
-        if (HopperBlockEntity.canInsert(to, stack, slot, direction)) {
+        if (HopperBlockEntity.canInsert(to, stack, slot, side)) {
             int j;
             boolean bl = false;
             boolean bl2 = to.isEmpty();

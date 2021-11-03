@@ -44,6 +44,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -417,6 +418,7 @@ AutoCloseable {
                 iterator.remove();
                 continue;
             }
+            if (!this.shouldTickBlocksInChunk(ChunkPos.toLong(blockEntityTickInvoker.getPos()))) continue;
             blockEntityTickInvoker.tick();
         }
         this.iteratingTickingBlockEntities = false;
@@ -435,6 +437,10 @@ AutoCloseable {
     }
 
     public boolean shouldUpdatePostDeath(Entity entity) {
+        return true;
+    }
+
+    public boolean shouldTickBlocksInChunk(long chunkPos) {
         return true;
     }
 
@@ -539,13 +545,13 @@ AutoCloseable {
     public List<Entity> getOtherEntities(@Nullable Entity except, Box box, Predicate<? super Entity> predicate) {
         this.getProfiler().visit("getEntities");
         ArrayList<Entity> list = Lists.newArrayList();
-        this.getEntityLookup().forEachIntersects(box, entity2 -> {
-            if (entity2 != except && predicate.test((Entity)entity2)) {
-                list.add((Entity)entity2);
+        this.getEntityLookup().forEachIntersects(box, entity -> {
+            if (entity != except && predicate.test((Entity)entity)) {
+                list.add((Entity)entity);
             }
-            if (entity2 instanceof EnderDragonEntity) {
-                for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity2).getBodyParts()) {
-                    if (entity2 == except || !predicate.test(enderDragonPart)) continue;
+            if (entity instanceof EnderDragonEntity) {
+                for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
+                    if (entity == except || !predicate.test(enderDragonPart)) continue;
                     list.add(enderDragonPart);
                 }
             }

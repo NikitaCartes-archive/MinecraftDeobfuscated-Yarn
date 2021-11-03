@@ -47,9 +47,9 @@ import org.jetbrains.annotations.Nullable;
  */
 @Environment(value=EnvType.CLIENT)
 public class TextRenderer {
-    private static final float field_32166 = 0.01f;
+    private static final float Z_INDEX = 0.01f;
     private static final Vec3f FORWARD_SHIFT = new Vec3f(0.0f, 0.0f, 0.03f);
-    public static final int field_35427 = 8;
+    public static final int ARABIC_SHAPING_LETTERS_SHAPE = 8;
     /**
      * The font height of the text that is rendered by the text renderer.
      */
@@ -60,7 +60,7 @@ public class TextRenderer {
 
     public TextRenderer(Function<Identifier, FontStorage> fontStorageAccessor) {
         this.fontStorageAccessor = fontStorageAccessor;
-        this.handler = new TextHandler((i, style) -> this.getFontStorage(style.getFont()).getGlyph(i).getAdvance(style.isBold()));
+        this.handler = new TextHandler((codePoint, style) -> this.getFontStorage(style.getFont()).getGlyph(codePoint).getAdvance(style.isBold()));
     }
 
     FontStorage getFontStorage(Identifier id) {
@@ -182,16 +182,16 @@ public class TextRenderer {
             for (int k = -1; k <= 1; ++k) {
                 if (j == 0 && k == 0) continue;
                 float[] fs = new float[]{x};
-                int l2 = j;
-                int m2 = k;
-                text.accept((l, style, m) -> {
+                int l = j;
+                int m = k;
+                text.accept((index, style, codePoint) -> {
                     boolean bl = style.isBold();
                     FontStorage fontStorage = this.getFontStorage(style.getFont());
-                    Glyph glyph = fontStorage.getGlyph(m);
-                    drawer.x = fs[0] + (float)l2 * glyph.getShadowOffset();
-                    drawer.y = y + (float)m2 * glyph.getShadowOffset();
+                    Glyph glyph = fontStorage.getGlyph(codePoint);
+                    drawer.x = fs[0] + (float)l * glyph.getShadowOffset();
+                    drawer.y = y + (float)m * glyph.getShadowOffset();
                     fs[0] = fs[0] + glyph.getAdvance(bl);
-                    return drawer.accept(l, style.withColor(i), m);
+                    return drawer.accept(index, style.withColor(i), codePoint);
                 });
             }
         }

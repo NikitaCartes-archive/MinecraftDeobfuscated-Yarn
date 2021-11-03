@@ -12,6 +12,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
+import net.minecraft.world.biome.source.util.VanillaTerrainParametersCreator;
 
 public final class VanillaBiomeParameters {
     private static final float field_34500 = 0.05f;
@@ -55,7 +56,7 @@ public final class VanillaBiomeParameters {
 
     protected void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
         if (SharedConstants.DEBUG_BIOME_SOURCE) {
-            new VanillaTerrainParameters().writeDebugBiomes(parameters);
+            VanillaTerrainParametersCreator.createSurfaceParameters().writeDebugBiomes(parameters);
             return;
         }
         this.writeOceanBiomes(parameters);

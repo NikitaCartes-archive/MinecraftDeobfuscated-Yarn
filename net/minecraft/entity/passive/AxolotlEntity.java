@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
@@ -55,6 +54,7 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -506,7 +506,7 @@ Bucketable {
     }
 
     public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
-        return world.getBlockState(pos.down()).isOf(Blocks.CLAY);
+        return world.getBlockState(pos.down()).isIn(BlockTags.AXOLOTLS_SPAWNABLE_ON);
     }
 
     static class AxolotlMoveControl

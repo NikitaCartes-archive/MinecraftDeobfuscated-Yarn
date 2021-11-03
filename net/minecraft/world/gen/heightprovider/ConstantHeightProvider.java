@@ -17,7 +17,7 @@ import net.minecraft.world.gen.heightprovider.HeightProviderType;
 public class ConstantHeightProvider
 extends HeightProvider {
     public static final ConstantHeightProvider ZERO = new ConstantHeightProvider(YOffset.fixed(0));
-    public static final Codec<ConstantHeightProvider> CONSTANT_CODEC = Codec.either(YOffset.OFFSET_CODEC, RecordCodecBuilder.create((RecordCodecBuilder.Instance<O> instance) -> instance.group(((MapCodec)YOffset.OFFSET_CODEC.fieldOf("value")).forGetter(constantHeightProvider -> constantHeightProvider.offset)).apply((Applicative<ConstantHeightProvider, ?>)instance, ConstantHeightProvider::new))).xmap(either -> either.map(ConstantHeightProvider::create, constantHeightProvider -> constantHeightProvider), constantHeightProvider -> Either.left(constantHeightProvider.offset));
+    public static final Codec<ConstantHeightProvider> CONSTANT_CODEC = Codec.either(YOffset.OFFSET_CODEC, RecordCodecBuilder.create((RecordCodecBuilder.Instance<O> instance) -> instance.group(((MapCodec)YOffset.OFFSET_CODEC.fieldOf("value")).forGetter(provider -> provider.offset)).apply((Applicative<ConstantHeightProvider, ?>)instance, ConstantHeightProvider::new))).xmap(either -> either.map(ConstantHeightProvider::create, provider -> provider), provider -> Either.left(provider.offset));
     private final YOffset offset;
 
     public static ConstantHeightProvider create(YOffset offset) {

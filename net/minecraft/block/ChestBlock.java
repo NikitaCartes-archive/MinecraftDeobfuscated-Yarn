@@ -306,12 +306,12 @@ implements Waterloggable {
         return this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
     }
 
-    public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> getAnimationProgressRetriever(final ChestAnimationProgress chestAnimationProgress) {
+    public static DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> getAnimationProgressRetriever(final ChestAnimationProgress progress) {
         return new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction>(){
 
             @Override
             public Float2FloatFunction getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-                return f -> Math.max(chestBlockEntity.getAnimationProgress(f), chestBlockEntity2.getAnimationProgress(f));
+                return tickDelta -> Math.max(chestBlockEntity.getAnimationProgress(tickDelta), chestBlockEntity2.getAnimationProgress(tickDelta));
             }
 
             @Override
@@ -321,7 +321,7 @@ implements Waterloggable {
 
             @Override
             public Float2FloatFunction getFallback() {
-                return chestAnimationProgress::getAnimationProgress;
+                return progress::getAnimationProgress;
             }
 
             @Override

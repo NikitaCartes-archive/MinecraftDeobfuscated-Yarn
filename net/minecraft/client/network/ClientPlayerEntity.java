@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -440,10 +441,10 @@ extends AbstractClientPlayerEntity {
         }
     }
 
-    private boolean wouldCollideAt(BlockPos pos2) {
+    private boolean wouldCollideAt(BlockPos pos) {
         Box box = this.getBoundingBox();
-        Box box2 = new Box(pos2.getX(), box.minY, pos2.getZ(), (double)pos2.getX() + 1.0, box.maxY, (double)pos2.getZ() + 1.0).contract(1.0E-7);
-        return this.world.hasBlockCollision(this, box2, (state, pos) -> state.shouldSuffocate(this.world, (BlockPos)pos));
+        Box box2 = new Box(pos.getX(), box.minY, pos.getZ(), (double)pos.getX() + 1.0, box.maxY, (double)pos.getZ() + 1.0).contract(1.0E-7);
+        return this.world.method_39454(this, box2);
     }
 
     @Override
@@ -907,7 +908,8 @@ extends AbstractClientPlayerEntity {
         Vec3d vec3d11 = vec3d7.subtract(vec3d9);
         Vec3d vec3d12 = vec3d6.add(vec3d9);
         Vec3d vec3d13 = vec3d7.add(vec3d9);
-        Iterator iterator = this.world.getCollisions(this, box, entity -> true).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
+        Iterable<VoxelShape> iterable = this.world.getCollisions(this, box);
+        Iterator iterator = StreamSupport.stream(iterable.spliterator(), false).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
         float r = Float.MIN_VALUE;
         while (iterator.hasNext()) {
             Box box2 = (Box)iterator.next();

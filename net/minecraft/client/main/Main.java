@@ -142,7 +142,6 @@ public class Main {
         if (optionSet.has(optionSpec)) {
             FlightProfiler.INSTANCE.start(InstanceType.CLIENT);
         }
-        FlightProfiler.INSTANCE.registerEvents();
         CrashReport.initCrashReport();
         Bootstrap.initialize();
         Bootstrap.logMissing();

@@ -176,11 +176,11 @@ extends Block {
         return RespawnAnchorBlock.findRespawnPosition(entity, world, pos, false);
     }
 
-    private static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView world, BlockPos pos, boolean bl) {
+    private static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView world, BlockPos pos, boolean ignoreInvalidPos) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Vec3i vec3i : VALID_SPAWN_OFFSETS) {
             mutable.set(pos).move(vec3i);
-            Vec3d vec3d = Dismounting.findRespawnPos(entity, world, mutable, bl);
+            Vec3d vec3d = Dismounting.findRespawnPos(entity, world, mutable, ignoreInvalidPos);
             if (vec3d == null) continue;
             return Optional.of(vec3d);
         }

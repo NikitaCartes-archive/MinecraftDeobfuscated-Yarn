@@ -6,6 +6,9 @@ package net.minecraft.network;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.List;
@@ -176,6 +179,7 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.util.Util;
+import net.minecraft.util.annotation.Debug;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -204,6 +208,17 @@ public enum NetworkState {
     @Nullable
     public Integer getPacketId(NetworkSide side, Packet<?> packet) {
         return this.packetHandlers.get((Object)side).getId(packet.getClass());
+    }
+
+    @Debug
+    public Int2ObjectMap<Class<? extends Packet<?>>> getPacketIdToPacketMap(NetworkSide side) {
+        Int2ObjectOpenHashMap int2ObjectMap = new Int2ObjectOpenHashMap();
+        PacketHandler<?> packetHandler = this.packetHandlers.get((Object)side);
+        if (packetHandler == null) {
+            return Int2ObjectMaps.emptyMap();
+        }
+        packetHandler.packetIds.forEach((packetId, integer) -> int2ObjectMap.put((int)integer, (Class<? extends Packet<?>>)packetId));
+        return int2ObjectMap;
     }
 
     @Nullable
@@ -258,7 +273,7 @@ public enum NetworkState {
     }
 
     static class PacketHandler<T extends PacketListener> {
-        private final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(new Object2IntOpenHashMap(), map -> map.defaultReturnValue(-1));
+        final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(new Object2IntOpenHashMap(), map -> map.defaultReturnValue(-1));
         private final List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories = Lists.newArrayList();
 
         PacketHandler() {

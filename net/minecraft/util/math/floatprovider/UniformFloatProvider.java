@@ -16,11 +16,11 @@ import net.minecraft.util.math.floatprovider.FloatProviderType;
 
 public class UniformFloatProvider
 extends FloatProvider {
-    public static final Codec<UniformFloatProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("min_inclusive")).forGetter(uniformFloatProvider -> Float.valueOf(uniformFloatProvider.min)), ((MapCodec)Codec.FLOAT.fieldOf("max_exclusive")).forGetter(uniformFloatProvider -> Float.valueOf(uniformFloatProvider.max))).apply((Applicative<UniformFloatProvider, ?>)instance, UniformFloatProvider::new)).comapFlatMap(uniformFloatProvider -> {
-        if (uniformFloatProvider.max <= uniformFloatProvider.min) {
-            return DataResult.error("Max must be larger than min, min_inclusive: " + uniformFloatProvider.min + ", max_exclusive: " + uniformFloatProvider.max);
+    public static final Codec<UniformFloatProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("min_inclusive")).forGetter(provider -> Float.valueOf(provider.min)), ((MapCodec)Codec.FLOAT.fieldOf("max_exclusive")).forGetter(provider -> Float.valueOf(provider.max))).apply((Applicative<UniformFloatProvider, ?>)instance, UniformFloatProvider::new)).comapFlatMap(provider -> {
+        if (provider.max <= provider.min) {
+            return DataResult.error("Max must be larger than min, min_inclusive: " + provider.min + ", max_exclusive: " + provider.max);
         }
-        return DataResult.success(uniformFloatProvider);
+        return DataResult.success(provider);
     }, Function.identity());
     private final float min;
     private final float max;

@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 public class VeryBiasedToBottomHeightProvider
 extends HeightProvider {
-    public static final Codec<VeryBiasedToBottomHeightProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)YOffset.OFFSET_CODEC.fieldOf("min_inclusive")).forGetter(veryBiasedToBottomHeightProvider -> veryBiasedToBottomHeightProvider.minOffset), ((MapCodec)YOffset.OFFSET_CODEC.fieldOf("max_inclusive")).forGetter(veryBiasedToBottomHeightProvider -> veryBiasedToBottomHeightProvider.maxOffset), Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("inner", 1).forGetter(veryBiasedToBottomHeightProvider -> veryBiasedToBottomHeightProvider.inner)).apply((Applicative<VeryBiasedToBottomHeightProvider, ?>)instance, VeryBiasedToBottomHeightProvider::new));
+    public static final Codec<VeryBiasedToBottomHeightProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)YOffset.OFFSET_CODEC.fieldOf("min_inclusive")).forGetter(provider -> provider.minOffset), ((MapCodec)YOffset.OFFSET_CODEC.fieldOf("max_inclusive")).forGetter(provider -> provider.maxOffset), Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("inner", 1).forGetter(provider -> provider.inner)).apply((Applicative<VeryBiasedToBottomHeightProvider, ?>)instance, VeryBiasedToBottomHeightProvider::new));
     private static final Logger LOGGER = LogManager.getLogger();
     private final YOffset minOffset;
     private final YOffset maxOffset;

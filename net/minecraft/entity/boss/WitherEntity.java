@@ -81,7 +81,7 @@ RangedAttackMob {
 
     public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
-        this.moveControl = new FlightMoveControl(this, 10, true);
+        this.moveControl = new FlightMoveControl(this, 10, false);
         this.setHealth(this.getMaxHealth());
         this.experiencePoints = 50;
     }

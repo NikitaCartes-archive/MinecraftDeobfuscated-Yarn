@@ -277,9 +277,9 @@ implements DedicatedServer {
             writer.write(String.format("max-world-size=%d%n", serverPropertiesHandler.maxWorldSize));
             writer.write(String.format("spawn-npcs=%s%n", serverPropertiesHandler.spawnNpcs));
             writer.write(String.format("view-distance=%d%n", serverPropertiesHandler.viewDistance));
-            writer.write(String.format("simulation-distance=%d%n", serverPropertiesHandler.field_34883));
+            writer.write(String.format("simulation-distance=%d%n", serverPropertiesHandler.simulationDistance));
             writer.write(String.format("spawn-animals=%s%n", serverPropertiesHandler.spawnAnimals));
-            writer.write(String.format("generate-structures=%s%n", serverPropertiesHandler.method_37371(this.registryManager).shouldGenerateStructures()));
+            writer.write(String.format("generate-structures=%s%n", serverPropertiesHandler.getGeneratorOptions(this.registryManager).shouldGenerateStructures()));
             writer.write(String.format("use-native=%s%n", serverPropertiesHandler.useNativeTransport));
             writer.write(String.format("rate-limit=%d%n", serverPropertiesHandler.rateLimit));
         }
@@ -408,6 +408,11 @@ implements DedicatedServer {
     @Override
     public boolean acceptsStatusQuery() {
         return this.getProperties().enableStatus;
+    }
+
+    @Override
+    public boolean hideOnlinePlayers() {
+        return this.getProperties().hideOnlinePlayers;
     }
 
     @Override

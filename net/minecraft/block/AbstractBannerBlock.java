@@ -39,9 +39,9 @@ extends BlockWithEntity {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         if (world.isClient) {
-            world.getBlockEntity(pos, BlockEntityType.BANNER).ifPresent(bannerBlockEntity -> bannerBlockEntity.readFrom(itemStack));
+            world.getBlockEntity(pos, BlockEntityType.BANNER).ifPresent(blockEntity -> blockEntity.readFrom(itemStack));
         } else if (itemStack.hasCustomName()) {
-            world.getBlockEntity(pos, BlockEntityType.BANNER).ifPresent(bannerBlockEntity -> bannerBlockEntity.setCustomName(itemStack.getName()));
+            world.getBlockEntity(pos, BlockEntityType.BANNER).ifPresent(blockEntity -> blockEntity.setCustomName(itemStack.getName()));
         }
     }
 

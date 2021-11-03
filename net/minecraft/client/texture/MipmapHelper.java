@@ -11,9 +11,9 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public class MipmapHelper {
     private static final int field_32949 = 96;
-    private static final float[] COLOR_FRACTIONS = Util.make(new float[256], fs -> {
-        for (int i = 0; i < ((float[])fs).length; ++i) {
-            fs[i] = (float)Math.pow((float)i / 255.0f, 2.2);
+    private static final float[] COLOR_FRACTIONS = Util.make(new float[256], list -> {
+        for (int i = 0; i < ((float[])list).length; ++i) {
+            list[i] = (float)Math.pow((float)i / 255.0f, 2.2);
         }
     });
 

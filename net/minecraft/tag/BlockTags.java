@@ -131,6 +131,15 @@ public final class BlockTags {
     public static final Tag.Identified<Block> FEATURES_CANNOT_REPLACE = BlockTags.register("features_cannot_replace");
     public static final Tag.Identified<Block> LAVA_POOL_STONE_CANNOT_REPLACE = BlockTags.register("lava_pool_stone_cannot_replace");
     public static final Tag.Identified<Block> GEODE_INVALID_BLOCKS = BlockTags.register("geode_invalid_blocks");
+    public static final Tag.Identified<Block> ANIMALS_SPAWNABLE_ON = BlockTags.register("animals_spawnable_on");
+    public static final Tag.Identified<Block> AXOLOTLS_SPAWNABLE_ON = BlockTags.register("axolotls_spawnable_on");
+    public static final Tag.Identified<Block> GOATS_SPAWNABLE_ON = BlockTags.register("goats_spawnable_on");
+    public static final Tag.Identified<Block> MOOSHROOMS_SPAWNABLE_ON = BlockTags.register("mooshrooms_spawnable_on");
+    public static final Tag.Identified<Block> PARROTS_SPAWNABLE_ON = BlockTags.register("parrots_spawnable_on");
+    public static final Tag.Identified<Block> POLAR_BEARS_SPAWNABLE_ON_IN_FROZEN_OCEAN = BlockTags.register("polar_bears_spawnable_on_in_frozen_ocean");
+    public static final Tag.Identified<Block> RABBITS_SPAWNABLE_ON = BlockTags.register("rabbits_spawnable_on");
+    public static final Tag.Identified<Block> FOXES_SPAWNABLE_ON = BlockTags.register("foxes_spawnable_on");
+    public static final Tag.Identified<Block> WOLVES_SPAWNABLE_ON = BlockTags.register("wolves_spawnable_on");
 
     private BlockTags() {
     }

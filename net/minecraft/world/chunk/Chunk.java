@@ -186,20 +186,6 @@ StructureHolder {
         return heightmap.get(x & 0xF, z & 0xF) - 1;
     }
 
-    public BlockPos sampleMaxHeightMap(Heightmap.Type type) {
-        int i = this.getBottomY();
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int j = this.pos.getStartX(); j <= this.pos.getEndX(); ++j) {
-            for (int k = this.pos.getStartZ(); k <= this.pos.getEndZ(); ++k) {
-                int l = this.sampleHeightmap(type, j & 0xF, k & 0xF);
-                if (l <= i) continue;
-                i = l;
-                mutable.set(j, i, k);
-            }
-        }
-        return mutable.toImmutable();
-    }
-
     public ChunkPos getPos() {
         return this.pos;
     }
@@ -402,19 +388,28 @@ StructureHolder {
         ChunkPos chunkPos = this.getPos();
         int i = BiomeCoords.fromBlock(chunkPos.getStartX());
         int j = BiomeCoords.fromBlock(chunkPos.getStartZ());
-        for (int k = 0; k < this.countVerticalSections(); ++k) {
-            ChunkSection chunkSection = this.getSection(k);
+        HeightLimitView heightLimitView = this.getHeightLimitView();
+        for (int k = heightLimitView.getBottomSectionCoord(); k < heightLimitView.getTopSectionCoord(); ++k) {
+            ChunkSection chunkSection = this.getSection(this.sectionCoordToIndex(k));
             chunkSection.method_38291(source, sampler, i, j);
         }
     }
 
     public boolean hasStructureReferences() {
-        return !this.structureReferences.isEmpty();
+        return !this.getStructureReferences().isEmpty();
     }
 
     @Nullable
     public BelowZeroRetrogen getBelowZeroRetrogen() {
         return null;
+    }
+
+    public boolean hasBelowZeroRetrogen() {
+        return this.getBelowZeroRetrogen() != null;
+    }
+
+    public HeightLimitView getHeightLimitView() {
+        return this;
     }
 
     public record TickSchedulers(SerializableTickScheduler<Block> blocks, SerializableTickScheduler<Fluid> fluids) {

@@ -753,7 +753,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         if (nbtCompound == null) {
             return null;
         }
-        return this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound, this.chunkGenerator.method_39301());
+        return this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound, this.chunkGenerator.getCodecKey());
     }
 
     boolean shouldTick(ChunkPos pos) {

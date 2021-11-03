@@ -26,13 +26,13 @@ import org.apache.commons.lang3.mutable.MutableObject;
 public interface Spline<C>
 extends ToFloatFunction<C> {
     @Debug
-    public String method_39225();
+    public String getDebugString();
 
     public static <C> Codec<Spline<C>> method_39232(Codec<ToFloatFunction<C>> codec) {
         record class_6737(float location, Spline<C> value, float derivative) {
         }
         MutableObject<Codec<Spline>> mutableObject = new MutableObject<Codec<Spline>>();
-        Codec codec2 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("location")).forGetter(class_6737::location), ((MapCodec)Codecs.method_39240(mutableObject::getValue).fieldOf("value")).forGetter(class_6737::value), ((MapCodec)Codec.FLOAT.fieldOf("derivative")).forGetter(class_6737::derivative)).apply((Applicative<class_6737, ?>)instance, (f, spline, g) -> new class_6737((float)f, spline, (float)g)));
+        Codec codec2 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("location")).forGetter(class_6737::location), ((MapCodec)Codecs.createLazy(mutableObject::getValue).fieldOf("value")).forGetter(class_6737::value), ((MapCodec)Codec.FLOAT.fieldOf("derivative")).forGetter(class_6737::derivative)).apply((Applicative<class_6737, ?>)instance, (f, spline, g) -> new class_6737((float)f, spline, (float)g)));
         Codec codec3 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf("coordinate")).forGetter(class_6738::coordinate), ((MapCodec)codec2.listOf().fieldOf("points")).forGetter(arg -> IntStream.range(0, arg.locations.length).mapToObj(i -> new class_6737(arg.locations()[i], arg.values().get(i), arg.derivatives()[i])).toList())).apply((Applicative<class_6738, ?>)instance, (toFloatFunction, list) -> {
             float[] fs = new float[list.size()];
             ImmutableList.Builder builder = ImmutableList.builder();
@@ -59,8 +59,26 @@ extends ToFloatFunction<C> {
         return (Codec)mutableObject.getValue();
     }
 
+    public static <C> Spline<C> method_39427(float f) {
+        return new FixedFloatFunction(f);
+    }
+
     public static <C> Builder<C> builder(ToFloatFunction<C> locationFunction) {
         return new Builder<C>(locationFunction);
+    }
+
+    @Debug
+    public record FixedFloatFunction<C>(float value) implements Spline<C>
+    {
+        @Override
+        public float apply(C object) {
+            return this.value;
+        }
+
+        @Override
+        public String getDebugString() {
+            return String.format("k=%.3f", Float.valueOf(this.value));
+        }
     }
 
     public static final class Builder<C> {
@@ -77,12 +95,12 @@ extends ToFloatFunction<C> {
             return this.add(location, new FixedFloatFunction(value), derivative);
         }
 
-        public Builder<C> add(float location, Spline<C> spline, float derivative) {
+        public Builder<C> add(float location, Spline<C> value, float derivative) {
             if (!this.locations.isEmpty() && location <= this.locations.getFloat(this.locations.size() - 1)) {
                 throw new IllegalArgumentException("Please register points in ascending order");
             }
             this.locations.add(location);
-            this.values.add(spline);
+            this.values.add(value);
             this.derivatives.add(derivative);
             return this;
         }
@@ -92,20 +110,6 @@ extends ToFloatFunction<C> {
                 throw new IllegalStateException("No elements added");
             }
             return new class_6738<C>(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
-        }
-    }
-
-    @Debug
-    public record FixedFloatFunction<C>(float value) implements Spline<C>
-    {
-        @Override
-        public float apply(C object) {
-            return this.value;
-        }
-
-        @Override
-        public String method_39225() {
-            return String.format("k=%.3f", Float.valueOf(this.value));
         }
     }
 
@@ -146,8 +150,8 @@ extends ToFloatFunction<C> {
 
         @Override
         @VisibleForTesting
-        public String method_39225() {
-            return "Spline{coordinate=" + this.coordinate + ", locations=" + this.method_39238(this.locations) + ", derivatives=" + this.method_39238(this.derivatives) + ", values=" + this.values.stream().map(Spline::method_39225).collect(Collectors.joining(", ", "[", "]")) + "}";
+        public String getDebugString() {
+            return "Spline{coordinate=" + this.coordinate + ", locations=" + this.method_39238(this.locations) + ", derivatives=" + this.method_39238(this.derivatives) + ", values=" + this.values.stream().map(Spline::getDebugString).collect(Collectors.joining(", ", "[", "]")) + "}";
         }
 
         private String method_39238(float[] fs) {

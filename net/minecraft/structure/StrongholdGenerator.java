@@ -1073,7 +1073,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public StructureWeightType method_33882() {
+        public StructureWeightType getWeightType() {
             return StructureWeightType.BURY;
         }
 

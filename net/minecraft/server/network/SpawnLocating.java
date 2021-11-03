@@ -42,7 +42,7 @@ public class SpawnLocating {
 
     @Nullable
     public static BlockPos findServerSpawnPoint(ServerWorld world, ChunkPos chunkPos) {
-        if (SharedConstants.method_37896(chunkPos.getStartX(), chunkPos.getStartZ())) {
+        if (SharedConstants.method_37896(chunkPos)) {
             return null;
         }
         for (int i = chunkPos.getStartX(); i <= chunkPos.getEndX(); ++i) {

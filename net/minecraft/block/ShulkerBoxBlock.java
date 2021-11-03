@@ -152,7 +152,7 @@ extends BlockWithEntity {
         BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
         if (blockEntity instanceof ShulkerBoxBlockEntity) {
             ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-            builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
+            builder = builder.putDrop(CONTENTS, (context, consumer) -> {
                 for (int i = 0; i < shulkerBoxBlockEntity.size(); ++i) {
                     consumer.accept(shulkerBoxBlockEntity.getStack(i));
                 }
@@ -237,7 +237,7 @@ extends BlockWithEntity {
     @Override
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         ItemStack itemStack = super.getPickStack(world, pos, state);
-        world.getBlockEntity(pos, BlockEntityType.SHULKER_BOX).ifPresent(shulkerBoxBlockEntity -> shulkerBoxBlockEntity.setStackNbt(itemStack));
+        world.getBlockEntity(pos, BlockEntityType.SHULKER_BOX).ifPresent(blockEntity -> blockEntity.setStackNbt(itemStack));
         return itemStack;
     }
 

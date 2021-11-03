@@ -14,7 +14,7 @@ import net.minecraft.util.registry.Registry;
 
 public abstract class IntProvider {
     private static final Codec<Either<Integer, IntProvider>> INT_CODEC = Codec.either(Codec.INT, Registry.INT_PROVIDER_TYPE.dispatch(IntProvider::getType, IntProviderType::codec));
-    public static final Codec<IntProvider> VALUE_CODEC = INT_CODEC.xmap(either -> either.map(ConstantIntProvider::create, intProvider -> intProvider), intProvider -> intProvider.getType() == IntProviderType.CONSTANT ? Either.left(((ConstantIntProvider)intProvider).getValue()) : Either.right(intProvider));
+    public static final Codec<IntProvider> VALUE_CODEC = INT_CODEC.xmap(either -> either.map(ConstantIntProvider::create, provider -> provider), provider -> provider.getType() == IntProviderType.CONSTANT ? Either.left(((ConstantIntProvider)provider).getValue()) : Either.right(provider));
     public static final Codec<IntProvider> NON_NEGATIVE_CODEC = IntProvider.createValidatingCodec(0, Integer.MAX_VALUE);
     public static final Codec<IntProvider> POSITIVE_CODEC = IntProvider.createValidatingCodec(1, Integer.MAX_VALUE);
 

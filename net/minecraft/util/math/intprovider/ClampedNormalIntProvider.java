@@ -16,45 +16,45 @@ import net.minecraft.util.math.intprovider.IntProviderType;
 
 public class ClampedNormalIntProvider
 extends IntProvider {
-    public static final Codec<ClampedNormalIntProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("mean")).forGetter(clampedNormalIntProvider -> Float.valueOf(clampedNormalIntProvider.field_35353)), ((MapCodec)Codec.FLOAT.fieldOf("deviation")).forGetter(clampedNormalIntProvider -> Float.valueOf(clampedNormalIntProvider.field_35354)), ((MapCodec)Codec.INT.fieldOf("min_inclusive")).forGetter(clampedNormalIntProvider -> clampedNormalIntProvider.field_35355), ((MapCodec)Codec.INT.fieldOf("max_inclusive")).forGetter(clampedNormalIntProvider -> clampedNormalIntProvider.field_35356)).apply((Applicative<ClampedNormalIntProvider, ?>)instance, ClampedNormalIntProvider::new)).comapFlatMap(clampedNormalIntProvider -> {
-        if (clampedNormalIntProvider.field_35356 < clampedNormalIntProvider.field_35355) {
-            return DataResult.error("Max must be larger than min: [" + clampedNormalIntProvider.field_35355 + ", " + clampedNormalIntProvider.field_35356 + "]");
+    public static final Codec<ClampedNormalIntProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("mean")).forGetter(provider -> Float.valueOf(provider.mean)), ((MapCodec)Codec.FLOAT.fieldOf("deviation")).forGetter(provider -> Float.valueOf(provider.deviation)), ((MapCodec)Codec.INT.fieldOf("min_inclusive")).forGetter(provider -> provider.min), ((MapCodec)Codec.INT.fieldOf("max_inclusive")).forGetter(provider -> provider.max)).apply((Applicative<ClampedNormalIntProvider, ?>)instance, ClampedNormalIntProvider::new)).comapFlatMap(provider -> {
+        if (provider.max < provider.min) {
+            return DataResult.error("Max must be larger than min: [" + provider.min + ", " + provider.max + "]");
         }
-        return DataResult.success(clampedNormalIntProvider);
+        return DataResult.success(provider);
     }, Function.identity());
-    private float field_35353;
-    private float field_35354;
-    private int field_35355;
-    private int field_35356;
+    private float mean;
+    private float deviation;
+    private int min;
+    private int max;
 
-    public static ClampedNormalIntProvider method_39156(float f, float g, int i, int j) {
-        return new ClampedNormalIntProvider(f, g, i, j);
+    public static ClampedNormalIntProvider of(float mean, float deviation, int min, int max) {
+        return new ClampedNormalIntProvider(mean, deviation, min, max);
     }
 
-    private ClampedNormalIntProvider(float f, float g, int i, int j) {
-        this.field_35353 = f;
-        this.field_35354 = g;
-        this.field_35355 = i;
-        this.field_35356 = j;
+    private ClampedNormalIntProvider(float mean, float deviation, int min, int max) {
+        this.mean = mean;
+        this.deviation = deviation;
+        this.min = min;
+        this.max = max;
     }
 
     @Override
     public int get(Random random) {
-        return ClampedNormalIntProvider.method_39159(random, this.field_35353, this.field_35354, this.field_35355, this.field_35356);
+        return ClampedNormalIntProvider.next(random, this.mean, this.deviation, this.min, this.max);
     }
 
-    public static int method_39159(Random random, float f, float g, float h, float i) {
-        return (int)MathHelper.clamp(MathHelper.nextGaussian(random, f, g), h, i);
+    public static int next(Random random, float mean, float deviation, float min, float max) {
+        return (int)MathHelper.clamp(MathHelper.nextGaussian(random, mean, deviation), min, max);
     }
 
     @Override
     public int getMin() {
-        return this.field_35355;
+        return this.min;
     }
 
     @Override
     public int getMax() {
-        return this.field_35356;
+        return this.max;
     }
 
     @Override
@@ -63,7 +63,7 @@ extends IntProvider {
     }
 
     public String toString() {
-        return "normal(" + this.field_35353 + ", " + this.field_35354 + ") in [" + this.field_35355 + "-" + this.field_35356 + "]";
+        return "normal(" + this.mean + ", " + this.deviation + ") in [" + this.min + "-" + this.max + "]";
     }
 }
 

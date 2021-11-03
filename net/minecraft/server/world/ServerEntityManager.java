@@ -395,12 +395,12 @@ implements AutoCloseable {
          * WARNING - Possible parameter corruption
          * WARNING - void declaration
          */
-        Listener(T entityLike, long l, EntityTrackingSection<T> entityTrackingSection) {
+        Listener(T entity, long l, EntityTrackingSection<T> section) {
             void var3_3;
             this.manager = serverEntityManager;
-            this.entity = entityLike;
+            this.entity = entity;
             this.sectionPos = var3_3;
-            this.section = entityTrackingSection;
+            this.section = section;
         }
 
         @Override

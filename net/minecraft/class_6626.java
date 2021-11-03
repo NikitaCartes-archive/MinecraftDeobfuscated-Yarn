@@ -4,7 +4,6 @@
 package net.minecraft;
 
 import com.google.common.collect.Lists;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.class_6624;
@@ -20,10 +19,6 @@ implements StructurePiecesHolder {
     @Override
     public void addPiece(StructurePiece piece) {
         this.field_34944.add(piece);
-    }
-
-    public void method_38717(Collection<StructurePiece> collection) {
-        this.field_34944.addAll(collection);
     }
 
     @Override

@@ -29,15 +29,15 @@ public class ChunkSection {
     private final PalettedContainer<BlockState> blockStateContainer;
     private final PalettedContainer<Biome> biomeContainer;
 
-    public ChunkSection(int i, PalettedContainer<BlockState> blockStateContainer, PalettedContainer<Biome> biomeContainer) {
-        this.yOffset = ChunkSection.blockCoordFromChunkCoord(i);
+    public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, PalettedContainer<Biome> biomeContainer) {
+        this.yOffset = ChunkSection.blockCoordFromChunkCoord(chunkPos);
         this.blockStateContainer = blockStateContainer;
         this.biomeContainer = biomeContainer;
         this.calculateCounts();
     }
 
-    public ChunkSection(int i, Registry<Biome> biomeRegistry) {
-        this.yOffset = ChunkSection.blockCoordFromChunkCoord(i);
+    public ChunkSection(int chunkPos, Registry<Biome> biomeRegistry) {
+        this.yOffset = ChunkSection.blockCoordFromChunkCoord(chunkPos);
         this.blockStateContainer = new PalettedContainer<BlockState>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
         this.biomeContainer = new PalettedContainer<Biome>(biomeRegistry, biomeRegistry.getOrThrow(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
     }

@@ -106,9 +106,9 @@ public abstract class BlockEntity {
             LOGGER.error("Block entity has invalid type: {}", (Object)string);
             return null;
         }
-        return Registry.BLOCK_ENTITY_TYPE.getOrEmpty(identifier).map(blockEntityType -> {
+        return Registry.BLOCK_ENTITY_TYPE.getOrEmpty(identifier).map(type -> {
             try {
-                return blockEntityType.instantiate(pos, state);
+                return type.instantiate(pos, state);
             } catch (Throwable throwable) {
                 LOGGER.error("Failed to create block entity {}", (Object)string, (Object)throwable);
                 return null;

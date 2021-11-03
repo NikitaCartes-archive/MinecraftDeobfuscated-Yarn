@@ -38,7 +38,7 @@ extends Feature<DecoratedFeatureConfig> {
             if (optional.isPresent() && !(configuredFeature.getFeature() instanceof DecoratedFeature) && !(biome = structureWorldAccess.getBiome((BlockPos)origin)).getGenerationSettings().isFeatureAllowed(optional.get())) {
                 return;
             }
-            if (configuredFeature.generate(optional, structureWorldAccess, chunkGenerator, random, (BlockPos)origin)) {
+            if (structureWorldAccess.isValidForSetBlock((BlockPos)origin) && configuredFeature.generate(optional, structureWorldAccess, chunkGenerator, random, (BlockPos)origin)) {
                 mutableBoolean.setTrue();
             }
         });

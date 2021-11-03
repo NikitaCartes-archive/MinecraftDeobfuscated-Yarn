@@ -86,19 +86,19 @@ implements Waterloggable {
         return 1 << dir.getHorizontal();
     }
 
-    protected int getShapeIndex(BlockState state) {
-        return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(state, blockState -> {
+    protected int getShapeIndex(BlockState state2) {
+        return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(state2, state -> {
             int i = 0;
-            if (blockState.get(NORTH).booleanValue()) {
+            if (state.get(NORTH).booleanValue()) {
                 i |= HorizontalConnectingBlock.getDirectionMask(Direction.NORTH);
             }
-            if (blockState.get(EAST).booleanValue()) {
+            if (state.get(EAST).booleanValue()) {
                 i |= HorizontalConnectingBlock.getDirectionMask(Direction.EAST);
             }
-            if (blockState.get(SOUTH).booleanValue()) {
+            if (state.get(SOUTH).booleanValue()) {
                 i |= HorizontalConnectingBlock.getDirectionMask(Direction.SOUTH);
             }
-            if (blockState.get(WEST).booleanValue()) {
+            if (state.get(WEST).booleanValue()) {
                 i |= HorizontalConnectingBlock.getDirectionMask(Direction.WEST);
             }
             return i;

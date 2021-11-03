@@ -35,6 +35,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.StructureWorldAccess;
@@ -60,7 +61,7 @@ public class ChunkRegion
 implements StructureWorldAccess {
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<Chunk> chunks;
-    private final ChunkPos centerPos;
+    private final Chunk centerPos;
     private final int width;
     private final ServerWorld world;
     private final long seed;
@@ -95,9 +96,8 @@ implements StructureWorldAccess {
         if (i * i != chunks.size()) {
             throw Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
         }
-        ChunkPos chunkPos = chunks.get(chunks.size() / 2).getPos();
         this.chunks = chunks;
-        this.centerPos = chunkPos;
+        this.centerPos = chunks.get(chunks.size() / 2);
         this.width = i;
         this.world = world;
         this.seed = world.getSeed();
@@ -111,7 +111,7 @@ implements StructureWorldAccess {
     }
 
     public ChunkPos getCenterPos() {
-        return this.centerPos;
+        return this.centerPos.getPos();
     }
 
     @Override
@@ -242,11 +242,18 @@ implements StructureWorldAccess {
     public boolean isValidForSetBlock(BlockPos pos) {
         int i = ChunkSectionPos.getSectionCoord(pos.getX());
         int j = ChunkSectionPos.getSectionCoord(pos.getZ());
-        int k = Math.abs(this.centerPos.x - i);
-        int l = Math.abs(this.centerPos.z - j);
+        ChunkPos chunkPos = this.getCenterPos();
+        int k = Math.abs(chunkPos.x - i);
+        int l = Math.abs(chunkPos.z - j);
         if (k > this.placementRadius || l > this.placementRadius) {
             Util.error("Detected setBlock in a far chunk [" + i + ", " + j + "], pos: " + pos + ", status: " + this.status + (String)(this.currentlyGeneratingStructureName == null ? "" : ", currently generating: " + this.currentlyGeneratingStructureName.get()));
             return false;
+        }
+        if (this.centerPos.hasBelowZeroRetrogen()) {
+            HeightLimitView heightLimitView = this.centerPos.getHeightLimitView();
+            if (pos.getY() < heightLimitView.getBottomY() || pos.getY() >= heightLimitView.getTopY()) {
+                return false;
+            }
         }
         return true;
     }
@@ -425,7 +432,7 @@ implements StructureWorldAccess {
 
     @Override
     public List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-        return this.structureAccessor.method_38853(pos, feature);
+        return this.structureAccessor.getStructureStarts(pos, feature);
     }
 
     @Override

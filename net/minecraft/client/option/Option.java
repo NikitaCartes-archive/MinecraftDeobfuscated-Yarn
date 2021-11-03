@@ -192,7 +192,7 @@ public abstract class Option {
         double d = option.get((GameOptions)gameOptions);
         return option.getGenericLabel(new TranslatableText("options.chunks", (int)d));
     });
-    public static final DoubleOption SIMULATION_DISTANCE = new DoubleOption("options.simulationDistance", 2.0, 16.0, 1.0f, gameOptions -> gameOptions.simulationDistance, (gameOptions, simulationDistance) -> {
+    public static final DoubleOption SIMULATION_DISTANCE = new DoubleOption("options.simulationDistance", 5.0, 16.0, 1.0f, gameOptions -> gameOptions.simulationDistance, (gameOptions, simulationDistance) -> {
         gameOptions.simulationDistance = simulationDistance.intValue();
     }, (gameOptions, option) -> {
         double d = option.get((GameOptions)gameOptions);
@@ -365,6 +365,11 @@ public abstract class Option {
     });
     public static final CyclingOption<Boolean> REALMS_NOTIFICATIONS = CyclingOption.create("options.realmsNotifications", gameOptions -> gameOptions.realmsNotifications, (gameOptions, option, realmsNotifications) -> {
         gameOptions.realmsNotifications = realmsNotifications;
+    });
+    private static final Text ALLOW_SERVER_LISTING_TOOLTIP = new TranslatableText("options.allowServerListing.tooltip");
+    public static final CyclingOption<Boolean> ALLOW_SERVER_LISTING = CyclingOption.create("options.allowServerListing", ALLOW_SERVER_LISTING_TOOLTIP, gameOptions -> gameOptions.allowServerListing, (gameOptions, option, allowServerListing) -> {
+        gameOptions.allowServerListing = allowServerListing;
+        gameOptions.sendClientSettings();
     });
     public static final CyclingOption<Boolean> REDUCED_DEBUG_INFO = CyclingOption.create("options.reducedDebugInfo", gameOptions -> gameOptions.reducedDebugInfo, (gameOptions, option, reducedDebugInfo) -> {
         gameOptions.reducedDebugInfo = reducedDebugInfo;

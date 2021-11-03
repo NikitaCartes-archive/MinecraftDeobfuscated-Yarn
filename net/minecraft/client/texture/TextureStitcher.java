@@ -58,12 +58,12 @@ public class TextureStitcher {
         this.height = MathHelper.smallestEncompassingPowerOfTwo(this.height);
     }
 
-    public void getStitchedSprites(SpriteConsumer spriteConsumer) {
+    public void getStitchedSprites(SpriteConsumer consumer) {
         for (Slot slot2 : this.slots) {
             slot2.addAllFilledSlots(slot -> {
                 Holder holder = slot.getTexture();
                 Sprite.Info info = holder.sprite;
-                spriteConsumer.load(info, this.width, this.height, slot.getX(), slot.getY());
+                consumer.load(info, this.width, this.height, slot.getX(), slot.getY());
             });
         }
     }
@@ -202,12 +202,12 @@ public class TextureStitcher {
             return false;
         }
 
-        public void addAllFilledSlots(Consumer<Slot> consumer) {
+        public void addAllFilledSlots(Consumer<Slot> slotConsumer) {
             if (this.texture != null) {
-                consumer.accept(this);
+                slotConsumer.accept(this);
             } else if (this.subSlots != null) {
                 for (Slot slot : this.subSlots) {
-                    slot.addAllFilledSlots(consumer);
+                    slot.addAllFilledSlots(slotConsumer);
                 }
             }
         }

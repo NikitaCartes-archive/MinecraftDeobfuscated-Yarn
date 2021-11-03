@@ -248,7 +248,7 @@ RecipeInputProvider {
         nbt.putShort("CookTimeTotal", (short)this.cookTimeTotal);
         Inventories.writeNbt(nbt, this.inventory);
         NbtCompound nbtCompound = new NbtCompound();
-        this.recipesUsed.forEach((identifier, integer) -> nbtCompound.putInt(identifier.toString(), (int)integer));
+        this.recipesUsed.forEach((identifier, count) -> nbtCompound.putInt(identifier.toString(), (int)count));
         nbt.put("RecipesUsed", nbtCompound);
     }
 

@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.debug;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -35,8 +35,8 @@ implements DebugRenderer.Renderer {
         double d = Util.getMeasuringTimeNano();
         if (d - this.lastUpdateTime > 1.0E8) {
             this.lastUpdateTime = d;
-            Entity entity2 = this.client.gameRenderer.getCamera().getFocusedEntity();
-            this.collisions = entity2.world.getCollisions(entity2, entity2.getBoundingBox().expand(6.0), entity -> true).collect(Collectors.toList());
+            Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
+            this.collisions = ImmutableList.copyOf(entity.world.getCollisions(entity, entity.getBoundingBox().expand(6.0)));
         }
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
         for (VoxelShape voxelShape : this.collisions) {

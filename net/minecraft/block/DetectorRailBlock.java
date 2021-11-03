@@ -144,7 +144,7 @@ extends AbstractRailBlock {
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         if (state.get(POWERED).booleanValue()) {
-            List<CommandBlockMinecartEntity> list = this.getCarts(world, pos, CommandBlockMinecartEntity.class, entity -> true);
+            List<CommandBlockMinecartEntity> list = this.getCarts(world, pos, CommandBlockMinecartEntity.class, cart -> true);
             if (!list.isEmpty()) {
                 return list.get(0).getCommandExecutor().getSuccessCount();
             }

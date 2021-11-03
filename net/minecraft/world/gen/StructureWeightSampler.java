@@ -49,7 +49,7 @@ implements ChunkNoiseSampler.ColumnSampler {
         this.junctions = new ObjectArrayList<JigsawJunction>(32);
         this.pieces = new ObjectArrayList<StructurePiece>(10);
         for (StructureFeature<?> structureFeature : StructureFeature.LAND_MODIFYING_STRUCTURES) {
-            structureAccessor.method_38853(ChunkSectionPos.from(chunk), structureFeature).forEach(structureStart -> {
+            structureAccessor.getStructureStarts(ChunkSectionPos.from(chunk), structureFeature).forEach(structureStart -> {
                 for (StructurePiece structurePiece : structureStart.getChildren()) {
                     if (!structurePiece.intersectsChunk(chunkPos, 12)) continue;
                     if (structurePiece instanceof PoolStructurePiece) {
@@ -85,7 +85,7 @@ implements ChunkNoiseSampler.ColumnSampler {
             l = Math.max(0, Math.max(blockBox.getMinX() - i, i - blockBox.getMaxX()));
             m = j - (blockBox.getMinY() + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
             int n = Math.max(0, Math.max(blockBox.getMinZ() - k, k - blockBox.getMaxZ()));
-            StructureWeightType structureWeightType = structurePiece.method_33882();
+            StructureWeightType structureWeightType = structurePiece.getWeightType();
             if (structureWeightType == StructureWeightType.BURY) {
                 d += StructureWeightSampler.getMagnitudeWeight(l, m, n);
                 continue;

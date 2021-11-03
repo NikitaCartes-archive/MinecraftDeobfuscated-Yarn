@@ -33,7 +33,7 @@ import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 import net.minecraft.world.gen.surfacebuilder.VanillaSurfaceRules;
 
 public final class ChunkGeneratorSettings {
-    public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorSettings::getStructuresConfig), ((MapCodec)GenerationShapeConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorSettings::getGenerationShapeConfig), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorSettings::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorSettings::getDefaultFluid), ((MapCodec)MaterialRules.MaterialRule.CODEC.fieldOf("surface_rule")).forGetter(ChunkGeneratorSettings::getSurfaceRule), ((MapCodec)Codec.INT.fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorSettings::getBedrockCeilingY), ((MapCodec)Codec.INT.fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorSettings::getBedrockFloorY), ((MapCodec)Codec.INT.fieldOf("sea_level")).forGetter(ChunkGeneratorSettings::getSeaLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorSettings::isMobGenerationDisabled), ((MapCodec)Codec.BOOL.fieldOf("aquifers_enabled")).forGetter(ChunkGeneratorSettings::hasAquifers), ((MapCodec)Codec.BOOL.fieldOf("noise_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoiseCaves), ((MapCodec)Codec.BOOL.fieldOf("deepslate_enabled")).forGetter(ChunkGeneratorSettings::hasDeepslate), ((MapCodec)Codec.BOOL.fieldOf("ore_veins_enabled")).forGetter(ChunkGeneratorSettings::hasOreVeins), ((MapCodec)Codec.BOOL.fieldOf("noodle_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoodleCaves), ((MapCodec)Codec.BOOL.fieldOf("legacy_random_source")).forGetter(ChunkGeneratorSettings::usesLegacyRandom)).apply((Applicative<ChunkGeneratorSettings, ?>)instance, ChunkGeneratorSettings::new));
+    public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorSettings::getStructuresConfig), ((MapCodec)GenerationShapeConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorSettings::getGenerationShapeConfig), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorSettings::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorSettings::getDefaultFluid), ((MapCodec)MaterialRules.MaterialRule.CODEC.fieldOf("surface_rule")).forGetter(ChunkGeneratorSettings::getSurfaceRule), ((MapCodec)Codec.INT.fieldOf("sea_level")).forGetter(ChunkGeneratorSettings::getSeaLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorSettings::isMobGenerationDisabled), ((MapCodec)Codec.BOOL.fieldOf("aquifers_enabled")).forGetter(ChunkGeneratorSettings::hasAquifers), ((MapCodec)Codec.BOOL.fieldOf("noise_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoiseCaves), ((MapCodec)Codec.BOOL.fieldOf("ore_veins_enabled")).forGetter(ChunkGeneratorSettings::hasOreVeins), ((MapCodec)Codec.BOOL.fieldOf("noodle_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoodleCaves), ((MapCodec)Codec.BOOL.fieldOf("legacy_random_source")).forGetter(ChunkGeneratorSettings::usesLegacyRandom)).apply((Applicative<ChunkGeneratorSettings, ?>)instance, ChunkGeneratorSettings::new));
     public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
     private final ChunkRandom.RandomProvider randomProvider;
     private final StructuresConfig structuresConfig;
@@ -41,13 +41,10 @@ public final class ChunkGeneratorSettings {
     private final BlockState defaultBlock;
     private final BlockState defaultFluid;
     private final MaterialRules.MaterialRule surfaceRule;
-    private final int bedrockCeilingY;
-    private final int bedrockFloorY;
     private final int seaLevel;
     private final boolean mobGenerationDisabled;
     private final boolean aquifers;
     private final boolean noiseCaves;
-    private final boolean deepslate;
     private final boolean oreVeins;
     private final boolean noodleCaves;
     public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("overworld"));
@@ -60,22 +57,19 @@ public final class ChunkGeneratorSettings {
     @VisibleForTesting
     static final ChunkGeneratorSettings INSTANCE = ChunkGeneratorSettings.register(OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(new StructuresConfig(true), false, false));
 
-    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, BlockState defaultBlock, BlockState defaultFluid, MaterialRules.MaterialRule surfaceRule, int bedrockCeilingY, int bedrockFloorY, int seaLevel, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean deepslate, boolean oreVeins, boolean noodleCaves, boolean legacy) {
+    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, BlockState defaultBlock, BlockState defaultFluid, MaterialRules.MaterialRule surfaceRule, int bedrockCeilingY, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean oreVeins, boolean noodleCaves, boolean useLegacyRandom) {
         this.structuresConfig = structuresConfig;
         this.generationShapeConfig = generationShapeConfig;
         this.defaultBlock = defaultBlock;
         this.defaultFluid = defaultFluid;
         this.surfaceRule = surfaceRule;
-        this.bedrockCeilingY = bedrockCeilingY;
-        this.bedrockFloorY = bedrockFloorY;
-        this.seaLevel = seaLevel;
+        this.seaLevel = bedrockCeilingY;
         this.mobGenerationDisabled = mobGenerationDisabled;
         this.aquifers = aquifers;
         this.noiseCaves = noiseCaves;
-        this.deepslate = deepslate;
         this.oreVeins = oreVeins;
         this.noodleCaves = noodleCaves;
-        this.randomProvider = legacy ? ChunkRandom.RandomProvider.LEGACY : ChunkRandom.RandomProvider.XOROSHIRO;
+        this.randomProvider = useLegacyRandom ? ChunkRandom.RandomProvider.LEGACY : ChunkRandom.RandomProvider.XOROSHIRO;
     }
 
     public StructuresConfig getStructuresConfig() {
@@ -98,24 +92,6 @@ public final class ChunkGeneratorSettings {
         return this.surfaceRule;
     }
 
-    /**
-     * Returns the Y level of the bedrock ceiling.
-     * 
-     * <p>If a number less than 1 is returned, the ceiling will not be generated.
-     */
-    public int getBedrockCeilingY() {
-        return this.bedrockCeilingY;
-    }
-
-    /**
-     * Returns the Y level of the bedrock floor.
-     * 
-     * <p>If a number greater than 255 is returned, the floor will not be generated.
-     */
-    public int getBedrockFloorY() {
-        return this.bedrockFloorY;
-    }
-
     public int getSeaLevel() {
         return this.seaLevel;
     }
@@ -136,10 +112,6 @@ public final class ChunkGeneratorSettings {
 
     public boolean hasNoiseCaves() {
         return this.noiseCaves;
-    }
-
-    public boolean hasDeepslate() {
-        return this.deepslate;
     }
 
     public boolean hasOreVeins() {
@@ -175,19 +147,17 @@ public final class ChunkGeneratorSettings {
     }
 
     private static ChunkGeneratorSettings createIslandSettings(StructuresConfig structuresConfig, BlockState defaultBlock, BlockState defaultFluid, boolean bl, boolean bl2) {
-        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, 0.0, 0.0, bl2, false, VanillaTerrainParametersCreator.createIslandParameters()), defaultBlock, defaultFluid, VanillaSurfaceRules.getEndStoneRule(), Integer.MIN_VALUE, Integer.MIN_VALUE, 0, bl, false, false, false, false, false, true);
+        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, bl2, false, false, VanillaTerrainParametersCreator.createIslandParameters()), defaultBlock, defaultFluid, VanillaSurfaceRules.getEndStoneRule(), 0, bl, false, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createUndergroundSettings(StructuresConfig structuresConfig, BlockState defaultBlock, BlockState defaultFluid) {
         HashMap<StructureFeature<?>, StructureConfig> map = Maps.newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
         map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
-        return new ChunkGeneratorSettings(new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, 0.0, -0.030078125, false, false, VanillaTerrainParametersCreator.createUndergroundParameters()), defaultBlock, defaultFluid, VanillaSurfaceRules.createNetherSurfaceRule(), 0, 0, 32, false, false, false, false, false, false, true);
+        return new ChunkGeneratorSettings(new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, false, false, false, VanillaTerrainParametersCreator.createUndergroundParameters()), defaultBlock, defaultFluid, VanillaSurfaceRules.createNetherSurfaceRule(), 32, false, false, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, boolean bl) {
-        int i = bl ? -2 : 0;
-        double d = 0.9999999814507745;
-        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0), new SlideConfig(-0.078125, 2, 8), new SlideConfig(0.1171875, 3, 0), 1, 2, 1.0, 0.0, false, amplified, VanillaTerrainParametersCreator.createSurfaceParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createOverworldSurfaceRule(), Integer.MIN_VALUE, 0, 63, false, true, true, true, true, true, false);
+        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0), new SlideConfig(-0.078125, 2, 8), new SlideConfig(0.1171875, 3, 0), 1, 2, false, amplified, bl, VanillaTerrainParametersCreator.createSurfaceParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createOverworldSurfaceRule(), 63, false, true, true, true, true, false);
     }
 
     static {

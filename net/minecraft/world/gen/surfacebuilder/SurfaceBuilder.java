@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -60,6 +61,7 @@ public class SurfaceBuilder {
     private final DoublePerlinNoiseSampler field_35500;
     private final Registry<DoublePerlinNoiseSampler.NoiseParameters> field_35415;
     private final Map<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler> noiseSamplers = new ConcurrentHashMap<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler>();
+    private final Map<Identifier, RandomDeriver> field_35633 = new ConcurrentHashMap<Identifier, RandomDeriver>();
     private final RandomDeriver randomDeriver;
     private final DoublePerlinNoiseSampler surfaceNoise;
 
@@ -84,6 +86,10 @@ public class SurfaceBuilder {
         return this.noiseSamplers.computeIfAbsent(registryKey, registryKey2 -> NoiseParametersKeys.method_39173(this.field_35415, this.randomDeriver, registryKey));
     }
 
+    protected RandomDeriver method_39482(Identifier identifier) {
+        return this.field_35633.computeIfAbsent(identifier, identifier2 -> this.randomDeriver.createRandom(identifier).createRandomDeriver());
+    }
+
     public void buildSurface(BiomeAccess biomeAccess, Registry<Biome> biomeRegistry, boolean useLegacyRandom, HeightContext context, final Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, MaterialRules.MaterialRule surfaceRule) {
         final BlockPos.Mutable mutable = new BlockPos.Mutable();
         final ChunkPos chunkPos = chunk.getPos();
@@ -105,12 +111,11 @@ public class SurfaceBuilder {
                 return "ChunkBlockColumn " + chunkPos;
             }
         };
-        MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(this, context);
+        MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(this, chunk, biomeAccess::getBiome, biomeRegistry, context);
         MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)surfaceRule.apply(materialRuleContext);
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
         for (int k = 0; k < 16; ++k) {
             for (int l = 0; l < 16; ++l) {
-                int u;
                 int m = i + k;
                 int n = j + l;
                 int o = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, k, l) + 1;
@@ -122,136 +127,134 @@ public class SurfaceBuilder {
                 Biome biome = biomeAccess.getBiome(mutable2.set(m, useLegacyRandom ? 0 : o, n));
                 RegistryKey<Biome> registryKey = biomeRegistry.getKey(biome).orElseThrow(() -> new IllegalStateException("Unregistered biome: " + biome));
                 if (registryKey == BiomeKeys.ERODED_BADLANDS) {
-                    this.method_39102(q, d, blockColumn, m, n, o, chunk);
+                    this.method_39102(blockColumn, m, n, o, chunk);
                 }
                 int r = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, k, l) + 1;
                 int s = (int)(d * 2.75 + 3.0 + abstractRandom.nextDouble() * 0.25);
-                if (registryKey == BiomeKeys.BASALT_DELTAS || registryKey == BiomeKeys.SOUL_SAND_VALLEY || registryKey == BiomeKeys.WARPED_FOREST || registryKey == BiomeKeys.CRIMSON_FOREST || registryKey == BiomeKeys.NETHER_WASTES) {
-                    t = 127;
-                    u = 0;
-                } else {
-                    t = r;
-                    u = q;
-                }
-                int v = registryKey == BiomeKeys.WOODED_BADLANDS || registryKey == BiomeKeys.BADLANDS ? 15 : Integer.MAX_VALUE;
-                materialRuleContext.initWorldDependentPredicates(chunk, m, n, s);
-                int w = 0;
-                int x = 0;
-                int y = Integer.MIN_VALUE;
-                int z = Integer.MAX_VALUE;
-                for (int aa = t; aa >= u && x < v; --aa) {
-                    int ab;
-                    BlockState blockState = blockColumn.getState(aa);
+                int t = registryKey == BiomeKeys.WOODED_BADLANDS || registryKey == BiomeKeys.BADLANDS ? 15 : Integer.MAX_VALUE;
+                materialRuleContext.initHorizontalContext(m, n, s);
+                int u = 0;
+                int v = 0;
+                int w = Integer.MIN_VALUE;
+                int x = Integer.MAX_VALUE;
+                int y = chunk.getBottomY();
+                for (int z = r; z >= y && v < t; --z) {
+                    BlockState blockState2;
+                    int aa;
+                    BlockState blockState = blockColumn.getState(z);
                     if (blockState.isAir()) {
-                        w = 0;
-                        y = Integer.MIN_VALUE;
+                        u = 0;
+                        w = Integer.MIN_VALUE;
                         continue;
                     }
                     if (!blockState.getFluidState().isEmpty()) {
-                        if (y != Integer.MIN_VALUE) continue;
-                        y = aa + 1;
+                        if (w != Integer.MIN_VALUE) continue;
+                        w = z + 1;
                         continue;
                     }
-                    if (z >= aa) {
-                        z = DimensionType.field_35479;
-                        for (ab = aa - 1; ab >= u - 1; --ab) {
-                            BlockState blockState2 = blockColumn.getState(ab);
-                            if (this.method_39333(blockState2)) continue;
-                            z = ab + 1;
+                    if (x >= z) {
+                        x = DimensionType.field_35479;
+                        for (aa = z - 1; aa >= y - 1; --aa) {
+                            blockState2 = blockColumn.getState(aa);
+                            if (this.isDefaultBlock(blockState2)) continue;
+                            x = aa + 1;
                             break;
                         }
                     }
-                    ++x;
-                    ab = aa - z + 1;
-                    Biome biome2 = biomeAccess.getBiome(mutable2.set(m, aa, n));
-                    RegistryKey<Biome> registryKey2 = biomeRegistry.getKey(biome2).orElseThrow(() -> new IllegalStateException("Unregistered biome: " + biome));
-                    materialRuleContext.initContextDependentPredicates(registryKey2, biome2, s, ++w, ab, y, m, aa, n);
-                    BlockState blockState3 = blockStateRule.tryApply(m, aa, n);
-                    if (blockState3 == null) continue;
-                    blockColumn.setState(aa, blockState3);
+                    ++v;
+                    aa = z - x + 1;
+                    materialRuleContext.initVerticalContext(q, ++u, aa, w, m, z, n);
+                    blockState2 = blockStateRule.tryApply(m, z, n);
+                    if (blockState2 == null) continue;
+                    blockColumn.setState(z, blockState2);
                 }
                 if (registryKey != BiomeKeys.FROZEN_OCEAN && registryKey != BiomeKeys.DEEP_FROZEN_OCEAN) continue;
-                this.method_39104(q, biome, d, blockColumn, mutable2, m, n, o);
+                this.method_39104(q, biome, blockColumn, mutable2, m, n, o);
             }
         }
     }
 
-    private boolean method_39333(BlockState blockState) {
-        return !blockState.isAir() && blockState.getFluidState().isEmpty();
+    private boolean isDefaultBlock(BlockState state) {
+        return !state.isAir() && state.getFluidState().isEmpty();
     }
 
     @Deprecated
-    public Optional<BlockState> method_39110(MaterialRules.MaterialRule rule, CarverContext context, Biome biome, RegistryKey<Biome> biomeKey, Chunk chunk, BlockPos pos, boolean bl) {
-        MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(this, context);
+    public Optional<BlockState> method_39110(MaterialRules.MaterialRule rule, CarverContext context, Function<BlockPos, Biome> function, Chunk chunk, BlockPos pos, boolean bl) {
+        MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(this, chunk, function, context.getRegistryManager().get(Registry.BIOME_KEY), context);
         MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)rule.apply(materialRuleContext);
-        AbstractRandom abstractRandom = this.randomDeriver.createRandom(pos.getX(), 0, pos.getZ());
-        double d = this.surfaceNoise.sample(pos.getX(), 0.0, pos.getZ());
-        int i = (int)(d * 2.75 + 3.0 + abstractRandom.nextDouble() * 0.25);
-        materialRuleContext.initWorldDependentPredicates(chunk, pos.getX(), pos.getZ(), i);
-        materialRuleContext.initContextDependentPredicates(biomeKey, biome, i, 1, 1, bl ? pos.getY() + 1 : Integer.MIN_VALUE, pos.getX(), pos.getY(), pos.getZ());
-        BlockState blockState = blockStateRule.tryApply(pos.getX(), pos.getY(), pos.getZ());
+        int i = pos.getX();
+        int j = pos.getY();
+        int k = pos.getZ();
+        AbstractRandom abstractRandom = this.randomDeriver.createRandom(i, 0, k);
+        double d = this.surfaceNoise.sample(i, 0.0, k);
+        int l = (int)(d * 2.75 + 3.0 + abstractRandom.nextDouble() * 0.25);
+        materialRuleContext.initHorizontalContext(i, k, l);
+        int m = j - 16;
+        materialRuleContext.initVerticalContext(m, 1, 1, bl ? j + 1 : Integer.MIN_VALUE, i, j, k);
+        BlockState blockState = blockStateRule.tryApply(i, j, k);
         return Optional.ofNullable(blockState);
     }
 
-    private void method_39102(int i, double d, BlockColumn chunk, int x, int z, int j, HeightLimitView heightLimitView) {
+    private void method_39102(BlockColumn blockColumn, int x, int z, int surfaceY, HeightLimitView heightLimitView) {
         BlockState blockState;
-        int n;
-        double e = 0.2;
-        double f = Math.min(Math.abs(this.field_35497.sample(x, 0.0, z) * 8.25), this.field_35495.sample((double)x * 0.2, 0.0, (double)z * 0.2) * 15.0);
-        if (f <= 0.0) {
+        int k;
+        double d = 0.2;
+        double e = Math.min(Math.abs(this.field_35497.sample(x, 0.0, z) * 8.25), this.field_35495.sample((double)x * 0.2, 0.0, (double)z * 0.2) * 15.0);
+        if (e <= 0.0) {
             return;
         }
-        double g = 0.75;
-        double h = 1.5;
-        double k = Math.abs(this.field_35496.sample((double)x * 0.75, 0.0, (double)z * 0.75) * 1.5);
-        double l = 64.0 + Math.min(f * f * 2.5, Math.ceil(k * 50.0) + 24.0);
-        int m = MathHelper.floor(l);
-        if (j > m) {
+        double f = 0.75;
+        double g = 1.5;
+        double h = Math.abs(this.field_35496.sample((double)x * 0.75, 0.0, (double)z * 0.75) * 1.5);
+        double i = 64.0 + Math.min(e * e * 2.5, Math.ceil(h * 50.0) + 24.0);
+        int j = MathHelper.floor(i);
+        if (surfaceY > j) {
             return;
         }
-        for (n = m; n >= heightLimitView.getBottomY() && !(blockState = chunk.getState(n)).isOf(this.defaultBlock.getBlock()); --n) {
+        for (k = j; k >= heightLimitView.getBottomY() && !(blockState = blockColumn.getState(k)).isOf(this.defaultBlock.getBlock()); --k) {
             if (!blockState.isOf(Blocks.WATER)) continue;
             return;
         }
-        for (n = m; n >= heightLimitView.getBottomY() && chunk.getState(n).isAir(); --n) {
-            chunk.setState(n, this.defaultBlock);
+        for (k = j; k >= heightLimitView.getBottomY() && blockColumn.getState(k).isAir(); --k) {
+            blockColumn.setState(k, this.defaultBlock);
         }
     }
 
-    private void method_39104(int i, Biome biome, double d, BlockColumn chunk, BlockPos.Mutable mutablePos, int x, int z, int surfaceY) {
-        double m;
+    private void method_39104(int i, Biome biome, BlockColumn blockColumn, BlockPos.Mutable mutablePos, int x, int z, int surfaceY) {
+        double l;
         float f = biome.getTemperature(mutablePos.set(x, 63, z));
-        double e = 1.28;
-        double g = Math.min(Math.abs(this.field_35500.sample(x, 0.0, z) * 8.25), this.field_35498.sample((double)x * 1.28, 0.0, (double)z * 1.28) * 15.0);
-        if (g <= 1.8) {
+        double d = 1.28;
+        double e = Math.min(Math.abs(this.field_35500.sample(x, 0.0, z) * 8.25), this.field_35498.sample((double)x * 1.28, 0.0, (double)z * 1.28) * 15.0);
+        if (e <= 1.8) {
             return;
         }
-        double h = 1.17;
-        double j = 1.5;
-        double k = Math.abs(this.field_35499.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
-        double l = Math.min(g * g * 1.2, Math.ceil(k * 40.0) + 14.0);
+        double g = 1.17;
+        double h = 1.5;
+        double j = Math.abs(this.field_35499.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
+        double k = Math.min(e * e * 1.2, Math.ceil(j * 40.0) + 14.0);
         if (f > 0.1f) {
-            l -= 2.0;
+            k -= 2.0;
         }
-        if (l > 2.0) {
-            m = (double)this.seaLevel - (l += (double)this.seaLevel) - 7.0;
+        if (k > 2.0) {
+            l = (double)this.seaLevel - k - 7.0;
+            k += (double)this.seaLevel;
         } else {
+            k = 0.0;
             l = 0.0;
-            m = 0.0;
         }
-        double n = l;
+        double m = k;
         AbstractRandom abstractRandom = this.randomDeriver.createRandom(x, 0, z);
-        int o = 2 + abstractRandom.nextInt(4);
-        int p = this.seaLevel + 18 + abstractRandom.nextInt(10);
-        int q = 0;
-        for (int r = Math.max(surfaceY, (int)n + 1); r >= i; --r) {
-            if (!(chunk.getState(r).isAir() && r < (int)n && abstractRandom.nextDouble() > 0.01) && (chunk.getState(r).getMaterial() != Material.WATER || r <= (int)m || r >= this.seaLevel || m == 0.0 || !(abstractRandom.nextDouble() > 0.15))) continue;
-            if (q <= o && r > p) {
-                chunk.setState(r, SNOW_BLOCK);
-                ++q;
+        int n = 2 + abstractRandom.nextInt(4);
+        int o = this.seaLevel + 18 + abstractRandom.nextInt(10);
+        int p = 0;
+        for (int q = Math.max(surfaceY, (int)m + 1); q >= i; --q) {
+            if (!(blockColumn.getState(q).isAir() && q < (int)m && abstractRandom.nextDouble() > 0.01) && (blockColumn.getState(q).getMaterial() != Material.WATER || q <= (int)l || q >= this.seaLevel || l == 0.0 || !(abstractRandom.nextDouble() > 0.15))) continue;
+            if (p <= n && q > o) {
+                blockColumn.setState(q, SNOW_BLOCK);
+                ++p;
                 continue;
             }
-            chunk.setState(r, PACKED_ICE);
+            blockColumn.setState(q, PACKED_ICE);
         }
     }
 

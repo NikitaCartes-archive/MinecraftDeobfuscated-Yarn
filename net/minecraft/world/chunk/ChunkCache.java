@@ -3,8 +3,7 @@
  */
 package net.minecraft.world.chunk;
 
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -86,6 +85,11 @@ CollisionView {
     }
 
     @Override
+    public List<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box) {
+        return List.of();
+    }
+
+    @Override
     @Nullable
     public BlockEntity getBlockEntity(BlockPos pos) {
         Chunk chunk = this.getChunk(pos);
@@ -99,16 +103,6 @@ CollisionView {
         }
         Chunk chunk = this.getChunk(pos);
         return chunk.getBlockState(pos);
-    }
-
-    @Override
-    public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-        return Stream.empty();
-    }
-
-    @Override
-    public Stream<VoxelShape> getCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-        return this.getBlockCollisions(entity, box);
     }
 
     @Override

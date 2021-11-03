@@ -6,6 +6,7 @@ package net.minecraft.client.gui.screen.option;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.option.ChatOptionsScreen;
 import net.minecraft.client.gui.screen.option.ControlsOptionsScreen;
 import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
+import net.minecraft.client.gui.screen.option.OnlineOptionsScreen;
 import net.minecraft.client.gui.screen.option.SkinOptionsScreen;
 import net.minecraft.client.gui.screen.option.SoundOptionsScreen;
 import net.minecraft.client.gui.screen.option.VideoOptionsScreen;
@@ -54,9 +56,9 @@ extends Screen {
             this.addDrawableChild(option.createButton(this.client.options, j, k, 150));
             ++i;
         }
-        if (this.client.world != null) {
-            this.difficultyButton = this.addDrawableChild(CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(this.client.world.getDifficulty()).build(this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, new TranslatableText("options.difficulty"), (button, difficulty) -> this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty)))));
-            if (this.client.isIntegratedServerRunning() && !this.client.world.getLevelProperties().isHardcore()) {
+        if (this.client.world != null && this.client.isIntegratedServerRunning()) {
+            this.difficultyButton = this.addDrawableChild(OptionsScreen.createDifficultyButtonWidget(i, this.width, this.height, "options.difficulty", this.client));
+            if (!this.client.world.getLevelProperties().isHardcore()) {
                 this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
                 this.lockDifficultyButton = this.addDrawableChild(new LockButtonWidget(this.difficultyButton.x + this.difficultyButton.getWidth(), this.difficultyButton.y, button -> this.client.setScreen(new ConfirmScreen(this::lockDifficulty, new TranslatableText("difficulty.lock.title"), new TranslatableText("difficulty.lock.question", this.client.world.getLevelProperties().getDifficulty().getTranslatableName())))));
                 this.lockDifficultyButton.setLocked(this.client.world.getLevelProperties().isDifficultyLocked());
@@ -66,7 +68,7 @@ extends Screen {
                 this.difficultyButton.active = false;
             }
         } else {
-            this.addDrawableChild(Option.REALMS_NOTIFICATIONS.createButton(this.settings, this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, new TranslatableText("options.online"), buttonWidget -> this.client.setScreen(new OnlineOptionsScreen(this, this.settings))));
         }
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20, new TranslatableText("options.skinCustomisation"), button -> this.client.setScreen(new SkinOptionsScreen(this, this.settings))));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, new TranslatableText("options.sounds"), button -> this.client.setScreen(new SoundOptionsScreen(this, this.settings))));
@@ -77,6 +79,10 @@ extends Screen {
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20, new TranslatableText("options.resourcepack"), button -> this.client.setScreen(new PackScreen(this, this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), new TranslatableText("resourcePack.title")))));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20, new TranslatableText("options.accessibility.title"), button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.settings))));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
+    }
+
+    public static CyclingButtonWidget<Difficulty> createDifficultyButtonWidget(int i, int width, int height, String string, MinecraftClient client) {
+        return CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(client.world.getDifficulty()).build(width / 2 - 155 + i % 2 * 160, height / 6 - 12 + 24 * (i >> 1), 150, 20, new TranslatableText(string), (cyclingButtonWidget, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty))));
     }
 
     private void refreshResourcePacks(ResourcePackManager resourcePackManager) {

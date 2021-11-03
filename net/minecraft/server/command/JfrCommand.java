@@ -8,10 +8,14 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import java.nio.file.Path;
+import java.io.File;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.profiling.jfr.InstanceType;
 
@@ -37,8 +41,9 @@ public class JfrCommand {
 
     private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
         try {
-            Path path = FlightProfiler.INSTANCE.stop();
-            source.sendFeedback(new TranslatableText("commands.jfr.stopped", path), false);
+            File file = FlightProfiler.INSTANCE.stop().toFile();
+            MutableText text = new LiteralText(file.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, file.getAbsolutePath())));
+            source.sendFeedback(new TranslatableText("commands.jfr.stopped", text), false);
             return 1;
         } catch (Throwable throwable) {
             throw JFR_DUMP_FAILED_EXCEPTION.create(throwable.getMessage());

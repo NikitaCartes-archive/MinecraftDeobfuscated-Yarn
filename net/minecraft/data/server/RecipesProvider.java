@@ -399,7 +399,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.LOOM).input(Character.valueOf('#'), ItemTags.PLANKS).input(Character.valueOf('@'), Items.STRING).pattern("@@").pattern("##").criterion("has_string", RecipesProvider.conditionsFromItem(Items.STRING)).offerTo(exporter);
         RecipesProvider.createChiseledBlockRecipe(Blocks.CHISELED_RED_SANDSTONE, Ingredient.ofItems(Blocks.RED_SANDSTONE_SLAB)).criterion("has_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.RED_SANDSTONE)).criterion("has_chiseled_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CHISELED_RED_SANDSTONE)).criterion("has_cut_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CUT_RED_SANDSTONE)).offerTo(exporter);
         RecipesProvider.offerChiseledBlockRecipe(exporter, Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE_SLAB);
-        RecipesProvider.offerReversibleCompactingRecipesWithInputItemGroup(exporter, Items.COPPER_INGOT, Items.COPPER_BLOCK, RecipesProvider.method_36450(Items.COPPER_INGOT), RecipesProvider.getItemPath(Items.COPPER_INGOT));
+        RecipesProvider.offerReversibleCompactingRecipesWithInputItemGroup(exporter, Items.COPPER_INGOT, Items.COPPER_BLOCK, RecipesProvider.getRecipeName(Items.COPPER_INGOT), RecipesProvider.getItemPath(Items.COPPER_INGOT));
         ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 9).input(Blocks.WAXED_COPPER_BLOCK).group(RecipesProvider.getItemPath(Items.COPPER_INGOT)).criterion(RecipesProvider.hasItem(Blocks.WAXED_COPPER_BLOCK), RecipesProvider.conditionsFromItem(Blocks.WAXED_COPPER_BLOCK)).offerTo(exporter, RecipesProvider.convertBetween(Items.COPPER_INGOT, Blocks.WAXED_COPPER_BLOCK));
         RecipesProvider.offerWaxingRecipes(exporter);
         ShapelessRecipeJsonFactory.create(Items.CYAN_DYE, 2).input(Items.BLUE_DYE).input(Items.GREEN_DYE).criterion("has_green_dye", RecipesProvider.conditionsFromItem(Items.GREEN_DYE)).criterion("has_blue_dye", RecipesProvider.conditionsFromItem(Items.BLUE_DYE)).offerTo(exporter);
@@ -1123,15 +1123,15 @@ implements DataProvider {
      * @param compacted compacted output item, e.g. block of copper
      */
     private static void offerReversibleCompactingRecipes(Consumer<RecipeJsonProvider> exporter, ItemConvertible compacted, ItemConvertible input) {
-        RecipesProvider.offerReversibleCompactingRecipes(exporter, compacted, input, RecipesProvider.method_36450(input), null, RecipesProvider.method_36450(compacted), null);
+        RecipesProvider.offerReversibleCompactingRecipes(exporter, compacted, input, RecipesProvider.getRecipeName(input), null, RecipesProvider.getRecipeName(compacted), null);
     }
 
     private static void offerReversibleCompactingRecipesWithCompactedItemGroup(Consumer<RecipeJsonProvider> exporter, ItemConvertible compacted, ItemConvertible input, String compactedItemId, String compactedItemGroup) {
-        RecipesProvider.offerReversibleCompactingRecipes(exporter, compacted, input, compactedItemId, compactedItemGroup, RecipesProvider.method_36450(compacted), null);
+        RecipesProvider.offerReversibleCompactingRecipes(exporter, compacted, input, compactedItemId, compactedItemGroup, RecipesProvider.getRecipeName(compacted), null);
     }
 
     private static void offerReversibleCompactingRecipesWithInputItemGroup(Consumer<RecipeJsonProvider> exporter, ItemConvertible input, ItemConvertible compacted, String inputItemId, String inputItemGroup) {
-        RecipesProvider.offerReversibleCompactingRecipes(exporter, input, compacted, RecipesProvider.method_36450(compacted), null, inputItemId, inputItemGroup);
+        RecipesProvider.offerReversibleCompactingRecipes(exporter, input, compacted, RecipesProvider.getRecipeName(compacted), null, inputItemId, inputItemGroup);
     }
 
     private static void offerReversibleCompactingRecipes(Consumer<RecipeJsonProvider> exporter, ItemConvertible input, ItemConvertible compacted, String compactedItemId, @Nullable String compactedItemGroup, String inputItemId, @Nullable String inputItemGroup) {
@@ -1221,7 +1221,7 @@ implements DataProvider {
         return Registry.ITEM.getId(item.asItem()).getPath();
     }
 
-    private static String method_36450(ItemConvertible item) {
+    private static String getRecipeName(ItemConvertible item) {
         return RecipesProvider.getItemPath(item);
     }
 

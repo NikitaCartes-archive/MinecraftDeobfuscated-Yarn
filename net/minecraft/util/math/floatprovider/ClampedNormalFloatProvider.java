@@ -16,11 +16,11 @@ import net.minecraft.util.math.floatprovider.FloatProviderType;
 
 public class ClampedNormalFloatProvider
 extends FloatProvider {
-    public static final Codec<ClampedNormalFloatProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("mean")).forGetter(clampedNormalFloatProvider -> Float.valueOf(clampedNormalFloatProvider.mean)), ((MapCodec)Codec.FLOAT.fieldOf("deviation")).forGetter(clampedNormalFloatProvider -> Float.valueOf(clampedNormalFloatProvider.deviation)), ((MapCodec)Codec.FLOAT.fieldOf("min")).forGetter(clampedNormalFloatProvider -> Float.valueOf(clampedNormalFloatProvider.min)), ((MapCodec)Codec.FLOAT.fieldOf("max")).forGetter(clampedNormalFloatProvider -> Float.valueOf(clampedNormalFloatProvider.max))).apply((Applicative<ClampedNormalFloatProvider, ?>)instance, ClampedNormalFloatProvider::new)).comapFlatMap(clampedNormalFloatProvider -> {
-        if (clampedNormalFloatProvider.max < clampedNormalFloatProvider.min) {
-            return DataResult.error("Max must be larger than min: [" + clampedNormalFloatProvider.min + ", " + clampedNormalFloatProvider.max + "]");
+    public static final Codec<ClampedNormalFloatProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("mean")).forGetter(provider -> Float.valueOf(provider.mean)), ((MapCodec)Codec.FLOAT.fieldOf("deviation")).forGetter(provider -> Float.valueOf(provider.deviation)), ((MapCodec)Codec.FLOAT.fieldOf("min")).forGetter(provider -> Float.valueOf(provider.min)), ((MapCodec)Codec.FLOAT.fieldOf("max")).forGetter(provider -> Float.valueOf(provider.max))).apply((Applicative<ClampedNormalFloatProvider, ?>)instance, ClampedNormalFloatProvider::new)).comapFlatMap(provider -> {
+        if (provider.max < provider.min) {
+            return DataResult.error("Max must be larger than min: [" + provider.min + ", " + provider.max + "]");
         }
-        return DataResult.success(clampedNormalFloatProvider);
+        return DataResult.success(provider);
     }, Function.identity());
     private float mean;
     private float deviation;

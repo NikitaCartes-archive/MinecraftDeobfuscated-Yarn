@@ -51,9 +51,9 @@ extends AbstractTexture {
         }
     }
 
-    private void upload(NativeImage nativeImage, boolean blur, boolean clamp) {
-        TextureUtil.prepareImage(this.getGlId(), 0, nativeImage.getWidth(), nativeImage.getHeight());
-        nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), blur, clamp, false, true);
+    private void upload(NativeImage image, boolean blur, boolean clamp) {
+        TextureUtil.prepareImage(this.getGlId(), 0, image.getWidth(), image.getHeight());
+        image.upload(0, 0, 0, 0, 0, image.getWidth(), image.getHeight(), blur, clamp, false, true);
     }
 
     protected TextureData loadTextureData(ResourceManager resourceManager) {
@@ -82,17 +82,17 @@ extends AbstractTexture {
             this.image = image;
         }
 
-        public static TextureData load(ResourceManager resourceManager, Identifier identifier) {
+        public static TextureData load(ResourceManager resourceManager, Identifier id) {
             TextureData textureData;
             block10: {
-                Resource resource = resourceManager.getResource(identifier);
+                Resource resource = resourceManager.getResource(id);
                 try {
                     NativeImage nativeImage = NativeImage.read(resource.getInputStream());
                     TextureResourceMetadata textureResourceMetadata = null;
                     try {
                         textureResourceMetadata = resource.getMetadata(TextureResourceMetadata.READER);
                     } catch (RuntimeException runtimeException) {
-                        LOGGER.warn("Failed reading metadata of: {}", (Object)identifier, (Object)runtimeException);
+                        LOGGER.warn("Failed reading metadata of: {}", (Object)id, (Object)runtimeException);
                     }
                     textureData = new TextureData(textureResourceMetadata, nativeImage);
                     if (resource == null) break block10;

@@ -225,7 +225,7 @@ public class Style {
         return new Style(this.color, this.bold, this.italic, this.underlined, strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
     }
 
-    public Style obfuscated(@Nullable Boolean obfuscated) {
+    public Style withObfuscated(@Nullable Boolean obfuscated) {
         return new Style(this.color, this.bold, this.italic, this.underlined, this.strikethrough, obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font);
     }
 

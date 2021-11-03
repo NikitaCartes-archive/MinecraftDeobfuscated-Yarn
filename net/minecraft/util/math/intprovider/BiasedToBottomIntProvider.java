@@ -15,11 +15,11 @@ import net.minecraft.util.math.intprovider.IntProviderType;
 
 public class BiasedToBottomIntProvider
 extends IntProvider {
-    public static final Codec<BiasedToBottomIntProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("min_inclusive")).forGetter(biasedToBottomIntProvider -> biasedToBottomIntProvider.min), ((MapCodec)Codec.INT.fieldOf("max_inclusive")).forGetter(biasedToBottomIntProvider -> biasedToBottomIntProvider.max)).apply((Applicative<BiasedToBottomIntProvider, ?>)instance, BiasedToBottomIntProvider::new)).comapFlatMap(biasedToBottomIntProvider -> {
-        if (biasedToBottomIntProvider.max < biasedToBottomIntProvider.min) {
-            return DataResult.error("Max must be at least min, min_inclusive: " + biasedToBottomIntProvider.min + ", max_inclusive: " + biasedToBottomIntProvider.max);
+    public static final Codec<BiasedToBottomIntProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("min_inclusive")).forGetter(provider -> provider.min), ((MapCodec)Codec.INT.fieldOf("max_inclusive")).forGetter(provider -> provider.max)).apply((Applicative<BiasedToBottomIntProvider, ?>)instance, BiasedToBottomIntProvider::new)).comapFlatMap(provider -> {
+        if (provider.max < provider.min) {
+            return DataResult.error("Max must be at least min, min_inclusive: " + provider.min + ", max_inclusive: " + provider.max);
         }
-        return DataResult.success(biasedToBottomIntProvider);
+        return DataResult.success(provider);
     }, Function.identity());
     private final int min;
     private final int max;

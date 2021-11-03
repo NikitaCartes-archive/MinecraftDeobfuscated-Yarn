@@ -5,7 +5,6 @@ package net.minecraft.util.profiling.jfr;
 
 import java.net.SocketAddress;
 import java.nio.file.Path;
-import java.util.function.Supplier;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.InstanceType;
@@ -17,9 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public interface FlightProfiler {
-    public static final FlightProfiler INSTANCE = Runtime.class.getModule().getLayer().findModule("jdk.jfr").isPresent() ? new JfrProfiler() : new NoopProfiler();
-
-    public void registerEvents();
+    public static final FlightProfiler INSTANCE = Runtime.class.getModule().getLayer().findModule("jdk.jfr").isPresent() ? JfrProfiler.getInstance() : new NoopProfiler();
 
     public boolean start(InstanceType var1);
 
@@ -31,9 +28,9 @@ public interface FlightProfiler {
 
     public void onTick(float var1);
 
-    public void onPacketReceived(Supplier<String> var1, SocketAddress var2, int var3);
+    public void onPacketReceived(int var1, int var2, SocketAddress var3, int var4);
 
-    public void onPacketSent(Supplier<String> var1, SocketAddress var2, int var3);
+    public void onPacketSent(int var1, int var2, SocketAddress var3, int var4);
 
     @Nullable
     public Finishable startWorldLoadProfiling();
@@ -45,10 +42,6 @@ public interface FlightProfiler {
     implements FlightProfiler {
         static final Logger LOGGER = LogManager.getLogger();
         static final Finishable NOOP = () -> {};
-
-        @Override
-        public void registerEvents() {
-        }
 
         @Override
         public boolean start(InstanceType instanceType) {
@@ -72,11 +65,11 @@ public interface FlightProfiler {
         }
 
         @Override
-        public void onPacketReceived(Supplier<String> packetNameSupplier, SocketAddress remoteAddress, int bytes) {
+        public void onPacketReceived(int protocolId, int packetId, SocketAddress remoteAddress, int bytes) {
         }
 
         @Override
-        public void onPacketSent(Supplier<String> packetNameSupplier, SocketAddress remoteAddress, int bytes) {
+        public void onPacketSent(int protocolId, int packetId, SocketAddress remoteAddress, int bytes) {
         }
 
         @Override

@@ -43,7 +43,7 @@ implements FluidDrainable {
     private static final float field_31217 = 0.9f;
     private static final float field_31218 = 1.5f;
     private static final float field_31219 = 2.5f;
-    private static final VoxelShape field_31220 = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, 0.9f, 1.0);
+    private static final VoxelShape FALLING_SHAPE = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, 0.9f, 1.0);
 
     public PowderSnowBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -87,11 +87,11 @@ implements FluidDrainable {
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         EntityShapeContext entityShapeContext;
-        Optional<Entity> optional;
-        if (context instanceof EntityShapeContext && (optional = (entityShapeContext = (EntityShapeContext)context).getEntity()).isPresent()) {
-            Entity entity = optional.get();
+        Entity entity;
+        ShapeContext shapeContext = context;
+        if (shapeContext instanceof EntityShapeContext && (entity = (entityShapeContext = (EntityShapeContext)shapeContext).getEntity()) != null) {
             if (entity.fallDistance > 2.5f) {
-                return field_31220;
+                return FALLING_SHAPE;
             }
             boolean bl = entity instanceof FallingBlockEntity;
             if (bl || PowderSnowBlock.canWalkOnPowderSnow(entity) && context.isAbove(VoxelShapes.fullCube(), pos, false) && !context.isDescending()) {

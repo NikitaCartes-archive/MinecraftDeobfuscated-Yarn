@@ -56,7 +56,7 @@ public interface MultilineText {
         return MultilineText.create(renderer, Arrays.stream(texts).map(Text::asOrderedText).map(text -> new Line((OrderedText)text, renderer.getWidth((OrderedText)text))).collect(ImmutableList.toImmutableList()));
     }
 
-    public static MultilineText method_35726(TextRenderer renderer, List<Text> texts) {
+    public static MultilineText createFromTexts(TextRenderer renderer, List<Text> texts) {
         return MultilineText.create(renderer, texts.stream().map(Text::asOrderedText).map(text -> new Line((OrderedText)text, renderer.getWidth((OrderedText)text))).collect(ImmutableList.toImmutableList()));
     }
 

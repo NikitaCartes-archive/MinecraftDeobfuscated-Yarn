@@ -242,8 +242,8 @@ public class Texture {
         return new Texture().put(TextureKey.LIT_LOG, Texture.getSubId(block, "_log_lit")).put(TextureKey.FIRE, Texture.getSubId(block, "_fire"));
     }
 
-    public static Texture candleCake(Block block, boolean bl) {
-        return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(Blocks.CAKE, "_side")).put(TextureKey.BOTTOM, Texture.getSubId(Blocks.CAKE, "_bottom")).put(TextureKey.TOP, Texture.getSubId(Blocks.CAKE, "_top")).put(TextureKey.SIDE, Texture.getSubId(Blocks.CAKE, "_side")).put(TextureKey.CANDLE, Texture.getSubId(block, bl ? "_lit" : ""));
+    public static Texture candleCake(Block block, boolean lit) {
+        return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(Blocks.CAKE, "_side")).put(TextureKey.BOTTOM, Texture.getSubId(Blocks.CAKE, "_bottom")).put(TextureKey.TOP, Texture.getSubId(Blocks.CAKE, "_top")).put(TextureKey.SIDE, Texture.getSubId(Blocks.CAKE, "_side")).put(TextureKey.CANDLE, Texture.getSubId(block, lit ? "_lit" : ""));
     }
 
     public static Texture cauldron(Identifier content) {
