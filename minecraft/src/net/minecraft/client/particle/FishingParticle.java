@@ -9,8 +9,8 @@ import net.minecraft.particle.DefaultParticleType;
 public class FishingParticle extends SpriteBillboardParticle {
 	private final SpriteProvider spriteProvider;
 
-	FishingParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-		super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
+	FishingParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.spriteProvider = spriteProvider;
 		this.velocityX *= 0.3F;
 		this.velocityY = Math.random() * 0.2F + 0.1F;
@@ -19,9 +19,9 @@ public class FishingParticle extends SpriteBillboardParticle {
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.setSpriteForAge(spriteProvider);
 		this.gravityStrength = 0.0F;
-		this.velocityX = g;
-		this.velocityY = h;
-		this.velocityZ = i;
+		this.velocityX = velocityX;
+		this.velocityY = velocityY;
+		this.velocityZ = velocityZ;
 	}
 
 	@Override

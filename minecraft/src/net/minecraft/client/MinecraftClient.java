@@ -528,13 +528,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.windowProvider = new WindowProvider(this);
 		this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, this.getWindowTitle());
 		this.onWindowFocusChanged(true);
-
-		try {
-			InputStream inputStream = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
-			InputStream inputStream2 = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
-			this.window.setIcon(inputStream, inputStream2);
-		} catch (IOException var9) {
-			LOGGER.error("Couldn't set icon", (Throwable)var9);
+		if (!IS_SYSTEM_MAC) {
+			try {
+				InputStream inputStream = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
+				InputStream inputStream2 = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
+				this.window.setIcon(inputStream, inputStream2);
+			} catch (IOException var9) {
+				LOGGER.error("Couldn't set icon", (Throwable)var9);
+			}
 		}
 
 		this.window.setFramerateLimit(this.options.maxFps);
@@ -1607,6 +1608,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 							case ENTITY:
 								EntityHitResult entityHitResult = (EntityHitResult)this.crosshairTarget;
 								Entity entity = entityHitResult.getEntity();
+								if (!this.world.getWorldBorder().contains(entity.getBlockPos())) {
+									return;
+								}
+
 								ActionResult actionResult = this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand);
 								if (!actionResult.isAccepted()) {
 									actionResult = this.interactionManager.interactEntity(this.player, entity, hand);

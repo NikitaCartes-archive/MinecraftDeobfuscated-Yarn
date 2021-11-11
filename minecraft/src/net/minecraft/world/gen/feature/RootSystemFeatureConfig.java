@@ -9,7 +9,7 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 public class RootSystemFeatureConfig implements FeatureConfig {
 	public static final Codec<RootSystemFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.feature),
+					PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.feature),
 					Codec.intRange(1, 64)
 						.fieldOf("required_vertical_space_for_tree")
 						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.requiredVerticalSpaceForTree),
@@ -30,7 +30,7 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 				)
 				.apply(instance, RootSystemFeatureConfig::new)
 	);
-	public final Supplier<ConfiguredFeature<?, ?>> feature;
+	public final Supplier<PlacedFeature> feature;
 	public final int requiredVerticalSpaceForTree;
 	public final int rootRadius;
 	public final Identifier rootReplaceable;
@@ -44,7 +44,7 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 	public final int allowedVerticalWaterForTree;
 
 	public RootSystemFeatureConfig(
-		Supplier<ConfiguredFeature<?, ?>> feature,
+		Supplier<PlacedFeature> feature,
 		int requiredVerticalSpaceForTree,
 		int rootRadius,
 		Identifier rootReplaceable,

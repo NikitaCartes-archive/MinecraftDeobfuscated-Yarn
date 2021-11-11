@@ -1,9 +1,9 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.MobEntity;
@@ -42,7 +42,7 @@ public class AttackTask<E extends MobEntity> extends Task<E> {
 	}
 
 	private boolean isAttackTargetVisible(E entity) {
-		return ((class_6670)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).method_38972(this.getAttackTarget(entity));
+		return ((LivingTargetCache)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).contains(this.getAttackTarget(entity));
 	}
 
 	private boolean isNearAttackTarget(E entity) {

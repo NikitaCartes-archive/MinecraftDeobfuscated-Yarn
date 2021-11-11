@@ -1,14 +1,11 @@
 package net.minecraft.block;
 
-import java.util.Optional;
 import java.util.Random;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.gen.feature.UndergroundConfiguredFeatures;
 
 public class MossBlock extends Block implements Fertilizable {
 	public MossBlock(AbstractBlock.Settings settings) {
@@ -27,11 +24,6 @@ public class MossBlock extends Block implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		Feature.VEGETATION_PATCH
-			.generate(
-				new FeatureContext<>(
-					Optional.empty(), world, world.getChunkManager().getChunkGenerator(), random, pos.up(), ConfiguredFeatures.MOSS_PATCH_BONEMEAL.getConfig()
-				)
-			);
+		UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL.generate(world, world.getChunkManager().getChunkGenerator(), random, pos.up());
 	}
 }

@@ -84,7 +84,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 	}
 
 	private boolean generateFeature(StructureWorldAccess world, ChunkGenerator generator, RootSystemFeatureConfig config, Random random, BlockPos pos) {
-		return ((ConfiguredFeature)config.feature.get()).generate(world, generator, random, pos);
+		return ((PlacedFeature)config.feature.get()).generateUnregistered(world, generator, random, pos);
 	}
 
 	private void generateRoots(StructureWorldAccess world, RootSystemFeatureConfig config, Random random, int x, int z, BlockPos.Mutable mutablePos) {

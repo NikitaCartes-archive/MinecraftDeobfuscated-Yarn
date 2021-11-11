@@ -203,10 +203,10 @@ public class ParticleManager implements ResourceReloader {
 		CompletableFuture<?>[] completableFutures = (CompletableFuture<?>[])Registry.PARTICLE_TYPE
 			.getIds()
 			.stream()
-			.map(identifier -> CompletableFuture.runAsync(() -> this.loadTextureList(manager, identifier, map), prepareExecutor))
+			.map(id -> CompletableFuture.runAsync(() -> this.loadTextureList(manager, id, map), prepareExecutor))
 			.toArray(CompletableFuture[]::new);
 		return CompletableFuture.allOf(completableFutures)
-			.thenApplyAsync(void_ -> {
+			.thenApplyAsync(v -> {
 				prepareProfiler.startTick();
 				prepareProfiler.push("stitching");
 				SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(manager, map.values().stream().flatMap(Collection::stream), prepareProfiler, 0);
@@ -358,7 +358,7 @@ public class ParticleManager implements ResourceReloader {
 		Particle particle;
 		if (!this.newParticles.isEmpty()) {
 			while ((particle = (Particle)this.newParticles.poll()) != null) {
-				((Queue)this.particles.computeIfAbsent(particle.getType(), particleTextureSheet -> EvictingQueue.create(16384))).add(particle);
+				((Queue)this.particles.computeIfAbsent(particle.getType(), sheet -> EvictingQueue.create(16384))).add(particle);
 			}
 		}
 	}
@@ -400,7 +400,7 @@ public class ParticleManager implements ResourceReloader {
 	}
 
 	public void renderParticles(
-		MatrixStack matrices, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f
+		MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, LightmapTextureManager lightmapTextureManager, Camera camera, float tickDelta
 	) {
 		lightmapTextureManager.enable();
 		RenderSystem.enableDepthTest();
@@ -420,7 +420,7 @@ public class ParticleManager implements ResourceReloader {
 
 				for (Particle particle : iterable) {
 					try {
-						particle.buildGeometry(bufferBuilder, camera, f);
+						particle.buildGeometry(bufferBuilder, camera, tickDelta);
 					} catch (Throwable var17) {
 						CrashReport crashReport = CrashReport.create(var17, "Rendering Particle");
 						CrashReportSection crashReportSection = crashReport.addElement("Particle being rendered");
@@ -453,25 +453,25 @@ public class ParticleManager implements ResourceReloader {
 			VoxelShape voxelShape = state.getOutlineShape(this.world, pos);
 			double d = 0.25;
 			voxelShape.forEachBox(
-				(dx, e, f, g, h, i) -> {
-					double j = Math.min(1.0, g - dx);
-					double k = Math.min(1.0, h - e);
-					double l = Math.min(1.0, i - f);
-					int m = Math.max(2, MathHelper.ceil(j / 0.25));
-					int n = Math.max(2, MathHelper.ceil(k / 0.25));
-					int o = Math.max(2, MathHelper.ceil(l / 0.25));
+				(minX, minY, minZ, maxX, maxY, maxZ) -> {
+					double dx = Math.min(1.0, maxX - minX);
+					double e = Math.min(1.0, maxY - minY);
+					double f = Math.min(1.0, maxZ - minZ);
+					int i = Math.max(2, MathHelper.ceil(dx / 0.25));
+					int j = Math.max(2, MathHelper.ceil(e / 0.25));
+					int k = Math.max(2, MathHelper.ceil(f / 0.25));
 
-					for (int p = 0; p < m; p++) {
-						for (int q = 0; q < n; q++) {
-							for (int r = 0; r < o; r++) {
-								double s = ((double)p + 0.5) / (double)m;
-								double t = ((double)q + 0.5) / (double)n;
-								double u = ((double)r + 0.5) / (double)o;
-								double v = s * j + dx;
-								double w = t * k + e;
-								double x = u * l + f;
+					for (int l = 0; l < i; l++) {
+						for (int m = 0; m < j; m++) {
+							for (int n = 0; n < k; n++) {
+								double g = ((double)l + 0.5) / (double)i;
+								double h = ((double)m + 0.5) / (double)j;
+								double o = ((double)n + 0.5) / (double)k;
+								double p = g * dx + minX;
+								double q = h * e + minY;
+								double r = o * f + minZ;
 								this.addParticle(
-									new BlockDustParticle(this.world, (double)pos.getX() + v, (double)pos.getY() + w, (double)pos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, state, pos)
+									new BlockDustParticle(this.world, (double)pos.getX() + p, (double)pos.getY() + q, (double)pos.getZ() + r, g - 0.5, h - 0.5, o - 0.5, state, pos)
 								);
 							}
 						}

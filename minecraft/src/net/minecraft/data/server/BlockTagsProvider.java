@@ -1153,7 +1153,8 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.addTag(BlockTags.SHULKER_BOXES)
 			.addTag(BlockTags.ANVIL)
 			.addTag(BlockTags.CAULDRONS)
-			.addTag(BlockTags.RAILS);
+			.addTag(BlockTags.RAILS)
+			.add(Blocks.CONDUIT);
 		this.getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE)
 			.add(
 				Blocks.CLAY,

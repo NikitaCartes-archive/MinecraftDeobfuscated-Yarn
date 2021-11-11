@@ -7,7 +7,9 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
+import net.minecraft.world.gen.feature.PileConfiguredFeatures;
+import net.minecraft.world.gen.feature.TreePlacedFeatures;
+import net.minecraft.world.gen.feature.VegetationConfiguredFeatures;
 
 public class PlainsVillageData {
 	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
@@ -190,7 +192,7 @@ public class PlainsVillageData {
 			new StructurePool(
 				new Identifier("village/plains/trees"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.OAK_CHECKED), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.OAK_CHECKED), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
@@ -200,9 +202,9 @@ public class PlainsVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofLegacySingle("village/plains/plains_lamp_1"), 2),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.OAK_CHECKED), 1),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.FLOWER_PLAIN), 1),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_HAY), 1),
+					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.OAK_CHECKED), 1),
+					Pair.of(StructurePoolElement.ofFeature(VegetationConfiguredFeatures.FLOWER_PLAIN.withPlacement()), 1),
+					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_HAY.withPlacement()), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 2)
 				),
 				StructurePool.Projection.RIGID
@@ -214,9 +216,9 @@ public class PlainsVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/plains_lamp_1", StructureProcessorLists.ZOMBIE_PLAINS), 1),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.OAK_CHECKED), 1),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.FLOWER_PLAIN), 1),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_HAY), 1),
+					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.OAK_CHECKED), 1),
+					Pair.of(StructurePoolElement.ofFeature(VegetationConfiguredFeatures.FLOWER_PLAIN.withPlacement()), 1),
+					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_HAY.withPlacement()), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 2)
 				),
 				StructurePool.Projection.RIGID

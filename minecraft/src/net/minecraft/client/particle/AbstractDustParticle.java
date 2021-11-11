@@ -11,15 +11,7 @@ public class AbstractDustParticle<T extends AbstractDustParticleEffect> extends 
 	private final SpriteProvider spriteProvider;
 
 	protected AbstractDustParticle(
-		ClientWorld world,
-		double x,
-		double y,
-		double z,
-		double velocityX,
-		double velocityY,
-		double velocityZ,
-		T abstractDustParticleEffect,
-		SpriteProvider spriteProvider
+		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, T parameters, SpriteProvider spriteProvider
 	) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ);
 		this.velocityMultiplier = 0.96F;
@@ -29,17 +21,17 @@ public class AbstractDustParticle<T extends AbstractDustParticleEffect> extends 
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
 		float f = this.random.nextFloat() * 0.4F + 0.6F;
-		this.colorRed = this.method_33076(abstractDustParticleEffect.getColor().getX(), f);
-		this.colorGreen = this.method_33076(abstractDustParticleEffect.getColor().getY(), f);
-		this.colorBlue = this.method_33076(abstractDustParticleEffect.getColor().getZ(), f);
-		this.scale = this.scale * 0.75F * abstractDustParticleEffect.getScale();
+		this.colorRed = this.darken(parameters.getColor().getX(), f);
+		this.colorGreen = this.darken(parameters.getColor().getY(), f);
+		this.colorBlue = this.darken(parameters.getColor().getZ(), f);
+		this.scale = this.scale * 0.75F * parameters.getScale();
 		int i = (int)(8.0 / (this.random.nextDouble() * 0.8 + 0.2));
-		this.maxAge = (int)Math.max((float)i * abstractDustParticleEffect.getScale(), 1.0F);
+		this.maxAge = (int)Math.max((float)i * parameters.getScale(), 1.0F);
 		this.setSpriteForAge(spriteProvider);
 	}
 
-	protected float method_33076(float f, float g) {
-		return (this.random.nextFloat() * 0.2F + 0.8F) * f * g;
+	protected float darken(float colorComponent, float multiplier) {
+		return (this.random.nextFloat() * 0.2F + 0.8F) * colorComponent * multiplier;
 	}
 
 	@Override

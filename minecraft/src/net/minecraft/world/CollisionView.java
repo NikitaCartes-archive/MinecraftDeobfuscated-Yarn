@@ -78,7 +78,7 @@ public interface CollisionView extends BlockView {
 		return worldBorder.canCollide(entity, box) ? worldBorder.asVoxelShape() : null;
 	}
 
-	default boolean method_39454(@Nullable Entity entity, Box box) {
+	default boolean canCollide(@Nullable Entity entity, Box box) {
 		BlockCollisionSpliterator blockCollisionSpliterator = new BlockCollisionSpliterator(this, entity, box, true);
 
 		while (blockCollisionSpliterator.hasNext()) {

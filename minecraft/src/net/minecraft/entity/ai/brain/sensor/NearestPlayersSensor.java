@@ -24,14 +24,14 @@ public class NearestPlayersSensor extends Sensor<LivingEntity> {
 		List<PlayerEntity> list = (List<PlayerEntity>)world.getPlayers()
 			.stream()
 			.filter(EntityPredicates.EXCEPT_SPECTATOR)
-			.filter(serverPlayerEntity -> entity.isInRange(serverPlayerEntity, 16.0))
+			.filter(player -> entity.isInRange(player, 16.0))
 			.sorted(Comparator.comparingDouble(entity::squaredDistanceTo))
 			.collect(Collectors.toList());
 		Brain<?> brain = entity.getBrain();
 		brain.remember(MemoryModuleType.NEAREST_PLAYERS, list);
-		List<PlayerEntity> list2 = (List<PlayerEntity>)list.stream().filter(playerEntity -> testTargetPredicate(entity, playerEntity)).collect(Collectors.toList());
+		List<PlayerEntity> list2 = (List<PlayerEntity>)list.stream().filter(player -> testTargetPredicate(entity, player)).collect(Collectors.toList());
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list2.isEmpty() ? null : (PlayerEntity)list2.get(0));
-		Optional<PlayerEntity> optional = list2.stream().filter(playerEntity -> testAttackableTargetPredicate(entity, playerEntity)).findFirst();
+		Optional<PlayerEntity> optional = list2.stream().filter(player -> testAttackableTargetPredicate(entity, player)).findFirst();
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, optional);
 	}
 }

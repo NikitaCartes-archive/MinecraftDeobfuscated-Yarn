@@ -4,7 +4,6 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,45 +25,45 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class SimpleStructurePiece extends StructurePiece {
 	private static final Logger LOGGER = LogManager.getLogger();
-	protected final String identifier;
+	protected final String template;
 	protected Structure structure;
 	protected StructurePlacementData placementData;
 	protected BlockPos pos;
 
 	public SimpleStructurePiece(
-		StructurePieceType type, int i, StructureManager structureManager, Identifier identifier, String string, StructurePlacementData placementData, BlockPos pos
+		StructurePieceType type, int length, StructureManager structureManager, Identifier id, String template, StructurePlacementData placementData, BlockPos pos
 	) {
-		super(type, i, structureManager.getStructureOrBlank(identifier).calculateBoundingBox(placementData, pos));
+		super(type, length, structureManager.getStructureOrBlank(id).calculateBoundingBox(placementData, pos));
 		this.setOrientation(Direction.NORTH);
-		this.identifier = string;
+		this.template = template;
 		this.pos = pos;
-		this.structure = structureManager.getStructureOrBlank(identifier);
+		this.structure = structureManager.getStructureOrBlank(id);
 		this.placementData = placementData;
 	}
 
 	public SimpleStructurePiece(
-		StructurePieceType type, NbtCompound nbtCompound, StructureManager structureManager, Function<Identifier, StructurePlacementData> function
+		StructurePieceType type, NbtCompound nbt, StructureManager structureManager, Function<Identifier, StructurePlacementData> placementDataGetter
 	) {
-		super(type, nbtCompound);
+		super(type, nbt);
 		this.setOrientation(Direction.NORTH);
-		this.identifier = nbtCompound.getString("Template");
-		this.pos = new BlockPos(nbtCompound.getInt("TPX"), nbtCompound.getInt("TPY"), nbtCompound.getInt("TPZ"));
+		this.template = nbt.getString("Template");
+		this.pos = new BlockPos(nbt.getInt("TPX"), nbt.getInt("TPY"), nbt.getInt("TPZ"));
 		Identifier identifier = this.getId();
 		this.structure = structureManager.getStructureOrBlank(identifier);
-		this.placementData = (StructurePlacementData)function.apply(identifier);
+		this.placementData = (StructurePlacementData)placementDataGetter.apply(identifier);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
 	}
 
 	protected Identifier getId() {
-		return new Identifier(this.identifier);
+		return new Identifier(this.template);
 	}
 
 	@Override
-	protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+	protected void writeNbt(StructureContext context, NbtCompound nbt) {
 		nbt.putInt("TPX", this.pos.getX());
 		nbt.putInt("TPY", this.pos.getY());
 		nbt.putInt("TPZ", this.pos.getZ());
-		nbt.putString("Template", this.identifier);
+		nbt.putString("Template", this.template);
 	}
 
 	@Override
@@ -73,18 +72,18 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
-		BlockBox boundingBox,
+		BlockBox chunkBox,
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		this.placementData.setBoundingBox(boundingBox);
+		this.placementData.setBoundingBox(chunkBox);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
 		if (this.structure.place(world, this.pos, pos, this.placementData, random, Block.NOTIFY_LISTENERS)) {
 			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.nbt != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.nbt.getString("mode"));
 					if (structureBlockMode == StructureBlockMode.DATA) {
-						this.handleMetadata(structureBlockInfo.nbt.getString("metadata"), structureBlockInfo.pos, world, random, boundingBox);
+						this.handleMetadata(structureBlockInfo.nbt.getString("metadata"), structureBlockInfo.pos, world, random, chunkBox);
 					}
 				}
 			}

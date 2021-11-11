@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.util.Identifier;
 
@@ -85,6 +86,10 @@ public class RegistryKey<T> {
 	 */
 	public boolean isOf(RegistryKey<? extends Registry<?>> registry) {
 		return this.registry.equals(registry.getValue());
+	}
+
+	public <E> Optional<RegistryKey<E>> method_39752(RegistryKey<? extends Registry<E>> registryKey) {
+		return this.isOf(registryKey) ? Optional.of(this) : Optional.empty();
 	}
 
 	public Identifier getValue() {

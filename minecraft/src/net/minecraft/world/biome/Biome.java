@@ -67,6 +67,9 @@ public final class Biome {
 	static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler(
 		new ChunkRandom(new AtomicSimpleRandom(3456L)), ImmutableList.of(-2, -1, 0)
 	);
+	@Deprecated(
+		forRemoval = true
+	)
 	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(
 		new ChunkRandom(new AtomicSimpleRandom(2345L)), ImmutableList.of(0)
 	);

@@ -12,6 +12,8 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class PathAwareEntity extends MobEntity {
+	protected static final float field_35670 = 0.0F;
+
 	protected PathAwareEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
 		super(entityType, world);
 	}

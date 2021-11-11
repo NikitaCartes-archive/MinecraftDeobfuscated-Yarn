@@ -1,0 +1,33 @@
+package net.minecraft.world.gen.decorator;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Random;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.blockpredicate.BlockPredicate;
+
+public class BlockFilterPlacementModifier extends AbstractConditionalPlacementModifier {
+	public static final Codec<BlockFilterPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(BlockPredicate.BASE_CODEC.fieldOf("predicate").forGetter(blockFilterPlacementModifier -> blockFilterPlacementModifier.predicate))
+				.apply(instance, BlockFilterPlacementModifier::new)
+	);
+	private final BlockPredicate predicate;
+
+	private BlockFilterPlacementModifier(BlockPredicate predicate) {
+		this.predicate = predicate;
+	}
+
+	public static BlockFilterPlacementModifier of(BlockPredicate predicate) {
+		return new BlockFilterPlacementModifier(predicate);
+	}
+
+	@Override
+	protected boolean shouldPlace(DecoratorContext context, Random random, BlockPos pos) {
+		return this.predicate.test(context.getWorld(), pos);
+	}
+
+	@Override
+	public PlacementModifierType<?> getType() {
+		return PlacementModifierType.BLOCK_PREDICATE_FILTER;
+	}
+}

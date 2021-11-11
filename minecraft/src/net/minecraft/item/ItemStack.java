@@ -145,7 +145,7 @@ import org.apache.logging.log4j.Logger;
 public final class ItemStack {
 	public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registry.ITEM.fieldOf("id").forGetter(stack -> stack.item),
+					Registry.ITEM.method_39673().fieldOf("id").forGetter(stack -> stack.item),
 					Codec.INT.fieldOf("Count").forGetter(stack -> stack.count),
 					NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.nbt))
 				)

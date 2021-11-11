@@ -22,6 +22,7 @@ import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +40,7 @@ public class GenerationSettings {
 						)
 						.fieldOf("carvers")
 						.forGetter(generationSettings -> generationSettings.carvers),
-					ConfiguredFeature.field_26756
+					PlacedFeature.LIST_CODEC
 						.promotePartial(Util.addPrefix("Feature: ", LOGGER::error))
 						.flatXmap(Codecs.createPresentValuesChecker(), Codecs.createPresentValuesChecker())
 						.listOf()
@@ -49,20 +50,20 @@ public class GenerationSettings {
 				.apply(instance, GenerationSettings::new)
 	);
 	private final Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers;
-	private final List<List<Supplier<ConfiguredFeature<?, ?>>>> features;
+	private final List<List<Supplier<PlacedFeature>>> features;
 	private final List<ConfiguredFeature<?, ?>> flowerFeatures;
-	private final Set<ConfiguredFeature<?, ?>> allowedFeatures;
+	private final Set<PlacedFeature> allowedFeatures;
 
-	GenerationSettings(Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> map, List<List<Supplier<ConfiguredFeature<?, ?>>>> list) {
+	GenerationSettings(Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> map, List<List<Supplier<PlacedFeature>>> list) {
 		this.carvers = map;
 		this.features = list;
 		this.flowerFeatures = (List<ConfiguredFeature<?, ?>>)list.stream()
 			.flatMap(Collection::stream)
 			.map(Supplier::get)
-			.flatMap(ConfiguredFeature::getDecoratedFeatures)
+			.flatMap(PlacedFeature::getDecoratedFeatures)
 			.filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER)
 			.collect(ImmutableList.toImmutableList());
-		this.allowedFeatures = (Set<ConfiguredFeature<?, ?>>)list.stream().flatMap(Collection::stream).map(Supplier::get).collect(Collectors.toSet());
+		this.allowedFeatures = (Set<PlacedFeature>)list.stream().flatMap(Collection::stream).map(Supplier::get).collect(Collectors.toSet());
 	}
 
 	public List<Supplier<ConfiguredCarver<?>>> getCarversForStep(GenerationStep.Carver carverStep) {
@@ -77,23 +78,23 @@ public class GenerationSettings {
 	 * Returns the lists of features configured for each {@link net.minecraft.world.gen.GenerationStep.Feature feature generation step}, up to the highest step that has a configured feature.
 	 * Entries are guaranteed to not be null, but may be empty lists if an earlier step has no features, but a later step does.
 	 */
-	public List<List<Supplier<ConfiguredFeature<?, ?>>>> getFeatures() {
+	public List<List<Supplier<PlacedFeature>>> getFeatures() {
 		return this.features;
 	}
 
-	public boolean isFeatureAllowed(ConfiguredFeature<?, ?> feature) {
-		return this.allowedFeatures.contains(feature);
+	public boolean isFeatureAllowed(PlacedFeature placedFeature) {
+		return this.allowedFeatures.contains(placedFeature);
 	}
 
 	public static class Builder {
 		private final Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers = Maps.<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>>newLinkedHashMap();
-		private final List<List<Supplier<ConfiguredFeature<?, ?>>>> features = Lists.<List<Supplier<ConfiguredFeature<?, ?>>>>newArrayList();
+		private final List<List<Supplier<PlacedFeature>>> features = Lists.<List<Supplier<PlacedFeature>>>newArrayList();
 
-		public GenerationSettings.Builder feature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature) {
-			return this.feature(featureStep.ordinal(), () -> feature);
+		public GenerationSettings.Builder feature(GenerationStep.Feature featureStep, PlacedFeature placedFeature) {
+			return this.feature(featureStep.ordinal(), () -> placedFeature);
 		}
 
-		public GenerationSettings.Builder feature(int stepIndex, Supplier<ConfiguredFeature<?, ?>> featureSupplier) {
+		public GenerationSettings.Builder feature(int stepIndex, Supplier<PlacedFeature> featureSupplier) {
 			this.addFeatureStep(stepIndex);
 			((List)this.features.get(stepIndex)).add(featureSupplier);
 			return this;
@@ -116,7 +117,7 @@ public class GenerationSettings {
 					.entrySet()
 					.stream()
 					.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ImmutableList.copyOf((Collection)entry.getValue()))),
-				(List<List<Supplier<ConfiguredFeature<?, ?>>>>)this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList())
+				(List<List<Supplier<PlacedFeature>>>)this.features.stream().map(ImmutableList::copyOf).collect(ImmutableList.toImmutableList())
 			);
 		}
 	}

@@ -1,34 +1,34 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
+import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
-public class LakeFeature extends Feature<SingleStateFeatureConfig> {
+@Deprecated
+public class LakeFeature extends Feature<LakeFeature.Config> {
 	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-	public LakeFeature(Codec<SingleStateFeatureConfig> codec) {
+	public LakeFeature(Codec<LakeFeature.Config> codec) {
 		super(codec);
 	}
 
 	@Override
-	public boolean generate(FeatureContext<SingleStateFeatureConfig> context) {
+	public boolean generate(FeatureContext<LakeFeature.Config> context) {
 		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		Random random = context.getRandom();
-		SingleStateFeatureConfig singleStateFeatureConfig = context.getConfig();
-
-		while (blockPos.getY() > structureWorldAccess.getBottomY() + 5 && structureWorldAccess.isAir(blockPos)) {
-			blockPos = blockPos.down();
-		}
-
+		LakeFeature.Config config = context.getConfig();
 		if (blockPos.getY() <= structureWorldAccess.getBottomY() + 4) {
 			return false;
 		} else {
@@ -62,25 +62,27 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 					}
 				}
 
-				for (int j = 0; j < 16; j++) {
-					for (int s = 0; s < 16; s++) {
-						for (int t = 0; t < 8; t++) {
-							boolean bl = !bls[(j * 16 + s) * 8 + t]
+				BlockState blockState = config.fluid().getBlockState(random, blockPos);
+
+				for (int s = 0; s < 16; s++) {
+					for (int t = 0; t < 16; t++) {
+						for (int u = 0; u < 8; u++) {
+							boolean bl = !bls[(s * 16 + t) * 8 + u]
 								&& (
-									j < 15 && bls[((j + 1) * 16 + s) * 8 + t]
-										|| j > 0 && bls[((j - 1) * 16 + s) * 8 + t]
-										|| s < 15 && bls[(j * 16 + s + 1) * 8 + t]
-										|| s > 0 && bls[(j * 16 + (s - 1)) * 8 + t]
-										|| t < 7 && bls[(j * 16 + s) * 8 + t + 1]
-										|| t > 0 && bls[(j * 16 + s) * 8 + (t - 1)]
+									s < 15 && bls[((s + 1) * 16 + t) * 8 + u]
+										|| s > 0 && bls[((s - 1) * 16 + t) * 8 + u]
+										|| t < 15 && bls[(s * 16 + t + 1) * 8 + u]
+										|| t > 0 && bls[(s * 16 + (t - 1)) * 8 + u]
+										|| u < 7 && bls[(s * 16 + t) * 8 + u + 1]
+										|| u > 0 && bls[(s * 16 + t) * 8 + (u - 1)]
 								);
 							if (bl) {
-								Material material = structureWorldAccess.getBlockState(blockPos.add(j, t, s)).getMaterial();
-								if (t >= 4 && material.isLiquid()) {
+								Material material = structureWorldAccess.getBlockState(blockPos.add(s, u, t)).getMaterial();
+								if (u >= 4 && material.isLiquid()) {
 									return false;
 								}
 
-								if (t < 4 && !material.isSolid() && structureWorldAccess.getBlockState(blockPos.add(j, t, s)) != singleStateFeatureConfig.state) {
+								if (u < 4 && !material.isSolid() && structureWorldAccess.getBlockState(blockPos.add(s, u, t)) != blockState) {
 									return false;
 								}
 							}
@@ -88,29 +90,59 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 					}
 				}
 
-				for (int j = 0; j < 16; j++) {
-					for (int s = 0; s < 16; s++) {
-						for (int tx = 0; tx < 8; tx++) {
-							if (bls[(j * 16 + s) * 8 + tx]) {
-								BlockPos blockPos2 = blockPos.add(j, tx, s);
-								boolean bl2 = tx >= 4;
-								structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : singleStateFeatureConfig.state, Block.NOTIFY_LISTENERS);
-								if (bl2) {
-									structureWorldAccess.createAndScheduleBlockTick(blockPos2, CAVE_AIR.getBlock(), 0);
-									this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos2);
+				for (int s = 0; s < 16; s++) {
+					for (int t = 0; t < 16; t++) {
+						for (int ux = 0; ux < 8; ux++) {
+							if (bls[(s * 16 + t) * 8 + ux]) {
+								BlockPos blockPos2 = blockPos.add(s, ux, t);
+								if (this.canReplace(structureWorldAccess.getBlockState(blockPos2))) {
+									boolean bl2 = ux >= 4;
+									structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : blockState, Block.NOTIFY_LISTENERS);
+									if (bl2) {
+										structureWorldAccess.createAndScheduleBlockTick(blockPos2, CAVE_AIR.getBlock(), 0);
+										this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos2);
+									}
 								}
 							}
 						}
 					}
 				}
 
-				if (singleStateFeatureConfig.state.getMaterial() == Material.WATER) {
-					for (int j = 0; j < 16; j++) {
-						for (int s = 0; s < 16; s++) {
-							int txx = 4;
-							BlockPos blockPos2 = blockPos.add(j, 4, s);
-							if (structureWorldAccess.getBiome(blockPos2).canSetIce(structureWorldAccess, blockPos2, false)) {
-								structureWorldAccess.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), Block.NOTIFY_LISTENERS);
+				BlockState blockState2 = config.barrier().getBlockState(random, blockPos);
+				if (!blockState2.isAir()) {
+					for (int t = 0; t < 16; t++) {
+						for (int uxx = 0; uxx < 16; uxx++) {
+							for (int v = 0; v < 8; v++) {
+								boolean bl2 = !bls[(t * 16 + uxx) * 8 + v]
+									&& (
+										t < 15 && bls[((t + 1) * 16 + uxx) * 8 + v]
+											|| t > 0 && bls[((t - 1) * 16 + uxx) * 8 + v]
+											|| uxx < 15 && bls[(t * 16 + uxx + 1) * 8 + v]
+											|| uxx > 0 && bls[(t * 16 + (uxx - 1)) * 8 + v]
+											|| v < 7 && bls[(t * 16 + uxx) * 8 + v + 1]
+											|| v > 0 && bls[(t * 16 + uxx) * 8 + (v - 1)]
+									);
+								if (bl2 && (v < 4 || random.nextInt(2) != 0)) {
+									BlockState blockState3 = structureWorldAccess.getBlockState(blockPos.add(t, v, uxx));
+									if (blockState3.getMaterial().isSolid() && !blockState3.isIn(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE)) {
+										BlockPos blockPos3 = blockPos.add(t, v, uxx);
+										structureWorldAccess.setBlockState(blockPos3, blockState2, Block.NOTIFY_LISTENERS);
+										this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos3);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				if (blockState.getFluidState().isIn(FluidTags.WATER)) {
+					for (int t = 0; t < 16; t++) {
+						for (int uxx = 0; uxx < 16; uxx++) {
+							int vx = 4;
+							BlockPos blockPos4 = blockPos.add(t, 4, uxx);
+							if (structureWorldAccess.getBiome(blockPos4).canSetIce(structureWorldAccess, blockPos4, false)
+								&& this.canReplace(structureWorldAccess.getBlockState(blockPos4))) {
+								structureWorldAccess.setBlockState(blockPos4, Blocks.ICE.getDefaultState(), Block.NOTIFY_LISTENERS);
 							}
 						}
 					}
@@ -118,6 +150,27 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 
 				return true;
 			}
+		}
+	}
+
+	private boolean canReplace(BlockState state) {
+		return !state.isIn(BlockTags.FEATURES_CANNOT_REPLACE);
+	}
+
+	public static record Config() implements FeatureConfig {
+		private final BlockStateProvider fluid;
+		private final BlockStateProvider barrier;
+		public static final Codec<LakeFeature.Config> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						BlockStateProvider.TYPE_CODEC.fieldOf("fluid").forGetter(LakeFeature.Config::fluid),
+						BlockStateProvider.TYPE_CODEC.fieldOf("barrier").forGetter(LakeFeature.Config::barrier)
+					)
+					.apply(instance, LakeFeature.Config::new)
+		);
+
+		public Config(BlockStateProvider blockStateProvider, BlockStateProvider blockStateProvider2) {
+			this.fluid = blockStateProvider;
+			this.barrier = blockStateProvider2;
 		}
 	}
 }

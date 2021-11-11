@@ -10,8 +10,8 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class DustColorTransitionParticle extends AbstractDustParticle<DustColorTransitionParticleEffect> {
-	private final Vec3f field_28244;
-	private final Vec3f field_28245;
+	private final Vec3f startColor;
+	private final Vec3f endColor;
 
 	protected DustColorTransitionParticle(
 		ClientWorld world,
@@ -21,23 +21,23 @@ public class DustColorTransitionParticle extends AbstractDustParticle<DustColorT
 		double velocityX,
 		double velocityY,
 		double velocityZ,
-		DustColorTransitionParticleEffect dustColorTransitionParticleEffect,
+		DustColorTransitionParticleEffect parameters,
 		SpriteProvider spriteProvider
 	) {
-		super(world, x, y, z, velocityX, velocityY, velocityZ, dustColorTransitionParticleEffect, spriteProvider);
+		super(world, x, y, z, velocityX, velocityY, velocityZ, parameters, spriteProvider);
 		float f = this.random.nextFloat() * 0.4F + 0.6F;
-		this.field_28244 = this.method_33073(dustColorTransitionParticleEffect.getFromColor(), f);
-		this.field_28245 = this.method_33073(dustColorTransitionParticleEffect.getToColor(), f);
+		this.startColor = this.darken(parameters.getFromColor(), f);
+		this.endColor = this.darken(parameters.getToColor(), f);
 	}
 
-	private Vec3f method_33073(Vec3f vec3f, float f) {
-		return new Vec3f(this.method_33076(vec3f.getX(), f), this.method_33076(vec3f.getY(), f), this.method_33076(vec3f.getZ(), f));
+	private Vec3f darken(Vec3f color, float multiplier) {
+		return new Vec3f(this.darken(color.getX(), multiplier), this.darken(color.getY(), multiplier), this.darken(color.getZ(), multiplier));
 	}
 
-	private void method_33074(float f) {
-		float g = ((float)this.age + f) / ((float)this.maxAge + 1.0F);
-		Vec3f vec3f = this.field_28244.copy();
-		vec3f.lerp(this.field_28245, g);
+	private void updateColor(float tickDelta) {
+		float f = ((float)this.age + tickDelta) / ((float)this.maxAge + 1.0F);
+		Vec3f vec3f = this.startColor.copy();
+		vec3f.lerp(this.endColor, f);
 		this.colorRed = vec3f.getX();
 		this.colorGreen = vec3f.getY();
 		this.colorBlue = vec3f.getZ();
@@ -45,7 +45,7 @@ public class DustColorTransitionParticle extends AbstractDustParticle<DustColorT
 
 	@Override
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-		this.method_33074(tickDelta);
+		this.updateColor(tickDelta);
 		super.buildGeometry(vertexConsumer, camera, tickDelta);
 	}
 

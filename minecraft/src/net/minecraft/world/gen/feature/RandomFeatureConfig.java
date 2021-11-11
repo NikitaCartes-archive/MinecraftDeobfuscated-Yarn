@@ -11,17 +11,17 @@ public class RandomFeatureConfig implements FeatureConfig {
 		instance -> instance.apply2(
 				RandomFeatureConfig::new,
 				RandomFeatureEntry.CODEC.listOf().fieldOf("features").forGetter(randomFeatureConfig -> randomFeatureConfig.features),
-				ConfiguredFeature.REGISTRY_CODEC.fieldOf("default").forGetter(randomFeatureConfig -> randomFeatureConfig.defaultFeature)
+				PlacedFeature.REGISTRY_CODEC.fieldOf("default").forGetter(randomFeatureConfig -> randomFeatureConfig.defaultFeature)
 			)
 	);
 	public final List<RandomFeatureEntry> features;
-	public final Supplier<ConfiguredFeature<?, ?>> defaultFeature;
+	public final Supplier<PlacedFeature> defaultFeature;
 
-	public RandomFeatureConfig(List<RandomFeatureEntry> features, ConfiguredFeature<?, ?> defaultFeature) {
-		this(features, () -> defaultFeature);
+	public RandomFeatureConfig(List<RandomFeatureEntry> features, PlacedFeature placedFeature) {
+		this(features, () -> placedFeature);
 	}
 
-	private RandomFeatureConfig(List<RandomFeatureEntry> features, Supplier<ConfiguredFeature<?, ?>> defaultFeature) {
+	private RandomFeatureConfig(List<RandomFeatureEntry> features, Supplier<PlacedFeature> defaultFeature) {
 		this.features = features;
 		this.defaultFeature = defaultFeature;
 	}
@@ -29,8 +29,8 @@ public class RandomFeatureConfig implements FeatureConfig {
 	@Override
 	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
 		return Stream.concat(
-			this.features.stream().flatMap(randomFeatureEntry -> ((ConfiguredFeature)randomFeatureEntry.feature.get()).getDecoratedFeatures()),
-			((ConfiguredFeature)this.defaultFeature.get()).getDecoratedFeatures()
+			this.features.stream().flatMap(randomFeatureEntry -> ((PlacedFeature)randomFeatureEntry.feature.get()).getDecoratedFeatures()),
+			((PlacedFeature)this.defaultFeature.get()).getDecoratedFeatures()
 		);
 	}
 }

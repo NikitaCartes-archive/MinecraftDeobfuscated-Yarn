@@ -72,7 +72,7 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+	public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noise) {
 		int i = x >> 2;
 		int j = z >> 2;
 		if ((long)i * (long)i + (long)j * (long)j <= 4096L) {

@@ -31,6 +31,8 @@ public class AtomicSimpleRandom implements BaseSimpleRandom {
 	public void setSeed(long l) {
 		if (!this.seed.compareAndSet(this.seed.get(), (l ^ 25214903917L) & 281474976710655L)) {
 			throw LockHelper.crash("LegacyRandomSource", null);
+		} else {
+			this.gaussianGenerator.reset();
 		}
 	}
 

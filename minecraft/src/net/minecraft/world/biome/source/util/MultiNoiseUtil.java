@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.util.dynamic.Codecs;
@@ -78,44 +77,44 @@ public class MultiNoiseUtil {
 	}
 
 	public static class Entries<T> {
-		private final List<Pair<MultiNoiseUtil.NoiseHypercube, Supplier<T>>> entries;
+		private final List<Pair<MultiNoiseUtil.NoiseHypercube, T>> entries;
 		private final MultiNoiseUtil.SearchTree<T> tree;
 
-		public Entries(List<Pair<MultiNoiseUtil.NoiseHypercube, Supplier<T>>> entries) {
+		public Entries(List<Pair<MultiNoiseUtil.NoiseHypercube, T>> entries) {
 			this.entries = entries;
 			this.tree = MultiNoiseUtil.SearchTree.create(entries);
 		}
 
-		public List<Pair<MultiNoiseUtil.NoiseHypercube, Supplier<T>>> getEntries() {
+		public List<Pair<MultiNoiseUtil.NoiseHypercube, T>> getEntries() {
 			return this.entries;
 		}
 
-		public T getValue(MultiNoiseUtil.NoiseValuePoint point, Supplier<T> defaultValue) {
-			return this.getValue(point);
+		public T method_39529(MultiNoiseUtil.NoiseValuePoint noiseValuePoint, T object) {
+			return this.method_39527(noiseValuePoint);
 		}
 
 		@VisibleForTesting
-		public T getValueSimple(MultiNoiseUtil.NoiseValuePoint point, Supplier<T> defaultValue) {
+		public T method_39530(MultiNoiseUtil.NoiseValuePoint noiseValuePoint, T object) {
 			long l = Long.MAX_VALUE;
-			Supplier<T> supplier = defaultValue;
+			T object2 = object;
 
-			for (Pair<MultiNoiseUtil.NoiseHypercube, Supplier<T>> pair : this.getEntries()) {
-				long m = pair.getFirst().getSquaredDistance(point);
+			for (Pair<MultiNoiseUtil.NoiseHypercube, T> pair : this.getEntries()) {
+				long m = pair.getFirst().getSquaredDistance(noiseValuePoint);
 				if (m < l) {
 					l = m;
-					supplier = pair.getSecond();
+					object2 = pair.getSecond();
 				}
 			}
 
-			return (T)supplier.get();
+			return object2;
 		}
 
-		public T getValue(MultiNoiseUtil.NoiseValuePoint point) {
-			return this.getValue(point, MultiNoiseUtil.SearchTree.TreeNode::getSquaredDistance);
+		public T method_39527(MultiNoiseUtil.NoiseValuePoint noiseValuePoint) {
+			return this.method_39528(noiseValuePoint, MultiNoiseUtil.SearchTree.TreeNode::getSquaredDistance);
 		}
 
-		protected T getValue(MultiNoiseUtil.NoiseValuePoint point, MultiNoiseUtil.NodeDistanceFunction<T> distanceFunction) {
-			return this.tree.get(point, distanceFunction);
+		protected T method_39528(MultiNoiseUtil.NoiseValuePoint noiseValuePoint, MultiNoiseUtil.NodeDistanceFunction<T> nodeDistanceFunction) {
+			return this.tree.get(noiseValuePoint, nodeDistanceFunction);
 		}
 	}
 
@@ -387,16 +386,16 @@ public class MultiNoiseUtil {
 			this.firstNode = firstNode;
 		}
 
-		public static <T> MultiNoiseUtil.SearchTree<T> create(List<Pair<MultiNoiseUtil.NoiseHypercube, Supplier<T>>> entries) {
+		public static <T> MultiNoiseUtil.SearchTree<T> create(List<Pair<MultiNoiseUtil.NoiseHypercube, T>> entries) {
 			if (entries.isEmpty()) {
-				throw new IllegalArgumentException("Need at least one biome to build the search tree.");
+				throw new IllegalArgumentException("Need at least one value to build the search tree.");
 			} else {
 				int i = ((MultiNoiseUtil.NoiseHypercube)((Pair)entries.get(0)).getFirst()).getParameters().size();
 				if (i != 7) {
 					throw new IllegalStateException("Expecting parameter space to be 7, got " + i);
 				} else {
 					List<MultiNoiseUtil.SearchTree.TreeLeafNode<T>> list = (List<MultiNoiseUtil.SearchTree.TreeLeafNode<T>>)entries.stream()
-						.map(entry -> new MultiNoiseUtil.SearchTree.TreeLeafNode((MultiNoiseUtil.NoiseHypercube)entry.getFirst(), (Supplier<T>)entry.getSecond()))
+						.map(entry -> new MultiNoiseUtil.SearchTree.TreeLeafNode<>((MultiNoiseUtil.NoiseHypercube)entry.getFirst(), entry.getSecond()))
 						.collect(Collectors.toCollection(ArrayList::new));
 					return new MultiNoiseUtil.SearchTree<>(createNode(i, list));
 				}
@@ -524,7 +523,7 @@ public class MultiNoiseUtil {
 			MultiNoiseUtil.SearchTree.TreeLeafNode<T> treeLeafNode = this.firstNode
 				.getResultingNode(ls, (MultiNoiseUtil.SearchTree.TreeLeafNode<T>)this.previousResultNode.get(), distanceFunction);
 			this.previousResultNode.set(treeLeafNode);
-			return (T)treeLeafNode.value.get();
+			return treeLeafNode.value;
 		}
 
 		static final class TreeBranchNode<T> extends MultiNoiseUtil.SearchTree.TreeNode<T> {
@@ -563,11 +562,11 @@ public class MultiNoiseUtil {
 		}
 
 		static final class TreeLeafNode<T> extends MultiNoiseUtil.SearchTree.TreeNode<T> {
-			final Supplier<T> value;
+			final T value;
 
-			TreeLeafNode(MultiNoiseUtil.NoiseHypercube parameters, Supplier<T> value) {
+			TreeLeafNode(MultiNoiseUtil.NoiseHypercube parameters, T object) {
 				super(parameters.getParameters());
-				this.value = value;
+				this.value = object;
 			}
 
 			@Override

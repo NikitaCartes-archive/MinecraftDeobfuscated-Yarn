@@ -3,7 +3,6 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_6625;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -233,7 +232,7 @@ public class EndCityGenerator {
 
 				for (StructurePiece structurePiece : list) {
 					structurePiece.chainLength = i;
-					StructurePiece structurePiece2 = StructurePiece.method_38702(pieces, structurePiece.getBoundingBox());
+					StructurePiece structurePiece2 = StructurePiece.firstIntersecting(pieces, structurePiece.getBoundingBox());
 					if (structurePiece2 != null && structurePiece2.chainLength != parent.chainLength) {
 						bl = true;
 						break;
@@ -279,7 +278,7 @@ public class EndCityGenerator {
 
 		@Override
 		protected Identifier getId() {
-			return getId(this.identifier);
+			return getId(this.template);
 		}
 
 		private static Identifier getId(String template) {
@@ -287,8 +286,8 @@ public class EndCityGenerator {
 		}
 
 		@Override
-		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
-			super.writeNbt(arg, nbt);
+		protected void writeNbt(StructureContext context, NbtCompound nbt) {
+			super.writeNbt(context, nbt);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 			nbt.putBoolean("OW", this.placementData.getProcessors().get(0) == BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 		}

@@ -21,9 +21,9 @@ public class VibrationParticle extends SpriteBillboardParticle {
 	private float field_28250;
 	private float field_28248;
 
-	VibrationParticle(ClientWorld clientWorld, Vibration vibration, int i) {
+	VibrationParticle(ClientWorld world, Vibration vibration, int maxAge) {
 		super(
-			clientWorld,
+			world,
 			(double)((float)vibration.getOrigin().getX() + 0.5F),
 			(double)((float)vibration.getOrigin().getY() + 0.5F),
 			(double)((float)vibration.getOrigin().getZ() + 0.5F),
@@ -33,7 +33,7 @@ public class VibrationParticle extends SpriteBillboardParticle {
 		);
 		this.scale = 0.3F;
 		this.vibration = vibration;
-		this.maxAge = i;
+		this.maxAge = maxAge;
 	}
 
 	@Override
@@ -41,63 +41,63 @@ public class VibrationParticle extends SpriteBillboardParticle {
 		float f = MathHelper.sin(((float)this.age + tickDelta - (float) (Math.PI * 2)) * 0.05F) * 2.0F;
 		float g = MathHelper.lerp(tickDelta, this.field_28248, this.field_28250);
 		float h = 1.0472F;
-		this.method_33078(vertexConsumer, camera, tickDelta, quaternion -> {
+		this.render(vertexConsumer, camera, tickDelta, quaternion -> {
 			quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(g));
 			quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getRadialQuaternion(-1.0472F));
 			quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(f));
 		});
-		this.method_33078(vertexConsumer, camera, tickDelta, quaternion -> {
+		this.render(vertexConsumer, camera, tickDelta, quaternion -> {
 			quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion((float) -Math.PI + g));
 			quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getRadialQuaternion(1.0472F));
 			quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(f));
 		});
 	}
 
-	private void method_33078(VertexConsumer vertexConsumer, Camera camera, float f, Consumer<Quaternion> consumer) {
+	private void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta, Consumer<Quaternion> transforms) {
 		Vec3d vec3d = camera.getPos();
-		float g = (float)(MathHelper.lerp((double)f, this.prevPosX, this.x) - vec3d.getX());
-		float h = (float)(MathHelper.lerp((double)f, this.prevPosY, this.y) - vec3d.getY());
-		float i = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.z) - vec3d.getZ());
+		float f = (float)(MathHelper.lerp((double)tickDelta, this.prevPosX, this.x) - vec3d.getX());
+		float g = (float)(MathHelper.lerp((double)tickDelta, this.prevPosY, this.y) - vec3d.getY());
+		float h = (float)(MathHelper.lerp((double)tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
 		Vec3f vec3f = new Vec3f(0.5F, 0.5F, 0.5F);
 		vec3f.normalize();
 		Quaternion quaternion = new Quaternion(vec3f, 0.0F, true);
-		consumer.accept(quaternion);
+		transforms.accept(quaternion);
 		Vec3f vec3f2 = new Vec3f(-1.0F, -1.0F, 0.0F);
 		vec3f2.rotate(quaternion);
 		Vec3f[] vec3fs = new Vec3f[]{new Vec3f(-1.0F, -1.0F, 0.0F), new Vec3f(-1.0F, 1.0F, 0.0F), new Vec3f(1.0F, 1.0F, 0.0F), new Vec3f(1.0F, -1.0F, 0.0F)};
-		float j = this.getSize(f);
+		float i = this.getSize(tickDelta);
 
-		for (int k = 0; k < 4; k++) {
-			Vec3f vec3f3 = vec3fs[k];
+		for (int j = 0; j < 4; j++) {
+			Vec3f vec3f3 = vec3fs[j];
 			vec3f3.rotate(quaternion);
-			vec3f3.scale(j);
-			vec3f3.add(g, h, i);
+			vec3f3.scale(i);
+			vec3f3.add(f, g, h);
 		}
 
-		float l = this.getMinU();
-		float m = this.getMaxU();
-		float n = this.getMinV();
-		float o = this.getMaxV();
-		int p = this.getBrightness(f);
+		float k = this.getMinU();
+		float l = this.getMaxU();
+		float m = this.getMinV();
+		float n = this.getMaxV();
+		int o = this.getBrightness(tickDelta);
 		vertexConsumer.vertex((double)vec3fs[0].getX(), (double)vec3fs[0].getY(), (double)vec3fs[0].getZ())
-			.texture(m, o)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.light(p)
-			.next();
-		vertexConsumer.vertex((double)vec3fs[1].getX(), (double)vec3fs[1].getY(), (double)vec3fs[1].getZ())
-			.texture(m, n)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.light(p)
-			.next();
-		vertexConsumer.vertex((double)vec3fs[2].getX(), (double)vec3fs[2].getY(), (double)vec3fs[2].getZ())
 			.texture(l, n)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.light(p)
+			.light(o)
+			.next();
+		vertexConsumer.vertex((double)vec3fs[1].getX(), (double)vec3fs[1].getY(), (double)vec3fs[1].getZ())
+			.texture(l, m)
+			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.light(o)
+			.next();
+		vertexConsumer.vertex((double)vec3fs[2].getX(), (double)vec3fs[2].getY(), (double)vec3fs[2].getZ())
+			.texture(k, m)
+			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.light(o)
 			.next();
 		vertexConsumer.vertex((double)vec3fs[3].getX(), (double)vec3fs[3].getY(), (double)vec3fs[3].getZ())
-			.texture(l, o)
+			.texture(k, n)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.light(p)
+			.light(o)
 			.next();
 	}
 

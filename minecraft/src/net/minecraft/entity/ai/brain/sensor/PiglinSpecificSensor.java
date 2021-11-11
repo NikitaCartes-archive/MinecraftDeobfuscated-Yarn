@@ -6,12 +6,12 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.class_6670;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.AbstractPiglinEntity;
@@ -59,9 +59,9 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		int i = 0;
 		List<AbstractPiglinEntity> list = Lists.<AbstractPiglinEntity>newArrayList();
 		List<AbstractPiglinEntity> list2 = Lists.<AbstractPiglinEntity>newArrayList();
-		class_6670 lv = (class_6670)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
+		LivingTargetCache livingTargetCache = (LivingTargetCache)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
 
-		for (LivingEntity livingEntity : lv.method_38978(livingEntityx -> true)) {
+		for (LivingEntity livingEntity : livingTargetCache.iterate(livingEntityx -> true)) {
 			if (livingEntity instanceof HoglinEntity) {
 				HoglinEntity hoglinEntity = (HoglinEntity)livingEntity;
 				if (hoglinEntity.isBaby() && optional3.isEmpty()) {

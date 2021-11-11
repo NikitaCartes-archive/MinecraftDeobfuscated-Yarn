@@ -2,7 +2,6 @@ package net.minecraft.structure;
 
 import java.util.Map;
 import java.util.Random;
-import net.minecraft.class_6625;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
@@ -89,8 +88,8 @@ public class ShipwreckGenerator {
 		}
 
 		@Override
-		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
-			super.writeNbt(arg, nbt);
+		protected void writeNbt(StructureContext context, NbtCompound nbt) {
+			super.writeNbt(context, nbt);
 			nbt.putBoolean("isBeached", this.grounded);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 		}
@@ -117,7 +116,7 @@ public class ShipwreckGenerator {
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
-			BlockBox boundingBox,
+			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
@@ -142,7 +141,7 @@ public class ShipwreckGenerator {
 
 			int m = this.grounded ? i - vec3i.getY() / 2 - random.nextInt(3) : j;
 			this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
-			super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
 		}
 	}
 }

@@ -19,7 +19,7 @@ public class Xoroshiro128PlusPlusRandom implements AbstractRandom {
 	private final GaussianGenerator gaussianGenerator = new GaussianGenerator(this);
 
 	public Xoroshiro128PlusPlusRandom(long seed) {
-		this.setSeed(seed);
+		this.implementation = new Xoroshiro128PlusPlusRandomImpl(RandomSeed.createXoroshiroSeed(seed));
 	}
 
 	public Xoroshiro128PlusPlusRandom(long seedLo, long seedHi) {
@@ -39,6 +39,7 @@ public class Xoroshiro128PlusPlusRandom implements AbstractRandom {
 	@Override
 	public void setSeed(long l) {
 		this.implementation = new Xoroshiro128PlusPlusRandomImpl(RandomSeed.createXoroshiroSeed(l));
+		this.gaussianGenerator.reset();
 	}
 
 	@Override

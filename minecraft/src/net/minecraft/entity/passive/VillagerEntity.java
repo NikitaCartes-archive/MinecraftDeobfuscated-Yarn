@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.class_6670;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -30,6 +29,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.Schedule;
@@ -641,10 +641,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	private void notifyDeath(Entity killer) {
 		if (this.world instanceof ServerWorld serverWorld) {
-			Optional<class_6670> optional = this.brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+			Optional<LivingTargetCache> optional = this.brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
 			if (!optional.isEmpty()) {
-				((class_6670)optional.get())
-					.method_38978(InteractionObserver.class::isInstance)
+				((LivingTargetCache)optional.get())
+					.iterate(InteractionObserver.class::isInstance)
 					.forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)livingEntity));
 			}
 		}

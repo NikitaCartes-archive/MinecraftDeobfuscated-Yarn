@@ -4,8 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import net.minecraft.SharedConstants;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -43,14 +46,18 @@ public class JfrCommand {
 
 	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
 		try {
-			File file = FlightProfiler.INSTANCE.stop().toFile();
-			Text text = new LiteralText(file.getName())
+			Path path = Paths.get(".").relativize(FlightProfiler.INSTANCE.stop().normalize());
+			Path path2 = source.getServer().isRemote() && !SharedConstants.isDevelopment ? path : path.toAbsolutePath();
+			Text text = new LiteralText(path.toString())
 				.formatted(Formatting.UNDERLINE)
-				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, file.getAbsolutePath())));
+				.styled(
+					style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, path2.toString()))
+							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.copy.click")))
+				);
 			source.sendFeedback(new TranslatableText("commands.jfr.stopped", text), false);
 			return 1;
-		} catch (Throwable var3) {
-			throw JFR_DUMP_FAILED_EXCEPTION.create(var3.getMessage());
+		} catch (Throwable var4) {
+			throw JFR_DUMP_FAILED_EXCEPTION.create(var4.getMessage());
 		}
 	}
 }

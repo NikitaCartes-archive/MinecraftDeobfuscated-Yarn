@@ -325,16 +325,20 @@ public class DimensionType {
 		return World.CODEC.parse(nbt);
 	}
 
-	public static DynamicRegistryManager.Impl addRegistryDefaults(DynamicRegistryManager.Impl registryManager) {
-		MutableRegistry<DimensionType> mutableRegistry = registryManager.getMutable(Registry.DIMENSION_TYPE_KEY);
+	public static DynamicRegistryManager addRegistryDefaults(DynamicRegistryManager dynamicRegistryManager) {
+		MutableRegistry<DimensionType> mutableRegistry = dynamicRegistryManager.getMutable(Registry.DIMENSION_TYPE_KEY);
 		mutableRegistry.add(OVERWORLD_REGISTRY_KEY, OVERWORLD, Lifecycle.stable());
 		mutableRegistry.add(OVERWORLD_CAVES_REGISTRY_KEY, OVERWORLD_CAVES, Lifecycle.stable());
 		mutableRegistry.add(THE_NETHER_REGISTRY_KEY, THE_NETHER, Lifecycle.stable());
 		mutableRegistry.add(THE_END_REGISTRY_KEY, THE_END, Lifecycle.stable());
-		return registryManager;
+		return dynamicRegistryManager;
 	}
 
-	public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager dynamicRegistryManager, long l) {
+	public static SimpleRegistry<DimensionOptions> method_39540(DynamicRegistryManager dynamicRegistryManager, long l) {
+		return createDefaultDimensionOptions(dynamicRegistryManager, l, true);
+	}
+
+	public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager dynamicRegistryManager, long l, boolean bl) {
 		SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental());
 		Registry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
 		Registry<Biome> registry2 = dynamicRegistryManager.get(Registry.BIOME_KEY);
@@ -345,7 +349,7 @@ public class DimensionType {
 			new DimensionOptions(
 				() -> registry.getOrThrow(THE_NETHER_REGISTRY_KEY),
 				new NoiseChunkGenerator(
-					registry4, MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(registry2), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.NETHER)
+					registry4, MultiNoiseBiomeSource.Preset.NETHER.method_39532(registry2, bl), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.NETHER)
 				)
 			),
 			Lifecycle.stable()

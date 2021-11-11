@@ -18,21 +18,20 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class FeaturePoolElement extends StructurePoolElement {
 	public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(featurePoolElement -> featurePoolElement.feature), method_28883())
+		instance -> instance.group(PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(featurePoolElement -> featurePoolElement.feature), method_28883())
 				.apply(instance, FeaturePoolElement::new)
 	);
-	private final Supplier<ConfiguredFeature<?, ?>> feature;
+	private final Supplier<PlacedFeature> feature;
 	private final NbtCompound nbt;
 
-	protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> feature, StructurePool.Projection projection) {
+	protected FeaturePoolElement(Supplier<PlacedFeature> feature, StructurePool.Projection projection) {
 		super(projection);
 		this.feature = feature;
 		this.nbt = this.createDefaultJigsawNbt();
@@ -83,7 +82,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		Random random,
 		boolean keepJigsaws
 	) {
-		return ((ConfiguredFeature)this.feature.get()).generate(world, chunkGenerator, random, pos);
+		return ((PlacedFeature)this.feature.get()).generateUnregistered(world, chunkGenerator, random, pos);
 	}
 
 	@Override
@@ -92,6 +91,6 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	public String toString() {
-		return "Feature[" + Registry.FEATURE.getId(((ConfiguredFeature)this.feature.get()).getFeature()) + "]";
+		return "Feature[" + this.feature.get() + "]";
 	}
 }

@@ -143,6 +143,14 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerWorld extends World implements StructureWorldAccess {
 	public static final BlockPos END_SPAWN_POS = new BlockPos(100, 50, 0);
+	private static final int field_35660 = 12000;
+	private static final int field_35653 = 180000;
+	private static final int field_35654 = 12000;
+	private static final int field_35655 = 24000;
+	private static final int field_35656 = 12000;
+	private static final int field_35657 = 180000;
+	private static final int field_35658 = 3600;
+	private static final int field_35659 = 15600;
 	private static final Logger LOGGER = LogManager.getLogger();
 	/**
 	 * The number of ticks ({@value}) the world will continue to tick entities after
@@ -254,90 +262,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		profiler.push("world border");
 		this.getWorldBorder().tick();
 		profiler.swap("weather");
-		boolean bl = this.isRaining();
-		if (this.getDimension().hasSkyLight()) {
-			if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
-				int i = this.worldProperties.getClearWeatherTime();
-				int j = this.worldProperties.getThunderTime();
-				int k = this.worldProperties.getRainTime();
-				boolean bl2 = this.properties.isThundering();
-				boolean bl3 = this.properties.isRaining();
-				if (i > 0) {
-					i--;
-					j = bl2 ? 0 : 1;
-					k = bl3 ? 0 : 1;
-					bl2 = false;
-					bl3 = false;
-				} else {
-					if (j > 0) {
-						if (--j == 0) {
-							bl2 = !bl2;
-						}
-					} else if (bl2) {
-						j = this.random.nextInt(12000) + 3600;
-					} else {
-						j = this.random.nextInt(168000) + 12000;
-					}
-
-					if (k > 0) {
-						if (--k == 0) {
-							bl3 = !bl3;
-						}
-					} else if (bl3) {
-						k = this.random.nextInt(12000) + 12000;
-					} else {
-						k = this.random.nextInt(168000) + 12000;
-					}
-				}
-
-				this.worldProperties.setThunderTime(j);
-				this.worldProperties.setRainTime(k);
-				this.worldProperties.setClearWeatherTime(i);
-				this.worldProperties.setThundering(bl2);
-				this.worldProperties.setRaining(bl3);
-			}
-
-			this.thunderGradientPrev = this.thunderGradient;
-			if (this.properties.isThundering()) {
-				this.thunderGradient = (float)((double)this.thunderGradient + 0.01);
-			} else {
-				this.thunderGradient = (float)((double)this.thunderGradient - 0.01);
-			}
-
-			this.thunderGradient = MathHelper.clamp(this.thunderGradient, 0.0F, 1.0F);
-			this.rainGradientPrev = this.rainGradient;
-			if (this.properties.isRaining()) {
-				this.rainGradient = (float)((double)this.rainGradient + 0.01);
-			} else {
-				this.rainGradient = (float)((double)this.rainGradient - 0.01);
-			}
-
-			this.rainGradient = MathHelper.clamp(this.rainGradient, 0.0F, 1.0F);
-		}
-
-		if (this.rainGradientPrev != this.rainGradient) {
-			this.server
-				.getPlayerManager()
-				.sendToDimension(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient), this.getRegistryKey());
-		}
-
-		if (this.thunderGradientPrev != this.thunderGradient) {
-			this.server
-				.getPlayerManager()
-				.sendToDimension(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient), this.getRegistryKey());
-		}
-
-		if (bl != this.isRaining()) {
-			if (bl) {
-				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STOPPED, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
-			} else {
-				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
-			}
-
-			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient));
-			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient));
-		}
-
+		this.tickWeather();
 		int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
 		if (this.sleepManager.canSkipNight(i) && this.sleepManager.canResetTime(i, this.players)) {
 			if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
@@ -371,12 +296,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.processSyncedBlockEvents();
 		this.inBlockTick = false;
 		profiler.pop();
-		boolean bl4 = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
-		if (bl4) {
+		boolean bl = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
+		if (bl) {
 			this.resetIdleTimeout();
 		}
 
-		if (bl4 || this.idleTimeout++ < 300) {
+		if (bl || this.idleTimeout++ < 300) {
 			profiler.push("entities");
 			if (this.enderDragonFight != null) {
 				profiler.push("dragonFight");
@@ -607,6 +532,92 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public ServerScoreboard getScoreboard() {
 		return this.server.getScoreboard();
+	}
+
+	private void tickWeather() {
+		boolean bl = this.isRaining();
+		if (this.getDimension().hasSkyLight()) {
+			if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
+				int i = this.worldProperties.getClearWeatherTime();
+				int j = this.worldProperties.getThunderTime();
+				int k = this.worldProperties.getRainTime();
+				boolean bl2 = this.properties.isThundering();
+				boolean bl3 = this.properties.isRaining();
+				if (i > 0) {
+					i--;
+					j = bl2 ? 0 : 1;
+					k = bl3 ? 0 : 1;
+					bl2 = false;
+					bl3 = false;
+				} else {
+					if (j > 0) {
+						if (--j == 0) {
+							bl2 = !bl2;
+						}
+					} else if (bl2) {
+						j = MathHelper.nextBetween(this.random, 3600, 15600);
+					} else {
+						j = MathHelper.nextBetween(this.random, 12000, 180000);
+					}
+
+					if (k > 0) {
+						if (--k == 0) {
+							bl3 = !bl3;
+						}
+					} else if (bl3) {
+						k = MathHelper.nextBetween(this.random, 12000, 24000);
+					} else {
+						k = MathHelper.nextBetween(this.random, 12000, 180000);
+					}
+				}
+
+				this.worldProperties.setThunderTime(j);
+				this.worldProperties.setRainTime(k);
+				this.worldProperties.setClearWeatherTime(i);
+				this.worldProperties.setThundering(bl2);
+				this.worldProperties.setRaining(bl3);
+			}
+
+			this.thunderGradientPrev = this.thunderGradient;
+			if (this.properties.isThundering()) {
+				this.thunderGradient = (float)((double)this.thunderGradient + 0.01);
+			} else {
+				this.thunderGradient = (float)((double)this.thunderGradient - 0.01);
+			}
+
+			this.thunderGradient = MathHelper.clamp(this.thunderGradient, 0.0F, 1.0F);
+			this.rainGradientPrev = this.rainGradient;
+			if (this.properties.isRaining()) {
+				this.rainGradient = (float)((double)this.rainGradient + 0.01);
+			} else {
+				this.rainGradient = (float)((double)this.rainGradient - 0.01);
+			}
+
+			this.rainGradient = MathHelper.clamp(this.rainGradient, 0.0F, 1.0F);
+		}
+
+		if (this.rainGradientPrev != this.rainGradient) {
+			this.server
+				.getPlayerManager()
+				.sendToDimension(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient), this.getRegistryKey());
+		}
+
+		if (this.thunderGradientPrev != this.thunderGradient) {
+			this.server
+				.getPlayerManager()
+				.sendToDimension(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient), this.getRegistryKey());
+		}
+
+		if (bl != this.isRaining()) {
+			if (bl) {
+				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STOPPED, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
+			} else {
+				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
+			}
+
+			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient));
+			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient));
+		}
 	}
 
 	private void resetWeather() {

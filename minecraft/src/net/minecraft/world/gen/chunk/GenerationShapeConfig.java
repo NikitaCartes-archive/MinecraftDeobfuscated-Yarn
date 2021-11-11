@@ -5,6 +5,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -96,5 +98,21 @@ public record GenerationShapeConfig() {
 			throw new IllegalStateException(partialResult.message());
 		});
 		return generationShapeConfig;
+	}
+
+	public int method_39545() {
+		return BiomeCoords.toBlock(this.verticalSize());
+	}
+
+	public int method_39546() {
+		return BiomeCoords.toBlock(this.horizontalSize());
+	}
+
+	public int method_39547() {
+		return this.height() / this.method_39545();
+	}
+
+	public int method_39548() {
+		return MathHelper.floorDiv(this.minimumY(), this.method_39545());
 	}
 }

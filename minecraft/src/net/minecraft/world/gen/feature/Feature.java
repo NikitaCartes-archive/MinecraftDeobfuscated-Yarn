@@ -66,7 +66,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<SingleStateFeatureConfig> FOREST_ROCK = register("forest_rock", new ForestRockFeature(SingleStateFeatureConfig.CODEC));
 	public static final Feature<DiskFeatureConfig> DISK = register("disk", new UnderwaterDiskFeature(DiskFeatureConfig.CODEC));
 	public static final Feature<DiskFeatureConfig> ICE_PATCH = register("ice_patch", new IcePatchFeature(DiskFeatureConfig.CODEC));
-	public static final Feature<SingleStateFeatureConfig> LAKE = register("lake", new LakeFeature(SingleStateFeatureConfig.CODEC));
+	public static final Feature<LakeFeature.Config> LAKE = register("lake", new LakeFeature(LakeFeature.Config.CODEC));
 	public static final Feature<OreFeatureConfig> ORE = register("ore", new OreFeature(OreFeatureConfig.CODEC));
 	public static final Feature<EndSpikeFeatureConfig> END_SPIKE = register("end_spike", new EndSpikeFeature(EndSpikeFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> END_ISLAND = register("end_island", new EndIslandFeature(DefaultFeatureConfig.CODEC));
@@ -80,11 +80,11 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<SimpleBlockFeatureConfig> SIMPLE_BLOCK = register("simple_block", new SimpleBlockFeature(SimpleBlockFeatureConfig.CODEC));
 	public static final Feature<ProbabilityConfig> BAMBOO = register("bamboo", new BambooFeature(ProbabilityConfig.CODEC));
 	public static final Feature<HugeFungusFeatureConfig> HUGE_FUNGUS = register("huge_fungus", new HugeFungusFeature(HugeFungusFeatureConfig.CODEC));
-	public static final Feature<BlockPileFeatureConfig> NETHER_FOREST_VEGETATION = register(
-		"nether_forest_vegetation", new NetherForestVegetationFeature(BlockPileFeatureConfig.CODEC)
+	public static final Feature<NetherForestVegetationFeatureConfig> NETHER_FOREST_VEGETATION = register(
+		"nether_forest_vegetation", new NetherForestVegetationFeature(NetherForestVegetationFeatureConfig.VEGETATION_CODEC)
 	);
 	public static final Feature<DefaultFeatureConfig> WEEPING_VINES = register("weeping_vines", new WeepingVinesFeature(DefaultFeatureConfig.CODEC));
-	public static final Feature<DefaultFeatureConfig> TWISTING_VINES = register("twisting_vines", new TwistingVinesFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<TwistingVinesFeatureConfig> TWISTING_VINES = register("twisting_vines", new TwistingVinesFeature(TwistingVinesFeatureConfig.CODEC));
 	public static final Feature<BasaltColumnsFeatureConfig> BASALT_COLUMNS = register("basalt_columns", new BasaltColumnsFeature(BasaltColumnsFeatureConfig.CODEC));
 	public static final Feature<DeltaFeatureConfig> DELTA_FEATURE = register("delta_feature", new DeltaFeature(DeltaFeatureConfig.CODEC));
 	public static final Feature<ReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = register(
@@ -101,7 +101,6 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<RandomBooleanFeatureConfig> RANDOM_BOOLEAN_SELECTOR = register(
 		"random_boolean_selector", new RandomBooleanFeature(RandomBooleanFeatureConfig.CODEC)
 	);
-	public static final Feature<DecoratedFeatureConfig> DECORATED = register("decorated", new DecoratedFeature(DecoratedFeatureConfig.CODEC));
 	public static final Feature<GeodeFeatureConfig> GEODE = register("geode", new GeodeFeature(GeodeFeatureConfig.CODEC));
 	public static final Feature<DripstoneClusterFeatureConfig> DRIPSTONE_CLUSTER = register(
 		"dripstone_cluster", new DripstoneClusterFeature(DripstoneClusterFeatureConfig.CODEC)

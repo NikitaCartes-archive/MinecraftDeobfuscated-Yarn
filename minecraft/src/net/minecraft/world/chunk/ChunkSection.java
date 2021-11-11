@@ -10,7 +10,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 
 public class ChunkSection {
@@ -171,7 +171,7 @@ public class ChunkSection {
 		return this.biomeContainer.get(x, y, z);
 	}
 
-	public void method_38291(BiomeSource source, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
+	public void method_38291(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
 		PalettedContainer<Biome> palettedContainer = this.getBiomeContainer();
 		palettedContainer.lock();
 
@@ -182,7 +182,7 @@ public class ChunkSection {
 			for (int k = 0; k < 4; k++) {
 				for (int l = 0; l < 4; l++) {
 					for (int m = 0; m < 4; m++) {
-						palettedContainer.swapUnsafe(k, l, m, source.getBiome(x + k, i + l, z + m, sampler));
+						palettedContainer.swapUnsafe(k, l, m, biomeSupplier.getBiome(x + k, i + l, z + m, sampler));
 					}
 				}
 			}

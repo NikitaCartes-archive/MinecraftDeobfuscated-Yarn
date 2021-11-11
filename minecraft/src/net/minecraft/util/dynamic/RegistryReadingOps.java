@@ -6,7 +6,6 @@ import com.mojang.serialization.DynamicOps;
 import java.util.Optional;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
@@ -36,10 +35,10 @@ public class RegistryReadingOps<T> extends ForwardingDynamicOps<T> {
 	 * @see RegistryOps#decodeOrId(Object, RegistryKey, Codec, boolean)
 	 */
 	protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<? extends Registry<E>> registryReference, Codec<E> codec) {
-		Optional<MutableRegistry<E>> optional = this.manager.getOptionalMutable(registryReference);
+		Optional<? extends Registry<E>> optional = this.manager.getOptionalMutable(registryReference);
 		if (optional.isPresent()) {
-			MutableRegistry<E> mutableRegistry = (MutableRegistry<E>)optional.get();
-			Optional<RegistryKey<E>> optional2 = mutableRegistry.getKey(input);
+			Registry<E> registry = (Registry<E>)optional.get();
+			Optional<RegistryKey<E>> optional2 = registry.getKey(input);
 			if (optional2.isPresent()) {
 				RegistryKey<E> registryKey = (RegistryKey<E>)optional2.get();
 				return Identifier.CODEC.encode(registryKey.getValue(), this.delegate, prefix);

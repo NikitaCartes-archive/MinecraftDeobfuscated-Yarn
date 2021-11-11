@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -28,6 +27,7 @@ import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtShort;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -37,7 +37,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.chunk.BelowZeroRetrogen;
-import net.minecraft.world.chunk.BlendingData;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -51,6 +50,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -131,7 +131,13 @@ public class ChunkSerializer {
 
 		long m = nbt.getLong("InhabitedTime");
 		ChunkStatus.ChunkType chunkType = getChunkType(nbt);
-		BlendingData blendingData = BlendingData.fromNbt(nbt.getCompound("blending_data"));
+		Blender blender;
+		if (nbt.contains("blending_data", NbtElement.COMPOUND_TYPE)) {
+			blender = (Blender)Blender.field_35682.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("blending_data"))).resultOrPartial(LOGGER::error).orElse(null);
+		} else {
+			blender = null;
+		}
+
 		Chunk chunk;
 		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 			ChunkTickScheduler<Block> chunkTickScheduler = ChunkTickScheduler.create(
@@ -149,7 +155,7 @@ public class ChunkSerializer {
 				m,
 				chunkSections,
 				worldChunk -> loadEntities(world, nbt, worldChunk),
-				blendingData
+				blender
 			);
 		} else {
 			SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(
@@ -158,7 +164,7 @@ public class ChunkSerializer {
 			SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(
 				nbt.getList("fluid_ticks", NbtElement.LIST_TYPE), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos
 			);
-			ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blendingData);
+			ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blender);
 			chunk = protoChunk;
 			protoChunk.setInhabitedTime(m);
 			if (nbt.contains("below_zero_retrogen", NbtElement.COMPOUND_TYPE)) {
@@ -202,7 +208,7 @@ public class ChunkSerializer {
 
 		Heightmap.populateHeightmaps(chunk, enumSet);
 		NbtCompound nbtCompound3 = nbt.getCompound("structures");
-		chunk.setStructureStarts(readStructureStarts(class_6625.method_38713(world), nbtCompound3, world.getSeed()));
+		chunk.setStructureStarts(readStructureStarts(StructureContext.from(world), nbtCompound3, world.getSeed()));
 		chunk.setStructureReferences(readStructureReferences(chunkPos, nbtCompound3));
 		if (nbt.getBoolean("shouldSave")) {
 			chunk.setShouldSave(true);
@@ -261,7 +267,9 @@ public class ChunkSerializer {
 	}
 
 	private static Codec<PalettedContainer<Biome>> createCodec(Registry<Biome> biomeRegistry) {
-		return PalettedContainer.createCodec(biomeRegistry, biomeRegistry, PalettedContainer.PaletteProvider.BIOME, biomeRegistry.getOrThrow(BiomeKeys.PLAINS));
+		return PalettedContainer.createCodec(
+			biomeRegistry, biomeRegistry.method_39673(), PalettedContainer.PaletteProvider.BIOME, biomeRegistry.getOrThrow(BiomeKeys.PLAINS)
+		);
 	}
 
 	public static NbtCompound serialize(ServerWorld world, Chunk chunk) {
@@ -274,9 +282,12 @@ public class ChunkSerializer {
 		nbtCompound.putLong("LastUpdate", world.getTime());
 		nbtCompound.putLong("InhabitedTime", chunk.getInhabitedTime());
 		nbtCompound.putString("Status", chunk.getStatus().getId());
-		BlendingData blendingData = chunk.getBlendingData();
-		if (blendingData != null) {
-			nbtCompound.put("blending_data", blendingData.toNbt());
+		Blender blender = chunk.getBlender();
+		if (blender != null) {
+			Blender.field_35682
+				.encodeStart(NbtOps.INSTANCE, blender)
+				.resultOrPartial(LOGGER::error)
+				.ifPresent(nbtElement -> nbtCompound.put("blending_data", nbtElement));
 		}
 
 		BelowZeroRetrogen belowZeroRetrogen = chunk.getBelowZeroRetrogen();
@@ -371,7 +382,7 @@ public class ChunkSerializer {
 		}
 
 		nbtCompound.put("Heightmaps", nbtCompound4);
-		nbtCompound.put("structures", writeStructures(class_6625.method_38713(world), chunkPos, chunk.getStructureStarts(), chunk.getStructureReferences()));
+		nbtCompound.put("structures", writeStructures(StructureContext.from(world), chunkPos, chunk.getStructureStarts(), chunk.getStructureReferences()));
 		return nbtCompound;
 	}
 
@@ -411,13 +422,13 @@ public class ChunkSerializer {
 	}
 
 	private static NbtCompound writeStructures(
-		class_6625 arg, ChunkPos pos, Map<StructureFeature<?>, StructureStart<?>> starts, Map<StructureFeature<?>, LongSet> references
+		StructureContext structureContext, ChunkPos pos, Map<StructureFeature<?>, StructureStart<?>> starts, Map<StructureFeature<?>, LongSet> references
 	) {
 		NbtCompound nbtCompound = new NbtCompound();
 		NbtCompound nbtCompound2 = new NbtCompound();
 
 		for (Entry<StructureFeature<?>, StructureStart<?>> entry : starts.entrySet()) {
-			nbtCompound2.put(((StructureFeature)entry.getKey()).getName(), ((StructureStart)entry.getValue()).toNbt(arg, pos));
+			nbtCompound2.put(((StructureFeature)entry.getKey()).getName(), ((StructureStart)entry.getValue()).toNbt(structureContext, pos));
 		}
 
 		nbtCompound.put("starts", nbtCompound2);
@@ -431,7 +442,7 @@ public class ChunkSerializer {
 		return nbtCompound;
 	}
 
-	private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(class_6625 arg, NbtCompound nbt, long worldSeed) {
+	private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureContext structureContext, NbtCompound nbt, long worldSeed) {
 		Map<StructureFeature<?>, StructureStart<?>> map = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
 		NbtCompound nbtCompound = nbt.getCompound("starts");
 
@@ -441,7 +452,7 @@ public class ChunkSerializer {
 			if (structureFeature == null) {
 				LOGGER.error("Unknown structure start: {}", string2);
 			} else {
-				StructureStart<?> structureStart = StructureFeature.readStructureStart(arg, nbtCompound.getCompound(string), worldSeed);
+				StructureStart<?> structureStart = StructureFeature.readStructureStart(structureContext, nbtCompound.getCompound(string), worldSeed);
 				if (structureStart != null) {
 					map.put(structureFeature, structureStart);
 				}

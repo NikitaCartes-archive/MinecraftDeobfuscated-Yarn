@@ -17,7 +17,7 @@ public class PointOfInterest {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
 						BlockPos.CODEC.fieldOf("pos").forGetter(poi -> poi.pos),
-						Registry.POINT_OF_INTEREST_TYPE.fieldOf("type").forGetter(poi -> poi.type),
+						Registry.POINT_OF_INTEREST_TYPE.method_39673().fieldOf("type").forGetter(poi -> poi.type),
 						Codec.INT.fieldOf("free_tickets").orElse(0).forGetter(poi -> poi.freeTickets),
 						RecordCodecBuilder.point(updateListener)
 					)

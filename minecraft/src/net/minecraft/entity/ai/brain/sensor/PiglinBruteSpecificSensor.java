@@ -6,9 +6,9 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.AbstractPiglinEntity;
@@ -26,8 +26,10 @@ public class PiglinBruteSpecificSensor extends Sensor<LivingEntity> {
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		Brain<?> brain = entity.getBrain();
 		List<AbstractPiglinEntity> list = Lists.<AbstractPiglinEntity>newArrayList();
-		class_6670 lv = (class_6670)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
-		Optional<MobEntity> optional = lv.method_38975(livingEntityx -> livingEntityx instanceof WitherSkeletonEntity || livingEntityx instanceof WitherEntity)
+		LivingTargetCache livingTargetCache = (LivingTargetCache)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
+		Optional<MobEntity> optional = livingTargetCache.findFirst(
+				livingEntityx -> livingEntityx instanceof WitherSkeletonEntity || livingEntityx instanceof WitherEntity
+			)
 			.map(MobEntity.class::cast);
 
 		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {

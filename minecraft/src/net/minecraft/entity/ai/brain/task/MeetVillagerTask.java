@@ -2,11 +2,11 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.class_6670;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -41,15 +41,19 @@ public class MeetVillagerTask extends Task<LivingEntity> {
 			&& optional.isPresent()
 			&& world.getRegistryKey() == ((GlobalPos)optional.get()).getDimension()
 			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(entity.getPos(), 4.0)
-			&& ((class_6670)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
-				.method_38981(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
+			&& ((LivingTargetCache)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
+				.anyMatch(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
 	}
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
 		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
-			.flatMap(arg -> arg.method_38975(livingEntity2 -> EntityType.VILLAGER.equals(livingEntity2.getType()) && livingEntity2.squaredDistanceTo(entity) <= 32.0))
+			.flatMap(
+				livingTargetCache -> livingTargetCache.findFirst(
+						livingEntity2 -> EntityType.VILLAGER.equals(livingEntity2.getType()) && livingEntity2.squaredDistanceTo(entity) <= 32.0
+					)
+			)
 			.ifPresent(livingEntity -> {
 				brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
 				brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));

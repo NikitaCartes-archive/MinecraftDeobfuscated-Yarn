@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import java.util.Optional;
-import net.minecraft.class_6670;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -14,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
@@ -129,7 +129,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	private Optional<? extends LivingEntity> getHoglinTarget() {
-		return ((class_6670)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971())).method_38975(this::shouldAttack);
+		return ((LivingTargetCache)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty())).findFirst(this::shouldAttack);
 	}
 
 	private boolean shouldAttack(LivingEntity livingEntity) {

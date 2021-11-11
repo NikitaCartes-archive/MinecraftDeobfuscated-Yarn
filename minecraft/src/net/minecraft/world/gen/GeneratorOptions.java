@@ -98,9 +98,7 @@ public class GeneratorOptions {
 			true,
 			true,
 			getRegistryWithReplacedOverworldGenerator(
-				registryManager.get(Registry.DIMENSION_TYPE_KEY),
-				DimensionType.createDefaultDimensionOptions(registryManager, (long)i),
-				createOverworldGenerator(registryManager, (long)i)
+				registryManager.get(Registry.DIMENSION_TYPE_KEY), DimensionType.method_39540(registryManager, (long)i), createOverworldGenerator(registryManager, (long)i)
 			)
 		);
 	}
@@ -112,19 +110,31 @@ public class GeneratorOptions {
 			true,
 			false,
 			getRegistryWithReplacedOverworldGenerator(
-				registryManager.get(Registry.DIMENSION_TYPE_KEY),
-				DimensionType.createDefaultDimensionOptions(registryManager, l),
-				createOverworldGenerator(registryManager, l)
+				registryManager.get(Registry.DIMENSION_TYPE_KEY), DimensionType.method_39540(registryManager, l), createOverworldGenerator(registryManager, l)
 			)
 		);
 	}
 
 	public static NoiseChunkGenerator createOverworldGenerator(DynamicRegistryManager registryManager, long l) {
+		return method_39558(registryManager, l, true);
+	}
+
+	public static NoiseChunkGenerator method_39558(DynamicRegistryManager dynamicRegistryManager, long l, boolean bl) {
+		return method_39557(dynamicRegistryManager, l, ChunkGeneratorSettings.OVERWORLD, bl);
+	}
+
+	public static NoiseChunkGenerator method_39556(DynamicRegistryManager dynamicRegistryManager, long l, RegistryKey<ChunkGeneratorSettings> registryKey) {
+		return method_39557(dynamicRegistryManager, l, registryKey, true);
+	}
+
+	public static NoiseChunkGenerator method_39557(
+		DynamicRegistryManager dynamicRegistryManager, long l, RegistryKey<ChunkGeneratorSettings> registryKey, boolean bl
+	) {
 		return new NoiseChunkGenerator(
-			registryManager.get(Registry.NOISE_WORLDGEN),
-			MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(registryManager.get(Registry.BIOME_KEY)),
+			dynamicRegistryManager.get(Registry.NOISE_WORLDGEN),
+			MultiNoiseBiomeSource.Preset.OVERWORLD.method_39532(dynamicRegistryManager.get(Registry.BIOME_KEY), bl),
 			l,
-			() -> registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(ChunkGeneratorSettings.OVERWORLD)
+			() -> dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(registryKey)
 		);
 	}
 
@@ -245,7 +255,7 @@ public class GeneratorOptions {
 
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
 		Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
-		SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(registryManager, l);
+		SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.method_39540(registryManager, l);
 		switch (string5) {
 			case "flat":
 				JsonObject jsonObject = !string.isEmpty() ? JsonHelper.deserialize(string) : new JsonObject();

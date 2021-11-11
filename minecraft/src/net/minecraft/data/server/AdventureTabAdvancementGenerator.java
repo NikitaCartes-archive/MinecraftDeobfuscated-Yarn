@@ -510,8 +510,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.JUKEBOX,
-				new TranslatableText("advancements.husbandry.play_jukebox_in_meadows.title"),
-				new TranslatableText("advancements.husbandry.play_jukebox_in_meadows.description"),
+				new TranslatableText("advancements.adventure.play_jukebox_in_meadows.title"),
+				new TranslatableText("advancements.adventure.play_jukebox_in_meadows.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -525,7 +525,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 					ItemPredicate.Builder.create().tag(ItemTags.MUSIC_DISCS)
 				)
 			)
-			.build(consumer, "husbandry/play_jukebox_in_meadows");
+			.build(consumer, "adventure/play_jukebox_in_meadows");
 		Advancement.Task.create()
 			.parent(advancement10)
 			.display(
@@ -560,7 +560,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 					LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))
 				)
 			)
-			.build(consumer, "adventure/caves_and_cliffs");
+			.build(consumer, "adventure/fall_from_world_height");
 	}
 
 	private List<RegistryKey<Biome>> getOverworldBiomes() {

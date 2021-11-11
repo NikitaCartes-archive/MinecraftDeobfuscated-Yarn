@@ -26,7 +26,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
+import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
 
 /**
  * Contains all the minecraft blocks.
@@ -433,7 +433,7 @@ public class Blocks {
 				.sounds(BlockSoundGroup.GRASS)
 				.luminance(state -> 1)
 				.postProcess(Blocks::always),
-			() -> ConfiguredFeatures.HUGE_BROWN_MUSHROOM
+			() -> TreeConfiguredFeatures.HUGE_BROWN_MUSHROOM
 		)
 	);
 	public static final Block RED_MUSHROOM = register(
@@ -445,7 +445,7 @@ public class Blocks {
 				.breakInstantly()
 				.sounds(BlockSoundGroup.GRASS)
 				.postProcess(Blocks::always),
-			() -> ConfiguredFeatures.HUGE_RED_MUSHROOM
+			() -> TreeConfiguredFeatures.HUGE_RED_MUSHROOM
 		)
 	);
 	public static final Block GOLD_BLOCK = register(
@@ -699,7 +699,15 @@ public class Blocks {
 		"stone_button", new StoneButtonBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().strength(0.5F))
 	);
 	public static final Block SNOW = register(
-		"snow", new SnowBlock(AbstractBlock.Settings.of(Material.SNOW_LAYER).ticksRandomly().strength(0.1F).requiresTool().sounds(BlockSoundGroup.SNOW))
+		"snow",
+		new SnowBlock(
+			AbstractBlock.Settings.of(Material.SNOW_LAYER)
+				.ticksRandomly()
+				.strength(0.1F)
+				.requiresTool()
+				.sounds(BlockSoundGroup.SNOW)
+				.blockVision((blockStatex, blockView, blockPos) -> (Integer)blockStatex.get(SnowBlock.LAYERS) >= 8)
+		)
 	);
 	public static final Block ICE = register(
 		"ice",
@@ -2481,7 +2489,7 @@ public class Blocks {
 		"warped_fungus",
 		new FungusBlock(
 			AbstractBlock.Settings.of(Material.PLANT, MapColor.CYAN).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS),
-			() -> ConfiguredFeatures.WARPED_FUNGI_PLANTED
+			() -> TreeConfiguredFeatures.WARPED_FUNGUS_PLANTED
 		)
 	);
 	public static final Block WARPED_WART_BLOCK = register(
@@ -2511,7 +2519,7 @@ public class Blocks {
 		"crimson_fungus",
 		new FungusBlock(
 			AbstractBlock.Settings.of(Material.PLANT, MapColor.DARK_RED).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS),
-			() -> ConfiguredFeatures.CRIMSON_FUNGI_PLANTED
+			() -> TreeConfiguredFeatures.CRIMSON_FUNGUS_PLANTED
 		)
 	);
 	public static final Block SHROOMLIGHT = register(

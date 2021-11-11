@@ -236,14 +236,14 @@ public final class ChunkGeneratorSettings {
 				-64,
 				384,
 				new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0),
-				new SlideConfig(-0.078125, 2, 8),
+				new SlideConfig(-0.078125, 2, amplified ? 0 : 8),
 				new SlideConfig(0.1171875, 3, 0),
 				1,
 				2,
 				false,
 				amplified,
 				bl,
-				VanillaTerrainParametersCreator.createSurfaceParameters()
+				VanillaTerrainParametersCreator.createSurfaceParameters(amplified)
 			),
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),

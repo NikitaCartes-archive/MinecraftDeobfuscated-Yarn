@@ -103,11 +103,11 @@ public class Structure {
 						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, null);
 					}
 
-					method_28054(structureBlockInfo, list, list2, list3);
+					categorize(structureBlockInfo, list, list2, list3);
 				}
 			}
 
-			List<Structure.StructureBlockInfo> list4 = method_28055(list, list2, list3);
+			List<Structure.StructureBlockInfo> list4 = combineSorted(list, list2, list3);
 			this.blockInfoLists.clear();
 			this.blockInfoLists.add(new Structure.PalettedBlockInfoList(list4));
 			if (includeEntities) {
@@ -118,35 +118,60 @@ public class Structure {
 		}
 	}
 
-	private static void method_28054(
-		Structure.StructureBlockInfo structureBlockInfo,
-		List<Structure.StructureBlockInfo> list,
-		List<Structure.StructureBlockInfo> list2,
-		List<Structure.StructureBlockInfo> list3
+	/**
+	 * Categorizes {@code blockInfo} based on its properties, modifying
+	 * the passed lists in-place.
+	 * 
+	 * <p>If the block has an NBT associated with it, then it will be
+	 * put in {@code blocksWithNbt}. If the block does not have an NBT
+	 * associated with it, but is always a full cube, then it will be
+	 * put in {@code fullBlocks}. Otherwise, it will be put in
+	 * {@code otherBlocks}.
+	 * 
+	 * @apiNote After all blocks are categorized, {@link #combineSorted}
+	 * should be called with the same parameters to get the final list.
+	 */
+	private static void categorize(
+		Structure.StructureBlockInfo blockInfo,
+		List<Structure.StructureBlockInfo> fullBlocks,
+		List<Structure.StructureBlockInfo> blocksWithNbt,
+		List<Structure.StructureBlockInfo> otherBlocks
 	) {
-		if (structureBlockInfo.nbt != null) {
-			list2.add(structureBlockInfo);
-		} else if (!structureBlockInfo.state.getBlock().hasDynamicBounds() && structureBlockInfo.state.isFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN)) {
-			list.add(structureBlockInfo);
+		if (blockInfo.nbt != null) {
+			blocksWithNbt.add(blockInfo);
+		} else if (!blockInfo.state.getBlock().hasDynamicBounds() && blockInfo.state.isFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN)) {
+			fullBlocks.add(blockInfo);
 		} else {
-			list3.add(structureBlockInfo);
+			otherBlocks.add(blockInfo);
 		}
 	}
 
-	private static List<Structure.StructureBlockInfo> method_28055(
-		List<Structure.StructureBlockInfo> list, List<Structure.StructureBlockInfo> list2, List<Structure.StructureBlockInfo> list3
+	/**
+	 * {@return the list that sorts and combines the passed block lists}
+	 * 
+	 * @apiNote The parameters passed should be the same one that was passed
+	 * to previous calls to {@link #categorize}. The returned value is meant to
+	 * be passed to {@link PalettedBlockInfoList}.
+	 * 
+	 * @implNote Each list passed will be sorted in-place using the items'
+	 * Y, X, and Z coordinates. The returned list contains all items of
+	 * {@code fullBlocks}, {@code otherBlocks}, and {@code blocksWithNbt}
+	 * in this order.
+	 */
+	private static List<Structure.StructureBlockInfo> combineSorted(
+		List<Structure.StructureBlockInfo> fullBlocks, List<Structure.StructureBlockInfo> blocksWithNbt, List<Structure.StructureBlockInfo> otherBlocks
 	) {
-		Comparator<Structure.StructureBlockInfo> comparator = Comparator.comparingInt(structureBlockInfo -> structureBlockInfo.pos.getY())
-			.thenComparingInt(structureBlockInfo -> structureBlockInfo.pos.getX())
-			.thenComparingInt(structureBlockInfo -> structureBlockInfo.pos.getZ());
-		list.sort(comparator);
-		list3.sort(comparator);
-		list2.sort(comparator);
-		List<Structure.StructureBlockInfo> list4 = Lists.<Structure.StructureBlockInfo>newArrayList();
-		list4.addAll(list);
-		list4.addAll(list3);
-		list4.addAll(list2);
-		return list4;
+		Comparator<Structure.StructureBlockInfo> comparator = Comparator.comparingInt(blockInfo -> blockInfo.pos.getY())
+			.thenComparingInt(blockInfo -> blockInfo.pos.getX())
+			.thenComparingInt(blockInfo -> blockInfo.pos.getZ());
+		fullBlocks.sort(comparator);
+		otherBlocks.sort(comparator);
+		blocksWithNbt.sort(comparator);
+		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
+		list.addAll(fullBlocks);
+		list.addAll(otherBlocks);
+		list.addAll(blocksWithNbt);
+		return list;
 	}
 
 	private void addEntitiesFromWorld(World world, BlockPos firstCorner, BlockPos secondCorner) {
@@ -199,7 +224,7 @@ public class Structure {
 		return transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
 	}
 
-	public boolean place(ServerWorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, Random random, int i) {
+	public boolean place(ServerWorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, Random random, int flags) {
 		if (this.blockInfoLists.isEmpty()) {
 			return false;
 		} else {
@@ -212,12 +237,12 @@ public class Structure {
 				List<BlockPos> list2 = Lists.<BlockPos>newArrayListWithCapacity(placementData.shouldPlaceFluids() ? list.size() : 0);
 				List<BlockPos> list3 = Lists.<BlockPos>newArrayListWithCapacity(placementData.shouldPlaceFluids() ? list.size() : 0);
 				List<Pair<BlockPos, NbtCompound>> list4 = Lists.<Pair<BlockPos, NbtCompound>>newArrayListWithCapacity(list.size());
+				int i = Integer.MAX_VALUE;
 				int j = Integer.MAX_VALUE;
 				int k = Integer.MAX_VALUE;
-				int l = Integer.MAX_VALUE;
+				int l = Integer.MIN_VALUE;
 				int m = Integer.MIN_VALUE;
 				int n = Integer.MIN_VALUE;
-				int o = Integer.MIN_VALUE;
 
 				for (Structure.StructureBlockInfo structureBlockInfo : process(world, pos, pivot, placementData, list)) {
 					BlockPos blockPos = structureBlockInfo.pos;
@@ -230,13 +255,13 @@ public class Structure {
 							world.setBlockState(blockPos, Blocks.BARRIER.getDefaultState(), Block.NO_REDRAW | Block.FORCE_STATE);
 						}
 
-						if (world.setBlockState(blockPos, blockState, i)) {
-							j = Math.min(j, blockPos.getX());
-							k = Math.min(k, blockPos.getY());
-							l = Math.min(l, blockPos.getZ());
-							m = Math.max(m, blockPos.getX());
-							n = Math.max(n, blockPos.getY());
-							o = Math.max(o, blockPos.getZ());
+						if (world.setBlockState(blockPos, blockState, flags)) {
+							i = Math.min(i, blockPos.getX());
+							j = Math.min(j, blockPos.getY());
+							k = Math.min(k, blockPos.getZ());
+							l = Math.max(l, blockPos.getX());
+							m = Math.max(m, blockPos.getY());
+							n = Math.max(n, blockPos.getZ());
 							list4.add(Pair.of(blockPos, structureBlockInfo.nbt));
 							if (structureBlockInfo.nbt != null) {
 								BlockEntity blockEntity = world.getBlockEntity(blockPos);
@@ -274,8 +299,8 @@ public class Structure {
 						BlockPos blockPos2 = (BlockPos)iterator.next();
 						FluidState fluidState2 = world.getFluidState(blockPos2);
 
-						for (int p = 0; p < directions.length && !fluidState2.isStill(); p++) {
-							BlockPos blockPos3 = blockPos2.offset(directions[p]);
+						for (int o = 0; o < directions.length && !fluidState2.isStill(); o++) {
+							BlockPos blockPos3 = blockPos2.offset(directions[o]);
 							FluidState fluidState3 = world.getFluidState(blockPos3);
 							if (fluidState3.isStill() && !list3.contains(blockPos3)) {
 								fluidState2 = fluidState3;
@@ -294,19 +319,19 @@ public class Structure {
 					}
 				}
 
-				if (j <= m) {
+				if (i <= l) {
 					if (!placementData.shouldUpdateNeighbors()) {
-						VoxelSet voxelSet = new BitSetVoxelSet(m - j + 1, n - k + 1, o - l + 1);
+						VoxelSet voxelSet = new BitSetVoxelSet(l - i + 1, m - j + 1, n - k + 1);
+						int p = i;
 						int q = j;
-						int r = k;
-						int px = l;
+						int ox = k;
 
 						for (Pair<BlockPos, NbtCompound> pair : list4) {
 							BlockPos blockPos4 = pair.getFirst();
-							voxelSet.set(blockPos4.getX() - q, blockPos4.getY() - r, blockPos4.getZ() - px);
+							voxelSet.set(blockPos4.getX() - p, blockPos4.getY() - q, blockPos4.getZ() - ox);
 						}
 
-						updateCorner(world, i, voxelSet, q, r, px);
+						updateCorner(world, flags, voxelSet, p, q, ox);
 					}
 
 					for (Pair<BlockPos, NbtCompound> pair2 : list4) {
@@ -315,7 +340,7 @@ public class Structure {
 							BlockState blockState2 = world.getBlockState(blockPos5);
 							BlockState blockState3 = Block.postProcessState(blockState2, world, blockPos5);
 							if (blockState2 != blockState3) {
-								world.setBlockState(blockPos5, blockState3, i & ~Block.NOTIFY_NEIGHBORS | Block.FORCE_STATE);
+								world.setBlockState(blockPos5, blockState3, flags & ~Block.NOTIFY_NEIGHBORS | Block.FORCE_STATE);
 							}
 
 							world.updateNeighbors(blockPos5, blockState3.getBlock());
@@ -331,7 +356,9 @@ public class Structure {
 				}
 
 				if (!placementData.shouldIgnoreEntities()) {
-					this.spawnEntities(world, pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition(), blockBox, placementData.method_27265());
+					this.spawnEntities(
+						world, pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition(), blockBox, placementData.shouldInitializeMobs()
+					);
 				}
 
 				return true;
@@ -384,7 +411,7 @@ public class Structure {
 	}
 
 	private void spawnEntities(
-		ServerWorldAccess world, BlockPos pos, BlockMirror mirror, BlockRotation rotation, BlockPos pivot, @Nullable BlockBox area, boolean bl
+		ServerWorldAccess world, BlockPos pos, BlockMirror mirror, BlockRotation rotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs
 	) {
 		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
 			BlockPos blockPos = transformAround(structureEntityInfo.blockPos, mirror, rotation, pivot).add(pos);
@@ -402,7 +429,7 @@ public class Structure {
 					float f = entity.applyMirror(mirror);
 					f += entity.getYaw() - entity.applyRotation(rotation);
 					entity.refreshPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, f, entity.getPitch());
-					if (bl && entity instanceof MobEntity) {
+					if (initializeMobs && entity instanceof MobEntity) {
 						((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
 					}
 
@@ -669,10 +696,10 @@ public class Structure {
 			}
 
 			Structure.StructureBlockInfo structureBlockInfo = new Structure.StructureBlockInfo(blockPos, blockState, nbtCompound2);
-			method_28054(structureBlockInfo, list, list2, list3);
+			categorize(structureBlockInfo, list, list2, list3);
 		}
 
-		List<Structure.StructureBlockInfo> list4 = method_28055(list, list2, list3);
+		List<Structure.StructureBlockInfo> list4 = combineSorted(list, list2, list3);
 		this.blockInfoLists.add(new Structure.PalettedBlockInfoList(list4));
 	}
 

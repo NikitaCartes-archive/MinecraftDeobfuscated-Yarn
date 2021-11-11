@@ -37,7 +37,7 @@ public class SpawnSettings {
 						)
 						.fieldOf("spawners")
 						.forGetter(spawnSettings -> spawnSettings.spawners),
-					Codec.simpleMap(Registry.ENTITY_TYPE, SpawnSettings.SpawnDensity.CODEC, Registry.ENTITY_TYPE)
+					Codec.simpleMap(Registry.ENTITY_TYPE.method_39673(), SpawnSettings.SpawnDensity.CODEC, Registry.ENTITY_TYPE)
 						.fieldOf("spawn_costs")
 						.forGetter(spawnSettings -> spawnSettings.spawnCosts),
 					Codec.BOOL.fieldOf("player_spawn_friendly").orElse(false).forGetter(SpawnSettings::isPlayerSpawnFriendly)
@@ -161,7 +161,7 @@ public class SpawnSettings {
 	public static class SpawnEntry extends Weighted.Absent {
 		public static final Codec<SpawnSettings.SpawnEntry> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registry.ENTITY_TYPE.fieldOf("type").forGetter(spawnEntry -> spawnEntry.type),
+						Registry.ENTITY_TYPE.method_39673().fieldOf("type").forGetter(spawnEntry -> spawnEntry.type),
 						Weight.CODEC.fieldOf("weight").forGetter(Weighted.Absent::getWeight),
 						Codec.INT.fieldOf("minCount").forGetter(spawnEntry -> spawnEntry.minGroupSize),
 						Codec.INT.fieldOf("maxCount").forGetter(spawnEntry -> spawnEntry.maxGroupSize)

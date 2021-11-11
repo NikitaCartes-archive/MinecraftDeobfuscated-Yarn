@@ -1,13 +1,24 @@
 package net.minecraft.world.gen.chunk;
 
+import com.google.common.primitives.Doubles;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.DoubleStream;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.EightWayDirection;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
@@ -16,7 +27,7 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.chunk.Chunk;
 
 public class Blender {
-	private static final double field_35514 = 1.0;
+	private static final double field_35514 = 0.1;
 	private static final HeightLimitView OLD_HEIGHT_LIMIT = new HeightLimitView() {
 		@Override
 		public int getHeight() {
@@ -30,8 +41,13 @@ public class Blender {
 	};
 	public static final int field_35511 = 8;
 	private static final int field_35516 = 2;
-	private static final int field_35517 = BiomeCoords.fromBlock(16) - 1;
-	private static final int field_35518 = 2 * field_35517 + 1;
+	private static final int field_35683 = BiomeCoords.fromBlock(16);
+	private static final int field_35684 = field_35683 - 1;
+	private static final int field_35685 = field_35683;
+	private static final int field_35686 = 2 * field_35684 + 1;
+	private static final int field_35687 = 2 * field_35685 + 1;
+	private static final int field_35518 = field_35686 + field_35687;
+	private static final int field_35688 = field_35683 + 1;
 	private static final List<Block> SURFACE_BLOCKS = List.of(
 		Blocks.PODZOL,
 		Blocks.GRAVEL,
@@ -45,83 +61,128 @@ public class Blender {
 		Blocks.TERRACOTTA,
 		Blocks.DIRT
 	);
-	public static final Blender NULL_BLENDER = new Blender(null);
-	public static final double field_35513 = Double.POSITIVE_INFINITY;
-	private final ChunkPos chunkPos;
-	private final double[] surfaceHeights;
-	private final double[][] field_35522;
+	protected static final double field_35513 = Double.MAX_VALUE;
+	private final boolean field_35689;
+	private boolean field_35690;
+	private final boolean field_35691;
+	private final double[] field_35692;
+	private final transient double[][] field_35693;
+	private final transient double[] field_35694;
+	private static final Codec<double[]> field_35695 = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
+	public static final Codec<Blender> field_35682 = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codec.BOOL.fieldOf("old_noise").forGetter(Blender::method_39566),
+						field_35695.optionalFieldOf("heights")
+							.forGetter(blender -> DoubleStream.of(blender.field_35692).anyMatch(d -> d != Double.MAX_VALUE) ? Optional.of(blender.field_35692) : Optional.empty())
+					)
+					.apply(instance, Blender::new)
+		)
+		.comapFlatMap(Blender::method_39573, Function.identity());
 
-	public static Blender create(ChunkRegion chunkRegion, int chunkX, int chunkZ) {
-		Chunk chunk = chunkRegion.getChunk(chunkX, chunkZ);
+	private static DataResult<Blender> method_39573(Blender blender) {
+		return blender.field_35692.length != field_35518 ? DataResult.error("heights has to be of length " + field_35518) : DataResult.success(blender);
+	}
+
+	private Blender(boolean bl, Optional<double[]> optional) {
+		this.field_35689 = bl;
+		this.field_35692 = (double[])optional.orElse(Util.make(new double[field_35518], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
+		this.field_35691 = optional.isPresent();
+		this.field_35693 = new double[field_35518][];
+		this.field_35694 = new double[field_35688 * field_35688];
+	}
+
+	public boolean method_39566() {
+		return this.field_35689;
+	}
+
+	@Nullable
+	public static Blender method_39570(ChunkRegion chunkRegion, int i, int j) {
+		Chunk chunk = chunkRegion.getChunk(i, j);
 		Blender blender = chunk.getBlender();
-		if (blender != null) {
+		if (blender != null && blender.method_39566()) {
+			blender.method_39572(chunk, method_39579(chunkRegion, i, j));
 			return blender;
 		} else {
-			Chunk chunk2 = chunkRegion.getChunk(chunkX - 1, chunkZ);
-			Chunk chunk3 = chunkRegion.getChunk(chunkX, chunkZ - 1);
-			Chunk chunk4 = chunkRegion.getChunk(chunkX - 1, chunkZ - 1);
-			boolean bl = chunk.usesOldNoise();
-			Blender blender2;
-			if (bl == chunk2.usesOldNoise() && bl == chunk3.usesOldNoise() && bl == chunk4.usesOldNoise()) {
-				blender2 = NULL_BLENDER;
-			} else {
-				blender2 = new Blender(chunk, chunk2, chunk3, chunk4);
-			}
-
-			chunk.setBlender(blender2);
-			return blender2;
+			return null;
 		}
 	}
 
-	private Blender(ChunkPos chunkPos) {
-		this.chunkPos = chunkPos;
-		this.surfaceHeights = new double[field_35518];
-		Arrays.fill(this.surfaceHeights, Double.POSITIVE_INFINITY);
-		this.field_35522 = new double[field_35518][];
+	private static Set<EightWayDirection> method_39579(ChunkRegion chunkRegion, int i, int j) {
+		Set<EightWayDirection> set = EnumSet.noneOf(EightWayDirection.class);
+
+		for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
+			int k = i;
+			int l = j;
+
+			for (Direction direction : eightWayDirection.getDirections()) {
+				k += direction.getOffsetX();
+				l += direction.getOffsetZ();
+			}
+
+			if (!chunkRegion.getChunk(k, l).usesOldNoise()) {
+				set.add(eightWayDirection);
+			}
+		}
+
+		return set;
 	}
 
-	private Blender(Chunk chunk1, Chunk chunk2, Chunk chunk3, Chunk chunk4) {
-		this(chunk1.getPos());
-		if (chunk1.usesOldNoise()) {
-			this.method_39347(method_39353(0, 0), chunk1, 0, 0);
-			if (!chunk2.usesOldNoise()) {
-				this.method_39347(method_39353(0, 1), chunk1, 0, 4);
-				this.method_39347(method_39353(0, 2), chunk1, 0, 8);
-				this.method_39347(method_39353(0, 3), chunk1, 0, 12);
+	private void method_39572(Chunk chunk, Set<EightWayDirection> set) {
+		if (!this.field_35690) {
+			BlockPos.Mutable mutable = new BlockPos.Mutable(0, OLD_HEIGHT_LIMIT.getBottomY(), 0);
+
+			for (int i = 0; i < this.field_35694.length; i++) {
+				mutable.setX(Math.max(BiomeCoords.toBlock(this.method_39568(i)), 15));
+				mutable.setZ(Math.max(BiomeCoords.toBlock(this.method_39577(i)), 15));
+				this.field_35694[i] = method_39350(chunk, mutable) ? 1.0 : -1.0;
 			}
 
-			if (!chunk3.usesOldNoise()) {
-				this.method_39347(method_39353(1, 0), chunk1, 4, 0);
-				this.method_39347(method_39353(2, 0), chunk1, 8, 0);
-				this.method_39347(method_39353(3, 0), chunk1, 12, 0);
-			}
-		} else {
-			if (chunk2.usesOldNoise()) {
-				this.method_39347(method_39353(0, 0), chunk2, 15, 0);
-				this.method_39347(method_39353(0, 1), chunk2, 15, 4);
-				this.method_39347(method_39353(0, 2), chunk2, 15, 8);
-				this.method_39347(method_39353(0, 3), chunk2, 15, 12);
+			if (set.contains(EightWayDirection.NORTH) || set.contains(EightWayDirection.WEST) || set.contains(EightWayDirection.NORTH_WEST)) {
+				this.method_39347(method_39578(0, 0), chunk, 0, 0);
 			}
 
-			if (chunk3.usesOldNoise()) {
-				if (!chunk2.usesOldNoise()) {
-					this.method_39347(method_39353(0, 0), chunk3, 0, 15);
+			if (set.contains(EightWayDirection.NORTH)) {
+				for (int i = 1; i < field_35683; i++) {
+					this.method_39347(method_39578(i, 0), chunk, 4 * i, 0);
 				}
-
-				this.method_39347(method_39353(1, 0), chunk3, 4, 15);
-				this.method_39347(method_39353(2, 0), chunk3, 8, 15);
-				this.method_39347(method_39353(3, 0), chunk3, 12, 15);
 			}
 
-			if (chunk4.usesOldNoise() && !chunk2.usesOldNoise() && !chunk3.usesOldNoise()) {
-				this.method_39347(method_39353(0, 0), chunk4, 15, 15);
+			if (set.contains(EightWayDirection.WEST)) {
+				for (int i = 1; i < field_35683; i++) {
+					this.method_39347(method_39578(0, i), chunk, 0, 4 * i);
+				}
 			}
+
+			if (set.contains(EightWayDirection.EAST)) {
+				for (int i = 1; i < field_35683; i++) {
+					this.method_39347(method_39582(field_35685, i), chunk, 15, 4 * i);
+				}
+			}
+
+			if (set.contains(EightWayDirection.SOUTH)) {
+				for (int i = 0; i < field_35683; i++) {
+					this.method_39347(method_39582(i, field_35685), chunk, 4 * i, 15);
+				}
+			}
+
+			if (set.contains(EightWayDirection.EAST) && set.contains(EightWayDirection.NORTH_EAST)) {
+				this.method_39347(method_39582(field_35685, 0), chunk, 15, 0);
+			}
+
+			if (set.contains(EightWayDirection.EAST) && set.contains(EightWayDirection.SOUTH) && set.contains(EightWayDirection.SOUTH_EAST)) {
+				this.method_39347(method_39582(field_35685, field_35685), chunk, 15, 15);
+			}
+
+			this.field_35690 = true;
 		}
 	}
 
 	private void method_39347(int index, Chunk chunk, int x, int z) {
-		this.surfaceHeights[index] = (double)getSurfaceHeight(chunk, x, z);
-		this.field_35522[index] = method_39354(chunk, x, z);
+		if (!this.field_35691) {
+			this.field_35692[index] = (double)getSurfaceHeight(chunk, x, z);
+		}
+
+		this.field_35693[index] = method_39354(chunk, x, z);
 	}
 
 	private static int getSurfaceHeight(Chunk chunk, int x, int z) {
@@ -146,26 +207,25 @@ public class Blender {
 	}
 
 	private static double[] method_39354(Chunk chunk, int x, int z) {
-		int i = OLD_HEIGHT_LIMIT.countVerticalSections() * 2 + 1;
-		int j = OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2;
-		double[] ds = new double[i];
-		double d = 3.0;
+		double[] ds = new double[method_39576()];
+		int i = method_39581();
+		double d = 30.0;
 		double e = 0.0;
 		double f = 0.0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		double g = 15.0;
 
-		for (int k = OLD_HEIGHT_LIMIT.getTopY() - 1; k >= OLD_HEIGHT_LIMIT.getBottomY(); k--) {
-			double h = method_39350(chunk, mutable.set(x, k, z)) ? 1.0 : -1.0;
-			int l = k % 8;
-			if (l == 0) {
-				double m = e / 15.0;
-				int n = k / 8 + 1;
-				ds[n - j] = m * d;
+		for (int j = OLD_HEIGHT_LIMIT.getTopY() - 1; j >= OLD_HEIGHT_LIMIT.getBottomY(); j--) {
+			double h = method_39350(chunk, mutable.set(x, j, z)) ? 1.0 : -1.0;
+			int k = j % 8;
+			if (k == 0) {
+				double l = e / 15.0;
+				int m = j / 8 + 1;
+				ds[m - i] = l * d;
 				e = f;
 				f = 0.0;
-				if (m > 0.0) {
-					d = 0.1;
+				if (l > 0.0) {
+					d = 1.0;
 				}
 			} else {
 				f += h;
@@ -174,7 +234,6 @@ public class Blender {
 			e += h;
 		}
 
-		ds[0] = e / 8.0 * d;
 		return ds;
 	}
 
@@ -193,66 +252,116 @@ public class Blender {
 		}
 	}
 
-	public double method_39344(int i, int j) {
-		int k = i & 3;
-		int l = j & 3;
-		return k != 0 && l != 0 ? Double.POSITIVE_INFINITY : this.surfaceHeights[method_39353(k, l)];
-	}
-
-	public double method_39345(int i, int j, int k) {
-		int l = i & 3;
-		int m = k & 3;
-		if (l != 0 && m != 0) {
-			return Double.POSITIVE_INFINITY;
+	protected double method_39344(int i, int j, int k) {
+		if (i == field_35685 || k == field_35685) {
+			return this.field_35692[method_39582(i, k)];
 		} else {
-			double[] ds = this.field_35522[method_39353(l, m)];
-			if (ds == null) {
-				return Double.POSITIVE_INFINITY;
-			} else {
-				int n = j - OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2;
-				return n >= 0 && n < ds.length ? ds[n] * 1.0 : Double.POSITIVE_INFINITY;
+			return i != 0 && k != 0 ? Double.MAX_VALUE : this.field_35692[method_39578(i, k)];
+		}
+	}
+
+	private static double method_39575(@Nullable double[] ds, int i) {
+		if (ds == null) {
+			return Double.MAX_VALUE;
+		} else {
+			int j = i - method_39581();
+			return j >= 0 && j < ds.length ? ds[j] * 0.1 : Double.MAX_VALUE;
+		}
+	}
+
+	protected double method_39345(int i, int j, int k) {
+		if (j == method_39583()) {
+			return this.field_35694[this.method_39569(i, k)] * 0.1;
+		} else if (i == field_35685 || k == field_35685) {
+			return method_39575(this.field_35693[method_39582(i, k)], j);
+		} else {
+			return i != 0 && k != 0 ? Double.MAX_VALUE : method_39575(this.field_35693[method_39578(i, k)], j);
+		}
+	}
+
+	public void method_39351(int i, int j, Blender.class_6751 arg) {
+		for (int k = 0; k < this.field_35693.length; k++) {
+			double d = this.field_35692[k];
+			if (d != Double.MAX_VALUE) {
+				arg.consume(i + method_39343(k), j + method_39352(k), d);
 			}
 		}
 	}
 
-	public void method_39351(Blender.class_6751 arg) {
-		for (int i = 0; i < this.surfaceHeights.length; i++) {
-			double d = this.surfaceHeights[i];
-			if (d != Double.POSITIVE_INFINITY) {
-				arg.consume(method_39343(i) + BiomeCoords.fromChunk(this.chunkPos.x), method_39352(i) + BiomeCoords.fromChunk(this.chunkPos.z), d);
-			}
-		}
-	}
+	public void method_39346(int i, int j, int k, int l, Blender.class_6750 arg) {
+		int m = method_39581();
+		int n = Math.max(0, k - m);
+		int o = Math.min(method_39576(), l - m);
 
-	public void method_39346(int i, int j, Blender.class_6750 arg) {
-		int k = Math.max(0, i - OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2);
-		int l = Math.min(OLD_HEIGHT_LIMIT.countVerticalSections() * 2 + 1, j - OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2);
-
-		for (int m = 0; m < this.field_35522.length; m++) {
-			double[] ds = this.field_35522[m];
+		for (int p = 0; p < this.field_35693.length; p++) {
+			double[] ds = this.field_35693[p];
 			if (ds != null) {
-				for (int n = k; n < l; n++) {
-					arg.consume(
-						method_39343(m) + BiomeCoords.fromChunk(this.chunkPos.x),
-						n + OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2,
-						method_39352(m) + BiomeCoords.fromChunk(this.chunkPos.z),
-						ds[n] * 1.0
-					);
+				int q = i + method_39343(p);
+				int r = j + method_39352(p);
+
+				for (int s = n; s < o; s++) {
+					arg.consume(q, s + m, r, ds[s] * 0.1);
 				}
 			}
 		}
+
+		if (m >= k && m <= l) {
+			for (int px = 0; px < this.field_35694.length; px++) {
+				int t = this.method_39568(px);
+				int q = this.method_39577(px);
+				arg.consume(t, m, q, this.field_35694[px] * 0.1);
+			}
+		}
 	}
 
-	private static int method_39353(int i, int j) {
-		return field_35517 - i + j;
+	private int method_39569(int i, int j) {
+		return i * field_35688 + j;
+	}
+
+	private int method_39568(int i) {
+		return i / field_35688;
+	}
+
+	private int method_39577(int i) {
+		return i % field_35688;
+	}
+
+	private static int method_39576() {
+		return OLD_HEIGHT_LIMIT.countVerticalSections() * 2;
+	}
+
+	private static int method_39581() {
+		return method_39583() + 1;
+	}
+
+	private static int method_39583() {
+		return OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2;
+	}
+
+	private static int method_39578(int i, int j) {
+		return field_35684 - i + j;
+	}
+
+	private static int method_39582(int i, int j) {
+		return field_35686 + i + field_35685 - j;
 	}
 
 	private static int method_39343(int i) {
-		return method_39355(field_35517 - i);
+		if (i < field_35686) {
+			return method_39355(field_35684 - i);
+		} else {
+			int j = i - field_35686;
+			return field_35685 - method_39355(field_35685 - j);
+		}
 	}
 
 	private static int method_39352(int i) {
-		return method_39355(i - field_35517);
+		if (i < field_35686) {
+			return method_39355(i - field_35684);
+		} else {
+			int j = i - field_35686;
+			return field_35685 - method_39355(j - field_35685);
+		}
 	}
 
 	private static int method_39355(int i) {

@@ -465,7 +465,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 					DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0))
 				)
 			)
-			.build(consumer, "adventure/ride_strider_in_overworld_lava");
+			.build(consumer, "nether/ride_strider_in_overworld_lava");
 		AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Task.create(), NETHER_BIOMES)
 			.parent(advancement12)
 			.display(

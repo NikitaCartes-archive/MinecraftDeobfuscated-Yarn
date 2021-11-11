@@ -12,7 +12,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class RandomFeatureEntry {
 	public static final Codec<RandomFeatureEntry> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ConfiguredFeature.REGISTRY_CODEC
+					PlacedFeature.REGISTRY_CODEC
 						.fieldOf("feature")
 						.flatXmap(Codecs.createPresentValueChecker(), Codecs.createPresentValueChecker())
 						.forGetter(randomFeatureEntry -> randomFeatureEntry.feature),
@@ -20,19 +20,19 @@ public class RandomFeatureEntry {
 				)
 				.apply(instance, RandomFeatureEntry::new)
 	);
-	public final Supplier<ConfiguredFeature<?, ?>> feature;
+	public final Supplier<PlacedFeature> feature;
 	public final float chance;
 
-	public RandomFeatureEntry(ConfiguredFeature<?, ?> feature, float chance) {
-		this(() -> feature, chance);
+	public RandomFeatureEntry(PlacedFeature placedFeature, float chance) {
+		this(() -> placedFeature, chance);
 	}
 
-	private RandomFeatureEntry(Supplier<ConfiguredFeature<?, ?>> feature, float chance) {
+	private RandomFeatureEntry(Supplier<PlacedFeature> feature, float chance) {
 		this.feature = feature;
 		this.chance = chance;
 	}
 
 	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
-		return ((ConfiguredFeature)this.feature.get()).generate(world, chunkGenerator, random, pos);
+		return ((PlacedFeature)this.feature.get()).generateUnregistered(world, chunkGenerator, random, pos);
 	}
 }

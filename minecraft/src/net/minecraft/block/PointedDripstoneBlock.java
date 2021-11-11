@@ -290,6 +290,14 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		BlockPos blockPos = getTipPos(state, world, pos, Integer.MAX_VALUE, true);
 		if (blockPos != null) {
 			BlockPos.Mutable mutable = blockPos.mutableCopy();
+			mutable.move(Direction.DOWN);
+			BlockState blockState = world.getBlockState(mutable);
+			if (blockState.getCollisionShape(world, mutable, ShapeContext.absent()).getMax(Direction.Axis.Y) >= 1.0 || blockState.isOf(Blocks.POWDER_SNOW)) {
+				world.breakBlock(blockPos, true);
+				mutable.move(Direction.UP);
+			}
+
+			mutable.move(Direction.UP);
 
 			while (isPointingDown(world.getBlockState(mutable))) {
 				world.createAndScheduleBlockTick(mutable, this, 2);

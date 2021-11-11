@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BlockFallingDustParticle extends SpriteBillboardParticle {
-	private final float field_3809;
+	private final float rotationSpeed;
 	private final SpriteProvider spriteProvider;
 
 	BlockFallingDustParticle(ClientWorld world, double x, double y, double z, float colorRed, float colorGreen, float colorBlue, SpriteProvider spriteProvider) {
@@ -28,7 +28,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 		int i = (int)(32.0 / (Math.random() * 0.8 + 0.2));
 		this.maxAge = (int)Math.max((float)i * 0.9F, 1.0F);
 		this.setSpriteForAge(spriteProvider);
-		this.field_3809 = ((float)Math.random() - 0.5F) * 0.1F;
+		this.rotationSpeed = ((float)Math.random() - 0.5F) * 0.1F;
 		this.angle = (float)Math.random() * (float) (Math.PI * 2);
 	}
 
@@ -52,7 +52,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 		} else {
 			this.setSpriteForAge(this.spriteProvider);
 			this.prevAngle = this.angle;
-			this.angle = this.angle + (float) Math.PI * this.field_3809 * 2.0F;
+			this.angle = this.angle + (float) Math.PI * this.rotationSpeed * 2.0F;
 			if (this.onGround) {
 				this.prevAngle = this.angle = 0.0F;
 			}

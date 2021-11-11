@@ -46,7 +46,7 @@ public abstract class ChunkTicketManager {
 	static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL) - 2;
 	private static final int field_29765 = 4;
 	private static final int field_34884 = 32;
-	private static final int field_34885 = 32;
+	private static final int field_34885 = 33;
 	final Long2ObjectMap<ObjectSet<ServerPlayerEntity>> playersByChunkPos = new Long2ObjectOpenHashMap<>();
 	final Long2ObjectOpenHashMap<SortedArraySet<ChunkTicket<?>>> ticketsByPosition = new Long2ObjectOpenHashMap<>();
 	private final ChunkTicketManager.TicketDistanceLevelPropagator distanceFromTicketTracker = new ChunkTicketManager.TicketDistanceLevelPropagator();
@@ -244,7 +244,7 @@ public abstract class ChunkTicketManager {
 	}
 
 	public boolean shouldTickBlocks(long chunkPos) {
-		return this.simulationDistanceTracker.getLevel(chunkPos) < 32;
+		return this.simulationDistanceTracker.getLevel(chunkPos) < 33;
 	}
 
 	protected String getTicket(long pos) {

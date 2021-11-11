@@ -143,7 +143,7 @@ public class LocationPredicate {
 			if (!optional.isPresent()) {
 				return false;
 			} else if (this.biome == null || bl && this.biome == optional.get()) {
-				if (this.feature == null || bl && world.getStructureAccessor().method_38854(blockPos, this.feature).hasChildren()) {
+				if (this.feature == null || bl && world.getStructureAccessor().getStructureContaining(blockPos, this.feature).hasChildren()) {
 					if (this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
 						if (!this.light.test(world, blockPos)) {
 							return false;

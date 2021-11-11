@@ -446,8 +446,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
+		int j = Math.max(0, this.unloadTaskQueue.size() - 2000);
+
 		Runnable runnable;
-		while ((shouldKeepTicking.getAsBoolean() || this.unloadTaskQueue.size() > 2000) && (runnable = (Runnable)this.unloadTaskQueue.poll()) != null) {
+		while ((shouldKeepTicking.getAsBoolean() || j > 0) && (runnable = (Runnable)this.unloadTaskQueue.poll()) != null) {
+			j--;
 			runnable.run();
 		}
 	}
@@ -1099,7 +1102,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
 			ChunkSectionPos chunkSectionPos = entityTracker.trackedSection;
 			ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(entityTracker.entity);
-			if (!Objects.equals(chunkSectionPos, chunkSectionPos2)) {
+			boolean bl = !Objects.equals(chunkSectionPos, chunkSectionPos2);
+			if (bl) {
 				entityTracker.updateTrackedStatus(list2);
 				Entity entity = entityTracker.entity;
 				if (entity instanceof ServerPlayerEntity) {
@@ -1109,7 +1113,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				entityTracker.trackedSection = chunkSectionPos2;
 			}
 
-			entityTracker.entry.tick();
+			if (bl || this.ticketManager.shouldTickEntities(chunkSectionPos2.toChunkPos().toLong())) {
+				entityTracker.entry.tick();
+			}
 		}
 
 		if (!list.isEmpty()) {

@@ -184,7 +184,7 @@ public abstract class MobSpawnerLogic {
 				mobSpawnerEntry = new MobSpawnerEntry();
 			}
 
-			this.spawnPotentials = DataPool.method_38061(mobSpawnerEntry);
+			this.spawnPotentials = DataPool.of(mobSpawnerEntry);
 			this.setSpawnEntry(world, pos, mobSpawnerEntry);
 		} else {
 			NbtList nbtList = nbt.getList("SpawnPotentials", NbtElement.COMPOUND_TYPE);

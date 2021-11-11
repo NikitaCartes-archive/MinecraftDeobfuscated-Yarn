@@ -149,7 +149,17 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 				this.storage.put(id, this.createSection(id));
 				this.dirtySections.add(id);
 				this.onLoadSection(id);
-				ChunkSectionPos.forEachChunkSectionAround(id, this.notifySections::add);
+				int j = ChunkSectionPos.unpackX(id);
+				int k = ChunkSectionPos.unpackY(id);
+				int l = ChunkSectionPos.unpackZ(id);
+
+				for (int m = -1; m <= 1; m++) {
+					for (int n = -1; n <= 1; n++) {
+						for (int o = -1; o <= 1; o++) {
+							this.notifySections.add(ChunkSectionPos.asLong(j + n, k + o, l + m));
+						}
+					}
+				}
 			}
 		}
 

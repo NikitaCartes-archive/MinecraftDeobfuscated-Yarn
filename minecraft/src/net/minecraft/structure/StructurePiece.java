@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -90,24 +89,24 @@ public abstract class StructurePiece {
 		return Direction.Type.HORIZONTAL.random(random);
 	}
 
-	public final NbtCompound toNbt(class_6625 arg) {
+	public final NbtCompound toNbt(StructureContext context) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
 		BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbtCompound.put("BB", nbtElement));
 		Direction direction = this.getFacing();
 		nbtCompound.putInt("O", direction == null ? -1 : direction.getHorizontal());
 		nbtCompound.putInt("GD", this.chainLength);
-		this.writeNbt(arg, nbtCompound);
+		this.writeNbt(context, nbtCompound);
 		return nbtCompound;
 	}
 
-	protected abstract void writeNbt(class_6625 arg, NbtCompound nbt);
+	protected abstract void writeNbt(StructureContext context, NbtCompound nbt);
 
 	public StructureWeightType getWeightType() {
 		return StructureWeightType.BEARD;
 	}
 
-	public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+	public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 	}
 
 	public abstract void generate(
@@ -115,7 +114,7 @@ public abstract class StructurePiece {
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
-		BlockBox boundingBox,
+		BlockBox chunkBox,
 		ChunkPos chunkPos,
 		BlockPos pos
 	);
@@ -486,15 +485,15 @@ public abstract class StructurePiece {
 		this.boundingBox.move(x, y, z);
 	}
 
-	public static BlockBox method_38703(Stream<StructurePiece> stream) {
-		return (BlockBox)BlockBox.encompass(stream.map(StructurePiece::getBoundingBox)::iterator)
+	public static BlockBox boundingBox(Stream<StructurePiece> pieces) {
+		return (BlockBox)BlockBox.encompass(pieces.map(StructurePiece::getBoundingBox)::iterator)
 			.orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
 	}
 
 	@Nullable
-	public static StructurePiece method_38702(List<StructurePiece> list, BlockBox blockBox) {
-		for (StructurePiece structurePiece : list) {
-			if (structurePiece.getBoundingBox().intersects(blockBox)) {
+	public static StructurePiece firstIntersecting(List<StructurePiece> pieces, BlockBox box) {
+		for (StructurePiece structurePiece : pieces) {
+			if (structurePiece.getBoundingBox().intersects(box)) {
 				return structurePiece;
 			}
 		}

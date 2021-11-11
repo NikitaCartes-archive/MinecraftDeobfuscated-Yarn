@@ -7,7 +7,8 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
+import net.minecraft.world.gen.feature.PileConfiguredFeatures;
+import net.minecraft.world.gen.feature.VegetationConfiguredFeatures;
 
 public class DesertVillageData {
 	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
@@ -174,8 +175,8 @@ public class DesertVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofLegacySingle("village/desert/desert_lamp_1"), 10),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PATCH_CACTUS), 4),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_HAY), 4),
+					Pair.of(StructurePoolElement.ofFeature(VegetationConfiguredFeatures.PATCH_CACTUS.withPlacement()), 4),
+					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_HAY.withPlacement()), 4),
 					Pair.of(StructurePoolElement.ofEmpty(), 10)
 				),
 				StructurePool.Projection.RIGID
@@ -187,8 +188,8 @@ public class DesertVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/desert/desert_lamp_1", StructureProcessorLists.ZOMBIE_DESERT), 10),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PATCH_CACTUS), 4),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_HAY), 4),
+					Pair.of(StructurePoolElement.ofFeature(VegetationConfiguredFeatures.PATCH_CACTUS.withPlacement()), 4),
+					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_HAY.withPlacement()), 4),
 					Pair.of(StructurePoolElement.ofEmpty(), 10)
 				),
 				StructurePool.Projection.RIGID

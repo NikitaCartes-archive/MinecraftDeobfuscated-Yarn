@@ -124,7 +124,7 @@ public final class VanillaBiomeParameters {
 
 	public void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
 		if (SharedConstants.DEBUG_BIOME_SOURCE) {
-			VanillaTerrainParametersCreator.createSurfaceParameters().writeDebugBiomes(parameters);
+			VanillaTerrainParametersCreator.createSurfaceParameters(false).writeDebugBiomes(parameters);
 		} else {
 			this.writeOceanBiomes(parameters);
 			this.writeLandBiomes(parameters);
@@ -202,14 +202,21 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.NEAR_INLAND_CONTINENTALNESS, this.FAR_INLAND_CONTINENTALNESS),
+					MultiNoiseUtil.ParameterRange.combine(this.SHORE_CONTINENTALNESS, this.FAR_INLAND_CONTINENTALNESS),
 					this.EROSION_PARAMETERS[0],
 					weirdness,
 					0.0F,
 					registryKey7
 				);
 				this.writeBiomeParameters(
-					parameters, parameterRange, parameterRange2, this.NEAR_INLAND_CONTINENTALNESS, this.EROSION_PARAMETERS[1], weirdness, 0.0F, registryKey3
+					parameters,
+					parameterRange,
+					parameterRange2,
+					MultiNoiseUtil.ParameterRange.combine(this.SHORE_CONTINENTALNESS, this.NEAR_INLAND_CONTINENTALNESS),
+					this.EROSION_PARAMETERS[1],
+					weirdness,
+					0.0F,
+					registryKey3
 				);
 				this.writeBiomeParameters(
 					parameters,
@@ -225,7 +232,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					this.NEAR_INLAND_CONTINENTALNESS,
+					MultiNoiseUtil.ParameterRange.combine(this.SHORE_CONTINENTALNESS, this.NEAR_INLAND_CONTINENTALNESS),
 					MultiNoiseUtil.ParameterRange.combine(this.EROSION_PARAMETERS[2], this.EROSION_PARAMETERS[3]),
 					weirdness,
 					0.0F,

@@ -15,10 +15,10 @@ public class RedDustParticle extends AbstractDustParticle<DustParticleEffect> {
 		double velocityX,
 		double velocityY,
 		double velocityZ,
-		DustParticleEffect dustParticleEffect,
+		DustParticleEffect parameters,
 		SpriteProvider spriteProvider
 	) {
-		super(world, x, y, z, velocityX, velocityY, velocityZ, dustParticleEffect, spriteProvider);
+		super(world, x, y, z, velocityX, velocityY, velocityZ, parameters, spriteProvider);
 	}
 
 	@Environment(EnvType.CLIENT)

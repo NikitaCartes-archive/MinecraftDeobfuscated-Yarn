@@ -91,7 +91,7 @@ public class PrepareRamTask<E extends PathAwareEntity> extends Task<E> {
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		Brain<?> brain = pathAwareEntity.getBrain();
 		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
-			.flatMap(arg -> arg.method_38975(mob -> this.targetPredicate.test(pathAwareEntity, mob)))
+			.flatMap(livingTargetCache -> livingTargetCache.findFirst(mob -> this.targetPredicate.test(pathAwareEntity, mob)))
 			.ifPresent(mob -> this.findRam(pathAwareEntity, mob));
 	}
 

@@ -20,10 +20,10 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FillLayerFeatureConfig;
+import net.minecraft.world.gen.feature.MiscPlacedFeatures;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -131,16 +131,17 @@ public class FlatChunkGeneratorConfig {
 		GenerationSettings generationSettings = biome.getGenerationSettings();
 		GenerationSettings.Builder builder = new GenerationSettings.Builder();
 		if (this.hasLakes) {
-			builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_LAVA);
+			builder.feature(GenerationStep.Feature.LAKES, MiscPlacedFeatures.LAKE_LAVA_UNDERGROUND);
+			builder.feature(GenerationStep.Feature.LAKES, MiscPlacedFeatures.LAKE_LAVA_SURFACE);
 		}
 
 		boolean bl = (!this.hasNoTerrain || this.biomeRegistry.getKey(biome).equals(Optional.of(BiomeKeys.THE_VOID))) && this.hasFeatures;
 		if (bl) {
-			List<List<Supplier<ConfiguredFeature<?, ?>>>> list = generationSettings.getFeatures();
+			List<List<Supplier<PlacedFeature>>> list = generationSettings.getFeatures();
 
 			for (int i = 0; i < list.size(); i++) {
 				if (i != GenerationStep.Feature.UNDERGROUND_STRUCTURES.ordinal() && i != GenerationStep.Feature.SURFACE_STRUCTURES.ordinal()) {
-					for (Supplier<ConfiguredFeature<?, ?>> supplier : (List)list.get(i)) {
+					for (Supplier<PlacedFeature> supplier : (List)list.get(i)) {
 						builder.feature(i, supplier);
 					}
 				}
@@ -153,7 +154,7 @@ public class FlatChunkGeneratorConfig {
 			BlockState blockState = (BlockState)list.get(ix);
 			if (!Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
 				list.set(ix, null);
-				builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(ix, blockState)));
+				builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(ix, blockState)).withPlacement());
 			}
 		}
 

@@ -19,6 +19,7 @@ public final class BelowZeroRetrogen {
 	private static final Codec<BitSet> MISSING_BEDROCK_CODEC = Codec.LONG_STREAM
 		.xmap(longStream -> BitSet.valueOf(longStream.toArray()), bitSet -> LongStream.of(bitSet.toLongArray()));
 	private static final Codec<ChunkStatus> STATUS_CODEC = Registry.CHUNK_STATUS
+		.method_39673()
 		.comapFlatMap(
 			chunkStatus -> chunkStatus == ChunkStatus.EMPTY ? DataResult.error("target_status cannot be empty") : DataResult.success(chunkStatus), Function.identity()
 		);

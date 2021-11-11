@@ -2,6 +2,7 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.noise.NoiseParametersKeys;
@@ -62,6 +63,7 @@ public class VanillaSurfaceRules {
 		MaterialRules.MaterialRule materialRule = MaterialRules.sequence(MaterialRules.condition(materialCondition7, GRASS_BLOCK), DIRT);
 		MaterialRules.MaterialRule materialRule2 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.field_35494, field_35562), SAND);
 		MaterialRules.MaterialRule materialRule3 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.field_35494, STONE), GRAVEL);
+		MaterialRules.MaterialCondition materialCondition13 = MaterialRules.biome(BiomeKeys.WARM_OCEAN, BiomeKeys.DESERT, BiomeKeys.BEACH, BiomeKeys.SNOWY_BEACH);
 		MaterialRules.MaterialRule materialRule4 = MaterialRules.sequence(
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.STONY_PEAKS),
@@ -72,7 +74,7 @@ public class VanillaSurfaceRules {
 				MaterialRules.sequence(MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.GRAVEL, -0.05, 0.05), materialRule3), STONE)
 			),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.WINDSWEPT_HILLS), MaterialRules.condition(surfaceNoiseThreshold(1.0), STONE)),
-			MaterialRules.condition(MaterialRules.biome(BiomeKeys.WARM_OCEAN, BiomeKeys.DESERT, BiomeKeys.BEACH, BiomeKeys.SNOWY_BEACH), materialRule2),
+			MaterialRules.condition(materialCondition13, materialRule2),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.DRIPSTONE_CAVES), STONE)
 		);
 		MaterialRules.MaterialRule materialRule5 = MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW, 0.45, 0.58), POWDER_SNOW);
@@ -142,9 +144,9 @@ public class VanillaSurfaceRules {
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.MUSHROOM_FIELDS), MYCELIUM),
 			materialRule
 		);
-		MaterialRules.MaterialCondition materialCondition13 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.909, -0.5454);
-		MaterialRules.MaterialCondition materialCondition14 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.1818, 0.1818);
-		MaterialRules.MaterialCondition materialCondition15 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, 0.5454, 0.909);
+		MaterialRules.MaterialCondition materialCondition14 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.909, -0.5454);
+		MaterialRules.MaterialCondition materialCondition15 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.1818, 0.1818);
+		MaterialRules.MaterialCondition materialCondition16 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, 0.5454, 0.909);
 		MaterialRules.MaterialRule materialRule9 = MaterialRules.sequence(
 			MaterialRules.condition(
 				MaterialRules.STONE_DEPTH_FLOOR,
@@ -154,9 +156,9 @@ public class VanillaSurfaceRules {
 						MaterialRules.condition(
 							materialCondition,
 							MaterialRules.sequence(
-								MaterialRules.condition(materialCondition13, COARSE_DIRT),
 								MaterialRules.condition(materialCondition14, COARSE_DIRT),
 								MaterialRules.condition(materialCondition15, COARSE_DIRT),
+								MaterialRules.condition(materialCondition16, COARSE_DIRT),
 								materialRule
 							)
 						)
@@ -174,34 +176,37 @@ public class VanillaSurfaceRules {
 			),
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.BADLANDS, BiomeKeys.ERODED_BADLANDS, BiomeKeys.WOODED_BADLANDS),
-				MaterialRules.sequence(
-					MaterialRules.condition(
-						MaterialRules.STONE_DEPTH_FLOOR,
-						MaterialRules.sequence(
-							MaterialRules.condition(materialCondition2, ORANGE_TERRACOTTA),
-							MaterialRules.condition(
-								materialCondition4,
-								MaterialRules.sequence(
-									MaterialRules.condition(materialCondition13, TERRACOTTA),
-									MaterialRules.condition(materialCondition14, TERRACOTTA),
-									MaterialRules.condition(materialCondition15, TERRACOTTA),
-									MaterialRules.terracottaBands()
-								)
-							),
-							MaterialRules.condition(materialCondition7, MaterialRules.sequence(MaterialRules.condition(MaterialRules.field_35494, field_35561), RED_SAND)),
-							MaterialRules.condition(MaterialRules.not(materialCondition10), ORANGE_TERRACOTTA),
-							MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA),
-							materialRule3
-						)
-					),
-					MaterialRules.condition(
-						materialCondition3,
-						MaterialRules.sequence(
-							MaterialRules.condition(materialCondition6, MaterialRules.condition(MaterialRules.not(materialCondition4), ORANGE_TERRACOTTA)),
-							MaterialRules.terracottaBands()
-						)
-					),
-					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_RUN_DEPTH, MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA))
+				MaterialRules.condition(
+					MaterialRules.method_39549(15, false, false, VerticalSurfaceType.FLOOR),
+					MaterialRules.sequence(
+						MaterialRules.condition(
+							MaterialRules.STONE_DEPTH_FLOOR,
+							MaterialRules.sequence(
+								MaterialRules.condition(materialCondition2, ORANGE_TERRACOTTA),
+								MaterialRules.condition(
+									materialCondition4,
+									MaterialRules.sequence(
+										MaterialRules.condition(materialCondition14, TERRACOTTA),
+										MaterialRules.condition(materialCondition15, TERRACOTTA),
+										MaterialRules.condition(materialCondition16, TERRACOTTA),
+										MaterialRules.terracottaBands()
+									)
+								),
+								MaterialRules.condition(materialCondition7, MaterialRules.sequence(MaterialRules.condition(MaterialRules.field_35494, field_35561), RED_SAND)),
+								MaterialRules.condition(MaterialRules.not(materialCondition10), ORANGE_TERRACOTTA),
+								MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA),
+								materialRule3
+							)
+						),
+						MaterialRules.condition(
+							materialCondition3,
+							MaterialRules.sequence(
+								MaterialRules.condition(materialCondition6, MaterialRules.condition(MaterialRules.not(materialCondition4), ORANGE_TERRACOTTA)),
+								MaterialRules.terracottaBands()
+							)
+						),
+						MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_RUN_DEPTH, MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA))
+					)
 				)
 			),
 			MaterialRules.condition(
@@ -221,10 +226,13 @@ public class VanillaSurfaceRules {
 				)
 			),
 			MaterialRules.condition(
-				MaterialRules.STONE_DEPTH_FLOOR,
-				MaterialRules.condition(materialCondition9, MaterialRules.condition(materialCondition11, MaterialRules.condition(materialCondition10, WATER)))
+				materialCondition9,
+				MaterialRules.sequence(
+					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.condition(materialCondition11, MaterialRules.condition(materialCondition10, WATER))),
+					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_RUN_DEPTH, materialRule7),
+					MaterialRules.condition(materialCondition13, MaterialRules.condition(MaterialRules.method_39549(0, true, true, VerticalSurfaceType.FLOOR), field_35562))
+				)
 			),
-			MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_RUN_DEPTH, MaterialRules.condition(materialCondition9, materialRule7)),
 			MaterialRules.condition(
 				MaterialRules.STONE_DEPTH_FLOOR,
 				MaterialRules.sequence(

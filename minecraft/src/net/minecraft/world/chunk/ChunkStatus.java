@@ -127,23 +127,14 @@ public class ChunkStatus {
 	);
 	public static final ChunkStatus SURFACE = register(
 		"surface", NOISE, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (targetStatus, world, generator, chunks, chunk) -> {
-			if (!chunk.hasBelowZeroRetrogen()) {
-				ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
-				generator.buildSurface(chunkRegion, world.getStructureAccessor().forRegion(chunkRegion), chunk);
-			}
+			ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
+			generator.buildSurface(chunkRegion, world.getStructureAccessor().forRegion(chunkRegion), chunk);
 		}
 	);
 	public static final ChunkStatus CARVERS = register(
-		"carvers",
-		SURFACE,
-		8,
-		PRE_CARVER_HEIGHTMAPS,
-		ChunkStatus.ChunkType.PROTOCHUNK,
-		(targetStatus, world, generator, chunks, chunk) -> {
-			if (!chunk.hasBelowZeroRetrogen()) {
-				ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
-				generator.carve(chunkRegion, world.getSeed(), world.getBiomeAccess(), world.getStructureAccessor().forRegion(chunkRegion), chunk, GenerationStep.Carver.AIR);
-			}
+		"carvers", SURFACE, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (targetStatus, world, generator, chunks, chunk) -> {
+			ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
+			generator.carve(chunkRegion, world.getSeed(), world.getBiomeAccess(), world.getStructureAccessor().forRegion(chunkRegion), chunk, GenerationStep.Carver.AIR);
 		}
 	);
 	public static final ChunkStatus LIQUID_CARVERS = register(
@@ -153,12 +144,10 @@ public class ChunkStatus {
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(targetStatus, world, generator, chunks, chunk) -> {
-			if (!chunk.hasBelowZeroRetrogen()) {
-				ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
-				generator.carve(
-					chunkRegion, world.getSeed(), world.getBiomeAccess(), world.getStructureAccessor().forRegion(chunkRegion), chunk, GenerationStep.Carver.LIQUID
-				);
-			}
+			ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
+			generator.carve(
+				chunkRegion, world.getSeed(), world.getBiomeAccess(), world.getStructureAccessor().forRegion(chunkRegion), chunk, GenerationStep.Carver.LIQUID
+			);
 		}
 	);
 	public static final ChunkStatus FEATURES = register(

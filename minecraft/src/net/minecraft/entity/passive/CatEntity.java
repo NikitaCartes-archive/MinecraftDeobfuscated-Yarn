@@ -426,7 +426,8 @@ public class CatEntity extends TameableEntity {
 		}
 
 		World world2 = world.toServerWorld();
-		if (world2 instanceof ServerWorld && ((ServerWorld)world2).getStructureAccessor().method_38854(this.getBlockPos(), StructureFeature.SWAMP_HUT).hasChildren()) {
+		if (world2 instanceof ServerWorld
+			&& ((ServerWorld)world2).getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureFeature.SWAMP_HUT).hasChildren()) {
 			this.setCatType(ALL_BLACK_TYPE);
 			this.setPersistent();
 		}

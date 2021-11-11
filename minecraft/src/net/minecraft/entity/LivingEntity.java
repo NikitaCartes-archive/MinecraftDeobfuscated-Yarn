@@ -896,7 +896,7 @@ public abstract class LivingEntity extends Entity {
 
 	public static boolean containsOnlyAmbientEffects(Collection<StatusEffectInstance> effects) {
 		for (StatusEffectInstance statusEffectInstance : effects) {
-			if (!statusEffectInstance.isAmbient()) {
+			if (statusEffectInstance.shouldShowParticles() && !statusEffectInstance.isAmbient()) {
 				return false;
 			}
 		}

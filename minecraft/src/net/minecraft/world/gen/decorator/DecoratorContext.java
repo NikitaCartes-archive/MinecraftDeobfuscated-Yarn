@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.decorator;
 
+import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -10,13 +11,18 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class DecoratorContext extends HeightContext {
 	private final StructureWorldAccess world;
+	private final ChunkGenerator generator;
+	private final Optional<PlacedFeature> placedFeature;
 
-	public DecoratorContext(StructureWorldAccess world, ChunkGenerator generator) {
+	public DecoratorContext(StructureWorldAccess world, ChunkGenerator generator, Optional<PlacedFeature> placedFeature) {
 		super(generator, world);
 		this.world = world;
+		this.generator = generator;
+		this.placedFeature = placedFeature;
 	}
 
 	public int getTopY(Heightmap.Type heightmap, int x, int z) {
@@ -37,5 +43,13 @@ public class DecoratorContext extends HeightContext {
 
 	public StructureWorldAccess getWorld() {
 		return this.world;
+	}
+
+	public Optional<PlacedFeature> getPlacedFeature() {
+		return this.placedFeature;
+	}
+
+	public ChunkGenerator getChunkGenerator() {
+		return this.generator;
 	}
 }

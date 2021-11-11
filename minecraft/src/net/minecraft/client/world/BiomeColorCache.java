@@ -15,14 +15,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BiomeColorCache {
-	private static final int field_32164 = 256;
+	private static final int MAX_ENTRY_SIZE = 256;
 	private final ThreadLocal<BiomeColorCache.Last> last = ThreadLocal.withInitial(BiomeColorCache.Last::new);
-	private final Long2ObjectLinkedOpenHashMap<BiomeColorCache.class_6598> colors = new Long2ObjectLinkedOpenHashMap<>(256, 0.25F);
+	private final Long2ObjectLinkedOpenHashMap<BiomeColorCache.Colors> colors = new Long2ObjectLinkedOpenHashMap<>(256, 0.25F);
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-	private final ToIntFunction<BlockPos> field_34795;
+	private final ToIntFunction<BlockPos> colorFactory;
 
-	public BiomeColorCache(ToIntFunction<BlockPos> toIntFunction) {
-		this.field_34795 = toIntFunction;
+	public BiomeColorCache(ToIntFunction<BlockPos> colorFactory) {
+		this.colorFactory = colorFactory;
 	}
 
 	public int getBiomeColor(BlockPos pos) {
@@ -35,7 +35,7 @@ public class BiomeColorCache {
 			last.colors = this.getColorArray(i, j);
 		}
 
-		int[] is = last.colors.method_38528(pos.getY());
+		int[] is = last.colors.get(pos.getY());
 		int k = pos.getX() & 15;
 		int l = pos.getZ() & 15;
 		int m = l << 4 | k;
@@ -43,7 +43,7 @@ public class BiomeColorCache {
 		if (n != -1) {
 			return n;
 		} else {
-			int o = this.field_34795.applyAsInt(pos);
+			int o = this.colorFactory.applyAsInt(pos);
 			is[m] = o;
 			return o;
 		}
@@ -73,14 +73,14 @@ public class BiomeColorCache {
 		}
 	}
 
-	private BiomeColorCache.class_6598 getColorArray(int chunkX, int chunkZ) {
+	private BiomeColorCache.Colors getColorArray(int chunkX, int chunkZ) {
 		long l = ChunkPos.toLong(chunkX, chunkZ);
 		this.lock.readLock().lock();
 
 		try {
-			BiomeColorCache.class_6598 lv = this.colors.get(l);
-			if (lv != null) {
-				return lv;
+			BiomeColorCache.Colors colors = this.colors.get(l);
+			if (colors != null) {
+				return colors;
 			}
 		} finally {
 			this.lock.readLock().unlock();
@@ -88,25 +88,62 @@ public class BiomeColorCache {
 
 		this.lock.writeLock().lock();
 
-		BiomeColorCache.class_6598 lv2;
+		BiomeColorCache.Colors colors2;
 		try {
-			BiomeColorCache.class_6598 lv = this.colors.get(l);
-			if (lv == null) {
-				lv2 = new BiomeColorCache.class_6598();
+			BiomeColorCache.Colors colors = this.colors.get(l);
+			if (colors == null) {
+				colors2 = new BiomeColorCache.Colors();
 				if (this.colors.size() >= 256) {
 					this.colors.removeFirst();
 				}
 
-				this.colors.put(l, lv2);
-				return lv2;
+				this.colors.put(l, colors2);
+				return colors2;
 			}
 
-			lv2 = lv;
+			colors2 = colors;
 		} finally {
 			this.lock.writeLock().unlock();
 		}
 
-		return lv2;
+		return colors2;
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class Colors {
+		private final Int2ObjectArrayMap<int[]> colors = new Int2ObjectArrayMap<>(16);
+		private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+		private static final int XZ_COLORS_SIZE = MathHelper.square(16);
+
+		public int[] get(int y) {
+			this.lock.readLock().lock();
+
+			try {
+				int[] is = this.colors.get(y);
+				if (is != null) {
+					return is;
+				}
+			} finally {
+				this.lock.readLock().unlock();
+			}
+
+			this.lock.writeLock().lock();
+
+			int[] var12;
+			try {
+				var12 = this.colors.computeIfAbsent(y, yx -> this.createDefault());
+			} finally {
+				this.lock.writeLock().unlock();
+			}
+
+			return var12;
+		}
+
+		private int[] createDefault() {
+			int[] is = new int[XZ_COLORS_SIZE];
+			Arrays.fill(is, -1);
+			return is;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -114,46 +151,9 @@ public class BiomeColorCache {
 		public int x = Integer.MIN_VALUE;
 		public int z = Integer.MIN_VALUE;
 		@Nullable
-		BiomeColorCache.class_6598 colors;
+		BiomeColorCache.Colors colors;
 
 		private Last() {
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class class_6598 {
-		private final Int2ObjectArrayMap<int[]> field_34796 = new Int2ObjectArrayMap<>(16);
-		private final ReentrantReadWriteLock field_34797 = new ReentrantReadWriteLock();
-		private static final int field_34798 = MathHelper.square(16);
-
-		public int[] method_38528(int i) {
-			this.field_34797.readLock().lock();
-
-			try {
-				int[] is = this.field_34796.get(i);
-				if (is != null) {
-					return is;
-				}
-			} finally {
-				this.field_34797.readLock().unlock();
-			}
-
-			this.field_34797.writeLock().lock();
-
-			int[] var12;
-			try {
-				var12 = this.field_34796.computeIfAbsent(i, ix -> this.method_38527());
-			} finally {
-				this.field_34797.writeLock().unlock();
-			}
-
-			return var12;
-		}
-
-		private int[] method_38527() {
-			int[] is = new int[field_34798];
-			Arrays.fill(is, -1);
-			return is;
 		}
 	}
 }

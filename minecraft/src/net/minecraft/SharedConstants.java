@@ -12,17 +12,17 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2845;
+	public static final int WORLD_VERSION = 2847;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "21w44a";
+	public static final String VERSION_NAME = "1.18-pre1";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.18";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 757;
 	@Deprecated
-	public static final int field_29736 = 48;
+	public static final int field_29736 = 49;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2830;
 	private static final int field_29708 = 30;
 	@Deprecated
@@ -93,7 +93,6 @@ public class SharedConstants {
 	public static final boolean field_33640 = false;
 	public static final boolean field_35438 = false;
 	public static final boolean field_35439 = false;
-	public static final boolean field_35440 = false;
 	public static final int DEFAULT_PORT = 25565;
 	public static final boolean field_29720 = false;
 	public static final boolean field_29721 = false;
@@ -104,6 +103,7 @@ public class SharedConstants {
 	public static final boolean field_29725 = false;
 	public static final boolean field_29726 = false;
 	public static final boolean field_29727 = false;
+	public static final boolean field_35652 = false;
 	public static final float field_29728 = 0.15F;
 	public static final long field_22251 = Duration.ofMillis(300L).toNanos();
 	/**
@@ -163,7 +163,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741872;
+		return 1073741873;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {

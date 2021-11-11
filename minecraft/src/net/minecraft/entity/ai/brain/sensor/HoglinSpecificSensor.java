@@ -5,9 +5,9 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.PiglinEntity;
@@ -34,9 +34,9 @@ public class HoglinSpecificSensor extends Sensor<HoglinEntity> {
 		Optional<PiglinEntity> optional = Optional.empty();
 		int i = 0;
 		List<HoglinEntity> list = Lists.<HoglinEntity>newArrayList();
-		class_6670 lv = (class_6670)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
+		LivingTargetCache livingTargetCache = (LivingTargetCache)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
 
-		for (LivingEntity livingEntity : lv.method_38978(
+		for (LivingEntity livingEntity : livingTargetCache.iterate(
 			livingEntityx -> !livingEntityx.isBaby() && (livingEntityx instanceof PiglinEntity || livingEntityx instanceof HoglinEntity)
 		)) {
 			if (livingEntity instanceof PiglinEntity piglinEntity) {

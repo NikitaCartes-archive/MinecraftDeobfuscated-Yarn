@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -87,8 +86,8 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	protected void writeNbt(class_6625 arg, NbtCompound nbt) {
-		super.writeNbt(arg, nbt);
+	protected void writeNbt(StructureContext context, NbtCompound nbt) {
+		super.writeNbt(context, nbt);
 		nbt.putString("Rotation", this.placementData.getRotation().name());
 		nbt.putString("Mirror", this.placementData.getMirror().name());
 		nbt.putString("VerticalPlacement", this.verticalPlacement.getId());
@@ -159,14 +158,14 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
-		BlockBox boundingBox,
+		BlockBox chunkBox,
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
 		BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (boundingBox.contains(blockBox.getCenter())) {
-			boundingBox.encompass(blockBox);
-			super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+		if (chunkBox.contains(blockBox.getCenter())) {
+			chunkBox.encompass(blockBox);
+			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
 			this.placeNetherrackBase(random, world);
 			this.updateNetherracksInBound(random, world);
 			if (this.properties.vines || this.properties.overgrown) {

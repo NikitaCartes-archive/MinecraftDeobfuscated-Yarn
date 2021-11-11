@@ -13,13 +13,13 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.util.TerrainNoisePoint;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.NoiseColumnSampler;
 
 public class ChunkNoiseSampler {
-	final int horizontalNoiseResolution;
-	final int verticalNoiseResolution;
-	final int height;
+	final GenerationShapeConfig field_35674;
 	final int horizontalSize;
+	final int height;
 	final int minimumY;
 	final int x;
 	final int z;
@@ -33,51 +33,87 @@ public class ChunkNoiseSampler {
 	private final ChunkNoiseSampler.BlockStateSampler oreVeinSampler;
 	private final class_6748 field_35487;
 
-	public ChunkNoiseSampler(
-		int horizontalNoiseResolution,
-		int verticalNoiseResolution,
-		int horizontalSize,
-		int height,
-		int minimumY,
+	public static ChunkNoiseSampler method_39543(
+		Chunk chunk,
 		NoiseColumnSampler noiseColumnSampler,
-		int x,
-		int z,
-		ChunkNoiseSampler.ColumnSampler columnSampler,
-		Supplier<ChunkGeneratorSettings> settings,
+		Supplier<ChunkNoiseSampler.ColumnSampler> supplier,
+		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
 		class_6748 arg
 	) {
-		this.horizontalNoiseResolution = horizontalNoiseResolution;
-		this.verticalNoiseResolution = verticalNoiseResolution;
-		this.height = height;
-		this.horizontalSize = horizontalSize;
-		this.minimumY = minimumY;
-		this.x = Math.floorDiv(x, horizontalNoiseResolution);
-		this.z = Math.floorDiv(z, horizontalNoiseResolution);
+		ChunkPos chunkPos = chunk.getPos();
+		GenerationShapeConfig generationShapeConfig = chunkGeneratorSettings.getGenerationShapeConfig();
+		int i = Math.max(generationShapeConfig.minimumY(), chunk.getBottomY());
+		int j = Math.min(generationShapeConfig.minimumY() + generationShapeConfig.height(), chunk.getTopY());
+		int k = MathHelper.floorDiv(i, generationShapeConfig.method_39545());
+		int l = MathHelper.floorDiv(j - i, generationShapeConfig.method_39545());
+		return new ChunkNoiseSampler(
+			16 / generationShapeConfig.method_39546(),
+			l,
+			k,
+			noiseColumnSampler,
+			chunkPos.getStartX(),
+			chunkPos.getStartZ(),
+			(ChunkNoiseSampler.ColumnSampler)supplier.get(),
+			chunkGeneratorSettings,
+			fluidLevelSampler,
+			arg
+		);
+	}
+
+	public static ChunkNoiseSampler method_39542(
+		int i,
+		int j,
+		int k,
+		int l,
+		NoiseColumnSampler noiseColumnSampler,
+		ChunkGeneratorSettings chunkGeneratorSettings,
+		AquiferSampler.FluidLevelSampler fluidLevelSampler
+	) {
+		return new ChunkNoiseSampler(1, l, k, noiseColumnSampler, i, j, (ix, jx, kx) -> 0.0, chunkGeneratorSettings, fluidLevelSampler, class_6748.method_39336());
+	}
+
+	private ChunkNoiseSampler(
+		int horizontalNoiseResolution,
+		int verticalNoiseResolution,
+		int horizontalSize,
+		NoiseColumnSampler noiseColumnSampler,
+		int minimumY,
+		int i,
+		ChunkNoiseSampler.ColumnSampler columnSampler,
+		ChunkGeneratorSettings chunkGeneratorSettings,
+		AquiferSampler.FluidLevelSampler fluidLevelSampler,
+		class_6748 arg
+	) {
+		this.field_35674 = chunkGeneratorSettings.getGenerationShapeConfig();
+		this.horizontalSize = horizontalNoiseResolution;
+		this.height = verticalNoiseResolution;
+		this.minimumY = horizontalSize;
+		int j = this.field_35674.method_39546();
+		this.x = Math.floorDiv(minimumY, j);
+		this.z = Math.floorDiv(i, j);
 		this.interpolators = Lists.<ChunkNoiseSampler.NoiseInterpolator>newArrayList();
-		this.biomeX = BiomeCoords.fromBlock(x);
-		this.biomeZ = BiomeCoords.fromBlock(z);
-		int i = BiomeCoords.fromBlock(horizontalSize * horizontalNoiseResolution);
-		this.field_35486 = new NoiseColumnSampler.class_6747[i + 1][];
+		this.biomeX = BiomeCoords.fromBlock(minimumY);
+		this.biomeZ = BiomeCoords.fromBlock(i);
+		int k = BiomeCoords.fromBlock(horizontalNoiseResolution * j);
+		this.field_35486 = new NoiseColumnSampler.class_6747[k + 1][];
 		this.field_35487 = arg;
 
-		for (int j = 0; j <= i; j++) {
-			int k = this.biomeX + j;
-			this.field_35486[j] = new NoiseColumnSampler.class_6747[i + 1];
+		for (int l = 0; l <= k; l++) {
+			int m = this.biomeX + l;
+			this.field_35486[l] = new NoiseColumnSampler.class_6747[k + 1];
 
-			for (int l = 0; l <= i; l++) {
-				int m = this.biomeZ + l;
-				this.field_35486[j][l] = noiseColumnSampler.method_39330(k, m, arg);
+			for (int n = 0; n <= k; n++) {
+				int o = this.biomeZ + n;
+				this.field_35486[l][n] = noiseColumnSampler.method_39330(m, o, arg);
 			}
 		}
 
 		this.aquiferSampler = noiseColumnSampler.createAquiferSampler(
-			this, x, z, minimumY, height, fluidLevelSampler, ((ChunkGeneratorSettings)settings.get()).hasAquifers()
+			this, minimumY, i, horizontalSize, verticalNoiseResolution, fluidLevelSampler, chunkGeneratorSettings.hasAquifers()
 		);
-		this.initialNoiseBlockStateSampler = noiseColumnSampler.createInitialNoiseBlockStateSampler(
-			this, columnSampler, ((ChunkGeneratorSettings)settings.get()).hasNoodleCaves()
-		);
-		this.oreVeinSampler = noiseColumnSampler.createOreVeinSampler(this, ((ChunkGeneratorSettings)settings.get()).hasOreVeins());
+		this.initialNoiseBlockStateSampler = noiseColumnSampler.createInitialNoiseBlockStateSampler(this, columnSampler, chunkGeneratorSettings.hasNoodleCaves());
+		this.oreVeinSampler = noiseColumnSampler.createOreVeinSampler(this, chunkGeneratorSettings.hasOreVeins());
 	}
 
 	public NoiseColumnSampler.class_6747 createMultiNoisePoint(int x, int z) {
@@ -222,15 +258,17 @@ public class ChunkNoiseSampler {
 		}
 
 		private void sampleNoise(double[][] buffer, int noiseX) {
-			for (int i = 0; i < ChunkNoiseSampler.this.horizontalSize + 1; i++) {
-				int j = ChunkNoiseSampler.this.z + i;
+			int i = ChunkNoiseSampler.this.field_35674.method_39546();
+			int j = ChunkNoiseSampler.this.field_35674.method_39545();
 
-				for (int k = 0; k < ChunkNoiseSampler.this.height + 1; k++) {
-					int l = k + ChunkNoiseSampler.this.minimumY;
-					int m = l * ChunkNoiseSampler.this.verticalNoiseResolution;
-					double d = this.columnSampler
-						.calculateNoise(noiseX * ChunkNoiseSampler.this.horizontalNoiseResolution, m, j * ChunkNoiseSampler.this.horizontalNoiseResolution);
-					buffer[i][k] = d;
+			for (int k = 0; k < ChunkNoiseSampler.this.horizontalSize + 1; k++) {
+				int l = ChunkNoiseSampler.this.z + k;
+
+				for (int m = 0; m < ChunkNoiseSampler.this.height + 1; m++) {
+					int n = m + ChunkNoiseSampler.this.minimumY;
+					int o = n * j;
+					double d = this.columnSampler.calculateNoise(noiseX * i, o, l * i);
+					buffer[k][m] = d;
 				}
 			}
 		}

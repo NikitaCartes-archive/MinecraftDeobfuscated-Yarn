@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockBox;
 
 /**
- * A holder of generated structure pieces.
+ * A holder of structure pieces to be added.
  * 
  * @see StructurePiece#fillOpenings
  */

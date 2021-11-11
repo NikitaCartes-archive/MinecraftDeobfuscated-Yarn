@@ -378,7 +378,9 @@ public class ServerChunkManager extends ChunkManager {
 						SpawnHelper.spawn(this.world, worldChunk2, info, this.spawnAnimals, this.spawnMonsters, bl2);
 					}
 
-					this.world.tickChunk(worldChunk2, i);
+					if (this.world.shouldTickBlocksInChunk(chunkPos.toLong())) {
+						this.world.tickChunk(worldChunk2, i);
+					}
 				}
 			}
 

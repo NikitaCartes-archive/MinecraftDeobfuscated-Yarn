@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import java.util.Random;
-import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,7 +26,7 @@ public class BuriedTreasureGenerator {
 		}
 
 		@Override
-		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+		protected void writeNbt(StructureContext context, NbtCompound nbt) {
 		}
 
 		@Override
@@ -36,7 +35,7 @@ public class BuriedTreasureGenerator {
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
-			BlockBox boundingBox,
+			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
@@ -68,7 +67,7 @@ public class BuriedTreasureGenerator {
 					}
 
 					this.boundingBox = new BlockBox(mutable);
-					this.addChest(world, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
+					this.addChest(world, chunkBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
 					return;
 				}
 

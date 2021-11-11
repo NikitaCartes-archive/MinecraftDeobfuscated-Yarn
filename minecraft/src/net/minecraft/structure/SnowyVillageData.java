@@ -7,7 +7,8 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
+import net.minecraft.world.gen.feature.PileConfiguredFeatures;
+import net.minecraft.world.gen.feature.TreePlacedFeatures;
 
 public class SnowyVillageData {
 	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
@@ -177,7 +178,7 @@ public class SnowyVillageData {
 			new StructurePool(
 				new Identifier("village/snowy/trees"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.SPRUCE_CHECKED), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.SPRUCE_CHECKED), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
@@ -189,9 +190,9 @@ public class SnowyVillageData {
 					Pair.of(StructurePoolElement.ofLegacySingle("village/snowy/snowy_lamp_post_01"), 4),
 					Pair.of(StructurePoolElement.ofLegacySingle("village/snowy/snowy_lamp_post_02"), 4),
 					Pair.of(StructurePoolElement.ofLegacySingle("village/snowy/snowy_lamp_post_03"), 1),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.SPRUCE_CHECKED), 4),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_SNOW), 4),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_ICE), 1),
+					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.SPRUCE_CHECKED), 4),
+					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_SNOW.withPlacement()), 4),
+					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_ICE.withPlacement()), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 9)
 				),
 				StructurePool.Projection.RIGID
@@ -205,9 +206,9 @@ public class SnowyVillageData {
 					Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/snowy/snowy_lamp_post_01", StructureProcessorLists.ZOMBIE_SNOWY), 1),
 					Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/snowy/snowy_lamp_post_02", StructureProcessorLists.ZOMBIE_SNOWY), 1),
 					Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/snowy/snowy_lamp_post_03", StructureProcessorLists.ZOMBIE_SNOWY), 1),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.SPRUCE_CHECKED), 4),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_SNOW), 4),
-					Pair.of(StructurePoolElement.ofFeature(ConfiguredFeatures.PILE_ICE), 4),
+					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.SPRUCE_CHECKED), 4),
+					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_SNOW.withPlacement()), 4),
+					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_ICE.withPlacement()), 4),
 					Pair.of(StructurePoolElement.ofEmpty(), 7)
 				),
 				StructurePool.Projection.RIGID

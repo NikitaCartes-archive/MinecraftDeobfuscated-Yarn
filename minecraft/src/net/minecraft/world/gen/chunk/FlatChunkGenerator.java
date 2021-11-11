@@ -58,8 +58,8 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	protected boolean method_38274(Registry<Biome> registry, Predicate<RegistryKey<Biome>> predicate, Biome biome) {
-		return registry.getKey(this.config.getBiome()).filter(predicate).isPresent();
+	protected boolean testBiomeByKey(Registry<Biome> registry, Predicate<RegistryKey<Biome>> condition, Biome biome) {
+		return registry.getKey(this.config.getBiome()).filter(condition).isPresent();
 	}
 
 	@Override
@@ -141,6 +141,6 @@ public class FlatChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public int getSeaLevel() {
-		return 63;
+		return -63;
 	}
 }
