@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
-import net.minecraft.class_6670;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -92,7 +92,7 @@ public class PrepareRamTask<E extends PathAwareEntity> extends Task<E> {
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		Brain<?> brain = pathAwareEntity.getBrain();
 		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
-			.flatMap(arg -> arg.method_38975(mob -> this.targetPredicate.test(pathAwareEntity, mob)))
+			.flatMap(livingTargetCache -> livingTargetCache.findFirst(mob -> this.targetPredicate.test(pathAwareEntity, mob)))
 			.ifPresent(mob -> this.findRam(pathAwareEntity, mob));
 	}
 

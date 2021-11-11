@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -57,15 +58,17 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 public class MoreOptionsDialog implements Drawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Text CUSTOM_TEXT = new TranslatableText("generator.custom");
+	private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.amplified.info");
 	private static final Text MAP_FEATURES_INFO_TEXT = new TranslatableText("selectWorld.mapFeatures.info");
 	private static final Text SELECT_SETTINGS_FILE_TEXT = new TranslatableText("selectWorld.import_worldgen_settings.select_file");
+	private MultilineText amplifiedInfoText = MultilineText.EMPTY;
 	private TextRenderer textRenderer;
 	private int parentWidth;
 	private TextFieldWidget seedTextField;
 	private CyclingButtonWidget<Boolean> mapFeaturesButton;
 	private CyclingButtonWidget<Boolean> bonusItemsButton;
 	private CyclingButtonWidget<GeneratorType> mapTypeButton;
-	private ButtonWidget field_28001;
+	private ButtonWidget unchangeableMapTypeButton;
 	private ButtonWidget customizeTypeButton;
 	private ButtonWidget importSettingsButton;
 	private DynamicRegistryManager.Impl registryManager;
@@ -107,6 +110,11 @@ public class MoreOptionsDialog implements Drawable {
 		this.mapTypeButton = parent.addDrawableChild(
 			CyclingButtonWidget.<GeneratorType>builder(GeneratorType::getDisplayName)
 				.values((List<GeneratorType>)GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES)
+				.narration(
+					button -> button.getValue() == GeneratorType.AMPLIFIED
+							? ScreenTexts.joinSentences(button.getGenericNarrationMessage(), AMPLIFIED_INFO_TEXT)
+							: button.getGenericNarrationMessage()
+				)
 				.build(
 					j,
 					100,
@@ -124,12 +132,12 @@ public class MoreOptionsDialog implements Drawable {
 		);
 		this.generatorType.ifPresent(this.mapTypeButton::setValue);
 		this.mapTypeButton.visible = false;
-		this.field_28001 = parent.addDrawableChild(
+		this.unchangeableMapTypeButton = parent.addDrawableChild(
 			new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(new TranslatableText("selectWorld.mapType"), CUSTOM_TEXT), button -> {
 			})
 		);
-		this.field_28001.active = false;
-		this.field_28001.visible = false;
+		this.unchangeableMapTypeButton.active = false;
+		this.unchangeableMapTypeButton.visible = false;
 		this.customizeTypeButton = parent.addDrawableChild(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), button -> {
 			GeneratorType.ScreenProvider screenProvider = (GeneratorType.ScreenProvider)GeneratorType.SCREEN_PROVIDERS.get(this.generatorType);
 			if (screenProvider != null) {
@@ -252,6 +260,7 @@ public class MoreOptionsDialog implements Drawable {
 			)
 		);
 		this.importSettingsButton.visible = false;
+		this.amplifiedInfoText = MultilineText.create(textRenderer, AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
 	}
 
 	private void importOptions(DynamicRegistryManager.Impl registryManager, GeneratorOptions generatorOptions) {
@@ -274,6 +283,9 @@ public class MoreOptionsDialog implements Drawable {
 		}
 
 		this.seedTextField.render(matrices, mouseX, mouseY, delta);
+		if (this.generatorType.equals(Optional.of(GeneratorType.AMPLIFIED))) {
+			this.amplifiedInfoText.drawWithShadow(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, 9, 10526880);
+		}
 	}
 
 	public void setGeneratorOptions(GeneratorOptions generatorOptions) {
@@ -338,10 +350,10 @@ public class MoreOptionsDialog implements Drawable {
 	private void setMapTypeButtonVisible(boolean visible) {
 		if (this.generatorType.isPresent()) {
 			this.mapTypeButton.visible = visible;
-			this.field_28001.visible = false;
+			this.unchangeableMapTypeButton.visible = false;
 		} else {
 			this.mapTypeButton.visible = false;
-			this.field_28001.visible = visible;
+			this.unchangeableMapTypeButton.visible = visible;
 		}
 	}
 

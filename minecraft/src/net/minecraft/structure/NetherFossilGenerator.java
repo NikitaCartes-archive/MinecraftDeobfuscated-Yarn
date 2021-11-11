@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import java.util.Random;
-import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
@@ -56,8 +55,8 @@ public class NetherFossilGenerator {
 		}
 
 		@Override
-		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
-			super.writeNbt(arg, nbt);
+		protected void writeNbt(StructureContext context, NbtCompound nbt) {
+			super.writeNbt(context, nbt);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 		}
 
@@ -71,12 +70,12 @@ public class NetherFossilGenerator {
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
-			BlockBox boundingBox,
+			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-			super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			chunkBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
+			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
 		}
 	}
 }

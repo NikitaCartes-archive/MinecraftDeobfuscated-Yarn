@@ -11,6 +11,10 @@ public class GaussianGenerator {
 		this.baseRandom = baseRandom;
 	}
 
+	public void reset() {
+		this.hasNextGaussian = false;
+	}
+
 	public double next() {
 		if (this.hasNextGaussian) {
 			this.hasNextGaussian = false;

@@ -9,8 +9,8 @@ import net.minecraft.particle.DefaultParticleType;
 public class SoulParticle extends AbstractSlowingParticle {
 	private final SpriteProvider spriteProvider;
 
-	SoulParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-		super(clientWorld, d, e, f, g, h, i);
+	SoulParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+		super(world, x, y, z, velocityX, velocityY, velocityZ);
 		this.spriteProvider = spriteProvider;
 		this.scale(1.5F);
 		this.setSpriteForAge(spriteProvider);

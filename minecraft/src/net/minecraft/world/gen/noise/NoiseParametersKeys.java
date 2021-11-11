@@ -11,14 +11,12 @@ public class NoiseParametersKeys {
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> VEGETATION = register("vegetation");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CONTINENTALNESS = register("continentalness");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> EROSION = register("erosion");
-	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> RIDGE = register("ridge");
-	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> OFFSET = register("offset");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> TEMPERATURE_LARGE = register("temperature_large");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> VEGETATION_LARGE = register("vegetation_large");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CONTINENTALNESS_LARGE = register("continentalness_large");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> EROSION_LARGE = register("erosion_large");
-	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> RIDGE_LARGE = register("ridge_large");
-	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> OFFSET_LARGE = register("offset_large");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> RIDGE = register("ridge");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> OFFSET = register("offset");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> AQUIFER_BARRIER = register("aquifer_barrier");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> AQUIFER_FLUID_LEVEL_FLOODEDNESS = register("aquifer_fluid_level_floodedness");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> AQUIFER_LAVA = register("aquifer_lava");
@@ -49,6 +47,7 @@ public class NoiseParametersKeys {
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> NOODLE_RIDGE_B = register("noodle_ridge_b");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> JAGGED = register("jagged");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SURFACE = register("surface");
+	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SURFACE_SECONDARY = register("surface_secondary");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CLAY_BANDS_OFFSET = register("clay_bands_offset");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_PILLAR = register("badlands_pillar");
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_PILLAR_ROOF = register("badlands_pillar_roof");

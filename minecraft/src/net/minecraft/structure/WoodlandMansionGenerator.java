@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -1065,7 +1064,7 @@ public class WoodlandMansionGenerator {
 
 		@Override
 		protected Identifier getId() {
-			return getId(this.identifier);
+			return getId(this.template);
 		}
 
 		private static Identifier getId(String identifier) {
@@ -1081,8 +1080,8 @@ public class WoodlandMansionGenerator {
 		}
 
 		@Override
-		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
-			super.writeNbt(arg, nbt);
+		protected void writeNbt(StructureContext context, NbtCompound nbt) {
+			super.writeNbt(context, nbt);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 			nbt.putString("Mi", this.placementData.getMirror().name());
 		}

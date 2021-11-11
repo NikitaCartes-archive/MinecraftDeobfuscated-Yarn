@@ -43,6 +43,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.SimpleGameEventDispatcher;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -97,7 +98,7 @@ public class WorldChunk extends Chunk {
 		long inhabitedTime,
 		@Nullable ChunkSection[] sectionArrayInitializer,
 		@Nullable Consumer<WorldChunk> loadToWorldConsumer,
-		@Nullable BlendingData blendingData
+		@Nullable Blender blendingData
 	) {
 		super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), inhabitedTime, sectionArrayInitializer, blendingData);
 		this.world = world;
@@ -124,7 +125,7 @@ public class WorldChunk extends Chunk {
 			protoChunk.getInhabitedTime(),
 			protoChunk.getSectionArray(),
 			loadToWorldConsumer,
-			protoChunk.getBlendingData()
+			protoChunk.getBlender()
 		);
 
 		for(BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {

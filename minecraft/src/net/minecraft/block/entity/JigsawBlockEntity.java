@@ -126,7 +126,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		PoolStructurePiece poolStructurePiece = new PoolStructurePiece(
 			structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos)
 		);
-		StructurePoolBasedGenerator.method_27230(
+		StructurePoolBasedGenerator.generate(
 			world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random, world
 		);
 

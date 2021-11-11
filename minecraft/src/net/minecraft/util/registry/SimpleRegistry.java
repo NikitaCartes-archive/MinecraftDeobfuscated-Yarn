@@ -16,6 +16,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
+import java.lang.runtime.ObjectMethods;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -38,20 +39,19 @@ import org.apache.logging.log4j.Logger;
 public class SimpleRegistry<T> extends MutableRegistry<T> {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	private final ObjectList<T> rawIdToEntry = new ObjectArrayList<>(256);
-	private final Object2IntMap<T> entryToRawId = new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy());
-	private final BiMap<Identifier, T> idToEntry;
-	private final BiMap<RegistryKey<T>, T> keyToEntry;
-	private final Map<T, Lifecycle> entryToLifecycle;
+	private final Object2IntMap<T> entryToRawId = Util.make(
+		new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> object2IntOpenCustomHashMap.defaultReturnValue(-1)
+	);
+	private final BiMap<Identifier, T> idToEntry = HashBiMap.create();
+	private final BiMap<RegistryKey<T>, T> keyToEntry = HashBiMap.create();
+	private final Map<T, Lifecycle> entryToLifecycle = Maps.<T, Lifecycle>newIdentityHashMap();
 	private Lifecycle lifecycle;
+	@Nullable
 	protected Object[] randomEntries;
 	private int nextId;
 
 	public SimpleRegistry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
 		super(registryKey, lifecycle);
-		this.entryToRawId.defaultReturnValue(-1);
-		this.idToEntry = HashBiMap.create();
-		this.keyToEntry = HashBiMap.create();
-		this.entryToLifecycle = Maps.<T, Lifecycle>newIdentityHashMap();
 		this.lifecycle = lifecycle;
 	}
 
@@ -60,12 +60,9 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	) {
 		return RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						Identifier.CODEC
-							.xmap(RegistryKey.createKeyFactory(key), RegistryKey::getValue)
-							.fieldOf("name")
-							.forGetter(registryManagerEntry -> registryManagerEntry.key),
-						Codec.INT.fieldOf("id").forGetter(registryManagerEntry -> registryManagerEntry.rawId),
-						entryCodec.forGetter(registryManagerEntry -> registryManagerEntry.entry)
+						Identifier.CODEC.xmap(RegistryKey.createKeyFactory(key), RegistryKey::getValue).fieldOf("name").forGetter(SimpleRegistry.RegistryManagerEntry::key),
+						Codec.INT.fieldOf("id").forGetter(SimpleRegistry.RegistryManagerEntry::rawId),
+						entryCodec.forGetter(SimpleRegistry.RegistryManagerEntry::entry)
 					)
 					.apply(instance, SimpleRegistry.RegistryManagerEntry::new)
 		);
@@ -205,7 +202,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 				return null;
 			}
 
-			this.randomEntries = collection.toArray(new Object[collection.size()]);
+			this.randomEntries = collection.toArray(i -> new Object[i]);
 		}
 
 		return Util.getRandom((T[])this.randomEntries, random);
@@ -226,7 +223,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(key, lifecycle);
 
 			for(SimpleRegistry.RegistryManagerEntry<T> registryManagerEntry : list) {
-				simpleRegistry.set(registryManagerEntry.rawId, registryManagerEntry.key, registryManagerEntry.entry, lifecycle);
+				simpleRegistry.set(registryManagerEntry.rawId(), registryManagerEntry.key(), registryManagerEntry.entry(), lifecycle);
 			}
 
 			return simpleRegistry;
@@ -234,7 +231,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 			Builder<SimpleRegistry.RegistryManagerEntry<T>> builder = ImmutableList.builder();
 
 			for(T object : simpleRegistry) {
-				builder.add(new SimpleRegistry.RegistryManagerEntry<>((RegistryKey<T>)simpleRegistry.getKey(object).get(), simpleRegistry.getRawId(object), object));
+				builder.add(new SimpleRegistry.RegistryManagerEntry((RegistryKey<T>)simpleRegistry.getKey(object).get(), simpleRegistry.getRawId(object), object));
 			}
 
 			return builder.build();
@@ -253,15 +250,45 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		}, simpleRegistry -> ImmutableMap.copyOf(simpleRegistry.keyToEntry));
 	}
 
-	public static class RegistryManagerEntry<T> {
-		public final RegistryKey<T> key;
-		public final int rawId;
-		public final T entry;
+	static final class RegistryManagerEntry extends Record {
+		private final RegistryKey<T> key;
+		private final int rawId;
+		private final T entry;
 
-		public RegistryManagerEntry(RegistryKey<T> key, int rawId, T entry) {
+		RegistryManagerEntry(RegistryKey<T> key, int rawId, T entry) {
 			this.key = key;
 			this.rawId = rawId;
 			this.entry = entry;
+		}
+
+		public final String toString() {
+			return ObjectMethods.bootstrap<"toString",SimpleRegistry.RegistryManagerEntry,"key;id;value",SimpleRegistry.RegistryManagerEntry::key,SimpleRegistry.RegistryManagerEntry::rawId,SimpleRegistry.RegistryManagerEntry::entry>(
+				this
+			);
+		}
+
+		public final int hashCode() {
+			return ObjectMethods.bootstrap<"hashCode",SimpleRegistry.RegistryManagerEntry,"key;id;value",SimpleRegistry.RegistryManagerEntry::key,SimpleRegistry.RegistryManagerEntry::rawId,SimpleRegistry.RegistryManagerEntry::entry>(
+				this
+			);
+		}
+
+		public final boolean equals(Object object) {
+			return ObjectMethods.bootstrap<"equals",SimpleRegistry.RegistryManagerEntry,"key;id;value",SimpleRegistry.RegistryManagerEntry::key,SimpleRegistry.RegistryManagerEntry::rawId,SimpleRegistry.RegistryManagerEntry::entry>(
+				this, object
+			);
+		}
+
+		public RegistryKey<T> key() {
+			return this.key;
+		}
+
+		public int rawId() {
+			return this.rawId;
+		}
+
+		public T entry() {
+			return this.entry;
 		}
 	}
 }

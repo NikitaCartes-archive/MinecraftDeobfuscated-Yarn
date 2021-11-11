@@ -3,11 +3,11 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.minecraft.class_6670;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -68,8 +68,8 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	}
 
 	private boolean anyVisibleTo(E entity) {
-		class_6670 lv = (class_6670)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
-		return lv.method_38981(this::testPredicate);
+		LivingTargetCache livingTargetCache = (LivingTargetCache)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
+		return livingTargetCache.anyMatch(this::testPredicate);
 	}
 
 	private boolean testPredicate(LivingEntity entity) {
@@ -79,10 +79,10 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	@Override
 	protected void run(ServerWorld world, E entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		Optional<class_6670> optional = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+		Optional<LivingTargetCache> optional = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
 		if (!optional.isEmpty()) {
-			class_6670 lv = (class_6670)optional.get();
-			lv.method_38975(target -> this.shouldTarget(entity, target)).ifPresent(target -> {
+			LivingTargetCache livingTargetCache = (LivingTargetCache)optional.get();
+			livingTargetCache.findFirst(target -> this.shouldTarget(entity, target)).ifPresent(target -> {
 				brain.remember(this.targetModule, (T)target);
 				brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 				brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(target, false), this.speed, this.completionRange));

@@ -19,6 +19,8 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
+import net.minecraft.world.gen.feature.PlacedFeature;
+import net.minecraft.world.gen.feature.PlacedFeatures;
 import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,10 +42,13 @@ public class BuiltinRegistries {
 	private static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier("root")), Lifecycle.experimental());
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 	public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = addRegistry(Registry.CONFIGURED_CARVER_KEY, () -> ConfiguredCarvers.CAVE);
-	public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = addRegistry(Registry.CONFIGURED_FEATURE_KEY, () -> ConfiguredFeatures.OAK);
+	public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = addRegistry(
+		Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeatures::getDefaultConfiguredFeature
+	);
 	public static final Registry<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE = addRegistry(
 		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeatures::getDefault
 	);
+	public static final Registry<PlacedFeature> PLACED_FEATURE = addRegistry(Registry.PLACED_FEATURE_KEY, PlacedFeatures::getDefaultPlacedFeature);
 	public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = addRegistry(
 		Registry.STRUCTURE_PROCESSOR_LIST_KEY, () -> StructureProcessorLists.ZOMBIE_PLAINS
 	);

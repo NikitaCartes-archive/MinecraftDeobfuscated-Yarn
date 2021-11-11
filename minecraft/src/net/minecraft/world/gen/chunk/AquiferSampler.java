@@ -229,7 +229,7 @@ public interface AquiferSampler {
 						double g = this.maxDistance(l, m);
 						double h = this.maxDistance(l, n);
 						double ah = this.maxDistance(m, n);
-						bl = g > 0.0;
+						bl = g > -0.4;
 						if (fluidLevel2.getBlockState(y).isOf(Blocks.WATER) && this.fluidLevelSampler.getFluidLevel(x, y - 1, z).getBlockState(y - 1).isOf(Blocks.LAVA)) {
 							f = 1.0;
 						} else if (g > -1.0) {

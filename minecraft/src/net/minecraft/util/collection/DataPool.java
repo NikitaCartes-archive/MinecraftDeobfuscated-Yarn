@@ -5,10 +5,15 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import net.minecraft.util.dynamic.Codecs;
 
 public class DataPool<E> extends Pool<Weighted.Present<E>> {
+	public static <E> Codec<DataPool<E>> method_39521(Codec<E> codec) {
+		return Weighted.Present.createCodec(codec).listOf().xmap(DataPool::new, Pool::getEntries);
+	}
+
 	public static <E> Codec<DataPool<E>> createCodec(Codec<E> dataCodec) {
-		return Weighted.Present.createCodec(dataCodec).listOf().xmap(DataPool::new, Pool::getEntries);
+		return Codecs.nonEmptyList(Weighted.Present.createCodec(dataCodec).listOf()).xmap(DataPool::new, Pool::getEntries);
 	}
 
 	DataPool(List<? extends Weighted.Present<E>> list) {
@@ -23,7 +28,7 @@ public class DataPool<E> extends Pool<Weighted.Present<E>> {
 		return new DataPool<>(List.of());
 	}
 
-	public static <E> DataPool<E> method_38061(E object) {
+	public static <E> DataPool<E> of(E object) {
 		return new DataPool<>(List.of(Weighted.of(object, 1)));
 	}
 

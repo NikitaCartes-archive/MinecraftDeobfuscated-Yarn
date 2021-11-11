@@ -3,7 +3,6 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_6625;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -221,8 +220,8 @@ public class OceanRuinGenerator {
 		}
 
 		@Override
-		protected void writeNbt(class_6625 arg, NbtCompound nbt) {
-			super.writeNbt(arg, nbt);
+		protected void writeNbt(StructureContext context, NbtCompound nbt) {
+			super.writeNbt(context, nbt);
 			nbt.putString("Rot", this.placementData.getRotation().name());
 			nbt.putFloat("Integrity", this.integrity);
 			nbt.putString("BiomeType", this.biomeType.toString());
@@ -260,7 +259,7 @@ public class OceanRuinGenerator {
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
-			BlockBox boundingBox,
+			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
@@ -278,7 +277,7 @@ public class OceanRuinGenerator {
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, world, blockPos), this.pos.getZ());
-			super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
 		}
 
 		private int method_14829(BlockPos start, BlockView world, BlockPos end) {

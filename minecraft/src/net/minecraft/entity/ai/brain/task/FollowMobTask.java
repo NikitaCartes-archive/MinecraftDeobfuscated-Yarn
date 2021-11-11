@@ -3,12 +3,12 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.minecraft.class_6670;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
@@ -43,8 +43,10 @@ public class FollowMobTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		class_6670 lv = (class_6670)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
-		this.field_35102 = lv.method_38975(this.predicate.and(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared));
+		LivingTargetCache livingTargetCache = (LivingTargetCache)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
+		this.field_35102 = livingTargetCache.findFirst(
+			this.predicate.and(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared)
+		);
 		return this.field_35102.isPresent();
 	}
 

@@ -2,16 +2,16 @@ package net.minecraft.block.sapling;
 
 import java.util.Random;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
+import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
 
 public class JungleSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Override
 	protected ConfiguredFeature<?, ?> getTreeFeature(Random random, boolean bees) {
-		return ConfiguredFeatures.JUNGLE_TREE_NO_VINE;
+		return TreeConfiguredFeatures.JUNGLE_TREE_NO_VINE;
 	}
 
 	@Override
 	protected ConfiguredFeature<?, ?> getLargeTreeFeature(Random random) {
-		return ConfiguredFeatures.MEGA_JUNGLE_TREE;
+		return TreeConfiguredFeatures.MEGA_JUNGLE_TREE;
 	}
 }

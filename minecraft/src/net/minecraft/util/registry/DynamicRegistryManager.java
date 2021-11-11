@@ -10,6 +10,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.DataResult.PartialResult;
 import com.mojang.serialization.codecs.UnboundedMapCodec;
+import java.lang.runtime.ObjectMethods;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
@@ -20,6 +21,7 @@ import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.EntryLoader;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -29,6 +31,7 @@ import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,6 +55,7 @@ public abstract class DynamicRegistryManager {
 		register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
 		register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
 		register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC);
+		register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
 		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC);
 		register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
 		register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
@@ -95,7 +99,7 @@ public abstract class DynamicRegistryManager {
 		RegistryKey<? extends Registry<E>> registryRef,
 		Codec<E> entryCodec
 	) {
-		infosBuilder.put(registryRef, new DynamicRegistryManager.Info<>(registryRef, entryCodec, null));
+		infosBuilder.put(registryRef, new DynamicRegistryManager.Info(registryRef, entryCodec, null));
 	}
 
 	private static <E> void register(
@@ -104,7 +108,11 @@ public abstract class DynamicRegistryManager {
 		Codec<E> entryCodec,
 		Codec<E> networkEntryCodec
 	) {
-		infosBuilder.put(registryRef, new DynamicRegistryManager.Info<>(registryRef, entryCodec, networkEntryCodec));
+		infosBuilder.put(registryRef, new DynamicRegistryManager.Info(registryRef, entryCodec, networkEntryCodec));
+	}
+
+	public static Iterable<DynamicRegistryManager.Info<?>> getInfos() {
+		return INFOS.values();
 	}
 
 	/**
@@ -112,7 +120,7 @@ public abstract class DynamicRegistryManager {
 	 */
 	public static DynamicRegistryManager.Impl create() {
 		DynamicRegistryManager.Impl impl = new DynamicRegistryManager.Impl();
-		RegistryOps.EntryLoader.Impl impl2 = new RegistryOps.EntryLoader.Impl();
+		EntryLoader.Impl impl2 = new EntryLoader.Impl();
 
 		for(DynamicRegistryManager.Info<?> info : INFOS.values()) {
 			method_31141(impl, impl2, info);
@@ -122,10 +130,8 @@ public abstract class DynamicRegistryManager {
 		return impl;
 	}
 
-	private static <E> void method_31141(
-		DynamicRegistryManager.Impl registryManager, RegistryOps.EntryLoader.Impl entryLoader, DynamicRegistryManager.Info<E> info
-	) {
-		RegistryKey<? extends Registry<E>> registryKey = info.getRegistry();
+	private static <E> void method_31141(DynamicRegistryManager.Impl registryManager, EntryLoader.Impl entryLoader, DynamicRegistryManager.Info<E> info) {
+		RegistryKey<? extends Registry<E>> registryKey = info.registry();
 		boolean bl = !registryKey.equals(Registry.CHUNK_GENERATOR_SETTINGS_KEY) && !registryKey.equals(Registry.DIMENSION_TYPE_KEY);
 		Registry<E> registry = BUILTIN.get(registryKey);
 		MutableRegistry<E> mutableRegistry = registryManager.getMutable(registryKey);
@@ -134,7 +140,7 @@ public abstract class DynamicRegistryManager {
 			RegistryKey<E> registryKey2 = (RegistryKey)entry.getKey();
 			E object = (E)entry.getValue();
 			if (bl) {
-				entryLoader.add(BUILTIN, registryKey2, info.getEntryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
+				entryLoader.add(BUILTIN, registryKey2, info.entryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
 			} else {
 				mutableRegistry.set(registry.getRawId(object), registryKey2, object, registry.getEntryLifecycle(object));
 			}
@@ -179,9 +185,9 @@ public abstract class DynamicRegistryManager {
 	 * is kept within the {@code ops}.
 	 */
 	private static <E> void load(RegistryOps<?> ops, DynamicRegistryManager dynamicRegistryManager, DynamicRegistryManager.Info<E> info) {
-		RegistryKey<? extends Registry<E>> registryKey = info.getRegistry();
+		RegistryKey<? extends Registry<E>> registryKey = info.registry();
 		SimpleRegistry<E> simpleRegistry = (SimpleRegistry)dynamicRegistryManager.<E>getMutable(registryKey);
-		DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry, info.getRegistry(), info.getEntryCodec());
+		DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry, info.registry(), info.entryCodec());
 		dataResult.error().ifPresent(partialResult -> {
 			throw new JsonParseException("Error loading registry data: " + partialResult.message());
 		});
@@ -222,7 +228,7 @@ public abstract class DynamicRegistryManager {
 
 		private static <E> DataResult<? extends Codec<E>> getDataResultForCodec(RegistryKey<? extends Registry<E>> registryRef) {
 			return (DataResult<? extends Codec<E>>)Optional.ofNullable((DynamicRegistryManager.Info)DynamicRegistryManager.INFOS.get(registryRef))
-				.map(info -> info.getNetworkEntryCodec())
+				.map(info -> info.networkEntryCodec())
 				.map(DataResult::success)
 				.orElseGet(() -> DataResult.error("Unknown or not serializable registry: " + registryRef));
 		}
@@ -272,7 +278,7 @@ public abstract class DynamicRegistryManager {
 	 * id of the registry, the codec for its elements, and whether the registry
 	 * should be sent to the client.
 	 */
-	static final class Info<E> {
+	public static final class Info extends Record {
 		private final RegistryKey<? extends Registry<E>> registry;
 		private final Codec<E> entryCodec;
 		@Nullable
@@ -284,21 +290,39 @@ public abstract class DynamicRegistryManager {
 			this.networkEntryCodec = networkEntryCodec;
 		}
 
-		public RegistryKey<? extends Registry<E>> getRegistry() {
+		public boolean isSynced() {
+			return this.networkEntryCodec != null;
+		}
+
+		public final String toString() {
+			return ObjectMethods.bootstrap<"toString",DynamicRegistryManager.Info,"key;codec;networkCodec",DynamicRegistryManager.Info::registry,DynamicRegistryManager.Info::entryCodec,DynamicRegistryManager.Info::networkEntryCodec>(
+				this
+			);
+		}
+
+		public final int hashCode() {
+			return ObjectMethods.bootstrap<"hashCode",DynamicRegistryManager.Info,"key;codec;networkCodec",DynamicRegistryManager.Info::registry,DynamicRegistryManager.Info::entryCodec,DynamicRegistryManager.Info::networkEntryCodec>(
+				this
+			);
+		}
+
+		public final boolean equals(Object object) {
+			return ObjectMethods.bootstrap<"equals",DynamicRegistryManager.Info,"key;codec;networkCodec",DynamicRegistryManager.Info::registry,DynamicRegistryManager.Info::entryCodec,DynamicRegistryManager.Info::networkEntryCodec>(
+				this, object
+			);
+		}
+
+		public RegistryKey<? extends Registry<E>> registry() {
 			return this.registry;
 		}
 
-		public Codec<E> getEntryCodec() {
+		public Codec<E> entryCodec() {
 			return this.entryCodec;
 		}
 
 		@Nullable
-		public Codec<E> getNetworkEntryCodec() {
+		public Codec<E> networkEntryCodec() {
 			return this.networkEntryCodec;
-		}
-
-		public boolean isSynced() {
-			return this.networkEntryCodec != null;
 		}
 	}
 }

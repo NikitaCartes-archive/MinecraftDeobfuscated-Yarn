@@ -15,12 +15,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
-import net.minecraft.world.gen.random.ChunkRandom;
-import net.minecraft.world.gen.random.RandomSeed;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
 	public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE
+		.method_39673()
 		.dispatch(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
 	public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(
 		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, CODEC
@@ -46,25 +44,14 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 		StructureManager structureManager,
 		long worldSeed,
 		ChunkPos chunkPos,
-		int i,
+		int structureReferences,
 		StructureConfig structureConfig,
-		HeightLimitView heightLimitView,
-		Predicate<Biome> predicate
+		HeightLimitView world,
+		Predicate<Biome> biomeLimit
 	) {
 		return this.feature
 			.tryPlaceStart(
-				registryManager,
-				chunkGenerator,
-				biomeSource,
-				structureManager,
-				worldSeed,
-				chunkPos,
-				i,
-				new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed())),
-				structureConfig,
-				this.config,
-				heightLimitView,
-				predicate
+				registryManager, chunkGenerator, biomeSource, structureManager, worldSeed, chunkPos, structureReferences, structureConfig, this.config, world, biomeLimit
 			);
 	}
 }

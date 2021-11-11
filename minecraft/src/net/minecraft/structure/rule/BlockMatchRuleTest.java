@@ -8,6 +8,7 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockMatchRuleTest extends RuleTest {
 	public static final Codec<BlockMatchRuleTest> CODEC = Registry.BLOCK
+		.method_39673()
 		.fieldOf("block")
 		.<BlockMatchRuleTest>xmap(BlockMatchRuleTest::new, blockMatchRuleTest -> blockMatchRuleTest.block)
 		.codec();

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -42,12 +41,12 @@ public class PoolStructurePiece extends StructurePiece {
 		this.rotation = rotation;
 	}
 
-	public PoolStructurePiece(class_6625 arg, NbtCompound nbt) {
+	public PoolStructurePiece(StructureContext structureContext, NbtCompound nbt) {
 		super(StructurePieceType.JIGSAW, nbt);
-		this.structureManager = arg.structureManager();
+		this.structureManager = structureContext.structureManager();
 		this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
 		this.groundLevelDelta = nbt.getInt("ground_level_delta");
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, arg.resourceManager(), arg.registryAccess());
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, structureContext.resourceManager(), structureContext.registryManager());
 		this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC
 			.parse(registryOps, nbt.getCompound("pool_element"))
 			.resultOrPartial(LOGGER::error)
@@ -60,12 +59,12 @@ public class PoolStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+	protected void writeNbt(StructureContext context, NbtCompound nbt) {
 		nbt.putInt("PosX", this.pos.getX());
 		nbt.putInt("PosY", this.pos.getY());
 		nbt.putInt("PosZ", this.pos.getZ());
 		nbt.putInt("ground_level_delta", this.groundLevelDelta);
-		RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, arg.registryAccess());
+		RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, context.registryManager());
 		StructurePoolElement.CODEC
 			.encodeStart(registryReadingOps, this.poolElement)
 			.resultOrPartial(LOGGER::error)
@@ -86,11 +85,11 @@ public class PoolStructurePiece extends StructurePiece {
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
-		BlockBox boundingBox,
+		BlockBox chunkBox,
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
+		this.generate(world, structureAccessor, chunkGenerator, random, chunkBox, pos, false);
 	}
 
 	public void generate(

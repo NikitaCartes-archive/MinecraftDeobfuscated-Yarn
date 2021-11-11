@@ -22,7 +22,7 @@ public final class MobSpawnerEntry extends Record {
 				)
 				.apply(instance, MobSpawnerEntry::new)
 	);
-	public static final Codec<DataPool<MobSpawnerEntry>> DATA_POOL_CODEC = DataPool.createCodec(CODEC);
+	public static final Codec<DataPool<MobSpawnerEntry>> DATA_POOL_CODEC = DataPool.method_39521(CODEC);
 	public static final String DEFAULT_ENTITY_ID = "minecraft:pig";
 
 	public MobSpawnerEntry() {

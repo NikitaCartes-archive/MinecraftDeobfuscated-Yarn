@@ -45,7 +45,7 @@ public class CatSpawner implements Spawner {
 								return this.spawnInHouse(world, blockPos);
 							}
 
-							if (world.getStructureAccessor().method_38854(blockPos, StructureFeature.SWAMP_HUT).hasChildren()) {
+							if (world.getStructureAccessor().getStructureContaining(blockPos, StructureFeature.SWAMP_HUT).hasChildren()) {
 								return this.spawnInSwampHut(world, blockPos);
 							}
 						}

@@ -106,7 +106,7 @@ public class StructureWeightSampler implements ChunkNoiseSampler.ColumnSampler {
 	}
 
 	private static double getMagnitudeWeight(int x, int y, int z) {
-		double d = MathHelper.magnitude(x, (double)y / 2.0, z);
+		double d = MathHelper.magnitude((double)x, (double)y / 2.0, (double)z);
 		return MathHelper.clampedLerpFromProgress(d, 0.0, 6.0, 1.0, 0.0);
 	}
 

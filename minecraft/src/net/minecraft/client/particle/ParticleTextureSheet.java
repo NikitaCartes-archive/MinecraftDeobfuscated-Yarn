@@ -16,12 +16,12 @@ import net.minecraft.client.texture.TextureManager;
 public interface ParticleTextureSheet {
 	ParticleTextureSheet TERRAIN_SHEET = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder builder, TextureManager textureManager) {
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.depthMask(true);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		@Override
@@ -35,12 +35,12 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet PARTICLE_SHEET_OPAQUE = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder builder, TextureManager textureManager) {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
 			RenderSystem.setShader(GameRenderer::getParticleShader);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		@Override
@@ -54,12 +54,12 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet PARTICLE_SHEET_TRANSLUCENT = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder builder, TextureManager textureManager) {
 			RenderSystem.depthMask(true);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		@Override
@@ -73,11 +73,11 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet PARTICLE_SHEET_LIT = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder builder, TextureManager textureManager) {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		@Override
@@ -91,7 +91,7 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet CUSTOM = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder builder, TextureManager textureManager) {
 			RenderSystem.depthMask(true);
 			RenderSystem.disableBlend();
 		}
@@ -106,7 +106,7 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet NO_RENDER = new ParticleTextureSheet() {
 		@Override
-		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder builder, TextureManager textureManager) {
 		}
 
 		@Override
@@ -118,7 +118,7 @@ public interface ParticleTextureSheet {
 		}
 	};
 
-	void begin(BufferBuilder bufferBuilder, TextureManager textureManager);
+	void begin(BufferBuilder builder, TextureManager textureManager);
 
 	void draw(Tessellator tessellator);
 }

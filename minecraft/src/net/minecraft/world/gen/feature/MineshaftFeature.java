@@ -4,12 +4,12 @@ import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
-import net.minecraft.class_6622;
-import net.minecraft.class_6626;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.MineshaftGenerator;
+import net.minecraft.structure.StructurePiecesCollector;
+import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -19,48 +19,50 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
-	public MineshaftFeature(Codec<MineshaftFeatureConfig> codec) {
-		super(codec, MineshaftFeature::method_38678);
+	public MineshaftFeature(Codec<MineshaftFeatureConfig> configCodec) {
+		super(configCodec, MineshaftFeature::addPieces);
 	}
 
 	protected boolean shouldStartAt(
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		long l,
-		ChunkRandom chunkRandom,
 		ChunkPos chunkPos,
-		ChunkPos chunkPos2,
 		MineshaftFeatureConfig mineshaftFeatureConfig,
 		HeightLimitView heightLimitView
 	) {
+		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setCarverSeed(l, chunkPos.x, chunkPos.z);
 		double d = (double)mineshaftFeatureConfig.probability;
 		return chunkRandom.nextDouble() < d;
 	}
 
-	private static void method_38678(class_6626 arg, MineshaftFeatureConfig mineshaftFeatureConfig, class_6622.class_6623 arg2) {
-		if (arg2.validBiome()
+	private static void addPieces(StructurePiecesCollector collector, MineshaftFeatureConfig config, StructurePiecesGenerator.Context context) {
+		if (context.biomeLimit()
 			.test(
-				arg2.chunkGenerator()
-					.getBiomeForNoiseGen(BiomeCoords.fromBlock(arg2.chunkPos().getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(arg2.chunkPos().getCenterZ()))
+				context.chunkGenerator()
+					.getBiomeForNoiseGen(
+						BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())
+					)
 			)) {
 			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
-				0, arg2.random(), arg2.chunkPos().getOffsetX(2), arg2.chunkPos().getOffsetZ(2), mineshaftFeatureConfig.type
+				0, context.random(), context.chunkPos().getOffsetX(2), context.chunkPos().getOffsetZ(2), config.type
 			);
-			arg.addPiece(mineshaftRoom);
-			mineshaftRoom.fillOpenings(mineshaftRoom, arg, arg2.random());
-			int i = arg2.chunkGenerator().getSeaLevel();
-			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
-				BlockPos blockPos = arg.method_38721().getCenter();
-				int j = arg2.chunkGenerator().getHeight(blockPos.getX(), blockPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, arg2.heightAccessor());
-				int k = j <= i ? i : MathHelper.nextBetween(arg2.random(), i, j);
+			collector.addPiece(mineshaftRoom);
+			mineshaftRoom.fillOpenings(mineshaftRoom, collector, context.random());
+			int i = context.chunkGenerator().getSeaLevel();
+			if (config.type == MineshaftFeature.Type.MESA) {
+				BlockPos blockPos = collector.getBoundingBox().getCenter();
+				int j = context.chunkGenerator().getHeight(blockPos.getX(), blockPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, context.world());
+				int k = j <= i ? i : MathHelper.nextBetween(context.random(), i, j);
 				int l = k - blockPos.getY();
-				arg.method_38715(l);
+				collector.shift(l);
 			} else {
-				arg.method_38716(i, arg2.chunkGenerator().getMinimumY(), arg2.random(), 10);
+				collector.shiftInto(i, context.chunkGenerator().getMinimumY(), context.random(), 10);
 			}
 		}
 	}

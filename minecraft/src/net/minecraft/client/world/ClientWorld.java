@@ -22,6 +22,7 @@ import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.particle.FireworksSparkParticle;
+import net.minecraft.client.render.ChunkBuilderMode;
 import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.EntityTrackingSoundInstance;
@@ -157,7 +158,7 @@ public class ClientWorld extends World {
 		}
 	}
 
-	public boolean method_38743() {
+	public boolean hasNoChunkUpdaters() {
 		return this.chunkUpdaters.isEmpty();
 	}
 
@@ -249,12 +250,12 @@ public class ClientWorld extends World {
 	}
 
 	public void resetChunkColor(ChunkPos chunkPos) {
-		this.colorCache.forEach((colorResolver, biomeColorCache) -> biomeColorCache.reset(chunkPos.x, chunkPos.z));
+		this.colorCache.forEach((resolver, cache) -> cache.reset(chunkPos.x, chunkPos.z));
 		this.entityManager.startTicking(chunkPos);
 	}
 
 	public void reloadColor() {
-		this.colorCache.forEach((colorResolver, biomeColorCache) -> biomeColorCache.reset());
+		this.colorCache.forEach((resolver, cache) -> cache.reset());
 	}
 
 	@Override
@@ -797,6 +798,11 @@ public class ClientWorld extends World {
 
 	public int getSimulationDistance() {
 		return this.simulationDistance;
+	}
+
+	@Override
+	public boolean shouldRemoveEntityLater(Entity.RemovalReason reason) {
+		return reason == Entity.RemovalReason.DISCARDED && this.client.options.chunkBuilderMode != ChunkBuilderMode.NEARBY;
 	}
 
 	@Environment(EnvType.CLIENT)

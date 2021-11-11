@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.brain;
 
 import java.util.Optional;
-import net.minecraft.class_6670;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
@@ -33,8 +32,8 @@ public class EntityLookTarget implements LookTarget {
 			if (!livingEntity.isAlive()) {
 				return false;
 			} else {
-				Optional<class_6670> optionalx = entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
-				return optionalx.isPresent() && ((class_6670)optionalx.get()).method_38972(livingEntity);
+				Optional<LivingTargetCache> optionalx = entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+				return optionalx.isPresent() && ((LivingTargetCache)optionalx.get()).contains(livingEntity);
 			}
 		} else {
 			return true;

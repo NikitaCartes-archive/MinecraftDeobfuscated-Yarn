@@ -3,8 +3,6 @@ package net.minecraft.entity.mob;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -157,8 +155,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		BlockState blockState = world.getBlockState(pos.down());
-		return !blockState.isOf(Blocks.GRASS_BLOCK) && !blockState.isOf(Blocks.SAND) ? 0.5F - world.getBrightness(pos) : 10.0F;
+		return 0.0F;
 	}
 
 	@Override

@@ -15,7 +15,9 @@ import net.minecraft.world.TestableWorld;
  * Tree decorators can add additional blocks to trees, such as vines or beehives.
  */
 public abstract class TreeDecorator {
-	public static final Codec<TreeDecorator> TYPE_CODEC = Registry.TREE_DECORATOR_TYPE.dispatch(TreeDecorator::getType, TreeDecoratorType::getCodec);
+	public static final Codec<TreeDecorator> TYPE_CODEC = Registry.TREE_DECORATOR_TYPE
+		.method_39673()
+		.dispatch(TreeDecorator::getType, TreeDecoratorType::getCodec);
 
 	protected abstract TreeDecoratorType<?> getType();
 

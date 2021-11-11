@@ -45,12 +45,16 @@ public class WorldBorder {
 		return x > this.getBoundWest() && x < this.getBoundEast() && z > this.getBoundNorth() && z < this.getBoundSouth();
 	}
 
-	public boolean contains(double x, double z, double d) {
-		return x > this.getBoundWest() - d && x < this.getBoundEast() + d && z > this.getBoundNorth() - d && z < this.getBoundSouth() + d;
+	public boolean contains(double x, double z, double margin) {
+		return x > this.getBoundWest() - margin && x < this.getBoundEast() + margin && z > this.getBoundNorth() - margin && z < this.getBoundSouth() + margin;
 	}
 
 	public boolean contains(Box box) {
 		return box.maxX > this.getBoundWest() && box.minX < this.getBoundEast() && box.maxZ > this.getBoundNorth() && box.minZ < this.getBoundSouth();
+	}
+
+	public BlockPos clamp(double x, double y, double z) {
+		return new BlockPos(MathHelper.clamp(x, this.getBoundWest(), this.getBoundEast()), y, MathHelper.clamp(z, this.getBoundNorth(), this.getBoundSouth()));
 	}
 
 	public double getDistanceInsideBorder(Entity entity) {

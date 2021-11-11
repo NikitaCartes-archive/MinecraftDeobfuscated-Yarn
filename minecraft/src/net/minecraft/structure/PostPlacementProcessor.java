@@ -1,0 +1,29 @@
+package net.minecraft.structure;
+
+import java.util.Random;
+import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+
+/**
+ * A post placement processor for a structure feature runs after all the
+ * pieces of a structure start have placed blocks in the world in the
+ * feature chunk status.
+ */
+@FunctionalInterface
+public interface PostPlacementProcessor {
+	PostPlacementProcessor EMPTY = (world, structureAccessor, chunkGenerator, random, chunkBox, pos, children) -> {
+	};
+
+	void afterPlace(
+		StructureWorldAccess world,
+		StructureAccessor structures,
+		ChunkGenerator chunkGenerator,
+		Random random,
+		BlockBox box,
+		ChunkPos pos,
+		StructurePiecesList children
+	);
+}

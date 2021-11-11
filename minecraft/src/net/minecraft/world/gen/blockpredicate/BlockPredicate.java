@@ -5,13 +5,17 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 
 public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockPos> {
-	Codec<BlockPredicate> BASE_CODEC = Registry.BLOCK_PREDICATE_TYPE.dispatch(BlockPredicate::getType, BlockPredicateType::codec);
+	Codec<BlockPredicate> BASE_CODEC = Registry.BLOCK_PREDICATE_TYPE.method_39673().dispatch(BlockPredicate::getType, BlockPredicateType::codec);
+	BlockPredicate IS_AIR = matchingBlock(Blocks.AIR, BlockPos.ORIGIN);
+	BlockPredicate IS_AIR_OR_WATER = matchingBlocks(List.of(Blocks.AIR, Blocks.WATER), BlockPos.ORIGIN);
 
 	BlockPredicateType<?> getType();
 
@@ -39,19 +43,19 @@ public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockP
 		return anyOf(List.of(first, second));
 	}
 
-	static BlockPredicate matchingBlocks(List<Block> blocks, BlockPos offset) {
+	static BlockPredicate matchingBlocks(List<Block> blocks, Vec3i offset) {
 		return new MatchingBlocksBlockPredicate(offset, blocks);
 	}
 
-	static BlockPredicate matchingBlock(Block block, BlockPos offset) {
+	static BlockPredicate matchingBlock(Block block, Vec3i offset) {
 		return matchingBlocks(List.of(block), offset);
 	}
 
-	static BlockPredicate matchingFluids(List<Fluid> fluids, BlockPos offset) {
+	static BlockPredicate matchingFluids(List<Fluid> fluids, Vec3i offset) {
 		return new MatchingFluidsBlockPredicate(offset, fluids);
 	}
 
-	static BlockPredicate matchingFluid(Fluid fluid, BlockPos offset) {
+	static BlockPredicate matchingFluid(Fluid fluid, Vec3i offset) {
 		return matchingFluids(List.of(fluid), offset);
 	}
 
@@ -59,16 +63,28 @@ public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockP
 		return new NotBlockPredicate(predicate);
 	}
 
-	static BlockPredicate replaceable(BlockPos offset) {
+	static BlockPredicate replaceable(Vec3i offset) {
 		return new ReplaceableBlockPredicate(offset);
 	}
 
 	static BlockPredicate replaceable() {
-		return replaceable(BlockPos.ORIGIN);
+		return replaceable(Vec3i.ZERO);
 	}
 
-	static BlockPredicate wouldSurvive(BlockState state, BlockPos offset) {
+	static BlockPredicate wouldSurvive(BlockState state, Vec3i offset) {
 		return new WouldSurviveBlockPredicate(offset, state);
+	}
+
+	static BlockPredicate solid(Vec3i offset) {
+		return new SolidBlockPredicate(offset);
+	}
+
+	static BlockPredicate solid() {
+		return solid(Vec3i.ZERO);
+	}
+
+	static BlockPredicate insideWorldBounds(Vec3i offset) {
+		return new InsideWorldBoundsBlockPredicate(offset);
 	}
 
 	static BlockPredicate alwaysTrue() {

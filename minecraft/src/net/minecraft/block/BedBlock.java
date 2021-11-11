@@ -200,7 +200,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		Direction direction = ctx.getPlayerFacing();
 		BlockPos blockPos = ctx.getBlockPos();
 		BlockPos blockPos2 = blockPos.offset(direction);
-		return ctx.getWorld().getBlockState(blockPos2).canReplace(ctx) ? this.getDefaultState().with(FACING, direction) : null;
+		World world = ctx.getWorld();
+		return world.getBlockState(blockPos2).canReplace(ctx) && world.getWorldBorder().contains(blockPos2) ? this.getDefaultState().with(FACING, direction) : null;
 	}
 
 	@Override
