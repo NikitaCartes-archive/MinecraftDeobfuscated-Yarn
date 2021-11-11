@@ -65,7 +65,7 @@ extends MinecraftServer {
     }
 
     private TestServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, ServerResourceManager serverResourceManager, Collection<GameTestBatch> batches, BlockPos pos, DynamicRegistryManager.Impl registryManager, Registry<Biome> biomeRegistry, Registry<DimensionType> dimensionTypeRegistry) {
-        super(serverThread, registryManager, session, new LevelProperties(TEST_LEVEL, new GeneratorOptions(0L, false, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(dimensionTypeRegistry, DimensionType.createDefaultDimensionOptions(registryManager, 0L), new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry)))), Lifecycle.stable()), dataPackManager, Proxy.NO_PROXY, Schemas.getFixer(), serverResourceManager, null, null, null, WorldGenerationProgressLogger::new);
+        super(serverThread, registryManager, session, new LevelProperties(TEST_LEVEL, new GeneratorOptions(0L, false, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(dimensionTypeRegistry, DimensionType.method_39540(registryManager, 0L), new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry)))), Lifecycle.stable()), dataPackManager, Proxy.NO_PROXY, Schemas.getFixer(), serverResourceManager, null, null, null, WorldGenerationProgressLogger::new);
         this.batches = Lists.newArrayList(batches);
         this.pos = pos;
         if (batches.isEmpty()) {

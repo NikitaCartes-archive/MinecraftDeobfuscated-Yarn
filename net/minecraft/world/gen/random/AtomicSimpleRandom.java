@@ -39,6 +39,7 @@ implements BaseSimpleRandom {
         if (!this.seed.compareAndSet(this.seed.get(), (l ^ 0x5DEECE66DL) & 0xFFFFFFFFFFFFL)) {
             throw LockHelper.crash("LegacyRandomSource", null);
         }
+        this.gaussianGenerator.reset();
     }
 
     @Override

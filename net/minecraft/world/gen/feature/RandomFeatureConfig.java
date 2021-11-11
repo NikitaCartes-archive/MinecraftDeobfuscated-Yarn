@@ -11,19 +11,20 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.RandomFeatureEntry;
 
 public class RandomFeatureConfig
 implements FeatureConfig {
-    public static final Codec<RandomFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.apply2(RandomFeatureConfig::new, ((MapCodec)RandomFeatureEntry.CODEC.listOf().fieldOf("features")).forGetter(randomFeatureConfig -> randomFeatureConfig.features), ((MapCodec)ConfiguredFeature.REGISTRY_CODEC.fieldOf("default")).forGetter(randomFeatureConfig -> randomFeatureConfig.defaultFeature)));
+    public static final Codec<RandomFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.apply2(RandomFeatureConfig::new, ((MapCodec)RandomFeatureEntry.CODEC.listOf().fieldOf("features")).forGetter(randomFeatureConfig -> randomFeatureConfig.features), ((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("default")).forGetter(randomFeatureConfig -> randomFeatureConfig.defaultFeature)));
     public final List<RandomFeatureEntry> features;
-    public final Supplier<ConfiguredFeature<?, ?>> defaultFeature;
+    public final Supplier<PlacedFeature> defaultFeature;
 
-    public RandomFeatureConfig(List<RandomFeatureEntry> features, ConfiguredFeature<?, ?> defaultFeature) {
-        this(features, () -> defaultFeature);
+    public RandomFeatureConfig(List<RandomFeatureEntry> features, PlacedFeature placedFeature) {
+        this(features, () -> placedFeature);
     }
 
-    private RandomFeatureConfig(List<RandomFeatureEntry> features, Supplier<ConfiguredFeature<?, ?>> defaultFeature) {
+    private RandomFeatureConfig(List<RandomFeatureEntry> features, Supplier<PlacedFeature> defaultFeature) {
         this.features = features;
         this.defaultFeature = defaultFeature;
     }

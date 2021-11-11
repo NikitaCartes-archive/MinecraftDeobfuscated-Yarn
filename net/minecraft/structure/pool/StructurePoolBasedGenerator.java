@@ -48,10 +48,10 @@ import org.apache.logging.log4j.Logger;
 public class StructurePoolBasedGenerator {
     static final Logger LOGGER = LogManager.getLogger();
 
-    public static void generate(DynamicRegistryManager dynamicRegistries, StructurePoolFeatureConfig config, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos pos, StructurePiecesHolder children, Random random, boolean modifyBoundingBox, boolean surface, HeightLimitView world, Predicate<Biome> predicate) {
+    public static void generate(DynamicRegistryManager registryManager, StructurePoolFeatureConfig config, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos pos, StructurePiecesHolder children, Random random, boolean modifyBoundingBox, boolean surface, HeightLimitView world, Predicate<Biome> biomeLimit) {
         StructureFeature.init();
         ArrayList<PoolStructurePiece> list = Lists.newArrayList();
-        Registry<StructurePool> registry = dynamicRegistries.get(Registry.STRUCTURE_POOL_KEY);
+        Registry<StructurePool> registry = registryManager.get(Registry.STRUCTURE_POOL_KEY);
         BlockRotation blockRotation = BlockRotation.random(random);
         StructurePool structurePool = config.getStartPool().get();
         StructurePoolElement structurePoolElement = structurePool.getRandomElement(random);
@@ -63,7 +63,7 @@ public class StructurePoolBasedGenerator {
         int i = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
         int j = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
         int k = surface ? pos.getY() + chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.WORLD_SURFACE_WG, world) : pos.getY();
-        if (!predicate.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j)))) {
+        if (!biomeLimit.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j)))) {
             return;
         }
         int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
@@ -83,13 +83,13 @@ public class StructurePoolBasedGenerator {
         list.forEach(children::addPiece);
     }
 
-    public static void method_27230(DynamicRegistryManager dynamicRegistryManager, PoolStructurePiece poolStructurePiece, int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random, HeightLimitView heightLimitView) {
-        Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.STRUCTURE_POOL_KEY);
-        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(registry, i, pieceFactory, chunkGenerator, structureManager, list, random);
-        structurePoolGenerator.structurePieces.addLast(new ShapedPoolStructurePiece(poolStructurePiece, new MutableObject<VoxelShape>(VoxelShapes.UNBOUNDED), 0));
+    public static void generate(DynamicRegistryManager registryManager, PoolStructurePiece piece, int maxDepth, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> results, Random random, HeightLimitView world) {
+        Registry<StructurePool> registry = registryManager.get(Registry.STRUCTURE_POOL_KEY);
+        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(registry, maxDepth, pieceFactory, chunkGenerator, structureManager, results, random);
+        structurePoolGenerator.structurePieces.addLast(new ShapedPoolStructurePiece(piece, new MutableObject<VoxelShape>(VoxelShapes.UNBOUNDED), 0));
         while (!structurePoolGenerator.structurePieces.isEmpty()) {
             ShapedPoolStructurePiece shapedPoolStructurePiece = structurePoolGenerator.structurePieces.removeFirst();
-            structurePoolGenerator.generatePiece(shapedPoolStructurePiece.piece, shapedPoolStructurePiece.pieceShape, shapedPoolStructurePiece.currentSize, false, heightLimitView);
+            structurePoolGenerator.generatePiece(shapedPoolStructurePiece.piece, shapedPoolStructurePiece.pieceShape, shapedPoolStructurePiece.currentSize, false, world);
         }
     }
 

@@ -279,7 +279,7 @@ implements ScreenHandlerProvider<T> {
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        boolean bl = this.client.options.keyPickItem.matchesMouse(button);
+        boolean bl = this.client.options.keyPickItem.matchesMouse(button) && this.client.interactionManager.hasCreativeInventory();
         Slot slot = this.getSlotAt(mouseX, mouseY);
         long l = Util.getMeasuringTimeMs();
         this.doubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
@@ -310,7 +310,7 @@ implements ScreenHandlerProvider<T> {
                     }
                 } else if (!this.cursorDragging) {
                     if (((ScreenHandler)this.handler).getCursorStack().isEmpty()) {
-                        if (this.client.options.keyPickItem.matchesMouse(button)) {
+                        if (bl) {
                             this.onMouseClick(slot, k, button, SlotActionType.CLONE);
                         } else {
                             boolean bl3 = k != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_SHIFT));
@@ -332,7 +332,7 @@ implements ScreenHandlerProvider<T> {
                             this.heldButtonType = 0;
                         } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                             this.heldButtonType = 1;
-                        } else if (this.client.options.keyPickItem.matchesMouse(button)) {
+                        } else if (bl) {
                             this.heldButtonType = 2;
                         }
                     }

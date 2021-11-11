@@ -43,11 +43,11 @@ public class PortalForcer {
         this.world = world;
     }
 
-    public Optional<BlockLocating.Rectangle> getPortalRect(BlockPos destPos, boolean destIsNether) {
+    public Optional<BlockLocating.Rectangle> getPortalRect(BlockPos blockPos, boolean destIsNether, WorldBorder worldBorder) {
         PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
         int i = destIsNether ? 16 : 128;
-        pointOfInterestStorage.preloadChunks(this.world, destPos, i);
-        Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, destPos, i, PointOfInterestStorage.OccupationStatus.ANY).sorted(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(destPos)).thenComparingInt(pointOfInterest -> pointOfInterest.getPos().getY())).filter(pointOfInterest -> this.world.getBlockState(pointOfInterest.getPos()).contains(Properties.HORIZONTAL_AXIS)).findFirst();
+        pointOfInterestStorage.preloadChunks(this.world, blockPos, i);
+        Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, i, PointOfInterestStorage.OccupationStatus.ANY).filter(pointOfInterest -> worldBorder.contains(pointOfInterest.getPos())).sorted(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos)).thenComparingInt(pointOfInterest -> pointOfInterest.getPos().getY())).filter(pointOfInterest -> this.world.getBlockState(pointOfInterest.getPos()).contains(Properties.HORIZONTAL_AXIS)).findFirst();
         return optional.map(pointOfInterest -> {
             BlockPos blockPos2 = pointOfInterest.getPos();
             this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos2), 3, blockPos2);

@@ -6,8 +6,6 @@ package net.minecraft.entity.mob;
 import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -159,11 +157,7 @@ InventoryOwner {
 
     @Override
     public float getPathfindingFavor(BlockPos pos, WorldView world) {
-        BlockState blockState = world.getBlockState(pos.down());
-        if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SAND)) {
-            return 10.0f;
-        }
-        return 0.5f - world.getBrightness(pos);
+        return 0.0f;
     }
 
     @Override

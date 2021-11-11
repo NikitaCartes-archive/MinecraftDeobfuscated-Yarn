@@ -11,19 +11,20 @@ import java.util.stream.Stream;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class SimpleRandomFeatureConfig
 implements FeatureConfig {
-    public static final Codec<SimpleRandomFeatureConfig> CODEC = ((MapCodec)Codecs.nonEmptyList(ConfiguredFeature.field_26756).fieldOf("features")).xmap(SimpleRandomFeatureConfig::new, simpleRandomFeatureConfig -> simpleRandomFeatureConfig.features).codec();
-    public final List<Supplier<ConfiguredFeature<?, ?>>> features;
+    public static final Codec<SimpleRandomFeatureConfig> CODEC = ((MapCodec)Codecs.nonEmptyList(PlacedFeature.LIST_CODEC).fieldOf("features")).xmap(SimpleRandomFeatureConfig::new, simpleRandomFeatureConfig -> simpleRandomFeatureConfig.features).codec();
+    public final List<Supplier<PlacedFeature>> features;
 
-    public SimpleRandomFeatureConfig(List<Supplier<ConfiguredFeature<?, ?>>> features) {
+    public SimpleRandomFeatureConfig(List<Supplier<PlacedFeature>> features) {
         this.features = features;
     }
 
     @Override
     public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
-        return this.features.stream().flatMap(supplier -> ((ConfiguredFeature)supplier.get()).getDecoratedFeatures());
+        return this.features.stream().flatMap(supplier -> ((PlacedFeature)supplier.get()).getDecoratedFeatures());
     }
 }
 

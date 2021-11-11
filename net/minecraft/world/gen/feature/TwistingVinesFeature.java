@@ -12,46 +12,46 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.TwistingVinesFeatureConfig;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class TwistingVinesFeature
-extends Feature<DefaultFeatureConfig> {
-    public TwistingVinesFeature(Codec<DefaultFeatureConfig> codec) {
+extends Feature<TwistingVinesFeatureConfig> {
+    public TwistingVinesFeature(Codec<TwistingVinesFeatureConfig> codec) {
         super(codec);
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-        return TwistingVinesFeature.tryGenerateVines(context.getWorld(), context.getRandom(), context.getOrigin(), 8, 4, 8);
-    }
-
-    public static boolean tryGenerateVines(WorldAccess world, Random random, BlockPos pos, int horizontalSpread, int verticalSpread, int length) {
-        if (TwistingVinesFeature.isNotSuitable(world, pos)) {
+    public boolean generate(FeatureContext<TwistingVinesFeatureConfig> context) {
+        BlockPos blockPos;
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        if (TwistingVinesFeature.isNotSuitable(structureWorldAccess, blockPos = context.getOrigin())) {
             return false;
         }
-        TwistingVinesFeature.generateVinesInArea(world, random, pos, horizontalSpread, verticalSpread, length);
-        return true;
-    }
-
-    private static void generateVinesInArea(WorldAccess world, Random random, BlockPos pos, int horizontalSpread, int verticalSpread, int length) {
+        Random random = context.getRandom();
+        TwistingVinesFeatureConfig twistingVinesFeatureConfig = context.getConfig();
+        int i = twistingVinesFeatureConfig.spreadWidth();
+        int j = twistingVinesFeatureConfig.spreadHeight();
+        int k = twistingVinesFeatureConfig.maxHeight();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int i = 0; i < horizontalSpread * horizontalSpread; ++i) {
-            mutable.set(pos).move(MathHelper.nextInt(random, -horizontalSpread, horizontalSpread), MathHelper.nextInt(random, -verticalSpread, verticalSpread), MathHelper.nextInt(random, -horizontalSpread, horizontalSpread));
-            if (!TwistingVinesFeature.canGenerate(world, mutable) || TwistingVinesFeature.isNotSuitable(world, mutable)) continue;
-            int j = MathHelper.nextInt(random, 1, length);
+        for (int l = 0; l < i * i; ++l) {
+            mutable.set(blockPos).move(MathHelper.nextInt(random, -i, i), MathHelper.nextInt(random, -j, j), MathHelper.nextInt(random, -i, i));
+            if (!TwistingVinesFeature.canGenerate(structureWorldAccess, mutable) || TwistingVinesFeature.isNotSuitable(structureWorldAccess, mutable)) continue;
+            int m = MathHelper.nextInt(random, 1, k);
             if (random.nextInt(6) == 0) {
-                j *= 2;
+                m *= 2;
             }
             if (random.nextInt(5) == 0) {
-                j = 1;
+                m = 1;
             }
-            int k = 17;
-            int l = 25;
-            TwistingVinesFeature.generateVineColumn(world, random, mutable, j, 17, 25);
+            int n = 17;
+            int o = 25;
+            TwistingVinesFeature.generateVineColumn(structureWorldAccess, random, mutable, m, 17, 25);
         }
+        return true;
     }
 
     private static boolean canGenerate(WorldAccess world, BlockPos.Mutable pos) {

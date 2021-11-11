@@ -157,7 +157,7 @@ public final class ChunkGeneratorSettings {
     }
 
     private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, boolean bl) {
-        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0), new SlideConfig(-0.078125, 2, 8), new SlideConfig(0.1171875, 3, 0), 1, 2, false, amplified, bl, VanillaTerrainParametersCreator.createSurfaceParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createOverworldSurfaceRule(), 63, false, true, true, true, true, false);
+        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0), new SlideConfig(-0.078125, 2, amplified ? 0 : 8), new SlideConfig(0.1171875, 3, 0), 1, 2, false, amplified, bl, VanillaTerrainParametersCreator.createSurfaceParameters(amplified)), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createOverworldSurfaceRule(), 63, false, true, true, true, true, false);
     }
 
     static {

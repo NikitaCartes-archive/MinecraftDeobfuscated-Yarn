@@ -18,14 +18,14 @@ public class ExplosionLargeParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider spriteProvider;
 
-    ExplosionLargeParticle(ClientWorld clientWorld, double d, double e, double f, double g, SpriteProvider spriteProvider) {
-        super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
-        float h;
+    ExplosionLargeParticle(ClientWorld world, double x, double y, double z, double d, SpriteProvider spriteProvider) {
+        super(world, x, y, z, 0.0, 0.0, 0.0);
+        float f;
         this.maxAge = 6 + this.random.nextInt(4);
-        this.colorRed = h = this.random.nextFloat() * 0.6f + 0.4f;
-        this.colorGreen = h;
-        this.colorBlue = h;
-        this.scale = 2.0f * (1.0f - (float)g * 0.5f);
+        this.colorRed = f = this.random.nextFloat() * 0.6f + 0.4f;
+        this.colorGreen = f;
+        this.colorBlue = f;
+        this.scale = 2.0f * (1.0f - (float)d * 0.5f);
         this.spriteProvider = spriteProvider;
         this.setSpriteForAge(spriteProvider);
     }

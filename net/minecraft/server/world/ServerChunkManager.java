@@ -342,6 +342,7 @@ extends ChunkManager {
             if (bl3 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(chunkPos)) {
                 SpawnHelper.spawn(this.world, worldChunk2, info, this.spawnAnimals, this.spawnMonsters, bl2);
             }
+            if (!this.world.shouldTickBlocksInChunk(chunkPos.toLong())) continue;
             this.world.tickChunk(worldChunk2, i);
         }
         profiler.swap("customSpawners");

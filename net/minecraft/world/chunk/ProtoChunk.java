@@ -30,7 +30,6 @@ import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.BelowZeroRetrogen;
-import net.minecraft.world.chunk.BlendingData;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -38,6 +37,7 @@ import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -57,11 +57,11 @@ extends Chunk {
     private final SimpleTickScheduler<Block> blockTickScheduler;
     private final SimpleTickScheduler<Fluid> fluidTickScheduler;
 
-    public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world, Registry<Biome> biomeRegistry, @Nullable BlendingData blendingData) {
+    public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world, Registry<Biome> biomeRegistry, @Nullable Blender blendingData) {
         this(pos, upgradeData, null, new SimpleTickScheduler<Block>(), new SimpleTickScheduler<Fluid>(), world, biomeRegistry, blendingData);
     }
 
-    public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, @Nullable ChunkSection[] sections, SimpleTickScheduler<Block> blockTickScheduler, SimpleTickScheduler<Fluid> fluidTickScheduler, HeightLimitView world, Registry<Biome> biomeRegistry, @Nullable BlendingData blendingData) {
+    public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, @Nullable ChunkSection[] sections, SimpleTickScheduler<Block> blockTickScheduler, SimpleTickScheduler<Fluid> fluidTickScheduler, HeightLimitView world, Registry<Biome> biomeRegistry, @Nullable Blender blendingData) {
         super(pos, upgradeData, world, biomeRegistry, 0L, sections, blendingData);
         this.blockTickScheduler = blockTickScheduler;
         this.fluidTickScheduler = fluidTickScheduler;
@@ -202,7 +202,7 @@ extends Chunk {
     public void setStructureStart(StructureFeature<?> structure, StructureStart<?> start) {
         BelowZeroRetrogen belowZeroRetrogen = this.getBelowZeroRetrogen();
         if (belowZeroRetrogen != null && start.hasChildren()) {
-            BlockBox blockBox = start.setBoundingBoxFromChildren();
+            BlockBox blockBox = start.getBoundingBox();
             HeightLimitView heightLimitView = this.getHeightLimitView();
             if (blockBox.getMinY() < heightLimitView.getBottomY() || blockBox.getMaxY() >= heightLimitView.getTopY()) {
                 return;
@@ -230,10 +230,10 @@ extends Chunk {
 
     @Override
     public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-        if (!this.getStatus().isAtLeast(ChunkStatus.BIOMES)) {
-            throw new IllegalStateException("Asking for biomes before we have biomes");
+        if (this.getStatus().isAtLeast(ChunkStatus.BIOMES) || this.belowZeroRetrogen != null && this.belowZeroRetrogen.getTargetStatus().isAtLeast(ChunkStatus.BIOMES)) {
+            return super.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
         }
-        return super.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
+        throw new IllegalStateException("Asking for biomes before we have biomes");
     }
 
     public static short getPackedSectionRelative(BlockPos pos) {

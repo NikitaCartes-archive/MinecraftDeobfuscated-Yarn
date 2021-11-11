@@ -4,7 +4,6 @@
 package net.minecraft.util.registry;
 
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -70,6 +69,7 @@ import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
 import net.minecraft.util.math.intprovider.IntProviderType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -93,10 +93,11 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.PlacementModifierType;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.size.FeatureSizeType;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
@@ -112,8 +113,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Registry<T>
-implements Codec<T>,
-Keyable,
+implements Keyable,
 IndexedIterable<T> {
     protected static final Logger LOGGER = LogManager.getLogger();
     private static final Map<Identifier, Supplier<?>> DEFAULT_ENTRIES = Maps.newLinkedHashMap();
@@ -221,6 +221,7 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<ChunkGeneratorSettings>> CHUNK_GENERATOR_SETTINGS_KEY = Registry.createRegistryKey("worldgen/noise_settings");
     public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_KEY = Registry.createRegistryKey("worldgen/configured_carver");
     public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE_KEY = Registry.createRegistryKey("worldgen/configured_feature");
+    public static final RegistryKey<Registry<PlacedFeature>> PLACED_FEATURE_KEY = Registry.createRegistryKey("worldgen/placed_feature");
     public static final RegistryKey<Registry<ConfiguredStructureFeature<?, ?>>> CONFIGURED_STRUCTURE_FEATURE_KEY = Registry.createRegistryKey("worldgen/configured_structure_feature");
     public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = Registry.createRegistryKey("worldgen/processor_list");
     public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = Registry.createRegistryKey("worldgen/template_pool");
@@ -234,8 +235,8 @@ IndexedIterable<T> {
     public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = Registry.create(STRUCTURE_FEATURE_KEY, () -> StructureFeature.MINESHAFT);
     public static final RegistryKey<Registry<StructurePieceType>> STRUCTURE_PIECE_KEY = Registry.createRegistryKey("worldgen/structure_piece");
     public static final Registry<StructurePieceType> STRUCTURE_PIECE = Registry.create(STRUCTURE_PIECE_KEY, () -> StructurePieceType.MINESHAFT_ROOM);
-    public static final RegistryKey<Registry<Decorator<?>>> DECORATOR_KEY = Registry.createRegistryKey("worldgen/decorator");
-    public static final Registry<Decorator<?>> DECORATOR = Registry.create(DECORATOR_KEY, () -> Decorator.NOPE);
+    public static final RegistryKey<Registry<PlacementModifierType<?>>> PLACEMENT_MODIFIER_TYPE_KEY = Registry.createRegistryKey("worldgen/placement_modifier_type");
+    public static final Registry<PlacementModifierType<?>> PLACEMENT_MODIFIER_TYPE = Registry.create(PLACEMENT_MODIFIER_TYPE_KEY, () -> PlacementModifierType.COUNT);
     public static final RegistryKey<Registry<BlockStateProviderType<?>>> BLOCK_STATE_PROVIDER_TYPE_KEY = Registry.createRegistryKey("worldgen/block_state_provider_type");
     public static final RegistryKey<Registry<FoliagePlacerType<?>>> FOLIAGE_PLACER_TYPE_KEY = Registry.createRegistryKey("worldgen/foliage_placer_type");
     public static final RegistryKey<Registry<TrunkPlacerType<?>>> TRUNK_PLACER_TYPE_KEY = Registry.createRegistryKey("worldgen/trunk_placer_type");
@@ -322,40 +323,14 @@ IndexedIterable<T> {
         return "Registry[" + this.registryKey + " (" + this.lifecycle + ")]";
     }
 
-    @Override
-    public <U> DataResult<Pair<T, U>> decode(DynamicOps<U> dynamicOps, U object2) {
-        if (dynamicOps.compressMaps()) {
-            return dynamicOps.getNumberValue(object2).flatMap((? super R number) -> {
-                Object object = this.get(number.intValue());
-                if (object == null) {
-                    return DataResult.error("Unknown registry id in " + this.registryKey + ": " + number);
-                }
-                return DataResult.success(object, this.getEntryLifecycle(object));
-            }).map((? super R object) -> Pair.of(object, dynamicOps.empty()));
-        }
-        return Identifier.CODEC.decode(dynamicOps, object2).flatMap((? super R pair) -> {
-            T object = this.get((Identifier)pair.getFirst());
-            if (object == null) {
-                return DataResult.error("Unknown registry key in " + this.registryKey + ": " + pair.getFirst());
-            }
-            return DataResult.success(Pair.of(object, pair.getSecond()), this.getEntryLifecycle(object));
-        });
-    }
-
-    @Override
-    public <U> DataResult<U> encode(T object, DynamicOps<U> dynamicOps, U object2) {
-        Identifier identifier = this.getId(object);
-        if (identifier == null) {
-            return DataResult.error("Unknown registry element in " + this.registryKey + ":" + object);
-        }
-        if (dynamicOps.compressMaps()) {
-            return dynamicOps.mergeToPrimitive(object2, dynamicOps.createInt(this.getRawId(object))).setLifecycle(this.lifecycle);
-        }
-        return dynamicOps.mergeToPrimitive(object2, dynamicOps.createString(identifier.toString())).setLifecycle(this.lifecycle);
+    public Codec<T> method_39673() {
+        Codec<Object> codec = Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(this.get((Identifier)identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry key in " + this.registryKey + ": " + identifier)), object -> this.getKey(object).map(RegistryKey::getValue).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry element in " + this.registryKey + ":" + object)));
+        Codec<Object> codec2 = Codecs.method_39511(object -> this.getKey(object).isPresent() ? this.getRawId(object) : -1, this::get, -1);
+        return Codecs.method_39504(Codecs.method_39512(codec, codec2), this::getEntryLifecycle, object -> this.lifecycle);
     }
 
     public <U> Stream<U> keys(DynamicOps<U> dynamicOps) {
-        return this.getIds().stream().map((? super T identifier) -> dynamicOps.createString(identifier.toString()));
+        return this.getIds().stream().map(identifier -> dynamicOps.createString(identifier.toString()));
     }
 
     @Nullable

@@ -10,7 +10,6 @@ import java.util.Optional;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.ForwardingDynamicOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
@@ -41,10 +40,10 @@ extends ForwardingDynamicOps<T> {
      * @see RegistryOps#decodeOrId(Object, RegistryKey, Codec, boolean)
      */
     protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<? extends Registry<E>> registryReference, Codec<E> codec) {
-        MutableRegistry mutableRegistry;
+        Registry registry;
         Optional<RegistryKey<E>> optional2;
         Optional optional = this.manager.getOptionalMutable(registryReference);
-        if (optional.isPresent() && (optional2 = (mutableRegistry = optional.get()).getKey(input)).isPresent()) {
+        if (optional.isPresent() && (optional2 = (registry = (Registry)optional.get()).getKey(input)).isPresent()) {
             RegistryKey<E> registryKey = optional2.get();
             return Identifier.CODEC.encode(registryKey.getValue(), this.delegate, prefix);
         }

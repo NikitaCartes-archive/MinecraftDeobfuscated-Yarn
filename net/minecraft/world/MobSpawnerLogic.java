@@ -150,7 +150,7 @@ public abstract class MobSpawnerLogic {
         boolean bl2 = nbt.contains("SpawnData", 10);
         if (!bl) {
             MobSpawnerEntry mobSpawnerEntry = bl2 ? MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData")).resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string)).orElseGet(MobSpawnerEntry::new) : new MobSpawnerEntry();
-            this.spawnPotentials = DataPool.method_38061(mobSpawnerEntry);
+            this.spawnPotentials = DataPool.of(mobSpawnerEntry);
             this.setSpawnEntry(world, pos, mobSpawnerEntry);
         } else {
             NbtList nbtList = nbt.getList("SpawnPotentials", 10);

@@ -4,27 +4,27 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_6622;
-import net.minecraft.class_6626;
 import net.minecraft.structure.DesertTempleGenerator;
+import net.minecraft.structure.StructurePiecesCollector;
+import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class DesertPyramidFeature
 extends StructureFeature<DefaultFeatureConfig> {
-    public DesertPyramidFeature(Codec<DefaultFeatureConfig> codec) {
-        super(codec, DesertPyramidFeature::method_38673);
+    public DesertPyramidFeature(Codec<DefaultFeatureConfig> configCodec) {
+        super(configCodec, DesertPyramidFeature::addPieces);
     }
 
-    private static void method_38673(class_6626 arg, DefaultFeatureConfig defaultFeatureConfig, class_6622.class_6623 arg2) {
-        if (!arg2.method_38707(Heightmap.Type.WORLD_SURFACE_WG)) {
+    private static void addPieces(StructurePiecesCollector collector, DefaultFeatureConfig config, StructurePiecesGenerator.Context context) {
+        if (!context.isBiomeValid(Heightmap.Type.WORLD_SURFACE_WG)) {
             return;
         }
-        if (arg2.method_38705(21, 21) < arg2.chunkGenerator().getSeaLevel()) {
+        if (context.getMinInGroundHeight(21, 21) < context.chunkGenerator().getSeaLevel()) {
             return;
         }
-        arg.addPiece(new DesertTempleGenerator(arg2.random(), arg2.chunkPos().getStartX(), arg2.chunkPos().getStartZ()));
+        collector.addPiece(new DesertTempleGenerator(context.random(), context.chunkPos().getStartX(), context.chunkPos().getStartZ()));
     }
 }
 

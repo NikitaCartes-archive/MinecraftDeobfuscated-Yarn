@@ -159,7 +159,7 @@ import net.minecraft.world.gen.PillagerSpawner;
 import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
+import net.minecraft.world.gen.feature.MiscConfiguredFeatures;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
@@ -381,7 +381,6 @@ AutoCloseable {
         this.initScoreboard(persistentStateManager);
         this.dataCommandStorage = new DataCommandStorage(persistentStateManager);
         WorldBorder worldBorder = serverWorld.getWorldBorder();
-        worldBorder.load(serverWorldProperties.getWorldBorder());
         if (!serverWorldProperties.isInitialized()) {
             try {
                 MinecraftServer.setupSpawn(serverWorld, serverWorldProperties, generatorOptions.hasBonusChest(), bl);
@@ -415,6 +414,7 @@ AutoCloseable {
             worldBorder.addListener(new WorldBorderListener.WorldBorderSyncer(serverWorld2.getWorldBorder()));
             this.worlds.put(registryKey2, serverWorld2);
         }
+        worldBorder.load(serverWorldProperties.getWorldBorder());
     }
 
     private static void setupSpawn(ServerWorld world, ServerWorldProperties worldProperties, boolean bonusChest, boolean debugWorld) {
@@ -450,7 +450,7 @@ AutoCloseable {
             k += m;
         }
         if (bonusChest) {
-            ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeatures.BONUS_CHEST;
+            ConfiguredFeature<?, ?> configuredFeature = MiscConfiguredFeatures.BONUS_CHEST;
             configuredFeature.generate(world, chunkGenerator, world.random, new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ()));
         }
     }

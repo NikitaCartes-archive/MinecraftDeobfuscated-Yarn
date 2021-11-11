@@ -309,10 +309,10 @@ AutoCloseable {
                 int q = (o - k + 16) * 32 + p - i + 16;
                 double r = (double)this.field_20794[q] * 0.5;
                 double s = (double)this.field_20795[q] * 0.5;
-                int t = world.getTopY(Heightmap.Type.MOTION_BLOCKING, p, o);
-                mutable.set(p, t, o);
+                mutable.set((double)p, e, (double)o);
                 Biome biome = world.getBiome(mutable);
                 if (biome.getPrecipitation() == Biome.Precipitation.NONE) continue;
+                int t = world.getTopY(Heightmap.Type.MOTION_BLOCKING, p, o);
                 int u = j - l;
                 int v = j + l;
                 if (u < t) {
@@ -1001,7 +1001,7 @@ AutoCloseable {
         profiler.swap("light_update_queue");
         this.world.runQueuedChunkUpdates();
         profiler.swap("light_updates");
-        boolean bl = this.world.method_38743();
+        boolean bl = this.world.hasNoChunkUpdaters();
         this.world.getChunkManager().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, bl, true);
         Vec3d vec3d = camera.getPos();
         double d = vec3d.getX();
@@ -2625,15 +2625,15 @@ AutoCloseable {
                 break;
             }
             case 1027: {
-                this.world.playSound(pos, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.NEUTRAL, 2.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f, false);
+                this.world.playSound(pos, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.HOSTILE, 2.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f, false);
                 break;
             }
             case 1040: {
-                this.world.playSound(pos, SoundEvents.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED, SoundCategory.NEUTRAL, 2.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f, false);
+                this.world.playSound(pos, SoundEvents.ENTITY_ZOMBIE_CONVERTED_TO_DROWNED, SoundCategory.HOSTILE, 2.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f, false);
                 break;
             }
             case 1041: {
-                this.world.playSound(pos, SoundEvents.ENTITY_HUSK_CONVERTED_TO_ZOMBIE, SoundCategory.NEUTRAL, 2.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f, false);
+                this.world.playSound(pos, SoundEvents.ENTITY_HUSK_CONVERTED_TO_ZOMBIE, SoundCategory.HOSTILE, 2.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f, false);
                 break;
             }
             case 1025: {
@@ -2670,7 +2670,7 @@ AutoCloseable {
                 break;
             }
             case 1048: {
-                this.world.playSound(pos, SoundEvents.ENTITY_SKELETON_CONVERTED_TO_STRAY, SoundCategory.NEUTRAL, 2.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f, false);
+                this.world.playSound(pos, SoundEvents.ENTITY_SKELETON_CONVERTED_TO_STRAY, SoundCategory.HOSTILE, 2.0f, (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f, false);
             }
         }
     }

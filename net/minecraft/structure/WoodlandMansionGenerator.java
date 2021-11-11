@@ -12,7 +12,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.class_6625;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.IllagerEntity;
@@ -20,6 +19,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePlacementData;
@@ -983,7 +983,7 @@ public class WoodlandMansionGenerator {
 
         @Override
         protected Identifier getId() {
-            return Piece.getId(this.identifier);
+            return Piece.getId(this.template);
         }
 
         private static Identifier getId(String identifier) {
@@ -995,8 +995,8 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
-            super.writeNbt(arg, nbt);
+        protected void writeNbt(StructureContext context, NbtCompound nbt) {
+            super.writeNbt(context, nbt);
             nbt.putString("Rot", this.placementData.getRotation().name());
             nbt.putString("Mi", this.placementData.getMirror().name());
         }

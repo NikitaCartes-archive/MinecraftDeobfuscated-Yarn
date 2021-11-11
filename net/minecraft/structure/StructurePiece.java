@@ -16,11 +16,11 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
-import net.minecraft.class_6625;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.util.BlockMirror;
@@ -78,24 +78,24 @@ public abstract class StructurePiece {
         return Direction.Type.HORIZONTAL.random(random);
     }
 
-    public final NbtCompound toNbt(class_6625 arg) {
+    public final NbtCompound toNbt(StructureContext context) {
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
         BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbtCompound.put("BB", (NbtElement)nbtElement));
         Direction direction = this.getFacing();
         nbtCompound.putInt("O", direction == null ? -1 : direction.getHorizontal());
         nbtCompound.putInt("GD", this.chainLength);
-        this.writeNbt(arg, nbtCompound);
+        this.writeNbt(context, nbtCompound);
         return nbtCompound;
     }
 
-    protected abstract void writeNbt(class_6625 var1, NbtCompound var2);
+    protected abstract void writeNbt(StructureContext var1, NbtCompound var2);
 
     public StructureWeightType getWeightType() {
         return StructureWeightType.BEARD;
     }
 
-    public void fillOpenings(StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random) {
+    public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
     }
 
     public abstract void generate(StructureWorldAccess var1, StructureAccessor var2, ChunkGenerator var3, Random var4, BlockBox var5, ChunkPos var6, BlockPos var7);
@@ -386,14 +386,14 @@ public abstract class StructurePiece {
         this.boundingBox.move(x, y, z);
     }
 
-    public static BlockBox method_38703(Stream<StructurePiece> stream) {
-        return BlockBox.encompass(stream.map(StructurePiece::getBoundingBox)::iterator).orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
+    public static BlockBox boundingBox(Stream<StructurePiece> pieces) {
+        return BlockBox.encompass(pieces.map(StructurePiece::getBoundingBox)::iterator).orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox without pieces"));
     }
 
     @Nullable
-    public static StructurePiece method_38702(List<StructurePiece> list, BlockBox blockBox) {
-        for (StructurePiece structurePiece : list) {
-            if (!structurePiece.getBoundingBox().intersects(blockBox)) continue;
+    public static StructurePiece firstIntersecting(List<StructurePiece> pieces, BlockBox box) {
+        for (StructurePiece structurePiece : pieces) {
+            if (!structurePiece.getBoundingBox().intersects(box)) continue;
             return structurePiece;
         }
         return null;

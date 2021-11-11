@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.class_6625;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
@@ -17,6 +16,7 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.SimpleStructurePiece;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -193,7 +193,7 @@ public class EndCityGenerator {
             int i = random.nextInt();
             for (StructurePiece structurePiece : list) {
                 structurePiece.chainLength = i;
-                StructurePiece structurePiece2 = StructurePiece.method_38702(pieces, structurePiece.getBoundingBox());
+                StructurePiece structurePiece2 = StructurePiece.firstIntersecting(pieces, structurePiece.getBoundingBox());
                 if (structurePiece2 == null || structurePiece2.chainLength == parent.chainLength) continue;
                 bl = true;
                 break;
@@ -223,7 +223,7 @@ public class EndCityGenerator {
 
         @Override
         protected Identifier getId() {
-            return Piece.getId(this.identifier);
+            return Piece.getId(this.template);
         }
 
         private static Identifier getId(String template) {
@@ -231,8 +231,8 @@ public class EndCityGenerator {
         }
 
         @Override
-        protected void writeNbt(class_6625 arg, NbtCompound nbt) {
-            super.writeNbt(arg, nbt);
+        protected void writeNbt(StructureContext context, NbtCompound nbt) {
+            super.writeNbt(context, nbt);
             nbt.putString("Rot", this.placementData.getRotation().name());
             nbt.putBoolean("OW", this.placementData.getProcessors().get(0) == BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
         }

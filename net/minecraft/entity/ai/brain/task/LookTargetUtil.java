@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.minecraft.class_6670;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -17,6 +16,7 @@ import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -42,8 +42,8 @@ public class LookTargetUtil {
     }
 
     public static boolean canSee(Brain<?> brain, LivingEntity target) {
-        Optional<class_6670> optional = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
-        return optional.isPresent() && optional.get().method_38972(target);
+        Optional<LivingTargetCache> optional = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+        return optional.isPresent() && optional.get().contains(target);
     }
 
     public static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryModuleType, EntityType<?> entityType) {
@@ -133,11 +133,11 @@ public class LookTargetUtil {
     }
 
     public static boolean isVisibleInMemory(LivingEntity source, LivingEntity target) {
-        Brain<class_6670> brain = source.getBrain();
+        Brain<LivingTargetCache> brain = source.getBrain();
         if (!brain.hasMemoryModule(MemoryModuleType.VISIBLE_MOBS)) {
             return false;
         }
-        return brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().method_38972(target);
+        return brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().contains(target);
     }
 
     public static LivingEntity getCloserEntity(LivingEntity source, Optional<LivingEntity> first, LivingEntity second) {

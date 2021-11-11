@@ -6,8 +6,8 @@ package net.minecraft.entity.ai.brain.sensor;
 import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.server.world.ServerWorld;
@@ -29,10 +29,10 @@ extends Sensor<LivingEntity> {
     }
 
     private Optional<LivingEntity> getNearestVisibleLivingEntity(LivingEntity entity) {
-        return this.getVisibleLivingEntities(entity).flatMap(arg -> arg.method_38975(livingEntity2 -> this.matches(entity, (LivingEntity)livingEntity2)));
+        return this.getVisibleLivingEntities(entity).flatMap(livingTargetCache -> livingTargetCache.findFirst(livingEntity2 -> this.matches(entity, (LivingEntity)livingEntity2)));
     }
 
-    protected Optional<class_6670> getVisibleLivingEntities(LivingEntity entity) {
+    protected Optional<LivingTargetCache> getVisibleLivingEntities(LivingEntity entity) {
         return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
     }
 }

@@ -36,9 +36,9 @@ public class MeCommand {
                     }, (Executor)minecraftServer);
                     return 1;
                 }
-                minecraftServer.getPlayerManager().broadcastChatMessage(MeCommand.getEmoteText(context, string), MessageType.CHAT, entity.getUuid());
+                minecraftServer.getPlayerManager().broadcast(MeCommand.getEmoteText(context, string), MessageType.CHAT, entity.getUuid());
             } else {
-                minecraftServer.getPlayerManager().broadcastChatMessage(MeCommand.getEmoteText(context, string), MessageType.SYSTEM, Util.NIL_UUID);
+                minecraftServer.getPlayerManager().broadcast(MeCommand.getEmoteText(context, string), MessageType.SYSTEM, Util.NIL_UUID);
             }
             return 1;
         })));

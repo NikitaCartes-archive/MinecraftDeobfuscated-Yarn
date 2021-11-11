@@ -5,10 +5,10 @@ package net.minecraft.structure;
 
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_6624;
-import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -27,9 +27,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class StructureStart<C extends FeatureConfig> {
     public static final String INVALID = "INVALID";
-    public static final StructureStart<?> DEFAULT = new StructureStart(null, new ChunkPos(0, 0), 0, new class_6624(List.of()));
+    public static final StructureStart<?> DEFAULT = new StructureStart(null, new ChunkPos(0, 0), 0, new StructurePiecesList(List.of()));
     private final StructureFeature<C> feature;
-    private final class_6624 field_34940;
+    private final StructurePiecesList children;
     private final ChunkPos pos;
     /**
      * The number of chunks that intersect the structures bounding box,
@@ -44,37 +44,37 @@ public final class StructureStart<C extends FeatureConfig> {
     @Nullable
     private volatile BlockBox boundingBox;
 
-    public StructureStart(StructureFeature<C> feature, ChunkPos pos, int references, class_6624 arg) {
+    public StructureStart(StructureFeature<C> feature, ChunkPos pos, int references, StructurePiecesList children) {
         this.feature = feature;
         this.pos = pos;
         this.references = references;
-        this.field_34940 = arg;
+        this.children = children;
     }
 
-    public BlockBox setBoundingBoxFromChildren() {
+    public BlockBox getBoundingBox() {
         BlockBox blockBox = this.boundingBox;
         if (blockBox == null) {
-            this.boundingBox = blockBox = this.feature.calculateBoundingBox(this.field_34940.method_38712());
+            this.boundingBox = blockBox = this.feature.calculateBoundingBox(this.children.getBoundingBox());
         }
         return blockBox;
     }
 
-    public void generateStructure(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-        List<StructurePiece> list = this.field_34940.pieces();
+    public void place(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos) {
+        List<StructurePiece> list = this.children.pieces();
         if (list.isEmpty()) {
             return;
         }
-        BlockBox blockBox2 = list.get((int)0).boundingBox;
-        BlockPos blockPos = blockBox2.getCenter();
-        BlockPos blockPos2 = new BlockPos(blockPos.getX(), blockBox2.getMinY(), blockPos.getZ());
+        BlockBox blockBox = list.get((int)0).boundingBox;
+        BlockPos blockPos = blockBox.getCenter();
+        BlockPos blockPos2 = new BlockPos(blockPos.getX(), blockBox.getMinY(), blockPos.getZ());
         for (StructurePiece structurePiece : list) {
-            if (!structurePiece.getBoundingBox().intersects(blockBox)) continue;
-            structurePiece.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos2);
+            if (!structurePiece.getBoundingBox().intersects(chunkBox)) continue;
+            structurePiece.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, blockPos2);
         }
-        this.feature.method_38690().afterPlace(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, this.field_34940);
+        this.feature.getPostProcessor().afterPlace(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, this.children);
     }
 
-    public NbtCompound toNbt(class_6625 arg, ChunkPos chunkPos) {
+    public NbtCompound toNbt(StructureContext context, ChunkPos chunkPos) {
         NbtCompound nbtCompound = new NbtCompound();
         if (!this.hasChildren()) {
             nbtCompound.putString("id", INVALID);
@@ -84,12 +84,12 @@ public final class StructureStart<C extends FeatureConfig> {
         nbtCompound.putInt("ChunkX", chunkPos.x);
         nbtCompound.putInt("ChunkZ", chunkPos.z);
         nbtCompound.putInt("references", this.references);
-        nbtCompound.put("Children", this.field_34940.method_38709(arg));
+        nbtCompound.put("Children", this.children.toNbt(context));
         return nbtCompound;
     }
 
     public boolean hasChildren() {
-        return !this.field_34940.method_38708();
+        return !this.children.isEmpty();
     }
 
     public ChunkPos getPos() {
@@ -117,7 +117,7 @@ public final class StructureStart<C extends FeatureConfig> {
     }
 
     public List<StructurePiece> getChildren() {
-        return this.field_34940.pieces();
+        return this.children.pieces();
     }
 }
 

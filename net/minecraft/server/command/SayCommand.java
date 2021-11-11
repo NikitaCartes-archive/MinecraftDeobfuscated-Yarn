@@ -21,9 +21,9 @@ public class SayCommand {
             TranslatableText text2 = new TranslatableText("chat.type.announcement", ((ServerCommandSource)context.getSource()).getDisplayName(), text);
             Entity entity = ((ServerCommandSource)context.getSource()).getEntity();
             if (entity != null) {
-                ((ServerCommandSource)context.getSource()).getServer().getPlayerManager().broadcastChatMessage(text2, MessageType.CHAT, entity.getUuid());
+                ((ServerCommandSource)context.getSource()).getServer().getPlayerManager().broadcast(text2, MessageType.CHAT, entity.getUuid());
             } else {
-                ((ServerCommandSource)context.getSource()).getServer().getPlayerManager().broadcastChatMessage(text2, MessageType.SYSTEM, Util.NIL_UUID);
+                ((ServerCommandSource)context.getSource()).getServer().getPlayerManager().broadcast(text2, MessageType.SYSTEM, Util.NIL_UUID);
             }
             return 1;
         })));

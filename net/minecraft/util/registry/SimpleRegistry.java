@@ -42,25 +42,22 @@ public class SimpleRegistry<T>
 extends MutableRegistry<T> {
     protected static final Logger LOGGER = LogManager.getLogger();
     private final ObjectList<T> rawIdToEntry = new ObjectArrayList<T>(256);
-    private final Object2IntMap<T> entryToRawId = new Object2IntOpenCustomHashMap<T>(Util.identityHashStrategy());
-    private final BiMap<Identifier, T> idToEntry;
-    private final BiMap<RegistryKey<T>, T> keyToEntry;
-    private final Map<T, Lifecycle> entryToLifecycle;
+    private final Object2IntMap<T> entryToRawId = Util.make(new Object2IntOpenCustomHashMap(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> object2IntOpenCustomHashMap.defaultReturnValue(-1));
+    private final BiMap<Identifier, T> idToEntry = HashBiMap.create();
+    private final BiMap<RegistryKey<T>, T> keyToEntry = HashBiMap.create();
+    private final Map<T, Lifecycle> entryToLifecycle = Maps.newIdentityHashMap();
     private Lifecycle lifecycle;
+    @Nullable
     protected Object[] randomEntries;
     private int nextId;
 
     public SimpleRegistry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
         super(registryKey, lifecycle);
-        this.entryToRawId.defaultReturnValue(-1);
-        this.idToEntry = HashBiMap.create();
-        this.keyToEntry = HashBiMap.create();
-        this.entryToLifecycle = Maps.newIdentityHashMap();
         this.lifecycle = lifecycle;
     }
 
     public static <T> MapCodec<RegistryManagerEntry<T>> createRegistryManagerEntryCodec(RegistryKey<? extends Registry<T>> key, MapCodec<T> entryCodec) {
-        return RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.xmap(RegistryKey.createKeyFactory(key), RegistryKey::getValue).fieldOf("name")).forGetter(registryManagerEntry -> registryManagerEntry.key), ((MapCodec)Codec.INT.fieldOf("id")).forGetter(registryManagerEntry -> registryManagerEntry.rawId), entryCodec.forGetter(registryManagerEntry -> registryManagerEntry.entry)).apply((Applicative<RegistryManagerEntry, ?>)instance, RegistryManagerEntry::new));
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.xmap(RegistryKey.createKeyFactory(key), RegistryKey::getValue).fieldOf("name")).forGetter(RegistryManagerEntry::key), ((MapCodec)Codec.INT.fieldOf("id")).forGetter(RegistryManagerEntry::rawId), entryCodec.forGetter(RegistryManagerEntry::entry)).apply((Applicative<RegistryManagerEntry, ?>)instance, RegistryManagerEntry::new));
     }
 
     @Override
@@ -195,7 +192,7 @@ extends MutableRegistry<T> {
             if (collection.isEmpty()) {
                 return null;
             }
-            this.randomEntries = collection.toArray(new Object[collection.size()]);
+            this.randomEntries = collection.toArray(Object[]::new);
         }
         return (T)Util.getRandom(this.randomEntries, random);
     }
@@ -214,7 +211,7 @@ extends MutableRegistry<T> {
         return SimpleRegistry.createRegistryManagerEntryCodec(key, entryCodec.fieldOf("element")).codec().listOf().xmap(list -> {
             SimpleRegistry simpleRegistry = new SimpleRegistry(key, lifecycle);
             for (RegistryManagerEntry registryManagerEntry : list) {
-                simpleRegistry.set(registryManagerEntry.rawId, registryManagerEntry.key, registryManagerEntry.entry, lifecycle);
+                simpleRegistry.set(registryManagerEntry.rawId(), registryManagerEntry.key(), registryManagerEntry.entry(), lifecycle);
             }
             return simpleRegistry;
         }, simpleRegistry -> {
@@ -238,16 +235,7 @@ extends MutableRegistry<T> {
         }, simpleRegistry -> ImmutableMap.copyOf(simpleRegistry.keyToEntry));
     }
 
-    public static class RegistryManagerEntry<T> {
-        public final RegistryKey<T> key;
-        public final int rawId;
-        public final T entry;
-
-        public RegistryManagerEntry(RegistryKey<T> key, int rawId, T entry) {
-            this.key = key;
-            this.rawId = rawId;
-            this.entry = entry;
-        }
+    record RegistryManagerEntry<T>(RegistryKey<T> key, int rawId, T entry) {
     }
 }
 

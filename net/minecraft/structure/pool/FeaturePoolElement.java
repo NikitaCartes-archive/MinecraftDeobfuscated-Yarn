@@ -28,20 +28,18 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class FeaturePoolElement
 extends StructurePoolElement {
-    public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(featurePoolElement -> featurePoolElement.feature), FeaturePoolElement.method_28883()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
-    private final Supplier<ConfiguredFeature<?, ?>> feature;
+    public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(featurePoolElement -> featurePoolElement.feature), FeaturePoolElement.method_28883()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
+    private final Supplier<PlacedFeature> feature;
     private final NbtCompound nbt;
 
-    protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> feature, StructurePool.Projection projection) {
+    protected FeaturePoolElement(Supplier<PlacedFeature> feature, StructurePool.Projection projection) {
         super(projection);
         this.feature = feature;
         this.nbt = this.createDefaultJigsawNbt();
@@ -77,7 +75,7 @@ extends StructurePoolElement {
 
     @Override
     public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos blockPos, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
-        return this.feature.get().generate(world, chunkGenerator, random, pos);
+        return this.feature.get().generateUnregistered(world, chunkGenerator, random, pos);
     }
 
     @Override
@@ -86,7 +84,7 @@ extends StructurePoolElement {
     }
 
     public String toString() {
-        return "Feature[" + Registry.FEATURE.getId((Feature<?>)this.feature.get().getFeature()) + "]";
+        return "Feature[" + this.feature.get() + "]";
     }
 }
 

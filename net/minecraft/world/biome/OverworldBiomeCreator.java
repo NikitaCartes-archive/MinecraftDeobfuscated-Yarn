@@ -15,8 +15,10 @@ import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
+import net.minecraft.world.gen.feature.MiscPlacedFeatures;
+import net.minecraft.world.gen.feature.OceanPlacedFeatures;
+import net.minecraft.world.gen.feature.VegetationPlacedFeatures;
 import org.jetbrains.annotations.Nullable;
 
 public class OverworldBiomeCreator {
@@ -68,7 +70,7 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addLargeFerns(builder2);
         DefaultBiomeFeatures.addDefaultOres(builder2);
         DefaultBiomeFeatures.addDefaultDisks(builder2);
-        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, bl ? ConfiguredFeatures.TREES_GIANT_SPRUCE : ConfiguredFeatures.TREES_GIANT);
+        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, bl ? VegetationPlacedFeatures.TREES_OLD_GROWTH_SPRUCE_TAIGA : VegetationPlacedFeatures.TREES_OLD_GROWTH_PINE_TAIGA);
         DefaultBiomeFeatures.addDefaultFlowers(builder2);
         DefaultBiomeFeatures.addGiantTaigaGrass(builder2);
         DefaultBiomeFeatures.addDefaultMushrooms(builder2);
@@ -171,14 +173,14 @@ public class OverworldBiomeCreator {
             builder.creatureSpawnProbability(0.07f);
             DefaultBiomeFeatures.addSnowyMobs(builder);
             if (bl3) {
-                builder2.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.ICE_SPIKE);
-                builder2.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.ICE_PATCH);
+                builder2.feature(GenerationStep.Feature.SURFACE_STRUCTURES, MiscPlacedFeatures.ICE_SPIKE);
+                builder2.feature(GenerationStep.Feature.SURFACE_STRUCTURES, MiscPlacedFeatures.ICE_PATCH);
             }
         } else {
             DefaultBiomeFeatures.addPlainsMobs(builder);
             DefaultBiomeFeatures.addPlainsTallGrass(builder2);
             if (bl) {
-                builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_SUNFLOWER);
+                builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.PATCH_SUNFLOWER);
             } else {
                 builder.playerSpawnFriendly();
             }
@@ -194,8 +196,8 @@ public class OverworldBiomeCreator {
         }
         DefaultBiomeFeatures.addDefaultMushrooms(builder2);
         if (bl) {
-            builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_SUGAR_CANE);
-            builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_PUMPKIN);
+            builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.PATCH_SUGAR_CANE);
+            builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.PATCH_PUMPKIN);
         } else {
             DefaultBiomeFeatures.addDefaultVegetation(builder2);
         }
@@ -211,7 +213,6 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addDefaultOres(builder2);
         DefaultBiomeFeatures.addDefaultDisks(builder2);
         DefaultBiomeFeatures.addMushroomFieldsFeatures(builder2);
-        DefaultBiomeFeatures.addDefaultMushrooms(builder2);
         DefaultBiomeFeatures.addDefaultVegetation(builder2);
         return OverworldBiomeCreator.method_39152(Biome.Precipitation.RAIN, Biome.Category.MUSHROOM, 0.9f, 1.0f, builder, builder2, field_35436);
     }
@@ -285,7 +286,7 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addOceanMobs(builder, 3, 4, 15);
         builder.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.SALMON, 15, 1, 5));
         GenerationSettings.Builder builder2 = OverworldBiomeCreator.createOceanGenerationSettings();
-        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP_COLD : ConfiguredFeatures.SEAGRASS_COLD);
+        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? OceanPlacedFeatures.SEAGRASS_DEEP_COLD : OceanPlacedFeatures.SEAGRASS_COLD);
         DefaultBiomeFeatures.addSeagrassOnStone(builder2);
         DefaultBiomeFeatures.addKelp(builder2);
         return OverworldBiomeCreator.createOcean(builder, 4020182, 329011, builder2);
@@ -296,7 +297,7 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addOceanMobs(builder, 1, 4, 10);
         builder.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.DOLPHIN, 1, 1, 2));
         GenerationSettings.Builder builder2 = OverworldBiomeCreator.createOceanGenerationSettings();
-        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP : ConfiguredFeatures.SEAGRASS_NORMAL);
+        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? OceanPlacedFeatures.SEAGRASS_DEEP : OceanPlacedFeatures.SEAGRASS_NORMAL);
         DefaultBiomeFeatures.addSeagrassOnStone(builder2);
         DefaultBiomeFeatures.addKelp(builder2);
         return OverworldBiomeCreator.createOcean(builder, 4159204, 329011, builder2);
@@ -311,7 +312,7 @@ public class OverworldBiomeCreator {
         }
         builder.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.PUFFERFISH, 5, 1, 3)).spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.TROPICAL_FISH, 25, 8, 8)).spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.DOLPHIN, 2, 1, 2));
         GenerationSettings.Builder builder2 = OverworldBiomeCreator.createOceanGenerationSettings();
-        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP_WARM : ConfiguredFeatures.SEAGRASS_WARM);
+        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? OceanPlacedFeatures.SEAGRASS_DEEP_WARM : OceanPlacedFeatures.SEAGRASS_WARM);
         if (deep) {
             DefaultBiomeFeatures.addSeagrassOnStone(builder2);
         }
@@ -322,7 +323,7 @@ public class OverworldBiomeCreator {
     public static Biome createWarmOcean() {
         SpawnSettings.Builder builder = new SpawnSettings.Builder().spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.PUFFERFISH, 15, 1, 3));
         DefaultBiomeFeatures.addWarmOceanMobs(builder, 10, 4);
-        GenerationSettings.Builder builder2 = OverworldBiomeCreator.createOceanGenerationSettings().feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARM_OCEAN_VEGETATION).feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_WARM).feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEA_PICKLE);
+        GenerationSettings.Builder builder2 = OverworldBiomeCreator.createOceanGenerationSettings().feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.WARM_OCEAN_VEGETATION).feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.SEAGRASS_WARM).feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.SEA_PICKLE);
         return OverworldBiomeCreator.createOcean(builder, 4445678, 270131, builder2);
     }
 
@@ -349,15 +350,15 @@ public class OverworldBiomeCreator {
         GenerationSettings.Builder builder = new GenerationSettings.Builder();
         OverworldBiomeCreator.method_39153(builder);
         if (bl3) {
-            builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FOREST_FLOWER_VEGETATION_COMMON);
+            builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.FLOWER_FOREST_FLOWERS);
         } else {
             DefaultBiomeFeatures.addForestFlowers(builder);
         }
         DefaultBiomeFeatures.addDefaultOres(builder);
         DefaultBiomeFeatures.addDefaultDisks(builder);
         if (bl3) {
-            builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FOREST_FLOWER_TREES);
-            builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FLOWER_FOREST);
+            builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.TREES_FLOWER_FOREST);
+            builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.FLOWER_FLOWER_FOREST);
             DefaultBiomeFeatures.addDefaultGrass(builder);
         } else {
             if (bl) {
@@ -403,7 +404,6 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addTaigaTrees(builder2);
         DefaultBiomeFeatures.addDefaultFlowers(builder2);
         DefaultBiomeFeatures.addTaigaGrass(builder2);
-        DefaultBiomeFeatures.addDefaultMushrooms(builder2);
         DefaultBiomeFeatures.addDefaultVegetation(builder2);
         if (cold) {
             DefaultBiomeFeatures.addSweetBerryBushesSnowy(builder2);
@@ -419,7 +419,7 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addBatsAndMonsters(builder);
         GenerationSettings.Builder builder2 = new GenerationSettings.Builder();
         OverworldBiomeCreator.method_39153(builder2);
-        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.DARK_FOREST_VEGETATION);
+        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.DARK_FOREST_VEGETATION);
         DefaultBiomeFeatures.addForestFlowers(builder2);
         DefaultBiomeFeatures.addDefaultOres(builder2);
         DefaultBiomeFeatures.addDefaultDisks(builder2);
@@ -443,7 +443,7 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addSwampFeatures(builder2);
         DefaultBiomeFeatures.addDefaultMushrooms(builder2);
         DefaultBiomeFeatures.addSwampVegetation(builder2);
-        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_SWAMP);
+        builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.SEAGRASS_SWAMP);
         return new Biome.Builder().precipitation(Biome.Precipitation.RAIN).category(Biome.Category.SWAMP).temperature(0.8f).downfall(0.9f).effects(new BiomeEffects.Builder().waterColor(6388580).waterFogColor(2302743).fogColor(12638463).skyColor(OverworldBiomeCreator.getSkyColor(0.8f)).foliageColor(6975545).grassColorModifier(BiomeEffects.GrassColorModifier.SWAMP).moodSound(BiomeMoodSound.CAVE).build()).spawnSettings(builder.build()).generationSettings(builder2.build()).build();
     }
 
@@ -461,7 +461,7 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addDefaultMushrooms(builder2);
         DefaultBiomeFeatures.addDefaultVegetation(builder2);
         if (!bl) {
-            builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_RIVER);
+            builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.SEAGRASS_RIVER);
         }
         float f = bl ? 0.0f : 0.5f;
         return OverworldBiomeCreator.method_39151(bl ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN, Biome.Category.RIVER, f, 0.5f, bl ? 3750089 : 4159204, 329011, builder, builder2, field_35436);
@@ -489,7 +489,7 @@ public class OverworldBiomeCreator {
 
     public static Biome createTheVoid() {
         GenerationSettings.Builder builder = new GenerationSettings.Builder();
-        builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, ConfiguredFeatures.VOID_START_PLATFORM);
+        builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, MiscPlacedFeatures.VOID_START_PLATFORM);
         return OverworldBiomeCreator.method_39152(Biome.Precipitation.NONE, Biome.Category.NONE, 0.5f, 0.5f, new SpawnSettings.Builder(), builder, field_35436);
     }
 

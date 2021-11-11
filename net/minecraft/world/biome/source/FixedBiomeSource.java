@@ -44,7 +44,7 @@ implements BiomeAccess.Storage {
     }
 
     @Override
-    public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+    public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noise) {
         return this.biome.get();
     }
 

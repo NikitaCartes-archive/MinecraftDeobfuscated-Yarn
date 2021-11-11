@@ -430,7 +430,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             }
             longIterator.remove();
         }
-        while ((shouldKeepTicking.getAsBoolean() || this.unloadTaskQueue.size() > 2000) && (runnable = this.unloadTaskQueue.poll()) != null) {
+        for (int j = Math.max(0, this.unloadTaskQueue.size() - 2000); (shouldKeepTicking.getAsBoolean() || j > 0) && (runnable = this.unloadTaskQueue.poll()) != null; --j) {
             runnable.run();
         }
     }
@@ -986,9 +986,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList();
         List<ServerPlayerEntity> list2 = this.world.getPlayers();
         for (EntityTracker entityTracker : this.entityTrackers.values()) {
+            boolean bl;
             ChunkSectionPos chunkSectionPos = entityTracker.trackedSection;
             ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(entityTracker.entity);
-            if (!Objects.equals(chunkSectionPos, chunkSectionPos2)) {
+            boolean bl2 = bl = !Objects.equals(chunkSectionPos, chunkSectionPos2);
+            if (bl) {
                 entityTracker.updateTrackedStatus(list2);
                 Entity entity = entityTracker.entity;
                 if (entity instanceof ServerPlayerEntity) {
@@ -996,6 +998,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 }
                 entityTracker.trackedSection = chunkSectionPos2;
             }
+            if (!bl && !this.ticketManager.shouldTickEntities(chunkSectionPos2.toChunkPos().toLong())) continue;
             entityTracker.entry.tick();
         }
         if (!list.isEmpty()) {

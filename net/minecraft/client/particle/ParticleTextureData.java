@@ -28,9 +28,9 @@ public class ParticleTextureData {
         return this.textureList;
     }
 
-    public static ParticleTextureData load(JsonObject jsonObject) {
-        JsonArray jsonArray = JsonHelper.getArray(jsonObject, "textures", null);
-        List list = jsonArray != null ? (List)Streams.stream(jsonArray).map(jsonElement -> JsonHelper.asString(jsonElement, "texture")).map(Identifier::new).collect(ImmutableList.toImmutableList()) : null;
+    public static ParticleTextureData load(JsonObject json) {
+        JsonArray jsonArray = JsonHelper.getArray(json, "textures", null);
+        List list = jsonArray != null ? (List)Streams.stream(jsonArray).map(texture -> JsonHelper.asString(texture, "texture")).map(Identifier::new).collect(ImmutableList.toImmutableList()) : null;
         return new ParticleTextureData(list);
     }
 }

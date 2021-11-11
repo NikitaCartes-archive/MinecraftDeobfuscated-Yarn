@@ -14,7 +14,7 @@ import net.minecraft.world.gen.feature.size.FeatureSizeType;
  * In charge of determining the amount of space needed by a tree to generate.
  */
 public abstract class FeatureSize {
-    public static final Codec<FeatureSize> TYPE_CODEC = Registry.FEATURE_SIZE_TYPE.dispatch(FeatureSize::getType, FeatureSizeType::getCodec);
+    public static final Codec<FeatureSize> TYPE_CODEC = Registry.FEATURE_SIZE_TYPE.method_39673().dispatch(FeatureSize::getType, FeatureSizeType::getCodec);
     protected static final int field_31522 = 16;
     protected final OptionalInt minClippedHeight;
 

@@ -20,7 +20,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
@@ -45,7 +45,7 @@ extends ProtoChunk {
     private final boolean field_34554;
 
     public ReadOnlyChunk(WorldChunk wrapped, boolean bl) {
-        super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped.heightLimitView, wrapped.getWorld().getRegistryManager().get(Registry.BIOME_KEY), wrapped.getBlendingData());
+        super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped.heightLimitView, wrapped.getWorld().getRegistryManager().get(Registry.BIOME_KEY), wrapped.getBlender());
         this.wrapped = wrapped;
         this.field_34554 = bl;
     }
@@ -285,9 +285,9 @@ extends ProtoChunk {
     }
 
     @Override
-    public void method_38257(BiomeSource source, MultiNoiseUtil.MultiNoiseSampler sampler) {
+    public void method_38257(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler) {
         if (this.field_34554) {
-            this.wrapped.method_38257(source, sampler);
+            this.wrapped.method_38257(biomeSupplier, sampler);
         }
     }
 }

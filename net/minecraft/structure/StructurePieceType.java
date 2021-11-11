@@ -4,7 +4,6 @@
 package net.minecraft.structure;
 
 import java.util.Locale;
-import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.BuriedTreasureGenerator;
 import net.minecraft.structure.DesertTempleGenerator;
@@ -20,6 +19,7 @@ import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.RuinedPortalStructurePiece;
 import net.minecraft.structure.ShipwreckGenerator;
 import net.minecraft.structure.StrongholdGenerator;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.SwampHutGenerator;
@@ -60,9 +60,9 @@ public interface StructurePieceType {
     public static final StructurePieceType STRONGHOLD_CORRIDOR = StructurePieceType.register(StrongholdGenerator.Corridor::new, "SHS");
     public static final StructurePieceType STRONGHOLD_STAIRS = StructurePieceType.register(StrongholdGenerator.Stairs::new, "SHSSD");
     public static final StructurePieceType JUNGLE_TEMPLE = StructurePieceType.register(JungleTempleGenerator::new, "TeJP");
-    public static final StructurePieceType OCEAN_TEMPLE = StructurePieceType.method_38691(OceanRuinGenerator.Piece::new, "ORP");
-    public static final StructurePieceType IGLOO = StructurePieceType.method_38691(IglooGenerator.Piece::new, "Iglu");
-    public static final StructurePieceType RUINED_PORTAL = StructurePieceType.method_38691(RuinedPortalStructurePiece::new, "RUPO");
+    public static final StructurePieceType OCEAN_TEMPLE = StructurePieceType.register(OceanRuinGenerator.Piece::new, "ORP");
+    public static final StructurePieceType IGLOO = StructurePieceType.register(IglooGenerator.Piece::new, "Iglu");
+    public static final StructurePieceType RUINED_PORTAL = StructurePieceType.register(RuinedPortalStructurePiece::new, "RUPO");
     public static final StructurePieceType SWAMP_HUT = StructurePieceType.register(SwampHutGenerator::new, "TeSH");
     public static final StructurePieceType DESERT_TEMPLE = StructurePieceType.register(DesertTempleGenerator::new, "TeDP");
     public static final StructurePieceType OCEAN_MONUMENT_BASE = StructurePieceType.register(OceanMonumentGenerator.Base::new, "OMB");
@@ -77,44 +77,44 @@ public interface StructurePieceType {
     public static final StructurePieceType OCEAN_MONUMENT_SIMPLE_ROOM = StructurePieceType.register(OceanMonumentGenerator.SimpleRoom::new, "OMSimple");
     public static final StructurePieceType OCEAN_MONUMENT_SIMPLE_TOP_ROOM = StructurePieceType.register(OceanMonumentGenerator.SimpleRoomTop::new, "OMSimpleT");
     public static final StructurePieceType OCEAN_MONUMENT_WING_ROOM = StructurePieceType.register(OceanMonumentGenerator.WingRoom::new, "OMWR");
-    public static final StructurePieceType END_CITY = StructurePieceType.method_38691(EndCityGenerator.Piece::new, "ECP");
-    public static final StructurePieceType WOODLAND_MANSION = StructurePieceType.method_38691(WoodlandMansionGenerator.Piece::new, "WMP");
+    public static final StructurePieceType END_CITY = StructurePieceType.register(EndCityGenerator.Piece::new, "ECP");
+    public static final StructurePieceType WOODLAND_MANSION = StructurePieceType.register(WoodlandMansionGenerator.Piece::new, "WMP");
     public static final StructurePieceType BURIED_TREASURE = StructurePieceType.register(BuriedTreasureGenerator.Piece::new, "BTP");
-    public static final StructurePieceType SHIPWRECK = StructurePieceType.method_38691(ShipwreckGenerator.Piece::new, "Shipwreck");
-    public static final StructurePieceType NETHER_FOSSIL = StructurePieceType.method_38691(NetherFossilGenerator.Piece::new, "NeFos");
-    public static final StructurePieceType JIGSAW = StructurePieceType.method_38692(PoolStructurePiece::new, "jigsaw");
+    public static final StructurePieceType SHIPWRECK = StructurePieceType.register(ShipwreckGenerator.Piece::new, "Shipwreck");
+    public static final StructurePieceType NETHER_FOSSIL = StructurePieceType.register(NetherFossilGenerator.Piece::new, "NeFos");
+    public static final StructurePieceType JIGSAW = StructurePieceType.register(PoolStructurePiece::new, "jigsaw");
 
-    public StructurePiece load(class_6625 var1, NbtCompound var2);
+    public StructurePiece load(StructureContext var1, NbtCompound var2);
 
-    private static StructurePieceType method_38692(StructurePieceType structurePieceType, String string) {
-        return Registry.register(Registry.STRUCTURE_PIECE, string.toLowerCase(Locale.ROOT), structurePieceType);
+    private static StructurePieceType register(StructurePieceType type, String id) {
+        return Registry.register(Registry.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), type);
     }
 
-    private static StructurePieceType register(class_6615 arg, String id) {
-        return StructurePieceType.method_38692(arg, id);
+    private static StructurePieceType register(Simple type, String id) {
+        return StructurePieceType.register((StructurePieceType)type, id);
     }
 
-    private static StructurePieceType method_38691(class_6616 arg, String string) {
-        return StructurePieceType.method_38692(arg, string);
+    private static StructurePieceType register(ManagerAware type, String id) {
+        return StructurePieceType.register((StructurePieceType)type, id);
     }
 
-    public static interface class_6615
+    public static interface Simple
     extends StructurePieceType {
         public StructurePiece load(NbtCompound var1);
 
         @Override
-        default public StructurePiece load(class_6625 arg, NbtCompound nbtCompound) {
+        default public StructurePiece load(StructureContext structureContext, NbtCompound nbtCompound) {
             return this.load(nbtCompound);
         }
     }
 
-    public static interface class_6616
+    public static interface ManagerAware
     extends StructurePieceType {
         public StructurePiece load(StructureManager var1, NbtCompound var2);
 
         @Override
-        default public StructurePiece load(class_6625 arg, NbtCompound nbtCompound) {
-            return this.load(arg.structureManager(), nbtCompound);
+        default public StructurePiece load(StructureContext structureContext, NbtCompound nbtCompound) {
+            return this.load(structureContext.structureManager(), nbtCompound);
         }
     }
 }

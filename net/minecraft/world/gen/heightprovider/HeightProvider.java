@@ -13,7 +13,7 @@ import net.minecraft.world.gen.heightprovider.ConstantHeightProvider;
 import net.minecraft.world.gen.heightprovider.HeightProviderType;
 
 public abstract class HeightProvider {
-    private static final Codec<Either<YOffset, HeightProvider>> field_31539 = Codec.either(YOffset.OFFSET_CODEC, Registry.HEIGHT_PROVIDER_TYPE.dispatch(HeightProvider::getType, HeightProviderType::codec));
+    private static final Codec<Either<YOffset, HeightProvider>> field_31539 = Codec.either(YOffset.OFFSET_CODEC, Registry.HEIGHT_PROVIDER_TYPE.method_39673().dispatch(HeightProvider::getType, HeightProviderType::codec));
     public static final Codec<HeightProvider> CODEC = field_31539.xmap(either -> either.map(ConstantHeightProvider::create, provider -> provider), provider -> provider.getType() == HeightProviderType.CONSTANT ? Either.left(((ConstantHeightProvider)provider).getOffset()) : Either.right(provider));
 
     public abstract int get(Random var1, HeightContext var2);

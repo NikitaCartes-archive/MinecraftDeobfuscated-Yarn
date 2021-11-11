@@ -8,9 +8,9 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.mob.HoglinEntity;
@@ -33,8 +33,8 @@ extends Sensor<HoglinEntity> {
         Optional<Object> optional = Optional.empty();
         int i = 0;
         ArrayList<HoglinEntity> list = Lists.newArrayList();
-        class_6670 lv = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
-        for (LivingEntity livingEntity2 : lv.method_38978(livingEntity -> !livingEntity.isBaby() && (livingEntity instanceof PiglinEntity || livingEntity instanceof HoglinEntity))) {
+        LivingTargetCache livingTargetCache = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
+        for (LivingEntity livingEntity2 : livingTargetCache.iterate(livingEntity -> !livingEntity.isBaby() && (livingEntity instanceof PiglinEntity || livingEntity instanceof HoglinEntity))) {
             LivingEntity livingEntity3 = livingEntity2;
             if (livingEntity3 instanceof PiglinEntity) {
                 PiglinEntity piglinEntity = (PiglinEntity)livingEntity3;

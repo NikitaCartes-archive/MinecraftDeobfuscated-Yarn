@@ -32,11 +32,11 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class StructurePoolElement {
-    public static final Codec<StructurePoolElement> CODEC = Registry.STRUCTURE_POOL_ELEMENT.dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
+    public static final Codec<StructurePoolElement> CODEC = Registry.STRUCTURE_POOL_ELEMENT.method_39673().dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
     @Nullable
     private volatile StructurePool.Projection projection;
 
@@ -98,8 +98,8 @@ public abstract class StructurePoolElement {
         return projection -> new SinglePoolElement(Either.left(new Identifier(id)), () -> processors, (StructurePool.Projection)projection);
     }
 
-    public static Function<StructurePool.Projection, FeaturePoolElement> ofFeature(ConfiguredFeature<?, ?> processors) {
-        return projection -> new FeaturePoolElement(() -> processors, (StructurePool.Projection)projection);
+    public static Function<StructurePool.Projection, FeaturePoolElement> ofFeature(PlacedFeature placedFeature) {
+        return projection -> new FeaturePoolElement(() -> placedFeature, (StructurePool.Projection)projection);
     }
 
     public static Function<StructurePool.Projection, ListPoolElement> ofList(List<Function<StructurePool.Projection, ? extends StructurePoolElement>> list) {

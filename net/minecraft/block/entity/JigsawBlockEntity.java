@@ -130,7 +130,7 @@ extends BlockEntity {
         structure.saveFromWorld(world, blockPos, new Vec3i(1, 1, 1), false, null);
         SinglePoolElement structurePoolElement = new SinglePoolElement(structure);
         PoolStructurePiece poolStructurePiece = new PoolStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos));
-        StructurePoolBasedGenerator.method_27230(world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random, world);
+        StructurePoolBasedGenerator.generate(world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random, world);
         for (PoolStructurePiece poolStructurePiece2 : list) {
             poolStructurePiece2.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
         }

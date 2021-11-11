@@ -4,20 +4,20 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.structure.MarginedStructureStart;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.feature.MarginedStructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 
 public class JigsawFeature
-extends MarginedStructureStart<StructurePoolFeatureConfig> {
+extends MarginedStructureFeature<StructurePoolFeatureConfig> {
     public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int structureStartY, boolean modifyBoundingBox, boolean surface) {
-        super(codec, (arg, structurePoolFeatureConfig, arg2) -> {
-            BlockPos blockPos = new BlockPos(arg2.chunkPos().getStartX(), structureStartY, arg2.chunkPos().getStartZ());
+        super(codec, (collector, config, context) -> {
+            BlockPos blockPos = new BlockPos(context.chunkPos().getStartX(), structureStartY, context.chunkPos().getStartZ());
             StructurePools.initDefaultPools();
-            StructurePoolBasedGenerator.generate(arg2.registryAccess(), structurePoolFeatureConfig, PoolStructurePiece::new, arg2.chunkGenerator(), arg2.structureManager(), blockPos, arg, arg2.random(), modifyBoundingBox, surface, arg2.heightAccessor(), arg2.validBiome());
+            StructurePoolBasedGenerator.generate(context.registryManager(), config, PoolStructurePiece::new, context.chunkGenerator(), context.structureManager(), blockPos, collector, context.random(), modifyBoundingBox, surface, context.world(), context.biomeLimit());
         });
     }
 }

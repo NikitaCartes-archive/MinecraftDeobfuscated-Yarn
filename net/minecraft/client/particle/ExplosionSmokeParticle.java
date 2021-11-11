@@ -18,18 +18,18 @@ public class ExplosionSmokeParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider spriteProvider;
 
-    protected ExplosionSmokeParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
+    protected ExplosionSmokeParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z);
-        float g;
+        float f;
         this.gravityStrength = -0.1f;
         this.velocityMultiplier = 0.9f;
         this.spriteProvider = spriteProvider;
-        this.velocityX = d + (Math.random() * 2.0 - 1.0) * (double)0.05f;
-        this.velocityY = e + (Math.random() * 2.0 - 1.0) * (double)0.05f;
-        this.velocityZ = f + (Math.random() * 2.0 - 1.0) * (double)0.05f;
-        this.colorRed = g = this.random.nextFloat() * 0.3f + 0.7f;
-        this.colorGreen = g;
-        this.colorBlue = g;
+        this.velocityX = velocityX + (Math.random() * 2.0 - 1.0) * (double)0.05f;
+        this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * (double)0.05f;
+        this.velocityZ = velocityZ + (Math.random() * 2.0 - 1.0) * (double)0.05f;
+        this.colorRed = f = this.random.nextFloat() * 0.3f + 0.7f;
+        this.colorGreen = f;
+        this.colorBlue = f;
         this.scale = 0.1f * (this.random.nextFloat() * this.random.nextFloat() * 6.0f + 1.0f);
         this.maxAge = (int)(16.0 / ((double)this.random.nextFloat() * 0.8 + 0.2)) + 2;
         this.setSpriteForAge(spriteProvider);

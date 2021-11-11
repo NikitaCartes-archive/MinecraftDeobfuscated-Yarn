@@ -444,7 +444,7 @@ extends AbstractClientPlayerEntity {
     private boolean wouldCollideAt(BlockPos pos) {
         Box box = this.getBoundingBox();
         Box box2 = new Box(pos.getX(), box.minY, pos.getZ(), (double)pos.getX() + 1.0, box.maxY, (double)pos.getZ() + 1.0).contract(1.0E-7);
-        return this.world.method_39454(this, box2);
+        return this.world.canCollide(this, box2);
     }
 
     @Override

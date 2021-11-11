@@ -14,14 +14,12 @@ public class NoiseParametersKeys {
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> VEGETATION = NoiseParametersKeys.register("vegetation");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CONTINENTALNESS = NoiseParametersKeys.register("continentalness");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> EROSION = NoiseParametersKeys.register("erosion");
-    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> RIDGE = NoiseParametersKeys.register("ridge");
-    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> OFFSET = NoiseParametersKeys.register("offset");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> TEMPERATURE_LARGE = NoiseParametersKeys.register("temperature_large");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> VEGETATION_LARGE = NoiseParametersKeys.register("vegetation_large");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CONTINENTALNESS_LARGE = NoiseParametersKeys.register("continentalness_large");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> EROSION_LARGE = NoiseParametersKeys.register("erosion_large");
-    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> RIDGE_LARGE = NoiseParametersKeys.register("ridge_large");
-    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> OFFSET_LARGE = NoiseParametersKeys.register("offset_large");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> RIDGE = NoiseParametersKeys.register("ridge");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> OFFSET = NoiseParametersKeys.register("offset");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> AQUIFER_BARRIER = NoiseParametersKeys.register("aquifer_barrier");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> AQUIFER_FLUID_LEVEL_FLOODEDNESS = NoiseParametersKeys.register("aquifer_fluid_level_floodedness");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> AQUIFER_LAVA = NoiseParametersKeys.register("aquifer_lava");
@@ -52,6 +50,7 @@ public class NoiseParametersKeys {
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> NOODLE_RIDGE_B = NoiseParametersKeys.register("noodle_ridge_b");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> JAGGED = NoiseParametersKeys.register("jagged");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SURFACE = NoiseParametersKeys.register("surface");
+    public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> SURFACE_SECONDARY = NoiseParametersKeys.register("surface_secondary");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> CLAY_BANDS_OFFSET = NoiseParametersKeys.register("clay_bands_offset");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_PILLAR = NoiseParametersKeys.register("badlands_pillar");
     public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> BADLANDS_PILLAR_ROOF = NoiseParametersKeys.register("badlands_pillar_roof");

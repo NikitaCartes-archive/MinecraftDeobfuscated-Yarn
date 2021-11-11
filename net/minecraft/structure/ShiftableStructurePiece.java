@@ -3,8 +3,8 @@
  */
 package net.minecraft.structure;
 
-import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.math.BlockBox;
@@ -37,7 +37,7 @@ extends StructurePiece {
     }
 
     @Override
-    protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+    protected void writeNbt(StructureContext context, NbtCompound nbt) {
         nbt.putInt("Width", this.width);
         nbt.putInt("Height", this.height);
         nbt.putInt("Depth", this.depth);

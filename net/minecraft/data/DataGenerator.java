@@ -52,7 +52,7 @@ public class DataGenerator {
         dataCache.write();
     }
 
-    public void install(DataProvider provider) {
+    public void addProvider(DataProvider provider) {
         this.providers.add(provider);
     }
 

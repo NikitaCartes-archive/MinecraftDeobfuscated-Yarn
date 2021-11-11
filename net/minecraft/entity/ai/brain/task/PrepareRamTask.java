@@ -77,7 +77,7 @@ extends Task<E> {
     @Override
     protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
         Brain<?> brain = pathAwareEntity.getBrain();
-        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).flatMap(arg -> arg.method_38975(mob -> this.targetPredicate.test(pathAwareEntity, (LivingEntity)mob))).ifPresent(mob -> this.findRam(pathAwareEntity, (LivingEntity)mob));
+        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).flatMap(livingTargetCache -> livingTargetCache.findFirst(mob -> this.targetPredicate.test(pathAwareEntity, (LivingEntity)mob))).ifPresent(mob -> this.findRam(pathAwareEntity, (LivingEntity)mob));
     }
 
     @Override

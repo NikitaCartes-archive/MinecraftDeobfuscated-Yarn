@@ -19,6 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.border.WorldBorder;
 
 public class DragonEggBlock
 extends FallingBlock {
@@ -45,9 +46,10 @@ extends FallingBlock {
     }
 
     private void teleport(BlockState state, World world, BlockPos pos) {
+        WorldBorder worldBorder = world.getWorldBorder();
         for (int i = 0; i < 1000; ++i) {
             BlockPos blockPos = pos.add(world.random.nextInt(16) - world.random.nextInt(16), world.random.nextInt(8) - world.random.nextInt(8), world.random.nextInt(16) - world.random.nextInt(16));
-            if (!world.getBlockState(blockPos).isAir()) continue;
+            if (!world.getBlockState(blockPos).isAir() || !worldBorder.contains(blockPos)) continue;
             if (world.isClient) {
                 for (int j = 0; j < 128; ++j) {
                     double d = world.random.nextDouble();

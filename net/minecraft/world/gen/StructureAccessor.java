@@ -36,14 +36,18 @@ public class StructureAccessor {
         return new StructureAccessor(region, this.options);
     }
 
-    public List<? extends StructureStart<?>> getStructureStarts(ChunkSectionPos chunkSectionPos, StructureFeature<?> structureFeature) {
-        LongSet longSet = this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(structureFeature);
+    /**
+     * {@return a list of structure starts for this chunk} The structure starts
+     * are computed from the structure references of the given section's chunk.
+     */
+    public List<? extends StructureStart<?>> getStructureStarts(ChunkSectionPos sectionPos, StructureFeature<?> feature) {
+        LongSet longSet = this.world.getChunk(sectionPos.getSectionX(), sectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(feature);
         ImmutableList.Builder builder = ImmutableList.builder();
         LongIterator longIterator = longSet.iterator();
         while (longIterator.hasNext()) {
             long l = (Long)longIterator.next();
-            ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(new ChunkPos(l), this.world.getBottomSectionCoord());
-            StructureStart<?> structureStart = this.getStructureStart(chunkSectionPos2, structureFeature, this.world.getChunk(chunkSectionPos2.getSectionX(), chunkSectionPos2.getSectionZ(), ChunkStatus.STRUCTURE_STARTS));
+            ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(new ChunkPos(l), this.world.getBottomSectionCoord());
+            StructureStart<?> structureStart = this.getStructureStart(chunkSectionPos, feature, this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_STARTS));
             if (structureStart == null || !structureStart.hasChildren()) continue;
             builder.add(structureStart);
         }
@@ -67,18 +71,24 @@ public class StructureAccessor {
         return this.options.shouldGenerateStructures();
     }
 
-    public StructureStart<?> getStructureAt(BlockPos pos, StructureFeature<?> structureFeature) {
-        for (StructureStart<?> structureStart : this.getStructureStarts(ChunkSectionPos.from(pos), structureFeature)) {
-            if (!structureStart.setBoundingBoxFromChildren().contains(pos)) continue;
+    public StructureStart<?> getStructureAt(BlockPos pos, StructureFeature<?> structure) {
+        for (StructureStart<?> structureStart : this.getStructureStarts(ChunkSectionPos.from(pos), structure)) {
+            if (!structureStart.getBoundingBox().contains(pos)) continue;
             return structureStart;
         }
         return StructureStart.DEFAULT;
     }
 
-    public StructureStart<?> method_38854(BlockPos blockPos, StructureFeature<?> structureFeature) {
-        for (StructureStart<?> structureStart : this.getStructureStarts(ChunkSectionPos.from(blockPos), structureFeature)) {
+    /**
+     * {@return a structure that contains the given {@code pos}} Compared to
+     * {@link #getStructureAt}, this does not return a structure if the given
+     * position is in the expanded bounding box of the structure but not in any
+     * child piece of it.
+     */
+    public StructureStart<?> getStructureContaining(BlockPos pos, StructureFeature<?> structure) {
+        for (StructureStart<?> structureStart : this.getStructureStarts(ChunkSectionPos.from(pos), structure)) {
             for (StructurePiece structurePiece : structureStart.getChildren()) {
-                if (!structurePiece.getBoundingBox().contains(blockPos)) continue;
+                if (!structurePiece.getBoundingBox().contains(pos)) continue;
                 return structureStart;
             }
         }

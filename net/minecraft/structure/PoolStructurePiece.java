@@ -8,12 +8,12 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.structure.JigsawJunction;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -49,12 +49,12 @@ extends StructurePiece {
         this.rotation = rotation;
     }
 
-    public PoolStructurePiece(class_6625 arg, NbtCompound nbt) {
+    public PoolStructurePiece(StructureContext structureContext, NbtCompound nbt) {
         super(StructurePieceType.JIGSAW, nbt);
-        this.structureManager = arg.structureManager();
+        this.structureManager = structureContext.structureManager();
         this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
         this.groundLevelDelta = nbt.getInt("ground_level_delta");
-        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, arg.resourceManager(), arg.registryAccess());
+        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, structureContext.resourceManager(), structureContext.registryManager());
         this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC.parse(registryOps, nbt.getCompound("pool_element")).resultOrPartial(LOGGER::error).orElseThrow(() -> new IllegalStateException("Invalid pool element found"));
         this.rotation = BlockRotation.valueOf(nbt.getString("rotation"));
         this.boundingBox = this.poolElement.getBoundingBox(this.structureManager, this.pos, this.rotation);
@@ -64,12 +64,12 @@ extends StructurePiece {
     }
 
     @Override
-    protected void writeNbt(class_6625 arg, NbtCompound nbt) {
+    protected void writeNbt(StructureContext context, NbtCompound nbt) {
         nbt.putInt("PosX", this.pos.getX());
         nbt.putInt("PosY", this.pos.getY());
         nbt.putInt("PosZ", this.pos.getZ());
         nbt.putInt("ground_level_delta", this.groundLevelDelta);
-        RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, arg.registryAccess());
+        RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, context.registryManager());
         StructurePoolElement.CODEC.encodeStart(registryReadingOps, this.poolElement).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("pool_element", (NbtElement)nbtElement));
         nbt.putString("rotation", this.rotation.name());
         NbtList nbtList = new NbtList();
@@ -80,8 +80,8 @@ extends StructurePiece {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-        this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        this.generate(world, structureAccessor, chunkGenerator, random, chunkBox, pos, false);
     }
 
     public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, BlockPos pos, boolean keepJigsaws) {

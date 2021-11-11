@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class Int2ObjectBiMap<K>
 implements IndexedIterable<K> {
-    public static final int ABSENT = -1;
+    private static final int ABSENT = -1;
     private static final Object EMPTY = null;
     private static final float LOAD_FACTOR = 0.8f;
     private K[] values;

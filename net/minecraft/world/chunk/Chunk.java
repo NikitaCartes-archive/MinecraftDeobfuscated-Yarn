@@ -40,10 +40,9 @@ import net.minecraft.world.StructureHolder;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.BelowZeroRetrogen;
-import net.minecraft.world.chunk.BlendingData;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.UpgradeData;
@@ -89,17 +88,15 @@ StructureHolder {
     protected final Map<BlockPos, BlockEntity> blockEntities = Maps.newHashMap();
     protected final HeightLimitView heightLimitView;
     protected final ChunkSection[] sectionArray;
-    @Nullable
-    protected final BlendingData blendingData;
 
-    public Chunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView heightLimitView, Registry<Biome> biome, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable BlendingData blendingData) {
+    public Chunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView heightLimitView, Registry<Biome> biome, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable Blender blendingData) {
         this.pos = pos;
         this.upgradeData = upgradeData;
         this.heightLimitView = heightLimitView;
         this.sectionArray = new ChunkSection[heightLimitView.countVerticalSections()];
         this.inhabitedTime = inhabitedTime;
         this.postProcessingLists = new ShortList[heightLimitView.countVerticalSections()];
-        this.blendingData = blendingData;
+        this.blender = blendingData;
         if (sectionArrayInitializer != null) {
             if (this.sectionArray.length == sectionArrayInitializer.length) {
                 System.arraycopy(sectionArrayInitializer, 0, this.sectionArray, 0, this.sectionArray.length);
@@ -298,12 +295,7 @@ StructureHolder {
     }
 
     public boolean usesOldNoise() {
-        return this.blendingData != null && this.blendingData.isOldNoise();
-    }
-
-    @Nullable
-    public BlendingData getBlendingData() {
-        return this.blendingData;
+        return this.blender != null && this.blender.method_39566();
     }
 
     @Nullable
@@ -353,9 +345,9 @@ StructureHolder {
         return this.heightLimitView.getHeight();
     }
 
-    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(int minimumY, int height, int x, int z, int horizontalNoiseResolution, int verticalNoiseResolutuion, NoiseColumnSampler noiseColumnSampler, Supplier<ChunkNoiseSampler.ColumnSampler> supplier, Supplier<ChunkGeneratorSettings> settings, AquiferSampler.FluidLevelSampler fluidLevelSampler, class_6748 arg) {
+    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(NoiseColumnSampler noiseColumnSampler, Supplier<ChunkNoiseSampler.ColumnSampler> supplier, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, class_6748 arg) {
         if (this.chunkNoiseSampler == null) {
-            this.chunkNoiseSampler = new ChunkNoiseSampler(horizontalNoiseResolution, verticalNoiseResolutuion, 16 / horizontalNoiseResolution, height, minimumY, noiseColumnSampler, x, z, supplier.get(), settings, fluidLevelSampler, arg);
+            this.chunkNoiseSampler = ChunkNoiseSampler.method_39543(this, noiseColumnSampler, supplier, chunkGeneratorSettings, fluidLevelSampler, arg);
         }
         return this.chunkNoiseSampler;
     }
@@ -384,14 +376,14 @@ StructureHolder {
         }
     }
 
-    public void method_38257(BiomeSource source, MultiNoiseUtil.MultiNoiseSampler sampler) {
+    public void method_38257(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler) {
         ChunkPos chunkPos = this.getPos();
         int i = BiomeCoords.fromBlock(chunkPos.getStartX());
         int j = BiomeCoords.fromBlock(chunkPos.getStartZ());
         HeightLimitView heightLimitView = this.getHeightLimitView();
         for (int k = heightLimitView.getBottomSectionCoord(); k < heightLimitView.getTopSectionCoord(); ++k) {
             ChunkSection chunkSection = this.getSection(this.sectionCoordToIndex(k));
-            chunkSection.method_38291(source, sampler, i, j);
+            chunkSection.method_38291(biomeSupplier, sampler, i, j);
         }
     }
 

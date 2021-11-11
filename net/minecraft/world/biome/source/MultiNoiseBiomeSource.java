@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.class_6748;
@@ -44,14 +43,14 @@ extends BiomeSource {
      */
     public static final MapCodec<MultiNoiseBiomeSource> CUSTOM_CODEC = RecordCodecBuilder.mapCodec(instance2 -> instance2.group(((MapCodec)RecordCodecBuilder.create(instance -> instance.group(((MapCodec)MultiNoiseUtil.NoiseHypercube.CODEC.fieldOf("parameters")).forGetter(Pair::getFirst), ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of)).listOf().xmap(MultiNoiseUtil.Entries::new, MultiNoiseUtil.Entries::getEntries).fieldOf("biomes")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.biomeEntries)).apply((Applicative<MultiNoiseBiomeSource, ?>)instance2, MultiNoiseBiomeSource::new));
     public static final Codec<MultiNoiseBiomeSource> CODEC = Codec.mapEither(Instance.CODEC, CUSTOM_CODEC).xmap(either -> either.map(Instance::getBiomeSource, Function.identity()), multiNoiseBiomeSource -> multiNoiseBiomeSource.getInstance().map(Either::left).orElseGet(() -> Either.right(multiNoiseBiomeSource))).codec();
-    private final MultiNoiseUtil.Entries<Biome> biomeEntries;
-    private final Optional<Pair<Registry<Biome>, Preset>> instance;
+    private final MultiNoiseUtil.Entries<Supplier<Biome>> biomeEntries;
+    private final Optional<Instance> instance;
 
-    private MultiNoiseBiomeSource(MultiNoiseUtil.Entries<Biome> entries) {
+    private MultiNoiseBiomeSource(MultiNoiseUtil.Entries<Supplier<Biome>> entries) {
         this(entries, Optional.empty());
     }
 
-    MultiNoiseBiomeSource(MultiNoiseUtil.Entries<Biome> biomeEntries, Optional<Pair<Registry<Biome>, Preset>> instance) {
+    MultiNoiseBiomeSource(MultiNoiseUtil.Entries<Supplier<Biome>> biomeEntries, Optional<Instance> instance) {
         super(biomeEntries.getEntries().stream().map(Pair::getSecond));
         this.instance = instance;
         this.biomeEntries = biomeEntries;
@@ -68,21 +67,21 @@ extends BiomeSource {
     }
 
     private Optional<Instance> getInstance() {
-        return this.instance.map(pair -> new Instance((Preset)pair.getSecond(), (Registry)pair.getFirst()));
+        return this.instance;
     }
 
     public boolean matchesInstance(Preset instance) {
-        return this.instance.isPresent() && Objects.equals(this.instance.get().getSecond(), instance);
+        return this.instance.isPresent() && Objects.equals(this.instance.get().preset(), instance);
     }
 
     @Override
-    public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
-        return this.getBiomeAtPoint(noiseSampler.sample(x, y, z));
+    public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noise) {
+        return this.getBiomeAtPoint(noise.sample(x, y, z));
     }
 
     @Debug
     public Biome getBiomeAtPoint(MultiNoiseUtil.NoiseValuePoint point) {
-        return this.biomeEntries.getValue(point, () -> BuiltinBiomes.THE_VOID);
+        return this.biomeEntries.method_39529(point, () -> BuiltinBiomes.THE_VOID).get();
     }
 
     @Override
@@ -109,48 +108,42 @@ extends BiomeSource {
         info.add("Terrain PV: " + decimalFormat.format(d) + " O: " + decimalFormat.format(terrainNoisePoint.offset()) + " F: " + decimalFormat.format(terrainNoisePoint.factor()) + " JA: " + decimalFormat.format(terrainNoisePoint.peaks()));
     }
 
-    static final class Instance {
-        public static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.flatXmap(id -> Optional.ofNullable(Preset.BY_IDENTIFIER.get(id)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + id)), preset -> DataResult.success(preset.id)).fieldOf("preset")).stable().forGetter(Instance::getPreset), RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(Instance::getBiomeRegistry)).apply((Applicative<Instance, ?>)instance, instance.stable(Instance::new)));
-        private final Preset preset;
-        private final Registry<Biome> biomeRegistry;
-
-        Instance(Preset preset, Registry<Biome> biomeRegistry) {
-            this.preset = preset;
-            this.biomeRegistry = biomeRegistry;
-        }
-
-        public Preset getPreset() {
-            return this.preset;
-        }
-
-        public Registry<Biome> getBiomeRegistry() {
-            return this.biomeRegistry;
-        }
+    record Instance(Preset preset, Registry<Biome> biomeRegistry) {
+        public static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.flatXmap(id -> Optional.ofNullable(Preset.BY_IDENTIFIER.get(id)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + id)), preset -> DataResult.success(preset.id)).fieldOf("preset")).stable().forGetter(Instance::preset), RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(Instance::biomeRegistry)).apply((Applicative<Instance, ?>)instance, instance.stable(Instance::new)));
 
         public MultiNoiseBiomeSource getBiomeSource() {
-            return this.preset.getBiomeSource(this.biomeRegistry);
+            return this.preset.method_39531(this, true);
         }
     }
 
     public static class Preset {
         static final Map<Identifier, Preset> BY_IDENTIFIER = Maps.newHashMap();
-        public static final Preset NETHER = new Preset(new Identifier("nether"), (preset, biomeRegistry) -> new MultiNoiseBiomeSource(new MultiNoiseUtil.Entries<Biome>(ImmutableList.of(Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> biomeRegistry.getOrThrow(BiomeKeys.NETHER_WASTES)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> biomeRegistry.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> biomeRegistry.getOrThrow(BiomeKeys.CRIMSON_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.375f), () -> biomeRegistry.getOrThrow(BiomeKeys.WARPED_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.175f), () -> biomeRegistry.getOrThrow(BiomeKeys.BASALT_DELTAS)))), Optional.of(Pair.of(biomeRegistry, preset))));
-        public static final Preset OVERWORLD = new Preset(new Identifier("overworld"), (preset, registry) -> {
+        public static final Preset NETHER = new Preset(new Identifier("nether"), registry -> new MultiNoiseUtil.Entries(ImmutableList.of(Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.NETHER_WASTES)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.CRIMSON_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.375f), () -> registry.getOrThrow(BiomeKeys.WARPED_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.175f), () -> registry.getOrThrow(BiomeKeys.BASALT_DELTAS)))));
+        public static final Preset OVERWORLD = new Preset(new Identifier("overworld"), registry -> {
             ImmutableList.Builder builder = ImmutableList.builder();
             new VanillaBiomeParameters().writeVanillaBiomeParameters(pair -> builder.add(pair.mapSecond(registryKey -> () -> (Biome)registry.getOrThrow(registryKey))));
-            return new MultiNoiseBiomeSource(new MultiNoiseUtil.Entries<Biome>((List<Pair<MultiNoiseUtil.NoiseHypercube, Supplier<Biome>>>)((Object)builder.build())), Optional.of(Pair.of(registry, preset)));
+            return new MultiNoiseUtil.Entries(builder.build());
         });
         final Identifier id;
-        private final BiFunction<Preset, Registry<Biome>, MultiNoiseBiomeSource> biomeSourceFunction;
+        private final Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> biomeSourceFunction;
 
-        public Preset(Identifier id, BiFunction<Preset, Registry<Biome>, MultiNoiseBiomeSource> biomeSourceFunction) {
+        public Preset(Identifier id, Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> function) {
             this.id = id;
-            this.biomeSourceFunction = biomeSourceFunction;
+            this.biomeSourceFunction = function;
             BY_IDENTIFIER.put(id, this);
         }
 
+        MultiNoiseBiomeSource method_39531(Instance instance, boolean bl) {
+            MultiNoiseUtil.Entries<Supplier<Biome>> entries = this.biomeSourceFunction.apply(instance.biomeRegistry());
+            return new MultiNoiseBiomeSource(entries, bl ? Optional.of(instance) : Optional.empty());
+        }
+
+        public MultiNoiseBiomeSource method_39532(Registry<Biome> registry, boolean bl) {
+            return this.method_39531(new Instance(this, registry), bl);
+        }
+
         public MultiNoiseBiomeSource getBiomeSource(Registry<Biome> biomeRegistry) {
-            return this.biomeSourceFunction.apply(this, biomeRegistry);
+            return this.method_39532(biomeRegistry, true);
         }
     }
 }

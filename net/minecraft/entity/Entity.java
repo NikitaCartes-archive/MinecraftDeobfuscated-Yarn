@@ -2348,13 +2348,9 @@ CommandOutput {
             return null;
         }
         WorldBorder worldBorder = destination.getWorldBorder();
-        double d = Math.max(-2.9999872E7, worldBorder.getBoundWest() + 16.0);
-        double e = Math.max(-2.9999872E7, worldBorder.getBoundNorth() + 16.0);
-        double f = Math.min(2.9999872E7, worldBorder.getBoundEast() - 16.0);
-        double g = Math.min(2.9999872E7, worldBorder.getBoundSouth() - 16.0);
-        double h = DimensionType.getCoordinateScaleFactor(this.world.getDimension(), destination.getDimension());
-        BlockPos blockPos2 = new BlockPos(MathHelper.clamp(this.getX() * h, d, f), this.getY(), MathHelper.clamp(this.getZ() * h, e, g));
-        return this.getPortalRect(destination, blockPos2, bl3).map(rect -> {
+        double d = DimensionType.getCoordinateScaleFactor(this.world.getDimension(), destination.getDimension());
+        BlockPos blockPos2 = worldBorder.clamp(this.getX() * d, this.getY(), this.getZ() * d);
+        return this.getPortalRect(destination, blockPos2, bl3, worldBorder).map(rect -> {
             Vec3d vec3d;
             Direction.Axis axis;
             BlockState blockState = this.world.getBlockState(this.lastNetherPortalPosition);
@@ -2374,8 +2370,8 @@ CommandOutput {
         return AreaHelper.entityPosInPortal(portalRect, portalAxis, this.getPos(), this.getDimensions(this.getPose()));
     }
 
-    protected Optional<BlockLocating.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether) {
-        return destWorld.getPortalForcer().getPortalRect(destPos, destIsNether);
+    protected Optional<BlockLocating.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether, WorldBorder worldBorder) {
+        return destWorld.getPortalForcer().getPortalRect(destPos, destIsNether, worldBorder);
     }
 
     public boolean canUsePortals() {
@@ -3106,7 +3102,7 @@ CommandOutput {
     }
 
     @Override
-    public final void setRemoved(RemovalReason reason) {
+    public void setRemoved(RemovalReason reason) {
         if (this.removalReason == null) {
             this.removalReason = reason;
         }

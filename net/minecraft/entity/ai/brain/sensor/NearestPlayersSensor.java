@@ -27,12 +27,12 @@ extends Sensor<LivingEntity> {
 
     @Override
     protected void sense(ServerWorld world, LivingEntity entity) {
-        List list = world.getPlayers().stream().filter(EntityPredicates.EXCEPT_SPECTATOR).filter(serverPlayerEntity -> entity.isInRange((Entity)serverPlayerEntity, 16.0)).sorted(Comparator.comparingDouble(entity::squaredDistanceTo)).collect(Collectors.toList());
+        List list = world.getPlayers().stream().filter(EntityPredicates.EXCEPT_SPECTATOR).filter(player -> entity.isInRange((Entity)player, 16.0)).sorted(Comparator.comparingDouble(entity::squaredDistanceTo)).collect(Collectors.toList());
         Brain<?> brain = entity.getBrain();
         brain.remember(MemoryModuleType.NEAREST_PLAYERS, list);
-        List list2 = list.stream().filter(playerEntity -> NearestPlayersSensor.testTargetPredicate(entity, playerEntity)).collect(Collectors.toList());
+        List list2 = list.stream().filter(player -> NearestPlayersSensor.testTargetPredicate(entity, player)).collect(Collectors.toList());
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list2.isEmpty() ? null : (PlayerEntity)list2.get(0));
-        Optional<PlayerEntity> optional = list2.stream().filter(playerEntity -> NearestPlayersSensor.testAttackableTargetPredicate(entity, playerEntity)).findFirst();
+        Optional<PlayerEntity> optional = list2.stream().filter(player -> NearestPlayersSensor.testAttackableTargetPredicate(entity, player)).findFirst();
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, optional);
     }
 }

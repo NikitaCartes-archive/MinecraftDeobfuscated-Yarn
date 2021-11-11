@@ -826,7 +826,7 @@ extends Entity {
 
     public static boolean containsOnlyAmbientEffects(Collection<StatusEffectInstance> effects) {
         for (StatusEffectInstance statusEffectInstance : effects) {
-            if (statusEffectInstance.isAmbient()) continue;
+            if (!statusEffectInstance.shouldShowParticles() || statusEffectInstance.isAmbient()) continue;
             return false;
         }
         return true;

@@ -33,7 +33,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
     public static final StructureProcessorType<BlackstoneReplacementStructureProcessor> BLACKSTONE_REPLACE = StructureProcessorType.register("blackstone_replace", BlackstoneReplacementStructureProcessor.CODEC);
     public static final StructureProcessorType<LavaSubmergedBlockStructureProcessor> LAVA_SUBMERGED_BLOCK = StructureProcessorType.register("lava_submerged_block", LavaSubmergedBlockStructureProcessor.CODEC);
     public static final StructureProcessorType<ProtectedBlocksStructureProcessor> PROTECTED_BLOCKS = StructureProcessorType.register("protected_blocks", ProtectedBlocksStructureProcessor.CODEC);
-    public static final Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
+    public static final Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR.method_39673().dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
     public static final Codec<StructureProcessorList> field_26663 = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
     public static final Codec<StructureProcessorList> field_25876 = Codec.either(((MapCodec)field_26663.fieldOf("processors")).codec(), field_26663).xmap(either -> either.map(structureProcessorList -> structureProcessorList, structureProcessorList -> structureProcessorList), Either::left);
     public static final Codec<Supplier<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_PROCESSOR_LIST_KEY, field_25876);

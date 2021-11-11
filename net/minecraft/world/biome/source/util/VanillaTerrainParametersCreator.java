@@ -7,8 +7,8 @@ import net.minecraft.util.math.Spline;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 
 public class VanillaTerrainParametersCreator {
-    public static VanillaTerrainParameters createSurfaceParameters() {
-        return VanillaTerrainParameters.method_39457();
+    public static VanillaTerrainParameters createSurfaceParameters(boolean bl) {
+        return VanillaTerrainParameters.method_39457(bl);
     }
 
     public static VanillaTerrainParameters createUndergroundParameters() {

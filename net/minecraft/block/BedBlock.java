@@ -188,7 +188,8 @@ implements BlockEntityProvider {
         Direction direction = ctx.getPlayerFacing();
         BlockPos blockPos = ctx.getBlockPos();
         BlockPos blockPos2 = blockPos.offset(direction);
-        if (ctx.getWorld().getBlockState(blockPos2).canReplace(ctx)) {
+        World world = ctx.getWorld();
+        if (world.getBlockState(blockPos2).canReplace(ctx) && world.getWorldBorder().contains(blockPos2)) {
             return (BlockState)this.getDefaultState().with(FACING, direction);
         }
         return null;

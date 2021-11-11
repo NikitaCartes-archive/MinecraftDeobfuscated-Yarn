@@ -18,14 +18,14 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BiomeColorCache {
-    private static final int field_32164 = 256;
+    private static final int MAX_ENTRY_SIZE = 256;
     private final ThreadLocal<Last> last = ThreadLocal.withInitial(Last::new);
-    private final Long2ObjectLinkedOpenHashMap<class_6598> colors = new Long2ObjectLinkedOpenHashMap(256, 0.25f);
+    private final Long2ObjectLinkedOpenHashMap<Colors> colors = new Long2ObjectLinkedOpenHashMap(256, 0.25f);
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final ToIntFunction<BlockPos> field_34795;
+    private final ToIntFunction<BlockPos> colorFactory;
 
-    public BiomeColorCache(ToIntFunction<BlockPos> toIntFunction) {
-        this.field_34795 = toIntFunction;
+    public BiomeColorCache(ToIntFunction<BlockPos> colorFactory) {
+        this.colorFactory = colorFactory;
     }
 
     public int getBiomeColor(BlockPos pos) {
@@ -38,7 +38,7 @@ public class BiomeColorCache {
             last.z = j;
             last.colors = this.getColorArray(i, j);
         }
-        int[] is = last.colors.method_38528(pos.getY());
+        int[] is = last.colors.get(pos.getY());
         int k = pos.getX() & 0xF;
         int l = pos.getZ() & 0xF;
         int m = l << 4 | k;
@@ -46,7 +46,7 @@ public class BiomeColorCache {
         if (n != -1) {
             return n;
         }
-        is[m] = o = this.field_34795.applyAsInt(pos);
+        is[m] = o = this.colorFactory.applyAsInt(pos);
         return o;
     }
 
@@ -79,33 +79,33 @@ public class BiomeColorCache {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    private class_6598 getColorArray(int chunkX, int chunkZ) {
-        class_6598 lv;
+    private Colors getColorArray(int chunkX, int chunkZ) {
+        Colors colors;
         long l = ChunkPos.toLong(chunkX, chunkZ);
         this.lock.readLock().lock();
         try {
-            lv = this.colors.get(l);
-            if (lv != null) {
-                class_6598 class_65982 = lv;
-                return class_65982;
+            colors = this.colors.get(l);
+            if (colors != null) {
+                Colors colors2 = colors;
+                return colors2;
             }
         } finally {
             this.lock.readLock().unlock();
         }
         this.lock.writeLock().lock();
         try {
-            lv = this.colors.get(l);
-            if (lv != null) {
-                class_6598 class_65983 = lv;
-                return class_65983;
+            colors = this.colors.get(l);
+            if (colors != null) {
+                Colors colors3 = colors;
+                return colors3;
             }
-            class_6598 lv2 = new class_6598();
+            Colors colors2 = new Colors();
             if (this.colors.size() >= 256) {
                 this.colors.removeFirst();
             }
-            this.colors.put(l, lv2);
-            class_6598 class_65984 = lv2;
-            return class_65984;
+            this.colors.put(l, colors2);
+            Colors colors4 = colors2;
+            return colors4;
         } finally {
             this.lock.writeLock().unlock();
         }
@@ -116,46 +116,46 @@ public class BiomeColorCache {
         public int x = Integer.MIN_VALUE;
         public int z = Integer.MIN_VALUE;
         @Nullable
-        class_6598 colors;
+        Colors colors;
 
         private Last() {
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_6598 {
-        private final Int2ObjectArrayMap<int[]> field_34796 = new Int2ObjectArrayMap(16);
-        private final ReentrantReadWriteLock field_34797 = new ReentrantReadWriteLock();
-        private static final int field_34798 = MathHelper.square(16);
+    static class Colors {
+        private final Int2ObjectArrayMap<int[]> colors = new Int2ObjectArrayMap(16);
+        private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+        private static final int XZ_COLORS_SIZE = MathHelper.square(16);
 
-        class_6598() {
+        Colors() {
         }
 
         /*
          * WARNING - Removed try catching itself - possible behaviour change.
          */
-        public int[] method_38528(int i2) {
-            this.field_34797.readLock().lock();
+        public int[] get(int y2) {
+            this.lock.readLock().lock();
             try {
-                int[] is = this.field_34796.get(i2);
+                int[] is = this.colors.get(y2);
                 if (is != null) {
                     int[] nArray = is;
                     return nArray;
                 }
             } finally {
-                this.field_34797.readLock().unlock();
+                this.lock.readLock().unlock();
             }
-            this.field_34797.writeLock().lock();
+            this.lock.writeLock().lock();
             try {
-                int[] nArray = this.field_34796.computeIfAbsent(i2, i -> this.method_38527());
+                int[] nArray = this.colors.computeIfAbsent(y2, y -> this.createDefault());
                 return nArray;
             } finally {
-                this.field_34797.writeLock().unlock();
+                this.lock.writeLock().unlock();
             }
         }
 
-        private int[] method_38527() {
-            int[] is = new int[field_34798];
+        private int[] createDefault() {
+            int[] is = new int[XZ_COLORS_SIZE];
             Arrays.fill(is, -1);
             return is;
         }

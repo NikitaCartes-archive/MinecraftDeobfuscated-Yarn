@@ -103,11 +103,11 @@ public class FireworksSparkParticle {
         private float field_3799;
         private boolean field_3802;
 
-        Explosion(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, SpriteProvider spriteProvider) {
-            super(clientWorld, d, e, f, spriteProvider, 0.1f);
-            this.velocityX = g;
-            this.velocityY = h;
-            this.velocityZ = i;
+        Explosion(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, SpriteProvider spriteProvider) {
+            super(world, x, y, z, spriteProvider, 0.1f);
+            this.velocityX = velocityX;
+            this.velocityY = velocityY;
+            this.velocityZ = velocityZ;
             this.particleManager = particleManager;
             this.scale *= 0.75f;
             this.maxAge = 48 + this.random.nextInt(12);

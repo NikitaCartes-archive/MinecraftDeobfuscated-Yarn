@@ -7,18 +7,19 @@ import com.mojang.datafixers.Products;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 
 public abstract class OffsetPredicate
 implements BlockPredicate {
-    protected final BlockPos offset;
+    protected final Vec3i offset;
 
-    protected static <P extends OffsetPredicate> Products.P1<RecordCodecBuilder.Mu<P>, BlockPos> registerOffsetField(RecordCodecBuilder.Instance<P> instance) {
-        return instance.group(BlockPos.CODEC.optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(predicate -> predicate.offset));
+    protected static <P extends OffsetPredicate> Products.P1<RecordCodecBuilder.Mu<P>, Vec3i> registerOffsetField(RecordCodecBuilder.Instance<P> instance) {
+        return instance.group(Vec3i.createOffsetCodec(16).optionalFieldOf("offset", Vec3i.ZERO).forGetter(predicate -> predicate.offset));
     }
 
-    protected OffsetPredicate(BlockPos offset) {
+    protected OffsetPredicate(Vec3i offset) {
         this.offset = offset;
     }
 

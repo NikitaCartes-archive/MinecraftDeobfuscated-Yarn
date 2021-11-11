@@ -13,9 +13,9 @@ import java.util.Set;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
-import net.minecraft.class_6670;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.boss.WitherEntity;
@@ -52,8 +52,8 @@ extends Sensor<LivingEntity> {
         int i = 0;
         ArrayList<AbstractPiglinEntity> list = Lists.newArrayList();
         ArrayList<AbstractPiglinEntity> list2 = Lists.newArrayList();
-        class_6670 lv = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(class_6670.method_38971());
-        for (LivingEntity livingEntity2 : lv.method_38978(livingEntity -> true)) {
+        LivingTargetCache livingTargetCache = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
+        for (LivingEntity livingEntity2 : livingTargetCache.iterate(livingEntity -> true)) {
             LivingEntity livingEntity3 = livingEntity2;
             if (livingEntity3 instanceof HoglinEntity) {
                 HoglinEntity hoglinEntity = (HoglinEntity)livingEntity3;

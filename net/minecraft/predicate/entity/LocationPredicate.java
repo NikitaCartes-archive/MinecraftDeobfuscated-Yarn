@@ -95,7 +95,7 @@ public class LocationPredicate {
         if (!(this.biome == null || bl && this.biome == optional.get())) {
             return false;
         }
-        if (!(this.feature == null || bl && world.getStructureAccessor().method_38854(blockPos, this.feature).hasChildren())) {
+        if (!(this.feature == null || bl && world.getStructureAccessor().getStructureContaining(blockPos, this.feature).hasChildren())) {
             return false;
         }
         if (!(this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos))) {

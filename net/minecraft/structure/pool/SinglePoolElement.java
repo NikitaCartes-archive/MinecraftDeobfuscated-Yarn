@@ -131,7 +131,7 @@ extends StructurePoolElement {
         structurePlacementData.setUpdateNeighbors(true);
         structurePlacementData.setIgnoreEntities(false);
         structurePlacementData.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
-        structurePlacementData.method_27264(true);
+        structurePlacementData.setInitializeMobs(true);
         if (!keepJigsaws) {
             structurePlacementData.addProcessor(JigsawReplacementStructureProcessor.INSTANCE);
         }

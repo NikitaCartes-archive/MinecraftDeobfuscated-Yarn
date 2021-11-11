@@ -38,7 +38,7 @@ extends Task<E> {
     }
 
     private boolean isAttackTargetVisible(E entity) {
-        return ((LivingEntity)entity).getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().method_38972(this.getAttackTarget(entity));
+        return ((LivingEntity)entity).getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().contains(this.getAttackTarget(entity));
     }
 
     private boolean isNearAttackTarget(E entity) {

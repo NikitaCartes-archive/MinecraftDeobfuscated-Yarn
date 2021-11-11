@@ -39,7 +39,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.BlendingData;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
@@ -49,6 +48,7 @@ import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.SimpleGameEventDispatcher;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -96,7 +96,7 @@ extends Chunk {
         this(world, pos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<Block>(), new ChunkTickScheduler<Fluid>(), 0L, null, null, null);
     }
 
-    public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, ChunkTickScheduler<Block> blockTickScheduler, ChunkTickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable Consumer<WorldChunk> loadToWorldConsumer, @Nullable BlendingData blendingData) {
+    public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, ChunkTickScheduler<Block> blockTickScheduler, ChunkTickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable Consumer<WorldChunk> loadToWorldConsumer, @Nullable Blender blendingData) {
         super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), inhabitedTime, sectionArrayInitializer, blendingData);
         this.world = world;
         this.gameEventDispatchers = new Int2ObjectOpenHashMap<GameEventDispatcher>();
@@ -110,7 +110,7 @@ extends Chunk {
     }
 
     public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
-        this(world, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.getBlockProtoTickScheduler(), protoChunk.getFluidProtoTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), loadToWorldConsumer, protoChunk.getBlendingData());
+        this(world, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.getBlockProtoTickScheduler(), protoChunk.getFluidProtoTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), loadToWorldConsumer, protoChunk.getBlender());
         for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
             this.setBlockEntity(blockEntity);
         }

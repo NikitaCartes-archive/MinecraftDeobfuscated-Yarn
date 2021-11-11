@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -43,6 +44,7 @@ import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -60,15 +62,17 @@ public class MoreOptionsDialog
 implements Drawable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Text CUSTOM_TEXT = new TranslatableText("generator.custom");
+    private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.amplified.info");
     private static final Text MAP_FEATURES_INFO_TEXT = new TranslatableText("selectWorld.mapFeatures.info");
     private static final Text SELECT_SETTINGS_FILE_TEXT = new TranslatableText("selectWorld.import_worldgen_settings.select_file");
+    private MultilineText amplifiedInfoText = MultilineText.EMPTY;
     private TextRenderer textRenderer;
     private int parentWidth;
     private TextFieldWidget seedTextField;
     private CyclingButtonWidget<Boolean> mapFeaturesButton;
     private CyclingButtonWidget<Boolean> bonusItemsButton;
     private CyclingButtonWidget<GeneratorType> mapTypeButton;
-    private ButtonWidget field_28001;
+    private ButtonWidget unchangeableMapTypeButton;
     private ButtonWidget customizeTypeButton;
     private ButtonWidget importSettingsButton;
     private DynamicRegistryManager.Impl registryManager;
@@ -98,16 +102,21 @@ implements Drawable {
             this.generatorOptions = this.generatorOptions.toggleGenerateStructures();
         }));
         this.mapFeaturesButton.visible = false;
-        this.mapTypeButton = parent.addDrawableChild(CyclingButtonWidget.builder(GeneratorType::getDisplayName).values(GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES).build(j, 100, 150, 20, new TranslatableText("selectWorld.mapType"), (button, generatorType) -> {
+        this.mapTypeButton = parent.addDrawableChild(CyclingButtonWidget.builder(GeneratorType::getDisplayName).values(GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES).narration(button -> {
+            if (button.getValue() == GeneratorType.AMPLIFIED) {
+                return ScreenTexts.joinSentences(button.getGenericNarrationMessage(), AMPLIFIED_INFO_TEXT);
+            }
+            return button.getGenericNarrationMessage();
+        }).build(j, 100, 150, 20, new TranslatableText("selectWorld.mapType"), (button, generatorType) -> {
             this.generatorType = Optional.of(generatorType);
             this.generatorOptions = generatorType.createDefaultOptions(this.registryManager, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest());
             parent.setMoreOptionsOpen();
         }));
         this.generatorType.ifPresent(this.mapTypeButton::setValue);
         this.mapTypeButton.visible = false;
-        this.field_28001 = parent.addDrawableChild(new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(new TranslatableText("selectWorld.mapType"), CUSTOM_TEXT), button -> {}));
-        this.field_28001.active = false;
-        this.field_28001.visible = false;
+        this.unchangeableMapTypeButton = parent.addDrawableChild(new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(new TranslatableText("selectWorld.mapType"), CUSTOM_TEXT), button -> {}));
+        this.unchangeableMapTypeButton.active = false;
+        this.unchangeableMapTypeButton.visible = false;
         this.customizeTypeButton = parent.addDrawableChild(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), button -> {
             GeneratorType.ScreenProvider screenProvider = GeneratorType.SCREEN_PROVIDERS.get(this.generatorType);
             if (screenProvider != null) {
@@ -175,6 +184,7 @@ implements Drawable {
             });
         }));
         this.importSettingsButton.visible = false;
+        this.amplifiedInfoText = MultilineText.create(textRenderer, (StringVisitable)AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
     }
 
     private void importOptions(DynamicRegistryManager.Impl registryManager, GeneratorOptions generatorOptions) {
@@ -196,6 +206,9 @@ implements Drawable {
             this.textRenderer.drawWithShadow(matrices, MAP_FEATURES_INFO_TEXT, (float)(this.parentWidth / 2 - 150), 122.0f, -6250336);
         }
         this.seedTextField.render(matrices, mouseX, mouseY, delta);
+        if (this.generatorType.equals(Optional.of(GeneratorType.AMPLIFIED))) {
+            this.amplifiedInfoText.drawWithShadow(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, this.textRenderer.fontHeight, 0xA0A0A0);
+        }
     }
 
     protected void setGeneratorOptions(GeneratorOptions generatorOptions) {
@@ -252,10 +265,10 @@ implements Drawable {
     private void setMapTypeButtonVisible(boolean visible) {
         if (this.generatorType.isPresent()) {
             this.mapTypeButton.visible = visible;
-            this.field_28001.visible = false;
+            this.unchangeableMapTypeButton.visible = false;
         } else {
             this.mapTypeButton.visible = false;
-            this.field_28001.visible = visible;
+            this.unchangeableMapTypeButton.visible = visible;
         }
     }
 

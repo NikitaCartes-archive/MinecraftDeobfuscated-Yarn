@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
@@ -180,41 +179,41 @@ public class MultiNoiseUtil {
     }
 
     public static class Entries<T> {
-        private final List<Pair<NoiseHypercube, Supplier<T>>> entries;
+        private final List<Pair<NoiseHypercube, T>> entries;
         private final SearchTree<T> tree;
 
-        public Entries(List<Pair<NoiseHypercube, Supplier<T>>> entries) {
+        public Entries(List<Pair<NoiseHypercube, T>> entries) {
             this.entries = entries;
             this.tree = SearchTree.create(entries);
         }
 
-        public List<Pair<NoiseHypercube, Supplier<T>>> getEntries() {
+        public List<Pair<NoiseHypercube, T>> getEntries() {
             return this.entries;
         }
 
-        public T getValue(NoiseValuePoint point, Supplier<T> defaultValue) {
-            return this.getValue(point);
+        public T method_39529(NoiseValuePoint noiseValuePoint, T object) {
+            return this.method_39527(noiseValuePoint);
         }
 
         @VisibleForTesting
-        public T getValueSimple(NoiseValuePoint point, Supplier<T> defaultValue) {
+        public T method_39530(NoiseValuePoint noiseValuePoint, T object) {
             long l = Long.MAX_VALUE;
-            Supplier<T> supplier = defaultValue;
-            for (Pair<NoiseHypercube, Supplier<T>> pair : this.getEntries()) {
-                long m = pair.getFirst().getSquaredDistance(point);
+            T object2 = object;
+            for (Pair<NoiseHypercube, T> pair : this.getEntries()) {
+                long m = pair.getFirst().getSquaredDistance(noiseValuePoint);
                 if (m >= l) continue;
                 l = m;
-                supplier = pair.getSecond();
+                object2 = pair.getSecond();
             }
-            return supplier.get();
+            return object2;
         }
 
-        public T getValue(NoiseValuePoint point) {
-            return this.getValue(point, SearchTree.TreeNode::getSquaredDistance);
+        public T method_39527(NoiseValuePoint noiseValuePoint) {
+            return this.method_39528(noiseValuePoint, SearchTree.TreeNode::getSquaredDistance);
         }
 
-        protected T getValue(NoiseValuePoint point, NodeDistanceFunction<T> distanceFunction) {
-            return this.tree.get(point, distanceFunction);
+        protected T method_39528(NoiseValuePoint noiseValuePoint, NodeDistanceFunction<T> nodeDistanceFunction) {
+            return this.tree.get(noiseValuePoint, nodeDistanceFunction);
         }
     }
 
@@ -227,15 +226,15 @@ public class MultiNoiseUtil {
             this.firstNode = firstNode;
         }
 
-        public static <T> SearchTree<T> create(List<Pair<NoiseHypercube, Supplier<T>>> entries) {
+        public static <T> SearchTree<T> create(List<Pair<NoiseHypercube, T>> entries) {
             if (entries.isEmpty()) {
-                throw new IllegalArgumentException("Need at least one biome to build the search tree.");
+                throw new IllegalArgumentException("Need at least one value to build the search tree.");
             }
             int i = entries.get(0).getFirst().getParameters().size();
             if (i != 7) {
                 throw new IllegalStateException("Expecting parameter space to be 7, got " + i);
             }
-            List list = entries.stream().map(entry -> new TreeLeafNode((NoiseHypercube)entry.getFirst(), (Supplier)entry.getSecond())).collect(Collectors.toCollection(ArrayList::new));
+            List list = entries.stream().map(entry -> new TreeLeafNode((NoiseHypercube)entry.getFirst(), entry.getSecond())).collect(Collectors.toCollection(ArrayList::new));
             return new SearchTree<T>(SearchTree.createNode(i, list));
         }
 
@@ -337,7 +336,7 @@ public class MultiNoiseUtil {
             long[] ls = point.getNoiseValueList();
             TreeLeafNode<T> treeLeafNode = this.firstNode.getResultingNode(ls, this.previousResultNode.get(), distanceFunction);
             this.previousResultNode.set(treeLeafNode);
-            return treeLeafNode.value.get();
+            return treeLeafNode.value;
         }
 
         static abstract class TreeNode<T> {
@@ -395,11 +394,11 @@ public class MultiNoiseUtil {
 
         static final class TreeLeafNode<T>
         extends TreeNode<T> {
-            final Supplier<T> value;
+            final T value;
 
-            TreeLeafNode(NoiseHypercube parameters, Supplier<T> value) {
+            TreeLeafNode(NoiseHypercube parameters, T object) {
                 super(parameters.getParameters());
-                this.value = value;
+                this.value = object;
             }
 
             @Override

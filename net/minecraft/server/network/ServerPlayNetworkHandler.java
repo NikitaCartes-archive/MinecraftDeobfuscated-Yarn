@@ -1032,7 +1032,7 @@ ServerPlayPacketListener {
     public void onDisconnected(Text reason) {
         LOGGER.info("{} lost connection: {}", (Object)this.player.getName().getString(), (Object)reason.getString());
         this.server.forcePlayerSampleUpdate();
-        this.server.getPlayerManager().broadcastChatMessage(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
+        this.server.getPlayerManager().broadcast(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
         this.player.onDisconnect();
         this.server.getPlayerManager().remove(this.player);
         this.player.getTextStream().onDisconnect();
@@ -1185,6 +1185,9 @@ ServerPlayPacketListener {
         this.player.updateLastActionTime();
         this.player.setSneaking(packet.isPlayerSneaking());
         if (entity != null) {
+            if (!serverWorld.getWorldBorder().contains(entity.getBlockPos())) {
+                return;
+            }
             double d = 36.0;
             if (this.player.squaredDistanceTo(entity) < 36.0) {
                 packet.handle(new PlayerInteractEntityC2SPacket.Handler(){

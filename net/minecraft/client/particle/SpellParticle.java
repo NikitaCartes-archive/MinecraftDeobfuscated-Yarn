@@ -23,14 +23,14 @@ extends SpriteBillboardParticle {
     private static final Random RANDOM = new Random();
     private final SpriteProvider spriteProvider;
 
-    SpellParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-        super(clientWorld, d, e, f, 0.5 - RANDOM.nextDouble(), h, 0.5 - RANDOM.nextDouble());
+    SpellParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+        super(world, x, y, z, 0.5 - RANDOM.nextDouble(), velocityY, 0.5 - RANDOM.nextDouble());
         this.velocityMultiplier = 0.96f;
         this.gravityStrength = -0.1f;
         this.field_28787 = true;
         this.spriteProvider = spriteProvider;
         this.velocityY *= (double)0.2f;
-        if (g == 0.0 && i == 0.0) {
+        if (velocityX == 0.0 && velocityZ == 0.0) {
             this.velocityX *= (double)0.1f;
             this.velocityZ *= (double)0.1f;
         }
@@ -38,7 +38,7 @@ extends SpriteBillboardParticle {
         this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
         this.collidesWithWorld = false;
         this.setSpriteForAge(spriteProvider);
-        if (this.method_37102()) {
+        if (this.isInvisible()) {
             this.setColorAlpha(0.0f);
         }
     }
@@ -52,14 +52,14 @@ extends SpriteBillboardParticle {
     public void tick() {
         super.tick();
         this.setSpriteForAge(this.spriteProvider);
-        if (this.method_37102()) {
+        if (this.isInvisible()) {
             this.setColorAlpha(0.0f);
         } else {
             this.setColorAlpha(MathHelper.lerp(0.05f, this.colorAlpha, 1.0f));
         }
     }
 
-    private boolean method_37102() {
+    private boolean isInvisible() {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         ClientPlayerEntity clientPlayerEntity = minecraftClient.player;
         return clientPlayerEntity != null && clientPlayerEntity.getEyePos().squaredDistanceTo(this.x, this.y, this.z) <= 9.0 && minecraftClient.options.getPerspective().isFirstPerson() && clientPlayerEntity.isUsingSpyglass();

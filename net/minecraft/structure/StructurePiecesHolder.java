@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockBox;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A holder of generated structure pieces.
+ * A holder of structure pieces to be added.
  * 
  * @see StructurePiece#fillOpenings
  */

@@ -29,7 +29,7 @@ public class StructurePlacementData {
     private int field_15575;
     private final List<StructureProcessor> processors = Lists.newArrayList();
     private boolean updateNeighbors;
-    private boolean field_24043;
+    private boolean initializeMobs;
 
     public StructurePlacementData copy() {
         StructurePlacementData structurePlacementData = new StructurePlacementData();
@@ -43,7 +43,7 @@ public class StructurePlacementData {
         structurePlacementData.field_15575 = this.field_15575;
         structurePlacementData.processors.addAll(this.processors);
         structurePlacementData.updateNeighbors = this.updateNeighbors;
-        structurePlacementData.field_24043 = this.field_24043;
+        structurePlacementData.initializeMobs = this.initializeMobs;
         return structurePlacementData;
     }
 
@@ -153,13 +153,13 @@ public class StructurePlacementData {
         return list.get(this.getRandom(pos).nextInt(i));
     }
 
-    public StructurePlacementData method_27264(boolean bl) {
-        this.field_24043 = bl;
+    public StructurePlacementData setInitializeMobs(boolean initializeMobs) {
+        this.initializeMobs = initializeMobs;
         return this;
     }
 
-    public boolean method_27265() {
-        return this.field_24043;
+    public boolean shouldInitializeMobs() {
+        return this.initializeMobs;
     }
 }
 

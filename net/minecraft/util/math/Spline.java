@@ -67,6 +67,10 @@ extends ToFloatFunction<C> {
         return new Builder<C>(locationFunction);
     }
 
+    public static <C> Builder<C> method_39502(ToFloatFunction<C> toFloatFunction, ToFloatFunction<Float> toFloatFunction2) {
+        return new Builder<C>(toFloatFunction, toFloatFunction2);
+    }
+
     @Debug
     public record FixedFloatFunction<C>(float value) implements Spline<C>
     {
@@ -83,16 +87,22 @@ extends ToFloatFunction<C> {
 
     public static final class Builder<C> {
         private final ToFloatFunction<C> locationFunction;
+        private final ToFloatFunction<Float> field_35661;
         private final FloatList locations = new FloatArrayList();
         private final List<Spline<C>> values = Lists.newArrayList();
         private final FloatList derivatives = new FloatArrayList();
 
         protected Builder(ToFloatFunction<C> locationFunction) {
-            this.locationFunction = locationFunction;
+            this(locationFunction, float_ -> float_.floatValue());
+        }
+
+        protected Builder(ToFloatFunction<C> toFloatFunction, ToFloatFunction<Float> toFloatFunction2) {
+            this.locationFunction = toFloatFunction;
+            this.field_35661 = toFloatFunction2;
         }
 
         public Builder<C> add(float location, float value, float derivative) {
-            return this.add(location, new FixedFloatFunction(value), derivative);
+            return this.add(location, new FixedFloatFunction(this.field_35661.apply(Float.valueOf(value))), derivative);
         }
 
         public Builder<C> add(float location, Spline<C> value, float derivative) {

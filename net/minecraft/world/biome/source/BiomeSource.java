@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
@@ -28,30 +29,36 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.CheckerboardBiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class BiomeSource {
+public abstract class BiomeSource
+implements BiomeSupplier {
     public static final Codec<BiomeSource> CODEC;
     private final List<Biome> biomes;
-    private final ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> field_34469;
+    private final List<List<PlacedFeature>> field_34469;
 
     protected BiomeSource(Stream<Supplier<Biome>> stream) {
         this(stream.map(Supplier::get).distinct().collect(ImmutableList.toImmutableList()));
     }
 
     protected BiomeSource(List<Biome> list) {
-        record class_6543(int featureIndex, int step, ConfiguredFeature<?, ?> feature) {
+        this.biomes = list;
+        this.field_34469 = this.method_39525(list, true);
+    }
+
+    private List<List<PlacedFeature>> method_39525(List<Biome> list, boolean bl) {
+        record class_6543(int featureIndex, int step, PlacedFeature feature) {
         }
         ArrayList<class_6543> list2;
-        this.biomes = list;
-        Object2IntOpenHashMap<ConfiguredFeature> object2IntMap = new Object2IntOpenHashMap<ConfiguredFeature>();
+        Object2IntOpenHashMap<PlacedFeature> object2IntMap = new Object2IntOpenHashMap<PlacedFeature>();
         MutableInt mutableInt = new MutableInt(0);
         Comparator<class_6543> comparator = Comparator.comparingInt(class_6543::step).thenComparingInt(class_6543::featureIndex);
         TreeMap<class_6543, Set> map = new TreeMap<class_6543, Set>(comparator);
@@ -59,12 +66,12 @@ public abstract class BiomeSource {
         for (Biome biome : list) {
             int j;
             list2 = Lists.newArrayList();
-            List<List<Supplier<ConfiguredFeature<?, ?>>>> list3 = biome.getGenerationSettings().getFeatures();
+            List<List<Supplier<PlacedFeature>>> list3 = biome.getGenerationSettings().getFeatures();
             i = Math.max(i, list3.size());
             for (j = 0; j < list3.size(); ++j) {
                 for (Supplier supplier : (List)list3.get(j)) {
-                    ConfiguredFeature configuredFeature = (ConfiguredFeature)supplier.get();
-                    list2.add(new class_6543(object2IntMap.computeIfAbsent(configuredFeature, object -> mutableInt.getAndIncrement()), j, configuredFeature));
+                    PlacedFeature placedFeature = (PlacedFeature)supplier.get();
+                    list2.add(new class_6543(object2IntMap.computeIfAbsent(placedFeature, object -> mutableInt.getAndIncrement()), j, placedFeature));
                 }
             }
             for (j = 0; j < list2.size(); ++j) {
@@ -81,17 +88,35 @@ public abstract class BiomeSource {
                 throw new IllegalStateException("You somehow broke the universe; DFS bork (iteration finished with non-empty in-progress vertex set");
             }
             if (set2.contains(lv) || !TopologicalSorts.sort(map, set2, set3, list2::add, lv)) continue;
-            Collections.reverse(list2);
-            throw new IllegalStateException("Feature order cycle found: " + list2.stream().filter(set3::contains).map(Object::toString).collect(Collectors.joining(", ")));
+            if (bl) {
+                int k;
+                ArrayList<Biome> list4 = new ArrayList<Biome>(list);
+                do {
+                    k = list4.size();
+                    ListIterator<Biome> listIterator = list4.listIterator();
+                    while (listIterator.hasNext()) {
+                        Biome biome2 = (Biome)listIterator.next();
+                        listIterator.remove();
+                        try {
+                            this.method_39525(list4, false);
+                        } catch (IllegalStateException illegalStateException) {
+                            continue;
+                        }
+                        listIterator.add(biome2);
+                    }
+                } while (k != list4.size());
+                throw new IllegalStateException("Feature order cycle found, involved biomes: " + list4);
+            }
+            throw new IllegalStateException("Feature order cycle found");
         }
         Collections.reverse(list2);
         ImmutableList.Builder builder = ImmutableList.builder();
         int j = 0;
         while (j < i) {
-            int k = j++;
-            builder.add(list2.stream().filter(arg -> arg.step() == k).map(class_6543::feature).collect(ImmutableList.toImmutableList()));
+            int l = j++;
+            builder.add(list2.stream().filter(arg -> arg.step() == l).map(class_6543::feature).collect(Collectors.toList()));
         }
-        this.field_34469 = builder.build();
+        return builder.build();
     }
 
     protected abstract Codec<? extends BiomeSource> getCodec();
@@ -168,12 +193,13 @@ public abstract class BiomeSource {
         return blockPos;
     }
 
+    @Override
     public abstract Biome getBiome(int var1, int var2, int var3, MultiNoiseUtil.MultiNoiseSampler var4);
 
     public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
     }
 
-    public ImmutableList<ImmutableList<ConfiguredFeature<?, ?>>> method_38115() {
+    public List<List<PlacedFeature>> method_38115() {
         return this.field_34469;
     }
 
@@ -182,7 +208,7 @@ public abstract class BiomeSource {
         Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
-        CODEC = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::getCodec, Function.identity());
+        CODEC = Registry.BIOME_SOURCE.method_39673().dispatchStable(BiomeSource::getCodec, Function.identity());
     }
 }
 

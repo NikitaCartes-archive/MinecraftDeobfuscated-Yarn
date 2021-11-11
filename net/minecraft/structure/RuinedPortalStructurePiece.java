@@ -19,13 +19,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.VineBlock;
-import net.minecraft.class_6625;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePlacementData;
@@ -79,8 +79,8 @@ extends SimpleStructurePiece {
     }
 
     @Override
-    protected void writeNbt(class_6625 arg, NbtCompound nbt) {
-        super.writeNbt(arg, nbt);
+    protected void writeNbt(StructureContext context, NbtCompound nbt) {
+        super.writeNbt(context, nbt);
         nbt.putString("Rotation", this.placementData.getRotation().name());
         nbt.putString("Mirror", this.placementData.getMirror().name());
         nbt.putString("VerticalPlacement", this.verticalPlacement.getId());
@@ -119,13 +119,13 @@ extends SimpleStructurePiece {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
         BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-        if (!boundingBox.contains(blockBox.getCenter())) {
+        if (!chunkBox.contains(blockBox.getCenter())) {
             return;
         }
-        boundingBox.encompass(blockBox);
-        super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+        chunkBox.encompass(blockBox);
+        super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
         this.placeNetherrackBase(random, world);
         this.updateNetherracksInBound(random, world);
         if (this.properties.vines || this.properties.overgrown) {

@@ -26,22 +26,23 @@ import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class GenerationSettings {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final GenerationSettings INSTANCE = new GenerationSettings(ImmutableMap.of(), ImmutableList.of());
-    public static final MapCodec<GenerationSettings> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(Codec.simpleMap(GenerationStep.Carver.CODEC, ConfiguredCarver.LIST_CODEC.promotePartial((Consumer)Util.addPrefix("Carver: ", LOGGER::error)).flatXmap(Codecs.createPresentValuesChecker(), Codecs.createPresentValuesChecker()), StringIdentifiable.toKeyable(GenerationStep.Carver.values())).fieldOf("carvers").forGetter(generationSettings -> generationSettings.carvers), ((MapCodec)ConfiguredFeature.field_26756.promotePartial((Consumer)Util.addPrefix("Feature: ", LOGGER::error)).flatXmap(Codecs.createPresentValuesChecker(), Codecs.createPresentValuesChecker()).listOf().fieldOf("features")).forGetter(generationSettings -> generationSettings.features)).apply((Applicative<GenerationSettings, ?>)instance, GenerationSettings::new));
+    public static final MapCodec<GenerationSettings> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(Codec.simpleMap(GenerationStep.Carver.CODEC, ConfiguredCarver.LIST_CODEC.promotePartial((Consumer)Util.addPrefix("Carver: ", LOGGER::error)).flatXmap(Codecs.createPresentValuesChecker(), Codecs.createPresentValuesChecker()), StringIdentifiable.toKeyable(GenerationStep.Carver.values())).fieldOf("carvers").forGetter(generationSettings -> generationSettings.carvers), ((MapCodec)PlacedFeature.LIST_CODEC.promotePartial((Consumer)Util.addPrefix("Feature: ", LOGGER::error)).flatXmap(Codecs.createPresentValuesChecker(), Codecs.createPresentValuesChecker()).listOf().fieldOf("features")).forGetter(generationSettings -> generationSettings.features)).apply((Applicative<GenerationSettings, ?>)instance, GenerationSettings::new));
     private final Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers;
-    private final List<List<Supplier<ConfiguredFeature<?, ?>>>> features;
+    private final List<List<Supplier<PlacedFeature>>> features;
     private final List<ConfiguredFeature<?, ?>> flowerFeatures;
-    private final Set<ConfiguredFeature<?, ?>> allowedFeatures;
+    private final Set<PlacedFeature> allowedFeatures;
 
-    GenerationSettings(Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> map, List<List<Supplier<ConfiguredFeature<?, ?>>>> list) {
+    GenerationSettings(Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> map, List<List<Supplier<PlacedFeature>>> list) {
         this.carvers = map;
         this.features = list;
-        this.flowerFeatures = list.stream().flatMap(Collection::stream).map(Supplier::get).flatMap(ConfiguredFeature::getDecoratedFeatures).filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER).collect(ImmutableList.toImmutableList());
+        this.flowerFeatures = list.stream().flatMap(Collection::stream).map(Supplier::get).flatMap(PlacedFeature::getDecoratedFeatures).filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER).collect(ImmutableList.toImmutableList());
         this.allowedFeatures = list.stream().flatMap(Collection::stream).map(Supplier::get).collect(Collectors.toSet());
     }
 
@@ -57,23 +58,23 @@ public class GenerationSettings {
      * Returns the lists of features configured for each {@link net.minecraft.world.gen.GenerationStep.Feature feature generation step}, up to the highest step that has a configured feature.
      * Entries are guaranteed to not be null, but may be empty lists if an earlier step has no features, but a later step does.
      */
-    public List<List<Supplier<ConfiguredFeature<?, ?>>>> getFeatures() {
+    public List<List<Supplier<PlacedFeature>>> getFeatures() {
         return this.features;
     }
 
-    public boolean isFeatureAllowed(ConfiguredFeature<?, ?> feature) {
-        return this.allowedFeatures.contains(feature);
+    public boolean isFeatureAllowed(PlacedFeature placedFeature) {
+        return this.allowedFeatures.contains(placedFeature);
     }
 
     public static class Builder {
         private final Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers = Maps.newLinkedHashMap();
-        private final List<List<Supplier<ConfiguredFeature<?, ?>>>> features = Lists.newArrayList();
+        private final List<List<Supplier<PlacedFeature>>> features = Lists.newArrayList();
 
-        public Builder feature(GenerationStep.Feature featureStep, ConfiguredFeature<?, ?> feature) {
-            return this.feature(featureStep.ordinal(), () -> feature);
+        public Builder feature(GenerationStep.Feature featureStep, PlacedFeature placedFeature) {
+            return this.feature(featureStep.ordinal(), () -> placedFeature);
         }
 
-        public Builder feature(int stepIndex, Supplier<ConfiguredFeature<?, ?>> featureSupplier) {
+        public Builder feature(int stepIndex, Supplier<PlacedFeature> featureSupplier) {
             this.addFeatureStep(stepIndex);
             this.features.get(stepIndex).add(featureSupplier);
             return this;

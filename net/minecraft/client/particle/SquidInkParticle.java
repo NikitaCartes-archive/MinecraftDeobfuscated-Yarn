@@ -17,18 +17,18 @@ import net.minecraft.util.math.BlockPos;
 @Environment(value=EnvType.CLIENT)
 public class SquidInkParticle
 extends AnimatedParticle {
-    SquidInkParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, int j, SpriteProvider spriteProvider) {
-        super(clientWorld, d, e, f, spriteProvider, 0.0f);
+    SquidInkParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, int color, SpriteProvider spriteProvider) {
+        super(world, x, y, z, spriteProvider, 0.0f);
         this.velocityMultiplier = 0.92f;
         this.scale = 0.5f;
         this.setColorAlpha(1.0f);
-        this.setColor(BackgroundHelper.ColorMixer.getRed(j), BackgroundHelper.ColorMixer.getGreen(j), BackgroundHelper.ColorMixer.getBlue(j));
+        this.setColor(BackgroundHelper.ColorMixer.getRed(color), BackgroundHelper.ColorMixer.getGreen(color), BackgroundHelper.ColorMixer.getBlue(color));
         this.maxAge = (int)((double)(this.scale * 12.0f) / (Math.random() * (double)0.8f + (double)0.2f));
         this.setSpriteForAge(spriteProvider);
         this.collidesWithWorld = false;
-        this.velocityX = g;
-        this.velocityY = h;
-        this.velocityZ = i;
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
+        this.velocityZ = velocityZ;
     }
 
     @Override

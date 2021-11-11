@@ -5,6 +5,8 @@ package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
@@ -23,6 +25,19 @@ implements Comparable<Vec3i> {
     private int x;
     private int y;
     private int z;
+
+    private static Function<Vec3i, DataResult<Vec3i>> createRangeValidator(int maxAbsValue) {
+        return vec -> {
+            if (Math.abs(vec.getX()) < maxAbsValue && Math.abs(vec.getY()) < maxAbsValue && Math.abs(vec.getZ()) < maxAbsValue) {
+                return DataResult.success(vec);
+            }
+            return DataResult.error("Position out of range, expected at most " + maxAbsValue + ": " + vec);
+        };
+    }
+
+    public static Codec<Vec3i> createOffsetCodec(int maxAbsValue) {
+        return CODEC.flatXmap(Vec3i.createRangeValidator(maxAbsValue), Vec3i.createRangeValidator(maxAbsValue));
+    }
 
     public Vec3i(int x, int y, int z) {
         this.x = x;

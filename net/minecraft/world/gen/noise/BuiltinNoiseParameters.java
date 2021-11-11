@@ -10,8 +10,10 @@ import net.minecraft.world.gen.noise.NoiseParametersKeys;
 
 public class BuiltinNoiseParameters {
     public static DoublePerlinNoiseSampler.NoiseParameters init() {
-        BuiltinNoiseParameters.method_39493(0, NoiseParametersKeys.TEMPERATURE, NoiseParametersKeys.VEGETATION, NoiseParametersKeys.CONTINENTALNESS, NoiseParametersKeys.EROSION, NoiseParametersKeys.RIDGE, NoiseParametersKeys.OFFSET);
-        BuiltinNoiseParameters.method_39493(-2, NoiseParametersKeys.TEMPERATURE_LARGE, NoiseParametersKeys.VEGETATION_LARGE, NoiseParametersKeys.CONTINENTALNESS_LARGE, NoiseParametersKeys.EROSION_LARGE, NoiseParametersKeys.RIDGE_LARGE, NoiseParametersKeys.OFFSET_LARGE);
+        BuiltinNoiseParameters.method_39493(0, NoiseParametersKeys.TEMPERATURE, NoiseParametersKeys.VEGETATION, NoiseParametersKeys.CONTINENTALNESS, NoiseParametersKeys.EROSION);
+        BuiltinNoiseParameters.method_39493(-2, NoiseParametersKeys.TEMPERATURE_LARGE, NoiseParametersKeys.VEGETATION_LARGE, NoiseParametersKeys.CONTINENTALNESS_LARGE, NoiseParametersKeys.EROSION_LARGE);
+        BuiltinNoiseParameters.register(NoiseParametersKeys.RIDGE, -7, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0);
+        BuiltinNoiseParameters.register(NoiseParametersKeys.OFFSET, -3, 1.0, 1.0, 1.0, 0.0);
         BuiltinNoiseParameters.register(NoiseParametersKeys.AQUIFER_BARRIER, -3, 1.0, new double[0]);
         BuiltinNoiseParameters.register(NoiseParametersKeys.AQUIFER_FLUID_LEVEL_FLOODEDNESS, -7, 1.0, new double[0]);
         BuiltinNoiseParameters.register(NoiseParametersKeys.AQUIFER_LAVA, -1, 1.0, new double[0]);
@@ -42,6 +44,7 @@ public class BuiltinNoiseParameters {
         BuiltinNoiseParameters.register(NoiseParametersKeys.NOODLE_RIDGE_B, -7, 1.0, new double[0]);
         BuiltinNoiseParameters.register(NoiseParametersKeys.JAGGED, -16, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
         BuiltinNoiseParameters.register(NoiseParametersKeys.SURFACE, -6, 1.0, 1.0, 1.0);
+        BuiltinNoiseParameters.register(NoiseParametersKeys.SURFACE_SECONDARY, -6, 1.0, 1.0, 1.0);
         BuiltinNoiseParameters.register(NoiseParametersKeys.CLAY_BANDS_OFFSET, -8, 1.0, new double[0]);
         BuiltinNoiseParameters.register(NoiseParametersKeys.BADLANDS_PILLAR, -2, 1.0, 1.0, 1.0, 1.0);
         BuiltinNoiseParameters.register(NoiseParametersKeys.BADLANDS_PILLAR_ROOF, -8, 1.0, new double[0]);
@@ -64,13 +67,11 @@ public class BuiltinNoiseParameters {
         return (DoublePerlinNoiseSampler.NoiseParameters)BuiltinRegistries.NOISE_PARAMETERS.iterator().next();
     }
 
-    private static void method_39493(int i, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey2, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey3, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey4, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey5, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey6) {
+    private static void method_39493(int i, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey2, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey3, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey4) {
         BuiltinNoiseParameters.register(registryKey, -10 + i, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0);
         BuiltinNoiseParameters.register(registryKey2, -8 + i, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0);
         BuiltinNoiseParameters.register(registryKey3, -9 + i, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0);
         BuiltinNoiseParameters.register(registryKey4, -9 + i, 1.0, 1.0, 0.0, 1.0, 1.0);
-        BuiltinNoiseParameters.register(registryKey5, -7 + i, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0);
-        BuiltinNoiseParameters.register(registryKey6, -3 + i, 1.0, 1.0, 1.0, 0.0);
     }
 
     private static void register(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, int i, double d, double ... ds) {

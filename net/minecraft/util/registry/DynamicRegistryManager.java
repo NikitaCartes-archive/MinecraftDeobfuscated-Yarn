@@ -19,6 +19,7 @@ import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.EntryLoader;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -33,6 +34,7 @@ import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -57,6 +59,7 @@ public abstract class DynamicRegistryManager {
         DynamicRegistryManager.register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC);
+        DynamicRegistryManager.register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
@@ -106,12 +109,16 @@ public abstract class DynamicRegistryManager {
         infosBuilder.put(registryRef, new Info<E>(registryRef, entryCodec, networkEntryCodec));
     }
 
+    public static Iterable<Info<?>> getInfos() {
+        return INFOS.values();
+    }
+
     /**
      * Creates a default dynamic registry manager.
      */
     public static Impl create() {
         Impl impl = new Impl();
-        RegistryOps.EntryLoader.Impl impl2 = new RegistryOps.EntryLoader.Impl();
+        EntryLoader.Impl impl2 = new EntryLoader.Impl();
         for (Info<?> info : INFOS.values()) {
             DynamicRegistryManager.method_31141(impl, impl2, info);
         }
@@ -119,8 +126,8 @@ public abstract class DynamicRegistryManager {
         return impl;
     }
 
-    private static <E> void method_31141(Impl registryManager, RegistryOps.EntryLoader.Impl entryLoader, Info<E> info) {
-        RegistryKey<Registry<E>> registryKey = info.getRegistry();
+    private static <E> void method_31141(Impl registryManager, EntryLoader.Impl entryLoader, Info<E> info) {
+        RegistryKey<Registry<E>> registryKey = info.registry();
         boolean bl = !registryKey.equals(Registry.CHUNK_GENERATOR_SETTINGS_KEY) && !registryKey.equals(Registry.DIMENSION_TYPE_KEY);
         Registry<E> registry = BUILTIN.get(registryKey);
         MutableRegistry<E> mutableRegistry = registryManager.getMutable(registryKey);
@@ -128,7 +135,7 @@ public abstract class DynamicRegistryManager {
             RegistryKey<E> registryKey2 = entry.getKey();
             E object = entry.getValue();
             if (bl) {
-                entryLoader.add(BUILTIN, registryKey2, info.getEntryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
+                entryLoader.add(BUILTIN, registryKey2, info.entryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
                 continue;
             }
             mutableRegistry.set(registry.getRawId(object), registryKey2, object, registry.getEntryLifecycle(object));
@@ -172,41 +179,22 @@ public abstract class DynamicRegistryManager {
      * is kept within the {@code ops}.
      */
     private static <E> void load(RegistryOps<?> ops, DynamicRegistryManager dynamicRegistryManager, Info<E> info) {
-        RegistryKey<Registry<E>> registryKey = info.getRegistry();
+        RegistryKey<Registry<E>> registryKey = info.registry();
         SimpleRegistry simpleRegistry = (SimpleRegistry)dynamicRegistryManager.getMutable(registryKey);
-        DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry, info.getRegistry(), info.getEntryCodec());
+        DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry, info.registry(), info.entryCodec());
         dataResult.error().ifPresent(partialResult -> {
             throw new JsonParseException("Error loading registry data: " + partialResult.message());
         });
     }
 
-    static final class Info<E> {
-        private final RegistryKey<? extends Registry<E>> registry;
-        private final Codec<E> entryCodec;
-        @Nullable
-        private final Codec<E> networkEntryCodec;
-
-        public Info(RegistryKey<? extends Registry<E>> registry, Codec<E> entryCodec, @Nullable Codec<E> networkEntryCodec) {
-            this.registry = registry;
-            this.entryCodec = entryCodec;
-            this.networkEntryCodec = networkEntryCodec;
-        }
-
-        public RegistryKey<? extends Registry<E>> getRegistry() {
-            return this.registry;
-        }
-
-        public Codec<E> getEntryCodec() {
-            return this.entryCodec;
-        }
-
-        @Nullable
-        public Codec<E> getNetworkEntryCodec() {
-            return this.networkEntryCodec;
-        }
-
+    public record Info<E>(RegistryKey<? extends Registry<E>> registry, Codec<E> entryCodec, @Nullable Codec<E> networkEntryCodec) {
         public boolean isSynced() {
             return this.networkEntryCodec != null;
+        }
+
+        @Nullable
+        public Codec<E> networkEntryCodec() {
+            return this.networkEntryCodec;
         }
     }
 
@@ -227,7 +215,7 @@ public abstract class DynamicRegistryManager {
         }
 
         private static <E> DataResult<? extends Codec<E>> getDataResultForCodec(RegistryKey<? extends Registry<E>> registryRef) {
-            return Optional.ofNullable(INFOS.get(registryRef)).map(info -> info.getNetworkEntryCodec()).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown or not serializable registry: " + registryRef));
+            return Optional.ofNullable(INFOS.get(registryRef)).map(info -> info.networkEntryCodec()).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown or not serializable registry: " + registryRef));
         }
 
         public Impl() {

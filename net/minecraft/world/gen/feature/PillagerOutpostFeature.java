@@ -16,30 +16,32 @@ import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.feature.JigsawFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class PillagerOutpostFeature
 extends JigsawFeature {
     public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of((Weighted[])new SpawnSettings.SpawnEntry[]{new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1)});
 
-    public PillagerOutpostFeature(Codec<StructurePoolFeatureConfig> codec) {
-        super(codec, 0, true, true);
+    public PillagerOutpostFeature(Codec<StructurePoolFeatureConfig> configCodec) {
+        super(configCodec, 0, true, true);
     }
 
     @Override
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, ChunkPos chunkPos2, StructurePoolFeatureConfig structurePoolFeatureConfig, HeightLimitView heightLimitView) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkPos chunkPos, StructurePoolFeatureConfig structurePoolFeatureConfig, HeightLimitView heightLimitView) {
         int i = chunkPos.x >> 4;
         int j = chunkPos.z >> 4;
+        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
         chunkRandom.setSeed((long)(i ^ j << 4) ^ l);
         chunkRandom.nextInt();
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
-        return !this.isVillageNearby(chunkGenerator, l, chunkRandom, chunkPos);
+        return !this.isVillageNearby(chunkGenerator, l, chunkPos);
     }
 
-    private boolean isVillageNearby(ChunkGenerator generator, long worldSeed, ChunkRandom random, ChunkPos pos) {
-        StructureConfig structureConfig = generator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
+    private boolean isVillageNearby(ChunkGenerator chunkGenerator, long seed, ChunkPos pos) {
+        StructureConfig structureConfig = chunkGenerator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
         if (structureConfig == null) {
             return false;
         }
@@ -47,7 +49,7 @@ extends JigsawFeature {
         int j = pos.z;
         for (int k = i - 10; k <= i + 10; ++k) {
             for (int l = j - 10; l <= j + 10; ++l) {
-                ChunkPos chunkPos = StructureFeature.VILLAGE.getStartChunk(structureConfig, worldSeed, random, k, l);
+                ChunkPos chunkPos = StructureFeature.VILLAGE.getStartChunk(structureConfig, seed, k, l);
                 if (k != chunkPos.x || l != chunkPos.z) continue;
                 return true;
             }
