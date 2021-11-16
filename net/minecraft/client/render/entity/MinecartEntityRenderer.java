@@ -92,7 +92,7 @@ extends EntityRenderer<T> {
             matrixStack.pop();
         }
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        this.model.setAngles(abstractMinecartEntity, 0.0f, 0.0f, -0.1f, 0.0f, 0.0f);
+        this.model.setAngles(abstractMinecartEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(abstractMinecartEntity)));
         this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();

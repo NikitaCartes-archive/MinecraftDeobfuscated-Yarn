@@ -53,7 +53,7 @@ implements NbtElement {
         }
         return DataResult.error("Not a compound tag: " + nbtElement);
     }, nbt -> new Dynamic<NbtCompound>(NbtOps.INSTANCE, (NbtCompound)nbt));
-    private static final int field_33190 = 384;
+    private static final int SIZE = 384;
     private static final int field_33191 = 256;
     public static final NbtType<NbtCompound> TYPE = new NbtType<NbtCompound>(){
 
@@ -408,8 +408,8 @@ implements NbtElement {
         return this.entries.isEmpty();
     }
 
-    private CrashReport createCrashReport(String key, NbtType<?> reader, ClassCastException classCastException) {
-        CrashReport crashReport = CrashReport.create(classCastException, "Reading NBT data");
+    private CrashReport createCrashReport(String key, NbtType<?> reader, ClassCastException exception) {
+        CrashReport crashReport = CrashReport.create(exception, "Reading NBT data");
         CrashReportSection crashReportSection = crashReport.addElement("Corrupt NBT tag", 1);
         crashReportSection.add("Tag type found", () -> this.entries.get(key).getNbtType().getCrashReportName());
         crashReportSection.add("Tag type expected", reader::getCrashReportName);

@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class NbtFloat
 extends AbstractNbtNumber {
-    private static final int field_33194 = 96;
+    private static final int SIZE = 96;
     public static final NbtFloat ZERO = new NbtFloat(0.0f);
     public static final NbtType<NbtFloat> TYPE = new NbtType<NbtFloat>(){
 

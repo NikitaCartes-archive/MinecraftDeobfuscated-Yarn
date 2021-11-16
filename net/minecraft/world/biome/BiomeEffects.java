@@ -121,6 +121,9 @@ public class BiomeEffects {
         return this.music;
     }
 
+    /*
+     * Uses 'sealed' constructs - enablewith --sealed true
+     */
     public static enum GrassColorModifier implements StringIdentifiable
     {
         NONE("none"){

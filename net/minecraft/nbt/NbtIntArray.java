@@ -22,7 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class NbtIntArray
 extends AbstractNbtList<NbtInt> {
-    private static final int field_33195 = 192;
+    private static final int SIZE = 192;
     public static final NbtType<NbtIntArray> TYPE = new NbtType<NbtIntArray>(){
 
         @Override

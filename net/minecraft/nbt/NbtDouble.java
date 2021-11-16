@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class NbtDouble
 extends AbstractNbtNumber {
-    private static final int field_33192 = 128;
+    private static final int SIZE = 128;
     public static final NbtDouble ZERO = new NbtDouble(0.0);
     public static final NbtType<NbtDouble> TYPE = new NbtType<NbtDouble>(){
 

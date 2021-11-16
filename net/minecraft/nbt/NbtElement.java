@@ -102,7 +102,7 @@ public interface NbtElement {
      * @see NbtCompound#contains(String, int)
      */
     public static final byte NUMBER_TYPE = 99;
-    public static final int field_33264 = 512;
+    public static final int MAX_DEPTH = 512;
 
     public void write(DataOutput var1) throws IOException;
 

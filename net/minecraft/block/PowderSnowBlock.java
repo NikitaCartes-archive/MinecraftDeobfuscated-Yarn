@@ -40,10 +40,12 @@ public class PowderSnowBlock
 extends Block
 implements FluidDrainable {
     private static final float field_31216 = 0.083333336f;
-    private static final float field_31217 = 0.9f;
-    private static final float field_31218 = 1.5f;
+    private static final float HORIZONTAL_MOVEMENT_MULTIPLIER = 0.9f;
+    private static final float VERTICAL_MOVEMENT_MULTIPLIER = 1.5f;
     private static final float field_31219 = 2.5f;
     private static final VoxelShape FALLING_SHAPE = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, 0.9f, 1.0);
+    private static final double field_36189 = 4.0;
+    private static final double SMALL_FALL_SOUND_MAX_DISTANCE = 7.0;
 
     public PowderSnowBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -85,11 +87,21 @@ implements FluidDrainable {
     }
 
     @Override
+    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+        if ((double)fallDistance < 4.0 || !(entity instanceof LivingEntity)) {
+            return;
+        }
+        LivingEntity livingEntity = (LivingEntity)entity;
+        LivingEntity.class_6823 lv = livingEntity.method_39760();
+        SoundEvent soundEvent = (double)fallDistance < 7.0 ? lv.small() : lv.big();
+        entity.playSound(soundEvent, 1.0f, 1.0f);
+    }
+
+    @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         EntityShapeContext entityShapeContext;
         Entity entity;
-        ShapeContext shapeContext = context;
-        if (shapeContext instanceof EntityShapeContext && (entity = (entityShapeContext = (EntityShapeContext)shapeContext).getEntity()) != null) {
+        if (context instanceof EntityShapeContext && (entity = (entityShapeContext = (EntityShapeContext)context).getEntity()) != null) {
             if (entity.fallDistance > 2.5f) {
                 return FALLING_SHAPE;
             }

@@ -1782,9 +1782,7 @@ implements WindowEventHandler {
             GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
             userCache.setExecutor(this);
-            SkullBlockEntity.setUserCache(userCache);
-            SkullBlockEntity.setSessionService(minecraftSessionService);
-            SkullBlockEntity.setExecutor(this);
+            SkullBlockEntity.setServices(userCache, minecraftSessionService, this);
             UserCache.setUseRemote(false);
             this.server = MinecraftServer.startServer(serverThread -> new IntegratedServer((Thread)serverThread, this, registryTracker, session, integratedResourceManager.getResourcePackManager(), integratedResourceManager.getServerResourceManager(), saveProperties, minecraftSessionService, gameProfileRepository, userCache, spawnChunkRadius -> {
                 WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(spawnChunkRadius + 0);
@@ -1888,9 +1886,7 @@ implements WindowEventHandler {
             GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
             UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
             userCache.setExecutor(this);
-            SkullBlockEntity.setUserCache(userCache);
-            SkullBlockEntity.setSessionService(minecraftSessionService);
-            SkullBlockEntity.setExecutor(this);
+            SkullBlockEntity.setServices(userCache, minecraftSessionService, this);
             UserCache.setUseRemote(false);
         }
     }
@@ -1929,6 +1925,7 @@ implements WindowEventHandler {
         this.world = null;
         this.setWorld(null);
         this.player = null;
+        SkullBlockEntity.clearServices();
     }
 
     private void reset(Screen screen) {
@@ -2601,6 +2598,9 @@ implements WindowEventHandler {
         SOCIAL_INTERACTIONS_NOT_AVAILABLE = new TranslatableText("multiplayer.socialInteractions.not_available");
     }
 
+    /*
+     * Uses 'sealed' constructs - enablewith --sealed true
+     */
     @Environment(value=EnvType.CLIENT)
     public static enum ChatRestriction {
         ENABLED(LiteralText.EMPTY){

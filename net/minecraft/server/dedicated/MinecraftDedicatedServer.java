@@ -171,9 +171,7 @@ implements DedicatedServer {
         }
         this.setPlayerManager(new DedicatedPlayerManager(this, this.registryManager, this.saveHandler));
         long l = Util.getMeasuringTimeNano();
-        SkullBlockEntity.setUserCache(this.getUserCache());
-        SkullBlockEntity.setSessionService(this.getSessionService());
-        SkullBlockEntity.setExecutor(this);
+        SkullBlockEntity.setServices(this.getUserCache(), this.getSessionService(), this);
         UserCache.setUseRemote(this.isOnlineMode());
         LOGGER.info("Preparing level \"{}\"", (Object)this.getLevelName());
         this.loadWorld();
@@ -528,6 +526,7 @@ implements DedicatedServer {
     public void shutdown() {
         super.shutdown();
         Util.shutdownExecutors();
+        SkullBlockEntity.clearServices();
     }
 
     @Override

@@ -16,6 +16,9 @@ import net.minecraft.item.TridentItem;
 import net.minecraft.item.Vanishable;
 import net.minecraft.item.Wearable;
 
+/*
+ * Uses 'sealed' constructs - enablewith --sealed true
+ */
 public enum EnchantmentTarget {
     ARMOR{
 

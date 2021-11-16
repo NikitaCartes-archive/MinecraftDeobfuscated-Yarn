@@ -99,9 +99,8 @@ public class LookTargetUtil {
 
     public static boolean isTargetWithinAttackRange(MobEntity mobEntity, LivingEntity target, int rangedWeaponReachReduction) {
         Item item = mobEntity.getMainHandStack().getItem();
-        Item item2 = item;
-        if (item2 instanceof RangedWeaponItem) {
-            RangedWeaponItem rangedWeaponItem = (RangedWeaponItem)item2;
+        if (item instanceof RangedWeaponItem) {
+            RangedWeaponItem rangedWeaponItem = (RangedWeaponItem)item;
             if (mobEntity.canUseRangedWeapon((RangedWeaponItem)item)) {
                 int i = rangedWeaponItem.getRange() - rangedWeaponReachReduction;
                 return mobEntity.isInRange(target, i);
@@ -157,8 +156,7 @@ public class LookTargetUtil {
         Optional<UUID> optional = entity2.getBrain().getOptionalMemory(uuidMemoryModule);
         return optional.map(uUID -> ((ServerWorld)livingEntity.world).getEntity((UUID)uUID)).map(entity -> {
             LivingEntity livingEntity;
-            Entity entity2 = entity;
-            return entity2 instanceof LivingEntity ? (livingEntity = (LivingEntity)entity2) : null;
+            return entity instanceof LivingEntity ? (livingEntity = (LivingEntity)entity) : null;
         });
     }
 

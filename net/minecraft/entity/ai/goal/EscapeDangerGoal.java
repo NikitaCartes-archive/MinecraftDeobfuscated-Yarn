@@ -77,25 +77,7 @@ extends Goal {
 
     @Nullable
     protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int rangeX, int rangeY) {
-        BlockPos blockPos = entity.getBlockPos();
-        int i = blockPos.getX();
-        int j = blockPos.getY();
-        int k = blockPos.getZ();
-        float f = rangeX * rangeX * rangeY * 2;
-        BlockPos blockPos2 = null;
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int l = i - rangeX; l <= i + rangeX; ++l) {
-            for (int m = j - rangeY; m <= j + rangeY; ++m) {
-                for (int n = k - rangeX; n <= k + rangeX; ++n) {
-                    float g;
-                    mutable.set(l, m, n);
-                    if (!blockView.getFluidState(mutable).isIn(FluidTags.WATER) || !((g = (float)((l - i) * (l - i) + (m - j) * (m - j) + (n - k) * (n - k))) < f)) continue;
-                    f = g;
-                    blockPos2 = new BlockPos(mutable);
-                }
-            }
-        }
-        return blockPos2;
+        return BlockPos.findClosest(entity.getBlockPos(), rangeX, rangeY, blockPos -> blockView.getFluidState((BlockPos)blockPos).isIn(FluidTags.WATER)).orElse(null);
     }
 }
 

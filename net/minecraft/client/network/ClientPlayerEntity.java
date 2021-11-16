@@ -96,6 +96,7 @@ extends AbstractClientPlayerEntity {
     private static final int field_32673 = 100;
     private static final float field_32674 = 0.6f;
     private static final double field_32675 = 0.35;
+    private static final double MAX_SOFT_COLLISION_RADIANS = 0.13962633907794952;
     public final ClientPlayNetworkHandler networkHandler;
     private final StatHandler statHandler;
     private final ClientRecipeBook recipeBook;
@@ -941,6 +942,23 @@ extends AbstractClientPlayerEntity {
             return;
         }
         this.ticksToNextAutojump = 1;
+    }
+
+    @Override
+    protected boolean hasCollidedSoftly(Vec3d adjustedMovement) {
+        float f = this.getYaw() * ((float)Math.PI / 180);
+        double d = MathHelper.sin(f);
+        double e = MathHelper.cos(f);
+        double g = (double)this.sidewaysSpeed * e - (double)this.forwardSpeed * d;
+        double h = (double)this.forwardSpeed * e + (double)this.sidewaysSpeed * d;
+        double i = MathHelper.square(g) + MathHelper.square(h);
+        double j = MathHelper.square(adjustedMovement.x) + MathHelper.square(adjustedMovement.z);
+        if (i < (double)1.0E-5f || j < (double)1.0E-5f) {
+            return false;
+        }
+        double k = g * adjustedMovement.x + h * adjustedMovement.z;
+        double l = Math.acos(k / Math.sqrt(i * j));
+        return l < 0.13962633907794952;
     }
 
     private boolean shouldAutoJump() {

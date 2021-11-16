@@ -16,6 +16,9 @@ import net.minecraft.world.gen.feature.EndSpikeFeature;
 import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
+/*
+ * Uses 'sealed' constructs - enablewith --sealed true
+ */
 public enum EnderDragonSpawnState {
     START{
 

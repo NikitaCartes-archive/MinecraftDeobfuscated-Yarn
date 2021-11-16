@@ -76,7 +76,6 @@ public class TargetPredicate {
             }
         } else {
             MobEntity mobEntity;
-            LivingEntity livingEntity;
             if (this.attackable && (!baseEntity.canTarget(targetEntity) || !baseEntity.canTarget(targetEntity.getType()) || baseEntity.isTeammate(targetEntity))) {
                 return false;
             }
@@ -88,7 +87,7 @@ public class TargetPredicate {
                     return false;
                 }
             }
-            if (this.respectsVisibility && (livingEntity = baseEntity) instanceof MobEntity && !(mobEntity = (MobEntity)livingEntity).getVisibilityCache().canSee(targetEntity)) {
+            if (this.respectsVisibility && baseEntity instanceof MobEntity && !(mobEntity = (MobEntity)baseEntity).getVisibilityCache().canSee(targetEntity)) {
                 return false;
             }
         }

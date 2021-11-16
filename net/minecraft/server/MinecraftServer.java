@@ -434,10 +434,10 @@ AutoCloseable {
         int k = 0;
         int l = 0;
         int m = -1;
-        int n = 32;
-        for (int o = 0; o < 1024; ++o) {
+        int n = 5;
+        for (int o = 0; o < MathHelper.square(11); ++o) {
             BlockPos blockPos2;
-            if (j > -16 && j <= 16 && k > -16 && k <= 16 && (blockPos2 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k))) != null) {
+            if (j >= -5 && j <= 5 && k >= -5 && k <= 5 && (blockPos2 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k))) != null) {
                 worldProperties.setSpawnPos(blockPos2, 0.0f);
                 break;
             }
@@ -689,6 +689,9 @@ AutoCloseable {
             } catch (Throwable throwable) {
                 LOGGER.error("Exception stopping the server", throwable);
             } finally {
+                if (this.userCache != null) {
+                    this.userCache.clearExecutor();
+                }
                 this.exit();
             }
         }

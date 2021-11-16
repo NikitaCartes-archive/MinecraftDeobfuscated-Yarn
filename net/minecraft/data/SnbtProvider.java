@@ -93,12 +93,12 @@ implements DataProvider {
             BufferedReader bufferedReader = Files.newBufferedReader(path);
             try {
                 String string = IOUtils.toString(bufferedReader);
-                NbtCompound nbtCompound = this.write(name, NbtHelper.method_32260(string));
+                NbtCompound nbtCompound = this.write(name, NbtHelper.fromNbtProviderString(string));
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 NbtIo.writeCompressed(nbtCompound, byteArrayOutputStream);
                 byte[] bs = byteArrayOutputStream.toByteArray();
                 String string2 = SHA1.hashBytes(bs).toString();
-                String string3 = DEBUG_OUTPUT_DIRECTORY != null ? NbtHelper.toPrettyPrintedString(nbtCompound) : null;
+                String string3 = DEBUG_OUTPUT_DIRECTORY != null ? NbtHelper.toNbtProviderString(nbtCompound) : null;
                 compressedData = new CompressedData(name, bs, string3, string2);
                 if (bufferedReader == null) break block8;
             } catch (Throwable throwable) {

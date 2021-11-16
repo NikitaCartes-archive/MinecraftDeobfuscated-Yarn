@@ -49,7 +49,7 @@ implements DataProvider {
     @Nullable
     public static Path convertNbtToSnbt(Path inputPath, String location, Path outputPath) {
         try {
-            NbtProvider.writeTo(outputPath.resolve(location + ".snbt"), NbtHelper.toPrettyPrintedString(NbtIo.readCompressed(Files.newInputStream(inputPath, new OpenOption[0]))));
+            NbtProvider.writeTo(outputPath.resolve(location + ".snbt"), NbtHelper.toNbtProviderString(NbtIo.readCompressed(Files.newInputStream(inputPath, new OpenOption[0]))));
             LOGGER.info("Converted {} from NBT to SNBT", (Object)location);
             return outputPath.resolve(location + ".snbt");
         } catch (IOException iOException) {

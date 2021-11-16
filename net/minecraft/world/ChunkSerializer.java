@@ -118,8 +118,8 @@ public class ChunkSerializer {
             chunk = new WorldChunk(world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, worldChunk -> ChunkSerializer.loadEntities(world, nbt, worldChunk), blender);
         } else {
             boolean bl3;
-            SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(nbt.getList(BLOCK_TICKS, 9), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos);
-            SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(nbt.getList(FLUID_TICKS, 9), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos);
+            SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(nbt.getList(BLOCK_TICKS, 10), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos);
+            SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(nbt.getList(FLUID_TICKS, 10), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos);
             ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blender);
             chunk = protoChunk;
             chunk.setInhabitedTime(m);

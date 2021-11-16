@@ -4,6 +4,8 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Optional;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -12,7 +14,11 @@ import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.FluidTags;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockView;
+import org.jetbrains.annotations.Nullable;
 
 public class WalkTask
 extends Task<PathAwareEntity> {
@@ -40,9 +46,22 @@ extends Task<PathAwareEntity> {
     @Override
     protected void keepRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
         Vec3d vec3d;
-        if (pathAwareEntity.getNavigation().isIdle() && (vec3d = FuzzyTargeting.find(pathAwareEntity, 5, 4)) != null) {
+        if (pathAwareEntity.getNavigation().isIdle() && (vec3d = this.findTarget(pathAwareEntity, serverWorld)) != null) {
             pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, 0));
         }
+    }
+
+    @Nullable
+    private Vec3d findTarget(PathAwareEntity entity, ServerWorld world) {
+        Optional<Vec3d> optional;
+        if (entity.isOnFire() && (optional = this.findClosestWater(world, entity).map(Vec3d::ofBottomCenter)).isPresent()) {
+            return optional.get();
+        }
+        return FuzzyTargeting.find(entity, 5, 4);
+    }
+
+    private Optional<BlockPos> findClosestWater(BlockView world, Entity entity) {
+        return BlockPos.findClosest(entity.getBlockPos(), 5, 4, pos -> world.getFluidState((BlockPos)pos).isIn(FluidTags.WATER));
     }
 
     @Override

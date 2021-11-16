@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class Blender {
     private static final double field_35514 = 0.1;
-    private static final HeightLimitView OLD_HEIGHT_LIMIT = new HeightLimitView(){
+    protected static final HeightLimitView OLD_HEIGHT_LIMIT = new HeightLimitView(){
 
         @Override
         public int getHeight() {

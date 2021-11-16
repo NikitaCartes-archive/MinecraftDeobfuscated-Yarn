@@ -183,37 +183,37 @@ implements DynamicOps<NbtElement> {
         return NbtString.of(string);
     }
 
-    private static AbstractNbtList<?> method_29144(byte b, byte c) {
-        if (NbtOps.method_29145(b, c, (byte)4)) {
+    private static AbstractNbtList<?> createList(byte knownType, byte valueType) {
+        if (NbtOps.isTypeEqual(knownType, valueType, (byte)4)) {
             return new NbtLongArray(new long[0]);
         }
-        if (NbtOps.method_29145(b, c, (byte)1)) {
+        if (NbtOps.isTypeEqual(knownType, valueType, (byte)1)) {
             return new NbtByteArray(new byte[0]);
         }
-        if (NbtOps.method_29145(b, c, (byte)3)) {
+        if (NbtOps.isTypeEqual(knownType, valueType, (byte)3)) {
             return new NbtIntArray(new int[0]);
         }
         return new NbtList();
     }
 
-    private static boolean method_29145(byte b, byte c, byte d) {
-        return b == d && (c == d || c == 0);
+    private static boolean isTypeEqual(byte knownType, byte valueType, byte expectedType) {
+        return knownType == expectedType && (valueType == expectedType || valueType == 0);
     }
 
-    private static <T extends NbtElement> void method_29151(AbstractNbtList<T> abstractNbtList, NbtElement nbtElement2, NbtElement nbtElement22) {
-        if (nbtElement2 instanceof AbstractNbtList) {
-            AbstractNbtList abstractNbtList2 = (AbstractNbtList)nbtElement2;
-            abstractNbtList2.forEach(nbtElement -> abstractNbtList.add(nbtElement));
+    private static <T extends NbtElement> void addAll(AbstractNbtList<T> destination, NbtElement source, NbtElement additionalValue) {
+        if (source instanceof AbstractNbtList) {
+            AbstractNbtList abstractNbtList = (AbstractNbtList)source;
+            abstractNbtList.forEach(nbt -> destination.add(nbt));
         }
-        abstractNbtList.add(nbtElement22);
+        destination.add(additionalValue);
     }
 
-    private static <T extends NbtElement> void method_29150(AbstractNbtList<T> abstractNbtList, NbtElement nbtElement2, List<NbtElement> list) {
-        if (nbtElement2 instanceof AbstractNbtList) {
-            AbstractNbtList abstractNbtList2 = (AbstractNbtList)nbtElement2;
-            abstractNbtList2.forEach(nbtElement -> abstractNbtList.add(nbtElement));
+    private static <T extends NbtElement> void addAll(AbstractNbtList<T> destination, NbtElement source, List<NbtElement> additionalValues) {
+        if (source instanceof AbstractNbtList) {
+            AbstractNbtList abstractNbtList = (AbstractNbtList)source;
+            abstractNbtList.forEach(nbt -> destination.add(nbt));
         }
-        list.forEach(nbtElement -> abstractNbtList.add(nbtElement));
+        additionalValues.forEach(nbt -> destination.add(nbt));
     }
 
     @Override
@@ -221,8 +221,8 @@ implements DynamicOps<NbtElement> {
         if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtNull)) {
             return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
         }
-        AbstractNbtList<?> abstractNbtList = NbtOps.method_29144(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, nbtElement2.getType());
-        NbtOps.method_29151(abstractNbtList, nbtElement, nbtElement2);
+        AbstractNbtList<?> abstractNbtList = NbtOps.createList(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, nbtElement2.getType());
+        NbtOps.addAll(abstractNbtList, nbtElement, nbtElement2);
         return DataResult.success(abstractNbtList);
     }
 
@@ -231,8 +231,8 @@ implements DynamicOps<NbtElement> {
         if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtNull)) {
             return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
         }
-        AbstractNbtList<?> abstractNbtList = NbtOps.method_29144(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, list.stream().findFirst().map(NbtElement::getType).orElse((byte)0));
-        NbtOps.method_29150(abstractNbtList, nbtElement, list);
+        AbstractNbtList<?> abstractNbtList = NbtOps.createList(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, list.stream().findFirst().map(NbtElement::getType).orElse((byte)0));
+        NbtOps.addAll(abstractNbtList, nbtElement, list);
         return DataResult.success(abstractNbtList);
     }
 
@@ -247,7 +247,7 @@ implements DynamicOps<NbtElement> {
         NbtCompound nbtCompound = new NbtCompound();
         if (nbtElement instanceof NbtCompound) {
             NbtCompound nbtCompound2 = (NbtCompound)nbtElement;
-            nbtCompound2.getKeys().forEach(string -> nbtCompound.put((String)string, nbtCompound2.get((String)string)));
+            nbtCompound2.getKeys().forEach(key -> nbtCompound.put((String)key, nbtCompound2.get((String)key)));
         }
         nbtCompound.put(nbtElement2.asString(), nbtElement3);
         return DataResult.success(nbtCompound);
@@ -284,7 +284,7 @@ implements DynamicOps<NbtElement> {
             return DataResult.error("Not a map: " + nbtElement);
         }
         NbtCompound nbtCompound = (NbtCompound)nbtElement;
-        return DataResult.success(nbtCompound.getKeys().stream().map(string -> Pair.of(this.createString((String)string), nbtCompound.get((String)string))));
+        return DataResult.success(nbtCompound.getKeys().stream().map(key -> Pair.of(this.createString((String)key), nbtCompound.get((String)key))));
     }
 
     @Override
@@ -293,7 +293,7 @@ implements DynamicOps<NbtElement> {
             return DataResult.error("Not a map: " + nbtElement);
         }
         NbtCompound nbtCompound = (NbtCompound)nbtElement;
-        return DataResult.success(biConsumer -> nbtCompound.getKeys().forEach(string -> biConsumer.accept(this.createString((String)string), nbtCompound.get((String)string))));
+        return DataResult.success(entryConsumer -> nbtCompound.getKeys().forEach(key -> entryConsumer.accept(this.createString((String)key), nbtCompound.get((String)key))));
     }
 
     @Override
@@ -318,7 +318,7 @@ implements DynamicOps<NbtElement> {
 
             @Override
             public Stream<Pair<NbtElement, NbtElement>> entries() {
-                return nbtCompound.getKeys().stream().map(string -> Pair.of(NbtOps.this.createString((String)string), nbtCompound.get((String)string)));
+                return nbtCompound.getKeys().stream().map(key -> Pair.of(NbtOps.this.createString((String)key), nbtCompound.get((String)key)));
             }
 
             public String toString() {
@@ -327,14 +327,14 @@ implements DynamicOps<NbtElement> {
 
             @Override
             @Nullable
-            public /* synthetic */ Object get(String string) {
-                return this.get(string);
+            public /* synthetic */ Object get(String key) {
+                return this.get(key);
             }
 
             @Override
             @Nullable
-            public /* synthetic */ Object get(Object object) {
-                return this.get((NbtElement)object);
+            public /* synthetic */ Object get(Object nbt) {
+                return this.get((NbtElement)nbt);
             }
         });
     }
@@ -342,14 +342,14 @@ implements DynamicOps<NbtElement> {
     @Override
     public NbtElement createMap(Stream<Pair<NbtElement, NbtElement>> stream) {
         NbtCompound nbtCompound = new NbtCompound();
-        stream.forEach(pair -> nbtCompound.put(((NbtElement)pair.getFirst()).asString(), (NbtElement)pair.getSecond()));
+        stream.forEach(entry -> nbtCompound.put(((NbtElement)entry.getFirst()).asString(), (NbtElement)entry.getSecond()));
         return nbtCompound;
     }
 
     @Override
-    public DataResult<Stream<NbtElement>> getStream(NbtElement nbtElement2) {
-        if (nbtElement2 instanceof AbstractNbtList) {
-            return DataResult.success(((AbstractNbtList)nbtElement2).stream().map(nbtElement -> nbtElement));
+    public DataResult<Stream<NbtElement>> getStream(NbtElement nbtElement) {
+        if (nbtElement instanceof AbstractNbtList) {
+            return DataResult.success(((AbstractNbtList)nbtElement).stream().map(nbt -> nbt));
         }
         return DataResult.error("Not a list");
     }
@@ -408,24 +408,24 @@ implements DynamicOps<NbtElement> {
         if (!peekingIterator.hasNext()) {
             return new NbtList();
         }
-        NbtElement nbtElement2 = (NbtElement)peekingIterator.peek();
-        if (nbtElement2 instanceof NbtByte) {
-            ArrayList<Byte> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbtElement -> ((NbtByte)nbtElement).byteValue()));
+        NbtElement nbtElement = (NbtElement)peekingIterator.peek();
+        if (nbtElement instanceof NbtByte) {
+            ArrayList<Byte> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbt -> ((NbtByte)nbt).byteValue()));
             return new NbtByteArray(list);
         }
-        if (nbtElement2 instanceof NbtInt) {
-            ArrayList<Integer> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbtElement -> ((NbtInt)nbtElement).intValue()));
+        if (nbtElement instanceof NbtInt) {
+            ArrayList<Integer> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbt -> ((NbtInt)nbt).intValue()));
             return new NbtIntArray(list);
         }
-        if (nbtElement2 instanceof NbtLong) {
-            ArrayList<Long> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbtElement -> ((NbtLong)nbtElement).longValue()));
+        if (nbtElement instanceof NbtLong) {
+            ArrayList<Long> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbt -> ((NbtLong)nbt).longValue()));
             return new NbtLongArray(list);
         }
         NbtList nbtList = new NbtList();
         while (peekingIterator.hasNext()) {
-            NbtElement nbtElement22 = (NbtElement)peekingIterator.next();
-            if (nbtElement22 instanceof NbtNull) continue;
-            nbtList.add(nbtElement22);
+            NbtElement nbtElement2 = (NbtElement)peekingIterator.next();
+            if (nbtElement2 instanceof NbtNull) continue;
+            nbtList.add(nbtElement2);
         }
         return nbtList;
     }
@@ -456,8 +456,8 @@ implements DynamicOps<NbtElement> {
     }
 
     @Override
-    public /* synthetic */ Object createLongList(LongStream longStream) {
-        return this.createLongList(longStream);
+    public /* synthetic */ Object createLongList(LongStream stream) {
+        return this.createLongList(stream);
     }
 
     @Override
@@ -466,8 +466,8 @@ implements DynamicOps<NbtElement> {
     }
 
     @Override
-    public /* synthetic */ Object createIntList(IntStream intStream) {
-        return this.createIntList(intStream);
+    public /* synthetic */ Object createIntList(IntStream stream) {
+        return this.createIntList(stream);
     }
 
     @Override
@@ -476,8 +476,8 @@ implements DynamicOps<NbtElement> {
     }
 
     @Override
-    public /* synthetic */ Object createByteList(ByteBuffer byteBuffer) {
-        return this.createByteList(byteBuffer);
+    public /* synthetic */ Object createByteList(ByteBuffer buf) {
+        return this.createByteList(buf);
     }
 
     @Override
@@ -506,8 +506,8 @@ implements DynamicOps<NbtElement> {
     }
 
     @Override
-    public /* synthetic */ Object createMap(Stream stream) {
-        return this.createMap(stream);
+    public /* synthetic */ Object createMap(Stream entries) {
+        return this.createMap(entries);
     }
 
     @Override
@@ -521,8 +521,8 @@ implements DynamicOps<NbtElement> {
     }
 
     @Override
-    public /* synthetic */ DataResult mergeToMap(Object element, MapLike mapLike) {
-        return this.mergeToMap((NbtElement)element, (MapLike<NbtElement>)mapLike);
+    public /* synthetic */ DataResult mergeToMap(Object element, MapLike map) {
+        return this.mergeToMap((NbtElement)element, (MapLike<NbtElement>)map);
     }
 
     @Override
@@ -531,8 +531,8 @@ implements DynamicOps<NbtElement> {
     }
 
     @Override
-    public /* synthetic */ DataResult mergeToList(Object object, List list) {
-        return this.mergeToList((NbtElement)object, (List<NbtElement>)list);
+    public /* synthetic */ DataResult mergeToList(Object list, List values) {
+        return this.mergeToList((NbtElement)list, (List<NbtElement>)values);
     }
 
     @Override
@@ -638,13 +638,13 @@ implements DynamicOps<NbtElement> {
         }
 
         @Override
-        protected /* synthetic */ Object append(String string, Object object, Object object2) {
-            return this.append(string, (NbtElement)object, (NbtCompound)object2);
+        protected /* synthetic */ Object append(String key, Object value, Object nbt) {
+            return this.append(key, (NbtElement)value, (NbtCompound)nbt);
         }
 
         @Override
-        protected /* synthetic */ DataResult build(Object object, Object object2) {
-            return this.build((NbtCompound)object, (NbtElement)object2);
+        protected /* synthetic */ DataResult build(Object nbt, Object mergedValue) {
+            return this.build((NbtCompound)nbt, (NbtElement)mergedValue);
         }
 
         @Override

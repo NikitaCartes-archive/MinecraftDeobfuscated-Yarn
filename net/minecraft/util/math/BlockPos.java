@@ -408,7 +408,11 @@ extends Vec3i {
     }
 
     public static Optional<BlockPos> findClosest(BlockPos pos, int horizontalRange, int verticalRange, Predicate<BlockPos> condition) {
-        return BlockPos.streamOutwards(pos, horizontalRange, verticalRange, horizontalRange).filter(condition).findFirst();
+        for (BlockPos blockPos : BlockPos.iterateOutwards(pos, horizontalRange, verticalRange, horizontalRange)) {
+            if (!condition.test(blockPos)) continue;
+            return Optional.of(blockPos);
+        }
+        return Optional.empty();
     }
 
     public static Stream<BlockPos> streamOutwards(BlockPos center, int maxX, int maxY, int maxZ) {

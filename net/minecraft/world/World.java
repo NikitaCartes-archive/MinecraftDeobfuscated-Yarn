@@ -564,16 +564,15 @@ AutoCloseable {
         this.getProfiler().visit("getEntities");
         ArrayList list = Lists.newArrayList();
         this.getEntityLookup().forEachIntersects(filter, box, entity -> {
-            Entity entity2;
             if (predicate.test(entity)) {
                 list.add(entity);
             }
-            if ((entity2 = entity) instanceof EnderDragonEntity) {
-                EnderDragonEntity enderDragonEntity = (EnderDragonEntity)entity2;
+            if (entity instanceof EnderDragonEntity) {
+                EnderDragonEntity enderDragonEntity = (EnderDragonEntity)entity;
                 for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
-                    Entity entity3 = (Entity)filter.downcast(enderDragonPart);
-                    if (entity3 == null || !predicate.test(entity3)) continue;
-                    list.add(entity3);
+                    Entity entity2 = (Entity)filter.downcast(enderDragonPart);
+                    if (entity2 == null || !predicate.test(entity2)) continue;
+                    list.add(entity2);
                 }
             }
         });

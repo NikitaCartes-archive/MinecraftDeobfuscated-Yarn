@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import java.util.Random;
+import net.minecraft.class_6825;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
@@ -39,7 +40,7 @@ public class PlacedFeatures {
     public static final PlacementModifier BOTTOM_TO_120_RANGE = HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(120));
 
     public static PlacedFeature getDefaultPlacedFeature() {
-        PlacedFeature[] placedFeatures = new PlacedFeature[]{OceanPlacedFeatures.KELP_COLD, UndergroundPlacedFeatures.CAVE_VINES, EndPlacedFeatures.CHORUS_PLANT, MiscPlacedFeatures.BLUE_ICE, NetherPlacedFeatures.BASALT_BLOBS, OrePlacedFeatures.ORE_ANCIENT_DEBRIS_LARGE, TreePlacedFeatures.ACACIA_CHECKED, VegetationPlacedFeatures.BAMBOO_VEGETATION};
+        PlacedFeature[] placedFeatures = new PlacedFeature[]{OceanPlacedFeatures.KELP_COLD, UndergroundPlacedFeatures.CAVE_VINES, EndPlacedFeatures.CHORUS_PLANT, MiscPlacedFeatures.BLUE_ICE, NetherPlacedFeatures.BASALT_BLOBS, OrePlacedFeatures.ORE_ANCIENT_DEBRIS_LARGE, TreePlacedFeatures.ACACIA_CHECKED, VegetationPlacedFeatures.BAMBOO_VEGETATION, class_6825.field_36195};
         return Util.getRandom(placedFeatures, new Random());
     }
 

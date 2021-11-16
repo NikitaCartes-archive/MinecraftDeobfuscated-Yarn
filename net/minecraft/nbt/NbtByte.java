@@ -17,7 +17,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtByte
 extends AbstractNbtNumber {
-    private static final int field_33189 = 72;
+    private static final int SIZE = 72;
     public static final NbtType<NbtByte> TYPE = new NbtType<NbtByte>(){
 
         @Override

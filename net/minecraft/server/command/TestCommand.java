@@ -292,7 +292,7 @@ public class TestCommand {
             String string = IOUtils.toString(bufferedReader);
             Files.createDirectories(path2.getParent(), new FileAttribute[0]);
             try (OutputStream outputStream = Files.newOutputStream(path2, new OpenOption[0]);){
-                NbtIo.writeCompressed(NbtHelper.method_32260(string), outputStream);
+                NbtIo.writeCompressed(NbtHelper.fromNbtProviderString(string), outputStream);
             }
             TestCommand.sendMessage(source, "Imported to " + path2.toAbsolutePath());
             return 0;

@@ -35,6 +35,7 @@ import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 import net.minecraft.world.gen.surfacebuilder.MaterialRules;
+import net.minecraft.world.tick.OrderedTick;
 
 public class SurfaceBuilder {
     private static final int field_35273 = 8;
@@ -108,6 +109,9 @@ public class SurfaceBuilder {
                 HeightLimitView heightLimitView = chunk.getHeightLimitView();
                 if (y >= heightLimitView.getBottomY() && y < heightLimitView.getTopY()) {
                     chunk.setBlockState(mutable.setY(y), state, false);
+                    if (!state.getFluidState().isEmpty()) {
+                        chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(state.getFluidState().getFluid(), mutable, 0L));
+                    }
                 }
             }
 

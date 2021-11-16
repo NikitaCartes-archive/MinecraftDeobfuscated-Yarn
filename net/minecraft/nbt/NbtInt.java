@@ -17,7 +17,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtInt
 extends AbstractNbtNumber {
-    private static final int field_33196 = 96;
+    private static final int SIZE = 96;
     public static final NbtType<NbtInt> TYPE = new NbtType<NbtInt>(){
 
         @Override
@@ -48,8 +48,8 @@ extends AbstractNbtNumber {
     };
     private final int value;
 
-    NbtInt(int i) {
-        this.value = i;
+    NbtInt(int value) {
+        this.value = value;
     }
 
     public static NbtInt of(int value) {
@@ -135,8 +135,8 @@ extends AbstractNbtNumber {
     }
 
     static class Cache {
-        private static final int field_33197 = 1024;
-        private static final int field_33198 = -128;
+        private static final int MAX = 1024;
+        private static final int MIN = -128;
         static final NbtInt[] VALUES = new NbtInt[1153];
 
         private Cache() {

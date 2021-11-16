@@ -47,9 +47,8 @@ extends ToFloatFunction<C> {
         }));
         mutableObject.setValue(Codec.either(Codec.FLOAT, codec3).xmap(either -> (Spline)((Object)either.map(FixedFloatFunction::new, arg -> arg)), spline -> {
             Either<Object, class_6738<Object>> either;
-            Spline spline2 = spline;
-            if (spline2 instanceof FixedFloatFunction) {
-                FixedFloatFunction fixedFloatFunction = (FixedFloatFunction)spline2;
+            if (spline instanceof FixedFloatFunction) {
+                FixedFloatFunction fixedFloatFunction = (FixedFloatFunction)spline;
                 either = Either.left(Float.valueOf(fixedFloatFunction.value()));
             } else {
                 either = Either.right((class_6738)spline);

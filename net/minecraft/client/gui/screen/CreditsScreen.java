@@ -13,7 +13,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.BufferedReader;
 import java.io.Closeable;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -122,9 +122,6 @@ extends Screen {
         this.client.setScreen(null);
     }
 
-    /*
-     * WARNING - Removed try catching itself - possible behaviour change.
-     */
     @Override
     protected void init() {
         if (this.credits != null) {
@@ -132,62 +129,80 @@ extends Screen {
         }
         this.credits = Lists.newArrayList();
         this.centeredLines = new IntOpenHashSet();
+        if (this.endCredits) {
+            this.method_39775("texts/end.txt", this::method_39774);
+        }
+        this.method_39775("texts/credits.json", this::method_39776);
+        if (this.endCredits) {
+            this.method_39775("texts/postcredits.txt", this::method_39774);
+        }
+        this.creditsHeight = this.credits.size() * 12;
+    }
+
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
+    private void method_39775(String string, class_6824 arg) {
         Resource resource = null;
         try {
-            String string2;
-            if (this.endCredits) {
-                int i;
-                Object string;
-                resource = this.client.getResourceManager().getResource(new Identifier("texts/end.txt"));
-                InputStream inputStream = resource.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                Random random = new Random(8124371L);
-                while ((string = bufferedReader.readLine()) != null) {
-                    string = ((String)string).replaceAll("PLAYERNAME", this.client.getSession().getUsername());
-                    while ((i = ((String)string).indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
-                        string2 = ((String)string).substring(0, i);
-                        String string3 = ((String)string).substring(i + OBFUSCATION_PLACEHOLDER.length());
-                        string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
-                    }
-                    this.addText((String)string);
-                    this.addEmptyLine();
-                }
-                inputStream.close();
-                for (i = 0; i < 8; ++i) {
-                    this.addEmptyLine();
-                }
-            }
-            resource = this.client.getResourceManager().getResource(new Identifier("texts/credits.json"));
-            JsonArray jsonArray = JsonHelper.deserializeArray(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-            JsonArray jsonArray2 = jsonArray.getAsJsonArray();
-            for (JsonElement jsonElement : jsonArray2) {
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
-                string2 = jsonObject.get("section").getAsString();
-                this.addText(SEPARATOR_LINE, true);
-                this.addText(new LiteralText(string2).formatted(Formatting.YELLOW), true);
-                this.addText(SEPARATOR_LINE, true);
-                this.addEmptyLine();
-                this.addEmptyLine();
-                JsonArray jsonArray3 = jsonObject.getAsJsonArray("titles");
-                for (JsonElement jsonElement2 : jsonArray3) {
-                    JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
-                    String string4 = jsonObject2.get("title").getAsString();
-                    JsonArray jsonArray4 = jsonObject2.getAsJsonArray("names");
-                    this.addText(new LiteralText(string4).formatted(Formatting.GRAY), false);
-                    for (JsonElement jsonElement3 : jsonArray4) {
-                        String string5 = jsonElement3.getAsString();
-                        this.addText(new LiteralText(CENTERED_LINE_PREFIX).append(string5).formatted(Formatting.WHITE), false);
-                    }
-                    this.addEmptyLine();
-                    this.addEmptyLine();
-                }
-            }
-            this.creditsHeight = this.credits.size() * 12;
-            IOUtils.closeQuietly((Closeable)resource);
+            resource = this.client.getResourceManager().getResource(new Identifier(string));
+            InputStreamReader inputStreamReader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+            arg.read(inputStreamReader);
         } catch (Exception exception) {
-            LOGGER.error("Couldn't load credits", (Throwable)exception);
-        } finally {
-            IOUtils.closeQuietly(resource);
+            try {
+                LOGGER.error("Couldn't load credits", (Throwable)exception);
+            } catch (Throwable throwable) {
+                IOUtils.closeQuietly(resource);
+                throw throwable;
+            }
+            IOUtils.closeQuietly((Closeable)resource);
+        }
+        IOUtils.closeQuietly((Closeable)resource);
+    }
+
+    private void method_39774(InputStreamReader inputStreamReader) throws IOException {
+        int i;
+        Object string;
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        Random random = new Random(8124371L);
+        while ((string = bufferedReader.readLine()) != null) {
+            string = ((String)string).replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+            while ((i = ((String)string).indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
+                String string2 = ((String)string).substring(0, i);
+                String string3 = ((String)string).substring(i + OBFUSCATION_PLACEHOLDER.length());
+                string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
+            }
+            this.addText((String)string);
+            this.addEmptyLine();
+        }
+        for (i = 0; i < 8; ++i) {
+            this.addEmptyLine();
+        }
+    }
+
+    private void method_39776(InputStreamReader inputStreamReader) {
+        JsonArray jsonArray = JsonHelper.deserializeArray(inputStreamReader);
+        for (JsonElement jsonElement : jsonArray) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            String string = jsonObject.get("section").getAsString();
+            this.addText(SEPARATOR_LINE, true);
+            this.addText(new LiteralText(string).formatted(Formatting.YELLOW), true);
+            this.addText(SEPARATOR_LINE, true);
+            this.addEmptyLine();
+            this.addEmptyLine();
+            JsonArray jsonArray2 = jsonObject.getAsJsonArray("titles");
+            for (JsonElement jsonElement2 : jsonArray2) {
+                JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
+                String string2 = jsonObject2.get("title").getAsString();
+                JsonArray jsonArray3 = jsonObject2.getAsJsonArray("names");
+                this.addText(new LiteralText(string2).formatted(Formatting.GRAY), false);
+                for (JsonElement jsonElement3 : jsonArray3) {
+                    String string3 = jsonElement3.getAsString();
+                    this.addText(new LiteralText(CENTERED_LINE_PREFIX).append(string3).formatted(Formatting.WHITE), false);
+                }
+                this.addEmptyLine();
+                this.addEmptyLine();
+            }
         }
     }
 
@@ -288,6 +303,12 @@ extends Screen {
         tessellator.draw();
         RenderSystem.disableBlend();
         super.render(matrices, mouseX, mouseY, delta);
+    }
+
+    @FunctionalInterface
+    @Environment(value=EnvType.CLIENT)
+    static interface class_6824 {
+        public void read(InputStreamReader var1) throws IOException;
     }
 }
 

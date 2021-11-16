@@ -6,12 +6,17 @@ package net.minecraft;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.block.BlockState;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
@@ -20,6 +25,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.noise.NoiseParametersKeys;
 import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
+import net.minecraft.world.tick.OrderedTick;
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
@@ -233,6 +239,51 @@ public class class_6748 {
         }
         Chunk chunk = this.field_35508.getChunk(((ChunkPos)mutableObject.getValue()).x, ((ChunkPos)mutableObject.getValue()).z);
         return chunk.getBiomeForNoiseGen(Math.min(mutable.getX() & 3, 3), mutable.getY(), Math.min(mutable.getZ() & 3, 3));
+    }
+
+    public static void method_39772(ChunkRegion chunkRegion, Chunk chunk) {
+        ChunkPos chunkPos = chunk.getPos();
+        boolean bl = chunk.usesOldNoise();
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ());
+        int i = Blender.OLD_HEIGHT_LIMIT.getBottomY();
+        int j = Blender.OLD_HEIGHT_LIMIT.getTopY() - 1;
+        if (bl) {
+            for (int k = 0; k < 16; ++k) {
+                for (int l = 0; l < 16; ++l) {
+                    class_6748.method_39773(chunk, mutable.set(blockPos, k, i - 1, l));
+                    class_6748.method_39773(chunk, mutable.set(blockPos, k, i, l));
+                    class_6748.method_39773(chunk, mutable.set(blockPos, k, j, l));
+                    class_6748.method_39773(chunk, mutable.set(blockPos, k, j + 1, l));
+                }
+            }
+        }
+        for (Direction direction : Direction.Type.HORIZONTAL) {
+            if (chunkRegion.getChunk(chunkPos.x + direction.getOffsetX(), chunkPos.z + direction.getOffsetZ()).usesOldNoise() == bl) continue;
+            int m = direction == Direction.EAST ? 15 : 0;
+            int n = direction == Direction.WEST ? 0 : 15;
+            int o = direction == Direction.SOUTH ? 15 : 0;
+            int p = direction == Direction.NORTH ? 0 : 15;
+            for (int q = m; q <= n; ++q) {
+                for (int r = o; r <= p; ++r) {
+                    int s = Math.min(j, chunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, q, r)) + 1;
+                    for (int t = i; t < s; ++t) {
+                        class_6748.method_39773(chunk, mutable.set(blockPos, q, t, r));
+                    }
+                }
+            }
+        }
+    }
+
+    private static void method_39773(Chunk chunk, BlockPos blockPos) {
+        FluidState fluidState;
+        BlockState blockState = chunk.getBlockState(blockPos);
+        if (blockState.isIn(BlockTags.LEAVES)) {
+            chunk.getBlockTickScheduler().scheduleTick(OrderedTick.create(blockState.getBlock(), blockPos, 0L));
+        }
+        if (!(fluidState = chunk.getFluidState(blockPos)).isEmpty()) {
+            chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(fluidState.getFluid(), blockPos, 0L));
+        }
     }
 
     record class_6782(int chunkX, int chunkZ, Blender blendingData) {

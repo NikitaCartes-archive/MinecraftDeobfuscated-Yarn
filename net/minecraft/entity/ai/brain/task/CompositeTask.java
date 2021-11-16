@@ -80,6 +80,9 @@ extends Task<E> {
         }
     }
 
+    /*
+     * Uses 'sealed' constructs - enablewith --sealed true
+     */
     public static enum RunMode {
         RUN_ONE{
 

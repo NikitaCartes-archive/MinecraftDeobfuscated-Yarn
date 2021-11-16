@@ -14,11 +14,11 @@ import net.minecraft.util.math.BlockPos;
 public class OxidizableStairsBlock
 extends StairsBlock
 implements Oxidizable {
-    private final Oxidizable.OxidizationLevel oxidizationLevel;
+    private final Oxidizable.OxidationLevel oxidationLevel;
 
-    public OxidizableStairsBlock(Oxidizable.OxidizationLevel oxidizationLevel, BlockState baseBlockState, AbstractBlock.Settings settings) {
+    public OxidizableStairsBlock(Oxidizable.OxidationLevel oxidationLevel, BlockState baseBlockState, AbstractBlock.Settings settings) {
         super(baseBlockState, settings);
-        this.oxidizationLevel = oxidizationLevel;
+        this.oxidationLevel = oxidationLevel;
     }
 
     @Override
@@ -32,8 +32,8 @@ implements Oxidizable {
     }
 
     @Override
-    public Oxidizable.OxidizationLevel getDegradationLevel() {
-        return this.oxidizationLevel;
+    public Oxidizable.OxidationLevel getDegradationLevel() {
+        return this.oxidationLevel;
     }
 
     @Override

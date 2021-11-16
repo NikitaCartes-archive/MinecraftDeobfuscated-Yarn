@@ -117,6 +117,7 @@ public enum Direction implements StringIdentifiable
     public Quaternion getRotationQuaternion() {
         Quaternion quaternion = Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f);
         return switch (this) {
+            default -> throw new IncompatibleClassChangeError();
             case DOWN -> Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f);
             case UP -> Quaternion.IDENTITY.copy();
             case NORTH -> {
@@ -132,7 +133,6 @@ public enum Direction implements StringIdentifiable
                 quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0f));
                 yield quaternion;
             }
-            default -> throw new IncompatibleClassChangeError();
         };
     }
 
@@ -150,6 +150,7 @@ public enum Direction implements StringIdentifiable
 
     public static Direction getLookDirectionForAxis(Entity entity, Axis axis) {
         return switch (axis) {
+            default -> throw new IncompatibleClassChangeError();
             case Axis.X -> {
                 if (EAST.pointsTo(entity.getYaw(1.0f))) {
                     yield EAST;
@@ -162,13 +163,7 @@ public enum Direction implements StringIdentifiable
                 }
                 yield NORTH;
             }
-            case Axis.Y -> {
-                if (entity.getPitch(1.0f) < 0.0f) {
-                    yield UP;
-                }
-                yield DOWN;
-            }
-            default -> throw new IncompatibleClassChangeError();
+            case Axis.Y -> entity.getPitch(1.0f) < 0.0f ? UP : DOWN;
         };
     }
 
@@ -178,6 +173,7 @@ public enum Direction implements StringIdentifiable
 
     public Direction rotateClockwise(Axis axis) {
         return switch (axis) {
+            default -> throw new IncompatibleClassChangeError();
             case Axis.X -> {
                 if (this == WEST || this == EAST) {
                     yield this;
@@ -190,18 +186,13 @@ public enum Direction implements StringIdentifiable
                 }
                 yield this.rotateYClockwise();
             }
-            case Axis.Z -> {
-                if (this == NORTH || this == SOUTH) {
-                    yield this;
-                }
-                yield this.rotateZClockwise();
-            }
-            default -> throw new IncompatibleClassChangeError();
+            case Axis.Z -> this == NORTH || this == SOUTH ? this : this.rotateZClockwise();
         };
     }
 
     public Direction rotateCounterclockwise(Axis axis) {
         return switch (axis) {
+            default -> throw new IncompatibleClassChangeError();
             case Axis.X -> {
                 if (this == WEST || this == EAST) {
                     yield this;
@@ -214,13 +205,7 @@ public enum Direction implements StringIdentifiable
                 }
                 yield this.rotateYCounterclockwise();
             }
-            case Axis.Z -> {
-                if (this == NORTH || this == SOUTH) {
-                    yield this;
-                }
-                yield this.rotateZCounterclockwise();
-            }
-            default -> throw new IncompatibleClassChangeError();
+            case Axis.Z -> this == NORTH || this == SOUTH ? this : this.rotateZCounterclockwise();
         };
     }
 
@@ -340,6 +325,7 @@ public enum Direction implements StringIdentifiable
 
     public static Direction from(Axis axis, AxisDirection direction) {
         return switch (axis) {
+            default -> throw new IncompatibleClassChangeError();
             case Axis.X -> {
                 if (direction == AxisDirection.POSITIVE) {
                     yield EAST;
@@ -352,13 +338,7 @@ public enum Direction implements StringIdentifiable
                 }
                 yield DOWN;
             }
-            case Axis.Z -> {
-                if (direction == AxisDirection.POSITIVE) {
-                    yield SOUTH;
-                }
-                yield NORTH;
-            }
-            default -> throw new IncompatibleClassChangeError();
+            case Axis.Z -> direction == AxisDirection.POSITIVE ? SOUTH : NORTH;
         };
     }
 
@@ -437,6 +417,9 @@ public enum Direction implements StringIdentifiable
         }, Long2ObjectOpenHashMap::new));
     }
 
+    /*
+     * Uses 'sealed' constructs - enablewith --sealed true
+     */
     public static enum Axis implements StringIdentifiable,
     Predicate<Direction>
     {
@@ -535,9 +518,9 @@ public enum Direction implements StringIdentifiable
 
         public Type getType() {
             return switch (this) {
+                default -> throw new IncompatibleClassChangeError();
                 case X, Z -> Type.HORIZONTAL;
                 case Y -> Type.VERTICAL;
-                default -> throw new IncompatibleClassChangeError();
             };
         }
 

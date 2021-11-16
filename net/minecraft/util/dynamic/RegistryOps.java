@@ -104,7 +104,7 @@ extends ForwardingDynamicOps<T> {
      * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.
      */
     private <E> DataResult<Supplier<E>> readSupplier(RegistryKey<? extends Registry<E>> registryKey, MutableRegistry<E> mutableRegistry, Codec<E> codec, RegistryKey<E> registryKey2) {
-        DataResult<Supplier<E>> dataResult2;
+        DataResult<Supplier<Object>> dataResult2;
         ValueHolder<E> valueHolder = this.getValueHolder(registryKey);
         DataResult dataResult = valueHolder.values.get(registryKey2);
         if (dataResult != null) {
@@ -113,7 +113,7 @@ extends ForwardingDynamicOps<T> {
         valueHolder.values.put(registryKey2, DataResult.success(RegistryOps.method_39744(mutableRegistry, registryKey2)));
         Optional<DataResult<EntryLoader.Entry<E>>> optional = this.entryLoader.load(this.entryOps, registryKey, registryKey2, codec);
         if (optional.isEmpty()) {
-            dataResult2 = DataResult.success(RegistryOps.method_39743(mutableRegistry, registryKey2), Lifecycle.stable());
+            dataResult2 = mutableRegistry.contains(registryKey2) ? DataResult.success(RegistryOps.method_39743(mutableRegistry, registryKey2), Lifecycle.stable()) : DataResult.error("Missing referenced custom/removed registry entry for registry " + registryKey + " named " + registryKey2.getValue());
         } else {
             DataResult<EntryLoader.Entry<E>> dataResult3 = optional.get();
             Optional<EntryLoader.Entry<E>> optional2 = dataResult3.result();

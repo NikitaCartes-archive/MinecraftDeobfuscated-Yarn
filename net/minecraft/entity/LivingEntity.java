@@ -1353,11 +1353,12 @@ extends Entity {
         return SoundEvents.ENTITY_GENERIC_DEATH;
     }
 
-    protected SoundEvent getFallSound(int distance) {
-        if (distance > 4) {
-            return SoundEvents.ENTITY_GENERIC_BIG_FALL;
-        }
-        return SoundEvents.ENTITY_GENERIC_SMALL_FALL;
+    private SoundEvent getFallSound(int distance) {
+        return distance > 4 ? this.method_39760().big() : this.method_39760().small();
+    }
+
+    public class_6823 method_39760() {
+        return new class_6823(SoundEvents.ENTITY_GENERIC_SMALL_FALL, SoundEvents.ENTITY_GENERIC_BIG_FALL);
     }
 
     protected SoundEvent getDrinkSound(ItemStack stack) {
@@ -3158,6 +3159,9 @@ extends Entity {
         this.setUuid(packet.getUuid());
         this.updatePositionAndAngles(d, e, f, g, h);
         this.setVelocity((float)packet.getVelocityX() / 8000.0f, (float)packet.getVelocityY() / 8000.0f, (float)packet.getVelocityZ() / 8000.0f);
+    }
+
+    public record class_6823(SoundEvent small, SoundEvent big) {
     }
 }
 

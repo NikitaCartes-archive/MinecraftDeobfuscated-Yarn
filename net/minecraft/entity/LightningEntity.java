@@ -95,7 +95,7 @@ extends Entity {
                     this.spawnFire(4);
                 }
                 this.powerLightningRod();
-                LightningEntity.cleanOxidization(this.world, this.getAffectedBlockPos());
+                LightningEntity.cleanOxidation(this.world, this.getAffectedBlockPos());
                 this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
             }
         }
@@ -156,7 +156,7 @@ extends Entity {
         }
     }
 
-    private static void cleanOxidization(World world, BlockPos pos) {
+    private static void cleanOxidation(World world, BlockPos pos) {
         BlockState blockState2;
         BlockPos blockPos;
         BlockState blockState = world.getBlockState(pos);
@@ -175,19 +175,19 @@ extends Entity {
         int i = world.random.nextInt(3) + 3;
         for (int j = 0; j < i; ++j) {
             int k = world.random.nextInt(8) + 1;
-            LightningEntity.cleanOxidizationAround(world, blockPos, mutable, k);
+            LightningEntity.cleanOxidationAround(world, blockPos, mutable, k);
         }
     }
 
-    private static void cleanOxidizationAround(World world, BlockPos pos, BlockPos.Mutable mutablePos, int count) {
+    private static void cleanOxidationAround(World world, BlockPos pos, BlockPos.Mutable mutablePos, int count) {
         Optional<BlockPos> optional;
         mutablePos.set(pos);
-        for (int i = 0; i < count && (optional = LightningEntity.cleanOxidizationAround(world, mutablePos)).isPresent(); ++i) {
+        for (int i = 0; i < count && (optional = LightningEntity.cleanOxidationAround(world, mutablePos)).isPresent(); ++i) {
             mutablePos.set(optional.get());
         }
     }
 
-    private static Optional<BlockPos> cleanOxidizationAround(World world, BlockPos pos) {
+    private static Optional<BlockPos> cleanOxidationAround(World world, BlockPos pos) {
         for (BlockPos blockPos : BlockPos.iterateRandomly(world.random, 10, pos, 1)) {
             BlockState blockState = world.getBlockState(blockPos);
             if (!(blockState.getBlock() instanceof Oxidizable)) continue;

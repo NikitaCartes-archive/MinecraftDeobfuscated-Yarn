@@ -34,7 +34,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtList
 extends AbstractNbtList<NbtElement> {
-    private static final int field_33199 = 296;
+    private static final int SIZE = 296;
     public static final NbtType<NbtList> TYPE = new NbtType<NbtList>(){
 
         @Override

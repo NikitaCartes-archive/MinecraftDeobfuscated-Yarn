@@ -309,10 +309,9 @@ extends World {
 
     @Nullable
     private Block getBlockParticle() {
-        Item item;
         ItemStack itemStack;
-        Item item2;
-        if (this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE && BLOCK_MARKER_ITEMS.contains(item2 = (itemStack = this.client.player.getMainHandStack()).getItem()) && (item = item2) instanceof BlockItem) {
+        Item item;
+        if (this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE && BLOCK_MARKER_ITEMS.contains(item = (itemStack = this.client.player.getMainHandStack()).getItem()) && item instanceof BlockItem) {
             BlockItem blockItem = (BlockItem)item;
             return blockItem.getBlock();
         }

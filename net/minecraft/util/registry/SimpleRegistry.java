@@ -73,10 +73,10 @@ extends MutableRegistry<T> {
         this.entryToRawId.put((T)entry, rawId);
         this.randomEntries = null;
         if (checkDuplicateKeys && this.keyToEntry.containsKey(key)) {
-            LOGGER.debug("Adding duplicate key '{}' to registry", (Object)key);
+            Util.error("Adding duplicate key '" + key + "' to registry");
         }
         if (this.idToEntry.containsValue(entry)) {
-            LOGGER.error("Adding duplicate value '{}' to registry", (Object)entry);
+            Util.error("Adding duplicate value '" + entry + "' to registry");
         }
         this.idToEntry.put(key.getValue(), entry);
         this.keyToEntry.put(key, entry);

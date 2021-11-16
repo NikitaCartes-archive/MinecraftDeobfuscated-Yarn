@@ -89,7 +89,6 @@ public class OverworldBiomeCreator {
         SpawnSettings.Builder builder = new SpawnSettings.Builder();
         DefaultBiomeFeatures.addJungleMobs(builder);
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, 40, 1, 2)).spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, 3)).spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 1, 1, 2));
-        builder.playerSpawnFriendly();
         return OverworldBiomeCreator.createJungleFeatures(0.9f, false, false, true, builder);
     }
 
@@ -181,8 +180,6 @@ public class OverworldBiomeCreator {
             DefaultBiomeFeatures.addPlainsTallGrass(builder2);
             if (bl) {
                 builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.PATCH_SUNFLOWER);
-            } else {
-                builder.playerSpawnFriendly();
             }
         }
         DefaultBiomeFeatures.addDefaultOres(builder2);
@@ -381,7 +378,7 @@ public class OverworldBiomeCreator {
         if (bl3) {
             builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
         } else if (!bl) {
-            builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4)).playerSpawnFriendly();
+            builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4));
         }
         float f = bl ? 0.6f : 0.7f;
         return OverworldBiomeCreator.method_39152(Biome.Precipitation.RAIN, Biome.Category.FOREST, f, bl ? 0.6f : 0.8f, builder2, builder, field_35436);
@@ -391,9 +388,6 @@ public class OverworldBiomeCreator {
         SpawnSettings.Builder builder = new SpawnSettings.Builder();
         DefaultBiomeFeatures.addFarmAnimals(builder);
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 4)).spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3)).spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
-        if (!cold) {
-            builder.playerSpawnFriendly();
-        }
         DefaultBiomeFeatures.addBatsAndMonsters(builder);
         float f = cold ? -0.5f : 0.25f;
         GenerationSettings.Builder builder2 = new GenerationSettings.Builder();

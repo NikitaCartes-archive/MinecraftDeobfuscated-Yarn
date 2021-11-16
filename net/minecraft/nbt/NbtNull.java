@@ -19,7 +19,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtNull
 implements NbtElement {
-    private static final int field_33193 = 64;
+    private static final int SIZE = 64;
     public static final NbtType<NbtNull> TYPE = new NbtType<NbtNull>(){
 
         @Override

@@ -151,7 +151,7 @@ implements BiomeAccess.Storage {
 
     public abstract ChunkGenerator withSeed(long var1);
 
-    public CompletableFuture<Chunk> populateBiomes(Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
+    public CompletableFuture<Chunk> populateBiomes(Registry<Biome> registry, Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
         return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
             chunk.method_38257(this.biomeSource::getBiome, this.getMultiNoiseSampler());
             return chunk;
@@ -311,22 +311,24 @@ implements BiomeAccess.Storage {
      * Determines which structures should start in the given chunk and creates their starting points.
      */
     public void setStructureStarts(DynamicRegistryManager registryManager, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long worldSeed) {
+        StructureStart<?> structureStart;
         ChunkPos chunkPos = chunk.getPos();
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk);
         StructureConfig structureConfig = this.structuresConfig.getForType(StructureFeature.STRONGHOLD);
-        if (structureConfig != null) {
-            StructureStart<?> structureStart = ConfiguredStructureFeatures.STRONGHOLD.tryPlaceStart(registryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, ChunkGenerator.getStructureReferences(structureAccessor, chunk, chunkSectionPos, StructureFeature.STRONGHOLD), structureConfig, chunk, ChunkGenerator::canPlaceStrongholdInBiome);
-            structureAccessor.setStructureStart(chunkSectionPos, StructureFeature.STRONGHOLD, structureStart, chunk);
+        if (!(structureConfig == null || (structureStart = structureAccessor.getStructureStart(chunkSectionPos, StructureFeature.STRONGHOLD, chunk)) != null && structureStart.hasChildren())) {
+            StructureStart<?> structureStart2 = ConfiguredStructureFeatures.STRONGHOLD.tryPlaceStart(registryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, ChunkGenerator.getStructureReferences(structureAccessor, chunk, chunkSectionPos, StructureFeature.STRONGHOLD), structureConfig, chunk, ChunkGenerator::canPlaceStrongholdInBiome);
+            structureAccessor.setStructureStart(chunkSectionPos, StructureFeature.STRONGHOLD, structureStart2, chunk);
         }
         Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
         block0: for (StructureFeature structureFeature : Registry.STRUCTURE_FEATURE) {
+            StructureStart<?> structureStart3;
             StructureConfig structureConfig2;
-            if (structureFeature == StructureFeature.STRONGHOLD || (structureConfig2 = this.structuresConfig.getForType(structureFeature)) == null) continue;
+            if (structureFeature == StructureFeature.STRONGHOLD || (structureConfig2 = this.structuresConfig.getForType(structureFeature)) == null || (structureStart3 = structureAccessor.getStructureStart(chunkSectionPos, structureFeature, chunk)) != null && structureStart3.hasChildren()) continue;
             int i = ChunkGenerator.getStructureReferences(structureAccessor, chunk, chunkSectionPos, structureFeature);
             for (Map.Entry entry : ((ImmutableMap)this.structuresConfig.getConfiguredStructureFeature(structureFeature).asMap()).entrySet()) {
-                StructureStart<?> structureStart2 = ((ConfiguredStructureFeature)entry.getKey()).tryPlaceStart(registryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, i, structureConfig2, chunk, b -> this.testBiomeByKey(registry, ((Collection)entry.getValue())::contains, (Biome)b));
-                if (!structureStart2.hasChildren()) continue;
-                structureAccessor.setStructureStart(chunkSectionPos, structureFeature, structureStart2, chunk);
+                StructureStart<?> structureStart4 = ((ConfiguredStructureFeature)entry.getKey()).tryPlaceStart(registryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, i, structureConfig2, chunk, b -> this.testBiomeByKey(registry, ((Collection)entry.getValue())::contains, (Biome)b));
+                if (!structureStart4.hasChildren()) continue;
+                structureAccessor.setStructureStart(chunkSectionPos, structureFeature, structureStart4, chunk);
                 continue block0;
             }
             structureAccessor.setStructureStart(chunkSectionPos, structureFeature, StructureStart.DEFAULT, chunk);

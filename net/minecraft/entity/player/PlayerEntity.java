@@ -1461,11 +1461,8 @@ extends LivingEntity {
     }
 
     @Override
-    protected SoundEvent getFallSound(int distance) {
-        if (distance > 4) {
-            return SoundEvents.ENTITY_PLAYER_BIG_FALL;
-        }
-        return SoundEvents.ENTITY_PLAYER_SMALL_FALL;
+    public LivingEntity.class_6823 method_39760() {
+        return new LivingEntity.class_6823(SoundEvents.ENTITY_PLAYER_SMALL_FALL, SoundEvents.ENTITY_PLAYER_BIG_FALL);
     }
 
     @Override

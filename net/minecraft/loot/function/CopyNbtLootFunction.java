@@ -184,6 +184,9 @@ extends ConditionalLootFunction {
         }
     }
 
+    /*
+     * Uses 'sealed' constructs - enablewith --sealed true
+     */
     public static enum Operator {
         REPLACE("replace"){
 

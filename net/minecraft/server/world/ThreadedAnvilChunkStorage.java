@@ -444,13 +444,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 return;
             }
             if (this.chunksToUnload.remove(pos, (Object)holder) && chunk != null) {
-                Chunk chunk2;
                 if (chunk instanceof WorldChunk) {
                     ((WorldChunk)chunk).setLoadedToWorld(false);
                 }
                 this.save((Chunk)chunk);
-                if (this.loadedChunks.remove(pos) && (chunk2 = chunk) instanceof WorldChunk) {
-                    WorldChunk worldChunk = (WorldChunk)chunk2;
+                if (this.loadedChunks.remove(pos) && chunk instanceof WorldChunk) {
+                    WorldChunk worldChunk = (WorldChunk)chunk;
                     this.world.unloadEntities(worldChunk);
                 }
                 this.lightingProvider.updateChunkStatus(chunk.getPos());

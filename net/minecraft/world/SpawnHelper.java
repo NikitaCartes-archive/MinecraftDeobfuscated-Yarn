@@ -72,8 +72,7 @@ public final class SpawnHelper {
         for (Entity entity : entities) {
             SpawnGroup spawnGroup;
             MobEntity mobEntity;
-            Entity entity2 = entity;
-            if (entity2 instanceof MobEntity && ((mobEntity = (MobEntity)entity2).isPersistent() || mobEntity.cannotDespawn()) || (spawnGroup = entity.getType().getSpawnGroup()) == SpawnGroup.MISC) continue;
+            if (entity instanceof MobEntity && ((mobEntity = (MobEntity)entity).isPersistent() || mobEntity.cannotDespawn()) || (spawnGroup = entity.getType().getSpawnGroup()) == SpawnGroup.MISC) continue;
             BlockPos blockPos = entity.getBlockPos();
             chunkSource.query(ChunkPos.toLong(blockPos), worldChunk -> {
                 SpawnSettings.SpawnDensity spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, worldChunk).getSpawnSettings().getSpawnDensity(entity.getType());

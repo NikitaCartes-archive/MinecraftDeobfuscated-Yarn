@@ -306,9 +306,8 @@ public final class VanillaTerrainParameters {
             field_35463 = StringIdentifiable.createCodec(LocationFunction::values, field_35462::get);
             field_35464 = field_35463.flatComapMap(locationFunction -> locationFunction, toFloatFunction -> {
                 DataResult<Object> dataResult;
-                ToFloatFunction toFloatFunction2 = toFloatFunction;
-                if (toFloatFunction2 instanceof LocationFunction) {
-                    LocationFunction locationFunction = (LocationFunction)toFloatFunction2;
+                if (toFloatFunction instanceof LocationFunction) {
+                    LocationFunction locationFunction = (LocationFunction)toFloatFunction;
                     dataResult = DataResult.success(locationFunction);
                 } else {
                     dataResult = DataResult.error("Not a coordinate resolver: " + toFloatFunction);

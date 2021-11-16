@@ -120,11 +120,11 @@ public class TelemetrySender {
                 return 99;
             }
             return switch (this.gameMode) {
+                default -> throw new IncompatibleClassChangeError();
                 case GameMode.SURVIVAL -> 0;
                 case GameMode.CREATIVE -> 1;
                 case GameMode.ADVENTURE -> 2;
                 case GameMode.SPECTATOR -> 6;
-                default -> throw new IncompatibleClassChangeError();
             };
         }
     }

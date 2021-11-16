@@ -115,9 +115,8 @@ public abstract class MobSpawnerLogic {
                 return;
             }
             entity2.refreshPositionAndAngles(entity2.getX(), entity2.getY(), entity2.getZ(), world.random.nextFloat() * 360.0f, 0.0f);
-            Entity entity3 = entity2;
-            if (entity3 instanceof MobEntity) {
-                MobEntity mobEntity = (MobEntity)entity3;
+            if (entity2 instanceof MobEntity) {
+                MobEntity mobEntity = (MobEntity)entity2;
                 if (this.spawnEntry.getCustomSpawnRules().isEmpty() && !mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) continue;
                 if (this.spawnEntry.getNbt().getSize() == 1 && this.spawnEntry.getNbt().contains("id", 8)) {
                     ((MobEntity)entity2).initialize(world, world.getLocalDifficulty(entity2.getBlockPos()), SpawnReason.SPAWNER, null, null);

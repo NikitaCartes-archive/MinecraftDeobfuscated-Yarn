@@ -95,11 +95,14 @@ extends Screen {
                     ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
                     ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getProfile()));
                 } catch (Exception exception) {
+                    Exception exception2;
                     if (ConnectScreen.this.connectingCancelled) {
                         return;
                     }
+                    Throwable throwable = exception.getCause();
+                    Exception exception3 = throwable instanceof Exception ? (exception2 = (Exception)throwable) : exception;
                     LOGGER.error("Couldn't connect to server", (Throwable)exception);
-                    String string = inetSocketAddress == null ? exception.toString() : exception.toString().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "");
+                    String string = inetSocketAddress == null ? exception3.getMessage() : exception3.getMessage().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "").replaceAll(inetSocketAddress.toString(), "");
                     client.execute(() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string))));
                 }
             }
