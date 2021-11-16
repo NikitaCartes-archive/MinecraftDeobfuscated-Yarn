@@ -25,8 +25,7 @@ public class NetherConfiguredFeatures {
 		"small_basalt_columns", Feature.BASALT_COLUMNS.configure(new BasaltColumnsFeatureConfig(ConstantIntProvider.create(1), UniformIntProvider.create(1, 4)))
 	);
 	public static final ConfiguredFeature<BasaltColumnsFeatureConfig, ?> SMALL_BASALT_COLUMNS_TEMP = ConfiguredFeatures.register(
-		"large_basalt_columns_temp",
-		Feature.BASALT_COLUMNS.configure(new BasaltColumnsFeatureConfig(UniformIntProvider.create(2, 3), UniformIntProvider.create(5, 10)))
+		"large_basalt_columns", Feature.BASALT_COLUMNS.configure(new BasaltColumnsFeatureConfig(UniformIntProvider.create(2, 3), UniformIntProvider.create(5, 10)))
 	);
 	public static final ConfiguredFeature<ReplaceBlobsFeatureConfig, ?> BASALT_BLOBS = ConfiguredFeatures.register(
 		"basalt_blobs",

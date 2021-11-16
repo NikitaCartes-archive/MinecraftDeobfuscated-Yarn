@@ -1624,8 +1624,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected SoundEvent getFallSound(int distance) {
-		return distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL;
+	public LivingEntity.class_6823 method_39760() {
+		return new LivingEntity.class_6823(SoundEvents.ENTITY_PLAYER_SMALL_FALL, SoundEvents.ENTITY_PLAYER_BIG_FALL);
 	}
 
 	@Override

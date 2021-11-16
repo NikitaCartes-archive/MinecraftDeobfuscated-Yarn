@@ -122,7 +122,6 @@ public class OverworldBiomeCreator {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, 40, 1, 2))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, 3))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 1, 1, 2));
-		builder.playerSpawnFriendly();
 		return createJungleFeatures(0.9F, false, false, true, builder);
 	}
 
@@ -219,8 +218,6 @@ public class OverworldBiomeCreator {
 			DefaultBiomeFeatures.addPlainsTallGrass(builder2);
 			if (bl) {
 				builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.PATCH_SUNFLOWER);
-			} else {
-				builder.playerSpawnFriendly();
 			}
 		}
 
@@ -485,7 +482,7 @@ public class OverworldBiomeCreator {
 		if (bl3) {
 			builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
 		} else if (!bl) {
-			builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4)).playerSpawnFriendly();
+			builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4));
 		}
 
 		float f = bl ? 0.6F : 0.7F;
@@ -498,10 +495,6 @@ public class OverworldBiomeCreator {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 4))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
-		if (!cold) {
-			builder.playerSpawnFriendly();
-		}
-
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		float f = cold ? -0.5F : 0.25F;
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder();

@@ -39,26 +39,20 @@ public class SpawnSettings {
 						.forGetter(spawnSettings -> spawnSettings.spawners),
 					Codec.simpleMap(Registry.ENTITY_TYPE.method_39673(), SpawnSettings.SpawnDensity.CODEC, Registry.ENTITY_TYPE)
 						.fieldOf("spawn_costs")
-						.forGetter(spawnSettings -> spawnSettings.spawnCosts),
-					Codec.BOOL.fieldOf("player_spawn_friendly").orElse(false).forGetter(SpawnSettings::isPlayerSpawnFriendly)
+						.forGetter(spawnSettings -> spawnSettings.spawnCosts)
 				)
 				.apply(instance, SpawnSettings::new)
 	);
 	private final float creatureSpawnProbability;
 	private final Map<SpawnGroup, Pool<SpawnSettings.SpawnEntry>> spawners;
 	private final Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts;
-	private final boolean playerSpawnFriendly;
 
 	SpawnSettings(
-		float creatureSpawnProbability,
-		Map<SpawnGroup, Pool<SpawnSettings.SpawnEntry>> spawners,
-		Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts,
-		boolean playerSpawnFriendly
+		float creatureSpawnProbability, Map<SpawnGroup, Pool<SpawnSettings.SpawnEntry>> spawners, Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts
 	) {
 		this.creatureSpawnProbability = creatureSpawnProbability;
 		this.spawners = ImmutableMap.copyOf(spawners);
 		this.spawnCosts = ImmutableMap.copyOf(spawnCosts);
-		this.playerSpawnFriendly = playerSpawnFriendly;
 	}
 
 	public Pool<SpawnSettings.SpawnEntry> getSpawnEntries(SpawnGroup spawnGroup) {
@@ -74,16 +68,11 @@ public class SpawnSettings {
 		return this.creatureSpawnProbability;
 	}
 
-	public boolean isPlayerSpawnFriendly() {
-		return this.playerSpawnFriendly;
-	}
-
 	public static class Builder {
 		private final Map<SpawnGroup, List<SpawnSettings.SpawnEntry>> spawners = (Map<SpawnGroup, List<SpawnSettings.SpawnEntry>>)Stream.of(SpawnGroup.values())
 			.collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> Lists.newArrayList()));
 		private final Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts = Maps.<EntityType<?>, SpawnSettings.SpawnDensity>newLinkedHashMap();
 		private float creatureSpawnProbability = 0.1F;
-		private boolean playerSpawnFriendly;
 
 		public SpawnSettings.Builder spawn(SpawnGroup spawnGroup, SpawnSettings.SpawnEntry spawnEntry) {
 			((List)this.spawners.get(spawnGroup)).add(spawnEntry);
@@ -100,11 +89,6 @@ public class SpawnSettings {
 			return this;
 		}
 
-		public SpawnSettings.Builder playerSpawnFriendly() {
-			this.playerSpawnFriendly = true;
-			return this;
-		}
-
 		public SpawnSettings build() {
 			return new SpawnSettings(
 				this.creatureSpawnProbability,
@@ -112,8 +96,7 @@ public class SpawnSettings {
 					.entrySet()
 					.stream()
 					.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> Pool.of((List)entry.getValue()))),
-				ImmutableMap.copyOf(this.spawnCosts),
-				this.playerSpawnFriendly
+				ImmutableMap.copyOf(this.spawnCosts)
 			);
 		}
 	}

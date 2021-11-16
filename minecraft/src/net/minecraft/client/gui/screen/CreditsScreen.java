@@ -9,7 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.BufferedReader;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -125,70 +125,80 @@ public class CreditsScreen extends Screen {
 		if (this.credits == null) {
 			this.credits = Lists.<OrderedText>newArrayList();
 			this.centeredLines = new IntOpenHashSet();
-			Resource resource = null;
+			if (this.endCredits) {
+				this.method_39775("texts/end.txt", this::method_39774);
+			}
 
-			try {
-				if (this.endCredits) {
-					resource = this.client.getResourceManager().getResource(new Identifier("texts/end.txt"));
-					InputStream inputStream = resource.getInputStream();
-					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-					Random random = new Random(8124371L);
+			this.method_39775("texts/credits.json", this::method_39776);
+			if (this.endCredits) {
+				this.method_39775("texts/postcredits.txt", this::method_39774);
+			}
 
-					String string;
-					while ((string = bufferedReader.readLine()) != null) {
-						string = string.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+			this.creditsHeight = this.credits.size() * 12;
+		}
+	}
 
-						int i;
-						while ((i = string.indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
-							String string2 = string.substring(0, i);
-							String string3 = string.substring(i + OBFUSCATION_PLACEHOLDER.length());
-							string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
-						}
+	private void method_39775(String string, CreditsScreen.class_6824 arg) {
+		Resource resource = null;
 
-						this.addText(string);
-						this.addEmptyLine();
-					}
+		try {
+			resource = this.client.getResourceManager().getResource(new Identifier(string));
+			InputStreamReader inputStreamReader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+			arg.read(inputStreamReader);
+		} catch (Exception var8) {
+			LOGGER.error("Couldn't load credits", (Throwable)var8);
+		} finally {
+			IOUtils.closeQuietly(resource);
+		}
+	}
 
-					inputStream.close();
+	private void method_39774(InputStreamReader inputStreamReader) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+		Random random = new Random(8124371L);
 
-					for (int i = 0; i < 8; i++) {
-						this.addEmptyLine();
-					}
+		String string;
+		while ((string = bufferedReader.readLine()) != null) {
+			string = string.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+
+			int i;
+			while ((i = string.indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
+				String string2 = string.substring(0, i);
+				String string3 = string.substring(i + OBFUSCATION_PLACEHOLDER.length());
+				string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
+			}
+
+			this.addText(string);
+			this.addEmptyLine();
+		}
+
+		for (int i = 0; i < 8; i++) {
+			this.addEmptyLine();
+		}
+	}
+
+	private void method_39776(InputStreamReader inputStreamReader) {
+		for (JsonElement jsonElement : JsonHelper.deserializeArray(inputStreamReader)) {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			String string = jsonObject.get("section").getAsString();
+			this.addText(SEPARATOR_LINE, true);
+			this.addText(new LiteralText(string).formatted(Formatting.YELLOW), true);
+			this.addText(SEPARATOR_LINE, true);
+			this.addEmptyLine();
+			this.addEmptyLine();
+
+			for (JsonElement jsonElement2 : jsonObject.getAsJsonArray("titles")) {
+				JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
+				String string2 = jsonObject2.get("title").getAsString();
+				JsonArray jsonArray3 = jsonObject2.getAsJsonArray("names");
+				this.addText(new LiteralText(string2).formatted(Formatting.GRAY), false);
+
+				for (JsonElement jsonElement3 : jsonArray3) {
+					String string3 = jsonElement3.getAsString();
+					this.addText(new LiteralText("           ").append(string3).formatted(Formatting.WHITE), false);
 				}
 
-				resource = this.client.getResourceManager().getResource(new Identifier("texts/credits.json"));
-				JsonArray jsonArray = JsonHelper.deserializeArray(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-
-				for (JsonElement jsonElement : jsonArray.getAsJsonArray()) {
-					JsonObject jsonObject = jsonElement.getAsJsonObject();
-					String string2 = jsonObject.get("section").getAsString();
-					this.addText(SEPARATOR_LINE, true);
-					this.addText(new LiteralText(string2).formatted(Formatting.YELLOW), true);
-					this.addText(SEPARATOR_LINE, true);
-					this.addEmptyLine();
-					this.addEmptyLine();
-
-					for (JsonElement jsonElement2 : jsonObject.getAsJsonArray("titles")) {
-						JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
-						String string4 = jsonObject2.get("title").getAsString();
-						JsonArray jsonArray4 = jsonObject2.getAsJsonArray("names");
-						this.addText(new LiteralText(string4).formatted(Formatting.GRAY), false);
-
-						for (JsonElement jsonElement3 : jsonArray4) {
-							String string5 = jsonElement3.getAsString();
-							this.addText(new LiteralText("           ").append(string5).formatted(Formatting.WHITE), false);
-						}
-
-						this.addEmptyLine();
-						this.addEmptyLine();
-					}
-				}
-
-				this.creditsHeight = this.credits.size() * 12;
-			} catch (Exception var20) {
-				LOGGER.error("Couldn't load credits", (Throwable)var20);
-			} finally {
-				IOUtils.closeQuietly(resource);
+				this.addEmptyLine();
+				this.addEmptyLine();
 			}
 		}
 	}
@@ -298,5 +308,11 @@ public class CreditsScreen extends Screen {
 		tessellator.draw();
 		RenderSystem.disableBlend();
 		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	@FunctionalInterface
+	@Environment(EnvType.CLIENT)
+	interface class_6824 {
+		void read(InputStreamReader inputStreamReader) throws IOException;
 	}
 }

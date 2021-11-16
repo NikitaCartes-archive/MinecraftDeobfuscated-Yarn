@@ -42,6 +42,7 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.chunk.BelowZeroRetrogen;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ProtoChunk;
@@ -124,18 +125,22 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public CompletableFuture<Chunk> populateBiomes(Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateBiomes(Registry<Biome> registry, Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
 		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
-			this.method_38327(arg, structureAccessor, chunk);
+			this.method_38327(registry, arg, structureAccessor, chunk);
 			return chunk;
 		}), Util.getMainWorkerExecutor());
 	}
 
-	private void method_38327(class_6748 arg, StructureAccessor world, Chunk chunk) {
+	private void method_38327(Registry<Biome> registry, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
-			this.noiseColumnSampler, () -> new StructureWeightSampler(world, chunk), (ChunkGeneratorSettings)this.settings.get(), this.fluidLevelSampler, arg
+			this.noiseColumnSampler,
+			() -> new StructureWeightSampler(structureAccessor, chunk),
+			(ChunkGeneratorSettings)this.settings.get(),
+			this.fluidLevelSampler,
+			arg
 		);
-		BiomeSupplier biomeSupplier = arg.method_39563(this.biomeSource);
+		BiomeSupplier biomeSupplier = BelowZeroRetrogen.method_39767(arg.method_39563(this.biomeSource), registry, chunk);
 		chunk.method_38257(biomeSupplier, (i, y, j) -> this.noiseColumnSampler.method_39329(i, y, j, chunkNoiseSampler.createMultiNoisePoint(i, j)));
 	}
 
@@ -468,7 +473,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	public void populateEntities(ChunkRegion region) {
 		if (!((ChunkGeneratorSettings)this.settings.get()).isMobGenerationDisabled()) {
 			ChunkPos chunkPos = region.getCenterPos();
-			Biome biome = region.getBiome(chunkPos.getStartPos());
+			Biome biome = region.getBiome(chunkPos.getStartPos().withY(region.getTopY() - 1));
 			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
 			chunkRandom.setPopulationSeed(region.getSeed(), chunkPos.getStartX(), chunkPos.getStartZ());
 			SpawnHelper.populateEntities(region, biome, chunkPos, chunkRandom);

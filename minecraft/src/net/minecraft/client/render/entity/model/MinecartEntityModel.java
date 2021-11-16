@@ -43,15 +43,9 @@ import net.minecraft.entity.Entity;
 @Environment(EnvType.CLIENT)
 public class MinecartEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
 	private final ModelPart root;
-	/**
-	 * The key of the contents model part, whose value is {@value}.
-	 */
-	private static final String CONTENTS = "contents";
-	private final ModelPart contents;
 
 	public MinecartEntityModel(ModelPart root) {
 		this.root = root;
-		this.contents = root.getChild("contents");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -80,17 +74,11 @@ public class MinecartEntityModel<T extends Entity> extends SinglePartEntityModel
 			"left", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -9.0F, -1.0F, 16.0F, 8.0F, 2.0F), ModelTransform.of(0.0F, 4.0F, -7.0F, 0.0F, (float) Math.PI, 0.0F)
 		);
 		modelPartData.addChild("right", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -9.0F, -1.0F, 16.0F, 8.0F, 2.0F), ModelTransform.pivot(0.0F, 4.0F, 7.0F));
-		modelPartData.addChild(
-			"contents",
-			ModelPartBuilder.create().uv(44, 10).cuboid(-9.0F, -7.0F, -1.0F, 18.0F, 14.0F, 1.0F),
-			ModelTransform.of(0.0F, 4.0F, 0.0F, (float) (-Math.PI / 2), 0.0F, 0.0F)
-		);
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.contents.pivotY = 4.0F - animationProgress;
 	}
 
 	@Override

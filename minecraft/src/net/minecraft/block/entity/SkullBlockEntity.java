@@ -35,16 +35,16 @@ public class SkullBlockEntity extends BlockEntity {
 		super(BlockEntityType.SKULL, pos, state);
 	}
 
-	public static void setUserCache(UserCache value) {
-		userCache = value;
-	}
-
-	public static void setSessionService(MinecraftSessionService value) {
-		sessionService = value;
-	}
-
-	public static void setExecutor(Executor executor) {
+	public static void setServices(UserCache userCache, MinecraftSessionService sessionService, Executor executor) {
+		SkullBlockEntity.userCache = userCache;
+		SkullBlockEntity.sessionService = sessionService;
 		SkullBlockEntity.executor = executor;
+	}
+
+	public static void clearServices() {
+		userCache = null;
+		sessionService = null;
+		executor = null;
 	}
 
 	@Override

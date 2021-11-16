@@ -196,11 +196,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * is lower than {@link Entity#MAX_SOFT_COLLISION_SPEED}.
 	 */
 	public boolean collidedSoftly;
-	/**
-	 * Collisions at a speed lower than this are considered "soft".
-	 * Used by players to determine whether to stop sprinting when hitting a wall.
-	 */
-	private static final float MAX_SOFT_COLLISION_SPEED = 0.0064F;
 	public boolean velocityModified;
 	protected Vec3d movementMultiplier = Vec3d.ZERO;
 	@Nullable
@@ -464,7 +459,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void baseTick() {
 		this.world.getProfiler().push("entityBaseTick");
-		this.blockStateAtPos = null;
 		if (this.hasVehicle() && this.getVehicle().isRemoved()) {
 			this.stopRiding();
 		}
@@ -639,7 +633,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			this.world.getProfiler().push("rest");
 			this.horizontalCollision = !MathHelper.approximatelyEquals(movement.x, vec3d.x) || !MathHelper.approximatelyEquals(movement.z, vec3d.z);
 			this.verticalCollision = movement.y != vec3d.y;
-			this.collidedSoftly = movement.subtract(vec3d).lengthSquared() < 0.0064F;
+			if (this.horizontalCollision) {
+				this.collidedSoftly = this.hasCollidedSoftly(vec3d);
+			} else {
+				this.collidedSoftly = false;
+			}
+
 			this.onGround = this.verticalCollision && movement.y < 0.0;
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
@@ -726,6 +725,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.world.getProfiler().pop();
 			}
 		}
+	}
+
+	protected boolean hasCollidedSoftly(Vec3d adjustedMovement) {
+		return false;
 	}
 
 	protected void tryCheckBlockCollision() {
@@ -3195,6 +3198,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			int k = MathHelper.floor(z);
 			if (i != this.blockPos.getX() || j != this.blockPos.getY() || k != this.blockPos.getZ()) {
 				this.blockPos = new BlockPos(i, j, k);
+				this.blockStateAtPos = null;
 				if (ChunkSectionPos.getSectionCoord(i) != this.chunkPos.x || ChunkSectionPos.getSectionCoord(k) != this.chunkPos.z) {
 					this.chunkPos = new ChunkPos(this.blockPos);
 				}

@@ -111,7 +111,7 @@ public class LightningEntity extends Entity {
 				}
 
 				this.powerLightningRod();
-				cleanOxidization(this.world, this.getAffectedBlockPos());
+				cleanOxidation(this.world, this.getAffectedBlockPos());
 				this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
 			}
 		}
@@ -187,7 +187,7 @@ public class LightningEntity extends Entity {
 		}
 	}
 
-	private static void cleanOxidization(World world, BlockPos pos) {
+	private static void cleanOxidation(World world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
 		BlockPos blockPos;
 		BlockState blockState2;
@@ -206,16 +206,16 @@ public class LightningEntity extends Entity {
 
 			for (int j = 0; j < i; j++) {
 				int k = world.random.nextInt(8) + 1;
-				cleanOxidizationAround(world, blockPos, mutable, k);
+				cleanOxidationAround(world, blockPos, mutable, k);
 			}
 		}
 	}
 
-	private static void cleanOxidizationAround(World world, BlockPos pos, BlockPos.Mutable mutablePos, int count) {
+	private static void cleanOxidationAround(World world, BlockPos pos, BlockPos.Mutable mutablePos, int count) {
 		mutablePos.set(pos);
 
 		for (int i = 0; i < count; i++) {
-			Optional<BlockPos> optional = cleanOxidizationAround(world, mutablePos);
+			Optional<BlockPos> optional = cleanOxidationAround(world, mutablePos);
 			if (!optional.isPresent()) {
 				break;
 			}
@@ -224,7 +224,7 @@ public class LightningEntity extends Entity {
 		}
 	}
 
-	private static Optional<BlockPos> cleanOxidizationAround(World world, BlockPos pos) {
+	private static Optional<BlockPos> cleanOxidationAround(World world, BlockPos pos) {
 		for (BlockPos blockPos : BlockPos.iterateRandomly(world.random, 10, pos, 1)) {
 			BlockState blockState = world.getBlockState(blockPos);
 			if (blockState.getBlock() instanceof Oxidizable) {

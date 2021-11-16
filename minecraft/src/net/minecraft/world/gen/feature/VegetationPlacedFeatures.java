@@ -230,7 +230,7 @@ public class VegetationPlacedFeatures {
 			.withPlacement(RarityFilterPlacementModifier.of(32), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
 	);
 	public static final PlacedFeature FLOWER_PLAIN = PlacedFeatures.register(
-		"flower_plain",
+		"flower_plains",
 		VegetationConfiguredFeatures.FLOWER_PLAIN
 			.withPlacement(
 				NoiseThresholdCountPlacementModifier.of(-0.8, 15, 4),

@@ -159,10 +159,10 @@ public class ChunkSerializer {
 			);
 		} else {
 			SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(
-				nbt.getList("block_ticks", NbtElement.LIST_TYPE), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos
+				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos
 			);
 			SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(
-				nbt.getList("fluid_ticks", NbtElement.LIST_TYPE), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos
+				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos
 			);
 			ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blender);
 			chunk = protoChunk;

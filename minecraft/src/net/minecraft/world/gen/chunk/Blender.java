@@ -28,7 +28,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class Blender {
 	private static final double field_35514 = 0.1;
-	private static final HeightLimitView OLD_HEIGHT_LIMIT = new HeightLimitView() {
+	public static final HeightLimitView OLD_HEIGHT_LIMIT = new HeightLimitView() {
 		@Override
 		public int getHeight() {
 			return 256;

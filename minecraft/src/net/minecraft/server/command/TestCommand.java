@@ -465,7 +465,7 @@ public class TestCommand {
 			OutputStream outputStream = Files.newOutputStream(path2);
 
 			try {
-				NbtIo.writeCompressed(NbtHelper.method_32260(string), outputStream);
+				NbtIo.writeCompressed(NbtHelper.fromNbtProviderString(string), outputStream);
 			} catch (Throwable var11) {
 				if (outputStream != null) {
 					try {

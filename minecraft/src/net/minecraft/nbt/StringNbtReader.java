@@ -16,20 +16,20 @@ public class StringNbtReader {
 	public static final SimpleCommandExceptionType EXPECTED_KEY = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.expected.key"));
 	public static final SimpleCommandExceptionType EXPECTED_VALUE = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.expected.value"));
 	public static final Dynamic2CommandExceptionType LIST_MIXED = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableText("argument.nbt.list.mixed", object, object2)
+		(receivedType, expectedType) -> new TranslatableText("argument.nbt.list.mixed", receivedType, expectedType)
 	);
 	public static final Dynamic2CommandExceptionType ARRAY_MIXED = new Dynamic2CommandExceptionType(
-		(object, object2) -> new TranslatableText("argument.nbt.array.mixed", object, object2)
+		(receivedType, expectedType) -> new TranslatableText("argument.nbt.array.mixed", receivedType, expectedType)
 	);
 	public static final DynamicCommandExceptionType ARRAY_INVALID = new DynamicCommandExceptionType(
-		object -> new TranslatableText("argument.nbt.array.invalid", object)
+		type -> new TranslatableText("argument.nbt.array.invalid", type)
 	);
-	public static final char field_33265 = ',';
-	public static final char field_33266 = ':';
-	private static final char field_33267 = '[';
-	private static final char field_33268 = ']';
-	private static final char field_33269 = '}';
-	private static final char field_33270 = '{';
+	public static final char COMMA = ',';
+	public static final char COLON = ':';
+	private static final char SQUARE_OPEN_BRACKET = '[';
+	private static final char SQUARE_CLOSE_BRACKET = ']';
+	private static final char RIGHT_CURLY_BRACKET = '}';
+	private static final char LEFT_CURLY_BRACKET = '{';
 	private static final Pattern DOUBLE_PATTERN_IMPLICIT = Pattern.compile("[-+]?(?:[0-9]+[.]|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?", 2);
 	private static final Pattern DOUBLE_PATTERN = Pattern.compile("[-+]?(?:[0-9]+[.]?|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?d", 2);
 	private static final Pattern FLOAT_PATTERN = Pattern.compile("[-+]?(?:[0-9]+[.]?|[0-9]*[.][0-9]+)(?:e[-+]?[0-9]+)?f", 2);

@@ -19,10 +19,10 @@ public interface PostPlacementProcessor {
 
 	void afterPlace(
 		StructureWorldAccess world,
-		StructureAccessor structures,
+		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
-		BlockBox box,
+		BlockBox chunkBox,
 		ChunkPos pos,
 		StructurePiecesList children
 	);

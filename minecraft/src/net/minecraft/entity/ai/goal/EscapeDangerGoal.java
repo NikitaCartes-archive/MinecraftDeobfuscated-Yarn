@@ -77,29 +77,6 @@ public class EscapeDangerGoal extends Goal {
 
 	@Nullable
 	protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int rangeX, int rangeY) {
-		BlockPos blockPos = entity.getBlockPos();
-		int i = blockPos.getX();
-		int j = blockPos.getY();
-		int k = blockPos.getZ();
-		float f = (float)(rangeX * rangeX * rangeY * 2);
-		BlockPos blockPos2 = null;
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-
-		for (int l = i - rangeX; l <= i + rangeX; l++) {
-			for (int m = j - rangeY; m <= j + rangeY; m++) {
-				for (int n = k - rangeX; n <= k + rangeX; n++) {
-					mutable.set(l, m, n);
-					if (blockView.getFluidState(mutable).isIn(FluidTags.WATER)) {
-						float g = (float)((l - i) * (l - i) + (m - j) * (m - j) + (n - k) * (n - k));
-						if (g < f) {
-							f = g;
-							blockPos2 = new BlockPos(mutable);
-						}
-					}
-				}
-			}
-		}
-
-		return blockPos2;
+		return (BlockPos)BlockPos.findClosest(entity.getBlockPos(), rangeX, rangeY, blockPos -> blockView.getFluidState(blockPos).isIn(FluidTags.WATER)).orElse(null);
 	}
 }

@@ -26,6 +26,9 @@ public class WorldBorderCommand {
 	private static final SimpleCommandExceptionType SET_FAILED_BIG_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.worldborder.set.failed.big", 5.999997E7F)
 	);
+	private static final SimpleCommandExceptionType field_36188 = new SimpleCommandExceptionType(
+		new TranslatableText("commands.worldborder.set.failed.far", 2.9999984E7)
+	);
 	private static final SimpleCommandExceptionType WARNING_TIME_FAILED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.worldborder.warning.time.failed")
 	);
@@ -178,12 +181,14 @@ public class WorldBorderCommand {
 		WorldBorder worldBorder = source.getServer().getOverworld().getWorldBorder();
 		if (worldBorder.getCenterX() == (double)pos.x && worldBorder.getCenterZ() == (double)pos.y) {
 			throw CENTER_FAILED_EXCEPTION.create();
-		} else {
+		} else if (!((double)Math.abs(pos.x) > 2.9999984E7) && !((double)Math.abs(pos.y) > 2.9999984E7)) {
 			worldBorder.setCenter((double)pos.x, (double)pos.y);
 			source.sendFeedback(
 				new TranslatableText("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", pos.x), String.format("%.2f", pos.y)), true
 			);
 			return 0;
+		} else {
+			throw field_36188.create();
 		}
 	}
 

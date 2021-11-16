@@ -474,7 +474,7 @@ public class WorldEvents {
 	 * <p>The ordinal direction the lightning rod is facing must be supplied as extra data.
 	 * <br>A {@code -1} should be passed if the event is called by a lightning entity itself.
 	 * <p>Called by {@link net.minecraft.block.LightningRodBlock#setPowered(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos) LightningRodBlock#setPowered},
-	 * and {@link net.minecraft.entity.LightningEntity#cleanOxidizationAround(net.minecraft.world.World, net.minecraft.util.math.BlockPos) LightningEntity#cleanOxidizationAround}
+	 * and {@link net.minecraft.entity.LightningEntity#cleanOxidationAround(net.minecraft.world.World, net.minecraft.util.math.BlockPos) LightningEntity#cleanOxidationAround}
 	 */
 	public static final int ELECTRICITY_SPARKS = 3002;
 	/**

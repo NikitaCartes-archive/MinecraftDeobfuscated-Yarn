@@ -15,7 +15,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
 public class WorldBorder {
-	public static final double field_33643 = 5.999997E7F;
+	public static final double STATIC_AREA_SIZE = 5.999997E7F;
+	public static final double MAX_CENTER_COORDINATES = 2.9999984E7;
 	private final List<WorldBorderListener> listeners = Lists.<WorldBorderListener>newArrayList();
 	private double damagePerBlock = 0.2;
 	private double safeZone = 5.0;
@@ -497,8 +498,8 @@ public class WorldBorder {
 		}
 
 		public static WorldBorder.Properties fromDynamic(DynamicLike<?> dynamic, WorldBorder.Properties properties) {
-			double d = dynamic.get("BorderCenterX").asDouble(properties.centerX);
-			double e = dynamic.get("BorderCenterZ").asDouble(properties.centerZ);
+			double d = MathHelper.clamp(dynamic.get("BorderCenterX").asDouble(properties.centerX), -2.9999984E7, 2.9999984E7);
+			double e = MathHelper.clamp(dynamic.get("BorderCenterZ").asDouble(properties.centerZ), -2.9999984E7, 2.9999984E7);
 			double f = dynamic.get("BorderSize").asDouble(properties.size);
 			long l = dynamic.get("BorderSizeLerpTime").asLong(properties.sizeLerpTime);
 			double g = dynamic.get("BorderSizeLerpTarget").asDouble(properties.sizeLerpTarget);

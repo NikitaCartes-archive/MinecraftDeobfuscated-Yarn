@@ -618,9 +618,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 			if (entity instanceof EnderDragonEntity enderDragonEntity) {
 				for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
-					T entity3 = filter.downcast(enderDragonPart);
-					if (entity3 != null && predicate.test(entity3)) {
-						list.add(entity3);
+					T entity2 = filter.downcast(enderDragonPart);
+					if (entity2 != null && predicate.test(entity2)) {
+						list.add(entity2);
 					}
 				}
 			}

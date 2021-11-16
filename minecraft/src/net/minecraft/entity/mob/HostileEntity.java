@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -73,8 +74,8 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	}
 
 	@Override
-	protected SoundEvent getFallSound(int distance) {
-		return distance > 4 ? SoundEvents.ENTITY_HOSTILE_BIG_FALL : SoundEvents.ENTITY_HOSTILE_SMALL_FALL;
+	public LivingEntity.class_6823 method_39760() {
+		return new LivingEntity.class_6823(SoundEvents.ENTITY_HOSTILE_SMALL_FALL, SoundEvents.ENTITY_HOSTILE_BIG_FALL);
 	}
 
 	@Override

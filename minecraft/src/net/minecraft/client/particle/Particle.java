@@ -13,11 +13,13 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public abstract class Particle {
 	private static final Box EMPTY_BOUNDING_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	private static final double MAX_SQUARED_COLLISION_CHECK_DISTANCE = MathHelper.square(100.0);
 	protected final ClientWorld world;
 	protected double prevPosX;
 	protected double prevPosY;
@@ -183,7 +185,7 @@ public abstract class Particle {
 			double d = dx;
 			double e = dy;
 			double f = dz;
-			if (this.collidesWithWorld && (dx != 0.0 || dy != 0.0 || dz != 0.0)) {
+			if (this.collidesWithWorld && (dx != 0.0 || dy != 0.0 || dz != 0.0) && dx * dx + dy * dy + dz * dz < MAX_SQUARED_COLLISION_CHECK_DISTANCE) {
 				Vec3d vec3d = Entity.adjustMovementForCollisions(null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, ShapeContext.absent(), List.of());
 				dx = vec3d.x;
 				dy = vec3d.y;

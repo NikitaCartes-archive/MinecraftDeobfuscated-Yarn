@@ -78,11 +78,11 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		this.entryToRawId.put((T)entry, rawId);
 		this.randomEntries = null;
 		if (checkDuplicateKeys && this.keyToEntry.containsKey(key)) {
-			LOGGER.debug("Adding duplicate key '{}' to registry", key);
+			Util.error("Adding duplicate key '" + key + "' to registry");
 		}
 
 		if (this.idToEntry.containsValue(entry)) {
-			LOGGER.error("Adding duplicate value '{}' to registry", entry);
+			Util.error("Adding duplicate value '" + entry + "' to registry");
 		}
 
 		this.idToEntry.put(key.getValue(), (T)entry);

@@ -193,9 +193,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		} else {
 			this.setPlayerManager(new DedicatedPlayerManager(this, this.registryManager, this.saveHandler));
 			long l = Util.getMeasuringTimeNano();
-			SkullBlockEntity.setUserCache(this.getUserCache());
-			SkullBlockEntity.setSessionService(this.getSessionService());
-			SkullBlockEntity.setExecutor(this);
+			SkullBlockEntity.setServices(this.getUserCache(), this.getSessionService(), this);
 			UserCache.setUseRemote(this.isOnlineMode());
 			LOGGER.info("Preparing level \"{}\"", this.getLevelName());
 			this.loadWorld();
@@ -588,6 +586,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	public void shutdown() {
 		super.shutdown();
 		Util.shutdownExecutors();
+		SkullBlockEntity.clearServices();
 	}
 
 	@Override

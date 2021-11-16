@@ -3043,28 +3043,28 @@ public class Blocks {
 	public static final Block OXIDIZED_COPPER = register(
 		"oxidized_copper",
 		new OxidizableBlock(
-			Oxidizable.OxidizationLevel.OXIDIZED,
+			Oxidizable.OxidationLevel.OXIDIZED,
 			AbstractBlock.Settings.of(Material.METAL, MapColor.TEAL).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER)
 		)
 	);
 	public static final Block WEATHERED_COPPER = register(
 		"weathered_copper",
 		new OxidizableBlock(
-			Oxidizable.OxidizationLevel.WEATHERED,
+			Oxidizable.OxidationLevel.WEATHERED,
 			AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER)
 		)
 	);
 	public static final Block EXPOSED_COPPER = register(
 		"exposed_copper",
 		new OxidizableBlock(
-			Oxidizable.OxidizationLevel.EXPOSED,
+			Oxidizable.OxidationLevel.EXPOSED,
 			AbstractBlock.Settings.of(Material.METAL, MapColor.TERRACOTTA_LIGHT_GRAY).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER)
 		)
 	);
 	public static final Block COPPER_BLOCK = register(
 		"copper_block",
 		new OxidizableBlock(
-			Oxidizable.OxidizationLevel.UNAFFECTED,
+			Oxidizable.OxidationLevel.UNAFFECTED,
 			AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER)
 		)
 	);
@@ -3074,44 +3074,43 @@ public class Blocks {
 		new OreBlock(AbstractBlock.Settings.copy(COPPER_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block OXIDIZED_CUT_COPPER = register(
-		"oxidized_cut_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_COPPER))
+		"oxidized_cut_copper", new OxidizableBlock(Oxidizable.OxidationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_COPPER))
 	);
 	public static final Block WEATHERED_CUT_COPPER = register(
-		"weathered_cut_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.WEATHERED, AbstractBlock.Settings.copy(WEATHERED_COPPER))
+		"weathered_cut_copper", new OxidizableBlock(Oxidizable.OxidationLevel.WEATHERED, AbstractBlock.Settings.copy(WEATHERED_COPPER))
 	);
 	public static final Block EXPOSED_CUT_COPPER = register(
-		"exposed_cut_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.EXPOSED, AbstractBlock.Settings.copy(EXPOSED_COPPER))
+		"exposed_cut_copper", new OxidizableBlock(Oxidizable.OxidationLevel.EXPOSED, AbstractBlock.Settings.copy(EXPOSED_COPPER))
 	);
 	public static final Block CUT_COPPER = register(
-		"cut_copper", new OxidizableBlock(Oxidizable.OxidizationLevel.UNAFFECTED, AbstractBlock.Settings.copy(COPPER_BLOCK))
+		"cut_copper", new OxidizableBlock(Oxidizable.OxidationLevel.UNAFFECTED, AbstractBlock.Settings.copy(COPPER_BLOCK))
 	);
 	public static final Block OXIDIZED_CUT_COPPER_STAIRS = register(
 		"oxidized_cut_copper_stairs",
-		new OxidizableStairsBlock(Oxidizable.OxidizationLevel.OXIDIZED, OXIDIZED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER))
+		new OxidizableStairsBlock(Oxidizable.OxidationLevel.OXIDIZED, OXIDIZED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER))
 	);
 	public static final Block WEATHERED_CUT_COPPER_STAIRS = register(
 		"weathered_cut_copper_stairs",
-		new OxidizableStairsBlock(Oxidizable.OxidizationLevel.WEATHERED, WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER))
+		new OxidizableStairsBlock(Oxidizable.OxidationLevel.WEATHERED, WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER))
 	);
 	public static final Block EXPOSED_CUT_COPPER_STAIRS = register(
 		"exposed_cut_copper_stairs",
-		new OxidizableStairsBlock(Oxidizable.OxidizationLevel.EXPOSED, EXPOSED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(EXPOSED_COPPER))
+		new OxidizableStairsBlock(Oxidizable.OxidationLevel.EXPOSED, EXPOSED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(EXPOSED_COPPER))
 	);
 	public static final Block CUT_COPPER_STAIRS = register(
-		"cut_copper_stairs",
-		new OxidizableStairsBlock(Oxidizable.OxidizationLevel.UNAFFECTED, CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK))
+		"cut_copper_stairs", new OxidizableStairsBlock(Oxidizable.OxidationLevel.UNAFFECTED, CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK))
 	);
 	public static final Block OXIDIZED_CUT_COPPER_SLAB = register(
-		"oxidized_cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidizationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER).requiresTool())
+		"oxidized_cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER).requiresTool())
 	);
 	public static final Block WEATHERED_CUT_COPPER_SLAB = register(
-		"weathered_cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidizationLevel.WEATHERED, AbstractBlock.Settings.copy(WEATHERED_CUT_COPPER).requiresTool())
+		"weathered_cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidationLevel.WEATHERED, AbstractBlock.Settings.copy(WEATHERED_CUT_COPPER).requiresTool())
 	);
 	public static final Block EXPOSED_CUT_COPPER_SLAB = register(
-		"exposed_cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidizationLevel.EXPOSED, AbstractBlock.Settings.copy(EXPOSED_CUT_COPPER).requiresTool())
+		"exposed_cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidationLevel.EXPOSED, AbstractBlock.Settings.copy(EXPOSED_CUT_COPPER).requiresTool())
 	);
 	public static final Block CUT_COPPER_SLAB = register(
-		"cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidizationLevel.UNAFFECTED, AbstractBlock.Settings.copy(CUT_COPPER).requiresTool())
+		"cut_copper_slab", new OxidizableSlabBlock(Oxidizable.OxidationLevel.UNAFFECTED, AbstractBlock.Settings.copy(CUT_COPPER).requiresTool())
 	);
 	public static final Block WAXED_COPPER_BLOCK = register("waxed_copper_block", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
 	public static final Block WAXED_WEATHERED_COPPER = register("waxed_weathered_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER)));

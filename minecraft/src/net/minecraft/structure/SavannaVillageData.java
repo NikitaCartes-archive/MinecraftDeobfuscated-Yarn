@@ -2,13 +2,12 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.class_6825;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.PileConfiguredFeatures;
-import net.minecraft.world.gen.feature.TreePlacedFeatures;
 
 public class SavannaVillageData {
 	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
@@ -211,7 +210,7 @@ public class SavannaVillageData {
 			new StructurePool(
 				new Identifier("village/savanna/trees"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.ACACIA_CHECKED), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(class_6825.field_36201), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
@@ -221,9 +220,9 @@ public class SavannaVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofLegacySingle("village/savanna/savanna_lamp_post_01"), 4),
-					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.ACACIA_CHECKED), 4),
-					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_HAY.withPlacement()), 4),
-					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_MELON.withPlacement()), 1),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36201), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36195), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36196), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 4)
 				),
 				StructurePool.Projection.RIGID
@@ -235,9 +234,9 @@ public class SavannaVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/savanna/savanna_lamp_post_01", StructureProcessorLists.ZOMBIE_SAVANNA), 4),
-					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.ACACIA_CHECKED), 4),
-					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_HAY.withPlacement()), 4),
-					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_MELON.withPlacement()), 1),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36201), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36195), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36196), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 4)
 				),
 				StructurePool.Projection.RIGID

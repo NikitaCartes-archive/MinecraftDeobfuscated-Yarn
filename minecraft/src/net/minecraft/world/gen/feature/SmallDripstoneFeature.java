@@ -20,7 +20,7 @@ public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> 
 		BlockPos blockPos = context.getOrigin();
 		Random random = context.getRandom();
 		SmallDripstoneFeatureConfig smallDripstoneFeatureConfig = context.getConfig();
-		Optional<Direction> optional = method_39175(worldAccess, blockPos, random);
+		Optional<Direction> optional = getDirection(worldAccess, blockPos, random);
 		if (optional.isEmpty()) {
 			return false;
 		} else {
@@ -35,9 +35,9 @@ public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> 
 		}
 	}
 
-	private static Optional<Direction> method_39175(WorldAccess worldAccess, BlockPos blockPos, Random random) {
-		boolean bl = DripstoneHelper.canReplace(worldAccess.getBlockState(blockPos.up()));
-		boolean bl2 = DripstoneHelper.canReplace(worldAccess.getBlockState(blockPos.down()));
+	private static Optional<Direction> getDirection(WorldAccess world, BlockPos pos, Random random) {
+		boolean bl = DripstoneHelper.canReplace(world.getBlockState(pos.up()));
+		boolean bl2 = DripstoneHelper.canReplace(world.getBlockState(pos.down()));
 		if (bl && bl2) {
 			return Optional.of(random.nextBoolean() ? Direction.DOWN : Direction.UP);
 		} else if (bl) {

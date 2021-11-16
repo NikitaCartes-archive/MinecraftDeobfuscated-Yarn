@@ -454,6 +454,7 @@ public class GameOptions {
 		this.hideBundleTutorial = visitor.visitBoolean("hideBundleTutorial", this.hideBundleTutorial);
 		this.syncChunkWrites = visitor.visitBoolean("syncChunkWrites", this.syncChunkWrites);
 		this.showAutosaveIndicator = visitor.visitBoolean("showAutosaveIndicator", this.showAutosaveIndicator);
+		this.allowServerListing = visitor.visitBoolean("allowServerListing", this.allowServerListing);
 
 		for (KeyBinding keyBinding : this.keysAll) {
 			String string = keyBinding.getBoundKeyTranslationKey();

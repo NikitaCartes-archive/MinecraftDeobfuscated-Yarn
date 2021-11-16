@@ -369,7 +369,13 @@ public class BlockPos extends Vec3i {
 	}
 
 	public static Optional<BlockPos> findClosest(BlockPos pos, int horizontalRange, int verticalRange, Predicate<BlockPos> condition) {
-		return streamOutwards(pos, horizontalRange, verticalRange, horizontalRange).filter(condition).findFirst();
+		for (BlockPos blockPos : iterateOutwards(pos, horizontalRange, verticalRange, horizontalRange)) {
+			if (condition.test(blockPos)) {
+				return Optional.of(blockPos);
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	public static Stream<BlockPos> streamOutwards(BlockPos center, int maxX, int maxY, int maxZ) {

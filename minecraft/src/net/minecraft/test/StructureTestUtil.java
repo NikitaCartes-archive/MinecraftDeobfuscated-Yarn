@@ -87,9 +87,9 @@ public class StructureTestUtil {
 		Files.walk(Paths.get(testStructuresDirectoryName)).filter(path -> path.toString().endsWith(".snbt")).forEach(path -> {
 			try {
 				String string = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-				NbtCompound nbtCompound = NbtHelper.method_32260(string);
+				NbtCompound nbtCompound = NbtHelper.fromNbtProviderString(string);
 				NbtCompound nbtCompound2 = StructureValidatorProvider.update(path.toString(), nbtCompound);
-				NbtProvider.writeTo(path, NbtHelper.toPrettyPrintedString(nbtCompound2));
+				NbtProvider.writeTo(path, NbtHelper.toNbtProviderString(nbtCompound2));
 			} catch (IOException | CommandSyntaxException var4) {
 				LOGGER.error("Something went wrong upgrading: {}", path, var4);
 			}
@@ -270,7 +270,7 @@ public class StructureTestUtil {
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);
 			String string = IOUtils.toString(bufferedReader);
-			return NbtHelper.method_32260(string);
+			return NbtHelper.fromNbtProviderString(string);
 		} catch (IOException var3) {
 			return null;
 		} catch (CommandSyntaxException var4) {

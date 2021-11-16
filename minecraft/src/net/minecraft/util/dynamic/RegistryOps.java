@@ -117,7 +117,11 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 			Optional<DataResult<EntryLoader.Entry<E>>> optional = this.entryLoader.load(this.entryOps, registryKey, registryKey2, codec);
 			DataResult<Supplier<E>> dataResult2;
 			if (optional.isEmpty()) {
-				dataResult2 = DataResult.success(method_39743(mutableRegistry, registryKey2), Lifecycle.stable());
+				if (mutableRegistry.contains(registryKey2)) {
+					dataResult2 = DataResult.success(method_39743(mutableRegistry, registryKey2), Lifecycle.stable());
+				} else {
+					dataResult2 = DataResult.error("Missing referenced custom/removed registry entry for registry " + registryKey + " named " + registryKey2.getValue());
+				}
 			} else {
 				DataResult<EntryLoader.Entry<E>> dataResult3 = (DataResult<EntryLoader.Entry<E>>)optional.get();
 				Optional<EntryLoader.Entry<E>> optional2 = dataResult3.result();

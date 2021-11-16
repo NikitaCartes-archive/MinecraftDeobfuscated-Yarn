@@ -9,7 +9,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * Represents an NBT 64-bit integer.
  */
 public class NbtLong extends AbstractNbtNumber {
-	private static final int field_33201 = 128;
+	private static final int SIZE = 128;
 	public static final NbtType<NbtLong> TYPE = new NbtType<NbtLong>() {
 		public NbtLong read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(128L);
@@ -33,8 +33,8 @@ public class NbtLong extends AbstractNbtNumber {
 	};
 	private final long value;
 
-	NbtLong(long l) {
-		this.value = l;
+	NbtLong(long value) {
+		this.value = value;
 	}
 
 	public static NbtLong of(long value) {
@@ -109,8 +109,8 @@ public class NbtLong extends AbstractNbtNumber {
 	}
 
 	static class Cache {
-		private static final int field_33202 = 1024;
-		private static final int field_33203 = -128;
+		private static final int MAX = 1024;
+		private static final int MIN = -128;
 		static final NbtLong[] VALUES = new NbtLong[1153];
 
 		private Cache() {

@@ -42,19 +42,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class NbtHelper {
-	private static final Comparator<NbtList> field_27816 = Comparator.comparingInt(nbtList -> nbtList.getInt(1))
-		.thenComparingInt(nbtList -> nbtList.getInt(0))
-		.thenComparingInt(nbtList -> nbtList.getInt(2));
-	private static final Comparator<NbtList> field_27817 = Comparator.comparingDouble(nbtList -> nbtList.getDouble(1))
-		.thenComparingDouble(nbtList -> nbtList.getDouble(0))
-		.thenComparingDouble(nbtList -> nbtList.getDouble(2));
-	public static final String field_33224 = "data";
-	private static final char field_33225 = '{';
-	private static final char field_33226 = '}';
-	private static final String field_33227 = ",";
-	private static final char field_33228 = ':';
+	private static final Comparator<NbtList> BLOCK_POS_COMPARATOR = Comparator.comparingInt(nbt -> nbt.getInt(1))
+		.thenComparingInt(nbt -> nbt.getInt(0))
+		.thenComparingInt(nbt -> nbt.getInt(2));
+	private static final Comparator<NbtList> ENTITY_POS_COMPARATOR = Comparator.comparingDouble(nbt -> nbt.getDouble(1))
+		.thenComparingDouble(nbt -> nbt.getDouble(0))
+		.thenComparingDouble(nbt -> nbt.getDouble(2));
+	public static final String DATA_KEY = "data";
+	private static final char LEFT_CURLY_BRACKET = '{';
+	private static final char RIGHT_CURLY_BRACKET = '}';
+	private static final String COMMA = ",";
+	private static final char COLON = ':';
 	private static final Splitter COMMA_SPLITTER = Splitter.on(",");
-	private static final Splitter field_27819 = Splitter.on(':').limit(2);
+	private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_33229 = 2;
 	private static final int field_33230 = -1;
@@ -279,10 +279,10 @@ public final class NbtHelper {
 		return nbtCompound;
 	}
 
-	public static NbtCompound method_36115(FluidState fluidState) {
+	public static NbtCompound fromFluidState(FluidState state) {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("Name", Registry.FLUID.getId(fluidState.getFluid()).toString());
-		ImmutableMap<Property<?>, Comparable<?>> immutableMap = fluidState.getEntries();
+		nbtCompound.putString("Name", Registry.FLUID.getId(state.getFluid()).toString());
+		ImmutableMap<Property<?>, Comparable<?>> immutableMap = state.getEntries();
 		if (!immutableMap.isEmpty()) {
 			NbtCompound nbtCompound2 = new NbtCompound();
 
@@ -301,16 +301,32 @@ public final class NbtHelper {
 		return property.name((T)value);
 	}
 
-	public static String method_36118(NbtElement nbtElement) {
-		return method_36117(nbtElement, false);
+	/**
+	 * {@return the human-readable, non-deserializable representation of {@code nbt}}
+	 * 
+	 * <p>This does not include contents of {@link NbtByteArray}, {@link NbtIntArray},
+	 * and {@link NbtLongArray}. To include them, call
+	 * {@link #toFormattedString(NbtElement, boolean)} with {@code withArrayContents}
+	 * parameter set to true.
+	 * 
+	 * @see #toFormattedString(NbtElement, boolean)
+	 */
+	public static String toFormattedString(NbtElement nbt) {
+		return toFormattedString(nbt, false);
 	}
 
-	public static String method_36117(NbtElement nbtElement, boolean bl) {
-		return method_36116(new StringBuilder(), nbtElement, 0, bl).toString();
+	/**
+	 * {@return the human-readable, non-deserializable representation of {@code nbt}}
+	 * 
+	 * @param withArrayContents whether to include contents of {@link NbtByteArray}, {@link NbtIntArray},
+	 * and {@link NbtLongArray}
+	 */
+	public static String toFormattedString(NbtElement nbt, boolean withArrayContents) {
+		return appendFormattedString(new StringBuilder(), nbt, 0, withArrayContents).toString();
 	}
 
-	public static StringBuilder method_36116(StringBuilder stringBuilder, NbtElement nbtElement, int i, boolean bl) {
-		switch (nbtElement.getType()) {
+	public static StringBuilder appendFormattedString(StringBuilder stringBuilder, NbtElement nbt, int depth, boolean withArrayContents) {
+		switch (nbt.getType()) {
 			case 0:
 				break;
 			case 1:
@@ -320,166 +336,166 @@ public final class NbtHelper {
 			case 5:
 			case 6:
 			case 8:
-				stringBuilder.append(nbtElement);
+				stringBuilder.append(nbt);
 				break;
 			case 7:
-				NbtByteArray nbtByteArray = (NbtByteArray)nbtElement;
+				NbtByteArray nbtByteArray = (NbtByteArray)nbt;
 				byte[] bs = nbtByteArray.getByteArray();
-				int jx = bs.length;
-				method_36114(i, stringBuilder).append("byte[").append(jx).append("] {\n");
-				if (bl) {
-					method_36114(i + 1, stringBuilder);
+				int ix = bs.length;
+				appendIndent(depth, stringBuilder).append("byte[").append(ix).append("] {\n");
+				if (withArrayContents) {
+					appendIndent(depth + 1, stringBuilder);
 
-					for (int k = 0; k < bs.length; k++) {
-						if (k != 0) {
+					for (int j = 0; j < bs.length; j++) {
+						if (j != 0) {
 							stringBuilder.append(',');
 						}
 
-						if (k % 16 == 0 && k / 16 > 0) {
+						if (j % 16 == 0 && j / 16 > 0) {
 							stringBuilder.append('\n');
-							if (k < bs.length) {
-								method_36114(i + 1, stringBuilder);
+							if (j < bs.length) {
+								appendIndent(depth + 1, stringBuilder);
 							}
-						} else if (k != 0) {
+						} else if (j != 0) {
 							stringBuilder.append(' ');
 						}
 
-						stringBuilder.append(String.format("0x%02X", bs[k] & 255));
+						stringBuilder.append(String.format("0x%02X", bs[j] & 255));
 					}
 				} else {
-					method_36114(i + 1, stringBuilder).append(" // Skipped, supply withBinaryBlobs true");
+					appendIndent(depth + 1, stringBuilder).append(" // Skipped, supply withBinaryBlobs true");
 				}
 
 				stringBuilder.append('\n');
-				method_36114(i, stringBuilder).append('}');
+				appendIndent(depth, stringBuilder).append('}');
 				break;
 			case 9:
-				NbtList nbtList = (NbtList)nbtElement;
-				int l = nbtList.size();
-				int j = nbtList.getHeldType();
-				String string = j == 0 ? "undefined" : NbtTypes.byId(j).getCommandFeedbackName();
-				method_36114(i, stringBuilder).append("list<").append(string).append(">[").append(l).append("] [");
-				if (l != 0) {
+				NbtList nbtList = (NbtList)nbt;
+				int k = nbtList.size();
+				int i = nbtList.getHeldType();
+				String string = i == 0 ? "undefined" : NbtTypes.byId(i).getCommandFeedbackName();
+				appendIndent(depth, stringBuilder).append("list<").append(string).append(">[").append(k).append("] [");
+				if (k != 0) {
 					stringBuilder.append('\n');
 				}
 
-				for (int m = 0; m < l; m++) {
-					if (m != 0) {
+				for (int l = 0; l < k; l++) {
+					if (l != 0) {
 						stringBuilder.append(",\n");
 					}
 
-					method_36114(i + 1, stringBuilder);
-					method_36116(stringBuilder, nbtList.get(m), i + 1, bl);
+					appendIndent(depth + 1, stringBuilder);
+					appendFormattedString(stringBuilder, nbtList.get(l), depth + 1, withArrayContents);
 				}
 
-				if (l != 0) {
+				if (k != 0) {
 					stringBuilder.append('\n');
 				}
 
-				method_36114(i, stringBuilder).append(']');
+				appendIndent(depth, stringBuilder).append(']');
 				break;
 			case 10:
-				NbtCompound nbtCompound = (NbtCompound)nbtElement;
+				NbtCompound nbtCompound = (NbtCompound)nbt;
 				List<String> list = Lists.<String>newArrayList(nbtCompound.getKeys());
 				Collections.sort(list);
-				method_36114(i, stringBuilder).append('{');
-				if (stringBuilder.length() - stringBuilder.lastIndexOf("\n") > 2 * (i + 1)) {
+				appendIndent(depth, stringBuilder).append('{');
+				if (stringBuilder.length() - stringBuilder.lastIndexOf("\n") > 2 * (depth + 1)) {
 					stringBuilder.append('\n');
-					method_36114(i + 1, stringBuilder);
+					appendIndent(depth + 1, stringBuilder);
 				}
 
-				int jx = list.stream().mapToInt(String::length).max().orElse(0);
-				String stringx = Strings.repeat(" ", jx);
+				int ix = list.stream().mapToInt(String::length).max().orElse(0);
+				String stringx = Strings.repeat(" ", ix);
 
-				for (int m = 0; m < list.size(); m++) {
-					if (m != 0) {
+				for (int l = 0; l < list.size(); l++) {
+					if (l != 0) {
 						stringBuilder.append(",\n");
 					}
 
-					String string2 = (String)list.get(m);
-					method_36114(i + 1, stringBuilder).append('"').append(string2).append('"').append(stringx, 0, stringx.length() - string2.length()).append(": ");
-					method_36116(stringBuilder, nbtCompound.get(string2), i + 1, bl);
+					String string2 = (String)list.get(l);
+					appendIndent(depth + 1, stringBuilder).append('"').append(string2).append('"').append(stringx, 0, stringx.length() - string2.length()).append(": ");
+					appendFormattedString(stringBuilder, nbtCompound.get(string2), depth + 1, withArrayContents);
 				}
 
 				if (!list.isEmpty()) {
 					stringBuilder.append('\n');
 				}
 
-				method_36114(i, stringBuilder).append('}');
+				appendIndent(depth, stringBuilder).append('}');
 				break;
 			case 11:
-				NbtIntArray nbtIntArray = (NbtIntArray)nbtElement;
+				NbtIntArray nbtIntArray = (NbtIntArray)nbt;
 				int[] is = nbtIntArray.getIntArray();
-				int jx = 0;
+				int ix = 0;
 
-				for (int n : is) {
-					jx = Math.max(jx, String.format("%X", n).length());
+				for (int m : is) {
+					ix = Math.max(ix, String.format("%X", m).length());
 				}
 
-				int k = is.length;
-				method_36114(i, stringBuilder).append("int[").append(k).append("] {\n");
-				if (bl) {
-					method_36114(i + 1, stringBuilder);
+				int j = is.length;
+				appendIndent(depth, stringBuilder).append("int[").append(j).append("] {\n");
+				if (withArrayContents) {
+					appendIndent(depth + 1, stringBuilder);
 
-					for (int m = 0; m < is.length; m++) {
+					for (int l = 0; l < is.length; l++) {
+						if (l != 0) {
+							stringBuilder.append(',');
+						}
+
+						if (l % 16 == 0 && l / 16 > 0) {
+							stringBuilder.append('\n');
+							if (l < is.length) {
+								appendIndent(depth + 1, stringBuilder);
+							}
+						} else if (l != 0) {
+							stringBuilder.append(' ');
+						}
+
+						stringBuilder.append(String.format("0x%0" + ix + "X", is[l]));
+					}
+				} else {
+					appendIndent(depth + 1, stringBuilder).append(" // Skipped, supply withBinaryBlobs true");
+				}
+
+				stringBuilder.append('\n');
+				appendIndent(depth, stringBuilder).append('}');
+				break;
+			case 12:
+				NbtLongArray nbtLongArray = (NbtLongArray)nbt;
+				long[] ls = nbtLongArray.getLongArray();
+				long n = 0L;
+
+				for (long o : ls) {
+					n = Math.max(n, (long)String.format("%X", o).length());
+				}
+
+				long p = (long)ls.length;
+				appendIndent(depth, stringBuilder).append("long[").append(p).append("] {\n");
+				if (withArrayContents) {
+					appendIndent(depth + 1, stringBuilder);
+
+					for (int m = 0; m < ls.length; m++) {
 						if (m != 0) {
 							stringBuilder.append(',');
 						}
 
 						if (m % 16 == 0 && m / 16 > 0) {
 							stringBuilder.append('\n');
-							if (m < is.length) {
-								method_36114(i + 1, stringBuilder);
+							if (m < ls.length) {
+								appendIndent(depth + 1, stringBuilder);
 							}
 						} else if (m != 0) {
 							stringBuilder.append(' ');
 						}
 
-						stringBuilder.append(String.format("0x%0" + jx + "X", is[m]));
+						stringBuilder.append(String.format("0x%0" + n + "X", ls[m]));
 					}
 				} else {
-					method_36114(i + 1, stringBuilder).append(" // Skipped, supply withBinaryBlobs true");
+					appendIndent(depth + 1, stringBuilder).append(" // Skipped, supply withBinaryBlobs true");
 				}
 
 				stringBuilder.append('\n');
-				method_36114(i, stringBuilder).append('}');
-				break;
-			case 12:
-				NbtLongArray nbtLongArray = (NbtLongArray)nbtElement;
-				long[] ls = nbtLongArray.getLongArray();
-				long o = 0L;
-
-				for (long p : ls) {
-					o = Math.max(o, (long)String.format("%X", p).length());
-				}
-
-				long q = (long)ls.length;
-				method_36114(i, stringBuilder).append("long[").append(q).append("] {\n");
-				if (bl) {
-					method_36114(i + 1, stringBuilder);
-
-					for (int n = 0; n < ls.length; n++) {
-						if (n != 0) {
-							stringBuilder.append(',');
-						}
-
-						if (n % 16 == 0 && n / 16 > 0) {
-							stringBuilder.append('\n');
-							if (n < ls.length) {
-								method_36114(i + 1, stringBuilder);
-							}
-						} else if (n != 0) {
-							stringBuilder.append(' ');
-						}
-
-						stringBuilder.append(String.format("0x%0" + o + "X", ls[n]));
-					}
-				} else {
-					method_36114(i + 1, stringBuilder).append(" // Skipped, supply withBinaryBlobs true");
-				}
-
-				stringBuilder.append('\n');
-				method_36114(i, stringBuilder).append('}');
+				appendIndent(depth, stringBuilder).append('}');
 				break;
 			default:
 				stringBuilder.append("<UNKNOWN :(>");
@@ -488,11 +504,11 @@ public final class NbtHelper {
 		return stringBuilder;
 	}
 
-	private static StringBuilder method_36114(int i, StringBuilder stringBuilder) {
-		int j = stringBuilder.lastIndexOf("\n") + 1;
-		int k = stringBuilder.length() - j;
+	private static StringBuilder appendIndent(int depth, StringBuilder stringBuilder) {
+		int i = stringBuilder.lastIndexOf("\n") + 1;
+		int j = stringBuilder.length() - i;
 
-		for (int l = 0; l < 2 * i - k; l++) {
+		for (int k = 0; k < 2 * depth - j; k++) {
 			stringBuilder.append(' ');
 		}
 
@@ -528,16 +544,40 @@ public final class NbtHelper {
 		return new NbtTextFormatter("", 0).apply(element);
 	}
 
-	public static String toPrettyPrintedString(NbtCompound compound) {
-		return new NbtOrderedStringFormatter().apply(method_32273(compound));
+	/**
+	 * {@return the string representation of {@code compound} as used
+	 * by the NBT provider in the data generator}
+	 * 
+	 * <p>The passed {@code compound} will be sorted and modified in-place
+	 * to make it more human-readable e.g. by converting {@link NbtCompound}
+	 * in the {@code palettes} {@code NbtList} to its short string
+	 * representation. Therefore the returned value is not an accurate
+	 * representation of the original NBT.
+	 * 
+	 * @see net.minecraft.data.dev.NbtProvider
+	 * @see #fromNbtProviderString(String)
+	 */
+	public static String toNbtProviderString(NbtCompound compound) {
+		return new NbtOrderedStringFormatter().apply(toNbtProviderFormat(compound));
 	}
 
-	public static NbtCompound method_32260(String string) throws CommandSyntaxException {
-		return method_32275(StringNbtReader.parse(string));
+	/**
+	 * {@return the {@code string} parsed as an NBT provider-formatted
+	 * NBT compound}
+	 * 
+	 * <p>This method first parses the string as an NBT, then performs
+	 * several conversions from human-readable {@link NbtCompound} items
+	 * to the actual values used in-game.
+	 * 
+	 * @see net.minecraft.data.SnbtProvider
+	 * @see #toNbtProviderString
+	 */
+	public static NbtCompound fromNbtProviderString(String string) throws CommandSyntaxException {
+		return fromNbtProviderFormat(StringNbtReader.parse(string));
 	}
 
 	@VisibleForTesting
-	static NbtCompound method_32273(NbtCompound compound) {
+	static NbtCompound toNbtProviderFormat(NbtCompound compound) {
 		boolean bl = compound.contains("palettes", NbtElement.LIST_TYPE);
 		NbtList nbtList;
 		if (bl) {
@@ -548,18 +588,18 @@ public final class NbtHelper {
 
 		NbtList nbtList2 = (NbtList)nbtList.stream()
 			.map(NbtCompound.class::cast)
-			.map(NbtHelper::method_32277)
+			.map(NbtHelper::toNbtProviderFormattedPalette)
 			.map(NbtString::of)
 			.collect(Collectors.toCollection(NbtList::new));
 		compound.put("palette", nbtList2);
 		if (bl) {
 			NbtList nbtList3 = new NbtList();
 			NbtList nbtList4 = compound.getList("palettes", NbtElement.LIST_TYPE);
-			nbtList4.stream().map(NbtList.class::cast).forEach(nbtList3x -> {
+			nbtList4.stream().map(NbtList.class::cast).forEach(nbt -> {
 				NbtCompound nbtCompound = new NbtCompound();
 
-				for (int i = 0; i < nbtList3x.size(); i++) {
-					nbtCompound.putString(nbtList2.getString(i), method_32277(nbtList3x.getCompound(i)));
+				for (int i = 0; i < nbt.size(); i++) {
+					nbtCompound.putString(nbtList2.getString(i), toNbtProviderFormattedPalette(nbt.getCompound(i)));
 				}
 
 				nbtList3.add(nbtCompound);
@@ -571,7 +611,7 @@ public final class NbtHelper {
 			NbtList nbtList3 = compound.getList("entities", NbtElement.COMPOUND_TYPE);
 			NbtList nbtList4 = (NbtList)nbtList3.stream()
 				.map(NbtCompound.class::cast)
-				.sorted(Comparator.comparing(nbtCompound -> nbtCompound.getList("pos", NbtElement.DOUBLE_TYPE), field_27817))
+				.sorted(Comparator.comparing(nbt -> nbt.getList("pos", NbtElement.DOUBLE_TYPE), ENTITY_POS_COMPARATOR))
 				.collect(Collectors.toCollection(NbtList::new));
 			compound.put("entities", nbtList4);
 		}
@@ -579,8 +619,8 @@ public final class NbtHelper {
 		NbtList nbtList3 = (NbtList)compound.getList("blocks", NbtElement.COMPOUND_TYPE)
 			.stream()
 			.map(NbtCompound.class::cast)
-			.sorted(Comparator.comparing(nbtCompound -> nbtCompound.getList("pos", NbtElement.INT_TYPE), field_27816))
-			.peek(nbtCompound -> nbtCompound.putString("state", nbtList2.getString(nbtCompound.getInt("state"))))
+			.sorted(Comparator.comparing(nbt -> nbt.getList("pos", NbtElement.INT_TYPE), BLOCK_POS_COMPARATOR))
+			.peek(nbt -> nbt.putString("state", nbtList2.getString(nbt.getInt("state"))))
 			.collect(Collectors.toCollection(NbtList::new));
 		compound.put("data", nbtList3);
 		compound.remove("blocks");
@@ -588,12 +628,12 @@ public final class NbtHelper {
 	}
 
 	@VisibleForTesting
-	static NbtCompound method_32275(NbtCompound compound) {
+	static NbtCompound fromNbtProviderFormat(NbtCompound compound) {
 		NbtList nbtList = compound.getList("palette", NbtElement.STRING_TYPE);
 		Map<String, NbtElement> map = (Map<String, NbtElement>)nbtList.stream()
 			.map(NbtString.class::cast)
 			.map(NbtString::asString)
-			.collect(ImmutableMap.toImmutableMap(Function.identity(), NbtHelper::method_32267));
+			.collect(ImmutableMap.toImmutableMap(Function.identity(), NbtHelper::fromNbtProviderFormattedPalette));
 		if (compound.contains("palettes", NbtElement.LIST_TYPE)) {
 			compound.put(
 				"palettes",
@@ -601,7 +641,7 @@ public final class NbtHelper {
 					.stream()
 					.map(NbtCompound.class::cast)
 					.map(
-						nbtCompoundx -> (NbtList)map.keySet().stream().map(nbtCompoundx::getString).map(NbtHelper::method_32267).collect(Collectors.toCollection(NbtList::new))
+						nbt -> (NbtList)map.keySet().stream().map(nbt::getString).map(NbtHelper::fromNbtProviderFormattedPalette).collect(Collectors.toCollection(NbtList::new))
 					)
 					.collect(Collectors.toCollection(NbtList::new))
 			);
@@ -639,15 +679,11 @@ public final class NbtHelper {
 	}
 
 	@VisibleForTesting
-	static String method_32277(NbtCompound compound) {
+	static String toNbtProviderFormattedPalette(NbtCompound compound) {
 		StringBuilder stringBuilder = new StringBuilder(compound.getString("Name"));
 		if (compound.contains("Properties", NbtElement.COMPOUND_TYPE)) {
 			NbtCompound nbtCompound = compound.getCompound("Properties");
-			String string = (String)nbtCompound.getKeys()
-				.stream()
-				.sorted()
-				.map(stringx -> stringx + ":" + nbtCompound.get(stringx).asString())
-				.collect(Collectors.joining(","));
+			String string = (String)nbtCompound.getKeys().stream().sorted().map(key -> key + ":" + nbtCompound.get(key).asString()).collect(Collectors.joining(","));
 			stringBuilder.append('{').append(string).append('}');
 		}
 
@@ -655,7 +691,7 @@ public final class NbtHelper {
 	}
 
 	@VisibleForTesting
-	static NbtCompound method_32267(String string) {
+	static NbtCompound fromNbtProviderFormattedPalette(String string) {
 		NbtCompound nbtCompound = new NbtCompound();
 		int i = string.indexOf(123);
 		String string2;
@@ -664,8 +700,8 @@ public final class NbtHelper {
 			NbtCompound nbtCompound2 = new NbtCompound();
 			if (i + 2 <= string.length()) {
 				String string3 = string.substring(i + 1, string.indexOf(125, i));
-				COMMA_SPLITTER.split(string3).forEach(string2x -> {
-					List<String> list = field_27819.splitToList(string2x);
+				COMMA_SPLITTER.split(string3).forEach(property -> {
+					List<String> list = COLON_SPLITTER.splitToList(property);
 					if (list.size() == 2) {
 						nbtCompound2.putString((String)list.get(0), (String)list.get(1));
 					} else {

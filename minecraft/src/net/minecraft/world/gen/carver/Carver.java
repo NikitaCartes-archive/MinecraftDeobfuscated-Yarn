@@ -33,6 +33,7 @@ public abstract class Carver<C extends CarverConfig> {
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
 	protected static final FluidState LAVA = Fluids.LAVA.getDefaultState();
 	protected Set<Block> alwaysCarvableBlocks = ImmutableSet.of(
+		Blocks.WATER,
 		Blocks.STONE,
 		Blocks.GRANITE,
 		Blocks.DIORITE,
@@ -190,8 +191,12 @@ public abstract class Carver<C extends CarverConfig> {
 				if (mutableBoolean.isTrue()) {
 					mutable2.set(mutable, Direction.DOWN);
 					if (chunk.getBlockState(mutable2).isOf(Blocks.DIRT)) {
-						context.method_39114(posToBiome, chunk, mutable2, !blockState2.getFluidState().isEmpty())
-							.ifPresent(blockStatex -> chunk.setBlockState(mutable2, blockStatex, false));
+						context.method_39114(posToBiome, chunk, mutable2, !blockState2.getFluidState().isEmpty()).ifPresent(blockStatex -> {
+							chunk.setBlockState(mutable2, blockStatex, false);
+							if (!blockStatex.getFluidState().isEmpty()) {
+								chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockStatex.getFluidState().getFluid(), mutable2, 0L));
+							}
+						});
 					}
 				}
 
@@ -240,10 +245,6 @@ public abstract class Carver<C extends CarverConfig> {
 
 	protected boolean canAlwaysCarveBlock(BlockState state) {
 		return this.alwaysCarvableBlocks.contains(state.getBlock());
-	}
-
-	private static boolean isOnBoundary(int x, int z, int minX, int maxX, int minZ, int maxZ) {
-		return x == minX || x == maxX || z == minZ || z == maxZ;
 	}
 
 	protected static boolean canCarveBranch(ChunkPos pos, double x, double z, int branchIndex, int branchCount, float baseWidth) {

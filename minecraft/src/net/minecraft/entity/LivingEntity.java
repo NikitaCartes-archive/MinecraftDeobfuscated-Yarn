@@ -1497,8 +1497,12 @@ public abstract class LivingEntity extends Entity {
 		return SoundEvents.ENTITY_GENERIC_DEATH;
 	}
 
-	protected SoundEvent getFallSound(int distance) {
-		return distance > 4 ? SoundEvents.ENTITY_GENERIC_BIG_FALL : SoundEvents.ENTITY_GENERIC_SMALL_FALL;
+	private SoundEvent getFallSound(int distance) {
+		return distance > 4 ? this.method_39760().big() : this.method_39760().small();
+	}
+
+	public LivingEntity.class_6823 method_39760() {
+		return new LivingEntity.class_6823(SoundEvents.ENTITY_GENERIC_SMALL_FALL, SoundEvents.ENTITY_GENERIC_BIG_FALL);
 	}
 
 	protected SoundEvent getDrinkSound(ItemStack stack) {
@@ -3475,5 +3479,15 @@ public abstract class LivingEntity extends Entity {
 		this.setVelocity(
 			(double)((float)packet.getVelocityX() / 8000.0F), (double)((float)packet.getVelocityY() / 8000.0F), (double)((float)packet.getVelocityZ() / 8000.0F)
 		);
+	}
+
+	public static record class_6823() {
+		private final SoundEvent small;
+		private final SoundEvent big;
+
+		public class_6823(SoundEvent soundEvent, SoundEvent soundEvent2) {
+			this.small = soundEvent;
+			this.big = soundEvent2;
+		}
 	}
 }

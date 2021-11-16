@@ -2015,9 +2015,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
 				UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
 				userCache.setExecutor(this);
-				SkullBlockEntity.setUserCache(userCache);
-				SkullBlockEntity.setSessionService(minecraftSessionService);
-				SkullBlockEntity.setExecutor(this);
+				SkullBlockEntity.setServices(userCache, minecraftSessionService, this);
 				UserCache.setUseRemote(false);
 				this.server = MinecraftServer.startServer(
 					serverThread -> new IntegratedServer(
@@ -2181,9 +2179,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
 			UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
 			userCache.setExecutor(this);
-			SkullBlockEntity.setUserCache(userCache);
-			SkullBlockEntity.setSessionService(minecraftSessionService);
-			SkullBlockEntity.setExecutor(this);
+			SkullBlockEntity.setServices(userCache, minecraftSessionService, this);
 			UserCache.setUseRemote(false);
 		}
 	}
@@ -2227,6 +2223,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.world = null;
 		this.setWorld(null);
 		this.player = null;
+		SkullBlockEntity.clearServices();
 	}
 
 	private void reset(Screen screen) {

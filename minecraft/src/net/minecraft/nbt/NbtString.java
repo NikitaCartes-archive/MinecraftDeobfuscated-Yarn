@@ -10,7 +10,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * Represents an NBT string.
  */
 public class NbtString implements NbtElement {
-	private static final int field_33241 = 288;
+	private static final int SIZE = 288;
 	public static final NbtType<NbtString> TYPE = new NbtType<NbtString>() {
 		public NbtString read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(288L);
@@ -35,10 +35,10 @@ public class NbtString implements NbtElement {
 		}
 	};
 	private static final NbtString EMPTY = new NbtString("");
-	private static final char field_33242 = '"';
-	private static final char field_33243 = '\'';
-	private static final char field_33244 = '\\';
-	private static final char field_33245 = '\u0000';
+	private static final char DOUBLE_QUOTE = '"';
+	private static final char SINGLE_QUOTE = '\'';
+	private static final char BACKSLASH = '\\';
+	private static final char NULL = '\u0000';
 	private final String value;
 
 	private NbtString(String value) {

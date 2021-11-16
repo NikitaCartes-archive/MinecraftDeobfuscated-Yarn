@@ -84,7 +84,13 @@ public class ChunkStatus {
 				return CompletableFuture.completedFuture(Either.left(chunk));
 			} else {
 				ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, -1);
-				return generator.populateBiomes(executor, class_6748.method_39342(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk)
+				return generator.populateBiomes(
+						world.getRegistryManager().get(Registry.BIOME_KEY),
+						executor,
+						class_6748.method_39342(chunkRegion),
+						world.getStructureAccessor().forRegion(chunkRegion),
+						chunk
+					)
 					.thenApply(chunkx -> {
 						if (chunkx instanceof ProtoChunk) {
 							((ProtoChunk)chunkx).setStatus(targetStatus);
@@ -112,8 +118,8 @@ public class ChunkStatus {
 							BelowZeroRetrogen belowZeroRetrogen = protoChunk.getBelowZeroRetrogen();
 							if (belowZeroRetrogen != null) {
 								BelowZeroRetrogen.replaceOldBedrock(protoChunk);
-								if (belowZeroRetrogen.hasMissingBedrock()) {
-									belowZeroRetrogen.fillColumnWithAirIfMissingBedrock(protoChunk);
+								if (belowZeroRetrogen.method_39770()) {
+									BelowZeroRetrogen.method_39771(protoChunk);
 								}
 							}
 
@@ -165,6 +171,7 @@ public class ChunkStatus {
 				);
 				ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 1);
 				generator.generateFeatures(chunkRegion, chunk, world.getStructureAccessor().forRegion(chunkRegion));
+				class_6748.method_39772(chunkRegion, chunk);
 				protoChunk.setStatus(targetStatus);
 			}
 
