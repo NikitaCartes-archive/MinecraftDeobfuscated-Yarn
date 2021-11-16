@@ -12,7 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * Represents an NBT byte array.
  */
 public class NbtByteArray extends AbstractNbtList<NbtByte> {
-	private static final int field_33188 = 192;
+	private static final int SIZE = 192;
 	public static final NbtType<NbtByteArray> TYPE = new NbtType<NbtByteArray>() {
 		public NbtByteArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(192L);

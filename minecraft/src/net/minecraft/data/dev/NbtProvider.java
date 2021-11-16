@@ -43,7 +43,7 @@ public class NbtProvider implements DataProvider {
 	@Nullable
 	public static Path convertNbtToSnbt(Path inputPath, String location, Path outputPath) {
 		try {
-			writeTo(outputPath.resolve(location + ".snbt"), NbtHelper.toPrettyPrintedString(NbtIo.readCompressed(Files.newInputStream(inputPath))));
+			writeTo(outputPath.resolve(location + ".snbt"), NbtHelper.toNbtProviderString(NbtIo.readCompressed(Files.newInputStream(inputPath))));
 			LOGGER.info("Converted {} from NBT to SNBT", location);
 			return outputPath.resolve(location + ".snbt");
 		} catch (IOException var4) {

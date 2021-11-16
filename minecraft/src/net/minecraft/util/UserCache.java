@@ -185,6 +185,10 @@ public class UserCache {
 		this.executor = executor;
 	}
 
+	public void clearExecutor() {
+		this.executor = null;
+	}
+
 	private static DateFormat getDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 	}

@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
+import java.lang.runtime.ObjectMethods;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -1497,8 +1498,12 @@ public abstract class LivingEntity extends Entity {
 		return SoundEvents.ENTITY_GENERIC_DEATH;
 	}
 
-	protected SoundEvent getFallSound(int distance) {
-		return distance > 4 ? SoundEvents.ENTITY_GENERIC_BIG_FALL : SoundEvents.ENTITY_GENERIC_SMALL_FALL;
+	private SoundEvent getFallSound(int distance) {
+		return distance > 4 ? this.method_39760().big() : this.method_39760().small();
+	}
+
+	public LivingEntity.class_6823 method_39760() {
+		return new LivingEntity.class_6823(SoundEvents.ENTITY_GENERIC_SMALL_FALL, SoundEvents.ENTITY_GENERIC_BIG_FALL);
 	}
 
 	protected SoundEvent getDrinkSound(ItemStack stack) {
@@ -3481,5 +3486,35 @@ public abstract class LivingEntity extends Entity {
 		this.setVelocity(
 			(double)((float)packet.getVelocityX() / 8000.0F), (double)((float)packet.getVelocityY() / 8000.0F), (double)((float)packet.getVelocityZ() / 8000.0F)
 		);
+	}
+
+	public static final class class_6823 extends Record {
+		private final SoundEvent small;
+		private final SoundEvent big;
+
+		public class_6823(SoundEvent soundEvent, SoundEvent soundEvent2) {
+			this.small = soundEvent;
+			this.big = soundEvent2;
+		}
+
+		public final String toString() {
+			return ObjectMethods.bootstrap<"toString",LivingEntity.class_6823,"small;big",LivingEntity.class_6823::small,LivingEntity.class_6823::big>(this);
+		}
+
+		public final int hashCode() {
+			return ObjectMethods.bootstrap<"hashCode",LivingEntity.class_6823,"small;big",LivingEntity.class_6823::small,LivingEntity.class_6823::big>(this);
+		}
+
+		public final boolean equals(Object object) {
+			return ObjectMethods.bootstrap<"equals",LivingEntity.class_6823,"small;big",LivingEntity.class_6823::small,LivingEntity.class_6823::big>(this, object);
+		}
+
+		public SoundEvent small() {
+			return this.small;
+		}
+
+		public SoundEvent big() {
+			return this.big;
+		}
 	}
 }

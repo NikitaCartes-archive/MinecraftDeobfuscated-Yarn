@@ -5,11 +5,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public class OxidizableSlabBlock extends SlabBlock implements Oxidizable {
-	private final Oxidizable.OxidizationLevel oxidizationLevel;
+	private final Oxidizable.OxidationLevel oxidationLevel;
 
-	public OxidizableSlabBlock(Oxidizable.OxidizationLevel oxidizationLevel, AbstractBlock.Settings settings) {
+	public OxidizableSlabBlock(Oxidizable.OxidationLevel oxidationLevel, AbstractBlock.Settings settings) {
 		super(settings);
-		this.oxidizationLevel = oxidizationLevel;
+		this.oxidationLevel = oxidationLevel;
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class OxidizableSlabBlock extends SlabBlock implements Oxidizable {
 		return Oxidizable.getIncreasedOxidationBlock(state.getBlock()).isPresent();
 	}
 
-	public Oxidizable.OxidizationLevel getDegradationLevel() {
-		return this.oxidizationLevel;
+	public Oxidizable.OxidationLevel getDegradationLevel() {
+		return this.oxidationLevel;
 	}
 }

@@ -9,7 +9,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * Represents an NBT byte.
  */
 public class NbtByte extends AbstractNbtNumber {
-	private static final int field_33189 = 72;
+	private static final int SIZE = 72;
 	public static final NbtType<NbtByte> TYPE = new NbtType<NbtByte>() {
 		public NbtByte read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(72L);

@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableBiMap;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public interface Oxidizable extends Degradable<Oxidizable.OxidizationLevel> {
+public interface Oxidizable extends Degradable<Oxidizable.OxidationLevel> {
 	Supplier<BiMap<Block, Block>> OXIDATION_LEVEL_INCREASES = Suppliers.memoize(
 		() -> ImmutableBiMap.<Block, Block>builder()
 				.put(Blocks.COPPER_BLOCK, Blocks.EXPOSED_COPPER)
@@ -61,10 +61,10 @@ public interface Oxidizable extends Degradable<Oxidizable.OxidizationLevel> {
 
 	@Override
 	default float getDegradationChanceMultiplier() {
-		return this.getDegradationLevel() == Oxidizable.OxidizationLevel.UNAFFECTED ? 0.75F : 1.0F;
+		return this.getDegradationLevel() == Oxidizable.OxidationLevel.UNAFFECTED ? 0.75F : 1.0F;
 	}
 
-	public static enum OxidizationLevel {
+	public static enum OxidationLevel {
 		UNAFFECTED,
 		EXPOSED,
 		WEATHERED,

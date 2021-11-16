@@ -90,15 +90,25 @@ public class ConnectScreen extends Screen {
 						.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, ConnectScreen.this.parent, ConnectScreen.this::setStatus));
 					ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
 					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getProfile()));
-				} catch (Exception var4) {
+				} catch (Exception var6) {
 					if (ConnectScreen.this.connectingCancelled) {
 						return;
 					}
 
-					ConnectScreen.LOGGER.error("Couldn't connect to server", var4);
+					Throwable var5 = var6.getCause();
+					Exception exception3;
+					if (var5 instanceof Exception exception2) {
+						exception3 = exception2;
+					} else {
+						exception3 = var6;
+					}
+
+					ConnectScreen.LOGGER.error("Couldn't connect to server", var6);
 					String string = inetSocketAddress == null
-						? var4.toString()
-						: var4.toString().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "");
+						? exception3.getMessage()
+						: exception3.getMessage()
+							.replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "")
+							.replaceAll(inetSocketAddress.toString(), "");
 					client.execute(
 						() -> client.setScreen(
 								new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string))

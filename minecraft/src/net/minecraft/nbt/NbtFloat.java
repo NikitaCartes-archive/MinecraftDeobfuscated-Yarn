@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
  * Represents an NBT 32-bit floating-point number.
  */
 public class NbtFloat extends AbstractNbtNumber {
-	private static final int field_33194 = 96;
+	private static final int SIZE = 96;
 	public static final NbtFloat ZERO = new NbtFloat(0.0F);
 	public static final NbtType<NbtFloat> TYPE = new NbtType<NbtFloat>() {
 		public NbtFloat read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {

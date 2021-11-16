@@ -17,7 +17,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * once its first element is inserted; empty NBT lists return {@link NbtElement#NULL_TYPE NULL_TYPE} as their held {@linkplain AbstractNbtList#getHeldType NBT type}.
  */
 public class NbtList extends AbstractNbtList<NbtElement> {
-	private static final int field_33199 = 296;
+	private static final int SIZE = 296;
 	public static final NbtType<NbtList> TYPE = new NbtType<NbtList>() {
 		public NbtList read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(296L);

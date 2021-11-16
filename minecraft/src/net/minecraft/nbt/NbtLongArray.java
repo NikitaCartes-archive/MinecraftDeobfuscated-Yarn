@@ -13,7 +13,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * Represents an NBT 64-bit integer array.
  */
 public class NbtLongArray extends AbstractNbtList<NbtLong> {
-	private static final int field_33200 = 192;
+	private static final int SIZE = 192;
 	public static final NbtType<NbtLongArray> TYPE = new NbtType<NbtLongArray>() {
 		public NbtLongArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(192L);

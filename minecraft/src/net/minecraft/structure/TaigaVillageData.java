@@ -2,14 +2,12 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.class_6825;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.PileConfiguredFeatures;
-import net.minecraft.world.gen.feature.TreePlacedFeatures;
-import net.minecraft.world.gen.feature.VegetationConfiguredFeatures;
 
 public class TaigaVillageData {
 	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
@@ -178,11 +176,11 @@ public class TaigaVillageData {
 					Pair.of(StructurePoolElement.ofLegacySingle("village/taiga/taiga_decoration_4"), 1),
 					Pair.of(StructurePoolElement.ofLegacySingle("village/taiga/taiga_decoration_5"), 2),
 					Pair.of(StructurePoolElement.ofLegacySingle("village/taiga/taiga_decoration_6"), 1),
-					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.SPRUCE_CHECKED), 4),
-					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.PINE_CHECKED), 4),
-					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_PUMPKIN.withPlacement()), 2),
-					Pair.of(StructurePoolElement.ofFeature(VegetationConfiguredFeatures.PATCH_TAIGA_GRASS.withPlacement()), 4),
-					Pair.of(StructurePoolElement.ofFeature(VegetationConfiguredFeatures.PATCH_BERRY_BUSH.withPlacement()), 1),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36202), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36203), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36199), 2),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36206), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36207), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 4)
 				),
 				StructurePool.Projection.RIGID
@@ -197,11 +195,11 @@ public class TaigaVillageData {
 					Pair.of(StructurePoolElement.ofLegacySingle("village/taiga/taiga_decoration_2"), 1),
 					Pair.of(StructurePoolElement.ofLegacySingle("village/taiga/taiga_decoration_3"), 1),
 					Pair.of(StructurePoolElement.ofLegacySingle("village/taiga/taiga_decoration_4"), 1),
-					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.SPRUCE_CHECKED), 4),
-					Pair.of(StructurePoolElement.ofFeature(TreePlacedFeatures.PINE_CHECKED), 4),
-					Pair.of(StructurePoolElement.ofFeature(PileConfiguredFeatures.PILE_PUMPKIN.withPlacement()), 2),
-					Pair.of(StructurePoolElement.ofFeature(VegetationConfiguredFeatures.PATCH_TAIGA_GRASS.withPlacement()), 4),
-					Pair.of(StructurePoolElement.ofFeature(VegetationConfiguredFeatures.PATCH_BERRY_BUSH.withPlacement()), 1),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36202), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36203), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36199), 2),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36206), 4),
+					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36207), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 4)
 				),
 				StructurePool.Projection.RIGID

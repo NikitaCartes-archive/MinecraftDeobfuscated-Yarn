@@ -98,7 +98,7 @@ public interface NbtElement {
 	 * @see NbtCompound#contains(String, int)
 	 */
 	byte NUMBER_TYPE = 99;
-	int field_33264 = 512;
+	int MAX_DEPTH = 512;
 
 	void write(DataOutput output) throws IOException;
 

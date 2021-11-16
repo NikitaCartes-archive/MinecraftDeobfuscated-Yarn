@@ -12,7 +12,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * and is the type of empty NBT lists.
  */
 public class NbtNull implements NbtElement {
-	private static final int field_33193 = 64;
+	private static final int SIZE = 64;
 	public static final NbtType<NbtNull> TYPE = new NbtType<NbtNull>() {
 		public NbtNull read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
 			nbtTagSizeTracker.add(64L);

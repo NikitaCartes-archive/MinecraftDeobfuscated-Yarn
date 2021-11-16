@@ -12,7 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * Represents an NBT 32-bit integer array.
  */
 public class NbtIntArray extends AbstractNbtList<NbtInt> {
-	private static final int field_33195 = 192;
+	private static final int SIZE = 192;
 	public static final NbtType<NbtIntArray> TYPE = new NbtType<NbtIntArray>() {
 		public NbtIntArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(192L);
