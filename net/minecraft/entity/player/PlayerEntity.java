@@ -1461,8 +1461,8 @@ extends LivingEntity {
     }
 
     @Override
-    public LivingEntity.class_6823 method_39760() {
-        return new LivingEntity.class_6823(SoundEvents.ENTITY_PLAYER_SMALL_FALL, SoundEvents.ENTITY_PLAYER_BIG_FALL);
+    public LivingEntity.FallSounds getFallSounds() {
+        return new LivingEntity.FallSounds(SoundEvents.ENTITY_PLAYER_SMALL_FALL, SoundEvents.ENTITY_PLAYER_BIG_FALL);
     }
 
     @Override
@@ -1615,7 +1615,7 @@ extends LivingEntity {
             return this.inventory.getMainHandStack();
         }
         if (slot == EquipmentSlot.OFFHAND) {
-            return this.inventory.offHand.get(0);
+            return this.inventory.offhand.get(0);
         }
         if (slot.getType() == EquipmentSlot.Type.ARMOR) {
             return this.inventory.armor.get(slot.getEntitySlotId());
@@ -1631,7 +1631,7 @@ extends LivingEntity {
             this.inventory.main.set(this.inventory.selectedSlot, stack);
         } else if (slot == EquipmentSlot.OFFHAND) {
             this.onEquipStack(stack);
-            this.inventory.offHand.set(0, stack);
+            this.inventory.offhand.set(0, stack);
         } else if (slot.getType() == EquipmentSlot.Type.ARMOR) {
             this.onEquipStack(stack);
             this.inventory.armor.set(slot.getEntitySlotId(), stack);
@@ -1645,7 +1645,7 @@ extends LivingEntity {
 
     @Override
     public Iterable<ItemStack> getItemsHand() {
-        return Lists.newArrayList(this.getMainHandStack(), this.getOffHandStack());
+        return Lists.newArrayList(this.getMainHandStack(), this.getOffhandStack());
     }
 
     @Override

@@ -17,6 +17,7 @@ import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1015,7 +1016,7 @@ extends ByteBuf {
         }
         this.readerIndex(i);
         try {
-            return NbtIo.read(new ByteBufInputStream(this), sizeTracker);
+            return NbtIo.read((DataInput)new ByteBufInputStream(this), sizeTracker);
         } catch (IOException iOException) {
             throw new EncoderException(iOException);
         }

@@ -1873,7 +1873,7 @@ AutoCloseable {
         for (ChunkInfo chunkInfo : this.field_34807) {
             ChunkBuilder.BuiltChunk builtChunk = chunkInfo.chunk;
             ChunkPos chunkPos = new ChunkPos(builtChunk.getOrigin());
-            if (!builtChunk.needsRebuild() || !this.world.getChunk(chunkPos.x, chunkPos.z).method_39791()) continue;
+            if (!builtChunk.needsRebuild() || !this.world.getChunk(chunkPos.x, chunkPos.z).shouldRenderOnUpdate()) continue;
             boolean bl = false;
             if (this.client.options.chunkBuilderMode == ChunkBuilderMode.NEARBY) {
                 BlockPos blockPos2 = builtChunk.getOrigin().add(8, 8, 8);

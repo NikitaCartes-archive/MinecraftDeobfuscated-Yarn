@@ -13,20 +13,20 @@ import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 
-public class RemoveOffHandItemTask<E extends PiglinEntity>
+public class RemoveOffhandItemTask<E extends PiglinEntity>
 extends Task<E> {
-    public RemoveOffHandItemTask() {
+    public RemoveOffhandItemTask() {
         super(ImmutableMap.of(MemoryModuleType.ADMIRING_ITEM, MemoryModuleState.VALUE_ABSENT));
     }
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
-        return !((LivingEntity)piglinEntity).getOffHandStack().isEmpty() && !((LivingEntity)piglinEntity).getOffHandStack().isOf(Items.SHIELD);
+        return !((LivingEntity)piglinEntity).getOffhandStack().isEmpty() && !((LivingEntity)piglinEntity).getOffhandStack().isOf(Items.SHIELD);
     }
 
     @Override
     protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-        PiglinBrain.consumeOffHandItem(piglinEntity, true);
+        PiglinBrain.consumeOffhandItem(piglinEntity, true);
     }
 }
 

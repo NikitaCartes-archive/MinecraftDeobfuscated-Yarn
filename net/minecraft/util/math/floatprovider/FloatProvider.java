@@ -13,7 +13,7 @@ import net.minecraft.util.math.floatprovider.FloatProviderType;
 import net.minecraft.util.registry.Registry;
 
 public abstract class FloatProvider {
-    private static final Codec<Either<Float, FloatProvider>> FLOAT_CODEC = Codec.either(Codec.FLOAT, Registry.FLOAT_PROVIDER_TYPE.method_39673().dispatch(FloatProvider::getType, FloatProviderType::codec));
+    private static final Codec<Either<Float, FloatProvider>> FLOAT_CODEC = Codec.either(Codec.FLOAT, Registry.FLOAT_PROVIDER_TYPE.getCodec().dispatch(FloatProvider::getType, FloatProviderType::codec));
     public static final Codec<FloatProvider> VALUE_CODEC = FLOAT_CODEC.xmap(either -> either.map(ConstantFloatProvider::create, provider -> provider), provider -> provider.getType() == FloatProviderType.CONSTANT ? Either.left(Float.valueOf(((ConstantFloatProvider)provider).getValue())) : Either.right(provider));
 
     public static Codec<FloatProvider> createValidatedCodec(float min, float max) {

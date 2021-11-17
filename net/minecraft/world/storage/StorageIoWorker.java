@@ -16,8 +16,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.class_6830;
-import net.minecraft.class_6836;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -38,8 +38,8 @@ AutoCloseable {
     private final RegionBasedStorage storage;
     private final Map<ChunkPos, Result> results = Maps.newLinkedHashMap();
 
-    protected StorageIoWorker(Path path, boolean dsync, String name) {
-        this.storage = new RegionBasedStorage(path, dsync);
+    protected StorageIoWorker(Path directory, boolean dsync, String name) {
+        this.storage = new RegionBasedStorage(directory, dsync);
         this.executor = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + name);
     }
 
@@ -97,16 +97,16 @@ AutoCloseable {
     }
 
     @Override
-    public CompletableFuture<Void> method_39795(ChunkPos chunkPos, class_6836 arg) {
+    public CompletableFuture<Void> method_39795(ChunkPos chunkPos, NbtScanner nbtScanner) {
         return this.run(() -> {
             try {
                 Result result = this.results.get(chunkPos);
                 if (result != null) {
                     if (result.nbt != null) {
-                        result.nbt.method_39876(arg);
+                        result.nbt.accept(nbtScanner);
                     }
                 } else {
-                    this.storage.method_39802(chunkPos, arg);
+                    this.storage.method_39802(chunkPos, nbtScanner);
                 }
                 return Either.left(null);
             } catch (Exception exception) {

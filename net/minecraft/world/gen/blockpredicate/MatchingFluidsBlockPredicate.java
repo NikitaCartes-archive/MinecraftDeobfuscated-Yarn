@@ -18,7 +18,7 @@ import net.minecraft.world.gen.blockpredicate.OffsetPredicate;
 class MatchingFluidsBlockPredicate
 extends OffsetPredicate {
     private final List<Fluid> fluids;
-    public static final Codec<MatchingFluidsBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingFluidsBlockPredicate.registerOffsetField(instance).and(((MapCodec)Registry.FLUID.method_39673().listOf().fieldOf("fluids")).forGetter(predicate -> predicate.fluids)).apply((Applicative<MatchingFluidsBlockPredicate, ?>)instance, MatchingFluidsBlockPredicate::new));
+    public static final Codec<MatchingFluidsBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingFluidsBlockPredicate.registerOffsetField(instance).and(((MapCodec)Registry.FLUID.getCodec().listOf().fieldOf("fluids")).forGetter(predicate -> predicate.fluids)).apply((Applicative<MatchingFluidsBlockPredicate, ?>)instance, MatchingFluidsBlockPredicate::new));
 
     public MatchingFluidsBlockPredicate(Vec3i vec3i, List<Fluid> fluids) {
         super(vec3i);

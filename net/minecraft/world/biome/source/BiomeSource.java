@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,7 +46,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BiomeSource
 implements BiomeSupplier {
     public static final Codec<BiomeSource> CODEC;
-    private final List<Biome> biomes;
+    private final Set<Biome> biomes;
     private final List<class_6827> field_34469;
 
     protected BiomeSource(Stream<Supplier<Biome>> stream) {
@@ -53,7 +54,7 @@ implements BiomeSupplier {
     }
 
     protected BiomeSource(List<Biome> list) {
-        this.biomes = list;
+        this.biomes = new ObjectLinkedOpenHashSet<Biome>(list);
         this.field_34469 = this.method_39525(list, true);
     }
 
@@ -131,7 +132,7 @@ implements BiomeSupplier {
 
     public abstract BiomeSource withSeed(long var1);
 
-    public List<Biome> getBiomes() {
+    public Set<Biome> getBiomes() {
         return this.biomes;
     }
 
@@ -216,7 +217,7 @@ implements BiomeSupplier {
         Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
-        CODEC = Registry.BIOME_SOURCE.method_39673().dispatchStable(BiomeSource::getCodec, Function.identity());
+        CODEC = Registry.BIOME_SOURCE.getCodec().dispatchStable(BiomeSource::getCodec, Function.identity());
     }
 
     public record class_6827(List<PlacedFeature> features, ToIntFunction<PlacedFeature> indexMapping) {

@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import net.minecraft.class_6836;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtNull;
@@ -25,6 +24,7 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.NbtType;
 import net.minecraft.nbt.NbtTypes;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -40,7 +40,7 @@ public class NbtIo {
 
     public static NbtCompound readCompressed(InputStream stream) throws IOException {
         try (DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(stream)));){
-            NbtCompound nbtCompound = NbtIo.read(dataInputStream, NbtTagSizeTracker.EMPTY);
+            NbtCompound nbtCompound = NbtIo.read((DataInput)dataInputStream, NbtTagSizeTracker.EMPTY);
             return nbtCompound;
         }
     }
@@ -72,7 +72,7 @@ public class NbtIo {
         try (FileInputStream fileInputStream = new FileInputStream(file);){
             NbtCompound nbtCompound;
             try (DataInputStream dataInputStream = new DataInputStream(fileInputStream);){
-                nbtCompound = NbtIo.read(dataInputStream, NbtTagSizeTracker.EMPTY);
+                nbtCompound = NbtIo.read((DataInput)dataInputStream, NbtTagSizeTracker.EMPTY);
             }
             return nbtCompound;
         }
@@ -94,26 +94,26 @@ public class NbtIo {
         NbtIo.write((NbtElement)compound, output);
     }
 
-    public static void method_39855(DataInput dataInput, class_6836 arg) throws IOException {
-        NbtType<?> nbtType = NbtTypes.byId(dataInput.readByte());
+    public static void read(DataInput input, NbtScanner visitor) throws IOException {
+        NbtType<?> nbtType = NbtTypes.byId(input.readByte());
         if (nbtType == NbtNull.TYPE) {
-            if (arg.method_39871(NbtNull.TYPE) == class_6836.class_6838.CONTINUE) {
-                arg.method_39856();
+            if (visitor.start(NbtNull.TYPE) == NbtScanner.Result.CONTINUE) {
+                visitor.visitNull();
             }
             return;
         }
-        switch (arg.method_39871(nbtType)) {
+        switch (visitor.start(nbtType)) {
             case HALT: {
                 break;
             }
             case BREAK: {
-                NbtString.method_39875(dataInput);
-                nbtType.method_39851(dataInput);
+                NbtString.skip(input);
+                nbtType.skip(input);
                 break;
             }
             case CONTINUE: {
-                NbtString.method_39875(dataInput);
-                nbtType.method_39852(dataInput, arg);
+                NbtString.skip(input);
+                nbtType.doAccept(input, visitor);
             }
         }
     }
@@ -132,7 +132,7 @@ public class NbtIo {
         if (b == 0) {
             return NbtNull.INSTANCE;
         }
-        NbtString.method_39875(input);
+        NbtString.skip(input);
         try {
             return NbtTypes.byId(b).read(input, depth, tracker);
         } catch (IOException iOException) {

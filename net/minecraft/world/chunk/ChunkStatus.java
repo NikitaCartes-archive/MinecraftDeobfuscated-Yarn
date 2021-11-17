@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
-import net.minecraft.class_6748;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerLightingProvider;
 import net.minecraft.server.world.ServerWorld;
@@ -31,6 +30,7 @@ import net.minecraft.world.chunk.BelowZeroRetrogen;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,7 +80,7 @@ public class ChunkStatus {
     public static final ChunkStatus BIOMES = ChunkStatus.register("biomes", STRUCTURE_REFERENCES, 8, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ChunkStatus targetStatus, Executor executor, ServerWorld world, ChunkGenerator generator, StructureManager structureManager, ServerLightingProvider lightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function, List<Chunk> chunks, Chunk chunk2, boolean bl) -> {
         if (bl || !chunk2.getStatus().isAtLeast(targetStatus)) {
             ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, -1);
-            return generator.populateBiomes(world.getRegistryManager().get(Registry.BIOME_KEY), executor, class_6748.method_39342(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk2).thenApply(chunk -> {
+            return generator.populateBiomes(world.getRegistryManager().get(Registry.BIOME_KEY), executor, Blender.getBlender(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk2).thenApply(chunk -> {
                 if (chunk instanceof ProtoChunk) {
                     ((ProtoChunk)chunk).setStatus(targetStatus);
                 }
@@ -92,14 +92,14 @@ public class ChunkStatus {
     public static final ChunkStatus NOISE = ChunkStatus.register("noise", BIOMES, 8, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ChunkStatus targetStatus, Executor executor, ServerWorld world, ChunkGenerator generator, StructureManager structureManager, ServerLightingProvider lightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function, List<Chunk> chunks, Chunk chunk2, boolean bl) -> {
         if (bl || !chunk2.getStatus().isAtLeast(targetStatus)) {
             ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
-            return generator.populateNoise(executor, class_6748.method_39342(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk2).thenApply(chunk -> {
+            return generator.populateNoise(executor, Blender.getBlender(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk2).thenApply(chunk -> {
                 if (chunk instanceof ProtoChunk) {
                     ProtoChunk protoChunk = (ProtoChunk)chunk;
                     BelowZeroRetrogen belowZeroRetrogen = protoChunk.getBelowZeroRetrogen();
                     if (belowZeroRetrogen != null) {
                         BelowZeroRetrogen.replaceOldBedrock(protoChunk);
-                        if (belowZeroRetrogen.method_39770()) {
-                            BelowZeroRetrogen.method_39771(protoChunk);
+                        if (belowZeroRetrogen.hasNoBedrock()) {
+                            BelowZeroRetrogen.fillChunkWithAir(protoChunk);
                         }
                     }
                     protoChunk.setStatus(targetStatus);
@@ -117,7 +117,7 @@ public class ChunkStatus {
         ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
         if (chunk instanceof ProtoChunk) {
             ProtoChunk protoChunk = (ProtoChunk)chunk;
-            class_6748.method_39809(chunkRegion, protoChunk);
+            Blender.method_39809(chunkRegion, protoChunk);
         }
         generator.carve(chunkRegion, world.getSeed(), world.getBiomeAccess(), world.getStructureAccessor().forRegion(chunkRegion), chunk, GenerationStep.Carver.AIR);
     });
@@ -129,7 +129,7 @@ public class ChunkStatus {
             Heightmap.populateHeightmaps(chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE));
             ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 1);
             generator.generateFeatures(chunkRegion, chunk, world.getStructureAccessor().forRegion(chunkRegion));
-            class_6748.method_39772(chunkRegion, chunk);
+            Blender.tickLeavesAndFluids(chunkRegion, chunk);
             protoChunk.setStatus(targetStatus);
         }
         return CompletableFuture.completedFuture(Either.left(chunk));

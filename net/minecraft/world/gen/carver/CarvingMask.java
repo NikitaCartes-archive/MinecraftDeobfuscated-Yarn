@@ -11,15 +11,15 @@ import net.minecraft.util.math.ChunkPos;
 public class CarvingMask {
     private final int bottomY;
     private final BitSet mask;
-    private class_6828 field_36217 = (i, j, k) -> false;
+    private MaskPredicate maskPredicate = (offsetX, y, offsetZ) -> false;
 
     public CarvingMask(int height, int bottomY) {
         this.bottomY = bottomY;
         this.mask = new BitSet(256 * height);
     }
 
-    public void method_39785(class_6828 arg) {
-        this.field_36217 = arg;
+    public void setMaskPredicate(MaskPredicate maskPredicate) {
+        this.maskPredicate = maskPredicate;
     }
 
     public CarvingMask(long[] mask, int bottomY) {
@@ -36,7 +36,7 @@ public class CarvingMask {
     }
 
     public boolean get(int offsetX, int y, int offsetZ) {
-        return this.field_36217.test(offsetX, y, offsetZ) || this.mask.get(this.getIndex(offsetX, y, offsetZ));
+        return this.maskPredicate.test(offsetX, y, offsetZ) || this.mask.get(this.getIndex(offsetX, y, offsetZ));
     }
 
     public Stream<BlockPos> streamBlockPos(ChunkPos chunkPos) {
@@ -52,7 +52,7 @@ public class CarvingMask {
         return this.mask.toLongArray();
     }
 
-    public static interface class_6828 {
+    public static interface MaskPredicate {
         public boolean test(int var1, int var2, int var3);
     }
 }

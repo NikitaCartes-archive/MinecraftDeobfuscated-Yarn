@@ -9,13 +9,13 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.class_6836;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtLong;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.NbtType;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -25,7 +25,7 @@ import org.apache.commons.lang3.ArrayUtils;
 public class NbtLongArray
 extends AbstractNbtList<NbtLong> {
     private static final int SIZE = 192;
-    public static final NbtType<NbtLongArray> TYPE = new NbtType.class_6840<NbtLongArray>(){
+    public static final NbtType<NbtLongArray> TYPE = new NbtType.OfVariableSize<NbtLongArray>(){
 
         @Override
         public NbtLongArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
@@ -40,18 +40,18 @@ extends AbstractNbtList<NbtLong> {
         }
 
         @Override
-        public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
-            int i = dataInput.readInt();
+        public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+            int i = input.readInt();
             long[] ls = new long[i];
             for (int j = 0; j < i; ++j) {
-                ls[j] = dataInput.readLong();
+                ls[j] = input.readLong();
             }
-            return arg.method_39869(ls);
+            return visitor.visitLongArray(ls);
         }
 
         @Override
-        public void method_39851(DataInput dataInput) throws IOException {
-            dataInput.skipBytes(dataInput.readInt() * 8);
+        public void skip(DataInput input) throws IOException {
+            input.skipBytes(input.readInt() * 8);
         }
 
         @Override
@@ -200,8 +200,8 @@ extends AbstractNbtList<NbtLong> {
     }
 
     @Override
-    public class_6836.class_6838 method_39850(class_6836 arg) {
-        return arg.method_39869(this.value);
+    public NbtScanner.Result doAccept(NbtScanner visitor) {
+        return visitor.visitLongArray(this.value);
     }
 
     @Override

@@ -73,11 +73,11 @@ extends ConditionalLootFunction {
     }
 
     public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, Identifier id) {
-        return SetLootTableLootFunction.builder(lootConditions -> new SetLootTableLootFunction((LootCondition[])lootConditions, id, 0L, type));
+        return SetLootTableLootFunction.builder(conditions -> new SetLootTableLootFunction((LootCondition[])conditions, id, 0L, type));
     }
 
     public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, Identifier id, long seed) {
-        return SetLootTableLootFunction.builder(lootConditions -> new SetLootTableLootFunction((LootCondition[])lootConditions, id, seed, type));
+        return SetLootTableLootFunction.builder(conditions -> new SetLootTableLootFunction((LootCondition[])conditions, id, seed, type));
     }
 
     public static class Serializer

@@ -130,8 +130,8 @@ public class Scoreboard {
         }
     }
 
-    public Map<ScoreboardObjective, ScoreboardPlayerScore> getPlayerObjectives(String string) {
-        Map<ScoreboardObjective, ScoreboardPlayerScore> map = this.playerObjectives.get(string);
+    public Map<ScoreboardObjective, ScoreboardPlayerScore> getPlayerObjectives(String playerName) {
+        Map<ScoreboardObjective, ScoreboardPlayerScore> map = this.playerObjectives.get(playerName);
         if (map == null) {
             map = Maps.newHashMap();
         }
@@ -310,7 +310,7 @@ public class Scoreboard {
 
     protected NbtList toNbt() {
         NbtList nbtList = new NbtList();
-        this.playerObjectives.values().stream().map(Map::values).forEach(collection -> collection.stream().filter(score -> score.getObjective() != null).forEach(score -> {
+        this.playerObjectives.values().stream().map(Map::values).forEach(scores -> scores.stream().filter(score -> score.getObjective() != null).forEach(score -> {
             NbtCompound nbtCompound = new NbtCompound();
             nbtCompound.putString("Name", score.getPlayerName());
             nbtCompound.putString("Objective", score.getObjective().getName());

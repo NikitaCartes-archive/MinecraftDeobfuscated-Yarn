@@ -29,8 +29,8 @@ extends FeatureRenderer<T, M> {
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         ItemStack itemStack2;
         boolean bl = ((LivingEntity)livingEntity).getMainArm() == Arm.RIGHT;
-        ItemStack itemStack = bl ? ((LivingEntity)livingEntity).getOffHandStack() : ((LivingEntity)livingEntity).getMainHandStack();
-        ItemStack itemStack3 = itemStack2 = bl ? ((LivingEntity)livingEntity).getMainHandStack() : ((LivingEntity)livingEntity).getOffHandStack();
+        ItemStack itemStack = bl ? ((LivingEntity)livingEntity).getOffhandStack() : ((LivingEntity)livingEntity).getMainHandStack();
+        ItemStack itemStack3 = itemStack2 = bl ? ((LivingEntity)livingEntity).getMainHandStack() : ((LivingEntity)livingEntity).getOffhandStack();
         if (itemStack.isEmpty() && itemStack2.isEmpty()) {
             return;
         }

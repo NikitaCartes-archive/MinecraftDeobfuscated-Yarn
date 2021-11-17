@@ -124,17 +124,17 @@ public class Bootstrap {
         if (SharedConstants.isDevelopment) {
             Bootstrap.getMissingTranslations().forEach(key -> LOGGER.error("Missing translations: {}", key));
             CommandManager.checkMissing();
-            Bootstrap.method_39891();
+            Bootstrap.logMissingBiomePlacementModifier();
         }
         DefaultAttributeRegistry.checkMissing();
     }
 
-    private static void method_39891() {
+    private static void logMissingBiomePlacementModifier() {
         BuiltinRegistries.BIOME.stream().forEach(biome -> {
             List<List<Supplier<PlacedFeature>>> list = biome.getGenerationSettings().getFeatures();
-            list.stream().flatMap(Collection::stream).forEach(supplier -> {
-                if (!((PlacedFeature)supplier.get()).method_39825().contains(BiomePlacementModifier.of())) {
-                    Util.error("Placed feature " + BuiltinRegistries.PLACED_FEATURE.getKey((PlacedFeature)supplier.get()) + " is missing BiomeFilter.biome()");
+            list.stream().flatMap(Collection::stream).forEach(placedFeatureSupplier -> {
+                if (!((PlacedFeature)placedFeatureSupplier.get()).method_39825().contains(BiomePlacementModifier.of())) {
+                    Util.error("Placed feature " + BuiltinRegistries.PLACED_FEATURE.getKey((PlacedFeature)placedFeatureSupplier.get()) + " is missing BiomeFilter.biome()");
                 }
             });
         });

@@ -273,7 +273,7 @@ InventoryOwner {
 
     @Override
     protected void zombify(ServerWorld world) {
-        PiglinBrain.pickupItemWithOffHand(this);
+        PiglinBrain.pickupItemWithOffhand(this);
         this.inventory.clearToList().forEach(this::dropStack);
         super.zombify(world);
     }
@@ -304,7 +304,7 @@ InventoryOwner {
         if (this.isDancing()) {
             return PiglinActivity.DANCING;
         }
-        if (PiglinBrain.isGoldenItem(this.getOffHandStack())) {
+        if (PiglinBrain.isGoldenItem(this.getOffhandStack())) {
             return PiglinActivity.ADMIRING_ITEM;
         }
         if (this.isAttacking() && this.isHoldingTool()) {
@@ -358,7 +358,7 @@ InventoryOwner {
         this.equipLootStack(EquipmentSlot.MAINHAND, stack);
     }
 
-    protected void equipToOffHand(ItemStack stack) {
+    protected void equipToOffhand(ItemStack stack) {
         if (stack.isOf(PiglinBrain.BARTERING_ITEM)) {
             this.equipStack(EquipmentSlot.OFFHAND, stack);
             this.updateDropChances(EquipmentSlot.OFFHAND);

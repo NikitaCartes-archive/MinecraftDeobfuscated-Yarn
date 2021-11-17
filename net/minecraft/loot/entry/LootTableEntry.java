@@ -23,9 +23,9 @@ public class LootTableEntry
 extends LeafEntry {
     final Identifier id;
 
-    LootTableEntry(Identifier identifier, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-        super(i, j, lootConditions, lootFunctions);
-        this.id = identifier;
+    LootTableEntry(Identifier id, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+        super(weight, quality, conditions, functions);
+        this.id = id;
     }
 
     @Override

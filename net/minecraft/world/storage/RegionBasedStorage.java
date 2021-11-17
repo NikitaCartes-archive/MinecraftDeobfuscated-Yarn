@@ -4,6 +4,7 @@
 package net.minecraft.world.storage;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
@@ -11,9 +12,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
-import net.minecraft.class_6836;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.util.ThrowableDeliverer;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.RegionFile;
@@ -21,14 +22,14 @@ import org.jetbrains.annotations.Nullable;
 
 public final class RegionBasedStorage
 implements AutoCloseable {
-    public static final String field_31425 = ".mca";
-    private static final int field_31426 = 256;
+    public static final String MCA_EXTENSION = ".mca";
+    private static final int MAX_CACHE_SIZE = 256;
     private final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap();
     private final Path directory;
     private final boolean dsync;
 
-    RegionBasedStorage(Path path, boolean dsync) {
-        this.directory = path;
+    RegionBasedStorage(Path directory, boolean dsync) {
+        this.directory = directory;
         this.dsync = dsync;
     }
 
@@ -42,7 +43,7 @@ implements AutoCloseable {
             this.cachedRegionFiles.removeLast().close();
         }
         Files.createDirectories(this.directory, new FileAttribute[0]);
-        Path path = this.directory.resolve("r." + pos.getRegionX() + "." + pos.getRegionZ() + field_31425);
+        Path path = this.directory.resolve("r." + pos.getRegionX() + "." + pos.getRegionZ() + MCA_EXTENSION);
         RegionFile regionFile2 = new RegionFile(path, this.directory, this.dsync);
         this.cachedRegionFiles.putAndMoveToFirst(l, regionFile2);
         return regionFile2;
@@ -61,11 +62,11 @@ implements AutoCloseable {
         }
     }
 
-    public void method_39802(ChunkPos chunkPos, class_6836 arg) throws IOException {
+    public void method_39802(ChunkPos chunkPos, NbtScanner nbtScanner) throws IOException {
         RegionFile regionFile = this.getRegionFile(chunkPos);
         try (DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);){
             if (dataInputStream != null) {
-                NbtIo.method_39855(dataInputStream, arg);
+                NbtIo.read((DataInput)dataInputStream, nbtScanner);
             }
         }
     }

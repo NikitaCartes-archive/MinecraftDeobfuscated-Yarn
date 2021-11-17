@@ -20,8 +20,8 @@ public final class ConstantLootNumberProvider
 implements LootNumberProvider {
     final float value;
 
-    ConstantLootNumberProvider(float f) {
-        this.value = f;
+    ConstantLootNumberProvider(float value) {
+        this.value = value;
     }
 
     @Override

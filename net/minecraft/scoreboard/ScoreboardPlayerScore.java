@@ -9,14 +9,14 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import org.jetbrains.annotations.Nullable;
 
 public class ScoreboardPlayerScore {
-    public static final Comparator<ScoreboardPlayerScore> COMPARATOR = (scoreboardPlayerScore, scoreboardPlayerScore2) -> {
-        if (scoreboardPlayerScore.getScore() > scoreboardPlayerScore2.getScore()) {
+    public static final Comparator<ScoreboardPlayerScore> COMPARATOR = (a, b) -> {
+        if (a.getScore() > b.getScore()) {
             return 1;
         }
-        if (scoreboardPlayerScore.getScore() < scoreboardPlayerScore2.getScore()) {
+        if (a.getScore() < b.getScore()) {
             return -1;
         }
-        return scoreboardPlayerScore2.getPlayerName().compareToIgnoreCase(scoreboardPlayerScore.getPlayerName());
+        return b.getPlayerName().compareToIgnoreCase(a.getPlayerName());
     };
     private final Scoreboard scoreboard;
     @Nullable

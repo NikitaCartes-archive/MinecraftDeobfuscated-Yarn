@@ -57,16 +57,16 @@ public class OrePlacedFeatures {
     public static final PlacedFeature ORE_COPPER_LARGE = PlacedFeatures.register("ore_copper_large", OreConfiguredFeatures.ORE_COPPER_LARGE.withPlacement(OrePlacedFeatures.modifiersWithCount(16, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-16), YOffset.fixed(112)))));
     public static final PlacedFeature ORE_CLAY = PlacedFeatures.register("ore_clay", OreConfiguredFeatures.ORE_CLAY.withPlacement(OrePlacedFeatures.modifiersWithCount(38, PlacedFeatures.BOTTOM_TO_120_RANGE)));
 
-    private static List<PlacementModifier> modifiers(PlacementModifier first, PlacementModifier second) {
-        return List.of(first, SquarePlacementModifier.of(), second, BiomePlacementModifier.of());
+    private static List<PlacementModifier> modifiers(PlacementModifier countModifier, PlacementModifier heightModifier) {
+        return List.of(countModifier, SquarePlacementModifier.of(), heightModifier, BiomePlacementModifier.of());
     }
 
-    private static List<PlacementModifier> modifiersWithCount(int count, PlacementModifier modifier) {
-        return OrePlacedFeatures.modifiers(CountPlacementModifier.of(count), modifier);
+    private static List<PlacementModifier> modifiersWithCount(int count, PlacementModifier heightModfier) {
+        return OrePlacedFeatures.modifiers(CountPlacementModifier.of(count), heightModfier);
     }
 
-    private static List<PlacementModifier> modifiersWithRarity(int chance, PlacementModifier modifier) {
-        return OrePlacedFeatures.modifiers(RarityFilterPlacementModifier.of(chance), modifier);
+    private static List<PlacementModifier> modifiersWithRarity(int chance, PlacementModifier heightModifier) {
+        return OrePlacedFeatures.modifiers(RarityFilterPlacementModifier.of(chance), heightModifier);
     }
 }
 

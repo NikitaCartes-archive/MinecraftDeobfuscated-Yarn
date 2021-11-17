@@ -23,9 +23,9 @@ implements LootNumberProvider {
     final LootNumberProvider n;
     final LootNumberProvider p;
 
-    BinomialLootNumberProvider(LootNumberProvider lootNumberProvider, LootNumberProvider lootNumberProvider2) {
-        this.n = lootNumberProvider;
-        this.p = lootNumberProvider2;
+    BinomialLootNumberProvider(LootNumberProvider n, LootNumberProvider p) {
+        this.n = n;
+        this.p = p;
     }
 
     @Override

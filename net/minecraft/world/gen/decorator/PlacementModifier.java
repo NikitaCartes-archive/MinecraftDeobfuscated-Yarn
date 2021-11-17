@@ -12,7 +12,7 @@ import net.minecraft.world.gen.decorator.DecoratorContext;
 import net.minecraft.world.gen.decorator.PlacementModifierType;
 
 public abstract class PlacementModifier {
-    public static final Codec<PlacementModifier> CODEC = Registry.PLACEMENT_MODIFIER_TYPE.method_39673().dispatch(PlacementModifier::getType, PlacementModifierType::codec);
+    public static final Codec<PlacementModifier> CODEC = Registry.PLACEMENT_MODIFIER_TYPE.getCodec().dispatch(PlacementModifier::getType, PlacementModifierType::codec);
 
     public abstract Stream<BlockPos> getPositions(DecoratorContext var1, Random var2, BlockPos var3);
 

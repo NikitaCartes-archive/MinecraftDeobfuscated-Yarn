@@ -28,7 +28,7 @@ import net.minecraft.world.gen.blockpredicate.WouldSurviveBlockPredicate;
 
 public interface BlockPredicate
 extends BiPredicate<StructureWorldAccess, BlockPos> {
-    public static final Codec<BlockPredicate> BASE_CODEC = Registry.BLOCK_PREDICATE_TYPE.method_39673().dispatch(BlockPredicate::getType, BlockPredicateType::codec);
+    public static final Codec<BlockPredicate> BASE_CODEC = Registry.BLOCK_PREDICATE_TYPE.getCodec().dispatch(BlockPredicate::getType, BlockPredicateType::codec);
     public static final BlockPredicate IS_AIR = BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN);
     public static final BlockPredicate IS_AIR_OR_WATER = BlockPredicate.matchingBlocks(List.of(Blocks.AIR, Blocks.WATER), BlockPos.ORIGIN);
 

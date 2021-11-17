@@ -25,7 +25,7 @@ extends Task<E> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
-        if (!((LivingEntity)piglinEntity).getOffHandStack().isEmpty()) {
+        if (!((LivingEntity)piglinEntity).getOffhandStack().isEmpty()) {
             return false;
         }
         Optional<ItemEntity> optional = ((PiglinEntity)piglinEntity).getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM);

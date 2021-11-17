@@ -57,7 +57,7 @@ implements PaletteStorage {
         int j = (size + this.elementsPerLong - 1) / this.elementsPerLong;
         if (data != null) {
             if (data.length != j) {
-                throw new class_6685("Invalid length given for storage, got: " + data.length + " but expected: " + j);
+                throw new InvalidLengthException("Invalid length given for storage, got: " + data.length + " but expected: " + j);
             }
             this.data = data;
         } else {
@@ -130,10 +130,10 @@ implements PaletteStorage {
         }
     }
 
-    public static class class_6685
+    public static class InvalidLengthException
     extends RuntimeException {
-        class_6685(String string) {
-            super(string);
+        InvalidLengthException(String message) {
+            super(message);
         }
     }
 }

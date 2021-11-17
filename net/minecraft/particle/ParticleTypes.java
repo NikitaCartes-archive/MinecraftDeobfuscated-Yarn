@@ -104,7 +104,7 @@ public class ParticleTypes {
     public static final DefaultParticleType WAX_OFF = ParticleTypes.register("wax_off", true);
     public static final DefaultParticleType ELECTRIC_SPARK = ParticleTypes.register("electric_spark", true);
     public static final DefaultParticleType SCRAPE = ParticleTypes.register("scrape", true);
-    public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.method_39673().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
+    public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
     private static DefaultParticleType register(String name, boolean alwaysShow) {
         return Registry.register(Registry.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));

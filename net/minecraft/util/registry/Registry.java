@@ -323,7 +323,7 @@ IndexedIterable<T> {
         return "Registry[" + this.registryKey + " (" + this.lifecycle + ")]";
     }
 
-    public Codec<T> method_39673() {
+    public Codec<T> getCodec() {
         Codec<Object> codec = Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(this.get((Identifier)identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry key in " + this.registryKey + ": " + identifier)), object -> this.getKey(object).map(RegistryKey::getValue).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry element in " + this.registryKey + ":" + object)));
         Codec<Object> codec2 = Codecs.method_39511(object -> this.getKey(object).isPresent() ? this.getRawId(object) : -1, this::get, -1);
         return Codecs.method_39504(Codecs.method_39512(codec, codec2), this::getEntryLifecycle, object -> this.lifecycle);
@@ -395,11 +395,11 @@ IndexedIterable<T> {
     }
 
     public static <V, T extends V> T register(Registry<V> registry, Identifier id, T entry) {
-        return Registry.method_39197(registry, RegistryKey.of(registry.registryKey, id), entry);
+        return Registry.register(registry, RegistryKey.of(registry.registryKey, id), entry);
     }
 
-    public static <V, T extends V> T method_39197(Registry<V> registry, RegistryKey<V> registryKey, T object) {
-        return ((MutableRegistry)registry).add(registryKey, object, Lifecycle.stable());
+    public static <V, T extends V> T register(Registry<V> registry, RegistryKey<V> key, T entry) {
+        return ((MutableRegistry)registry).add(key, entry, Lifecycle.stable());
     }
 
     public static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {

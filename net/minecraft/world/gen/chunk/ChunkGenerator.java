@@ -25,7 +25,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6748;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -56,6 +55,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
@@ -155,7 +155,7 @@ implements BiomeAccess.Storage {
 
     public abstract ChunkGenerator withSeed(long var1);
 
-    public CompletableFuture<Chunk> populateBiomes(Registry<Biome> registry, Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
+    public CompletableFuture<Chunk> populateBiomes(Registry<Biome> registry, Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
         return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
             chunk.method_38257(this.biomeSource::getBiome, this.getMultiNoiseSampler());
             return chunk;
@@ -238,6 +238,7 @@ implements BiomeAccess.Storage {
                 chunkSection.getBiomeContainer().method_39793(set::add);
             }
         });
+        set.retainAll(this.populationSource.getBiomes());
         int i = list.size();
         try {
             Registry<PlacedFeature> registry = world.getRegistryManager().get(Registry.PLACED_FEATURE_KEY);
@@ -405,7 +406,7 @@ implements BiomeAccess.Storage {
     /**
      * Generates the base shape of the chunk out of the basic block states as decided by this chunk generator's config.
      */
-    public abstract CompletableFuture<Chunk> populateNoise(Executor var1, class_6748 var2, StructureAccessor var3, Chunk var4);
+    public abstract CompletableFuture<Chunk> populateNoise(Executor var1, Blender var2, StructureAccessor var3, Chunk var4);
 
     public abstract int getSeaLevel();
 
@@ -438,7 +439,7 @@ implements BiomeAccess.Storage {
         Registry.register(Registry.CHUNK_GENERATOR, "noise", NoiseChunkGenerator.CODEC);
         Registry.register(Registry.CHUNK_GENERATOR, "flat", FlatChunkGenerator.CODEC);
         Registry.register(Registry.CHUNK_GENERATOR, "debug", DebugChunkGenerator.CODEC);
-        CODEC = Registry.CHUNK_GENERATOR.method_39673().dispatchStable(ChunkGenerator::getCodec, Function.identity());
+        CODEC = Registry.CHUNK_GENERATOR.getCodec().dispatchStable(ChunkGenerator::getCodec, Function.identity());
     }
 }
 

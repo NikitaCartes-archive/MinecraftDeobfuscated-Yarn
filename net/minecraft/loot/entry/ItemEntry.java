@@ -24,8 +24,8 @@ public class ItemEntry
 extends LeafEntry {
     final Item item;
 
-    ItemEntry(Item item, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-        super(i, j, lootConditions, lootFunctions);
+    ItemEntry(Item item, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+        super(weight, quality, conditions, functions);
         this.item = item;
     }
 

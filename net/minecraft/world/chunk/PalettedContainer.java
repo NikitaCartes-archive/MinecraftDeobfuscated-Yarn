@@ -174,18 +174,10 @@ implements PaletteResizeListener<T> {
     }
 
     public void method_39793(Consumer<T> consumer) {
-        Palette<T> palette = this.data.palette();
-        if (palette instanceof IdListPalette) {
-            IdListPalette idListPalette = (IdListPalette)palette;
-            IntArraySet intSet = new IntArraySet();
-            this.data.storage.forEach(intSet::add);
-            intSet.forEach(i -> consumer.accept(idListPalette.get(i)));
-        } else {
-            int i2 = palette.getSize();
-            for (int j = 0; j < i2; ++j) {
-                consumer.accept(palette.get(j));
-            }
-        }
+        Palette palette = this.data.palette();
+        IntArraySet intSet = new IntArraySet();
+        this.data.storage.forEach(intSet::add);
+        intSet.forEach(i -> consumer.accept(palette.get(i)));
     }
 
     /*
@@ -247,8 +239,8 @@ implements PaletteResizeListener<T> {
                 } else {
                     paletteStorage = new PackedIntegerArray(dataProvider.bits(), i2, ls);
                 }
-            } catch (PackedIntegerArray.class_6685 lv) {
-                return DataResult.error("Failed to read PalettedContainer: " + lv.getMessage());
+            } catch (PackedIntegerArray.InvalidLengthException invalidLengthException) {
+                return DataResult.error("Failed to read PalettedContainer: " + invalidLengthException.getMessage());
             }
         }
         return DataResult.success(new PalettedContainer<T>(idList, provider, dataProvider, paletteStorage, list));

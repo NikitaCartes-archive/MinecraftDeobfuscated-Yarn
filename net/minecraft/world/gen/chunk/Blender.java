@@ -3,345 +3,364 @@
  */
 package net.minecraft.world.gen.chunk;
 
-import com.google.common.primitives.Doubles;
-import com.mojang.datafixers.kinds.Applicative;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Arrays;
-import java.util.EnumSet;
+import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.DoubleStream;
-import net.minecraft.block.Block;
+import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.EightWayDirection;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.ChunkRegion;
-import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.biome.source.BiomeSupplier;
+import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ProtoChunk;
+import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.CarvingMask;
+import net.minecraft.world.gen.chunk.BlendingData;
+import net.minecraft.world.gen.noise.NoiseParametersKeys;
+import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
+import org.apache.commons.lang3.mutable.MutableDouble;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 public class Blender {
-    private static final double field_35514 = 0.1;
-    protected static final HeightLimitView OLD_HEIGHT_LIMIT = new HeightLimitView(){
+    private static final Blender NO_BLENDING = new Blender(null, List.of(), List.of()){
 
         @Override
-        public int getHeight() {
-            return 256;
+        public TerrainNoisePoint method_39340(int i, int j, TerrainNoisePoint terrainNoisePoint) {
+            return terrainNoisePoint;
         }
 
         @Override
-        public int getBottomY() {
-            return 0;
+        public double method_39338(int i, int j, int k, double d) {
+            return d;
+        }
+
+        @Override
+        public BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier) {
+            return biomeSupplier;
         }
     };
-    public static final int field_35511 = 8;
-    private static final int field_35516 = 2;
-    private static final int field_35683 = BiomeCoords.fromBlock(16);
-    private static final int field_35684 = field_35683 - 1;
-    private static final int field_35685 = field_35683;
-    private static final int field_35686 = 2 * field_35684 + 1;
-    private static final int field_35687 = 2 * field_35685 + 1;
-    private static final int field_35518 = field_35686 + field_35687;
-    private static final int field_35688 = field_35683 + 1;
-    private static final List<Block> SURFACE_BLOCKS = List.of(Blocks.PODZOL, Blocks.GRAVEL, Blocks.GRASS_BLOCK, Blocks.STONE, Blocks.COARSE_DIRT, Blocks.SAND, Blocks.RED_SAND, Blocks.MYCELIUM, Blocks.SNOW_BLOCK, Blocks.TERRACOTTA, Blocks.DIRT);
-    protected static final double field_35513 = Double.MAX_VALUE;
-    private final boolean field_35689;
-    private boolean field_35690;
-    private final boolean field_35691;
-    private final double[] field_35692;
-    private final transient double[][] field_35693;
-    private final transient double[] field_35694;
-    private static final Codec<double[]> field_35695 = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
-    public static final Codec<Blender> field_35682 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.BOOL.fieldOf("old_noise")).forGetter(Blender::method_39566), field_35695.optionalFieldOf("heights").forGetter(blender -> DoubleStream.of(blender.field_35692).anyMatch(d -> d != Double.MAX_VALUE) ? Optional.of(blender.field_35692) : Optional.empty())).apply((Applicative<Blender, ?>)instance, Blender::new)).comapFlatMap(Blender::method_39573, Function.identity());
+    private static final DoublePerlinNoiseSampler field_35681 = DoublePerlinNoiseSampler.create(new Xoroshiro128PlusPlusRandom(42L), BuiltinRegistries.NOISE_PARAMETERS.getOrThrow(NoiseParametersKeys.OFFSET));
+    private static final int field_35502 = BiomeCoords.fromChunk(7) - 1;
+    private static final int field_35503 = BiomeCoords.toChunk(field_35502 + 3);
+    private static final int field_35504 = 2;
+    private static final int field_35505 = BiomeCoords.toChunk(5);
+    private static final double field_35506 = 10.0;
+    private static final double field_35507 = 0.0;
+    private static final double field_36222 = (double)BlendingData.OLD_HEIGHT_LIMIT.getHeight() / 2.0;
+    private static final double field_36223 = (double)BlendingData.OLD_HEIGHT_LIMIT.getBottomY() + field_36222;
+    private static final double field_36224 = 8.0;
+    private final ChunkRegion chunkRegion;
+    private final List<ChunkBlendingData> field_35509;
+    private final List<ChunkBlendingData> field_35510;
 
-    private static DataResult<Blender> method_39573(Blender blender) {
-        if (blender.field_35692.length != field_35518) {
-            return DataResult.error("heights has to be of length " + field_35518);
+    public static Blender getNoBlending() {
+        return NO_BLENDING;
+    }
+
+    public static Blender getBlender(@Nullable ChunkRegion chunkRegion) {
+        if (chunkRegion == null) {
+            return NO_BLENDING;
         }
-        return DataResult.success(blender);
+        ArrayList<ChunkBlendingData> list = Lists.newArrayList();
+        ArrayList<ChunkBlendingData> list2 = Lists.newArrayList();
+        ChunkPos chunkPos = chunkRegion.getCenterPos();
+        for (int i = -field_35503; i <= field_35503; ++i) {
+            for (int j = -field_35503; j <= field_35503; ++j) {
+                int k = chunkPos.x + i;
+                int l = chunkPos.z + j;
+                BlendingData blendingData = BlendingData.getBlendingData(chunkRegion, k, l);
+                if (blendingData == null) continue;
+                ChunkBlendingData chunkBlendingData = new ChunkBlendingData(k, l, blendingData);
+                list.add(chunkBlendingData);
+                if (i < -field_35505 || i > field_35505 || j < -field_35505 || j > field_35505) continue;
+                list2.add(chunkBlendingData);
+            }
+        }
+        if (list.isEmpty() && list2.isEmpty()) {
+            return NO_BLENDING;
+        }
+        return new Blender(chunkRegion, list, list2);
     }
 
-    private Blender(boolean bl, Optional<double[]> optional) {
-        this.field_35689 = bl;
-        this.field_35692 = optional.orElse(Util.make(new double[field_35518], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
-        this.field_35691 = optional.isPresent();
-        this.field_35693 = new double[field_35518][];
-        this.field_35694 = new double[field_35688 * field_35688];
+    Blender(ChunkRegion chunkRegion, List<ChunkBlendingData> list, List<ChunkBlendingData> list2) {
+        this.chunkRegion = chunkRegion;
+        this.field_35509 = list;
+        this.field_35510 = list2;
     }
 
-    public boolean method_39566() {
-        return this.field_35689;
+    public TerrainNoisePoint method_39340(int i, int j, TerrainNoisePoint terrainNoisePoint) {
+        int l2;
+        int k2 = BiomeCoords.fromBlock(i);
+        double d2 = this.method_39562(k2, 0, l2 = BiomeCoords.fromBlock(j), BlendingData::method_39344);
+        if (d2 != Double.MAX_VALUE) {
+            return new TerrainNoisePoint(Blender.method_39337(d2), 10.0, 0.0);
+        }
+        MutableDouble mutableDouble = new MutableDouble(0.0);
+        MutableDouble mutableDouble2 = new MutableDouble(0.0);
+        MutableDouble mutableDouble3 = new MutableDouble(Double.POSITIVE_INFINITY);
+        for (ChunkBlendingData chunkBlendingData : this.field_35509) {
+            chunkBlendingData.blendingData.method_39351(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), (k, l, d) -> {
+                double e = MathHelper.hypot(k2 - k, l2 - l);
+                if (e > (double)field_35502) {
+                    return;
+                }
+                if (e < mutableDouble3.doubleValue()) {
+                    mutableDouble3.setValue(e);
+                }
+                double f = 1.0 / (e * e * e * e);
+                mutableDouble2.add(d * f);
+                mutableDouble.add(f);
+            });
+        }
+        if (mutableDouble3.doubleValue() == Double.POSITIVE_INFINITY) {
+            return terrainNoisePoint;
+        }
+        double e = mutableDouble2.doubleValue() / mutableDouble.doubleValue();
+        double f = MathHelper.clamp(mutableDouble3.doubleValue() / (double)(field_35502 + 1), 0.0, 1.0);
+        f = 3.0 * f * f - 2.0 * f * f * f;
+        double g = MathHelper.lerp(f, Blender.method_39337(e), terrainNoisePoint.offset());
+        double h = MathHelper.lerp(f, 10.0, terrainNoisePoint.factor());
+        double m = MathHelper.lerp(f, 0.0, terrainNoisePoint.peaks());
+        return new TerrainNoisePoint(g, h, m);
+    }
+
+    private static double method_39337(double d) {
+        double e = 1.0;
+        double f = d + 0.5;
+        double g = MathHelper.floorMod(f, 8.0);
+        return 1.0 * (32.0 * (f - 128.0) - 3.0 * (f - 120.0) * g + 3.0 * g * g) / (128.0 * (32.0 - 3.0 * g));
+    }
+
+    public double method_39338(int i, int j, int k, double d2) {
+        int n2;
+        int m2;
+        int l2 = BiomeCoords.fromBlock(i);
+        double e = this.method_39562(l2, m2 = j / 8, n2 = BiomeCoords.fromBlock(k), BlendingData::method_39345);
+        if (e != Double.MAX_VALUE) {
+            return e;
+        }
+        MutableDouble mutableDouble = new MutableDouble(0.0);
+        MutableDouble mutableDouble2 = new MutableDouble(0.0);
+        MutableDouble mutableDouble3 = new MutableDouble(Double.POSITIVE_INFINITY);
+        for (ChunkBlendingData chunkBlendingData : this.field_35510) {
+            chunkBlendingData.blendingData.method_39346(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), m2 - 2, m2 + 2, (l, m, n, d) -> {
+                double e = MathHelper.magnitude(l2 - l, m2 - m, n2 - n);
+                if (e > 2.0) {
+                    return;
+                }
+                if (e < mutableDouble3.doubleValue()) {
+                    mutableDouble3.setValue(e);
+                }
+                double f = 1.0 / (e * e * e * e);
+                mutableDouble2.add(d * f);
+                mutableDouble.add(f);
+            });
+        }
+        if (mutableDouble3.doubleValue() == Double.POSITIVE_INFINITY) {
+            return d2;
+        }
+        double f = mutableDouble2.doubleValue() / mutableDouble.doubleValue();
+        double g = MathHelper.clamp(mutableDouble3.doubleValue() / 3.0, 0.0, 1.0);
+        return MathHelper.lerp(g, f, d2);
+    }
+
+    private double method_39562(int i, int j, int k, class_6781 arg) {
+        int l = BiomeCoords.toChunk(i);
+        int m = BiomeCoords.toChunk(k);
+        boolean bl = (i & 3) == 0;
+        boolean bl2 = (k & 3) == 0;
+        double d = this.method_39565(arg, l, m, i, j, k);
+        if (d == Double.MAX_VALUE) {
+            if (bl && bl2) {
+                d = this.method_39565(arg, l - 1, m - 1, i, j, k);
+            }
+            if (d == Double.MAX_VALUE) {
+                if (bl) {
+                    d = this.method_39565(arg, l - 1, m, i, j, k);
+                }
+                if (d == Double.MAX_VALUE && bl2) {
+                    d = this.method_39565(arg, l, m - 1, i, j, k);
+                }
+            }
+        }
+        return d;
+    }
+
+    private double method_39565(class_6781 arg, int i, int j, int k, int l, int m) {
+        BlendingData blendingData = BlendingData.getBlendingData(this.chunkRegion, i, j);
+        if (blendingData != null) {
+            return arg.get(blendingData, k - BiomeCoords.fromChunk(i), l, m - BiomeCoords.fromChunk(j));
+        }
+        return Double.MAX_VALUE;
+    }
+
+    public BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier) {
+        return (x, y, z, noise) -> {
+            Biome biome = this.blendBiome(x, y, z);
+            if (biome == null) {
+                return biomeSupplier.getBiome(x, y, z, noise);
+            }
+            return biome;
+        };
     }
 
     @Nullable
-    public static Blender method_39570(ChunkRegion chunkRegion, int i, int j) {
-        Chunk chunk = chunkRegion.getChunk(i, j);
-        Blender blender = chunk.getBlender();
-        if (blender == null || !blender.method_39566()) {
+    private Biome blendBiome(int x, int y, int z) {
+        double d = (double)x + field_35681.sample(x, 0.0, z) * 12.0;
+        double e = (double)z + field_35681.sample(z, x, 0.0) * 12.0;
+        MutableDouble mutableDouble = new MutableDouble(Double.POSITIVE_INFINITY);
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        MutableObject mutableObject = new MutableObject();
+        for (ChunkBlendingData chunkBlendingData : this.field_35509) {
+            chunkBlendingData.blendingData.method_39351(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), (i, j, f) -> {
+                double g = MathHelper.hypot(d - (double)i, e - (double)j);
+                if (g > (double)field_35502) {
+                    return;
+                }
+                if (g < mutableDouble.doubleValue()) {
+                    mutableObject.setValue(new ChunkPos(chunkBlendingData.chunkX, chunkBlendingData.chunkZ));
+                    mutable.set(i, BiomeCoords.fromBlock(MathHelper.floor(f)), j);
+                    mutableDouble.setValue(g);
+                }
+            });
+        }
+        if (mutableDouble.doubleValue() == Double.POSITIVE_INFINITY) {
             return null;
         }
-        blender.method_39572(chunk, Blender.method_39579(chunkRegion, i, j, false));
-        return blender;
-    }
-
-    public static Set<EightWayDirection> method_39579(StructureWorldAccess structureWorldAccess, int i, int j, boolean bl) {
-        EnumSet<EightWayDirection> set = EnumSet.noneOf(EightWayDirection.class);
-        for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
-            int k = i;
-            int l = j;
-            for (Direction direction : eightWayDirection.getDirections()) {
-                k += direction.getOffsetX();
-                l += direction.getOffsetZ();
-            }
-            if (structureWorldAccess.getChunk(k, l).usesOldNoise() != bl) continue;
-            set.add(eightWayDirection);
+        double f2 = MathHelper.clamp(mutableDouble.doubleValue() / (double)(field_35502 + 1), 0.0, 1.0);
+        if (f2 > 0.5) {
+            return null;
         }
-        return set;
+        Chunk chunk = this.chunkRegion.getChunk(((ChunkPos)mutableObject.getValue()).x, ((ChunkPos)mutableObject.getValue()).z);
+        return chunk.getBiomeForNoiseGen(Math.min(mutable.getX() & 3, 3), mutable.getY(), Math.min(mutable.getZ() & 3, 3));
     }
 
-    private void method_39572(Chunk chunk, Set<EightWayDirection> set) {
-        int i;
-        if (this.field_35690) {
+    public static void tickLeavesAndFluids(ChunkRegion chunkRegion, Chunk chunk) {
+        ChunkPos chunkPos = chunk.getPos();
+        boolean bl = chunk.usesOldNoise();
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ());
+        int i = BlendingData.OLD_HEIGHT_LIMIT.getBottomY();
+        int j = BlendingData.OLD_HEIGHT_LIMIT.getTopY() - 1;
+        if (bl) {
+            for (int k = 0; k < 16; ++k) {
+                for (int l = 0; l < 16; ++l) {
+                    Blender.tickLeavesAndFluids(chunk, mutable.set(blockPos, k, i - 1, l));
+                    Blender.tickLeavesAndFluids(chunk, mutable.set(blockPos, k, i, l));
+                    Blender.tickLeavesAndFluids(chunk, mutable.set(blockPos, k, j, l));
+                    Blender.tickLeavesAndFluids(chunk, mutable.set(blockPos, k, j + 1, l));
+                }
+            }
+        }
+        for (Direction direction : Direction.Type.HORIZONTAL) {
+            if (chunkRegion.getChunk(chunkPos.x + direction.getOffsetX(), chunkPos.z + direction.getOffsetZ()).usesOldNoise() == bl) continue;
+            int m = direction == Direction.EAST ? 15 : 0;
+            int n = direction == Direction.WEST ? 0 : 15;
+            int o = direction == Direction.SOUTH ? 15 : 0;
+            int p = direction == Direction.NORTH ? 0 : 15;
+            for (int q = m; q <= n; ++q) {
+                for (int r = o; r <= p; ++r) {
+                    int s = Math.min(j, chunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, q, r)) + 1;
+                    for (int t = i; t < s; ++t) {
+                        Blender.tickLeavesAndFluids(chunk, mutable.set(blockPos, q, t, r));
+                    }
+                }
+            }
+        }
+    }
+
+    private static void tickLeavesAndFluids(Chunk chunk, BlockPos pos) {
+        FluidState fluidState;
+        BlockState blockState = chunk.getBlockState(pos);
+        if (blockState.isIn(BlockTags.LEAVES)) {
+            chunk.markBlockForPostProcessing(pos);
+        }
+        if (!(fluidState = chunk.getFluidState(pos)).isEmpty()) {
+            chunk.markBlockForPostProcessing(pos);
+        }
+    }
+
+    public static void method_39809(StructureWorldAccess structureWorldAccess, ProtoChunk protoChunk) {
+        ChunkPos chunkPos = protoChunk.getPos();
+        class_6831 lv = Blender.method_39815(protoChunk.usesOldNoise(), BlendingData.getAdjacentChunksWithNoise(structureWorldAccess, chunkPos.x, chunkPos.z, true));
+        if (lv == null) {
             return;
         }
-        BlockPos.Mutable mutable = new BlockPos.Mutable(0, OLD_HEIGHT_LIMIT.getBottomY(), 0);
-        for (i = 0; i < this.field_35694.length; ++i) {
-            mutable.setX(Math.max(BiomeCoords.toBlock(this.method_39568(i)), 15));
-            mutable.setZ(Math.max(BiomeCoords.toBlock(this.method_39577(i)), 15));
-            this.field_35694[i] = Blender.method_39350(chunk, mutable) ? 1.0 : -1.0;
-        }
-        if (set.contains((Object)EightWayDirection.NORTH) || set.contains((Object)EightWayDirection.WEST) || set.contains((Object)EightWayDirection.NORTH_WEST)) {
-            this.method_39347(Blender.method_39578(0, 0), chunk, 0, 0);
-        }
-        if (set.contains((Object)EightWayDirection.NORTH)) {
-            for (i = 1; i < field_35683; ++i) {
-                this.method_39347(Blender.method_39578(i, 0), chunk, 4 * i, 0);
-            }
-        }
-        if (set.contains((Object)EightWayDirection.WEST)) {
-            for (i = 1; i < field_35683; ++i) {
-                this.method_39347(Blender.method_39578(0, i), chunk, 0, 4 * i);
-            }
-        }
-        if (set.contains((Object)EightWayDirection.EAST)) {
-            for (i = 1; i < field_35683; ++i) {
-                this.method_39347(Blender.method_39582(field_35685, i), chunk, 15, 4 * i);
-            }
-        }
-        if (set.contains((Object)EightWayDirection.SOUTH)) {
-            for (i = 0; i < field_35683; ++i) {
-                this.method_39347(Blender.method_39582(i, field_35685), chunk, 4 * i, 15);
-            }
-        }
-        if (set.contains((Object)EightWayDirection.EAST) && set.contains((Object)EightWayDirection.NORTH_EAST)) {
-            this.method_39347(Blender.method_39582(field_35685, 0), chunk, 15, 0);
-        }
-        if (set.contains((Object)EightWayDirection.EAST) && set.contains((Object)EightWayDirection.SOUTH) && set.contains((Object)EightWayDirection.SOUTH_EAST)) {
-            this.method_39347(Blender.method_39582(field_35685, field_35685), chunk, 15, 15);
-        }
-        this.field_35690 = true;
+        CarvingMask.MaskPredicate maskPredicate = (i, j, k) -> {
+            double f;
+            double e;
+            double d = (double)i + 0.5 + field_35681.sample(i, j, k) * 4.0;
+            return lv.getDistance(d, e = (double)j + 0.5 + field_35681.sample(j, k, i) * 4.0, f = (double)k + 0.5 + field_35681.sample(k, i, j) * 4.0) < 4.0;
+        };
+        Stream.of(GenerationStep.Carver.values()).map(protoChunk::getOrCreateCarvingMask).forEach(carvingMask -> carvingMask.setMaskPredicate(maskPredicate));
     }
 
-    private void method_39347(int index, Chunk chunk, int x, int z) {
-        if (!this.field_35691) {
-            this.field_35692[index] = Blender.getSurfaceHeight(chunk, x, z);
+    @Nullable
+    public static class_6831 method_39815(boolean bl, Set<EightWayDirection> set) {
+        if (!bl && set.isEmpty()) {
+            return null;
         }
-        this.field_35693[index] = Blender.method_39354(chunk, x, z);
+        ArrayList<class_6831> list = Lists.newArrayList();
+        if (bl) {
+            list.add(Blender.method_39812(null));
+        }
+        set.forEach(eightWayDirection -> list.add(Blender.method_39812(eightWayDirection)));
+        return (d, e, f) -> {
+            double g = Double.POSITIVE_INFINITY;
+            for (class_6831 lv : list) {
+                double h = lv.getDistance(d, e, f);
+                if (!(h < g)) continue;
+                g = h;
+            }
+            return g;
+        };
     }
 
-    private static int getSurfaceHeight(Chunk chunk, int x, int z) {
-        int i = chunk.hasHeightmap(Heightmap.Type.WORLD_SURFACE_WG) ? Math.min(chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, x, z), OLD_HEIGHT_LIMIT.getTopY()) : OLD_HEIGHT_LIMIT.getTopY();
-        int j = OLD_HEIGHT_LIMIT.getBottomY();
-        BlockPos.Mutable mutable = new BlockPos.Mutable(x, i, z);
-        while (mutable.getY() > j) {
-            mutable.move(Direction.DOWN);
-            if (!SURFACE_BLOCKS.contains(chunk.getBlockState(mutable).getBlock())) continue;
-            return mutable.getY();
-        }
-        return j;
-    }
-
-    private static double[] method_39354(Chunk chunk, int x, int z) {
-        double[] ds = new double[Blender.method_39576()];
-        int i = Blender.method_39581();
-        double d = 30.0;
+    private static class_6831 method_39812(@Nullable EightWayDirection eightWayDirection) {
+        double d = 0.0;
         double e = 0.0;
-        double f = 0.0;
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        double g = 15.0;
-        for (int j = OLD_HEIGHT_LIMIT.getTopY() - 1; j >= OLD_HEIGHT_LIMIT.getBottomY(); --j) {
-            double h = Blender.method_39350(chunk, mutable.set(x, j, z)) ? 1.0 : -1.0;
-            int k = j % 8;
-            if (k == 0) {
-                double l = e / 15.0;
-                int m = j / 8 + 1;
-                ds[m - i] = l * d;
-                e = f;
-                f = 0.0;
-                if (l > 0.0) {
-                    d = 1.0;
-                }
-            } else {
-                f += h;
-            }
-            e += h;
-        }
-        return ds;
-    }
-
-    private static boolean method_39350(Chunk chunk, BlockPos pos) {
-        BlockState blockState = chunk.getBlockState(pos);
-        if (blockState.isAir()) {
-            return false;
-        }
-        if (blockState.isIn(BlockTags.LEAVES)) {
-            return false;
-        }
-        if (blockState.isIn(BlockTags.LOGS)) {
-            return false;
-        }
-        if (blockState.isOf(Blocks.BROWN_MUSHROOM_BLOCK) || blockState.isOf(Blocks.RED_MUSHROOM_BLOCK)) {
-            return false;
-        }
-        return !blockState.getCollisionShape(chunk, pos).isEmpty();
-    }
-
-    protected double method_39344(int i, int j, int k) {
-        if (i == field_35685 || k == field_35685) {
-            return this.field_35692[Blender.method_39582(i, k)];
-        }
-        if (i == 0 || k == 0) {
-            return this.field_35692[Blender.method_39578(i, k)];
-        }
-        return Double.MAX_VALUE;
-    }
-
-    private static double method_39575(@Nullable double[] ds, int i) {
-        if (ds == null) {
-            return Double.MAX_VALUE;
-        }
-        int j = i - Blender.method_39581();
-        if (j < 0 || j >= ds.length) {
-            return Double.MAX_VALUE;
-        }
-        return ds[j] * 0.1;
-    }
-
-    protected double method_39345(int i, int j, int k) {
-        if (j == Blender.method_39583()) {
-            return this.field_35694[this.method_39569(i, k)] * 0.1;
-        }
-        if (i == field_35685 || k == field_35685) {
-            return Blender.method_39575(this.field_35693[Blender.method_39582(i, k)], j);
-        }
-        if (i == 0 || k == 0) {
-            return Blender.method_39575(this.field_35693[Blender.method_39578(i, k)], j);
-        }
-        return Double.MAX_VALUE;
-    }
-
-    protected void method_39351(int i, int j, class_6751 arg) {
-        for (int k = 0; k < this.field_35693.length; ++k) {
-            double d = this.field_35692[k];
-            if (d == Double.MAX_VALUE) continue;
-            arg.consume(i + Blender.method_39343(k), j + Blender.method_39352(k), d);
-        }
-    }
-
-    protected void method_39346(int i, int j, int k, int l, class_6750 arg) {
-        int q;
-        int p;
-        int m = Blender.method_39581();
-        int n = Math.max(0, k - m);
-        int o = Math.min(Blender.method_39576(), l - m);
-        for (p = 0; p < this.field_35693.length; ++p) {
-            double[] ds = this.field_35693[p];
-            if (ds == null) continue;
-            q = i + Blender.method_39343(p);
-            int r = j + Blender.method_39352(p);
-            for (int s = n; s < o; ++s) {
-                arg.consume(q, s + m, r, ds[s] * 0.1);
+        if (eightWayDirection != null) {
+            for (Direction direction : eightWayDirection.getDirections()) {
+                d += (double)(direction.getOffsetX() * 16);
+                e += (double)(direction.getOffsetZ() * 16);
             }
         }
-        if (m >= k && m <= l) {
-            for (p = 0; p < this.field_35694.length; ++p) {
-                int t = this.method_39568(p);
-                q = this.method_39577(p);
-                arg.consume(t, m, q, this.field_35694[p] * 0.1);
-            }
-        }
+        double f2 = d;
+        double g2 = e;
+        return (f, g, h) -> Blender.method_39808(f - 8.0 - f2, g - field_36223, h - 8.0 - g2, 8.0, field_36222, 8.0);
     }
 
-    private int method_39569(int i, int j) {
-        return i * field_35688 + j;
+    private static double method_39808(double d, double e, double f, double g, double h, double i) {
+        double j = Math.abs(d) - g;
+        double k = Math.abs(e) - h;
+        double l = Math.abs(f) - i;
+        return MathHelper.magnitude(Math.max(0.0, j), Math.max(0.0, k), Math.max(0.0, l));
     }
 
-    private int method_39568(int i) {
-        return i / field_35688;
+    record ChunkBlendingData(int chunkX, int chunkZ, BlendingData blendingData) {
     }
 
-    private int method_39577(int i) {
-        return i % field_35688;
+    static interface class_6781 {
+        public double get(BlendingData var1, int var2, int var3, int var4);
     }
 
-    private static int method_39576() {
-        return OLD_HEIGHT_LIMIT.countVerticalSections() * 2;
-    }
-
-    private static int method_39581() {
-        return Blender.method_39583() + 1;
-    }
-
-    private static int method_39583() {
-        return OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2;
-    }
-
-    private static int method_39578(int i, int j) {
-        return field_35684 - i + j;
-    }
-
-    private static int method_39582(int i, int j) {
-        return field_35686 + i + field_35685 - j;
-    }
-
-    private static int method_39343(int i) {
-        if (i < field_35686) {
-            return Blender.method_39355(field_35684 - i);
-        }
-        int j = i - field_35686;
-        return field_35685 - Blender.method_39355(field_35685 - j);
-    }
-
-    private static int method_39352(int i) {
-        if (i < field_35686) {
-            return Blender.method_39355(i - field_35684);
-        }
-        int j = i - field_35686;
-        return field_35685 - Blender.method_39355(j - field_35685);
-    }
-
-    private static int method_39355(int i) {
-        return i & ~(i >> 31);
-    }
-
-    protected static interface class_6751 {
-        public void consume(int var1, int var2, double var3);
-    }
-
-    protected static interface class_6750 {
-        public void consume(int var1, int var2, int var3, double var4);
+    public static interface class_6831 {
+        public double getDistance(double var1, double var3, double var5);
     }
 }
 

@@ -54,7 +54,7 @@ implements ArgumentType<ScoreboardCriterion> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        ArrayList<String> list = Lists.newArrayList(ScoreboardCriterion.method_37271());
+        ArrayList<String> list = Lists.newArrayList(ScoreboardCriterion.getAllSimpleCriteria());
         for (StatType statType : Registry.STAT_TYPE) {
             for (Object object : statType.getRegistry()) {
                 String string = this.getStatName(statType, object);

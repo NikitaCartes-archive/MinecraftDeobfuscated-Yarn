@@ -51,7 +51,7 @@ Nameable {
      * 
      * <p>This value is the result of the sum {@code MAIN_SIZE (36) + ARMOR_SIZE (4)}.</p>
      */
-    public static final int OFF_HAND_SLOT = 40;
+    public static final int OFFHAND_SLOT = 40;
     /**
      * The slot index ({@value}) used to indicate no result
      * (item not present / no available space) when querying the inventory's contents
@@ -62,8 +62,8 @@ Nameable {
     public static final int[] HELMET_SLOTS = new int[]{3};
     public final DefaultedList<ItemStack> main = DefaultedList.ofSize(36, ItemStack.EMPTY);
     public final DefaultedList<ItemStack> armor = DefaultedList.ofSize(4, ItemStack.EMPTY);
-    public final DefaultedList<ItemStack> offHand = DefaultedList.ofSize(1, ItemStack.EMPTY);
-    private final List<DefaultedList<ItemStack>> combinedInventory = ImmutableList.of(this.main, this.armor, this.offHand);
+    public final DefaultedList<ItemStack> offhand = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    private final List<DefaultedList<ItemStack>> combinedInventory = ImmutableList.of(this.main, this.armor, this.offhand);
     public int selectedSlot;
     public final PlayerEntity player;
     private int changeCount;
@@ -401,11 +401,11 @@ Nameable {
             this.armor.get(i).writeNbt(nbtCompound);
             nbtList.add(nbtCompound);
         }
-        for (i = 0; i < this.offHand.size(); ++i) {
-            if (this.offHand.get(i).isEmpty()) continue;
+        for (i = 0; i < this.offhand.size(); ++i) {
+            if (this.offhand.get(i).isEmpty()) continue;
             nbtCompound = new NbtCompound();
             nbtCompound.putByte("Slot", (byte)(i + 150));
-            this.offHand.get(i).writeNbt(nbtCompound);
+            this.offhand.get(i).writeNbt(nbtCompound);
             nbtList.add(nbtCompound);
         }
         return nbtList;
@@ -414,7 +414,7 @@ Nameable {
     public void readNbt(NbtList nbtList) {
         this.main.clear();
         this.armor.clear();
-        this.offHand.clear();
+        this.offhand.clear();
         for (int i = 0; i < nbtList.size(); ++i) {
             NbtCompound nbtCompound = nbtList.getCompound(i);
             int j = nbtCompound.getByte("Slot") & 0xFF;
@@ -428,14 +428,14 @@ Nameable {
                 this.armor.set(j - 100, itemStack);
                 continue;
             }
-            if (j < 150 || j >= this.offHand.size() + 150) continue;
-            this.offHand.set(j - 150, itemStack);
+            if (j < 150 || j >= this.offhand.size() + 150) continue;
+            this.offhand.set(j - 150, itemStack);
         }
     }
 
     @Override
     public int size() {
-        return this.main.size() + this.armor.size() + this.offHand.size();
+        return this.main.size() + this.armor.size() + this.offhand.size();
     }
 
     @Override
@@ -448,7 +448,7 @@ Nameable {
             if (itemStack.isEmpty()) continue;
             return false;
         }
-        for (ItemStack itemStack : this.offHand) {
+        for (ItemStack itemStack : this.offhand) {
             if (itemStack.isEmpty()) continue;
             return false;
         }

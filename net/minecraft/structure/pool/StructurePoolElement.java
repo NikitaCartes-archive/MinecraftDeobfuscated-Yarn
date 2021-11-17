@@ -36,7 +36,7 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class StructurePoolElement {
-    public static final Codec<StructurePoolElement> CODEC = Registry.STRUCTURE_POOL_ELEMENT.method_39673().dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
+    public static final Codec<StructurePoolElement> CODEC = Registry.STRUCTURE_POOL_ELEMENT.getCodec().dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
     @Nullable
     private volatile StructurePool.Projection projection;
 

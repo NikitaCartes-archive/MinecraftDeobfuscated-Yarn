@@ -17,8 +17,8 @@ extends VoxelShape {
     private final DoubleList yPoints;
     private final DoubleList zPoints;
 
-    protected ArrayVoxelShape(VoxelSet voxelSet, double[] ds, double[] es, double[] fs) {
-        this(voxelSet, DoubleArrayList.wrap(Arrays.copyOf(ds, voxelSet.getXSize() + 1)), DoubleArrayList.wrap(Arrays.copyOf(es, voxelSet.getYSize() + 1)), DoubleArrayList.wrap(Arrays.copyOf(fs, voxelSet.getZSize() + 1)));
+    protected ArrayVoxelShape(VoxelSet shape, double[] xPoints, double[] yPoints, double[] zPoints) {
+        this(shape, DoubleArrayList.wrap(Arrays.copyOf(xPoints, shape.getXSize() + 1)), DoubleArrayList.wrap(Arrays.copyOf(yPoints, shape.getYSize() + 1)), DoubleArrayList.wrap(Arrays.copyOf(zPoints, shape.getZSize() + 1)));
     }
 
     ArrayVoxelShape(VoxelSet shape, DoubleList xPoints, DoubleList yPoints, DoubleList zPoints) {

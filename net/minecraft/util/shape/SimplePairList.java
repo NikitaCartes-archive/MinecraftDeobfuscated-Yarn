@@ -14,7 +14,7 @@ implements PairList {
     private final double[] valueIndices;
     private final int[] minValues;
     private final int[] maxValues;
-    private final int field_27347;
+    private final int size;
 
     public SimplePairList(DoubleList first, DoubleList second, boolean includeFirstOnly, boolean includeSecondOnly) {
         double d = Double.NaN;
@@ -60,12 +60,12 @@ implements PairList {
             this.minValues[l - 1] = o;
             this.maxValues[l - 1] = p;
         }
-        this.field_27347 = Math.max(1, l);
+        this.size = Math.max(1, l);
     }
 
     @Override
     public boolean forEachPair(PairList.Consumer predicate) {
-        int i = this.field_27347 - 1;
+        int i = this.size - 1;
         for (int j = 0; j < i; ++j) {
             if (predicate.merge(this.minValues[j], this.maxValues[j], j)) continue;
             return false;
@@ -75,12 +75,12 @@ implements PairList {
 
     @Override
     public int size() {
-        return this.field_27347;
+        return this.size;
     }
 
     @Override
     public DoubleList getPairs() {
-        return this.field_27347 <= 1 ? field_27346 : DoubleArrayList.wrap(this.valueIndices, this.field_27347);
+        return this.size <= 1 ? field_27346 : DoubleArrayList.wrap(this.valueIndices, this.size);
     }
 }
 

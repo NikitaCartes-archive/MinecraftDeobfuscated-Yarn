@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class FluidState
 extends State<Fluid, FluidState> {
-    public static final Codec<FluidState> CODEC = FluidState.createCodec(Registry.FLUID.method_39673(), Fluid::getDefaultState).stable();
+    public static final Codec<FluidState> CODEC = FluidState.createCodec(Registry.FLUID.getCodec(), Fluid::getDefaultState).stable();
     public static final int field_31727 = 9;
     public static final int field_31728 = 8;
 

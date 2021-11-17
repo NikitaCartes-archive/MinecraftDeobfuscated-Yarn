@@ -23,9 +23,9 @@ implements LootNumberProvider {
     final LootNumberProvider min;
     final LootNumberProvider max;
 
-    UniformLootNumberProvider(LootNumberProvider lootNumberProvider, LootNumberProvider lootNumberProvider2) {
-        this.min = lootNumberProvider;
-        this.max = lootNumberProvider2;
+    UniformLootNumberProvider(LootNumberProvider min, LootNumberProvider max) {
+        this.min = min;
+        this.max = max;
     }
 
     @Override

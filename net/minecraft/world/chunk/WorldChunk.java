@@ -49,7 +49,7 @@ import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.SimpleGameEventDispatcher;
-import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -84,12 +84,12 @@ extends Chunk {
     };
     private final Map<BlockPos, WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.newHashMap();
     private boolean loadedToWorld;
-    private boolean field_36218 = false;
+    private boolean shouldRenderOnUpdate = false;
     final World world;
     @Nullable
     private Supplier<ChunkHolder.LevelType> levelTypeProvider;
     @Nullable
-    private class_6829 loadToWorldConsumer;
+    private EntityLoader entityLoader;
     private final Int2ObjectMap<GameEventDispatcher> gameEventDispatchers;
     private final ChunkTickScheduler<Block> blockTickScheduler;
     private final ChunkTickScheduler<Fluid> fluidTickScheduler;
@@ -98,7 +98,7 @@ extends Chunk {
         this(world, pos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<Block>(), new ChunkTickScheduler<Fluid>(), 0L, null, null, null);
     }
 
-    public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, ChunkTickScheduler<Block> blockTickScheduler, ChunkTickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable class_6829 arg, @Nullable Blender blendingData) {
+    public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, ChunkTickScheduler<Block> blockTickScheduler, ChunkTickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable EntityLoader entityLoader, @Nullable BlendingData blendingData) {
         super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), inhabitedTime, sectionArrayInitializer, blendingData);
         this.world = world;
         this.gameEventDispatchers = new Int2ObjectOpenHashMap<GameEventDispatcher>();
@@ -106,13 +106,13 @@ extends Chunk {
             if (!ChunkStatus.FULL.getHeightmapTypes().contains(type)) continue;
             this.heightmaps.put(type, new Heightmap(this, type));
         }
-        this.loadToWorldConsumer = arg;
+        this.entityLoader = entityLoader;
         this.blockTickScheduler = blockTickScheduler;
         this.fluidTickScheduler = fluidTickScheduler;
     }
 
-    public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable class_6829 arg) {
-        this(world, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.getBlockProtoTickScheduler(), protoChunk.getFluidProtoTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), arg, protoChunk.getBlender());
+    public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable EntityLoader entityLoader) {
+        this(world, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.getBlockProtoTickScheduler(), protoChunk.getFluidProtoTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), entityLoader, protoChunk.getBlendingData());
         for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
             this.setBlockEntity(blockEntity);
         }
@@ -381,10 +381,10 @@ extends Chunk {
         }
     }
 
-    public void loadToWorld() {
-        if (this.loadToWorldConsumer != null) {
-            this.loadToWorldConsumer.run(this);
-            this.loadToWorldConsumer = null;
+    public void loadEntities() {
+        if (this.entityLoader != null) {
+            this.entityLoader.run(this);
+            this.entityLoader = null;
         }
     }
 
@@ -557,16 +557,16 @@ extends Chunk {
         return new DirectBlockEntityTickInvoker(this, blockEntity, blockEntityTicker);
     }
 
-    public boolean method_39791() {
-        return this.field_36218;
+    public boolean shouldRenderOnUpdate() {
+        return this.shouldRenderOnUpdate;
     }
 
-    public void method_39792(boolean bl) {
-        this.field_36218 = bl;
+    public void setShouldRenderOnUpdate(boolean shouldRenderOnUpdate) {
+        this.shouldRenderOnUpdate = shouldRenderOnUpdate;
     }
 
     @FunctionalInterface
-    public static interface class_6829 {
+    public static interface EntityLoader {
         public void run(WorldChunk var1);
     }
 

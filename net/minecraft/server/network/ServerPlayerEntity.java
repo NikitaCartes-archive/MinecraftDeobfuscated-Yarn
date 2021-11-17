@@ -588,7 +588,7 @@ extends PlayerEntity {
 
     private void forgiveMobAnger() {
         Box box = new Box(this.getBlockPos()).expand(32.0, 10.0, 32.0);
-        this.world.getEntitiesByClass(MobEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR).stream().filter(mobEntity -> mobEntity instanceof Angerable).forEach(mobEntity -> ((Angerable)((Object)mobEntity)).forgive(this));
+        this.world.getEntitiesByClass(MobEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR).stream().filter(entity -> entity instanceof Angerable).forEach(entity -> ((Angerable)((Object)entity)).forgive(this));
     }
 
     @Override

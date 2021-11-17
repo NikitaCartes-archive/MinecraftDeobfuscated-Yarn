@@ -111,7 +111,7 @@ public abstract class ChunkTicketManager {
     @Nullable
     protected abstract ChunkHolder setLevel(long var1, int var3, @Nullable ChunkHolder var4, int var5);
 
-    public boolean tick(ThreadedAnvilChunkStorage tacs) {
+    public boolean tick(ThreadedAnvilChunkStorage chunkStorage) {
         boolean bl;
         this.distanceFromNearestPlayerTracker.updateLevels();
         this.simulationDistanceTracker.updateLevels();
@@ -122,7 +122,7 @@ public abstract class ChunkTicketManager {
             // empty if block
         }
         if (!this.chunkHolders.isEmpty()) {
-            this.chunkHolders.forEach(chunkHolder -> chunkHolder.tick(tacs, this.mainThreadExecutor));
+            this.chunkHolders.forEach(holder -> holder.tick(chunkStorage, this.mainThreadExecutor));
             this.chunkHolders.clear();
             return true;
         }
@@ -130,12 +130,12 @@ public abstract class ChunkTicketManager {
             LongIterator longIterator = this.chunkPositions.iterator();
             while (longIterator.hasNext()) {
                 long l = longIterator.nextLong();
-                if (!this.getTicketSet(l).stream().anyMatch(chunkTicket -> chunkTicket.getType() == ChunkTicketType.PLAYER)) continue;
-                ChunkHolder chunkHolder2 = tacs.getCurrentChunkHolder(l);
-                if (chunkHolder2 == null) {
+                if (!this.getTicketSet(l).stream().anyMatch(ticket -> ticket.getType() == ChunkTicketType.PLAYER)) continue;
+                ChunkHolder chunkHolder = chunkStorage.getCurrentChunkHolder(l);
+                if (chunkHolder == null) {
                     throw new IllegalStateException();
                 }
-                CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder2.getEntityTickingFuture();
+                CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getEntityTickingFuture();
                 completableFuture.thenAccept(either -> this.mainThreadExecutor.execute(() -> this.playerTicketThrottlerUnblocker.send(ChunkTaskPrioritySystem.createUnblockingMessage(() -> {}, l, false))));
             }
             this.chunkPositions.clear();

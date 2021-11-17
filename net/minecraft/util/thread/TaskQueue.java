@@ -20,23 +20,23 @@ public interface TaskQueue<T, F> {
 
     public static final class Prioritized
     implements TaskQueue<PrioritizedTask, Runnable> {
-        private final Queue<Runnable>[] field_35032;
-        private final AtomicInteger field_35033 = new AtomicInteger();
+        private final Queue<Runnable>[] queue;
+        private final AtomicInteger queueSize = new AtomicInteger();
 
         public Prioritized(int priorityCount) {
-            this.field_35032 = new Queue[priorityCount];
+            this.queue = new Queue[priorityCount];
             for (int i = 0; i < priorityCount; ++i) {
-                this.field_35032[i] = Queues.newConcurrentLinkedQueue();
+                this.queue[i] = Queues.newConcurrentLinkedQueue();
             }
         }
 
         @Override
         @Nullable
         public Runnable poll() {
-            for (Queue<Runnable> queue : this.field_35032) {
+            for (Queue<Runnable> queue : this.queue) {
                 Runnable runnable = queue.poll();
                 if (runnable == null) continue;
-                this.field_35033.decrementAndGet();
+                this.queueSize.decrementAndGet();
                 return runnable;
             }
             return null;
@@ -45,22 +45,22 @@ public interface TaskQueue<T, F> {
         @Override
         public boolean add(PrioritizedTask prioritizedTask) {
             int i = prioritizedTask.priority;
-            if (i >= this.field_35032.length || i < 0) {
-                throw new IndexOutOfBoundsException("Priority %d not supported. Expected range [0-%d]".formatted(i, this.field_35032.length - 1));
+            if (i >= this.queue.length || i < 0) {
+                throw new IndexOutOfBoundsException("Priority %d not supported. Expected range [0-%d]".formatted(i, this.queue.length - 1));
             }
-            this.field_35032[i].add(prioritizedTask);
-            this.field_35033.incrementAndGet();
+            this.queue[i].add(prioritizedTask);
+            this.queueSize.incrementAndGet();
             return true;
         }
 
         @Override
         public boolean isEmpty() {
-            return this.field_35033.get() == 0;
+            return this.queueSize.get() == 0;
         }
 
         @Override
         public int getSize() {
-            return this.field_35033.get();
+            return this.queueSize.get();
         }
 
         @Override

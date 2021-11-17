@@ -19,7 +19,7 @@ import net.minecraft.world.PersistentState;
 
 public class ScoreboardState
 extends PersistentState {
-    public static final String field_31893 = "scoreboard";
+    public static final String SCOREBOARD_KEY = "scoreboard";
     private final Scoreboard scoreboard;
 
     public ScoreboardState(Scoreboard scoreboard) {

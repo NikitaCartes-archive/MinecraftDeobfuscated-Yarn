@@ -30,7 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> {
-    public static final Codec<ConfiguredFeature<?, ?>> CODEC = Registry.FEATURE.method_39673().dispatch(configuredFeature -> configuredFeature.feature, Feature::getCodec);
+    public static final Codec<ConfiguredFeature<?, ?>> CODEC = Registry.FEATURE.getCodec().dispatch(configuredFeature -> configuredFeature.feature, Feature::getCodec);
     public static final Codec<Supplier<ConfiguredFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_FEATURE_KEY, CODEC);
     public static final Codec<List<Supplier<ConfiguredFeature<?, ?>>>> LIST_CODEC = RegistryElementCodec.method_31194(Registry.CONFIGURED_FEATURE_KEY, CODEC);
     public static final Logger LOGGER = LogManager.getLogger();

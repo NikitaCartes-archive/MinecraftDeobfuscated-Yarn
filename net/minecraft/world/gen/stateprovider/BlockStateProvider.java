@@ -16,7 +16,7 @@ import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
  * A provider for {@linkplain BlockState block states}. Results may be random or based on a block position.
  */
 public abstract class BlockStateProvider {
-    public static final Codec<BlockStateProvider> TYPE_CODEC = Registry.BLOCK_STATE_PROVIDER_TYPE.method_39673().dispatch(BlockStateProvider::getType, BlockStateProviderType::getCodec);
+    public static final Codec<BlockStateProvider> TYPE_CODEC = Registry.BLOCK_STATE_PROVIDER_TYPE.getCodec().dispatch(BlockStateProvider::getType, BlockStateProviderType::getCodec);
 
     /**
      * {@return a block state provider that always returns the given state}

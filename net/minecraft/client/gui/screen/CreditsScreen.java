@@ -130,11 +130,11 @@ extends Screen {
         this.credits = Lists.newArrayList();
         this.centeredLines = new IntOpenHashSet();
         if (this.endCredits) {
-            this.method_39775("texts/end.txt", this::method_39774);
+            this.load("texts/end.txt", this::readPoem);
         }
-        this.method_39775("texts/credits.json", this::method_39776);
+        this.load("texts/credits.json", this::readCredits);
         if (this.endCredits) {
-            this.method_39775("texts/postcredits.txt", this::method_39774);
+            this.load("texts/postcredits.txt", this::readPoem);
         }
         this.creditsHeight = this.credits.size() * 12;
     }
@@ -142,12 +142,12 @@ extends Screen {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    private void method_39775(String string, class_6824 arg) {
+    private void load(String id, CreditsReader reader) {
         Resource resource = null;
         try {
-            resource = this.client.getResourceManager().getResource(new Identifier(string));
+            resource = this.client.getResourceManager().getResource(new Identifier(id));
             InputStreamReader inputStreamReader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
-            arg.read(inputStreamReader);
+            reader.read(inputStreamReader);
         } catch (Exception exception) {
             try {
                 LOGGER.error("Couldn't load credits", (Throwable)exception);
@@ -160,7 +160,7 @@ extends Screen {
         IOUtils.closeQuietly((Closeable)resource);
     }
 
-    private void method_39774(InputStreamReader inputStreamReader) throws IOException {
+    private void readPoem(InputStreamReader inputStreamReader) throws IOException {
         int i;
         Object string;
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -180,7 +180,7 @@ extends Screen {
         }
     }
 
-    private void method_39776(InputStreamReader inputStreamReader) {
+    private void readCredits(InputStreamReader inputStreamReader) {
         JsonArray jsonArray = JsonHelper.deserializeArray(inputStreamReader);
         for (JsonElement jsonElement : jsonArray) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -307,7 +307,7 @@ extends Screen {
 
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
-    static interface class_6824 {
+    static interface CreditsReader {
         public void read(InputStreamReader var1) throws IOException;
     }
 }

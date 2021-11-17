@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * Contains the configuration for placement of each structure type during chunk generation.
  */
 public class StructuresConfig {
-    public static final Codec<StructuresConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(StrongholdConfig.CODEC.optionalFieldOf("stronghold").forGetter(config -> Optional.ofNullable(config.stronghold)), Codec.simpleMap(Registry.STRUCTURE_FEATURE.method_39673(), StructureConfig.CODEC, Registry.STRUCTURE_FEATURE).fieldOf("structures").forGetter(config -> config.structures)).apply((Applicative<StructuresConfig, ?>)instance, StructuresConfig::new));
+    public static final Codec<StructuresConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(StrongholdConfig.CODEC.optionalFieldOf("stronghold").forGetter(config -> Optional.ofNullable(config.stronghold)), Codec.simpleMap(Registry.STRUCTURE_FEATURE.getCodec(), StructureConfig.CODEC, Registry.STRUCTURE_FEATURE).fieldOf("structures").forGetter(config -> config.structures)).apply((Applicative<StructuresConfig, ?>)instance, StructuresConfig::new));
     /**
      * Default placement settings for each known structure type.
      * At startup, Minecraft validates that each registered structure has a default

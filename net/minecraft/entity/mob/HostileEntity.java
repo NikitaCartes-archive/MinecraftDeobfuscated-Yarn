@@ -82,8 +82,8 @@ implements Monster {
     }
 
     @Override
-    public LivingEntity.class_6823 method_39760() {
-        return new LivingEntity.class_6823(SoundEvents.ENTITY_HOSTILE_SMALL_FALL, SoundEvents.ENTITY_HOSTILE_BIG_FALL);
+    public LivingEntity.FallSounds getFallSounds() {
+        return new LivingEntity.FallSounds(SoundEvents.ENTITY_HOSTILE_SMALL_FALL, SoundEvents.ENTITY_HOSTILE_BIG_FALL);
     }
 
     @Override

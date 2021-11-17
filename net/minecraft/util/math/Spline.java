@@ -58,16 +58,16 @@ extends ToFloatFunction<C> {
         return (Codec)mutableObject.getValue();
     }
 
-    public static <C> Spline<C> method_39427(float f) {
-        return new FixedFloatFunction(f);
+    public static <C> Spline<C> fixedFloatFunction(float value) {
+        return new FixedFloatFunction(value);
     }
 
     public static <C> Builder<C> builder(ToFloatFunction<C> locationFunction) {
         return new Builder<C>(locationFunction);
     }
 
-    public static <C> Builder<C> method_39502(ToFloatFunction<C> toFloatFunction, ToFloatFunction<Float> toFloatFunction2) {
-        return new Builder<C>(toFloatFunction, toFloatFunction2);
+    public static <C> Builder<C> builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> toFloatFunction) {
+        return new Builder<C>(locationFunction, toFloatFunction);
     }
 
     @Debug
@@ -95,9 +95,9 @@ extends ToFloatFunction<C> {
             this(locationFunction, float_ -> float_.floatValue());
         }
 
-        protected Builder(ToFloatFunction<C> toFloatFunction, ToFloatFunction<Float> toFloatFunction2) {
-            this.locationFunction = toFloatFunction;
-            this.field_35661 = toFloatFunction2;
+        protected Builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> toFloatFunction) {
+            this.locationFunction = locationFunction;
+            this.field_35661 = toFloatFunction;
         }
 
         public Builder<C> add(float location, float value, float derivative) {

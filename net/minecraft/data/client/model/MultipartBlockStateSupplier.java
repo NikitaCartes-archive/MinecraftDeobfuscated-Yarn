@@ -77,8 +77,8 @@ implements BlockStateSupplier {
     implements Supplier<JsonElement> {
         private final List<BlockStateVariant> variants;
 
-        Multipart(List<BlockStateVariant> list) {
-            this.variants = list;
+        Multipart(List<BlockStateVariant> variants) {
+            this.variants = variants;
         }
 
         public void validate(StateManager<?, ?> stateManager) {
@@ -105,8 +105,8 @@ implements BlockStateSupplier {
     extends Multipart {
         private final When when;
 
-        ConditionalMultipart(When when, List<BlockStateVariant> list) {
-            super(list);
+        ConditionalMultipart(When when, List<BlockStateVariant> variants) {
+            super(variants);
             this.when = when;
         }
 

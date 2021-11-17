@@ -34,12 +34,12 @@ extends ForwardingDynamicOps<T> {
     private final Map<RegistryKey<? extends Registry<?>>, ValueHolder<?>> valueHolders;
     private final RegistryOps<JsonElement> entryOps;
 
-    public static <T> RegistryOps<T> ofLoaded(DynamicOps<T> dynamicOps, ResourceManager resourceManager, DynamicRegistryManager registryManager) {
-        return RegistryOps.ofLoaded(dynamicOps, EntryLoader.resourceBacked(resourceManager), registryManager);
+    public static <T> RegistryOps<T> ofLoaded(DynamicOps<T> ops, ResourceManager resourceManager, DynamicRegistryManager registryManager) {
+        return RegistryOps.ofLoaded(ops, EntryLoader.resourceBacked(resourceManager), registryManager);
     }
 
-    public static <T> RegistryOps<T> ofLoaded(DynamicOps<T> dynamicOps, EntryLoader entryLoader, DynamicRegistryManager registryManager) {
-        RegistryOps<T> registryOps = new RegistryOps<T>(dynamicOps, entryLoader, registryManager, Maps.newIdentityHashMap());
+    public static <T> RegistryOps<T> ofLoaded(DynamicOps<T> ops, EntryLoader entryLoader, DynamicRegistryManager registryManager) {
+        RegistryOps<T> registryOps = new RegistryOps<T>(ops, entryLoader, registryManager, Maps.newIdentityHashMap());
         DynamicRegistryManager.load(registryManager, registryOps);
         return registryOps;
     }

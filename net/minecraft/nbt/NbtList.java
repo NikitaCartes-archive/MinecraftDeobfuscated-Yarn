@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.class_6836;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
@@ -24,6 +23,7 @@ import net.minecraft.nbt.NbtShort;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.NbtType;
 import net.minecraft.nbt.NbtTypes;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
@@ -36,7 +36,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 public class NbtList
 extends AbstractNbtList<NbtElement> {
     private static final int SIZE = 296;
-    public static final NbtType<NbtList> TYPE = new NbtType.class_6840<NbtList>(){
+    public static final NbtType<NbtList> TYPE = new NbtType.OfVariableSize<NbtList>(){
 
         @Override
         public NbtList read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
@@ -62,11 +62,11 @@ extends AbstractNbtList<NbtElement> {
          * Exception decompiling
          */
         @Override
-        public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+        public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
             /*
              * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
              * 
-             * org.benf.cfr.reader.util.ConfusedCFRException: Tried to end blocks [8[CASE], 4[SWITCH]], but top level block is 9[SWITCH]
+             * org.benf.cfr.reader.util.ConfusedCFRException: Tried to end blocks [4[SWITCH], 8[CASE]], but top level block is 9[SWITCH]
              *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.processEndingBlocks(Op04StructuredStatement.java:435)
              *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.buildNestedBlocks(Op04StructuredStatement.java:484)
              *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op03SimpleStatement.createInitialStructuredBlock(Op03SimpleStatement.java:736)
@@ -115,10 +115,10 @@ extends AbstractNbtList<NbtElement> {
         }
 
         @Override
-        public void method_39851(DataInput dataInput) throws IOException {
-            NbtType<?> nbtType = NbtTypes.byId(dataInput.readByte());
-            int i = dataInput.readInt();
-            nbtType.method_39854(dataInput, i);
+        public void skip(DataInput input) throws IOException {
+            NbtType<?> nbtType = NbtTypes.byId(input.readByte());
+            int i = input.readInt();
+            nbtType.skip(input, i);
         }
 
         @Override
@@ -357,40 +357,40 @@ extends AbstractNbtList<NbtElement> {
     }
 
     @Override
-    public class_6836.class_6838 method_39850(class_6836 arg) {
-        switch (arg.method_39864(NbtTypes.byId(this.type), this.value.size())) {
+    public NbtScanner.Result doAccept(NbtScanner visitor) {
+        switch (visitor.visitListMeta(NbtTypes.byId(this.type), this.value.size())) {
             case HALT: {
-                return class_6836.class_6838.HALT;
+                return NbtScanner.Result.HALT;
             }
             case BREAK: {
-                return arg.method_39870();
+                return visitor.endNested();
             }
         }
         block13: for (int i = 0; i < this.value.size(); ++i) {
             NbtElement nbtElement = this.value.get(i);
-            switch (arg.method_39872(nbtElement.getNbtType(), i)) {
+            switch (visitor.startListItem(nbtElement.getNbtType(), i)) {
                 case HALT: {
-                    return class_6836.class_6838.HALT;
+                    return NbtScanner.Result.HALT;
                 }
                 case SKIP: {
                     continue block13;
                 }
                 case BREAK: {
-                    return arg.method_39870();
+                    return visitor.endNested();
                 }
                 default: {
-                    switch (nbtElement.method_39850(arg)) {
+                    switch (nbtElement.doAccept(visitor)) {
                         case HALT: {
-                            return class_6836.class_6838.HALT;
+                            return NbtScanner.Result.HALT;
                         }
                         case BREAK: {
-                            return arg.method_39870();
+                            return visitor.endNested();
                         }
                     }
                 }
             }
         }
-        return arg.method_39870();
+        return visitor.endNested();
     }
 
     @Override

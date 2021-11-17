@@ -652,9 +652,9 @@ implements StructureWorldAccess {
      * 
      * @param predicate a predicate which returned entities must satisfy
      */
-    public <T extends Entity> List<? extends T> getEntitiesByType(TypeFilter<Entity, T> typeFilter, Predicate<? super T> predicate) {
+    public <T extends Entity> List<? extends T> getEntitiesByType(TypeFilter<Entity, T> filter, Predicate<? super T> predicate) {
         ArrayList list = Lists.newArrayList();
-        this.getEntityLookup().forEach(typeFilter, entity -> {
+        this.getEntityLookup().forEach(filter, entity -> {
             if (predicate.test(entity)) {
                 list.add(entity);
             }
@@ -1046,8 +1046,8 @@ implements StructureWorldAccess {
             this.getPointOfInterestStorage().remove(blockPos);
             DebugInfoSender.sendPoiRemoval(this, blockPos);
         }));
-        optional2.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
-            this.getPointOfInterestStorage().add(blockPos, (PointOfInterestType)pointOfInterestType);
+        optional2.ifPresent(poiType -> this.getServer().execute(() -> {
+            this.getPointOfInterestStorage().add(blockPos, (PointOfInterestType)poiType);
             DebugInfoSender.sendPoiAddition(this, blockPos);
         }));
     }
@@ -1151,7 +1151,7 @@ implements StructureWorldAccess {
 
     @VisibleForTesting
     public void clearUpdatesInArea(BlockBox box) {
-        this.syncedBlockEventQueue.removeIf(blockEvent -> box.contains(blockEvent.pos()));
+        this.syncedBlockEventQueue.removeIf(event -> box.contains(event.pos()));
     }
 
     @Override
@@ -1224,12 +1224,12 @@ implements StructureWorldAccess {
     }
 
     public static void createEndSpawnPlatform(ServerWorld world) {
-        BlockPos blockPos2 = END_SPAWN_POS;
-        int i = blockPos2.getX();
-        int j = blockPos2.getY() - 2;
-        int k = blockPos2.getZ();
-        BlockPos.iterate(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach(blockPos -> world.setBlockState((BlockPos)blockPos, Blocks.AIR.getDefaultState()));
-        BlockPos.iterate(i - 2, j, k - 2, i + 2, j, k + 2).forEach(blockPos -> world.setBlockState((BlockPos)blockPos, Blocks.OBSIDIAN.getDefaultState()));
+        BlockPos blockPos = END_SPAWN_POS;
+        int i = blockPos.getX();
+        int j = blockPos.getY() - 2;
+        int k = blockPos.getZ();
+        BlockPos.iterate(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach(pos -> world.setBlockState((BlockPos)pos, Blocks.AIR.getDefaultState()));
+        BlockPos.iterate(i - 2, j, k - 2, i + 2, j, k + 2).forEach(pos -> world.setBlockState((BlockPos)pos, Blocks.OBSIDIAN.getDefaultState()));
     }
 
     @Override

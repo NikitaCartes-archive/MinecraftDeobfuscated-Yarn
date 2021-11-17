@@ -6,10 +6,10 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.class_6836;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.NbtType;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
@@ -30,16 +30,16 @@ implements NbtElement {
         }
 
         @Override
-        public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) {
-            return arg.method_39856();
+        public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) {
+            return visitor.visitNull();
         }
 
         @Override
-        public void method_39854(DataInput dataInput, int i) {
+        public void skip(DataInput input, int count) {
         }
 
         @Override
-        public void method_39851(DataInput dataInput) {
+        public void skip(DataInput input) {
         }
 
         @Override
@@ -96,8 +96,8 @@ implements NbtElement {
     }
 
     @Override
-    public class_6836.class_6838 method_39850(class_6836 arg) {
-        return arg.method_39856();
+    public NbtScanner.Result doAccept(NbtScanner visitor) {
+        return visitor.visitNull();
     }
 
     @Override

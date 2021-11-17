@@ -21,7 +21,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_6748;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
@@ -51,6 +50,7 @@ import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -80,7 +80,7 @@ StructureHolder {
     protected ChunkNoiseSampler chunkNoiseSampler;
     protected final UpgradeData upgradeData;
     @Nullable
-    protected Blender blender;
+    protected BlendingData blendingData;
     protected final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
     private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.newHashMap();
     private final Map<StructureFeature<?>, LongSet> structureReferences = Maps.newHashMap();
@@ -89,14 +89,14 @@ StructureHolder {
     protected final HeightLimitView heightLimitView;
     protected final ChunkSection[] sectionArray;
 
-    public Chunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView heightLimitView, Registry<Biome> biome, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable Blender blendingData) {
+    public Chunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView heightLimitView, Registry<Biome> biome, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable BlendingData blendingData) {
         this.pos = pos;
         this.upgradeData = upgradeData;
         this.heightLimitView = heightLimitView;
         this.sectionArray = new ChunkSection[heightLimitView.countVerticalSections()];
         this.inhabitedTime = inhabitedTime;
         this.postProcessingLists = new ShortList[heightLimitView.countVerticalSections()];
-        this.blender = blendingData;
+        this.blendingData = blendingData;
         if (sectionArrayInitializer != null) {
             if (this.sectionArray.length == sectionArrayInitializer.length) {
                 System.arraycopy(sectionArrayInitializer, 0, this.sectionArray, 0, this.sectionArray.length);
@@ -295,16 +295,16 @@ StructureHolder {
     }
 
     public boolean usesOldNoise() {
-        return this.blender != null && this.blender.method_39566();
+        return this.blendingData != null && this.blendingData.usesOldNoise();
     }
 
     @Nullable
-    public Blender getBlender() {
-        return this.blender;
+    public BlendingData getBlendingData() {
+        return this.blendingData;
     }
 
-    public void setBlender(Blender blender) {
-        this.blender = blender;
+    public void setBlender(BlendingData blender) {
+        this.blendingData = blender;
     }
 
     public long getInhabitedTime() {
@@ -345,9 +345,9 @@ StructureHolder {
         return this.heightLimitView.getHeight();
     }
 
-    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(NoiseColumnSampler noiseColumnSampler, Supplier<ChunkNoiseSampler.ColumnSampler> supplier, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, class_6748 arg) {
+    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(NoiseColumnSampler noiseColumnSampler, Supplier<ChunkNoiseSampler.ColumnSampler> supplier, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
         if (this.chunkNoiseSampler == null) {
-            this.chunkNoiseSampler = ChunkNoiseSampler.method_39543(this, noiseColumnSampler, supplier, chunkGeneratorSettings, fluidLevelSampler, arg);
+            this.chunkNoiseSampler = ChunkNoiseSampler.method_39543(this, noiseColumnSampler, supplier, chunkGeneratorSettings, fluidLevelSampler, blender);
         }
         return this.chunkNoiseSampler;
     }

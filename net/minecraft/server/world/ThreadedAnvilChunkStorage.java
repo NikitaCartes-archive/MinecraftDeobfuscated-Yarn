@@ -584,7 +584,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     chunkHolder.setCompletedChunk(new ReadOnlyChunk(worldChunk2, false));
                 }
                 worldChunk2.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
-                worldChunk2.loadToWorld();
+                worldChunk2.loadEntities();
                 if (this.loadedChunks.add(chunkPos.toLong())) {
                     worldChunk2.setLoadedToWorld(true);
                     worldChunk2.updateAllBlockEntities();
@@ -607,7 +607,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         ((CompletableFuture)completableFuture2).thenAcceptAsync(either -> either.ifLeft(worldChunk -> {
             this.totalChunksLoadedCount.getAndIncrement();
             MutableObject mutableObject = new MutableObject();
-            this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> this.sendChunkDataPackets((ServerPlayerEntity)serverPlayerEntity, mutableObject, (WorldChunk)worldChunk));
+            this.getPlayersWatchingChunk(chunkPos, false).forEach(player -> this.sendChunkDataPackets((ServerPlayerEntity)player, mutableObject, (WorldChunk)worldChunk));
         }), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
         return completableFuture2;
     }
@@ -681,10 +681,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             for (ChunkHolder chunkHolder : this.currentChunkHolders.values()) {
                 ChunkPos chunkPos = chunkHolder.getPos();
                 MutableObject mutableObject = new MutableObject();
-                this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> {
-                    boolean bl = ThreadedAnvilChunkStorage.isWithinDistance(chunkPos, serverPlayerEntity, true, j);
-                    boolean bl2 = ThreadedAnvilChunkStorage.isWithinDistance(chunkPos, serverPlayerEntity, true, this.watchDistance);
-                    this.sendWatchPackets((ServerPlayerEntity)serverPlayerEntity, chunkPos, mutableObject, bl, bl2);
+                this.getPlayersWatchingChunk(chunkPos, false).forEach(player -> {
+                    boolean bl = ThreadedAnvilChunkStorage.isWithinDistance(chunkPos, player, true, j);
+                    boolean bl2 = ThreadedAnvilChunkStorage.isWithinDistance(chunkPos, player, true, this.watchDistance);
+                    this.sendWatchPackets((ServerPlayerEntity)player, chunkPos, mutableObject, bl, bl2);
                 });
             }
         }

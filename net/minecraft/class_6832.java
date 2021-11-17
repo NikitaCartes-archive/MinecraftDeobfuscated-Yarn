@@ -19,12 +19,12 @@ import java.util.Map;
 import java.util.function.Predicate;
 import net.minecraft.class_6830;
 import net.minecraft.class_6833;
-import net.minecraft.class_6841;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.scanner.SelectiveNbtCollector;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.ChunkPos;
@@ -105,14 +105,14 @@ public class class_6832 {
     @Nullable
     private class_6833 method_39832(ChunkPos chunkPos, StructureFeature<?> structureFeature, boolean bl, long l) {
         NbtCompound nbtCompound2;
-        class_6841 lv = new class_6841(new class_6841.class_6843(NbtInt.TYPE, "DataVersion"), new class_6841.class_6843("Level", "Structures", NbtCompound.TYPE, "Starts"), new class_6841.class_6843("structures", NbtCompound.TYPE, "starts"));
+        SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(new SelectiveNbtCollector.Query(NbtInt.TYPE, "DataVersion"), new SelectiveNbtCollector.Query("Level", "Structures", NbtCompound.TYPE, "Starts"), new SelectiveNbtCollector.Query("structures", NbtCompound.TYPE, "starts"));
         try {
-            this.field_36227.method_39795(chunkPos, lv).join();
+            this.field_36227.method_39795(chunkPos, selectiveNbtCollector).join();
         } catch (Exception exception) {
             field_36225.warn("Failed to read chunk {}", (Object)chunkPos, (Object)exception);
             return class_6833.CHUNK_LOAD_NEEDED;
         }
-        NbtElement nbtElement = lv.method_39887();
+        NbtElement nbtElement = selectiveNbtCollector.getRoot();
         if (!(nbtElement instanceof NbtCompound)) {
             return null;
         }

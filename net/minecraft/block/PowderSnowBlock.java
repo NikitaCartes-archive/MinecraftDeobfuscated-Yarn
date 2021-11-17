@@ -92,8 +92,8 @@ implements FluidDrainable {
             return;
         }
         LivingEntity livingEntity = (LivingEntity)entity;
-        LivingEntity.class_6823 lv = livingEntity.method_39760();
-        SoundEvent soundEvent = (double)fallDistance < 7.0 ? lv.small() : lv.big();
+        LivingEntity.FallSounds fallSounds = livingEntity.getFallSounds();
+        SoundEvent soundEvent = (double)fallDistance < 7.0 ? fallSounds.small() : fallSounds.big();
         entity.playSound(soundEvent, 1.0f, 1.0f);
     }
 

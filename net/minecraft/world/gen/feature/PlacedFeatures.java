@@ -4,7 +4,6 @@
 package net.minecraft.world.gen.feature;
 
 import java.util.Random;
-import net.minecraft.class_6825;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
@@ -27,6 +26,7 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.TreePlacedFeatures;
 import net.minecraft.world.gen.feature.UndergroundPlacedFeatures;
 import net.minecraft.world.gen.feature.VegetationPlacedFeatures;
+import net.minecraft.world.gen.feature.VillagePlacedFeatures;
 
 public class PlacedFeatures {
     public static final PlacementModifier MOTION_BLOCKING_HEIGHTMAP = HeightmapPlacementModifier.of(Heightmap.Type.MOTION_BLOCKING);
@@ -40,7 +40,7 @@ public class PlacedFeatures {
     public static final PlacementModifier BOTTOM_TO_120_RANGE = HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(120));
 
     public static PlacedFeature getDefaultPlacedFeature() {
-        PlacedFeature[] placedFeatures = new PlacedFeature[]{OceanPlacedFeatures.KELP_COLD, UndergroundPlacedFeatures.CAVE_VINES, EndPlacedFeatures.CHORUS_PLANT, MiscPlacedFeatures.BLUE_ICE, NetherPlacedFeatures.BASALT_BLOBS, OrePlacedFeatures.ORE_ANCIENT_DEBRIS_LARGE, TreePlacedFeatures.ACACIA_CHECKED, VegetationPlacedFeatures.BAMBOO_VEGETATION, class_6825.field_36195};
+        PlacedFeature[] placedFeatures = new PlacedFeature[]{OceanPlacedFeatures.KELP_COLD, UndergroundPlacedFeatures.CAVE_VINES, EndPlacedFeatures.CHORUS_PLANT, MiscPlacedFeatures.BLUE_ICE, NetherPlacedFeatures.BASALT_BLOBS, OrePlacedFeatures.ORE_ANCIENT_DEBRIS_LARGE, TreePlacedFeatures.ACACIA_CHECKED, VegetationPlacedFeatures.BAMBOO_VEGETATION, VillagePlacedFeatures.PILE_HAY};
         return Util.getRandom(placedFeatures, new Random());
     }
 
@@ -48,12 +48,12 @@ public class PlacedFeatures {
         return Registry.register(BuiltinRegistries.PLACED_FEATURE, id, feature);
     }
 
-    public static PlacementModifier method_39736(int i, float f, int j) {
-        float g = 1.0f / f;
-        if (Math.abs(g - (float)((int)g)) > 1.0E-5f) {
+    public static PlacementModifier createCountExtraModifier(int count, float extraChance, int extraCount) {
+        float f = 1.0f / extraChance;
+        if (Math.abs(f - (float)((int)f)) > 1.0E-5f) {
             throw new IllegalStateException("Chance data cannot be represented as list weight");
         }
-        DataPool<IntProvider> dataPool = DataPool.builder().add(ConstantIntProvider.create(i), (int)g - 1).add(ConstantIntProvider.create(i + j), 1).build();
+        DataPool<IntProvider> dataPool = DataPool.builder().add(ConstantIntProvider.create(count), (int)f - 1).add(ConstantIntProvider.create(count + extraCount), 1).build();
         return CountPlacementModifier.of(new WeightedListIntProvider(dataPool));
     }
 }

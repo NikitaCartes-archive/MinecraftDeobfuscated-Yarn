@@ -269,7 +269,7 @@ public class ClientPlayerInteractionManager {
             this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, hitResult));
             return ActionResult.SUCCESS;
         }
-        boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
+        boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffhandStack().isEmpty();
         boolean bl3 = bl2 = player.shouldCancelInteraction() && bl;
         if (!bl2 && (actionResult = world.getBlockState(blockPos).onUse(world, player, hand, hitResult)).isAccepted()) {
             this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, hitResult));

@@ -12,11 +12,11 @@ public class VanillaTerrainParametersCreator {
     }
 
     public static VanillaTerrainParameters createUndergroundParameters() {
-        return new VanillaTerrainParameters(Spline.method_39427(0.0f), Spline.method_39427(0.0f), Spline.method_39427(0.0f));
+        return new VanillaTerrainParameters(Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(0.0f));
     }
 
     public static VanillaTerrainParameters createIslandParameters() {
-        return new VanillaTerrainParameters(Spline.method_39427(0.0f), Spline.method_39427(1.0f), Spline.method_39427(0.0f));
+        return new VanillaTerrainParameters(Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(1.0f), Spline.fixedFloatFunction(0.0f));
     }
 }
 

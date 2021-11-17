@@ -5,6 +5,7 @@ package net.minecraft.data.server;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.advancement.Advancement;
@@ -103,8 +104,8 @@ implements Consumer<Consumer<Advancement>> {
     }
 
     private List<RegistryKey<Biome>> getOverworldBiomes() {
-        List<Biome> list = MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(BuiltinRegistries.BIOME).getBiomes();
-        return list.stream().map(BuiltinRegistries.BIOME::getKey).flatMap(Optional::stream).collect(Collectors.toList());
+        Set<Biome> set = MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(BuiltinRegistries.BIOME).getBiomes();
+        return set.stream().map(BuiltinRegistries.BIOME::getKey).flatMap(Optional::stream).collect(Collectors.toList());
     }
 
     private Advancement.Task requireListedMobsKilled(Advancement.Task task) {
