@@ -124,6 +124,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -399,10 +400,10 @@ AutoCloseable {
         for (int j = 0; j < i; ++j) {
             int k = random.nextInt(21) - 10;
             int l = random.nextInt(21) - 10;
-            BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l)).down();
+            BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l));
             Biome biome = worldView.getBiome(blockPos3);
             if (blockPos3.getY() <= worldView.getBottomY() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos3) >= 0.15f)) continue;
-            blockPos2 = blockPos3;
+            blockPos2 = blockPos3.down();
             if (this.client.options.particles == ParticlesMode.MINIMAL) break;
             double d = random.nextDouble();
             double e = random.nextDouble();
@@ -1871,7 +1872,8 @@ AutoCloseable {
         ArrayList<ChunkBuilder.BuiltChunk> list = Lists.newArrayList();
         for (ChunkInfo chunkInfo : this.field_34807) {
             ChunkBuilder.BuiltChunk builtChunk = chunkInfo.chunk;
-            if (!builtChunk.needsRebuild()) continue;
+            ChunkPos chunkPos = new ChunkPos(builtChunk.getOrigin());
+            if (!builtChunk.needsRebuild() || !this.world.getChunk(chunkPos.x, chunkPos.z).method_39791()) continue;
             boolean bl = false;
             if (this.client.options.chunkBuilderMode == ChunkBuilderMode.NEARBY) {
                 BlockPos blockPos2 = builtChunk.getOrigin().add(8, 8, 8);

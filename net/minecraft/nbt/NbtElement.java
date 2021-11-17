@@ -5,6 +5,7 @@ package net.minecraft.nbt;
 
 import java.io.DataOutput;
 import java.io.IOException;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.NbtType;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.nbt.visitor.StringNbtWriter;
@@ -134,5 +135,14 @@ public interface NbtElement {
     }
 
     public void accept(NbtElementVisitor var1);
+
+    public class_6836.class_6838 method_39850(class_6836 var1);
+
+    default public void method_39876(class_6836 arg) {
+        class_6836.class_6838 lv = arg.method_39871(this.getNbtType());
+        if (lv == class_6836.class_6838.CONTINUE) {
+            this.method_39850(arg);
+        }
+    }
 }
 

@@ -11,18 +11,15 @@ import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_6834;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
@@ -31,26 +28,25 @@ import net.minecraft.world.gen.random.ChunkRandom;
 public class MineshaftFeature
 extends StructureFeature<MineshaftFeatureConfig> {
     public MineshaftFeature(Codec<MineshaftFeatureConfig> configCodec) {
-        super(configCodec, MineshaftFeature::addPieces);
+        super(configCodec, class_6834.simple(MineshaftFeature::method_28638, MineshaftFeature::addPieces));
     }
 
-    @Override
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkPos chunkPos, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView) {
+    private static boolean method_28638(class_6834.class_6835<MineshaftFeatureConfig> arg) {
         ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-        chunkRandom.setCarverSeed(l, chunkPos.x, chunkPos.z);
-        double d = mineshaftFeatureConfig.probability;
-        return chunkRandom.nextDouble() < d;
+        chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
+        double d = arg.config().probability;
+        if (chunkRandom.nextDouble() >= d) {
+            return false;
+        }
+        return arg.validBiome().test(arg.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(arg.chunkPos().getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(arg.chunkPos().getCenterZ())));
     }
 
-    private static void addPieces(StructurePiecesCollector collector, MineshaftFeatureConfig config, StructurePiecesGenerator.Context context) {
-        if (!context.biomeLimit().test(context.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())))) {
-            return;
-        }
-        MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, context.random(), context.chunkPos().getOffsetX(2), context.chunkPos().getOffsetZ(2), config.type);
+    private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<MineshaftFeatureConfig> context) {
+        MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, context.random(), context.chunkPos().getOffsetX(2), context.chunkPos().getOffsetZ(2), context.config().type);
         collector.addPiece(mineshaftRoom);
         mineshaftRoom.fillOpenings(mineshaftRoom, collector, context.random());
         int i = context.chunkGenerator().getSeaLevel();
-        if (config.type == Type.MESA) {
+        if (context.config().type == Type.MESA) {
             BlockPos blockPos = collector.getBoundingBox().getCenter();
             int j = context.chunkGenerator().getHeight(blockPos.getX(), blockPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, context.world());
             int k = j <= i ? i : MathHelper.nextBetween((Random)context.random(), i, j);

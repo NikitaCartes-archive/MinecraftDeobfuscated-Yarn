@@ -8,6 +8,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtByte;
@@ -23,7 +24,7 @@ import org.apache.commons.lang3.ArrayUtils;
 public class NbtByteArray
 extends AbstractNbtList<NbtByte> {
     private static final int SIZE = 192;
-    public static final NbtType<NbtByteArray> TYPE = new NbtType<NbtByteArray>(){
+    public static final NbtType<NbtByteArray> TYPE = new NbtType.class_6840<NbtByteArray>(){
 
         @Override
         public NbtByteArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
@@ -33,6 +34,19 @@ extends AbstractNbtList<NbtByte> {
             byte[] bs = new byte[j];
             dataInput.readFully(bs);
             return new NbtByteArray(bs);
+        }
+
+        @Override
+        public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+            int i = dataInput.readInt();
+            byte[] bs = new byte[i];
+            dataInput.readFully(bs);
+            return arg.method_39867(bs);
+        }
+
+        @Override
+        public void method_39851(DataInput dataInput) throws IOException {
+            dataInput.skipBytes(dataInput.readInt() * 1);
         }
 
         @Override
@@ -171,6 +185,11 @@ extends AbstractNbtList<NbtByte> {
     @Override
     public void clear() {
         this.value = new byte[0];
+    }
+
+    @Override
+    public class_6836.class_6838 method_39850(class_6836 arg) {
+        return arg.method_39867(this.value);
     }
 
     @Override

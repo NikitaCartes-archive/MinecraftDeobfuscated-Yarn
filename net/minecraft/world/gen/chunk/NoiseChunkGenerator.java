@@ -74,7 +74,6 @@ import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomSeed;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
-import net.minecraft.world.tick.OrderedTick;
 import org.jetbrains.annotations.Nullable;
 
 public final class NoiseChunkGenerator
@@ -338,7 +337,7 @@ extends ChunkGenerator {
                                 heightmap2.trackUpdate(z, u, ac, blockState);
                                 if (!aquiferSampler.needsFluidTick() || blockState.getFluidState().isEmpty()) continue;
                                 mutable.set(y, u, ab);
-                                chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockState.getFluidState().getFluid(), mutable, 0L));
+                                chunk.markBlockForPostProcessing(mutable);
                             }
                         }
                     }

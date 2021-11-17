@@ -20,6 +20,7 @@ import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.minecraft.class_6830;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -82,10 +83,9 @@ extends ChunkManager {
         this.world = world;
         this.mainThreadExecutor = new MainThreadExecutor(world);
         this.serverThread = Thread.currentThread();
-        File file = session.getWorldDirectory(world.getRegistryKey());
-        File file2 = new File(file, "data");
-        file2.mkdirs();
-        this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
+        File file = session.getWorldDirectory(world.getRegistryKey()).resolve("data").toFile();
+        file.mkdirs();
+        this.persistentStateManager = new PersistentStateManager(file, dataFixer);
         this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(world, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, chunkGenerator, worldGenerationProgressListener, chunkStatusChangeListener, persistentStateManagerFactory, viewDistance, dsync);
         this.lightingProvider = this.threadedAnvilChunkStorage.getLightingProvider();
         this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
@@ -475,6 +475,10 @@ extends ChunkManager {
 
     public PointOfInterestStorage getPointOfInterestStorage() {
         return this.threadedAnvilChunkStorage.getPointOfInterestStorage();
+    }
+
+    public class_6830 method_39777() {
+        return this.threadedAnvilChunkStorage.method_39800();
     }
 
     @Nullable

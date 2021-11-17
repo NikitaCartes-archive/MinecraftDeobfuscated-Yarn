@@ -13,7 +13,6 @@ import net.minecraft.world.gen.decorator.BiomePlacementModifier;
 import net.minecraft.world.gen.decorator.CountPlacementModifier;
 import net.minecraft.world.gen.decorator.EnvironmentScanPlacementModifier;
 import net.minecraft.world.gen.decorator.HeightRangePlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifier;
 import net.minecraft.world.gen.decorator.RarityFilterPlacementModifier;
 import net.minecraft.world.gen.decorator.SquarePlacementModifier;
 import net.minecraft.world.gen.decorator.SurfaceThresholdFilterPlacementModifier;
@@ -35,11 +34,11 @@ public class MiscPlacedFeatures {
     public static final PlacedFeature DISK_CLAY = PlacedFeatures.register("disk_clay", MiscConfiguredFeatures.DISK_CLAY.withPlacement(SquarePlacementModifier.of(), PlacedFeatures.OCEAN_FLOOR_WG_HEIGHTMAP, BiomePlacementModifier.of()));
     public static final PlacedFeature DISK_GRAVEL = PlacedFeatures.register("disk_gravel", MiscConfiguredFeatures.DISK_GRAVEL.withPlacement(SquarePlacementModifier.of(), PlacedFeatures.OCEAN_FLOOR_WG_HEIGHTMAP, BiomePlacementModifier.of()));
     public static final PlacedFeature DISK_SAND = PlacedFeatures.register("disk_sand", MiscConfiguredFeatures.DISK_SAND.withPlacement(CountPlacementModifier.of(3), SquarePlacementModifier.of(), PlacedFeatures.OCEAN_FLOOR_WG_HEIGHTMAP, BiomePlacementModifier.of()));
-    public static final PlacedFeature FREEZE_TOP_LAYER = PlacedFeatures.register("freeze_top_layer", MiscConfiguredFeatures.FREEZE_TOP_LAYER.withPlacement(new PlacementModifier[0]));
-    public static final PlacedFeature VOID_START_PLATFORM = PlacedFeatures.register("void_start_platform", MiscConfiguredFeatures.VOID_START_PLATFORM.withPlacement(new PlacementModifier[0]));
+    public static final PlacedFeature FREEZE_TOP_LAYER = PlacedFeatures.register("freeze_top_layer", MiscConfiguredFeatures.FREEZE_TOP_LAYER.withPlacement(BiomePlacementModifier.of()));
+    public static final PlacedFeature VOID_START_PLATFORM = PlacedFeatures.register("void_start_platform", MiscConfiguredFeatures.VOID_START_PLATFORM.withPlacement(BiomePlacementModifier.of()));
     public static final PlacedFeature DESERT_WELL = PlacedFeatures.register("desert_well", MiscConfiguredFeatures.DESERT_WELL.withPlacement(RarityFilterPlacementModifier.of(1000), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of()));
     public static final PlacedFeature SPRING_LAVA = PlacedFeatures.register("spring_lava", MiscConfiguredFeatures.SPRING_LAVA_OVERWORLD.withPlacement(CountPlacementModifier.of(20), SquarePlacementModifier.of(), HeightRangePlacementModifier.of(VeryBiasedToBottomHeightProvider.create(YOffset.getBottom(), YOffset.belowTop(8), 8)), BiomePlacementModifier.of()));
-    public static final PlacedFeature SPRING_LAVA_FROZEN = PlacedFeatures.register("spring_lava_frozen", MiscConfiguredFeatures.SPRING_LAVA_FROZEN.withPlacement(CountPlacementModifier.of(20), SquarePlacementModifier.of(), HeightRangePlacementModifier.of(VeryBiasedToBottomHeightProvider.create(YOffset.getBottom(), YOffset.belowTop(8), 8))));
+    public static final PlacedFeature SPRING_LAVA_FROZEN = PlacedFeatures.register("spring_lava_frozen", MiscConfiguredFeatures.SPRING_LAVA_FROZEN.withPlacement(CountPlacementModifier.of(20), SquarePlacementModifier.of(), HeightRangePlacementModifier.of(VeryBiasedToBottomHeightProvider.create(YOffset.getBottom(), YOffset.belowTop(8), 8)), BiomePlacementModifier.of()));
     public static final PlacedFeature SPRING_WATER = PlacedFeatures.register("spring_water", MiscConfiguredFeatures.SPRING_WATER.withPlacement(CountPlacementModifier.of(25), SquarePlacementModifier.of(), HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(192)), BiomePlacementModifier.of()));
 }
 

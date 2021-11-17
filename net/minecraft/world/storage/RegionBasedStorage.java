@@ -7,8 +7,11 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.ThrowableDeliverer;
@@ -21,11 +24,11 @@ implements AutoCloseable {
     public static final String field_31425 = ".mca";
     private static final int field_31426 = 256;
     private final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap();
-    private final File directory;
+    private final Path directory;
     private final boolean dsync;
 
-    RegionBasedStorage(File directory, boolean dsync) {
-        this.directory = directory;
+    RegionBasedStorage(Path path, boolean dsync) {
+        this.directory = path;
         this.dsync = dsync;
     }
 
@@ -38,11 +41,9 @@ implements AutoCloseable {
         if (this.cachedRegionFiles.size() >= 256) {
             this.cachedRegionFiles.removeLast().close();
         }
-        if (!this.directory.exists()) {
-            this.directory.mkdirs();
-        }
-        File file = new File(this.directory, "r." + pos.getRegionX() + "." + pos.getRegionZ() + field_31425);
-        RegionFile regionFile2 = new RegionFile(file, this.directory, this.dsync);
+        Files.createDirectories(this.directory, new FileAttribute[0]);
+        Path path = this.directory.resolve("r." + pos.getRegionX() + "." + pos.getRegionZ() + field_31425);
+        RegionFile regionFile2 = new RegionFile(path, this.directory, this.dsync);
         this.cachedRegionFiles.putAndMoveToFirst(l, regionFile2);
         return regionFile2;
     }
@@ -57,6 +58,15 @@ implements AutoCloseable {
             }
             NbtCompound nbtCompound = NbtIo.read(dataInputStream);
             return nbtCompound;
+        }
+    }
+
+    public void method_39802(ChunkPos chunkPos, class_6836 arg) throws IOException {
+        RegionFile regionFile = this.getRegionFile(chunkPos);
+        try (DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);){
+            if (dataInputStream != null) {
+                NbtIo.method_39855(dataInputStream, arg);
+            }
         }
     }
 

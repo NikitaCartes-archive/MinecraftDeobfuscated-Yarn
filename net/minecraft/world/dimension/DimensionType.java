@@ -10,7 +10,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.function.Function;
@@ -198,17 +198,17 @@ public class DimensionType {
         return "";
     }
 
-    public static File getSaveDirectory(RegistryKey<World> worldRef, File root) {
+    public static Path getSaveDirectory(RegistryKey<World> worldRef, Path path) {
         if (worldRef == World.OVERWORLD) {
-            return root;
+            return path;
         }
         if (worldRef == World.END) {
-            return new File(root, "DIM1");
+            return path.resolve("DIM1");
         }
         if (worldRef == World.NETHER) {
-            return new File(root, "DIM-1");
+            return path.resolve("DIM-1");
         }
-        return new File(root, "dimensions/" + worldRef.getValue().getNamespace() + "/" + worldRef.getValue().getPath());
+        return path.resolve("dimensions").resolve(worldRef.getValue().getNamespace()).resolve(worldRef.getValue().getPath());
     }
 
     public boolean hasSkyLight() {

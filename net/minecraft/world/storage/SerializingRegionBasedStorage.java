@@ -14,8 +14,8 @@ import com.mojang.serialization.OptionalDynamic;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -47,13 +47,13 @@ implements AutoCloseable {
     private final DataFixTypes dataFixTypes;
     protected final HeightLimitView world;
 
-    public SerializingRegionBasedStorage(File directory, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean dsync, HeightLimitView world) {
+    public SerializingRegionBasedStorage(Path path, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean dsync, HeightLimitView world) {
         this.codecFactory = codecFactory;
         this.factory = factory;
         this.dataFixer = dataFixer;
         this.dataFixTypes = dataFixTypes;
         this.world = world;
-        this.worker = new StorageIoWorker(directory, dsync, directory.getName());
+        this.worker = new StorageIoWorker(path, dsync, path.getFileName().toString());
     }
 
     protected void tick(BooleanSupplier shouldKeepTicking) {

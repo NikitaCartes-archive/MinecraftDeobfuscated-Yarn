@@ -230,11 +230,17 @@ extends ProtoChunk {
 
     @Override
     public BasicTickScheduler<Block> getBlockTickScheduler() {
+        if (this.field_34554) {
+            return this.wrapped.getBlockTickScheduler();
+        }
         return EmptyTickSchedulers.getReadOnlyTickScheduler();
     }
 
     @Override
     public BasicTickScheduler<Fluid> getFluidTickScheduler() {
+        if (this.field_34554) {
+            return this.wrapped.getFluidTickScheduler();
+        }
         return EmptyTickSchedulers.getReadOnlyTickScheduler();
     }
 

@@ -6,6 +6,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtTagSizeTracker;
@@ -18,12 +19,22 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 public class NbtInt
 extends AbstractNbtNumber {
     private static final int SIZE = 96;
-    public static final NbtType<NbtInt> TYPE = new NbtType<NbtInt>(){
+    public static final NbtType<NbtInt> TYPE = new NbtType.class_6839<NbtInt>(){
 
         @Override
         public NbtInt read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
             nbtTagSizeTracker.add(96L);
             return NbtInt.of(dataInput.readInt());
+        }
+
+        @Override
+        public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+            return arg.method_39860(dataInput.readInt());
+        }
+
+        @Override
+        public int method_39853() {
+            return 4;
         }
 
         @Override
@@ -127,6 +138,11 @@ extends AbstractNbtNumber {
     @Override
     public Number numberValue() {
         return this.value;
+    }
+
+    @Override
+    public class_6836.class_6838 method_39850(class_6836 arg) {
+        return arg.method_39860(this.value);
     }
 
     @Override

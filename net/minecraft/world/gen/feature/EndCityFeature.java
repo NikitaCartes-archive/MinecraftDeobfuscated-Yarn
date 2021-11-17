@@ -6,10 +6,11 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
+import net.minecraft.class_6834;
 import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -17,7 +18,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -33,11 +33,6 @@ extends StructureFeature<DefaultFeatureConfig> {
     @Override
     protected boolean isUniformDistribution() {
         return false;
-    }
-
-    @Override
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
-        return EndCityFeature.getGenerationHeight(chunkPos, chunkGenerator, heightLimitView) >= 60;
     }
 
     private static int getGenerationHeight(ChunkPos pos, ChunkGenerator chunkGenerator, HeightLimitView world) {
@@ -62,19 +57,21 @@ extends StructureFeature<DefaultFeatureConfig> {
         return Math.min(Math.min(m, n), Math.min(o, p));
     }
 
-    private static void addPieces(StructurePiecesCollector collector, DefaultFeatureConfig config, StructurePiecesGenerator.Context context) {
-        BlockRotation blockRotation = BlockRotation.random(context.random());
-        int i = EndCityFeature.getGenerationHeight(context.chunkPos(), context.chunkGenerator(), context.world());
+    private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(class_6834.class_6835<DefaultFeatureConfig> arg) {
+        int i = EndCityFeature.getGenerationHeight(arg.chunkPos(), arg.chunkGenerator(), arg.heightAccessor());
         if (i < 60) {
-            return;
+            return Optional.empty();
         }
-        BlockPos blockPos = context.chunkPos().getCenterAtY(i);
-        if (!context.biomeLimit().test(context.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ())))) {
-            return;
+        BlockPos blockPos = arg.chunkPos().getCenterAtY(i);
+        if (!arg.validBiome().test(arg.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ())))) {
+            return Optional.empty();
         }
-        ArrayList<StructurePiece> list = Lists.newArrayList();
-        EndCityGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, context.random());
-        list.forEach(collector::addPiece);
+        return Optional.of((structurePiecesCollector, context) -> {
+            BlockRotation blockRotation = BlockRotation.random(context.random());
+            ArrayList<StructurePiece> list = Lists.newArrayList();
+            EndCityGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, context.random());
+            list.forEach(structurePiecesCollector::addPiece);
+        });
     }
 }
 

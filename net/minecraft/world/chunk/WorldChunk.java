@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -83,11 +84,12 @@ extends Chunk {
     };
     private final Map<BlockPos, WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.newHashMap();
     private boolean loadedToWorld;
+    private boolean field_36218 = false;
     final World world;
     @Nullable
     private Supplier<ChunkHolder.LevelType> levelTypeProvider;
     @Nullable
-    private Consumer<WorldChunk> loadToWorldConsumer;
+    private class_6829 loadToWorldConsumer;
     private final Int2ObjectMap<GameEventDispatcher> gameEventDispatchers;
     private final ChunkTickScheduler<Block> blockTickScheduler;
     private final ChunkTickScheduler<Fluid> fluidTickScheduler;
@@ -96,7 +98,7 @@ extends Chunk {
         this(world, pos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<Block>(), new ChunkTickScheduler<Fluid>(), 0L, null, null, null);
     }
 
-    public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, ChunkTickScheduler<Block> blockTickScheduler, ChunkTickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable Consumer<WorldChunk> loadToWorldConsumer, @Nullable Blender blendingData) {
+    public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, ChunkTickScheduler<Block> blockTickScheduler, ChunkTickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable class_6829 arg, @Nullable Blender blendingData) {
         super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), inhabitedTime, sectionArrayInitializer, blendingData);
         this.world = world;
         this.gameEventDispatchers = new Int2ObjectOpenHashMap<GameEventDispatcher>();
@@ -104,13 +106,13 @@ extends Chunk {
             if (!ChunkStatus.FULL.getHeightmapTypes().contains(type)) continue;
             this.heightmaps.put(type, new Heightmap(this, type));
         }
-        this.loadToWorldConsumer = loadToWorldConsumer;
+        this.loadToWorldConsumer = arg;
         this.blockTickScheduler = blockTickScheduler;
         this.fluidTickScheduler = fluidTickScheduler;
     }
 
-    public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
-        this(world, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.getBlockProtoTickScheduler(), protoChunk.getFluidProtoTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), loadToWorldConsumer, protoChunk.getBlender());
+    public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable class_6829 arg) {
+        this(world, protoChunk.getPos(), protoChunk.getUpgradeData(), protoChunk.getBlockProtoTickScheduler(), protoChunk.getFluidProtoTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), arg, protoChunk.getBlender());
         for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
             this.setBlockEntity(blockEntity);
         }
@@ -381,7 +383,7 @@ extends Chunk {
 
     public void loadToWorld() {
         if (this.loadToWorldConsumer != null) {
-            this.loadToWorldConsumer.accept(this);
+            this.loadToWorldConsumer.run(this);
             this.loadToWorldConsumer = null;
         }
     }
@@ -432,6 +434,11 @@ extends Chunk {
             for (Short short_ : this.postProcessingLists[i]) {
                 BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.sectionIndexToCoord(i), chunkPos);
                 BlockState blockState = this.getBlockState(blockPos);
+                FluidState fluidState = blockState.getFluidState();
+                if (!fluidState.isEmpty()) {
+                    fluidState.onScheduledTick(this.world, blockPos);
+                }
+                if (blockState.getBlock() instanceof FluidBlock) continue;
                 BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
                 this.world.setBlockState(blockPos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
             }
@@ -548,6 +555,19 @@ extends Chunk {
 
     private <T extends BlockEntity> BlockEntityTickInvoker wrapTicker(T blockEntity, BlockEntityTicker<T> blockEntityTicker) {
         return new DirectBlockEntityTickInvoker(this, blockEntity, blockEntityTicker);
+    }
+
+    public boolean method_39791() {
+        return this.field_36218;
+    }
+
+    public void method_39792(boolean bl) {
+        this.field_36218 = bl;
+    }
+
+    @FunctionalInterface
+    public static interface class_6829 {
+        public void run(WorldChunk var1);
     }
 
     public static enum CreationType {

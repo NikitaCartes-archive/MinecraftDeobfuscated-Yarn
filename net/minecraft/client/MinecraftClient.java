@@ -424,8 +424,6 @@ implements WindowEventHandler {
     private ClientConnection integratedServerConnection;
     private boolean integratedServerRunning;
     @Nullable
-    private TelemetrySender telemetrySender;
-    @Nullable
     public Entity cameraEntity;
     @Nullable
     public Entity targetedEntity;
@@ -1953,11 +1951,11 @@ implements WindowEventHandler {
     }
 
     public boolean isMultiplayerEnabled() {
-        return this.multiplayerEnabled && this.userApiService.serversAllowed();
+        return this.multiplayerEnabled && this.userApiService.properties().flag(UserApiService.UserFlag.SERVERS_ALLOWED);
     }
 
     public boolean isRealmsEnabled() {
-        return this.userApiService.realmsAllowed();
+        return this.userApiService.properties().flag(UserApiService.UserFlag.REALMS_ALLOWED);
     }
 
     /**
@@ -1980,7 +1978,7 @@ implements WindowEventHandler {
         if (!this.onlineChatEnabled) {
             return ChatRestriction.DISABLED_BY_LAUNCHER;
         }
-        if (!this.userApiService.chatAllowed()) {
+        if (!this.userApiService.properties().flag(UserApiService.UserFlag.CHAT_ALLOWED)) {
             return ChatRestriction.DISABLED_BY_PROFILE;
         }
         return ChatRestriction.ENABLED;
@@ -2581,7 +2579,7 @@ implements WindowEventHandler {
     }
 
     public boolean shouldFilterText() {
-        return false;
+        return this.userApiService.properties().flag(UserApiService.UserFlag.PROFANITY_FILTER_ENABLED);
     }
 
     public void loadBlockList() {

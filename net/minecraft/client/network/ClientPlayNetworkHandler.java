@@ -639,6 +639,7 @@ implements ClientPlayPacketListener {
             lightingProvider.setSectionStatus(ChunkSectionPos.from(chunkPos, j), chunkSection.isEmpty());
             this.world.scheduleBlockRenders(x, j, z);
         }
+        this.world.method_39849(x, z);
     }
 
     @Override
@@ -659,6 +660,7 @@ implements ClientPlayPacketListener {
                 lightingProvider.setSectionStatus(ChunkSectionPos.from(packet.getX(), i, packet.getZ()), true);
             }
             lightingProvider.setColumnEnabled(new ChunkPos(packet.getX(), packet.getZ()), false);
+            this.world.method_39849(packet.getX(), packet.getZ());
         });
     }
 
@@ -1997,6 +1999,7 @@ implements ClientPlayPacketListener {
         BitSet bitSet4 = data.getUninitedBlock();
         Iterator<byte[]> iterator2 = data.getBlockNibbles().iterator();
         this.updateLighting(x, z, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, data.isNonEdge());
+        this.world.method_39849(x, z);
     }
 
     @Override

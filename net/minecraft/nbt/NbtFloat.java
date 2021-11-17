@@ -6,6 +6,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtTagSizeTracker;
@@ -20,12 +21,22 @@ public class NbtFloat
 extends AbstractNbtNumber {
     private static final int SIZE = 96;
     public static final NbtFloat ZERO = new NbtFloat(0.0f);
-    public static final NbtType<NbtFloat> TYPE = new NbtType<NbtFloat>(){
+    public static final NbtType<NbtFloat> TYPE = new NbtType.class_6839<NbtFloat>(){
 
         @Override
         public NbtFloat read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
             nbtTagSizeTracker.add(96L);
             return NbtFloat.of(dataInput.readFloat());
+        }
+
+        @Override
+        public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+            return arg.method_39859(dataInput.readFloat());
+        }
+
+        @Override
+        public int method_39853() {
+            return 4;
         }
 
         @Override
@@ -129,6 +140,11 @@ extends AbstractNbtNumber {
     @Override
     public Number numberValue() {
         return Float.valueOf(this.value);
+    }
+
+    @Override
+    public class_6836.class_6838 method_39850(class_6836 arg) {
+        return arg.method_39859(this.value);
     }
 
     @Override

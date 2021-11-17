@@ -27,6 +27,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.Nullable;
@@ -91,11 +92,11 @@ public class Blender {
         if (blender == null || !blender.method_39566()) {
             return null;
         }
-        blender.method_39572(chunk, Blender.method_39579(chunkRegion, i, j));
+        blender.method_39572(chunk, Blender.method_39579(chunkRegion, i, j, false));
         return blender;
     }
 
-    private static Set<EightWayDirection> method_39579(ChunkRegion chunkRegion, int i, int j) {
+    public static Set<EightWayDirection> method_39579(StructureWorldAccess structureWorldAccess, int i, int j, boolean bl) {
         EnumSet<EightWayDirection> set = EnumSet.noneOf(EightWayDirection.class);
         for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
             int k = i;
@@ -104,7 +105,7 @@ public class Blender {
                 k += direction.getOffsetX();
                 l += direction.getOffsetZ();
             }
-            if (chunkRegion.getChunk(k, l).usesOldNoise()) continue;
+            if (structureWorldAccess.getChunk(k, l).usesOldNoise() != bl) continue;
             set.add(eightWayDirection);
         }
         return set;

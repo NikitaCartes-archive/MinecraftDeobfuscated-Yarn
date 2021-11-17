@@ -48,7 +48,8 @@ extends DataFix {
     private static final int CHUNK_SECTIONS_IN_OLD_CHUNK = 16;
     private static final int CHUNK_SECTIONS_IN_NEW_CHUNK = 24;
     private static final int MIN_CHUNK_SECTION_Y = -4;
-    private static final int field_35021 = 64;
+    public static final int field_36214 = 4096;
+    private static final int field_36215 = 64;
     private static final int field_35022 = 9;
     private static final long field_35023 = 511L;
     private static final int field_35024 = 64;
@@ -341,10 +342,29 @@ extends DataFix {
     }
 
     private static Dynamic<?> fixPalette(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
-        if (dynamic.asStream().count() == 1L) {
+        List list = dynamic.asStream().collect(Collectors.toCollection(ArrayList::new));
+        if (list.size() == 1) {
             return ChunkHeightAndBiomeFix.fixPalette(dynamic);
         }
+        dynamic = ChunkHeightAndBiomeFix.method_39781(dynamic, dynamic2, list);
         return ChunkHeightAndBiomeFix.fixPaletteWithData(dynamic, dynamic2);
+    }
+
+    private static Dynamic<?> method_39781(Dynamic<?> dynamic, Dynamic<?> dynamic2, List<Dynamic<?>> list) {
+        int i;
+        int j;
+        long l = dynamic2.asLongStream().count() * 64L;
+        long m = l / 4096L;
+        if (m > (long)(j = ChunkHeightAndBiomeFix.ceilLog2(i = list.size()))) {
+            Dynamic dynamic3 = dynamic.createMap(ImmutableMap.of(dynamic.createString("Name"), dynamic.createString("minecraft:air")));
+            int k = (1 << (int)(m - 1L)) + 1;
+            int n = k - i;
+            for (int o = 0; o < n; ++o) {
+                list.add(dynamic3);
+            }
+            return dynamic.createList(list.stream());
+        }
+        return dynamic;
     }
 
     public static int ceilLog2(int value) {

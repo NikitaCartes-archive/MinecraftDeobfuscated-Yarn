@@ -87,7 +87,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -96,7 +95,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
 import org.jetbrains.annotations.Nullable;
 
 public class FoxEntity
@@ -268,8 +266,8 @@ extends AnimalEntity {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        Optional<RegistryKey<Biome>> optional = world.getBiomeKey(this.getBlockPos());
-        Type type = Type.fromBiome(optional);
+        Biome biome = world.getBiome(this.getBlockPos());
+        Type type = Type.fromBiome(biome);
         boolean bl = false;
         if (entityData instanceof FoxData) {
             type = ((FoxData)entityData).type;
@@ -1341,19 +1339,17 @@ extends AnimalEntity {
     }
 
     public static enum Type {
-        RED(0, "red", BiomeKeys.TAIGA, BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA),
-        SNOW(1, "snow", BiomeKeys.SNOWY_TAIGA);
+        RED(0, "red"),
+        SNOW(1, "snow");
 
         private static final Type[] TYPES;
         private static final Map<String, Type> NAME_TYPE_MAP;
         private final int id;
         private final String key;
-        private final List<RegistryKey<Biome>> biomes;
 
-        private Type(int id, String key, RegistryKey<Biome> ... biomes) {
+        private Type(int id, String key) {
             this.id = id;
             this.key = key;
-            this.biomes = Arrays.asList(biomes);
         }
 
         public String getKey() {
@@ -1375,8 +1371,8 @@ extends AnimalEntity {
             return TYPES[id];
         }
 
-        public static Type fromBiome(Optional<RegistryKey<Biome>> biome) {
-            return biome.isPresent() && Type.SNOW.biomes.contains(biome.get()) ? SNOW : RED;
+        public static Type fromBiome(Biome biome) {
+            return biome.getPrecipitation() == Biome.Precipitation.SNOW ? SNOW : RED;
         }
 
         static {

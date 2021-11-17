@@ -34,7 +34,6 @@ import net.minecraft.world.gen.carver.NetherCaveCarver;
 import net.minecraft.world.gen.carver.RavineCarver;
 import net.minecraft.world.gen.carver.RavineCarverConfig;
 import net.minecraft.world.gen.chunk.AquiferSampler;
-import net.minecraft.world.tick.OrderedTick;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,7 +82,7 @@ public abstract class Carver<C extends CarverConfig> {
         int n = Math.max(MathHelper.floor(d - g) - l - 1, 0);
         int o = Math.min(MathHelper.floor(d + g) - l, 15);
         int p = Math.max(MathHelper.floor(e - h) - 1, context.getMinY() + 1);
-        int q = Math.min(MathHelper.floor(e + h) + 1, context.getMinY() + context.getHeight() - 8);
+        int q = Math.min(MathHelper.floor(e + h) + 1, context.getMinY() + context.getHeight() - 2);
         int r = Math.max(MathHelper.floor(f - g) - m - 1, 0);
         int s = Math.min(MathHelper.floor(f + g) - m, 15);
         boolean bl = false;
@@ -123,7 +122,7 @@ public abstract class Carver<C extends CarverConfig> {
         }
         chunk.setBlockState(mutable, blockState22, false);
         if (aquiferSampler.needsFluidTick() && !blockState22.getFluidState().isEmpty()) {
-            chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockState22.getFluidState().getFluid(), mutable, 0L));
+            chunk.markBlockForPostProcessing(mutable);
         }
         if (mutableBoolean.isTrue()) {
             mutable2.set((Vec3i)mutable, Direction.DOWN);
@@ -131,7 +130,7 @@ public abstract class Carver<C extends CarverConfig> {
                 context.method_39114(posToBiome, chunk, mutable2, !blockState22.getFluidState().isEmpty()).ifPresent(blockState -> {
                     chunk.setBlockState(mutable2, (BlockState)blockState, false);
                     if (!blockState.getFluidState().isEmpty()) {
-                        chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockState.getFluidState().getFluid(), mutable2, 0L));
+                        chunk.markBlockForPostProcessing(mutable2);
                     }
                 });
             }

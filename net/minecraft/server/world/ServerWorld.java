@@ -15,7 +15,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
@@ -38,6 +37,7 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_6832;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -128,6 +128,7 @@ import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
@@ -195,6 +196,7 @@ implements StructureWorldAccess {
     private final EnderDragonFight enderDragonFight;
     final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<EnderDragonPart>();
     private final StructureAccessor structureAccessor;
+    private final class_6832 field_36208;
     private final boolean shouldTickTime;
 
     public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long seed, List<Spawner> spawners, boolean shouldTickTime) {
@@ -205,7 +207,7 @@ implements StructureWorldAccess {
         this.worldProperties = properties;
         boolean bl = server.syncChunkWrites();
         DataFixer dataFixer = server.getDataFixer();
-        EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(worldKey), "entities"), dataFixer, bl, server);
+        EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
         this.entityManager = new ServerEntityManager<Entity>(Entity.class, new ServerEntityHandler(), chunkDataAccess);
         this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().getSimulationDistance(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
         this.portalForcer = new PortalForcer(this);
@@ -216,8 +218,10 @@ implements StructureWorldAccess {
         if (!server.isSingleplayer()) {
             properties.setGameMode(server.getDefaultGameMode());
         }
-        this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions());
-        this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, server.getSaveProperties().getGeneratorOptions().getSeed(), server.getSaveProperties().getDragonFight()) : null;
+        long l = server.getSaveProperties().getGeneratorOptions().getSeed();
+        this.field_36208 = new class_6832(this.chunkManager.method_39777(), this.getRegistryManager(), server.getStructureManager(), worldKey, chunkGenerator, this, chunkGenerator.getBiomeSource(), l, dataFixer);
+        this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.field_36208);
+        this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, l, server.getSaveProperties().getDragonFight()) : null;
         this.sleepManager = new SleepManager();
     }
 
@@ -1243,6 +1247,10 @@ implements StructureWorldAccess {
 
     public void disableTickSchedulers(WorldChunk chunk) {
         chunk.disableTickSchedulers(this.getLevelProperties().getTime());
+    }
+
+    public void method_39778(Chunk chunk) {
+        this.field_36208.method_39833(chunk.getPos(), chunk.getStructureStarts());
     }
 
     @Override

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
@@ -35,7 +36,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 public class NbtList
 extends AbstractNbtList<NbtElement> {
     private static final int SIZE = 296;
-    public static final NbtType<NbtList> TYPE = new NbtType<NbtList>(){
+    public static final NbtType<NbtList> TYPE = new NbtType.class_6840<NbtList>(){
 
         @Override
         public NbtList read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
@@ -55,6 +56,69 @@ extends AbstractNbtList<NbtElement> {
                 list.add((NbtElement)nbtType.read(dataInput, i + 1, nbtTagSizeTracker));
             }
             return new NbtList(list, b);
+        }
+
+        /*
+         * Exception decompiling
+         */
+        @Override
+        public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+            /*
+             * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
+             * 
+             * org.benf.cfr.reader.util.ConfusedCFRException: Tried to end blocks [8[CASE], 4[SWITCH]], but top level block is 9[SWITCH]
+             *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.processEndingBlocks(Op04StructuredStatement.java:435)
+             *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.buildNestedBlocks(Op04StructuredStatement.java:484)
+             *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op03SimpleStatement.createInitialStructuredBlock(Op03SimpleStatement.java:736)
+             *     at org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisInner(CodeAnalyser.java:850)
+             *     at org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisOrWrapFail(CodeAnalyser.java:278)
+             *     at org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysis(CodeAnalyser.java:201)
+             *     at org.benf.cfr.reader.entities.attributes.AttributeCode.analyse(AttributeCode.java:94)
+             *     at org.benf.cfr.reader.entities.Method.analyse(Method.java:538)
+             *     at org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:1055)
+             *     at org.benf.cfr.reader.entities.ClassFile.analyseInnerClassesPass1(ClassFile.java:923)
+             *     at org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:1035)
+             *     at org.benf.cfr.reader.entities.ClassFile.analyseTop(ClassFile.java:942)
+             *     at org.benf.cfr.reader.Driver.doJarVersionTypes(Driver.java:261)
+             *     at org.benf.cfr.reader.Driver.doJar(Driver.java:143)
+             *     at net.fabricmc.loom.decompilers.cfr.LoomCFRDecompiler.decompile(LoomCFRDecompiler.java:89)
+             *     at net.fabricmc.loom.task.GenerateSourcesTask$DecompileAction.doDecompile(GenerateSourcesTask.java:269)
+             *     at net.fabricmc.loom.task.GenerateSourcesTask$DecompileAction.execute(GenerateSourcesTask.java:234)
+             *     at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)
+             *     at org.gradle.workers.internal.AbstractClassLoaderWorker$1.create(AbstractClassLoaderWorker.java:49)
+             *     at org.gradle.workers.internal.AbstractClassLoaderWorker$1.create(AbstractClassLoaderWorker.java:43)
+             *     at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)
+             *     at org.gradle.workers.internal.AbstractClassLoaderWorker.executeInClassLoader(AbstractClassLoaderWorker.java:43)
+             *     at org.gradle.workers.internal.IsolatedClassloaderWorker.run(IsolatedClassloaderWorker.java:49)
+             *     at org.gradle.workers.internal.IsolatedClassloaderWorker.run(IsolatedClassloaderWorker.java:30)
+             *     at org.gradle.workers.internal.WorkerDaemonServer.run(WorkerDaemonServer.java:87)
+             *     at org.gradle.workers.internal.WorkerDaemonServer.run(WorkerDaemonServer.java:56)
+             *     at org.gradle.process.internal.worker.request.WorkerAction$1.call(WorkerAction.java:138)
+             *     at org.gradle.process.internal.worker.child.WorkerLogEventListener.withWorkerLoggingProtocol(WorkerLogEventListener.java:41)
+             *     at org.gradle.process.internal.worker.request.WorkerAction.run(WorkerAction.java:135)
+             *     at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+             *     at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+             *     at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+             *     at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+             *     at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+             *     at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+             *     at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+             *     at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+             *     at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+             *     at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+             *     at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:49)
+             *     at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+             *     at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+             *     at java.base/java.lang.Thread.run(Thread.java:833)
+             */
+            throw new IllegalStateException("Decompilation failed");
+        }
+
+        @Override
+        public void method_39851(DataInput dataInput) throws IOException {
+            NbtType<?> nbtType = NbtTypes.byId(dataInput.readByte());
+            int i = dataInput.readInt();
+            nbtType.method_39854(dataInput, i);
         }
 
         @Override
@@ -290,6 +354,43 @@ extends AbstractNbtList<NbtElement> {
     public void clear() {
         this.value.clear();
         this.type = 0;
+    }
+
+    @Override
+    public class_6836.class_6838 method_39850(class_6836 arg) {
+        switch (arg.method_39864(NbtTypes.byId(this.type), this.value.size())) {
+            case HALT: {
+                return class_6836.class_6838.HALT;
+            }
+            case BREAK: {
+                return arg.method_39870();
+            }
+        }
+        block13: for (int i = 0; i < this.value.size(); ++i) {
+            NbtElement nbtElement = this.value.get(i);
+            switch (arg.method_39872(nbtElement.getNbtType(), i)) {
+                case HALT: {
+                    return class_6836.class_6838.HALT;
+                }
+                case SKIP: {
+                    continue block13;
+                }
+                case BREAK: {
+                    return arg.method_39870();
+                }
+                default: {
+                    switch (nbtElement.method_39850(arg)) {
+                        case HALT: {
+                            return class_6836.class_6838.HALT;
+                        }
+                        case BREAK: {
+                            return arg.method_39870();
+                        }
+                    }
+                }
+            }
+        }
+        return arg.method_39870();
     }
 
     @Override

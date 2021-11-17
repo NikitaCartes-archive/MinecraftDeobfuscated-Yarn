@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,10 +22,12 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
 import net.minecraft.util.TopologicalSorts;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -43,7 +46,7 @@ public abstract class BiomeSource
 implements BiomeSupplier {
     public static final Codec<BiomeSource> CODEC;
     private final List<Biome> biomes;
-    private final List<List<PlacedFeature>> field_34469;
+    private final List<class_6827> field_34469;
 
     protected BiomeSource(Stream<Supplier<Biome>> stream) {
         this(stream.map(Supplier::get).distinct().collect(ImmutableList.toImmutableList()));
@@ -54,7 +57,7 @@ implements BiomeSupplier {
         this.field_34469 = this.method_39525(list, true);
     }
 
-    private List<List<PlacedFeature>> method_39525(List<Biome> list, boolean bl) {
+    private List<class_6827> method_39525(List<Biome> list, boolean bl) {
         record class_6543(int featureIndex, int step, PlacedFeature feature) {
         }
         ArrayList<class_6543> list2;
@@ -111,10 +114,15 @@ implements BiomeSupplier {
         }
         Collections.reverse(list2);
         ImmutableList.Builder builder = ImmutableList.builder();
-        int j = 0;
-        while (j < i) {
-            int l = j++;
-            builder.add(list2.stream().filter(arg -> arg.step() == l).map(class_6543::feature).collect(Collectors.toList()));
+        for (int j = 0; j < i; ++j) {
+            int l = j;
+            List<PlacedFeature> list5 = list2.stream().filter(arg -> arg.step() == l).map(class_6543::feature).collect(Collectors.toList());
+            int m = list5.size();
+            Object2IntOpenCustomHashMap<PlacedFeature> object2IntMap2 = new Object2IntOpenCustomHashMap<PlacedFeature>(m, Util.identityHashStrategy());
+            for (int n = 0; n < m; ++n) {
+                object2IntMap2.put((PlacedFeature)list5.get(n), n);
+            }
+            builder.add(new class_6827(list5, object2IntMap2));
         }
         return builder.build();
     }
@@ -199,7 +207,7 @@ implements BiomeSupplier {
     public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
     }
 
-    public List<List<PlacedFeature>> method_38115() {
+    public List<class_6827> method_38115() {
         return this.field_34469;
     }
 
@@ -209,6 +217,9 @@ implements BiomeSupplier {
         Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
         CODEC = Registry.BIOME_SOURCE.method_39673().dispatchStable(BiomeSource::getCodec, Function.identity());
+    }
+
+    public record class_6827(List<PlacedFeature> features, ToIntFunction<PlacedFeature> indexMapping) {
     }
 }
 

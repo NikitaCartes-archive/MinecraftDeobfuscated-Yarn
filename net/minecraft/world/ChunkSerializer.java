@@ -115,7 +115,7 @@ public class ChunkSerializer {
         if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
             ChunkTickScheduler<Block> chunkTickScheduler = ChunkTickScheduler.create(nbt.getList(BLOCK_TICKS, 10), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos);
             ChunkTickScheduler<Fluid> chunkTickScheduler2 = ChunkTickScheduler.create(nbt.getList(FLUID_TICKS, 10), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos);
-            chunk = new WorldChunk(world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, worldChunk -> ChunkSerializer.loadEntities(world, nbt, worldChunk), blender);
+            chunk = new WorldChunk(world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, ChunkSerializer.loadEntities(world, nbt), blender);
         } else {
             boolean bl3;
             SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(nbt.getList(BLOCK_TICKS, 10), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos);
@@ -302,24 +302,38 @@ public class ChunkSerializer {
         return ChunkStatus.ChunkType.PROTOCHUNK;
     }
 
-    private static void loadEntities(ServerWorld world, NbtCompound nbt, WorldChunk chunk) {
-        NbtList nbtList;
-        if (nbt.contains("entities", 9) && !(nbtList = nbt.getList("entities", 10)).isEmpty()) {
-            world.loadEntities(EntityType.streamFromNbt(nbtList, world));
+    @Nullable
+    private static WorldChunk.class_6829 loadEntities(ServerWorld world, NbtCompound nbt) {
+        NbtList nbtList = ChunkSerializer.method_39796(nbt, "entities");
+        NbtList nbtList2 = ChunkSerializer.method_39796(nbt, "block_entities");
+        if (nbtList == null && nbtList2 == null) {
+            return null;
         }
-        nbtList = nbt.getList("block_entities", 10);
-        for (int i = 0; i < nbtList.size(); ++i) {
-            NbtCompound nbtCompound = nbtList.getCompound(i);
-            boolean bl = nbtCompound.getBoolean("keepPacked");
-            if (bl) {
-                chunk.addPendingBlockEntityNbt(nbtCompound);
-                continue;
+        return worldChunk -> {
+            if (nbtList != null) {
+                world.loadEntities(EntityType.streamFromNbt(nbtList, world));
             }
-            BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
-            BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, chunk.getBlockState(blockPos), nbtCompound);
-            if (blockEntity == null) continue;
-            chunk.setBlockEntity(blockEntity);
-        }
+            if (nbtList2 != null) {
+                for (int i = 0; i < nbtList2.size(); ++i) {
+                    NbtCompound nbtCompound = nbtList2.getCompound(i);
+                    boolean bl = nbtCompound.getBoolean("keepPacked");
+                    if (bl) {
+                        worldChunk.addPendingBlockEntityNbt(nbtCompound);
+                        continue;
+                    }
+                    BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
+                    BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, worldChunk.getBlockState(blockPos), nbtCompound);
+                    if (blockEntity == null) continue;
+                    worldChunk.setBlockEntity(blockEntity);
+                }
+            }
+        };
+    }
+
+    @Nullable
+    private static NbtList method_39796(NbtCompound nbtCompound, String string) {
+        NbtList nbtList = nbtCompound.getList(string, 10);
+        return nbtList.isEmpty() ? null : nbtList;
     }
 
     private static NbtCompound writeStructures(StructureContext structureContext, ChunkPos pos, Map<StructureFeature<?>, StructureStart<?>> starts, Map<StructureFeature<?>, LongSet> references) {
