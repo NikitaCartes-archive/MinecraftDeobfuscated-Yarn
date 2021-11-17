@@ -10,7 +10,7 @@ import net.minecraft.util.registry.Registry;
 public class RandomBlockMatchRuleTest extends RuleTest {
 	public static final Codec<RandomBlockMatchRuleTest> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registry.BLOCK.method_39673().fieldOf("block").forGetter(randomBlockMatchRuleTest -> randomBlockMatchRuleTest.block),
+					Registry.BLOCK.getCodec().fieldOf("block").forGetter(randomBlockMatchRuleTest -> randomBlockMatchRuleTest.block),
 					Codec.FLOAT.fieldOf("probability").forGetter(randomBlockMatchRuleTest -> randomBlockMatchRuleTest.probability)
 				)
 				.apply(instance, RandomBlockMatchRuleTest::new)

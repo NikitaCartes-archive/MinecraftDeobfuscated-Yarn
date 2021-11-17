@@ -10,12 +10,8 @@ public class VillagerData {
 	private static final int[] LEVEL_BASE_EXPERIENCE = new int[]{0, 10, 70, 150, 250};
 	public static final Codec<VillagerData> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registry.VILLAGER_TYPE.method_39673().fieldOf("type").orElseGet(() -> VillagerType.PLAINS).forGetter(villagerData -> villagerData.type),
-					Registry.VILLAGER_PROFESSION
-						.method_39673()
-						.fieldOf("profession")
-						.orElseGet(() -> VillagerProfession.NONE)
-						.forGetter(villagerData -> villagerData.profession),
+					Registry.VILLAGER_TYPE.getCodec().fieldOf("type").orElseGet(() -> VillagerType.PLAINS).forGetter(villagerData -> villagerData.type),
+					Registry.VILLAGER_PROFESSION.getCodec().fieldOf("profession").orElseGet(() -> VillagerProfession.NONE).forGetter(villagerData -> villagerData.profession),
 					Codec.INT.fieldOf("level").orElse(1).forGetter(villagerData -> villagerData.level)
 				)
 				.apply(instance, VillagerData::new)

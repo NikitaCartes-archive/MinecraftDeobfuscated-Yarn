@@ -15,9 +15,7 @@ import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class FoliagePlacer {
-	public static final Codec<FoliagePlacer> TYPE_CODEC = Registry.FOLIAGE_PLACER_TYPE
-		.method_39673()
-		.dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
+	public static final Codec<FoliagePlacer> TYPE_CODEC = Registry.FOLIAGE_PLACER_TYPE.getCodec().dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
 	protected final IntProvider radius;
 	protected final IntProvider offset;
 

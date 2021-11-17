@@ -18,7 +18,7 @@ import net.minecraft.world.gen.chunk.StructureConfig;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
 	public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE
-		.method_39673()
+		.getCodec()
 		.dispatch(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
 	public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(
 		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, CODEC

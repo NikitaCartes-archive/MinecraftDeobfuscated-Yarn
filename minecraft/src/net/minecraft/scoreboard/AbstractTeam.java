@@ -75,7 +75,7 @@ public abstract class AbstractTeam {
 		public final String name;
 		public final int value;
 
-		public static String[] method_35595() {
+		public static String[] getKeys() {
 			return (String[])VISIBILITY_RULES.keySet().toArray(new String[0]);
 		}
 

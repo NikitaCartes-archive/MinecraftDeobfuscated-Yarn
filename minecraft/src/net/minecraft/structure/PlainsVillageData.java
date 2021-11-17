@@ -2,12 +2,12 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.class_6825;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.gen.feature.VillagePlacedFeatures;
 
 public class PlainsVillageData {
 	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
@@ -190,7 +190,7 @@ public class PlainsVillageData {
 			new StructurePool(
 				new Identifier("village/plains/trees"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(class_6825.field_36200), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(VillagePlacedFeatures.OAK), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
@@ -200,9 +200,9 @@ public class PlainsVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofLegacySingle("village/plains/plains_lamp_1"), 2),
-					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36200), 1),
-					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36205), 1),
-					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36195), 1),
+					Pair.of(StructurePoolElement.ofFeature(VillagePlacedFeatures.OAK), 1),
+					Pair.of(StructurePoolElement.ofFeature(VillagePlacedFeatures.FLOWER_PLAIN), 1),
+					Pair.of(StructurePoolElement.ofFeature(VillagePlacedFeatures.PILE_HAY), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 2)
 				),
 				StructurePool.Projection.RIGID
@@ -214,9 +214,9 @@ public class PlainsVillageData {
 				new Identifier("empty"),
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/plains_lamp_1", StructureProcessorLists.ZOMBIE_PLAINS), 1),
-					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36200), 1),
-					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36205), 1),
-					Pair.of(StructurePoolElement.ofFeature(class_6825.field_36195), 1),
+					Pair.of(StructurePoolElement.ofFeature(VillagePlacedFeatures.OAK), 1),
+					Pair.of(StructurePoolElement.ofFeature(VillagePlacedFeatures.FLOWER_PLAIN), 1),
+					Pair.of(StructurePoolElement.ofFeature(VillagePlacedFeatures.PILE_HAY), 1),
 					Pair.of(StructurePoolElement.ofEmpty(), 2)
 				),
 				StructurePool.Projection.RIGID

@@ -654,7 +654,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.world.scheduleBlockRenders(x, j, z);
 		}
 
-		this.world.method_39849(x, z);
+		this.world.markChunkRenderability(x, z);
 	}
 
 	@Override
@@ -677,7 +677,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			}
 
 			lightingProvider.setColumnEnabled(new ChunkPos(packet.getX(), packet.getZ()), false);
-			this.world.method_39849(packet.getX(), packet.getZ());
+			this.world.markChunkRenderability(packet.getX(), packet.getZ());
 		});
 	}
 
@@ -781,7 +781,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			if (packet.getAnimationId() == 0) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				livingEntity.swingHand(Hand.MAIN_HAND);
-			} else if (packet.getAnimationId() == EntityAnimationS2CPacket.SWING_OFF_HAND) {
+			} else if (packet.getAnimationId() == 3) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				livingEntity.swingHand(Hand.OFF_HAND);
 			} else if (packet.getAnimationId() == EntityAnimationS2CPacket.DAMAGE) {
@@ -2187,7 +2187,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		BitSet bitSet4 = data.getUninitedBlock();
 		Iterator<byte[]> iterator2 = data.getBlockNibbles().iterator();
 		this.updateLighting(x, z, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, data.isNonEdge());
-		this.world.method_39849(x, z);
+		this.world.markChunkRenderability(x, z);
 	}
 
 	@Override

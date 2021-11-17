@@ -82,16 +82,16 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		return mutableObject.getValue();
 	}
 
-	static <C> Spline<C> method_39427(float f) {
-		return new Spline.FixedFloatFunction<>(f);
+	static <C> Spline<C> fixedFloatFunction(float value) {
+		return new Spline.FixedFloatFunction<>(value);
 	}
 
 	static <C> Spline.Builder<C> builder(ToFloatFunction<C> locationFunction) {
 		return new Spline.Builder<>(locationFunction);
 	}
 
-	static <C> Spline.Builder<C> method_39502(ToFloatFunction<C> toFloatFunction, ToFloatFunction<Float> toFloatFunction2) {
-		return new Spline.Builder<>(toFloatFunction, toFloatFunction2);
+	static <C> Spline.Builder<C> builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> toFloatFunction) {
+		return new Spline.Builder<>(locationFunction, toFloatFunction);
 	}
 
 	public static final class Builder<C> {
@@ -105,9 +105,9 @@ public interface Spline<C> extends ToFloatFunction<C> {
 			this(locationFunction, float_ -> float_);
 		}
 
-		protected Builder(ToFloatFunction<C> toFloatFunction, ToFloatFunction<Float> toFloatFunction2) {
-			this.locationFunction = toFloatFunction;
-			this.field_35661 = toFloatFunction2;
+		protected Builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> toFloatFunction) {
+			this.locationFunction = locationFunction;
+			this.field_35661 = toFloatFunction;
 		}
 
 		public Spline.Builder<C> add(float location, float value, float derivative) {

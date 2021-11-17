@@ -33,7 +33,7 @@ public final class BitSetVoxelSet extends VoxelSet {
 		for (int i = minX; i < maxX; i++) {
 			for (int j = minY; j < maxY; j++) {
 				for (int k = minZ; k < maxZ; k++) {
-					bitSetVoxelSet.method_31940(i, j, k, false);
+					bitSetVoxelSet.set(i, j, k, false);
 				}
 			}
 		}
@@ -76,7 +76,7 @@ public final class BitSetVoxelSet extends VoxelSet {
 		return this.storage.get(this.getIndex(x, y, z));
 	}
 
-	private void method_31940(int x, int y, int z, boolean bl) {
+	private void set(int x, int y, int z, boolean bl) {
 		this.storage.set(this.getIndex(x, y, z));
 		if (bl) {
 			this.minX = Math.min(this.minX, x);
@@ -90,7 +90,7 @@ public final class BitSetVoxelSet extends VoxelSet {
 
 	@Override
 	public void set(int x, int y, int z) {
-		this.method_31940(x, y, z, true);
+		this.set(x, y, z, true);
 	}
 
 	@Override

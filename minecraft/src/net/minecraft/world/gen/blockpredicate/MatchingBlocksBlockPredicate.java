@@ -12,7 +12,7 @@ class MatchingBlocksBlockPredicate extends OffsetPredicate {
 	private final List<Block> blocks;
 	public static final Codec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> registerOffsetField(instance)
-				.and(Registry.BLOCK.method_39673().listOf().fieldOf("blocks").forGetter(predicate -> predicate.blocks))
+				.and(Registry.BLOCK.getCodec().listOf().fieldOf("blocks").forGetter(predicate -> predicate.blocks))
 				.apply(instance, MatchingBlocksBlockPredicate::new)
 	);
 

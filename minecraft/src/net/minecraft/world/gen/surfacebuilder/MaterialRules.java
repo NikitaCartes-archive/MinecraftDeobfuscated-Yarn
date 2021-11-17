@@ -364,9 +364,7 @@ public class MaterialRules {
 	}
 
 	public interface MaterialCondition extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BooleanSupplier> {
-		Codec<MaterialRules.MaterialCondition> CODEC = Registry.MATERIAL_CONDITION
-			.method_39673()
-			.dispatch(MaterialRules.MaterialCondition::codec, Function.identity());
+		Codec<MaterialRules.MaterialCondition> CODEC = Registry.MATERIAL_CONDITION.getCodec().dispatch(MaterialRules.MaterialCondition::codec, Function.identity());
 
 		static Codec<? extends MaterialRules.MaterialCondition> registerAndGetDefault() {
 			Registry.register(Registry.MATERIAL_CONDITION, "biome", MaterialRules.BiomeMaterialCondition.CONDITION_CODEC);
@@ -387,7 +385,7 @@ public class MaterialRules {
 	}
 
 	public interface MaterialRule extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BlockStateRule> {
-		Codec<MaterialRules.MaterialRule> CODEC = Registry.MATERIAL_RULE.method_39673().dispatch(MaterialRules.MaterialRule::codec, Function.identity());
+		Codec<MaterialRules.MaterialRule> CODEC = Registry.MATERIAL_RULE.getCodec().dispatch(MaterialRules.MaterialRule::codec, Function.identity());
 
 		static Codec<? extends MaterialRules.MaterialRule> registerAndGetDefault() {
 			Registry.register(Registry.MATERIAL_RULE, "bandlands", MaterialRules.TerracottaBandsMaterialRule.RULE_CODEC);

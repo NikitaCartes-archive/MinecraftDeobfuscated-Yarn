@@ -19,7 +19,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public final class FluidState extends State<Fluid, FluidState> {
-	public static final Codec<FluidState> CODEC = createCodec(Registry.FLUID.method_39673(), Fluid::getDefaultState).stable();
+	public static final Codec<FluidState> CODEC = createCodec(Registry.FLUID.getCodec(), Fluid::getDefaultState).stable();
 	public static final int field_31727 = 9;
 	public static final int field_31728 = 8;
 

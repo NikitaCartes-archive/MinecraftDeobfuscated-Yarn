@@ -14,8 +14,8 @@ import net.minecraft.util.JsonSerializer;
 public class FixedLootScoreProvider implements LootScoreProvider {
 	final String name;
 
-	FixedLootScoreProvider(String string) {
-		this.name = string;
+	FixedLootScoreProvider(String name) {
+		this.name = name;
 	}
 
 	public static LootScoreProvider create(String name) {

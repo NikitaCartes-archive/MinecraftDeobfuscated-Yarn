@@ -17,7 +17,7 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 					Codec.BOOL.fieldOf("can_place_on_ceiling").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnCeiling),
 					Codec.BOOL.fieldOf("can_place_on_wall").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnWalls),
 					Codec.floatRange(0.0F, 1.0F).fieldOf("chance_of_spreading").orElse(0.5F).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.spreadChance),
-					Registry.BLOCK.method_39673().listOf().fieldOf("can_be_placed_on").forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.canPlaceOn)
+					Registry.BLOCK.getCodec().listOf().fieldOf("can_be_placed_on").forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.canPlaceOn)
 				)
 				.apply(instance, GlowLichenFeatureConfig::new)
 	);

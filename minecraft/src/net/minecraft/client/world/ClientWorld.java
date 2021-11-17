@@ -530,10 +530,10 @@ public class ClientWorld extends World {
 		this.worldRenderer.scheduleBlockRenders(x, y, z);
 	}
 
-	public void method_39849(int i, int j) {
-		WorldChunk worldChunk = this.chunkManager.getWorldChunk(i, j, false);
+	public void markChunkRenderability(int chunkX, int chunkZ) {
+		WorldChunk worldChunk = this.chunkManager.getWorldChunk(chunkX, chunkZ, false);
 		if (worldChunk != null) {
-			worldChunk.method_39792(true);
+			worldChunk.setShouldRenderOnUpdate(true);
 		}
 	}
 

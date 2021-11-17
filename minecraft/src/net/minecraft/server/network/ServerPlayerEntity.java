@@ -624,8 +624,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.world
 			.getEntitiesByClass(MobEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR)
 			.stream()
-			.filter(mobEntity -> mobEntity instanceof Angerable)
-			.forEach(mobEntity -> ((Angerable)mobEntity).forgive(this));
+			.filter(entity -> entity instanceof Angerable)
+			.forEach(entity -> ((Angerable)entity).forgive(this));
 	}
 
 	@Override

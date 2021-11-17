@@ -169,9 +169,9 @@ public abstract class DynamicRegistryManager {
 	/**
 	 * Loads a dynamic registry manager from the resource manager's data files.
 	 */
-	public static void load(DynamicRegistryManager dynamicRegistryManager, RegistryOps<?> registryOps) {
+	public static void load(DynamicRegistryManager manager, RegistryOps<?> ops) {
 		for (DynamicRegistryManager.Info<?> info : INFOS.values()) {
-			load(registryOps, dynamicRegistryManager, info);
+			load(ops, manager, info);
 		}
 	}
 
@@ -180,9 +180,9 @@ public abstract class DynamicRegistryManager {
 	 * info} within the {@code manager}. Note that the resource manager instance
 	 * is kept within the {@code ops}.
 	 */
-	private static <E> void load(RegistryOps<?> ops, DynamicRegistryManager dynamicRegistryManager, DynamicRegistryManager.Info<E> info) {
+	private static <E> void load(RegistryOps<?> ops, DynamicRegistryManager manager, DynamicRegistryManager.Info<E> info) {
 		RegistryKey<? extends Registry<E>> registryKey = info.registry();
-		SimpleRegistry<E> simpleRegistry = (SimpleRegistry<E>)dynamicRegistryManager.<E>getMutable(registryKey);
+		SimpleRegistry<E> simpleRegistry = (SimpleRegistry<E>)manager.<E>getMutable(registryKey);
 		DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry, info.registry(), info.entryCodec());
 		dataResult.error().ifPresent(partialResult -> {
 			throw new JsonParseException("Error loading registry data: " + partialResult.message());

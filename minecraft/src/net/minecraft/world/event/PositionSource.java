@@ -16,7 +16,7 @@ public interface PositionSource {
 	 * A codec for encoding and decoding any position source whose {@link #getType() type}
 	 * is in the {@link net.minecraft.util.registry.Registry#POSITION_SOURCE_TYPE registry}.
 	 */
-	Codec<PositionSource> CODEC = Registry.POSITION_SOURCE_TYPE.method_39673().dispatch(PositionSource::getType, PositionSourceType::getCodec);
+	Codec<PositionSource> CODEC = Registry.POSITION_SOURCE_TYPE.getCodec().dispatch(PositionSource::getType, PositionSourceType::getCodec);
 
 	Optional<BlockPos> getPos(World world);
 

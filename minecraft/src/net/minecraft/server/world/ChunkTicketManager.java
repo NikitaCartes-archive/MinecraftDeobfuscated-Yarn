@@ -111,7 +111,7 @@ public abstract class ChunkTicketManager {
 	@Nullable
 	protected abstract ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i);
 
-	public boolean tick(ThreadedAnvilChunkStorage tacs) {
+	public boolean tick(ThreadedAnvilChunkStorage chunkStorage) {
 		this.distanceFromNearestPlayerTracker.updateLevels();
 		this.simulationDistanceTracker.updateLevels();
 		this.nearbyChunkTicketUpdater.updateLevels();
@@ -121,7 +121,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		if (!this.chunkHolders.isEmpty()) {
-			this.chunkHolders.forEach(chunkHolderx -> chunkHolderx.tick(tacs, this.mainThreadExecutor));
+			this.chunkHolders.forEach(holder -> holder.tick(chunkStorage, this.mainThreadExecutor));
 			this.chunkHolders.clear();
 			return true;
 		} else {
@@ -130,8 +130,8 @@ public abstract class ChunkTicketManager {
 
 				while (longIterator.hasNext()) {
 					long l = longIterator.nextLong();
-					if (this.getTicketSet(l).stream().anyMatch(chunkTicket -> chunkTicket.getType() == ChunkTicketType.PLAYER)) {
-						ChunkHolder chunkHolder = tacs.getCurrentChunkHolder(l);
+					if (this.getTicketSet(l).stream().anyMatch(ticket -> ticket.getType() == ChunkTicketType.PLAYER)) {
+						ChunkHolder chunkHolder = chunkStorage.getCurrentChunkHolder(l);
 						if (chunkHolder == null) {
 							throw new IllegalStateException();
 						}

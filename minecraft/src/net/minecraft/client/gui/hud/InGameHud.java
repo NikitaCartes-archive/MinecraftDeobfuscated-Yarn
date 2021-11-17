@@ -511,7 +511,7 @@ public class InGameHud extends DrawableHelper {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-			ItemStack itemStack = playerEntity.getOffHandStack();
+			ItemStack itemStack = playerEntity.getOffhandStack();
 			Arm arm = playerEntity.getMainArm().getOpposite();
 			int i = this.scaledWidth / 2;
 			int j = this.getZOffset();

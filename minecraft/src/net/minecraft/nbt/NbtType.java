@@ -2,7 +2,7 @@ package net.minecraft.nbt;
 
 import java.io.DataInput;
 import java.io.IOException;
-import net.minecraft.class_6836;
+import net.minecraft.nbt.scanner.NbtScanner;
 
 /**
  * Represents an NBT type.
@@ -10,23 +10,23 @@ import net.minecraft.class_6836;
 public interface NbtType<T extends NbtElement> {
 	T read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException;
 
-	class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException;
+	NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException;
 
-	default void method_39877(DataInput dataInput, class_6836 arg) throws IOException {
-		switch (arg.method_39871(this)) {
+	default void accept(DataInput input, NbtScanner visitor) throws IOException {
+		switch (visitor.start(this)) {
 			case CONTINUE:
-				this.method_39852(dataInput, arg);
+				this.doAccept(input, visitor);
 			case HALT:
 			default:
 				break;
 			case BREAK:
-				this.method_39851(dataInput);
+				this.skip(input);
 		}
 	}
 
-	void method_39854(DataInput dataInput, int i) throws IOException;
+	void skip(DataInput input, int count) throws IOException;
 
-	void method_39851(DataInput dataInput) throws IOException;
+	void skip(DataInput input) throws IOException;
 
 	/**
 	 * Determines the immutability of this type.
@@ -46,27 +46,27 @@ public interface NbtType<T extends NbtElement> {
 
 	static NbtType<NbtNull> createInvalid(int type) {
 		return new NbtType<NbtNull>() {
-			private IOException method_39878() {
+			private IOException createException() {
 				return new IOException("Invalid tag id: " + type);
 			}
 
 			public NbtNull read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-				throw this.method_39878();
+				throw this.createException();
 			}
 
 			@Override
-			public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
-				throw this.method_39878();
+			public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+				throw this.createException();
 			}
 
 			@Override
-			public void method_39854(DataInput dataInput, int i) throws IOException {
-				throw this.method_39878();
+			public void skip(DataInput input, int count) throws IOException {
+				throw this.createException();
 			}
 
 			@Override
-			public void method_39851(DataInput dataInput) throws IOException {
-				throw this.method_39878();
+			public void skip(DataInput input) throws IOException {
+				throw this.createException();
 			}
 
 			@Override
@@ -81,25 +81,25 @@ public interface NbtType<T extends NbtElement> {
 		};
 	}
 
-	public interface class_6839<T extends NbtElement> extends NbtType<T> {
+	public interface OfFixedSize<T extends NbtElement> extends NbtType<T> {
 		@Override
-		default void method_39851(DataInput dataInput) throws IOException {
-			dataInput.skipBytes(this.method_39853());
+		default void skip(DataInput input) throws IOException {
+			input.skipBytes(this.getSizeInBytes());
 		}
 
 		@Override
-		default void method_39854(DataInput dataInput, int i) throws IOException {
-			dataInput.skipBytes(this.method_39853() * i);
+		default void skip(DataInput input, int count) throws IOException {
+			input.skipBytes(this.getSizeInBytes() * count);
 		}
 
-		int method_39853();
+		int getSizeInBytes();
 	}
 
-	public interface class_6840<T extends NbtElement> extends NbtType<T> {
+	public interface OfVariableSize<T extends NbtElement> extends NbtType<T> {
 		@Override
-		default void method_39854(DataInput dataInput, int i) throws IOException {
-			for (int j = 0; j < i; j++) {
-				this.method_39851(dataInput);
+		default void skip(DataInput input, int count) throws IOException {
+			for (int i = 0; i < count; i++) {
+				this.skip(input);
 			}
 		}
 	}

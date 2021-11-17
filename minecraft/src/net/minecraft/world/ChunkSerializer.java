@@ -50,7 +50,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
-import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -131,11 +131,14 @@ public class ChunkSerializer {
 
 		long m = nbt.getLong("InhabitedTime");
 		ChunkStatus.ChunkType chunkType = getChunkType(nbt);
-		Blender blender;
+		BlendingData blendingData;
 		if (nbt.contains("blending_data", NbtElement.COMPOUND_TYPE)) {
-			blender = (Blender)Blender.field_35682.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("blending_data"))).resultOrPartial(LOGGER::error).orElse(null);
+			blendingData = (BlendingData)BlendingData.CODEC
+				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("blending_data")))
+				.resultOrPartial(LOGGER::error)
+				.orElse(null);
 		} else {
-			blender = null;
+			blendingData = null;
 		}
 
 		Chunk chunk;
@@ -147,7 +150,7 @@ public class ChunkSerializer {
 				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos
 			);
 			chunk = new WorldChunk(
-				world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, loadEntities(world, nbt), blender
+				world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, getEntityLoadingCallback(world, nbt), blendingData
 			);
 		} else {
 			SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(
@@ -156,7 +159,7 @@ public class ChunkSerializer {
 			SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(
 				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos
 			);
-			ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blender);
+			ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blendingData);
 			chunk = protoChunk;
 			protoChunk.setInhabitedTime(m);
 			if (nbt.contains("below_zero_retrogen", NbtElement.COMPOUND_TYPE)) {
@@ -260,7 +263,7 @@ public class ChunkSerializer {
 
 	private static Codec<PalettedContainer<Biome>> createCodec(Registry<Biome> biomeRegistry) {
 		return PalettedContainer.createCodec(
-			biomeRegistry, biomeRegistry.method_39673(), PalettedContainer.PaletteProvider.BIOME, biomeRegistry.getOrThrow(BiomeKeys.PLAINS)
+			biomeRegistry, biomeRegistry.getCodec(), PalettedContainer.PaletteProvider.BIOME, biomeRegistry.getOrThrow(BiomeKeys.PLAINS)
 		);
 	}
 
@@ -274,10 +277,10 @@ public class ChunkSerializer {
 		nbtCompound.putLong("LastUpdate", world.getTime());
 		nbtCompound.putLong("InhabitedTime", chunk.getInhabitedTime());
 		nbtCompound.putString("Status", chunk.getStatus().getId());
-		Blender blender = chunk.getBlender();
-		if (blender != null) {
-			Blender.field_35682
-				.encodeStart(NbtOps.INSTANCE, blender)
+		BlendingData blendingData = chunk.getBlendingData();
+		if (blendingData != null) {
+			BlendingData.CODEC
+				.encodeStart(NbtOps.INSTANCE, blendingData)
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(nbtElement -> nbtCompound.put("blending_data", nbtElement));
 		}
@@ -389,10 +392,10 @@ public class ChunkSerializer {
 	}
 
 	@Nullable
-	private static WorldChunk.class_6829 loadEntities(ServerWorld world, NbtCompound nbt) {
-		NbtList nbtList = method_39796(nbt, "entities");
-		NbtList nbtList2 = method_39796(nbt, "block_entities");
-		return nbtList == null && nbtList2 == null ? null : worldChunk -> {
+	private static WorldChunk.EntityLoader getEntityLoadingCallback(ServerWorld world, NbtCompound nbt) {
+		NbtList nbtList = getList(nbt, "entities");
+		NbtList nbtList2 = getList(nbt, "block_entities");
+		return nbtList == null && nbtList2 == null ? null : chunk -> {
 			if (nbtList != null) {
 				world.loadEntities(EntityType.streamFromNbt(nbtList, world));
 			}
@@ -402,12 +405,12 @@ public class ChunkSerializer {
 					NbtCompound nbtCompound = nbtList2.getCompound(i);
 					boolean bl = nbtCompound.getBoolean("keepPacked");
 					if (bl) {
-						worldChunk.addPendingBlockEntityNbt(nbtCompound);
+						chunk.addPendingBlockEntityNbt(nbtCompound);
 					} else {
 						BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
-						BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, worldChunk.getBlockState(blockPos), nbtCompound);
+						BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, chunk.getBlockState(blockPos), nbtCompound);
 						if (blockEntity != null) {
-							worldChunk.setBlockEntity(blockEntity);
+							chunk.setBlockEntity(blockEntity);
 						}
 					}
 				}
@@ -416,19 +419,19 @@ public class ChunkSerializer {
 	}
 
 	@Nullable
-	private static NbtList method_39796(NbtCompound nbtCompound, String string) {
-		NbtList nbtList = nbtCompound.getList(string, NbtElement.COMPOUND_TYPE);
+	private static NbtList getList(NbtCompound nbt, String key) {
+		NbtList nbtList = nbt.getList(key, NbtElement.COMPOUND_TYPE);
 		return nbtList.isEmpty() ? null : nbtList;
 	}
 
 	private static NbtCompound writeStructures(
-		StructureContext structureContext, ChunkPos pos, Map<StructureFeature<?>, StructureStart<?>> starts, Map<StructureFeature<?>, LongSet> references
+		StructureContext context, ChunkPos pos, Map<StructureFeature<?>, StructureStart<?>> starts, Map<StructureFeature<?>, LongSet> references
 	) {
 		NbtCompound nbtCompound = new NbtCompound();
 		NbtCompound nbtCompound2 = new NbtCompound();
 
 		for (Entry<StructureFeature<?>, StructureStart<?>> entry : starts.entrySet()) {
-			nbtCompound2.put(((StructureFeature)entry.getKey()).getName(), ((StructureStart)entry.getValue()).toNbt(structureContext, pos));
+			nbtCompound2.put(((StructureFeature)entry.getKey()).getName(), ((StructureStart)entry.getValue()).toNbt(context, pos));
 		}
 
 		nbtCompound.put("starts", nbtCompound2);

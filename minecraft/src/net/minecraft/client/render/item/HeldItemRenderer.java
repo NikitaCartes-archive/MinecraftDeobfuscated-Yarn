@@ -105,11 +105,11 @@ public class HeldItemRenderer {
 	private static final float field_32734 = 0.1F;
 	private final MinecraftClient client;
 	private ItemStack mainHand = ItemStack.EMPTY;
-	private ItemStack offHand = ItemStack.EMPTY;
+	private ItemStack offhand = ItemStack.EMPTY;
 	private float equipProgressMainHand;
 	private float prevEquipProgressMainHand;
-	private float equipProgressOffHand;
-	private float prevEquipProgressOffHand;
+	private float equipProgressOffhand;
+	private float prevEquipProgressOffhand;
 	private final EntityRenderDispatcher renderManager;
 	private final ItemRenderer itemRenderer;
 
@@ -303,10 +303,10 @@ public class HeldItemRenderer {
 			this.renderFirstPersonItem(player, tickDelta, g, Hand.MAIN_HAND, j, this.mainHand, k, matrices, vertexConsumers, light);
 		}
 
-		if (handRenderType.renderOffHand) {
+		if (handRenderType.renderOffhand) {
 			float j = hand == Hand.OFF_HAND ? f : 0.0F;
-			float k = 1.0F - MathHelper.lerp(tickDelta, this.prevEquipProgressOffHand, this.equipProgressOffHand);
-			this.renderFirstPersonItem(player, tickDelta, g, Hand.OFF_HAND, j, this.offHand, k, matrices, vertexConsumers, light);
+			float k = 1.0F - MathHelper.lerp(tickDelta, this.prevEquipProgressOffhand, this.equipProgressOffhand);
+			this.renderFirstPersonItem(player, tickDelta, g, Hand.OFF_HAND, j, this.offhand, k, matrices, vertexConsumers, light);
 		}
 
 		vertexConsumers.draw();
@@ -315,7 +315,7 @@ public class HeldItemRenderer {
 	@VisibleForTesting
 	static HeldItemRenderer.HandRenderType getHandRenderType(ClientPlayerEntity player) {
 		ItemStack itemStack = player.getMainHandStack();
-		ItemStack itemStack2 = player.getOffHandStack();
+		ItemStack itemStack2 = player.getOffhandStack();
 		boolean bl = itemStack.isOf(Items.BOW) || itemStack2.isOf(Items.BOW);
 		boolean bl2 = itemStack.isOf(Items.CROSSBOW) || itemStack2.isOf(Items.CROSSBOW);
 		if (!bl && !bl2) {
@@ -331,7 +331,7 @@ public class HeldItemRenderer {
 		ItemStack itemStack = player.getActiveItem();
 		Hand hand = player.getActiveHand();
 		if (!itemStack.isOf(Items.BOW) && !itemStack.isOf(Items.CROSSBOW)) {
-			return hand == Hand.MAIN_HAND && isChargedCrossbow(player.getOffHandStack())
+			return hand == Hand.MAIN_HAND && isChargedCrossbow(player.getOffhandStack())
 				? HeldItemRenderer.HandRenderType.RENDER_MAIN_HAND_ONLY
 				: HeldItemRenderer.HandRenderType.RENDER_BOTH_HANDS;
 		} else {
@@ -364,7 +364,7 @@ public class HeldItemRenderer {
 					this.renderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
 				}
 			} else if (item.isOf(Items.FILLED_MAP)) {
-				if (bl && this.offHand.isEmpty()) {
+				if (bl && this.offhand.isEmpty()) {
 					this.renderMapInBothHands(matrices, vertexConsumers, light, pitch, equipProgress, swingProgress);
 				} else {
 					this.renderMapInOneHand(matrices, vertexConsumers, light, equipProgress, arm, swingProgress, item);
@@ -513,35 +513,35 @@ public class HeldItemRenderer {
 
 	public void updateHeldItems() {
 		this.prevEquipProgressMainHand = this.equipProgressMainHand;
-		this.prevEquipProgressOffHand = this.equipProgressOffHand;
+		this.prevEquipProgressOffhand = this.equipProgressOffhand;
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		ItemStack itemStack = clientPlayerEntity.getMainHandStack();
-		ItemStack itemStack2 = clientPlayerEntity.getOffHandStack();
+		ItemStack itemStack2 = clientPlayerEntity.getOffhandStack();
 		if (ItemStack.areEqual(this.mainHand, itemStack)) {
 			this.mainHand = itemStack;
 		}
 
-		if (ItemStack.areEqual(this.offHand, itemStack2)) {
-			this.offHand = itemStack2;
+		if (ItemStack.areEqual(this.offhand, itemStack2)) {
+			this.offhand = itemStack2;
 		}
 
 		if (clientPlayerEntity.isRiding()) {
 			this.equipProgressMainHand = MathHelper.clamp(this.equipProgressMainHand - 0.4F, 0.0F, 1.0F);
-			this.equipProgressOffHand = MathHelper.clamp(this.equipProgressOffHand - 0.4F, 0.0F, 1.0F);
+			this.equipProgressOffhand = MathHelper.clamp(this.equipProgressOffhand - 0.4F, 0.0F, 1.0F);
 		} else {
 			float f = clientPlayerEntity.getAttackCooldownProgress(1.0F);
 			this.equipProgressMainHand = this.equipProgressMainHand
 				+ MathHelper.clamp((this.mainHand == itemStack ? f * f * f : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
-			this.equipProgressOffHand = this.equipProgressOffHand
-				+ MathHelper.clamp((float)(this.offHand == itemStack2 ? 1 : 0) - this.equipProgressOffHand, -0.4F, 0.4F);
+			this.equipProgressOffhand = this.equipProgressOffhand
+				+ MathHelper.clamp((float)(this.offhand == itemStack2 ? 1 : 0) - this.equipProgressOffhand, -0.4F, 0.4F);
 		}
 
 		if (this.equipProgressMainHand < 0.1F) {
 			this.mainHand = itemStack;
 		}
 
-		if (this.equipProgressOffHand < 0.1F) {
-			this.offHand = itemStack2;
+		if (this.equipProgressOffhand < 0.1F) {
+			this.offhand = itemStack2;
 		}
 	}
 
@@ -549,7 +549,7 @@ public class HeldItemRenderer {
 		if (hand == Hand.MAIN_HAND) {
 			this.equipProgressMainHand = 0.0F;
 		} else {
-			this.equipProgressOffHand = 0.0F;
+			this.equipProgressOffhand = 0.0F;
 		}
 	}
 
@@ -561,11 +561,11 @@ public class HeldItemRenderer {
 		RENDER_OFF_HAND_ONLY(false, true);
 
 		final boolean renderMainHand;
-		final boolean renderOffHand;
+		final boolean renderOffhand;
 
-		private HandRenderType(boolean renderMainHand, boolean renderOffHand) {
+		private HandRenderType(boolean renderMainHand, boolean renderOffhand) {
 			this.renderMainHand = renderMainHand;
-			this.renderOffHand = renderOffHand;
+			this.renderOffhand = renderOffhand;
 		}
 
 		public static HeldItemRenderer.HandRenderType shouldOnlyRender(Hand hand) {

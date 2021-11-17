@@ -275,7 +275,7 @@ public class ClientPlayerInteractionManager {
 				this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, hitResult));
 				return ActionResult.SUCCESS;
 			} else {
-				boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
+				boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffhandStack().isEmpty();
 				boolean bl2 = player.shouldCancelInteraction() && bl;
 				if (!bl2) {
 					ActionResult actionResult = world.getBlockState(blockPos).onUse(world, player, hand, hitResult);

@@ -64,9 +64,9 @@ public class LootConditionManager extends JsonDataLoader {
 		private final LootCondition[] terms;
 		private final Predicate<LootContext> predicate;
 
-		AndCondition(LootCondition[] lootConditions) {
-			this.terms = lootConditions;
-			this.predicate = LootConditionTypes.joinAnd(lootConditions);
+		AndCondition(LootCondition[] terms) {
+			this.terms = terms;
+			this.predicate = LootConditionTypes.joinAnd(terms);
 		}
 
 		public final boolean test(LootContext lootContext) {

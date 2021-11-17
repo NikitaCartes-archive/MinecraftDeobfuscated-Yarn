@@ -736,9 +736,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * 
 	 * @param predicate a predicate which returned entities must satisfy
 	 */
-	public <T extends Entity> List<? extends T> getEntitiesByType(TypeFilter<Entity, T> typeFilter, Predicate<? super T> predicate) {
+	public <T extends Entity> List<? extends T> getEntitiesByType(TypeFilter<Entity, T> filter, Predicate<? super T> predicate) {
 		List<T> list = Lists.<T>newArrayList();
-		this.getEntityLookup().forEach(typeFilter, entity -> {
+		this.getEntityLookup().forEach(filter, entity -> {
 			if (predicate.test(entity)) {
 				list.add(entity);
 			}
@@ -1202,8 +1202,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					this.getPointOfInterestStorage().remove(blockPos);
 					DebugInfoSender.sendPoiRemoval(this, blockPos);
 				}));
-			optional2.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
-					this.getPointOfInterestStorage().add(blockPos, pointOfInterestType);
+			optional2.ifPresent(poiType -> this.getServer().execute(() -> {
+					this.getPointOfInterestStorage().add(blockPos, poiType);
 					DebugInfoSender.sendPoiAddition(this, blockPos);
 				}));
 		}
@@ -1427,7 +1427,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@VisibleForTesting
 	public void clearUpdatesInArea(BlockBox box) {
-		this.syncedBlockEventQueue.removeIf(blockEvent -> box.contains(blockEvent.pos()));
+		this.syncedBlockEventQueue.removeIf(event -> box.contains(event.pos()));
 	}
 
 	@Override
@@ -1521,8 +1521,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		int i = blockPos.getX();
 		int j = blockPos.getY() - 2;
 		int k = blockPos.getZ();
-		BlockPos.iterate(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach(blockPosx -> world.setBlockState(blockPosx, Blocks.AIR.getDefaultState()));
-		BlockPos.iterate(i - 2, j, k - 2, i + 2, j, k + 2).forEach(blockPosx -> world.setBlockState(blockPosx, Blocks.OBSIDIAN.getDefaultState()));
+		BlockPos.iterate(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach(pos -> world.setBlockState(pos, Blocks.AIR.getDefaultState()));
+		BlockPos.iterate(i - 2, j, k - 2, i + 2, j, k + 2).forEach(pos -> world.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState()));
 	}
 
 	@Override

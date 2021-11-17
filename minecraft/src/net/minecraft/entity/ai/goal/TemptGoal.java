@@ -46,7 +46,7 @@ public class TemptGoal extends Goal {
 	}
 
 	private boolean isTemptedBy(LivingEntity entity) {
-		return this.food.test(entity.getMainHandStack()) || this.food.test(entity.getOffHandStack());
+		return this.food.test(entity.getMainHandStack()) || this.food.test(entity.getOffhandStack());
 	}
 
 	@Override

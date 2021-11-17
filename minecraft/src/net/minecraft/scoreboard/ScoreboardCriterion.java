@@ -13,7 +13,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ScoreboardCriterion {
-	private static final Map<String, ScoreboardCriterion> field_33939 = Maps.<String, ScoreboardCriterion>newHashMap();
+	/**
+	 * A map of all scoreboard criteria that can be identified with a single
+	 * keyword (as opposed to combined words) by their names.
+	 * Updated automatically in {@link #create(String, boolean, ScoreboardCriterion.RenderType)}.
+	 */
+	private static final Map<String, ScoreboardCriterion> SIMPLE_CRITERIA = Maps.<String, ScoreboardCriterion>newHashMap();
 	/**
 	 * A map of all scoreboard criteria by their names.
 	 * Updated automatically in the constructor.
@@ -72,7 +77,7 @@ public class ScoreboardCriterion {
 
 	private static ScoreboardCriterion create(String name, boolean readOnly, ScoreboardCriterion.RenderType defaultRenderType) {
 		ScoreboardCriterion scoreboardCriterion = new ScoreboardCriterion(name, readOnly, defaultRenderType);
-		field_33939.put(name, scoreboardCriterion);
+		SIMPLE_CRITERIA.put(name, scoreboardCriterion);
 		return scoreboardCriterion;
 	}
 
@@ -91,8 +96,8 @@ public class ScoreboardCriterion {
 		CRITERIA.put(name, this);
 	}
 
-	public static Set<String> method_37271() {
-		return ImmutableSet.copyOf(field_33939.keySet());
+	public static Set<String> getAllSimpleCriteria() {
+		return ImmutableSet.copyOf(SIMPLE_CRITERIA.keySet());
 	}
 
 	public static Optional<ScoreboardCriterion> getOrCreateStatCriterion(String name) {

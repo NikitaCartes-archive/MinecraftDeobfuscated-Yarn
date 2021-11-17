@@ -18,10 +18,10 @@ public class ScoreLootNumberProvider implements LootNumberProvider {
 	final String score;
 	final float scale;
 
-	ScoreLootNumberProvider(LootScoreProvider lootScoreProvider, String string, float f) {
-		this.target = lootScoreProvider;
-		this.score = string;
-		this.scale = f;
+	ScoreLootNumberProvider(LootScoreProvider target, String score, float scale) {
+		this.target = target;
+		this.score = score;
+		this.scale = scale;
 	}
 
 	@Override

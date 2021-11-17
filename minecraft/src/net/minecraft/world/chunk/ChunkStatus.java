@@ -12,7 +12,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_6748;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerLightingProvider;
 import net.minecraft.server.world.ServerWorld;
@@ -25,6 +24,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ChunkStatus {
@@ -98,11 +98,7 @@ public class ChunkStatus {
 			} else {
 				ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, -1);
 				return generator.populateBiomes(
-						world.getRegistryManager().get(Registry.BIOME_KEY),
-						executor,
-						class_6748.method_39342(chunkRegion),
-						world.getStructureAccessor().forRegion(chunkRegion),
-						chunk
+						world.getRegistryManager().get(Registry.BIOME_KEY), executor, Blender.getBlender(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk
 					)
 					.thenApply(chunkx -> {
 						if (chunkx instanceof ProtoChunk) {
@@ -125,22 +121,21 @@ public class ChunkStatus {
 				return CompletableFuture.completedFuture(Either.left(chunk));
 			} else {
 				ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
-				return generator.populateNoise(executor, class_6748.method_39342(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk)
-					.thenApply(chunkx -> {
-						if (chunkx instanceof ProtoChunk protoChunk) {
-							BelowZeroRetrogen belowZeroRetrogen = protoChunk.getBelowZeroRetrogen();
-							if (belowZeroRetrogen != null) {
-								BelowZeroRetrogen.replaceOldBedrock(protoChunk);
-								if (belowZeroRetrogen.method_39770()) {
-									BelowZeroRetrogen.method_39771(protoChunk);
-								}
+				return generator.populateNoise(executor, Blender.getBlender(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk).thenApply(chunkx -> {
+					if (chunkx instanceof ProtoChunk protoChunk) {
+						BelowZeroRetrogen belowZeroRetrogen = protoChunk.getBelowZeroRetrogen();
+						if (belowZeroRetrogen != null) {
+							BelowZeroRetrogen.replaceOldBedrock(protoChunk);
+							if (belowZeroRetrogen.hasNoBedrock()) {
+								BelowZeroRetrogen.fillChunkWithAir(protoChunk);
 							}
-
-							protoChunk.setStatus(targetStatus);
 						}
 
-						return Either.left(chunkx);
-					});
+						protoChunk.setStatus(targetStatus);
+					}
+
+					return Either.left(chunkx);
+				});
 			}
 		}
 	);
@@ -154,7 +149,7 @@ public class ChunkStatus {
 		"carvers", SURFACE, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (targetStatus, world, generator, chunks, chunk) -> {
 			ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
 			if (chunk instanceof ProtoChunk protoChunk) {
-				class_6748.method_39809(chunkRegion, protoChunk);
+				Blender.method_39809(chunkRegion, protoChunk);
 			}
 
 			generator.carve(chunkRegion, world.getSeed(), world.getBiomeAccess(), world.getStructureAccessor().forRegion(chunkRegion), chunk, GenerationStep.Carver.AIR);
@@ -179,7 +174,7 @@ public class ChunkStatus {
 				);
 				ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 1);
 				generator.generateFeatures(chunkRegion, chunk, world.getStructureAccessor().forRegion(chunkRegion));
-				class_6748.method_39772(chunkRegion, chunk);
+				Blender.tickLeavesAndFluids(chunkRegion, chunk);
 				protoChunk.setStatus(targetStatus);
 			}
 

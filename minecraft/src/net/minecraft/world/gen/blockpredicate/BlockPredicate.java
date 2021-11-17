@@ -13,7 +13,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 
 public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockPos> {
-	Codec<BlockPredicate> BASE_CODEC = Registry.BLOCK_PREDICATE_TYPE.method_39673().dispatch(BlockPredicate::getType, BlockPredicateType::codec);
+	Codec<BlockPredicate> BASE_CODEC = Registry.BLOCK_PREDICATE_TYPE.getCodec().dispatch(BlockPredicate::getType, BlockPredicateType::codec);
 	BlockPredicate IS_AIR = matchingBlock(Blocks.AIR, BlockPos.ORIGIN);
 	BlockPredicate IS_AIR_OR_WATER = matchingBlocks(List.of(Blocks.AIR, Blocks.WATER), BlockPos.ORIGIN);
 

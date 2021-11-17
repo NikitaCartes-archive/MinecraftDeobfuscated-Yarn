@@ -176,17 +176,9 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 
 	public void method_39793(Consumer<T> consumer) {
 		Palette<T> palette = this.data.palette();
-		if (palette instanceof IdListPalette<T> idListPalette) {
-			IntSet intSet = new IntArraySet();
-			this.data.storage.forEach(intSet::add);
-			intSet.forEach(ix -> consumer.accept(idListPalette.get(ix)));
-		} else {
-			int i = palette.getSize();
-
-			for (int j = 0; j < i; j++) {
-				consumer.accept(palette.get(j));
-			}
-		}
+		IntSet intSet = new IntArraySet();
+		this.data.storage.forEach(intSet::add);
+		intSet.forEach(i -> consumer.accept(palette.get(i)));
 	}
 
 	/**
@@ -251,7 +243,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 				} else {
 					paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, ls);
 				}
-			} catch (PackedIntegerArray.class_6685 var13) {
+			} catch (PackedIntegerArray.InvalidLengthException var13) {
 				return DataResult.error("Failed to read PalettedContainer: " + var13.getMessage());
 			}
 		}

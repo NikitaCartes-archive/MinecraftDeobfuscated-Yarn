@@ -70,7 +70,7 @@ public final class VanillaTerrainParameters {
 		float g = -0.4F;
 		float h = 0.1F;
 		float i = -0.15F;
-		Spline<VanillaTerrainParameters.NoisePoint> spline5 = Spline.method_39502(VanillaTerrainParameters.LocationFunction.CONTINENTS, toFloatFunction)
+		Spline<VanillaTerrainParameters.NoisePoint> spline5 = Spline.builder(VanillaTerrainParameters.LocationFunction.CONTINENTS, toFloatFunction)
 			.add(-1.1F, 0.044F, 0.0F)
 			.add(-1.02F, -0.2222F, 0.0F)
 			.add(-0.51F, -0.2222F, 0.0F)
@@ -82,7 +82,7 @@ public final class VanillaTerrainParameters {
 			.add(0.25F, spline3, 0.0F)
 			.add(1.0F, spline4, 0.0F)
 			.build();
-		Spline<VanillaTerrainParameters.NoisePoint> spline6 = Spline.method_39502(VanillaTerrainParameters.LocationFunction.CONTINENTS, field_35673)
+		Spline<VanillaTerrainParameters.NoisePoint> spline6 = Spline.builder(VanillaTerrainParameters.LocationFunction.CONTINENTS, field_35673)
 			.add(-0.19F, 3.95F, 0.0F)
 			.add(-0.15F, buildErosionFactorSpline(6.25F, true, field_35673), 0.0F)
 			.add(-0.1F, buildErosionFactorSpline(5.47F, true, toFloatFunction2), 0.0F)
@@ -90,7 +90,7 @@ public final class VanillaTerrainParameters {
 			.add(0.06F, buildErosionFactorSpline(4.69F, false, toFloatFunction2), 0.0F)
 			.build();
 		float j = 0.65F;
-		Spline<VanillaTerrainParameters.NoisePoint> spline7 = Spline.method_39502(VanillaTerrainParameters.LocationFunction.CONTINENTS, toFloatFunction3)
+		Spline<VanillaTerrainParameters.NoisePoint> spline7 = Spline.builder(VanillaTerrainParameters.LocationFunction.CONTINENTS, toFloatFunction3)
 			.add(-0.11F, 0.0F, 0.0F)
 			.add(0.03F, method_38856(1.0F, 0.5F, 0.0F, 0.0F, toFloatFunction3), 0.0F)
 			.add(0.65F, method_38856(1.0F, 1.0F, 1.0F, 0.0F, toFloatFunction3), 0.0F)
@@ -102,7 +102,7 @@ public final class VanillaTerrainParameters {
 		float j = -0.5775F;
 		Spline<VanillaTerrainParameters.NoisePoint> spline = method_38855(f, h, toFloatFunction);
 		Spline<VanillaTerrainParameters.NoisePoint> spline2 = method_38855(g, i, toFloatFunction);
-		return Spline.method_39502(VanillaTerrainParameters.LocationFunction.EROSION, toFloatFunction)
+		return Spline.builder(VanillaTerrainParameters.LocationFunction.EROSION, toFloatFunction)
 			.add(-1.0F, spline, 0.0F)
 			.add(-0.78F, spline2, 0.0F)
 			.add(-0.5775F, spline2, 0.0F)
@@ -114,7 +114,7 @@ public final class VanillaTerrainParameters {
 		float h = getNormalizedWeirdness(0.4F);
 		float i = getNormalizedWeirdness(0.56666666F);
 		float j = (h + i) / 2.0F;
-		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.method_39502(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction);
+		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.builder(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction);
 		builder.add(h, 0.0F, 0.0F);
 		if (g > 0.0F) {
 			builder.add(j, method_38857(g, toFloatFunction), 0.0F);
@@ -134,45 +134,41 @@ public final class VanillaTerrainParameters {
 	private static Spline<VanillaTerrainParameters.NoisePoint> method_38857(float f, ToFloatFunction<Float> toFloatFunction) {
 		float g = 0.63F * f;
 		float h = 0.3F * f;
-		return Spline.method_39502(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction).add(-0.01F, g, 0.0F).add(0.01F, h, 0.0F).build();
+		return Spline.builder(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction).add(-0.01F, g, 0.0F).add(0.01F, h, 0.0F).build();
 	}
 
 	private static Spline<VanillaTerrainParameters.NoisePoint> buildErosionFactorSpline(float value, boolean bl, ToFloatFunction<Float> toFloatFunction) {
-		Spline<VanillaTerrainParameters.NoisePoint> spline = Spline.method_39502(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction)
+		Spline<VanillaTerrainParameters.NoisePoint> spline = Spline.builder(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction)
 			.add(-0.2F, 6.3F, 0.0F)
 			.add(0.2F, value, 0.0F)
 			.build();
-		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.method_39502(VanillaTerrainParameters.LocationFunction.EROSION, toFloatFunction)
+		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.builder(VanillaTerrainParameters.LocationFunction.EROSION, toFloatFunction)
 			.add(-0.6F, spline, 0.0F)
 			.add(
-				-0.5F,
-				Spline.method_39502(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction).add(-0.05F, 6.3F, 0.0F).add(0.05F, 2.67F, 0.0F).build(),
-				0.0F
+				-0.5F, Spline.builder(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction).add(-0.05F, 6.3F, 0.0F).add(0.05F, 2.67F, 0.0F).build(), 0.0F
 			)
 			.add(-0.35F, spline, 0.0F)
 			.add(-0.25F, spline, 0.0F)
 			.add(
-				-0.1F,
-				Spline.method_39502(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction).add(-0.05F, 2.67F, 0.0F).add(0.05F, 6.3F, 0.0F).build(),
-				0.0F
+				-0.1F, Spline.builder(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction).add(-0.05F, 2.67F, 0.0F).add(0.05F, 6.3F, 0.0F).build(), 0.0F
 			)
 			.add(0.03F, spline, 0.0F);
 		if (bl) {
-			Spline<VanillaTerrainParameters.NoisePoint> spline2 = Spline.method_39502(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction)
+			Spline<VanillaTerrainParameters.NoisePoint> spline2 = Spline.builder(VanillaTerrainParameters.LocationFunction.WEIRDNESS, toFloatFunction)
 				.add(0.0F, value, 0.0F)
 				.add(0.1F, 0.625F, 0.0F)
 				.build();
-			Spline<VanillaTerrainParameters.NoisePoint> spline3 = Spline.method_39502(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
+			Spline<VanillaTerrainParameters.NoisePoint> spline3 = Spline.builder(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
 				.add(-0.9F, value, 0.0F)
 				.add(-0.69F, spline2, 0.0F)
 				.build();
 			builder.add(0.35F, value, 0.0F).add(0.45F, spline3, 0.0F).add(0.55F, spline3, 0.0F).add(0.62F, value, 0.0F);
 		} else {
-			Spline<VanillaTerrainParameters.NoisePoint> spline2 = Spline.method_39502(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
+			Spline<VanillaTerrainParameters.NoisePoint> spline2 = Spline.builder(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
 				.add(-0.7F, spline, 0.0F)
 				.add(-0.15F, 1.37F, 0.0F)
 				.build();
-			Spline<VanillaTerrainParameters.NoisePoint> spline3 = Spline.method_39502(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
+			Spline<VanillaTerrainParameters.NoisePoint> spline3 = Spline.builder(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
 				.add(0.45F, spline, 0.0F)
 				.add(0.7F, 1.56F, 0.0F)
 				.build();
@@ -187,7 +183,7 @@ public final class VanillaTerrainParameters {
 	}
 
 	private static Spline<VanillaTerrainParameters.NoisePoint> method_38219(float f, boolean bl, ToFloatFunction<Float> toFloatFunction) {
-		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.method_39502(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction);
+		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.builder(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction);
 		float g = -0.7F;
 		float h = -1.0F;
 		float i = getOffsetValue(-1.0F, f, -0.7F);
@@ -257,13 +253,13 @@ public final class VanillaTerrainParameters {
 		Spline<VanillaTerrainParameters.NoisePoint> spline5 = createFlatOffsetSpline(f, j * i, g * i, 0.5F * i, 0.6F * i, 0.5F, toFloatFunction);
 		Spline<VanillaTerrainParameters.NoisePoint> spline6 = createFlatOffsetSpline(f, j, j, g, h, 0.5F, toFloatFunction);
 		Spline<VanillaTerrainParameters.NoisePoint> spline7 = createFlatOffsetSpline(f, j, j, g, h, 0.5F, toFloatFunction);
-		Spline<VanillaTerrainParameters.NoisePoint> spline8 = Spline.method_39502(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
+		Spline<VanillaTerrainParameters.NoisePoint> spline8 = Spline.builder(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
 			.add(-1.0F, f, 0.0F)
 			.add(-0.4F, spline6, 0.0F)
 			.add(0.0F, h + 0.07F, 0.0F)
 			.build();
 		Spline<VanillaTerrainParameters.NoisePoint> spline9 = createFlatOffsetSpline(-0.02F, k, k, g, h, 0.0F, toFloatFunction);
-		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.method_39502(VanillaTerrainParameters.LocationFunction.EROSION, toFloatFunction)
+		Spline.Builder<VanillaTerrainParameters.NoisePoint> builder = Spline.builder(VanillaTerrainParameters.LocationFunction.EROSION, toFloatFunction)
 			.add(-0.85F, spline, 0.0F)
 			.add(-0.7F, spline2, 0.0F)
 			.add(-0.4F, spline3, 0.0F)
@@ -283,7 +279,7 @@ public final class VanillaTerrainParameters {
 	) {
 		float l = Math.max(0.5F * (g - f), k);
 		float m = 5.0F * (h - g);
-		return Spline.method_39502(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
+		return Spline.builder(VanillaTerrainParameters.LocationFunction.RIDGES, toFloatFunction)
 			.add(-1.0F, f, l)
 			.add(-0.4F, g, Math.min(l, m))
 			.add(0.0F, h, m)

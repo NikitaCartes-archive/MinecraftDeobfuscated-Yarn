@@ -169,15 +169,15 @@ public class OrePlacedFeatures {
 		"ore_clay", OreConfiguredFeatures.ORE_CLAY.withPlacement(modifiersWithCount(38, PlacedFeatures.BOTTOM_TO_120_RANGE))
 	);
 
-	private static List<PlacementModifier> modifiers(PlacementModifier first, PlacementModifier second) {
-		return List.of(first, SquarePlacementModifier.of(), second, BiomePlacementModifier.of());
+	private static List<PlacementModifier> modifiers(PlacementModifier countModifier, PlacementModifier heightModifier) {
+		return List.of(countModifier, SquarePlacementModifier.of(), heightModifier, BiomePlacementModifier.of());
 	}
 
-	private static List<PlacementModifier> modifiersWithCount(int count, PlacementModifier modifier) {
-		return modifiers(CountPlacementModifier.of(count), modifier);
+	private static List<PlacementModifier> modifiersWithCount(int count, PlacementModifier heightModfier) {
+		return modifiers(CountPlacementModifier.of(count), heightModfier);
 	}
 
-	private static List<PlacementModifier> modifiersWithRarity(int chance, PlacementModifier modifier) {
-		return modifiers(RarityFilterPlacementModifier.of(chance), modifier);
+	private static List<PlacementModifier> modifiersWithRarity(int chance, PlacementModifier heightModifier) {
+		return modifiers(RarityFilterPlacementModifier.of(chance), heightModifier);
 	}
 }

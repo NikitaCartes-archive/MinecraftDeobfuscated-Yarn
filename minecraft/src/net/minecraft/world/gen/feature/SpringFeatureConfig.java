@@ -17,7 +17,7 @@ public class SpringFeatureConfig implements FeatureConfig {
 					Codec.INT.fieldOf("rock_count").orElse(4).forGetter(springFeatureConfig -> springFeatureConfig.rockCount),
 					Codec.INT.fieldOf("hole_count").orElse(1).forGetter(springFeatureConfig -> springFeatureConfig.holeCount),
 					Registry.BLOCK
-						.method_39673()
+						.getCodec()
 						.listOf()
 						.fieldOf("valid_blocks")
 						.xmap(ImmutableSet::copyOf, ImmutableList::copyOf)

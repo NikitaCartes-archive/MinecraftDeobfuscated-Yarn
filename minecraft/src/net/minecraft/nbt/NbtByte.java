@@ -3,7 +3,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.class_6836;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
@@ -11,19 +11,19 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtByte extends AbstractNbtNumber {
 	private static final int SIZE = 72;
-	public static final NbtType<NbtByte> TYPE = new NbtType.class_6839<NbtByte>() {
+	public static final NbtType<NbtByte> TYPE = new NbtType.OfFixedSize<NbtByte>() {
 		public NbtByte read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(72L);
 			return NbtByte.of(dataInput.readByte());
 		}
 
 		@Override
-		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
-			return arg.method_39857(dataInput.readByte());
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+			return visitor.visitByte(input.readByte());
 		}
 
 		@Override
-		public int method_39853() {
+		public int getSizeInBytes() {
 			return 1;
 		}
 
@@ -126,8 +126,8 @@ public class NbtByte extends AbstractNbtNumber {
 	}
 
 	@Override
-	public class_6836.class_6838 method_39850(class_6836 arg) {
-		return arg.method_39857(this.value);
+	public NbtScanner.Result doAccept(NbtScanner visitor) {
+		return visitor.visitByte(this.value);
 	}
 
 	static class Cache {

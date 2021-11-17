@@ -14,9 +14,9 @@ import net.minecraft.util.JsonHelper;
 public class DynamicEntry extends LeafEntry {
 	final Identifier name;
 
-	DynamicEntry(Identifier identifier, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-		super(i, j, lootConditions, lootFunctions);
-		this.name = identifier;
+	DynamicEntry(Identifier name, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+		super(weight, quality, conditions, functions);
+		this.name = name;
 	}
 
 	@Override

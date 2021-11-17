@@ -22,7 +22,7 @@ import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
-import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.EmptyTickSchedulers;
@@ -40,7 +40,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 			UpgradeData.NO_UPGRADE_DATA,
 			wrapped.heightLimitView,
 			wrapped.getWorld().getRegistryManager().get(Registry.BIOME_KEY),
-			wrapped.getBlender()
+			wrapped.getBlendingData()
 		);
 		this.wrapped = wrapped;
 		this.field_34554 = bl;
@@ -233,12 +233,12 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public Blender getBlender() {
-		return this.wrapped.getBlender();
+	public BlendingData getBlendingData() {
+		return this.wrapped.getBlendingData();
 	}
 
 	@Override
-	public void setBlender(Blender blender) {
+	public void setBlender(BlendingData blender) {
 		this.wrapped.setBlender(blender);
 	}
 

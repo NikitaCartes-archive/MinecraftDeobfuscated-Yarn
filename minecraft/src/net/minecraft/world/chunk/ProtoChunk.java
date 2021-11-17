@@ -30,7 +30,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
-import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -48,7 +48,7 @@ public class ProtoChunk extends Chunk {
 	private final SimpleTickScheduler<Block> blockTickScheduler;
 	private final SimpleTickScheduler<Fluid> fluidTickScheduler;
 
-	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world, Registry<Biome> biomeRegistry, @Nullable Blender blendingData) {
+	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world, Registry<Biome> biomeRegistry, @Nullable BlendingData blendingData) {
 		this(pos, upgradeData, null, new SimpleTickScheduler<>(), new SimpleTickScheduler<>(), world, biomeRegistry, blendingData);
 	}
 
@@ -60,7 +60,7 @@ public class ProtoChunk extends Chunk {
 		SimpleTickScheduler<Fluid> fluidTickScheduler,
 		HeightLimitView world,
 		Registry<Biome> biomeRegistry,
-		@Nullable Blender blendingData
+		@Nullable BlendingData blendingData
 	) {
 		super(pos, upgradeData, world, biomeRegistry, 0L, sections, blendingData);
 		this.blockTickScheduler = blockTickScheduler;

@@ -21,10 +21,10 @@ public class TagEntry extends LeafEntry {
 	final Tag<Item> name;
 	final boolean expand;
 
-	TagEntry(Tag<Item> tag, boolean bl, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-		super(i, j, lootConditions, lootFunctions);
-		this.name = tag;
-		this.expand = bl;
+	TagEntry(Tag<Item> name, boolean expand, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+		super(weight, quality, conditions, functions);
+		this.name = name;
+		this.expand = expand;
 	}
 
 	@Override

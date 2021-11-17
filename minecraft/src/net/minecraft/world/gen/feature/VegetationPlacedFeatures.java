@@ -244,14 +244,14 @@ public class VegetationPlacedFeatures {
 		"flower_meadow",
 		VegetationConfiguredFeatures.FLOWER_MEADOW.withPlacement(SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
 	);
-	public static final PlacementModifier field_36134 = SurfaceWaterDepthFilterPlacementModifier.of(0);
+	public static final PlacementModifier NOT_IN_SURFACE_WATER_MODIFIER = SurfaceWaterDepthFilterPlacementModifier.of(0);
 	public static final PlacedFeature TREES_PLAINS = PlacedFeatures.register(
 		"trees_plains",
 		VegetationConfiguredFeatures.TREES_PLAINS
 			.withPlacement(
-				PlacedFeatures.method_39736(0, 0.05F, 1),
+				PlacedFeatures.createCountExtraModifier(0, 0.05F, 1),
 				SquarePlacementModifier.of(),
-				field_36134,
+				NOT_IN_SURFACE_WATER_MODIFIER,
 				PlacedFeatures.OCEAN_FLOOR_HEIGHTMAP,
 				BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(Blocks.OAK_SAPLING.getDefaultState(), BlockPos.ORIGIN)),
 				BiomePlacementModifier.of()
@@ -260,7 +260,13 @@ public class VegetationPlacedFeatures {
 	public static final PlacedFeature DARK_FOREST_VEGETATION = PlacedFeatures.register(
 		"dark_forest_vegetation",
 		VegetationConfiguredFeatures.DARK_FOREST_VEGETATION
-			.withPlacement(CountPlacementModifier.of(16), SquarePlacementModifier.of(), field_36134, PlacedFeatures.OCEAN_FLOOR_HEIGHTMAP, BiomePlacementModifier.of())
+			.withPlacement(
+				CountPlacementModifier.of(16),
+				SquarePlacementModifier.of(),
+				NOT_IN_SURFACE_WATER_MODIFIER,
+				PlacedFeatures.OCEAN_FLOOR_HEIGHTMAP,
+				BiomePlacementModifier.of()
+			)
 	);
 	public static final PlacedFeature FLOWER_FOREST_FLOWERS = PlacedFeatures.register(
 		"flower_forest_flowers",
@@ -285,28 +291,30 @@ public class VegetationPlacedFeatures {
 			)
 	);
 	public static final PlacedFeature TREES_FLOWER_FOREST = PlacedFeatures.register(
-		"trees_flower_forest", VegetationConfiguredFeatures.TREES_FLOWER_FOREST.withPlacement(modifiers(PlacedFeatures.method_39736(6, 0.1F, 1)))
+		"trees_flower_forest", VegetationConfiguredFeatures.TREES_FLOWER_FOREST.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(6, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_MEADOW = PlacedFeatures.register(
 		"trees_meadow", VegetationConfiguredFeatures.MEADOW_TREES.withPlacement(modifiers(RarityFilterPlacementModifier.of(100)))
 	);
 	public static final PlacedFeature TREES_TAIGA = PlacedFeatures.register(
-		"trees_taiga", VegetationConfiguredFeatures.TREES_TAIGA.withPlacement(modifiers(PlacedFeatures.method_39736(10, 0.1F, 1)))
+		"trees_taiga", VegetationConfiguredFeatures.TREES_TAIGA.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_GROVE = PlacedFeatures.register(
-		"trees_grove", VegetationConfiguredFeatures.TREES_GROVE.withPlacement(modifiers(PlacedFeatures.method_39736(10, 0.1F, 1)))
+		"trees_grove", VegetationConfiguredFeatures.TREES_GROVE.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_BADLANDS = PlacedFeatures.register(
-		"trees_badlands", TreeConfiguredFeatures.OAK.withPlacement(modifiers(PlacedFeatures.method_39736(5, 0.1F, 1), Blocks.OAK_SAPLING))
+		"trees_badlands",
+		TreeConfiguredFeatures.OAK.withPlacement(modifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(5, 0.1F, 1), Blocks.OAK_SAPLING))
 	);
 	public static final PlacedFeature TREES_SNOWY = PlacedFeatures.register(
-		"trees_snowy", TreeConfiguredFeatures.SPRUCE.withPlacement(modifiers(PlacedFeatures.method_39736(0, 0.1F, 1), Blocks.SPRUCE_SAPLING))
+		"trees_snowy",
+		TreeConfiguredFeatures.SPRUCE.withPlacement(modifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1), Blocks.SPRUCE_SAPLING))
 	);
 	public static final PlacedFeature TREES_SWAMP = PlacedFeatures.register(
 		"trees_swamp",
 		TreeConfiguredFeatures.SWAMP_OAK
 			.withPlacement(
-				PlacedFeatures.method_39736(2, 0.1F, 1),
+				PlacedFeatures.createCountExtraModifier(2, 0.1F, 1),
 				SquarePlacementModifier.of(),
 				SurfaceWaterDepthFilterPlacementModifier.of(2),
 				PlacedFeatures.OCEAN_FLOOR_HEIGHTMAP,
@@ -315,44 +323,46 @@ public class VegetationPlacedFeatures {
 			)
 	);
 	public static final PlacedFeature TREES_WINDSWEPT_SAVANNA = PlacedFeatures.register(
-		"trees_windswept_savanna", VegetationConfiguredFeatures.TREES_SAVANNA.withPlacement(modifiers(PlacedFeatures.method_39736(2, 0.1F, 1)))
+		"trees_windswept_savanna", VegetationConfiguredFeatures.TREES_SAVANNA.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(2, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_SAVANNA = PlacedFeatures.register(
-		"trees_savanna", VegetationConfiguredFeatures.TREES_SAVANNA.withPlacement(modifiers(PlacedFeatures.method_39736(1, 0.1F, 1)))
+		"trees_savanna", VegetationConfiguredFeatures.TREES_SAVANNA.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(1, 0.1F, 1)))
 	);
 	public static final PlacedFeature BIRCH_TALL = PlacedFeatures.register(
-		"birch_tall", VegetationConfiguredFeatures.BIRCH_TALL.withPlacement(modifiers(PlacedFeatures.method_39736(10, 0.1F, 1)))
+		"birch_tall", VegetationConfiguredFeatures.BIRCH_TALL.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_BIRCH = PlacedFeatures.register(
-		"trees_birch", TreeConfiguredFeatures.BIRCH_BEES_0002.withPlacement(modifiers(PlacedFeatures.method_39736(10, 0.1F, 1), Blocks.BIRCH_SAPLING))
+		"trees_birch",
+		TreeConfiguredFeatures.BIRCH_BEES_0002.withPlacement(modifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1), Blocks.BIRCH_SAPLING))
 	);
 	public static final PlacedFeature TREES_WINDSWEPT_FOREST = PlacedFeatures.register(
-		"trees_windswept_forest", VegetationConfiguredFeatures.TREES_WINDSWEPT_HILLS.withPlacement(modifiers(PlacedFeatures.method_39736(3, 0.1F, 1)))
+		"trees_windswept_forest", VegetationConfiguredFeatures.TREES_WINDSWEPT_HILLS.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(3, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_WINDSWEPT_HILLS = PlacedFeatures.register(
-		"trees_windswept_hills", VegetationConfiguredFeatures.TREES_WINDSWEPT_HILLS.withPlacement(modifiers(PlacedFeatures.method_39736(0, 0.1F, 1)))
+		"trees_windswept_hills", VegetationConfiguredFeatures.TREES_WINDSWEPT_HILLS.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_WATER = PlacedFeatures.register(
-		"trees_water", VegetationConfiguredFeatures.TREES_WATER.withPlacement(modifiers(PlacedFeatures.method_39736(0, 0.1F, 1)))
+		"trees_water", VegetationConfiguredFeatures.TREES_WATER.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_BIRCH_AND_OAK = PlacedFeatures.register(
-		"trees_birch_and_oak", VegetationConfiguredFeatures.TREES_BIRCH_AND_OAK.withPlacement(modifiers(PlacedFeatures.method_39736(10, 0.1F, 1)))
+		"trees_birch_and_oak", VegetationConfiguredFeatures.TREES_BIRCH_AND_OAK.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_SPARSE_JUNGLE = PlacedFeatures.register(
-		"trees_sparse_jungle", VegetationConfiguredFeatures.TREES_SPARSE_JUNGLE.withPlacement(modifiers(PlacedFeatures.method_39736(2, 0.1F, 1)))
+		"trees_sparse_jungle", VegetationConfiguredFeatures.TREES_SPARSE_JUNGLE.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(2, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_OLD_GROWTH_SPRUCE_TAIGA = PlacedFeatures.register(
 		"trees_old_growth_spruce_taiga",
-		VegetationConfiguredFeatures.TREES_OLD_GROWTH_SPRUCE_TAIGA.withPlacement(modifiers(PlacedFeatures.method_39736(10, 0.1F, 1)))
+		VegetationConfiguredFeatures.TREES_OLD_GROWTH_SPRUCE_TAIGA.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_OLD_GROWTH_PINE_TAIGA = PlacedFeatures.register(
-		"trees_old_growth_pine_taiga", VegetationConfiguredFeatures.TREES_OLD_GROWTH_PINE_TAIGA.withPlacement(modifiers(PlacedFeatures.method_39736(10, 0.1F, 1)))
+		"trees_old_growth_pine_taiga",
+		VegetationConfiguredFeatures.TREES_OLD_GROWTH_PINE_TAIGA.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)))
 	);
 	public static final PlacedFeature TREES_JUNGLE = PlacedFeatures.register(
-		"trees_jungle", VegetationConfiguredFeatures.TREES_JUNGLE.withPlacement(modifiers(PlacedFeatures.method_39736(50, 0.1F, 1)))
+		"trees_jungle", VegetationConfiguredFeatures.TREES_JUNGLE.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(50, 0.1F, 1)))
 	);
 	public static final PlacedFeature BAMBOO_VEGETATION = PlacedFeatures.register(
-		"bamboo_vegetation", VegetationConfiguredFeatures.BAMBOO_VEGETATION.withPlacement(modifiers(PlacedFeatures.method_39736(30, 0.1F, 1)))
+		"bamboo_vegetation", VegetationConfiguredFeatures.BAMBOO_VEGETATION.withPlacement(modifiers(PlacedFeatures.createCountExtraModifier(30, 0.1F, 1)))
 	);
 	public static final PlacedFeature MUSHROOM_ISLAND_VEGETATION = PlacedFeatures.register(
 		"mushroom_island_vegetation",
@@ -380,20 +390,20 @@ public class VegetationPlacedFeatures {
 		return builder.build();
 	}
 
-	private static Builder<PlacementModifier> method_39742(PlacementModifier placementModifier) {
+	private static Builder<PlacementModifier> modifiersBuilder(PlacementModifier countModifier) {
 		return ImmutableList.<PlacementModifier>builder()
-			.add(placementModifier)
+			.add(countModifier)
 			.add(SquarePlacementModifier.of())
-			.add(field_36134)
+			.add(NOT_IN_SURFACE_WATER_MODIFIER)
 			.add(PlacedFeatures.OCEAN_FLOOR_HEIGHTMAP)
 			.add(BiomePlacementModifier.of());
 	}
 
 	public static List<PlacementModifier> modifiers(PlacementModifier modifier) {
-		return method_39742(modifier).build();
+		return modifiersBuilder(modifier).build();
 	}
 
-	public static List<PlacementModifier> modifiers(PlacementModifier modifier, Block block) {
-		return method_39742(modifier).add(BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN))).build();
+	public static List<PlacementModifier> modifiersWithWouldSurvive(PlacementModifier modifier, Block block) {
+		return modifiersBuilder(modifier).add(BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN))).build();
 	}
 }

@@ -40,23 +40,23 @@ public class BoundedIntUnaryOperator {
 		return builder.build();
 	}
 
-	BoundedIntUnaryOperator(@Nullable LootNumberProvider lootNumberProvider, @Nullable LootNumberProvider lootNumberProvider2) {
-		this.min = lootNumberProvider;
-		this.max = lootNumberProvider2;
-		if (lootNumberProvider == null) {
-			if (lootNumberProvider2 == null) {
+	BoundedIntUnaryOperator(@Nullable LootNumberProvider min, @Nullable LootNumberProvider max) {
+		this.min = min;
+		this.max = max;
+		if (min == null) {
+			if (max == null) {
 				this.applier = (context, value) -> value;
 				this.tester = (context, value) -> true;
 			} else {
-				this.applier = (context, value) -> Math.min(lootNumberProvider2.nextInt(context), value);
-				this.tester = (context, value) -> value <= lootNumberProvider2.nextInt(context);
+				this.applier = (context, value) -> Math.min(max.nextInt(context), value);
+				this.tester = (context, value) -> value <= max.nextInt(context);
 			}
-		} else if (lootNumberProvider2 == null) {
-			this.applier = (context, value) -> Math.max(lootNumberProvider.nextInt(context), value);
-			this.tester = (context, value) -> value >= lootNumberProvider.nextInt(context);
+		} else if (max == null) {
+			this.applier = (context, value) -> Math.max(min.nextInt(context), value);
+			this.tester = (context, value) -> value >= min.nextInt(context);
 		} else {
-			this.applier = (context, value) -> MathHelper.clamp(value, lootNumberProvider.nextInt(context), lootNumberProvider2.nextInt(context));
-			this.tester = (context, value) -> value >= lootNumberProvider.nextInt(context) && value <= lootNumberProvider2.nextInt(context);
+			this.applier = (context, value) -> MathHelper.clamp(value, min.nextInt(context), max.nextInt(context));
+			this.tester = (context, value) -> value >= min.nextInt(context) && value <= max.nextInt(context);
 		}
 	}
 

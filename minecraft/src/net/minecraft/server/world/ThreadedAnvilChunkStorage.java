@@ -634,7 +634,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				}
 
 				worldChunk.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
-				worldChunk.loadToWorld();
+				worldChunk.loadEntities();
 				if (this.loadedChunks.add(chunkPos.toLong())) {
 					worldChunk.setLoadedToWorld(true);
 					worldChunk.updateAllBlockEntities();
@@ -658,7 +658,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		completableFuture2.thenAcceptAsync(either -> either.ifLeft(worldChunk -> {
 				this.totalChunksLoadedCount.getAndIncrement();
 				MutableObject<ChunkDataS2CPacket> mutableObject = new MutableObject<>();
-				this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> this.sendChunkDataPackets(serverPlayerEntity, mutableObject, worldChunk));
+				this.getPlayersWatchingChunk(chunkPos, false).forEach(player -> this.sendChunkDataPackets(player, mutableObject, worldChunk));
 			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
 		return completableFuture2;
 	}
@@ -740,10 +740,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			for (ChunkHolder chunkHolder : this.currentChunkHolders.values()) {
 				ChunkPos chunkPos = chunkHolder.getPos();
 				MutableObject<ChunkDataS2CPacket> mutableObject = new MutableObject<>();
-				this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> {
-					boolean bl = isWithinDistance(chunkPos, serverPlayerEntity, true, j);
-					boolean bl2 = isWithinDistance(chunkPos, serverPlayerEntity, true, this.watchDistance);
-					this.sendWatchPackets(serverPlayerEntity, chunkPos, mutableObject, bl, bl2);
+				this.getPlayersWatchingChunk(chunkPos, false).forEach(player -> {
+					boolean bl = isWithinDistance(chunkPos, player, true, j);
+					boolean bl2 = isWithinDistance(chunkPos, player, true, this.watchDistance);
+					this.sendWatchPackets(player, chunkPos, mutableObject, bl, bl2);
 				});
 			}
 		}

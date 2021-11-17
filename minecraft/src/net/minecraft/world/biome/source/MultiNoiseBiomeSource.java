@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.class_6748;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
@@ -30,6 +29,7 @@ import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.gen.NoiseColumnSampler;
+import net.minecraft.world.gen.chunk.Blender;
 
 public class MultiNoiseBiomeSource extends BiomeSource {
 	/**
@@ -136,7 +136,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 				+ vanillaBiomeParameters.getHumidityDescription((double)l)
 		);
 		if (noiseSampler instanceof NoiseColumnSampler noiseColumnSampler) {
-			TerrainNoisePoint terrainNoisePoint = noiseColumnSampler.createTerrainNoisePoint(pos.getX(), pos.getZ(), f, m, g, class_6748.method_39336());
+			TerrainNoisePoint terrainNoisePoint = noiseColumnSampler.createTerrainNoisePoint(pos.getX(), pos.getZ(), f, m, g, Blender.getNoBlending());
 			info.add(
 				"Terrain PV: "
 					+ decimalFormat.format(d)

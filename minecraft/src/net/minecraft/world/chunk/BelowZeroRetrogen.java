@@ -25,7 +25,7 @@ public final class BelowZeroRetrogen {
 	private static final Codec<BitSet> MISSING_BEDROCK_CODEC = Codec.LONG_STREAM
 		.xmap(longStream -> BitSet.valueOf(longStream.toArray()), bitSet -> LongStream.of(bitSet.toLongArray()));
 	private static final Codec<ChunkStatus> STATUS_CODEC = Registry.CHUNK_STATUS
-		.method_39673()
+		.getCodec()
 		.comapFlatMap(
 			chunkStatus -> chunkStatus == ChunkStatus.EMPTY ? DataResult.error("target_status cannot be empty") : DataResult.success(chunkStatus), Function.identity()
 		);
@@ -37,7 +37,7 @@ public final class BelowZeroRetrogen {
 				)
 				.apply(instance, BelowZeroRetrogen::new)
 	);
-	private static final Set<RegistryKey<Biome>> field_36192 = Set.of(BiomeKeys.LUSH_CAVES, BiomeKeys.DRIPSTONE_CAVES);
+	private static final Set<RegistryKey<Biome>> CAVE_BIOMES = Set.of(BiomeKeys.LUSH_CAVES, BiomeKeys.DRIPSTONE_CAVES);
 	public static final HeightLimitView BELOW_ZERO_VIEW = new HeightLimitView() {
 		@Override
 		public int getHeight() {
@@ -72,30 +72,30 @@ public final class BelowZeroRetrogen {
 		});
 	}
 
-	public static void method_39771(ProtoChunk protoChunk) {
-		HeightLimitView heightLimitView = protoChunk.getHeightLimitView();
+	public static void fillChunkWithAir(ProtoChunk chunk) {
+		HeightLimitView heightLimitView = chunk.getHeightLimitView();
 		int i = heightLimitView.getBottomY();
 		int j = heightLimitView.getTopY() - 1;
-		BlockPos.iterate(0, i, 0, 15, j, 15).forEach(blockPos -> protoChunk.setBlockState(blockPos, Blocks.AIR.getDefaultState(), false));
+		BlockPos.iterate(0, i, 0, 15, j, 15).forEach(pos -> chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false));
 	}
 
 	public ChunkStatus getTargetStatus() {
 		return this.targetStatus;
 	}
 
-	public boolean method_39770() {
+	public boolean hasNoBedrock() {
 		int i = this.missingBedrock.size();
 		return i == 256 && i == this.missingBedrock.cardinality();
 	}
 
-	public static BiomeSupplier method_39767(BiomeSupplier biomeSupplier, Registry<Biome> registry, Chunk chunk) {
+	public static BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier, Registry<Biome> biomeRegistry, Chunk chunk) {
 		if (!chunk.hasBelowZeroRetrogen()) {
 			return biomeSupplier;
 		} else {
-			Set<Biome> set = (Set<Biome>)field_36192.stream().map(registry::get).collect(Collectors.toSet());
-			return (i, j, k, multiNoiseSampler) -> {
-				Biome biome = biomeSupplier.getBiome(i, j, k, multiNoiseSampler);
-				return set.contains(biome) ? biome : chunk.getBiomeForNoiseGen(i, 0, k);
+			Set<Biome> set = (Set<Biome>)CAVE_BIOMES.stream().map(biomeRegistry::get).collect(Collectors.toSet());
+			return (x, y, z, noise) -> {
+				Biome biome = biomeSupplier.getBiome(x, y, z, noise);
+				return set.contains(biome) ? biome : chunk.getBiomeForNoiseGen(x, 0, z);
 			};
 		}
 	}

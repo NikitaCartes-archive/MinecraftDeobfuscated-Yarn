@@ -167,12 +167,12 @@ public abstract class VoxelShape {
 			return Optional.empty();
 		} else {
 			Vec3d[] vec3ds = new Vec3d[1];
-			this.forEachBox((d, e, f, g, h, i) -> {
-				double j = MathHelper.clamp(target.getX(), d, g);
-				double k = MathHelper.clamp(target.getY(), e, h);
-				double l = MathHelper.clamp(target.getZ(), f, i);
-				if (vec3ds[0] == null || target.squaredDistanceTo(j, k, l) < target.squaredDistanceTo(vec3ds[0])) {
-					vec3ds[0] = new Vec3d(j, k, l);
+			this.forEachBox((minX, minY, minZ, maxX, maxY, maxZ) -> {
+				double d = MathHelper.clamp(target.getX(), minX, maxX);
+				double e = MathHelper.clamp(target.getY(), minY, maxY);
+				double f = MathHelper.clamp(target.getZ(), minZ, maxZ);
+				if (vec3ds[0] == null || target.squaredDistanceTo(d, e, f) < target.squaredDistanceTo(vec3ds[0])) {
+					vec3ds[0] = new Vec3d(d, e, f);
 				}
 			});
 			return Optional.of(vec3ds[0]);

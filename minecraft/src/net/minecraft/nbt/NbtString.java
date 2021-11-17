@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
-import net.minecraft.class_6836;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
@@ -12,7 +12,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtString implements NbtElement {
 	private static final int SIZE = 288;
-	public static final NbtType<NbtString> TYPE = new NbtType.class_6840<NbtString>() {
+	public static final NbtType<NbtString> TYPE = new NbtType.OfVariableSize<NbtString>() {
 		public NbtString read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(288L);
 			String string = dataInput.readUTF();
@@ -21,13 +21,13 @@ public class NbtString implements NbtElement {
 		}
 
 		@Override
-		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
-			return arg.method_39862(dataInput.readUTF());
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+			return visitor.visitString(input.readUTF());
 		}
 
 		@Override
-		public void method_39851(DataInput dataInput) throws IOException {
-			NbtString.method_39875(dataInput);
+		public void skip(DataInput input) throws IOException {
+			NbtString.skip(input);
 		}
 
 		@Override
@@ -52,8 +52,8 @@ public class NbtString implements NbtElement {
 	private static final char NULL = '\u0000';
 	private final String value;
 
-	public static void method_39875(DataInput dataInput) throws IOException {
-		dataInput.skipBytes(dataInput.readUnsignedShort());
+	public static void skip(DataInput input) throws IOException {
+		input.skipBytes(input.readUnsignedShort());
 	}
 
 	private NbtString(String value) {
@@ -138,7 +138,7 @@ public class NbtString implements NbtElement {
 	}
 
 	@Override
-	public class_6836.class_6838 method_39850(class_6836 arg) {
-		return arg.method_39862(this.value);
+	public NbtScanner.Result doAccept(NbtScanner visitor) {
+		return visitor.visitString(this.value);
 	}
 }

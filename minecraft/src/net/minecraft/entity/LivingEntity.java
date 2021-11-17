@@ -144,7 +144,7 @@ public abstract class LivingEntity extends Entity {
 	public static final int field_30063 = 4;
 	private static final double field_33908 = 128.0;
 	protected static final int USING_ITEM_FLAG = 1;
-	protected static final int OFF_HAND_ACTIVE_FLAG = 2;
+	protected static final int OFFHAND_ACTIVE_FLAG = 2;
 	protected static final int USING_RIPTIDE_FLAG = 4;
 	protected static final TrackedData<Byte> LIVING_FLAGS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Float> HEALTH = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -1498,11 +1498,11 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	private SoundEvent getFallSound(int distance) {
-		return distance > 4 ? this.method_39760().big() : this.method_39760().small();
+		return distance > 4 ? this.getFallSounds().big() : this.getFallSounds().small();
 	}
 
-	public LivingEntity.class_6823 method_39760() {
-		return new LivingEntity.class_6823(SoundEvents.ENTITY_GENERIC_SMALL_FALL, SoundEvents.ENTITY_GENERIC_BIG_FALL);
+	public LivingEntity.FallSounds getFallSounds() {
+		return new LivingEntity.FallSounds(SoundEvents.ENTITY_GENERIC_SMALL_FALL, SoundEvents.ENTITY_GENERIC_BIG_FALL);
 	}
 
 	protected SoundEvent getDrinkSound(ItemStack stack) {
@@ -1729,7 +1729,7 @@ public abstract class LivingEntity extends Entity {
 			this.preferredHand = hand;
 			if (this.world instanceof ServerWorld) {
 				EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(
-					this, hand == Hand.MAIN_HAND ? EntityAnimationS2CPacket.SWING_MAIN_HAND : EntityAnimationS2CPacket.SWING_OFF_HAND
+					this, hand == Hand.MAIN_HAND ? EntityAnimationS2CPacket.SWING_MAIN_HAND : 3
 				);
 				ServerChunkManager serverChunkManager = ((ServerWorld)this.world).getChunkManager();
 				if (fromServerPlayer) {
@@ -1944,7 +1944,7 @@ public abstract class LivingEntity extends Entity {
 		return this.getEquippedStack(EquipmentSlot.MAINHAND);
 	}
 
-	public ItemStack getOffHandStack() {
+	public ItemStack getOffhandStack() {
 		return this.getEquippedStack(EquipmentSlot.OFFHAND);
 	}
 
@@ -1963,7 +1963,7 @@ public abstract class LivingEntity extends Entity {
 	 * <p>This checks both the entity's main and off hand.
 	 */
 	public boolean isHolding(Predicate<ItemStack> predicate) {
-		return predicate.test(this.getMainHandStack()) || predicate.test(this.getOffHandStack());
+		return predicate.test(this.getMainHandStack()) || predicate.test(this.getOffhandStack());
 	}
 
 	public ItemStack getStackInHand(Hand hand) {
@@ -3010,7 +3010,7 @@ public abstract class LivingEntity extends Entity {
 			this.itemUseTimeLeft = itemStack.getMaxUseTime();
 			if (!this.world.isClient) {
 				this.setLivingFlag(USING_ITEM_FLAG, true);
-				this.setLivingFlag(OFF_HAND_ACTIVE_FLAG, hand == Hand.OFF_HAND);
+				this.setLivingFlag(2, hand == Hand.OFF_HAND);
 			}
 		}
 	}
@@ -3481,11 +3481,11 @@ public abstract class LivingEntity extends Entity {
 		);
 	}
 
-	public static record class_6823() {
+	public static record FallSounds() {
 		private final SoundEvent small;
 		private final SoundEvent big;
 
-		public class_6823(SoundEvent soundEvent, SoundEvent soundEvent2) {
+		public FallSounds(SoundEvent soundEvent, SoundEvent soundEvent2) {
 			this.small = soundEvent;
 			this.big = soundEvent2;
 		}

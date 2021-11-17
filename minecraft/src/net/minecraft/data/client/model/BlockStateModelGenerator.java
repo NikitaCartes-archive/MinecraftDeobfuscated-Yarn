@@ -1353,25 +1353,24 @@ public class BlockStateModelGenerator {
 		Identifier identifier4 = this.createSubModel(rail, "_on", Models.RAIL_FLAT, Texture::rail);
 		Identifier identifier5 = this.createSubModel(rail, "_on", Models.TEMPLATE_RAIL_RAISED_NE, Texture::rail);
 		Identifier identifier6 = this.createSubModel(rail, "_on", Models.TEMPLATE_RAIL_RAISED_SW, Texture::rail);
-		BlockStateVariantMap blockStateVariantMap = BlockStateVariantMap.create(Properties.POWERED, Properties.STRAIGHT_RAIL_SHAPE)
-			.register((boolean_, railShape) -> {
-				switch (railShape) {
-					case NORTH_SOUTH:
-						return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier4 : identifier);
-					case EAST_WEST:
-						return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier4 : identifier).put(VariantSettings.Y, VariantSettings.Rotation.R90);
-					case ASCENDING_EAST:
-						return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier5 : identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R90);
-					case ASCENDING_WEST:
-						return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier6 : identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R90);
-					case ASCENDING_NORTH:
-						return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier5 : identifier2);
-					case ASCENDING_SOUTH:
-						return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier6 : identifier3);
-					default:
-						throw new UnsupportedOperationException("Fix you generator!");
-				}
-			});
+		BlockStateVariantMap blockStateVariantMap = BlockStateVariantMap.create(Properties.POWERED, Properties.STRAIGHT_RAIL_SHAPE).register((boolean_, shape) -> {
+			switch (shape) {
+				case NORTH_SOUTH:
+					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier4 : identifier);
+				case EAST_WEST:
+					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier4 : identifier).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+				case ASCENDING_EAST:
+					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier5 : identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+				case ASCENDING_WEST:
+					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier6 : identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+				case ASCENDING_NORTH:
+					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier5 : identifier2);
+				case ASCENDING_SOUTH:
+					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier6 : identifier3);
+				default:
+					throw new UnsupportedOperationException("Fix you generator!");
+			}
+		});
 		this.registerItemModel(rail);
 		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(rail).coordinate(blockStateVariantMap));
 	}
@@ -1458,9 +1457,7 @@ public class BlockStateModelGenerator {
 	private void registerCommandBlock(Block commandBlock) {
 		Texture texture = Texture.sideFrontBack(commandBlock);
 		Identifier identifier = Models.TEMPLATE_COMMAND_BLOCK.upload(commandBlock, texture, this.modelCollector);
-		Identifier identifier2 = this.createSubModel(
-			commandBlock, "_conditional", Models.TEMPLATE_COMMAND_BLOCK, identifierx -> texture.copyAndAdd(TextureKey.SIDE, identifierx)
-		);
+		Identifier identifier2 = this.createSubModel(commandBlock, "_conditional", Models.TEMPLATE_COMMAND_BLOCK, id -> texture.copyAndAdd(TextureKey.SIDE, id));
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(commandBlock)
@@ -2098,9 +2095,7 @@ public class BlockStateModelGenerator {
 	private void registerChorusFlower() {
 		Texture texture = Texture.texture(Blocks.CHORUS_FLOWER);
 		Identifier identifier = Models.TEMPLATE_CHORUS_FLOWER.upload(Blocks.CHORUS_FLOWER, texture, this.modelCollector);
-		Identifier identifier2 = this.createSubModel(
-			Blocks.CHORUS_FLOWER, "_dead", Models.TEMPLATE_CHORUS_FLOWER, identifierx -> texture.copyAndAdd(TextureKey.TEXTURE, identifierx)
-		);
+		Identifier identifier2 = this.createSubModel(Blocks.CHORUS_FLOWER, "_dead", Models.TEMPLATE_CHORUS_FLOWER, id -> texture.copyAndAdd(TextureKey.TEXTURE, id));
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.CHORUS_FLOWER).coordinate(createValueFencedModelMap(Properties.AGE_5, 5, identifier2, identifier)));
 	}
@@ -3282,16 +3277,14 @@ public class BlockStateModelGenerator {
 		this.registerItemModel(block);
 		Identifier identifier = ModelIds.getBlockModelId(block);
 		MultipartBlockStateSupplier multipartBlockStateSupplier = MultipartBlockStateSupplier.create(block);
-		When.PropertyCondition propertyCondition = Util.make(
-			When.create(), propertyConditionx -> CONNECTION_VARIANT_FUNCTIONS.forEach((booleanProperty, function) -> {
-					if (block.getDefaultState().contains(booleanProperty)) {
-						propertyConditionx.set(booleanProperty, false);
-					}
-				})
-		);
-		CONNECTION_VARIANT_FUNCTIONS.forEach((booleanProperty, function) -> {
-			if (block.getDefaultState().contains(booleanProperty)) {
-				multipartBlockStateSupplier.with(When.create().set(booleanProperty, true), (BlockStateVariant)function.apply(identifier));
+		When.PropertyCondition propertyCondition = Util.make(When.create(), propertyConditionx -> CONNECTION_VARIANT_FUNCTIONS.forEach((property, function) -> {
+				if (block.getDefaultState().contains(property)) {
+					propertyConditionx.set(property, false);
+				}
+			}));
+		CONNECTION_VARIANT_FUNCTIONS.forEach((property, function) -> {
+			if (block.getDefaultState().contains(property)) {
+				multipartBlockStateSupplier.with(When.create().set(property, true), (BlockStateVariant)function.apply(identifier));
 				multipartBlockStateSupplier.with(propertyCondition, (BlockStateVariant)function.apply(identifier));
 			}
 		});
@@ -3435,7 +3428,7 @@ public class BlockStateModelGenerator {
 	public void register() {
 		BlockFamilies.getFamilies()
 			.filter(BlockFamily::shouldGenerateModels)
-			.forEach(blockFamily -> this.registerCubeAllModelTexturePool(blockFamily.getBaseBlock()).family(blockFamily));
+			.forEach(family -> this.registerCubeAllModelTexturePool(family.getBaseBlock()).family(family));
 		this.registerCubeAllModelTexturePool(Blocks.CUT_COPPER).family(BlockFamilies.CUT_COPPER).same(Blocks.WAXED_CUT_COPPER).family(BlockFamilies.WAXED_CUT_COPPER);
 		this.registerCubeAllModelTexturePool(Blocks.EXPOSED_CUT_COPPER)
 			.family(BlockFamilies.EXPOSED_CUT_COPPER)
@@ -4034,7 +4027,7 @@ public class BlockStateModelGenerator {
 		this.registerInfestedStone();
 		this.registerInfested(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
 		this.registerInfestedDeepslate();
-		SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel(spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
+		SpawnEggItem.getAll().forEach(item -> this.registerParentedItemModel(item, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
 	}
 
 	private void registerLightBlock() {

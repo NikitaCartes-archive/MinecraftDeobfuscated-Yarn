@@ -44,7 +44,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.SimpleGameEventDispatcher;
-import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -75,12 +75,12 @@ public class WorldChunk extends Chunk {
 	};
 	private final Map<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker>newHashMap();
 	private boolean loadedToWorld;
-	private boolean field_36218 = false;
+	private boolean shouldRenderOnUpdate = false;
 	final World world;
 	@Nullable
 	private Supplier<ChunkHolder.LevelType> levelTypeProvider;
 	@Nullable
-	private WorldChunk.class_6829 loadToWorldConsumer;
+	private WorldChunk.EntityLoader entityLoader;
 	private final Int2ObjectMap<GameEventDispatcher> gameEventDispatchers;
 	private final ChunkTickScheduler<Block> blockTickScheduler;
 	private final ChunkTickScheduler<Fluid> fluidTickScheduler;
@@ -97,8 +97,8 @@ public class WorldChunk extends Chunk {
 		ChunkTickScheduler<Fluid> fluidTickScheduler,
 		long inhabitedTime,
 		@Nullable ChunkSection[] sectionArrayInitializer,
-		@Nullable WorldChunk.class_6829 arg,
-		@Nullable Blender blendingData
+		@Nullable WorldChunk.EntityLoader entityLoader,
+		@Nullable BlendingData blendingData
 	) {
 		super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), inhabitedTime, sectionArrayInitializer, blendingData);
 		this.world = world;
@@ -110,12 +110,12 @@ public class WorldChunk extends Chunk {
 			}
 		}
 
-		this.loadToWorldConsumer = arg;
+		this.entityLoader = entityLoader;
 		this.blockTickScheduler = blockTickScheduler;
 		this.fluidTickScheduler = fluidTickScheduler;
 	}
 
-	public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable WorldChunk.class_6829 arg) {
+	public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable WorldChunk.EntityLoader entityLoader) {
 		this(
 			world,
 			protoChunk.getPos(),
@@ -124,8 +124,8 @@ public class WorldChunk extends Chunk {
 			protoChunk.getFluidProtoTickScheduler(),
 			protoChunk.getInhabitedTime(),
 			protoChunk.getSectionArray(),
-			arg,
-			protoChunk.getBlender()
+			entityLoader,
+			protoChunk.getBlendingData()
 		);
 
 		for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
@@ -428,10 +428,10 @@ public class WorldChunk extends Chunk {
 		}
 	}
 
-	public void loadToWorld() {
-		if (this.loadToWorldConsumer != null) {
-			this.loadToWorldConsumer.run(this);
-			this.loadToWorldConsumer = null;
+	public void loadEntities() {
+		if (this.entityLoader != null) {
+			this.entityLoader.run(this);
+			this.entityLoader = null;
 		}
 	}
 
@@ -619,12 +619,12 @@ public class WorldChunk extends Chunk {
 		return new WorldChunk.DirectBlockEntityTickInvoker<>(blockEntity, blockEntityTicker);
 	}
 
-	public boolean method_39791() {
-		return this.field_36218;
+	public boolean shouldRenderOnUpdate() {
+		return this.shouldRenderOnUpdate;
 	}
 
-	public void method_39792(boolean bl) {
-		this.field_36218 = bl;
+	public void setShouldRenderOnUpdate(boolean shouldRenderOnUpdate) {
+		this.shouldRenderOnUpdate = shouldRenderOnUpdate;
 	}
 
 	public static enum CreationType {
@@ -691,6 +691,11 @@ public class WorldChunk extends Chunk {
 		}
 	}
 
+	@FunctionalInterface
+	public interface EntityLoader {
+		void run(WorldChunk chunk);
+	}
+
 	class WrappedBlockEntityTickInvoker implements BlockEntityTickInvoker {
 		private BlockEntityTickInvoker wrapped;
 
@@ -725,10 +730,5 @@ public class WorldChunk extends Chunk {
 		public String toString() {
 			return this.wrapped.toString() + " <wrapped>";
 		}
-	}
-
-	@FunctionalInterface
-	public interface class_6829 {
-		void run(WorldChunk worldChunk);
 	}
 }

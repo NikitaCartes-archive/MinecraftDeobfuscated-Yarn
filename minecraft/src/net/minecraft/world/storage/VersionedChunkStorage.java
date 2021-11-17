@@ -27,9 +27,9 @@ public class VersionedChunkStorage implements AutoCloseable {
 	@Nullable
 	private FeatureUpdater featureUpdater;
 
-	public VersionedChunkStorage(Path path, DataFixer dataFixer, boolean dsync) {
+	public VersionedChunkStorage(Path directory, DataFixer dataFixer, boolean dsync) {
 		this.dataFixer = dataFixer;
-		this.worker = new StorageIoWorker(path, dsync, "chunk");
+		this.worker = new StorageIoWorker(directory, dsync, "chunk");
 	}
 
 	public NbtCompound updateChunkNbt(

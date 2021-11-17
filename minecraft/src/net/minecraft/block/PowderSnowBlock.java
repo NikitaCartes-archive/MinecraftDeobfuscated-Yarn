@@ -83,8 +83,8 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	@Override
 	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
 		if (!((double)fallDistance < 4.0) && entity instanceof LivingEntity livingEntity) {
-			LivingEntity.class_6823 lv = livingEntity.method_39760();
-			SoundEvent soundEvent = (double)fallDistance < 7.0 ? lv.small() : lv.big();
+			LivingEntity.FallSounds fallSounds = livingEntity.getFallSounds();
+			SoundEvent soundEvent = (double)fallDistance < 7.0 ? fallSounds.small() : fallSounds.big();
 			entity.playSound(soundEvent, 1.0F, 1.0F);
 		}
 	}

@@ -8,7 +8,7 @@ import net.minecraft.util.registry.Registry;
 
 public abstract class PlacementModifier {
 	public static final Codec<PlacementModifier> CODEC = Registry.PLACEMENT_MODIFIER_TYPE
-		.method_39673()
+		.getCodec()
 		.dispatch(PlacementModifier::getType, PlacementModifierType::codec);
 
 	public abstract Stream<BlockPos> getPositions(DecoratorContext context, Random random, BlockPos pos);

@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.class_6836;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class NbtByteArray extends AbstractNbtList<NbtByte> {
 	private static final int SIZE = 192;
-	public static final NbtType<NbtByteArray> TYPE = new NbtType.class_6840<NbtByteArray>() {
+	public static final NbtType<NbtByteArray> TYPE = new NbtType.OfVariableSize<NbtByteArray>() {
 		public NbtByteArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(192L);
 			int j = dataInput.readInt();
@@ -25,16 +25,16 @@ public class NbtByteArray extends AbstractNbtList<NbtByte> {
 		}
 
 		@Override
-		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
-			int i = dataInput.readInt();
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+			int i = input.readInt();
 			byte[] bs = new byte[i];
-			dataInput.readFully(bs);
-			return arg.method_39867(bs);
+			input.readFully(bs);
+			return visitor.visitByteArray(bs);
 		}
 
 		@Override
-		public void method_39851(DataInput dataInput) throws IOException {
-			dataInput.skipBytes(dataInput.readInt() * 1);
+		public void skip(DataInput input) throws IOException {
+			input.skipBytes(input.readInt() * 1);
 		}
 
 		@Override
@@ -167,7 +167,7 @@ public class NbtByteArray extends AbstractNbtList<NbtByte> {
 	}
 
 	@Override
-	public class_6836.class_6838 method_39850(class_6836 arg) {
-		return arg.method_39867(this.value);
+	public NbtScanner.Result doAccept(NbtScanner visitor) {
+		return visitor.visitByteArray(this.value);
 	}
 }

@@ -11,48 +11,48 @@ public class InterpolatedNoiseSampler implements ChunkNoiseSampler.ColumnSampler
 	private final OctavePerlinNoiseSampler lowerInterpolatedNoise;
 	private final OctavePerlinNoiseSampler upperInterpolatedNoise;
 	private final OctavePerlinNoiseSampler interpolationNoise;
-	private final double field_34752;
-	private final double field_34753;
-	private final double field_34754;
-	private final double field_34755;
-	private final int field_34756;
-	private final int field_34757;
+	private final double xzScale;
+	private final double yScale;
+	private final double xzMainScale;
+	private final double yMainScale;
+	private final int cellWidth;
+	private final int cellHeight;
 
 	private InterpolatedNoiseSampler(
 		OctavePerlinNoiseSampler lowerInterpolatedNoise,
 		OctavePerlinNoiseSampler upperInterpolatedNoise,
 		OctavePerlinNoiseSampler interpolationNoise,
-		NoiseSamplingConfig noiseSamplingConfig,
-		int i,
-		int j
+		NoiseSamplingConfig config,
+		int cellWidth,
+		int cellHeight
 	) {
 		this.lowerInterpolatedNoise = lowerInterpolatedNoise;
 		this.upperInterpolatedNoise = upperInterpolatedNoise;
 		this.interpolationNoise = interpolationNoise;
-		this.field_34752 = 684.412 * noiseSamplingConfig.getXZScale();
-		this.field_34753 = 684.412 * noiseSamplingConfig.getYScale();
-		this.field_34754 = this.field_34752 / noiseSamplingConfig.getXZFactor();
-		this.field_34755 = this.field_34753 / noiseSamplingConfig.getYFactor();
-		this.field_34756 = i;
-		this.field_34757 = j;
+		this.xzScale = 684.412 * config.getXZScale();
+		this.yScale = 684.412 * config.getYScale();
+		this.xzMainScale = this.xzScale / config.getXZFactor();
+		this.yMainScale = this.yScale / config.getYFactor();
+		this.cellWidth = cellWidth;
+		this.cellHeight = cellHeight;
 	}
 
-	public InterpolatedNoiseSampler(AbstractRandom random, NoiseSamplingConfig noiseSamplingConfig, int i, int j) {
+	public InterpolatedNoiseSampler(AbstractRandom random, NoiseSamplingConfig config, int cellWidth, int cellHeight) {
 		this(
 			OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-15, 0)),
 			OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-15, 0)),
 			OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-7, 0)),
-			noiseSamplingConfig,
-			i,
-			j
+			config,
+			cellWidth,
+			cellHeight
 		);
 	}
 
 	@Override
 	public double calculateNoise(int i, int j, int k) {
-		int l = Math.floorDiv(i, this.field_34756);
-		int m = Math.floorDiv(j, this.field_34757);
-		int n = Math.floorDiv(k, this.field_34756);
+		int l = Math.floorDiv(i, this.cellWidth);
+		int m = Math.floorDiv(j, this.cellHeight);
+		int n = Math.floorDiv(k, this.cellWidth);
 		double d = 0.0;
 		double e = 0.0;
 		double f = 0.0;
@@ -63,11 +63,11 @@ public class InterpolatedNoiseSampler implements ChunkNoiseSampler.ColumnSampler
 			PerlinNoiseSampler perlinNoiseSampler = this.interpolationNoise.getOctave(o);
 			if (perlinNoiseSampler != null) {
 				f += perlinNoiseSampler.sample(
-						OctavePerlinNoiseSampler.maintainPrecision((double)l * this.field_34754 * g),
-						OctavePerlinNoiseSampler.maintainPrecision((double)m * this.field_34755 * g),
-						OctavePerlinNoiseSampler.maintainPrecision((double)n * this.field_34754 * g),
-						this.field_34755 * g,
-						(double)m * this.field_34755 * g
+						OctavePerlinNoiseSampler.maintainPrecision((double)l * this.xzMainScale * g),
+						OctavePerlinNoiseSampler.maintainPrecision((double)m * this.yMainScale * g),
+						OctavePerlinNoiseSampler.maintainPrecision((double)n * this.xzMainScale * g),
+						this.yMainScale * g,
+						(double)m * this.yMainScale * g
 					)
 					/ g;
 			}
@@ -81,10 +81,10 @@ public class InterpolatedNoiseSampler implements ChunkNoiseSampler.ColumnSampler
 		g = 1.0;
 
 		for (int p = 0; p < 16; p++) {
-			double q = OctavePerlinNoiseSampler.maintainPrecision((double)l * this.field_34752 * g);
-			double r = OctavePerlinNoiseSampler.maintainPrecision((double)m * this.field_34753 * g);
-			double s = OctavePerlinNoiseSampler.maintainPrecision((double)n * this.field_34752 * g);
-			double t = this.field_34753 * g;
+			double q = OctavePerlinNoiseSampler.maintainPrecision((double)l * this.xzScale * g);
+			double r = OctavePerlinNoiseSampler.maintainPrecision((double)m * this.yScale * g);
+			double s = OctavePerlinNoiseSampler.maintainPrecision((double)n * this.xzScale * g);
+			double t = this.yScale * g;
 			if (!bl2) {
 				PerlinNoiseSampler perlinNoiseSampler2 = this.lowerInterpolatedNoise.getOctave(p);
 				if (perlinNoiseSampler2 != null) {
@@ -116,12 +116,12 @@ public class InterpolatedNoiseSampler implements ChunkNoiseSampler.ColumnSampler
 		info.append(
 				String.format(
 					", xzScale=%.3f, yScale=%.3f, xzMainScale=%.3f, yMainScale=%.3f, cellWidth=%d, cellHeight=%d",
-					this.field_34752,
-					this.field_34753,
-					this.field_34754,
-					this.field_34755,
-					this.field_34756,
-					this.field_34757
+					this.xzScale,
+					this.yScale,
+					this.xzMainScale,
+					this.yMainScale,
+					this.cellWidth,
+					this.cellHeight
 				)
 			)
 			.append('}');

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6748;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
@@ -24,6 +23,7 @@ import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.gen.chunk.AquiferSampler;
+import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import net.minecraft.world.gen.noise.NoiseParametersKeys;
@@ -210,13 +210,13 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		return chunkNoiseSampler -> chunkNoiseSampler.createNoiseInterpolator(columnSampler);
 	}
 
-	private double sampleNoiseColumn(int x, int y, int z, TerrainNoisePoint point, class_6748 arg) {
+	private double sampleNoiseColumn(int x, int y, int z, TerrainNoisePoint point, Blender blender) {
 		double d = this.terrainNoise.calculateNoise(x, y, z);
 		boolean bl = !this.hasNoiseCaves;
-		return this.sampleNoiseColumn(x, y, z, point, d, bl, true, arg);
+		return this.sampleNoiseColumn(x, y, z, point, d, bl, true, blender);
 	}
 
-	private double sampleNoiseColumn(int x, int y, int z, TerrainNoisePoint point, double noise, boolean hasNoNoiseCaves, boolean bl, class_6748 arg) {
+	private double sampleNoiseColumn(int x, int y, int z, TerrainNoisePoint point, double noise, boolean hasNoNoiseCaves, boolean bl, Blender blender) {
 		double d;
 		if (this.islandNoise != null) {
 			d = ((double)TheEndBiomeSource.getNoiseAt(this.islandNoise, x / 8, z / 8) - 8.0) / 128.0;
@@ -266,7 +266,7 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 
 		double j = Math.max(Math.min(g, h), i);
 		j = this.applySlides(j, y / this.config.method_39545());
-		j = arg.method_39338(x, y, z, j);
+		j = blender.method_39338(x, y, z, j);
 		return MathHelper.clamp(j, -64.0, 64.0);
 	}
 
@@ -354,7 +354,7 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		for (int i = this.config.method_39548() + this.config.method_39547(); i >= this.config.method_39548(); i--) {
 			int j = i * this.config.method_39545();
 			double d = -0.703125;
-			double e = this.sampleNoiseColumn(x, j, z, point, -0.703125, true, false, class_6748.method_39336());
+			double e = this.sampleNoiseColumn(x, j, z, point, -0.703125, true, false, Blender.getNoBlending());
 			if (e > 0.390625) {
 				return j;
 			}
@@ -388,19 +388,19 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 	}
 
 	@Debug
-	public NoiseColumnSampler.class_6747 method_39330(int i, int j, class_6748 arg) {
+	public NoiseColumnSampler.class_6747 method_39330(int i, int j, Blender blender) {
 		double d = (double)i + this.sampleShiftNoise(i, 0, j);
 		double e = (double)j + this.sampleShiftNoise(j, i, 0);
 		double f = this.sampleContinentalnessNoise(d, 0.0, e);
 		double g = this.sampleWeirdnessNoise(d, 0.0, e);
 		double h = this.sampleErosionNoise(d, 0.0, e);
-		TerrainNoisePoint terrainNoisePoint = this.createTerrainNoisePoint(BiomeCoords.toBlock(i), BiomeCoords.toBlock(j), (float)f, (float)g, (float)h, arg);
+		TerrainNoisePoint terrainNoisePoint = this.createTerrainNoisePoint(BiomeCoords.toBlock(i), BiomeCoords.toBlock(j), (float)f, (float)g, (float)h, blender);
 		return new NoiseColumnSampler.class_6747(d, e, f, g, h, terrainNoisePoint);
 	}
 
 	@Override
 	public MultiNoiseUtil.NoiseValuePoint sample(int i, int j, int k) {
-		return this.method_39329(i, j, k, this.method_39330(i, k, class_6748.method_39336()));
+		return this.method_39329(i, j, k, this.method_39330(i, k, Blender.getNoBlending()));
 	}
 
 	@Debug
@@ -419,14 +419,14 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		);
 	}
 
-	public TerrainNoisePoint createTerrainNoisePoint(int x, int z, float continentalness, float weirdness, float erosion, class_6748 arg) {
+	public TerrainNoisePoint createTerrainNoisePoint(int x, int z, float continentalness, float weirdness, float erosion, Blender blender) {
 		VanillaTerrainParameters vanillaTerrainParameters = this.config.terrainParameters();
 		VanillaTerrainParameters.NoisePoint noisePoint = vanillaTerrainParameters.createNoisePoint(continentalness, erosion, weirdness);
 		float f = vanillaTerrainParameters.getOffset(noisePoint);
 		float g = vanillaTerrainParameters.getFactor(noisePoint);
 		float h = vanillaTerrainParameters.getPeak(noisePoint);
 		TerrainNoisePoint terrainNoisePoint = new TerrainNoisePoint((double)f, (double)g, (double)h);
-		return arg.method_39340(x, z, terrainNoisePoint);
+		return blender.method_39340(x, z, terrainNoisePoint);
 	}
 
 	@Override

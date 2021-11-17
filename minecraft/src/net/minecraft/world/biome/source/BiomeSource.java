@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,8 +38,8 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public abstract class BiomeSource implements BiomeSupplier {
-	public static final Codec<BiomeSource> CODEC = Registry.BIOME_SOURCE.method_39673().dispatchStable(BiomeSource::getCodec, Function.identity());
-	private final List<Biome> biomes;
+	public static final Codec<BiomeSource> CODEC = Registry.BIOME_SOURCE.getCodec().dispatchStable(BiomeSource::getCodec, Function.identity());
+	private final Set<Biome> biomes;
 	private final List<BiomeSource.class_6827> field_34469;
 
 	protected BiomeSource(Stream<Supplier<Biome>> stream) {
@@ -46,7 +47,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 	}
 
 	protected BiomeSource(List<Biome> list) {
-		this.biomes = list;
+		this.biomes = new ObjectLinkedOpenHashSet<>(list);
 		this.field_34469 = this.method_39525(list, true);
 	}
 
@@ -156,7 +157,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 
 	public abstract BiomeSource withSeed(long seed);
 
-	public List<Biome> getBiomes() {
+	public Set<Biome> getBiomes() {
 		return this.biomes;
 	}
 

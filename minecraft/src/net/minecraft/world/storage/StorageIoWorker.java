@@ -14,8 +14,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.class_6830;
-import net.minecraft.class_6836;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -31,8 +31,8 @@ public class StorageIoWorker implements class_6830, AutoCloseable {
 	private final RegionBasedStorage storage;
 	private final Map<ChunkPos, StorageIoWorker.Result> results = Maps.<ChunkPos, StorageIoWorker.Result>newLinkedHashMap();
 
-	protected StorageIoWorker(Path path, boolean dsync, String name) {
-		this.storage = new RegionBasedStorage(path, dsync);
+	protected StorageIoWorker(Path directory, boolean dsync, String name) {
+		this.storage = new RegionBasedStorage(directory, dsync);
 		this.executor = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + name);
 	}
 
@@ -95,16 +95,16 @@ public class StorageIoWorker implements class_6830, AutoCloseable {
 	}
 
 	@Override
-	public CompletableFuture<Void> method_39795(ChunkPos chunkPos, class_6836 arg) {
+	public CompletableFuture<Void> method_39795(ChunkPos chunkPos, NbtScanner nbtScanner) {
 		return this.run(() -> {
 			try {
 				StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(chunkPos);
 				if (result != null) {
 					if (result.nbt != null) {
-						result.nbt.method_39876(arg);
+						result.nbt.accept(nbtScanner);
 					}
 				} else {
-					this.storage.method_39802(chunkPos, arg);
+					this.storage.method_39802(chunkPos, nbtScanner);
 				}
 
 				return Either.left(null);

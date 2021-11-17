@@ -23,7 +23,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6748;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -69,7 +68,7 @@ import net.minecraft.world.gen.random.RandomSeed;
  * Biome placement starts here, however all vanilla and most modded chunk generators delegate this to a {@linkplain net.minecraft.world.biome.source.BiomeSource biome source}.
  */
 public abstract class ChunkGenerator implements BiomeAccess.Storage {
-	public static final Codec<ChunkGenerator> CODEC = Registry.CHUNK_GENERATOR.method_39673().dispatchStable(ChunkGenerator::getCodec, Function.identity());
+	public static final Codec<ChunkGenerator> CODEC = Registry.CHUNK_GENERATOR.getCodec().dispatchStable(ChunkGenerator::getCodec, Function.identity());
 	/**
 	 * Used to control the population step without replacing the actual biome that comes from the original {@link #biomeSource}.
 	 * 
@@ -156,7 +155,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 	public abstract ChunkGenerator withSeed(long seed);
 
-	public CompletableFuture<Chunk> populateBiomes(Registry<Biome> registry, Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateBiomes(Registry<Biome> registry, Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
 		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
 			chunk.method_38257(this.biomeSource::getBiome, this.getMultiNoiseSampler());
 			return chunk;
@@ -249,6 +248,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 					chunkSection.getBiomeContainer().method_39793(set::add);
 				}
 			});
+			set.retainAll(this.populationSource.getBiomes());
 			int i = list.size();
 
 			try {
@@ -475,7 +475,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 	/**
 	 * Generates the base shape of the chunk out of the basic block states as decided by this chunk generator's config.
 	 */
-	public abstract CompletableFuture<Chunk> populateNoise(Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk);
+	public abstract CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk);
 
 	public abstract int getSeaLevel();
 

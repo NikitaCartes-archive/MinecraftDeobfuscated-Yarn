@@ -736,8 +736,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public LivingEntity.class_6823 method_39760() {
-		return new LivingEntity.class_6823(SoundEvents.ENTITY_ARMOR_STAND_FALL, SoundEvents.ENTITY_ARMOR_STAND_FALL);
+	public LivingEntity.FallSounds getFallSounds() {
+		return new LivingEntity.FallSounds(SoundEvents.ENTITY_ARMOR_STAND_FALL, SoundEvents.ENTITY_ARMOR_STAND_FALL);
 	}
 
 	@Nullable

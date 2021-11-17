@@ -12,7 +12,7 @@ class MatchingFluidsBlockPredicate extends OffsetPredicate {
 	private final List<Fluid> fluids;
 	public static final Codec<MatchingFluidsBlockPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> registerOffsetField(instance)
-				.and(Registry.FLUID.method_39673().listOf().fieldOf("fluids").forGetter(predicate -> predicate.fluids))
+				.and(Registry.FLUID.getCodec().listOf().fieldOf("fluids").forGetter(predicate -> predicate.fluids))
 				.apply(instance, MatchingFluidsBlockPredicate::new)
 	);
 

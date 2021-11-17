@@ -3,7 +3,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.class_6836;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.util.math.MathHelper;
 
@@ -13,19 +13,19 @@ import net.minecraft.util.math.MathHelper;
 public class NbtFloat extends AbstractNbtNumber {
 	private static final int SIZE = 96;
 	public static final NbtFloat ZERO = new NbtFloat(0.0F);
-	public static final NbtType<NbtFloat> TYPE = new NbtType.class_6839<NbtFloat>() {
+	public static final NbtType<NbtFloat> TYPE = new NbtType.OfFixedSize<NbtFloat>() {
 		public NbtFloat read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(96L);
 			return NbtFloat.of(dataInput.readFloat());
 		}
 
 		@Override
-		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
-			return arg.method_39859(dataInput.readFloat());
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
+			return visitor.visitFloat(input.readFloat());
 		}
 
 		@Override
-		public int method_39853() {
+		public int getSizeInBytes() {
 			return 4;
 		}
 
@@ -122,7 +122,7 @@ public class NbtFloat extends AbstractNbtNumber {
 	}
 
 	@Override
-	public class_6836.class_6838 method_39850(class_6836 arg) {
-		return arg.method_39859(this.value);
+	public NbtScanner.Result doAccept(NbtScanner visitor) {
+		return visitor.visitFloat(this.value);
 	}
 }

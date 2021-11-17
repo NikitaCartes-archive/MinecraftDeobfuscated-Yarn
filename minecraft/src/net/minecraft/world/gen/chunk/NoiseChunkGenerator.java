@@ -17,7 +17,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6748;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
@@ -124,22 +123,22 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public CompletableFuture<Chunk> populateBiomes(Registry<Biome> registry, Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateBiomes(Registry<Biome> registry, Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
 		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
-			this.method_38327(registry, arg, structureAccessor, chunk);
+			this.method_38327(registry, blender, structureAccessor, chunk);
 			return chunk;
 		}), Util.getMainWorkerExecutor());
 	}
 
-	private void method_38327(Registry<Biome> registry, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
+	private void method_38327(Registry<Biome> registry, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
 			this.noiseColumnSampler,
 			() -> new StructureWeightSampler(structureAccessor, chunk),
 			(ChunkGeneratorSettings)this.settings.get(),
 			this.fluidLevelSampler,
-			arg
+			blender
 		);
-		BiomeSupplier biomeSupplier = BelowZeroRetrogen.method_39767(arg.method_39563(this.biomeSource), registry, chunk);
+		BiomeSupplier biomeSupplier = BelowZeroRetrogen.getBiomeSupplier(blender.getBiomeSupplier(this.biomeSource), registry, chunk);
 		chunk.method_38257(biomeSupplier, (i, y, j) -> this.noiseColumnSampler.method_39329(i, y, j, chunkNoiseSampler.createMultiNoisePoint(i, j)));
 	}
 
@@ -237,11 +236,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			HeightContext heightContext = new HeightContext(this, region);
 			ChunkGeneratorSettings chunkGeneratorSettings = (ChunkGeneratorSettings)this.settings.get();
 			ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
-				this.noiseColumnSampler,
-				() -> new StructureWeightSampler(structures, chunk),
-				chunkGeneratorSettings,
-				this.fluidLevelSampler,
-				class_6748.method_39342(region)
+				this.noiseColumnSampler, () -> new StructureWeightSampler(structures, chunk), chunkGeneratorSettings, this.fluidLevelSampler, Blender.getBlender(region)
 			);
 			this.surfaceBuilder
 				.buildSurface(
@@ -269,7 +264,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			() -> new StructureWeightSampler(structureAccessor, chunk),
 			(ChunkGeneratorSettings)this.settings.get(),
 			this.fluidLevelSampler,
-			class_6748.method_39342(chunkRegion)
+			Blender.getBlender(chunkRegion)
 		);
 		AquiferSampler aquiferSampler = chunkNoiseSampler.getAquiferSampler();
 		CarverContext carverContext = new CarverContext(this, chunkRegion.getRegistryManager(), chunk.getHeightLimitView(), chunkNoiseSampler);
@@ -300,7 +295,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public CompletableFuture<Chunk> populateNoise(Executor executor, class_6748 arg, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
 		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig();
 		HeightLimitView heightLimitView = chunk.getHeightLimitView();
 		int i = Math.max(generationShapeConfig.minimumY(), heightLimitView.getBottomY());
@@ -321,7 +316,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			}
 
 			return CompletableFuture.supplyAsync(
-					Util.debugSupplier("wgen_fill_noise", () -> this.populateNoise(arg, structureAccessor, chunk, k, l)), Util.getMainWorkerExecutor()
+					Util.debugSupplier("wgen_fill_noise", () -> this.populateNoise(blender, structureAccessor, chunk, k, l)), Util.getMainWorkerExecutor()
 				)
 				.whenCompleteAsync((chunkx, throwable) -> {
 					for (ChunkSection chunkSectionx : set) {
@@ -331,10 +326,10 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		}
 	}
 
-	private Chunk populateNoise(class_6748 arg, StructureAccessor structureAccessor, Chunk chunk, int i, int j) {
+	private Chunk populateNoise(Blender blender, StructureAccessor structureAccessor, Chunk chunk, int i, int j) {
 		ChunkGeneratorSettings chunkGeneratorSettings = (ChunkGeneratorSettings)this.settings.get();
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
-			this.noiseColumnSampler, () -> new StructureWeightSampler(structureAccessor, chunk), chunkGeneratorSettings, this.fluidLevelSampler, arg
+			this.noiseColumnSampler, () -> new StructureWeightSampler(structureAccessor, chunk), chunkGeneratorSettings, this.fluidLevelSampler, blender
 		);
 		Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
 		Heightmap heightmap2 = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);

@@ -22,7 +22,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 	);
 	StructureProcessorType<ProtectedBlocksStructureProcessor> PROTECTED_BLOCKS = register("protected_blocks", ProtectedBlocksStructureProcessor.CODEC);
 	Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR
-		.method_39673()
+		.getCodec()
 		.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
 	Codec<StructureProcessorList> field_26663 = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
 	Codec<StructureProcessorList> field_25876 = Codec.either(field_26663.fieldOf("processors").codec(), field_26663)

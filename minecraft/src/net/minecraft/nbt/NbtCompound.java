@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.class_6836;
+import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -32,7 +32,7 @@ public class NbtCompound implements NbtElement {
 	}, nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
 	private static final int SIZE = 384;
 	private static final int field_33191 = 256;
-	public static final NbtType<NbtCompound> TYPE = new NbtType.class_6840<NbtCompound>() {
+	public static final NbtType<NbtCompound> TYPE = new NbtType.OfVariableSize<NbtCompound>() {
 		public NbtCompound read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(384L);
 			if (i > 512) {
@@ -55,37 +55,37 @@ public class NbtCompound implements NbtElement {
 		}
 
 		@Override
-		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) throws IOException {
 			byte b;
 			label33:
-			while ((b = dataInput.readByte()) != 0) {
+			while ((b = input.readByte()) != 0) {
 				NbtType<?> nbtType = NbtTypes.byId(b);
-				switch (arg.method_39863(nbtType)) {
+				switch (visitor.visitSubNbtType(nbtType)) {
 					case HALT:
-						return class_6836.class_6838.HALT;
+						return NbtScanner.Result.HALT;
 					case BREAK:
-						NbtString.method_39875(dataInput);
-						nbtType.method_39851(dataInput);
+						NbtString.skip(input);
+						nbtType.skip(input);
 						break label33;
 					case SKIP:
-						NbtString.method_39875(dataInput);
-						nbtType.method_39851(dataInput);
+						NbtString.skip(input);
+						nbtType.skip(input);
 						break;
 					default:
-						String string = dataInput.readUTF();
-						switch (arg.method_39865(nbtType, string)) {
+						String string = input.readUTF();
+						switch (visitor.startSubNbt(nbtType, string)) {
 							case HALT:
-								return class_6836.class_6838.HALT;
+								return NbtScanner.Result.HALT;
 							case BREAK:
-								nbtType.method_39851(dataInput);
+								nbtType.skip(input);
 								break label33;
 							case SKIP:
-								nbtType.method_39851(dataInput);
+								nbtType.skip(input);
 								break;
 							default:
-								switch (nbtType.method_39852(dataInput, arg)) {
+								switch (nbtType.doAccept(input, visitor)) {
 									case HALT:
-										return class_6836.class_6838.HALT;
+										return NbtScanner.Result.HALT;
 									case BREAK:
 								}
 						}
@@ -93,21 +93,21 @@ public class NbtCompound implements NbtElement {
 			}
 
 			if (b != 0) {
-				while ((b = dataInput.readByte()) != 0) {
-					NbtString.method_39875(dataInput);
-					NbtTypes.byId(b).method_39851(dataInput);
+				while ((b = input.readByte()) != 0) {
+					NbtString.skip(input);
+					NbtTypes.byId(b).skip(input);
 				}
 			}
 
-			return arg.method_39870();
+			return visitor.endNested();
 		}
 
 		@Override
-		public void method_39851(DataInput dataInput) throws IOException {
+		public void skip(DataInput input) throws IOException {
 			byte b;
-			while ((b = dataInput.readByte()) != 0) {
-				NbtString.method_39875(dataInput);
-				NbtTypes.byId(b).method_39851(dataInput);
+			while ((b = input.readByte()) != 0) {
+				NbtString.skip(input);
+				NbtTypes.byId(b).skip(input);
 			}
 		}
 
@@ -527,39 +527,39 @@ public class NbtCompound implements NbtElement {
 	}
 
 	@Override
-	public class_6836.class_6838 method_39850(class_6836 arg) {
+	public NbtScanner.Result doAccept(NbtScanner visitor) {
 		for (Entry<String, NbtElement> entry : this.entries.entrySet()) {
 			NbtElement nbtElement = (NbtElement)entry.getValue();
 			NbtType<?> nbtType = nbtElement.getNbtType();
-			class_6836.class_6837 lv = arg.method_39863(nbtType);
-			switch (lv) {
+			NbtScanner.NestedResult nestedResult = visitor.visitSubNbtType(nbtType);
+			switch (nestedResult) {
 				case HALT:
-					return class_6836.class_6838.HALT;
+					return NbtScanner.Result.HALT;
 				case BREAK:
-					return arg.method_39870();
+					return visitor.endNested();
 				case SKIP:
 					break;
 				default:
-					lv = arg.method_39865(nbtType, (String)entry.getKey());
-					switch (lv) {
+					nestedResult = visitor.startSubNbt(nbtType, (String)entry.getKey());
+					switch (nestedResult) {
 						case HALT:
-							return class_6836.class_6838.HALT;
+							return NbtScanner.Result.HALT;
 						case BREAK:
-							return arg.method_39870();
+							return visitor.endNested();
 						case SKIP:
 							break;
 						default:
-							class_6836.class_6838 lv2 = nbtElement.method_39850(arg);
-							switch (lv2) {
+							NbtScanner.Result result = nbtElement.doAccept(visitor);
+							switch (result) {
 								case HALT:
-									return class_6836.class_6838.HALT;
+									return NbtScanner.Result.HALT;
 								case BREAK:
-									return arg.method_39870();
+									return visitor.endNested();
 							}
 					}
 			}
 		}
 
-		return arg.method_39870();
+		return visitor.endNested();
 	}
 }
