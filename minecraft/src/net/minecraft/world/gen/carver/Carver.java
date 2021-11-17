@@ -21,7 +21,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.AquiferSampler;
-import net.minecraft.world.tick.OrderedTick;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
@@ -125,7 +124,7 @@ public abstract class Carver<C extends CarverConfig> {
 			int n = Math.max(MathHelper.floor(d - g) - l - 1, 0);
 			int o = Math.min(MathHelper.floor(d + g) - l, 15);
 			int p = Math.max(MathHelper.floor(e - h) - 1, context.getMinY() + 1);
-			int q = Math.min(MathHelper.floor(e + h) + 1, context.getMinY() + context.getHeight() - 8);
+			int q = Math.min(MathHelper.floor(e + h) + 1, context.getMinY() + context.getHeight() - 2);
 			int r = Math.max(MathHelper.floor(f - g) - m - 1, 0);
 			int s = Math.min(MathHelper.floor(f + g) - m, 15);
 			boolean bl = false;
@@ -185,7 +184,7 @@ public abstract class Carver<C extends CarverConfig> {
 			} else {
 				chunk.setBlockState(mutable, blockState2, false);
 				if (aquiferSampler.needsFluidTick() && !blockState2.getFluidState().isEmpty()) {
-					chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockState2.getFluidState().getFluid(), mutable, 0L));
+					chunk.markBlockForPostProcessing(mutable);
 				}
 
 				if (mutableBoolean.isTrue()) {
@@ -194,7 +193,7 @@ public abstract class Carver<C extends CarverConfig> {
 						context.method_39114(posToBiome, chunk, mutable2, !blockState2.getFluidState().isEmpty()).ifPresent(blockStatex -> {
 							chunk.setBlockState(mutable2, blockStatex, false);
 							if (!blockStatex.getFluidState().isEmpty()) {
-								chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockStatex.getFluidState().getFluid(), mutable2, 0L));
+								chunk.markBlockForPostProcessing(mutable2);
 							}
 						});
 					}

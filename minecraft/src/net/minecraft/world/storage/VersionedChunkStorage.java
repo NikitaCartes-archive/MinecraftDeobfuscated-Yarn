@@ -2,12 +2,13 @@ package net.minecraft.world.storage;
 
 import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Codec;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6830;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -20,14 +21,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class VersionedChunkStorage implements AutoCloseable {
+	public static final int field_36219 = 1493;
 	private final StorageIoWorker worker;
 	protected final DataFixer dataFixer;
 	@Nullable
 	private FeatureUpdater featureUpdater;
 
-	public VersionedChunkStorage(File directory, DataFixer dataFixer, boolean dsync) {
+	public VersionedChunkStorage(Path path, DataFixer dataFixer, boolean dsync) {
 		this.dataFixer = dataFixer;
-		this.worker = new StorageIoWorker(directory, dsync, "chunk");
+		this.worker = new StorageIoWorker(path, dsync, "chunk");
 	}
 
 	public NbtCompound updateChunkNbt(
@@ -37,7 +39,6 @@ public class VersionedChunkStorage implements AutoCloseable {
 		Optional<RegistryKey<Codec<? extends ChunkGenerator>>> optional
 	) {
 		int i = getDataVersion(nbt);
-		int j = 1493;
 		if (i < 1493) {
 			nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, i, 1493);
 			if (nbt.getCompound("Level").getBoolean("hasLegacyStructureData")) {
@@ -49,13 +50,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 			}
 		}
 
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("dimension", worldKey.getValue().toString());
-		if (optional.isPresent()) {
-			nbtCompound.putString("generator", ((RegistryKey)optional.get()).getValue().toString());
-		}
-
-		nbt.put("__context", nbtCompound);
+		method_39799(nbt, worldKey, optional);
 		nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, Math.max(1493, i));
 		if (i < SharedConstants.getGameVersion().getWorldVersion()) {
 			nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
@@ -63,6 +58,13 @@ public class VersionedChunkStorage implements AutoCloseable {
 
 		nbt.remove("__context");
 		return nbt;
+	}
+
+	public static void method_39799(NbtCompound nbtCompound, RegistryKey<World> registryKey, Optional<RegistryKey<Codec<? extends ChunkGenerator>>> optional) {
+		NbtCompound nbtCompound2 = new NbtCompound();
+		nbtCompound2.putString("dimension", registryKey.getValue().toString());
+		optional.ifPresent(registryKeyx -> nbtCompound2.putString("generator", registryKeyx.getValue().toString()));
+		nbtCompound.put("__context", nbtCompound2);
 	}
 
 	public static int getDataVersion(NbtCompound nbt) {
@@ -87,5 +89,9 @@ public class VersionedChunkStorage implements AutoCloseable {
 
 	public void close() throws IOException {
 		this.worker.close();
+	}
+
+	public class_6830 method_39800() {
+		return this.worker;
 	}
 }

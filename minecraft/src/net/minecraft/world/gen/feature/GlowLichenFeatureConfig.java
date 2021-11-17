@@ -4,12 +4,11 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
 
 public class GlowLichenFeatureConfig implements FeatureConfig {
 	public static final Codec<GlowLichenFeatureConfig> CODEC = RecordCodecBuilder.create(
@@ -19,7 +18,7 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 					Codec.BOOL.fieldOf("can_place_on_ceiling").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnCeiling),
 					Codec.BOOL.fieldOf("can_place_on_wall").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnWalls),
 					Codec.floatRange(0.0F, 1.0F).fieldOf("chance_of_spreading").orElse(0.5F).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.spreadChance),
-					BlockState.CODEC.listOf().fieldOf("can_be_placed_on").forGetter(glowLichenFeatureConfig -> new ArrayList(glowLichenFeatureConfig.canPlaceOn))
+					Registry.BLOCK.method_39673().listOf().fieldOf("can_be_placed_on").forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.canPlaceOn)
 				)
 				.apply(instance, GlowLichenFeatureConfig::new)
 	);
@@ -28,11 +27,11 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 	public final boolean placeOnCeiling;
 	public final boolean placeOnWalls;
 	public final float spreadChance;
-	public final List<BlockState> canPlaceOn;
+	public final List<Block> canPlaceOn;
 	public final List<Direction> directions;
 
 	public GlowLichenFeatureConfig(
-		int searchRange, boolean placeOnFloor, boolean placeOnCeiling, boolean placeOnWalls, float spreadChance, List<BlockState> canPlaceOn
+		int searchRange, boolean placeOnFloor, boolean placeOnCeiling, boolean placeOnWalls, float spreadChance, List<Block> canPlaceOn
 	) {
 		this.searchRange = searchRange;
 		this.placeOnFloor = placeOnFloor;
@@ -54,9 +53,5 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 		}
 
 		this.directions = Collections.unmodifiableList(list);
-	}
-
-	public boolean canGrowOn(Block block) {
-		return this.canPlaceOn.stream().anyMatch(state -> state.isOf(block));
 	}
 }

@@ -3,6 +3,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
@@ -17,6 +18,19 @@ public class NbtNull implements NbtElement {
 		public NbtNull read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
 			nbtTagSizeTracker.add(64L);
 			return NbtNull.INSTANCE;
+		}
+
+		@Override
+		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) {
+			return arg.method_39856();
+		}
+
+		@Override
+		public void method_39854(DataInput dataInput, int i) {
+		}
+
+		@Override
+		public void method_39851(DataInput dataInput) {
 		}
 
 		@Override
@@ -65,5 +79,10 @@ public class NbtNull implements NbtElement {
 	@Override
 	public void accept(NbtElementVisitor visitor) {
 		visitor.visitNull(this);
+	}
+
+	@Override
+	public class_6836.class_6838 method_39850(class_6836 arg) {
+		return arg.method_39856();
 	}
 }

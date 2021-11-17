@@ -20,9 +20,9 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -146,10 +146,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		int viewDistance,
 		boolean dsync
 	) {
-		super(new File(session.getWorldDirectory(world.getRegistryKey()), "region"), dataFixer, dsync);
+		super(session.getWorldDirectory(world.getRegistryKey()).resolve("region"), dataFixer, dsync);
 		this.structureManager = structureManager;
-		File file = session.getWorldDirectory(world.getRegistryKey());
-		this.saveDir = file.getName();
+		Path path = session.getWorldDirectory(world.getRegistryKey());
+		this.saveDir = path.getFileName().toString();
 		this.world = world;
 		this.chunkGenerator = chunkGenerator;
 		this.mainThreadExecutor = mainThreadExecutor;
@@ -166,7 +166,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(executor, mainThreadExecutor);
 		this.persistentStateManagerFactory = persistentStateManagerFactory;
-		this.pointOfInterestStorage = new PointOfInterestStorage(new File(file, "poi"), dataFixer, dsync, world);
+		this.pointOfInterestStorage = new PointOfInterestStorage(path.resolve("poi"), dataFixer, dsync, world);
 		this.setViewDistance(viewDistance);
 	}
 

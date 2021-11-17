@@ -8,8 +8,11 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_6833;
+import net.minecraft.class_6834;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -105,7 +108,7 @@ public class StructureFeature<C extends FeatureConfig> {
 	public static final List<StructureFeature<?>> LAND_MODIFYING_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
 	public static final int field_31518 = 8;
 	private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
-	private final StructurePiecesGenerator<C> piecesGenerator;
+	private final class_6834<C> piecesGenerator;
 	private final PostPlacementProcessor postProcessor;
 
 	private static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
@@ -114,11 +117,11 @@ public class StructureFeature<C extends FeatureConfig> {
 		return Registry.register(Registry.STRUCTURE_FEATURE, name.toLowerCase(Locale.ROOT), structureFeature);
 	}
 
-	public StructureFeature(Codec<C> configCodec, StructurePiecesGenerator<C> piecesGenerator) {
+	public StructureFeature(Codec<C> configCodec, class_6834<C> piecesGenerator) {
 		this(configCodec, piecesGenerator, PostPlacementProcessor.EMPTY);
 	}
 
-	public StructureFeature(Codec<C> configCodec, StructurePiecesGenerator<C> piecesGenerator, PostPlacementProcessor postPlacementProcessor) {
+	public StructureFeature(Codec<C> configCodec, class_6834<C> piecesGenerator, PostPlacementProcessor postPlacementProcessor) {
 		this.codec = configCodec.fieldOf("config")
 			.<ConfiguredStructureFeature<C, StructureFeature<C>>>xmap(
 				config -> new ConfiguredStructureFeature<>(this, (C)config), configuredFeature -> configuredFeature.config
@@ -198,7 +201,7 @@ public class StructureFeature<C extends FeatureConfig> {
 	 */
 	@Nullable
 	public BlockPos locateStructure(
-		WorldView world,
+		WorldView worldView,
 		StructureAccessor structureAccessor,
 		BlockPos searchStartPos,
 		int searchRadius,
@@ -220,21 +223,28 @@ public class StructureFeature<C extends FeatureConfig> {
 						int o = j + i * m;
 						int p = k + i * n;
 						ChunkPos chunkPos = this.getStartChunk(config, worldSeed, o, p);
-						Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
-						StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk), this, chunk);
-						if (structureStart != null && structureStart.hasChildren()) {
-							if (skipExistingChunks && structureStart.isInExistingChunk()) {
-								structureStart.incrementReferences();
-								return this.getLocatedPos(structureStart.getPos());
+						class_6833 lv = structureAccessor.method_39783(chunkPos, this, skipExistingChunks);
+						if (lv != class_6833.START_NOT_PRESENT) {
+							if (!skipExistingChunks && lv == class_6833.START_PRESENT) {
+								return this.getLocatedPos(chunkPos);
 							}
 
-							if (!skipExistingChunks) {
-								return this.getLocatedPos(structureStart.getPos());
-							}
-						}
+							Chunk chunk = worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
+							StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk), this, chunk);
+							if (structureStart != null && structureStart.hasChildren()) {
+								if (skipExistingChunks && structureStart.isInExistingChunk()) {
+									structureAccessor.method_39784(structureStart);
+									return this.getLocatedPos(structureStart.getPos());
+								}
 
-						if (l == 0) {
-							break;
+								if (!skipExistingChunks) {
+									return this.getLocatedPos(structureStart.getPos());
+								}
+							}
+
+							if (l == 0) {
+								break;
+							}
 						}
 					}
 				}
@@ -289,15 +299,6 @@ public class StructureFeature<C extends FeatureConfig> {
 	}
 
 	/**
-	 * Checks if this structure can <em>actually</em> be placed at a potential structure position determined via
-	 * {@link #getStartChunk}. Specific structures override this method to reduce the spawn probability or
-	 * restrict the spawn in some other way.
-	 */
-	protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkPos pos, C config, HeightLimitView world) {
-		return true;
-	}
-
-	/**
 	 * Tries to place a starting point for this type of structure in the given chunk.
 	 * <p>
 	 * If this structure doesn't have a starting point in the chunk, {@link StructureStart#DEFAULT}
@@ -317,23 +318,43 @@ public class StructureFeature<C extends FeatureConfig> {
 		Predicate<Biome> biomeLimit
 	) {
 		ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, pos.x, pos.z);
-		if (pos.x == chunkPos.x && pos.z == chunkPos.z && this.shouldStartAt(chunkGenerator, biomeSource, worldSeed, pos, config, world)) {
-			StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
-			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-			chunkRandom.setCarverSeed(worldSeed, pos.x, pos.z);
-			this.piecesGenerator
-				.generatePieces(
-					structurePiecesCollector,
-					config,
-					new StructurePiecesGenerator.Context(registryManager, chunkGenerator, structureManager, pos, biomeLimit, world, chunkRandom, worldSeed)
-				);
-			StructureStart<C> structureStart = new StructureStart<>(this, pos, structureReferences, structurePiecesCollector.toList());
-			if (structureStart.hasChildren()) {
-				return structureStart;
+		if (pos.x == chunkPos.x && pos.z == chunkPos.z) {
+			Optional<StructurePiecesGenerator<C>> optional = this.piecesGenerator
+				.createGenerator(new class_6834.class_6835(chunkGenerator, biomeSource, worldSeed, pos, config, world, biomeLimit, structureManager, registryManager));
+			if (optional.isPresent()) {
+				StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
+				ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+				chunkRandom.setCarverSeed(worldSeed, pos.x, pos.z);
+				((StructurePiecesGenerator)optional.get())
+					.generatePieces(
+						structurePiecesCollector, new StructurePiecesGenerator.Context(config, chunkGenerator, structureManager, pos, world, chunkRandom, worldSeed)
+					);
+				StructureStart<C> structureStart = new StructureStart<>(this, pos, structureReferences, structurePiecesCollector.toList());
+				if (structureStart.hasChildren()) {
+					return structureStart;
+				}
 			}
 		}
 
 		return StructureStart.DEFAULT;
+	}
+
+	public boolean method_39821(
+		DynamicRegistryManager dynamicRegistryManager,
+		ChunkGenerator chunkGenerator,
+		BiomeSource biomeSource,
+		StructureManager structureManager,
+		long l,
+		ChunkPos chunkPos,
+		C featureConfig,
+		HeightLimitView heightLimitView,
+		Predicate<Biome> predicate
+	) {
+		return this.piecesGenerator
+			.createGenerator(
+				new class_6834.class_6835(chunkGenerator, biomeSource, l, chunkPos, featureConfig, heightLimitView, predicate, structureManager, dynamicRegistryManager)
+			)
+			.isPresent();
 	}
 
 	public PostPlacementProcessor getPostProcessor() {

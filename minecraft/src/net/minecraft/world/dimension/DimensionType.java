@@ -7,7 +7,7 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.DataResult.PartialResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.function.Function;
@@ -378,15 +378,15 @@ public class DimensionType {
 		return this.equals(THE_END) ? "_end" : "";
 	}
 
-	public static File getSaveDirectory(RegistryKey<World> worldRef, File root) {
+	public static Path getSaveDirectory(RegistryKey<World> worldRef, Path path) {
 		if (worldRef == World.OVERWORLD) {
-			return root;
+			return path;
 		} else if (worldRef == World.END) {
-			return new File(root, "DIM1");
+			return path.resolve("DIM1");
 		} else {
 			return worldRef == World.NETHER
-				? new File(root, "DIM-1")
-				: new File(root, "dimensions/" + worldRef.getValue().getNamespace() + "/" + worldRef.getValue().getPath());
+				? path.resolve("DIM-1")
+				: path.resolve("dimensions").resolve(worldRef.getValue().getNamespace()).resolve(worldRef.getValue().getPath());
 		}
 	}
 

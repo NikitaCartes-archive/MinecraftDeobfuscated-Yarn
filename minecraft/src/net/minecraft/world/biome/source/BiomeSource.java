@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.lang.runtime.ObjectMethods;
 import java.util.ArrayList;
@@ -22,11 +23,13 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.util.TopologicalSorts;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -37,7 +40,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 public abstract class BiomeSource implements BiomeSupplier {
 	public static final Codec<BiomeSource> CODEC = Registry.BIOME_SOURCE.method_39673().dispatchStable(BiomeSource::getCodec, Function.identity());
 	private final List<Biome> biomes;
-	private final List<List<PlacedFeature>> field_34469;
+	private final List<BiomeSource.class_6827> field_34469;
 
 	protected BiomeSource(Stream<Supplier<Biome>> stream) {
 		this((List<Biome>)stream.map(Supplier::get).distinct().collect(ImmutableList.toImmutableList()));
@@ -48,7 +51,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 		this.field_34469 = this.method_39525(list, true);
 	}
 
-	private List<List<PlacedFeature>> method_39525(List<Biome> list, boolean bl) {
+	private List<BiomeSource.class_6827> method_39525(List<Biome> list, boolean bl) {
 		Object2IntMap<PlacedFeature> object2IntMap = new Object2IntOpenHashMap<>();
 		MutableInt mutableInt = new MutableInt(0);
 
@@ -156,11 +159,19 @@ public abstract class BiomeSource implements BiomeSupplier {
 		}
 
 		Collections.reverse(list2);
-		Builder<List<PlacedFeature>> builder = ImmutableList.builder();
+		Builder<BiomeSource.class_6827> builder = ImmutableList.builder();
 
 		for(int j = 0; j < i; ++j) {
 			int l = j;
-			builder.add((List)list2.stream().filter(arg -> arg.step() == l).map(class_6543::feature).collect(Collectors.toList()));
+			List<PlacedFeature> list5 = (List)list2.stream().filter(arg -> arg.step() == l).map(class_6543::feature).collect(Collectors.toList());
+			int m = list5.size();
+			Object2IntMap<PlacedFeature> object2IntMap2 = new Object2IntOpenCustomHashMap<>(m, Util.identityHashStrategy());
+
+			for(int n = 0; n < m; ++n) {
+				object2IntMap2.put((PlacedFeature)list5.get(n), n);
+			}
+
+			builder.add(new BiomeSource.class_6827(list5, object2IntMap2));
 		}
 
 		return builder.build();
@@ -254,7 +265,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 	public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
 	}
 
-	public List<List<PlacedFeature>> method_38115() {
+	public List<BiomeSource.class_6827> method_38115() {
 		return this.field_34469;
 	}
 
@@ -263,5 +274,41 @@ public abstract class BiomeSource implements BiomeSupplier {
 		Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.CODEC);
 		Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.CODEC);
 		Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
+	}
+
+	public static final class class_6827 extends Record {
+		private final List<PlacedFeature> features;
+		private final ToIntFunction<PlacedFeature> indexMapping;
+
+		public class_6827(List<PlacedFeature> list, ToIntFunction<PlacedFeature> toIntFunction) {
+			this.features = list;
+			this.indexMapping = toIntFunction;
+		}
+
+		public final String toString() {
+			return ObjectMethods.bootstrap<"toString",BiomeSource.class_6827,"features;indexMapping",BiomeSource.class_6827::features,BiomeSource.class_6827::indexMapping>(
+				this
+			);
+		}
+
+		public final int hashCode() {
+			return ObjectMethods.bootstrap<"hashCode",BiomeSource.class_6827,"features;indexMapping",BiomeSource.class_6827::features,BiomeSource.class_6827::indexMapping>(
+				this
+			);
+		}
+
+		public final boolean equals(Object object) {
+			return ObjectMethods.bootstrap<"equals",BiomeSource.class_6827,"features;indexMapping",BiomeSource.class_6827::features,BiomeSource.class_6827::indexMapping>(
+				this, object
+			);
+		}
+
+		public List<PlacedFeature> features() {
+			return this.features;
+		}
+
+		public ToIntFunction<PlacedFeature> indexMapping() {
+			return this.indexMapping;
+		}
 	}
 }

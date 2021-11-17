@@ -80,7 +80,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		MultiplayerServerListWidget.Entry entry = this.getSelectedOrNull();
-		return entry != null ? entry.keyPressed(keyCode, scanCode, modifiers) : super.keyPressed(keyCode, scanCode, modifiers);
+		return entry != null && entry.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.minecraft.class_6834;
 import net.minecraft.structure.OceanRuinGenerator;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
@@ -15,15 +16,13 @@ import net.minecraft.world.Heightmap;
 
 public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 	public OceanRuinFeature(Codec<OceanRuinFeatureConfig> configCodec) {
-		super(configCodec, OceanRuinFeature::addPieces);
+		super(configCodec, class_6834.simple(class_6834.checkForBiomeOnTop(Heightmap.Type.OCEAN_FLOOR_WG), OceanRuinFeature::addPieces));
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, OceanRuinFeatureConfig config, StructurePiecesGenerator.Context context) {
-		if (context.isBiomeValid(Heightmap.Type.OCEAN_FLOOR_WG)) {
-			BlockPos blockPos = new BlockPos(context.chunkPos().getStartX(), 90, context.chunkPos().getStartZ());
-			BlockRotation blockRotation = BlockRotation.random(context.random());
-			OceanRuinGenerator.addPieces(context.structureManager(), blockPos, blockRotation, collector, context.random(), config);
-		}
+	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<OceanRuinFeatureConfig> context) {
+		BlockPos blockPos = new BlockPos(context.chunkPos().getStartX(), 90, context.chunkPos().getStartZ());
+		BlockRotation blockRotation = BlockRotation.random(context.random());
+		OceanRuinGenerator.addPieces(context.structureManager(), blockPos, blockRotation, collector, context.random(), (OceanRuinFeatureConfig)context.config());
 	}
 
 	public static enum BiomeType implements StringIdentifiable {

@@ -1,13 +1,10 @@
 package net.minecraft.world.storage;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -45,8 +42,8 @@ public class RegionFile implements AutoCloseable {
 	@VisibleForTesting
 	protected final SectorMap sectors = new SectorMap();
 
-	public RegionFile(File file, File directory, boolean dsync) throws IOException {
-		this(file.toPath(), directory.toPath(), ChunkStreamVersion.DEFLATE, dsync);
+	public RegionFile(Path path, Path path2, boolean dsync) throws IOException {
+		this(path, path2, ChunkStreamVersion.DEFLATE, dsync);
 	}
 
 	public RegionFile(Path file, Path directory, ChunkStreamVersion outputChunkStreamVersion, boolean dsync) throws IOException {
@@ -165,7 +162,7 @@ public class RegionFile implements AutoCloseable {
 			LOGGER.error("Chunk {} has invalid chunk stream version {}", chunkPos, b);
 			return null;
 		} else {
-			return new DataInputStream(new BufferedInputStream(chunkStreamVersion.wrap(inputStream)));
+			return new DataInputStream(chunkStreamVersion.wrap(inputStream));
 		}
 	}
 
@@ -249,7 +246,7 @@ public class RegionFile implements AutoCloseable {
 	}
 
 	public DataOutputStream getChunkOutputStream(ChunkPos pos) throws IOException {
-		return new DataOutputStream(new BufferedOutputStream(this.outputChunkStreamVersion.wrap(new RegionFile.ChunkBuffer(pos))));
+		return new DataOutputStream(this.outputChunkStreamVersion.wrap(new RegionFile.ChunkBuffer(pos)));
 	}
 
 	public void sync() throws IOException {

@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -76,11 +77,12 @@ public class WorldChunk extends Chunk {
 		
 	);
 	private boolean loadedToWorld;
+	private boolean field_36218 = false;
 	final World world;
 	@Nullable
 	private Supplier<ChunkHolder.LevelType> levelTypeProvider;
 	@Nullable
-	private Consumer<WorldChunk> loadToWorldConsumer;
+	private WorldChunk.class_6829 loadToWorldConsumer;
 	private final Int2ObjectMap<GameEventDispatcher> gameEventDispatchers;
 	private final ChunkTickScheduler<Block> blockTickScheduler;
 	private final ChunkTickScheduler<Fluid> fluidTickScheduler;
@@ -97,7 +99,7 @@ public class WorldChunk extends Chunk {
 		ChunkTickScheduler<Fluid> fluidTickScheduler,
 		long inhabitedTime,
 		@Nullable ChunkSection[] sectionArrayInitializer,
-		@Nullable Consumer<WorldChunk> loadToWorldConsumer,
+		@Nullable WorldChunk.class_6829 arg,
 		@Nullable Blender blendingData
 	) {
 		super(pos, upgradeData, world, world.getRegistryManager().get(Registry.BIOME_KEY), inhabitedTime, sectionArrayInitializer, blendingData);
@@ -110,12 +112,12 @@ public class WorldChunk extends Chunk {
 			}
 		}
 
-		this.loadToWorldConsumer = loadToWorldConsumer;
+		this.loadToWorldConsumer = arg;
 		this.blockTickScheduler = blockTickScheduler;
 		this.fluidTickScheduler = fluidTickScheduler;
 	}
 
-	public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
+	public WorldChunk(ServerWorld world, ProtoChunk protoChunk, @Nullable WorldChunk.class_6829 arg) {
 		this(
 			world,
 			protoChunk.getPos(),
@@ -124,7 +126,7 @@ public class WorldChunk extends Chunk {
 			protoChunk.getFluidProtoTickScheduler(),
 			protoChunk.getInhabitedTime(),
 			protoChunk.getSectionArray(),
-			loadToWorldConsumer,
+			arg,
 			protoChunk.getBlender()
 		);
 
@@ -434,7 +436,7 @@ public class WorldChunk extends Chunk {
 
 	public void loadToWorld() {
 		if (this.loadToWorldConsumer != null) {
-			this.loadToWorldConsumer.accept(this);
+			this.loadToWorldConsumer.run(this);
 			this.loadToWorldConsumer = null;
 		}
 	}
@@ -494,8 +496,15 @@ public class WorldChunk extends Chunk {
 				for(Short short_ : this.postProcessingLists[i]) {
 					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.sectionIndexToCoord(i), chunkPos);
 					BlockState blockState = this.getBlockState(blockPos);
-					BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
-					this.world.setBlockState(blockPos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
+					FluidState fluidState = blockState.getFluidState();
+					if (!fluidState.isEmpty()) {
+						fluidState.onScheduledTick(this.world, blockPos);
+					}
+
+					if (!(blockState.getBlock() instanceof FluidBlock)) {
+						BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
+						this.world.setBlockState(blockPos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
+					}
 				}
 
 				this.postProcessingLists[i].clear();
@@ -616,6 +625,14 @@ public class WorldChunk extends Chunk {
 		return new WorldChunk.DirectBlockEntityTickInvoker<>(blockEntity, blockEntityTicker);
 	}
 
+	public boolean method_39791() {
+		return this.field_36218;
+	}
+
+	public void method_39792(boolean bl) {
+		this.field_36218 = bl;
+	}
+
 	public static enum CreationType {
 		IMMEDIATE,
 		QUEUED,
@@ -714,5 +731,10 @@ public class WorldChunk extends Chunk {
 		public String toString() {
 			return this.wrapped.toString() + " <wrapped>";
 		}
+	}
+
+	@FunctionalInterface
+	public interface class_6829 {
+		void run(WorldChunk worldChunk);
 	}
 }

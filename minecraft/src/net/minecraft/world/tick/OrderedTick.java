@@ -59,10 +59,6 @@ public final class OrderedTick extends Record {
 		return new OrderedTick(type, pos, 0L, TickPriority.NORMAL, 0L);
 	}
 
-	public static <T> OrderedTick<T> create(T type, BlockPos pos, long subTickOrder) {
-		return new OrderedTick(type, pos, 0L, TickPriority.NORMAL, subTickOrder);
-	}
-
 	public final String toString() {
 		return ObjectMethods.bootstrap<"toString",OrderedTick,"type;pos;triggerTick;priority;subTickOrder",OrderedTick::type,OrderedTick::pos,OrderedTick::triggerTick,OrderedTick::priority,OrderedTick::subTickOrder>(
 			this
