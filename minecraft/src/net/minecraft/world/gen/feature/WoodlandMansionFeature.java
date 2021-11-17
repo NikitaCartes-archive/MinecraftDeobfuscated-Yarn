@@ -3,10 +3,11 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+import net.minecraft.class_6834;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.structure.WoodlandMansionGenerator;
@@ -18,6 +19,8 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfig> {
 	public WoodlandMansionFeature(Codec<DefaultFeatureConfig> configCodec) {
@@ -29,8 +32,10 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		return false;
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, DefaultFeatureConfig config, StructurePiecesGenerator.Context context) {
-		BlockRotation blockRotation = BlockRotation.random(context.random());
+	private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(class_6834.class_6835<DefaultFeatureConfig> arg) {
+		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+		chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
+		BlockRotation blockRotation = BlockRotation.random(chunkRandom);
 		int i = 5;
 		int j = 5;
 		if (blockRotation == BlockRotation.CLOCKWISE_90) {
@@ -42,18 +47,23 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 			j = -5;
 		}
 
-		int k = context.chunkPos().getOffsetX(7);
-		int l = context.chunkPos().getOffsetZ(7);
-		int[] is = context.getHeightsInGround(k, i, l, j);
+		int k = arg.chunkPos().getOffsetX(7);
+		int l = arg.chunkPos().getOffsetZ(7);
+		int[] is = arg.method_39847(k, i, l, j);
 		int m = Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
-		if (m >= 60) {
-			if (context.biomeLimit()
-				.test(context.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(is[0]), BiomeCoords.fromBlock(l)))) {
-				BlockPos blockPos = new BlockPos(context.chunkPos().getCenterX(), m + 1, context.chunkPos().getCenterZ());
+		if (m < 60) {
+			return Optional.empty();
+		} else if (!arg.validBiome().test(arg.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(is[0]), BiomeCoords.fromBlock(l)))
+			)
+		 {
+			return Optional.empty();
+		} else {
+			BlockPos blockPos = new BlockPos(arg.chunkPos().getCenterX(), m + 1, arg.chunkPos().getCenterZ());
+			return Optional.of((StructurePiecesGenerator<>)(structurePiecesCollector, context) -> {
 				List<WoodlandMansionGenerator.Piece> list = Lists.<WoodlandMansionGenerator.Piece>newLinkedList();
-				WoodlandMansionGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, context.random());
-				list.forEach(collector::addPiece);
-			}
+				WoodlandMansionGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, chunkRandom);
+				list.forEach(structurePiecesCollector::addPiece);
+			});
 		}
 	}
 

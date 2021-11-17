@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nullable;
+import net.minecraft.class_6836;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -184,7 +185,29 @@ public class NbtIo {
 		write((NbtElement)compound, output);
 	}
 
-	private static void write(NbtElement element, DataOutput output) throws IOException {
+	public static void method_39855(DataInput dataInput, class_6836 arg) throws IOException {
+		NbtType<?> nbtType = NbtTypes.byId(dataInput.readByte());
+		if (nbtType == NbtNull.TYPE) {
+			if (arg.method_39871(NbtNull.TYPE) == class_6836.class_6838.CONTINUE) {
+				arg.method_39856();
+			}
+		} else {
+			switch (arg.method_39871(nbtType)) {
+				case HALT:
+				default:
+					break;
+				case BREAK:
+					NbtString.method_39875(dataInput);
+					nbtType.method_39851(dataInput);
+					break;
+				case CONTINUE:
+					NbtString.method_39875(dataInput);
+					nbtType.method_39852(dataInput, arg);
+			}
+		}
+	}
+
+	public static void write(NbtElement element, DataOutput output) throws IOException {
 		output.writeByte(element.getType());
 		if (element.getType() != 0) {
 			output.writeUTF("");
@@ -197,7 +220,7 @@ public class NbtIo {
 		if (b == 0) {
 			return NbtNull.INSTANCE;
 		} else {
-			input.readUTF();
+			NbtString.method_39875(input);
 
 			try {
 				return NbtTypes.byId(b).read(input, depth, tracker);

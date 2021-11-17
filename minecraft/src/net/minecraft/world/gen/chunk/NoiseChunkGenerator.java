@@ -65,7 +65,6 @@ import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomSeed;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
-import net.minecraft.world.tick.OrderedTick;
 
 public final class NoiseChunkGenerator extends ChunkGenerator {
 	public static final Codec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.create(
@@ -399,7 +398,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 									heightmap2.trackUpdate(z, u, ac, blockState);
 									if (aquiferSampler.needsFluidTick() && !blockState.getFluidState().isEmpty()) {
 										mutable.set(y, u, ab);
-										chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(blockState.getFluidState().getFluid(), mutable, 0L));
+										chunk.markBlockForPostProcessing(mutable);
 									}
 								}
 							}

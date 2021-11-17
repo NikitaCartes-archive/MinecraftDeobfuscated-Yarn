@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -35,11 +35,11 @@ public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
 	private final TaskExecutor<Runnable> taskExecutor;
 	protected final DataFixer dataFixer;
 
-	public EntityChunkDataAccess(ServerWorld world, File chunkFile, DataFixer dataFixer, boolean dsync, Executor executor) {
+	public EntityChunkDataAccess(ServerWorld world, Path path, DataFixer dataFixer, boolean dsync, Executor executor) {
 		this.world = world;
 		this.dataFixer = dataFixer;
 		this.taskExecutor = TaskExecutor.create(executor, "entity-deserializer");
-		this.dataLoadWorker = new StorageIoWorker(chunkFile, dsync, "entities");
+		this.dataLoadWorker = new StorageIoWorker(path, dsync, "entities");
 	}
 
 	@Override

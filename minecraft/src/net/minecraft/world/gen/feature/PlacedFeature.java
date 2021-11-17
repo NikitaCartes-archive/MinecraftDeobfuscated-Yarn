@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -61,6 +62,11 @@ public class PlacedFeature {
 
 	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
 		return ((ConfiguredFeature)this.feature.get()).getDecoratedFeatures();
+	}
+
+	@Debug
+	public List<PlacementModifier> method_39825() {
+		return this.placementModifiers;
 	}
 
 	public String toString() {

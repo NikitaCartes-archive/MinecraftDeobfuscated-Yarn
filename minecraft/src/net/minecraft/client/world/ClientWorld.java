@@ -530,6 +530,13 @@ public class ClientWorld extends World {
 		this.worldRenderer.scheduleBlockRenders(x, y, z);
 	}
 
+	public void method_39849(int i, int j) {
+		WorldChunk worldChunk = this.chunkManager.getWorldChunk(i, j, false);
+		if (worldChunk != null) {
+			worldChunk.method_39792(true);
+		}
+	}
+
 	@Override
 	public void setBlockBreakingInfo(int entityId, BlockPos pos, int progress) {
 		this.worldRenderer.setBlockBreakingInfo(entityId, pos, progress);

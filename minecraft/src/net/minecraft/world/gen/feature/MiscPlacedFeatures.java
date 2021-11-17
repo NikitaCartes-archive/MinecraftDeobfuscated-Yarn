@@ -80,9 +80,11 @@ public class MiscPlacedFeatures {
 		MiscConfiguredFeatures.DISK_SAND
 			.withPlacement(CountPlacementModifier.of(3), SquarePlacementModifier.of(), PlacedFeatures.OCEAN_FLOOR_WG_HEIGHTMAP, BiomePlacementModifier.of())
 	);
-	public static final PlacedFeature FREEZE_TOP_LAYER = PlacedFeatures.register("freeze_top_layer", MiscConfiguredFeatures.FREEZE_TOP_LAYER.withPlacement());
+	public static final PlacedFeature FREEZE_TOP_LAYER = PlacedFeatures.register(
+		"freeze_top_layer", MiscConfiguredFeatures.FREEZE_TOP_LAYER.withPlacement(BiomePlacementModifier.of())
+	);
 	public static final PlacedFeature VOID_START_PLATFORM = PlacedFeatures.register(
-		"void_start_platform", MiscConfiguredFeatures.VOID_START_PLATFORM.withPlacement()
+		"void_start_platform", MiscConfiguredFeatures.VOID_START_PLATFORM.withPlacement(BiomePlacementModifier.of())
 	);
 	public static final PlacedFeature DESERT_WELL = PlacedFeatures.register(
 		"desert_well",
@@ -105,7 +107,8 @@ public class MiscPlacedFeatures {
 			.withPlacement(
 				CountPlacementModifier.of(20),
 				SquarePlacementModifier.of(),
-				HeightRangePlacementModifier.of(VeryBiasedToBottomHeightProvider.create(YOffset.getBottom(), YOffset.belowTop(8), 8))
+				HeightRangePlacementModifier.of(VeryBiasedToBottomHeightProvider.create(YOffset.getBottom(), YOffset.belowTop(8), 8)),
+				BiomePlacementModifier.of()
 			)
 	);
 	public static final PlacedFeature SPRING_WATER = PlacedFeatures.register(

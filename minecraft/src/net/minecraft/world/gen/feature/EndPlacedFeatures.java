@@ -10,7 +10,7 @@ import net.minecraft.world.gen.decorator.RarityFilterPlacementModifier;
 import net.minecraft.world.gen.decorator.SquarePlacementModifier;
 
 public class EndPlacedFeatures {
-	public static final PlacedFeature END_SPIKE = PlacedFeatures.register("end_spike", EndConfiguredFeatures.END_SPIKE.withPlacement());
+	public static final PlacedFeature END_SPIKE = PlacedFeatures.register("end_spike", EndConfiguredFeatures.END_SPIKE.withPlacement(BiomePlacementModifier.of()));
 	public static final PlacedFeature END_GATEWAY_RETURN = PlacedFeatures.register(
 		"end_gateway_return",
 		EndConfiguredFeatures.END_GATEWAY_RETURN

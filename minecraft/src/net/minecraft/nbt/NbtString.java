@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
@@ -11,12 +12,22 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtString implements NbtElement {
 	private static final int SIZE = 288;
-	public static final NbtType<NbtString> TYPE = new NbtType<NbtString>() {
+	public static final NbtType<NbtString> TYPE = new NbtType.class_6840<NbtString>() {
 		public NbtString read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(288L);
 			String string = dataInput.readUTF();
 			nbtTagSizeTracker.add((long)(16 * string.length()));
 			return NbtString.of(string);
+		}
+
+		@Override
+		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+			return arg.method_39862(dataInput.readUTF());
+		}
+
+		@Override
+		public void method_39851(DataInput dataInput) throws IOException {
+			NbtString.method_39875(dataInput);
 		}
 
 		@Override
@@ -40,6 +51,10 @@ public class NbtString implements NbtElement {
 	private static final char BACKSLASH = '\\';
 	private static final char NULL = '\u0000';
 	private final String value;
+
+	public static void method_39875(DataInput dataInput) throws IOException {
+		dataInput.skipBytes(dataInput.readUnsignedShort());
+	}
 
 	private NbtString(String value) {
 		Objects.requireNonNull(value, "Null string not allowed");
@@ -120,5 +135,10 @@ public class NbtString implements NbtElement {
 		stringBuilder.setCharAt(0, c);
 		stringBuilder.append(c);
 		return stringBuilder.toString();
+	}
+
+	@Override
+	public class_6836.class_6838 method_39850(class_6836 arg) {
+		return arg.method_39862(this.value);
 	}
 }

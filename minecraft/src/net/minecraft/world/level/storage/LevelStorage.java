@@ -297,8 +297,8 @@ public class LevelStorage {
 			return (Path)this.paths.computeIfAbsent(savePath, path -> this.directory.resolve(path.getRelativePath()));
 		}
 
-		public File getWorldDirectory(RegistryKey<World> key) {
-			return DimensionType.getSaveDirectory(key, this.directory.toFile());
+		public Path getWorldDirectory(RegistryKey<World> key) {
+			return DimensionType.getSaveDirectory(key, this.directory);
 		}
 
 		private void checkValid() {

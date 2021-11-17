@@ -76,7 +76,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -85,7 +84,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
 
 public class FoxEntity extends AnimalEntity {
 	private static final TrackedData<Integer> TYPE = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -297,8 +295,8 @@ public class FoxEntity extends AnimalEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		Optional<RegistryKey<Biome>> optional = world.getBiomeKey(this.getBlockPos());
-		FoxEntity.Type type = FoxEntity.Type.fromBiome(optional);
+		Biome biome = world.getBiome(this.getBlockPos());
+		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
 			type = ((FoxEntity.FoxData)entityData).type;
@@ -1445,8 +1443,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	public static enum Type {
-		RED(0, "red", BiomeKeys.TAIGA, BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA),
-		SNOW(1, "snow", BiomeKeys.SNOWY_TAIGA);
+		RED(0, "red"),
+		SNOW(1, "snow");
 
 		private static final FoxEntity.Type[] TYPES = (FoxEntity.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(FoxEntity.Type::getId))
@@ -1455,12 +1453,10 @@ public class FoxEntity extends AnimalEntity {
 			.collect(Collectors.toMap(FoxEntity.Type::getKey, type -> type));
 		private final int id;
 		private final String key;
-		private final List<RegistryKey<Biome>> biomes;
 
-		private Type(int id, String key, RegistryKey<Biome>... biomes) {
+		private Type(int id, String key) {
 			this.id = id;
 			this.key = key;
-			this.biomes = Arrays.asList(biomes);
 		}
 
 		public String getKey() {
@@ -1483,8 +1479,8 @@ public class FoxEntity extends AnimalEntity {
 			return TYPES[id];
 		}
 
-		public static FoxEntity.Type fromBiome(Optional<RegistryKey<Biome>> biome) {
-			return biome.isPresent() && SNOW.biomes.contains(biome.get()) ? SNOW : RED;
+		public static FoxEntity.Type fromBiome(Biome biome) {
+			return biome.getPrecipitation() == Biome.Precipitation.SNOW ? SNOW : RED;
 		}
 	}
 

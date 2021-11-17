@@ -3,6 +3,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.util.math.MathHelper;
 
@@ -12,10 +13,20 @@ import net.minecraft.util.math.MathHelper;
 public class NbtDouble extends AbstractNbtNumber {
 	private static final int SIZE = 128;
 	public static final NbtDouble ZERO = new NbtDouble(0.0);
-	public static final NbtType<NbtDouble> TYPE = new NbtType<NbtDouble>() {
+	public static final NbtType<NbtDouble> TYPE = new NbtType.class_6839<NbtDouble>() {
 		public NbtDouble read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(128L);
 			return NbtDouble.of(dataInput.readDouble());
+		}
+
+		@Override
+		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+			return arg.method_39858(dataInput.readDouble());
+		}
+
+		@Override
+		public int method_39853() {
+			return 8;
 		}
 
 		@Override
@@ -109,5 +120,10 @@ public class NbtDouble extends AbstractNbtNumber {
 	@Override
 	public Number numberValue() {
 		return this.value;
+	}
+
+	@Override
+	public class_6836.class_6838 method_39850(class_6836 arg) {
+		return arg.method_39858(this.value);
 	}
 }

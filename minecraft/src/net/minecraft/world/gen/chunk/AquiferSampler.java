@@ -93,6 +93,8 @@ public interface AquiferSampler {
 		private static final int field_31457 = 16;
 		private static final int field_31458 = 12;
 		private static final int field_31459 = 16;
+		private static final int field_36220 = 11;
+		private static final double field_36221 = maxDistance(MathHelper.square(10), MathHelper.square(12));
 		private final ChunkNoiseSampler chunkNoiseSampler;
 		private final DoublePerlinNoiseSampler edgeDensityNoise;
 		private final DoublePerlinNoiseSampler field_35122;
@@ -226,10 +228,10 @@ public interface AquiferSampler {
 						AquiferSampler.FluidLevel fluidLevel2 = this.getWaterLevel(o);
 						AquiferSampler.FluidLevel fluidLevel3 = this.getWaterLevel(p);
 						AquiferSampler.FluidLevel fluidLevel4 = this.getWaterLevel(q);
-						double g = this.maxDistance(l, m);
-						double h = this.maxDistance(l, n);
-						double ah = this.maxDistance(m, n);
-						bl = g > -0.4;
+						double g = maxDistance(l, m);
+						double h = maxDistance(l, n);
+						double ah = maxDistance(m, n);
+						bl = g >= field_36221;
 						if (fluidLevel2.getBlockState(y).isOf(Blocks.WATER) && this.fluidLevelSampler.getFluidLevel(x, y - 1, z).getBlockState(y - 1).isOf(Blocks.LAVA)) {
 							f = 1.0;
 						} else if (g > -1.0) {
@@ -265,9 +267,9 @@ public interface AquiferSampler {
 			return this.needsFluidTick;
 		}
 
-		private double maxDistance(int a, int b) {
+		private static double maxDistance(int i, int a) {
 			double d = 25.0;
-			return 1.0 - (double)Math.abs(b - a) / 25.0;
+			return 1.0 - (double)Math.abs(a - i) / 25.0;
 		}
 
 		private double calculateDensity(int i, int j, int k, MutableDouble mutableDouble, AquiferSampler.FluidLevel fluidLevel, AquiferSampler.FluidLevel fluidLevel2) {

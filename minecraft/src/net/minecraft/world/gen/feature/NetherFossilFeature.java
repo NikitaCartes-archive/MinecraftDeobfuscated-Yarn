@@ -1,10 +1,11 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.Optional;
+import net.minecraft.class_6834;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.NetherFossilGenerator;
-import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -13,19 +14,23 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
+import net.minecraft.world.gen.random.ChunkRandom;
 
 public class NetherFossilFeature extends MarginedStructureFeature<RangeDecoratorConfig> {
 	public NetherFossilFeature(Codec<RangeDecoratorConfig> configCodec) {
 		super(configCodec, NetherFossilFeature::addPieces);
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, RangeDecoratorConfig config, StructurePiecesGenerator.Context context) {
-		int i = context.chunkPos().getStartX() + context.random().nextInt(16);
-		int j = context.chunkPos().getStartZ() + context.random().nextInt(16);
-		int k = context.chunkGenerator().getSeaLevel();
-		HeightContext heightContext = new HeightContext(context.chunkGenerator(), context.world());
-		int l = config.heightProvider.get(context.random(), heightContext);
-		VerticalBlockSample verticalBlockSample = context.chunkGenerator().getColumnSample(i, j, context.world());
+	private static Optional<StructurePiecesGenerator<RangeDecoratorConfig>> addPieces(class_6834.class_6835<RangeDecoratorConfig> arg) {
+		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+		chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
+		int i = arg.chunkPos().getStartX() + chunkRandom.nextInt(16);
+		int j = arg.chunkPos().getStartZ() + chunkRandom.nextInt(16);
+		int k = arg.chunkGenerator().getSeaLevel();
+		HeightContext heightContext = new HeightContext(arg.chunkGenerator(), arg.heightAccessor());
+		int l = ((RangeDecoratorConfig)arg.config()).heightProvider.get(chunkRandom, heightContext);
+		VerticalBlockSample verticalBlockSample = arg.chunkGenerator().getColumnSample(i, j, arg.heightAccessor());
 		BlockPos.Mutable mutable = new BlockPos.Mutable(i, l, j);
 
 		while (l > k) {
@@ -36,10 +41,17 @@ public class NetherFossilFeature extends MarginedStructureFeature<RangeDecorator
 			}
 		}
 
-		if (l > k) {
-			if (context.biomeLimit().test(context.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(l), BiomeCoords.fromBlock(j)))) {
-				NetherFossilGenerator.addPieces(context.structureManager(), collector, context.random(), new BlockPos(i, l, j));
-			}
+		if (l <= k) {
+			return Optional.empty();
+		} else if (!arg.validBiome().test(arg.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(l), BiomeCoords.fromBlock(j)))) {
+			return Optional.empty();
+		} else {
+			BlockPos blockPos = new BlockPos(i, l, j);
+			return Optional.of(
+				(StructurePiecesGenerator<>)(structurePiecesCollector, context) -> NetherFossilGenerator.addPieces(
+						arg.structureManager(), structurePiecesCollector, chunkRandom, blockPos
+					)
+			);
 		}
 	}
 }

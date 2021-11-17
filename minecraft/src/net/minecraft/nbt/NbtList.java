@@ -7,6 +7,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
@@ -18,7 +19,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtList extends AbstractNbtList<NbtElement> {
 	private static final int SIZE = 296;
-	public static final NbtType<NbtList> TYPE = new NbtType<NbtList>() {
+	public static final NbtType<NbtList> TYPE = new NbtType.class_6840<NbtList>() {
 		public NbtList read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(296L);
 			if (i > 512) {
@@ -40,6 +41,63 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 					return new NbtList(list, b);
 				}
 			}
+		}
+
+		@Override
+		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+			NbtType<?> nbtType = NbtTypes.byId(dataInput.readByte());
+			int i = dataInput.readInt();
+			switch (arg.method_39864(nbtType, i)) {
+				case HALT:
+					return class_6836.class_6838.HALT;
+				case BREAK:
+					nbtType.method_39854(dataInput, i);
+					return arg.method_39870();
+				default:
+					int j = 0;
+
+					while (true) {
+						label41: {
+							if (j < i) {
+								switch (arg.method_39872(nbtType, j)) {
+									case HALT:
+										return class_6836.class_6838.HALT;
+									case BREAK:
+										nbtType.method_39851(dataInput);
+										break;
+									case SKIP:
+										nbtType.method_39851(dataInput);
+										break label41;
+									default:
+										switch (nbtType.method_39852(dataInput, arg)) {
+											case HALT:
+												return class_6836.class_6838.HALT;
+											case BREAK:
+												break;
+											default:
+												break label41;
+										}
+								}
+							}
+
+							int k = i - 1 - j;
+							if (k > 0) {
+								nbtType.method_39854(dataInput, k);
+							}
+
+							return arg.method_39870();
+						}
+
+						j++;
+					}
+			}
+		}
+
+		@Override
+		public void method_39851(DataInput dataInput) throws IOException {
+			NbtType<?> nbtType = NbtTypes.byId(dataInput.readByte());
+			int i = dataInput.readInt();
+			nbtType.method_39854(dataInput, i);
 		}
 
 		@Override
@@ -294,5 +352,38 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 	public void clear() {
 		this.value.clear();
 		this.type = 0;
+	}
+
+	@Override
+	public class_6836.class_6838 method_39850(class_6836 arg) {
+		switch (arg.method_39864(NbtTypes.byId(this.type), this.value.size())) {
+			case HALT:
+				return class_6836.class_6838.HALT;
+			case BREAK:
+				return arg.method_39870();
+			default:
+				int i = 0;
+
+				while (i < this.value.size()) {
+					NbtElement nbtElement = (NbtElement)this.value.get(i);
+					switch (arg.method_39872(nbtElement.getNbtType(), i)) {
+						case HALT:
+							return class_6836.class_6838.HALT;
+						case BREAK:
+							return arg.method_39870();
+						default:
+							switch (nbtElement.method_39850(arg)) {
+								case HALT:
+									return class_6836.class_6838.HALT;
+								case BREAK:
+									return arg.method_39870();
+							}
+						case SKIP:
+							i++;
+					}
+				}
+
+				return arg.method_39870();
+		}
 	}
 }

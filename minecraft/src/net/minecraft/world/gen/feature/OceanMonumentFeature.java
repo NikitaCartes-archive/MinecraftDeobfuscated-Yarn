@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.class_6834;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.OceanMonumentGenerator;
 import net.minecraft.structure.StructurePiece;
@@ -10,12 +11,9 @@ import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
-import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomSeed;
@@ -24,7 +22,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
 	public OceanMonumentFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, OceanMonumentFeature::addPieces);
+		super(configCodec, class_6834.simple(OceanMonumentFeature::method_28642, OceanMonumentFeature::addPieces));
 	}
 
 	@Override
@@ -32,19 +30,17 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		return false;
 	}
 
-	protected boolean shouldStartAt(
-		ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView
-	) {
-		int i = chunkPos.getOffsetX(9);
-		int j = chunkPos.getOffsetZ(9);
+	private static boolean method_28642(class_6834.class_6835<DefaultFeatureConfig> arg) {
+		int i = arg.chunkPos().getOffsetX(9);
+		int j = arg.chunkPos().getOffsetZ(9);
 
-		for (Biome biome : biomeSource.getBiomesInArea(i, chunkGenerator.getSeaLevel(), j, 29, chunkGenerator.getMultiNoiseSampler())) {
+		for (Biome biome : arg.biomeSource().getBiomesInArea(i, arg.chunkGenerator().getSeaLevel(), j, 29, arg.chunkGenerator().getMultiNoiseSampler())) {
 			if (biome.getCategory() != Biome.Category.OCEAN && biome.getCategory() != Biome.Category.RIVER) {
 				return false;
 			}
 		}
 
-		return true;
+		return arg.method_39848(Heightmap.Type.OCEAN_FLOOR_WG);
 	}
 
 	private static StructurePiece createBasePiece(ChunkPos pos, ChunkRandom random) {
@@ -54,14 +50,8 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		return new OceanMonumentGenerator.Base(random, i, j, direction);
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, DefaultFeatureConfig config, StructurePiecesGenerator.Context context) {
-		addPieces(collector, context);
-	}
-
-	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context context) {
-		if (context.isBiomeValid(Heightmap.Type.OCEAN_FLOOR_WG)) {
-			collector.addPiece(createBasePiece(context.chunkPos(), context.random()));
-		}
+	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {
+		collector.addPiece(createBasePiece(context.chunkPos(), context.random()));
 	}
 
 	public static StructurePiecesList modifyPiecesOnRead(ChunkPos pos, long worldSeed, StructurePiecesList pieces) {

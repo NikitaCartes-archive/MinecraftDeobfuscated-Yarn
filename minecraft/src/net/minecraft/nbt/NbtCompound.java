@@ -13,7 +13,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import javax.annotation.Nullable;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -30,7 +32,7 @@ public class NbtCompound implements NbtElement {
 	}, nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
 	private static final int SIZE = 384;
 	private static final int field_33191 = 256;
-	public static final NbtType<NbtCompound> TYPE = new NbtType<NbtCompound>() {
+	public static final NbtType<NbtCompound> TYPE = new NbtType.class_6840<NbtCompound>() {
 		public NbtCompound read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 			nbtTagSizeTracker.add(384L);
 			if (i > 512) {
@@ -49,6 +51,63 @@ public class NbtCompound implements NbtElement {
 				}
 
 				return new NbtCompound(map);
+			}
+		}
+
+		@Override
+		public class_6836.class_6838 method_39852(DataInput dataInput, class_6836 arg) throws IOException {
+			byte b;
+			label33:
+			while ((b = dataInput.readByte()) != 0) {
+				NbtType<?> nbtType = NbtTypes.byId(b);
+				switch (arg.method_39863(nbtType)) {
+					case HALT:
+						return class_6836.class_6838.HALT;
+					case BREAK:
+						NbtString.method_39875(dataInput);
+						nbtType.method_39851(dataInput);
+						break label33;
+					case SKIP:
+						NbtString.method_39875(dataInput);
+						nbtType.method_39851(dataInput);
+						break;
+					default:
+						String string = dataInput.readUTF();
+						switch (arg.method_39865(nbtType, string)) {
+							case HALT:
+								return class_6836.class_6838.HALT;
+							case BREAK:
+								nbtType.method_39851(dataInput);
+								break label33;
+							case SKIP:
+								nbtType.method_39851(dataInput);
+								break;
+							default:
+								switch (nbtType.method_39852(dataInput, arg)) {
+									case HALT:
+										return class_6836.class_6838.HALT;
+									case BREAK:
+								}
+						}
+				}
+			}
+
+			if (b != 0) {
+				while ((b = dataInput.readByte()) != 0) {
+					NbtString.method_39875(dataInput);
+					NbtTypes.byId(b).method_39851(dataInput);
+				}
+			}
+
+			return arg.method_39870();
+		}
+
+		@Override
+		public void method_39851(DataInput dataInput) throws IOException {
+			byte b;
+			while ((b = dataInput.readByte()) != 0) {
+				NbtString.method_39875(dataInput);
+				NbtTypes.byId(b).method_39851(dataInput);
 			}
 		}
 
@@ -465,5 +524,42 @@ public class NbtCompound implements NbtElement {
 
 	protected Map<String, NbtElement> toMap() {
 		return Collections.unmodifiableMap(this.entries);
+	}
+
+	@Override
+	public class_6836.class_6838 method_39850(class_6836 arg) {
+		for (Entry<String, NbtElement> entry : this.entries.entrySet()) {
+			NbtElement nbtElement = (NbtElement)entry.getValue();
+			NbtType<?> nbtType = nbtElement.getNbtType();
+			class_6836.class_6837 lv = arg.method_39863(nbtType);
+			switch (lv) {
+				case HALT:
+					return class_6836.class_6838.HALT;
+				case BREAK:
+					return arg.method_39870();
+				case SKIP:
+					break;
+				default:
+					lv = arg.method_39865(nbtType, (String)entry.getKey());
+					switch (lv) {
+						case HALT:
+							return class_6836.class_6838.HALT;
+						case BREAK:
+							return arg.method_39870();
+						case SKIP:
+							break;
+						default:
+							class_6836.class_6838 lv2 = nbtElement.method_39850(arg);
+							switch (lv2) {
+								case HALT:
+									return class_6836.class_6838.HALT;
+								case BREAK:
+									return arg.method_39870();
+							}
+					}
+			}
+		}
+
+		return arg.method_39870();
 	}
 }

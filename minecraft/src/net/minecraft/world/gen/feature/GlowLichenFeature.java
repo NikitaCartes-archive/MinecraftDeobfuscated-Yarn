@@ -64,7 +64,7 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 
 		for (Direction direction : directions) {
 			BlockState blockState = world.getBlockState(mutable.set(pos, direction));
-			if (config.canGrowOn(blockState.getBlock())) {
+			if (config.canPlaceOn.contains(blockState.getBlock())) {
 				GlowLichenBlock glowLichenBlock = (GlowLichenBlock)Blocks.GLOW_LICHEN;
 				BlockState blockState2 = glowLichenBlock.withDirection(state, world, pos, direction);
 				if (blockState2 == null) {

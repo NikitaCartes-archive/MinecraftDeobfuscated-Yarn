@@ -42,7 +42,7 @@ public class ChunkLevelTagRenameFix extends DataFix {
 	}
 
 	private static Typed<?> rename(Typed<?> typed, String oldKey, String newKey) {
-		return rename(typed, oldKey, newKey, typed.getType().findFieldType(oldKey));
+		return rename(typed, oldKey, newKey, typed.getType().findFieldType(oldKey)).update(DSL.remainderFinder(), dynamic -> dynamic.remove(oldKey));
 	}
 
 	private static <A> Typed<?> rename(Typed<?> typed, String oldKey, String newKey, Type<A> type) {

@@ -31,7 +31,6 @@ import net.minecraft.world.gen.noise.NoiseParametersKeys;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
-import net.minecraft.world.tick.OrderedTick;
 
 public class SurfaceBuilder {
 	private static final int field_35273 = 8;
@@ -121,7 +120,7 @@ public class SurfaceBuilder {
 				if (y >= heightLimitView.getBottomY() && y < heightLimitView.getTopY()) {
 					chunk.setBlockState(mutable.setY(y), state, false);
 					if (!state.getFluidState().isEmpty()) {
-						chunk.getFluidTickScheduler().scheduleTick(OrderedTick.create(state.getFluidState().getFluid(), mutable, 0L));
+						chunk.markBlockForPostProcessing(mutable);
 					}
 				}
 			}
@@ -181,9 +180,11 @@ public class SurfaceBuilder {
 						q++;
 						int vx = u - s + 1;
 						materialRuleContext.initVerticalContext(q, vx, r, m, u, n);
-						BlockState blockState2 = blockStateRule.tryApply(m, u, n);
-						if (blockState2 != null) {
-							blockColumn.setState(u, blockState2);
+						if (blockState == this.defaultBlock) {
+							BlockState blockState2 = blockStateRule.tryApply(m, u, n);
+							if (blockState2 != null) {
+								blockColumn.setState(u, blockState2);
+							}
 						}
 					}
 				}

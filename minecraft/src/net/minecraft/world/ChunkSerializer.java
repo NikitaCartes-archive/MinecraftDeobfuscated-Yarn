@@ -147,15 +147,7 @@ public class ChunkSerializer {
 				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos
 			);
 			chunk = new WorldChunk(
-				world.toServerWorld(),
-				chunkPos,
-				upgradeData,
-				chunkTickScheduler,
-				chunkTickScheduler2,
-				m,
-				chunkSections,
-				worldChunk -> loadEntities(world, nbt, worldChunk),
-				blender
+				world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, loadEntities(world, nbt), blender
 			);
 		} else {
 			SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(
@@ -396,29 +388,37 @@ public class ChunkSerializer {
 		return nbt != null ? ChunkStatus.byId(nbt.getString("Status")).getChunkType() : ChunkStatus.ChunkType.PROTOCHUNK;
 	}
 
-	private static void loadEntities(ServerWorld world, NbtCompound nbt, WorldChunk chunk) {
-		if (nbt.contains("entities", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("entities", NbtElement.COMPOUND_TYPE);
-			if (!nbtList.isEmpty()) {
+	@Nullable
+	private static WorldChunk.class_6829 loadEntities(ServerWorld world, NbtCompound nbt) {
+		NbtList nbtList = method_39796(nbt, "entities");
+		NbtList nbtList2 = method_39796(nbt, "block_entities");
+		return nbtList == null && nbtList2 == null ? null : worldChunk -> {
+			if (nbtList != null) {
 				world.loadEntities(EntityType.streamFromNbt(nbtList, world));
 			}
-		}
 
-		NbtList nbtList = nbt.getList("block_entities", NbtElement.COMPOUND_TYPE);
-
-		for (int i = 0; i < nbtList.size(); i++) {
-			NbtCompound nbtCompound = nbtList.getCompound(i);
-			boolean bl = nbtCompound.getBoolean("keepPacked");
-			if (bl) {
-				chunk.addPendingBlockEntityNbt(nbtCompound);
-			} else {
-				BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
-				BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, chunk.getBlockState(blockPos), nbtCompound);
-				if (blockEntity != null) {
-					chunk.setBlockEntity(blockEntity);
+			if (nbtList2 != null) {
+				for (int i = 0; i < nbtList2.size(); i++) {
+					NbtCompound nbtCompound = nbtList2.getCompound(i);
+					boolean bl = nbtCompound.getBoolean("keepPacked");
+					if (bl) {
+						worldChunk.addPendingBlockEntityNbt(nbtCompound);
+					} else {
+						BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
+						BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, worldChunk.getBlockState(blockPos), nbtCompound);
+						if (blockEntity != null) {
+							worldChunk.setBlockEntity(blockEntity);
+						}
+					}
 				}
 			}
-		}
+		};
+	}
+
+	@Nullable
+	private static NbtList method_39796(NbtCompound nbtCompound, String string) {
+		NbtList nbtList = nbtCompound.getList(string, NbtElement.COMPOUND_TYPE);
+		return nbtList.isEmpty() ? null : nbtList;
 	}
 
 	private static NbtCompound writeStructures(

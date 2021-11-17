@@ -37,8 +37,8 @@ public class ChunkStatus {
 	 * A load task which only bumps the chunk status of the chunk.
 	 */
 	private static final ChunkStatus.LoadTask STATUS_BUMP_LOAD_TASK = (targetStatus, world, structureManager, lightingProvider, function, chunk) -> {
-		if (chunk instanceof ProtoChunk && !chunk.getStatus().isAtLeast(targetStatus)) {
-			((ProtoChunk)chunk).setStatus(targetStatus);
+		if (chunk instanceof ProtoChunk protoChunk && !chunk.getStatus().isAtLeast(targetStatus)) {
+			protoChunk.setStatus(targetStatus);
 		}
 
 		return CompletableFuture.completedFuture(Either.left(chunk));
@@ -62,6 +62,19 @@ public class ChunkStatus {
 				if (chunk instanceof ProtoChunk protoChunk) {
 					protoChunk.setStatus(targetStatus);
 				}
+
+				world.method_39778(chunk);
+			}
+
+			return CompletableFuture.completedFuture(Either.left(chunk));
+		},
+		(chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> {
+			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
+				if (chunk instanceof ProtoChunk protoChunk) {
+					protoChunk.setStatus(chunkStatus);
+				}
+
+				serverWorld.method_39778(chunk);
 			}
 
 			return CompletableFuture.completedFuture(Either.left(chunk));
@@ -140,20 +153,15 @@ public class ChunkStatus {
 	public static final ChunkStatus CARVERS = register(
 		"carvers", SURFACE, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (targetStatus, world, generator, chunks, chunk) -> {
 			ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
+			if (chunk instanceof ProtoChunk protoChunk) {
+				class_6748.method_39809(chunkRegion, protoChunk);
+			}
+
 			generator.carve(chunkRegion, world.getSeed(), world.getBiomeAccess(), world.getStructureAccessor().forRegion(chunkRegion), chunk, GenerationStep.Carver.AIR);
 		}
 	);
 	public static final ChunkStatus LIQUID_CARVERS = register(
-		"liquid_carvers",
-		CARVERS,
-		8,
-		POST_CARVER_HEIGHTMAPS,
-		ChunkStatus.ChunkType.PROTOCHUNK,
-		(targetStatus, world, generator, chunks, chunk) -> {
-			ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
-			generator.carve(
-				chunkRegion, world.getSeed(), world.getBiomeAccess(), world.getStructureAccessor().forRegion(chunkRegion), chunk, GenerationStep.Carver.LIQUID
-			);
+		"liquid_carvers", CARVERS, 8, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (chunkStatus, serverWorld, chunkGenerator, list, chunk) -> {
 		}
 	);
 	public static final ChunkStatus FEATURES = register(

@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
@@ -32,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.class_6832;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -118,6 +118,7 @@ import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
@@ -180,6 +181,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final EnderDragonFight enderDragonFight;
 	final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
 	private final StructureAccessor structureAccessor;
+	private final class_6832 field_36208;
 	private final boolean shouldTickTime;
 
 	public ServerWorld(
@@ -203,7 +205,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.worldProperties = properties;
 		boolean bl = server.syncChunkWrites();
 		DataFixer dataFixer = server.getDataFixer();
-		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(worldKey), "entities"), dataFixer, bl, server);
+		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
 		this.entityManager = new ServerEntityManager<>(Entity.class, new ServerWorld.ServerEntityHandler(), chunkDataAccess);
 		this.chunkManager = new ServerChunkManager(
 			this,
@@ -229,9 +231,21 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			properties.setGameMode(server.getDefaultGameMode());
 		}
 
-		this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions());
+		long l = server.getSaveProperties().getGeneratorOptions().getSeed();
+		this.field_36208 = new class_6832(
+			this.chunkManager.method_39777(),
+			this.getRegistryManager(),
+			server.getStructureManager(),
+			worldKey,
+			chunkGenerator,
+			this,
+			chunkGenerator.getBiomeSource(),
+			l,
+			dataFixer
+		);
+		this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.field_36208);
 		if (this.getDimension().hasEnderDragonFight()) {
-			this.enderDragonFight = new EnderDragonFight(this, server.getSaveProperties().getGeneratorOptions().getSeed(), server.getSaveProperties().getDragonFight());
+			this.enderDragonFight = new EnderDragonFight(this, l, server.getSaveProperties().getDragonFight());
 		} else {
 			this.enderDragonFight = null;
 		}
@@ -1526,6 +1540,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public void disableTickSchedulers(WorldChunk chunk) {
 		chunk.disableTickSchedulers(this.getLevelProperties().getTime());
+	}
+
+	public void method_39778(Chunk chunk) {
+		this.field_36208.method_39833(chunk.getPos(), chunk.getStructureStarts());
 	}
 
 	@Override

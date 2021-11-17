@@ -55,8 +55,4 @@ public record OrderedTick() {
 	public static <T> OrderedTick<T> create(T type, BlockPos pos) {
 		return new OrderedTick(type, pos, 0L, TickPriority.NORMAL, 0L);
 	}
-
-	public static <T> OrderedTick<T> create(T type, BlockPos pos, long subTickOrder) {
-		return new OrderedTick(type, pos, 0L, TickPriority.NORMAL, subTickOrder);
-	}
 }

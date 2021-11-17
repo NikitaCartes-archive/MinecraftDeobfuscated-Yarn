@@ -2,18 +2,15 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import net.minecraft.class_6834;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.NetherFortressGenerator;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.collection.Pool;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
@@ -27,37 +24,33 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	);
 
 	public NetherFortressFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, NetherFortressFeature::addPieces);
+		super(configCodec, class_6834.simple(NetherFortressFeature::method_28640, NetherFortressFeature::addPieces));
 	}
 
-	protected boolean shouldStartAt(
-		ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView
-	) {
+	private static boolean method_28640(class_6834.class_6835<DefaultFeatureConfig> arg) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-		chunkRandom.setCarverSeed(l, chunkPos.x, chunkPos.z);
-		return chunkRandom.nextInt(5) < 2;
+		chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
+		return chunkRandom.nextInt(5) >= 2
+			? false
+			: arg.validBiome()
+				.test(
+					arg.chunkGenerator()
+						.getBiomeForNoiseGen(BiomeCoords.fromBlock(arg.chunkPos().getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(arg.chunkPos().getCenterZ()))
+				);
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, DefaultFeatureConfig config, StructurePiecesGenerator.Context context) {
-		if (context.biomeLimit()
-			.test(
-				context.chunkGenerator()
-					.getBiomeForNoiseGen(
-						BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())
-					)
-			)) {
-			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(context.random(), context.chunkPos().getOffsetX(2), context.chunkPos().getOffsetZ(2));
-			collector.addPiece(start);
-			start.fillOpenings(start, collector, context.random());
-			List<StructurePiece> list = start.pieces;
+	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {
+		NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(context.random(), context.chunkPos().getOffsetX(2), context.chunkPos().getOffsetZ(2));
+		collector.addPiece(start);
+		start.fillOpenings(start, collector, context.random());
+		List<StructurePiece> list = start.pieces;
 
-			while (!list.isEmpty()) {
-				int i = context.random().nextInt(list.size());
-				StructurePiece structurePiece = (StructurePiece)list.remove(i);
-				structurePiece.fillOpenings(start, collector, context.random());
-			}
-
-			collector.shiftInto(context.random(), 48, 70);
+		while (!list.isEmpty()) {
+			int i = context.random().nextInt(list.size());
+			StructurePiece structurePiece = (StructurePiece)list.remove(i);
+			structurePiece.fillOpenings(start, collector, context.random());
 		}
+
+		collector.shiftInto(context.random(), 48, 70);
 	}
 }

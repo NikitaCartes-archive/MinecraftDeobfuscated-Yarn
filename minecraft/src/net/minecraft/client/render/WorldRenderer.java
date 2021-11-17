@@ -97,6 +97,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -411,30 +412,30 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			for (int j = 0; j < i; j++) {
 				int k = random.nextInt(21) - 10;
 				int l = random.nextInt(21) - 10;
-				BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l)).down();
+				BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l));
 				Biome biome = worldView.getBiome(blockPos3);
 				if (blockPos3.getY() > worldView.getBottomY()
 					&& blockPos3.getY() <= blockPos.getY() + 10
 					&& blockPos3.getY() >= blockPos.getY() - 10
 					&& biome.getPrecipitation() == Biome.Precipitation.RAIN
 					&& biome.getTemperature(blockPos3) >= 0.15F) {
-					blockPos2 = blockPos3;
+					blockPos2 = blockPos3.down();
 					if (this.client.options.particles == ParticlesMode.MINIMAL) {
 						break;
 					}
 
 					double d = random.nextDouble();
 					double e = random.nextDouble();
-					BlockState blockState = worldView.getBlockState(blockPos3);
-					FluidState fluidState = worldView.getFluidState(blockPos3);
-					VoxelShape voxelShape = blockState.getCollisionShape(worldView, blockPos3);
+					BlockState blockState = worldView.getBlockState(blockPos2);
+					FluidState fluidState = worldView.getFluidState(blockPos2);
+					VoxelShape voxelShape = blockState.getCollisionShape(worldView, blockPos2);
 					double g = voxelShape.getEndingCoord(Direction.Axis.Y, d, e);
-					double h = (double)fluidState.getHeight(worldView, blockPos3);
+					double h = (double)fluidState.getHeight(worldView, blockPos2);
 					double m = Math.max(g, h);
 					ParticleEffect particleEffect = !fluidState.isIn(FluidTags.LAVA) && !blockState.isOf(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(blockState)
 						? ParticleTypes.RAIN
 						: ParticleTypes.SMOKE;
-					this.client.world.addParticle(particleEffect, (double)blockPos3.getX() + d, (double)blockPos3.getY() + m, (double)blockPos3.getZ() + e, 0.0, 0.0, 0.0);
+					this.client.world.addParticle(particleEffect, (double)blockPos2.getX() + d, (double)blockPos2.getY() + m, (double)blockPos2.getZ() + e, 0.0, 0.0, 0.0);
 				}
 			}
 
@@ -2250,7 +2251,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		for (WorldRenderer.ChunkInfo chunkInfo : this.field_34807) {
 			ChunkBuilder.BuiltChunk builtChunk = chunkInfo.chunk;
-			if (builtChunk.needsRebuild()) {
+			ChunkPos chunkPos = new ChunkPos(builtChunk.getOrigin());
+			if (builtChunk.needsRebuild() && this.world.getChunk(chunkPos.x, chunkPos.z).method_39791()) {
 				boolean bl = false;
 				if (this.client.options.chunkBuilderMode == ChunkBuilderMode.NEARBY) {
 					BlockPos blockPos2 = builtChunk.getOrigin().add(8, 8, 8);

@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenCustomHashMap;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ThreadFactory;
@@ -61,7 +62,7 @@ public class WorldUpdater {
 		this.eraseCache = eraseCache;
 		this.dataFixer = dataFixer;
 		this.session = session;
-		this.persistentStateManager = new PersistentStateManager(new File(this.session.getWorldDirectory(World.OVERWORLD), "data"), dataFixer);
+		this.persistentStateManager = new PersistentStateManager(this.session.getWorldDirectory(World.OVERWORLD).resolve("data").toFile(), dataFixer);
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
@@ -99,8 +100,8 @@ public class WorldUpdater {
 			Builder<RegistryKey<World>, VersionedChunkStorage> builder2 = ImmutableMap.builder();
 
 			for (RegistryKey<World> registryKey2 : immutableSet) {
-				File file = this.session.getWorldDirectory(registryKey2);
-				builder2.put(registryKey2, new VersionedChunkStorage(new File(file, "region"), this.dataFixer, true));
+				Path path = this.session.getWorldDirectory(registryKey2);
+				builder2.put(registryKey2, new VersionedChunkStorage(path.resolve("region"), this.dataFixer, true));
 			}
 
 			ImmutableMap<RegistryKey<World>, VersionedChunkStorage> immutableMap2 = builder2.build();
@@ -193,7 +194,7 @@ public class WorldUpdater {
 	}
 
 	private List<ChunkPos> getChunkPositions(RegistryKey<World> world) {
-		File file = this.session.getWorldDirectory(world);
+		File file = this.session.getWorldDirectory(world).toFile();
 		File file2 = new File(file, "region");
 		File[] files = file2.listFiles((directory, name) -> name.endsWith(".mca"));
 		if (files == null) {
@@ -207,7 +208,7 @@ public class WorldUpdater {
 					int i = Integer.parseInt(matcher.group(1)) << 5;
 					int j = Integer.parseInt(matcher.group(2)) << 5;
 
-					try (RegionFile regionFile = new RegionFile(file3, file2, true)) {
+					try (RegionFile regionFile = new RegionFile(file3.toPath(), file2.toPath(), true)) {
 						for (int k = 0; k < 32; k++) {
 							for (int l = 0; l < 32; l++) {
 								ChunkPos chunkPos = new ChunkPos(k + i, l + j);

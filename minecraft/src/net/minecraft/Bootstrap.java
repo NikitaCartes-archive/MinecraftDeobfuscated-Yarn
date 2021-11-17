@@ -1,6 +1,8 @@
 package net.minecraft;
 
 import java.io.PrintStream;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -22,10 +24,14 @@ import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.util.Language;
+import net.minecraft.util.Util;
 import net.minecraft.util.logging.DebugLoggerPrintStream;
 import net.minecraft.util.logging.LoggerPrintStream;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.gen.decorator.BiomePlacementModifier;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -114,9 +120,21 @@ public class Bootstrap {
 		if (SharedConstants.isDevelopment) {
 			getMissingTranslations().forEach(key -> LOGGER.error("Missing translations: {}", key));
 			CommandManager.checkMissing();
+			method_39891();
 		}
 
 		DefaultAttributeRegistry.checkMissing();
+	}
+
+	private static void method_39891() {
+		BuiltinRegistries.BIOME.stream().forEach(biome -> {
+			List<List<Supplier<PlacedFeature>>> list = biome.getGenerationSettings().getFeatures();
+			list.stream().flatMap(Collection::stream).forEach(supplier -> {
+				if (!((PlacedFeature)supplier.get()).method_39825().contains(BiomePlacementModifier.of())) {
+					Util.error("Placed feature " + BuiltinRegistries.PLACED_FEATURE.getKey((PlacedFeature)supplier.get()) + " is missing BiomeFilter.biome()");
+				}
+			});
+		});
 	}
 
 	private static void setOutputStreams() {

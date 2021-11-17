@@ -2,6 +2,7 @@ package net.minecraft.world.storage;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,11 +11,20 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.InflaterInputStream;
 import javax.annotation.Nullable;
+import net.minecraft.class_6826;
 
 public class ChunkStreamVersion {
 	private static final Int2ObjectMap<ChunkStreamVersion> VERSIONS = new Int2ObjectOpenHashMap<>();
-	public static final ChunkStreamVersion GZIP = add(new ChunkStreamVersion(1, GZIPInputStream::new, GZIPOutputStream::new));
-	public static final ChunkStreamVersion DEFLATE = add(new ChunkStreamVersion(2, InflaterInputStream::new, DeflaterOutputStream::new));
+	public static final ChunkStreamVersion GZIP = add(
+		new ChunkStreamVersion(
+			1, inputStream -> new class_6826(new GZIPInputStream(inputStream)), outputStream -> new BufferedOutputStream(new GZIPOutputStream(outputStream))
+		)
+	);
+	public static final ChunkStreamVersion DEFLATE = add(
+		new ChunkStreamVersion(
+			2, inputStream -> new class_6826(new InflaterInputStream(inputStream)), outputStream -> new BufferedOutputStream(new DeflaterOutputStream(outputStream))
+		)
+	);
 	public static final ChunkStreamVersion UNCOMPRESSED = add(new ChunkStreamVersion(3, inputStream -> inputStream, outputStream -> outputStream));
 	private final int id;
 	private final ChunkStreamVersion.Wrapper<InputStream> inputStreamWrapper;

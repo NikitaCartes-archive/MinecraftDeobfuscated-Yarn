@@ -10,6 +10,7 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
+import com.mojang.authlib.minecraft.UserApiService.UserFlag;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlDebugInfo;
@@ -410,8 +411,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	private ClientConnection integratedServerConnection;
 	private boolean integratedServerRunning;
-	@Nullable
-	private TelemetrySender telemetrySender;
 	@Nullable
 	public Entity cameraEntity;
 	@Nullable
@@ -2251,11 +2250,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public boolean isMultiplayerEnabled() {
-		return this.multiplayerEnabled && this.userApiService.serversAllowed();
+		return this.multiplayerEnabled && this.userApiService.properties().flag(UserFlag.SERVERS_ALLOWED);
 	}
 
 	public boolean isRealmsEnabled() {
-		return this.userApiService.realmsAllowed();
+		return this.userApiService.properties().flag(UserFlag.REALMS_ALLOWED);
 	}
 
 	/**
@@ -2276,7 +2275,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} else if (!this.onlineChatEnabled) {
 			return MinecraftClient.ChatRestriction.DISABLED_BY_LAUNCHER;
 		} else {
-			return !this.userApiService.chatAllowed() ? MinecraftClient.ChatRestriction.DISABLED_BY_PROFILE : MinecraftClient.ChatRestriction.ENABLED;
+			return !this.userApiService.properties().flag(UserFlag.CHAT_ALLOWED)
+				? MinecraftClient.ChatRestriction.DISABLED_BY_PROFILE
+				: MinecraftClient.ChatRestriction.ENABLED;
 		}
 	}
 
@@ -2921,7 +2922,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public boolean shouldFilterText() {
-		return false;
+		return this.userApiService.properties().flag(UserFlag.PROFANITY_FILTER_ENABLED);
 	}
 
 	public void loadBlockList() {

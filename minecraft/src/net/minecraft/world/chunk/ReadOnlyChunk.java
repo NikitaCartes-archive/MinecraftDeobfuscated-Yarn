@@ -218,12 +218,12 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public BasicTickScheduler<Block> getBlockTickScheduler() {
-		return EmptyTickSchedulers.getReadOnlyTickScheduler();
+		return this.field_34554 ? this.wrapped.getBlockTickScheduler() : EmptyTickSchedulers.getReadOnlyTickScheduler();
 	}
 
 	@Override
 	public BasicTickScheduler<Fluid> getFluidTickScheduler() {
-		return EmptyTickSchedulers.getReadOnlyTickScheduler();
+		return this.field_34554 ? this.wrapped.getFluidTickScheduler() : EmptyTickSchedulers.getReadOnlyTickScheduler();
 	}
 
 	@Override

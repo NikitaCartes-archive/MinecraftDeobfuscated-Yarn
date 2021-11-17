@@ -6,10 +6,13 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Semaphore;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -169,6 +172,21 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	protected T get(int index) {
 		PalettedContainer.Data<T> data = this.data;
 		return data.palette.get(data.storage.get(index));
+	}
+
+	public void method_39793(Consumer<T> consumer) {
+		Palette<T> palette = this.data.palette();
+		if (palette instanceof IdListPalette<T> idListPalette) {
+			IntSet intSet = new IntArraySet();
+			this.data.storage.forEach(intSet::add);
+			intSet.forEach(ix -> consumer.accept(idListPalette.get(ix)));
+		} else {
+			int i = palette.getSize();
+
+			for (int j = 0; j < i; j++) {
+				consumer.accept(palette.get(j));
+			}
+		}
 	}
 
 	/**
@@ -438,7 +456,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 			public <A> PalettedContainer.DataProvider<A> createDataProvider(IndexedIterable<A> idList, int bits) {
 				return switch (bits) {
 					case 0 -> new PalettedContainer.DataProvider(SINGULAR, bits);
-					case 1, 2 -> new PalettedContainer.DataProvider(ARRAY, bits);
+					case 1, 2, 3 -> new PalettedContainer.DataProvider(ARRAY, bits);
 					default -> new PalettedContainer.DataProvider(PalettedContainer.PaletteProvider.ID_LIST, MathHelper.ceilLog2(idList.size()));
 				};
 			}

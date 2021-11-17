@@ -2,8 +2,8 @@ package net.minecraft.world.storage;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Either;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.class_6830;
+import net.minecraft.class_6836;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
@@ -22,15 +24,15 @@ import net.minecraft.util.thread.TaskQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class StorageIoWorker implements AutoCloseable {
+public class StorageIoWorker implements class_6830, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final AtomicBoolean closed = new AtomicBoolean();
 	private final TaskExecutor<TaskQueue.PrioritizedTask> executor;
 	private final RegionBasedStorage storage;
 	private final Map<ChunkPos, StorageIoWorker.Result> results = Maps.<ChunkPos, StorageIoWorker.Result>newLinkedHashMap();
 
-	protected StorageIoWorker(File directory, boolean dsync, String name) {
-		this.storage = new RegionBasedStorage(directory, dsync);
+	protected StorageIoWorker(Path path, boolean dsync, String name) {
+		this.storage = new RegionBasedStorage(path, dsync);
 		this.executor = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + name);
 	}
 
@@ -90,6 +92,27 @@ public class StorageIoWorker implements AutoCloseable {
 					return Either.right(var2x);
 				}
 			})) : completableFuture.thenCompose(void_ -> this.run(() -> Either.left(null)));
+	}
+
+	@Override
+	public CompletableFuture<Void> method_39795(ChunkPos chunkPos, class_6836 arg) {
+		return this.run(() -> {
+			try {
+				StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(chunkPos);
+				if (result != null) {
+					if (result.nbt != null) {
+						result.nbt.method_39876(arg);
+					}
+				} else {
+					this.storage.method_39802(chunkPos, arg);
+				}
+
+				return Either.left(null);
+			} catch (Exception var4) {
+				LOGGER.warn("Failed to bulk scan chunk {}", chunkPos, var4);
+				return Either.right(var4);
+			}
+		});
 	}
 
 	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> task) {

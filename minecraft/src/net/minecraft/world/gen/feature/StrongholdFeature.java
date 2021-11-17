@@ -2,27 +2,22 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import net.minecraft.class_6834;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.HeightLimitView;
-import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class StrongholdFeature extends MarginedStructureFeature<DefaultFeatureConfig> {
 	public StrongholdFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, StrongholdFeature::addPieces);
+		super(configCodec, class_6834.simple(StrongholdFeature::method_28654, StrongholdFeature::addPieces));
 	}
 
-	protected boolean shouldStartAt(
-		ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView
-	) {
-		return chunkGenerator.isStrongholdStartingChunk(chunkPos);
+	private static boolean method_28654(class_6834.class_6835<DefaultFeatureConfig> arg) {
+		return arg.chunkGenerator().isStrongholdStartingChunk(arg.chunkPos());
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, DefaultFeatureConfig config, StructurePiecesGenerator.Context context) {
+	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {
 		int i = 0;
 
 		StrongholdGenerator.Start start;

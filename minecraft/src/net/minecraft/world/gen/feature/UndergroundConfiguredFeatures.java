@@ -125,16 +125,7 @@ public class UndergroundConfiguredFeatures {
 					true,
 					true,
 					0.5F,
-					List.of(
-						Blocks.STONE.getDefaultState(),
-						Blocks.ANDESITE.getDefaultState(),
-						Blocks.DIORITE.getDefaultState(),
-						Blocks.GRANITE.getDefaultState(),
-						Blocks.DRIPSTONE_BLOCK.getDefaultState(),
-						Blocks.CALCITE.getDefaultState(),
-						Blocks.TUFF.getDefaultState(),
-						Blocks.DEEPSLATE.getDefaultState()
-					)
+					List.of(Blocks.STONE, Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.DRIPSTONE_BLOCK, Blocks.CALCITE, Blocks.TUFF, Blocks.DEEPSLATE)
 				)
 			)
 	);
