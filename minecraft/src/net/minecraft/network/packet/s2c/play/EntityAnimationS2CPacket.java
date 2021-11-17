@@ -9,7 +9,7 @@ public class EntityAnimationS2CPacket implements Packet<ClientPlayPacketListener
 	public static final int SWING_MAIN_HAND = 0;
 	public static final int DAMAGE = 1;
 	public static final int WAKE_UP = 2;
-	public static final int SWING_OFF_HAND = 3;
+	public static final int SWING_OFFHAND = 3;
 	public static final int CRIT = 4;
 	public static final int ENCHANTED_HIT = 5;
 	private final int id;

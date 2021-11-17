@@ -16,8 +16,8 @@ import net.minecraft.util.JsonSerializer;
 public class StorageLootNbtProvider implements LootNbtProvider {
 	final Identifier source;
 
-	StorageLootNbtProvider(Identifier identifier) {
-		this.source = identifier;
+	StorageLootNbtProvider(Identifier source) {
+		this.source = source;
 	}
 
 	@Override

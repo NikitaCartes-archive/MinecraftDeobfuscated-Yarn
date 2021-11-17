@@ -329,7 +329,7 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 		return "Registry[" + this.registryKey + " (" + this.lifecycle + ")]";
 	}
 
-	public Codec<T> method_39673() {
+	public Codec<T> getCodec() {
 		Codec<T> codec = Identifier.CODEC
 			.flatXmap(
 				identifier -> (DataResult)Optional.ofNullable(this.get(identifier))
@@ -412,11 +412,11 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	}
 
 	public static <V, T extends V> T register(Registry<V> registry, Identifier id, T entry) {
-		return method_39197(registry, RegistryKey.of(registry.registryKey, id), entry);
+		return register(registry, RegistryKey.of(registry.registryKey, id), entry);
 	}
 
-	public static <V, T extends V> T method_39197(Registry<V> registry, RegistryKey<V> registryKey, T object) {
-		return ((MutableRegistry)registry).add(registryKey, object, Lifecycle.stable());
+	public static <V, T extends V> T register(Registry<V> registry, RegistryKey<V> key, T entry) {
+		return ((MutableRegistry)registry).add(key, entry, Lifecycle.stable());
 	}
 
 	public static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {

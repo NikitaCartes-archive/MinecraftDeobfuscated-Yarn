@@ -12,7 +12,7 @@ import net.minecraft.util.registry.Registry;
  */
 public abstract class BlockStateProvider {
 	public static final Codec<BlockStateProvider> TYPE_CODEC = Registry.BLOCK_STATE_PROVIDER_TYPE
-		.method_39673()
+		.getCodec()
 		.dispatch(BlockStateProvider::getType, BlockStateProviderType::getCodec);
 
 	/**

@@ -37,7 +37,7 @@ public class EndPlacedFeatures {
 		EndConfiguredFeatures.END_ISLAND
 			.withPlacement(
 				RarityFilterPlacementModifier.of(14),
-				PlacedFeatures.method_39736(1, 0.25F, 1),
+				PlacedFeatures.createCountExtraModifier(1, 0.25F, 1),
 				SquarePlacementModifier.of(),
 				HeightRangePlacementModifier.uniform(YOffset.fixed(55), YOffset.fixed(70)),
 				BiomePlacementModifier.of()

@@ -245,7 +245,7 @@ public class PackedIntegerArray implements PaletteStorage {
 		int j = (size + this.elementsPerLong - 1) / this.elementsPerLong;
 		if (data != null) {
 			if (data.length != j) {
-				throw new PackedIntegerArray.class_6685("Invalid length given for storage, got: " + data.length + " but expected: " + j);
+				throw new PackedIntegerArray.InvalidLengthException("Invalid length given for storage, got: " + data.length + " but expected: " + j);
 			}
 
 			this.data = data;
@@ -321,9 +321,9 @@ public class PackedIntegerArray implements PaletteStorage {
 		}
 	}
 
-	public static class class_6685 extends RuntimeException {
-		class_6685(String string) {
-			super(string);
+	public static class InvalidLengthException extends RuntimeException {
+		InvalidLengthException(String message) {
+			super(message);
 		}
 	}
 }

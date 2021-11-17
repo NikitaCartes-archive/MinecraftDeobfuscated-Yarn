@@ -312,7 +312,7 @@ public class ServerPlayerInteractionManager {
 				return ActionResult.PASS;
 			}
 		} else {
-			boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
+			boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffhandStack().isEmpty();
 			boolean bl2 = player.shouldCancelInteraction() && bl;
 			ItemStack itemStack = stack.copy();
 			if (!bl2) {

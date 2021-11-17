@@ -9,7 +9,7 @@ import net.minecraft.util.registry.Registry;
 
 public abstract class IntProvider {
 	private static final Codec<Either<Integer, IntProvider>> INT_CODEC = Codec.either(
-		Codec.INT, Registry.INT_PROVIDER_TYPE.method_39673().dispatch(IntProvider::getType, IntProviderType::codec)
+		Codec.INT, Registry.INT_PROVIDER_TYPE.getCodec().dispatch(IntProvider::getType, IntProviderType::codec)
 	);
 	public static final Codec<IntProvider> VALUE_CODEC = INT_CODEC.xmap(
 		either -> either.map(ConstantIntProvider::create, provider -> provider),

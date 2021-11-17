@@ -4,13 +4,11 @@ import java.util.Comparator;
 import javax.annotation.Nullable;
 
 public class ScoreboardPlayerScore {
-	public static final Comparator<ScoreboardPlayerScore> COMPARATOR = (scoreboardPlayerScore, scoreboardPlayerScore2) -> {
-		if (scoreboardPlayerScore.getScore() > scoreboardPlayerScore2.getScore()) {
+	public static final Comparator<ScoreboardPlayerScore> COMPARATOR = (a, b) -> {
+		if (a.getScore() > b.getScore()) {
 			return 1;
 		} else {
-			return scoreboardPlayerScore.getScore() < scoreboardPlayerScore2.getScore()
-				? -1
-				: scoreboardPlayerScore2.getPlayerName().compareToIgnoreCase(scoreboardPlayerScore.getPlayerName());
+			return a.getScore() < b.getScore() ? -1 : b.getPlayerName().compareToIgnoreCase(a.getPlayerName());
 		}
 	};
 	private final Scoreboard scoreboard;

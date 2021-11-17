@@ -69,11 +69,11 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, Identifier id) {
-		return builder(lootConditions -> new SetLootTableLootFunction(lootConditions, id, 0L, type));
+		return builder(conditions -> new SetLootTableLootFunction(conditions, id, 0L, type));
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(BlockEntityType<?> type, Identifier id, long seed) {
-		return builder(lootConditions -> new SetLootTableLootFunction(lootConditions, id, seed, type));
+		return builder(conditions -> new SetLootTableLootFunction(conditions, id, seed, type));
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetLootTableLootFunction> {

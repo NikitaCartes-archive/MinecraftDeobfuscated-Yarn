@@ -149,12 +149,12 @@ public class UndergroundConfiguredFeatures {
 				)
 			)
 	);
-	private static final WeightedBlockStateProvider field_35793 = new WeightedBlockStateProvider(
+	private static final WeightedBlockStateProvider CAVE_VINES_PLANT_PROVIDER = new WeightedBlockStateProvider(
 		DataPool.<BlockState>builder()
 			.add(Blocks.CAVE_VINES_PLANT.getDefaultState(), 4)
 			.add(Blocks.CAVE_VINES_PLANT.getDefaultState().with(CaveVines.BERRIES, Boolean.valueOf(true)), 1)
 	);
-	private static final RandomizedIntBlockStateProvider field_35794 = new RandomizedIntBlockStateProvider(
+	private static final RandomizedIntBlockStateProvider RANDOMIZED_AGE_CAVE_VINES_PROVIDER = new RandomizedIntBlockStateProvider(
 		new WeightedBlockStateProvider(
 			DataPool.<BlockState>builder()
 				.add(Blocks.CAVE_VINES.getDefaultState(), 4)
@@ -177,9 +177,9 @@ public class UndergroundConfiguredFeatures {
 									.add(UniformIntProvider.create(0, 6), 10)
 									.build()
 							),
-							field_35793
+							CAVE_VINES_PLANT_PROVIDER
 						),
-						BlockColumnFeatureConfig.createLayer(ConstantIntProvider.create(1), field_35794)
+						BlockColumnFeatureConfig.createLayer(ConstantIntProvider.create(1), RANDOMIZED_AGE_CAVE_VINES_PROVIDER)
 					),
 					Direction.DOWN,
 					BlockPredicate.IS_AIR,
@@ -195,9 +195,9 @@ public class UndergroundConfiguredFeatures {
 					List.of(
 						BlockColumnFeatureConfig.createLayer(
 							new WeightedListIntProvider(DataPool.<IntProvider>builder().add(UniformIntProvider.create(0, 3), 5).add(UniformIntProvider.create(1, 7), 1).build()),
-							field_35793
+							CAVE_VINES_PLANT_PROVIDER
 						),
-						BlockColumnFeatureConfig.createLayer(ConstantIntProvider.create(1), field_35794)
+						BlockColumnFeatureConfig.createLayer(ConstantIntProvider.create(1), RANDOMIZED_AGE_CAVE_VINES_PROVIDER)
 					),
 					Direction.DOWN,
 					BlockPredicate.IS_AIR,
@@ -263,11 +263,11 @@ public class UndergroundConfiguredFeatures {
 			.configure(
 				new SimpleRandomFeatureConfig(
 					List.of(
-						UndergroundConfiguredFeatures::method_39686,
-						(Supplier)() -> method_39687(Direction.EAST),
-						(Supplier)() -> method_39687(Direction.WEST),
-						(Supplier)() -> method_39687(Direction.SOUTH),
-						(Supplier)() -> method_39687(Direction.NORTH)
+						UndergroundConfiguredFeatures::createSmallDripleafFeature,
+						(Supplier)() -> createBigDripleafFeature(Direction.EAST),
+						(Supplier)() -> createBigDripleafFeature(Direction.WEST),
+						(Supplier)() -> createBigDripleafFeature(Direction.SOUTH),
+						(Supplier)() -> createBigDripleafFeature(Direction.NORTH)
 					)
 				)
 			)
@@ -368,7 +368,7 @@ public class UndergroundConfiguredFeatures {
 			)
 	);
 
-	private static PlacedFeature method_39687(Direction direction) {
+	private static PlacedFeature createBigDripleafFeature(Direction direction) {
 		return Feature.BLOCK_COLUMN
 			.configure(
 				new BlockColumnFeatureConfig(
@@ -389,7 +389,7 @@ public class UndergroundConfiguredFeatures {
 			.withPlacement();
 	}
 
-	private static PlacedFeature method_39686() {
+	private static PlacedFeature createSmallDripleafFeature() {
 		return Feature.SIMPLE_BLOCK
 			.configure(
 				new SimpleBlockFeatureConfig(

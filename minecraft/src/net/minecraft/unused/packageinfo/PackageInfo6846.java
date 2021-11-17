@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.unused.packageinfo;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.util.annotation.FieldsAreNonnullByDefault;
@@ -8,5 +8,5 @@ import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @FieldsAreNonnullByDefault
-interface class_6846 {
+interface PackageInfo6846 {
 }

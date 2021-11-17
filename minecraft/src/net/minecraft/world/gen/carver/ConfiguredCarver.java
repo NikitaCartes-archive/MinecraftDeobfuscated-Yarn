@@ -15,7 +15,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 
 public class ConfiguredCarver<WC extends CarverConfig> {
-	public static final Codec<ConfiguredCarver<?>> CODEC = Registry.CARVER.method_39673().dispatch(configuredCarver -> configuredCarver.carver, Carver::getCodec);
+	public static final Codec<ConfiguredCarver<?>> CODEC = Registry.CARVER.getCodec().dispatch(configuredCarver -> configuredCarver.carver, Carver::getCodec);
 	public static final Codec<Supplier<ConfiguredCarver<?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_CARVER_KEY, CODEC);
 	public static final Codec<List<Supplier<ConfiguredCarver<?>>>> LIST_CODEC = RegistryElementCodec.method_31194(Registry.CONFIGURED_CARVER_KEY, CODEC);
 	private final Carver<WC> carver;

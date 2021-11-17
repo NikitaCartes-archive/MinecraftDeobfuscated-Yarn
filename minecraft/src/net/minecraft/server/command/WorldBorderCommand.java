@@ -27,7 +27,7 @@ public class WorldBorderCommand {
 	private static final SimpleCommandExceptionType SET_FAILED_BIG_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.worldborder.set.failed.big", 5.999997E7F)
 	);
-	private static final SimpleCommandExceptionType field_36188 = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType SET_FAILED_FAR_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.worldborder.set.failed.far", 2.9999984E7)
 	);
 	private static final SimpleCommandExceptionType WARNING_TIME_FAILED_EXCEPTION = new SimpleCommandExceptionType(
@@ -189,7 +189,7 @@ public class WorldBorderCommand {
 			);
 			return 0;
 		} else {
-			throw field_36188.create();
+			throw SET_FAILED_FAR_EXCEPTION.create();
 		}
 	}
 

@@ -26,7 +26,7 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 
 public abstract class StructurePoolElement {
 	public static final Codec<StructurePoolElement> CODEC = Registry.STRUCTURE_POOL_ELEMENT
-		.method_39673()
+		.getCodec()
 		.dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
 	@Nullable
 	private volatile StructurePool.Projection projection;

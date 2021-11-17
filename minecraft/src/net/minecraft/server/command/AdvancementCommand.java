@@ -400,8 +400,8 @@ public class AdvancementCommand {
 
 		private final String commandPrefix;
 
-		Operation(String string2) {
-			this.commandPrefix = "commands.advancement." + string2;
+		Operation(String name) {
+			this.commandPrefix = "commands.advancement." + name;
 		}
 
 		public int processAll(ServerPlayerEntity player, Iterable<Advancement> advancements) {

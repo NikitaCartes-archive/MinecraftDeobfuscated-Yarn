@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.feature;
 
 import java.util.Random;
-import net.minecraft.class_6825;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
@@ -37,7 +36,7 @@ public class PlacedFeatures {
 			OrePlacedFeatures.ORE_ANCIENT_DEBRIS_LARGE,
 			TreePlacedFeatures.ACACIA_CHECKED,
 			VegetationPlacedFeatures.BAMBOO_VEGETATION,
-			class_6825.field_36195
+			VillagePlacedFeatures.PILE_HAY
 		};
 		return Util.getRandom(placedFeatures, new Random());
 	}
@@ -46,14 +45,14 @@ public class PlacedFeatures {
 		return Registry.register(BuiltinRegistries.PLACED_FEATURE, id, feature);
 	}
 
-	public static PlacementModifier method_39736(int i, float f, int j) {
-		float g = 1.0F / f;
-		if (Math.abs(g - (float)((int)g)) > 1.0E-5F) {
+	public static PlacementModifier createCountExtraModifier(int count, float extraChance, int extraCount) {
+		float f = 1.0F / extraChance;
+		if (Math.abs(f - (float)((int)f)) > 1.0E-5F) {
 			throw new IllegalStateException("Chance data cannot be represented as list weight");
 		} else {
 			DataPool<IntProvider> dataPool = DataPool.<IntProvider>builder()
-				.add(ConstantIntProvider.create(i), (int)g - 1)
-				.add(ConstantIntProvider.create(i + j), 1)
+				.add(ConstantIntProvider.create(count), (int)f - 1)
+				.add(ConstantIntProvider.create(count + extraCount), 1)
 				.build();
 			return CountPlacementModifier.of(new WeightedListIntProvider(dataPool));
 		}

@@ -17,7 +17,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6748;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -46,6 +45,7 @@ import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -71,7 +71,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	protected ChunkNoiseSampler chunkNoiseSampler;
 	protected final UpgradeData upgradeData;
 	@Nullable
-	protected Blender blender;
+	protected BlendingData blendingData;
 	protected final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
 	private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
 	private final Map<StructureFeature<?>, LongSet> structureReferences = Maps.<StructureFeature<?>, LongSet>newHashMap();
@@ -87,7 +87,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		Registry<Biome> biome,
 		long inhabitedTime,
 		@Nullable ChunkSection[] sectionArrayInitializer,
-		@Nullable Blender blendingData
+		@Nullable BlendingData blendingData
 	) {
 		this.pos = pos;
 		this.upgradeData = upgradeData;
@@ -95,7 +95,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		this.sectionArray = new ChunkSection[heightLimitView.countVerticalSections()];
 		this.inhabitedTime = inhabitedTime;
 		this.postProcessingLists = new ShortList[heightLimitView.countVerticalSections()];
-		this.blender = blendingData;
+		this.blendingData = blendingData;
 		if (sectionArrayInitializer != null) {
 			if (this.sectionArray.length == sectionArrayInitializer.length) {
 				System.arraycopy(sectionArrayInitializer, 0, this.sectionArray, 0, this.sectionArray.length);
@@ -305,16 +305,16 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public boolean usesOldNoise() {
-		return this.blender != null && this.blender.method_39566();
+		return this.blendingData != null && this.blendingData.usesOldNoise();
 	}
 
 	@Nullable
-	public Blender getBlender() {
-		return this.blender;
+	public BlendingData getBlendingData() {
+		return this.blendingData;
 	}
 
-	public void setBlender(Blender blender) {
-		this.blender = blender;
+	public void setBlender(BlendingData blender) {
+		this.blendingData = blender;
 	}
 
 	public long getInhabitedTime() {
@@ -361,10 +361,10 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		Supplier<ChunkNoiseSampler.ColumnSampler> supplier,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
-		class_6748 arg
+		Blender blender
 	) {
 		if (this.chunkNoiseSampler == null) {
-			this.chunkNoiseSampler = ChunkNoiseSampler.method_39543(this, noiseColumnSampler, supplier, chunkGeneratorSettings, fluidLevelSampler, arg);
+			this.chunkNoiseSampler = ChunkNoiseSampler.method_39543(this, noiseColumnSampler, supplier, chunkGeneratorSettings, fluidLevelSampler, blender);
 		}
 
 		return this.chunkNoiseSampler;

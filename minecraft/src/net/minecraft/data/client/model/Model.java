@@ -41,10 +41,10 @@ public class Model {
 		Map<TextureKey, Identifier> map = this.createTextureMap(texture);
 		modelCollector.accept(id, (Supplier)() -> {
 			JsonObject jsonObject = new JsonObject();
-			this.parent.ifPresent(identifier -> jsonObject.addProperty("parent", identifier.toString()));
+			this.parent.ifPresent(parentId -> jsonObject.addProperty("parent", parentId.toString()));
 			if (!map.isEmpty()) {
 				JsonObject jsonObject2 = new JsonObject();
-				map.forEach((textureKey, identifier) -> jsonObject2.addProperty(textureKey.getName(), identifier.toString()));
+				map.forEach((textureKey, textureId) -> jsonObject2.addProperty(textureKey.getName(), textureId.toString()));
 				jsonObject.add("textures", jsonObject2);
 			}
 

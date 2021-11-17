@@ -82,9 +82,9 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		return serverPropertiesHandler;
 	}
 
-	public GeneratorOptions getGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {
+	public GeneratorOptions getGeneratorOptions(DynamicRegistryManager registryManager) {
 		if (this.generatorOptions == null) {
-			this.generatorOptions = GeneratorOptions.fromProperties(dynamicRegistryManager, this.properties);
+			this.generatorOptions = GeneratorOptions.fromProperties(registryManager, this.properties);
 		}
 
 		return this.generatorOptions;

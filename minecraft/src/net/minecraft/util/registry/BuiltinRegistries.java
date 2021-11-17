@@ -96,9 +96,9 @@ public class BuiltinRegistries {
 	}
 
 	static {
-		DEFAULT_VALUE_SUPPLIERS.forEach((identifier, supplier) -> {
+		DEFAULT_VALUE_SUPPLIERS.forEach((id, supplier) -> {
 			if (supplier.get() == null) {
-				LOGGER.error("Unable to bootstrap registry '{}'", identifier);
+				LOGGER.error("Unable to bootstrap registry '{}'", id);
 			}
 		});
 		Registry.validate(ROOT);

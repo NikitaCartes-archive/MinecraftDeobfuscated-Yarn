@@ -28,12 +28,12 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	private final Map<RegistryKey<? extends Registry<?>>, RegistryOps.ValueHolder<?>> valueHolders;
 	private final RegistryOps<JsonElement> entryOps;
 
-	public static <T> RegistryOps<T> ofLoaded(DynamicOps<T> dynamicOps, ResourceManager resourceManager, DynamicRegistryManager registryManager) {
-		return ofLoaded(dynamicOps, EntryLoader.resourceBacked(resourceManager), registryManager);
+	public static <T> RegistryOps<T> ofLoaded(DynamicOps<T> ops, ResourceManager resourceManager, DynamicRegistryManager registryManager) {
+		return ofLoaded(ops, EntryLoader.resourceBacked(resourceManager), registryManager);
 	}
 
-	public static <T> RegistryOps<T> ofLoaded(DynamicOps<T> dynamicOps, EntryLoader entryLoader, DynamicRegistryManager registryManager) {
-		RegistryOps<T> registryOps = new RegistryOps<>(dynamicOps, entryLoader, registryManager, Maps.newIdentityHashMap());
+	public static <T> RegistryOps<T> ofLoaded(DynamicOps<T> ops, EntryLoader entryLoader, DynamicRegistryManager registryManager) {
+		RegistryOps<T> registryOps = new RegistryOps<>(ops, entryLoader, registryManager, Maps.newIdentityHashMap());
 		DynamicRegistryManager.load(registryManager, registryOps);
 		return registryOps;
 	}
