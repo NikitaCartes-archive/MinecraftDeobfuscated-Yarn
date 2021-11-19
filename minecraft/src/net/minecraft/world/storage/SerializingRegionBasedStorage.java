@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 
 public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final String field_31427 = "Sections";
+	private static final String SECTIONS_KEY = "Sections";
 	private final StorageIoWorker worker;
 	private final Long2ObjectMap<Optional<R>> loadedElements = new Long2ObjectOpenHashMap<>();
 	private final LongLinkedOpenHashSet unsavedElements = new LongLinkedOpenHashSet();
@@ -90,8 +90,8 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		}
 	}
 
-	protected boolean isPosInvalid(long l) {
-		int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l));
+	protected boolean isPosInvalid(long pos) {
+		int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(pos));
 		return this.world.isOutOfHeightLimit(i);
 	}
 
@@ -127,7 +127,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
 		if (data == null) {
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
-				this.loadedElements.put(method_33637(pos, i), Optional.empty());
+				this.loadedElements.put(chunkSectionPosAsLong(pos, i), Optional.empty());
 			}
 		} else {
 			Dynamic<T> dynamic = new Dynamic<>(dynamicOps, data);
@@ -138,7 +138,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
 
 			for (int l = this.world.getBottomSectionCoord(); l < this.world.getTopSectionCoord(); l++) {
-				long m = method_33637(pos, l);
+				long m = chunkSectionPosAsLong(pos, l);
 				Optional<R> optional = optionalDynamic.get(Integer.toString(l))
 					.result()
 					.flatMap(dynamicx -> ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(m))).parse(dynamicx).resultOrPartial(LOGGER::error));
@@ -167,7 +167,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		Map<T, T> map = Maps.<T, T>newHashMap();
 
 		for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
-			long l = method_33637(chunkPos, i);
+			long l = chunkSectionPosAsLong(chunkPos, i);
 			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
 			if (optional != null && optional.isPresent()) {
@@ -190,8 +190,8 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		);
 	}
 
-	private static long method_33637(ChunkPos chunkPos, int i) {
-		return ChunkSectionPos.asLong(chunkPos.x, i, chunkPos.z);
+	private static long chunkSectionPosAsLong(ChunkPos chunkPos, int y) {
+		return ChunkSectionPos.asLong(chunkPos.x, y, chunkPos.z);
 	}
 
 	protected void onLoad(long pos) {
@@ -213,7 +213,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	public void saveChunk(ChunkPos pos) {
 		if (!this.unsavedElements.isEmpty()) {
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
-				long l = method_33637(pos, i);
+				long l = chunkSectionPosAsLong(pos, i);
 				if (this.unsavedElements.contains(l)) {
 					this.save(pos);
 					return;

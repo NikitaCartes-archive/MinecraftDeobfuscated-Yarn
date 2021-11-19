@@ -172,7 +172,7 @@ public class OptionsScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
 	}
 
-	public static CyclingButtonWidget<Difficulty> createDifficultyButtonWidget(int i, int width, int height, String string, MinecraftClient client) {
+	public static CyclingButtonWidget<Difficulty> createDifficultyButtonWidget(int i, int width, int height, String text, MinecraftClient client) {
 		return CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
 			.values(Difficulty.values())
 			.initially(client.world.getDifficulty())
@@ -181,7 +181,7 @@ public class OptionsScreen extends Screen {
 				height / 6 - 12 + 24 * (i >> 1),
 				150,
 				20,
-				new TranslatableText(string),
+				new TranslatableText(text),
 				(cyclingButtonWidget, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(difficulty))
 			);
 	}

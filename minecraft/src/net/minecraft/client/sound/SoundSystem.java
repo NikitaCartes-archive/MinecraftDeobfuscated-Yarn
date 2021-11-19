@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.resource.ResourceManager;
@@ -351,7 +352,9 @@ public class SoundSystem {
 									.createSource(sound2.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
 								Channel.SourceManager sourceManager = (Channel.SourceManager)completableFuture.join();
 								if (sourceManager == null) {
-									LOGGER.warn("Failed to create new sound handle");
+									if (SharedConstants.isDevelopment) {
+										LOGGER.warn("Failed to create new sound handle");
+									}
 								} else {
 									LOGGER.debug(MARKER, "Playing sound {} for event {}", sound2.getIdentifier(), identifier);
 									this.soundEndTicks.put(sound, this.ticks + 20);

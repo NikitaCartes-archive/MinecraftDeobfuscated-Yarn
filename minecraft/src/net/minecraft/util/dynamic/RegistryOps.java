@@ -113,12 +113,12 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		if (dataResult != null) {
 			return dataResult;
 		} else {
-			valueHolder.values.put(registryKey2, DataResult.success(method_39744(mutableRegistry, registryKey2)));
+			valueHolder.values.put(registryKey2, DataResult.success(createLazyEntrySupplier(mutableRegistry, registryKey2)));
 			Optional<DataResult<EntryLoader.Entry<E>>> optional = this.entryLoader.load(this.entryOps, registryKey, registryKey2, codec);
 			DataResult<Supplier<E>> dataResult2;
 			if (optional.isEmpty()) {
 				if (mutableRegistry.contains(registryKey2)) {
-					dataResult2 = DataResult.success(method_39743(mutableRegistry, registryKey2), Lifecycle.stable());
+					dataResult2 = DataResult.success(createEntrySupplier(mutableRegistry, registryKey2), Lifecycle.stable());
 				} else {
 					dataResult2 = DataResult.error("Missing referenced custom/removed registry entry for registry " + registryKey + " named " + registryKey2.getValue());
 				}
@@ -130,7 +130,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 					mutableRegistry.replace(entry.fixedId(), registryKey2, entry.value(), dataResult3.lifecycle());
 				}
 
-				dataResult2 = dataResult3.map(entryx -> method_39743(mutableRegistry, registryKey2));
+				dataResult2 = dataResult3.map(entryx -> createEntrySupplier(mutableRegistry, registryKey2));
 			}
 
 			valueHolder.values.put(registryKey2, dataResult2);
@@ -138,25 +138,25 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		}
 	}
 
-	private static <E> Supplier<E> method_39744(MutableRegistry<E> mutableRegistry, RegistryKey<E> registryKey) {
+	private static <E> Supplier<E> createLazyEntrySupplier(MutableRegistry<E> registry, RegistryKey<E> key) {
 		return Suppliers.memoize(() -> {
-			E object = mutableRegistry.get(registryKey);
+			E object = registry.get(key);
 			if (object == null) {
-				throw new RuntimeException("Error during recursive registry parsing, element resolved too early: " + registryKey);
+				throw new RuntimeException("Error during recursive registry parsing, element resolved too early: " + key);
 			} else {
 				return (T)object;
 			}
 		});
 	}
 
-	private static <E> Supplier<E> method_39743(Registry<E> registry, RegistryKey<E> registryKey) {
+	private static <E> Supplier<E> createEntrySupplier(Registry<E> registry, RegistryKey<E> key) {
 		return new Supplier<E>() {
 			public E get() {
-				return registry.get(registryKey);
+				return registry.get(key);
 			}
 
 			public String toString() {
-				return registryKey.toString();
+				return key.toString();
 			}
 		};
 	}

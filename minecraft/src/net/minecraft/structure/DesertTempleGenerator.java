@@ -23,12 +23,12 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 		super(StructurePieceType.DESERT_TEMPLE, x, 64, z, 21, 15, 21, getRandomHorizontalDirection(random));
 	}
 
-	public DesertTempleGenerator(NbtCompound nbtCompound) {
-		super(StructurePieceType.DESERT_TEMPLE, nbtCompound);
-		this.hasPlacedChest[0] = nbtCompound.getBoolean("hasPlacedChest0");
-		this.hasPlacedChest[1] = nbtCompound.getBoolean("hasPlacedChest1");
-		this.hasPlacedChest[2] = nbtCompound.getBoolean("hasPlacedChest2");
-		this.hasPlacedChest[3] = nbtCompound.getBoolean("hasPlacedChest3");
+	public DesertTempleGenerator(NbtCompound nbt) {
+		super(StructurePieceType.DESERT_TEMPLE, nbt);
+		this.hasPlacedChest[0] = nbt.getBoolean("hasPlacedChest0");
+		this.hasPlacedChest[1] = nbt.getBoolean("hasPlacedChest1");
+		this.hasPlacedChest[2] = nbt.getBoolean("hasPlacedChest2");
+		this.hasPlacedChest[3] = nbt.getBoolean("hasPlacedChest3");
 	}
 
 	@Override

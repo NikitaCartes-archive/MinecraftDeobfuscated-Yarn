@@ -49,10 +49,10 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 		Brain<?> brain = villagerEntity.getBrain();
 		brain.getOptionalMemory(this.destination)
 			.ifPresent(
-				globalPos -> {
-					if (this.dimensionMismatches(serverWorld, globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
+				pos -> {
+					if (this.dimensionMismatches(serverWorld, pos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
 						this.giveUp(villagerEntity, l);
-					} else if (this.exceedsMaxRange(villagerEntity, globalPos)) {
+					} else if (this.exceedsMaxRange(villagerEntity, pos)) {
 						Vec3d vec3d = null;
 						int i = 0;
 
@@ -60,7 +60,7 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 							i < 1000 && (vec3d == null || this.exceedsMaxRange(villagerEntity, GlobalPos.create(serverWorld.getRegistryKey(), new BlockPos(vec3d))));
 							i++
 						) {
-							vec3d = NoPenaltyTargeting.findTo(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), (float) (Math.PI / 2));
+							vec3d = NoPenaltyTargeting.findTo(villagerEntity, 15, 7, Vec3d.ofBottomCenter(pos.getPos()), (float) (Math.PI / 2));
 						}
 
 						if (i == 1000) {
@@ -69,8 +69,8 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 						}
 
 						brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
-					} else if (!this.reachedDestination(serverWorld, villagerEntity, globalPos)) {
-						brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
+					} else if (!this.reachedDestination(serverWorld, villagerEntity, pos)) {
+						brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(pos.getPos(), this.speed, this.completionRange));
 					}
 				}
 			);

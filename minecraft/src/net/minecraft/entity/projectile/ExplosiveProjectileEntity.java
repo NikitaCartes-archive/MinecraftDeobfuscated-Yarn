@@ -80,7 +80,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			double d = this.getX() + vec3d.x;
 			double e = this.getY() + vec3d.y;
 			double f = this.getZ() + vec3d.z;
-			ProjectileUtil.method_7484(this, 0.2F);
+			ProjectileUtil.setRotationFromVelocity(this, 0.2F);
 			float g = this.getDrag();
 			if (this.isTouchingWater()) {
 				for (int i = 0; i < 4; i++) {

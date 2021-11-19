@@ -47,19 +47,19 @@ public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> 
 		}
 	}
 
-	private static void generateDripstoneBlocks(WorldAccess worldAccess, Random random, BlockPos pos, SmallDripstoneFeatureConfig smallDripstoneFeatureConfig) {
-		DripstoneHelper.generateDripstoneBlock(worldAccess, pos);
+	private static void generateDripstoneBlocks(WorldAccess world, Random random, BlockPos pos, SmallDripstoneFeatureConfig config) {
+		DripstoneHelper.generateDripstoneBlock(world, pos);
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			if (!(random.nextFloat() > smallDripstoneFeatureConfig.field_35416)) {
+			if (!(random.nextFloat() > config.chanceOfDirectionalSpread)) {
 				BlockPos blockPos = pos.offset(direction);
-				DripstoneHelper.generateDripstoneBlock(worldAccess, blockPos);
-				if (!(random.nextFloat() > smallDripstoneFeatureConfig.field_35417)) {
+				DripstoneHelper.generateDripstoneBlock(world, blockPos);
+				if (!(random.nextFloat() > config.chanceOfSpreadRadius2)) {
 					BlockPos blockPos2 = blockPos.offset(Direction.random(random));
-					DripstoneHelper.generateDripstoneBlock(worldAccess, blockPos2);
-					if (!(random.nextFloat() > smallDripstoneFeatureConfig.field_35418)) {
+					DripstoneHelper.generateDripstoneBlock(world, blockPos2);
+					if (!(random.nextFloat() > config.chanceOfSpreadRadius3)) {
 						BlockPos blockPos3 = blockPos2.offset(Direction.random(random));
-						DripstoneHelper.generateDripstoneBlock(worldAccess, blockPos3);
+						DripstoneHelper.generateDripstoneBlock(world, blockPos3);
 					}
 				}
 			}

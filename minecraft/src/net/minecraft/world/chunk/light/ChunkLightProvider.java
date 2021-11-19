@@ -158,7 +158,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	}
 
 	@Override
-	public int doLightUpdates(int i, boolean bl, boolean bl2) {
+	public int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation) {
 		if (!this.field_15794) {
 			if (this.lightStorage.hasPendingUpdates()) {
 				i = this.lightStorage.applyPendingUpdates(i);
@@ -167,7 +167,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 				}
 			}
 
-			this.lightStorage.updateLight(this, bl, bl2);
+			this.lightStorage.updateLight(this, doSkylight, skipEdgeLightPropagation);
 		}
 
 		this.field_15794 = true;

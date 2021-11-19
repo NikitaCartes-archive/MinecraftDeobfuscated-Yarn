@@ -54,16 +54,16 @@ public class GenerationSettings {
 	private final List<ConfiguredFeature<?, ?>> flowerFeatures;
 	private final Set<PlacedFeature> allowedFeatures;
 
-	GenerationSettings(Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> map, List<List<Supplier<PlacedFeature>>> list) {
-		this.carvers = map;
-		this.features = list;
-		this.flowerFeatures = (List<ConfiguredFeature<?, ?>>)list.stream()
+	GenerationSettings(Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers, List<List<Supplier<PlacedFeature>>> features) {
+		this.carvers = carvers;
+		this.features = features;
+		this.flowerFeatures = (List<ConfiguredFeature<?, ?>>)features.stream()
 			.flatMap(Collection::stream)
 			.map(Supplier::get)
 			.flatMap(PlacedFeature::getDecoratedFeatures)
 			.filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER)
 			.collect(ImmutableList.toImmutableList());
-		this.allowedFeatures = (Set<PlacedFeature>)list.stream().flatMap(Collection::stream).map(Supplier::get).collect(Collectors.toSet());
+		this.allowedFeatures = (Set<PlacedFeature>)features.stream().flatMap(Collection::stream).map(Supplier::get).collect(Collectors.toSet());
 	}
 
 	public List<Supplier<ConfiguredCarver<?>>> getCarversForStep(GenerationStep.Carver carverStep) {
@@ -82,16 +82,16 @@ public class GenerationSettings {
 		return this.features;
 	}
 
-	public boolean isFeatureAllowed(PlacedFeature placedFeature) {
-		return this.allowedFeatures.contains(placedFeature);
+	public boolean isFeatureAllowed(PlacedFeature feature) {
+		return this.allowedFeatures.contains(feature);
 	}
 
 	public static class Builder {
 		private final Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers = Maps.<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>>newLinkedHashMap();
 		private final List<List<Supplier<PlacedFeature>>> features = Lists.<List<Supplier<PlacedFeature>>>newArrayList();
 
-		public GenerationSettings.Builder feature(GenerationStep.Feature featureStep, PlacedFeature placedFeature) {
-			return this.feature(featureStep.ordinal(), () -> placedFeature);
+		public GenerationSettings.Builder feature(GenerationStep.Feature featureStep, PlacedFeature feature) {
+			return this.feature(featureStep.ordinal(), () -> feature);
 		}
 
 		public GenerationSettings.Builder feature(int stepIndex, Supplier<PlacedFeature> featureSupplier) {

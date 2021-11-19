@@ -53,9 +53,9 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 						livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance && this.test(livingEntity2)
 					)
 			)
-			.ifPresent(livingEntity -> {
-				brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
-				brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
+			.ifPresent(target -> {
+				brain.remember(MemoryModuleType.INTERACTION_TARGET, target);
+				brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 			});
 	}
 

@@ -59,7 +59,7 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 						mutable.move(direction);
 					}
 
-					for (int var25 = 0; world.testBlockState(mutable, blockStatex -> !blockStatex.isAir()) && var25 < config.verticalRange; var25++) {
+					for (int var25 = 0; world.testBlockState(mutable, state -> !state.isAir()) && var25 < config.verticalRange; var25++) {
 						mutable.move(direction2);
 					}
 
@@ -99,7 +99,8 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 	protected boolean generateVegetationFeature(
 		StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, Random random, BlockPos pos
 	) {
-		return ((ConfiguredFeature)config.vegetationFeature.get()).generate(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
+		return ((PlacedFeature)config.vegetationFeature.get())
+			.generateUnregistered(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
 	}
 
 	protected boolean placeGround(

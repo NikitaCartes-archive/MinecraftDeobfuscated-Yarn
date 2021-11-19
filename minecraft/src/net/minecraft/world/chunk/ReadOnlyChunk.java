@@ -275,9 +275,9 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void method_38257(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler) {
+	public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler) {
 		if (this.field_34554) {
-			this.wrapped.method_38257(biomeSupplier, sampler);
+			this.wrapped.populateBiomes(biomeSupplier, sampler);
 		}
 	}
 }

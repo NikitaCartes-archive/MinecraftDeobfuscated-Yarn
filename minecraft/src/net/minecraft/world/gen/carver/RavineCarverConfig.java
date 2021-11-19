@@ -24,12 +24,12 @@ public class RavineCarverConfig extends CarverConfig {
 		HeightProvider y,
 		FloatProvider yScale,
 		YOffset lavaLevel,
-		CarverDebugConfig carverDebugConfig,
-		FloatProvider floatProvider,
+		CarverDebugConfig debugConfig,
+		FloatProvider verticalRotation,
 		RavineCarverConfig.Shape shape
 	) {
-		super(probability, y, yScale, lavaLevel, carverDebugConfig);
-		this.verticalRotation = floatProvider;
+		super(probability, y, yScale, lavaLevel, debugConfig);
+		this.verticalRotation = verticalRotation;
 		this.shape = shape;
 	}
 

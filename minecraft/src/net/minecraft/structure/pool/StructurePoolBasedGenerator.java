@@ -8,11 +8,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
-import net.minecraft.class_6834;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.BlockRotation;
@@ -43,16 +43,20 @@ public class StructurePoolBasedGenerator {
 	static final Logger LOGGER = LogManager.getLogger();
 
 	public static Optional<StructurePiecesGenerator<StructurePoolFeatureConfig>> generate(
-		class_6834.class_6835<StructurePoolFeatureConfig> arg, StructurePoolBasedGenerator.PieceFactory pieceFactory, BlockPos blockPos, boolean bl, boolean bl2
+		StructureGeneratorFactory.Context<StructurePoolFeatureConfig> context,
+		StructurePoolBasedGenerator.PieceFactory pieceFactory,
+		BlockPos pos,
+		boolean bl,
+		boolean bl2
 	) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-		chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
-		DynamicRegistryManager dynamicRegistryManager = arg.registryAccess();
-		StructurePoolFeatureConfig structurePoolFeatureConfig = (StructurePoolFeatureConfig)arg.config();
-		ChunkGenerator chunkGenerator = arg.chunkGenerator();
-		StructureManager structureManager = arg.structureManager();
-		HeightLimitView heightLimitView = arg.heightAccessor();
-		Predicate<Biome> predicate = arg.validBiome();
+		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
+		DynamicRegistryManager dynamicRegistryManager = context.registryManager();
+		StructurePoolFeatureConfig structurePoolFeatureConfig = (StructurePoolFeatureConfig)context.config();
+		ChunkGenerator chunkGenerator = context.chunkGenerator();
+		StructureManager structureManager = context.structureManager();
+		HeightLimitView heightLimitView = context.world();
+		Predicate<Biome> predicate = context.validBiome();
 		StructureFeature.init();
 		Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.STRUCTURE_POOL_KEY);
 		BlockRotation blockRotation = BlockRotation.random(chunkRandom);
@@ -64,19 +68,19 @@ public class StructurePoolBasedGenerator {
 			PoolStructurePiece poolStructurePiece = pieceFactory.create(
 				structureManager,
 				structurePoolElement,
-				blockPos,
+				pos,
 				structurePoolElement.getGroundLevelDelta(),
 				blockRotation,
-				structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation)
+				structurePoolElement.getBoundingBox(structureManager, pos, blockRotation)
 			);
 			BlockBox blockBox = poolStructurePiece.getBoundingBox();
 			int i = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
 			int j = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
 			int k;
 			if (bl2) {
-				k = blockPos.getY() + chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+				k = pos.getY() + chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
 			} else {
-				k = blockPos.getY();
+				k = pos.getY();
 			}
 
 			if (!predicate.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j)))) {
@@ -85,7 +89,7 @@ public class StructurePoolBasedGenerator {
 				int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
 				poolStructurePiece.translate(0, k - l, 0);
 				return Optional.of(
-					(StructurePiecesGenerator<>)(structurePiecesCollector, context) -> {
+					(StructurePiecesGenerator<>)(structurePiecesCollector, contextx) -> {
 						List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
 						list.add(poolStructurePiece);
 						if (structurePoolFeatureConfig.getSize() > 0) {
@@ -251,9 +255,9 @@ public class StructurePoolBasedGenerator {
 										} else {
 											Identifier identifierx = new Identifier(structureBlockInfox.nbt.getString("pool"));
 											Optional<StructurePool> optionalx = this.registry.getOrEmpty(identifierx);
-											Optional<StructurePool> optional2x = optionalx.flatMap(structurePool -> this.registry.getOrEmpty(structurePool.getTerminatorsId()));
-											int ix = (Integer)optionalx.map(structurePool -> structurePool.getHighestY(this.structureManager)).orElse(0);
-											int jx = (Integer)optional2x.map(structurePool -> structurePool.getHighestY(this.structureManager)).orElse(0);
+											Optional<StructurePool> optional2x = optionalx.flatMap(pool -> this.registry.getOrEmpty(pool.getTerminatorsId()));
+											int ix = (Integer)optionalx.map(pool -> pool.getHighestY(this.structureManager)).orElse(0);
+											int jx = (Integer)optional2x.map(pool -> pool.getHighestY(this.structureManager)).orElse(0);
 											return Math.max(ix, jx);
 										}
 									}).max().orElse(0);

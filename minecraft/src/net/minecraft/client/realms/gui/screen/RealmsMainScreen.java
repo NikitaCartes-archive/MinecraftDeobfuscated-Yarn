@@ -609,7 +609,9 @@ public class RealmsMainScreen extends RealmsScreen {
 			Text text = new TranslatableText("mco.configure.world.leave.question.line1");
 			Text text2 = new TranslatableText("mco.configure.world.leave.question.line2");
 			this.client
-				.setScreen(new RealmsLongConfirmationScreen(bl -> this.leaveServer(bl, selectedServer), RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
+				.setScreen(
+					new RealmsLongConfirmationScreen(confirmed -> this.leaveServer(confirmed, selectedServer), RealmsLongConfirmationScreen.Type.INFO, text, text2, true)
+				);
 		}
 	}
 

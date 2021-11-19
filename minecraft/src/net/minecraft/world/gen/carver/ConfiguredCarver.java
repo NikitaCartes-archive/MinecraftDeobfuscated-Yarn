@@ -35,10 +35,8 @@ public class ConfiguredCarver<WC extends CarverConfig> {
 	}
 
 	public boolean carve(
-		CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, AquiferSampler aquiferSampler, ChunkPos pos, CarvingMask carvingMask
+		CarverContext context, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, AquiferSampler aquiferSampler, ChunkPos pos, CarvingMask mask
 	) {
-		return SharedConstants.method_37896(chunk.getPos())
-			? false
-			: this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, carvingMask);
+		return SharedConstants.method_37896(chunk.getPos()) ? false : this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, mask);
 	}
 }

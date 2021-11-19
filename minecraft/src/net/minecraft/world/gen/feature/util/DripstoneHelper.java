@@ -75,15 +75,17 @@ public class DripstoneHelper {
 	}
 
 	public static void generatePointedDripstone(WorldAccess world, BlockPos pos, Direction direction, int height, boolean merge) {
-		BlockPos.Mutable mutable = pos.mutableCopy();
-		getDripstoneThickness(direction, height, merge, state -> {
-			if (state.isOf(Blocks.POINTED_DRIPSTONE)) {
-				state = state.with(PointedDripstoneBlock.WATERLOGGED, Boolean.valueOf(world.isWater(mutable)));
-			}
+		if (canReplace(world.getBlockState(pos.offset(direction.getOpposite())))) {
+			BlockPos.Mutable mutable = pos.mutableCopy();
+			getDripstoneThickness(direction, height, merge, state -> {
+				if (state.isOf(Blocks.POINTED_DRIPSTONE)) {
+					state = state.with(PointedDripstoneBlock.WATERLOGGED, Boolean.valueOf(world.isWater(mutable)));
+				}
 
-			world.setBlockState(mutable, state, Block.NOTIFY_LISTENERS);
-			mutable.move(direction);
-		});
+				world.setBlockState(mutable, state, Block.NOTIFY_LISTENERS);
+				mutable.move(direction);
+			});
+		}
 	}
 
 	public static boolean generateDripstoneBlock(WorldAccess world, BlockPos pos) {

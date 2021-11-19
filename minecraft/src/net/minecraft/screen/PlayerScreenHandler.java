@@ -102,8 +102,8 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 		});
 	}
 
-	public static boolean method_36211(int i) {
-		return i >= 36 && i < 45 || i == 45;
+	public static boolean isInHotbar(int slot) {
+		return slot >= 36 && slot < 45 || slot == 45;
 	}
 
 	@Override

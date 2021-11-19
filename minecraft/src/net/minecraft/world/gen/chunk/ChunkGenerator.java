@@ -155,9 +155,11 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 	public abstract ChunkGenerator withSeed(long seed);
 
-	public CompletableFuture<Chunk> populateBiomes(Registry<Biome> registry, Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateBiomes(
+		Registry<Biome> biomeRegistry, Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk
+	) {
 		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
-			chunk.method_38257(this.biomeSource::getBiome, this.getMultiNoiseSampler());
+			chunk.populateBiomes(this.biomeSource::getBiome, this.getMultiNoiseSampler());
 			return chunk;
 		}), Util.getMainWorkerExecutor());
 	}
@@ -241,14 +243,19 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
 			long l = chunkRandom.setPopulationSeed(world.getSeed(), blockPos.getX(), blockPos.getZ());
 			Set<Biome> set = new ObjectArraySet<>();
-			ChunkPos.stream(chunkSectionPos.toChunkPos(), 1).forEach(chunkPosx -> {
-				Chunk chunkx = world.getChunk(chunkPosx.x, chunkPosx.z);
+			if (this instanceof FlatChunkGenerator) {
+				set.addAll(this.populationSource.getBiomes());
+			} else {
+				ChunkPos.stream(chunkSectionPos.toChunkPos(), 1).forEach(chunkPosx -> {
+					Chunk chunkx = world.getChunk(chunkPosx.x, chunkPosx.z);
 
-				for (ChunkSection chunkSection : chunkx.getSectionArray()) {
-					chunkSection.getBiomeContainer().method_39793(set::add);
-				}
-			});
-			set.retainAll(this.populationSource.getBiomes());
+					for (ChunkSection chunkSection : chunkx.getSectionArray()) {
+						chunkSection.getBiomeContainer().method_39793(set::add);
+					}
+				});
+				set.retainAll(this.populationSource.getBiomes());
+			}
+
 			int i = list.size();
 
 			try {

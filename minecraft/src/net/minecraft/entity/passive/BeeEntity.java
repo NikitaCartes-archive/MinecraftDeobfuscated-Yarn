@@ -809,10 +809,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			BlockPos blockPos = BeeEntity.this.getBlockPos();
 			PointOfInterestStorage pointOfInterestStorage = ((ServerWorld)BeeEntity.this.world).getPointOfInterestStorage();
 			Stream<PointOfInterest> stream = pointOfInterestStorage.getInCircle(
-				pointOfInterestType -> pointOfInterestType == PointOfInterestType.BEEHIVE || pointOfInterestType == PointOfInterestType.BEE_NEST,
-				blockPos,
-				20,
-				PointOfInterestStorage.OccupationStatus.ANY
+				poiType -> poiType == PointOfInterestType.BEEHIVE || poiType == PointOfInterestType.BEE_NEST, blockPos, 20, PointOfInterestStorage.OccupationStatus.ANY
 			);
 			return (List<BlockPos>)stream.map(PointOfInterest::getPos)
 				.filter(BeeEntity.this::doesHiveHaveSpace)

@@ -17,22 +17,22 @@ import net.minecraft.tag.Tag;
 public class FollowMobTask extends Task<LivingEntity> {
 	private final Predicate<LivingEntity> predicate;
 	private final float maxDistanceSquared;
-	private Optional<LivingEntity> field_35102 = Optional.empty();
+	private Optional<LivingEntity> target = Optional.empty();
 
 	public FollowMobTask(Tag<EntityType<?>> entityType, float maxDistance) {
-		this(livingEntity -> livingEntity.getType().isIn(entityType), maxDistance);
+		this(entity -> entity.getType().isIn(entityType), maxDistance);
 	}
 
 	public FollowMobTask(SpawnGroup group, float maxDistance) {
-		this(livingEntity -> group.equals(livingEntity.getType().getSpawnGroup()), maxDistance);
+		this(entity -> group.equals(entity.getType().getSpawnGroup()), maxDistance);
 	}
 
 	public FollowMobTask(EntityType<?> entityType, float maxDistance) {
-		this(livingEntity -> entityType.equals(livingEntity.getType()), maxDistance);
+		this(entity -> entityType.equals(entity.getType()), maxDistance);
 	}
 
 	public FollowMobTask(float maxDistance) {
-		this(livingEntity -> true, maxDistance);
+		this(entity -> true, maxDistance);
 	}
 
 	public FollowMobTask(Predicate<LivingEntity> predicate, float maxDistance) {
@@ -44,15 +44,13 @@ public class FollowMobTask extends Task<LivingEntity> {
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
 		LivingTargetCache livingTargetCache = (LivingTargetCache)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
-		this.field_35102 = livingTargetCache.findFirst(
-			this.predicate.and(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared)
-		);
-		return this.field_35102.isPresent();
+		this.target = livingTargetCache.findFirst(this.predicate.and(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared));
+		return this.target.isPresent();
 	}
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)this.field_35102.get(), true));
-		this.field_35102 = Optional.empty();
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)this.target.get(), true));
+		this.target = Optional.empty();
 	}
 }

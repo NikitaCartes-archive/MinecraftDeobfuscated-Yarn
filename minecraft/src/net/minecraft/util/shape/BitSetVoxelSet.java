@@ -152,38 +152,38 @@ public final class BitSetVoxelSet extends VoxelSet {
 	protected static void method_31941(VoxelSet voxelSet, VoxelSet.PositionBiConsumer positionBiConsumer, boolean bl) {
 		BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(voxelSet);
 
-		for (int i = 0; i < bitSetVoxelSet.sizeX; i++) {
-			for (int j = 0; j < bitSetVoxelSet.sizeY; j++) {
+		for (int i = 0; i < bitSetVoxelSet.sizeY; i++) {
+			for (int j = 0; j < bitSetVoxelSet.sizeX; j++) {
 				int k = -1;
 
 				for (int l = 0; l <= bitSetVoxelSet.sizeZ; l++) {
-					if (bitSetVoxelSet.inBoundsAndContains(i, j, l)) {
+					if (bitSetVoxelSet.inBoundsAndContains(j, i, l)) {
 						if (bl) {
 							if (k == -1) {
 								k = l;
 							}
 						} else {
-							positionBiConsumer.consume(i, j, l, i + 1, j + 1, l + 1);
+							positionBiConsumer.consume(j, i, l, j + 1, i + 1, l + 1);
 						}
 					} else if (k != -1) {
-						int m = i;
-						int n = j;
-						bitSetVoxelSet.method_31942(k, l, i, j);
+						int m = j;
+						int n = i;
+						bitSetVoxelSet.method_31942(k, l, j, i);
 
-						while (bitSetVoxelSet.isColumnFull(k, l, m + 1, j)) {
-							bitSetVoxelSet.method_31942(k, l, m + 1, j);
+						while (bitSetVoxelSet.isColumnFull(k, l, m + 1, i)) {
+							bitSetVoxelSet.method_31942(k, l, m + 1, i);
 							m++;
 						}
 
-						while (bitSetVoxelSet.method_31938(i, m + 1, k, l, n + 1)) {
-							for (int o = i; o <= m; o++) {
+						while (bitSetVoxelSet.method_31938(j, m + 1, k, l, n + 1)) {
+							for (int o = j; o <= m; o++) {
 								bitSetVoxelSet.method_31942(k, l, o, n + 1);
 							}
 
 							n++;
 						}
 
-						positionBiConsumer.consume(i, j, k, m + 1, n + 1, l);
+						positionBiConsumer.consume(j, i, k, m + 1, n + 1, l);
 						k = -1;
 					}
 				}

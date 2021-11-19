@@ -36,7 +36,7 @@ public record GenerationShapeConfig() {
 							.forGetter(GenerationShapeConfig::islandNoiseOverride),
 						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified),
 						Codec.BOOL.optionalFieldOf("large_biomes", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::largeBiomes),
-						VanillaTerrainParameters.field_35456.fieldOf("terrain_shaper").forGetter(GenerationShapeConfig::terrainParameters)
+						VanillaTerrainParameters.CODEC.fieldOf("terrain_shaper").forGetter(GenerationShapeConfig::terrainParameters)
 					)
 					.apply(instance, GenerationShapeConfig::new)
 		)
@@ -100,19 +100,19 @@ public record GenerationShapeConfig() {
 		return generationShapeConfig;
 	}
 
-	public int method_39545() {
+	public int verticalBlockSize() {
 		return BiomeCoords.toBlock(this.verticalSize());
 	}
 
-	public int method_39546() {
+	public int horizontalBlockSize() {
 		return BiomeCoords.toBlock(this.horizontalSize());
 	}
 
-	public int method_39547() {
-		return this.height() / this.method_39545();
+	public int verticalBlockCount() {
+		return this.height() / this.verticalBlockSize();
 	}
 
-	public int method_39548() {
-		return MathHelper.floorDiv(this.minimumY(), this.method_39545());
+	public int minimumBlockY() {
+		return MathHelper.floorDiv(this.minimumY(), this.verticalBlockSize());
 	}
 }

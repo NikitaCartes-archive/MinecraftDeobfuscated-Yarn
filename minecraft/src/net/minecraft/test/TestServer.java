@@ -96,7 +96,9 @@ public class TestServer extends MinecraftServer {
 					false,
 					false,
 					GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
-						dimensionTypeRegistry, DimensionType.method_39540(registryManager, 0L), new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry))
+						dimensionTypeRegistry,
+						DimensionType.createDefaultDimensionOptions(registryManager, 0L),
+						new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry))
 					)
 				),
 				Lifecycle.stable()

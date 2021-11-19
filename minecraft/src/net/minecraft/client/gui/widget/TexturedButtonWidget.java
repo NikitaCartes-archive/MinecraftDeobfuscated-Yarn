@@ -99,7 +99,7 @@ public class TexturedButtonWidget extends ButtonWidget {
 
 		RenderSystem.enableDepthTest();
 		drawTexture(matrices, this.x, this.y, (float)this.u, (float)i, this.width, this.height, this.textureWidth, this.textureHeight);
-		if (this.isHovered()) {
+		if (this.hovered) {
 			this.renderTooltip(matrices, mouseX, mouseY);
 		}
 	}

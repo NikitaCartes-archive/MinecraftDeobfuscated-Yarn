@@ -564,9 +564,9 @@ public class MultiNoiseUtil {
 		static final class TreeLeafNode<T> extends MultiNoiseUtil.SearchTree.TreeNode<T> {
 			final T value;
 
-			TreeLeafNode(MultiNoiseUtil.NoiseHypercube parameters, T object) {
+			TreeLeafNode(MultiNoiseUtil.NoiseHypercube parameters, T value) {
 				super(parameters.getParameters());
-				this.value = object;
+				this.value = value;
 			}
 
 			@Override

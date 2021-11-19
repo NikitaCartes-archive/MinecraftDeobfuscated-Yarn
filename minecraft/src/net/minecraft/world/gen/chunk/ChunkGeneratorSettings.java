@@ -1,6 +1,5 @@
 package net.minecraft.world.gen.chunk;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -62,8 +61,6 @@ public final class ChunkGeneratorSettings {
 	public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(
 		Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("floating_islands")
 	);
-	@VisibleForTesting
-	static final ChunkGeneratorSettings INSTANCE = register(OVERWORLD, createSurfaceSettings(new StructuresConfig(true), false, false));
 
 	private ChunkGeneratorSettings(
 		StructuresConfig structuresConfig,
@@ -159,19 +156,17 @@ public final class ChunkGeneratorSettings {
 		return Objects.equals(this, BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.get(registryKey));
 	}
 
-	private static ChunkGeneratorSettings register(RegistryKey<ChunkGeneratorSettings> registryKey, ChunkGeneratorSettings settings) {
-		return BuiltinRegistries.add(BuiltinRegistries.CHUNK_GENERATOR_SETTINGS, registryKey.getValue(), settings);
+	private static void register(RegistryKey<ChunkGeneratorSettings> registryKey, ChunkGeneratorSettings settings) {
+		BuiltinRegistries.add(BuiltinRegistries.CHUNK_GENERATOR_SETTINGS, registryKey.getValue(), settings);
 	}
 
 	public static ChunkGeneratorSettings getInstance() {
-		return INSTANCE;
+		return (ChunkGeneratorSettings)BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.iterator().next();
 	}
 
-	private static ChunkGeneratorSettings createIslandSettings(
-		StructuresConfig structuresConfig, BlockState defaultBlock, BlockState defaultFluid, boolean bl, boolean bl2
-	) {
+	private static ChunkGeneratorSettings createEndSettings() {
 		return new ChunkGeneratorSettings(
-			structuresConfig,
+			new StructuresConfig(false),
 			GenerationShapeConfig.create(
 				0,
 				128,
@@ -180,16 +175,16 @@ public final class ChunkGeneratorSettings {
 				new SlideConfig(-0.234375, 7, 1),
 				2,
 				1,
-				bl2,
+				true,
 				false,
 				false,
 				VanillaTerrainParametersCreator.createIslandParameters()
 			),
-			defaultBlock,
-			defaultFluid,
+			Blocks.END_STONE.getDefaultState(),
+			Blocks.AIR.getDefaultState(),
 			VanillaSurfaceRules.getEndStoneRule(),
 			0,
-			bl,
+			true,
 			false,
 			false,
 			false,
@@ -198,11 +193,11 @@ public final class ChunkGeneratorSettings {
 		);
 	}
 
-	private static ChunkGeneratorSettings createUndergroundSettings(StructuresConfig structuresConfig, BlockState defaultBlock, BlockState defaultFluid) {
+	private static ChunkGeneratorSettings createNetherSettings() {
 		Map<StructureFeature<?>, StructureConfig> map = Maps.<StructureFeature<?>, StructureConfig>newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
 		map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
 		return new ChunkGeneratorSettings(
-			new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map),
+			new StructuresConfig(Optional.empty(), map),
 			GenerationShapeConfig.create(
 				0,
 				128,
@@ -216,8 +211,8 @@ public final class ChunkGeneratorSettings {
 				false,
 				VanillaTerrainParametersCreator.createUndergroundParameters()
 			),
-			defaultBlock,
-			defaultFluid,
+			Blocks.NETHERRACK.getDefaultState(),
+			Blocks.LAVA.getDefaultState(),
 			VanillaSurfaceRules.createNetherSurfaceRule(),
 			32,
 			false,
@@ -229,9 +224,9 @@ public final class ChunkGeneratorSettings {
 		);
 	}
 
-	private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, boolean bl) {
+	private static ChunkGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {
 		return new ChunkGeneratorSettings(
-			structuresConfig,
+			new StructuresConfig(true),
 			GenerationShapeConfig.create(
 				-64,
 				384,
@@ -242,7 +237,7 @@ public final class ChunkGeneratorSettings {
 				2,
 				false,
 				amplified,
-				bl,
+				largeBiomes,
 				VanillaTerrainParametersCreator.createSurfaceParameters(amplified)
 			),
 			Blocks.STONE.getDefaultState(),
@@ -258,12 +253,71 @@ public final class ChunkGeneratorSettings {
 		);
 	}
 
+	private static ChunkGeneratorSettings createCavesSettings() {
+		return new ChunkGeneratorSettings(
+			new StructuresConfig(false),
+			GenerationShapeConfig.create(
+				-64,
+				192,
+				new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0),
+				new SlideConfig(0.9375, 3, 0),
+				new SlideConfig(2.5, 4, -1),
+				1,
+				2,
+				false,
+				false,
+				false,
+				VanillaTerrainParametersCreator.method_39923()
+			),
+			Blocks.STONE.getDefaultState(),
+			Blocks.WATER.getDefaultState(),
+			VanillaSurfaceRules.method_39922(false, true, true),
+			32,
+			false,
+			false,
+			false,
+			false,
+			false,
+			true
+		);
+	}
+
+	private static ChunkGeneratorSettings createFloatingIslandsSettings() {
+		return new ChunkGeneratorSettings(
+			new StructuresConfig(true),
+			GenerationShapeConfig.create(
+				0,
+				256,
+				new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0),
+				new SlideConfig(-23.4375, 64, -46),
+				new SlideConfig(-0.234375, 7, 1),
+				2,
+				1,
+				false,
+				false,
+				false,
+				VanillaTerrainParametersCreator.method_39924()
+			),
+			Blocks.STONE.getDefaultState(),
+			Blocks.WATER.getDefaultState(),
+			VanillaSurfaceRules.method_39922(false, false, false),
+			-64,
+			false,
+			false,
+			false,
+			false,
+			false,
+			true
+		);
+	}
+
 	static {
-		register(LARGE_BIOMES, createSurfaceSettings(new StructuresConfig(true), false, true));
-		register(AMPLIFIED, createSurfaceSettings(new StructuresConfig(true), true, false));
-		register(NETHER, createUndergroundSettings(new StructuresConfig(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState()));
-		register(END, createIslandSettings(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), true, true));
-		register(CAVES, createUndergroundSettings(new StructuresConfig(true), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState()));
-		register(FLOATING_ISLANDS, createIslandSettings(new StructuresConfig(true), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), false, false));
+		register(OVERWORLD, createSurfaceSettings(false, false));
+		register(LARGE_BIOMES, createSurfaceSettings(false, true));
+		register(AMPLIFIED, createSurfaceSettings(true, false));
+		register(NETHER, createNetherSettings());
+		register(END, createEndSettings());
+		register(CAVES, createCavesSettings());
+		register(FLOATING_ISLANDS, createFloatingIslandsSettings());
 	}
 }

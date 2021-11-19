@@ -1,9 +1,9 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_6834;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.OceanMonumentGenerator;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
@@ -22,7 +22,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
 	public OceanMonumentFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, class_6834.simple(OceanMonumentFeature::method_28642, OceanMonumentFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(OceanMonumentFeature::method_28642, OceanMonumentFeature::addPieces));
 	}
 
 	@Override
@@ -30,17 +30,17 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		return false;
 	}
 
-	private static boolean method_28642(class_6834.class_6835<DefaultFeatureConfig> arg) {
-		int i = arg.chunkPos().getOffsetX(9);
-		int j = arg.chunkPos().getOffsetZ(9);
+	private static boolean method_28642(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
+		int i = context.chunkPos().getOffsetX(9);
+		int j = context.chunkPos().getOffsetZ(9);
 
-		for (Biome biome : arg.biomeSource().getBiomesInArea(i, arg.chunkGenerator().getSeaLevel(), j, 29, arg.chunkGenerator().getMultiNoiseSampler())) {
+		for (Biome biome : context.biomeSource().getBiomesInArea(i, context.chunkGenerator().getSeaLevel(), j, 29, context.chunkGenerator().getMultiNoiseSampler())) {
 			if (biome.getCategory() != Biome.Category.OCEAN && biome.getCategory() != Biome.Category.RIVER) {
 				return false;
 			}
 		}
 
-		return arg.method_39848(Heightmap.Type.OCEAN_FLOOR_WG);
+		return context.isBiomeValid(Heightmap.Type.OCEAN_FLOOR_WG);
 	}
 
 	private static StructurePiece createBasePiece(ChunkPos pos, ChunkRandom random) {

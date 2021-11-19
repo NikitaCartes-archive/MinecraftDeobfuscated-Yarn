@@ -32,7 +32,7 @@ public enum ModelRotation implements ModelBakeSettings {
 
 	private static final int MAX_ROTATION = 360;
 	private static final Map<Integer, ModelRotation> BY_INDEX = (Map<Integer, ModelRotation>)Arrays.stream(values())
-		.collect(Collectors.toMap(modelRotation -> modelRotation.index, modelRotation -> modelRotation));
+		.collect(Collectors.toMap(rotation -> rotation.index, modelRotation -> modelRotation));
 	private final AffineTransformation rotation;
 	private final DirectionTransformation directionTransformation;
 	private final int index;

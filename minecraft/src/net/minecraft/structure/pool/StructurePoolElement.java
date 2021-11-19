@@ -62,9 +62,7 @@ public abstract class StructurePoolElement {
 
 	public abstract StructurePoolElementType<?> getType();
 
-	public void method_16756(
-		WorldAccess worldAccess, Structure.StructureBlockInfo structureBlockInfo, BlockPos blockPos, BlockRotation blockRotation, Random random, BlockBox blockBox
-	) {
+	public void method_16756(WorldAccess world, Structure.StructureBlockInfo structureBlockInfo, BlockPos pos, BlockRotation rotation, Random random, BlockBox box) {
 	}
 
 	public StructurePoolElement setProjection(StructurePool.Projection projection) {

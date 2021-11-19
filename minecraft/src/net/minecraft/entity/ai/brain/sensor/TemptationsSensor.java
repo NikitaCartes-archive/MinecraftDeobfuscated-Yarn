@@ -43,7 +43,7 @@ public class TemptationsSensor extends Sensor<PathAwareEntity> {
 	}
 
 	private boolean test(PlayerEntity player) {
-		return this.test(player.getMainHandStack()) || this.test(player.getOffhandStack());
+		return this.test(player.getMainHandStack()) || this.test(player.getOffHandStack());
 	}
 
 	private boolean test(ItemStack stack) {

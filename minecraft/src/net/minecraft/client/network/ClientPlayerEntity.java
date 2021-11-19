@@ -959,7 +959,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 						Vec3d vec3d12 = vec3d6.add(vec3d9);
 						Vec3d vec3d13 = vec3d7.add(vec3d9);
 						Iterable<VoxelShape> iterable = this.world.getCollisions(this, box);
-						Iterator<Box> iterator = StreamSupport.stream(iterable.spliterator(), false).flatMap(voxelShapex -> voxelShapex.getBoundingBoxes().stream()).iterator();
+						Iterator<Box> iterator = StreamSupport.stream(iterable.spliterator(), false).flatMap(shape -> shape.getBoundingBoxes().stream()).iterator();
 						float r = Float.MIN_VALUE;
 
 						while (iterator.hasNext()) {

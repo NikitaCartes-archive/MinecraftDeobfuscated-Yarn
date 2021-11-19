@@ -46,12 +46,12 @@ public abstract class BiomeSource implements BiomeSupplier {
 		this((List<Biome>)stream.map(Supplier::get).distinct().collect(ImmutableList.toImmutableList()));
 	}
 
-	protected BiomeSource(List<Biome> list) {
-		this.biomes = new ObjectLinkedOpenHashSet<>(list);
-		this.field_34469 = this.method_39525(list, true);
+	protected BiomeSource(List<Biome> biomes) {
+		this.biomes = new ObjectLinkedOpenHashSet<>(biomes);
+		this.field_34469 = this.method_39525(biomes, true);
 	}
 
-	private List<BiomeSource.class_6827> method_39525(List<Biome> list, boolean bl) {
+	private List<BiomeSource.class_6827> method_39525(List<Biome> biomes, boolean bl) {
 		Object2IntMap<PlacedFeature> object2IntMap = new Object2IntOpenHashMap<>();
 		MutableInt mutableInt = new MutableInt(0);
 
@@ -71,15 +71,15 @@ public abstract class BiomeSource implements BiomeSupplier {
 		Map<class_6543, Set<class_6543>> map = new TreeMap(comparator);
 		int i = 0;
 
-		for (Biome biome : list) {
-			List<class_6543> list2 = Lists.<class_6543>newArrayList();
-			List<List<Supplier<PlacedFeature>>> list3 = biome.getGenerationSettings().getFeatures();
-			i = Math.max(i, list3.size());
+		for (Biome biome : biomes) {
+			List<class_6543> list = Lists.<class_6543>newArrayList();
+			List<List<Supplier<PlacedFeature>>> list2 = biome.getGenerationSettings().getFeatures();
+			i = Math.max(i, list2.size());
 
-			for (int j = 0; j < list3.size(); j++) {
-				for (Supplier<PlacedFeature> supplier : (List)list3.get(j)) {
+			for (int j = 0; j < list2.size(); j++) {
+				for (Supplier<PlacedFeature> supplier : (List)list2.get(j)) {
 					PlacedFeature placedFeature = (PlacedFeature)supplier.get();
-					list2.add(
+					list.add(
 						new class_6543(
 							object2IntMap.computeIfAbsent(placedFeature, (Object2IntFunction<? super PlacedFeature>)(object -> mutableInt.getAndIncrement())), j, placedFeature
 						)
@@ -87,67 +87,67 @@ public abstract class BiomeSource implements BiomeSupplier {
 				}
 			}
 
-			for (int j = 0; j < list2.size(); j++) {
-				Set<class_6543> set = (Set<class_6543>)map.computeIfAbsent((class_6543)list2.get(j), arg -> new TreeSet(comparator));
-				if (j < list2.size() - 1) {
-					set.add((class_6543)list2.get(j + 1));
+			for (int j = 0; j < list.size(); j++) {
+				Set<class_6543> set = (Set<class_6543>)map.computeIfAbsent((class_6543)list.get(j), arg -> new TreeSet(comparator));
+				if (j < list.size() - 1) {
+					set.add((class_6543)list.get(j + 1));
 				}
 			}
 		}
 
 		Set<class_6543> set2 = new TreeSet(comparator);
 		Set<class_6543> set3 = new TreeSet(comparator);
-		List<class_6543> list2 = Lists.<class_6543>newArrayList();
+		List<class_6543> list = Lists.<class_6543>newArrayList();
 
 		for (class_6543 lv : map.keySet()) {
 			if (!set3.isEmpty()) {
 				throw new IllegalStateException("You somehow broke the universe; DFS bork (iteration finished with non-empty in-progress vertex set");
 			}
 
-			if (!set2.contains(lv) && TopologicalSorts.sort(map, set2, set3, list2::add, lv)) {
+			if (!set2.contains(lv) && TopologicalSorts.sort(map, set2, set3, list::add, lv)) {
 				if (!bl) {
 					throw new IllegalStateException("Feature order cycle found");
 				}
 
-				List<Biome> list4 = new ArrayList(list);
+				List<Biome> list3 = new ArrayList(biomes);
 
 				int k;
 				do {
-					k = list4.size();
-					ListIterator<Biome> listIterator = list4.listIterator();
+					k = list3.size();
+					ListIterator<Biome> listIterator = list3.listIterator();
 
 					while (listIterator.hasNext()) {
 						Biome biome2 = (Biome)listIterator.next();
 						listIterator.remove();
 
 						try {
-							this.method_39525(list4, false);
+							this.method_39525(list3, false);
 						} catch (IllegalStateException var18) {
 							continue;
 						}
 
 						listIterator.add(biome2);
 					}
-				} while (k != list4.size());
+				} while (k != list3.size());
 
-				throw new IllegalStateException("Feature order cycle found, involved biomes: " + list4);
+				throw new IllegalStateException("Feature order cycle found, involved biomes: " + list3);
 			}
 		}
 
-		Collections.reverse(list2);
+		Collections.reverse(list);
 		Builder<BiomeSource.class_6827> builder = ImmutableList.builder();
 
 		for (int jx = 0; jx < i; jx++) {
 			int l = jx;
-			List<PlacedFeature> list5 = (List<PlacedFeature>)list2.stream().filter(arg -> arg.step() == l).map(class_6543::feature).collect(Collectors.toList());
-			int m = list5.size();
+			List<PlacedFeature> list4 = (List<PlacedFeature>)list.stream().filter(arg -> arg.step() == l).map(class_6543::feature).collect(Collectors.toList());
+			int m = list4.size();
 			Object2IntMap<PlacedFeature> object2IntMap2 = new Object2IntOpenCustomHashMap<>(m, Util.identityHashStrategy());
 
 			for (int n = 0; n < m; n++) {
-				object2IntMap2.put((PlacedFeature)list5.get(n), n);
+				object2IntMap2.put((PlacedFeature)list4.get(n), n);
 			}
 
-			builder.add(new BiomeSource.class_6827(list5, object2IntMap2));
+			builder.add(new BiomeSource.class_6827(list4, object2IntMap2));
 		}
 
 		return builder.build();

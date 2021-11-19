@@ -9,9 +9,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 import org.apache.commons.lang3.mutable.MutableDouble;
@@ -20,28 +18,17 @@ public interface AquiferSampler {
 	static AquiferSampler aquifer(
 		ChunkNoiseSampler chunkNoiseSampler,
 		ChunkPos chunkPos,
-		DoublePerlinNoiseSampler edgeDensityNoise,
-		DoublePerlinNoiseSampler doublePerlinNoiseSampler,
-		DoublePerlinNoiseSampler doublePerlinNoiseSampler2,
+		DoublePerlinNoiseSampler barrierNoise,
+		DoublePerlinNoiseSampler fluidLevelFloodednessNoise,
+		DoublePerlinNoiseSampler fluidLevelSpreadNoise,
 		DoublePerlinNoiseSampler fluidTypeNoise,
 		RandomDeriver randomDeriver,
-		NoiseColumnSampler columnSampler,
-		int i,
-		int j,
+		int minY,
+		int height,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler
 	) {
 		return new AquiferSampler.Impl(
-			chunkNoiseSampler,
-			chunkPos,
-			edgeDensityNoise,
-			doublePerlinNoiseSampler,
-			doublePerlinNoiseSampler2,
-			fluidTypeNoise,
-			randomDeriver,
-			columnSampler,
-			i,
-			j,
-			fluidLevelSampler
+			chunkNoiseSampler, chunkPos, barrierNoise, fluidLevelFloodednessNoise, fluidLevelSpreadNoise, fluidTypeNoise, randomDeriver, minY, height, fluidLevelSampler
 		);
 	}
 
@@ -96,16 +83,15 @@ public interface AquiferSampler {
 		private static final int field_36220 = 11;
 		private static final double field_36221 = maxDistance(MathHelper.square(10), MathHelper.square(12));
 		private final ChunkNoiseSampler chunkNoiseSampler;
-		private final DoublePerlinNoiseSampler edgeDensityNoise;
-		private final DoublePerlinNoiseSampler field_35122;
-		private final DoublePerlinNoiseSampler field_35123;
+		private final DoublePerlinNoiseSampler barrierNoise;
+		private final DoublePerlinNoiseSampler fluidLevelFloodednessNoise;
+		private final DoublePerlinNoiseSampler fluidLevelSpreadNoise;
 		private final DoublePerlinNoiseSampler fluidTypeNoise;
-		private final RandomDeriver field_34579;
+		private final RandomDeriver randomDeriver;
 		private final AquiferSampler.FluidLevel[] waterLevels;
 		private final long[] blockPositions;
 		private final AquiferSampler.FluidLevelSampler fluidLevelSampler;
 		private boolean needsFluidTick;
-		private final NoiseColumnSampler columnSampler;
 		private final int startX;
 		private final int startY;
 		private final int startZ;
@@ -118,36 +104,34 @@ public interface AquiferSampler {
 		Impl(
 			ChunkNoiseSampler chunkNoiseSampler,
 			ChunkPos chunkPos,
-			DoublePerlinNoiseSampler edgeDensityNoise,
-			DoublePerlinNoiseSampler doublePerlinNoiseSampler,
-			DoublePerlinNoiseSampler doublePerlinNoiseSampler2,
+			DoublePerlinNoiseSampler barrierNoise,
+			DoublePerlinNoiseSampler fluidLevelFloodednessNoise,
+			DoublePerlinNoiseSampler fluidLevelSpreadNoise,
 			DoublePerlinNoiseSampler fluidTypeNoise,
 			RandomDeriver randomDeriver,
-			NoiseColumnSampler columnSampler,
-			int i,
-			int j,
+			int minY,
+			int height,
 			AquiferSampler.FluidLevelSampler fluidLevelSampler
 		) {
 			this.chunkNoiseSampler = chunkNoiseSampler;
-			this.edgeDensityNoise = edgeDensityNoise;
-			this.field_35122 = doublePerlinNoiseSampler;
-			this.field_35123 = doublePerlinNoiseSampler2;
+			this.barrierNoise = barrierNoise;
+			this.fluidLevelFloodednessNoise = fluidLevelFloodednessNoise;
+			this.fluidLevelSpreadNoise = fluidLevelSpreadNoise;
 			this.fluidTypeNoise = fluidTypeNoise;
-			this.field_34579 = randomDeriver;
-			this.columnSampler = columnSampler;
+			this.randomDeriver = randomDeriver;
 			this.startX = this.getLocalX(chunkPos.getStartX()) - 1;
 			this.fluidLevelSampler = fluidLevelSampler;
-			int k = this.getLocalX(chunkPos.getEndX()) + 1;
-			this.sizeX = k - this.startX + 1;
-			this.startY = this.getLocalY(i) - 1;
-			int l = this.getLocalY(i + j) + 1;
-			int m = l - this.startY + 1;
+			int i = this.getLocalX(chunkPos.getEndX()) + 1;
+			this.sizeX = i - this.startX + 1;
+			this.startY = this.getLocalY(minY) - 1;
+			int j = this.getLocalY(minY + height) + 1;
+			int k = j - this.startY + 1;
 			this.startZ = this.getLocalZ(chunkPos.getStartZ()) - 1;
-			int n = this.getLocalZ(chunkPos.getEndZ()) + 1;
-			this.sizeZ = n - this.startZ + 1;
-			int o = this.sizeX * m * this.sizeZ;
-			this.waterLevels = new AquiferSampler.FluidLevel[o];
-			this.blockPositions = new long[o];
+			int l = this.getLocalZ(chunkPos.getEndZ()) + 1;
+			this.sizeZ = l - this.startZ + 1;
+			int m = this.sizeX * k * this.sizeZ;
+			this.waterLevels = new AquiferSampler.FluidLevel[m];
+			this.blockPositions = new long[m];
 			Arrays.fill(this.blockPositions, Long.MAX_VALUE);
 		}
 
@@ -196,7 +180,7 @@ public interface AquiferSampler {
 									if (ab != Long.MAX_VALUE) {
 										ac = ab;
 									} else {
-										AbstractRandom abstractRandom = this.field_34579.createRandom(u, v, w);
+										AbstractRandom abstractRandom = this.randomDeriver.createRandom(u, v, w);
 										ac = BlockPos.asLong(u * 16 + abstractRandom.nextInt(10), v * 12 + abstractRandom.nextInt(9), w * 16 + abstractRandom.nextInt(10));
 										this.blockPositions[aa] = ac;
 									}
@@ -311,7 +295,7 @@ public interface AquiferSampler {
 						double rx = mutableDouble.getValue();
 						if (Double.isNaN(rx)) {
 							double t = 0.5;
-							double u = this.edgeDensityNoise.sample((double)i, (double)j * 0.5, (double)k);
+							double u = this.barrierNoise.sample((double)i, (double)j * 0.5, (double)k);
 							mutableDouble.setValue(u);
 							return u + s;
 						} else {
@@ -367,8 +351,7 @@ public interface AquiferSampler {
 			for (int[] is : field_34581) {
 				int l = x + ChunkSectionPos.getBlockCoord(is[0]);
 				int m = z + ChunkSectionPos.getBlockCoord(is[1]);
-				int n = this.columnSampler
-					.method_38383(l, m, this.chunkNoiseSampler.getTerrainNoisePoint(this.columnSampler, BiomeCoords.fromBlock(l), BiomeCoords.fromBlock(m)));
+				int n = this.chunkNoiseSampler.method_39900(l, m);
 				int o = n + 8;
 				boolean bl2 = is[0] == 0 && is[1] == 0;
 				if (bl2 && k > o) {
@@ -396,7 +379,7 @@ public interface AquiferSampler {
 			int q = 64;
 			double d = bl ? MathHelper.clampedLerpFromProgress((double)p, 0.0, 64.0, 1.0, 0.0) : 0.0;
 			double e = 0.67;
-			double f = MathHelper.clamp(this.field_35122.sample((double)x, (double)y * 0.67, (double)z), -1.0, 1.0);
+			double f = MathHelper.clamp(this.fluidLevelFloodednessNoise.sample((double)x, (double)y * 0.67, (double)z), -1.0, 1.0);
 			double g = MathHelper.lerpFromProgress(d, 1.0, 0.0, -0.3, 0.8);
 			if (f > g) {
 				return fluidLevel;
@@ -412,7 +395,7 @@ public interface AquiferSampler {
 					int v = Math.floorDiv(z, 16);
 					int w = u * 40 + 20;
 					int aa = 10;
-					double ab = this.field_35123.sample((double)t, (double)u / 1.4, (double)v) * 10.0;
+					double ab = this.fluidLevelSpreadNoise.sample((double)t, (double)u / 1.4, (double)v) * 10.0;
 					int ac = MathHelper.roundDownToMultiple(ab, 3);
 					int ad = w + ac;
 					int ae = Math.min(i, ad);

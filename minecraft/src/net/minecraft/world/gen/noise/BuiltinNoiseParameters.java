@@ -6,8 +6,8 @@ import net.minecraft.util.registry.RegistryKey;
 
 public class BuiltinNoiseParameters {
 	public static DoublePerlinNoiseSampler.NoiseParameters init() {
-		method_39493(0, NoiseParametersKeys.TEMPERATURE, NoiseParametersKeys.VEGETATION, NoiseParametersKeys.CONTINENTALNESS, NoiseParametersKeys.EROSION);
-		method_39493(
+		register(0, NoiseParametersKeys.TEMPERATURE, NoiseParametersKeys.VEGETATION, NoiseParametersKeys.CONTINENTALNESS, NoiseParametersKeys.EROSION);
+		register(
 			-2,
 			NoiseParametersKeys.TEMPERATURE_LARGE,
 			NoiseParametersKeys.VEGETATION_LARGE,
@@ -69,20 +69,20 @@ public class BuiltinNoiseParameters {
 		return (DoublePerlinNoiseSampler.NoiseParameters)BuiltinRegistries.NOISE_PARAMETERS.iterator().next();
 	}
 
-	private static void method_39493(
-		int i,
-		RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey,
-		RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey2,
-		RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey3,
-		RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey4
+	private static void register(
+		int firstOctaveOffset,
+		RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> temperature,
+		RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> vegetation,
+		RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> continentalness,
+		RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> erosion
 	) {
-		register(registryKey, -10 + i, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0);
-		register(registryKey2, -8 + i, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0);
-		register(registryKey3, -9 + i, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0);
-		register(registryKey4, -9 + i, 1.0, 1.0, 0.0, 1.0, 1.0);
+		register(temperature, -10 + firstOctaveOffset, 1.5, 0.0, 1.0, 0.0, 0.0, 0.0);
+		register(vegetation, -8 + firstOctaveOffset, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+		register(continentalness, -9 + firstOctaveOffset, 1.0, 1.0, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0);
+		register(erosion, -9 + firstOctaveOffset, 1.0, 1.0, 0.0, 1.0, 1.0);
 	}
 
-	private static void register(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, int i, double d, double... ds) {
-		BuiltinRegistries.add(BuiltinRegistries.NOISE_PARAMETERS, registryKey, new DoublePerlinNoiseSampler.NoiseParameters(i, d, ds));
+	private static void register(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise, int firstOctave, double firstAmplitude, double... amplitudes) {
+		BuiltinRegistries.add(BuiltinRegistries.NOISE_PARAMETERS, noise, new DoublePerlinNoiseSampler.NoiseParameters(firstOctave, firstAmplitude, amplitudes));
 	}
 }

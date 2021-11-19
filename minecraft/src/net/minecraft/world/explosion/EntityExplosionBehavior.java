@@ -17,7 +17,7 @@ public class EntityExplosionBehavior extends ExplosionBehavior {
 	@Override
 	public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
 		return super.getBlastResistance(explosion, world, pos, blockState, fluidState)
-			.map(float_ -> this.entity.getEffectiveExplosionResistance(explosion, world, pos, blockState, fluidState, float_));
+			.map(max -> this.entity.getEffectiveExplosionResistance(explosion, world, pos, blockState, fluidState, max));
 	}
 
 	@Override

@@ -617,7 +617,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		int i = Block.NOTIFY_ALL | Block.FORCE_STATE | (packet.shouldSkipLightingUpdates() ? Block.SKIP_LIGHTING_UPDATES : 0);
-		packet.visitUpdates((blockPos, blockState) -> this.world.setBlockState(blockPos, blockState, i));
+		packet.visitUpdates((pos, state) -> this.world.setBlockState(pos, state, i));
 	}
 
 	@Override
@@ -770,7 +770,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onGameMessage(GameMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.getSender());
+		this.client.inGameHud.addChatMessage(packet.getType(), packet.getMessage(), packet.getSender());
 	}
 
 	@Override
@@ -781,7 +781,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			if (packet.getAnimationId() == 0) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				livingEntity.swingHand(Hand.MAIN_HAND);
-			} else if (packet.getAnimationId() == 3) {
+			} else if (packet.getAnimationId() == EntityAnimationS2CPacket.SWING_OFF_HAND) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				livingEntity.swingHand(Hand.OFF_HAND);
 			} else if (packet.getAnimationId() == EntityAnimationS2CPacket.DAMAGE) {
@@ -1027,7 +1027,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				bl = creativeInventoryScreen.getSelectedTab() != ItemGroup.INVENTORY.getIndex();
 			}
 
-			if (packet.getSyncId() == 0 && PlayerScreenHandler.method_36211(i)) {
+			if (packet.getSyncId() == 0 && PlayerScreenHandler.isInHotbar(i)) {
 				if (!itemStack.isEmpty()) {
 					ItemStack itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack();
 					if (itemStack2.isEmpty() || itemStack2.getCount() < itemStack.getCount()) {

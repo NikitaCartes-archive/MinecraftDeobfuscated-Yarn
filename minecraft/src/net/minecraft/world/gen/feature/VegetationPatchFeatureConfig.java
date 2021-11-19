@@ -13,7 +13,7 @@ public class VegetationPatchFeatureConfig implements FeatureConfig {
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("replaceable").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.replaceable),
 					BlockStateProvider.TYPE_CODEC.fieldOf("ground_state").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.groundState),
-					ConfiguredFeature.REGISTRY_CODEC.fieldOf("vegetation_feature").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.vegetationFeature),
+					PlacedFeature.REGISTRY_CODEC.fieldOf("vegetation_feature").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.vegetationFeature),
 					VerticalSurfaceType.CODEC.fieldOf("surface").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.surface),
 					IntProvider.createValidatingCodec(1, 128).fieldOf("depth").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.depth),
 					Codec.floatRange(0.0F, 1.0F)
@@ -30,7 +30,7 @@ public class VegetationPatchFeatureConfig implements FeatureConfig {
 	);
 	public final Identifier replaceable;
 	public final BlockStateProvider groundState;
-	public final Supplier<ConfiguredFeature<?, ?>> vegetationFeature;
+	public final Supplier<PlacedFeature> vegetationFeature;
 	public final VerticalSurfaceType surface;
 	public final IntProvider depth;
 	public final float extraBottomBlockChance;
@@ -42,7 +42,7 @@ public class VegetationPatchFeatureConfig implements FeatureConfig {
 	public VegetationPatchFeatureConfig(
 		Identifier replaceable,
 		BlockStateProvider groundState,
-		Supplier<ConfiguredFeature<?, ?>> vegetationFeature,
+		Supplier<PlacedFeature> vegetationFeature,
 		VerticalSurfaceType surface,
 		IntProvider depth,
 		float extraBottomBlockChance,

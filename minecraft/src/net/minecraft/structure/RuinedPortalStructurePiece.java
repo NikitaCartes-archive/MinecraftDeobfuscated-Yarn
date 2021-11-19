@@ -54,31 +54,23 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	private final RuinedPortalStructurePiece.Properties properties;
 
 	public RuinedPortalStructurePiece(
-		StructureManager structureManager,
-		BlockPos blockPos,
+		StructureManager manager,
+		BlockPos pos,
 		RuinedPortalStructurePiece.VerticalPlacement verticalPlacement,
 		RuinedPortalStructurePiece.Properties properties,
-		Identifier identifier,
+		Identifier id,
 		Structure structure,
 		BlockRotation rotation,
 		BlockMirror mirror,
-		BlockPos blockPos2
+		BlockPos blockPos
 	) {
-		super(
-			StructurePieceType.RUINED_PORTAL,
-			0,
-			structureManager,
-			identifier,
-			identifier.toString(),
-			createPlacementData(mirror, rotation, verticalPlacement, blockPos2, properties),
-			blockPos
-		);
+		super(StructurePieceType.RUINED_PORTAL, 0, manager, id, id.toString(), createPlacementData(mirror, rotation, verticalPlacement, blockPos, properties), pos);
 		this.verticalPlacement = verticalPlacement;
 		this.properties = properties;
 	}
 
-	public RuinedPortalStructurePiece(StructureManager structureManager, NbtCompound nbt) {
-		super(StructurePieceType.RUINED_PORTAL, nbt, structureManager, identifier -> createPlacementData(structureManager, nbt, identifier));
+	public RuinedPortalStructurePiece(StructureManager manager, NbtCompound nbt) {
+		super(StructurePieceType.RUINED_PORTAL, nbt, manager, id -> createPlacementData(manager, nbt, id));
 		this.verticalPlacement = RuinedPortalStructurePiece.VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
 		this.properties = RuinedPortalStructurePiece.Properties.CODEC
 			.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties")))
@@ -97,8 +89,8 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			.ifPresent(nbtElement -> nbt.put("Properties", nbtElement));
 	}
 
-	private static StructurePlacementData createPlacementData(StructureManager structureManager, NbtCompound nbt, Identifier id) {
-		Structure structure = structureManager.getStructureOrBlank(id);
+	private static StructurePlacementData createPlacementData(StructureManager manager, NbtCompound nbt, Identifier id) {
+		Structure structure = manager.getStructureOrBlank(id);
 		BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
 		return createPlacementData(
 			BlockMirror.valueOf(nbt.getString("Mirror")),
@@ -169,13 +161,13 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			this.placeNetherrackBase(random, world);
 			this.updateNetherracksInBound(random, world);
 			if (this.properties.vines || this.properties.overgrown) {
-				BlockPos.stream(this.getBoundingBox()).forEach(blockPos -> {
+				BlockPos.stream(this.getBoundingBox()).forEach(posx -> {
 					if (this.properties.vines) {
-						this.generateVines(random, world, blockPos);
+						this.generateVines(random, world, posx);
 					}
 
 					if (this.properties.overgrown) {
-						this.generateOvergrownLeaves(random, world, blockPos);
+						this.generateOvergrownLeaves(random, world, posx);
 					}
 				});
 			}

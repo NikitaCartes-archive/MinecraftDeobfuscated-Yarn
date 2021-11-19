@@ -37,8 +37,8 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 			this.tries = 0;
 			this.expiryTime = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
 			PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-			Predicate<BlockPos> predicate = blockPosx -> {
-				long l = blockPosx.asLong();
+			Predicate<BlockPos> predicate = pos -> {
+				long l = pos.asLong();
 				if (this.positionToExpiryTime.containsKey(l)) {
 					return false;
 				} else if (++this.tries >= 5) {

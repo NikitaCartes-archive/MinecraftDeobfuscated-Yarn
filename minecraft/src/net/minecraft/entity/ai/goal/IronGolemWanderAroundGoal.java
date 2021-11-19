@@ -81,7 +81,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 	private ChunkSectionPos findRandomChunkPos() {
 		ServerWorld serverWorld = (ServerWorld)this.mob.world;
 		List<ChunkSectionPos> list = (List<ChunkSectionPos>)ChunkSectionPos.stream(ChunkSectionPos.from(this.mob), 2)
-			.filter(chunkSectionPos -> serverWorld.getOccupiedPointOfInterestDistance(chunkSectionPos) == 0)
+			.filter(sectionPos -> serverWorld.getOccupiedPointOfInterestDistance(sectionPos) == 0)
 			.collect(Collectors.toList());
 		return list.isEmpty() ? null : (ChunkSectionPos)list.get(serverWorld.random.nextInt(list.size()));
 	}

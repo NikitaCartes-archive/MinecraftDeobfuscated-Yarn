@@ -594,57 +594,57 @@ public class ClientWorld extends World {
 		return this.getRegistryManager().get(Registry.BIOME_KEY).getOrThrow(BiomeKeys.PLAINS);
 	}
 
-	public float method_23783(float f) {
-		float g = this.getSkyAngle(f);
-		float h = 1.0F - (MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.2F);
-		h = MathHelper.clamp(h, 0.0F, 1.0F);
-		h = 1.0F - h;
-		h = (float)((double)h * (1.0 - (double)(this.getRainGradient(f) * 5.0F) / 16.0));
-		h = (float)((double)h * (1.0 - (double)(this.getThunderGradient(f) * 5.0F) / 16.0));
-		return h * 0.8F + 0.2F;
+	public float getStarBrightness(float tickDelta) {
+		float f = this.getSkyAngle(tickDelta);
+		float g = 1.0F - (MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.2F);
+		g = MathHelper.clamp(g, 0.0F, 1.0F);
+		g = 1.0F - g;
+		g = (float)((double)g * (1.0 - (double)(this.getRainGradient(tickDelta) * 5.0F) / 16.0));
+		g = (float)((double)g * (1.0 - (double)(this.getThunderGradient(tickDelta) * 5.0F) / 16.0));
+		return g * 0.8F + 0.2F;
 	}
 
-	public Vec3d method_23777(Vec3d vec3d, float f) {
-		float g = this.getSkyAngle(f);
-		Vec3d vec3d2 = vec3d.subtract(2.0, 2.0, 2.0).multiply(0.25);
+	public Vec3d getSkyColor(Vec3d cameraPos, float tickDelta) {
+		float f = this.getSkyAngle(tickDelta);
+		Vec3d vec3d = cameraPos.subtract(2.0, 2.0, 2.0).multiply(0.25);
 		BiomeAccess biomeAccess = this.getBiomeAccess();
-		Vec3d vec3d3 = CubicSampler.sampleColor(vec3d2, (ix, jx, kx) -> Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(ix, jx, kx).getSkyColor()));
-		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
-		h = MathHelper.clamp(h, 0.0F, 1.0F);
-		float i = (float)vec3d3.x * h;
-		float j = (float)vec3d3.y * h;
-		float k = (float)vec3d3.z * h;
-		float l = this.getRainGradient(f);
-		if (l > 0.0F) {
-			float m = (i * 0.3F + j * 0.59F + k * 0.11F) * 0.6F;
-			float n = 1.0F - l * 0.75F;
-			i = i * n + m * (1.0F - n);
-			j = j * n + m * (1.0F - n);
-			k = k * n + m * (1.0F - n);
+		Vec3d vec3d2 = CubicSampler.sampleColor(vec3d, (x, y, z) -> Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(x, y, z).getSkyColor()));
+		float g = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
+		g = MathHelper.clamp(g, 0.0F, 1.0F);
+		float h = (float)vec3d2.x * g;
+		float i = (float)vec3d2.y * g;
+		float j = (float)vec3d2.z * g;
+		float k = this.getRainGradient(tickDelta);
+		if (k > 0.0F) {
+			float l = (h * 0.3F + i * 0.59F + j * 0.11F) * 0.6F;
+			float m = 1.0F - k * 0.75F;
+			h = h * m + l * (1.0F - m);
+			i = i * m + l * (1.0F - m);
+			j = j * m + l * (1.0F - m);
 		}
 
-		float m = this.getThunderGradient(f);
-		if (m > 0.0F) {
-			float n = (i * 0.3F + j * 0.59F + k * 0.11F) * 0.2F;
-			float o = 1.0F - m * 0.75F;
-			i = i * o + n * (1.0F - o);
-			j = j * o + n * (1.0F - o);
-			k = k * o + n * (1.0F - o);
+		float l = this.getThunderGradient(tickDelta);
+		if (l > 0.0F) {
+			float m = (h * 0.3F + i * 0.59F + j * 0.11F) * 0.2F;
+			float n = 1.0F - l * 0.75F;
+			h = h * n + m * (1.0F - n);
+			i = i * n + m * (1.0F - n);
+			j = j * n + m * (1.0F - n);
 		}
 
 		if (!this.client.options.hideLightningFlashes && this.lightningTicksLeft > 0) {
-			float n = (float)this.lightningTicksLeft - f;
-			if (n > 1.0F) {
-				n = 1.0F;
+			float m = (float)this.lightningTicksLeft - tickDelta;
+			if (m > 1.0F) {
+				m = 1.0F;
 			}
 
-			n *= 0.45F;
-			i = i * (1.0F - n) + 0.8F * n;
-			j = j * (1.0F - n) + 0.8F * n;
-			k = k * (1.0F - n) + 1.0F * n;
+			m *= 0.45F;
+			h = h * (1.0F - m) + 0.8F * m;
+			i = i * (1.0F - m) + 0.8F * m;
+			j = j * (1.0F - m) + 1.0F * m;
 		}
 
-		return new Vec3d((double)i, (double)j, (double)k);
+		return new Vec3d((double)h, (double)i, (double)j);
 	}
 
 	public Vec3d getCloudsColor(float tickDelta) {

@@ -54,7 +54,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		this.goalSelector.add(2, new WanderAroundFarGoal(this, 1.0, 1.0000001E-5F));
 		this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(4, new LookAroundGoal(this));
-		this.targetSelector.add(1, new ActiveTargetGoal(this, MobEntity.class, 10, true, false, livingEntity -> livingEntity instanceof Monster));
+		this.targetSelector.add(1, new ActiveTargetGoal(this, MobEntity.class, 10, true, false, entity -> entity instanceof Monster));
 	}
 
 	public static DefaultAttributeContainer.Builder createSnowGolemAttributes() {

@@ -176,7 +176,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		}
 
 		public MultiNoiseBiomeSource getBiomeSource() {
-			return this.preset.method_39531(this, true);
+			return this.preset.getBiomeSource(this, true);
 		}
 	}
 
@@ -202,23 +202,23 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		final Identifier id;
 		private final Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> biomeSourceFunction;
 
-		public Preset(Identifier id, Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> function) {
+		public Preset(Identifier id, Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> biomeSourceFunction) {
 			this.id = id;
-			this.biomeSourceFunction = function;
+			this.biomeSourceFunction = biomeSourceFunction;
 			BY_IDENTIFIER.put(id, this);
 		}
 
-		MultiNoiseBiomeSource method_39531(MultiNoiseBiomeSource.Instance instance, boolean bl) {
+		MultiNoiseBiomeSource getBiomeSource(MultiNoiseBiomeSource.Instance instance, boolean useInstance) {
 			MultiNoiseUtil.Entries<Supplier<Biome>> entries = (MultiNoiseUtil.Entries<Supplier<Biome>>)this.biomeSourceFunction.apply(instance.biomeRegistry());
-			return new MultiNoiseBiomeSource(entries, bl ? Optional.of(instance) : Optional.empty());
+			return new MultiNoiseBiomeSource(entries, useInstance ? Optional.of(instance) : Optional.empty());
 		}
 
-		public MultiNoiseBiomeSource method_39532(Registry<Biome> registry, boolean bl) {
-			return this.method_39531(new MultiNoiseBiomeSource.Instance(this, registry), bl);
+		public MultiNoiseBiomeSource getBiomeSource(Registry<Biome> biomeRegistry, boolean useInstance) {
+			return this.getBiomeSource(new MultiNoiseBiomeSource.Instance(this, biomeRegistry), useInstance);
 		}
 
 		public MultiNoiseBiomeSource getBiomeSource(Registry<Biome> biomeRegistry) {
-			return this.method_39532(biomeRegistry, true);
+			return this.getBiomeSource(biomeRegistry, true);
 		}
 	}
 }

@@ -569,7 +569,7 @@ public class TurtleEntity extends AnimalEntity {
 			if (this.mob.getAttacker() == null && !this.mob.isOnFire()) {
 				return false;
 			} else {
-				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 7, 4);
+				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 7);
 				if (blockPos != null) {
 					this.targetX = (double)blockPos.getX();
 					this.targetY = (double)blockPos.getY();

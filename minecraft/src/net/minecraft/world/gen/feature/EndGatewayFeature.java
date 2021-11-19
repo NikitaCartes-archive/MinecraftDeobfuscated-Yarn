@@ -27,10 +27,10 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 			if (bl && bl2 && bl3) {
 				BlockPos blockPos3 = blockPos2.toImmutable();
 				this.setBlockState(structureWorldAccess, blockPos3, Blocks.END_GATEWAY.getDefaultState());
-				endGatewayFeatureConfig.getExitPos().ifPresent(blockPos2x -> {
+				endGatewayFeatureConfig.getExitPos().ifPresent(pos -> {
 					BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos3);
 					if (blockEntity instanceof EndGatewayBlockEntity endGatewayBlockEntity) {
-						endGatewayBlockEntity.setExitPortalPos(blockPos2x, endGatewayFeatureConfig.isExact());
+						endGatewayBlockEntity.setExitPortalPos(pos, endGatewayFeatureConfig.isExact());
 						blockEntity.markDirty();
 					}
 				});

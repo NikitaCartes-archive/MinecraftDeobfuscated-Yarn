@@ -27,7 +27,7 @@ public class ScheduleCommand {
 		eventName -> new TranslatableText("commands.schedule.cleared.failure", eventName)
 	);
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
-			context.getSource().getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22592(), builder
+			context.getSource().getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().getEventNames(), builder
 		);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -86,7 +86,7 @@ public class ScheduleCommand {
 			function.getSecond().ifLeft(functionx -> {
 				String string = identifier.toString();
 				if (replace) {
-					timer.method_22593(string);
+					timer.remove(string);
 				}
 
 				timer.setEvent(string, l, new FunctionTimerCallback(identifier));
@@ -94,7 +94,7 @@ public class ScheduleCommand {
 			}).ifRight(tag -> {
 				String string = "#" + identifier;
 				if (replace) {
-					timer.method_22593(string);
+					timer.remove(string);
 				}
 
 				timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
@@ -105,7 +105,7 @@ public class ScheduleCommand {
 	}
 
 	private static int clearEvent(ServerCommandSource source, String eventName) throws CommandSyntaxException {
-		int i = source.getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22593(eventName);
+		int i = source.getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().remove(eventName);
 		if (i == 0) {
 			throw CLEARED_FAILURE_EXCEPTION.create(eventName);
 		} else {

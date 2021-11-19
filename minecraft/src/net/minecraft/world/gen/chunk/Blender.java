@@ -163,8 +163,8 @@ public class Blender {
 
 			for (Blender.ChunkBlendingData chunkBlendingData : this.field_35510) {
 				chunkBlendingData.blendingData
-					.method_39346(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), m - 2, m + 2, (lx, mx, nx, dx) -> {
-						double ex = MathHelper.magnitude((double)(l - lx), (double)(m - mx), (double)(n - nx));
+					.method_39346(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), m - 1, m + 1, (lx, mx, nx, dx) -> {
+						double ex = MathHelper.magnitude((double)(l - lx), (double)((m - mx) * 2), (double)(n - nx));
 						if (!(ex > 2.0)) {
 							if (ex < mutableDouble3.doubleValue()) {
 								mutableDouble3.setValue(ex);

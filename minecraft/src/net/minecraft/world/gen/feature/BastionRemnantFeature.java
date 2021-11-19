@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_6834;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
@@ -12,9 +12,9 @@ public class BastionRemnantFeature extends JigsawFeature {
 		super(configCodec, 33, false, false, BastionRemnantFeature::method_28617);
 	}
 
-	private static boolean method_28617(class_6834.class_6835<StructurePoolFeatureConfig> arg) {
+	private static boolean method_28617(StructureGeneratorFactory.Context<StructurePoolFeatureConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-		chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
+		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
 		return chunkRandom.nextInt(5) >= 2;
 	}
 }

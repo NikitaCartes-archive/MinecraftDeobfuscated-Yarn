@@ -144,20 +144,20 @@ public class ChunkSerializer {
 		Chunk chunk;
 		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 			ChunkTickScheduler<Block> chunkTickScheduler = ChunkTickScheduler.create(
-				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos
+				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
 			ChunkTickScheduler<Fluid> chunkTickScheduler2 = ChunkTickScheduler.create(
-				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos
+				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
 			chunk = new WorldChunk(
 				world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, getEntityLoadingCallback(world, nbt), blendingData
 			);
 		} else {
 			SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(
-				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos
+				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
 			SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(
-				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos
+				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
 			ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blendingData);
 			chunk = protoChunk;
@@ -445,7 +445,7 @@ public class ChunkSerializer {
 		return nbtCompound;
 	}
 
-	private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureContext structureContext, NbtCompound nbt, long worldSeed) {
+	private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
 		Map<StructureFeature<?>, StructureStart<?>> map = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
 		NbtCompound nbtCompound = nbt.getCompound("starts");
 
@@ -455,7 +455,7 @@ public class ChunkSerializer {
 			if (structureFeature == null) {
 				LOGGER.error("Unknown structure start: {}", string2);
 			} else {
-				StructureStart<?> structureStart = StructureFeature.readStructureStart(structureContext, nbtCompound.getCompound(string), worldSeed);
+				StructureStart<?> structureStart = StructureFeature.readStructureStart(context, nbtCompound.getCompound(string), worldSeed);
 				if (structureStart != null) {
 					map.put(structureFeature, structureStart);
 				}

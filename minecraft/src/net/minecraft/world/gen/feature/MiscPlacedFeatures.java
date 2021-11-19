@@ -24,11 +24,13 @@ public class MiscPlacedFeatures {
 	);
 	public static final PlacedFeature ICE_PATCH = PlacedFeatures.register(
 		"ice_patch",
-		MiscConfiguredFeatures.ICE_PATCH.withPlacement(CountPlacementModifier.of(2), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
+		MiscConfiguredFeatures.ICE_PATCH
+			.withPlacement(CountPlacementModifier.of(2), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
 	);
 	public static final PlacedFeature FOREST_ROCK = PlacedFeatures.register(
 		"forest_rock",
-		MiscConfiguredFeatures.FOREST_ROCK.withPlacement(CountPlacementModifier.of(2), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
+		MiscConfiguredFeatures.FOREST_ROCK
+			.withPlacement(CountPlacementModifier.of(2), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
 	);
 	public static final PlacedFeature ICEBERG_PACKED = PlacedFeatures.register(
 		"iceberg_packed",

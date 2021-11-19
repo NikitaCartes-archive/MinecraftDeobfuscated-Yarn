@@ -132,9 +132,9 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		return ((LivingTargetCache)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty())).findFirst(this::shouldAttack);
 	}
 
-	private boolean shouldAttack(LivingEntity livingEntity) {
-		EntityType<?> entityType = livingEntity.getType();
-		return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && Sensor.testAttackableTargetPredicate(this, livingEntity);
+	private boolean shouldAttack(LivingEntity entity) {
+		EntityType<?> entityType = entity.getType();
+		return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && Sensor.testAttackableTargetPredicate(this, entity);
 	}
 
 	@Override
@@ -220,7 +220,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		return (Brain<ZoglinEntity>)super.getBrain();
 	}
 
-	protected void method_26931() {
+	protected void tickBrain() {
 		Activity activity = (Activity)this.brain.getFirstPossibleNonCoreActivity().orElse(null);
 		this.brain.resetPossibleActivities(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
 		Activity activity2 = (Activity)this.brain.getFirstPossibleNonCoreActivity().orElse(null);
@@ -236,7 +236,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		this.world.getProfiler().push("zoglinBrain");
 		this.getBrain().tick((ServerWorld)this.world, this);
 		this.world.getProfiler().pop();
-		this.method_26931();
+		this.tickBrain();
 	}
 
 	@Override

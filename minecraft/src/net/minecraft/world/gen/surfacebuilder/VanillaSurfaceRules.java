@@ -1,5 +1,7 @@
 package net.minecraft.world.gen.surfacebuilder;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.VerticalSurfaceType;
@@ -9,14 +11,14 @@ import net.minecraft.world.gen.noise.NoiseParametersKeys;
 
 public class VanillaSurfaceRules {
 	private static final MaterialRules.MaterialRule AIR = block(Blocks.AIR);
-	private static final MaterialRules.MaterialRule field_35639 = block(Blocks.BEDROCK);
+	private static final MaterialRules.MaterialRule BEDROCK = block(Blocks.BEDROCK);
 	private static final MaterialRules.MaterialRule WHITE_TERRACOTTA = block(Blocks.WHITE_TERRACOTTA);
 	private static final MaterialRules.MaterialRule ORANGE_TERRACOTTA = block(Blocks.ORANGE_TERRACOTTA);
 	private static final MaterialRules.MaterialRule TERRACOTTA = block(Blocks.TERRACOTTA);
 	private static final MaterialRules.MaterialRule RED_SAND = block(Blocks.RED_SAND);
-	private static final MaterialRules.MaterialRule field_35561 = block(Blocks.RED_SANDSTONE);
+	private static final MaterialRules.MaterialRule RED_SANDSTONE = block(Blocks.RED_SANDSTONE);
 	private static final MaterialRules.MaterialRule STONE = block(Blocks.STONE);
-	private static final MaterialRules.MaterialRule field_35640 = block(Blocks.DEEPSLATE);
+	private static final MaterialRules.MaterialRule DEEPSLATE = block(Blocks.DEEPSLATE);
 	private static final MaterialRules.MaterialRule DIRT = block(Blocks.DIRT);
 	private static final MaterialRules.MaterialRule PODZOL = block(Blocks.PODZOL);
 	private static final MaterialRules.MaterialRule COARSE_DIRT = block(Blocks.COARSE_DIRT);
@@ -25,7 +27,7 @@ public class VanillaSurfaceRules {
 	private static final MaterialRules.MaterialRule CALCITE = block(Blocks.CALCITE);
 	private static final MaterialRules.MaterialRule GRAVEL = block(Blocks.GRAVEL);
 	private static final MaterialRules.MaterialRule SAND = block(Blocks.SAND);
-	private static final MaterialRules.MaterialRule field_35562 = block(Blocks.SANDSTONE);
+	private static final MaterialRules.MaterialRule SANDSTONE = block(Blocks.SANDSTONE);
 	private static final MaterialRules.MaterialRule PACKED_ICE = block(Blocks.PACKED_ICE);
 	private static final MaterialRules.MaterialRule SNOW_BLOCK = block(Blocks.SNOW_BLOCK);
 	private static final MaterialRules.MaterialRule POWDER_SNOW = block(Blocks.POWDER_SNOW);
@@ -48,6 +50,10 @@ public class VanillaSurfaceRules {
 	}
 
 	public static MaterialRules.MaterialRule createOverworldSurfaceRule() {
+		return method_39922(true, false, true);
+	}
+
+	public static MaterialRules.MaterialRule method_39922(boolean bl, boolean bl2, boolean bl3) {
 		MaterialRules.MaterialCondition materialCondition = MaterialRules.aboveY(YOffset.fixed(97), 2);
 		MaterialRules.MaterialCondition materialCondition2 = MaterialRules.aboveY(YOffset.fixed(256), 0);
 		MaterialRules.MaterialCondition materialCondition3 = MaterialRules.aboveYWithStoneDepth(YOffset.fixed(63), -1);
@@ -61,8 +67,8 @@ public class VanillaSurfaceRules {
 		MaterialRules.MaterialCondition materialCondition11 = MaterialRules.biome(BiomeKeys.FROZEN_OCEAN, BiomeKeys.DEEP_FROZEN_OCEAN);
 		MaterialRules.MaterialCondition materialCondition12 = MaterialRules.steepSlope();
 		MaterialRules.MaterialRule materialRule = MaterialRules.sequence(MaterialRules.condition(materialCondition7, GRASS_BLOCK), DIRT);
-		MaterialRules.MaterialRule materialRule2 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.field_35494, field_35562), SAND);
-		MaterialRules.MaterialRule materialRule3 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.field_35494, STONE), GRAVEL);
+		MaterialRules.MaterialRule materialRule2 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, SANDSTONE), SAND);
+		MaterialRules.MaterialRule materialRule3 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, STONE), GRAVEL);
 		MaterialRules.MaterialCondition materialCondition13 = MaterialRules.biome(BiomeKeys.WARM_OCEAN, BiomeKeys.DESERT, BiomeKeys.BEACH, BiomeKeys.SNOWY_BEACH);
 		MaterialRules.MaterialRule materialRule4 = MaterialRules.sequence(
 			MaterialRules.condition(
@@ -176,37 +182,34 @@ public class VanillaSurfaceRules {
 			),
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.BADLANDS, BiomeKeys.ERODED_BADLANDS, BiomeKeys.WOODED_BADLANDS),
-				MaterialRules.condition(
-					MaterialRules.method_39549(15, false, false, VerticalSurfaceType.FLOOR),
-					MaterialRules.sequence(
-						MaterialRules.condition(
-							MaterialRules.STONE_DEPTH_FLOOR,
-							MaterialRules.sequence(
-								MaterialRules.condition(materialCondition2, ORANGE_TERRACOTTA),
-								MaterialRules.condition(
-									materialCondition4,
-									MaterialRules.sequence(
-										MaterialRules.condition(materialCondition14, TERRACOTTA),
-										MaterialRules.condition(materialCondition15, TERRACOTTA),
-										MaterialRules.condition(materialCondition16, TERRACOTTA),
-										MaterialRules.terracottaBands()
-									)
-								),
-								MaterialRules.condition(materialCondition7, MaterialRules.sequence(MaterialRules.condition(MaterialRules.field_35494, field_35561), RED_SAND)),
-								MaterialRules.condition(MaterialRules.not(materialCondition10), ORANGE_TERRACOTTA),
-								MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA),
-								materialRule3
-							)
-						),
-						MaterialRules.condition(
-							materialCondition3,
-							MaterialRules.sequence(
-								MaterialRules.condition(materialCondition6, MaterialRules.condition(MaterialRules.not(materialCondition4), ORANGE_TERRACOTTA)),
-								MaterialRules.terracottaBands()
-							)
-						),
-						MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_RUN_DEPTH, MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA))
-					)
+				MaterialRules.sequence(
+					MaterialRules.condition(
+						MaterialRules.STONE_DEPTH_FLOOR,
+						MaterialRules.sequence(
+							MaterialRules.condition(materialCondition2, ORANGE_TERRACOTTA),
+							MaterialRules.condition(
+								materialCondition4,
+								MaterialRules.sequence(
+									MaterialRules.condition(materialCondition14, TERRACOTTA),
+									MaterialRules.condition(materialCondition15, TERRACOTTA),
+									MaterialRules.condition(materialCondition16, TERRACOTTA),
+									MaterialRules.terracottaBands()
+								)
+							),
+							MaterialRules.condition(materialCondition7, MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, RED_SANDSTONE), RED_SAND)),
+							MaterialRules.condition(MaterialRules.not(materialCondition10), ORANGE_TERRACOTTA),
+							MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA),
+							materialRule3
+						)
+					),
+					MaterialRules.condition(
+						materialCondition3,
+						MaterialRules.sequence(
+							MaterialRules.condition(materialCondition6, MaterialRules.condition(MaterialRules.not(materialCondition4), ORANGE_TERRACOTTA)),
+							MaterialRules.terracottaBands()
+						)
+					),
+					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA))
 				)
 			),
 			MaterialRules.condition(
@@ -229,8 +232,8 @@ public class VanillaSurfaceRules {
 				materialCondition9,
 				MaterialRules.sequence(
 					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.condition(materialCondition11, MaterialRules.condition(materialCondition10, WATER))),
-					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_RUN_DEPTH, materialRule7),
-					MaterialRules.condition(materialCondition13, MaterialRules.condition(MaterialRules.method_39549(0, true, true, VerticalSurfaceType.FLOOR), field_35562))
+					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, materialRule7),
+					MaterialRules.condition(materialCondition13, MaterialRules.condition(MaterialRules.stoneDepth(0, true, true, VerticalSurfaceType.FLOOR), SANDSTONE))
 				)
 			),
 			MaterialRules.condition(
@@ -242,11 +245,19 @@ public class VanillaSurfaceRules {
 				)
 			)
 		);
-		return MaterialRules.sequence(
-			MaterialRules.condition(MaterialRules.method_39472("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), field_35639),
-			MaterialRules.condition(MaterialRules.method_39473(), materialRule9),
-			MaterialRules.condition(MaterialRules.method_39472("deepslate", YOffset.fixed(0), YOffset.fixed(8)), field_35640)
-		);
+		Builder<MaterialRules.MaterialRule> builder = ImmutableList.builder();
+		if (bl2) {
+			builder.add(MaterialRules.condition(MaterialRules.not(MaterialRules.verticalGradient("bedrock_roof", YOffset.belowTop(5), YOffset.getTop())), BEDROCK));
+		}
+
+		if (bl3) {
+			builder.add(MaterialRules.condition(MaterialRules.verticalGradient("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), BEDROCK));
+		}
+
+		MaterialRules.MaterialRule materialRule10 = MaterialRules.condition(MaterialRules.surface(), materialRule9);
+		builder.add(bl ? materialRule10 : materialRule9);
+		builder.add(MaterialRules.condition(MaterialRules.verticalGradient("deepslate", YOffset.fixed(0), YOffset.fixed(8)), DEEPSLATE));
+		return MaterialRules.sequence((MaterialRules.MaterialRule[])builder.build().toArray(MaterialRules.MaterialRule[]::new));
 	}
 
 	public static MaterialRules.MaterialRule createNetherSurfaceRule() {
@@ -265,23 +276,27 @@ public class VanillaSurfaceRules {
 			materialCondition8, MaterialRules.condition(materialCondition3, MaterialRules.condition(materialCondition4, GRAVEL))
 		);
 		return MaterialRules.sequence(
-			MaterialRules.condition(MaterialRules.method_39472("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), field_35639),
-			MaterialRules.condition(MaterialRules.not(MaterialRules.method_39472("bedrock_roof", YOffset.belowTop(5), YOffset.getTop())), field_35639),
+			MaterialRules.condition(MaterialRules.verticalGradient("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), BEDROCK),
+			MaterialRules.condition(MaterialRules.not(MaterialRules.verticalGradient("bedrock_roof", YOffset.belowTop(5), YOffset.getTop())), BEDROCK),
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.BASALT_DELTAS),
 				MaterialRules.sequence(
-					MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, BASALT),
+					MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING_WITH_SURFACE_DEPTH, BASALT),
 					MaterialRules.condition(
-						MaterialRules.STONE_DEPTH_FLOOR_WITH_RUN_DEPTH, MaterialRules.sequence(materialRule, MaterialRules.condition(materialCondition11, BASALT), BLACKSTONE)
+						MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH,
+						MaterialRules.sequence(materialRule, MaterialRules.condition(materialCondition11, BASALT), BLACKSTONE)
 					)
 				)
 			),
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.SOUL_SAND_VALLEY),
 				MaterialRules.sequence(
-					MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, MaterialRules.sequence(MaterialRules.condition(materialCondition11, SOUL_SAND), SOUL_SOIL)),
 					MaterialRules.condition(
-						MaterialRules.STONE_DEPTH_FLOOR_WITH_RUN_DEPTH, MaterialRules.sequence(materialRule, MaterialRules.condition(materialCondition11, SOUL_SAND), SOUL_SOIL)
+						MaterialRules.STONE_DEPTH_CEILING_WITH_SURFACE_DEPTH, MaterialRules.sequence(MaterialRules.condition(materialCondition11, SOUL_SAND), SOUL_SOIL)
+					),
+					MaterialRules.condition(
+						MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH,
+						MaterialRules.sequence(materialRule, MaterialRules.condition(materialCondition11, SOUL_SAND), SOUL_SOIL)
 					)
 				)
 			),
@@ -309,7 +324,7 @@ public class VanillaSurfaceRules {
 				MaterialRules.biome(BiomeKeys.NETHER_WASTES),
 				MaterialRules.sequence(
 					MaterialRules.condition(
-						MaterialRules.STONE_DEPTH_FLOOR_WITH_RUN_DEPTH,
+						MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH,
 						MaterialRules.condition(
 							materialCondition6,
 							MaterialRules.sequence(

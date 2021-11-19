@@ -159,27 +159,27 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	) {
 		List<PointOfInterest> list = (List<PointOfInterest>)this.getInCircle(typePredicate, pos, radius, occupationStatus).collect(Collectors.toList());
 		Collections.shuffle(list, random);
-		return list.stream().filter(pointOfInterest -> positionPredicate.test(pointOfInterest.getPos())).findFirst().map(PointOfInterest::getPos);
+		return list.stream().filter(poi -> positionPredicate.test(poi.getPos())).findFirst().map(PointOfInterest::getPos);
 	}
 
 	public boolean releaseTicket(BlockPos pos) {
 		return (Boolean)this.get(ChunkSectionPos.toLong(pos))
-			.map(pointOfInterestSet -> pointOfInterestSet.releaseTicket(pos))
+			.map(poiSet -> poiSet.releaseTicket(pos))
 			.orElseThrow(() -> Util.throwOrPause(new IllegalStateException("POI never registered at " + pos)));
 	}
 
 	public boolean test(BlockPos pos, Predicate<PointOfInterestType> predicate) {
-		return (Boolean)this.get(ChunkSectionPos.toLong(pos)).map(pointOfInterestSet -> pointOfInterestSet.test(pos, predicate)).orElse(false);
+		return (Boolean)this.get(ChunkSectionPos.toLong(pos)).map(poiSet -> poiSet.test(pos, predicate)).orElse(false);
 	}
 
 	public Optional<PointOfInterestType> getType(BlockPos pos) {
-		return this.get(ChunkSectionPos.toLong(pos)).flatMap(pointOfInterestSet -> pointOfInterestSet.getType(pos));
+		return this.get(ChunkSectionPos.toLong(pos)).flatMap(poiSet -> poiSet.getType(pos));
 	}
 
 	@Deprecated
 	@Debug
 	public int getFreeTickets(BlockPos pos) {
-		return (Integer)this.get(ChunkSectionPos.toLong(pos)).map(pointOfInterestSet -> pointOfInterestSet.getFreeTickets(pos)).orElse(0);
+		return (Integer)this.get(ChunkSectionPos.toLong(pos)).map(poiSet -> poiSet.getFreeTickets(pos)).orElse(0);
 	}
 
 	public int getDistanceFromNearestOccupied(ChunkSectionPos pos) {
@@ -191,9 +191,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		Optional<PointOfInterestSet> optional = this.getIfLoaded(pos);
 		return optional == null
 			? false
-			: (Boolean)optional.map(
-					pointOfInterestSet -> pointOfInterestSet.get(PointOfInterestType.ALWAYS_TRUE, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).count() > 0L
-				)
+			: (Boolean)optional.map(poiSet -> poiSet.get(PointOfInterestType.ALWAYS_TRUE, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).count() > 0L)
 				.orElse(false);
 	}
 
@@ -216,7 +214,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 
 	public void initForPalette(ChunkPos chunkPos, ChunkSection chunkSection) {
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, ChunkSectionPos.getSectionCoord(chunkSection.getYOffset()));
-		Util.ifPresentOrElse(this.get(chunkSectionPos.asLong()), pointOfInterestSet -> pointOfInterestSet.updatePointsOfInterest(biConsumer -> {
+		Util.ifPresentOrElse(this.get(chunkSectionPos.asLong()), poiSet -> poiSet.updatePointsOfInterest(biConsumer -> {
 				if (shouldScan(chunkSection)) {
 					this.scanAndPopulate(chunkSection, chunkSectionPos, biConsumer);
 				}
@@ -232,14 +230,14 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return chunkSection.hasAny(PointOfInterestType.REGISTERED_STATES::contains);
 	}
 
-	private void scanAndPopulate(ChunkSection chunkSection, ChunkSectionPos chunkSectionPos, BiConsumer<BlockPos, PointOfInterestType> biConsumer) {
-		chunkSectionPos.streamBlocks()
+	private void scanAndPopulate(ChunkSection chunkSection, ChunkSectionPos sectionPos, BiConsumer<BlockPos, PointOfInterestType> biConsumer) {
+		sectionPos.streamBlocks()
 			.forEach(
-				blockPos -> {
+				pos -> {
 					BlockState blockState = chunkSection.getBlockState(
-						ChunkSectionPos.getLocalCoord(blockPos.getX()), ChunkSectionPos.getLocalCoord(blockPos.getY()), ChunkSectionPos.getLocalCoord(blockPos.getZ())
+						ChunkSectionPos.getLocalCoord(pos.getX()), ChunkSectionPos.getLocalCoord(pos.getY()), ChunkSectionPos.getLocalCoord(pos.getZ())
 					);
-					PointOfInterestType.from(blockState).ifPresent(pointOfInterestType -> biConsumer.accept(blockPos, pointOfInterestType));
+					PointOfInterestType.from(blockState).ifPresent(poiType -> biConsumer.accept(pos, poiType));
 				}
 			);
 	}
@@ -251,7 +249,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	 */
 	public void preloadChunks(WorldView world, BlockPos pos, int radius) {
 		ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.world.getBottomSectionCoord(), this.world.getTopSectionCoord())
-			.map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong())))
+			.map(sectionPos -> Pair.of(sectionPos, this.get(sectionPos.asLong())))
 			.filter(pair -> !(Boolean)((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false))
 			.map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos())
 			.filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong()))

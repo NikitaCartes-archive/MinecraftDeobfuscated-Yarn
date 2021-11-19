@@ -319,12 +319,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			BlockPos blockPos = this.raider.getBlockPos();
 			Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
 				.getPosition(
-					pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
-					this::canLootHome,
-					PointOfInterestStorage.OccupationStatus.ANY,
-					blockPos,
-					48,
-					this.raider.random
+					poiType -> poiType == PointOfInterestType.HOME, this::canLootHome, PointOfInterestStorage.OccupationStatus.ANY, blockPos, 48, this.raider.random
 				);
 			if (!optional.isPresent()) {
 				return false;

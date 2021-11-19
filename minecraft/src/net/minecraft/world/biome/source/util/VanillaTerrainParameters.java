@@ -22,7 +22,7 @@ public final class VanillaTerrainParameters {
 	private static final Codec<Spline<VanillaTerrainParameters.NoisePoint>> field_35457 = Spline.method_39232(
 		VanillaTerrainParameters.LocationFunction.field_35464
 	);
-	public static final Codec<VanillaTerrainParameters> field_35456 = RecordCodecBuilder.create(
+	public static final Codec<VanillaTerrainParameters> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					field_35457.fieldOf("offset").forGetter(VanillaTerrainParameters::getOffsetSpline),
 					field_35457.fieldOf("factor").forGetter(VanillaTerrainParameters::getFactorSpline),
@@ -381,10 +381,10 @@ public final class VanillaTerrainParameters {
 				values()
 			)
 			.collect(Collectors.toMap(VanillaTerrainParameters.LocationFunction::asString, locationFunction -> locationFunction));
-		private static final Codec<VanillaTerrainParameters.LocationFunction> field_35463 = StringIdentifiable.createCodec(
+		private static final Codec<VanillaTerrainParameters.LocationFunction> CODEC = StringIdentifiable.createCodec(
 			VanillaTerrainParameters.LocationFunction::values, field_35462::get
 		);
-		static final Codec<ToFloatFunction<VanillaTerrainParameters.NoisePoint>> field_35464 = field_35463.flatComapMap(
+		static final Codec<ToFloatFunction<VanillaTerrainParameters.NoisePoint>> field_35464 = CODEC.flatComapMap(
 			locationFunction -> locationFunction,
 			toFloatFunction -> toFloatFunction instanceof VanillaTerrainParameters.LocationFunction locationFunction
 					? DataResult.success(locationFunction)

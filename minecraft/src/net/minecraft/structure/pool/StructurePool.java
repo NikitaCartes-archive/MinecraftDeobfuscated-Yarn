@@ -91,7 +91,7 @@ public class StructurePool {
 			this.highestY = this.elements
 				.stream()
 				.filter(structurePoolElement -> structurePoolElement != EmptyPoolElement.INSTANCE)
-				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY())
+				.mapToInt(element -> element.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY())
 				.max()
 				.orElse(0);
 		}

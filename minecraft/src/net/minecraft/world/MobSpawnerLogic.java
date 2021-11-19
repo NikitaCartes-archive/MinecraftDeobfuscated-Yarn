@@ -26,7 +26,7 @@ public abstract class MobSpawnerLogic {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_30951 = 1;
 	private int spawnDelay = 20;
-	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.method_38062();
+	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.empty();
 	private MobSpawnerEntry spawnEntry = new MobSpawnerEntry();
 	private double field_9161;
 	private double field_9159;
@@ -191,7 +191,7 @@ public abstract class MobSpawnerLogic {
 			this.spawnPotentials = (DataPool<MobSpawnerEntry>)MobSpawnerEntry.DATA_POOL_CODEC
 				.parse(NbtOps.INSTANCE, nbtList)
 				.resultOrPartial(string -> LOGGER.warn("Invalid SpawnPotentials list: {}", string))
-				.orElseGet(DataPool::method_38062);
+				.orElseGet(DataPool::empty);
 			if (bl2) {
 				MobSpawnerEntry mobSpawnerEntry2 = (MobSpawnerEntry)MobSpawnerEntry.CODEC
 					.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData"))
@@ -221,20 +221,20 @@ public abstract class MobSpawnerLogic {
 		this.renderedEntity = null;
 	}
 
-	public NbtCompound writeNbt(NbtCompound nbtCompound) {
-		nbtCompound.putShort("Delay", (short)this.spawnDelay);
-		nbtCompound.putShort("MinSpawnDelay", (short)this.minSpawnDelay);
-		nbtCompound.putShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
-		nbtCompound.putShort("SpawnCount", (short)this.spawnCount);
-		nbtCompound.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
-		nbtCompound.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
-		nbtCompound.putShort("SpawnRange", (short)this.spawnRange);
-		nbtCompound.put(
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		nbt.putShort("Delay", (short)this.spawnDelay);
+		nbt.putShort("MinSpawnDelay", (short)this.minSpawnDelay);
+		nbt.putShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
+		nbt.putShort("SpawnCount", (short)this.spawnCount);
+		nbt.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
+		nbt.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
+		nbt.putShort("SpawnRange", (short)this.spawnRange);
+		nbt.put(
 			"SpawnData",
 			(NbtElement)MobSpawnerEntry.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnEntry).result().orElseThrow(() -> new IllegalStateException("Invalid SpawnData"))
 		);
-		nbtCompound.put("SpawnPotentials", (NbtElement)MobSpawnerEntry.DATA_POOL_CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPotentials).result().orElseThrow());
-		return nbtCompound;
+		nbt.put("SpawnPotentials", (NbtElement)MobSpawnerEntry.DATA_POOL_CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPotentials).result().orElseThrow());
+		return nbt;
 	}
 
 	@Nullable

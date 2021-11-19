@@ -130,7 +130,7 @@ public class Bootstrap {
 		BuiltinRegistries.BIOME.stream().forEach(biome -> {
 			List<List<Supplier<PlacedFeature>>> list = biome.getGenerationSettings().getFeatures();
 			list.stream().flatMap(Collection::stream).forEach(placedFeatureSupplier -> {
-				if (!((PlacedFeature)placedFeatureSupplier.get()).method_39825().contains(BiomePlacementModifier.of())) {
+				if (!((PlacedFeature)placedFeatureSupplier.get()).getPlacementModifiers().contains(BiomePlacementModifier.of())) {
 					Util.error("Placed feature " + BuiltinRegistries.PLACED_FEATURE.getKey((PlacedFeature)placedFeatureSupplier.get()) + " is missing BiomeFilter.biome()");
 				}
 			});

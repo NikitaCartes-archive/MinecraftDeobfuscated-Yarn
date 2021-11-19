@@ -70,7 +70,7 @@ public class ShearsItem extends Item {
 			world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_GROWING_PLANT_CROP, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			world.setBlockState(blockPos, abstractPlantStemBlock.withMaxAge(blockState));
 			if (playerEntity != null) {
-				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(context.getHand()));
+				itemStack.damage(1, playerEntity, player -> player.sendToolBreakStatus(context.getHand()));
 			}
 
 			return ActionResult.success(world.isClient);

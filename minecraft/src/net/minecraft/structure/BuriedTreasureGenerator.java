@@ -21,8 +21,8 @@ public class BuriedTreasureGenerator {
 			super(StructurePieceType.BURIED_TREASURE, 0, new BlockBox(pos));
 		}
 
-		public Piece(NbtCompound nbtCompound) {
-			super(StructurePieceType.BURIED_TREASURE, nbtCompound);
+		public Piece(NbtCompound nbt) {
+			super(StructurePieceType.BURIED_TREASURE, nbt);
 		}
 
 		@Override

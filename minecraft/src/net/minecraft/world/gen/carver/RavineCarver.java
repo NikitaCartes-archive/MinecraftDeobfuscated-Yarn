@@ -59,7 +59,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		int branchStartIndex,
 		int branchCount,
 		double yawPitchRatio,
-		CarvingMask carvingMask
+		CarvingMask mask
 	) {
 		Random random = new Random(seed);
 		float[] fs = this.createHorizontalStretchFactors(context, config, random);
@@ -99,8 +99,10 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 					z,
 					d,
 					e,
-					carvingMask,
-					(contextx, dx, ex, fx, yx) -> this.isPositionExcluded(contextx, fs, dx, ex, fx, yx)
+					mask,
+					(contextx, scaledRelativeX, scaledRelativeY, scaledRelativeZ, yx) -> this.isPositionExcluded(
+							contextx, fs, scaledRelativeX, scaledRelativeY, scaledRelativeZ, yx
+						)
 				);
 			}
 		}

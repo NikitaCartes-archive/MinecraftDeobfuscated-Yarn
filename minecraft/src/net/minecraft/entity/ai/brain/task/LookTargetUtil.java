@@ -44,11 +44,11 @@ public class LookTargetUtil {
 	}
 
 	public static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryModuleType, EntityType<?> entityType) {
-		return canSee(brain, memoryModuleType, livingEntity -> livingEntity.getType() == entityType);
+		return canSee(brain, memoryModuleType, entity -> entity.getType() == entityType);
 	}
 
 	private static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryType, Predicate<LivingEntity> filter) {
-		return brain.getOptionalMemory(memoryType).filter(filter).filter(LivingEntity::isAlive).filter(livingEntity -> canSee(brain, livingEntity)).isPresent();
+		return brain.getOptionalMemory(memoryType).filter(filter).filter(LivingEntity::isAlive).filter(target -> canSee(brain, target)).isPresent();
 	}
 
 	private static void lookAtEachOther(LivingEntity first, LivingEntity second) {
@@ -92,19 +92,19 @@ public class LookTargetUtil {
 	public static ChunkSectionPos getPosClosestToOccupiedPointOfInterest(ServerWorld world, ChunkSectionPos center, int radius) {
 		int i = world.getOccupiedPointOfInterestDistance(center);
 		return (ChunkSectionPos)ChunkSectionPos.stream(center, radius)
-			.filter(chunkSectionPos -> world.getOccupiedPointOfInterestDistance(chunkSectionPos) < i)
+			.filter(sectionPos -> world.getOccupiedPointOfInterestDistance(sectionPos) < i)
 			.min(Comparator.comparingInt(world::getOccupiedPointOfInterestDistance))
 			.orElse(center);
 	}
 
-	public static boolean isTargetWithinAttackRange(MobEntity mobEntity, LivingEntity target, int rangedWeaponReachReduction) {
-		Item item = mobEntity.getMainHandStack().getItem();
-		if (item instanceof RangedWeaponItem rangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item)) {
+	public static boolean isTargetWithinAttackRange(MobEntity mob, LivingEntity target, int rangedWeaponReachReduction) {
+		Item item = mob.getMainHandStack().getItem();
+		if (item instanceof RangedWeaponItem rangedWeaponItem && mob.canUseRangedWeapon((RangedWeaponItem)item)) {
 			int i = rangedWeaponItem.getRange() - rangedWeaponReachReduction;
-			return mobEntity.isInRange(target, (double)i);
+			return mob.isInRange(target, (double)i);
 		}
 
-		return isTargetWithinMeleeRange(mobEntity, target);
+		return isTargetWithinMeleeRange(mob, target);
 	}
 
 	public static boolean isTargetWithinMeleeRange(MobEntity source, LivingEntity target) {
@@ -149,7 +149,7 @@ public class LookTargetUtil {
 
 	public static Optional<LivingEntity> getEntity(LivingEntity entity, MemoryModuleType<UUID> uuidMemoryModule) {
 		Optional<UUID> optional = entity.getBrain().getOptionalMemory(uuidMemoryModule);
-		return optional.map(uUID -> ((ServerWorld)entity.world).getEntity(uUID)).map(entityx -> entityx instanceof LivingEntity livingEntity ? livingEntity : null);
+		return optional.map(uuid -> ((ServerWorld)entity.world).getEntity(uuid)).map(target -> target instanceof LivingEntity livingEntity ? livingEntity : null);
 	}
 
 	public static Stream<VillagerEntity> streamSeenVillagers(VillagerEntity villager, Predicate<VillagerEntity> filter) {
@@ -157,7 +157,7 @@ public class LookTargetUtil {
 			.getOptionalMemory(MemoryModuleType.MOBS)
 			.map(
 				list -> list.stream()
-						.filter(livingEntity -> livingEntity instanceof VillagerEntity && livingEntity != villager)
+						.filter(entity -> entity instanceof VillagerEntity && entity != villager)
 						.map(livingEntity -> (VillagerEntity)livingEntity)
 						.filter(LivingEntity::isAlive)
 						.filter(filter)

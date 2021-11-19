@@ -11,18 +11,20 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.InflaterInputStream;
 import javax.annotation.Nullable;
-import net.minecraft.class_6826;
+import net.minecraft.util.FixedBufferInputStream;
 
 public class ChunkStreamVersion {
 	private static final Int2ObjectMap<ChunkStreamVersion> VERSIONS = new Int2ObjectOpenHashMap<>();
 	public static final ChunkStreamVersion GZIP = add(
 		new ChunkStreamVersion(
-			1, inputStream -> new class_6826(new GZIPInputStream(inputStream)), outputStream -> new BufferedOutputStream(new GZIPOutputStream(outputStream))
+			1, inputStream -> new FixedBufferInputStream(new GZIPInputStream(inputStream)), outputStream -> new BufferedOutputStream(new GZIPOutputStream(outputStream))
 		)
 	);
 	public static final ChunkStreamVersion DEFLATE = add(
 		new ChunkStreamVersion(
-			2, inputStream -> new class_6826(new InflaterInputStream(inputStream)), outputStream -> new BufferedOutputStream(new DeflaterOutputStream(outputStream))
+			2,
+			inputStream -> new FixedBufferInputStream(new InflaterInputStream(inputStream)),
+			outputStream -> new BufferedOutputStream(new DeflaterOutputStream(outputStream))
 		)
 	);
 	public static final ChunkStreamVersion UNCOMPRESSED = add(new ChunkStreamVersion(3, inputStream -> inputStream, outputStream -> outputStream));

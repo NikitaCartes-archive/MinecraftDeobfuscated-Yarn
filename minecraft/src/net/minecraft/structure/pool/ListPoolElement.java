@@ -59,7 +59,7 @@ public class ListPoolElement extends StructurePoolElement {
 		Stream<BlockBox> stream = this.elements
 			.stream()
 			.filter(structurePoolElement -> structurePoolElement != EmptyPoolElement.INSTANCE)
-			.map(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, pos, rotation));
+			.map(element -> element.getBoundingBox(structureManager, pos, rotation));
 		return (BlockBox)BlockBox.encompass(stream::iterator).orElseThrow(() -> new IllegalStateException("Unable to calculate boundingbox for ListPoolElement"));
 	}
 
@@ -102,6 +102,6 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	private void setAllElementsProjection(StructurePool.Projection projection) {
-		this.elements.forEach(structurePoolElement -> structurePoolElement.setProjection(projection));
+		this.elements.forEach(element -> element.setProjection(projection));
 	}
 }

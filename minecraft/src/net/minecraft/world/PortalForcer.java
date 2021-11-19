@@ -38,43 +38,40 @@ public class PortalForcer {
 		this.world = world;
 	}
 
-	public Optional<BlockLocating.Rectangle> getPortalRect(BlockPos blockPos, boolean destIsNether, WorldBorder worldBorder) {
+	public Optional<BlockLocating.Rectangle> getPortalRect(BlockPos pos, boolean destIsNether, WorldBorder worldBorder) {
 		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 		int i = destIsNether ? 16 : 128;
-		pointOfInterestStorage.preloadChunks(this.world, blockPos, i);
+		pointOfInterestStorage.preloadChunks(this.world, pos, i);
 		Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(
-				pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, i, PointOfInterestStorage.OccupationStatus.ANY
+				poiType -> poiType == PointOfInterestType.NETHER_PORTAL, pos, i, PointOfInterestStorage.OccupationStatus.ANY
 			)
-			.filter(pointOfInterest -> worldBorder.contains(pointOfInterest.getPos()))
-			.sorted(
-				Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos))
-					.thenComparingInt(pointOfInterest -> pointOfInterest.getPos().getY())
-			)
-			.filter(pointOfInterest -> this.world.getBlockState(pointOfInterest.getPos()).contains(Properties.HORIZONTAL_AXIS))
+			.filter(poi -> worldBorder.contains(poi.getPos()))
+			.sorted(Comparator.comparingDouble(poi -> poi.getPos().getSquaredDistance(pos)).thenComparingInt(poi -> poi.getPos().getY()))
+			.filter(poi -> this.world.getBlockState(poi.getPos()).contains(Properties.HORIZONTAL_AXIS))
 			.findFirst();
 		return optional.map(
-			pointOfInterest -> {
-				BlockPos blockPosx = pointOfInterest.getPos();
-				this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPosx), 3, blockPosx);
-				BlockState blockState = this.world.getBlockState(blockPosx);
+			poi -> {
+				BlockPos blockPos = poi.getPos();
+				this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
+				BlockState blockState = this.world.getBlockState(blockPos);
 				return BlockLocating.getLargestRectangle(
-					blockPosx, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, blockPosxx -> this.world.getBlockState(blockPosxx) == blockState
+					blockPos, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, posx -> this.world.getBlockState(posx) == blockState
 				);
 			}
 		);
 	}
 
-	public Optional<BlockLocating.Rectangle> createPortal(BlockPos blockPos, Direction.Axis axis) {
+	public Optional<BlockLocating.Rectangle> createPortal(BlockPos pos, Direction.Axis axis) {
 		Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, axis);
 		double d = -1.0;
-		BlockPos blockPos2 = null;
+		BlockPos blockPos = null;
 		double e = -1.0;
-		BlockPos blockPos3 = null;
+		BlockPos blockPos2 = null;
 		WorldBorder worldBorder = this.world.getWorldBorder();
 		int i = Math.min(this.world.getTopY(), this.world.getBottomY() + this.world.getLogicalHeight()) - 1;
-		BlockPos.Mutable mutable = blockPos.mutableCopy();
+		BlockPos.Mutable mutable = pos.mutableCopy();
 
-		for (BlockPos.Mutable mutable2 : BlockPos.iterateInSquare(blockPos, 16, Direction.EAST, Direction.SOUTH)) {
+		for (BlockPos.Mutable mutable2 : BlockPos.iterateInSquare(pos, 16, Direction.EAST, Direction.SOUTH)) {
 			int j = Math.min(i, this.world.getTopY(Heightmap.Type.MOTION_BLOCKING, mutable2.getX(), mutable2.getZ()));
 			int k = 1;
 			if (worldBorder.contains(mutable2) && worldBorder.contains(mutable2.move(direction, 1))) {
@@ -94,15 +91,15 @@ public class PortalForcer {
 							if (n <= 0 || n >= 3) {
 								mutable2.setY(l);
 								if (this.isValidPortalPos(mutable2, mutable, direction, 0)) {
-									double f = blockPos.getSquaredDistance(mutable2);
+									double f = pos.getSquaredDistance(mutable2);
 									if (this.isValidPortalPos(mutable2, mutable, direction, -1) && this.isValidPortalPos(mutable2, mutable, direction, 1) && (d == -1.0 || d > f)) {
 										d = f;
-										blockPos2 = mutable2.toImmutable();
+										blockPos = mutable2.toImmutable();
 									}
 
 									if (d == -1.0 && (e == -1.0 || e > f)) {
 										e = f;
-										blockPos3 = mutable2.toImmutable();
+										blockPos2 = mutable2.toImmutable();
 									}
 								}
 							}
@@ -113,7 +110,7 @@ public class PortalForcer {
 		}
 
 		if (d == -1.0 && e != -1.0) {
-			blockPos2 = blockPos3;
+			blockPos = blockPos2;
 			d = e;
 		}
 
@@ -124,9 +121,9 @@ public class PortalForcer {
 				return Optional.empty();
 			}
 
-			blockPos2 = new BlockPos(blockPos.getX(), MathHelper.clamp(blockPos.getY(), o, p), blockPos.getZ()).toImmutable();
+			blockPos = new BlockPos(pos.getX(), MathHelper.clamp(pos.getY(), o, p), pos.getZ()).toImmutable();
 			Direction direction2 = direction.rotateYClockwise();
-			if (!worldBorder.contains(blockPos2)) {
+			if (!worldBorder.contains(blockPos)) {
 				return Optional.empty();
 			}
 
@@ -134,7 +131,7 @@ public class PortalForcer {
 				for (int lx = 0; lx < 2; lx++) {
 					for (int m = -1; m < 3; m++) {
 						BlockState blockState = m < 0 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
-						mutable.set(blockPos2, lx * direction.getOffsetX() + k * direction2.getOffsetX(), m, lx * direction.getOffsetZ() + k * direction2.getOffsetZ());
+						mutable.set(blockPos, lx * direction.getOffsetX() + k * direction2.getOffsetX(), m, lx * direction.getOffsetZ() + k * direction2.getOffsetZ());
 						this.world.setBlockState(mutable, blockState);
 					}
 				}
@@ -144,7 +141,7 @@ public class PortalForcer {
 		for (int ox = -1; ox < 3; ox++) {
 			for (int px = -1; px < 4; px++) {
 				if (ox == -1 || ox == 2 || px == -1 || px == 3) {
-					mutable.set(blockPos2, ox * direction.getOffsetX(), px, ox * direction.getOffsetZ());
+					mutable.set(blockPos, ox * direction.getOffsetX(), px, ox * direction.getOffsetZ());
 					this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), Block.NOTIFY_ALL);
 				}
 			}
@@ -154,12 +151,12 @@ public class PortalForcer {
 
 		for (int pxx = 0; pxx < 2; pxx++) {
 			for (int j = 0; j < 3; j++) {
-				mutable.set(blockPos2, pxx * direction.getOffsetX(), j, pxx * direction.getOffsetZ());
+				mutable.set(blockPos, pxx * direction.getOffsetX(), j, pxx * direction.getOffsetZ());
 				this.world.setBlockState(mutable, blockState2, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 			}
 		}
 
-		return Optional.of(new BlockLocating.Rectangle(blockPos2.toImmutable(), 2, 3));
+		return Optional.of(new BlockLocating.Rectangle(blockPos.toImmutable(), 2, 3));
 	}
 
 	private boolean isValidPortalPos(BlockPos pos, BlockPos.Mutable temp, Direction portalDirection, int distanceOrthogonalToPortal) {

@@ -15,7 +15,7 @@ import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 public class CarverContext extends HeightContext {
 	private final NoiseChunkGenerator chunkGenerator;
 	private final DynamicRegistryManager registryManager;
-	private final ChunkNoiseSampler field_35703;
+	private final ChunkNoiseSampler chunkNoiseSampler;
 
 	public CarverContext(
 		NoiseChunkGenerator chunkGenerator, DynamicRegistryManager registryManager, HeightLimitView heightLimitView, ChunkNoiseSampler chunkNoiseSampler
@@ -23,12 +23,12 @@ public class CarverContext extends HeightContext {
 		super(chunkGenerator, heightLimitView);
 		this.chunkGenerator = chunkGenerator;
 		this.registryManager = registryManager;
-		this.field_35703 = chunkNoiseSampler;
+		this.chunkNoiseSampler = chunkNoiseSampler;
 	}
 
 	@Deprecated
-	public Optional<BlockState> method_39114(Function<BlockPos, Biome> function, Chunk chunk, BlockPos blockPos, boolean bl) {
-		return this.chunkGenerator.method_39041(this, function, chunk, this.field_35703, blockPos, bl);
+	public Optional<BlockState> applyMaterialRule(Function<BlockPos, Biome> posToBiome, Chunk chunk, BlockPos pos, boolean bl) {
+		return this.chunkGenerator.applyMaterialRule(this, posToBiome, chunk, this.chunkNoiseSampler, pos, bl);
 	}
 
 	@Deprecated

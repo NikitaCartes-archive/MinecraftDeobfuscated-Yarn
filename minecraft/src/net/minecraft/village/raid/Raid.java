@@ -397,7 +397,7 @@ public class Raid {
 		Stream<ChunkSectionPos> stream = ChunkSectionPos.stream(ChunkSectionPos.from(this.center), 2);
 		stream.filter(this.world::isNearOccupiedPointOfInterest)
 			.map(ChunkSectionPos::getCenterPos)
-			.min(Comparator.comparingDouble(blockPos -> blockPos.getSquaredDistance(this.center)))
+			.min(Comparator.comparingDouble(pos -> pos.getSquaredDistance(this.center)))
 			.ifPresent(this::setCenter);
 	}
 

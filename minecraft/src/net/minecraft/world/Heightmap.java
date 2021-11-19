@@ -148,11 +148,11 @@ public class Heightmap {
 		WORLD_SURFACE("WORLD_SURFACE", Heightmap.Purpose.CLIENT, Heightmap.NOT_AIR),
 		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Purpose.WORLDGEN, Heightmap.SUFFOCATES),
 		OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.Purpose.LIVE_WORLD, Heightmap.SUFFOCATES),
-		MOTION_BLOCKING("MOTION_BLOCKING", Heightmap.Purpose.CLIENT, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()),
+		MOTION_BLOCKING("MOTION_BLOCKING", Heightmap.Purpose.CLIENT, state -> state.getMaterial().blocksMovement() || !state.getFluidState().isEmpty()),
 		MOTION_BLOCKING_NO_LEAVES(
 			"MOTION_BLOCKING_NO_LEAVES",
 			Heightmap.Purpose.LIVE_WORLD,
-			blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
+			state -> (state.getMaterial().blocksMovement() || !state.getFluidState().isEmpty()) && !(state.getBlock() instanceof LeavesBlock)
 		);
 
 		public static final Codec<Heightmap.Type> CODEC = StringIdentifiable.createCodec(Heightmap.Type::values, Heightmap.Type::byName);

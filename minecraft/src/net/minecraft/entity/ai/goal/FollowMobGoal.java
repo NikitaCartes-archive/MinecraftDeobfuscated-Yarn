@@ -25,7 +25,7 @@ public class FollowMobGoal extends Goal {
 
 	public FollowMobGoal(MobEntity mob, double speed, float minDistance, float maxDistance) {
 		this.mob = mob;
-		this.targetPredicate = mobEntity2 -> mobEntity2 != null && mob.getClass() != mobEntity2.getClass();
+		this.targetPredicate = target -> target != null && mob.getClass() != target.getClass();
 		this.speed = speed;
 		this.navigation = mob.getNavigation();
 		this.minDistance = minDistance;

@@ -315,9 +315,9 @@ public class GlStateManager {
 		GL15.glDeleteBuffers(buffer);
 	}
 
-	public static void _glCopyTexSubImage2D(int i, int j, int k, int l, int m, int n, int o, int p) {
+	public static void _glCopyTexSubImage2D(int target, int level, int xOffset, int yOffset, int x, int y, int width, int height) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		GL20.glCopyTexSubImage2D(i, j, k, l, m, n, o, p);
+		GL20.glCopyTexSubImage2D(target, level, xOffset, yOffset, x, y, width, height);
 	}
 
 	public static void _glDeleteVertexArrays(int array) {
@@ -335,14 +335,14 @@ public class GlStateManager {
 		GL30.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
 	}
 
-	public static void _glBindRenderbuffer(int i, int j) {
+	public static void _glBindRenderbuffer(int target, int renderbuffer) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		GL30.glBindRenderbuffer(i, j);
+		GL30.glBindRenderbuffer(target, renderbuffer);
 	}
 
-	public static void _glDeleteRenderbuffers(int i) {
+	public static void _glDeleteRenderbuffers(int renderbuffer) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		GL30.glDeleteRenderbuffers(i);
+		GL30.glDeleteRenderbuffers(renderbuffer);
 	}
 
 	public static void _glDeleteFramebuffers(int framebuffer) {
@@ -360,14 +360,14 @@ public class GlStateManager {
 		return GL30.glGenRenderbuffers();
 	}
 
-	public static void _glRenderbufferStorage(int i, int j, int k, int l) {
+	public static void _glRenderbufferStorage(int target, int internalFormat, int width, int height) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		GL30.glRenderbufferStorage(i, j, k, l);
+		GL30.glRenderbufferStorage(target, internalFormat, width, height);
 	}
 
-	public static void _glFramebufferRenderbuffer(int i, int j, int k, int l) {
+	public static void _glFramebufferRenderbuffer(int target, int attachment, int renderbufferTarget, int renderbuffer) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		GL30.glFramebufferRenderbuffer(i, j, k, l);
+		GL30.glFramebufferRenderbuffer(target, attachment, renderbufferTarget, renderbuffer);
 	}
 
 	public static int glCheckFramebufferStatus(int target) {
@@ -525,9 +525,9 @@ public class GlStateManager {
 		return GL11.glGenTextures();
 	}
 
-	public static void _genTextures(int[] is) {
+	public static void _genTextures(int[] textures) {
 		RenderSystem.assertOnRenderThreadOrInit();
-		GL11.glGenTextures(is);
+		GL11.glGenTextures(textures);
 	}
 
 	public static void _deleteTexture(int texture) {
@@ -541,18 +541,18 @@ public class GlStateManager {
 		}
 	}
 
-	public static void _deleteTextures(int[] is) {
+	public static void _deleteTextures(int[] textures) {
 		RenderSystem.assertOnRenderThreadOrInit();
 
 		for (GlStateManager.Texture2DState texture2DState : TEXTURES) {
-			for (int i : is) {
+			for (int i : textures) {
 				if (texture2DState.boundTexture == i) {
 					texture2DState.boundTexture = -1;
 				}
 			}
 		}
 
-		GL11.glDeleteTextures(is);
+		GL11.glDeleteTextures(textures);
 	}
 
 	public static void _bindTexture(int texture) {
@@ -563,8 +563,8 @@ public class GlStateManager {
 		}
 	}
 
-	public static int _getTextureId(int i) {
-		return i >= 0 && i < 12 && TEXTURES[i].capState ? TEXTURES[i].boundTexture : 0;
+	public static int _getTextureId(int texture) {
+		return texture >= 0 && texture < 12 && TEXTURES[texture].capState ? TEXTURES[texture].boundTexture : 0;
 	}
 
 	public static int _getActiveTexture() {
@@ -657,9 +657,9 @@ public class GlStateManager {
 		}
 	}
 
-	public static void _glDrawPixels(int i, int j, int k, int l, long m) {
+	public static void _glDrawPixels(int width, int height, int format, int type, long pixels) {
 		RenderSystem.assertOnRenderThread();
-		GL11.glDrawPixels(i, j, k, l, m);
+		GL11.glDrawPixels(width, height, format, type, pixels);
 	}
 
 	public static void _vertexAttribPointer(int index, int size, int type, boolean normalized, int stride, long pointer) {
@@ -697,9 +697,9 @@ public class GlStateManager {
 		GL11.glReadPixels(x, y, width, height, format, type, pixels);
 	}
 
-	public static void _readPixels(int i, int j, int k, int l, int m, int n, long o) {
+	public static void _readPixels(int x, int y, int width, int height, int format, int type, long pixels) {
 		RenderSystem.assertOnRenderThread();
-		GL11.glReadPixels(i, j, k, l, m, n, o);
+		GL11.glReadPixels(x, y, width, height, format, type, pixels);
 	}
 
 	public static int _getError() {
@@ -797,8 +797,8 @@ public class GlStateManager {
 
 		public final int value;
 
-		private DstFactor(int j) {
-			this.value = j;
+		private DstFactor(int value) {
+			this.value = value;
 		}
 	}
 
@@ -868,8 +868,8 @@ public class GlStateManager {
 
 		public final int value;
 
-		private SrcFactor(int j) {
-			this.value = j;
+		private SrcFactor(int value) {
+			this.value = value;
 		}
 	}
 

@@ -115,12 +115,12 @@ public abstract class VoxelShape {
 		return list;
 	}
 
-	public double method_35593(Direction.Axis axis, double d, double e) {
+	public double getStartingCoord(Direction.Axis axis, double from, double to) {
 		Direction.Axis axis2 = AxisCycleDirection.FORWARD.cycle(axis);
 		Direction.Axis axis3 = AxisCycleDirection.BACKWARD.cycle(axis);
-		int i = this.getCoordIndex(axis2, d);
-		int j = this.getCoordIndex(axis3, e);
-		int k = this.voxels.method_35592(axis, i, j);
+		int i = this.getCoordIndex(axis2, from);
+		int j = this.getCoordIndex(axis3, to);
+		int k = this.voxels.getStartingAxisCoord(axis, i, j);
 		return k >= this.voxels.getSize(axis) ? Double.POSITIVE_INFINITY : this.getPointPosition(axis, k);
 	}
 

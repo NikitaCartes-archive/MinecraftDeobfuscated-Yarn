@@ -69,11 +69,11 @@ public final class EntityPredicates {
 		return (Predicate<Entity>)(collisionRule == AbstractTeam.CollisionRule.NEVER
 			? Predicates.alwaysFalse()
 			: EXCEPT_SPECTATOR.and(
-				entity2 -> {
-					if (!entity2.isPushable()) {
+				entityx -> {
+					if (!entityx.isPushable()) {
 						return false;
-					} else if (!entity.world.isClient || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).isMainPlayer()) {
-						AbstractTeam abstractTeam2 = entity2.getScoreboardTeam();
+					} else if (!entity.world.isClient || entityx instanceof PlayerEntity && ((PlayerEntity)entityx).isMainPlayer()) {
+						AbstractTeam abstractTeam2 = entityx.getScoreboardTeam();
 						AbstractTeam.CollisionRule collisionRule2 = abstractTeam2 == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam2.getCollisionRule();
 						if (collisionRule2 == AbstractTeam.CollisionRule.NEVER) {
 							return false;

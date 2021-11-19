@@ -70,7 +70,7 @@ public class MultipartUnbakedModel implements UnbakedModel {
 	public Collection<Identifier> getModelDependencies() {
 		return (Collection<Identifier>)this.getComponents()
 			.stream()
-			.flatMap(multipartModelComponent -> multipartModelComponent.getModel().getModelDependencies().stream())
+			.flatMap(component -> component.getModel().getModelDependencies().stream())
 			.collect(Collectors.toSet());
 	}
 
@@ -80,7 +80,7 @@ public class MultipartUnbakedModel implements UnbakedModel {
 	) {
 		return (Collection<SpriteIdentifier>)this.getComponents()
 			.stream()
-			.flatMap(multipartModelComponent -> multipartModelComponent.getModel().getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences).stream())
+			.flatMap(component -> component.getModel().getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences).stream())
 			.collect(Collectors.toSet());
 	}
 

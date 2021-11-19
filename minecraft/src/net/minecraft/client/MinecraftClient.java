@@ -1671,7 +1671,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.profiler.push("gui");
-		this.inGameHud.method_39191(this.paused);
+		this.inGameHud.tick(this.paused);
 		this.profiler.pop();
 		this.gameRenderer.updateTargetedEntity(1.0F);
 		this.tutorialManager.tick(this.world, this.crosshairTarget);

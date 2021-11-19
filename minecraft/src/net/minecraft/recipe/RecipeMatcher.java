@@ -153,9 +153,9 @@ public class RecipeMatcher {
 		private final BitSet requirementsMatrix;
 		private final IntList ingredientItemLookup = new IntArrayList();
 
-		public Matcher(Recipe<?> recipe2) {
-			this.recipe = recipe2;
-			this.ingredients.addAll(recipe2.getIngredients());
+		public Matcher(Recipe<?> recipe) {
+			this.recipe = recipe;
+			this.ingredients.addAll(recipe.getIngredients());
 			this.ingredients.removeIf(Ingredient::isEmpty);
 			this.totalIngredients = this.ingredients.size();
 			this.requiredItems = this.createItemRequirementList();

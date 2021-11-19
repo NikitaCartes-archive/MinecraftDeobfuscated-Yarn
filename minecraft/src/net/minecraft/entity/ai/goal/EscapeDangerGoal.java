@@ -11,6 +11,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 
 public class EscapeDangerGoal extends Goal {
+	public static final int field_36271 = 1;
 	protected final PathAwareEntity mob;
 	protected final double speed;
 	protected double targetX;
@@ -30,7 +31,7 @@ public class EscapeDangerGoal extends Goal {
 			return false;
 		} else {
 			if (this.mob.isOnFire()) {
-				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5, 4);
+				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5);
 				if (blockPos != null) {
 					this.targetX = (double)blockPos.getX();
 					this.targetY = (double)blockPos.getY();
@@ -76,7 +77,10 @@ public class EscapeDangerGoal extends Goal {
 	}
 
 	@Nullable
-	protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int rangeX, int rangeY) {
-		return (BlockPos)BlockPos.findClosest(entity.getBlockPos(), rangeX, rangeY, blockPos -> blockView.getFluidState(blockPos).isIn(FluidTags.WATER)).orElse(null);
+	protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int rangeX) {
+		BlockPos blockPos = entity.getBlockPos();
+		return !blockView.getBlockState(blockPos).getCollisionShape(blockView, blockPos).isEmpty()
+			? null
+			: (BlockPos)BlockPos.findClosest(entity.getBlockPos(), rangeX, 1, blockPosx -> blockView.getFluidState(blockPosx).isIn(FluidTags.WATER)).orElse(null);
 	}
 }

@@ -46,7 +46,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	 * 
 	 * <p>This value is the result of the sum {@code MAIN_SIZE (36) + ARMOR_SIZE (4)}.</p>
 	 */
-	public static final int OFFHAND_SLOT = 40;
+	public static final int OFF_HAND_SLOT = 40;
 	/**
 	 * The slot index ({@value}) used to indicate no result
 	 * (item not present / no available space) when querying the inventory's contents
@@ -57,8 +57,8 @@ public class PlayerInventory implements Inventory, Nameable {
 	public static final int[] HELMET_SLOTS = new int[]{3};
 	public final DefaultedList<ItemStack> main = DefaultedList.ofSize(36, ItemStack.EMPTY);
 	public final DefaultedList<ItemStack> armor = DefaultedList.ofSize(4, ItemStack.EMPTY);
-	public final DefaultedList<ItemStack> offhand = DefaultedList.ofSize(1, ItemStack.EMPTY);
-	private final List<DefaultedList<ItemStack>> combinedInventory = ImmutableList.of(this.main, this.armor, this.offhand);
+	public final DefaultedList<ItemStack> offHand = DefaultedList.ofSize(1, ItemStack.EMPTY);
+	private final List<DefaultedList<ItemStack>> combinedInventory = ImmutableList.of(this.main, this.armor, this.offHand);
 	public int selectedSlot;
 	public final PlayerEntity player;
 	private int changeCount;
@@ -442,11 +442,11 @@ public class PlayerInventory implements Inventory, Nameable {
 			}
 		}
 
-		for (int ixx = 0; ixx < this.offhand.size(); ixx++) {
-			if (!this.offhand.get(ixx).isEmpty()) {
+		for (int ixx = 0; ixx < this.offHand.size(); ixx++) {
+			if (!this.offHand.get(ixx).isEmpty()) {
 				NbtCompound nbtCompound = new NbtCompound();
 				nbtCompound.putByte("Slot", (byte)(ixx + 150));
-				this.offhand.get(ixx).writeNbt(nbtCompound);
+				this.offHand.get(ixx).writeNbt(nbtCompound);
 				nbtList.add(nbtCompound);
 			}
 		}
@@ -457,7 +457,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public void readNbt(NbtList nbtList) {
 		this.main.clear();
 		this.armor.clear();
-		this.offhand.clear();
+		this.offHand.clear();
 
 		for (int i = 0; i < nbtList.size(); i++) {
 			NbtCompound nbtCompound = nbtList.getCompound(i);
@@ -468,8 +468,8 @@ public class PlayerInventory implements Inventory, Nameable {
 					this.main.set(j, itemStack);
 				} else if (j >= 100 && j < this.armor.size() + 100) {
 					this.armor.set(j - 100, itemStack);
-				} else if (j >= 150 && j < this.offhand.size() + 150) {
-					this.offhand.set(j - 150, itemStack);
+				} else if (j >= 150 && j < this.offHand.size() + 150) {
+					this.offHand.set(j - 150, itemStack);
 				}
 			}
 		}
@@ -477,7 +477,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	@Override
 	public int size() {
-		return this.main.size() + this.armor.size() + this.offhand.size();
+		return this.main.size() + this.armor.size() + this.offHand.size();
 	}
 
 	@Override
@@ -494,7 +494,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			}
 		}
 
-		for (ItemStack itemStackxx : this.offhand) {
+		for (ItemStack itemStackxx : this.offHand) {
 			if (!itemStackxx.isEmpty()) {
 				return false;
 			}

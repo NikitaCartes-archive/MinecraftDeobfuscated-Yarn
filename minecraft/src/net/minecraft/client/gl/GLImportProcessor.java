@@ -21,15 +21,15 @@ import org.apache.logging.log4j.util.Strings;
  */
 @Environment(EnvType.CLIENT)
 public abstract class GLImportProcessor {
-	private static final String field_32036 = "/\\*(?:[^*]|\\*+[^*/])*\\*+/";
-	private static final String field_33620 = "//[^\\v]*";
+	private static final String MULTI_LINE_COMMENT_PATTERN = "/\\*(?:[^*]|\\*+[^*/])*\\*+/";
+	private static final String SINGLE_LINE_COMMENT_PATTERN = "//[^\\v]*";
 	private static final Pattern MOJ_IMPORT_PATTERN = Pattern.compile(
 		"(#(?:/\\*(?:[^*]|\\*+[^*/])*\\*+/|\\h)*moj_import(?:/\\*(?:[^*]|\\*+[^*/])*\\*+/|\\h)*(?:\"(.*)\"|<(.*)>))"
 	);
 	private static final Pattern IMPORT_VERSION_PATTERN = Pattern.compile(
 		"(#(?:/\\*(?:[^*]|\\*+[^*/])*\\*+/|\\h)*version(?:/\\*(?:[^*]|\\*+[^*/])*\\*+/|\\h)*(\\d+))\\b"
 	);
-	private static final Pattern field_33621 = Pattern.compile("(?:^|\\v)(?:\\s|/\\*(?:[^*]|\\*+[^*/])*\\*+/|(//[^\\v]*))*\\z");
+	private static final Pattern TRAILING_WHITESPACE_PATTERN = Pattern.compile("(?:^|\\v)(?:\\s|/\\*(?:[^*]|\\*+[^*/])*\\*+/|(//[^\\v]*))*\\z");
 
 	/**
 	 * Reads the source code supplied into a list of lines suitable for uploading to
@@ -127,7 +127,7 @@ public abstract class GLImportProcessor {
 		if (j == 0) {
 			return false;
 		} else {
-			Matcher matcher2 = field_33621.matcher(string.substring(i, matcher.start()));
+			Matcher matcher2 = TRAILING_WHITESPACE_PATTERN.matcher(string.substring(i, matcher.start()));
 			if (!matcher2.find()) {
 				return true;
 			} else {

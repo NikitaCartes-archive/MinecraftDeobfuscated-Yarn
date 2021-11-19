@@ -113,8 +113,8 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 		this.world.getProfiler().push("piglinBruteBrain");
 		this.getBrain().tick((ServerWorld)this.world, this);
 		this.world.getProfiler().pop();
-		PiglinBruteBrain.method_30256(this);
-		PiglinBruteBrain.method_30258(this);
+		PiglinBruteBrain.tick(this);
+		PiglinBruteBrain.playSoundRandomly(this);
 		super.mobTick();
 	}
 

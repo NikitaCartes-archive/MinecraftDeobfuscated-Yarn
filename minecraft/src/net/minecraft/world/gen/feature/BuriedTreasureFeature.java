@@ -1,8 +1,8 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_6834;
 import net.minecraft.structure.BuriedTreasureGenerator;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.math.BlockPos;
@@ -16,13 +16,13 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 	private static final int SALT = 10387320;
 
 	public BuriedTreasureFeature(Codec<ProbabilityConfig> configCodec) {
-		super(configCodec, class_6834.simple(BuriedTreasureFeature::method_28619, BuriedTreasureFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(BuriedTreasureFeature::method_28619, BuriedTreasureFeature::addPieces));
 	}
 
-	private static boolean method_28619(class_6834.class_6835<ProbabilityConfig> arg) {
+	private static boolean method_28619(StructureGeneratorFactory.Context<ProbabilityConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-		chunkRandom.setRegionSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z, 10387320);
-		return chunkRandom.nextFloat() < ((ProbabilityConfig)arg.config()).probability && arg.method_39848(Heightmap.Type.OCEAN_FLOOR_WG);
+		chunkRandom.setRegionSeed(context.seed(), context.chunkPos().x, context.chunkPos().z, 10387320);
+		return chunkRandom.nextFloat() < ((ProbabilityConfig)context.config()).probability && context.isBiomeValid(Heightmap.Type.OCEAN_FLOOR_WG);
 	}
 
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<ProbabilityConfig> context) {

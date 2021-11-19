@@ -110,7 +110,7 @@ public class UndergroundPlacedFeatures {
 			.withPlacement(
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(Direction.UP.getVector()), BlockPredicate.IS_AIR, 12),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -121,7 +121,7 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(157),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.hasSturdyFace(Direction.UP.getVector(), Direction.DOWN), BlockPredicate.IS_AIR, 12),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -132,7 +132,7 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(104),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(Direction.DOWN.getVector()), BlockPredicate.IS_AIR, 12),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -143,7 +143,7 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(52),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(Direction.DOWN.getVector()), BlockPredicate.IS_AIR, 12),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -154,7 +154,7 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(104),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(Direction.UP.getVector()), BlockPredicate.IS_AIR, 12),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -165,7 +165,7 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(21),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(Direction.UP.getVector()), BlockPredicate.IS_AIR, 12),
 				BiomePlacementModifier.of()
 			)
 	);

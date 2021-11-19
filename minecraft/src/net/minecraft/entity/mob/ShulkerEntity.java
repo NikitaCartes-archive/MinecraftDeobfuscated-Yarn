@@ -195,14 +195,14 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	protected Box calculateBoundingBox() {
-		float f = method_33342(this.openProgress);
+		float f = getExtraLength(this.openProgress);
 		Direction direction = this.getAttachedFace().getOpposite();
 		float g = this.getType().getWidth() / 2.0F;
-		return method_33346(direction, f).offset(this.getX() - (double)g, this.getY(), this.getZ() - (double)g);
+		return calculateBoundingBox(direction, f).offset(this.getX() - (double)g, this.getY(), this.getZ() - (double)g);
 	}
 
-	private static float method_33342(float f) {
-		return 0.5F - MathHelper.sin((0.5F + f) * (float) Math.PI) * 0.5F;
+	private static float getExtraLength(float openProgress) {
+		return 0.5F - MathHelper.sin((0.5F + openProgress) * (float) Math.PI) * 0.5F;
 	}
 
 	private boolean tickOpenProgress() {
@@ -223,15 +223,15 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	private void moveEntities() {
 		this.refreshPosition();
-		float f = method_33342(this.openProgress);
-		float g = method_33342(this.prevOpenProgress);
+		float f = getExtraLength(this.openProgress);
+		float g = getExtraLength(this.prevOpenProgress);
 		Direction direction = this.getAttachedFace().getOpposite();
 		float h = f - g;
 		if (!(h <= 0.0F)) {
 			for (Entity entity : this.world
 				.getOtherEntities(
 					this,
-					method_33347(direction, g, f).offset(this.getX() - 0.5, this.getY(), this.getZ() - 0.5),
+					calculateBoundingBox(direction, g, f).offset(this.getX() - 0.5, this.getY(), this.getZ() - 0.5),
 					EntityPredicates.EXCEPT_SPECTATOR.and(entityx -> !entityx.isConnectedThroughVehicle(this))
 				)) {
 				if (!(entity instanceof ShulkerEntity) && !entity.noClip) {
@@ -244,13 +244,13 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
-	public static Box method_33346(Direction direction, float f) {
-		return method_33347(direction, -1.0F, f);
+	public static Box calculateBoundingBox(Direction direction, float extraLength) {
+		return calculateBoundingBox(direction, -1.0F, extraLength);
 	}
 
-	public static Box method_33347(Direction direction, float f, float g) {
-		double d = (double)Math.max(f, g);
-		double e = (double)Math.min(f, g);
+	public static Box calculateBoundingBox(Direction direction, float prevExtraLength, float extraLength) {
+		double d = (double)Math.max(prevExtraLength, extraLength);
+		double e = (double)Math.min(prevExtraLength, extraLength);
 		return new Box(BlockPos.ORIGIN)
 			.stretch((double)direction.getOffsetX() * d, (double)direction.getOffsetY() * d, (double)direction.getOffsetZ() * d)
 			.shrink((double)(-direction.getOffsetX()) * (1.0 + e), (double)(-direction.getOffsetY()) * (1.0 + e), (double)(-direction.getOffsetZ()) * (1.0 + e));
@@ -350,20 +350,20 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	boolean canStay(BlockPos pos, Direction direction) {
-		if (this.method_33351(pos)) {
+		if (this.isInvalidPosition(pos)) {
 			return false;
 		} else {
 			Direction direction2 = direction.getOpposite();
 			if (!this.world.isDirectionSolid(pos.offset(direction), this, direction2)) {
 				return false;
 			} else {
-				Box box = method_33346(direction2, 1.0F).offset(pos).contract(1.0E-6);
+				Box box = calculateBoundingBox(direction2, 1.0F).offset(pos).contract(1.0E-6);
 				return this.world.isSpaceEmpty(this, box);
 			}
 		}
 	}
 
-	private boolean method_33351(BlockPos pos) {
+	private boolean isInvalidPosition(BlockPos pos) {
 		BlockState blockState = this.world.getBlockState(pos);
 		if (blockState.isAir()) {
 			return false;

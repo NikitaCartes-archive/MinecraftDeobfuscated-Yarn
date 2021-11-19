@@ -153,7 +153,7 @@ public class PotionUtil {
 		}
 	}
 
-	public static void buildTooltip(ItemStack stack, List<Text> list, float f) {
+	public static void buildTooltip(ItemStack stack, List<Text> list, float durationMultiplier) {
 		List<StatusEffectInstance> list2 = getPotionEffects(stack);
 		List<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.<Pair<EntityAttribute, EntityAttributeModifier>>newArrayList();
 		if (list2.isEmpty()) {
@@ -180,7 +180,7 @@ public class PotionUtil {
 				}
 
 				if (statusEffectInstance.getDuration() > 20) {
-					mutableText = new TranslatableText("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, f));
+					mutableText = new TranslatableText("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, durationMultiplier));
 				}
 
 				list.add(mutableText.formatted(statusEffect.getCategory().getFormatting()));

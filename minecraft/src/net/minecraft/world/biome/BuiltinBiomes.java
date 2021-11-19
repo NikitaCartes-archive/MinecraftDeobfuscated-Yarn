@@ -24,8 +24,8 @@ public abstract class BuiltinBiomes {
 		register(BiomeKeys.BIRCH_FOREST, OverworldBiomeCreator.createNormalForest(true, false, false));
 		register(BiomeKeys.DARK_FOREST, OverworldBiomeCreator.createDarkForest());
 		register(BiomeKeys.OLD_GROWTH_BIRCH_FOREST, OverworldBiomeCreator.createNormalForest(true, true, false));
-		register(BiomeKeys.OLD_GROWTH_PINE_TAIGA, OverworldBiomeCreator.createOldGrowthPineTaiga(false));
-		register(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, OverworldBiomeCreator.createOldGrowthPineTaiga(true));
+		register(BiomeKeys.OLD_GROWTH_PINE_TAIGA, OverworldBiomeCreator.createOldGrowthTaiga(false));
+		register(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, OverworldBiomeCreator.createOldGrowthTaiga(true));
 		register(BiomeKeys.TAIGA, OverworldBiomeCreator.createTaiga(false));
 		register(BiomeKeys.SNOWY_TAIGA, OverworldBiomeCreator.createTaiga(true));
 		register(BiomeKeys.SAVANNA, OverworldBiomeCreator.createSavanna(false, false));
@@ -37,9 +37,9 @@ public abstract class BuiltinBiomes {
 		register(BiomeKeys.JUNGLE, OverworldBiomeCreator.createJungle());
 		register(BiomeKeys.SPARSE_JUNGLE, OverworldBiomeCreator.createSparseJungle());
 		register(BiomeKeys.BAMBOO_JUNGLE, OverworldBiomeCreator.createNormalBambooJungle());
-		register(BiomeKeys.BADLANDS, OverworldBiomeCreator.createNormalBadlands(false));
-		register(BiomeKeys.ERODED_BADLANDS, OverworldBiomeCreator.createNormalBadlands(false));
-		register(BiomeKeys.WOODED_BADLANDS, OverworldBiomeCreator.createNormalBadlands(true));
+		register(BiomeKeys.BADLANDS, OverworldBiomeCreator.createBadlands(false));
+		register(BiomeKeys.ERODED_BADLANDS, OverworldBiomeCreator.createBadlands(false));
+		register(BiomeKeys.WOODED_BADLANDS, OverworldBiomeCreator.createBadlands(true));
 		register(BiomeKeys.MEADOW, OverworldBiomeCreator.createMeadow());
 		register(BiomeKeys.GROVE, OverworldBiomeCreator.createGrove());
 		register(BiomeKeys.SNOWY_SLOPES, OverworldBiomeCreator.createSnowySlopes());

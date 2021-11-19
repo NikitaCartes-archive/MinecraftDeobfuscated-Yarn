@@ -87,7 +87,7 @@ public class LightmapTextureManager implements AutoCloseable {
 			this.client.getProfiler().push("lightTex");
 			ClientWorld clientWorld = this.client.world;
 			if (clientWorld != null) {
-				float f = clientWorld.method_23783(1.0F);
+				float f = clientWorld.getStarBrightness(1.0F);
 				float g;
 				if (clientWorld.getLightningTicksLeft() > 0) {
 					g = 1.0F;

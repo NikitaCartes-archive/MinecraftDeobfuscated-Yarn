@@ -1,9 +1,8 @@
 package net.minecraft.world.gen.chunk;
 
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2IntMap;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -16,7 +15,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.NoiseColumnSampler;
 
 public class ChunkNoiseSampler {
-	final GenerationShapeConfig field_35674;
+	private final NoiseColumnSampler field_36272;
+	final GenerationShapeConfig generationShapeConfig;
 	final int horizontalSize;
 	final int height;
 	final int minimumY;
@@ -26,13 +26,13 @@ public class ChunkNoiseSampler {
 	private final int biomeZ;
 	final List<ChunkNoiseSampler.NoiseInterpolator> interpolators;
 	private final NoiseColumnSampler.class_6747[][] field_35486;
-	private final Long2ObjectMap<TerrainNoisePoint> terrainNoisePoints = new Long2ObjectOpenHashMap<>();
+	private final Long2IntMap field_36273 = new Long2IntOpenHashMap();
 	private final AquiferSampler aquiferSampler;
 	private final ChunkNoiseSampler.BlockStateSampler initialNoiseBlockStateSampler;
 	private final ChunkNoiseSampler.BlockStateSampler oreVeinSampler;
-	private final Blender field_35487;
+	private final Blender blender;
 
-	public static ChunkNoiseSampler method_39543(
+	public static ChunkNoiseSampler create(
 		Chunk chunk,
 		NoiseColumnSampler noiseColumnSampler,
 		Supplier<ChunkNoiseSampler.ColumnSampler> supplier,
@@ -44,10 +44,10 @@ public class ChunkNoiseSampler {
 		GenerationShapeConfig generationShapeConfig = chunkGeneratorSettings.getGenerationShapeConfig();
 		int i = Math.max(generationShapeConfig.minimumY(), chunk.getBottomY());
 		int j = Math.min(generationShapeConfig.minimumY() + generationShapeConfig.height(), chunk.getTopY());
-		int k = MathHelper.floorDiv(i, generationShapeConfig.method_39545());
-		int l = MathHelper.floorDiv(j - i, generationShapeConfig.method_39545());
+		int k = MathHelper.floorDiv(i, generationShapeConfig.verticalBlockSize());
+		int l = MathHelper.floorDiv(j - i, generationShapeConfig.verticalBlockSize());
 		return new ChunkNoiseSampler(
-			16 / generationShapeConfig.method_39546(),
+			16 / generationShapeConfig.horizontalBlockSize(),
 			l,
 			k,
 			noiseColumnSampler,
@@ -60,16 +60,27 @@ public class ChunkNoiseSampler {
 		);
 	}
 
-	public static ChunkNoiseSampler method_39542(
+	public static ChunkNoiseSampler create(
+		int minimumY,
 		int i,
-		int j,
-		int k,
-		int l,
+		int horizontalSize,
+		int verticalNoiseResolution,
 		NoiseColumnSampler noiseColumnSampler,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler
 	) {
-		return new ChunkNoiseSampler(1, l, k, noiseColumnSampler, i, j, (ix, jx, kx) -> 0.0, chunkGeneratorSettings, fluidLevelSampler, Blender.getNoBlending());
+		return new ChunkNoiseSampler(
+			1,
+			verticalNoiseResolution,
+			horizontalSize,
+			noiseColumnSampler,
+			minimumY,
+			i,
+			(ix, j, k) -> 0.0,
+			chunkGeneratorSettings,
+			fluidLevelSampler,
+			Blender.getNoBlending()
+		);
 	}
 
 	private ChunkNoiseSampler(
@@ -78,38 +89,39 @@ public class ChunkNoiseSampler {
 		int horizontalSize,
 		NoiseColumnSampler noiseColumnSampler,
 		int minimumY,
-		int i,
+		int minimumZ,
 		ChunkNoiseSampler.ColumnSampler columnSampler,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
 		Blender blender
 	) {
-		this.field_35674 = chunkGeneratorSettings.getGenerationShapeConfig();
+		this.generationShapeConfig = chunkGeneratorSettings.getGenerationShapeConfig();
 		this.horizontalSize = horizontalNoiseResolution;
 		this.height = verticalNoiseResolution;
 		this.minimumY = horizontalSize;
-		int j = this.field_35674.method_39546();
-		this.x = Math.floorDiv(minimumY, j);
-		this.z = Math.floorDiv(i, j);
+		this.field_36272 = noiseColumnSampler;
+		int i = this.generationShapeConfig.horizontalBlockSize();
+		this.x = Math.floorDiv(minimumY, i);
+		this.z = Math.floorDiv(minimumZ, i);
 		this.interpolators = Lists.<ChunkNoiseSampler.NoiseInterpolator>newArrayList();
 		this.biomeX = BiomeCoords.fromBlock(minimumY);
-		this.biomeZ = BiomeCoords.fromBlock(i);
-		int k = BiomeCoords.fromBlock(horizontalNoiseResolution * j);
-		this.field_35486 = new NoiseColumnSampler.class_6747[k + 1][];
-		this.field_35487 = blender;
+		this.biomeZ = BiomeCoords.fromBlock(minimumZ);
+		int j = BiomeCoords.fromBlock(horizontalNoiseResolution * i);
+		this.field_35486 = new NoiseColumnSampler.class_6747[j + 1][];
+		this.blender = blender;
 
-		for (int l = 0; l <= k; l++) {
-			int m = this.biomeX + l;
-			this.field_35486[l] = new NoiseColumnSampler.class_6747[k + 1];
+		for (int k = 0; k <= j; k++) {
+			int l = this.biomeX + k;
+			this.field_35486[k] = new NoiseColumnSampler.class_6747[j + 1];
 
-			for (int n = 0; n <= k; n++) {
-				int o = this.biomeZ + n;
-				this.field_35486[l][n] = noiseColumnSampler.method_39330(m, o, blender);
+			for (int m = 0; m <= j; m++) {
+				int n = this.biomeZ + m;
+				this.field_35486[k][m] = noiseColumnSampler.method_39330(l, n, blender);
 			}
 		}
 
 		this.aquiferSampler = noiseColumnSampler.createAquiferSampler(
-			this, minimumY, i, horizontalSize, verticalNoiseResolution, fluidLevelSampler, chunkGeneratorSettings.hasAquifers()
+			this, minimumY, minimumZ, horizontalSize, verticalNoiseResolution, fluidLevelSampler, chunkGeneratorSettings.hasAquifers()
 		);
 		this.initialNoiseBlockStateSampler = noiseColumnSampler.createInitialNoiseBlockStateSampler(this, columnSampler, chunkGeneratorSettings.hasNoodleCaves());
 		this.oreVeinSampler = noiseColumnSampler.createOreVeinSampler(this, chunkGeneratorSettings.hasOreVeins());
@@ -119,41 +131,32 @@ public class ChunkNoiseSampler {
 		return this.field_35486[x - this.biomeX][z - this.biomeZ];
 	}
 
-	public TerrainNoisePoint getTerrainNoisePoint(NoiseColumnSampler noiseColumnSampler, int x, int z) {
-		int i = x - this.biomeX;
-		int j = z - this.biomeZ;
-		int k = this.field_35486.length;
-		return i >= 0 && j >= 0 && i < k && j < k
-			? this.field_35486[i][j].terrainInfo()
-			: this.terrainNoisePoints
-				.computeIfAbsent(
-					ChunkPos.toLong(x, z),
-					(Long2ObjectFunction<? extends TerrainNoisePoint>)(l -> noiseColumnSampler.method_39330(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), this.field_35487)
-							.terrainInfo())
-				);
+	public int method_39900(int i, int j) {
+		return this.field_36273.computeIfAbsent(ChunkPos.toLong(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(j)), this::method_39899);
 	}
 
-	public TerrainNoisePoint getInterpolatedTerrainNoisePoint(int x, int z) {
-		int i = BiomeCoords.fromBlock(x) - this.biomeX;
-		int j = BiomeCoords.fromBlock(z) - this.biomeZ;
-		TerrainNoisePoint terrainNoisePoint = this.field_35486[i][j].terrainInfo();
-		TerrainNoisePoint terrainNoisePoint2 = this.field_35486[i][j + 1].terrainInfo();
-		TerrainNoisePoint terrainNoisePoint3 = this.field_35486[i + 1][j].terrainInfo();
-		TerrainNoisePoint terrainNoisePoint4 = this.field_35486[i + 1][j + 1].terrainInfo();
-		double d = (double)Math.floorMod(x, 4) / 4.0;
-		double e = (double)Math.floorMod(z, 4) / 4.0;
-		double f = MathHelper.lerp2(d, e, terrainNoisePoint.offset(), terrainNoisePoint3.offset(), terrainNoisePoint2.offset(), terrainNoisePoint4.offset());
-		double g = MathHelper.lerp2(d, e, terrainNoisePoint.factor(), terrainNoisePoint3.factor(), terrainNoisePoint2.factor(), terrainNoisePoint4.factor());
-		double h = MathHelper.lerp2(d, e, terrainNoisePoint.peaks(), terrainNoisePoint3.peaks(), terrainNoisePoint2.peaks(), terrainNoisePoint4.peaks());
-		return new TerrainNoisePoint(f, g, h);
+	private int method_39899(long l) {
+		int i = ChunkPos.getPackedX(l);
+		int j = ChunkPos.getPackedZ(l);
+		int k = i - this.biomeX;
+		int m = j - this.biomeZ;
+		int n = this.field_35486.length;
+		TerrainNoisePoint terrainNoisePoint;
+		if (k >= 0 && m >= 0 && k < n && m < n) {
+			terrainNoisePoint = this.field_35486[k][m].terrainInfo();
+		} else {
+			terrainNoisePoint = this.field_36272.method_39330(i, j, this.blender).terrainInfo();
+		}
+
+		return this.field_36272.method_38383(BiomeCoords.toBlock(i), BiomeCoords.toBlock(j), terrainNoisePoint);
 	}
 
 	public ChunkNoiseSampler.NoiseInterpolator createNoiseInterpolator(ChunkNoiseSampler.ColumnSampler columnSampler) {
 		return new ChunkNoiseSampler.NoiseInterpolator(columnSampler);
 	}
 
-	public Blender method_39327() {
-		return this.field_35487;
+	public Blender getBlender() {
+		return this.blender;
 	}
 
 	public void sampleStartNoise() {
@@ -257,8 +260,8 @@ public class ChunkNoiseSampler {
 		}
 
 		private void sampleNoise(double[][] buffer, int noiseX) {
-			int i = ChunkNoiseSampler.this.field_35674.method_39546();
-			int j = ChunkNoiseSampler.this.field_35674.method_39545();
+			int i = ChunkNoiseSampler.this.generationShapeConfig.horizontalBlockSize();
+			int j = ChunkNoiseSampler.this.generationShapeConfig.verticalBlockSize();
 
 			for (int k = 0; k < ChunkNoiseSampler.this.horizontalSize + 1; k++) {
 				int l = ChunkNoiseSampler.this.z + k;

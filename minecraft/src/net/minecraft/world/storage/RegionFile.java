@@ -29,7 +29,7 @@ public class RegionFile implements AutoCloseable {
 	private static final int field_31419 = 5;
 	private static final int field_31420 = 0;
 	private static final ByteBuffer ZERO = ByteBuffer.allocateDirect(1);
-	private static final String field_31421 = ".mcc";
+	private static final String FILE_EXTENSION = ".mcc";
 	private static final int field_31422 = 128;
 	private static final int field_31423 = 256;
 	private static final int field_31424 = 0;
@@ -42,8 +42,8 @@ public class RegionFile implements AutoCloseable {
 	@VisibleForTesting
 	protected final SectorMap sectors = new SectorMap();
 
-	public RegionFile(Path path, Path path2, boolean dsync) throws IOException {
-		this(path, path2, ChunkStreamVersion.DEFLATE, dsync);
+	public RegionFile(Path file, Path directory, boolean dsync) throws IOException {
+		this(file, directory, ChunkStreamVersion.DEFLATE, dsync);
 	}
 
 	public RegionFile(Path file, Path directory, ChunkStreamVersion outputChunkStreamVersion, boolean dsync) throws IOException {
@@ -143,7 +143,7 @@ public class RegionFile implements AutoCloseable {
 		}
 	}
 
-	private static int method_31739() {
+	private static int getEpochTimeSeconds() {
 		return (int)(Util.getEpochTimeMs() / 1000L);
 	}
 
@@ -258,7 +258,7 @@ public class RegionFile implements AutoCloseable {
 		int j = this.sectorData.get(i);
 		if (j != 0) {
 			this.sectorData.put(i, 0);
-			this.saveTimes.put(i, method_31739());
+			this.saveTimes.put(i, getEpochTimeSeconds());
 			this.writeHeader();
 			Files.deleteIfExists(this.getExternalChunkPath(chunkPos));
 			this.sectors.free(getOffset(j), getSize(j));
@@ -289,7 +289,7 @@ public class RegionFile implements AutoCloseable {
 		}
 
 		this.sectorData.put(i, this.packSectorData(o, n));
-		this.saveTimes.put(i, method_31739());
+		this.saveTimes.put(i, getEpochTimeSeconds());
 		this.writeHeader();
 		outputAction.run();
 		if (k != 0) {

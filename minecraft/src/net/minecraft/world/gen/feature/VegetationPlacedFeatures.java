@@ -53,7 +53,7 @@ public class VegetationPlacedFeatures {
 	public static final PlacedFeature PATCH_PUMPKIN = PlacedFeatures.register(
 		"patch_pumpkin",
 		VegetationConfiguredFeatures.PATCH_PUMPKIN
-			.withPlacement(RarityFilterPlacementModifier.of(2048), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
+			.withPlacement(RarityFilterPlacementModifier.of(300), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
 	);
 	public static final PlacedFeature PATCH_GRASS_PLAIN = PlacedFeatures.register(
 		"patch_grass_plain",
@@ -103,17 +103,17 @@ public class VegetationPlacedFeatures {
 	public static final PlacedFeature PATCH_MELON = PlacedFeatures.register(
 		"patch_melon",
 		VegetationConfiguredFeatures.PATCH_MELON
-			.withPlacement(RarityFilterPlacementModifier.of(64), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
+			.withPlacement(RarityFilterPlacementModifier.of(6), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
 	);
 	public static final PlacedFeature PATCH_BERRY_COMMON = PlacedFeatures.register(
 		"patch_berry_common",
 		VegetationConfiguredFeatures.PATCH_BERRY_BUSH
-			.withPlacement(RarityFilterPlacementModifier.of(128), SquarePlacementModifier.of(), PlacedFeatures.WORLD_SURFACE_WG_HEIGHTMAP, BiomePlacementModifier.of())
+			.withPlacement(RarityFilterPlacementModifier.of(32), SquarePlacementModifier.of(), PlacedFeatures.WORLD_SURFACE_WG_HEIGHTMAP, BiomePlacementModifier.of())
 	);
 	public static final PlacedFeature PATCH_BERRY_RARE = PlacedFeatures.register(
 		"patch_berry_rare",
 		VegetationConfiguredFeatures.PATCH_BERRY_BUSH
-			.withPlacement(RarityFilterPlacementModifier.of(1536), SquarePlacementModifier.of(), PlacedFeatures.WORLD_SURFACE_WG_HEIGHTMAP, BiomePlacementModifier.of())
+			.withPlacement(RarityFilterPlacementModifier.of(384), SquarePlacementModifier.of(), PlacedFeatures.WORLD_SURFACE_WG_HEIGHTMAP, BiomePlacementModifier.of())
 	);
 	public static final PlacedFeature PATCH_WATERLILY = PlacedFeatures.register(
 		"patch_waterlily", VegetationConfiguredFeatures.PATCH_WATERLILY.withPlacement(modifiers(4))

@@ -68,13 +68,13 @@ public class ChunkStatus {
 
 			return CompletableFuture.completedFuture(Either.left(chunk));
 		},
-		(chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> {
-			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
+		(targetStatus, world, structureManager, lightingProvider, function, chunk) -> {
+			if (!chunk.getStatus().isAtLeast(targetStatus)) {
 				if (chunk instanceof ProtoChunk protoChunk) {
-					protoChunk.setStatus(chunkStatus);
+					protoChunk.setStatus(targetStatus);
 				}
 
-				serverWorld.method_39778(chunk);
+				world.method_39778(chunk);
 			}
 
 			return CompletableFuture.completedFuture(Either.left(chunk));
@@ -126,8 +126,8 @@ public class ChunkStatus {
 						BelowZeroRetrogen belowZeroRetrogen = protoChunk.getBelowZeroRetrogen();
 						if (belowZeroRetrogen != null) {
 							BelowZeroRetrogen.replaceOldBedrock(protoChunk);
-							if (belowZeroRetrogen.hasNoBedrock()) {
-								BelowZeroRetrogen.fillChunkWithAir(protoChunk);
+							if (belowZeroRetrogen.method_39897()) {
+								belowZeroRetrogen.method_39898(protoChunk);
 							}
 						}
 
@@ -156,7 +156,7 @@ public class ChunkStatus {
 		}
 	);
 	public static final ChunkStatus LIQUID_CARVERS = register(
-		"liquid_carvers", CARVERS, 8, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (chunkStatus, serverWorld, chunkGenerator, list, chunk) -> {
+		"liquid_carvers", CARVERS, 8, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (targetStatus, world, generator, chunks, chunk) -> {
 		}
 	);
 	public static final ChunkStatus FEATURES = register(
@@ -190,7 +190,7 @@ public class ChunkStatus {
 		(targetStatus, executor, world, generator, structureManager, lightingProvider, function, chunks, chunk, bl) -> getLightingFuture(
 				targetStatus, lightingProvider, chunk
 			),
-		(chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> getLightingFuture(chunkStatus, serverLightingProvider, chunk)
+		(targetStatus, world, structureManager, lightingProvider, function, chunk) -> getLightingFuture(targetStatus, lightingProvider, chunk)
 	);
 	public static final ChunkStatus SPAWN = register(
 		"spawn", LIGHT, 0, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (targetStatus, world, generator, chunks, chunk) -> {
@@ -212,9 +212,7 @@ public class ChunkStatus {
 		(targetStatus, executor, world, generator, structureManager, lightingProvider, function, chunks, chunk, bl) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(
 				chunk
 			),
-		(chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(
-				chunk
-			)
+		(targetStatus, world, structureManager, lightingProvider, function, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(chunk)
 	);
 	private static final List<ChunkStatus> DISTANCE_TO_STATUS = ImmutableList.of(
 		FULL,

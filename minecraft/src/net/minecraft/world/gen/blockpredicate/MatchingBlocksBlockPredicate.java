@@ -16,8 +16,8 @@ class MatchingBlocksBlockPredicate extends OffsetPredicate {
 				.apply(instance, MatchingBlocksBlockPredicate::new)
 	);
 
-	public MatchingBlocksBlockPredicate(Vec3i vec3i, List<Block> blocks) {
-		super(vec3i);
+	public MatchingBlocksBlockPredicate(Vec3i offset, List<Block> blocks) {
+		super(offset);
 		this.blocks = blocks;
 	}
 

@@ -57,9 +57,9 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		private float u;
 		private float v;
 
-		OutlineVertexConsumer(VertexConsumer vertexConsumer, int i, int j, int k, int l) {
-			this.delegate = vertexConsumer;
-			super.fixedColor(i, j, k, l);
+		OutlineVertexConsumer(VertexConsumer delegate, int red, int green, int blue, int alpha) {
+			this.delegate = delegate;
+			super.fixedColor(red, green, blue, alpha);
 		}
 
 		@Override

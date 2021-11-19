@@ -23,12 +23,12 @@ public class EntityTrackingSection<T extends EntityLike> {
 		this.collection = new TypeFilterableList<>(entityClass);
 	}
 
-	public void add(T entityLike) {
-		this.collection.add(entityLike);
+	public void add(T entity) {
+		this.collection.add(entity);
 	}
 
-	public boolean remove(T entityLike) {
-		return this.collection.remove(entityLike);
+	public boolean remove(T entity) {
+		return this.collection.remove(entity);
 	}
 
 	public void forEach(Box box, Consumer<T> action) {

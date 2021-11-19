@@ -92,8 +92,8 @@ public class BreedTask extends Task<AnimalEntity> {
 	}
 
 	private Optional<? extends AnimalEntity> findBreedTarget(AnimalEntity animal) {
-		return ((LivingTargetCache)animal.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).findFirst(livingEntity -> {
-			if (livingEntity.getType() == this.targetType && livingEntity instanceof AnimalEntity animalEntity2 && animal.canBreedWith(animalEntity2)) {
+		return ((LivingTargetCache)animal.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).findFirst(entity -> {
+			if (entity.getType() == this.targetType && entity instanceof AnimalEntity animalEntity2 && animal.canBreedWith(animalEntity2)) {
 				return true;
 			}
 

@@ -24,11 +24,11 @@ public class CarverConfig extends ProbabilityConfig {
 	public final YOffset lavaLevel;
 	public final CarverDebugConfig debugConfig;
 
-	public CarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig carverDebugConfig) {
+	public CarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig debugConfig) {
 		super(probability);
 		this.y = y;
 		this.yScale = yScale;
 		this.lavaLevel = lavaLevel;
-		this.debugConfig = carverDebugConfig;
+		this.debugConfig = debugConfig;
 	}
 }

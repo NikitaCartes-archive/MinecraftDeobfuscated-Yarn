@@ -6,8 +6,6 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.class_6832;
-import net.minecraft.class_6833;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
@@ -15,6 +13,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.StructureHolder;
+import net.minecraft.world.StructureLocator;
+import net.minecraft.world.StructurePresence;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -22,12 +22,12 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public class StructureAccessor {
 	private final WorldAccess world;
 	private final GeneratorOptions options;
-	private final class_6832 field_36216;
+	private final StructureLocator field_36216;
 
-	public StructureAccessor(WorldAccess world, GeneratorOptions options, class_6832 arg) {
+	public StructureAccessor(WorldAccess world, GeneratorOptions options, StructureLocator structureLocator) {
 		this.world = world;
 		this.options = options;
-		this.field_36216 = arg;
+		this.field_36216 = structureLocator;
 	}
 
 	public StructureAccessor forRegion(ChunkRegion region) {
@@ -111,12 +111,12 @@ public class StructureAccessor {
 		return this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).hasStructureReferences();
 	}
 
-	public class_6833 method_39783(ChunkPos chunkPos, StructureFeature<?> structureFeature, boolean bl) {
-		return this.field_36216.method_39831(chunkPos, structureFeature, bl);
+	public StructurePresence method_39783(ChunkPos chunkPos, StructureFeature<?> structureFeature, boolean bl) {
+		return this.field_36216.getStructurePresence(chunkPos, structureFeature, bl);
 	}
 
 	public void method_39784(StructureStart<?> structureStart) {
 		structureStart.incrementReferences();
-		this.field_36216.method_39830(structureStart.getPos(), structureStart.getFeature());
+		this.field_36216.incrementReferences(structureStart.getPos(), structureStart.getFeature());
 	}
 }

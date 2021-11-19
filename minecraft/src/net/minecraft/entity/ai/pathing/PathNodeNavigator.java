@@ -36,9 +36,7 @@ public class PathNodeNavigator {
 		this.pathNodeMaker.init(world, mob);
 		PathNode pathNode = this.pathNodeMaker.getStart();
 		Map<TargetPathNode, BlockPos> map = (Map<TargetPathNode, BlockPos>)positions.stream()
-			.collect(
-				Collectors.toMap(blockPos -> this.pathNodeMaker.getNode((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), Function.identity())
-			);
+			.collect(Collectors.toMap(pos -> this.pathNodeMaker.getNode((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()), Function.identity()));
 		Path path = this.findPathToAny(world.getProfiler(), pathNode, map, followRange, distance, rangeMultiplier);
 		this.pathNodeMaker.clear();
 		return path;

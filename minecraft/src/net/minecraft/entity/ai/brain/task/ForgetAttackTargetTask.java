@@ -29,11 +29,11 @@ public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 	}
 
 	public ForgetAttackTargetTask(Consumer<E> forgetCallback) {
-		this(livingEntity -> false, forgetCallback);
+		this(target -> false, forgetCallback);
 	}
 
 	public ForgetAttackTargetTask() {
-		this(livingEntity -> false, mobEntity -> {
+		this(target -> false, mobEntity -> {
 		});
 	}
 

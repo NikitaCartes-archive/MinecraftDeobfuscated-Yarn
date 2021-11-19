@@ -36,17 +36,17 @@ public class IglooGenerator {
 		TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2)
 	);
 
-	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder structurePiecesHolder, Random random) {
+	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random) {
 		if (random.nextDouble() < 0.5) {
 			int i = random.nextInt(8) + 4;
-			structurePiecesHolder.addPiece(new IglooGenerator.Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
+			holder.addPiece(new IglooGenerator.Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
 
 			for (int j = 0; j < i - 1; j++) {
-				structurePiecesHolder.addPiece(new IglooGenerator.Piece(manager, MIDDLE_TEMPLATE, pos, rotation, j * 3));
+				holder.addPiece(new IglooGenerator.Piece(manager, MIDDLE_TEMPLATE, pos, rotation, j * 3));
 			}
 		}
 
-		structurePiecesHolder.addPiece(new IglooGenerator.Piece(manager, TOP_TEMPLATE, pos, rotation, 0));
+		holder.addPiece(new IglooGenerator.Piece(manager, TOP_TEMPLATE, pos, rotation, 0));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
@@ -56,8 +56,8 @@ public class IglooGenerator {
 			);
 		}
 
-		public Piece(StructureManager structureManager, NbtCompound nbt) {
-			super(StructurePieceType.IGLOO, nbt, structureManager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier));
+		public Piece(StructureManager manager, NbtCompound nbt) {
+			super(StructurePieceType.IGLOO, nbt, manager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier));
 		}
 
 		private static StructurePlacementData createPlacementData(BlockRotation rotation, Identifier identifier) {

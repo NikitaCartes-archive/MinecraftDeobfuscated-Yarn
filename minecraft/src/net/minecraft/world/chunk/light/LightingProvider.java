@@ -48,17 +48,17 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Override
-	public int doLightUpdates(int i, boolean bl, boolean bl2) {
+	public int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation) {
 		if (this.blockLightProvider != null && this.skyLightProvider != null) {
 			int j = i / 2;
-			int k = this.blockLightProvider.doLightUpdates(j, bl, bl2);
+			int k = this.blockLightProvider.doLightUpdates(j, doSkylight, skipEdgeLightPropagation);
 			int l = i - j + k;
-			int m = this.skyLightProvider.doLightUpdates(l, bl, bl2);
-			return k == 0 && m > 0 ? this.blockLightProvider.doLightUpdates(m, bl, bl2) : m;
+			int m = this.skyLightProvider.doLightUpdates(l, doSkylight, skipEdgeLightPropagation);
+			return k == 0 && m > 0 ? this.blockLightProvider.doLightUpdates(m, doSkylight, skipEdgeLightPropagation) : m;
 		} else if (this.blockLightProvider != null) {
-			return this.blockLightProvider.doLightUpdates(i, bl, bl2);
+			return this.blockLightProvider.doLightUpdates(i, doSkylight, skipEdgeLightPropagation);
 		} else {
-			return this.skyLightProvider != null ? this.skyLightProvider.doLightUpdates(i, bl, bl2) : i;
+			return this.skyLightProvider != null ? this.skyLightProvider.doLightUpdates(i, doSkylight, skipEdgeLightPropagation) : i;
 		}
 	}
 

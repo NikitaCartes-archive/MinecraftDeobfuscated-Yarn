@@ -131,8 +131,8 @@ public class InGameHud extends DrawableHelper {
 	private long heartJumpEndTick;
 	private int scaledWidth;
 	private int scaledHeight;
-	private float field_35428;
-	private float field_35429;
+	private float autosaveIndicatorAlpha;
+	private float lastAutosaveIndicatorAlpha;
 	private final Map<MessageType, List<ClientChatListener>> listeners = Maps.<MessageType, List<ClientChatListener>>newHashMap();
 	private float spyglassScale;
 
@@ -511,7 +511,7 @@ public class InGameHud extends DrawableHelper {
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-			ItemStack itemStack = playerEntity.getOffhandStack();
+			ItemStack itemStack = playerEntity.getOffHandStack();
 			Arm arm = playerEntity.getMainArm().getOpposite();
 			int i = this.scaledWidth / 2;
 			int j = this.getZOffset();
@@ -1134,9 +1134,9 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	public void method_39191(boolean bl) {
-		this.method_39193();
-		if (!bl) {
+	public void tick(boolean paused) {
+		this.tickAutosaveIndicator();
+		if (!paused) {
 			this.tick();
 		}
 	}
@@ -1174,11 +1174,11 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	private void method_39193() {
+	private void tickAutosaveIndicator() {
 		MinecraftServer minecraftServer = this.client.getServer();
 		boolean bl = minecraftServer != null && minecraftServer.isSaving();
-		this.field_35429 = this.field_35428;
-		this.field_35428 = MathHelper.lerp(0.2F, this.field_35428, bl ? 1.0F : 0.0F);
+		this.lastAutosaveIndicatorAlpha = this.autosaveIndicatorAlpha;
+		this.autosaveIndicatorAlpha = MathHelper.lerp(0.2F, this.autosaveIndicatorAlpha, bl ? 1.0F : 0.0F);
 	}
 
 	public void setRecordPlayingOverlay(Text description) {
@@ -1277,8 +1277,10 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	private void renderAutosaveIndicator(MatrixStack matrices) {
-		if (this.client.options.showAutosaveIndicator && (this.field_35428 > 0.0F || this.field_35429 > 0.0F)) {
-			int i = MathHelper.floor(255.0F * MathHelper.clamp(MathHelper.lerp(this.client.getTickDelta(), this.field_35429, this.field_35428), 0.0F, 1.0F));
+		if (this.client.options.showAutosaveIndicator && (this.autosaveIndicatorAlpha > 0.0F || this.lastAutosaveIndicatorAlpha > 0.0F)) {
+			int i = MathHelper.floor(
+				255.0F * MathHelper.clamp(MathHelper.lerp(this.client.getTickDelta(), this.lastAutosaveIndicatorAlpha, this.autosaveIndicatorAlpha), 0.0F, 1.0F)
+			);
 			if (i > 8) {
 				TextRenderer textRenderer = this.getTextRenderer();
 				int j = textRenderer.getWidth(SAVING_LEVEL_TEXT);

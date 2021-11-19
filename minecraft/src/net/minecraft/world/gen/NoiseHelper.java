@@ -13,11 +13,11 @@ public class NoiseHelper {
 		return d + Math.sin(Math.PI * d) * e / Math.PI;
 	}
 
-	public static void method_39119(StringBuilder stringBuilder, double d, double e, double f, byte[] bs) {
-		stringBuilder.append(String.format("xo=%.3f, yo=%.3f, zo=%.3f, p0=%d, p255=%d", (float)d, (float)e, (float)f, bs[0], bs[255]));
+	public static void appendDebugInfo(StringBuilder builder, double originX, double originY, double originZ, byte[] permutations) {
+		builder.append(String.format("xo=%.3f, yo=%.3f, zo=%.3f, p0=%d, p255=%d", (float)originX, (float)originY, (float)originZ, permutations[0], permutations[255]));
 	}
 
-	public static void method_39120(StringBuilder stringBuilder, double d, double e, double f, int[] is) {
-		stringBuilder.append(String.format("xo=%.3f, yo=%.3f, zo=%.3f, p0=%d, p255=%d", (float)d, (float)e, (float)f, is[0], is[255]));
+	public static void appendDebugInfo(StringBuilder builder, double originX, double originY, double originZ, int[] permutations) {
+		builder.append(String.format("xo=%.3f, yo=%.3f, zo=%.3f, p0=%d, p255=%d", (float)originX, (float)originY, (float)originZ, permutations[0], permutations[255]));
 	}
 }

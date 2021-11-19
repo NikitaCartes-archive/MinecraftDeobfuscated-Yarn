@@ -1,5 +1,6 @@
 package net.minecraft.util.collection;
 
+import java.util.Arrays;
 import java.util.function.IntConsumer;
 import org.apache.commons.lang3.Validate;
 
@@ -53,5 +54,10 @@ public class EmptyPaletteStorage implements PaletteStorage {
 		for (int i = 0; i < this.size; i++) {
 			action.accept(0);
 		}
+	}
+
+	@Override
+	public void method_39892(int[] is) {
+		Arrays.fill(is, 0, this.size, 0);
 	}
 }

@@ -495,7 +495,11 @@ public class VegetationConfiguredFeatures {
 	public static final ConfiguredFeature<RandomBooleanFeatureConfig, ?> MUSHROOM_ISLAND_VEGETATION = ConfiguredFeatures.register(
 		"mushroom_island_vegetation",
 		Feature.RANDOM_BOOLEAN_SELECTOR
-			.configure(new RandomBooleanFeatureConfig(() -> TreeConfiguredFeatures.HUGE_RED_MUSHROOM, () -> TreeConfiguredFeatures.HUGE_BROWN_MUSHROOM))
+			.configure(
+				new RandomBooleanFeatureConfig(
+					() -> TreeConfiguredFeatures.HUGE_RED_MUSHROOM.withPlacement(), () -> TreeConfiguredFeatures.HUGE_BROWN_MUSHROOM.withPlacement()
+				)
+			)
 	);
 
 	private static RandomPatchFeatureConfig createRandomPatchFeatureConfig(BlockStateProvider block, int tries) {

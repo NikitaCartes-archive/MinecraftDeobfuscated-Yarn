@@ -30,8 +30,8 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 			.collect(
 				ImmutableMap.toImmutableMap(
 					type -> type,
-					type -> Pair.of(
-							new Identifier("textures/entity/boat/" + type.getName() + ".png"), new BoatEntityModel(context.getPart(EntityModelLayers.createBoat(type)))
+					boatType -> Pair.of(
+							new Identifier("textures/entity/boat/" + boatType.getName() + ".png"), new BoatEntityModel(context.getPart(EntityModelLayers.createBoat(boatType)))
 						)
 				)
 			);

@@ -2,6 +2,8 @@ package net.minecraft.world.gen.heightprovider;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Random;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.HeightContext;
@@ -20,6 +22,7 @@ public class UniformHeightProvider extends HeightProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final YOffset minOffset;
 	private final YOffset maxOffset;
+	private final LongSet field_36290 = new LongOpenHashSet();
 
 	private UniformHeightProvider(YOffset minOffset, YOffset maxOffset) {
 		this.minOffset = minOffset;
@@ -39,7 +42,10 @@ public class UniformHeightProvider extends HeightProvider {
 		int i = this.minOffset.getY(context);
 		int j = this.maxOffset.getY(context);
 		if (i > j) {
-			LOGGER.warn("Empty height range: {}", this);
+			if (this.field_36290.add((long)i << 32 | (long)j)) {
+				LOGGER.warn("Empty height range: {}", this);
+			}
+
 			return i;
 		} else {
 			return MathHelper.nextBetween(random, i, j);

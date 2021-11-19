@@ -425,9 +425,9 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 
 	static {
 		BuiltinRegistries.init();
-		DEFAULT_ENTRIES.forEach((identifier, supplier) -> {
-			if (supplier.get() == null) {
-				LOGGER.error("Unable to bootstrap registry '{}'", identifier);
+		DEFAULT_ENTRIES.forEach((id, defaultEntry) -> {
+			if (defaultEntry.get() == null) {
+				LOGGER.error("Unable to bootstrap registry '{}'", id);
 			}
 		});
 		validate(ROOT);

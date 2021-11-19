@@ -352,6 +352,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			E entry = this.getEntryAtPosition(mouseX, mouseY);
 			if (entry != null) {
 				if (entry.mouseClicked(mouseX, mouseY, button)) {
+					this.setFocused(entry);
 					this.setDragging(true);
 					return true;
 				}

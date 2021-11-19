@@ -60,9 +60,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			List<RaiderEntity> list = this.actor
 				.world
 				.getEntitiesByClass(
-					RaiderEntity.class,
-					this.actor.getBoundingBox().expand(16.0),
-					raiderEntityx -> !raiderEntityx.hasActiveRaid() && RaidManager.isValidRaiderFor(raiderEntityx, raid)
+					RaiderEntity.class, this.actor.getBoundingBox().expand(16.0), raider -> !raider.hasActiveRaid() && RaidManager.isValidRaiderFor(raider, raid)
 				);
 			set.addAll(list);
 

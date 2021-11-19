@@ -81,10 +81,10 @@ public class ModelLoader {
 	);
 	public static final int field_32983 = 10;
 	public static final List<Identifier> BLOCK_DESTRUCTION_STAGES = (List<Identifier>)IntStream.range(0, 10)
-		.mapToObj(i -> new Identifier("block/destroy_stage_" + i))
+		.mapToObj(stage -> new Identifier("block/destroy_stage_" + stage))
 		.collect(Collectors.toList());
 	public static final List<Identifier> BLOCK_DESTRUCTION_STAGE_TEXTURES = (List<Identifier>)BLOCK_DESTRUCTION_STAGES.stream()
-		.map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png"))
+		.map(id -> new Identifier("textures/" + id.getPath() + ".png"))
 		.collect(Collectors.toList());
 	public static final List<RenderLayer> BLOCK_DESTRUCTION_RENDER_LAYERS = (List<RenderLayer>)BLOCK_DESTRUCTION_STAGE_TEXTURES.stream()
 		.map(RenderLayer::getBlockBreaking)
@@ -126,7 +126,7 @@ public class ModelLoader {
 	private static final String BUILTIN_ENTITY = "builtin/entity";
 	private static final String MISSING = "missing";
 	public static final ModelIdentifier MISSING_ID = new ModelIdentifier("builtin/missing", "missing");
-	private static final String field_21773 = MISSING_ID.toString();
+	private static final String MISSING_ID_STRING = MISSING_ID.toString();
 	@VisibleForTesting
 	public static final String MISSING_DEFINITION = ("{    'textures': {       'particle': '"
 			+ MissingSprite.getMissingSpriteId().getPath()
@@ -207,7 +207,7 @@ public class ModelLoader {
 			.collect(Collectors.toSet());
 		set2.addAll(DEFAULT_TEXTURES);
 		set.stream()
-			.filter(pair -> !((String)pair.getSecond()).equals(field_21773))
+			.filter(pair -> !((String)pair.getSecond()).equals(MISSING_ID_STRING))
 			.forEach(pair -> LOGGER.warn("Unable to resolve texture reference: {} in {}", pair.getFirst(), pair.getSecond()));
 		Map<Identifier, List<SpriteIdentifier>> map = (Map<Identifier, List<SpriteIdentifier>>)set2.stream()
 			.collect(Collectors.groupingBy(SpriteIdentifier::getAtlasId));
@@ -241,17 +241,17 @@ public class ModelLoader {
 			(Collection<SpriteAtlasTexture>)this.spriteAtlasData.values().stream().map(Pair::getFirst).collect(Collectors.toList())
 		);
 		profiler.swap("baking");
-		this.modelsToBake.keySet().forEach(identifier -> {
+		this.modelsToBake.keySet().forEach(id -> {
 			BakedModel bakedModel = null;
 
 			try {
-				bakedModel = this.bake(identifier, ModelRotation.X0_Y0);
+				bakedModel = this.bake(id, ModelRotation.X0_Y0);
 			} catch (Exception var4x) {
-				LOGGER.warn("Unable to bake model: '{}': {}", identifier, var4x);
+				LOGGER.warn("Unable to bake model: '{}': {}", id, var4x);
 			}
 
 			if (bakedModel != null) {
-				this.bakedModels.put(identifier, bakedModel);
+				this.bakedModels.put(id, bakedModel);
 			}
 		});
 		profiler.pop();
@@ -281,10 +281,10 @@ public class ModelLoader {
 		}
 
 		Block block = stateFactory.getOwner();
-		return blockState -> {
-			if (blockState != null && blockState.isOf(block)) {
+		return state -> {
+			if (state != null && state.isOf(block)) {
 				for (Entry<Property<?>, Comparable<?>> entry : map.entrySet()) {
-					if (!Objects.equals(blockState.get((Property)entry.getKey()), entry.getValue())) {
+					if (!Objects.equals(state.get((Property)entry.getKey()), entry.getValue())) {
 						return false;
 					}
 				}
@@ -348,7 +348,7 @@ public class ModelLoader {
 			List<Property<?>> list = ImmutableList.copyOf(this.blockColors.getProperties(stateManager.getOwner()));
 			ImmutableList<BlockState> immutableList = stateManager.getStates();
 			Map<ModelIdentifier, BlockState> map = Maps.<ModelIdentifier, BlockState>newHashMap();
-			immutableList.forEach(blockState -> map.put(BlockModels.getModelId(identifier, blockState), blockState));
+			immutableList.forEach(state -> map.put(BlockModels.getModelId(identifier, state), state));
 			Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map2 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newHashMap();
 			Identifier identifier2 = new Identifier(id.getNamespace(), "blockstates/" + id.getPath() + ".json");
 			UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING_ID);
@@ -457,20 +457,20 @@ public class ModelLoader {
 				throw new ModelLoader.ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier2, var27));
 			} finally {
 				Map<ModelLoader.ModelDefinition, Set<BlockState>> map6 = Maps.<ModelLoader.ModelDefinition, Set<BlockState>>newHashMap();
-				map.forEach((modelIdentifierx, blockState) -> {
+				map.forEach((idx, blockState) -> {
 					Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair2x = (Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>)map2.get(blockState);
 					if (pair2x == null) {
-						LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", identifier2, modelIdentifierx);
+						LOGGER.warn("Exception loading blockstate definition: '{}' missing model for variant: '{}'", identifier2, idx);
 						pair2x = pair;
 					}
 
-					this.putModel(modelIdentifierx, pair2x.getFirst());
+					this.putModel(idx, pair2x.getFirst());
 
 					try {
 						ModelLoader.ModelDefinition modelDefinitionx = (ModelLoader.ModelDefinition)pair2x.getSecond().get();
 						((Set)map6.computeIfAbsent(modelDefinitionx, modelDefinitionxx -> Sets.newIdentityHashSet())).add(blockState);
 					} catch (Exception var9x) {
-						LOGGER.warn("Exception evaluating model definition: '{}'", modelIdentifierx, var9x);
+						LOGGER.warn("Exception evaluating model definition: '{}'", idx, var9x);
 					}
 				});
 				map6.forEach((modelDefinitionx, set) -> {
@@ -603,7 +603,7 @@ public class ModelLoader {
 			StateManager<Block, BlockState> stateManager = state.getBlock().getStateManager();
 			List<UnbakedModel> list = (List<UnbakedModel>)rawModel.getComponents()
 				.stream()
-				.filter(multipartModelComponent -> multipartModelComponent.getPredicate(stateManager).test(state))
+				.filter(component -> component.getPredicate(stateManager).test(state))
 				.map(MultipartModelComponent::getModel)
 				.collect(ImmutableList.toImmutableList());
 			List<Object> list2 = getStateValues(state, properties);

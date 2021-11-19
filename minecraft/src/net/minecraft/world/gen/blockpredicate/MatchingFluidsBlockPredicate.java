@@ -16,8 +16,8 @@ class MatchingFluidsBlockPredicate extends OffsetPredicate {
 				.apply(instance, MatchingFluidsBlockPredicate::new)
 	);
 
-	public MatchingFluidsBlockPredicate(Vec3i vec3i, List<Fluid> fluids) {
-		super(vec3i);
+	public MatchingFluidsBlockPredicate(Vec3i offset, List<Fluid> fluids) {
+		super(offset);
 		this.fluids = fluids;
 	}
 

@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.class_6834;
 import net.minecraft.structure.OceanRuinGenerator;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.BlockRotation;
@@ -16,7 +16,7 @@ import net.minecraft.world.Heightmap;
 
 public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 	public OceanRuinFeature(Codec<OceanRuinFeatureConfig> configCodec) {
-		super(configCodec, class_6834.simple(class_6834.checkForBiomeOnTop(Heightmap.Type.OCEAN_FLOOR_WG), OceanRuinFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(StructureGeneratorFactory.checkForBiomeOnTop(Heightmap.Type.OCEAN_FLOOR_WG), OceanRuinFeature::addPieces));
 	}
 
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<OceanRuinFeatureConfig> context) {

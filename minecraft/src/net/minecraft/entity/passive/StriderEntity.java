@@ -186,7 +186,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	public boolean canBeControlledByRider() {
 		return !(this.getPrimaryPassenger() instanceof PlayerEntity playerEntity)
 			? false
-			: playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffhandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
+			: playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
 	}
 
 	@Override
@@ -469,9 +469,9 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	static class GoBackToLavaGoal extends MoveToTargetPosGoal {
 		private final StriderEntity strider;
 
-		GoBackToLavaGoal(StriderEntity striderEntity, double d) {
-			super(striderEntity, d, 8, 2);
-			this.strider = striderEntity;
+		GoBackToLavaGoal(StriderEntity strider, double speed) {
+			super(strider, speed, 8, 2);
+			this.strider = strider;
 		}
 
 		@Override

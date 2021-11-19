@@ -164,6 +164,6 @@ public final class PerlinNoiseSampler {
 
 	@VisibleForTesting
 	public void addDebugInfo(StringBuilder info) {
-		NoiseHelper.method_39119(info, this.originX, this.originY, this.originZ, this.permutations);
+		NoiseHelper.appendDebugInfo(info, this.originX, this.originY, this.originZ, this.permutations);
 	}
 }

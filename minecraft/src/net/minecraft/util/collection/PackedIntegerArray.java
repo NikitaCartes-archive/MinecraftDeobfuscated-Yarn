@@ -1,10 +1,8 @@
 package net.minecraft.util.collection;
 
 import java.util.function.IntConsumer;
-import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.mutable.MutableInt;
 
 public class PackedIntegerArray implements PaletteStorage {
 	/**
@@ -222,10 +220,33 @@ public class PackedIntegerArray implements PaletteStorage {
 	private final int indexOffset;
 	private final int indexShift;
 
-	public PackedIntegerArray(int elementBits, int size, IntStream values) {
-		this(elementBits, size);
-		MutableInt mutableInt = new MutableInt();
-		values.forEach(value -> this.set(mutableInt.getAndIncrement(), value));
+	public PackedIntegerArray(int i, int j, int[] is) {
+		this(i, j);
+		int k = 0;
+
+		int l;
+		for (l = 0; l <= j - this.elementsPerLong; l += this.elementsPerLong) {
+			long m = 0L;
+
+			for (int n = this.elementsPerLong - 1; n >= 0; n--) {
+				m <<= i;
+				m |= (long)is[l + n] & this.maxValue;
+			}
+
+			this.data[k++] = m;
+		}
+
+		int o = j - l;
+		if (o > 0) {
+			long p = 0L;
+
+			for (int q = o - 1; q >= 0; q--) {
+				p <<= i;
+				p |= (long)is[l + q] & this.maxValue;
+			}
+
+			this.data[k] = p;
+		}
 	}
 
 	public PackedIntegerArray(int elementBits, int size) {
@@ -317,6 +338,33 @@ public class PackedIntegerArray implements PaletteStorage {
 				if (++i >= this.size) {
 					return;
 				}
+			}
+		}
+	}
+
+	@Override
+	public void method_39892(int[] is) {
+		int i = this.data.length;
+		int j = 0;
+
+		for (int k = 0; k < i - 1; k++) {
+			long l = this.data[k];
+
+			for (int m = 0; m < this.elementsPerLong; m++) {
+				is[j + m] = (int)(l & this.maxValue);
+				l >>= this.elementBits;
+			}
+
+			j += this.elementsPerLong;
+		}
+
+		int k = this.size - j;
+		if (k > 0) {
+			long l = this.data[i - 1];
+
+			for (int m = 0; m < k; m++) {
+				is[j + m] = (int)(l & this.maxValue);
+				l >>= this.elementBits;
 			}
 		}
 	}

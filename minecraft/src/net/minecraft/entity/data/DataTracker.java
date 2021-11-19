@@ -130,14 +130,14 @@ public class DataTracker {
 		return this.dirty;
 	}
 
-	public static void entriesToPacket(@Nullable List<DataTracker.Entry<?>> list, PacketByteBuf packetByteBuf) {
-		if (list != null) {
-			for (DataTracker.Entry<?> entry : list) {
-				writeEntryToPacket(packetByteBuf, entry);
+	public static void entriesToPacket(@Nullable List<DataTracker.Entry<?>> entries, PacketByteBuf buf) {
+		if (entries != null) {
+			for (DataTracker.Entry<?> entry : entries) {
+				writeEntryToPacket(buf, entry);
 			}
 		}
 
-		packetByteBuf.writeByte(255);
+		buf.writeByte(255);
 	}
 
 	@Nullable
@@ -219,11 +219,11 @@ public class DataTracker {
 		return new DataTracker.Entry<>(trackedDataHandler.create(i), trackedDataHandler.read(buf));
 	}
 
-	public void writeUpdatedEntries(List<DataTracker.Entry<?>> list) {
+	public void writeUpdatedEntries(List<DataTracker.Entry<?>> entries) {
 		this.lock.writeLock().lock();
 
 		try {
-			for (DataTracker.Entry<?> entry : list) {
+			for (DataTracker.Entry<?> entry : entries) {
 				DataTracker.Entry<?> entry2 = this.entries.get(entry.getData().getId());
 				if (entry2 != null) {
 					this.copyToFrom(entry2, entry);
@@ -237,21 +237,21 @@ public class DataTracker {
 		this.dirty = true;
 	}
 
-	private <T> void copyToFrom(DataTracker.Entry<T> entry, DataTracker.Entry<?> entry2) {
-		if (!Objects.equals(entry2.data.getType(), entry.data.getType())) {
+	private <T> void copyToFrom(DataTracker.Entry<T> to, DataTracker.Entry<?> from) {
+		if (!Objects.equals(from.data.getType(), to.data.getType())) {
 			throw new IllegalStateException(
 				String.format(
 					"Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)",
-					entry.data.getId(),
+					to.data.getId(),
 					this.trackedEntity,
-					entry.value,
-					entry.value.getClass(),
-					entry2.value,
-					entry2.value.getClass()
+					to.value,
+					to.value.getClass(),
+					from.value,
+					from.value.getClass()
 				)
 			);
 		} else {
-			entry.set((T)entry2.get());
+			to.set((T)from.get());
 		}
 	}
 

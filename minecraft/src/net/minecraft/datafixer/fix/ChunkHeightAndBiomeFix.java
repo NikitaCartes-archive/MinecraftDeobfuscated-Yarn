@@ -276,19 +276,22 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 						ProtoChunkTickListFix.class_6741 lv = (ProtoChunkTickListFix.class_6741)supplier.get();
 						if (lv != null) {
 							BitSet bitSet = new BitSet(256);
+							boolean bl4 = false;
 
 							for (int i = 0; i < 16; i++) {
 								for (int j = 0; j < 16; j++) {
 									Dynamic<?> dynamic3 = lv.method_39265(j, 0, i);
-									boolean bl4 = dynamic3 != null && "minecraft:bedrock".equals(dynamic3.get("Name").asString(""));
-									if (!bl4) {
+									boolean bl5 = dynamic3 != null && "minecraft:bedrock".equals(dynamic3.get("Name").asString(""));
+									boolean bl6 = dynamic3 != null && "minecraft:air".equals(dynamic3.get("Name").asString(""));
+									if (bl6) {
 										bitSet.set(i * 16 + j);
 									}
+
+									bl4 |= bl5;
 								}
 							}
 
-							boolean bl5 = bitSet.cardinality() != bitSet.size();
-							if (bl5) {
+							if (bl4 && bitSet.cardinality() != bitSet.size()) {
 								Dynamic<?> dynamic4 = "full".equals(string) ? dynamic.createString("heightmaps") : dynamic2;
 								dynamic = dynamic.set(
 									"below_zero_retrogen",
@@ -302,8 +305,9 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 									)
 								);
 								dynamic = dynamic.set("Status", dynamic.createString("empty"));
-								dynamic = dynamic.set("isLightOn", dynamic.createBoolean(false));
 							}
+
+							dynamic = dynamic.set("isLightOn", dynamic.createBoolean(false));
 						}
 					}
 				}

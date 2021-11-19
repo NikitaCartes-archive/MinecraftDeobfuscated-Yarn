@@ -24,7 +24,7 @@ public class BubbleColumnSoundPlayer implements ClientPlayerTickable {
 	public void tick() {
 		World world = this.player.world;
 		BlockState blockState = (BlockState)world.getStatesInBoxIfLoaded(this.player.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(1.0E-6))
-			.filter(blockStatex -> blockStatex.isOf(Blocks.BUBBLE_COLUMN))
+			.filter(state -> state.isOf(Blocks.BUBBLE_COLUMN))
 			.findFirst()
 			.orElse(null);
 		if (blockState != null) {

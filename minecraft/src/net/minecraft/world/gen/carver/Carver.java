@@ -111,7 +111,7 @@ public abstract class Carver<C extends CarverConfig> {
 		double f,
 		double g,
 		double h,
-		CarvingMask carvingMask,
+		CarvingMask mask,
 		Carver.SkipPredicate skipPredicate
 	) {
 		ChunkPos chunkPos = chunk.getPos();
@@ -143,10 +143,10 @@ public abstract class Carver<C extends CarverConfig> {
 
 						for (int z = q; z > p; z--) {
 							double aa = ((double)z - 0.5 - e) / h;
-							if (!skipPredicate.shouldSkip(context, v, aa, y, z) && (!carvingMask.get(t, z, w) || isDebug(config))) {
-								carvingMask.set(t, z, w);
+							if (!skipPredicate.shouldSkip(context, v, aa, y, z) && (!mask.get(t, z, w) || isDebug(config))) {
+								mask.set(t, z, w);
 								mutable.set(u, z, x);
-								bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, mutable, mutable2, aquiferSampler, mutableBoolean);
+								bl |= this.carveAtPoint(context, config, chunk, posToBiome, mask, mutable, mutable2, aquiferSampler, mutableBoolean);
 							}
 						}
 					}
@@ -164,7 +164,7 @@ public abstract class Carver<C extends CarverConfig> {
 		C config,
 		Chunk chunk,
 		Function<BlockPos, Biome> posToBiome,
-		CarvingMask carvingMask,
+		CarvingMask mask,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
 		AquiferSampler aquiferSampler,
@@ -190,9 +190,9 @@ public abstract class Carver<C extends CarverConfig> {
 				if (mutableBoolean.isTrue()) {
 					mutable2.set(mutable, Direction.DOWN);
 					if (chunk.getBlockState(mutable2).isOf(Blocks.DIRT)) {
-						context.method_39114(posToBiome, chunk, mutable2, !blockState2.getFluidState().isEmpty()).ifPresent(blockStatex -> {
-							chunk.setBlockState(mutable2, blockStatex, false);
-							if (!blockStatex.getFluidState().isEmpty()) {
+						context.applyMaterialRule(posToBiome, chunk, mutable2, !blockState2.getFluidState().isEmpty()).ifPresent(state -> {
+							chunk.setBlockState(mutable2, state, false);
+							if (!state.getFluidState().isEmpty()) {
 								chunk.markBlockForPostProcessing(mutable2);
 							}
 						});
@@ -237,7 +237,7 @@ public abstract class Carver<C extends CarverConfig> {
 		Random random,
 		AquiferSampler aquiferSampler,
 		ChunkPos pos,
-		CarvingMask carvingMask
+		CarvingMask mask
 	);
 
 	public abstract boolean shouldCarve(C config, Random random);

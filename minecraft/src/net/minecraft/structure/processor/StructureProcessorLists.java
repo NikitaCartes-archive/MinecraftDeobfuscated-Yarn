@@ -232,6 +232,7 @@ public class StructureProcessorLists {
 			new RuleStructureProcessor(
 				ImmutableList.of(
 					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.DIRT_PATH), new BlockMatchRuleTest(Blocks.WATER), Blocks.SPRUCE_PLANKS.getDefaultState()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.DIRT_PATH), new BlockMatchRuleTest(Blocks.ICE), Blocks.SPRUCE_PLANKS.getDefaultState()),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.DIRT_PATH, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.GRASS_BLOCK.getDefaultState()),
 					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.GRASS_BLOCK), new BlockMatchRuleTest(Blocks.WATER), Blocks.WATER.getDefaultState()),
 					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.DIRT), new BlockMatchRuleTest(Blocks.WATER), Blocks.WATER.getDefaultState())

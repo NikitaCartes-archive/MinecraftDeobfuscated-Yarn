@@ -2,19 +2,19 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
-import net.minecraft.class_6834;
 import net.minecraft.structure.StrongholdGenerator;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 
 public class StrongholdFeature extends MarginedStructureFeature<DefaultFeatureConfig> {
 	public StrongholdFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, class_6834.simple(StrongholdFeature::method_28654, StrongholdFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(StrongholdFeature::method_28654, StrongholdFeature::addPieces));
 	}
 
-	private static boolean method_28654(class_6834.class_6835<DefaultFeatureConfig> arg) {
-		return arg.chunkGenerator().isStrongholdStartingChunk(arg.chunkPos());
+	private static boolean method_28654(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
+		return context.chunkGenerator().isStrongholdStartingChunk(context.chunkPos());
 	}
 
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {

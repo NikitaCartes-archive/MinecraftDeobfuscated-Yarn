@@ -39,7 +39,7 @@ public class HideInHomeTask extends Task<LivingEntity> {
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
 		Optional<BlockPos> optional = world.getPointOfInterestStorage()
 			.getPosition(
-				pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
+				poiType -> poiType == PointOfInterestType.HOME,
 				blockPos -> true,
 				entity.getBlockPos(),
 				this.preferredDistance + 1,
@@ -61,7 +61,7 @@ public class HideInHomeTask extends Task<LivingEntity> {
 		if (!optional.isPresent()) {
 			optional = world.getPointOfInterestStorage()
 				.getPosition(
-					pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
+					poiType -> poiType == PointOfInterestType.HOME,
 					blockPos -> true,
 					PointOfInterestStorage.OccupationStatus.ANY,
 					entity.getBlockPos(),

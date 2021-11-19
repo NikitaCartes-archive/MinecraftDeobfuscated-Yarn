@@ -220,9 +220,9 @@ public class LevelStorage {
 	}
 
 	BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
-		return (file2, dataFixer) -> {
+		return (filex, dataFixer) -> {
 			try {
-				NbtCompound nbtCompound = NbtIo.readCompressed(file2);
+				NbtCompound nbtCompound = NbtIo.readCompressed(filex);
 				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
 				nbtCompound2.remove("Player");
 				int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
@@ -244,7 +244,7 @@ public class LevelStorage {
 					return new LevelSummary(levelInfo, saveVersionInfo, file.getName(), bl2, locked, file3);
 				}
 			} catch (Exception var15) {
-				LOGGER.error("Exception reading {}", file2, var15);
+				LOGGER.error("Exception reading {}", filex, var15);
 				return null;
 			}
 		};
@@ -330,19 +330,19 @@ public class LevelStorage {
 			return LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage::readDataPackSettings);
 		}
 
-		public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties) {
-			this.backupLevelDataFile(dynamicRegistryManager, saveProperties, null);
+		public void backupLevelDataFile(DynamicRegistryManager registryManager, SaveProperties saveProperties) {
+			this.backupLevelDataFile(registryManager, saveProperties, null);
 		}
 
-		public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties, @Nullable NbtCompound nbtCompound) {
+		public void backupLevelDataFile(DynamicRegistryManager registryManager, SaveProperties saveProperties, @Nullable NbtCompound nbt) {
 			File file = this.directory.toFile();
-			NbtCompound nbtCompound2 = saveProperties.cloneWorldNbt(dynamicRegistryManager, nbtCompound);
-			NbtCompound nbtCompound3 = new NbtCompound();
-			nbtCompound3.put("Data", nbtCompound2);
+			NbtCompound nbtCompound = saveProperties.cloneWorldNbt(registryManager, nbt);
+			NbtCompound nbtCompound2 = new NbtCompound();
+			nbtCompound2.put("Data", nbtCompound);
 
 			try {
 				File file2 = File.createTempFile("level", ".dat", file);
-				NbtIo.writeCompressed(nbtCompound3, file2);
+				NbtIo.writeCompressed(nbtCompound2, file2);
 				File file3 = new File(file, "level.dat_old");
 				File file4 = new File(file, "level.dat");
 				Util.backupAndReplace(file4, file2, file3);

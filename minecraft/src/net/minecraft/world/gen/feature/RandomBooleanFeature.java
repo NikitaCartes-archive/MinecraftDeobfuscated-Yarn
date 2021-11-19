@@ -21,7 +21,7 @@ public class RandomBooleanFeature extends Feature<RandomBooleanFeatureConfig> {
 		BlockPos blockPos = context.getOrigin();
 		boolean bl = random.nextBoolean();
 		return bl
-			? ((ConfiguredFeature)randomBooleanFeatureConfig.featureTrue.get()).generate(structureWorldAccess, chunkGenerator, random, blockPos)
-			: ((ConfiguredFeature)randomBooleanFeatureConfig.featureFalse.get()).generate(structureWorldAccess, chunkGenerator, random, blockPos);
+			? ((PlacedFeature)randomBooleanFeatureConfig.featureTrue.get()).generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos)
+			: ((PlacedFeature)randomBooleanFeatureConfig.featureFalse.get()).generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
 	}
 }

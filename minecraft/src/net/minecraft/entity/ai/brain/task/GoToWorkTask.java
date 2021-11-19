@@ -31,15 +31,10 @@ public class GoToWorkTask extends Task<VillagerEntity> {
 		if (villagerEntity.getVillagerData().getProfession() == VillagerProfession.NONE) {
 			MinecraftServer minecraftServer = serverWorld.getServer();
 			Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension()))
-				.flatMap(serverWorldx -> serverWorldx.getPointOfInterestStorage().getType(globalPos.getPos()))
-				.flatMap(
-					pointOfInterestType -> Registry.VILLAGER_PROFESSION
-							.stream()
-							.filter(villagerProfession -> villagerProfession.getWorkStation() == pointOfInterestType)
-							.findFirst()
-				)
-				.ifPresent(villagerProfession -> {
-					villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(villagerProfession));
+				.flatMap(world -> world.getPointOfInterestStorage().getType(globalPos.getPos()))
+				.flatMap(poiType -> Registry.VILLAGER_PROFESSION.stream().filter(profession -> profession.getWorkStation() == poiType).findFirst())
+				.ifPresent(profession -> {
+					villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(profession));
 					villagerEntity.reinitializeBrain(serverWorld);
 				});
 		}

@@ -2,9 +2,9 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
-import net.minecraft.class_6834;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.NetherFortressGenerator;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
@@ -24,18 +24,20 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	);
 
 	public NetherFortressFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, class_6834.simple(NetherFortressFeature::method_28640, NetherFortressFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(NetherFortressFeature::method_28640, NetherFortressFeature::addPieces));
 	}
 
-	private static boolean method_28640(class_6834.class_6835<DefaultFeatureConfig> arg) {
+	private static boolean method_28640(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-		chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
+		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
 		return chunkRandom.nextInt(5) >= 2
 			? false
-			: arg.validBiome()
+			: context.validBiome()
 				.test(
-					arg.chunkGenerator()
-						.getBiomeForNoiseGen(BiomeCoords.fromBlock(arg.chunkPos().getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(arg.chunkPos().getCenterZ()))
+					context.chunkGenerator()
+						.getBiomeForNoiseGen(
+							BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())
+						)
 				);
 	}
 

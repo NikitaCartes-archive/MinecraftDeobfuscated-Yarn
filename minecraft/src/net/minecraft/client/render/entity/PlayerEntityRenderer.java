@@ -88,7 +88,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			BipedEntityModel.ArmPose armPose = getArmPose(player, Hand.MAIN_HAND);
 			BipedEntityModel.ArmPose armPose2 = getArmPose(player, Hand.OFF_HAND);
 			if (armPose.isTwoHanded()) {
-				armPose2 = player.getOffhandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
+				armPose2 = player.getOffHandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
 			}
 
 			if (player.getMainArm() == Arm.RIGHT) {

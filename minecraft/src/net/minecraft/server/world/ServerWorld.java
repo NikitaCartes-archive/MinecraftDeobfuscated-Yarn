@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.class_6832;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -113,6 +112,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PortalForcer;
 import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.StructureLocator;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
@@ -181,7 +181,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final EnderDragonFight enderDragonFight;
 	final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
 	private final StructureAccessor structureAccessor;
-	private final class_6832 field_36208;
+	private final StructureLocator structureLocator;
 	private final boolean shouldTickTime;
 
 	public ServerWorld(
@@ -232,8 +232,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		long l = server.getSaveProperties().getGeneratorOptions().getSeed();
-		this.field_36208 = new class_6832(
-			this.chunkManager.method_39777(),
+		this.structureLocator = new StructureLocator(
+			this.chunkManager.getChunkIoWorker(),
 			this.getRegistryManager(),
 			server.getStructureManager(),
 			worldKey,
@@ -243,7 +243,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			l,
 			dataFixer
 		);
-		this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.field_36208);
+		this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.structureLocator);
 		if (this.getDimension().hasEnderDragonFight()) {
 			this.enderDragonFight = new EnderDragonFight(this, l, server.getSaveProperties().getDragonFight());
 		} else {
@@ -1543,7 +1543,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public void method_39778(Chunk chunk) {
-		this.field_36208.method_39833(chunk.getPos(), chunk.getStructureStarts());
+		this.structureLocator.cache(chunk.getPos(), chunk.getStructureStarts());
 	}
 
 	@Override

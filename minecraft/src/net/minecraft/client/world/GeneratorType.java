@@ -47,13 +47,13 @@ public abstract class GeneratorType {
 	public static final GeneratorType LARGE_BIOMES = new GeneratorType("large_biomes") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(DynamicRegistryManager registryManager, long seed) {
-			return GeneratorOptions.method_39556(registryManager, seed, ChunkGeneratorSettings.LARGE_BIOMES);
+			return GeneratorOptions.createGenerator(registryManager, seed, ChunkGeneratorSettings.LARGE_BIOMES);
 		}
 	};
 	public static final GeneratorType AMPLIFIED = new GeneratorType("amplified") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(DynamicRegistryManager registryManager, long seed) {
-			return GeneratorOptions.method_39556(registryManager, seed, ChunkGeneratorSettings.AMPLIFIED);
+			return GeneratorOptions.createGenerator(registryManager, seed, ChunkGeneratorSettings.AMPLIFIED);
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_SURFACE = new GeneratorType("single_biome_surface") {
@@ -164,7 +164,9 @@ public abstract class GeneratorType {
 			generateStructures,
 			bonusChest,
 			GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
-				registryManager.get(Registry.DIMENSION_TYPE_KEY), DimensionType.method_39540(registryManager, seed), this.getChunkGenerator(registryManager, seed)
+				registryManager.get(Registry.DIMENSION_TYPE_KEY),
+				DimensionType.createDefaultDimensionOptions(registryManager, seed),
+				this.getChunkGenerator(registryManager, seed)
 			)
 		);
 	}

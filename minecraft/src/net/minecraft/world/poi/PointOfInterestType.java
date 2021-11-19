@@ -146,10 +146,10 @@ public class PointOfInterestType {
 	}
 
 	private static PointOfInterestType setup(PointOfInterestType poiType) {
-		poiType.blockStates.forEach(blockState -> {
-			PointOfInterestType pointOfInterestType2 = (PointOfInterestType)BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put(blockState, poiType);
+		poiType.blockStates.forEach(state -> {
+			PointOfInterestType pointOfInterestType2 = (PointOfInterestType)BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put(state, poiType);
 			if (pointOfInterestType2 != null) {
-				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
+				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException(String.format("%s is defined in too many tags", state)));
 			}
 		});
 		return poiType;

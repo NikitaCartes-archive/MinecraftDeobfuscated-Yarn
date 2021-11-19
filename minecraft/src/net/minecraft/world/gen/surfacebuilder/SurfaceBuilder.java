@@ -23,7 +23,6 @@ import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.HeightContext;
-import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
@@ -33,7 +32,6 @@ import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 
 public class SurfaceBuilder {
-	private static final int field_35273 = 8;
 	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
 	private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
 	private static final BlockState TERRACOTTA = Blocks.TERRACOTTA.getDefaultState();
@@ -43,56 +41,49 @@ public class SurfaceBuilder {
 	private static final BlockState LIGHT_GRAY_TERRACOTTA = Blocks.LIGHT_GRAY_TERRACOTTA.getDefaultState();
 	private static final BlockState PACKED_ICE = Blocks.PACKED_ICE.getDefaultState();
 	private static final BlockState SNOW_BLOCK = Blocks.SNOW_BLOCK.getDefaultState();
-	private final NoiseColumnSampler noiseColumnSampler;
-	private final BlockState defaultBlock;
+	private final BlockState defaultState;
 	private final int seaLevel;
 	private final BlockState[] terracottaBands;
 	private final DoublePerlinNoiseSampler terracottaBandsOffsetNoise;
-	private final DoublePerlinNoiseSampler field_35495;
-	private final DoublePerlinNoiseSampler field_35496;
-	private final DoublePerlinNoiseSampler field_35497;
-	private final DoublePerlinNoiseSampler field_35498;
-	private final DoublePerlinNoiseSampler field_35499;
-	private final DoublePerlinNoiseSampler field_35500;
-	private final Registry<DoublePerlinNoiseSampler.NoiseParameters> field_35415;
+	private final DoublePerlinNoiseSampler badlandsPillarNoise;
+	private final DoublePerlinNoiseSampler badlandsPillarRoofNoise;
+	private final DoublePerlinNoiseSampler badlandsSurfaceNoise;
+	private final DoublePerlinNoiseSampler icebergPillarNoise;
+	private final DoublePerlinNoiseSampler icebergPillarRoofNoise;
+	private final DoublePerlinNoiseSampler icebergSurfaceNoise;
+	private final Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry;
 	private final Map<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler> noiseSamplers = new ConcurrentHashMap();
-	private final Map<Identifier, RandomDeriver> field_35633 = new ConcurrentHashMap();
+	private final Map<Identifier, RandomDeriver> randomDerivers = new ConcurrentHashMap();
 	private final RandomDeriver randomDeriver;
 	private final DoublePerlinNoiseSampler surfaceNoise;
-	private final DoublePerlinNoiseSampler field_35680;
+	private final DoublePerlinNoiseSampler surfaceSecondaryNoise;
 
 	public SurfaceBuilder(
-		NoiseColumnSampler noiseColumnSampler,
-		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry,
-		BlockState blockState,
-		int i,
-		long l,
-		ChunkRandom.RandomProvider randomProvider
+		Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, BlockState defaultState, int seaLevel, long seed, ChunkRandom.RandomProvider randomProvider
 	) {
-		this.noiseColumnSampler = noiseColumnSampler;
-		this.field_35415 = registry;
-		this.defaultBlock = blockState;
-		this.seaLevel = i;
-		this.randomDeriver = randomProvider.create(l).createRandomDeriver();
-		this.terracottaBandsOffsetNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.CLAY_BANDS_OFFSET);
+		this.noiseRegistry = noiseRegistry;
+		this.defaultState = defaultState;
+		this.seaLevel = seaLevel;
+		this.randomDeriver = randomProvider.create(seed).createRandomDeriver();
+		this.terracottaBandsOffsetNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.CLAY_BANDS_OFFSET);
 		this.terracottaBands = createTerracottaBands(this.randomDeriver.createRandom(new Identifier("clay_bands")));
-		this.surfaceNoise = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.SURFACE);
-		this.field_35680 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.SURFACE_SECONDARY);
-		this.field_35495 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR);
-		this.field_35496 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR_ROOF);
-		this.field_35497 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.BADLANDS_SURFACE);
-		this.field_35498 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR);
-		this.field_35499 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR_ROOF);
-		this.field_35500 = NoiseParametersKeys.method_39173(registry, this.randomDeriver, NoiseParametersKeys.ICEBERG_SURFACE);
+		this.surfaceNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.SURFACE);
+		this.surfaceSecondaryNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.SURFACE_SECONDARY);
+		this.badlandsPillarNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR);
+		this.badlandsPillarRoofNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR_ROOF);
+		this.badlandsSurfaceNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.BADLANDS_SURFACE);
+		this.icebergPillarNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR);
+		this.icebergPillarRoofNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR_ROOF);
+		this.icebergSurfaceNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.ICEBERG_SURFACE);
 	}
 
-	protected DoublePerlinNoiseSampler getNoiseSampler(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey) {
+	protected DoublePerlinNoiseSampler getNoiseSampler(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise) {
 		return (DoublePerlinNoiseSampler)this.noiseSamplers
-			.computeIfAbsent(registryKey, registryKey2 -> NoiseParametersKeys.method_39173(this.field_35415, this.randomDeriver, registryKey));
+			.computeIfAbsent(noise, registryKey2 -> NoiseParametersKeys.createNoiseSampler(this.noiseRegistry, this.randomDeriver, noise));
 	}
 
-	protected RandomDeriver method_39482(Identifier identifier) {
-		return (RandomDeriver)this.field_35633.computeIfAbsent(identifier, identifier2 -> this.randomDeriver.createRandom(identifier).createRandomDeriver());
+	protected RandomDeriver getRandomDeriver(Identifier id) {
+		return (RandomDeriver)this.randomDerivers.computeIfAbsent(id, i -> this.randomDeriver.createRandom(id).createRandomDeriver());
 	}
 
 	public void buildSurface(
@@ -180,7 +171,7 @@ public class SurfaceBuilder {
 						q++;
 						int vx = u - s + 1;
 						materialRuleContext.initVerticalContext(q, vx, r, m, u, n);
-						if (blockState == this.defaultBlock) {
+						if (blockState == this.defaultState) {
 							BlockState blockState2 = blockStateRule.tryApply(m, u, n);
 							if (blockState2 != null) {
 								blockColumn.setState(u, blockState2);
@@ -196,17 +187,12 @@ public class SurfaceBuilder {
 		}
 	}
 
-	protected int method_39553(ChunkNoiseSampler chunkNoiseSampler, int i, int j) {
-		int k = this.noiseColumnSampler.method_38383(i, j, chunkNoiseSampler.getInterpolatedTerrainNoisePoint(i, j));
-		return k - 8;
-	}
-
 	protected int method_39552(int i, int j) {
 		return this.method_39554(this.surfaceNoise, i, j);
 	}
 
 	protected int method_39555(int i, int j) {
-		return this.method_39554(this.field_35680, i, j);
+		return this.method_39554(this.surfaceSecondaryNoise, i, j);
 	}
 
 	private int method_39554(DoublePerlinNoiseSampler doublePerlinNoiseSampler, int i, int j) {
@@ -218,22 +204,22 @@ public class SurfaceBuilder {
 	}
 
 	@Deprecated
-	public Optional<BlockState> method_39110(
+	public Optional<BlockState> applyMaterialRule(
 		MaterialRules.MaterialRule rule,
 		CarverContext context,
-		Function<BlockPos, Biome> function,
+		Function<BlockPos, Biome> posToBiome,
 		Chunk chunk,
 		ChunkNoiseSampler chunkNoiseSampler,
-		BlockPos blockPos,
+		BlockPos pos,
 		boolean bl
 	) {
 		MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(
-			this, chunk, chunkNoiseSampler, function, context.getRegistryManager().get(Registry.BIOME_KEY), context
+			this, chunk, chunkNoiseSampler, posToBiome, context.getRegistryManager().get(Registry.BIOME_KEY), context
 		);
 		MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)rule.apply(materialRuleContext);
-		int i = blockPos.getX();
-		int j = blockPos.getY();
-		int k = blockPos.getZ();
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
 		materialRuleContext.initHorizontalContext(i, k);
 		materialRuleContext.initVerticalContext(1, 1, bl ? j + 1 : Integer.MIN_VALUE, i, j, k);
 		BlockState blockState = blockStateRule.tryApply(i, j, k);
@@ -243,18 +229,18 @@ public class SurfaceBuilder {
 	private void method_39102(BlockColumn blockColumn, int x, int z, int surfaceY, HeightLimitView heightLimitView) {
 		double d = 0.2;
 		double e = Math.min(
-			Math.abs(this.field_35497.sample((double)x, 0.0, (double)z) * 8.25), this.field_35495.sample((double)x * 0.2, 0.0, (double)z * 0.2) * 15.0
+			Math.abs(this.badlandsSurfaceNoise.sample((double)x, 0.0, (double)z) * 8.25), this.badlandsPillarNoise.sample((double)x * 0.2, 0.0, (double)z * 0.2) * 15.0
 		);
 		if (!(e <= 0.0)) {
 			double f = 0.75;
 			double g = 1.5;
-			double h = Math.abs(this.field_35496.sample((double)x * 0.75, 0.0, (double)z * 0.75) * 1.5);
+			double h = Math.abs(this.badlandsPillarRoofNoise.sample((double)x * 0.75, 0.0, (double)z * 0.75) * 1.5);
 			double i = 64.0 + Math.min(e * e * 2.5, Math.ceil(h * 50.0) + 24.0);
 			int j = MathHelper.floor(i);
 			if (surfaceY <= j) {
 				for (int k = j; k >= heightLimitView.getBottomY(); k--) {
 					BlockState blockState = blockColumn.getState(k);
-					if (blockState.isOf(this.defaultBlock.getBlock())) {
+					if (blockState.isOf(this.defaultState.getBlock())) {
 						break;
 					}
 
@@ -264,7 +250,7 @@ public class SurfaceBuilder {
 				}
 
 				for (int k = j; k >= heightLimitView.getBottomY() && blockColumn.getState(k).isAir(); k--) {
-					blockColumn.setState(k, this.defaultBlock);
+					blockColumn.setState(k, this.defaultState);
 				}
 			}
 		}
@@ -274,12 +260,12 @@ public class SurfaceBuilder {
 		float f = biome.getTemperature(mutablePos.set(x, 63, z));
 		double d = 1.28;
 		double e = Math.min(
-			Math.abs(this.field_35500.sample((double)x, 0.0, (double)z) * 8.25), this.field_35498.sample((double)x * 1.28, 0.0, (double)z * 1.28) * 15.0
+			Math.abs(this.icebergSurfaceNoise.sample((double)x, 0.0, (double)z) * 8.25), this.icebergPillarNoise.sample((double)x * 1.28, 0.0, (double)z * 1.28) * 15.0
 		);
 		if (!(e <= 1.8)) {
 			double g = 1.17;
 			double h = 1.5;
-			double j = Math.abs(this.field_35499.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
+			double j = Math.abs(this.icebergPillarRoofNoise.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
 			double k = Math.min(e * e * 1.2, Math.ceil(j * 40.0) + 14.0);
 			if (f > 0.1F) {
 				k -= 2.0;

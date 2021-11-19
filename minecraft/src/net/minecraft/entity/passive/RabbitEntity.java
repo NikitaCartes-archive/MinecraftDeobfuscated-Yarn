@@ -206,8 +206,8 @@ public class RabbitEntity extends AnimalEntity {
 					this.lookTowards(vec3d.x, vec3d.z);
 					this.startJump();
 				}
-			} else if (!rabbitJumpControl.method_27313()) {
-				this.method_6611();
+			} else if (!rabbitJumpControl.canJump()) {
+				this.enableJump();
 			}
 		}
 
@@ -223,12 +223,12 @@ public class RabbitEntity extends AnimalEntity {
 		this.setYaw((float)(MathHelper.atan2(z - this.getZ(), x - this.getX()) * 180.0F / (float)Math.PI) - 90.0F);
 	}
 
-	private void method_6611() {
-		((RabbitEntity.RabbitJumpControl)this.jumpControl).method_27311(true);
+	private void enableJump() {
+		((RabbitEntity.RabbitJumpControl)this.jumpControl).setCanJump(true);
 	}
 
-	private void method_6621() {
-		((RabbitEntity.RabbitJumpControl)this.jumpControl).method_27311(false);
+	private void disableJump() {
+		((RabbitEntity.RabbitJumpControl)this.jumpControl).setCanJump(false);
 	}
 
 	private void doScheduleJump() {
@@ -241,7 +241,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	private void scheduleJump() {
 		this.doScheduleJump();
-		this.method_6621();
+		this.disableJump();
 	}
 
 	@Override
@@ -534,23 +534,23 @@ public class RabbitEntity extends AnimalEntity {
 
 	public static class RabbitJumpControl extends JumpControl {
 		private final RabbitEntity rabbit;
-		private boolean field_24091;
+		private boolean canJump;
 
-		public RabbitJumpControl(RabbitEntity rabbitEntity) {
-			super(rabbitEntity);
-			this.rabbit = rabbitEntity;
+		public RabbitJumpControl(RabbitEntity rabbit) {
+			super(rabbit);
+			this.rabbit = rabbit;
 		}
 
 		public boolean isActive() {
 			return this.active;
 		}
 
-		public boolean method_27313() {
-			return this.field_24091;
+		public boolean canJump() {
+			return this.canJump;
 		}
 
-		public void method_27311(boolean bl) {
-			this.field_24091 = bl;
+		public void setCanJump(boolean canJump) {
+			this.canJump = canJump;
 		}
 
 		@Override

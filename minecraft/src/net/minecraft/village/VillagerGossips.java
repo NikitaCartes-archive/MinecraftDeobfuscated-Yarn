@@ -85,15 +85,15 @@ public class VillagerGossips {
 	}
 
 	private VillagerGossips.Reputation getReputationFor(UUID target) {
-		return (VillagerGossips.Reputation)this.entityReputation.computeIfAbsent(target, uUID -> new VillagerGossips.Reputation());
+		return (VillagerGossips.Reputation)this.entityReputation.computeIfAbsent(target, uuid -> new VillagerGossips.Reputation());
 	}
 
 	public void shareGossipFrom(VillagerGossips from, Random random, int count) {
 		Collection<VillagerGossips.GossipEntry> collection = from.pickGossips(random, count);
-		collection.forEach(gossipEntry -> {
-			int i = gossipEntry.value - gossipEntry.type.shareDecrement;
+		collection.forEach(gossip -> {
+			int i = gossip.value - gossip.type.shareDecrement;
 			if (i >= 2) {
-				this.getReputationFor(gossipEntry.target).associatedGossip.mergeInt(gossipEntry.type, i, VillagerGossips::max);
+				this.getReputationFor(gossip.target).associatedGossip.mergeInt(gossip.type, i, VillagerGossips::max);
 			}
 		});
 	}
@@ -103,43 +103,43 @@ public class VillagerGossips {
 		return reputation != null ? reputation.getValueFor(gossipTypeFilter) : 0;
 	}
 
-	public long method_35122(VillageGossipType villageGossipType, DoublePredicate doublePredicate) {
+	public long getReputationCount(VillageGossipType type, DoublePredicate predicate) {
 		return this.entityReputation
 			.values()
 			.stream()
-			.filter(reputation -> doublePredicate.test((double)(reputation.associatedGossip.getOrDefault(villageGossipType, 0) * villageGossipType.multiplier)))
+			.filter(reputation -> predicate.test((double)(reputation.associatedGossip.getOrDefault(type, 0) * type.multiplier)))
 			.count();
 	}
 
 	public void startGossip(UUID target, VillageGossipType type, int value) {
 		VillagerGossips.Reputation reputation = this.getReputationFor(target);
-		reputation.associatedGossip.mergeInt(type, value, (IntBinaryOperator)((i, j) -> this.mergeReputation(type, i, j)));
+		reputation.associatedGossip.mergeInt(type, value, (IntBinaryOperator)((left, right) -> this.mergeReputation(type, left, right)));
 		reputation.clamp(type);
 		if (reputation.isObsolete()) {
 			this.entityReputation.remove(target);
 		}
 	}
 
-	public void method_35126(UUID uUID, VillageGossipType villageGossipType, int i) {
-		this.startGossip(uUID, villageGossipType, -i);
+	public void removeGossip(UUID target, VillageGossipType type, int value) {
+		this.startGossip(target, type, -value);
 	}
 
-	public void method_35124(UUID uUID, VillageGossipType villageGossipType) {
-		VillagerGossips.Reputation reputation = (VillagerGossips.Reputation)this.entityReputation.get(uUID);
+	public void remove(UUID target, VillageGossipType type) {
+		VillagerGossips.Reputation reputation = (VillagerGossips.Reputation)this.entityReputation.get(target);
 		if (reputation != null) {
-			reputation.remove(villageGossipType);
+			reputation.remove(type);
 			if (reputation.isObsolete()) {
-				this.entityReputation.remove(uUID);
+				this.entityReputation.remove(target);
 			}
 		}
 	}
 
-	public void method_35121(VillageGossipType villageGossipType) {
+	public void remove(VillageGossipType type) {
 		Iterator<VillagerGossips.Reputation> iterator = this.entityReputation.values().iterator();
 
 		while (iterator.hasNext()) {
 			VillagerGossips.Reputation reputation = (VillagerGossips.Reputation)iterator.next();
-			reputation.remove(villageGossipType);
+			reputation.remove(type);
 			if (reputation.isObsolete()) {
 				iterator.remove();
 			}

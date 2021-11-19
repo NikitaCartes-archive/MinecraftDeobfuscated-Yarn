@@ -171,7 +171,7 @@ public class ChunkSection {
 		return this.biomeContainer.get(x, y, z);
 	}
 
-	public void method_38291(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
+	public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
 		PalettedContainer<Biome> palettedContainer = this.getBiomeContainer();
 		palettedContainer.lock();
 

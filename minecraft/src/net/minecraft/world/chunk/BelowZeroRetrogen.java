@@ -72,20 +72,30 @@ public final class BelowZeroRetrogen {
 		});
 	}
 
-	public static void fillChunkWithAir(ProtoChunk chunk) {
-		HeightLimitView heightLimitView = chunk.getHeightLimitView();
+	public void method_39898(ProtoChunk protoChunk) {
+		HeightLimitView heightLimitView = protoChunk.getHeightLimitView();
 		int i = heightLimitView.getBottomY();
 		int j = heightLimitView.getTopY() - 1;
-		BlockPos.iterate(0, i, 0, 15, j, 15).forEach(pos -> chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false));
+
+		for (int k = 0; k < 16; k++) {
+			for (int l = 0; l < 16; l++) {
+				if (this.method_39895(k, l)) {
+					BlockPos.iterate(k, i, l, k, j, l).forEach(blockPos -> protoChunk.setBlockState(blockPos, Blocks.AIR.getDefaultState(), false));
+				}
+			}
+		}
 	}
 
 	public ChunkStatus getTargetStatus() {
 		return this.targetStatus;
 	}
 
-	public boolean hasNoBedrock() {
-		int i = this.missingBedrock.size();
-		return i == 256 && i == this.missingBedrock.cardinality();
+	public boolean method_39897() {
+		return !this.missingBedrock.isEmpty();
+	}
+
+	public boolean method_39895(int i, int j) {
+		return this.missingBedrock.get((j & 15) * 16 + (i & 15));
 	}
 
 	public static BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier, Registry<Biome> biomeRegistry, Chunk chunk) {

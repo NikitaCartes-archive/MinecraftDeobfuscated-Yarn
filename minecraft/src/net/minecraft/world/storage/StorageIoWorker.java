@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.class_6830;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.util.Unit;
@@ -24,7 +23,7 @@ import net.minecraft.util.thread.TaskQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class StorageIoWorker implements class_6830, AutoCloseable {
+public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final AtomicBoolean closed = new AtomicBoolean();
 	private final TaskExecutor<TaskQueue.PrioritizedTask> executor;
@@ -95,21 +94,21 @@ public class StorageIoWorker implements class_6830, AutoCloseable {
 	}
 
 	@Override
-	public CompletableFuture<Void> method_39795(ChunkPos chunkPos, NbtScanner nbtScanner) {
+	public CompletableFuture<Void> scanChunk(ChunkPos pos, NbtScanner scanner) {
 		return this.run(() -> {
 			try {
-				StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(chunkPos);
+				StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(pos);
 				if (result != null) {
 					if (result.nbt != null) {
-						result.nbt.accept(nbtScanner);
+						result.nbt.accept(scanner);
 					}
 				} else {
-					this.storage.method_39802(chunkPos, nbtScanner);
+					this.storage.method_39802(pos, scanner);
 				}
 
 				return Either.left(null);
 			} catch (Exception var4) {
-				LOGGER.warn("Failed to bulk scan chunk {}", chunkPos, var4);
+				LOGGER.warn("Failed to bulk scan chunk {}", pos, var4);
 				return Either.right(var4);
 			}
 		});

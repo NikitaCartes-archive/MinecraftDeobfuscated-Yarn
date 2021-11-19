@@ -360,7 +360,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		return (DyeColor)this.world
 			.getRecipeManager()
 			.getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world)
-			.map(craftingRecipe -> craftingRecipe.craft(craftingInventory))
+			.map(recipe -> recipe.craft(craftingInventory))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)

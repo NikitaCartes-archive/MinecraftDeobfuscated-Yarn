@@ -41,12 +41,12 @@ public class PoolStructurePiece extends StructurePiece {
 		this.rotation = rotation;
 	}
 
-	public PoolStructurePiece(StructureContext structureContext, NbtCompound nbt) {
+	public PoolStructurePiece(StructureContext context, NbtCompound nbt) {
 		super(StructurePieceType.JIGSAW, nbt);
-		this.structureManager = structureContext.structureManager();
+		this.structureManager = context.structureManager();
 		this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
 		this.groundLevelDelta = nbt.getInt("ground_level_delta");
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, structureContext.resourceManager(), structureContext.registryManager());
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, context.resourceManager(), context.registryManager());
 		this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC
 			.parse(registryOps, nbt.getCompound("pool_element"))
 			.resultOrPartial(LOGGER::error)
@@ -55,7 +55,7 @@ public class PoolStructurePiece extends StructurePiece {
 		this.boundingBox = this.poolElement.getBoundingBox(this.structureManager, this.pos, this.rotation);
 		NbtList nbtList = nbt.getList("junctions", NbtElement.COMPOUND_TYPE);
 		this.junctions.clear();
-		nbtList.forEach(nbtElement -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<>(registryOps, nbtElement))));
+		nbtList.forEach(nbtElement -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<>(registryOps, nbtElement))));
 	}
 
 	@Override

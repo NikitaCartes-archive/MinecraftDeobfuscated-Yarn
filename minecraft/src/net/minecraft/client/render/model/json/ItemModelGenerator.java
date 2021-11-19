@@ -145,22 +145,24 @@ public class ItemModelGenerator {
 		int i = sprite.getWidth();
 		int j = sprite.getHeight();
 		List<ItemModelGenerator.Frame> list = Lists.<ItemModelGenerator.Frame>newArrayList();
-		sprite.getDistinctFrameCount().forEach(k -> {
-			for (int l = 0; l < j; l++) {
-				for (int m = 0; m < i; m++) {
-					boolean bl = !this.isPixelTransparent(sprite, k, m, l, i, j);
-					this.buildCube(ItemModelGenerator.Side.UP, list, sprite, k, m, l, i, j, bl);
-					this.buildCube(ItemModelGenerator.Side.DOWN, list, sprite, k, m, l, i, j, bl);
-					this.buildCube(ItemModelGenerator.Side.LEFT, list, sprite, k, m, l, i, j, bl);
-					this.buildCube(ItemModelGenerator.Side.RIGHT, list, sprite, k, m, l, i, j, bl);
+		sprite.getDistinctFrameCount().forEach(frame -> {
+			for (int k = 0; k < j; k++) {
+				for (int l = 0; l < i; l++) {
+					boolean bl = !this.isPixelTransparent(sprite, frame, l, k, i, j);
+					this.buildCube(ItemModelGenerator.Side.UP, list, sprite, frame, l, k, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.DOWN, list, sprite, frame, l, k, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.LEFT, list, sprite, frame, l, k, i, j, bl);
+					this.buildCube(ItemModelGenerator.Side.RIGHT, list, sprite, frame, l, k, i, j, bl);
 				}
 			}
 		});
 		return list;
 	}
 
-	private void buildCube(ItemModelGenerator.Side side, List<ItemModelGenerator.Frame> cubes, Sprite sprite, int frame, int x, int y, int i, int j, boolean bl) {
-		boolean bl2 = this.isPixelTransparent(sprite, frame, x + side.getOffsetX(), y + side.getOffsetY(), i, j) && bl;
+	private void buildCube(
+		ItemModelGenerator.Side side, List<ItemModelGenerator.Frame> cubes, Sprite sprite, int frame, int x, int y, int width, int height, boolean bl
+	) {
+		boolean bl2 = this.isPixelTransparent(sprite, frame, x + side.getOffsetX(), y + side.getOffsetY(), width, height) && bl;
 		if (bl2) {
 			this.buildCube(cubes, side, x, y);
 		}
@@ -188,8 +190,8 @@ public class ItemModelGenerator {
 		}
 	}
 
-	private boolean isPixelTransparent(Sprite sprite, int frame, int x, int y, int i, int j) {
-		return x >= 0 && y >= 0 && x < i && y < j ? sprite.isPixelTransparent(frame, x, y) : true;
+	private boolean isPixelTransparent(Sprite sprite, int frame, int x, int y, int width, int height) {
+		return x >= 0 && y >= 0 && x < width && y < height ? sprite.isPixelTransparent(frame, x, y) : true;
 	}
 
 	@Environment(EnvType.CLIENT)

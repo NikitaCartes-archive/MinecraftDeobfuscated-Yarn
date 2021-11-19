@@ -19,7 +19,7 @@ public class WantNewItemTask<E extends PiglinEntity> extends Task<E> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
-		if (!piglinEntity.getOffhandStack().isEmpty()) {
+		if (!piglinEntity.getOffHandStack().isEmpty()) {
 			return false;
 		} else {
 			Optional<ItemEntity> optional = piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM);

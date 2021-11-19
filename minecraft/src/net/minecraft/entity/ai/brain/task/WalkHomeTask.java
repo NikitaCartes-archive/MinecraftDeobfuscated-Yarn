@@ -57,8 +57,8 @@ public class WalkHomeTask extends Task<LivingEntity> {
 		this.expiryTimeLimit = world.getTime() + (long)world.getRandom().nextInt(20);
 		PathAwareEntity pathAwareEntity = (PathAwareEntity)entity;
 		PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
-		Predicate<BlockPos> predicate = blockPosx -> {
-			long l = blockPosx.asLong();
+		Predicate<BlockPos> predicate = pos -> {
+			long l = pos.asLong();
 			if (this.positionToExpiry.containsKey(l)) {
 				return false;
 			} else if (++this.tries >= 5) {

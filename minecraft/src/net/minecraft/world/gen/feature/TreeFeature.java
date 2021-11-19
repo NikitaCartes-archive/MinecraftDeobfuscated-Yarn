@@ -85,7 +85,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 			int m = this.getTopPosition(world, i, pos, config);
 			if (m >= i || optionalInt.isPresent() && m >= optionalInt.getAsInt()) {
 				List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, trunkReplacer, random, m, pos, config);
-				list.forEach(treeNode -> config.foliagePlacer.generate(world, foliageReplacer, random, config, m, treeNode, j, l));
+				list.forEach(node -> config.foliagePlacer.generate(world, foliageReplacer, random, config, m, node, j, l));
 				return true;
 			} else {
 				return false;
@@ -147,7 +147,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 				List<BlockPos> list2 = Lists.<BlockPos>newArrayList(set2);
 				list.sort(Comparator.comparingInt(Vec3i::getY));
 				list2.sort(Comparator.comparingInt(Vec3i::getY));
-				treeFeatureConfig.decorators.forEach(treeDecorator -> treeDecorator.generate(structureWorldAccess, biConsumer3, random, list, list2));
+				treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(structureWorldAccess, biConsumer3, random, list, list2));
 			}
 
 			return (Boolean)BlockBox.encompassPositions(Iterables.concat(set, set2, set3)).map(box -> {

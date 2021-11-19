@@ -117,11 +117,11 @@ public class SectionedEntityCache<T extends EntityLike> {
 	}
 
 	public void forEachIntersects(Box box, Consumer<T> action) {
-		this.forEachInBox(box, entityTrackingSection -> entityTrackingSection.forEach(box, action));
+		this.forEachInBox(box, section -> section.forEach(box, action));
 	}
 
 	public <U extends T> void forEachIntersects(TypeFilter<T, U> filter, Box box, Consumer<U> action) {
-		this.forEachInBox(box, entityTrackingSection -> entityTrackingSection.forEach(filter, box, action));
+		this.forEachInBox(box, section -> section.forEach(filter, box, action));
 	}
 
 	public void removeSection(long sectionPos) {

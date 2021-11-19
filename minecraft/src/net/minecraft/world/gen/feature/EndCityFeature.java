@@ -5,8 +5,8 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import net.minecraft.class_6834;
 import net.minecraft.structure.EndCityGenerator;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.BlockRotation;
@@ -52,22 +52,22 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		return Math.min(Math.min(m, n), Math.min(o, p));
 	}
 
-	private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(class_6834.class_6835<DefaultFeatureConfig> arg) {
-		int i = getGenerationHeight(arg.chunkPos(), arg.chunkGenerator(), arg.heightAccessor());
+	private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
+		int i = getGenerationHeight(context.chunkPos(), context.chunkGenerator(), context.world());
 		if (i < 60) {
 			return Optional.empty();
 		} else {
-			BlockPos blockPos = arg.chunkPos().getCenterAtY(i);
-			return !arg.validBiome()
+			BlockPos blockPos = context.chunkPos().getCenterAtY(i);
+			return !context.validBiome()
 					.test(
-						arg.chunkGenerator()
+						context.chunkGenerator()
 							.getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()))
 					)
 				? Optional.empty()
-				: Optional.of((StructurePiecesGenerator<>)(structurePiecesCollector, context) -> {
-					BlockRotation blockRotation = BlockRotation.random(context.random());
+				: Optional.of((StructurePiecesGenerator<>)(structurePiecesCollector, contextx) -> {
+					BlockRotation blockRotation = BlockRotation.random(contextx.random());
 					List<StructurePiece> list = Lists.<StructurePiece>newArrayList();
-					EndCityGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, context.random());
+					EndCityGenerator.addPieces(contextx.structureManager(), blockPos, blockRotation, list, contextx.random());
 					list.forEach(structurePiecesCollector::addPiece);
 				});
 		}

@@ -45,21 +45,21 @@ public class MineshaftGenerator {
 	public static final int field_34729 = 50;
 
 	private static MineshaftGenerator.MineshaftPart pickPiece(
-		StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, @Nullable Direction orientation, int chainLength, MineshaftFeature.Type type
+		StructurePiecesHolder holder, Random random, int x, int y, int z, @Nullable Direction orientation, int chainLength, MineshaftFeature.Type type
 	) {
 		int i = random.nextInt(100);
 		if (i >= 80) {
-			BlockBox blockBox = MineshaftGenerator.MineshaftCrossing.getBoundingBox(structurePiecesHolder, random, x, y, z, orientation);
+			BlockBox blockBox = MineshaftGenerator.MineshaftCrossing.getBoundingBox(holder, random, x, y, z, orientation);
 			if (blockBox != null) {
 				return new MineshaftGenerator.MineshaftCrossing(chainLength, blockBox, orientation, type);
 			}
 		} else if (i >= 70) {
-			BlockBox blockBox = MineshaftGenerator.MineshaftStairs.getBoundingBox(structurePiecesHolder, random, x, y, z, orientation);
+			BlockBox blockBox = MineshaftGenerator.MineshaftStairs.getBoundingBox(holder, random, x, y, z, orientation);
 			if (blockBox != null) {
 				return new MineshaftGenerator.MineshaftStairs(chainLength, blockBox, orientation, type);
 			}
 		} else {
-			BlockBox blockBox = MineshaftGenerator.MineshaftCorridor.getBoundingBox(structurePiecesHolder, random, x, y, z, orientation);
+			BlockBox blockBox = MineshaftGenerator.MineshaftCorridor.getBoundingBox(holder, random, x, y, z, orientation);
 			if (blockBox != null) {
 				return new MineshaftGenerator.MineshaftCorridor(chainLength, random, blockBox, orientation, type);
 			}
@@ -69,16 +69,16 @@ public class MineshaftGenerator {
 	}
 
 	static MineshaftGenerator.MineshaftPart pieceGenerator(
-		StructurePiece start, StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
+		StructurePiece start, StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength
 	) {
 		if (chainLength > 8) {
 			return null;
 		} else if (Math.abs(x - start.getBoundingBox().getMinX()) <= 80 && Math.abs(z - start.getBoundingBox().getMinZ()) <= 80) {
 			MineshaftFeature.Type type = ((MineshaftGenerator.MineshaftPart)start).mineshaftType;
-			MineshaftGenerator.MineshaftPart mineshaftPart = pickPiece(structurePiecesHolder, random, x, y, z, orientation, chainLength + 1, type);
+			MineshaftGenerator.MineshaftPart mineshaftPart = pickPiece(holder, random, x, y, z, orientation, chainLength + 1, type);
 			if (mineshaftPart != null) {
-				structurePiecesHolder.addPiece(mineshaftPart);
-				mineshaftPart.fillOpenings(start, structurePiecesHolder, random);
+				holder.addPiece(mineshaftPart);
+				mineshaftPart.fillOpenings(start, holder, random);
 			}
 
 			return mineshaftPart;
@@ -523,10 +523,10 @@ public class MineshaftGenerator {
 		private final Direction direction;
 		private final boolean twoFloors;
 
-		public MineshaftCrossing(NbtCompound nbtCompound) {
-			super(StructurePieceType.MINESHAFT_CROSSING, nbtCompound);
-			this.twoFloors = nbtCompound.getBoolean("tf");
-			this.direction = Direction.fromHorizontal(nbtCompound.getInt("D"));
+		public MineshaftCrossing(NbtCompound nbt) {
+			super(StructurePieceType.MINESHAFT_CROSSING, nbt);
+			this.twoFloors = nbt.getBoolean("tf");
+			this.direction = Direction.fromHorizontal(nbt.getInt("D"));
 		}
 
 		@Override
@@ -543,7 +543,7 @@ public class MineshaftGenerator {
 		}
 
 		@Nullable
-		public static BlockBox getBoundingBox(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation) {
+		public static BlockBox getBoundingBox(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation) {
 			int i;
 			if (random.nextInt(4) == 0) {
 				i = 6;
@@ -557,7 +557,7 @@ public class MineshaftGenerator {
 				case EAST -> new BlockBox(0, 0, -1, 4, i, 3);
 			};
 			blockBox.move(x, y, z);
-			return structurePiecesHolder.getIntersecting(blockBox) != null ? null : blockBox;
+			return holder.getIntersecting(blockBox) != null ? null : blockBox;
 		}
 
 		@Override
@@ -1095,12 +1095,12 @@ public class MineshaftGenerator {
 			this.setOrientation(orientation);
 		}
 
-		public MineshaftStairs(NbtCompound nbtCompound) {
-			super(StructurePieceType.MINESHAFT_STAIRS, nbtCompound);
+		public MineshaftStairs(NbtCompound nbt) {
+			super(StructurePieceType.MINESHAFT_STAIRS, nbt);
 		}
 
 		@Nullable
-		public static BlockBox getBoundingBox(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation) {
+		public static BlockBox getBoundingBox(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation) {
 			BlockBox blockBox = switch (orientation) {
 				default -> new BlockBox(0, -5, -8, 2, 2, 0);
 				case SOUTH -> new BlockBox(0, -5, 0, 2, 2, 8);
@@ -1108,7 +1108,7 @@ public class MineshaftGenerator {
 				case EAST -> new BlockBox(0, -5, 0, 8, 2, 2);
 			};
 			blockBox.move(x, y, z);
-			return structurePiecesHolder.getIntersecting(blockBox) != null ? null : blockBox;
+			return holder.getIntersecting(blockBox) != null ? null : blockBox;
 		}
 
 		@Override

@@ -13,27 +13,27 @@ public class SmallDripstoneFeatureConfig implements FeatureConfig {
 					Codec.floatRange(0.0F, 1.0F)
 						.fieldOf("chance_of_directional_spread")
 						.orElse(0.7F)
-						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.field_35416),
+						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.chanceOfDirectionalSpread),
 					Codec.floatRange(0.0F, 1.0F)
 						.fieldOf("chance_of_spread_radius2")
 						.orElse(0.5F)
-						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.field_35417),
+						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.chanceOfSpreadRadius2),
 					Codec.floatRange(0.0F, 1.0F)
 						.fieldOf("chance_of_spread_radius3")
 						.orElse(0.5F)
-						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.field_35418)
+						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.chanceOfSpreadRadius3)
 				)
 				.apply(instance, SmallDripstoneFeatureConfig::new)
 	);
 	public final float chanceOfTallerDripstone;
-	public final float field_35416;
-	public final float field_35417;
-	public final float field_35418;
+	public final float chanceOfDirectionalSpread;
+	public final float chanceOfSpreadRadius2;
+	public final float chanceOfSpreadRadius3;
 
-	public SmallDripstoneFeatureConfig(float f, float g, float h, float chanceOfTallerDripstone) {
-		this.chanceOfTallerDripstone = f;
-		this.field_35416 = g;
-		this.field_35417 = h;
-		this.field_35418 = chanceOfTallerDripstone;
+	public SmallDripstoneFeatureConfig(float chanceOfTallerDripstone, float chanceOfDirectionalSpread, float chanceOfSpreadRadius2, float chanceOfSpreadRadius3) {
+		this.chanceOfTallerDripstone = chanceOfTallerDripstone;
+		this.chanceOfDirectionalSpread = chanceOfDirectionalSpread;
+		this.chanceOfSpreadRadius2 = chanceOfSpreadRadius2;
+		this.chanceOfSpreadRadius3 = chanceOfSpreadRadius3;
 	}
 }

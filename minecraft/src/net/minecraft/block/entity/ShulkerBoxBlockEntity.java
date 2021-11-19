@@ -99,13 +99,13 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	public Box getBoundingBox(BlockState state) {
-		return ShulkerEntity.method_33346(state.get(ShulkerBoxBlock.FACING), 0.5F * this.getAnimationProgress(1.0F));
+		return ShulkerEntity.calculateBoundingBox(state.get(ShulkerBoxBlock.FACING), 0.5F * this.getAnimationProgress(1.0F));
 	}
 
 	private void pushEntities(World world, BlockPos pos, BlockState state) {
 		if (state.getBlock() instanceof ShulkerBoxBlock) {
 			Direction direction = state.get(ShulkerBoxBlock.FACING);
-			Box box = ShulkerEntity.method_33347(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
+			Box box = ShulkerEntity.calculateBoundingBox(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
 			List<Entity> list = world.getOtherEntities(null, box);
 			if (!list.isEmpty()) {
 				for (int i = 0; i < list.size(); i++) {

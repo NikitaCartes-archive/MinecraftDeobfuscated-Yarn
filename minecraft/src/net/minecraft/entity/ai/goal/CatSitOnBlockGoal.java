@@ -53,9 +53,7 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 			} else {
 				return blockState.isOf(Blocks.FURNACE) && blockState.get(FurnaceBlock.LIT)
 					? true
-					: blockState.isIn(
-						BlockTags.BEDS, abstractBlockState -> (Boolean)abstractBlockState.getOrEmpty(BedBlock.PART).map(bedPart -> bedPart != BedPart.HEAD).orElse(true)
-					);
+					: blockState.isIn(BlockTags.BEDS, state -> (Boolean)state.getOrEmpty(BedBlock.PART).map(part -> part != BedPart.HEAD).orElse(true));
 			}
 		}
 	}

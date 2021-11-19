@@ -94,7 +94,7 @@ public class StrongholdGenerator {
 
 	private static StrongholdGenerator.Piece createPiece(
 		Class<? extends StrongholdGenerator.Piece> pieceType,
-		StructurePiecesHolder structurePiecesHolder,
+		StructurePiecesHolder holder,
 		Random random,
 		int x,
 		int y,
@@ -104,40 +104,40 @@ public class StrongholdGenerator {
 	) {
 		StrongholdGenerator.Piece piece = null;
 		if (pieceType == StrongholdGenerator.Corridor.class) {
-			piece = StrongholdGenerator.Corridor.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.Corridor.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.PrisonHall.class) {
-			piece = StrongholdGenerator.PrisonHall.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.PrisonHall.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.LeftTurn.class) {
-			piece = StrongholdGenerator.LeftTurn.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.LeftTurn.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.RightTurn.class) {
-			piece = StrongholdGenerator.RightTurn.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.RightTurn.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.SquareRoom.class) {
-			piece = StrongholdGenerator.SquareRoom.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.SquareRoom.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.Stairs.class) {
-			piece = StrongholdGenerator.Stairs.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.Stairs.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.SpiralStaircase.class) {
-			piece = StrongholdGenerator.SpiralStaircase.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.SpiralStaircase.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.FiveWayCrossing.class) {
-			piece = StrongholdGenerator.FiveWayCrossing.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.FiveWayCrossing.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.ChestCorridor.class) {
-			piece = StrongholdGenerator.ChestCorridor.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.ChestCorridor.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.Library.class) {
-			piece = StrongholdGenerator.Library.create(structurePiecesHolder, random, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.Library.create(holder, random, x, y, z, orientation, chainLength);
 		} else if (pieceType == StrongholdGenerator.PortalRoom.class) {
-			piece = StrongholdGenerator.PortalRoom.create(structurePiecesHolder, x, y, z, orientation, chainLength);
+			piece = StrongholdGenerator.PortalRoom.create(holder, x, y, z, orientation, chainLength);
 		}
 
 		return piece;
 	}
 
 	private static StrongholdGenerator.Piece pickPiece(
-		StrongholdGenerator.Start start, StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
+		StrongholdGenerator.Start start, StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength
 	) {
 		if (!checkRemainingPieces()) {
 			return null;
 		} else {
 			if (activePieceType != null) {
-				StrongholdGenerator.Piece piece = createPiece(activePieceType, structurePiecesHolder, random, x, y, z, orientation, chainLength);
+				StrongholdGenerator.Piece piece = createPiece(activePieceType, holder, random, x, y, z, orientation, chainLength);
 				activePieceType = null;
 				if (piece != null) {
 					return piece;
@@ -157,7 +157,7 @@ public class StrongholdGenerator {
 							break;
 						}
 
-						StrongholdGenerator.Piece piece2 = createPiece(pieceData.pieceType, structurePiecesHolder, random, x, y, z, orientation, chainLength);
+						StrongholdGenerator.Piece piece2 = createPiece(pieceData.pieceType, holder, random, x, y, z, orientation, chainLength);
 						if (piece2 != null) {
 							pieceData.generatedCount++;
 							start.lastPiece = pieceData;
@@ -171,27 +171,20 @@ public class StrongholdGenerator {
 				}
 			}
 
-			BlockBox blockBox = StrongholdGenerator.SmallCorridor.create(structurePiecesHolder, random, x, y, z, orientation);
+			BlockBox blockBox = StrongholdGenerator.SmallCorridor.create(holder, random, x, y, z, orientation);
 			return blockBox != null && blockBox.getMinY() > 1 ? new StrongholdGenerator.SmallCorridor(chainLength, blockBox, orientation) : null;
 		}
 	}
 
 	static StructurePiece pieceGenerator(
-		StrongholdGenerator.Start start,
-		StructurePiecesHolder structurePiecesHolder,
-		Random random,
-		int x,
-		int y,
-		int z,
-		@Nullable Direction orientation,
-		int chainLength
+		StrongholdGenerator.Start start, StructurePiecesHolder holder, Random random, int x, int y, int z, @Nullable Direction orientation, int chainLength
 	) {
 		if (chainLength > 50) {
 			return null;
 		} else if (Math.abs(x - start.getBoundingBox().getMinX()) <= 112 && Math.abs(z - start.getBoundingBox().getMinZ()) <= 112) {
-			StructurePiece structurePiece = pickPiece(start, structurePiecesHolder, random, x, y, z, orientation, chainLength + 1);
+			StructurePiece structurePiece = pickPiece(start, holder, random, x, y, z, orientation, chainLength + 1);
 			if (structurePiece != null) {
-				structurePiecesHolder.addPiece(structurePiece);
+				holder.addPiece(structurePiece);
 				start.pieces.add(structurePiece);
 			}
 
@@ -213,9 +206,9 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public ChestCorridor(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, nbtCompound);
-			this.chestGenerated = nbtCompound.getBoolean("Chest");
+		public ChestCorridor(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, nbt);
+			this.chestGenerated = nbt.getBoolean("Chest");
 		}
 
 		@Override
@@ -230,10 +223,10 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.ChestCorridor create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainlength
+			StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainlength
 		) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -1, 0, 5, 5, 7, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
 				? new StrongholdGenerator.ChestCorridor(chainlength, random, blockBox, orientation)
 				: null;
 		}
@@ -283,10 +276,10 @@ public class StrongholdGenerator {
 			this.rightExitExists = random.nextInt(2) == 0;
 		}
 
-		public Corridor(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_CORRIDOR, nbtCompound);
-			this.leftExitExists = nbtCompound.getBoolean("Left");
-			this.rightExitExists = nbtCompound.getBoolean("Right");
+		public Corridor(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_CORRIDOR, nbt);
+			this.leftExitExists = nbt.getBoolean("Left");
+			this.rightExitExists = nbt.getBoolean("Right");
 		}
 
 		@Override
@@ -308,11 +301,9 @@ public class StrongholdGenerator {
 			}
 		}
 
-		public static StrongholdGenerator.Corridor create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
-		) {
+		public static StrongholdGenerator.Corridor create(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -1, 0, 5, 5, 7, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
 				? new StrongholdGenerator.Corridor(chainLength, random, blockBox, orientation)
 				: null;
 		}
@@ -365,12 +356,12 @@ public class StrongholdGenerator {
 			this.upperRightExists = random.nextInt(3) > 0;
 		}
 
-		public FiveWayCrossing(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, nbtCompound);
-			this.lowerLeftExists = nbtCompound.getBoolean("leftLow");
-			this.upperLeftExists = nbtCompound.getBoolean("leftHigh");
-			this.lowerRightExists = nbtCompound.getBoolean("rightLow");
-			this.upperRightExists = nbtCompound.getBoolean("rightHigh");
+		public FiveWayCrossing(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, nbt);
+			this.lowerLeftExists = nbt.getBoolean("leftLow");
+			this.upperLeftExists = nbt.getBoolean("leftHigh");
+			this.lowerRightExists = nbt.getBoolean("rightLow");
+			this.upperRightExists = nbt.getBoolean("rightHigh");
 		}
 
 		@Override
@@ -411,10 +402,10 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.FiveWayCrossing create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
+			StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength
 		) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -4, -3, 0, 10, 9, 11, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
 				? new StrongholdGenerator.FiveWayCrossing(chainLength, random, blockBox, orientation)
 				: null;
 		}
@@ -484,8 +475,8 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public LeftTurn(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_LEFT_TURN, nbtCompound);
+		public LeftTurn(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_LEFT_TURN, nbt);
 		}
 
 		@Override
@@ -498,11 +489,9 @@ public class StrongholdGenerator {
 			}
 		}
 
-		public static StrongholdGenerator.LeftTurn create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
-		) {
+		public static StrongholdGenerator.LeftTurn create(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -1, 0, 5, 5, 5, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
 				? new StrongholdGenerator.LeftTurn(chainLength, random, blockBox, orientation)
 				: null;
 		}
@@ -542,9 +531,9 @@ public class StrongholdGenerator {
 			this.tall = boundingBox.getBlockCountY() > 6;
 		}
 
-		public Library(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_LIBRARY, nbtCompound);
-			this.tall = nbtCompound.getBoolean("Tall");
+		public Library(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_LIBRARY, nbt);
+			this.tall = nbt.getBoolean("Tall");
 		}
 
 		@Override
@@ -553,13 +542,11 @@ public class StrongholdGenerator {
 			nbt.putBoolean("Tall", this.tall);
 		}
 
-		public static StrongholdGenerator.Library create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
-		) {
+		public static StrongholdGenerator.Library create(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -4, -1, 0, 14, 11, 15, orientation);
-			if (!isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+			if (!isInBounds(blockBox) || holder.getIntersecting(blockBox) != null) {
 				blockBox = BlockBox.rotated(x, y, z, -4, -1, 0, 14, 6, 15, orientation);
-				if (!isInBounds(blockBox) || structurePiecesHolder.getIntersecting(blockBox) != null) {
+				if (!isInBounds(blockBox) || holder.getIntersecting(blockBox) != null) {
 					return null;
 				}
 			}
@@ -808,7 +795,7 @@ public class StrongholdGenerator {
 
 		@Nullable
 		protected StructurePiece fillForwardOpening(
-			StrongholdGenerator.Start start, StructurePiecesHolder structurePiecesHolder, Random random, int leftRightOffset, int heightOffset
+			StrongholdGenerator.Start start, StructurePiecesHolder holder, Random random, int leftRightOffset, int heightOffset
 		) {
 			Direction direction = this.getFacing();
 			if (direction != null) {
@@ -816,7 +803,7 @@ public class StrongholdGenerator {
 					case NORTH:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMinX() + leftRightOffset,
 							this.boundingBox.getMinY() + heightOffset,
@@ -827,7 +814,7 @@ public class StrongholdGenerator {
 					case SOUTH:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMinX() + leftRightOffset,
 							this.boundingBox.getMinY() + heightOffset,
@@ -838,7 +825,7 @@ public class StrongholdGenerator {
 					case WEST:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMinX() - 1,
 							this.boundingBox.getMinY() + heightOffset,
@@ -849,7 +836,7 @@ public class StrongholdGenerator {
 					case EAST:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMaxX() + 1,
 							this.boundingBox.getMinY() + heightOffset,
@@ -864,16 +851,14 @@ public class StrongholdGenerator {
 		}
 
 		@Nullable
-		protected StructurePiece fillNWOpening(
-			StrongholdGenerator.Start start, StructurePiecesHolder structurePiecesHolder, Random random, int heightOffset, int leftRightOffset
-		) {
+		protected StructurePiece fillNWOpening(StrongholdGenerator.Start start, StructurePiecesHolder holder, Random random, int heightOffset, int leftRightOffset) {
 			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMinX() - 1,
 							this.boundingBox.getMinY() + heightOffset,
@@ -884,7 +869,7 @@ public class StrongholdGenerator {
 					case SOUTH:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMinX() - 1,
 							this.boundingBox.getMinY() + heightOffset,
@@ -895,7 +880,7 @@ public class StrongholdGenerator {
 					case WEST:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMinX() + leftRightOffset,
 							this.boundingBox.getMinY() + heightOffset,
@@ -906,7 +891,7 @@ public class StrongholdGenerator {
 					case EAST:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMinX() + leftRightOffset,
 							this.boundingBox.getMinY() + heightOffset,
@@ -921,16 +906,14 @@ public class StrongholdGenerator {
 		}
 
 		@Nullable
-		protected StructurePiece fillSEOpening(
-			StrongholdGenerator.Start start, StructurePiecesHolder structurePiecesHolder, Random random, int heightOffset, int leftRightOffset
-		) {
+		protected StructurePiece fillSEOpening(StrongholdGenerator.Start start, StructurePiecesHolder holder, Random random, int heightOffset, int leftRightOffset) {
 			Direction direction = this.getFacing();
 			if (direction != null) {
 				switch (direction) {
 					case NORTH:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMaxX() + 1,
 							this.boundingBox.getMinY() + heightOffset,
@@ -941,7 +924,7 @@ public class StrongholdGenerator {
 					case SOUTH:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMaxX() + 1,
 							this.boundingBox.getMinY() + heightOffset,
@@ -952,7 +935,7 @@ public class StrongholdGenerator {
 					case WEST:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMinX() + leftRightOffset,
 							this.boundingBox.getMinY() + heightOffset,
@@ -963,7 +946,7 @@ public class StrongholdGenerator {
 					case EAST:
 						return StrongholdGenerator.pieceGenerator(
 							start,
-							structurePiecesHolder,
+							holder,
 							random,
 							this.boundingBox.getMinX() + leftRightOffset,
 							this.boundingBox.getMinY() + heightOffset,
@@ -1021,9 +1004,9 @@ public class StrongholdGenerator {
 			this.setOrientation(orientation);
 		}
 
-		public PortalRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, nbtCompound);
-			this.spawnerPlaced = nbtCompound.getBoolean("Mob");
+		public PortalRoom(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, nbt);
+			this.spawnerPlaced = nbt.getBoolean("Mob");
 		}
 
 		@Override
@@ -1039,11 +1022,9 @@ public class StrongholdGenerator {
 			}
 		}
 
-		public static StrongholdGenerator.PortalRoom create(StructurePiecesHolder structurePiecesHolder, int x, int y, int z, Direction orientation, int chainLength) {
+		public static StrongholdGenerator.PortalRoom create(StructurePiecesHolder holder, int x, int y, int z, Direction orientation, int chainLength) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -4, -1, 0, 11, 8, 16, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
-				? new StrongholdGenerator.PortalRoom(chainLength, blockBox, orientation)
-				: null;
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null ? new StrongholdGenerator.PortalRoom(chainLength, blockBox, orientation) : null;
 		}
 
 		@Override
@@ -1154,8 +1135,8 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public PrisonHall(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_PRISON_HALL, nbtCompound);
+		public PrisonHall(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_PRISON_HALL, nbt);
 		}
 
 		@Override
@@ -1163,11 +1144,9 @@ public class StrongholdGenerator {
 			this.fillForwardOpening((StrongholdGenerator.Start)start, holder, random, 1, 1);
 		}
 
-		public static StrongholdGenerator.PrisonHall create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
-		) {
+		public static StrongholdGenerator.PrisonHall create(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -1, 0, 9, 5, 11, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
 				? new StrongholdGenerator.PrisonHall(chainLength, random, blockBox, orientation)
 				: null;
 		}
@@ -1242,8 +1221,8 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public RightTurn(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_RIGHT_TURN, nbtCompound);
+		public RightTurn(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_RIGHT_TURN, nbt);
 		}
 
 		@Override
@@ -1256,11 +1235,9 @@ public class StrongholdGenerator {
 			}
 		}
 
-		public static StrongholdGenerator.RightTurn create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
-		) {
+		public static StrongholdGenerator.RightTurn create(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -1, 0, 5, 5, 5, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
 				? new StrongholdGenerator.RightTurn(chainLength, random, blockBox, orientation)
 				: null;
 		}
@@ -1295,9 +1272,9 @@ public class StrongholdGenerator {
 			this.length = orientation != Direction.NORTH && orientation != Direction.SOUTH ? boundingBox.getBlockCountX() : boundingBox.getBlockCountZ();
 		}
 
-		public SmallCorridor(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, nbtCompound);
-			this.length = nbtCompound.getInt("Steps");
+		public SmallCorridor(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, nbt);
+			this.length = nbt.getInt("Steps");
 		}
 
 		@Override
@@ -1306,10 +1283,10 @@ public class StrongholdGenerator {
 			nbt.putInt("Steps", this.length);
 		}
 
-		public static BlockBox create(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation) {
+		public static BlockBox create(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation) {
 			int i = 3;
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -1, 0, 5, 5, 4, orientation);
-			StructurePiece structurePiece = structurePiecesHolder.getIntersecting(blockBox);
+			StructurePiece structurePiece = holder.getIntersecting(blockBox);
 			if (structurePiece == null) {
 				return null;
 			} else {
@@ -1385,8 +1362,8 @@ public class StrongholdGenerator {
 			this.isStructureStart = nbtCompound.getBoolean("Source");
 		}
 
-		public SpiralStaircase(NbtCompound nbtCompound) {
-			this(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, nbtCompound);
+		public SpiralStaircase(NbtCompound nbt) {
+			this(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, nbt);
 		}
 
 		@Override
@@ -1405,10 +1382,10 @@ public class StrongholdGenerator {
 		}
 
 		public static StrongholdGenerator.SpiralStaircase create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
+			StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength
 		) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -7, 0, 5, 11, 5, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
 				? new StrongholdGenerator.SpiralStaircase(chainLength, random, blockBox, orientation)
 				: null;
 		}
@@ -1459,9 +1436,9 @@ public class StrongholdGenerator {
 			this.roomType = random.nextInt(5);
 		}
 
-		public SquareRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, nbtCompound);
-			this.roomType = nbtCompound.getInt("Type");
+		public SquareRoom(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, nbt);
+			this.roomType = nbt.getInt("Type");
 		}
 
 		@Override
@@ -1477,11 +1454,9 @@ public class StrongholdGenerator {
 			this.fillSEOpening((StrongholdGenerator.Start)start, holder, random, 1, 4);
 		}
 
-		public static StrongholdGenerator.SquareRoom create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
-		) {
+		public static StrongholdGenerator.SquareRoom create(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -4, -1, 0, 11, 7, 11, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
 				? new StrongholdGenerator.SquareRoom(chainLength, random, blockBox, orientation)
 				: null;
 		}
@@ -1594,8 +1569,8 @@ public class StrongholdGenerator {
 			this.entryDoor = this.getRandomEntrance(random);
 		}
 
-		public Stairs(NbtCompound nbtCompound) {
-			super(StructurePieceType.STRONGHOLD_STAIRS, nbtCompound);
+		public Stairs(NbtCompound nbt) {
+			super(StructurePieceType.STRONGHOLD_STAIRS, nbt);
 		}
 
 		@Override
@@ -1603,13 +1578,9 @@ public class StrongholdGenerator {
 			this.fillForwardOpening((StrongholdGenerator.Start)start, holder, random, 1, 1);
 		}
 
-		public static StrongholdGenerator.Stairs create(
-			StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation, int chainLength
-		) {
+		public static StrongholdGenerator.Stairs create(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -7, 0, 5, 11, 8, orientation);
-			return isInBounds(blockBox) && structurePiecesHolder.getIntersecting(blockBox) == null
-				? new StrongholdGenerator.Stairs(chainLength, random, blockBox, orientation)
-				: null;
+			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null ? new StrongholdGenerator.Stairs(chainLength, random, blockBox, orientation) : null;
 		}
 
 		@Override

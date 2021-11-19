@@ -104,10 +104,12 @@ public class UndergroundConfiguredFeatures {
 					ImmutableList.of(
 						() -> Feature.POINTED_DRIPSTONE
 								.configure(new SmallDripstoneFeatureConfig(0.2F, 0.7F, 0.5F, 0.5F))
-								.withPlacement(EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR_OR_WATER, 12)),
+								.withPlacement(
+									EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(Direction.DOWN.getVector()), BlockPredicate.IS_AIR_OR_WATER, 12)
+								),
 						() -> Feature.POINTED_DRIPSTONE
 								.configure(new SmallDripstoneFeatureConfig(0.2F, 0.7F, 0.5F, 0.5F))
-								.withPlacement(EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR_OR_WATER, 12))
+								.withPlacement(EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(Direction.UP.getVector()), BlockPredicate.IS_AIR_OR_WATER, 12))
 					)
 				)
 			)
@@ -137,7 +139,7 @@ public class UndergroundConfiguredFeatures {
 					() -> TreeConfiguredFeatures.AZALEA_TREE.withPlacement(),
 					3,
 					3,
-					BlockTags.LUSH_GROUND_REPLACEABLE.getId(),
+					BlockTags.AZALEA_ROOT_REPLACEABLE.getId(),
 					BlockStateProvider.of(Blocks.ROOTED_DIRT),
 					20,
 					100,
@@ -145,7 +147,15 @@ public class UndergroundConfiguredFeatures {
 					2,
 					BlockStateProvider.of(Blocks.HANGING_ROOTS),
 					20,
-					2
+					2,
+					BlockPredicate.bothOf(
+						BlockPredicate.anyOf(
+							BlockPredicate.matchingBlocks(List.of(Blocks.AIR, Blocks.CAVE_AIR, Blocks.VOID_AIR, Blocks.WATER)),
+							BlockPredicate.matchingBlockTag(BlockTags.LEAVES),
+							BlockPredicate.matchingBlockTag(BlockTags.REPLACEABLE_PLANTS)
+						),
+						BlockPredicate.matchingBlockTag(BlockTags.AZALEA_GROWS_ON, Direction.DOWN.getVector())
+					)
 				)
 			)
 	);
@@ -228,7 +238,7 @@ public class UndergroundConfiguredFeatures {
 				new VegetationPatchFeatureConfig(
 					BlockTags.MOSS_REPLACEABLE.getId(),
 					BlockStateProvider.of(Blocks.MOSS_BLOCK),
-					() -> MOSS_VEGETATION,
+					() -> MOSS_VEGETATION.withPlacement(),
 					VerticalSurfaceType.FLOOR,
 					ConstantIntProvider.create(1),
 					0.0F,
@@ -246,7 +256,7 @@ public class UndergroundConfiguredFeatures {
 				new VegetationPatchFeatureConfig(
 					BlockTags.MOSS_REPLACEABLE.getId(),
 					BlockStateProvider.of(Blocks.MOSS_BLOCK),
-					() -> MOSS_VEGETATION,
+					() -> MOSS_VEGETATION.withPlacement(),
 					VerticalSurfaceType.FLOOR,
 					ConstantIntProvider.create(1),
 					0.0F,
@@ -279,7 +289,7 @@ public class UndergroundConfiguredFeatures {
 				new VegetationPatchFeatureConfig(
 					BlockTags.LUSH_GROUND_REPLACEABLE.getId(),
 					BlockStateProvider.of(Blocks.CLAY),
-					() -> DRIPLEAF,
+					() -> DRIPLEAF.withPlacement(),
 					VerticalSurfaceType.FLOOR,
 					ConstantIntProvider.create(3),
 					0.8F,
@@ -297,7 +307,7 @@ public class UndergroundConfiguredFeatures {
 				new VegetationPatchFeatureConfig(
 					BlockTags.LUSH_GROUND_REPLACEABLE.getId(),
 					BlockStateProvider.of(Blocks.CLAY),
-					() -> DRIPLEAF,
+					() -> DRIPLEAF.withPlacement(),
 					VerticalSurfaceType.FLOOR,
 					ConstantIntProvider.create(3),
 					0.8F,
@@ -309,7 +319,9 @@ public class UndergroundConfiguredFeatures {
 			)
 	);
 	public static final ConfiguredFeature<RandomBooleanFeatureConfig, ?> LUSH_CAVES_CLAY = ConfiguredFeatures.register(
-		"lush_caves_clay", Feature.RANDOM_BOOLEAN_SELECTOR.configure(new RandomBooleanFeatureConfig(() -> CLAY_WITH_DRIPLEAVES, () -> CLAY_POOL_WITH_DRIPLEAVES))
+		"lush_caves_clay",
+		Feature.RANDOM_BOOLEAN_SELECTOR
+			.configure(new RandomBooleanFeatureConfig(() -> CLAY_WITH_DRIPLEAVES.withPlacement(), () -> CLAY_POOL_WITH_DRIPLEAVES.withPlacement()))
 	);
 	public static final ConfiguredFeature<VegetationPatchFeatureConfig, ?> MOSS_PATCH_CEILING = ConfiguredFeatures.register(
 		"moss_patch_ceiling",
@@ -318,7 +330,7 @@ public class UndergroundConfiguredFeatures {
 				new VegetationPatchFeatureConfig(
 					BlockTags.MOSS_REPLACEABLE.getId(),
 					BlockStateProvider.of(Blocks.MOSS_BLOCK),
-					() -> CAVE_VINE_IN_MOSS,
+					() -> CAVE_VINE_IN_MOSS.withPlacement(),
 					VerticalSurfaceType.CEILING,
 					UniformIntProvider.create(1, 2),
 					0.0F,

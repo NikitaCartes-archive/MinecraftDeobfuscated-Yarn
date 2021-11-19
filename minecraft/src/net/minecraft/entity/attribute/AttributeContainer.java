@@ -75,8 +75,8 @@ public class AttributeContainer {
 	}
 
 	public void removeModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {
-		attributeModifiers.asMap().forEach((entityAttribute, collection) -> {
-			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(entityAttribute);
+		attributeModifiers.asMap().forEach((attribute, collection) -> {
+			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
 			if (entityAttributeInstance != null) {
 				collection.forEach(entityAttributeInstance::removeModifier);
 			}
@@ -84,20 +84,20 @@ public class AttributeContainer {
 	}
 
 	public void addTemporaryModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {
-		attributeModifiers.forEach((entityAttribute, entityAttributeModifier) -> {
-			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(entityAttribute);
+		attributeModifiers.forEach((attribute, attributeModifier) -> {
+			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.removeModifier(entityAttributeModifier);
-				entityAttributeInstance.addTemporaryModifier(entityAttributeModifier);
+				entityAttributeInstance.removeModifier(attributeModifier);
+				entityAttributeInstance.addTemporaryModifier(attributeModifier);
 			}
 		});
 	}
 
 	public void setFrom(AttributeContainer other) {
-		other.custom.values().forEach(entityAttributeInstance -> {
-			EntityAttributeInstance entityAttributeInstance2 = this.getCustomInstance(entityAttributeInstance.getAttribute());
-			if (entityAttributeInstance2 != null) {
-				entityAttributeInstance2.setFrom(entityAttributeInstance);
+		other.custom.values().forEach(attributeInstance -> {
+			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attributeInstance.getAttribute());
+			if (entityAttributeInstance != null) {
+				entityAttributeInstance.setFrom(attributeInstance);
 			}
 		});
 	}
@@ -116,8 +116,8 @@ public class AttributeContainer {
 		for (int i = 0; i < nbt.size(); i++) {
 			NbtCompound nbtCompound = nbt.getCompound(i);
 			String string = nbtCompound.getString("Name");
-			Util.ifPresentOrElse(Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), entityAttribute -> {
-				EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(entityAttribute);
+			Util.ifPresentOrElse(Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), attribute -> {
+				EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
 				if (entityAttributeInstance != null) {
 					entityAttributeInstance.readNbt(nbtCompound);
 				}
