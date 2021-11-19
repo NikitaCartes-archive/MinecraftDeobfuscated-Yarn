@@ -20,8 +20,8 @@ implements FeatureConfig {
     public final List<RandomFeatureEntry> features;
     public final Supplier<PlacedFeature> defaultFeature;
 
-    public RandomFeatureConfig(List<RandomFeatureEntry> features, PlacedFeature placedFeature) {
-        this(features, () -> placedFeature);
+    public RandomFeatureConfig(List<RandomFeatureEntry> features, PlacedFeature defaultFeature) {
+        this(features, () -> defaultFeature);
     }
 
     private RandomFeatureConfig(List<RandomFeatureEntry> features, Supplier<PlacedFeature> defaultFeature) {

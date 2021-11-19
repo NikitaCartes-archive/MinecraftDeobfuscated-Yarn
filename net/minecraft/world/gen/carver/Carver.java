@@ -69,7 +69,7 @@ public abstract class Carver<C extends CarverConfig> {
         return 4;
     }
 
-    protected boolean carveRegion(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, AquiferSampler aquiferSampler, double d, double e, double f, double g, double h, CarvingMask carvingMask, SkipPredicate skipPredicate) {
+    protected boolean carveRegion(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, AquiferSampler aquiferSampler, double d, double e, double f, double g, double h, CarvingMask mask, SkipPredicate skipPredicate) {
         ChunkPos chunkPos = chunk.getPos();
         double i = chunkPos.getCenterX();
         double j = chunkPos.getCenterZ();
@@ -98,38 +98,38 @@ public abstract class Carver<C extends CarverConfig> {
                 MutableBoolean mutableBoolean = new MutableBoolean(false);
                 for (int z = q; z > p; --z) {
                     double aa = ((double)z - 0.5 - e) / h;
-                    if (skipPredicate.shouldSkip(context, v, aa, y, z) || carvingMask.get(t, z, w) && !Carver.isDebug(config)) continue;
-                    carvingMask.set(t, z, w);
+                    if (skipPredicate.shouldSkip(context, v, aa, y, z) || mask.get(t, z, w) && !Carver.isDebug(config)) continue;
+                    mask.set(t, z, w);
                     mutable.set(u, z, x);
-                    bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, mutable, mutable2, aquiferSampler, mutableBoolean);
+                    bl |= this.carveAtPoint(context, config, chunk, posToBiome, mask, mutable, mutable2, aquiferSampler, mutableBoolean);
                 }
             }
         }
         return bl;
     }
 
-    protected boolean carveAtPoint(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, CarvingMask carvingMask, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, AquiferSampler aquiferSampler, MutableBoolean mutableBoolean) {
-        BlockState blockState2 = chunk.getBlockState(mutable);
-        if (blockState2.isOf(Blocks.GRASS_BLOCK) || blockState2.isOf(Blocks.MYCELIUM)) {
+    protected boolean carveAtPoint(CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, CarvingMask mask, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, AquiferSampler aquiferSampler, MutableBoolean mutableBoolean) {
+        BlockState blockState = chunk.getBlockState(mutable);
+        if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
             mutableBoolean.setTrue();
         }
-        if (!this.canAlwaysCarveBlock(blockState2) && !Carver.isDebug(config)) {
+        if (!this.canAlwaysCarveBlock(blockState) && !Carver.isDebug(config)) {
             return false;
         }
-        BlockState blockState22 = this.getState(context, config, mutable, aquiferSampler);
-        if (blockState22 == null) {
+        BlockState blockState2 = this.getState(context, config, mutable, aquiferSampler);
+        if (blockState2 == null) {
             return false;
         }
-        chunk.setBlockState(mutable, blockState22, false);
-        if (aquiferSampler.needsFluidTick() && !blockState22.getFluidState().isEmpty()) {
+        chunk.setBlockState(mutable, blockState2, false);
+        if (aquiferSampler.needsFluidTick() && !blockState2.getFluidState().isEmpty()) {
             chunk.markBlockForPostProcessing(mutable);
         }
         if (mutableBoolean.isTrue()) {
             mutable2.set((Vec3i)mutable, Direction.DOWN);
             if (chunk.getBlockState(mutable2).isOf(Blocks.DIRT)) {
-                context.method_39114(posToBiome, chunk, mutable2, !blockState22.getFluidState().isEmpty()).ifPresent(blockState -> {
-                    chunk.setBlockState(mutable2, (BlockState)blockState, false);
-                    if (!blockState.getFluidState().isEmpty()) {
+                context.applyMaterialRule(posToBiome, chunk, mutable2, !blockState2.getFluidState().isEmpty()).ifPresent(state -> {
+                    chunk.setBlockState(mutable2, (BlockState)state, false);
+                    if (!state.getFluidState().isEmpty()) {
                         chunk.markBlockForPostProcessing(mutable2);
                     }
                 });

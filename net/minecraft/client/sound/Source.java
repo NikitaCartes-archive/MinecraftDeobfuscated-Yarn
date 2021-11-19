@@ -91,7 +91,7 @@ public class Source {
         }
     }
 
-    public boolean method_35598() {
+    public boolean isPlaying() {
         return this.getSourceState() == 4114;
     }
 

@@ -34,11 +34,11 @@ public class ShipwreckGenerator {
     static final BlockPos DEFAULT_POSITION = new BlockPos(4, 0, 15);
     private static final Identifier[] BEACHED_TEMPLATES = new Identifier[]{new Identifier("shipwreck/with_mast"), new Identifier("shipwreck/sideways_full"), new Identifier("shipwreck/sideways_fronthalf"), new Identifier("shipwreck/sideways_backhalf"), new Identifier("shipwreck/rightsideup_full"), new Identifier("shipwreck/rightsideup_fronthalf"), new Identifier("shipwreck/rightsideup_backhalf"), new Identifier("shipwreck/with_mast_degraded"), new Identifier("shipwreck/rightsideup_full_degraded"), new Identifier("shipwreck/rightsideup_fronthalf_degraded"), new Identifier("shipwreck/rightsideup_backhalf_degraded")};
     private static final Identifier[] REGULAR_TEMPLATES = new Identifier[]{new Identifier("shipwreck/with_mast"), new Identifier("shipwreck/upsidedown_full"), new Identifier("shipwreck/upsidedown_fronthalf"), new Identifier("shipwreck/upsidedown_backhalf"), new Identifier("shipwreck/sideways_full"), new Identifier("shipwreck/sideways_fronthalf"), new Identifier("shipwreck/sideways_backhalf"), new Identifier("shipwreck/rightsideup_full"), new Identifier("shipwreck/rightsideup_fronthalf"), new Identifier("shipwreck/rightsideup_backhalf"), new Identifier("shipwreck/with_mast_degraded"), new Identifier("shipwreck/upsidedown_full_degraded"), new Identifier("shipwreck/upsidedown_fronthalf_degraded"), new Identifier("shipwreck/upsidedown_backhalf_degraded"), new Identifier("shipwreck/sideways_full_degraded"), new Identifier("shipwreck/sideways_fronthalf_degraded"), new Identifier("shipwreck/sideways_backhalf_degraded"), new Identifier("shipwreck/rightsideup_full_degraded"), new Identifier("shipwreck/rightsideup_fronthalf_degraded"), new Identifier("shipwreck/rightsideup_backhalf_degraded")};
-    static final Map<String, Identifier> field_34939 = Map.of("map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST);
+    static final Map<String, Identifier> LOOT_TABLES = Map.of("map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST);
 
-    public static void addParts(StructureManager structureManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder structurePiecesHolder, Random random, ShipwreckFeatureConfig config) {
+    public static void addParts(StructureManager structureManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, ShipwreckFeatureConfig config) {
         Identifier identifier = Util.getRandom(config.isBeached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
-        structurePiecesHolder.addPiece(new Piece(structureManager, identifier, pos, rotation, config.isBeached));
+        holder.addPiece(new Piece(structureManager, identifier, pos, rotation, config.isBeached));
     }
 
     public static class Piece
@@ -50,8 +50,8 @@ public class ShipwreckGenerator {
             this.grounded = grounded;
         }
 
-        public Piece(StructureManager structureManager, NbtCompound nbt) {
-            super(StructurePieceType.SHIPWRECK, nbt, structureManager, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+        public Piece(StructureManager manager, NbtCompound nbt) {
+            super(StructurePieceType.SHIPWRECK, nbt, manager, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
             this.grounded = nbt.getBoolean("isBeached");
         }
 
@@ -68,7 +68,7 @@ public class ShipwreckGenerator {
 
         @Override
         protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
-            Identifier identifier = field_34939.get(metadata);
+            Identifier identifier = LOOT_TABLES.get(metadata);
             if (identifier != null) {
                 LootableContainerBlockEntity.setLootTable(world, random, pos.down(), identifier);
             }

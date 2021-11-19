@@ -408,9 +408,9 @@ IndexedIterable<T> {
 
     static {
         BuiltinRegistries.init();
-        DEFAULT_ENTRIES.forEach((? super K identifier, ? super V supplier) -> {
-            if (supplier.get() == null) {
-                LOGGER.error("Unable to bootstrap registry '{}'", identifier);
+        DEFAULT_ENTRIES.forEach((? super K id, ? super V defaultEntry) -> {
+            if (defaultEntry.get() == null) {
+                LOGGER.error("Unable to bootstrap registry '{}'", id);
             }
         });
         Registry.validate(ROOT);

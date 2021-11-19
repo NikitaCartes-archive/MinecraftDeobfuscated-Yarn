@@ -53,7 +53,7 @@ extends Sensor<HoglinEntity> {
     }
 
     private Optional<BlockPos> findNearestWarpedFungus(ServerWorld world, HoglinEntity hoglin) {
-        return BlockPos.findClosest(hoglin.getBlockPos(), 8, 4, blockPos -> world.getBlockState((BlockPos)blockPos).isIn(BlockTags.HOGLIN_REPELLENTS));
+        return BlockPos.findClosest(hoglin.getBlockPos(), 8, 4, pos -> world.getBlockState((BlockPos)pos).isIn(BlockTags.HOGLIN_REPELLENTS));
     }
 }
 

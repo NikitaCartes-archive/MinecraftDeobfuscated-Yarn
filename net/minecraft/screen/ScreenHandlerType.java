@@ -43,7 +43,7 @@ public class ScreenHandlerType<T extends ScreenHandler> {
     public static final ScreenHandlerType<FurnaceScreenHandler> FURNACE = ScreenHandlerType.register("furnace", FurnaceScreenHandler::new);
     public static final ScreenHandlerType<GrindstoneScreenHandler> GRINDSTONE = ScreenHandlerType.register("grindstone", GrindstoneScreenHandler::new);
     public static final ScreenHandlerType<HopperScreenHandler> HOPPER = ScreenHandlerType.register("hopper", HopperScreenHandler::new);
-    public static final ScreenHandlerType<LecternScreenHandler> LECTERN = ScreenHandlerType.register("lectern", (i, playerInventory) -> new LecternScreenHandler(i));
+    public static final ScreenHandlerType<LecternScreenHandler> LECTERN = ScreenHandlerType.register("lectern", (syncId, playerInventory) -> new LecternScreenHandler(syncId));
     public static final ScreenHandlerType<LoomScreenHandler> LOOM = ScreenHandlerType.register("loom", LoomScreenHandler::new);
     public static final ScreenHandlerType<MerchantScreenHandler> MERCHANT = ScreenHandlerType.register("merchant", MerchantScreenHandler::new);
     public static final ScreenHandlerType<ShulkerBoxScreenHandler> SHULKER_BOX = ScreenHandlerType.register("shulker_box", ShulkerBoxScreenHandler::new);

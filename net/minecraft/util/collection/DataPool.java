@@ -30,7 +30,7 @@ extends Pool<Weighted.Present<E>> {
         return new Builder();
     }
 
-    public static <E> DataPool<E> method_38062() {
+    public static <E> DataPool<E> empty() {
         return new DataPool<E>(List.of());
     }
 

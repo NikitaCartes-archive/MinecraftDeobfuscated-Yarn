@@ -20,11 +20,11 @@ extends CarverConfig {
     public final FloatProvider verticalRadiusMultiplier;
     final FloatProvider floorLevel;
 
-    public CaveCarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig carverDebugConfig, FloatProvider floatProvider, FloatProvider floatProvider2, FloatProvider floatProvider3) {
-        super(probability, y, yScale, lavaLevel, carverDebugConfig);
-        this.horizontalRadiusMultiplier = floatProvider;
-        this.verticalRadiusMultiplier = floatProvider2;
-        this.floorLevel = floatProvider3;
+    public CaveCarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig debugConfig, FloatProvider horizontalRadiusMultiplier, FloatProvider verticalRadiusMultiplier, FloatProvider floorLevel) {
+        super(probability, y, yScale, lavaLevel, debugConfig);
+        this.horizontalRadiusMultiplier = horizontalRadiusMultiplier;
+        this.verticalRadiusMultiplier = verticalRadiusMultiplier;
+        this.floorLevel = floorLevel;
     }
 
     public CaveCarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, boolean aquifers, FloatProvider horizontalRadiusMultiplier, FloatProvider verticalRadiusMultiplier, FloatProvider floorLevel) {

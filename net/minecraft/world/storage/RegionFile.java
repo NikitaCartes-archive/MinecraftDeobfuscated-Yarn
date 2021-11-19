@@ -37,7 +37,7 @@ implements AutoCloseable {
     private static final int field_31419 = 5;
     private static final int field_31420 = 0;
     private static final ByteBuffer ZERO = ByteBuffer.allocateDirect(1);
-    private static final String field_31421 = ".mcc";
+    private static final String FILE_EXTENSION = ".mcc";
     private static final int field_31422 = 128;
     private static final int field_31423 = 256;
     private static final int field_31424 = 0;
@@ -50,8 +50,8 @@ implements AutoCloseable {
     @VisibleForTesting
     protected final SectorMap sectors = new SectorMap();
 
-    public RegionFile(Path path, Path path2, boolean dsync) throws IOException {
-        this(path, path2, ChunkStreamVersion.DEFLATE, dsync);
+    public RegionFile(Path file, Path directory, boolean dsync) throws IOException {
+        this(file, directory, ChunkStreamVersion.DEFLATE, dsync);
     }
 
     public RegionFile(Path file, Path directory, ChunkStreamVersion outputChunkStreamVersion, boolean dsync) throws IOException {
@@ -99,7 +99,7 @@ implements AutoCloseable {
     }
 
     private Path getExternalChunkPath(ChunkPos chunkPos) {
-        String string = "c." + chunkPos.x + "." + chunkPos.z + field_31421;
+        String string = "c." + chunkPos.x + "." + chunkPos.z + FILE_EXTENSION;
         return this.directory.resolve(string);
     }
 
@@ -143,7 +143,7 @@ implements AutoCloseable {
         return this.method_22409(pos, b, RegionFile.getInputStream(byteBuffer, n));
     }
 
-    private static int method_31739() {
+    private static int getEpochTimeSeconds() {
         return (int)(Util.getEpochTimeMs() / 1000L);
     }
 
@@ -251,7 +251,7 @@ implements AutoCloseable {
             return;
         }
         this.sectorData.put(i, 0);
-        this.saveTimes.put(i, RegionFile.method_31739());
+        this.saveTimes.put(i, RegionFile.getEpochTimeSeconds());
         this.writeHeader();
         Files.deleteIfExists(this.getExternalChunkPath(chunkPos));
         this.sectors.free(RegionFile.getOffset(j), RegionFile.getSize(j));
@@ -280,7 +280,7 @@ implements AutoCloseable {
             this.channel.write(byteBuffer, o * 4096);
         }
         this.sectorData.put(i, this.packSectorData(o, n));
-        this.saveTimes.put(i, RegionFile.method_31739());
+        this.saveTimes.put(i, RegionFile.getEpochTimeSeconds());
         this.writeHeader();
         outputAction.run();
         if (k != 0) {

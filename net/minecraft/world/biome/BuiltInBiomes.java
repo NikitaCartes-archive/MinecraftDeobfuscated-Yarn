@@ -32,8 +32,8 @@ public abstract class BuiltinBiomes {
         BuiltinBiomes.register(BiomeKeys.BIRCH_FOREST, OverworldBiomeCreator.createNormalForest(true, false, false));
         BuiltinBiomes.register(BiomeKeys.DARK_FOREST, OverworldBiomeCreator.createDarkForest());
         BuiltinBiomes.register(BiomeKeys.OLD_GROWTH_BIRCH_FOREST, OverworldBiomeCreator.createNormalForest(true, true, false));
-        BuiltinBiomes.register(BiomeKeys.OLD_GROWTH_PINE_TAIGA, OverworldBiomeCreator.createOldGrowthPineTaiga(false));
-        BuiltinBiomes.register(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, OverworldBiomeCreator.createOldGrowthPineTaiga(true));
+        BuiltinBiomes.register(BiomeKeys.OLD_GROWTH_PINE_TAIGA, OverworldBiomeCreator.createOldGrowthTaiga(false));
+        BuiltinBiomes.register(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, OverworldBiomeCreator.createOldGrowthTaiga(true));
         BuiltinBiomes.register(BiomeKeys.TAIGA, OverworldBiomeCreator.createTaiga(false));
         BuiltinBiomes.register(BiomeKeys.SNOWY_TAIGA, OverworldBiomeCreator.createTaiga(true));
         BuiltinBiomes.register(BiomeKeys.SAVANNA, OverworldBiomeCreator.createSavanna(false, false));
@@ -45,9 +45,9 @@ public abstract class BuiltinBiomes {
         BuiltinBiomes.register(BiomeKeys.JUNGLE, OverworldBiomeCreator.createJungle());
         BuiltinBiomes.register(BiomeKeys.SPARSE_JUNGLE, OverworldBiomeCreator.createSparseJungle());
         BuiltinBiomes.register(BiomeKeys.BAMBOO_JUNGLE, OverworldBiomeCreator.createNormalBambooJungle());
-        BuiltinBiomes.register(BiomeKeys.BADLANDS, OverworldBiomeCreator.createNormalBadlands(false));
-        BuiltinBiomes.register(BiomeKeys.ERODED_BADLANDS, OverworldBiomeCreator.createNormalBadlands(false));
-        BuiltinBiomes.register(BiomeKeys.WOODED_BADLANDS, OverworldBiomeCreator.createNormalBadlands(true));
+        BuiltinBiomes.register(BiomeKeys.BADLANDS, OverworldBiomeCreator.createBadlands(false));
+        BuiltinBiomes.register(BiomeKeys.ERODED_BADLANDS, OverworldBiomeCreator.createBadlands(false));
+        BuiltinBiomes.register(BiomeKeys.WOODED_BADLANDS, OverworldBiomeCreator.createBadlands(true));
         BuiltinBiomes.register(BiomeKeys.MEADOW, OverworldBiomeCreator.createMeadow());
         BuiltinBiomes.register(BiomeKeys.GROVE, OverworldBiomeCreator.createGrove());
         BuiltinBiomes.register(BiomeKeys.SNOWY_SLOPES, OverworldBiomeCreator.createSnowySlopes());

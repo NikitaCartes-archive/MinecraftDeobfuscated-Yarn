@@ -347,7 +347,7 @@ StructureHolder {
 
     public ChunkNoiseSampler getOrCreateChunkNoiseSampler(NoiseColumnSampler noiseColumnSampler, Supplier<ChunkNoiseSampler.ColumnSampler> supplier, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
         if (this.chunkNoiseSampler == null) {
-            this.chunkNoiseSampler = ChunkNoiseSampler.method_39543(this, noiseColumnSampler, supplier, chunkGeneratorSettings, fluidLevelSampler, blender);
+            this.chunkNoiseSampler = ChunkNoiseSampler.create(this, noiseColumnSampler, supplier, chunkGeneratorSettings, fluidLevelSampler, blender);
         }
         return this.chunkNoiseSampler;
     }
@@ -376,14 +376,14 @@ StructureHolder {
         }
     }
 
-    public void method_38257(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler) {
+    public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler) {
         ChunkPos chunkPos = this.getPos();
         int i = BiomeCoords.fromBlock(chunkPos.getStartX());
         int j = BiomeCoords.fromBlock(chunkPos.getStartZ());
         HeightLimitView heightLimitView = this.getHeightLimitView();
         for (int k = heightLimitView.getBottomSectionCoord(); k < heightLimitView.getTopSectionCoord(); ++k) {
             ChunkSection chunkSection = this.getSection(this.sectionCoordToIndex(k));
-            chunkSection.method_38291(biomeSupplier, sampler, i, j);
+            chunkSection.populateBiomes(biomeSupplier, sampler, i, j);
         }
     }
 

@@ -64,6 +64,7 @@ public final class BlockTags {
     public static final Tag.Identified<Block> NON_FLAMMABLE_WOOD = BlockTags.register("non_flammable_wood");
     public static final Tag.Identified<Block> CANDLES = BlockTags.register("candles");
     public static final Tag.Identified<Block> DIRT = BlockTags.register("dirt");
+    public static final Tag.Identified<Block> TERRACOTTA = BlockTags.register("terracotta");
     public static final Tag.Identified<Block> FLOWER_POTS = BlockTags.register("flower_pots");
     public static final Tag.Identified<Block> ENDERMAN_HOLDABLE = BlockTags.register("enderman_holdable");
     public static final Tag.Identified<Block> ICE = BlockTags.register("ice");
@@ -118,6 +119,7 @@ public final class BlockTags {
     public static final Tag.Identified<Block> CAVE_VINES = BlockTags.register("cave_vines");
     public static final Tag.Identified<Block> MOSS_REPLACEABLE = BlockTags.register("moss_replaceable");
     public static final Tag.Identified<Block> LUSH_GROUND_REPLACEABLE = BlockTags.register("lush_ground_replaceable");
+    public static final Tag.Identified<Block> AZALEA_ROOT_REPLACEABLE = BlockTags.register("azalea_root_replaceable");
     public static final Tag.Identified<Block> SMALL_DRIPLEAF_PLACEABLE = BlockTags.register("small_dripleaf_placeable");
     public static final Tag.Identified<Block> BIG_DRIPLEAF_PLACEABLE = BlockTags.register("big_dripleaf_placeable");
     public static final Tag.Identified<Block> SNOW = BlockTags.register("snow");
@@ -140,6 +142,8 @@ public final class BlockTags {
     public static final Tag.Identified<Block> RABBITS_SPAWNABLE_ON = BlockTags.register("rabbits_spawnable_on");
     public static final Tag.Identified<Block> FOXES_SPAWNABLE_ON = BlockTags.register("foxes_spawnable_on");
     public static final Tag.Identified<Block> WOLVES_SPAWNABLE_ON = BlockTags.register("wolves_spawnable_on");
+    public static final Tag.Identified<Block> AZALEA_GROWS_ON = BlockTags.register("azalea_grows_on");
+    public static final Tag.Identified<Block> REPLACEABLE_PLANTS = BlockTags.register("replaceable_plants");
 
     private BlockTags() {
     }

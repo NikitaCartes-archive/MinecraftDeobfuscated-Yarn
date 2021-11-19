@@ -44,23 +44,23 @@ extends Task<VillagerEntity> {
     @Override
     protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
-        brain.getOptionalMemory(this.destination).ifPresent(globalPos -> {
-            if (this.dimensionMismatches(serverWorld, (GlobalPos)globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
+        brain.getOptionalMemory(this.destination).ifPresent(pos -> {
+            if (this.dimensionMismatches(serverWorld, (GlobalPos)pos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
                 this.giveUp(villagerEntity, l);
-            } else if (this.exceedsMaxRange(villagerEntity, (GlobalPos)globalPos)) {
+            } else if (this.exceedsMaxRange(villagerEntity, (GlobalPos)pos)) {
                 int i;
                 Vec3d vec3d = null;
                 int j = 1000;
                 for (i = 0; i < 1000 && (vec3d == null || this.exceedsMaxRange(villagerEntity, GlobalPos.create(serverWorld.getRegistryKey(), new BlockPos(vec3d)))); ++i) {
-                    vec3d = NoPenaltyTargeting.findTo(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), 1.5707963705062866);
+                    vec3d = NoPenaltyTargeting.findTo(villagerEntity, 15, 7, Vec3d.ofBottomCenter(pos.getPos()), 1.5707963705062866);
                 }
                 if (i == 1000) {
                     this.giveUp(villagerEntity, l);
                     return;
                 }
                 brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, this.completionRange));
-            } else if (!this.reachedDestination(serverWorld, villagerEntity, (GlobalPos)globalPos)) {
-                brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.speed, this.completionRange));
+            } else if (!this.reachedDestination(serverWorld, villagerEntity, (GlobalPos)pos)) {
+                brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(pos.getPos(), this.speed, this.completionRange));
             }
         });
     }

@@ -59,7 +59,7 @@ extends MoveToTargetPosGoal {
         if (blockState.isOf(Blocks.FURNACE) && blockState.get(FurnaceBlock.LIT).booleanValue()) {
             return true;
         }
-        return blockState.isIn(BlockTags.BEDS, abstractBlockState -> abstractBlockState.getOrEmpty(BedBlock.PART).map(bedPart -> bedPart != BedPart.HEAD).orElse(true));
+        return blockState.isIn(BlockTags.BEDS, state -> state.getOrEmpty(BedBlock.PART).map(part -> part != BedPart.HEAD).orElse(true));
     }
 }
 

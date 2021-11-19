@@ -212,8 +212,8 @@ public class EndCityGenerator {
             super(StructurePieceType.END_CITY, 0, manager, Piece.getId(template), template, Piece.createPlacementData(includeAir, rotation), pos);
         }
 
-        public Piece(StructureManager structureManager, NbtCompound nbtCompound) {
-            super(StructurePieceType.END_CITY, nbtCompound, structureManager, identifier -> Piece.createPlacementData(nbtCompound.getBoolean("OW"), BlockRotation.valueOf(nbtCompound.getString("Rot"))));
+        public Piece(StructureManager manager, NbtCompound nbt) {
+            super(StructurePieceType.END_CITY, nbt, manager, identifier -> Piece.createPlacementData(nbt.getBoolean("OW"), BlockRotation.valueOf(nbt.getString("Rot"))));
         }
 
         private static StructurePlacementData createPlacementData(boolean includeAir, BlockRotation rotation) {

@@ -604,7 +604,7 @@ implements ClientPlayPacketListener {
     public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         int i = Block.NOTIFY_ALL | Block.FORCE_STATE | (packet.shouldSkipLightingUpdates() ? Block.SKIP_LIGHTING_UPDATES : 0);
-        packet.visitUpdates((blockPos, blockState) -> this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState, i));
+        packet.visitUpdates((pos, state) -> this.world.setBlockState((BlockPos)pos, (BlockState)state, i));
     }
 
     @Override
@@ -730,7 +730,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onGameMessage(GameMessageS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.getSender());
+        this.client.inGameHud.addChatMessage(packet.getType(), packet.getMessage(), packet.getSender());
     }
 
     @Override
@@ -743,7 +743,7 @@ implements ClientPlayPacketListener {
         if (packet.getAnimationId() == 0) {
             LivingEntity livingEntity = (LivingEntity)entity;
             livingEntity.swingHand(Hand.MAIN_HAND);
-        } else if (packet.getAnimationId() == 3) {
+        } else if (packet.getAnimationId() == EntityAnimationS2CPacket.SWING_OFF_HAND) {
             LivingEntity livingEntity = (LivingEntity)entity;
             livingEntity.swingHand(Hand.OFF_HAND);
         } else if (packet.getAnimationId() == EntityAnimationS2CPacket.DAMAGE) {
@@ -954,7 +954,7 @@ implements ClientPlayPacketListener {
                 CreativeInventoryScreen creativeInventoryScreen = (CreativeInventoryScreen)this.client.currentScreen;
                 boolean bl2 = bl = creativeInventoryScreen.getSelectedTab() != ItemGroup.INVENTORY.getIndex();
             }
-            if (packet.getSyncId() == 0 && PlayerScreenHandler.method_36211(i)) {
+            if (packet.getSyncId() == 0 && PlayerScreenHandler.isInHotbar(i)) {
                 ItemStack itemStack2;
                 if (!itemStack.isEmpty() && ((itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack()).isEmpty() || itemStack2.getCount() < itemStack.getCount())) {
                     itemStack.setBobbingAnimationTime(5);

@@ -62,12 +62,12 @@ extends Feature<VegetationPatchFeatureConfig> {
                 for (k = 0; world.testBlockState(mutable, AbstractBlock.AbstractBlockState::isAir) && k < config.verticalRange; ++k) {
                     mutable.move(direction);
                 }
-                for (k = 0; world.testBlockState(mutable, blockState -> !blockState.isAir()) && k < config.verticalRange; ++k) {
+                for (k = 0; world.testBlockState(mutable, state -> !state.isAir()) && k < config.verticalRange; ++k) {
                     mutable.move(direction2);
                 }
                 mutable2.set((Vec3i)mutable, config.surface.getDirection());
-                BlockState blockState2 = world.getBlockState(mutable2);
-                if (!world.isAir(mutable) || !blockState2.isSideSolidFullSquare(world, mutable2, config.surface.getDirection().getOpposite())) continue;
+                BlockState blockState = world.getBlockState(mutable2);
+                if (!world.isAir(mutable) || !blockState.isSideSolidFullSquare(world, mutable2, config.surface.getDirection().getOpposite())) continue;
                 int l = config.depth.get(random) + (config.extraBottomBlockChance > 0.0f && random.nextFloat() < config.extraBottomBlockChance ? 1 : 0);
                 BlockPos blockPos = mutable2.toImmutable();
                 boolean bl62 = this.placeGround(world, config, replaceable, random, mutable2, l);
@@ -86,7 +86,7 @@ extends Feature<VegetationPatchFeatureConfig> {
     }
 
     protected boolean generateVegetationFeature(StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, Random random, BlockPos pos) {
-        return config.vegetationFeature.get().generate(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
+        return config.vegetationFeature.get().generateUnregistered(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
     }
 
     protected boolean placeGround(StructureWorldAccess world, VegetationPatchFeatureConfig config, Predicate<BlockState> replaceable, Random random, BlockPos.Mutable pos, int depth) {

@@ -24,6 +24,7 @@ import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -46,7 +47,9 @@ public class BlendingData {
             return 0;
         }
     };
-    public static final int field_35511 = 8;
+    protected static final int field_36280 = 4;
+    protected static final int field_35511 = 8;
+    protected static final int field_36281 = 2;
     private static final int field_35516 = 2;
     private static final int field_35683 = BiomeCoords.fromBlock(16);
     private static final int field_35684 = field_35683 - 1;
@@ -158,11 +161,11 @@ public class BlendingData {
         if (!this.field_35691) {
             this.heights[index] = BlendingData.getSurfaceHeight(chunk, x, z);
         }
-        this.field_35693[index] = BlendingData.method_39354(chunk, x, z);
+        this.field_35693[index] = BlendingData.method_39354(chunk, x, z, MathHelper.floor(this.heights[index]));
     }
 
     private static int getSurfaceHeight(Chunk chunk, int x, int z) {
-        int i = chunk.hasHeightmap(Heightmap.Type.WORLD_SURFACE_WG) ? Math.min(chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, x, z), OLD_HEIGHT_LIMIT.getTopY()) : OLD_HEIGHT_LIMIT.getTopY();
+        int i = chunk.hasHeightmap(Heightmap.Type.WORLD_SURFACE_WG) ? Math.min(chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, x, z) + 1, OLD_HEIGHT_LIMIT.getTopY()) : OLD_HEIGHT_LIMIT.getTopY();
         int j = OLD_HEIGHT_LIMIT.getBottomY();
         BlockPos.Mutable mutable = new BlockPos.Mutable(x, i, z);
         while (mutable.getY() > j) {
@@ -173,30 +176,39 @@ public class BlendingData {
         return j;
     }
 
-    private static double[] method_39354(Chunk chunk, int x, int z) {
+    private static double method_39905(Chunk chunk, BlockPos.Mutable mutable) {
+        return BlendingData.isCollidableAndNotTreeAt(chunk, mutable.move(Direction.DOWN)) ? 1.0 : -1.0;
+    }
+
+    private static double method_39906(Chunk chunk, BlockPos.Mutable mutable) {
+        double d = 0.0;
+        for (int i = 0; i < 7; ++i) {
+            d += BlendingData.method_39905(chunk, mutable);
+        }
+        return d;
+    }
+
+    private static double[] method_39354(Chunk chunk, int x, int z, int i) {
+        double f;
+        double e;
+        int j;
         double[] ds = new double[BlendingData.method_39576()];
-        int i = BlendingData.method_39581();
-        double d = 30.0;
-        double e = 0.0;
-        double f = 0.0;
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        double g = 15.0;
-        for (int j = OLD_HEIGHT_LIMIT.getTopY() - 1; j >= OLD_HEIGHT_LIMIT.getBottomY(); --j) {
-            double h = BlendingData.isCollidableAndNotTreeAt(chunk, mutable.set(x, j, z)) ? 1.0 : -1.0;
-            int k = j % 8;
-            if (k == 0) {
-                double l = e / 15.0;
-                int m = j / 8 + 1;
-                ds[m - i] = l * d;
-                e = f;
-                f = 0.0;
-                if (l > 0.0) {
-                    d = 1.0;
-                }
-            } else {
-                f += h;
-            }
-            e += h;
+        Arrays.fill(ds, -1.0);
+        BlockPos.Mutable mutable = new BlockPos.Mutable(x, OLD_HEIGHT_LIMIT.getTopY(), z);
+        double d = BlendingData.method_39906(chunk, mutable);
+        for (j = ds.length - 2; j >= 0; --j) {
+            e = BlendingData.method_39905(chunk, mutable);
+            f = BlendingData.method_39906(chunk, mutable);
+            ds[j] = (d + e + f) / 15.0;
+            d = f;
+        }
+        j = MathHelper.floorDiv(i, 8);
+        if (j >= 1) {
+            e = ((double)i + 0.5) % 8.0 / 8.0;
+            f = (1.0 - e) / e;
+            double g = Math.max(f, 1.0) * 0.25;
+            ds[j] = -f / g;
+            ds[j - 1] = 1.0 / g;
         }
         return ds;
     }

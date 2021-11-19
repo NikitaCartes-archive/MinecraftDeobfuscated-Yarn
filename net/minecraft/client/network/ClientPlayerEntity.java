@@ -910,7 +910,7 @@ extends AbstractClientPlayerEntity {
         Vec3d vec3d12 = vec3d6.add(vec3d9);
         Vec3d vec3d13 = vec3d7.add(vec3d9);
         Iterable<VoxelShape> iterable = this.world.getCollisions(this, box);
-        Iterator iterator = StreamSupport.stream(iterable.spliterator(), false).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
+        Iterator iterator = StreamSupport.stream(iterable.spliterator(), false).flatMap(shape -> shape.getBoundingBoxes().stream()).iterator();
         float r = Float.MIN_VALUE;
         while (iterator.hasNext()) {
             Box box2 = (Box)iterator.next();
@@ -923,8 +923,8 @@ extends AbstractClientPlayerEntity {
                 BlockState blockState4;
                 BlockPos blockPos3 = blockPos2.up(s);
                 BlockState blockState3 = this.world.getBlockState(blockPos3);
-                VoxelShape voxelShape2 = blockState3.getCollisionShape(this.world, blockPos3, shapeContext);
-                if (!voxelShape2.isEmpty() && (double)(r = (float)voxelShape2.getMax(Direction.Axis.Y) + (float)blockPos3.getY()) - this.getY() > (double)n) {
+                VoxelShape voxelShape = blockState3.getCollisionShape(this.world, blockPos3, shapeContext);
+                if (!voxelShape.isEmpty() && (double)(r = (float)voxelShape.getMax(Direction.Axis.Y) + (float)blockPos3.getY()) - this.getY() > (double)n) {
                     return;
                 }
                 if (s > 1 && !(blockState4 = this.world.getBlockState(blockPos = blockPos.up())).getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {

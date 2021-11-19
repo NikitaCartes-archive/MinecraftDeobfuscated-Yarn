@@ -84,8 +84,8 @@ extends Task<VillagerEntity> {
     }
 
     private void addLookWalkTargets(VillagerEntity villager) {
-        this.pos.ifPresent(blockPos -> {
-            BlockPosLookTarget blockPosLookTarget = new BlockPosLookTarget((BlockPos)blockPos);
+        this.pos.ifPresent(pos -> {
+            BlockPosLookTarget blockPosLookTarget = new BlockPosLookTarget((BlockPos)pos);
             villager.getBrain().remember(MemoryModuleType.LOOK_TARGET, blockPosLookTarget);
             villager.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPosLookTarget, 0.5f, 1));
         });

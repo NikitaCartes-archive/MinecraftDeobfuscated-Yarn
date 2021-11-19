@@ -32,7 +32,7 @@ extends EntityRenderer<BoatEntity> {
     public BoatEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
         this.shadowRadius = 0.8f;
-        this.texturesAndModels = Stream.of(BoatEntity.Type.values()).collect(ImmutableMap.toImmutableMap(type -> type, type -> Pair.of(new Identifier("textures/entity/boat/" + type.getName() + ".png"), new BoatEntityModel(context.getPart(EntityModelLayers.createBoat(type))))));
+        this.texturesAndModels = Stream.of(BoatEntity.Type.values()).collect(ImmutableMap.toImmutableMap(type -> type, boatType -> Pair.of(new Identifier("textures/entity/boat/" + boatType.getName() + ".png"), new BoatEntityModel(context.getPart(EntityModelLayers.createBoat(boatType))))));
     }
 
     @Override

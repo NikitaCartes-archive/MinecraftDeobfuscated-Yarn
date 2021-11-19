@@ -44,16 +44,16 @@ extends Carver<RavineCarverConfig> {
         return true;
     }
 
-    private void carveRavine(CarverContext context2, RavineCarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, AquiferSampler aquiferSampler, double x, double y2, double z, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, CarvingMask carvingMask) {
+    private void carveRavine(CarverContext context2, RavineCarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, AquiferSampler aquiferSampler, double x, double y2, double z, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, CarvingMask mask) {
         Random random = new Random(seed);
         float[] fs = this.createHorizontalStretchFactors(context2, config, random);
-        float f2 = 0.0f;
+        float f = 0.0f;
         float g = 0.0f;
         for (int i = branchStartIndex; i < branchCount; ++i) {
-            double d2 = 1.5 + (double)(MathHelper.sin((float)i * (float)Math.PI / (float)branchCount) * width);
-            double e2 = d2 * yawPitchRatio;
-            d2 *= (double)config.shape.horizontalRadiusFactor.get(random);
-            e2 = this.getVerticalScale(config, random, e2, branchCount, i);
+            double d = 1.5 + (double)(MathHelper.sin((float)i * (float)Math.PI / (float)branchCount) * width);
+            double e = d * yawPitchRatio;
+            d *= (double)config.shape.horizontalRadiusFactor.get(random);
+            e = this.getVerticalScale(config, random, e, branchCount, i);
             float h = MathHelper.cos(pitch);
             float j = MathHelper.sin(pitch);
             x += (double)(MathHelper.cos(yaw) * h);
@@ -61,16 +61,16 @@ extends Carver<RavineCarverConfig> {
             z += (double)(MathHelper.sin(yaw) * h);
             pitch *= 0.7f;
             pitch += g * 0.05f;
-            yaw += f2 * 0.05f;
+            yaw += f * 0.05f;
             g *= 0.8f;
-            f2 *= 0.5f;
+            f *= 0.5f;
             g += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0f;
-            f2 += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0f;
+            f += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0f;
             if (random.nextInt(4) == 0) continue;
             if (!RavineCarver.canCarveBranch(chunk.getPos(), x, z, i, branchCount, width)) {
                 return;
             }
-            this.carveRegion(context2, config, chunk, posToBiome, aquiferSampler, x, y2, z, d2, e2, carvingMask, (context, d, e, f, y) -> this.isPositionExcluded(context, fs, d, e, f, y));
+            this.carveRegion(context2, config, chunk, posToBiome, aquiferSampler, x, y2, z, d, e, mask, (context, scaledRelativeX, scaledRelativeY, scaledRelativeZ, y) -> this.isPositionExcluded(context, fs, scaledRelativeX, scaledRelativeY, scaledRelativeZ, y));
         }
     }
 

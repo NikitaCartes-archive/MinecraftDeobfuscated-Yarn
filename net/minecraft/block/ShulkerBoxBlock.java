@@ -112,7 +112,7 @@ extends BlockWithEntity {
         if (entity.getAnimationStage() != ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
             return true;
         }
-        Box box = ShulkerEntity.method_33347(state.get(FACING), 0.0f, 0.5f).offset(pos).contract(1.0E-6);
+        Box box = ShulkerEntity.calculateBoundingBox(state.get(FACING), 0.0f, 0.5f).offset(pos).contract(1.0E-6);
         return world.isSpaceEmpty(box);
     }
 

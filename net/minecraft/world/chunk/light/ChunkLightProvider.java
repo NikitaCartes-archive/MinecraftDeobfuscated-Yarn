@@ -159,12 +159,12 @@ implements ChunkLightingView {
     }
 
     @Override
-    public int doLightUpdates(int i, boolean bl, boolean bl2) {
+    public int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation) {
         if (!this.field_15794) {
             if (((LevelPropagator)this.lightStorage).hasPendingUpdates() && (i = ((LevelPropagator)this.lightStorage).applyPendingUpdates(i)) == 0) {
                 return i;
             }
-            ((LightStorage)this.lightStorage).updateLight(this, bl, bl2);
+            ((LightStorage)this.lightStorage).updateLight(this, doSkylight, skipEdgeLightPropagation);
         }
         this.field_15794 = true;
         if (this.hasPendingUpdates()) {

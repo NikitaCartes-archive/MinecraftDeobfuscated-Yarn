@@ -18,7 +18,7 @@ import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
 import net.minecraft.world.gen.chunk.SlideConfig;
 
 public record GenerationShapeConfig(int minimumY, int height, NoiseSamplingConfig sampling, SlideConfig topSlide, SlideConfig bottomSlide, int horizontalSize, int verticalSize, boolean islandNoiseOverride, boolean amplified, boolean largeBiomes, VanillaTerrainParameters terrainParameters) {
-    public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(GenerationShapeConfig::minimumY), ((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(GenerationShapeConfig::height), ((MapCodec)NoiseSamplingConfig.CODEC.fieldOf("sampling")).forGetter(GenerationShapeConfig::sampling), ((MapCodec)SlideConfig.CODEC.fieldOf("top_slide")).forGetter(GenerationShapeConfig::topSlide), ((MapCodec)SlideConfig.CODEC.fieldOf("bottom_slide")).forGetter(GenerationShapeConfig::bottomSlide), ((MapCodec)Codec.intRange(1, 4).fieldOf("size_horizontal")).forGetter(GenerationShapeConfig::horizontalSize), ((MapCodec)Codec.intRange(1, 4).fieldOf("size_vertical")).forGetter(GenerationShapeConfig::verticalSize), Codec.BOOL.optionalFieldOf("island_noise_override", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::islandNoiseOverride), Codec.BOOL.optionalFieldOf("amplified", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified), Codec.BOOL.optionalFieldOf("large_biomes", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::largeBiomes), ((MapCodec)VanillaTerrainParameters.field_35456.fieldOf("terrain_shaper")).forGetter(GenerationShapeConfig::terrainParameters)).apply((Applicative<GenerationShapeConfig, ?>)instance, GenerationShapeConfig::new)).comapFlatMap(GenerationShapeConfig::checkHeight, Function.identity());
+    public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(GenerationShapeConfig::minimumY), ((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(GenerationShapeConfig::height), ((MapCodec)NoiseSamplingConfig.CODEC.fieldOf("sampling")).forGetter(GenerationShapeConfig::sampling), ((MapCodec)SlideConfig.CODEC.fieldOf("top_slide")).forGetter(GenerationShapeConfig::topSlide), ((MapCodec)SlideConfig.CODEC.fieldOf("bottom_slide")).forGetter(GenerationShapeConfig::bottomSlide), ((MapCodec)Codec.intRange(1, 4).fieldOf("size_horizontal")).forGetter(GenerationShapeConfig::horizontalSize), ((MapCodec)Codec.intRange(1, 4).fieldOf("size_vertical")).forGetter(GenerationShapeConfig::verticalSize), Codec.BOOL.optionalFieldOf("island_noise_override", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::islandNoiseOverride), Codec.BOOL.optionalFieldOf("amplified", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified), Codec.BOOL.optionalFieldOf("large_biomes", false, Lifecycle.experimental()).forGetter(GenerationShapeConfig::largeBiomes), ((MapCodec)VanillaTerrainParameters.CODEC.fieldOf("terrain_shaper")).forGetter(GenerationShapeConfig::terrainParameters)).apply((Applicative<GenerationShapeConfig, ?>)instance, GenerationShapeConfig::new)).comapFlatMap(GenerationShapeConfig::checkHeight, Function.identity());
 
     private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
         if (config.minimumY() + config.height() > DimensionType.MAX_COLUMN_HEIGHT + 1) {
@@ -56,20 +56,20 @@ public record GenerationShapeConfig(int minimumY, int height, NoiseSamplingConfi
         return this.largeBiomes;
     }
 
-    public int method_39545() {
+    public int verticalBlockSize() {
         return BiomeCoords.toBlock(this.verticalSize());
     }
 
-    public int method_39546() {
+    public int horizontalBlockSize() {
         return BiomeCoords.toBlock(this.horizontalSize());
     }
 
-    public int method_39547() {
-        return this.height() / this.method_39545();
+    public int verticalBlockCount() {
+        return this.height() / this.verticalBlockSize();
     }
 
-    public int method_39548() {
-        return MathHelper.floorDiv(this.minimumY(), this.method_39545());
+    public int minimumBlockY() {
+        return MathHelper.floorDiv(this.minimumY(), this.verticalBlockSize());
     }
 }
 

@@ -160,27 +160,27 @@ public class DimensionType {
         return World.CODEC.parse(nbt);
     }
 
-    public static DynamicRegistryManager addRegistryDefaults(DynamicRegistryManager dynamicRegistryManager) {
-        MutableRegistry<DimensionType> mutableRegistry = dynamicRegistryManager.getMutable(Registry.DIMENSION_TYPE_KEY);
+    public static DynamicRegistryManager addRegistryDefaults(DynamicRegistryManager registryManager) {
+        MutableRegistry<DimensionType> mutableRegistry = registryManager.getMutable(Registry.DIMENSION_TYPE_KEY);
         mutableRegistry.add(OVERWORLD_REGISTRY_KEY, OVERWORLD, Lifecycle.stable());
         mutableRegistry.add(OVERWORLD_CAVES_REGISTRY_KEY, OVERWORLD_CAVES, Lifecycle.stable());
         mutableRegistry.add(THE_NETHER_REGISTRY_KEY, THE_NETHER, Lifecycle.stable());
         mutableRegistry.add(THE_END_REGISTRY_KEY, THE_END, Lifecycle.stable());
-        return dynamicRegistryManager;
+        return registryManager;
     }
 
-    public static SimpleRegistry<DimensionOptions> method_39540(DynamicRegistryManager dynamicRegistryManager, long l) {
-        return DimensionType.createDefaultDimensionOptions(dynamicRegistryManager, l, true);
+    public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager registryManager, long seed) {
+        return DimensionType.createDefaultDimensionOptions(registryManager, seed, true);
     }
 
-    public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager dynamicRegistryManager, long l, boolean bl) {
+    public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager registryManager, long seed, boolean bl) {
         SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_KEY, Lifecycle.experimental());
-        Registry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
-        Registry<Biome> registry2 = dynamicRegistryManager.get(Registry.BIOME_KEY);
-        Registry<ChunkGeneratorSettings> registry3 = dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
-        Registry<DoublePerlinNoiseSampler.NoiseParameters> registry4 = dynamicRegistryManager.get(Registry.NOISE_WORLDGEN);
-        simpleRegistry.add(DimensionOptions.NETHER, new DimensionOptions(() -> registry.getOrThrow(THE_NETHER_REGISTRY_KEY), new NoiseChunkGenerator(registry4, (BiomeSource)MultiNoiseBiomeSource.Preset.NETHER.method_39532(registry2, bl), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.NETHER))), Lifecycle.stable());
-        simpleRegistry.add(DimensionOptions.END, new DimensionOptions(() -> registry.getOrThrow(THE_END_REGISTRY_KEY), new NoiseChunkGenerator(registry4, (BiomeSource)new TheEndBiomeSource(registry2, l), l, () -> registry3.getOrThrow(ChunkGeneratorSettings.END))), Lifecycle.stable());
+        Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
+        Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
+        Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
+        Registry<DoublePerlinNoiseSampler.NoiseParameters> registry4 = registryManager.get(Registry.NOISE_WORLDGEN);
+        simpleRegistry.add(DimensionOptions.NETHER, new DimensionOptions(() -> registry.getOrThrow(THE_NETHER_REGISTRY_KEY), new NoiseChunkGenerator(registry4, (BiomeSource)MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(registry2, bl), seed, () -> registry3.getOrThrow(ChunkGeneratorSettings.NETHER))), Lifecycle.stable());
+        simpleRegistry.add(DimensionOptions.END, new DimensionOptions(() -> registry.getOrThrow(THE_END_REGISTRY_KEY), new NoiseChunkGenerator(registry4, (BiomeSource)new TheEndBiomeSource(registry2, seed), seed, () -> registry3.getOrThrow(ChunkGeneratorSettings.END))), Lifecycle.stable());
         return simpleRegistry;
     }
 
@@ -198,17 +198,17 @@ public class DimensionType {
         return "";
     }
 
-    public static Path getSaveDirectory(RegistryKey<World> worldRef, Path path) {
+    public static Path getSaveDirectory(RegistryKey<World> worldRef, Path worldDirectory) {
         if (worldRef == World.OVERWORLD) {
-            return path;
+            return worldDirectory;
         }
         if (worldRef == World.END) {
-            return path.resolve("DIM1");
+            return worldDirectory.resolve("DIM1");
         }
         if (worldRef == World.NETHER) {
-            return path.resolve("DIM-1");
+            return worldDirectory.resolve("DIM-1");
         }
-        return path.resolve("dimensions").resolve(worldRef.getValue().getNamespace()).resolve(worldRef.getValue().getPath());
+        return worldDirectory.resolve("dimensions").resolve(worldRef.getValue().getNamespace()).resolve(worldRef.getValue().getPath());
     }
 
     public boolean hasSkyLight() {

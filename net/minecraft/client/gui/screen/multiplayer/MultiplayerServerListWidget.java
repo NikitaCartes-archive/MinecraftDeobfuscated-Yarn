@@ -340,6 +340,9 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             if (Screen.hasShiftDown()) {
                 MultiplayerServerListWidget multiplayerServerListWidget = this.screen.serverListWidget;
                 int i = multiplayerServerListWidget.children().indexOf(this);
+                if (i == -1) {
+                    return true;
+                }
                 if (keyCode == GLFW.GLFW_KEY_DOWN && i < this.screen.getServerList().size() - 1 || keyCode == GLFW.GLFW_KEY_UP && i > 0) {
                     this.swapEntries(i, keyCode == GLFW.GLFW_KEY_DOWN ? i + 1 : i - 1);
                     return true;

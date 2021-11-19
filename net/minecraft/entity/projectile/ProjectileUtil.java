@@ -41,54 +41,54 @@ public final class ProjectileUtil {
     }
 
     @Nullable
-    public static EntityHitResult raycast(Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double d) {
+    public static EntityHitResult raycast(Entity entity, Vec3d min, Vec3d max, Box box, Predicate<Entity> predicate, double d) {
         World world = entity.world;
         double e = d;
         Entity entity2 = null;
-        Vec3d vec3d3 = null;
+        Vec3d vec3d = null;
         for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
-            Vec3d vec3d4;
+            Vec3d vec3d2;
             double f;
             Box box2 = entity3.getBoundingBox().expand(entity3.getTargetingMargin());
-            Optional<Vec3d> optional = box2.raycast(vec3d, vec3d2);
-            if (box2.contains(vec3d)) {
+            Optional<Vec3d> optional = box2.raycast(min, max);
+            if (box2.contains(min)) {
                 if (!(e >= 0.0)) continue;
                 entity2 = entity3;
-                vec3d3 = optional.orElse(vec3d);
+                vec3d = optional.orElse(min);
                 e = 0.0;
                 continue;
             }
-            if (!optional.isPresent() || !((f = vec3d.squaredDistanceTo(vec3d4 = optional.get())) < e) && e != 0.0) continue;
+            if (!optional.isPresent() || !((f = min.squaredDistanceTo(vec3d2 = optional.get())) < e) && e != 0.0) continue;
             if (entity3.getRootVehicle() == entity.getRootVehicle()) {
                 if (e != 0.0) continue;
                 entity2 = entity3;
-                vec3d3 = vec3d4;
+                vec3d = vec3d2;
                 continue;
             }
             entity2 = entity3;
-            vec3d3 = vec3d4;
+            vec3d = vec3d2;
             e = f;
         }
         if (entity2 == null) {
             return null;
         }
-        return new EntityHitResult(entity2, vec3d3);
+        return new EntityHitResult(entity2, vec3d);
     }
 
     @Nullable
-    public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate) {
-        return ProjectileUtil.method_37226(world, entity, vec3d, vec3d2, box, predicate, 0.3f);
+    public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d min, Vec3d max, Box box, Predicate<Entity> predicate) {
+        return ProjectileUtil.getEntityCollision(world, entity, min, max, box, predicate, 0.3f);
     }
 
     @Nullable
-    public static EntityHitResult method_37226(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, float f) {
+    public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d min, Vec3d max, Box box, Predicate<Entity> predicate, float f) {
         double d = Double.MAX_VALUE;
         Entity entity2 = null;
         for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
             double e;
             Box box2 = entity3.getBoundingBox().expand(f);
-            Optional<Vec3d> optional = box2.raycast(vec3d, vec3d2);
-            if (!optional.isPresent() || !((e = vec3d.squaredDistanceTo(optional.get())) < d)) continue;
+            Optional<Vec3d> optional = box2.raycast(min, max);
+            if (!optional.isPresent() || !((e = min.squaredDistanceTo(optional.get())) < d)) continue;
             entity2 = entity3;
             d = e;
         }
@@ -98,7 +98,7 @@ public final class ProjectileUtil {
         return new EntityHitResult(entity2);
     }
 
-    public static void method_7484(Entity entity, float f) {
+    public static void setRotationFromVelocity(Entity entity, float delta) {
         Vec3d vec3d = entity.getVelocity();
         if (vec3d.lengthSquared() == 0.0) {
             return;
@@ -118,8 +118,8 @@ public final class ProjectileUtil {
         while (entity.getYaw() - entity.prevYaw >= 180.0f) {
             entity.prevYaw += 360.0f;
         }
-        entity.setPitch(MathHelper.lerp(f, entity.prevPitch, entity.getPitch()));
-        entity.setYaw(MathHelper.lerp(f, entity.prevYaw, entity.getYaw()));
+        entity.setPitch(MathHelper.lerp(delta, entity.prevPitch, entity.getPitch()));
+        entity.setYaw(MathHelper.lerp(delta, entity.prevYaw, entity.getYaw()));
     }
 
     public static Hand getHandPossiblyHolding(LivingEntity entity, Item item) {

@@ -34,7 +34,7 @@ public class SectorMap {
     }
 
     @VisibleForTesting
-    public IntSet method_35322() {
+    public IntSet getAllocatedBits() {
         return this.bitSet.stream().collect(IntArraySet::new, IntCollection::add, IntCollection::addAll);
     }
 }

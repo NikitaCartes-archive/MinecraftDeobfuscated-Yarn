@@ -107,7 +107,7 @@ implements SidedInventory {
     }
 
     public Box getBoundingBox(BlockState state) {
-        return ShulkerEntity.method_33346(state.get(ShulkerBoxBlock.FACING), 0.5f * this.getAnimationProgress(1.0f));
+        return ShulkerEntity.calculateBoundingBox(state.get(ShulkerBoxBlock.FACING), 0.5f * this.getAnimationProgress(1.0f));
     }
 
     private void pushEntities(World world, BlockPos pos, BlockState state) {
@@ -115,7 +115,7 @@ implements SidedInventory {
             return;
         }
         Direction direction = state.get(ShulkerBoxBlock.FACING);
-        Box box = ShulkerEntity.method_33347(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
+        Box box = ShulkerEntity.calculateBoundingBox(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
         List<Entity> list = world.getOtherEntities(null, box);
         if (list.isEmpty()) {
             return;

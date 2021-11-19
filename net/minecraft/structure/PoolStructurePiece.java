@@ -49,18 +49,18 @@ extends StructurePiece {
         this.rotation = rotation;
     }
 
-    public PoolStructurePiece(StructureContext structureContext, NbtCompound nbt) {
+    public PoolStructurePiece(StructureContext context, NbtCompound nbt) {
         super(StructurePieceType.JIGSAW, nbt);
-        this.structureManager = structureContext.structureManager();
+        this.structureManager = context.structureManager();
         this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
         this.groundLevelDelta = nbt.getInt("ground_level_delta");
-        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, structureContext.resourceManager(), structureContext.registryManager());
+        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, context.resourceManager(), context.registryManager());
         this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC.parse(registryOps, nbt.getCompound("pool_element")).resultOrPartial(LOGGER::error).orElseThrow(() -> new IllegalStateException("Invalid pool element found"));
         this.rotation = BlockRotation.valueOf(nbt.getString("rotation"));
         this.boundingBox = this.poolElement.getBoundingBox(this.structureManager, this.pos, this.rotation);
         NbtList nbtList = nbt.getList("junctions", 10);
         this.junctions.clear();
-        nbtList.forEach(nbtElement -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<NbtElement>((DynamicOps<NbtElement>)registryOps, (NbtElement)nbtElement))));
+        nbtList.forEach(nbtElement -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<NbtElement>((DynamicOps<NbtElement>)registryOps, (NbtElement)nbtElement))));
     }
 
     @Override

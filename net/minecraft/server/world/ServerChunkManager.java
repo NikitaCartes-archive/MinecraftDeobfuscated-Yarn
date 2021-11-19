@@ -20,7 +20,6 @@ import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import net.minecraft.class_6830;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -56,6 +55,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.storage.NbtScannable;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerChunkManager
@@ -477,8 +477,8 @@ extends ChunkManager {
         return this.threadedAnvilChunkStorage.getPointOfInterestStorage();
     }
 
-    public class_6830 method_39777() {
-        return this.threadedAnvilChunkStorage.method_39800();
+    public NbtScannable getChunkIoWorker() {
+        return this.threadedAnvilChunkStorage.getWorker();
     }
 
     @Nullable

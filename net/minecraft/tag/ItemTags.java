@@ -66,6 +66,8 @@ public final class ItemTags {
     public static final Tag.Identified<Item> NON_FLAMMABLE_WOOD = ItemTags.register("non_flammable_wood");
     public static final Tag.Identified<Item> SOUL_FIRE_BASE_BLOCKS = ItemTags.register("soul_fire_base_blocks");
     public static final Tag.Identified<Item> CANDLES = ItemTags.register("candles");
+    public static final Tag.Identified<Item> DIRT = ItemTags.register("dirt");
+    public static final Tag.Identified<Item> TERRACOTTA = ItemTags.register("terracotta");
     public static final Tag.Identified<Item> BOATS = ItemTags.register("boats");
     public static final Tag.Identified<Item> FISHES = ItemTags.register("fishes");
     public static final Tag.Identified<Item> SIGNS = ItemTags.register("signs");

@@ -78,12 +78,12 @@ implements UnbakedModel {
 
     @Override
     public Collection<Identifier> getModelDependencies() {
-        return this.getComponents().stream().flatMap(multipartModelComponent -> multipartModelComponent.getModel().getModelDependencies().stream()).collect(Collectors.toSet());
+        return this.getComponents().stream().flatMap(component -> component.getModel().getModelDependencies().stream()).collect(Collectors.toSet());
     }
 
     @Override
     public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
-        return this.getComponents().stream().flatMap(multipartModelComponent -> multipartModelComponent.getModel().getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences).stream()).collect(Collectors.toSet());
+        return this.getComponents().stream().flatMap(component -> component.getModel().getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences).stream()).collect(Collectors.toSet());
     }
 
     @Override

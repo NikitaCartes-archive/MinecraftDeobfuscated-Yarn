@@ -198,7 +198,7 @@ Saddleable {
             return false;
         }
         PlayerEntity playerEntity = (PlayerEntity)entity;
-        return playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffhandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
+        return playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
     }
 
     @Override
@@ -458,9 +458,9 @@ Saddleable {
     extends MoveToTargetPosGoal {
         private final StriderEntity strider;
 
-        GoBackToLavaGoal(StriderEntity striderEntity, double d) {
-            super(striderEntity, d, 8, 2);
-            this.strider = striderEntity;
+        GoBackToLavaGoal(StriderEntity strider, double speed) {
+            super(strider, speed, 8, 2);
+            this.strider = strider;
         }
 
         @Override

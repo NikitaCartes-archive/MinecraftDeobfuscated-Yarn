@@ -53,14 +53,14 @@ public abstract class GeneratorType {
 
         @Override
         protected ChunkGenerator getChunkGenerator(DynamicRegistryManager registryManager, long seed) {
-            return GeneratorOptions.method_39556(registryManager, seed, ChunkGeneratorSettings.LARGE_BIOMES);
+            return GeneratorOptions.createGenerator(registryManager, seed, ChunkGeneratorSettings.LARGE_BIOMES);
         }
     };
     public static final GeneratorType AMPLIFIED = new GeneratorType("amplified"){
 
         @Override
         protected ChunkGenerator getChunkGenerator(DynamicRegistryManager registryManager, long seed) {
-            return GeneratorOptions.method_39556(registryManager, seed, ChunkGeneratorSettings.AMPLIFIED);
+            return GeneratorOptions.createGenerator(registryManager, seed, ChunkGeneratorSettings.AMPLIFIED);
         }
     };
     private static final GeneratorType SINGLE_BIOME_SURFACE = new GeneratorType("single_biome_surface"){
@@ -120,7 +120,7 @@ public abstract class GeneratorType {
     }
 
     public GeneratorOptions createDefaultOptions(DynamicRegistryManager.Impl registryManager, long seed, boolean generateStructures, boolean bonusChest) {
-        return new GeneratorOptions(seed, generateStructures, bonusChest, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registryManager.get(Registry.DIMENSION_TYPE_KEY), DimensionType.method_39540(registryManager, seed), this.getChunkGenerator(registryManager, seed)));
+        return new GeneratorOptions(seed, generateStructures, bonusChest, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registryManager.get(Registry.DIMENSION_TYPE_KEY), DimensionType.createDefaultDimensionOptions(registryManager, seed), this.getChunkGenerator(registryManager, seed)));
     }
 
     protected abstract ChunkGenerator getChunkGenerator(DynamicRegistryManager var1, long var2);

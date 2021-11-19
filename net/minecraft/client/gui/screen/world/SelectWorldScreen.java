@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class SelectWorldScreen
 extends Screen {
-    private static final Logger field_28783 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     protected final Screen parent;
     @Nullable
     private List<OrderedText> tooltipText;
@@ -138,7 +138,7 @@ extends Screen {
             String string2 = FileNameUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), "DEBUG world", "");
             this.client.createWorld(string2, levelInfo, impl, generatorOptions);
         } catch (IOException iOException) {
-            field_28783.error("Failed to recreate the debug world", (Throwable)iOException);
+            LOGGER.error("Failed to recreate the debug world", (Throwable)iOException);
         }
     }
 }

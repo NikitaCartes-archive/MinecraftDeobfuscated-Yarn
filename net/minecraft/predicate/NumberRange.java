@@ -155,45 +155,45 @@ public abstract class NumberRange<T extends Number> {
         @Nullable
         private final Double squaredMax;
 
-        private static FloatRange create(StringReader reader, @Nullable Double double_, @Nullable Double double2) throws CommandSyntaxException {
-            if (double_ != null && double2 != null && double_ > double2) {
+        private static FloatRange create(StringReader reader, @Nullable Double min, @Nullable Double max) throws CommandSyntaxException {
+            if (min != null && max != null && min > max) {
                 throw EXCEPTION_SWAPPED.createWithContext(reader);
             }
-            return new FloatRange(double_, double2);
+            return new FloatRange(min, max);
         }
 
         @Nullable
-        private static Double square(@Nullable Double double_) {
-            return double_ == null ? null : Double.valueOf(double_ * double_);
+        private static Double square(@Nullable Double value) {
+            return value == null ? null : Double.valueOf(value * value);
         }
 
-        private FloatRange(@Nullable Double double_, @Nullable Double double2) {
-            super(double_, double2);
-            this.squaredMin = FloatRange.square(double_);
-            this.squaredMax = FloatRange.square(double2);
+        private FloatRange(@Nullable Double min, @Nullable Double max) {
+            super(min, max);
+            this.squaredMin = FloatRange.square(min);
+            this.squaredMax = FloatRange.square(max);
         }
 
-        public static FloatRange exactly(double d) {
-            return new FloatRange(d, d);
+        public static FloatRange exactly(double value) {
+            return new FloatRange(value, value);
         }
 
-        public static FloatRange between(double d, double e) {
-            return new FloatRange(d, e);
+        public static FloatRange between(double min, double max) {
+            return new FloatRange(min, max);
         }
 
-        public static FloatRange atLeast(double d) {
-            return new FloatRange(d, null);
+        public static FloatRange atLeast(double value) {
+            return new FloatRange(value, null);
         }
 
-        public static FloatRange atMost(double d) {
-            return new FloatRange(null, d);
+        public static FloatRange atMost(double value) {
+            return new FloatRange(null, value);
         }
 
-        public boolean test(double d) {
-            if (this.min != null && (Double)this.min > d) {
+        public boolean test(double value) {
+            if (this.min != null && (Double)this.min > value) {
                 return false;
             }
-            return this.max == null || !((Double)this.max < d);
+            return this.max == null || !((Double)this.max < value);
         }
 
         public boolean testSqrt(double value) {
@@ -208,7 +208,7 @@ public abstract class NumberRange<T extends Number> {
         }
 
         public static FloatRange parse(StringReader reader) throws CommandSyntaxException {
-            return FloatRange.parse(reader, double_ -> double_);
+            return FloatRange.parse(reader, value -> value);
         }
 
         public static FloatRange parse(StringReader reader, Function<Double, Double> mapper) throws CommandSyntaxException {
@@ -265,11 +265,11 @@ public abstract class NumberRange<T extends Number> {
             return this.max == null || (Integer)this.max >= value;
         }
 
-        public boolean method_35288(long l) {
-            if (this.minSquared != null && this.minSquared > l) {
+        public boolean testSqrt(long value) {
+            if (this.minSquared != null && this.minSquared > value) {
                 return false;
             }
-            return this.maxSquared == null || this.maxSquared >= l;
+            return this.maxSquared == null || this.maxSquared >= value;
         }
 
         public static IntRange fromJson(@Nullable JsonElement element) {
@@ -277,7 +277,7 @@ public abstract class NumberRange<T extends Number> {
         }
 
         public static IntRange parse(StringReader reader) throws CommandSyntaxException {
-            return IntRange.fromStringReader(reader, integer -> integer);
+            return IntRange.fromStringReader(reader, value -> value);
         }
 
         public static IntRange fromStringReader(StringReader reader, Function<Integer, Integer> converter) throws CommandSyntaxException {

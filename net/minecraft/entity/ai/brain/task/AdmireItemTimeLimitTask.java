@@ -26,7 +26,7 @@ extends Task<E> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
-        return ((LivingEntity)piglinEntity).getOffhandStack().isEmpty();
+        return ((LivingEntity)piglinEntity).getOffHandStack().isEmpty();
     }
 
     @Override

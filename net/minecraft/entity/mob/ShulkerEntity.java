@@ -201,14 +201,14 @@ implements Monster {
 
     @Override
     protected Box calculateBoundingBox() {
-        float f = ShulkerEntity.method_33342(this.openProgress);
+        float f = ShulkerEntity.getExtraLength(this.openProgress);
         Direction direction = this.getAttachedFace().getOpposite();
         float g = this.getType().getWidth() / 2.0f;
-        return ShulkerEntity.method_33346(direction, f).offset(this.getX() - (double)g, this.getY(), this.getZ() - (double)g);
+        return ShulkerEntity.calculateBoundingBox(direction, f).offset(this.getX() - (double)g, this.getY(), this.getZ() - (double)g);
     }
 
-    private static float method_33342(float f) {
-        return 0.5f - MathHelper.sin((0.5f + f) * (float)Math.PI) * 0.5f;
+    private static float getExtraLength(float openProgress) {
+        return 0.5f - MathHelper.sin((0.5f + openProgress) * (float)Math.PI) * 0.5f;
     }
 
     private boolean tickOpenProgress() {
@@ -223,27 +223,27 @@ implements Monster {
 
     private void moveEntities() {
         this.refreshPosition();
-        float f = ShulkerEntity.method_33342(this.openProgress);
-        float g = ShulkerEntity.method_33342(this.prevOpenProgress);
+        float f = ShulkerEntity.getExtraLength(this.openProgress);
+        float g = ShulkerEntity.getExtraLength(this.prevOpenProgress);
         Direction direction = this.getAttachedFace().getOpposite();
         float h = f - g;
         if (h <= 0.0f) {
             return;
         }
-        List<Entity> list = this.world.getOtherEntities(this, ShulkerEntity.method_33347(direction, g, f).offset(this.getX() - 0.5, this.getY(), this.getZ() - 0.5), EntityPredicates.EXCEPT_SPECTATOR.and(entity -> !entity.isConnectedThroughVehicle(this)));
+        List<Entity> list = this.world.getOtherEntities(this, ShulkerEntity.calculateBoundingBox(direction, g, f).offset(this.getX() - 0.5, this.getY(), this.getZ() - 0.5), EntityPredicates.EXCEPT_SPECTATOR.and(entity -> !entity.isConnectedThroughVehicle(this)));
         for (Entity entity2 : list) {
             if (entity2 instanceof ShulkerEntity || entity2.noClip) continue;
             entity2.move(MovementType.SHULKER, new Vec3d(h * (float)direction.getOffsetX(), h * (float)direction.getOffsetY(), h * (float)direction.getOffsetZ()));
         }
     }
 
-    public static Box method_33346(Direction direction, float f) {
-        return ShulkerEntity.method_33347(direction, -1.0f, f);
+    public static Box calculateBoundingBox(Direction direction, float extraLength) {
+        return ShulkerEntity.calculateBoundingBox(direction, -1.0f, extraLength);
     }
 
-    public static Box method_33347(Direction direction, float f, float g) {
-        double d = Math.max(f, g);
-        double e = Math.min(f, g);
+    public static Box calculateBoundingBox(Direction direction, float prevExtraLength, float extraLength) {
+        double d = Math.max(prevExtraLength, extraLength);
+        double e = Math.min(prevExtraLength, extraLength);
         return new Box(BlockPos.ORIGIN).stretch((double)direction.getOffsetX() * d, (double)direction.getOffsetY() * d, (double)direction.getOffsetZ() * d).shrink((double)(-direction.getOffsetX()) * (1.0 + e), (double)(-direction.getOffsetY()) * (1.0 + e), (double)(-direction.getOffsetZ()) * (1.0 + e));
     }
 
@@ -338,18 +338,18 @@ implements Monster {
     }
 
     boolean canStay(BlockPos pos, Direction direction) {
-        if (this.method_33351(pos)) {
+        if (this.isInvalidPosition(pos)) {
             return false;
         }
         Direction direction2 = direction.getOpposite();
         if (!this.world.isDirectionSolid(pos.offset(direction), this, direction2)) {
             return false;
         }
-        Box box = ShulkerEntity.method_33346(direction2, 1.0f).offset(pos).contract(1.0E-6);
+        Box box = ShulkerEntity.calculateBoundingBox(direction2, 1.0f).offset(pos).contract(1.0E-6);
         return this.world.isSpaceEmpty(this, box);
     }
 
-    private boolean method_33351(BlockPos pos) {
+    private boolean isInvalidPosition(BlockPos pos) {
         BlockState blockState = this.world.getBlockState(pos);
         if (blockState.isAir()) {
             return false;

@@ -12,6 +12,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.sound.AlUtil;
 import net.minecraft.client.sound.SoundListener;
 import net.minecraft.client.sound.Source;
@@ -252,7 +253,9 @@ public class SoundEngine {
         @Nullable
         public Source createSource() {
             if (this.sources.size() >= this.maxSourceCount) {
-                LOGGER.warn("Maximum sound pool size {} reached", (Object)this.maxSourceCount);
+                if (SharedConstants.isDevelopment) {
+                    LOGGER.warn("Maximum sound pool size {} reached", (Object)this.maxSourceCount);
+                }
                 return null;
             }
             Source source = Source.create();

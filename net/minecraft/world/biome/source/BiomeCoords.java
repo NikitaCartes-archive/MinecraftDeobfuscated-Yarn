@@ -34,6 +34,10 @@ public final class BiomeCoords {
         return blockCoord >> 2;
     }
 
+    public static int method_39920(int i) {
+        return i & 3;
+    }
+
     /**
      * Converts a biome x, y, or z to a block x, y, or z.
      * 

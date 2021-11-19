@@ -8,8 +8,8 @@ import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
-import net.minecraft.class_6834;
 import net.minecraft.structure.EndCityGenerator;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.BlockRotation;
@@ -57,13 +57,13 @@ extends StructureFeature<DefaultFeatureConfig> {
         return Math.min(Math.min(m, n), Math.min(o, p));
     }
 
-    private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(class_6834.class_6835<DefaultFeatureConfig> arg) {
-        int i = EndCityFeature.getGenerationHeight(arg.chunkPos(), arg.chunkGenerator(), arg.heightAccessor());
+    private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(StructureGeneratorFactory.Context<DefaultFeatureConfig> context2) {
+        int i = EndCityFeature.getGenerationHeight(context2.chunkPos(), context2.chunkGenerator(), context2.world());
         if (i < 60) {
             return Optional.empty();
         }
-        BlockPos blockPos = arg.chunkPos().getCenterAtY(i);
-        if (!arg.validBiome().test(arg.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ())))) {
+        BlockPos blockPos = context2.chunkPos().getCenterAtY(i);
+        if (!context2.validBiome().test(context2.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ())))) {
             return Optional.empty();
         }
         return Optional.of((structurePiecesCollector, context) -> {

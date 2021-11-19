@@ -333,6 +333,7 @@ Selectable {
         E entry = this.getEntryAtPosition(mouseX, mouseY);
         if (entry != null) {
             if (entry.mouseClicked(mouseX, mouseY, button)) {
+                this.setFocused((Element)entry);
                 this.setDragging(true);
                 return true;
             }

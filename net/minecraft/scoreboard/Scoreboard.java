@@ -76,10 +76,10 @@ public class Scoreboard {
         return scoreboardPlayerScore != null;
     }
 
-    public ScoreboardPlayerScore getPlayerScore(String string2, ScoreboardObjective objective2) {
-        Map map = this.playerObjectives.computeIfAbsent(string2, string -> Maps.newHashMap());
+    public ScoreboardPlayerScore getPlayerScore(String playerName, ScoreboardObjective objective2) {
+        Map map = this.playerObjectives.computeIfAbsent(playerName, string -> Maps.newHashMap());
         return map.computeIfAbsent(objective2, objective -> {
-            ScoreboardPlayerScore scoreboardPlayerScore = new ScoreboardPlayerScore(this, (ScoreboardObjective)objective, string2);
+            ScoreboardPlayerScore scoreboardPlayerScore = new ScoreboardPlayerScore(this, (ScoreboardObjective)objective, playerName);
             scoreboardPlayerScore.setScore(0);
             return scoreboardPlayerScore;
         });

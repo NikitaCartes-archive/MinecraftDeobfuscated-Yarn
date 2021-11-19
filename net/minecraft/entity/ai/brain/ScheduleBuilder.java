@@ -24,10 +24,10 @@ public class ScheduleBuilder {
 
     public Schedule build() {
         this.activities.stream().map(ActivityEntry::getActivity).collect(Collectors.toSet()).forEach(this.schedule::addActivity);
-        this.activities.forEach(activityEntry -> {
-            Activity activity = activityEntry.getActivity();
-            this.schedule.getOtherRules(activity).forEach(scheduleRule -> scheduleRule.add(activityEntry.getStartTime(), 0.0f));
-            this.schedule.getRule(activity).add(activityEntry.getStartTime(), 1.0f);
+        this.activities.forEach(activity -> {
+            Activity activity2 = activity.getActivity();
+            this.schedule.getOtherRules(activity2).forEach(scheduleRule -> scheduleRule.add(activity.getStartTime(), 0.0f));
+            this.schedule.getRule(activity2).add(activity.getStartTime(), 1.0f);
         });
         return this.schedule;
     }

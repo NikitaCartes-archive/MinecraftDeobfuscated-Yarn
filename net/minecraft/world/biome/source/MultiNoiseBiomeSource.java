@@ -112,7 +112,7 @@ extends BiomeSource {
         public static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.flatXmap(id -> Optional.ofNullable(Preset.BY_IDENTIFIER.get(id)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + id)), preset -> DataResult.success(preset.id)).fieldOf("preset")).stable().forGetter(Instance::preset), RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(Instance::biomeRegistry)).apply((Applicative<Instance, ?>)instance, instance.stable(Instance::new)));
 
         public MultiNoiseBiomeSource getBiomeSource() {
-            return this.preset.method_39531(this, true);
+            return this.preset.getBiomeSource(this, true);
         }
     }
 
@@ -127,23 +127,23 @@ extends BiomeSource {
         final Identifier id;
         private final Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> biomeSourceFunction;
 
-        public Preset(Identifier id, Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> function) {
+        public Preset(Identifier id, Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> biomeSourceFunction) {
             this.id = id;
-            this.biomeSourceFunction = function;
+            this.biomeSourceFunction = biomeSourceFunction;
             BY_IDENTIFIER.put(id, this);
         }
 
-        MultiNoiseBiomeSource method_39531(Instance instance, boolean bl) {
+        MultiNoiseBiomeSource getBiomeSource(Instance instance, boolean useInstance) {
             MultiNoiseUtil.Entries<Supplier<Biome>> entries = this.biomeSourceFunction.apply(instance.biomeRegistry());
-            return new MultiNoiseBiomeSource(entries, bl ? Optional.of(instance) : Optional.empty());
+            return new MultiNoiseBiomeSource(entries, useInstance ? Optional.of(instance) : Optional.empty());
         }
 
-        public MultiNoiseBiomeSource method_39532(Registry<Biome> registry, boolean bl) {
-            return this.method_39531(new Instance(this, registry), bl);
+        public MultiNoiseBiomeSource getBiomeSource(Registry<Biome> biomeRegistry, boolean useInstance) {
+            return this.getBiomeSource(new Instance(this, biomeRegistry), useInstance);
         }
 
         public MultiNoiseBiomeSource getBiomeSource(Registry<Biome> biomeRegistry) {
-            return this.method_39532(biomeRegistry, true);
+            return this.getBiomeSource(biomeRegistry, true);
         }
     }
 }

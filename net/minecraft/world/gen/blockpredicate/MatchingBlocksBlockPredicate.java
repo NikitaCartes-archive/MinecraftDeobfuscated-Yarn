@@ -20,8 +20,8 @@ extends OffsetPredicate {
     private final List<Block> blocks;
     public static final Codec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingBlocksBlockPredicate.registerOffsetField(instance).and(((MapCodec)Registry.BLOCK.getCodec().listOf().fieldOf("blocks")).forGetter(predicate -> predicate.blocks)).apply((Applicative<MatchingBlocksBlockPredicate, ?>)instance, MatchingBlocksBlockPredicate::new));
 
-    public MatchingBlocksBlockPredicate(Vec3i vec3i, List<Block> blocks) {
-        super(vec3i);
+    public MatchingBlocksBlockPredicate(Vec3i offset, List<Block> blocks) {
+        super(offset);
         this.blocks = blocks;
     }
 

@@ -54,7 +54,7 @@ implements Monster {
         this.goalSelector.add(5, new FlyRandomlyGoal(this));
         this.goalSelector.add(7, new LookAtTargetGoal(this));
         this.goalSelector.add(7, new ShootFireballGoal(this));
-        this.targetSelector.add(1, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
+        this.targetSelector.add(1, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, entity -> Math.abs(entity.getY() - this.getY()) <= 4.0));
     }
 
     public boolean isShooting() {

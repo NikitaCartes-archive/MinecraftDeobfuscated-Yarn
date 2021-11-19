@@ -107,9 +107,9 @@ public abstract class Property<T extends Comparable<T>> {
         return 31 * this.type.hashCode() + this.name.hashCode();
     }
 
-    public <U, S extends State<?, S>> DataResult<S> method_35307(DynamicOps<U> dynamicOps, S state, U object) {
-        DataResult dataResult = this.codec.parse(dynamicOps, object);
-        return dataResult.map(comparable -> (State)state.with(this, comparable)).setPartial(state);
+    public <U, S extends State<?, S>> DataResult<S> parse(DynamicOps<U> ops, S state, U input) {
+        DataResult dataResult = this.codec.parse(ops, input);
+        return dataResult.map(property -> (State)state.with(this, property)).setPartial(state);
     }
 
     public record Value<T extends Comparable<T>>(Property<T> property, T value) {

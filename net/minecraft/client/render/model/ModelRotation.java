@@ -75,7 +75,7 @@ public enum ModelRotation implements ModelBakeSettings
     }
 
     static {
-        BY_INDEX = Arrays.stream(ModelRotation.values()).collect(Collectors.toMap(modelRotation -> modelRotation.index, modelRotation -> modelRotation));
+        BY_INDEX = Arrays.stream(ModelRotation.values()).collect(Collectors.toMap(rotation -> rotation.index, modelRotation -> modelRotation));
     }
 }
 

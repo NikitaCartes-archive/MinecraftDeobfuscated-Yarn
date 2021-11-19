@@ -31,10 +31,10 @@ public interface SaveProperties {
 
     public void addServerBrand(String var1, boolean var2);
 
-    default public void populateCrashReport(CrashReportSection crashReportSection) {
-        crashReportSection.add("Known server brands", () -> String.join((CharSequence)", ", this.getServerBrands()));
-        crashReportSection.add("Level was modded", () -> Boolean.toString(this.isModded()));
-        crashReportSection.add("Level storage version", () -> {
+    default public void populateCrashReport(CrashReportSection section) {
+        section.add("Known server brands", () -> String.join((CharSequence)", ", this.getServerBrands()));
+        section.add("Level was modded", () -> Boolean.toString(this.isModded()));
+        section.add("Level storage version", () -> {
             int i = this.getVersion();
             return String.format("0x%05X - %s", i, this.getFormatName(i));
         });

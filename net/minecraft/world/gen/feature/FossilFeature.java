@@ -60,18 +60,18 @@ extends Feature<FossilFeatureConfig> {
             return false;
         }
         structurePlacementData.clearProcessors();
-        fossilFeatureConfig.fossilProcessors.get().getList().forEach(structureProcessor -> structurePlacementData.addProcessor((StructureProcessor)structureProcessor));
+        fossilFeatureConfig.fossilProcessors.get().getList().forEach(processor -> structurePlacementData.addProcessor((StructureProcessor)processor));
         structure.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, Block.NO_REDRAW);
         structurePlacementData.clearProcessors();
-        fossilFeatureConfig.overlayProcessors.get().getList().forEach(structureProcessor -> structurePlacementData.addProcessor((StructureProcessor)structureProcessor));
+        fossilFeatureConfig.overlayProcessors.get().getList().forEach(processor -> structurePlacementData.addProcessor((StructureProcessor)processor));
         structure2.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, Block.NO_REDRAW);
         return true;
     }
 
     private static int getEmptyCorners(StructureWorldAccess world, BlockBox box) {
         MutableInt mutableInt = new MutableInt(0);
-        box.forEachVertex(blockPos -> {
-            BlockState blockState = world.getBlockState((BlockPos)blockPos);
+        box.forEachVertex(pos -> {
+            BlockState blockState = world.getBlockState((BlockPos)pos);
             if (blockState.isAir() || blockState.isOf(Blocks.LAVA) || blockState.isOf(Blocks.WATER)) {
                 mutableInt.add(1);
             }

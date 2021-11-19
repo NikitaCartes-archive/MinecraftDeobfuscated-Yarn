@@ -346,7 +346,7 @@ extends PatrolEntity {
         private boolean tryFindHome() {
             ServerWorld serverWorld = (ServerWorld)this.raider.world;
             BlockPos blockPos = this.raider.getBlockPos();
-            Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, this::canLootHome, PointOfInterestStorage.OccupationStatus.ANY, blockPos, 48, this.raider.random);
+            Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(poiType -> poiType == PointOfInterestType.HOME, this::canLootHome, PointOfInterestStorage.OccupationStatus.ANY, blockPos, 48, this.raider.random);
             if (!optional.isPresent()) {
                 return false;
             }

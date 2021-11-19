@@ -55,10 +55,10 @@ extends Goal {
     private void includeFreeRaiders(Raid raid) {
         if (raid.isActive()) {
             HashSet<RaiderEntity> set = Sets.newHashSet();
-            List<RaiderEntity> list = ((RaiderEntity)this.actor).world.getEntitiesByClass(RaiderEntity.class, ((Entity)this.actor).getBoundingBox().expand(16.0), raiderEntity -> !raiderEntity.hasActiveRaid() && RaidManager.isValidRaiderFor(raiderEntity, raid));
+            List<RaiderEntity> list = ((RaiderEntity)this.actor).world.getEntitiesByClass(RaiderEntity.class, ((Entity)this.actor).getBoundingBox().expand(16.0), raider -> !raider.hasActiveRaid() && RaidManager.isValidRaiderFor(raider, raid));
             set.addAll(list);
-            for (RaiderEntity raiderEntity2 : set) {
-                raid.addRaider(raid.getGroupsSpawned(), raiderEntity2, null, true);
+            for (RaiderEntity raiderEntity : set) {
+                raid.addRaider(raid.getGroupsSpawned(), raiderEntity, null, true);
             }
         }
     }

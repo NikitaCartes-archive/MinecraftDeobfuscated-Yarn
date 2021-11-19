@@ -65,12 +65,12 @@ public class OceanRuinGenerator {
         return Util.getRandom(BIG_WARM_RUINS, random);
     }
 
-    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder structurePiecesHolder, Random random, OceanRuinFeatureConfig config) {
+    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, OceanRuinFeatureConfig config) {
         boolean bl = random.nextFloat() <= config.largeProbability;
         float f = bl ? 0.9f : 0.8f;
-        OceanRuinGenerator.method_14822(manager, pos, rotation, structurePiecesHolder, random, config, bl, f);
+        OceanRuinGenerator.method_14822(manager, pos, rotation, holder, random, config, bl, f);
         if (bl && random.nextFloat() <= config.clusterProbability) {
-            OceanRuinGenerator.method_14825(manager, random, rotation, pos, config, structurePiecesHolder);
+            OceanRuinGenerator.method_14825(manager, random, rotation, pos, config, holder);
         }
     }
 
@@ -105,11 +105,11 @@ public class OceanRuinGenerator {
         return list;
     }
 
-    private static void method_14822(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder structurePiecesHolder, Random random, OceanRuinFeatureConfig config, boolean large, float integrity) {
+    private static void method_14822(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, OceanRuinFeatureConfig config, boolean large, float integrity) {
         switch (config.biomeType) {
             default: {
                 Identifier identifier = large ? OceanRuinGenerator.getRandomBigWarmRuin(random) : OceanRuinGenerator.getRandomWarmRuin(random);
-                structurePiecesHolder.addPiece(new Piece(manager, identifier, pos, rotation, integrity, config.biomeType, large));
+                holder.addPiece(new Piece(manager, identifier, pos, rotation, integrity, config.biomeType, large));
                 break;
             }
             case COLD: {
@@ -117,9 +117,9 @@ public class OceanRuinGenerator {
                 Identifier[] identifiers2 = large ? BIG_CRACKED_RUINS : CRACKED_RUINS;
                 Identifier[] identifiers3 = large ? BIG_MOSSY_RUINS : MOSSY_RUINS;
                 int i = random.nextInt(identifiers.length);
-                structurePiecesHolder.addPiece(new Piece(manager, identifiers[i], pos, rotation, integrity, config.biomeType, large));
-                structurePiecesHolder.addPiece(new Piece(manager, identifiers2[i], pos, rotation, 0.7f, config.biomeType, large));
-                structurePiecesHolder.addPiece(new Piece(manager, identifiers3[i], pos, rotation, 0.5f, config.biomeType, large));
+                holder.addPiece(new Piece(manager, identifiers[i], pos, rotation, integrity, config.biomeType, large));
+                holder.addPiece(new Piece(manager, identifiers2[i], pos, rotation, 0.7f, config.biomeType, large));
+                holder.addPiece(new Piece(manager, identifiers3[i], pos, rotation, 0.5f, config.biomeType, large));
             }
         }
     }
@@ -137,8 +137,8 @@ public class OceanRuinGenerator {
             this.large = large;
         }
 
-        public Piece(StructureManager structureManager, NbtCompound nbt) {
-            super(StructurePieceType.OCEAN_TEMPLE, nbt, structureManager, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+        public Piece(StructureManager holder, NbtCompound nbt) {
+            super(StructurePieceType.OCEAN_TEMPLE, nbt, holder, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
             this.integrity = nbt.getFloat("Integrity");
             this.biomeType = OceanRuinFeature.BiomeType.valueOf(nbt.getString("BiomeType"));
             this.large = nbt.getBoolean("IsLarge");

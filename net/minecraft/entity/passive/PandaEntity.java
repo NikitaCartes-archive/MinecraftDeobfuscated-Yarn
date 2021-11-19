@@ -749,7 +749,7 @@ extends AnimalEntity {
             if (!this.panda.isOnFire()) {
                 return false;
             }
-            BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5, 4);
+            BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5);
             if (blockPos != null) {
                 this.targetX = blockPos.getX();
                 this.targetY = blockPos.getY();
@@ -774,9 +774,9 @@ extends AnimalEntity {
         private final PandaEntity panda;
         private int nextAskPlayerForBambooAge;
 
-        public PandaMateGoal(PandaEntity pandaEntity, double d) {
-            super(pandaEntity, d);
-            this.panda = pandaEntity;
+        public PandaMateGoal(PandaEntity panda, double chance) {
+            super(panda, chance);
+            this.panda = panda;
         }
 
         @Override

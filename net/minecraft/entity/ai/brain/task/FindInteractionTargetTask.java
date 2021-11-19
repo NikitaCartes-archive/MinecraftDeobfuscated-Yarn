@@ -44,9 +44,9 @@ extends Task<LivingEntity> {
     public void run(ServerWorld world, LivingEntity entity, long time) {
         super.run(world, entity, time);
         Brain<?> brain = entity.getBrain();
-        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).flatMap(livingTargetCache -> livingTargetCache.findFirst(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance && this.test((LivingEntity)livingEntity2))).ifPresent(livingEntity -> {
-            brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
-            brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)livingEntity, true));
+        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).flatMap(livingTargetCache -> livingTargetCache.findFirst(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance && this.test((LivingEntity)livingEntity2))).ifPresent(target -> {
+            brain.remember(MemoryModuleType.INTERACTION_TARGET, target);
+            brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)target, true));
         });
     }
 

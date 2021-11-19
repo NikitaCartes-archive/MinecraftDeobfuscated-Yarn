@@ -10,7 +10,7 @@ import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 public class VillageFeature
 extends JigsawFeature {
     public VillageFeature(Codec<StructurePoolFeatureConfig> configCodec) {
-        super(configCodec, 0, true, true, arg -> true);
+        super(configCodec, 0, true, true, context -> true);
     }
 }
 

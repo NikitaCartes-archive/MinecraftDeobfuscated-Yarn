@@ -66,15 +66,15 @@ extends Item {
         BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
         Block block = blockState.getBlock();
         if (block instanceof AbstractPlantStemBlock && !(abstractPlantStemBlock = (AbstractPlantStemBlock)block).hasMaxAge(blockState)) {
-            PlayerEntity playerEntity2 = context.getPlayer();
+            PlayerEntity playerEntity = context.getPlayer();
             ItemStack itemStack = context.getStack();
-            if (playerEntity2 instanceof ServerPlayerEntity) {
-                Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity2, blockPos, itemStack);
+            if (playerEntity instanceof ServerPlayerEntity) {
+                Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
             }
-            world.playSound(playerEntity2, blockPos, SoundEvents.BLOCK_GROWING_PLANT_CROP, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_GROWING_PLANT_CROP, SoundCategory.BLOCKS, 1.0f, 1.0f);
             world.setBlockState(blockPos, abstractPlantStemBlock.withMaxAge(blockState));
-            if (playerEntity2 != null) {
-                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(context.getHand()));
+            if (playerEntity != null) {
+                itemStack.damage(1, playerEntity, player -> player.sendToolBreakStatus(context.getHand()));
             }
             return ActionResult.success(world.isClient);
         }

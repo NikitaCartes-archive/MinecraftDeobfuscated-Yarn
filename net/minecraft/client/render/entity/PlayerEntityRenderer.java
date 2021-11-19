@@ -93,7 +93,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             BipedEntityModel.ArmPose armPose = PlayerEntityRenderer.getArmPose(player, Hand.MAIN_HAND);
             BipedEntityModel.ArmPose armPose2 = PlayerEntityRenderer.getArmPose(player, Hand.OFF_HAND);
             if (armPose.isTwoHanded()) {
-                BipedEntityModel.ArmPose armPose3 = armPose2 = player.getOffhandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
+                BipedEntityModel.ArmPose armPose3 = armPose2 = player.getOffHandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
             }
             if (player.getMainArm() == Arm.RIGHT) {
                 playerEntityModel.rightArmPose = armPose;

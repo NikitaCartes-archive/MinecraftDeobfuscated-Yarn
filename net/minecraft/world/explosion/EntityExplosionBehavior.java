@@ -22,7 +22,7 @@ extends ExplosionBehavior {
 
     @Override
     public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
-        return super.getBlastResistance(explosion, world, pos, blockState, fluidState).map(float_ -> Float.valueOf(this.entity.getEffectiveExplosionResistance(explosion, world, pos, blockState, fluidState, float_.floatValue())));
+        return super.getBlastResistance(explosion, world, pos, blockState, fluidState).map(max -> Float.valueOf(this.entity.getEffectiveExplosionResistance(explosion, world, pos, blockState, fluidState, max.floatValue())));
     }
 
     @Override

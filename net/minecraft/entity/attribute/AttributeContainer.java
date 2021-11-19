@@ -78,8 +78,8 @@ public class AttributeContainer {
     }
 
     public void removeModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {
-        attributeModifiers.asMap().forEach((entityAttribute, collection) -> {
-            EntityAttributeInstance entityAttributeInstance = this.custom.get(entityAttribute);
+        attributeModifiers.asMap().forEach((attribute, collection) -> {
+            EntityAttributeInstance entityAttributeInstance = this.custom.get(attribute);
             if (entityAttributeInstance != null) {
                 collection.forEach(entityAttributeInstance::removeModifier);
             }
@@ -87,20 +87,20 @@ public class AttributeContainer {
     }
 
     public void addTemporaryModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {
-        attributeModifiers.forEach((entityAttribute, entityAttributeModifier) -> {
-            EntityAttributeInstance entityAttributeInstance = this.getCustomInstance((EntityAttribute)entityAttribute);
+        attributeModifiers.forEach((attribute, attributeModifier) -> {
+            EntityAttributeInstance entityAttributeInstance = this.getCustomInstance((EntityAttribute)attribute);
             if (entityAttributeInstance != null) {
-                entityAttributeInstance.removeModifier((EntityAttributeModifier)entityAttributeModifier);
-                entityAttributeInstance.addTemporaryModifier((EntityAttributeModifier)entityAttributeModifier);
+                entityAttributeInstance.removeModifier((EntityAttributeModifier)attributeModifier);
+                entityAttributeInstance.addTemporaryModifier((EntityAttributeModifier)attributeModifier);
             }
         });
     }
 
     public void setFrom(AttributeContainer other) {
-        other.custom.values().forEach(entityAttributeInstance -> {
-            EntityAttributeInstance entityAttributeInstance2 = this.getCustomInstance(entityAttributeInstance.getAttribute());
-            if (entityAttributeInstance2 != null) {
-                entityAttributeInstance2.setFrom((EntityAttributeInstance)entityAttributeInstance);
+        other.custom.values().forEach(attributeInstance -> {
+            EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attributeInstance.getAttribute());
+            if (entityAttributeInstance != null) {
+                entityAttributeInstance.setFrom((EntityAttributeInstance)attributeInstance);
             }
         });
     }
@@ -117,8 +117,8 @@ public class AttributeContainer {
         for (int i = 0; i < nbt.size(); ++i) {
             NbtCompound nbtCompound = nbt.getCompound(i);
             String string = nbtCompound.getString("Name");
-            Util.ifPresentOrElse(Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), entityAttribute -> {
-                EntityAttributeInstance entityAttributeInstance = this.getCustomInstance((EntityAttribute)entityAttribute);
+            Util.ifPresentOrElse(Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), attribute -> {
+                EntityAttributeInstance entityAttributeInstance = this.getCustomInstance((EntityAttribute)attribute);
                 if (entityAttributeInstance != null) {
                     entityAttributeInstance.readNbt(nbtCompound);
                 }

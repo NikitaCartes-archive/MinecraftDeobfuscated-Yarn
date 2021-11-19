@@ -1607,7 +1607,7 @@ AutoCloseable {
             return;
         }
         RenderSystem.disableTexture();
-        Vec3d vec3d = this.world.method_23777(this.client.gameRenderer.getCamera().getPos(), f);
+        Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.getCamera().getPos(), f);
         float g = (float)vec3d.x;
         float h = (float)vec3d.y;
         float i = (float)vec3d.z;

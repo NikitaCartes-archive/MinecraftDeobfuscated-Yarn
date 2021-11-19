@@ -84,7 +84,7 @@ extends WanderAroundGoal {
     @Nullable
     private ChunkSectionPos findRandomChunkPos() {
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
-        List list = ChunkSectionPos.stream(ChunkSectionPos.from(this.mob), 2).filter(chunkSectionPos -> serverWorld.getOccupiedPointOfInterestDistance((ChunkSectionPos)chunkSectionPos) == 0).collect(Collectors.toList());
+        List list = ChunkSectionPos.stream(ChunkSectionPos.from(this.mob), 2).filter(sectionPos -> serverWorld.getOccupiedPointOfInterestDistance((ChunkSectionPos)sectionPos) == 0).collect(Collectors.toList());
         if (list.isEmpty()) {
             return null;
         }

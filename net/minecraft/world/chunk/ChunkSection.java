@@ -167,7 +167,7 @@ public class ChunkSection {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void method_38291(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
+    public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
         PalettedContainer<Biome> palettedContainer = this.getBiomeContainer();
         palettedContainer.lock();
         try {

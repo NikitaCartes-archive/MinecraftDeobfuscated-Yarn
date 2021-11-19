@@ -369,7 +369,7 @@ implements Shearable {
         DyeColor dyeColor = ((SheepEntity)firstParent).getColor();
         DyeColor dyeColor2 = ((SheepEntity)secondParent).getColor();
         CraftingInventory craftingInventory = SheepEntity.createDyeMixingCraftingInventory(dyeColor, dyeColor2);
-        return this.world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world).map(craftingRecipe -> craftingRecipe.craft(craftingInventory)).map(ItemStack::getItem).filter(DyeItem.class::isInstance).map(DyeItem.class::cast).map(DyeItem::getColor).orElseGet(() -> this.world.random.nextBoolean() ? dyeColor : dyeColor2);
+        return this.world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world).map(recipe -> recipe.craft(craftingInventory)).map(ItemStack::getItem).filter(DyeItem.class::isInstance).map(DyeItem.class::cast).map(DyeItem::getColor).orElseGet(() -> this.world.random.nextBoolean() ? dyeColor : dyeColor2);
     }
 
     private static CraftingInventory createDyeMixingCraftingInventory(DyeColor firstColor, DyeColor secondColor) {

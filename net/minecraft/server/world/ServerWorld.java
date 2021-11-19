@@ -37,7 +37,6 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6832;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -123,6 +122,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PortalForcer;
 import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.StructureLocator;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
@@ -196,7 +196,7 @@ implements StructureWorldAccess {
     private final EnderDragonFight enderDragonFight;
     final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<EnderDragonPart>();
     private final StructureAccessor structureAccessor;
-    private final class_6832 field_36208;
+    private final StructureLocator structureLocator;
     private final boolean shouldTickTime;
 
     public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long seed, List<Spawner> spawners, boolean shouldTickTime) {
@@ -219,8 +219,8 @@ implements StructureWorldAccess {
             properties.setGameMode(server.getDefaultGameMode());
         }
         long l = server.getSaveProperties().getGeneratorOptions().getSeed();
-        this.field_36208 = new class_6832(this.chunkManager.method_39777(), this.getRegistryManager(), server.getStructureManager(), worldKey, chunkGenerator, this, chunkGenerator.getBiomeSource(), l, dataFixer);
-        this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.field_36208);
+        this.structureLocator = new StructureLocator(this.chunkManager.getChunkIoWorker(), this.getRegistryManager(), server.getStructureManager(), worldKey, chunkGenerator, this, chunkGenerator.getBiomeSource(), l, dataFixer);
+        this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.structureLocator);
         this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, l, server.getSaveProperties().getDragonFight()) : null;
         this.sleepManager = new SleepManager();
     }
@@ -1250,7 +1250,7 @@ implements StructureWorldAccess {
     }
 
     public void method_39778(Chunk chunk) {
-        this.field_36208.method_39833(chunk.getPos(), chunk.getStructureStarts());
+        this.structureLocator.cache(chunk.getPos(), chunk.getStructureStarts());
     }
 
     @Override

@@ -20,8 +20,8 @@ implements BlockPredicate {
     private final Vec3i offset;
     private final BlockState state;
 
-    protected WouldSurviveBlockPredicate(Vec3i vec3i, BlockState state) {
-        this.offset = vec3i;
+    protected WouldSurviveBlockPredicate(Vec3i offset, BlockState state) {
+        this.offset = offset;
         this.state = state;
     }
 

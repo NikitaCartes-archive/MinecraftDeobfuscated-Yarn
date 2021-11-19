@@ -14,12 +14,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.minecraft.class_6833;
-import net.minecraft.class_6834;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.structure.PostPlacementProcessor;
 import net.minecraft.structure.StructureContext;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
@@ -33,6 +32,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.StructurePresence;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -101,7 +101,7 @@ public class StructureFeature<C extends FeatureConfig> {
     public static final List<StructureFeature<?>> LAND_MODIFYING_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
     public static final int field_31518 = 8;
     private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
-    private final class_6834<C> piecesGenerator;
+    private final StructureGeneratorFactory<C> piecesGenerator;
     private final PostPlacementProcessor postProcessor;
 
     private static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
@@ -110,11 +110,11 @@ public class StructureFeature<C extends FeatureConfig> {
         return (F)Registry.register(Registry.STRUCTURE_FEATURE, name.toLowerCase(Locale.ROOT), structureFeature);
     }
 
-    public StructureFeature(Codec<C> configCodec, class_6834<C> piecesGenerator) {
+    public StructureFeature(Codec<C> configCodec, StructureGeneratorFactory<C> piecesGenerator) {
         this(configCodec, piecesGenerator, PostPlacementProcessor.EMPTY);
     }
 
-    public StructureFeature(Codec<C> configCodec, class_6834<C> piecesGenerator, PostPlacementProcessor postPlacementProcessor) {
+    public StructureFeature(Codec<C> configCodec, StructureGeneratorFactory<C> piecesGenerator, PostPlacementProcessor postPlacementProcessor) {
         this.codec = ((MapCodec)configCodec.fieldOf("config")).xmap(config -> new ConfiguredStructureFeature<FeatureConfig, StructureFeature>(this, (FeatureConfig)config), configuredFeature -> configuredFeature.config).codec();
         this.piecesGenerator = piecesGenerator;
         this.postProcessor = postPlacementProcessor;
@@ -185,7 +185,7 @@ public class StructureFeature<C extends FeatureConfig> {
      * @param searchRadius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
      */
     @Nullable
-    public BlockPos locateStructure(WorldView worldView, StructureAccessor structureAccessor, BlockPos searchStartPos, int searchRadius, boolean skipExistingChunks, long worldSeed, StructureConfig config) {
+    public BlockPos locateStructure(WorldView world, StructureAccessor structureAccessor, BlockPos searchStartPos, int searchRadius, boolean skipExistingChunks, long worldSeed, StructureConfig config) {
         int i = config.getSpacing();
         int j = ChunkSectionPos.getSectionCoord(searchStartPos.getX());
         int k = ChunkSectionPos.getSectionCoord(searchStartPos.getZ());
@@ -196,14 +196,14 @@ public class StructureFeature<C extends FeatureConfig> {
                     int p;
                     int o;
                     ChunkPos chunkPos;
-                    class_6833 lv;
+                    StructurePresence structurePresence;
                     boolean bl2;
                     boolean bl3 = bl2 = n == -l || n == l;
-                    if (!bl && !bl2 || (lv = structureAccessor.method_39783(chunkPos = this.getStartChunk(config, worldSeed, o = j + i * m, p = k + i * n), this, skipExistingChunks)) == class_6833.START_NOT_PRESENT) continue;
-                    if (!skipExistingChunks && lv == class_6833.START_PRESENT) {
+                    if (!bl && !bl2 || (structurePresence = structureAccessor.method_39783(chunkPos = this.getStartChunk(config, worldSeed, o = j + i * m, p = k + i * n), this, skipExistingChunks)) == StructurePresence.START_NOT_PRESENT) continue;
+                    if (!skipExistingChunks && structurePresence == StructurePresence.START_PRESENT) {
                         return this.getLocatedPos(chunkPos);
                     }
-                    Chunk chunk = worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
+                    Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
                     StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk), this, chunk);
                     if (structureStart != null && structureStart.hasChildren()) {
                         if (skipExistingChunks && structureStart.isInExistingChunk()) {
@@ -267,10 +267,10 @@ public class StructureFeature<C extends FeatureConfig> {
      * If this structure doesn't have a starting point in the chunk, {@link StructureStart#DEFAULT}
      * will be returned.
      */
-    public StructureStart<?> tryPlaceStart(DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos pos, int structureReferences, StructureConfig structureConfig, C config, HeightLimitView world, Predicate<Biome> biomeLimit) {
+    public StructureStart<?> tryPlaceStart(DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos pos, int structureReferences, StructureConfig structureConfig, C config, HeightLimitView world, Predicate<Biome> biomePredicate) {
         Optional<StructurePiecesGenerator<C>> optional;
         ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, pos.x, pos.z);
-        if (pos.x == chunkPos.x && pos.z == chunkPos.z && (optional = this.piecesGenerator.createGenerator(new class_6834.class_6835<C>(chunkGenerator, biomeSource, worldSeed, pos, config, world, biomeLimit, structureManager, registryManager))).isPresent()) {
+        if (pos.x == chunkPos.x && pos.z == chunkPos.z && (optional = this.piecesGenerator.createGenerator(new StructureGeneratorFactory.Context<C>(chunkGenerator, biomeSource, worldSeed, pos, config, world, biomePredicate, structureManager, registryManager))).isPresent()) {
             StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
             ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
             chunkRandom.setCarverSeed(worldSeed, pos.x, pos.z);
@@ -283,8 +283,8 @@ public class StructureFeature<C extends FeatureConfig> {
         return StructureStart.DEFAULT;
     }
 
-    public boolean method_39821(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long l, ChunkPos chunkPos, C featureConfig, HeightLimitView heightLimitView, Predicate<Biome> predicate) {
-        return this.piecesGenerator.createGenerator(new class_6834.class_6835<C>(chunkGenerator, biomeSource, l, chunkPos, featureConfig, heightLimitView, predicate, structureManager, dynamicRegistryManager)).isPresent();
+    public boolean canGenerate(DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos pos, C config, HeightLimitView world, Predicate<Biome> biomePredicate) {
+        return this.piecesGenerator.createGenerator(new StructureGeneratorFactory.Context<C>(chunkGenerator, biomeSource, worldSeed, pos, config, world, biomePredicate, structureManager, registryManager)).isPresent();
     }
 
     public PostPlacementProcessor getPostProcessor() {

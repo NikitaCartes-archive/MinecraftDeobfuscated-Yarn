@@ -54,5 +54,7 @@ public interface PaletteStorage {
      * Executes an {@code action} on all values in this storage, sequentially.
      */
     public void forEach(IntConsumer var1);
+
+    public void method_39892(int[] var1);
 }
 

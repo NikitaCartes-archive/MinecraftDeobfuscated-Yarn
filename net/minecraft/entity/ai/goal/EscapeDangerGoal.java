@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EscapeDangerGoal
 extends Goal {
+    public static final int field_36271 = 1;
     protected final PathAwareEntity mob;
     protected final double speed;
     protected double targetX;
@@ -35,7 +36,7 @@ extends Goal {
         if (this.mob.getAttacker() == null && !this.mob.isOnFire()) {
             return false;
         }
-        if (this.mob.isOnFire() && (blockPos = this.locateClosestWater(this.mob.world, this.mob, 5, 4)) != null) {
+        if (this.mob.isOnFire() && (blockPos = this.locateClosestWater(this.mob.world, this.mob, 5)) != null) {
             this.targetX = blockPos.getX();
             this.targetY = blockPos.getY();
             this.targetZ = blockPos.getZ();
@@ -76,8 +77,12 @@ extends Goal {
     }
 
     @Nullable
-    protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int rangeX, int rangeY) {
-        return BlockPos.findClosest(entity.getBlockPos(), rangeX, rangeY, blockPos -> blockView.getFluidState((BlockPos)blockPos).isIn(FluidTags.WATER)).orElse(null);
+    protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int rangeX) {
+        BlockPos blockPos2 = entity.getBlockPos();
+        if (!blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2).isEmpty()) {
+            return null;
+        }
+        return BlockPos.findClosest(entity.getBlockPos(), rangeX, 1, blockPos -> blockView.getFluidState((BlockPos)blockPos).isIn(FluidTags.WATER)).orElse(null);
     }
 }
 

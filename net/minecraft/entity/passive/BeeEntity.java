@@ -957,7 +957,7 @@ Flutterer {
         private List<BlockPos> getNearbyFreeHives() {
             BlockPos blockPos = BeeEntity.this.getBlockPos();
             PointOfInterestStorage pointOfInterestStorage = ((ServerWorld)BeeEntity.this.world).getPointOfInterestStorage();
-            Stream<PointOfInterest> stream = pointOfInterestStorage.getInCircle(pointOfInterestType -> pointOfInterestType == PointOfInterestType.BEEHIVE || pointOfInterestType == PointOfInterestType.BEE_NEST, blockPos, 20, PointOfInterestStorage.OccupationStatus.ANY);
+            Stream<PointOfInterest> stream = pointOfInterestStorage.getInCircle(poiType -> poiType == PointOfInterestType.BEEHIVE || poiType == PointOfInterestType.BEE_NEST, blockPos, 20, PointOfInterestStorage.OccupationStatus.ANY);
             return stream.map(PointOfInterest::getPos).filter(BeeEntity.this::doesHiveHaveSpace).sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos))).collect(Collectors.toList());
         }
     }

@@ -76,16 +76,16 @@ extends StructurePoolElement {
 
     @Override
     public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
-        Structure structure = this.method_27233(structureManager);
+        Structure structure = this.getStructure(structureManager);
         return structure.getRotatedSize(rotation);
     }
 
-    private Structure method_27233(StructureManager structureManager) {
+    private Structure getStructure(StructureManager structureManager) {
         return this.location.map(structureManager::getStructureOrBlank, Function.identity());
     }
 
     public List<Structure.StructureBlockInfo> getDataStructureBlocks(StructureManager structureManager, BlockPos pos, BlockRotation rotation, boolean mirroredAndRotated) {
-        Structure structure = this.method_27233(structureManager);
+        Structure structure = this.getStructure(structureManager);
         List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated);
         ArrayList<Structure.StructureBlockInfo> list2 = Lists.newArrayList();
         for (Structure.StructureBlockInfo structureBlockInfo : list) {
@@ -98,7 +98,7 @@ extends StructurePoolElement {
 
     @Override
     public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
-        Structure structure = this.method_27233(structureManager);
+        Structure structure = this.getStructure(structureManager);
         List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
         Collections.shuffle(list, random);
         return list;
@@ -106,14 +106,14 @@ extends StructurePoolElement {
 
     @Override
     public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
-        Structure structure = this.method_27233(structureManager);
+        Structure structure = this.getStructure(structureManager);
         return structure.calculateBoundingBox(new StructurePlacementData().setRotation(rotation), pos);
     }
 
     @Override
     public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos blockPos, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
         StructurePlacementData structurePlacementData;
-        Structure structure = this.method_27233(structureManager);
+        Structure structure = this.getStructure(structureManager);
         if (structure.place(world, pos, blockPos, structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws), random, Block.NOTIFY_LISTENERS | Block.FORCE_STATE)) {
             List<Structure.StructureBlockInfo> list = Structure.process(world, pos, blockPos, structurePlacementData, this.getDataStructureBlocks(structureManager, pos, rotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {

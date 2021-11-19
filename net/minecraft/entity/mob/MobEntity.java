@@ -1105,7 +1105,7 @@ extends LivingEntity {
             if (this.world instanceof ServerWorld) {
                 SpawnEggItem spawnEggItem = (SpawnEggItem)itemStack.getItem();
                 Optional<MobEntity> optional = spawnEggItem.spawnBaby(player, this, this.getType(), (ServerWorld)this.world, this.getPos(), itemStack);
-                optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(player, (MobEntity)mobEntity));
+                optional.ifPresent(entity -> this.onPlayerSpawnedChild(player, (MobEntity)entity));
                 return optional.isPresent() ? ActionResult.SUCCESS : ActionResult.PASS;
             }
             return ActionResult.CONSUME;
@@ -1144,7 +1144,7 @@ extends LivingEntity {
         return this.positionTargetRange;
     }
 
-    public void method_35055() {
+    public void clearPositionTarget() {
         this.positionTargetRange = -1.0f;
     }
 

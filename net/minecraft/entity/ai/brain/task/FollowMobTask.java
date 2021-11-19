@@ -21,22 +21,22 @@ public class FollowMobTask
 extends Task<LivingEntity> {
     private final Predicate<LivingEntity> predicate;
     private final float maxDistanceSquared;
-    private Optional<LivingEntity> field_35102 = Optional.empty();
+    private Optional<LivingEntity> target = Optional.empty();
 
     public FollowMobTask(Tag<EntityType<?>> entityType, float maxDistance) {
-        this((LivingEntity livingEntity) -> livingEntity.getType().isIn(entityType), maxDistance);
+        this((LivingEntity entity) -> entity.getType().isIn(entityType), maxDistance);
     }
 
     public FollowMobTask(SpawnGroup group, float maxDistance) {
-        this((LivingEntity livingEntity) -> group.equals(livingEntity.getType().getSpawnGroup()), maxDistance);
+        this((LivingEntity entity) -> group.equals(entity.getType().getSpawnGroup()), maxDistance);
     }
 
     public FollowMobTask(EntityType<?> entityType, float maxDistance) {
-        this((LivingEntity livingEntity) -> entityType.equals(livingEntity.getType()), maxDistance);
+        this((LivingEntity entity) -> entityType.equals(entity.getType()), maxDistance);
     }
 
     public FollowMobTask(float maxDistance) {
-        this((LivingEntity livingEntity) -> true, maxDistance);
+        this((LivingEntity entity) -> true, maxDistance);
     }
 
     public FollowMobTask(Predicate<LivingEntity> predicate, float maxDistance) {
@@ -48,14 +48,14 @@ extends Task<LivingEntity> {
     @Override
     protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
         LivingTargetCache livingTargetCache = entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
-        this.field_35102 = livingTargetCache.findFirst(this.predicate.and(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared));
-        return this.field_35102.isPresent();
+        this.target = livingTargetCache.findFirst(this.predicate.and(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared));
+        return this.target.isPresent();
     }
 
     @Override
     protected void run(ServerWorld world, LivingEntity entity, long time) {
-        entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(this.field_35102.get(), true));
-        this.field_35102 = Optional.empty();
+        entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(this.target.get(), true));
+        this.target = Optional.empty();
     }
 }
 

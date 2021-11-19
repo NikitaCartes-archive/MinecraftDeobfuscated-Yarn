@@ -85,28 +85,28 @@ public class GeneratorOptions {
 
     public static GeneratorOptions createDemo(DynamicRegistryManager registryManager) {
         int i = "North Carolina".hashCode();
-        return new GeneratorOptions(i, true, true, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registryManager.get(Registry.DIMENSION_TYPE_KEY), DimensionType.method_39540(registryManager, i), GeneratorOptions.createOverworldGenerator(registryManager, i)));
+        return new GeneratorOptions(i, true, true, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registryManager.get(Registry.DIMENSION_TYPE_KEY), DimensionType.createDefaultDimensionOptions(registryManager, i), GeneratorOptions.createOverworldGenerator(registryManager, i)));
     }
 
     public static GeneratorOptions getDefaultOptions(DynamicRegistryManager registryManager) {
         long l = new Random().nextLong();
-        return new GeneratorOptions(l, true, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registryManager.get(Registry.DIMENSION_TYPE_KEY), DimensionType.method_39540(registryManager, l), GeneratorOptions.createOverworldGenerator(registryManager, l)));
+        return new GeneratorOptions(l, true, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registryManager.get(Registry.DIMENSION_TYPE_KEY), DimensionType.createDefaultDimensionOptions(registryManager, l), GeneratorOptions.createOverworldGenerator(registryManager, l)));
     }
 
-    public static NoiseChunkGenerator createOverworldGenerator(DynamicRegistryManager registryManager, long l) {
-        return GeneratorOptions.method_39558(registryManager, l, true);
+    public static NoiseChunkGenerator createOverworldGenerator(DynamicRegistryManager registryManager, long seed) {
+        return GeneratorOptions.createOverworldGenerator(registryManager, seed, true);
     }
 
-    public static NoiseChunkGenerator method_39558(DynamicRegistryManager dynamicRegistryManager, long l, boolean bl) {
-        return GeneratorOptions.method_39557(dynamicRegistryManager, l, ChunkGeneratorSettings.OVERWORLD, bl);
+    public static NoiseChunkGenerator createOverworldGenerator(DynamicRegistryManager registryManager, long seed, boolean bl) {
+        return GeneratorOptions.createGenerator(registryManager, seed, ChunkGeneratorSettings.OVERWORLD, bl);
     }
 
-    public static NoiseChunkGenerator method_39556(DynamicRegistryManager dynamicRegistryManager, long l, RegistryKey<ChunkGeneratorSettings> registryKey) {
-        return GeneratorOptions.method_39557(dynamicRegistryManager, l, registryKey, true);
+    public static NoiseChunkGenerator createGenerator(DynamicRegistryManager registryManager, long seed, RegistryKey<ChunkGeneratorSettings> settings) {
+        return GeneratorOptions.createGenerator(registryManager, seed, settings, true);
     }
 
-    public static NoiseChunkGenerator method_39557(DynamicRegistryManager dynamicRegistryManager, long l, RegistryKey<ChunkGeneratorSettings> registryKey, boolean bl) {
-        return new NoiseChunkGenerator(dynamicRegistryManager.get(Registry.NOISE_WORLDGEN), (BiomeSource)MultiNoiseBiomeSource.Preset.OVERWORLD.method_39532(dynamicRegistryManager.get(Registry.BIOME_KEY), bl), l, () -> dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(registryKey));
+    public static NoiseChunkGenerator createGenerator(DynamicRegistryManager registryManager, long seed, RegistryKey<ChunkGeneratorSettings> settings, boolean bl) {
+        return new NoiseChunkGenerator(registryManager.get(Registry.NOISE_WORLDGEN), (BiomeSource)MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(registryManager.get(Registry.BIOME_KEY), bl), seed, () -> registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(settings));
     }
 
     public long getSeed() {
@@ -210,7 +210,7 @@ public class GeneratorOptions {
         }
         Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
         Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
-        SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.method_39540(registryManager, l);
+        SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(registryManager, l);
         switch (string5) {
             case "flat": {
                 JsonObject jsonObject = !string2.isEmpty() ? JsonHelper.deserialize(string2) : new JsonObject();

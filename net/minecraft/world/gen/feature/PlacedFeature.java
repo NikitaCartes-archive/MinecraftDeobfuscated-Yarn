@@ -40,14 +40,22 @@ public class PlacedFeature {
         return this.generate(new DecoratorContext(world, generator, Optional.empty()), random, pos);
     }
 
+    /**
+     * Generates a configured feature at the positions obtained by applying
+     * placement modifiers to the given position.
+     * 
+     * <p>To calculate positions, it first creates a singleton stream of the
+     * given position, then it applies placement modifiers with {@linkplain
+     * Stream#flatMap flatMap} in order they appear in the list.
+     */
     public boolean generate(StructureWorldAccess world, ChunkGenerator generator, Random random, BlockPos pos) {
         return this.generate(new DecoratorContext(world, generator, Optional.of(this)), random, pos);
     }
 
-    private boolean generate(DecoratorContext context, Random random, BlockPos pos) {
-        Stream<BlockPos> stream = Stream.of(pos);
+    private boolean generate(DecoratorContext context, Random random, BlockPos pos2) {
+        Stream<BlockPos> stream = Stream.of(pos2);
         for (PlacementModifier placementModifier : this.placementModifiers) {
-            stream = stream.flatMap(blockPos -> placementModifier.getPositions(context, random, (BlockPos)blockPos));
+            stream = stream.flatMap(pos -> placementModifier.getPositions(context, random, (BlockPos)pos));
         }
         ConfiguredFeature<?, ?> configuredFeature = this.feature.get();
         MutableBoolean mutableBoolean = new MutableBoolean();
@@ -64,7 +72,7 @@ public class PlacedFeature {
     }
 
     @Debug
-    public List<PlacementModifier> method_39825() {
+    public List<PlacementModifier> getPlacementModifiers() {
         return this.placementModifiers;
     }
 

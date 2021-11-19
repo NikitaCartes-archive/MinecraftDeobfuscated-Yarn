@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6834;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.structure.WoodlandMansionGenerator;
@@ -38,9 +38,9 @@ extends StructureFeature<DefaultFeatureConfig> {
         return false;
     }
 
-    private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(class_6834.class_6835<DefaultFeatureConfig> arg) {
+    private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(StructureGeneratorFactory.Context<DefaultFeatureConfig> context2) {
         ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-        chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
+        chunkRandom.setCarverSeed(context2.seed(), context2.chunkPos().x, context2.chunkPos().z);
         BlockRotation blockRotation = BlockRotation.random(chunkRandom);
         int i = 5;
         int j = 5;
@@ -52,17 +52,17 @@ extends StructureFeature<DefaultFeatureConfig> {
         } else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
             j = -5;
         }
-        int k = arg.chunkPos().getOffsetX(7);
-        int l = arg.chunkPos().getOffsetZ(7);
-        int[] is = arg.method_39847(k, i, l, j);
+        int k = context2.chunkPos().getOffsetX(7);
+        int l = context2.chunkPos().getOffsetZ(7);
+        int[] is = context2.getCornerHeights(k, i, l, j);
         int m = Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
         if (m < 60) {
             return Optional.empty();
         }
-        if (!arg.validBiome().test(arg.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(is[0]), BiomeCoords.fromBlock(l)))) {
+        if (!context2.validBiome().test(context2.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(is[0]), BiomeCoords.fromBlock(l)))) {
             return Optional.empty();
         }
-        BlockPos blockPos = new BlockPos(arg.chunkPos().getCenterX(), m + 1, arg.chunkPos().getCenterZ());
+        BlockPos blockPos = new BlockPos(context2.chunkPos().getCenterX(), m + 1, context2.chunkPos().getCenterZ());
         return Optional.of((structurePiecesCollector, context) -> {
             LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
             WoodlandMansionGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, chunkRandom);

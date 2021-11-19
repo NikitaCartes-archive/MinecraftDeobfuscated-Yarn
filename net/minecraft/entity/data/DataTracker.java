@@ -130,13 +130,13 @@ public class DataTracker {
         return this.dirty;
     }
 
-    public static void entriesToPacket(@Nullable List<Entry<?>> list, PacketByteBuf packetByteBuf) {
-        if (list != null) {
-            for (Entry<?> entry : list) {
-                DataTracker.writeEntryToPacket(packetByteBuf, entry);
+    public static void entriesToPacket(@Nullable List<Entry<?>> entries, PacketByteBuf buf) {
+        if (entries != null) {
+            for (Entry<?> entry : entries) {
+                DataTracker.writeEntryToPacket(buf, entry);
             }
         }
-        packetByteBuf.writeByte(255);
+        buf.writeByte(255);
     }
 
     @Nullable
@@ -208,10 +208,10 @@ public class DataTracker {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void writeUpdatedEntries(List<Entry<?>> list) {
+    public void writeUpdatedEntries(List<Entry<?>> entries) {
         this.lock.writeLock().lock();
         try {
-            for (Entry<?> entry : list) {
+            for (Entry<?> entry : entries) {
                 Entry entry2 = (Entry)this.entries.get(entry.getData().getId());
                 if (entry2 == null) continue;
                 this.copyToFrom(entry2, entry);
@@ -223,11 +223,11 @@ public class DataTracker {
         this.dirty = true;
     }
 
-    private <T> void copyToFrom(Entry<T> entry, Entry<?> entry2) {
-        if (!Objects.equals(entry2.data.getType(), entry.data.getType())) {
-            throw new IllegalStateException(String.format("Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)", entry.data.getId(), this.trackedEntity, entry.value, entry.value.getClass(), entry2.value, entry2.value.getClass()));
+    private <T> void copyToFrom(Entry<T> to, Entry<?> from) {
+        if (!Objects.equals(from.data.getType(), to.data.getType())) {
+            throw new IllegalStateException(String.format("Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)", to.data.getId(), this.trackedEntity, to.value, to.value.getClass(), from.value, from.value.getClass()));
         }
-        entry.set(entry2.get());
+        to.set(from.get());
     }
 
     public boolean isEmpty() {

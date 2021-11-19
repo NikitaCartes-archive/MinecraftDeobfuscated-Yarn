@@ -75,8 +75,8 @@ public class NoiseParametersKeys {
         return RegistryKey.of(Registry.NOISE_WORLDGEN, new Identifier(id));
     }
 
-    public static DoublePerlinNoiseSampler method_39173(Registry<DoublePerlinNoiseSampler.NoiseParameters> registry, RandomDeriver randomDeriver, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey) {
-        return DoublePerlinNoiseSampler.create(randomDeriver.createRandom(registryKey.getValue()), registry.getOrThrow(registryKey));
+    public static DoublePerlinNoiseSampler createNoiseSampler(Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, RandomDeriver randomDeriver, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise) {
+        return DoublePerlinNoiseSampler.create(randomDeriver.createRandom(noise.getValue()), noiseRegistry.getOrThrow(noise));
     }
 }
 

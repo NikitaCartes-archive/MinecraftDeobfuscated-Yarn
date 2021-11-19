@@ -53,77 +53,77 @@ implements BiomeSupplier {
         this(stream.map(Supplier::get).distinct().collect(ImmutableList.toImmutableList()));
     }
 
-    protected BiomeSource(List<Biome> list) {
-        this.biomes = new ObjectLinkedOpenHashSet<Biome>(list);
-        this.field_34469 = this.method_39525(list, true);
+    protected BiomeSource(List<Biome> biomes) {
+        this.biomes = new ObjectLinkedOpenHashSet<Biome>(biomes);
+        this.field_34469 = this.method_39525(biomes, true);
     }
 
-    private List<class_6827> method_39525(List<Biome> list, boolean bl) {
+    private List<class_6827> method_39525(List<Biome> biomes, boolean bl) {
         record class_6543(int featureIndex, int step, PlacedFeature feature) {
         }
-        ArrayList<class_6543> list2;
+        ArrayList<class_6543> list;
         Object2IntOpenHashMap<PlacedFeature> object2IntMap = new Object2IntOpenHashMap<PlacedFeature>();
         MutableInt mutableInt = new MutableInt(0);
         Comparator<class_6543> comparator = Comparator.comparingInt(class_6543::step).thenComparingInt(class_6543::featureIndex);
         TreeMap<class_6543, Set> map = new TreeMap<class_6543, Set>(comparator);
         int i = 0;
-        for (Biome biome : list) {
+        for (Biome biome : biomes) {
             int j;
-            list2 = Lists.newArrayList();
-            List<List<Supplier<PlacedFeature>>> list3 = biome.getGenerationSettings().getFeatures();
-            i = Math.max(i, list3.size());
-            for (j = 0; j < list3.size(); ++j) {
-                for (Supplier supplier : (List)list3.get(j)) {
+            list = Lists.newArrayList();
+            List<List<Supplier<PlacedFeature>>> list2 = biome.getGenerationSettings().getFeatures();
+            i = Math.max(i, list2.size());
+            for (j = 0; j < list2.size(); ++j) {
+                for (Supplier supplier : (List)list2.get(j)) {
                     PlacedFeature placedFeature = (PlacedFeature)supplier.get();
-                    list2.add(new class_6543(object2IntMap.computeIfAbsent(placedFeature, object -> mutableInt.getAndIncrement()), j, placedFeature));
+                    list.add(new class_6543(object2IntMap.computeIfAbsent(placedFeature, object -> mutableInt.getAndIncrement()), j, placedFeature));
                 }
             }
-            for (j = 0; j < list2.size(); ++j) {
-                Set set = map.computeIfAbsent((class_6543)list2.get(j), arg -> new TreeSet(comparator));
-                if (j >= list2.size() - 1) continue;
-                set.add((class_6543)list2.get(j + 1));
+            for (j = 0; j < list.size(); ++j) {
+                Set set = map.computeIfAbsent((class_6543)list.get(j), arg -> new TreeSet(comparator));
+                if (j >= list.size() - 1) continue;
+                set.add((class_6543)list.get(j + 1));
             }
         }
         TreeSet<class_6543> set2 = new TreeSet<class_6543>(comparator);
         TreeSet<class_6543> set3 = new TreeSet<class_6543>(comparator);
-        list2 = Lists.newArrayList();
+        list = Lists.newArrayList();
         for (class_6543 lv : map.keySet()) {
             if (!set3.isEmpty()) {
                 throw new IllegalStateException("You somehow broke the universe; DFS bork (iteration finished with non-empty in-progress vertex set");
             }
-            if (set2.contains(lv) || !TopologicalSorts.sort(map, set2, set3, list2::add, lv)) continue;
+            if (set2.contains(lv) || !TopologicalSorts.sort(map, set2, set3, list::add, lv)) continue;
             if (bl) {
                 int k;
-                ArrayList<Biome> list4 = new ArrayList<Biome>(list);
+                ArrayList<Biome> list3 = new ArrayList<Biome>(biomes);
                 do {
-                    k = list4.size();
-                    ListIterator<Biome> listIterator = list4.listIterator();
+                    k = list3.size();
+                    ListIterator<Biome> listIterator = list3.listIterator();
                     while (listIterator.hasNext()) {
                         Biome biome2 = (Biome)listIterator.next();
                         listIterator.remove();
                         try {
-                            this.method_39525(list4, false);
+                            this.method_39525(list3, false);
                         } catch (IllegalStateException illegalStateException) {
                             continue;
                         }
                         listIterator.add(biome2);
                     }
-                } while (k != list4.size());
-                throw new IllegalStateException("Feature order cycle found, involved biomes: " + list4);
+                } while (k != list3.size());
+                throw new IllegalStateException("Feature order cycle found, involved biomes: " + list3);
             }
             throw new IllegalStateException("Feature order cycle found");
         }
-        Collections.reverse(list2);
+        Collections.reverse(list);
         ImmutableList.Builder builder = ImmutableList.builder();
         for (int j = 0; j < i; ++j) {
             int l = j;
-            List<PlacedFeature> list5 = list2.stream().filter(arg -> arg.step() == l).map(class_6543::feature).collect(Collectors.toList());
-            int m = list5.size();
+            List<PlacedFeature> list4 = list.stream().filter(arg -> arg.step() == l).map(class_6543::feature).collect(Collectors.toList());
+            int m = list4.size();
             Object2IntOpenCustomHashMap<PlacedFeature> object2IntMap2 = new Object2IntOpenCustomHashMap<PlacedFeature>(m, Util.identityHashStrategy());
             for (int n = 0; n < m; ++n) {
-                object2IntMap2.put((PlacedFeature)list5.get(n), n);
+                object2IntMap2.put((PlacedFeature)list4.get(n), n);
             }
-            builder.add(new class_6827(list5, object2IntMap2));
+            builder.add(new class_6827(list4, object2IntMap2));
         }
         return builder.build();
     }

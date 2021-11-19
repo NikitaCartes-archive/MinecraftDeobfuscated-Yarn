@@ -70,6 +70,9 @@ public class DripstoneHelper {
     }
 
     protected static void generatePointedDripstone(WorldAccess world, BlockPos pos, Direction direction, int height, boolean merge) {
+        if (!DripstoneHelper.canReplace(world.getBlockState(pos.offset(direction.getOpposite())))) {
+            return;
+        }
         BlockPos.Mutable mutable = pos.mutableCopy();
         DripstoneHelper.getDripstoneThickness(direction, height, merge, state -> {
             if (state.isOf(Blocks.POINTED_DRIPSTONE)) {

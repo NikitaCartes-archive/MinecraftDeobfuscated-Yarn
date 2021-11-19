@@ -12,9 +12,9 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_6834;
 import net.minecraft.structure.RuinedPortalStructurePiece;
 import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -51,12 +51,12 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         super(configCodec, RuinedPortalFeature::addPieces);
     }
 
-    private static Optional<StructurePiecesGenerator<RuinedPortalFeatureConfig>> addPieces(class_6834.class_6835<RuinedPortalFeatureConfig> arg) {
+    private static Optional<StructurePiecesGenerator<RuinedPortalFeatureConfig>> addPieces(StructureGeneratorFactory.Context<RuinedPortalFeatureConfig> context2) {
         RuinedPortalStructurePiece.VerticalPlacement verticalPlacement;
         RuinedPortalStructurePiece.Properties properties = new RuinedPortalStructurePiece.Properties();
-        RuinedPortalFeatureConfig ruinedPortalFeatureConfig = arg.config();
+        RuinedPortalFeatureConfig ruinedPortalFeatureConfig = context2.config();
         ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-        chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
+        chunkRandom.setCarverSeed(context2.seed(), context2.chunkPos().x, context2.chunkPos().z);
         if (ruinedPortalFeatureConfig.portalType == Type.DESERT) {
             verticalPlacement = RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED;
             properties.airPocket = false;
@@ -91,24 +91,24 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
             properties.airPocket = bl || chunkRandom.nextFloat() < 0.5f;
         }
         Identifier identifier = chunkRandom.nextFloat() < 0.05f ? new Identifier(RARE_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(RARE_PORTAL_STRUCTURE_IDS.length)]) : new Identifier(COMMON_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(COMMON_PORTAL_STRUCTURE_IDS.length)]);
-        Structure structure = arg.structureManager().getStructureOrBlank(identifier);
+        Structure structure = context2.structureManager().getStructureOrBlank(identifier);
         BlockRotation blockRotation = Util.getRandom(BlockRotation.values(), (Random)chunkRandom);
         BlockMirror blockMirror = chunkRandom.nextFloat() < 0.5f ? BlockMirror.NONE : BlockMirror.FRONT_BACK;
         BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
-        BlockPos blockPos2 = arg.chunkPos().getStartPos();
+        BlockPos blockPos2 = context2.chunkPos().getStartPos();
         BlockBox blockBox = structure.calculateBoundingBox(blockPos2, blockRotation, blockPos, blockMirror);
         BlockPos blockPos3 = blockBox.getCenter();
-        int i = arg.chunkGenerator().getHeight(blockPos3.getX(), blockPos3.getZ(), RuinedPortalStructurePiece.getHeightmapType(verticalPlacement), arg.heightAccessor()) - 1;
-        int j = RuinedPortalFeature.getFloorHeight(chunkRandom, arg.chunkGenerator(), verticalPlacement, properties.airPocket, i, blockBox.getBlockCountY(), blockBox, arg.heightAccessor());
+        int i = context2.chunkGenerator().getHeight(blockPos3.getX(), blockPos3.getZ(), RuinedPortalStructurePiece.getHeightmapType(verticalPlacement), context2.world()) - 1;
+        int j = RuinedPortalFeature.getFloorHeight(chunkRandom, context2.chunkGenerator(), verticalPlacement, properties.airPocket, i, blockBox.getBlockCountY(), blockBox, context2.world());
         BlockPos blockPos4 = new BlockPos(blockPos2.getX(), j, blockPos2.getZ());
-        if (!arg.validBiome().test(arg.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos4.getX()), BiomeCoords.fromBlock(blockPos4.getY()), BiomeCoords.fromBlock(blockPos4.getZ())))) {
+        if (!context2.validBiome().test(context2.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos4.getX()), BiomeCoords.fromBlock(blockPos4.getY()), BiomeCoords.fromBlock(blockPos4.getZ())))) {
             return Optional.empty();
         }
-        return Optional.of((structurePiecesCollector, context) -> {
+        return Optional.of((collector, context) -> {
             if (ruinedPortalFeatureConfig.portalType == Type.MOUNTAIN || ruinedPortalFeatureConfig.portalType == Type.OCEAN || ruinedPortalFeatureConfig.portalType == Type.STANDARD) {
-                properties.cold = RuinedPortalFeature.isColdAt(blockPos4, arg.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos4.getX()), BiomeCoords.fromBlock(blockPos4.getY()), BiomeCoords.fromBlock(blockPos4.getZ())));
+                properties.cold = RuinedPortalFeature.isColdAt(blockPos4, context2.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos4.getX()), BiomeCoords.fromBlock(blockPos4.getY()), BiomeCoords.fromBlock(blockPos4.getZ())));
             }
-            structurePiecesCollector.addPiece(new RuinedPortalStructurePiece(context.structureManager(), blockPos4, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos));
+            collector.addPiece(new RuinedPortalStructurePiece(context.structureManager(), blockPos4, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos));
         });
     }
 
@@ -131,7 +131,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
             j = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED ? height - blockCountY + MathHelper.nextBetween(random, 2, 8) : height;
         }
         ImmutableList<BlockPos> list = ImmutableList.of(new BlockPos(box.getMinX(), 0, box.getMinZ()), new BlockPos(box.getMaxX(), 0, box.getMinZ()), new BlockPos(box.getMinX(), 0, box.getMaxZ()), new BlockPos(box.getMaxX(), 0, box.getMaxZ()));
-        List list2 = list.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world)).collect(Collectors.toList());
+        List list2 = list.stream().map(pos -> chunkGenerator.getColumnSample(pos.getX(), pos.getZ(), world)).collect(Collectors.toList());
         Heightmap.Type type = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR ? Heightmap.Type.OCEAN_FLOOR_WG : Heightmap.Type.WORLD_SURFACE_WG;
         block0: for (l = j; l > i; --l) {
             int m = 0;

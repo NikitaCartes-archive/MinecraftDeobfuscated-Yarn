@@ -73,15 +73,15 @@ public class Timer<T> {
         this.events.add(event);
     }
 
-    public int method_22593(String string) {
-        Collection<Event<Event>> collection = this.eventsByName.row(string).values();
+    public int remove(String name) {
+        Collection<Event<Event>> collection = this.eventsByName.row(name).values();
         collection.forEach(this.events::remove);
         int i = collection.size();
         collection.clear();
         return i;
     }
 
-    public Set<String> method_22592() {
+    public Set<String> getEventNames() {
         return Collections.unmodifiableSet(this.eventsByName.rowKeySet());
     }
 

@@ -63,11 +63,11 @@ extends Goal {
         if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
             return false;
         }
-        Vec3d vec3d = FuzzyTargeting.find(this.mob, 15, 7, blockPos2 -> {
-            if (!serverWorld.isNearOccupiedPointOfInterest((BlockPos)blockPos2)) {
+        Vec3d vec3d = FuzzyTargeting.find(this.mob, 15, 7, pos -> {
+            if (!serverWorld.isNearOccupiedPointOfInterest((BlockPos)pos)) {
                 return Double.NEGATIVE_INFINITY;
             }
-            Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, (BlockPos)blockPos2, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
+            Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, (BlockPos)pos, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
             if (!optional.isPresent()) {
                 return Double.NEGATIVE_INFINITY;
             }
@@ -100,8 +100,8 @@ extends Goal {
         }
         for (int i = 0; i < this.targetPath.getLength(); ++i) {
             PathNode pathNode = this.targetPath.getNode(i);
-            BlockPos blockPos22 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
-            if (!DoorBlock.isWoodenDoor(this.mob.world, blockPos22)) continue;
+            BlockPos blockPos2 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
+            if (!DoorBlock.isWoodenDoor(this.mob.world, blockPos2)) continue;
             this.targetPath = this.mob.getNavigation().findPathTo(pathNode.x, (double)pathNode.y, pathNode.z, 0);
             break;
         }

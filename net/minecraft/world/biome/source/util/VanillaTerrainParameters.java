@@ -26,7 +26,7 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 
 public final class VanillaTerrainParameters {
     private static final Codec<Spline<NoisePoint>> field_35457 = Spline.method_39232(LocationFunction.field_35464);
-    public static final Codec<VanillaTerrainParameters> field_35456 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)field_35457.fieldOf("offset")).forGetter(VanillaTerrainParameters::getOffsetSpline), ((MapCodec)field_35457.fieldOf("factor")).forGetter(VanillaTerrainParameters::getFactorSpline), ((MapCodec)field_35457.fieldOf("jaggedness")).forGetter(vanillaTerrainParameters -> vanillaTerrainParameters.peakSpline)).apply((Applicative<VanillaTerrainParameters, ?>)instance, VanillaTerrainParameters::new));
+    public static final Codec<VanillaTerrainParameters> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)field_35457.fieldOf("offset")).forGetter(VanillaTerrainParameters::getOffsetSpline), ((MapCodec)field_35457.fieldOf("factor")).forGetter(VanillaTerrainParameters::getFactorSpline), ((MapCodec)field_35457.fieldOf("jaggedness")).forGetter(vanillaTerrainParameters -> vanillaTerrainParameters.peakSpline)).apply((Applicative<VanillaTerrainParameters, ?>)instance, VanillaTerrainParameters::new));
     private static final float OFFSET_VALUE_OFFSET = -0.50375f;
     private static final ToFloatFunction<Float> field_35673 = float_ -> float_.floatValue();
     private final Spline<NoisePoint> offsetSpline;
@@ -272,7 +272,7 @@ public final class VanillaTerrainParameters {
         RIDGES(NoisePoint::normalizedWeirdness, "ridges");
 
         private static final Map<String, LocationFunction> field_35462;
-        private static final Codec<LocationFunction> field_35463;
+        private static final Codec<LocationFunction> CODEC;
         static final Codec<ToFloatFunction<NoisePoint>> field_35464;
         private final ToFloatFunction<NoisePoint> noiseFunction;
         private final String id;
@@ -303,8 +303,8 @@ public final class VanillaTerrainParameters {
 
         static {
             field_35462 = Arrays.stream(LocationFunction.values()).collect(Collectors.toMap(LocationFunction::asString, locationFunction -> locationFunction));
-            field_35463 = StringIdentifiable.createCodec(LocationFunction::values, field_35462::get);
-            field_35464 = field_35463.flatComapMap(locationFunction -> locationFunction, toFloatFunction -> {
+            CODEC = StringIdentifiable.createCodec(LocationFunction::values, field_35462::get);
+            field_35464 = CODEC.flatComapMap(locationFunction -> locationFunction, toFloatFunction -> {
                 DataResult<Object> dataResult;
                 if (toFloatFunction instanceof LocationFunction) {
                     LocationFunction locationFunction = (LocationFunction)toFloatFunction;

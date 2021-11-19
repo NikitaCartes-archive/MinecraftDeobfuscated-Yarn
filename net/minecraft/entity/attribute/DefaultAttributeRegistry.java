@@ -89,7 +89,7 @@ public class DefaultAttributeRegistry {
     }
 
     public static void checkMissing() {
-        Registry.ENTITY_TYPE.stream().filter(entityType -> entityType.getSpawnGroup() != SpawnGroup.MISC).filter(entityType -> !DefaultAttributeRegistry.hasDefinitionFor(entityType)).map(Registry.ENTITY_TYPE::getId).forEach(identifier -> Util.error("Entity " + identifier + " has no attributes"));
+        Registry.ENTITY_TYPE.stream().filter(entityType -> entityType.getSpawnGroup() != SpawnGroup.MISC).filter(entityType -> !DefaultAttributeRegistry.hasDefinitionFor(entityType)).map(Registry.ENTITY_TYPE::getId).forEach(id -> Util.error("Entity " + id + " has no attributes"));
     }
 }
 

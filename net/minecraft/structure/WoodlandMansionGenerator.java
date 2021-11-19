@@ -969,16 +969,16 @@ public class WoodlandMansionGenerator {
 
     public static class Piece
     extends SimpleStructurePiece {
-        public Piece(StructureManager structureManager, String template, BlockPos pos, BlockRotation rotation) {
-            this(structureManager, template, pos, rotation, BlockMirror.NONE);
+        public Piece(StructureManager manager, String template, BlockPos pos, BlockRotation rotation) {
+            this(manager, template, pos, rotation, BlockMirror.NONE);
         }
 
-        public Piece(StructureManager structureManager, String template, BlockPos pos, BlockRotation rotation, BlockMirror mirror) {
-            super(StructurePieceType.WOODLAND_MANSION, 0, structureManager, Piece.getId(template), template, Piece.createPlacementData(mirror, rotation), pos);
+        public Piece(StructureManager manager, String template, BlockPos pos, BlockRotation rotation, BlockMirror mirror) {
+            super(StructurePieceType.WOODLAND_MANSION, 0, manager, Piece.getId(template), template, Piece.createPlacementData(mirror, rotation), pos);
         }
 
-        public Piece(StructureManager structureManager, NbtCompound nbt) {
-            super(StructurePieceType.WOODLAND_MANSION, nbt, structureManager, (Identifier identifier) -> Piece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot"))));
+        public Piece(StructureManager manager, NbtCompound nbt) {
+            super(StructurePieceType.WOODLAND_MANSION, nbt, manager, (Identifier identifier) -> Piece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot"))));
         }
 
         @Override

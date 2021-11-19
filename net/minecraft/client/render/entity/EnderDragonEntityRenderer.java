@@ -340,16 +340,16 @@ extends EntityRenderer<EnderDragonEntity> {
             matrices.pop();
         }
 
-        private void setLimbRotation(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float offset, ModelPart wing, ModelPart frontLeg, ModelPart frontLegTip, ModelPart frontFoot, ModelPart hindLeg, ModelPart hindLegTip, ModelPart hindFoot, float f) {
+        private void setLimbRotation(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float offset, ModelPart wing, ModelPart frontLeg, ModelPart frontLegTip, ModelPart frontFoot, ModelPart hindLeg, ModelPart hindLegTip, ModelPart hindFoot, float alpha) {
             hindLeg.pitch = 1.0f + offset * 0.1f;
             hindLegTip.pitch = 0.5f + offset * 0.1f;
             hindFoot.pitch = 0.75f + offset * 0.1f;
             frontLeg.pitch = 1.3f + offset * 0.1f;
             frontLegTip.pitch = -0.5f - offset * 0.1f;
             frontFoot.pitch = 0.75f + offset * 0.1f;
-            wing.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, f);
-            frontLeg.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, f);
-            hindLeg.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, f);
+            wing.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, alpha);
+            frontLeg.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, alpha);
+            hindLeg.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, alpha);
         }
     }
 }

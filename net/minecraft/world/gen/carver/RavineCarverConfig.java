@@ -20,9 +20,9 @@ extends CarverConfig {
     public final FloatProvider verticalRotation;
     public final Shape shape;
 
-    public RavineCarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig carverDebugConfig, FloatProvider floatProvider, Shape shape) {
-        super(probability, y, yScale, lavaLevel, carverDebugConfig);
-        this.verticalRotation = floatProvider;
+    public RavineCarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig debugConfig, FloatProvider verticalRotation, Shape shape) {
+        super(probability, y, yScale, lavaLevel, debugConfig);
+        this.verticalRotation = verticalRotation;
         this.shape = shape;
     }
 

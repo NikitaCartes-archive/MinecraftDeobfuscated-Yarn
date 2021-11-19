@@ -113,13 +113,13 @@ public class ChunkSerializer {
         ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(nbt);
         BlendingData blendingData = nbt.contains("blending_data", 10) ? (BlendingData)BlendingData.CODEC.parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("blending_data"))).resultOrPartial(LOGGER::error).orElse(null) : null;
         if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
-            ChunkTickScheduler<Block> chunkTickScheduler = ChunkTickScheduler.create(nbt.getList(BLOCK_TICKS, 10), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos);
-            ChunkTickScheduler<Fluid> chunkTickScheduler2 = ChunkTickScheduler.create(nbt.getList(FLUID_TICKS, 10), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos);
+            ChunkTickScheduler<Block> chunkTickScheduler = ChunkTickScheduler.create(nbt.getList(BLOCK_TICKS, 10), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos);
+            ChunkTickScheduler<Fluid> chunkTickScheduler2 = ChunkTickScheduler.create(nbt.getList(FLUID_TICKS, 10), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos);
             chunk = new WorldChunk(world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, ChunkSerializer.getEntityLoadingCallback(world, nbt), blendingData);
         } else {
             boolean bl3;
-            SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(nbt.getList(BLOCK_TICKS, 10), string -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(string)), chunkPos);
-            SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(nbt.getList(FLUID_TICKS, 10), string -> Registry.FLUID.getOrEmpty(Identifier.tryParse(string)), chunkPos);
+            SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(nbt.getList(BLOCK_TICKS, 10), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos);
+            SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(nbt.getList(FLUID_TICKS, 10), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos);
             ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blendingData);
             chunk = protoChunk;
             chunk.setInhabitedTime(m);
@@ -144,9 +144,9 @@ public class ChunkSerializer {
         NbtCompound nbtCompound2 = nbt.getCompound("Heightmaps");
         EnumSet<Heightmap.Type> enumSet = EnumSet.noneOf(Heightmap.Type.class);
         for (Heightmap.Type type : chunk.getStatus().getHeightmapTypes()) {
-            String string2 = type.getName();
-            if (nbtCompound2.contains(string2, 12)) {
-                chunk.setHeightmap(type, nbtCompound2.getLongArray(string2));
+            String string = type.getName();
+            if (nbtCompound2.contains(string, 12)) {
+                chunk.setHeightmap(type, nbtCompound2.getLongArray(string));
                 continue;
             }
             enumSet.add(type);
@@ -351,7 +351,7 @@ public class ChunkSerializer {
         return nbtCompound;
     }
 
-    private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureContext structureContext, NbtCompound nbt, long worldSeed) {
+    private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
         HashMap<StructureFeature<?>, StructureStart<?>> map = Maps.newHashMap();
         NbtCompound nbtCompound = nbt.getCompound("starts");
         for (String string : nbtCompound.getKeys()) {
@@ -361,7 +361,7 @@ public class ChunkSerializer {
                 LOGGER.error("Unknown structure start: {}", (Object)string2);
                 continue;
             }
-            StructureStart<?> structureStart = StructureFeature.readStructureStart(structureContext, nbtCompound.getCompound(string), worldSeed);
+            StructureStart<?> structureStart = StructureFeature.readStructureStart(context, nbtCompound.getCompound(string), worldSeed);
             if (structureStart == null) continue;
             map.put(structureFeature, structureStart);
         }

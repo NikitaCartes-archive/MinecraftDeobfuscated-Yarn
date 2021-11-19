@@ -13,13 +13,13 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.InflaterInputStream;
-import net.minecraft.class_6826;
+import net.minecraft.util.FixedBufferInputStream;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkStreamVersion {
     private static final Int2ObjectMap<ChunkStreamVersion> VERSIONS = new Int2ObjectOpenHashMap<ChunkStreamVersion>();
-    public static final ChunkStreamVersion GZIP = ChunkStreamVersion.add(new ChunkStreamVersion(1, inputStream -> new class_6826(new GZIPInputStream((InputStream)inputStream)), outputStream -> new BufferedOutputStream(new GZIPOutputStream((OutputStream)outputStream))));
-    public static final ChunkStreamVersion DEFLATE = ChunkStreamVersion.add(new ChunkStreamVersion(2, inputStream -> new class_6826(new InflaterInputStream((InputStream)inputStream)), outputStream -> new BufferedOutputStream(new DeflaterOutputStream((OutputStream)outputStream))));
+    public static final ChunkStreamVersion GZIP = ChunkStreamVersion.add(new ChunkStreamVersion(1, inputStream -> new FixedBufferInputStream(new GZIPInputStream((InputStream)inputStream)), outputStream -> new BufferedOutputStream(new GZIPOutputStream((OutputStream)outputStream))));
+    public static final ChunkStreamVersion DEFLATE = ChunkStreamVersion.add(new ChunkStreamVersion(2, inputStream -> new FixedBufferInputStream(new InflaterInputStream((InputStream)inputStream)), outputStream -> new BufferedOutputStream(new DeflaterOutputStream((OutputStream)outputStream))));
     public static final ChunkStreamVersion UNCOMPRESSED = ChunkStreamVersion.add(new ChunkStreamVersion(3, inputStream -> inputStream, outputStream -> outputStream));
     private final int id;
     private final Wrapper<InputStream> inputStreamWrapper;

@@ -41,15 +41,15 @@ public class IglooGenerator {
     static final Map<Identifier, BlockPos> OFFSETS = ImmutableMap.of(TOP_TEMPLATE, new BlockPos(3, 5, 5), MIDDLE_TEMPLATE, new BlockPos(1, 3, 1), BOTTOM_TEMPLATE, new BlockPos(3, 6, 7));
     static final Map<Identifier, BlockPos> OFFSETS_FROM_TOP = ImmutableMap.of(TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2));
 
-    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder structurePiecesHolder, Random random) {
+    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random) {
         if (random.nextDouble() < 0.5) {
             int i = random.nextInt(8) + 4;
-            structurePiecesHolder.addPiece(new Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
+            holder.addPiece(new Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
             for (int j = 0; j < i - 1; ++j) {
-                structurePiecesHolder.addPiece(new Piece(manager, MIDDLE_TEMPLATE, pos, rotation, j * 3));
+                holder.addPiece(new Piece(manager, MIDDLE_TEMPLATE, pos, rotation, j * 3));
             }
         }
-        structurePiecesHolder.addPiece(new Piece(manager, TOP_TEMPLATE, pos, rotation, 0));
+        holder.addPiece(new Piece(manager, TOP_TEMPLATE, pos, rotation, 0));
     }
 
     public static class Piece
@@ -58,8 +58,8 @@ public class IglooGenerator {
             super(StructurePieceType.IGLOO, 0, manager, identifier, identifier.toString(), Piece.createPlacementData(rotation, identifier), Piece.getPosOffset(identifier, pos, yOffset));
         }
 
-        public Piece(StructureManager structureManager, NbtCompound nbt) {
-            super(StructurePieceType.IGLOO, nbt, structureManager, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier));
+        public Piece(StructureManager manager, NbtCompound nbt) {
+            super(StructurePieceType.IGLOO, nbt, manager, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier));
         }
 
         private static StructurePlacementData createPlacementData(BlockRotation rotation, Identifier identifier) {

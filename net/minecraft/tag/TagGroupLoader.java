@@ -113,7 +113,7 @@ public class TagGroupLoader<T> {
     public TagGroup<T> buildGroup(Map<Identifier, Tag.Builder> tags) {
         HashMap map = Maps.newHashMap();
         Function<Identifier, Tag> function = map::get;
-        Function<Identifier, Object> function2 = identifier -> this.registryGetter.apply((Identifier)identifier).orElse(null);
+        Function<Identifier, Object> function2 = id -> this.registryGetter.apply((Identifier)id).orElse(null);
         HashMultimap multimap = HashMultimap.create();
         tags.forEach((identifier, builder) -> builder.forEachTagId(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
         tags.forEach((identifier, builder) -> builder.forEachGroupId(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));

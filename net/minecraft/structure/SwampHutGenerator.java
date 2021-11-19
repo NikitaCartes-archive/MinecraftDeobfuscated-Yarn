@@ -34,10 +34,10 @@ extends ShiftableStructurePiece {
         super(StructurePieceType.SWAMP_HUT, x, 64, z, 7, 7, 9, SwampHutGenerator.getRandomHorizontalDirection(random));
     }
 
-    public SwampHutGenerator(NbtCompound nbtCompound) {
-        super(StructurePieceType.SWAMP_HUT, nbtCompound);
-        this.hasWitch = nbtCompound.getBoolean("Witch");
-        this.hasCat = nbtCompound.getBoolean("Cat");
+    public SwampHutGenerator(NbtCompound nbt) {
+        super(StructurePieceType.SWAMP_HUT, nbt);
+        this.hasWitch = nbt.getBoolean("Witch");
+        this.hasCat = nbt.getBoolean("Cat");
     }
 
     @Override

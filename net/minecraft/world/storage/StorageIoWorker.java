@@ -15,7 +15,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.class_6830;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.util.Unit;
@@ -24,13 +23,14 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.thread.MessageListener;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.util.thread.TaskQueue;
+import net.minecraft.world.storage.NbtScannable;
 import net.minecraft.world.storage.RegionBasedStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class StorageIoWorker
-implements class_6830,
+implements NbtScannable,
 AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private final AtomicBoolean closed = new AtomicBoolean();
@@ -97,20 +97,20 @@ AutoCloseable {
     }
 
     @Override
-    public CompletableFuture<Void> method_39795(ChunkPos chunkPos, NbtScanner nbtScanner) {
+    public CompletableFuture<Void> scanChunk(ChunkPos pos, NbtScanner scanner) {
         return this.run(() -> {
             try {
-                Result result = this.results.get(chunkPos);
+                Result result = this.results.get(pos);
                 if (result != null) {
                     if (result.nbt != null) {
-                        result.nbt.accept(nbtScanner);
+                        result.nbt.accept(scanner);
                     }
                 } else {
-                    this.storage.method_39802(chunkPos, nbtScanner);
+                    this.storage.method_39802(pos, scanner);
                 }
                 return Either.left(null);
             } catch (Exception exception) {
-                LOGGER.warn("Failed to bulk scan chunk {}", (Object)chunkPos, (Object)exception);
+                LOGGER.warn("Failed to bulk scan chunk {}", (Object)pos, (Object)exception);
                 return Either.right(exception);
             }
         });

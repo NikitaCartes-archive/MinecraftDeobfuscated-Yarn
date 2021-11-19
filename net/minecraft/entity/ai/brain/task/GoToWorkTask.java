@@ -29,18 +29,18 @@ extends Task<VillagerEntity> {
     }
 
     @Override
-    protected void run(ServerWorld serverWorld2, VillagerEntity villagerEntity, long l) {
+    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         GlobalPos globalPos = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get();
         villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
         villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
-        serverWorld2.sendEntityStatus(villagerEntity, (byte)14);
+        serverWorld.sendEntityStatus(villagerEntity, (byte)14);
         if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.NONE) {
             return;
         }
-        MinecraftServer minecraftServer = serverWorld2.getServer();
-        Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension())).flatMap(serverWorld -> serverWorld.getPointOfInterestStorage().getType(globalPos.getPos())).flatMap(pointOfInterestType -> Registry.VILLAGER_PROFESSION.stream().filter(villagerProfession -> villagerProfession.getWorkStation() == pointOfInterestType).findFirst()).ifPresent(villagerProfession -> {
-            villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession((VillagerProfession)villagerProfession));
-            villagerEntity.reinitializeBrain(serverWorld2);
+        MinecraftServer minecraftServer = serverWorld.getServer();
+        Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension())).flatMap(world -> world.getPointOfInterestStorage().getType(globalPos.getPos())).flatMap(poiType -> Registry.VILLAGER_PROFESSION.stream().filter(profession -> profession.getWorkStation() == poiType).findFirst()).ifPresent(profession -> {
+            villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession((VillagerProfession)profession));
+            villagerEntity.reinitializeBrain(serverWorld);
         });
     }
 }

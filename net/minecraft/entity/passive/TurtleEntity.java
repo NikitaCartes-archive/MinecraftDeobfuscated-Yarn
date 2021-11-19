@@ -403,7 +403,7 @@ extends AnimalEntity {
             if (this.mob.getAttacker() == null && !this.mob.isOnFire()) {
                 return false;
             }
-            BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 7, 4);
+            BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 7);
             if (blockPos != null) {
                 this.targetX = blockPos.getX();
                 this.targetY = blockPos.getY();

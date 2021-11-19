@@ -45,7 +45,7 @@ implements DataProvider {
         DynamicRegistryManager.Impl dynamicRegistryManager = DynamicRegistryManager.create();
         boolean i = false;
         SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(dynamicRegistryManager, 0L, false);
-        NoiseChunkGenerator chunkGenerator = GeneratorOptions.method_39558(dynamicRegistryManager, 0L, false);
+        NoiseChunkGenerator chunkGenerator = GeneratorOptions.createOverworldGenerator(dynamicRegistryManager, 0L, false);
         SimpleRegistry<DimensionOptions> simpleRegistry2 = GeneratorOptions.getRegistryWithReplacedOverworldGenerator(dynamicRegistryManager.getMutable(Registry.DIMENSION_TYPE_KEY), simpleRegistry, chunkGenerator);
         RegistryReadingOps<JsonElement> dynamicOps = RegistryReadingOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
         DynamicRegistryManager.getInfos().forEach(info -> WorldgenListProvider.writeRegistryEntries(cache, path, dynamicRegistryManager, dynamicOps, info));

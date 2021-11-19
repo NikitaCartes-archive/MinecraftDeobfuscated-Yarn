@@ -13,25 +13,25 @@ import net.minecraft.text.Text;
 public class GameMessageS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private final Text message;
-    private final MessageType location;
+    private final MessageType type;
     private final UUID sender;
 
-    public GameMessageS2CPacket(Text message, MessageType location, UUID sender) {
+    public GameMessageS2CPacket(Text message, MessageType type, UUID sender) {
         this.message = message;
-        this.location = location;
+        this.type = type;
         this.sender = sender;
     }
 
     public GameMessageS2CPacket(PacketByteBuf buf) {
         this.message = buf.readText();
-        this.location = MessageType.byId(buf.readByte());
+        this.type = MessageType.byId(buf.readByte());
         this.sender = buf.readUuid();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeText(this.message);
-        buf.writeByte(this.location.getId());
+        buf.writeByte(this.type.getId());
         buf.writeUuid(this.sender);
     }
 
@@ -44,8 +44,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.message;
     }
 
-    public MessageType getLocation() {
-        return this.location;
+    public MessageType getType() {
+        return this.type;
     }
 
     public UUID getSender() {

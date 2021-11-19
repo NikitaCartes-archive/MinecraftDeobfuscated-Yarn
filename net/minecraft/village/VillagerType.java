@@ -65,8 +65,8 @@ public final class VillagerType {
         return Registry.register(Registry.VILLAGER_TYPE, new Identifier(id), new VillagerType(id));
     }
 
-    public static VillagerType forBiome(Optional<RegistryKey<Biome>> biomeKey) {
-        return biomeKey.flatMap(registryKey -> Optional.ofNullable(BIOME_TO_TYPE.get(registryKey))).orElse(PLAINS);
+    public static VillagerType forBiome(Optional<RegistryKey<Biome>> biomeKey2) {
+        return biomeKey2.flatMap(biomeKey -> Optional.ofNullable(BIOME_TO_TYPE.get(biomeKey))).orElse(PLAINS);
     }
 }
 

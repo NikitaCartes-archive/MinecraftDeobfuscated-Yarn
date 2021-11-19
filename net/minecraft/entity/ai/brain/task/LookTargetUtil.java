@@ -47,11 +47,11 @@ public class LookTargetUtil {
     }
 
     public static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryModuleType, EntityType<?> entityType) {
-        return LookTargetUtil.canSee(brain, memoryModuleType, (LivingEntity livingEntity) -> livingEntity.getType() == entityType);
+        return LookTargetUtil.canSee(brain, memoryModuleType, (LivingEntity entity) -> entity.getType() == entityType);
     }
 
     private static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryType, Predicate<LivingEntity> filter) {
-        return brain.getOptionalMemory(memoryType).filter(filter).filter(LivingEntity::isAlive).filter(livingEntity -> LookTargetUtil.canSee(brain, livingEntity)).isPresent();
+        return brain.getOptionalMemory(memoryType).filter(filter).filter(LivingEntity::isAlive).filter(target -> LookTargetUtil.canSee(brain, target)).isPresent();
     }
 
     private static void lookAtEachOther(LivingEntity first, LivingEntity second) {
@@ -94,19 +94,19 @@ public class LookTargetUtil {
 
     public static ChunkSectionPos getPosClosestToOccupiedPointOfInterest(ServerWorld world, ChunkSectionPos center, int radius) {
         int i = world.getOccupiedPointOfInterestDistance(center);
-        return ChunkSectionPos.stream(center, radius).filter(chunkSectionPos -> world.getOccupiedPointOfInterestDistance((ChunkSectionPos)chunkSectionPos) < i).min(Comparator.comparingInt(world::getOccupiedPointOfInterestDistance)).orElse(center);
+        return ChunkSectionPos.stream(center, radius).filter(sectionPos -> world.getOccupiedPointOfInterestDistance((ChunkSectionPos)sectionPos) < i).min(Comparator.comparingInt(world::getOccupiedPointOfInterestDistance)).orElse(center);
     }
 
-    public static boolean isTargetWithinAttackRange(MobEntity mobEntity, LivingEntity target, int rangedWeaponReachReduction) {
-        Item item = mobEntity.getMainHandStack().getItem();
+    public static boolean isTargetWithinAttackRange(MobEntity mob, LivingEntity target, int rangedWeaponReachReduction) {
+        Item item = mob.getMainHandStack().getItem();
         if (item instanceof RangedWeaponItem) {
             RangedWeaponItem rangedWeaponItem = (RangedWeaponItem)item;
-            if (mobEntity.canUseRangedWeapon((RangedWeaponItem)item)) {
+            if (mob.canUseRangedWeapon((RangedWeaponItem)item)) {
                 int i = rangedWeaponItem.getRange() - rangedWeaponReachReduction;
-                return mobEntity.isInRange(target, i);
+                return mob.isInRange(target, i);
             }
         }
-        return LookTargetUtil.isTargetWithinMeleeRange(mobEntity, target);
+        return LookTargetUtil.isTargetWithinMeleeRange(mob, target);
     }
 
     public static boolean isTargetWithinMeleeRange(MobEntity source, LivingEntity target) {
@@ -152,16 +152,16 @@ public class LookTargetUtil {
         return source.squaredDistanceTo(vec3d) < source.squaredDistanceTo(vec3d2) ? first : second;
     }
 
-    public static Optional<LivingEntity> getEntity(LivingEntity entity2, MemoryModuleType<UUID> uuidMemoryModule) {
-        Optional<UUID> optional = entity2.getBrain().getOptionalMemory(uuidMemoryModule);
-        return optional.map(uUID -> ((ServerWorld)livingEntity.world).getEntity((UUID)uUID)).map(entity -> {
+    public static Optional<LivingEntity> getEntity(LivingEntity entity, MemoryModuleType<UUID> uuidMemoryModule) {
+        Optional<UUID> optional = entity.getBrain().getOptionalMemory(uuidMemoryModule);
+        return optional.map(uuid -> ((ServerWorld)livingEntity.world).getEntity((UUID)uuid)).map(target -> {
             LivingEntity livingEntity;
-            return entity instanceof LivingEntity ? (livingEntity = (LivingEntity)entity) : null;
+            return target instanceof LivingEntity ? (livingEntity = (LivingEntity)target) : null;
         });
     }
 
     public static Stream<VillagerEntity> streamSeenVillagers(VillagerEntity villager, Predicate<VillagerEntity> filter) {
-        return villager.getBrain().getOptionalMemory(MemoryModuleType.MOBS).map(list -> list.stream().filter(livingEntity -> livingEntity instanceof VillagerEntity && livingEntity != villager).map(livingEntity -> (VillagerEntity)livingEntity).filter(LivingEntity::isAlive).filter(filter)).orElseGet(Stream::empty);
+        return villager.getBrain().getOptionalMemory(MemoryModuleType.MOBS).map(list -> list.stream().filter(entity -> entity instanceof VillagerEntity && entity != villager).map(livingEntity -> (VillagerEntity)livingEntity).filter(LivingEntity::isAlive).filter(filter)).orElseGet(Stream::empty);
     }
 
     @Nullable

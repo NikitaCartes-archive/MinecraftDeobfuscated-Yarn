@@ -29,22 +29,22 @@ extends AbstractIterator<VoxelShape> {
     private final BlockPos.Mutable pos;
     private final VoxelShape boxShape;
     private final CollisionView world;
-    private final boolean field_35590;
+    private final boolean forEntity;
     @Nullable
-    private BlockView field_35108;
-    private long field_35109;
+    private BlockView chunk;
+    private long chunkPos;
 
     public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box) {
         this(world, entity, box, false);
     }
 
-    public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box, boolean bl) {
+    public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box, boolean forEntity) {
         this.context = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
         this.pos = new BlockPos.Mutable();
         this.boxShape = VoxelShapes.cuboid(box);
         this.world = world;
         this.box = box;
-        this.field_35590 = bl;
+        this.forEntity = forEntity;
         int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
         int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
         int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
@@ -60,11 +60,11 @@ extends AbstractIterator<VoxelShape> {
         int i = ChunkSectionPos.getSectionCoord(x);
         int j = ChunkSectionPos.getSectionCoord(z);
         long l = ChunkPos.toLong(i, j);
-        if (this.field_35108 != null && this.field_35109 == l) {
-            return this.field_35108;
+        if (this.chunk != null && this.chunkPos == l) {
+            return this.chunk;
         }
-        this.field_35108 = blockView = this.world.getChunkAsView(i, j);
-        this.field_35109 = l;
+        this.chunk = blockView = this.world.getChunkAsView(i, j);
+        this.chunkPos = l;
         return blockView;
     }
 
@@ -79,7 +79,7 @@ extends AbstractIterator<VoxelShape> {
             if (l == 3 || (blockView = this.getChunk(i, k)) == null) continue;
             this.pos.set(i, j, k);
             BlockState blockState = blockView.getBlockState(this.pos);
-            if (this.field_35590 && !blockState.shouldSuffocate(blockView, this.pos) || l == 1 && !blockState.exceedsCube() || l == 2 && !blockState.isOf(Blocks.MOVING_PISTON)) continue;
+            if (this.forEntity && !blockState.shouldSuffocate(blockView, this.pos) || l == 1 && !blockState.exceedsCube() || l == 2 && !blockState.isOf(Blocks.MOVING_PISTON)) continue;
             VoxelShape voxelShape = blockState.getCollisionShape(this.world, this.pos, this.context);
             if (voxelShape == VoxelShapes.fullCube()) {
                 if (!this.box.intersects(i, j, k, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)) continue;

@@ -81,7 +81,7 @@ public class BackgroundRenderer {
             float g;
             float t = 0.25f + 0.75f * (float)i2 / 32.0f;
             t = 1.0f - (float)Math.pow(t, 0.25);
-            Vec3d vec3d = world.method_23777(camera.getPos(), tickDelta);
+            Vec3d vec3d = world.getSkyColor(camera.getPos(), tickDelta);
             float u = (float)vec3d.x;
             float v = (float)vec3d.y;
             float w = (float)vec3d.z;

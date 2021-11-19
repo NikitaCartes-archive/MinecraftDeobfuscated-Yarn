@@ -33,7 +33,7 @@ import net.minecraft.world.timer.Timer;
 public class ScheduleCommand {
     private static final SimpleCommandExceptionType SAME_TICK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.schedule.same_tick"));
     private static final DynamicCommandExceptionType CLEARED_FAILURE_EXCEPTION = new DynamicCommandExceptionType(eventName -> new TranslatableText("commands.schedule.cleared.failure", eventName));
-    private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22592(), builder);
+    private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().getEventNames(), builder);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("schedule").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.literal("function").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("function", CommandFunctionArgumentType.commandFunction()).suggests(FunctionCommand.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("time", TimeArgumentType.time()).executes(context -> ScheduleCommand.execute((ServerCommandSource)context.getSource(), CommandFunctionArgumentType.getFunctionOrTag(context, "function"), IntegerArgumentType.getInteger(context, "time"), true))).then(CommandManager.literal("append").executes(context -> ScheduleCommand.execute((ServerCommandSource)context.getSource(), CommandFunctionArgumentType.getFunctionOrTag(context, "function"), IntegerArgumentType.getInteger(context, "time"), false)))).then(CommandManager.literal("replace").executes(context -> ScheduleCommand.execute((ServerCommandSource)context.getSource(), CommandFunctionArgumentType.getFunctionOrTag(context, "function"), IntegerArgumentType.getInteger(context, "time"), true))))))).then(CommandManager.literal("clear").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("function", StringArgumentType.greedyString()).suggests(SUGGESTION_PROVIDER).executes(context -> ScheduleCommand.clearEvent((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "function"))))));
@@ -49,14 +49,14 @@ public class ScheduleCommand {
         function2.getSecond().ifLeft(function -> {
             String string = identifier.toString();
             if (replace) {
-                timer.method_22593(string);
+                timer.remove(string);
             }
             timer.setEvent(string, l, new FunctionTimerCallback(identifier));
             source.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, time, l), true);
         }).ifRight(tag -> {
             String string = "#" + identifier;
             if (replace) {
-                timer.method_22593(string);
+                timer.remove(string);
             }
             timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
             source.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, time, l), true);
@@ -65,7 +65,7 @@ public class ScheduleCommand {
     }
 
     private static int clearEvent(ServerCommandSource source, String eventName) throws CommandSyntaxException {
-        int i = source.getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22593(eventName);
+        int i = source.getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().remove(eventName);
         if (i == 0) {
             throw CLEARED_FAILURE_EXCEPTION.create(eventName);
         }

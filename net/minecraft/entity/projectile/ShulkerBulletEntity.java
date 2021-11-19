@@ -215,7 +215,7 @@ extends ProjectileEntity {
         this.checkBlockCollision();
         vec3d = this.getVelocity();
         this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
-        ProjectileUtil.method_7484(this, 0.5f);
+        ProjectileUtil.setRotationFromVelocity(this, 0.5f);
         if (this.world.isClient) {
             this.world.addParticle(ParticleTypes.END_ROD, this.getX() - vec3d.x, this.getY() - vec3d.y + 0.15, this.getZ() - vec3d.z, 0.0, 0.0, 0.0);
         } else if (this.target != null && !this.target.isRemoved()) {

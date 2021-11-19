@@ -47,15 +47,15 @@ extends Task<E> {
     private Optional<Target> lastTarget = Optional.empty();
     private int cooldown;
     private long targetTime;
-    private Function<E, SoundEvent> field_33460;
+    private Function<E, SoundEvent> entityToSound;
 
-    public LongJumpTask(UniformIntProvider cooldownRange, int verticalRange, int horizontalRange, float maxRange, Function<E, SoundEvent> function) {
+    public LongJumpTask(UniformIntProvider cooldownRange, int verticalRange, int horizontalRange, float maxRange, Function<E, SoundEvent> entityToSound) {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleState.VALUE_ABSENT), 200);
         this.cooldownRange = cooldownRange;
         this.verticalRange = verticalRange;
         this.horizontalRange = horizontalRange;
         this.maxRange = maxRange;
-        this.field_33460 = function;
+        this.entityToSound = entityToSound;
     }
 
     @Override
@@ -104,7 +104,7 @@ extends Task<E> {
                 double e = d + ((LivingEntity)mobEntity).getJumpBoostVelocityModifier();
                 ((Entity)mobEntity).setVelocity(vec3d.multiply(e / d));
                 ((LivingEntity)mobEntity).getBrain().remember(MemoryModuleType.LONG_JUMP_MID_JUMP, true);
-                serverWorld.playSoundFromEntity(null, (Entity)mobEntity, this.field_33460.apply(mobEntity), SoundCategory.NEUTRAL, 1.0f, 1.0f);
+                serverWorld.playSoundFromEntity(null, (Entity)mobEntity, this.entityToSound.apply(mobEntity), SoundCategory.NEUTRAL, 1.0f, 1.0f);
             }
         } else {
             --this.cooldown;

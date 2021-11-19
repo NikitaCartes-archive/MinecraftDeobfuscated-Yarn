@@ -20,8 +20,8 @@ public class RandomFeatureEntry {
     public final Supplier<PlacedFeature> feature;
     public final float chance;
 
-    public RandomFeatureEntry(PlacedFeature placedFeature, float chance) {
-        this(() -> placedFeature, chance);
+    public RandomFeatureEntry(PlacedFeature feature, float chance) {
+        this(() -> feature, chance);
     }
 
     private RandomFeatureEntry(Supplier<PlacedFeature> feature, float chance) {

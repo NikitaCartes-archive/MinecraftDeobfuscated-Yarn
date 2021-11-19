@@ -34,14 +34,14 @@ extends Goal {
         this(mob, targetType, range, chance, false);
     }
 
-    public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f, float g, boolean bl) {
-        this.mob = mobEntity;
-        this.targetType = class_;
-        this.range = f;
-        this.chance = g;
+    public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range, float chance, boolean bl) {
+        this.mob = mob;
+        this.targetType = targetType;
+        this.range = range;
+        this.chance = chance;
         this.field_33761 = bl;
         this.setControls(EnumSet.of(Goal.Control.LOOK));
-        this.targetPredicate = class_ == PlayerEntity.class ? TargetPredicate.createNonAttackable().setBaseMaxDistance(f).setPredicate(livingEntity -> EntityPredicates.rides(mobEntity).test((Entity)livingEntity)) : TargetPredicate.createNonAttackable().setBaseMaxDistance(f);
+        this.targetPredicate = targetType == PlayerEntity.class ? TargetPredicate.createNonAttackable().setBaseMaxDistance(range).setPredicate(entity -> EntityPredicates.rides(mob).test((Entity)entity)) : TargetPredicate.createNonAttackable().setBaseMaxDistance(range);
     }
 
     @Override

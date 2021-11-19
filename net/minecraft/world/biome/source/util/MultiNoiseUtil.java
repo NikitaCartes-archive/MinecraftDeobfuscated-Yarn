@@ -396,9 +396,9 @@ public class MultiNoiseUtil {
         extends TreeNode<T> {
             final T value;
 
-            TreeLeafNode(NoiseHypercube parameters, T object) {
+            TreeLeafNode(NoiseHypercube parameters, T value) {
                 super(parameters.getParameters());
-                this.value = object;
+                this.value = value;
             }
 
             @Override

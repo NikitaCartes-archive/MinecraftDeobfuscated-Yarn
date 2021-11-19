@@ -11,14 +11,15 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class RandomBooleanFeatureConfig
 implements FeatureConfig {
-    public static final Codec<RandomBooleanFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature_true")).forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureTrue), ((MapCodec)ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature_false")).forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureFalse)).apply((Applicative<RandomBooleanFeatureConfig, ?>)instance, RandomBooleanFeatureConfig::new));
-    public final Supplier<ConfiguredFeature<?, ?>> featureTrue;
-    public final Supplier<ConfiguredFeature<?, ?>> featureFalse;
+    public static final Codec<RandomBooleanFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature_true")).forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureTrue), ((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature_false")).forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureFalse)).apply((Applicative<RandomBooleanFeatureConfig, ?>)instance, RandomBooleanFeatureConfig::new));
+    public final Supplier<PlacedFeature> featureTrue;
+    public final Supplier<PlacedFeature> featureFalse;
 
-    public RandomBooleanFeatureConfig(Supplier<ConfiguredFeature<?, ?>> featureTrue, Supplier<ConfiguredFeature<?, ?>> featureFalse) {
+    public RandomBooleanFeatureConfig(Supplier<PlacedFeature> featureTrue, Supplier<PlacedFeature> featureFalse) {
         this.featureTrue = featureTrue;
         this.featureFalse = featureFalse;
     }

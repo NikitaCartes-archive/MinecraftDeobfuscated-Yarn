@@ -27,9 +27,9 @@ extends Feature<RandomBooleanFeatureConfig> {
         BlockPos blockPos = context.getOrigin();
         boolean bl = random.nextBoolean();
         if (bl) {
-            return randomBooleanFeatureConfig.featureTrue.get().generate(structureWorldAccess, chunkGenerator, random, blockPos);
+            return randomBooleanFeatureConfig.featureTrue.get().generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
         }
-        return randomBooleanFeatureConfig.featureFalse.get().generate(structureWorldAccess, chunkGenerator, random, blockPos);
+        return randomBooleanFeatureConfig.featureFalse.get().generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
     }
 }
 

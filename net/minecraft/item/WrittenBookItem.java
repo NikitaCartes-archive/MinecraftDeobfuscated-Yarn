@@ -128,26 +128,26 @@ extends Item {
         }
         NbtList nbtList = nbtCompound.getList(PAGES_KEY, 8);
         for (int i = 0; i < nbtList.size(); ++i) {
-            nbtList.set(i, NbtString.of(WrittenBookItem.method_33826(commandSource, player, nbtList.getString(i))));
+            nbtList.set(i, NbtString.of(WrittenBookItem.textToJson(commandSource, player, nbtList.getString(i))));
         }
         if (nbtCompound.contains(FILTERED_PAGES_KEY, 10)) {
             NbtCompound nbtCompound2 = nbtCompound.getCompound(FILTERED_PAGES_KEY);
             for (String string : nbtCompound2.getKeys()) {
-                nbtCompound2.putString(string, WrittenBookItem.method_33826(commandSource, player, nbtCompound2.getString(string)));
+                nbtCompound2.putString(string, WrittenBookItem.textToJson(commandSource, player, nbtCompound2.getString(string)));
             }
         }
         return true;
     }
 
-    private static String method_33826(@Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity, String string) {
-        MutableText text;
+    private static String textToJson(@Nullable ServerCommandSource commandSource, @Nullable PlayerEntity player, String text) {
+        MutableText text2;
         try {
-            text = Text.Serializer.fromLenientJson(string);
-            text = Texts.parse(serverCommandSource, text, (Entity)playerEntity, 0);
+            text2 = Text.Serializer.fromLenientJson(text);
+            text2 = Texts.parse(commandSource, text2, (Entity)player, 0);
         } catch (Exception exception) {
-            text = new LiteralText(string);
+            text2 = new LiteralText(text);
         }
-        return Text.Serializer.toJson(text);
+        return Text.Serializer.toJson(text2);
     }
 
     @Override

@@ -65,23 +65,23 @@ public final class EntityPredicates {
         return entity -> entity != null && entity.squaredDistanceTo(x, y, z) <= d;
     }
 
-    public static Predicate<Entity> canBePushedBy(Entity entity) {
+    public static Predicate<Entity> canBePushedBy(Entity entity2) {
         AbstractTeam.CollisionRule collisionRule;
-        AbstractTeam abstractTeam = entity.getScoreboardTeam();
+        AbstractTeam abstractTeam = entity2.getScoreboardTeam();
         AbstractTeam.CollisionRule collisionRule2 = collisionRule = abstractTeam == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam.getCollisionRule();
         if (collisionRule == AbstractTeam.CollisionRule.NEVER) {
             return Predicates.alwaysFalse();
         }
-        return EXCEPT_SPECTATOR.and(entity2 -> {
+        return EXCEPT_SPECTATOR.and(entity -> {
             boolean bl;
             AbstractTeam.CollisionRule collisionRule2;
-            if (!entity2.isPushable()) {
+            if (!entity.isPushable()) {
                 return false;
             }
-            if (!(!entity.world.isClient || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).isMainPlayer())) {
+            if (!(!entity2.world.isClient || entity instanceof PlayerEntity && ((PlayerEntity)entity).isMainPlayer())) {
                 return false;
             }
-            AbstractTeam abstractTeam2 = entity2.getScoreboardTeam();
+            AbstractTeam abstractTeam2 = entity.getScoreboardTeam();
             AbstractTeam.CollisionRule collisionRule3 = collisionRule2 = abstractTeam2 == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam2.getCollisionRule();
             if (collisionRule2 == AbstractTeam.CollisionRule.NEVER) {
                 return false;

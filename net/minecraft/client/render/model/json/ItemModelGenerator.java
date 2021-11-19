@@ -140,23 +140,23 @@ public class ItemModelGenerator {
         int i = sprite.getWidth();
         int j = sprite.getHeight();
         ArrayList<Frame> list = Lists.newArrayList();
-        sprite.getDistinctFrameCount().forEach(k -> {
-            for (int l = 0; l < j; ++l) {
-                for (int m = 0; m < i; ++m) {
-                    boolean bl = !this.isPixelTransparent(sprite, k, m, l, i, j);
-                    this.buildCube(Side.UP, list, sprite, k, m, l, i, j, bl);
-                    this.buildCube(Side.DOWN, list, sprite, k, m, l, i, j, bl);
-                    this.buildCube(Side.LEFT, list, sprite, k, m, l, i, j, bl);
-                    this.buildCube(Side.RIGHT, list, sprite, k, m, l, i, j, bl);
+        sprite.getDistinctFrameCount().forEach(frame -> {
+            for (int k = 0; k < j; ++k) {
+                for (int l = 0; l < i; ++l) {
+                    boolean bl = !this.isPixelTransparent(sprite, frame, l, k, i, j);
+                    this.buildCube(Side.UP, list, sprite, frame, l, k, i, j, bl);
+                    this.buildCube(Side.DOWN, list, sprite, frame, l, k, i, j, bl);
+                    this.buildCube(Side.LEFT, list, sprite, frame, l, k, i, j, bl);
+                    this.buildCube(Side.RIGHT, list, sprite, frame, l, k, i, j, bl);
                 }
             }
         });
         return list;
     }
 
-    private void buildCube(Side side, List<Frame> cubes, Sprite sprite, int frame, int x, int y, int i, int j, boolean bl) {
+    private void buildCube(Side side, List<Frame> cubes, Sprite sprite, int frame, int x, int y, int width, int height, boolean bl) {
         boolean bl2;
-        boolean bl3 = bl2 = this.isPixelTransparent(sprite, frame, x + side.getOffsetX(), y + side.getOffsetY(), i, j) && bl;
+        boolean bl3 = bl2 = this.isPixelTransparent(sprite, frame, x + side.getOffsetX(), y + side.getOffsetY(), width, height) && bl;
         if (bl2) {
             this.buildCube(cubes, side, x, y);
         }
@@ -182,8 +182,8 @@ public class ItemModelGenerator {
         }
     }
 
-    private boolean isPixelTransparent(Sprite sprite, int frame, int x, int y, int i, int j) {
-        if (x < 0 || y < 0 || x >= i || y >= j) {
+    private boolean isPixelTransparent(Sprite sprite, int frame, int x, int y, int width, int height) {
+        if (x < 0 || y < 0 || x >= width || y >= height) {
             return true;
         }
         return sprite.isPixelTransparent(frame, x, y);

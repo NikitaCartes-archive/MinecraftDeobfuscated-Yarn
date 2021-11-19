@@ -369,10 +369,10 @@ implements ItemConvertible {
         }
     }
 
-    public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack stack) {
+    public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack stack2) {
         if (world instanceof ServerWorld) {
-            Block.getDroppedStacks(state, (ServerWorld)world, pos, blockEntity, entity, stack).forEach(itemStack -> Block.dropStack(world, pos, itemStack));
-            state.onStacksDropped((ServerWorld)world, pos, stack);
+            Block.getDroppedStacks(state, (ServerWorld)world, pos, blockEntity, entity, stack2).forEach(stack -> Block.dropStack(world, pos, stack));
+            state.onStacksDropped((ServerWorld)world, pos, stack2);
         }
     }
 

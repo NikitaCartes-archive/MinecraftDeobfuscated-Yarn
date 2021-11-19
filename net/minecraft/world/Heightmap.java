@@ -132,8 +132,8 @@ public class Heightmap {
         WORLD_SURFACE("WORLD_SURFACE", Purpose.CLIENT, NOT_AIR),
         OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Purpose.WORLDGEN, SUFFOCATES),
         OCEAN_FLOOR("OCEAN_FLOOR", Purpose.LIVE_WORLD, SUFFOCATES),
-        MOTION_BLOCKING("MOTION_BLOCKING", Purpose.CLIENT, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()),
-        MOTION_BLOCKING_NO_LEAVES("MOTION_BLOCKING_NO_LEAVES", Purpose.LIVE_WORLD, blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock));
+        MOTION_BLOCKING("MOTION_BLOCKING", Purpose.CLIENT, state -> state.getMaterial().blocksMovement() || !state.getFluidState().isEmpty()),
+        MOTION_BLOCKING_NO_LEAVES("MOTION_BLOCKING_NO_LEAVES", Purpose.LIVE_WORLD, state -> (state.getMaterial().blocksMovement() || !state.getFluidState().isEmpty()) && !(state.getBlock() instanceof LeavesBlock));
 
         public static final Codec<Type> CODEC;
         private final String name;

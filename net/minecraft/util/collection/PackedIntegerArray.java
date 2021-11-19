@@ -4,10 +4,8 @@
 package net.minecraft.util.collection;
 
 import java.util.function.IntConsumer;
-import java.util.stream.IntStream;
 import net.minecraft.util.collection.PaletteStorage;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 
 public class PackedIntegerArray
@@ -34,10 +32,27 @@ implements PaletteStorage {
     private final int indexOffset;
     private final int indexShift;
 
-    public PackedIntegerArray(int elementBits, int size, IntStream values) {
-        this(elementBits, size);
-        MutableInt mutableInt = new MutableInt();
-        values.forEach(value -> this.set(mutableInt.getAndIncrement(), value));
+    public PackedIntegerArray(int i, int j, int[] is) {
+        this(i, j);
+        int l;
+        int k = 0;
+        for (l = 0; l <= j - this.elementsPerLong; l += this.elementsPerLong) {
+            long m = 0L;
+            for (int n = this.elementsPerLong - 1; n >= 0; --n) {
+                m <<= i;
+                m |= (long)is[l + n] & this.maxValue;
+            }
+            this.data[k++] = m;
+        }
+        int o = j - l;
+        if (o > 0) {
+            long p = 0L;
+            for (int q = o - 1; q >= 0; --q) {
+                p <<= i;
+                p |= (long)is[l + q] & this.maxValue;
+            }
+            this.data[k] = p;
+        }
     }
 
     public PackedIntegerArray(int elementBits, int size) {
@@ -126,6 +141,31 @@ implements PaletteStorage {
                 l >>= this.elementBits;
                 if (++i < this.size) continue;
                 return;
+            }
+        }
+    }
+
+    @Override
+    public void method_39892(int[] is) {
+        int m;
+        long l;
+        int k;
+        int i = this.data.length;
+        int j = 0;
+        for (k = 0; k < i - 1; ++k) {
+            l = this.data[k];
+            for (m = 0; m < this.elementsPerLong; ++m) {
+                is[j + m] = (int)(l & this.maxValue);
+                l >>= this.elementBits;
+            }
+            j += this.elementsPerLong;
+        }
+        k = this.size - j;
+        if (k > 0) {
+            l = this.data[i - 1];
+            for (m = 0; m < k; ++m) {
+                is[j + m] = (int)(l & this.maxValue);
+                l >>= this.elementBits;
             }
         }
     }

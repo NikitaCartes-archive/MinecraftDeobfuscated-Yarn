@@ -38,33 +38,33 @@ public class PersistentStateManager {
         return new File(this.directory, id + ".dat");
     }
 
-    public <T extends PersistentState> T getOrCreate(Function<NbtCompound, T> function, Supplier<T> supplier, String string) {
-        T persistentState = this.get(function, string);
+    public <T extends PersistentState> T getOrCreate(Function<NbtCompound, T> readFunction, Supplier<T> supplier, String id) {
+        T persistentState = this.get(readFunction, id);
         if (persistentState != null) {
             return persistentState;
         }
         PersistentState persistentState2 = (PersistentState)supplier.get();
-        this.set(string, persistentState2);
+        this.set(id, persistentState2);
         return (T)persistentState2;
     }
 
     @Nullable
-    public <T extends PersistentState> T get(Function<NbtCompound, T> function, String id) {
+    public <T extends PersistentState> T get(Function<NbtCompound, T> readFunction, String id) {
         PersistentState persistentState = this.loadedStates.get(id);
         if (persistentState == null && !this.loadedStates.containsKey(id)) {
-            persistentState = this.readFromFile(function, id);
+            persistentState = this.readFromFile(readFunction, id);
             this.loadedStates.put(id, persistentState);
         }
         return (T)persistentState;
     }
 
     @Nullable
-    private <T extends PersistentState> T readFromFile(Function<NbtCompound, T> function, String id) {
+    private <T extends PersistentState> T readFromFile(Function<NbtCompound, T> readFunction, String id) {
         try {
             File file = this.getFile(id);
             if (file.exists()) {
                 NbtCompound nbtCompound = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
-                return (T)((PersistentState)function.apply(nbtCompound.getCompound("data")));
+                return (T)((PersistentState)readFunction.apply(nbtCompound.getCompound("data")));
             }
         } catch (Exception exception) {
             LOGGER.error("Error loading saved data: {}", (Object)id, (Object)exception);
@@ -72,8 +72,8 @@ public class PersistentStateManager {
         return null;
     }
 
-    public void set(String string, PersistentState persistentState) {
-        this.loadedStates.put(string, persistentState);
+    public void set(String id, PersistentState state) {
+        this.loadedStates.put(id, state);
     }
 
     public NbtCompound readNbt(String id, int dataVersion) throws IOException {
@@ -111,9 +111,9 @@ public class PersistentStateManager {
     }
 
     public void save() {
-        this.loadedStates.forEach((string, persistentState) -> {
-            if (persistentState != null) {
-                persistentState.save(this.getFile((String)string));
+        this.loadedStates.forEach((id, state) -> {
+            if (state != null) {
+                state.save(this.getFile((String)id));
             }
         });
     }

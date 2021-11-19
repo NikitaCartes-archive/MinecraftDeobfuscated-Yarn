@@ -1497,7 +1497,7 @@ implements WindowEventHandler {
             --this.itemUseCooldown;
         }
         this.profiler.push("gui");
-        this.inGameHud.method_39191(this.paused);
+        this.inGameHud.tick(this.paused);
         this.profiler.pop();
         this.gameRenderer.updateTargetedEntity(1.0f);
         this.tutorialManager.tick(this.world, this.crosshairTarget);

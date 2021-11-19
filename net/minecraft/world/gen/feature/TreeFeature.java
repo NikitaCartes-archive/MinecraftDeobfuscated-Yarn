@@ -90,7 +90,7 @@ extends Feature<TreeFeatureConfig> {
             return false;
         }
         List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, trunkReplacer, random, m, pos, config);
-        list.forEach(treeNode -> treeFeatureConfig.foliagePlacer.generate(world, foliageReplacer, random, config, m, (FoliagePlacer.TreeNode)treeNode, j, l));
+        list.forEach(node -> treeFeatureConfig.foliagePlacer.generate(world, foliageReplacer, random, config, m, (FoliagePlacer.TreeNode)node, j, l));
         return true;
     }
 
@@ -144,7 +144,7 @@ extends Feature<TreeFeatureConfig> {
             ArrayList<BlockPos> list2 = Lists.newArrayList(set2);
             list.sort(Comparator.comparingInt(Vec3i::getY));
             list2.sort(Comparator.comparingInt(Vec3i::getY));
-            treeFeatureConfig.decorators.forEach(treeDecorator -> treeDecorator.generate(structureWorldAccess, biConsumer3, random, list, list2));
+            treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(structureWorldAccess, biConsumer3, random, list, list2));
         }
         return BlockBox.encompassPositions(Iterables.concat(set, set2, set3)).map(box -> {
             VoxelSet voxelSet = TreeFeature.placeLogsAndLeaves(structureWorldAccess, box, set, set3);

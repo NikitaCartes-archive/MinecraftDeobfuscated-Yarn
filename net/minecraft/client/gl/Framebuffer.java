@@ -163,7 +163,7 @@ public abstract class Framebuffer {
         throw new RuntimeException("glCheckFramebufferStatus returned unknown status:" + i);
     }
 
-    public void method_35610() {
+    public void beginRead() {
         RenderSystem.assertOnRenderThread();
         GlStateManager._bindTexture(this.colorAttachment);
     }
@@ -208,12 +208,12 @@ public abstract class Framebuffer {
         this.draw(width, height, true);
     }
 
-    public void draw(int width, int height, boolean bl) {
+    public void draw(int width, int height, boolean disableBlend) {
         RenderSystem.assertOnGameThreadOrInit();
         if (!RenderSystem.isInInitPhase()) {
-            RenderSystem.recordRenderCall(() -> this.drawInternal(width, height, bl));
+            RenderSystem.recordRenderCall(() -> this.drawInternal(width, height, disableBlend));
         } else {
-            this.drawInternal(width, height, bl);
+            this.drawInternal(width, height, disableBlend);
         }
     }
 

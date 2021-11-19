@@ -109,9 +109,9 @@ Hoglin {
         return this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty()).findFirst(this::shouldAttack);
     }
 
-    private boolean shouldAttack(LivingEntity livingEntity) {
-        EntityType<?> entityType = livingEntity.getType();
-        return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && Sensor.testAttackableTargetPredicate(this, livingEntity);
+    private boolean shouldAttack(LivingEntity entity) {
+        EntityType<?> entityType = entity.getType();
+        return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && Sensor.testAttackableTargetPredicate(this, entity);
     }
 
     @Override
@@ -189,7 +189,7 @@ Hoglin {
         return super.getBrain();
     }
 
-    protected void method_26931() {
+    protected void tickBrain() {
         Activity activity = this.brain.getFirstPossibleNonCoreActivity().orElse(null);
         this.brain.resetPossibleActivities(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
         Activity activity2 = this.brain.getFirstPossibleNonCoreActivity().orElse(null);
@@ -204,7 +204,7 @@ Hoglin {
         this.world.getProfiler().push("zoglinBrain");
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
-        this.method_26931();
+        this.tickBrain();
     }
 
     @Override

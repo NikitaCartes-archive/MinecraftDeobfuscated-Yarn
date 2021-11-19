@@ -65,14 +65,14 @@ implements Waterloggable {
         this.collisionShapeMap = this.getShapeMap(4.0f, 3.0f, 24.0f, 0.0f, 24.0f, 24.0f);
     }
 
-    private static VoxelShape method_24426(VoxelShape voxelShape, WallShape wallShape, VoxelShape voxelShape2, VoxelShape voxelShape3) {
+    private static VoxelShape getVoxelShape(VoxelShape base, WallShape wallShape, VoxelShape tall, VoxelShape low) {
         if (wallShape == WallShape.TALL) {
-            return VoxelShapes.union(voxelShape, voxelShape3);
+            return VoxelShapes.union(base, low);
         }
         if (wallShape == WallShape.LOW) {
-            return VoxelShapes.union(voxelShape, voxelShape2);
+            return VoxelShapes.union(base, tall);
         }
-        return voxelShape;
+        return base;
     }
 
     private Map<BlockState, VoxelShape> getShapeMap(float f, float g, float h, float i, float j, float k) {
@@ -96,10 +96,10 @@ implements Waterloggable {
                     for (WallShape wallShape3 : WEST_SHAPE.getValues()) {
                         for (WallShape wallShape4 : SOUTH_SHAPE.getValues()) {
                             VoxelShape voxelShape10 = VoxelShapes.empty();
-                            voxelShape10 = WallBlock.method_24426(voxelShape10, wallShape, voxelShape5, voxelShape9);
-                            voxelShape10 = WallBlock.method_24426(voxelShape10, wallShape3, voxelShape4, voxelShape8);
-                            voxelShape10 = WallBlock.method_24426(voxelShape10, wallShape2, voxelShape2, voxelShape6);
-                            voxelShape10 = WallBlock.method_24426(voxelShape10, wallShape4, voxelShape3, voxelShape7);
+                            voxelShape10 = WallBlock.getVoxelShape(voxelShape10, wallShape, voxelShape5, voxelShape9);
+                            voxelShape10 = WallBlock.getVoxelShape(voxelShape10, wallShape3, voxelShape4, voxelShape8);
+                            voxelShape10 = WallBlock.getVoxelShape(voxelShape10, wallShape2, voxelShape2, voxelShape6);
+                            voxelShape10 = WallBlock.getVoxelShape(voxelShape10, wallShape4, voxelShape3, voxelShape7);
                             if (boolean_.booleanValue()) {
                                 voxelShape10 = VoxelShapes.union(voxelShape10, voxelShape);
                             }
@@ -155,7 +155,7 @@ implements Waterloggable {
         boolean bl3 = this.shouldConnectTo(blockState3, blockState3.isSideSolidFullSquare(worldView, blockPos4, Direction.NORTH), Direction.NORTH);
         boolean bl4 = this.shouldConnectTo(blockState4, blockState4.isSideSolidFullSquare(worldView, blockPos5, Direction.EAST), Direction.EAST);
         BlockState blockState6 = (BlockState)this.getDefaultState().with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
-        return this.method_24422(worldView, blockState6, blockPos6, blockState5, bl, bl2, bl3, bl4);
+        return this.getStateWith(worldView, blockState6, blockPos6, blockState5, bl, bl2, bl3, bl4);
     }
 
     @Override
@@ -167,56 +167,56 @@ implements Waterloggable {
             return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
         }
         if (direction == Direction.UP) {
-            return this.method_24421(world, state, neighborPos, neighborState);
+            return this.getStateAt(world, state, neighborPos, neighborState);
         }
-        return this.method_24423(world, pos, state, neighborPos, neighborState, direction);
+        return this.getStateWithNeighbor(world, pos, state, neighborPos, neighborState, direction);
     }
 
-    private static boolean method_24424(BlockState blockState, Property<WallShape> property) {
-        return blockState.get(property) != WallShape.NONE;
+    private static boolean isConnected(BlockState state, Property<WallShape> property) {
+        return state.get(property) != WallShape.NONE;
     }
 
-    private static boolean method_24427(VoxelShape voxelShape, VoxelShape voxelShape2) {
-        return !VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.ONLY_FIRST);
+    private static boolean shouldUseTallShape(VoxelShape aboveShape, VoxelShape tallShape) {
+        return !VoxelShapes.matchesAnywhere(tallShape, aboveShape, BooleanBiFunction.ONLY_FIRST);
     }
 
-    private BlockState method_24421(WorldView worldView, BlockState blockState, BlockPos blockPos, BlockState blockState2) {
-        boolean bl = WallBlock.method_24424(blockState, NORTH_SHAPE);
-        boolean bl2 = WallBlock.method_24424(blockState, EAST_SHAPE);
-        boolean bl3 = WallBlock.method_24424(blockState, SOUTH_SHAPE);
-        boolean bl4 = WallBlock.method_24424(blockState, WEST_SHAPE);
-        return this.method_24422(worldView, blockState, blockPos, blockState2, bl, bl2, bl3, bl4);
+    private BlockState getStateAt(WorldView world, BlockState state, BlockPos pos, BlockState aboveState) {
+        boolean bl = WallBlock.isConnected(state, NORTH_SHAPE);
+        boolean bl2 = WallBlock.isConnected(state, EAST_SHAPE);
+        boolean bl3 = WallBlock.isConnected(state, SOUTH_SHAPE);
+        boolean bl4 = WallBlock.isConnected(state, WEST_SHAPE);
+        return this.getStateWith(world, state, pos, aboveState, bl, bl2, bl3, bl4);
     }
 
-    private BlockState method_24423(WorldView worldView, BlockPos blockPos, BlockState blockState, BlockPos blockPos2, BlockState blockState2, Direction direction) {
+    private BlockState getStateWithNeighbor(WorldView world, BlockPos pos, BlockState state, BlockPos neighborPos, BlockState neighborState, Direction direction) {
         Direction direction2 = direction.getOpposite();
-        boolean bl = direction == Direction.NORTH ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(worldView, blockPos2, direction2), direction2) : WallBlock.method_24424(blockState, NORTH_SHAPE);
-        boolean bl2 = direction == Direction.EAST ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(worldView, blockPos2, direction2), direction2) : WallBlock.method_24424(blockState, EAST_SHAPE);
-        boolean bl3 = direction == Direction.SOUTH ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(worldView, blockPos2, direction2), direction2) : WallBlock.method_24424(blockState, SOUTH_SHAPE);
-        boolean bl4 = direction == Direction.WEST ? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(worldView, blockPos2, direction2), direction2) : WallBlock.method_24424(blockState, WEST_SHAPE);
-        BlockPos blockPos3 = blockPos.up();
-        BlockState blockState3 = worldView.getBlockState(blockPos3);
-        return this.method_24422(worldView, blockState, blockPos3, blockState3, bl, bl2, bl3, bl4);
+        boolean bl = direction == Direction.NORTH ? this.shouldConnectTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction2), direction2) : WallBlock.isConnected(state, NORTH_SHAPE);
+        boolean bl2 = direction == Direction.EAST ? this.shouldConnectTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction2), direction2) : WallBlock.isConnected(state, EAST_SHAPE);
+        boolean bl3 = direction == Direction.SOUTH ? this.shouldConnectTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction2), direction2) : WallBlock.isConnected(state, SOUTH_SHAPE);
+        boolean bl4 = direction == Direction.WEST ? this.shouldConnectTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction2), direction2) : WallBlock.isConnected(state, WEST_SHAPE);
+        BlockPos blockPos = pos.up();
+        BlockState blockState = world.getBlockState(blockPos);
+        return this.getStateWith(world, state, blockPos, blockState, bl, bl2, bl3, bl4);
     }
 
-    private BlockState method_24422(WorldView worldView, BlockState blockState, BlockPos blockPos, BlockState blockState2, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
-        VoxelShape voxelShape = blockState2.getCollisionShape(worldView, blockPos).getFace(Direction.DOWN);
-        BlockState blockState3 = this.method_24425(blockState, bl, bl2, bl3, bl4, voxelShape);
-        return (BlockState)blockState3.with(UP, this.method_27092(blockState3, blockState2, voxelShape));
+    private BlockState getStateWith(WorldView world, BlockState state, BlockPos pos, BlockState aboveState, boolean north, boolean east, boolean south, boolean west) {
+        VoxelShape voxelShape = aboveState.getCollisionShape(world, pos).getFace(Direction.DOWN);
+        BlockState blockState = this.getStateWith(state, north, east, south, west, voxelShape);
+        return (BlockState)blockState.with(UP, this.shouldHavePost(blockState, aboveState, voxelShape));
     }
 
-    private boolean method_27092(BlockState blockState, BlockState blockState2, VoxelShape voxelShape) {
+    private boolean shouldHavePost(BlockState state, BlockState aboveState, VoxelShape aboveShape) {
         boolean bl7;
         boolean bl6;
         boolean bl;
-        boolean bl2 = bl = blockState2.getBlock() instanceof WallBlock && blockState2.get(UP) != false;
+        boolean bl2 = bl = aboveState.getBlock() instanceof WallBlock && aboveState.get(UP) != false;
         if (bl) {
             return true;
         }
-        WallShape wallShape = blockState.get(NORTH_SHAPE);
-        WallShape wallShape2 = blockState.get(SOUTH_SHAPE);
-        WallShape wallShape3 = blockState.get(EAST_SHAPE);
-        WallShape wallShape4 = blockState.get(WEST_SHAPE);
+        WallShape wallShape = state.get(NORTH_SHAPE);
+        WallShape wallShape2 = state.get(SOUTH_SHAPE);
+        WallShape wallShape3 = state.get(EAST_SHAPE);
+        WallShape wallShape4 = state.get(WEST_SHAPE);
         boolean bl22 = wallShape2 == WallShape.NONE;
         boolean bl3 = wallShape4 == WallShape.NONE;
         boolean bl4 = wallShape3 == WallShape.NONE;
@@ -229,16 +229,16 @@ implements Waterloggable {
         if (bl7) {
             return false;
         }
-        return blockState2.isIn(BlockTags.WALL_POST_OVERRIDE) || WallBlock.method_24427(voxelShape, TALL_POST_SHAPE);
+        return aboveState.isIn(BlockTags.WALL_POST_OVERRIDE) || WallBlock.shouldUseTallShape(aboveShape, TALL_POST_SHAPE);
     }
 
-    private BlockState method_24425(BlockState blockState, boolean bl, boolean bl2, boolean bl3, boolean bl4, VoxelShape voxelShape) {
-        return (BlockState)((BlockState)((BlockState)((BlockState)blockState.with(NORTH_SHAPE, this.method_24428(bl, voxelShape, TALL_NORTH_SHAPE))).with(EAST_SHAPE, this.method_24428(bl2, voxelShape, TALL_EAST_SHAPE))).with(SOUTH_SHAPE, this.method_24428(bl3, voxelShape, TALL_SOUTH_SHAPE))).with(WEST_SHAPE, this.method_24428(bl4, voxelShape, TALL_WEST_SHAPE));
+    private BlockState getStateWith(BlockState state, boolean north, boolean east, boolean south, boolean west, VoxelShape aboveShape) {
+        return (BlockState)((BlockState)((BlockState)((BlockState)state.with(NORTH_SHAPE, this.getWallShape(north, aboveShape, TALL_NORTH_SHAPE))).with(EAST_SHAPE, this.getWallShape(east, aboveShape, TALL_EAST_SHAPE))).with(SOUTH_SHAPE, this.getWallShape(south, aboveShape, TALL_SOUTH_SHAPE))).with(WEST_SHAPE, this.getWallShape(west, aboveShape, TALL_WEST_SHAPE));
     }
 
-    private WallShape method_24428(boolean bl, VoxelShape voxelShape, VoxelShape voxelShape2) {
-        if (bl) {
-            if (WallBlock.method_24427(voxelShape, voxelShape2)) {
+    private WallShape getWallShape(boolean connected, VoxelShape aboveShape, VoxelShape tallShape) {
+        if (connected) {
+            if (WallBlock.shouldUseTallShape(aboveShape, tallShape)) {
                 return WallShape.TALL;
             }
             return WallShape.LOW;

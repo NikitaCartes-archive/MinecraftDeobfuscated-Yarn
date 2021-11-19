@@ -289,7 +289,7 @@ extends NetworkSyncedItem {
             PlayerEntity playerEntity = (PlayerEntity)entity;
             mapState.update(playerEntity, stack);
         }
-        if (!mapState.locked && (selected || entity instanceof PlayerEntity && ((PlayerEntity)entity).getOffhandStack() == stack)) {
+        if (!mapState.locked && (selected || entity instanceof PlayerEntity && ((PlayerEntity)entity).getOffHandStack() == stack)) {
             this.updateColors(world, entity, mapState);
         }
     }

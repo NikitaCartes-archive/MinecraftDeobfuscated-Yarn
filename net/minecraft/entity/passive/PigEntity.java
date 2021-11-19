@@ -95,7 +95,7 @@ Saddleable {
             return false;
         }
         PlayerEntity playerEntity = (PlayerEntity)entity;
-        return playerEntity.getMainHandStack().isOf(Items.CARROT_ON_A_STICK) || playerEntity.getOffhandStack().isOf(Items.CARROT_ON_A_STICK);
+        return playerEntity.getMainHandStack().isOf(Items.CARROT_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.CARROT_ON_A_STICK);
     }
 
     @Override

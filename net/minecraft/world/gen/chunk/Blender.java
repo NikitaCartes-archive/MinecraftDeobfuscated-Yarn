@@ -158,8 +158,8 @@ public class Blender {
         MutableDouble mutableDouble2 = new MutableDouble(0.0);
         MutableDouble mutableDouble3 = new MutableDouble(Double.POSITIVE_INFINITY);
         for (ChunkBlendingData chunkBlendingData : this.field_35510) {
-            chunkBlendingData.blendingData.method_39346(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), m2 - 2, m2 + 2, (l, m, n, d) -> {
-                double e = MathHelper.magnitude(l2 - l, m2 - m, n2 - n);
+            chunkBlendingData.blendingData.method_39346(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), m2 - 1, m2 + 1, (l, m, n, d) -> {
+                double e = MathHelper.magnitude(l2 - l, (m2 - m) * 2, n2 - n);
                 if (e > 2.0) {
                     return;
                 }

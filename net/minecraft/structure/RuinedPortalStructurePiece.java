@@ -66,14 +66,14 @@ extends SimpleStructurePiece {
     private final VerticalPlacement verticalPlacement;
     private final Properties properties;
 
-    public RuinedPortalStructurePiece(StructureManager structureManager, BlockPos blockPos, VerticalPlacement verticalPlacement, Properties properties, Identifier identifier, Structure structure, BlockRotation rotation, BlockMirror mirror, BlockPos blockPos2) {
-        super(StructurePieceType.RUINED_PORTAL, 0, structureManager, identifier, identifier.toString(), RuinedPortalStructurePiece.createPlacementData(mirror, rotation, verticalPlacement, blockPos2, properties), blockPos);
+    public RuinedPortalStructurePiece(StructureManager manager, BlockPos pos, VerticalPlacement verticalPlacement, Properties properties, Identifier id, Structure structure, BlockRotation rotation, BlockMirror mirror, BlockPos blockPos) {
+        super(StructurePieceType.RUINED_PORTAL, 0, manager, id, id.toString(), RuinedPortalStructurePiece.createPlacementData(mirror, rotation, verticalPlacement, blockPos, properties), pos);
         this.verticalPlacement = verticalPlacement;
         this.properties = properties;
     }
 
-    public RuinedPortalStructurePiece(StructureManager structureManager, NbtCompound nbt) {
-        super(StructurePieceType.RUINED_PORTAL, nbt, structureManager, identifier -> RuinedPortalStructurePiece.createPlacementData(structureManager, nbt, identifier));
+    public RuinedPortalStructurePiece(StructureManager manager, NbtCompound nbt) {
+        super(StructurePieceType.RUINED_PORTAL, nbt, manager, id -> RuinedPortalStructurePiece.createPlacementData(manager, nbt, id));
         this.verticalPlacement = VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
         this.properties = (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error);
     }
@@ -87,8 +87,8 @@ extends SimpleStructurePiece {
         Properties.CODEC.encodeStart(NbtOps.INSTANCE, this.properties).resultOrPartial(field_24992::error).ifPresent(nbtElement -> nbt.put("Properties", (NbtElement)nbtElement));
     }
 
-    private static StructurePlacementData createPlacementData(StructureManager structureManager, NbtCompound nbt, Identifier id) {
-        Structure structure = structureManager.getStructureOrBlank(id);
+    private static StructurePlacementData createPlacementData(StructureManager manager, NbtCompound nbt, Identifier id) {
+        Structure structure = manager.getStructureOrBlank(id);
         BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
         return RuinedPortalStructurePiece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mirror")), BlockRotation.valueOf(nbt.getString("Rotation")), VerticalPlacement.getFromId(nbt.getString("VerticalPlacement")), blockPos, (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error));
     }
@@ -119,22 +119,22 @@ extends SimpleStructurePiece {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos2) {
         BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
         if (!chunkBox.contains(blockBox.getCenter())) {
             return;
         }
         chunkBox.encompass(blockBox);
-        super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
+        super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos2);
         this.placeNetherrackBase(random, world);
         this.updateNetherracksInBound(random, world);
         if (this.properties.vines || this.properties.overgrown) {
-            BlockPos.stream(this.getBoundingBox()).forEach(blockPos -> {
+            BlockPos.stream(this.getBoundingBox()).forEach(pos -> {
                 if (this.properties.vines) {
-                    this.generateVines(random, world, (BlockPos)blockPos);
+                    this.generateVines(random, world, (BlockPos)pos);
                 }
                 if (this.properties.overgrown) {
-                    this.generateOvergrownLeaves(random, world, (BlockPos)blockPos);
+                    this.generateOvergrownLeaves(random, world, (BlockPos)pos);
                 }
             });
         }

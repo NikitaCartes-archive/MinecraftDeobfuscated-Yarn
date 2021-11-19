@@ -10,7 +10,7 @@ import net.minecraft.world.PersistentState;
 
 public class IdCountsState
 extends PersistentState {
-    public static final String field_31830 = "idcounts";
+    public static final String IDCOUNTS_KEY = "idcounts";
     private final Object2IntMap<String> idCounts = new Object2IntOpenHashMap<String>();
 
     public IdCountsState() {

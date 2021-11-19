@@ -111,7 +111,7 @@ extends Block {
     private BlockState getPlacementState(BlockView world, BlockState state, BlockPos pos) {
         boolean bl7;
         boolean bl = RedstoneWireBlock.isNotConnected(state);
-        state = this.method_27843(world, (BlockState)this.getDefaultState().with(POWER, state.get(POWER)), pos);
+        state = this.getDefaultWireState(world, (BlockState)this.getDefaultState().with(POWER, state.get(POWER)), pos);
         if (bl && RedstoneWireBlock.isNotConnected(state)) {
             return state;
         }
@@ -136,7 +136,7 @@ extends Block {
         return state;
     }
 
-    private BlockState method_27843(BlockView world, BlockState state, BlockPos pos) {
+    private BlockState getDefaultWireState(BlockView world, BlockState state, BlockPos pos) {
         boolean bl = !world.getBlockState(pos.up()).isSolidBlock(world, pos);
         for (Direction direction : Direction.Type.HORIZONTAL) {
             if (((WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected()) continue;

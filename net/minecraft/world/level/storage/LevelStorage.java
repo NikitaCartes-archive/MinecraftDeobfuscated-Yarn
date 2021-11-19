@@ -200,10 +200,10 @@ public class LevelStorage {
         };
     }
 
-    BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
-        return (file2, dataFixer) -> {
+    BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file2, boolean locked) {
+        return (file, dataFixer) -> {
             try {
-                NbtCompound nbtCompound = NbtIo.readCompressed(file2);
+                NbtCompound nbtCompound = NbtIo.readCompressed(file);
                 NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
                 nbtCompound2.remove("Player");
                 int i = nbtCompound2.contains("DataVersion", 99) ? nbtCompound2.getInt("DataVersion") : -1;
@@ -212,14 +212,14 @@ public class LevelStorage {
                 int j = saveVersionInfo.getLevelFormatVersion();
                 if (j == 19132 || j == 19133) {
                     boolean bl2 = j != this.getCurrentVersion();
-                    File file3 = new File(file, DEFAULT_ICON);
+                    File file3 = new File(file2, DEFAULT_ICON);
                     DataPackSettings dataPackSettings = dynamic.get("DataPacks").result().map(LevelStorage::parseDataPackSettings).orElse(DataPackSettings.SAFE_MODE);
                     LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
-                    return new LevelSummary(levelInfo, saveVersionInfo, file.getName(), bl2, locked, file3);
+                    return new LevelSummary(levelInfo, saveVersionInfo, file2.getName(), bl2, locked, file3);
                 }
                 return null;
             } catch (Exception exception) {
-                LOGGER.error("Exception reading {}", file2, (Object)exception);
+                LOGGER.error("Exception reading {}", file, (Object)exception);
                 return null;
             }
         };
@@ -306,18 +306,18 @@ public class LevelStorage {
             return LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage::readDataPackSettings);
         }
 
-        public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties) {
-            this.backupLevelDataFile(dynamicRegistryManager, saveProperties, null);
+        public void backupLevelDataFile(DynamicRegistryManager registryManager, SaveProperties saveProperties) {
+            this.backupLevelDataFile(registryManager, saveProperties, null);
         }
 
-        public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties, @Nullable NbtCompound nbtCompound) {
+        public void backupLevelDataFile(DynamicRegistryManager registryManager, SaveProperties saveProperties, @Nullable NbtCompound nbt) {
             File file = this.directory.toFile();
-            NbtCompound nbtCompound2 = saveProperties.cloneWorldNbt(dynamicRegistryManager, nbtCompound);
-            NbtCompound nbtCompound3 = new NbtCompound();
-            nbtCompound3.put("Data", nbtCompound2);
+            NbtCompound nbtCompound = saveProperties.cloneWorldNbt(registryManager, nbt);
+            NbtCompound nbtCompound2 = new NbtCompound();
+            nbtCompound2.put("Data", nbtCompound);
             try {
                 File file2 = File.createTempFile("level", ".dat", file);
-                NbtIo.writeCompressed(nbtCompound3, file2);
+                NbtIo.writeCompressed(nbtCompound2, file2);
                 File file3 = new File(file, "level.dat_old");
                 File file4 = new File(file, "level.dat");
                 Util.backupAndReplace(file4, file2, file3);

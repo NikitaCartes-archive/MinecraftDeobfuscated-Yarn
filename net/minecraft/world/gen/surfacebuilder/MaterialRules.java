@@ -14,10 +14,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -35,13 +35,13 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import org.jetbrains.annotations.Nullable;
 
 public class MaterialRules {
-    public static final MaterialCondition STONE_DEPTH_FLOOR = MaterialRules.method_39549(0, false, false, VerticalSurfaceType.FLOOR);
-    public static final MaterialCondition STONE_DEPTH_FLOOR_WITH_RUN_DEPTH = MaterialRules.method_39549(0, true, false, VerticalSurfaceType.FLOOR);
-    public static final MaterialCondition field_35494 = MaterialRules.method_39549(0, false, false, VerticalSurfaceType.CEILING);
-    public static final MaterialCondition STONE_DEPTH_CEILING = MaterialRules.method_39549(0, true, false, VerticalSurfaceType.CEILING);
+    public static final MaterialCondition STONE_DEPTH_FLOOR = MaterialRules.stoneDepth(0, false, false, VerticalSurfaceType.FLOOR);
+    public static final MaterialCondition STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH = MaterialRules.stoneDepth(0, true, false, VerticalSurfaceType.FLOOR);
+    public static final MaterialCondition STONE_DEPTH_CEILING = MaterialRules.stoneDepth(0, false, false, VerticalSurfaceType.CEILING);
+    public static final MaterialCondition STONE_DEPTH_CEILING_WITH_SURFACE_DEPTH = MaterialRules.stoneDepth(0, true, false, VerticalSurfaceType.CEILING);
 
-    public static MaterialCondition method_39549(int i, boolean bl, boolean bl2, VerticalSurfaceType verticalSurfaceType) {
-        return new StoneDepthMaterialCondition(i, bl, bl2, verticalSurfaceType);
+    public static MaterialCondition stoneDepth(int offset, boolean addSurfaceDepth, boolean addSecondarySurfaceDepth, VerticalSurfaceType surfaceType) {
+        return new StoneDepthMaterialCondition(offset, addSurfaceDepth, addSecondarySurfaceDepth, surfaceType);
     }
 
     public static MaterialCondition not(MaterialCondition target) {
@@ -73,16 +73,16 @@ public class MaterialRules {
         return new BiomeMaterialCondition(biomes);
     }
 
-    public static MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d) {
-        return MaterialRules.noiseThreshold(registryKey, d, Double.MAX_VALUE);
+    public static MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise, double min) {
+        return MaterialRules.noiseThreshold(noise, min, Double.MAX_VALUE);
     }
 
-    public static MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d, double e) {
-        return new NoiseThresholdMaterialCondition(registryKey, d, e);
+    public static MaterialCondition noiseThreshold(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise, double min, double max) {
+        return new NoiseThresholdMaterialCondition(noise, min, max);
     }
 
-    public static MaterialCondition method_39472(String string, YOffset yOffset, YOffset yOffset2) {
-        return new VerticalGradientMaterialCondition(new Identifier(string), yOffset, yOffset2);
+    public static MaterialCondition verticalGradient(String id, YOffset trueAtAndBelow, YOffset falseAtAndAbove) {
+        return new VerticalGradientMaterialCondition(new Identifier(id), trueAtAndBelow, falseAtAndAbove);
     }
 
     public static MaterialCondition steepSlope() {
@@ -93,7 +93,7 @@ public class MaterialRules {
         return HoleMaterialCondition.INSTANCE;
     }
 
-    public static MaterialCondition method_39473() {
+    public static MaterialCondition surface() {
         return SurfaceMaterialCondition.INSTANCE;
     }
 
@@ -105,8 +105,11 @@ public class MaterialRules {
         return new ConditionMaterialRule(condition, rule);
     }
 
-    public static MaterialRule sequence(MaterialRule firstRule, MaterialRule ... rules) {
-        return new SequenceMaterialRule(Stream.concat(Stream.of(firstRule), Arrays.stream(rules)).toList());
+    public static MaterialRule sequence(MaterialRule ... rules) {
+        if (rules.length == 0) {
+            throw new IllegalArgumentException("Need at least 1 rule for a sequence");
+        }
+        return new SequenceMaterialRule(Arrays.asList(rules));
     }
 
     public static MaterialRule block(BlockState state) {
@@ -331,7 +334,7 @@ public class MaterialRules {
         public BooleanSupplier apply(final MaterialRuleContext materialRuleContext) {
             final int i = this.trueAtAndBelow().getY(materialRuleContext.heightContext);
             final int j = this.falseAtAndAbove().getY(materialRuleContext.heightContext);
-            final RandomDeriver randomDeriver = materialRuleContext.surfaceBuilder.method_39482(this.randomName());
+            final RandomDeriver randomDeriver = materialRuleContext.surfaceBuilder.getRandomDeriver(this.randomName());
             class VerticalGradientPredicate
             extends FullLazyAbstractPredicate {
                 VerticalGradientPredicate() {
@@ -356,8 +359,8 @@ public class MaterialRules {
         }
 
         @Override
-        public /* synthetic */ Object apply(Object object) {
-            return this.apply((MaterialRuleContext)object);
+        public /* synthetic */ Object apply(Object context) {
+            return this.apply((MaterialRuleContext)context);
         }
     }
 
@@ -480,8 +483,8 @@ public class MaterialRules {
         }
 
         @Override
-        public /* synthetic */ Object apply(Object object) {
-            return this.apply((MaterialRuleContext)object);
+        public /* synthetic */ Object apply(Object context) {
+            return this.apply((MaterialRuleContext)context);
         }
     }
 
@@ -522,8 +525,8 @@ public class MaterialRules {
         }
 
         @Override
-        public /* synthetic */ Object apply(Object object) {
-            return this.apply((MaterialRuleContext)object);
+        public /* synthetic */ Object apply(Object context) {
+            return this.apply((MaterialRuleContext)context);
         }
     }
 
@@ -684,16 +687,22 @@ public class MaterialRules {
     }
 
     protected static final class MaterialRuleContext {
+        private static final int field_36274 = 8;
+        private static final int field_36275 = 4;
+        private static final int field_36276 = 16;
+        private static final int field_36277 = 15;
         final SurfaceBuilder surfaceBuilder;
         final BooleanSupplier biomeTemperaturePredicate = new BiomeTemperaturePredicate(this);
         final BooleanSupplier steepSlopePredicate = new SteepSlopePredicate(this);
         final BooleanSupplier negativeRunDepthPredicate = new NegativeRunDepthPredicate(this);
         final BooleanSupplier surfacePredicate = new SurfacePredicate();
         final Chunk chunk;
-        private final ChunkNoiseSampler field_35676;
+        private final ChunkNoiseSampler chunkNoiseSampler;
         private final Function<BlockPos, Biome> posToBiome;
         private final Registry<Biome> biomeRegistry;
         final HeightContext heightContext;
+        private long field_36278 = Long.MAX_VALUE;
+        private final int[] field_36279 = new int[4];
         long uniqueHorizontalPosValue = -9223372036854775807L;
         int x;
         int z;
@@ -711,12 +720,12 @@ public class MaterialRules {
         int stoneDepthBelow;
         int stoneDepthAbove;
 
-        protected MaterialRuleContext(SurfaceBuilder surfaceBuilder, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, Function<BlockPos, Biome> function, Registry<Biome> registry, HeightContext heightContext) {
+        protected MaterialRuleContext(SurfaceBuilder surfaceBuilder, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, Function<BlockPos, Biome> posToBiome, Registry<Biome> biomeRegistry, HeightContext heightContext) {
             this.surfaceBuilder = surfaceBuilder;
             this.chunk = chunk;
-            this.field_35676 = chunkNoiseSampler;
-            this.posToBiome = function;
-            this.biomeRegistry = registry;
+            this.chunkNoiseSampler = chunkNoiseSampler;
+            this.posToBiome = posToBiome;
+            this.biomeRegistry = biomeRegistry;
             this.heightContext = heightContext;
         }
 
@@ -728,14 +737,14 @@ public class MaterialRules {
             this.runDepth = this.surfaceBuilder.method_39552(x, z);
         }
 
-        protected void initVerticalContext(int i, int j, int k, int l, int m, int n) {
+        protected void initVerticalContext(int stoneDepthAbove, int stoneDepthBelow, int fluidHeight, int x, int y, int z) {
             ++this.uniquePosValue;
-            this.biomeSupplier = Suppliers.memoize(() -> this.posToBiome.apply(this.pos.set(l, m, n)));
+            this.biomeSupplier = Suppliers.memoize(() -> this.posToBiome.apply(this.pos.set(x, y, z)));
             this.biomeKeySupplier = Suppliers.memoize(() -> this.biomeRegistry.getKey(this.biomeSupplier.get()).orElseThrow(() -> new IllegalStateException("Unregistered biome: " + this.biomeSupplier)));
-            this.y = m;
-            this.fluidHeight = k;
-            this.stoneDepthBelow = j;
-            this.stoneDepthAbove = i;
+            this.y = y;
+            this.fluidHeight = fluidHeight;
+            this.stoneDepthBelow = stoneDepthBelow;
+            this.stoneDepthAbove = stoneDepthAbove;
         }
 
         protected int method_39550() {
@@ -746,10 +755,29 @@ public class MaterialRules {
             return this.field_35678;
         }
 
+        private static int method_39903(int i) {
+            return i >> 4;
+        }
+
+        private static int method_39904(int i) {
+            return i << 4;
+        }
+
         protected int method_39551() {
             if (this.field_35679 != this.uniqueHorizontalPosValue) {
+                int j;
                 this.field_35679 = this.uniqueHorizontalPosValue;
-                this.surfaceMinY = this.surfaceBuilder.method_39553(this.field_35676, this.x, this.z);
+                int i = MaterialRuleContext.method_39903(this.x);
+                long l = ChunkPos.toLong(i, j = MaterialRuleContext.method_39903(this.z));
+                if (this.field_36278 != l) {
+                    this.field_36278 = l;
+                    this.field_36279[0] = this.chunkNoiseSampler.method_39900(MaterialRuleContext.method_39904(i), MaterialRuleContext.method_39904(j));
+                    this.field_36279[1] = this.chunkNoiseSampler.method_39900(MaterialRuleContext.method_39904(i + 1), MaterialRuleContext.method_39904(j));
+                    this.field_36279[2] = this.chunkNoiseSampler.method_39900(MaterialRuleContext.method_39904(i), MaterialRuleContext.method_39904(j + 1));
+                    this.field_36279[3] = this.chunkNoiseSampler.method_39900(MaterialRuleContext.method_39904(i + 1), MaterialRuleContext.method_39904(j + 1));
+                }
+                int k = MathHelper.floor(MathHelper.lerp2((float)(this.x & 0xF) / 16.0f, (float)(this.z & 0xF) / 16.0f, this.field_36279[0], this.field_36279[1], this.field_36279[2], this.field_36279[3]));
+                this.surfaceMinY = k + this.runDepth - 8;
             }
             return this.surfaceMinY;
         }

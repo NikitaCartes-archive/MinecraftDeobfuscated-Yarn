@@ -64,7 +64,7 @@ extends ButtonWidget {
         }
         RenderSystem.enableDepthTest();
         TexturedButtonWidget.drawTexture(matrices, this.x, this.y, this.u, i, this.width, this.height, this.textureWidth, this.textureHeight);
-        if (this.isHovered()) {
+        if (this.hovered) {
             this.renderTooltip(matrices, mouseX, mouseY);
         }
     }

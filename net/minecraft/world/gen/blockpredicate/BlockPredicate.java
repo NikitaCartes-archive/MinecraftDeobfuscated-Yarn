@@ -10,7 +10,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
@@ -18,7 +20,9 @@ import net.minecraft.world.gen.blockpredicate.AllOfBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.AlwaysTrueBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.AnyOfBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
+import net.minecraft.world.gen.blockpredicate.HasSturdyFacePredicate;
 import net.minecraft.world.gen.blockpredicate.InsideWorldBoundsBlockPredicate;
+import net.minecraft.world.gen.blockpredicate.MatchingBlockTagPredicate;
 import net.minecraft.world.gen.blockpredicate.MatchingBlocksBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.MatchingFluidsBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.NotBlockPredicate;
@@ -62,8 +66,20 @@ extends BiPredicate<StructureWorldAccess, BlockPos> {
         return new MatchingBlocksBlockPredicate(offset, blocks);
     }
 
+    public static BlockPredicate matchingBlocks(List<Block> blocks) {
+        return BlockPredicate.matchingBlocks(blocks, Vec3i.ZERO);
+    }
+
     public static BlockPredicate matchingBlock(Block block, Vec3i offset) {
         return BlockPredicate.matchingBlocks(List.of(block), offset);
+    }
+
+    public static BlockPredicate matchingBlockTag(Tag<Block> tag, Vec3i offset) {
+        return new MatchingBlockTagPredicate(offset, tag);
+    }
+
+    public static BlockPredicate matchingBlockTag(Tag<Block> offset) {
+        return BlockPredicate.matchingBlockTag(offset, Vec3i.ZERO);
     }
 
     public static BlockPredicate matchingFluids(List<Fluid> fluids, Vec3i offset) {
@@ -88,6 +104,10 @@ extends BiPredicate<StructureWorldAccess, BlockPos> {
 
     public static BlockPredicate wouldSurvive(BlockState state, Vec3i offset) {
         return new WouldSurviveBlockPredicate(offset, state);
+    }
+
+    public static BlockPredicate hasSturdyFace(Vec3i offset, Direction face) {
+        return new HasSturdyFacePredicate(offset, face);
     }
 
     public static BlockPredicate solid(Vec3i offset) {

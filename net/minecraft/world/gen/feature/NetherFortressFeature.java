@@ -5,9 +5,9 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
-import net.minecraft.class_6834;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.NetherFortressGenerator;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
@@ -25,16 +25,16 @@ extends StructureFeature<DefaultFeatureConfig> {
     public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of((Weighted[])new SpawnSettings.SpawnEntry[]{new SpawnSettings.SpawnEntry(EntityType.BLAZE, 10, 2, 3), new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 5, 4, 4), new SpawnSettings.SpawnEntry(EntityType.WITHER_SKELETON, 8, 5, 5), new SpawnSettings.SpawnEntry(EntityType.SKELETON, 2, 5, 5), new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)});
 
     public NetherFortressFeature(Codec<DefaultFeatureConfig> configCodec) {
-        super(configCodec, class_6834.simple(NetherFortressFeature::method_28640, NetherFortressFeature::addPieces));
+        super(configCodec, StructureGeneratorFactory.simple(NetherFortressFeature::method_28640, NetherFortressFeature::addPieces));
     }
 
-    private static boolean method_28640(class_6834.class_6835<DefaultFeatureConfig> arg) {
+    private static boolean method_28640(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
         ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-        chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
+        chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
         if (chunkRandom.nextInt(5) >= 2) {
             return false;
         }
-        return arg.validBiome().test(arg.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(arg.chunkPos().getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(arg.chunkPos().getCenterZ())));
+        return context.validBiome().test(context.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())));
     }
 
     private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {
