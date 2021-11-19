@@ -156,11 +156,11 @@ public class TrackedDataHandlerRegistry {
 		}
 
 		public ParticleEffect read(PacketByteBuf packetByteBuf) {
-			return this.method_12744(packetByteBuf, (ParticleType<ParticleEffect>)Registry.PARTICLE_TYPE.get(packetByteBuf.readVarInt()));
+			return this.read(packetByteBuf, (ParticleType<ParticleEffect>)Registry.PARTICLE_TYPE.get(packetByteBuf.readVarInt()));
 		}
 
-		private <T extends ParticleEffect> T method_12744(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
-			return particleType.getParametersFactory().read(particleType, packetByteBuf);
+		private <T extends ParticleEffect> T read(PacketByteBuf buf, ParticleType<T> type) {
+			return type.getParametersFactory().read(type, buf);
 		}
 
 		public ParticleEffect copy(ParticleEffect particleEffect) {

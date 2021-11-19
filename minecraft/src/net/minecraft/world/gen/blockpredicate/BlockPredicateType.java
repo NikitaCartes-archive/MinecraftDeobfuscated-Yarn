@@ -5,7 +5,9 @@ import net.minecraft.util.registry.Registry;
 
 public interface BlockPredicateType<P extends BlockPredicate> {
 	BlockPredicateType<MatchingBlocksBlockPredicate> MATCHING_BLOCKS = register("matching_blocks", MatchingBlocksBlockPredicate.CODEC);
+	BlockPredicateType<MatchingBlockTagPredicate> MATCHING_BLOCK_TAG = register("matching_block_tag", MatchingBlockTagPredicate.CODEC);
 	BlockPredicateType<MatchingFluidsBlockPredicate> MATCHING_FLUIDS = register("matching_fluids", MatchingFluidsBlockPredicate.CODEC);
+	BlockPredicateType<HasSturdyFacePredicate> HAS_STURDY_FACE = register("has_sturdy_face", HasSturdyFacePredicate.CODEC);
 	BlockPredicateType<SolidBlockPredicate> SOLID = register("solid", SolidBlockPredicate.CODEC);
 	BlockPredicateType<ReplaceableBlockPredicate> REPLACEABLE = register("replaceable", ReplaceableBlockPredicate.CODEC);
 	BlockPredicateType<WouldSurviveBlockPredicate> WOULD_SURVIVE = register("would_survive", WouldSurviveBlockPredicate.CODEC);

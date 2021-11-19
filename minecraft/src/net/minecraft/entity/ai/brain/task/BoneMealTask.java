@@ -82,8 +82,8 @@ public class BoneMealTask extends Task<VillagerEntity> {
 	}
 
 	private void addLookWalkTargets(VillagerEntity villager) {
-		this.pos.ifPresent(blockPos -> {
-			BlockPosLookTarget blockPosLookTarget = new BlockPosLookTarget(blockPos);
+		this.pos.ifPresent(pos -> {
+			BlockPosLookTarget blockPosLookTarget = new BlockPosLookTarget(pos);
 			villager.getBrain().remember(MemoryModuleType.LOOK_TARGET, blockPosLookTarget);
 			villager.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPosLookTarget, 0.5F, 1));
 		});

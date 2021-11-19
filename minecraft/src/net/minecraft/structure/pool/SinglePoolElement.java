@@ -68,18 +68,18 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	@Override
 	public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
-		Structure structure = this.method_27233(structureManager);
+		Structure structure = this.getStructure(structureManager);
 		return structure.getRotatedSize(rotation);
 	}
 
-	private Structure method_27233(StructureManager structureManager) {
+	private Structure getStructure(StructureManager structureManager) {
 		return this.location.map(structureManager::getStructureOrBlank, Function.identity());
 	}
 
 	public List<Structure.StructureBlockInfo> getDataStructureBlocks(
 		StructureManager structureManager, BlockPos pos, BlockRotation rotation, boolean mirroredAndRotated
 	) {
-		Structure structure = this.method_27233(structureManager);
+		Structure structure = this.getStructure(structureManager);
 		List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(
 			pos, new StructurePlacementData().setRotation(rotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated
 		);
@@ -99,7 +99,7 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	@Override
 	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
-		Structure structure = this.method_27233(structureManager);
+		Structure structure = this.getStructure(structureManager);
 		List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
 		Collections.shuffle(list, random);
 		return list;
@@ -107,7 +107,7 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	@Override
 	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
-		Structure structure = this.method_27233(structureManager);
+		Structure structure = this.getStructure(structureManager);
 		return structure.calculateBoundingBox(new StructurePlacementData().setRotation(rotation), pos);
 	}
 
@@ -124,7 +124,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		Random random,
 		boolean keepJigsaws
 	) {
-		Structure structure = this.method_27233(structureManager);
+		Structure structure = this.getStructure(structureManager);
 		StructurePlacementData structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws);
 		if (!structure.place(world, pos, blockPos, structurePlacementData, random, Block.NOTIFY_LISTENERS | Block.FORCE_STATE)) {
 			return false;

@@ -454,13 +454,13 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		final float cameraY;
 		final float cameraZ;
 
-		State(VertexFormat.DrawMode drawMode, int i, @Nullable Vec3f[] vec3fs, float f, float g, float h) {
+		State(VertexFormat.DrawMode drawMode, int vertexCount, @Nullable Vec3f[] currentParameters, float cameraX, float cameraY, float cameraZ) {
 			this.drawMode = drawMode;
-			this.vertexCount = i;
-			this.currentParameters = vec3fs;
-			this.cameraX = f;
-			this.cameraY = g;
-			this.cameraZ = h;
+			this.vertexCount = vertexCount;
+			this.currentParameters = currentParameters;
+			this.cameraX = cameraX;
+			this.cameraY = cameraY;
+			this.cameraZ = cameraZ;
 		}
 	}
 }

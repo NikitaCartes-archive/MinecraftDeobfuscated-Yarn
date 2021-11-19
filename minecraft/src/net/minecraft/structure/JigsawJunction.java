@@ -41,17 +41,17 @@ public class JigsawJunction {
 		return this.destProjection;
 	}
 
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(dynamicOps.createString("source_x"), dynamicOps.createInt(this.sourceX))
-			.put(dynamicOps.createString("source_ground_y"), dynamicOps.createInt(this.sourceGroundY))
-			.put(dynamicOps.createString("source_z"), dynamicOps.createInt(this.sourceZ))
-			.put(dynamicOps.createString("delta_y"), dynamicOps.createInt(this.deltaY))
-			.put(dynamicOps.createString("dest_proj"), dynamicOps.createString(this.destProjection.getId()));
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build()));
+		builder.put(ops.createString("source_x"), ops.createInt(this.sourceX))
+			.put(ops.createString("source_ground_y"), ops.createInt(this.sourceGroundY))
+			.put(ops.createString("source_z"), ops.createInt(this.sourceZ))
+			.put(ops.createString("delta_y"), ops.createInt(this.deltaY))
+			.put(ops.createString("dest_proj"), ops.createString(this.destProjection.getId()));
+		return new Dynamic<>(ops, ops.createMap(builder.build()));
 	}
 
-	public static <T> JigsawJunction method_28873(Dynamic<T> dynamic) {
+	public static <T> JigsawJunction deserialize(Dynamic<T> dynamic) {
 		return new JigsawJunction(
 			dynamic.get("source_x").asInt(0),
 			dynamic.get("source_ground_y").asInt(0),

@@ -29,19 +29,19 @@ public class LookAtEntityGoal extends Goal {
 		this(mob, targetType, range, chance, false);
 	}
 
-	public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f, float g, boolean bl) {
-		this.mob = mobEntity;
-		this.targetType = class_;
-		this.range = f;
-		this.chance = g;
+	public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range, float chance, boolean bl) {
+		this.mob = mob;
+		this.targetType = targetType;
+		this.range = range;
+		this.chance = chance;
 		this.field_33761 = bl;
 		this.setControls(EnumSet.of(Goal.Control.LOOK));
-		if (class_ == PlayerEntity.class) {
+		if (targetType == PlayerEntity.class) {
 			this.targetPredicate = TargetPredicate.createNonAttackable()
-				.setBaseMaxDistance((double)f)
-				.setPredicate(livingEntity -> EntityPredicates.rides(mobEntity).test(livingEntity));
+				.setBaseMaxDistance((double)range)
+				.setPredicate(entity -> EntityPredicates.rides(mob).test(entity));
 		} else {
-			this.targetPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance((double)f);
+			this.targetPredicate = TargetPredicate.createNonAttackable().setBaseMaxDistance((double)range);
 		}
 	}
 

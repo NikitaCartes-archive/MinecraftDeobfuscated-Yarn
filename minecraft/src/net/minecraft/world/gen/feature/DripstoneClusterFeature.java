@@ -104,7 +104,11 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 				if (optionalInt3.isPresent() && bl3 && !this.isLava(world, pos.withY(optionalInt3.getAsInt()))) {
 					int m = config.dripstoneBlockLayerThickness.get(random);
 					this.placeDripstoneBlocks(world, pos.withY(optionalInt3.getAsInt()), m, Direction.DOWN);
-					j = Math.max(0, l + MathHelper.nextBetween(random, -config.maxStalagmiteStalactiteHeightDiff, config.maxStalagmiteStalactiteHeightDiff));
+					if (optionalInt.isPresent()) {
+						j = Math.max(0, l + MathHelper.nextBetween(random, -config.maxStalagmiteStalactiteHeightDiff, config.maxStalagmiteStalactiteHeightDiff));
+					} else {
+						j = this.getHeight(random, localX, localZ, density, height, config);
+					}
 				} else {
 					j = 0;
 				}

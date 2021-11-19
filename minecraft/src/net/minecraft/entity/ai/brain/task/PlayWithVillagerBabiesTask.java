@@ -56,7 +56,7 @@ public class PlayWithVillagerBabiesTask extends Task<PathAwareEntity> {
 			if (optional.isPresent()) {
 				setPlayTarget(pathAwareEntity, (LivingEntity)optional.get());
 			} else {
-				this.getVisibleMob(pathAwareEntity).ifPresent(livingEntityx -> setPlayTarget(pathAwareEntity, livingEntityx));
+				this.getVisibleMob(pathAwareEntity).ifPresent(target -> setPlayTarget(pathAwareEntity, target));
 			}
 		}
 	}

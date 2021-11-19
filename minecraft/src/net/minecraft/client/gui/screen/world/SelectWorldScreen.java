@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SelectWorldScreen extends Screen {
-	private static final Logger field_28783 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	protected final Screen parent;
 	@Nullable
 	private List<OrderedText> tooltipText;

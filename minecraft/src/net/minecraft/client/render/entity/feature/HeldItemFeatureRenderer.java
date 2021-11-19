@@ -23,8 +23,8 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		boolean bl = livingEntity.getMainArm() == Arm.RIGHT;
-		ItemStack itemStack = bl ? livingEntity.getOffhandStack() : livingEntity.getMainHandStack();
-		ItemStack itemStack2 = bl ? livingEntity.getMainHandStack() : livingEntity.getOffhandStack();
+		ItemStack itemStack = bl ? livingEntity.getOffHandStack() : livingEntity.getMainHandStack();
+		ItemStack itemStack2 = bl ? livingEntity.getMainHandStack() : livingEntity.getOffHandStack();
 		if (!itemStack.isEmpty() || !itemStack2.isEmpty()) {
 			matrixStack.push();
 			if (this.getContextModel().child) {

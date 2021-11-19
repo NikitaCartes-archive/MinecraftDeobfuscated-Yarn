@@ -77,8 +77,8 @@ public class OceanMonumentGenerator {
 			this.field_14465.add(new OceanMonumentGenerator.Penthouse(orientation, blockBox3));
 		}
 
-		public Base(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_BASE, nbtCompound);
+		public Base(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_BASE, nbt);
 		}
 
 		private List<OceanMonumentGenerator.PieceSetting> method_14760(Random random) {
@@ -577,8 +577,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, 1, orientation, setting, 2, 2, 2);
 		}
 
-		public CoreRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, nbtCompound);
+		public CoreRoom(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, nbt);
 		}
 
 		@Override
@@ -663,8 +663,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, 1, orientation, setting, 2, 1, 1);
 		}
 
-		public DoubleXRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, nbtCompound);
+		public DoubleXRoom(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, nbt);
 		}
 
 		@Override
@@ -754,8 +754,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, 1, orientation, setting, 2, 2, 1);
 		}
 
-		public DoubleXYRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, nbtCompound);
+		public DoubleXYRoom(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, nbt);
 		}
 
 		@Override
@@ -899,8 +899,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, 1, orientation, setting, 1, 2, 1);
 		}
 
-		public DoubleYRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, nbtCompound);
+		public DoubleYRoom(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_ROOM, nbt);
 		}
 
 		@Override
@@ -1001,8 +1001,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, 1, orientation, setting, 1, 2, 2);
 		}
 
-		public DoubleYZRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, nbtCompound);
+		public DoubleYZRoom(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, nbt);
 		}
 
 		@Override
@@ -1144,8 +1144,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, 1, orientation, setting, 1, 1, 2);
 		}
 
-		public DoubleZRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, nbtCompound);
+		public DoubleZRoom(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, nbt);
 		}
 
 		@Override
@@ -1259,8 +1259,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, 1, orientation, setting, 1, 1, 1);
 		}
 
-		public Entry(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, nbtCompound);
+		public Entry(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, nbt);
 		}
 
 		@Override
@@ -1301,8 +1301,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, orientation, 1, box);
 		}
 
-		public Penthouse(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, nbtCompound);
+		public Penthouse(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, nbt);
 		}
 
 		@Override
@@ -1574,8 +1574,8 @@ public class OceanMonumentGenerator {
 			this.field_14480 = random.nextInt(3);
 		}
 
-		public SimpleRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, nbtCompound);
+		public SimpleRoom(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, nbt);
 		}
 
 		@Override
@@ -1761,8 +1761,8 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, 1, orientation, setting, 1, 1, 1);
 		}
 
-		public SimpleRoomTop(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, nbtCompound);
+		public SimpleRoomTop(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, nbt);
 		}
 
 		@Override
@@ -1840,8 +1840,8 @@ public class OceanMonumentGenerator {
 			this.field_14481 = i & 1;
 		}
 
-		public WingRoom(NbtCompound nbtCompound) {
-			super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, nbtCompound);
+		public WingRoom(NbtCompound nbt) {
+			super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, nbt);
 		}
 
 		@Override

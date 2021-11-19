@@ -7,6 +7,14 @@ public class VanillaTerrainParametersCreator {
 		return VanillaTerrainParameters.method_39457(bl);
 	}
 
+	public static VanillaTerrainParameters method_39923() {
+		return new VanillaTerrainParameters(Spline.fixedFloatFunction(0.0F), Spline.fixedFloatFunction(0.0F), Spline.fixedFloatFunction(0.0F));
+	}
+
+	public static VanillaTerrainParameters method_39924() {
+		return new VanillaTerrainParameters(Spline.fixedFloatFunction(0.0F), Spline.fixedFloatFunction(0.0F), Spline.fixedFloatFunction(0.0F));
+	}
+
 	public static VanillaTerrainParameters createUndergroundParameters() {
 		return new VanillaTerrainParameters(Spline.fixedFloatFunction(0.0F), Spline.fixedFloatFunction(0.0F), Spline.fixedFloatFunction(0.0F));
 	}

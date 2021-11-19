@@ -328,7 +328,7 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.FLUID_SPRINGS, MiscPlacedFeatures.SPRING_LAVA);
 	}
 
-	public static void method_39420(GenerationSettings.Builder builder) {
+	public static void addFrozenLavaSpring(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.FLUID_SPRINGS, MiscPlacedFeatures.SPRING_LAVA_FROZEN);
 	}
 

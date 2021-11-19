@@ -59,7 +59,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 			j = 0;
 		}
 
-		double d = this.method_37003(new BlockPos(node.x, node.y, node.z));
+		double d = this.getFeetY(new BlockPos(node.x, node.y, node.z));
 		PathNode pathNode = this.getPathNode(node.x, node.y + 1, node.z, Math.max(0, j - 1), d, Direction.UP, pathNodeType2);
 		PathNode pathNode2 = this.getPathNode(node.x, node.y - 1, node.z, j, d, Direction.DOWN, pathNodeType2);
 		if (this.isValidAdjacentSuccessor(pathNode, node)) {
@@ -81,8 +81,8 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	}
 
 	@Override
-	protected double method_37003(BlockPos blockPos) {
-		return this.entity.isTouchingWater() ? (double)blockPos.getY() + 0.5 : super.method_37003(blockPos);
+	protected double getFeetY(BlockPos pos) {
+		return this.entity.isTouchingWater() ? (double)pos.getY() + 0.5 : super.getFeetY(pos);
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class AdmireItemTimeLimitTask<E extends PiglinEntity> extends Task<E> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
-		return piglinEntity.getOffhandStack().isEmpty();
+		return piglinEntity.getOffHandStack().isEmpty();
 	}
 
 	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {

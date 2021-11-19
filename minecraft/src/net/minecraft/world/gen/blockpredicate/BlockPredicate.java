@@ -7,7 +7,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
@@ -47,8 +49,20 @@ public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockP
 		return new MatchingBlocksBlockPredicate(offset, blocks);
 	}
 
+	static BlockPredicate matchingBlocks(List<Block> blocks) {
+		return matchingBlocks(blocks, Vec3i.ZERO);
+	}
+
 	static BlockPredicate matchingBlock(Block block, Vec3i offset) {
 		return matchingBlocks(List.of(block), offset);
+	}
+
+	static BlockPredicate matchingBlockTag(Tag<Block> tag, Vec3i offset) {
+		return new MatchingBlockTagPredicate(offset, tag);
+	}
+
+	static BlockPredicate matchingBlockTag(Tag<Block> offset) {
+		return matchingBlockTag(offset, Vec3i.ZERO);
 	}
 
 	static BlockPredicate matchingFluids(List<Fluid> fluids, Vec3i offset) {
@@ -73,6 +87,10 @@ public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockP
 
 	static BlockPredicate wouldSurvive(BlockState state, Vec3i offset) {
 		return new WouldSurviveBlockPredicate(offset, state);
+	}
+
+	static BlockPredicate hasSturdyFace(Vec3i offset, Direction face) {
+		return new HasSturdyFacePredicate(offset, face);
 	}
 
 	static BlockPredicate solid(Vec3i offset) {

@@ -47,8 +47,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		this.goalSelector.add(5, new GhastEntity.FlyRandomlyGoal(this));
 		this.goalSelector.add(7, new GhastEntity.LookAtTargetGoal(this));
 		this.goalSelector.add(7, new GhastEntity.ShootFireballGoal(this));
-		this.targetSelector
-			.add(1, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
+		this.targetSelector.add(1, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, entity -> Math.abs(entity.getY() - this.getY()) <= 4.0));
 	}
 
 	public boolean isShooting() {

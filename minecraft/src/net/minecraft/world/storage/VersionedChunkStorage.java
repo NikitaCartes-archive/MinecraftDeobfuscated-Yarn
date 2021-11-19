@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6830;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -36,7 +35,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 		RegistryKey<World> worldKey,
 		Supplier<PersistentStateManager> persistentStateManagerFactory,
 		NbtCompound nbt,
-		Optional<RegistryKey<Codec<? extends ChunkGenerator>>> optional
+		Optional<RegistryKey<Codec<? extends ChunkGenerator>>> generatorCodecKey
 	) {
 		int i = getDataVersion(nbt);
 		if (i < 1493) {
@@ -50,7 +49,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 			}
 		}
 
-		method_39799(nbt, worldKey, optional);
+		saveContextToNbt(nbt, worldKey, generatorCodecKey);
 		nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, Math.max(1493, i));
 		if (i < SharedConstants.getGameVersion().getWorldVersion()) {
 			nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
@@ -60,11 +59,11 @@ public class VersionedChunkStorage implements AutoCloseable {
 		return nbt;
 	}
 
-	public static void method_39799(NbtCompound nbtCompound, RegistryKey<World> registryKey, Optional<RegistryKey<Codec<? extends ChunkGenerator>>> optional) {
-		NbtCompound nbtCompound2 = new NbtCompound();
-		nbtCompound2.putString("dimension", registryKey.getValue().toString());
-		optional.ifPresent(registryKeyx -> nbtCompound2.putString("generator", registryKeyx.getValue().toString()));
-		nbtCompound.put("__context", nbtCompound2);
+	public static void saveContextToNbt(NbtCompound nbt, RegistryKey<World> worldKey, Optional<RegistryKey<Codec<? extends ChunkGenerator>>> generatorCodecKey) {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putString("dimension", worldKey.getValue().toString());
+		generatorCodecKey.ifPresent(key -> nbtCompound.putString("generator", key.getValue().toString()));
+		nbt.put("__context", nbtCompound);
 	}
 
 	public static int getDataVersion(NbtCompound nbt) {
@@ -91,7 +90,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 		this.worker.close();
 	}
 
-	public class_6830 method_39800() {
+	public NbtScannable getWorker() {
 		return this.worker;
 	}
 }

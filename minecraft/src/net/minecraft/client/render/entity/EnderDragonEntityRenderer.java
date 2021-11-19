@@ -497,7 +497,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			ModelPart hindLeg,
 			ModelPart hindLegTip,
 			ModelPart hindFoot,
-			float f
+			float alpha
 		) {
 			hindLeg.pitch = 1.0F + offset * 0.1F;
 			hindLegTip.pitch = 0.5F + offset * 0.1F;
@@ -505,9 +505,9 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			frontLeg.pitch = 1.3F + offset * 0.1F;
 			frontLegTip.pitch = -0.5F - offset * 0.1F;
 			frontFoot.pitch = 0.75F + offset * 0.1F;
-			wing.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, f);
-			frontLeg.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, f);
-			hindLeg.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, f);
+			wing.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
+			frontLeg.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
+			hindLeg.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
 		}
 	}
 }

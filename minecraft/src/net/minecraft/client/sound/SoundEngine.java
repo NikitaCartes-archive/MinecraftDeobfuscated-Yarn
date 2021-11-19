@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -265,7 +266,10 @@ public class SoundEngine {
 		@Override
 		public Source createSource() {
 			if (this.sources.size() >= this.maxSourceCount) {
-				SoundEngine.LOGGER.warn("Maximum sound pool size {} reached", this.maxSourceCount);
+				if (SharedConstants.isDevelopment) {
+					SoundEngine.LOGGER.warn("Maximum sound pool size {} reached", this.maxSourceCount);
+				}
+
 				return null;
 			} else {
 				Source source = Source.create();

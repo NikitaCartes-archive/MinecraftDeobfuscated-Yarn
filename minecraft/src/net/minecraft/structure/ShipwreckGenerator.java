@@ -58,20 +58,15 @@ public class ShipwreckGenerator {
 		new Identifier("shipwreck/rightsideup_fronthalf_degraded"),
 		new Identifier("shipwreck/rightsideup_backhalf_degraded")
 	};
-	static final Map<String, Identifier> field_34939 = Map.of(
+	static final Map<String, Identifier> LOOT_TABLES = Map.of(
 		"map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST
 	);
 
 	public static void addParts(
-		StructureManager structureManager,
-		BlockPos pos,
-		BlockRotation rotation,
-		StructurePiecesHolder structurePiecesHolder,
-		Random random,
-		ShipwreckFeatureConfig config
+		StructureManager structureManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, ShipwreckFeatureConfig config
 	) {
 		Identifier identifier = Util.getRandom(config.isBeached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
-		structurePiecesHolder.addPiece(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, config.isBeached));
+		holder.addPiece(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, config.isBeached));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
@@ -82,8 +77,8 @@ public class ShipwreckGenerator {
 			this.grounded = grounded;
 		}
 
-		public Piece(StructureManager structureManager, NbtCompound nbt) {
-			super(StructurePieceType.SHIPWRECK, nbt, structureManager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+		public Piece(StructureManager manager, NbtCompound nbt) {
+			super(StructurePieceType.SHIPWRECK, nbt, manager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 			this.grounded = nbt.getBoolean("isBeached");
 		}
 
@@ -104,7 +99,7 @@ public class ShipwreckGenerator {
 
 		@Override
 		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
-			Identifier identifier = (Identifier)ShipwreckGenerator.field_34939.get(metadata);
+			Identifier identifier = (Identifier)ShipwreckGenerator.LOOT_TABLES.get(metadata);
 			if (identifier != null) {
 				LootableContainerBlockEntity.setLootTable(world, random, pos.down(), identifier);
 			}

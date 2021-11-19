@@ -40,7 +40,7 @@ public interface ChunkLightingView extends LightingView {
 		}
 
 		@Override
-		public int doLightUpdates(int i, boolean bl, boolean bl2) {
+		public int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation) {
 			return i;
 		}
 

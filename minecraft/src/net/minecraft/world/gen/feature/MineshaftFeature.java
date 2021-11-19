@@ -4,11 +4,11 @@ import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
-import net.minecraft.class_6834;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.MineshaftGenerator;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.StringIdentifiable;
@@ -21,19 +21,21 @@ import net.minecraft.world.gen.random.ChunkRandom;
 
 public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	public MineshaftFeature(Codec<MineshaftFeatureConfig> configCodec) {
-		super(configCodec, class_6834.simple(MineshaftFeature::method_28638, MineshaftFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(MineshaftFeature::method_28638, MineshaftFeature::addPieces));
 	}
 
-	private static boolean method_28638(class_6834.class_6835<MineshaftFeatureConfig> arg) {
+	private static boolean method_28638(StructureGeneratorFactory.Context<MineshaftFeatureConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-		chunkRandom.setCarverSeed(arg.seed(), arg.chunkPos().x, arg.chunkPos().z);
-		double d = (double)((MineshaftFeatureConfig)arg.config()).probability;
+		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
+		double d = (double)((MineshaftFeatureConfig)context.config()).probability;
 		return chunkRandom.nextDouble() >= d
 			? false
-			: arg.validBiome()
+			: context.validBiome()
 				.test(
-					arg.chunkGenerator()
-						.getBiomeForNoiseGen(BiomeCoords.fromBlock(arg.chunkPos().getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(arg.chunkPos().getCenterZ()))
+					context.chunkGenerator()
+						.getBiomeForNoiseGen(
+							BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())
+						)
 				);
 	}
 

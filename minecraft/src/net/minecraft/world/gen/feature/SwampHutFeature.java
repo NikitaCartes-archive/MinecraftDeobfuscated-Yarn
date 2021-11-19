@@ -1,8 +1,8 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_6834;
 import net.minecraft.entity.EntityType;
+import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.structure.SwampHutGenerator;
@@ -15,7 +15,9 @@ public class SwampHutFeature extends StructureFeature<DefaultFeatureConfig> {
 	public static final Pool<SpawnSettings.SpawnEntry> CREATURE_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.CAT, 1, 1, 1));
 
 	public SwampHutFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, class_6834.simple(class_6834.checkForBiomeOnTop(Heightmap.Type.WORLD_SURFACE_WG), SwampHutFeature::addPieces));
+		super(
+			configCodec, StructureGeneratorFactory.simple(StructureGeneratorFactory.checkForBiomeOnTop(Heightmap.Type.WORLD_SURFACE_WG), SwampHutFeature::addPieces)
+		);
 	}
 
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {

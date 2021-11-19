@@ -15,12 +15,12 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final ChunkData chunkData;
 	private final LightData lightData;
 
-	public ChunkDataS2CPacket(WorldChunk chunk, LightingProvider lightProvider, @Nullable BitSet bitSet, @Nullable BitSet bitSet2, boolean bl) {
+	public ChunkDataS2CPacket(WorldChunk chunk, LightingProvider lightProvider, @Nullable BitSet skyBits, @Nullable BitSet blockBits, boolean nonEdge) {
 		ChunkPos chunkPos = chunk.getPos();
 		this.chunkX = chunkPos.x;
 		this.chunkZ = chunkPos.z;
 		this.chunkData = new ChunkData(chunk);
-		this.lightData = new LightData(chunkPos, lightProvider, bitSet, bitSet2, bl);
+		this.lightData = new LightData(chunkPos, lightProvider, skyBits, blockBits, nonEdge);
 	}
 
 	public ChunkDataS2CPacket(PacketByteBuf buf) {

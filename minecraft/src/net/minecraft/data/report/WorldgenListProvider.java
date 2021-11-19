@@ -41,7 +41,7 @@ public class WorldgenListProvider implements DataProvider {
 		DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.create();
 		int i = 0;
 		SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(dynamicRegistryManager, 0L, false);
-		ChunkGenerator chunkGenerator = GeneratorOptions.method_39558(dynamicRegistryManager, 0L, false);
+		ChunkGenerator chunkGenerator = GeneratorOptions.createOverworldGenerator(dynamicRegistryManager, 0L, false);
 		SimpleRegistry<DimensionOptions> simpleRegistry2 = GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
 			dynamicRegistryManager.getMutable(Registry.DIMENSION_TYPE_KEY), simpleRegistry, chunkGenerator
 		);

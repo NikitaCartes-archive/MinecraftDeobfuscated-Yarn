@@ -892,7 +892,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			if (amount >= 3.0F) {
 				int i = 1 + MathHelper.floor(amount);
 				Hand hand = this.getActiveHand();
-				this.activeItemStack.damage(i, this, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				this.activeItemStack.damage(i, this, player -> player.sendToolBreakStatus(hand));
 				if (this.activeItemStack.isEmpty()) {
 					if (hand == Hand.MAIN_HAND) {
 						this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
@@ -1778,7 +1778,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (slot == EquipmentSlot.MAINHAND) {
 			return this.inventory.getMainHandStack();
 		} else if (slot == EquipmentSlot.OFFHAND) {
-			return this.inventory.offhand.get(0);
+			return this.inventory.offHand.get(0);
 		} else {
 			return slot.getType() == EquipmentSlot.Type.ARMOR ? this.inventory.armor.get(slot.getEntitySlotId()) : ItemStack.EMPTY;
 		}
@@ -1792,7 +1792,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.inventory.main.set(this.inventory.selectedSlot, stack);
 		} else if (slot == EquipmentSlot.OFFHAND) {
 			this.onEquipStack(stack);
-			this.inventory.offhand.set(0, stack);
+			this.inventory.offHand.set(0, stack);
 		} else if (slot.getType() == EquipmentSlot.Type.ARMOR) {
 			this.onEquipStack(stack);
 			this.inventory.armor.set(slot.getEntitySlotId(), stack);
@@ -1806,7 +1806,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public Iterable<ItemStack> getItemsHand() {
-		return Lists.<ItemStack>newArrayList(this.getMainHandStack(), this.getOffhandStack());
+		return Lists.<ItemStack>newArrayList(this.getMainHandStack(), this.getOffHandStack());
 	}
 
 	@Override

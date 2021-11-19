@@ -36,12 +36,12 @@ public class JungleTempleGenerator extends ShiftableStructurePiece {
 		super(StructurePieceType.JUNGLE_TEMPLE, x, 64, z, 12, 10, 15, getRandomHorizontalDirection(random));
 	}
 
-	public JungleTempleGenerator(NbtCompound nbtCompound) {
-		super(StructurePieceType.JUNGLE_TEMPLE, nbtCompound);
-		this.placedMainChest = nbtCompound.getBoolean("placedMainChest");
-		this.placedHiddenChest = nbtCompound.getBoolean("placedHiddenChest");
-		this.placedTrap1 = nbtCompound.getBoolean("placedTrap1");
-		this.placedTrap2 = nbtCompound.getBoolean("placedTrap2");
+	public JungleTempleGenerator(NbtCompound nbt) {
+		super(StructurePieceType.JUNGLE_TEMPLE, nbt);
+		this.placedMainChest = nbt.getBoolean("placedMainChest");
+		this.placedHiddenChest = nbt.getBoolean("placedHiddenChest");
+		this.placedTrap1 = nbt.getBoolean("placedTrap1");
+		this.placedTrap2 = nbt.getBoolean("placedTrap2");
 	}
 
 	@Override

@@ -101,8 +101,8 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		super.tick();
 		if (this.wasShotByEntity()) {
 			if (this.shooter == null) {
-				((OptionalInt)this.dataTracker.get(SHOOTER_ENTITY_ID)).ifPresent(i -> {
-					Entity entity = this.world.getEntityById(i);
+				((OptionalInt)this.dataTracker.get(SHOOTER_ENTITY_ID)).ifPresent(id -> {
+					Entity entity = this.world.getEntityById(id);
 					if (entity instanceof LivingEntity) {
 						this.shooter = (LivingEntity)entity;
 					}

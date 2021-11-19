@@ -145,7 +145,7 @@ public abstract class LivingEntity extends Entity {
 	public static final int field_30063 = 4;
 	private static final double field_33908 = 128.0;
 	protected static final int USING_ITEM_FLAG = 1;
-	protected static final int OFFHAND_ACTIVE_FLAG = 2;
+	protected static final int OFF_HAND_ACTIVE_FLAG = 2;
 	protected static final int USING_RIPTIDE_FLAG = 4;
 	protected static final TrackedData<Byte> LIVING_FLAGS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Float> HEALTH = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -1730,7 +1730,7 @@ public abstract class LivingEntity extends Entity {
 			this.preferredHand = hand;
 			if (this.world instanceof ServerWorld) {
 				EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(
-					this, hand == Hand.MAIN_HAND ? EntityAnimationS2CPacket.SWING_MAIN_HAND : 3
+					this, hand == Hand.MAIN_HAND ? EntityAnimationS2CPacket.SWING_MAIN_HAND : EntityAnimationS2CPacket.SWING_OFF_HAND
 				);
 				ServerChunkManager serverChunkManager = ((ServerWorld)this.world).getChunkManager();
 				if (fromServerPlayer) {
@@ -1945,7 +1945,7 @@ public abstract class LivingEntity extends Entity {
 		return this.getEquippedStack(EquipmentSlot.MAINHAND);
 	}
 
-	public ItemStack getOffhandStack() {
+	public ItemStack getOffHandStack() {
 		return this.getEquippedStack(EquipmentSlot.OFFHAND);
 	}
 
@@ -1964,7 +1964,7 @@ public abstract class LivingEntity extends Entity {
 	 * <p>This checks both the entity's main and off hand.
 	 */
 	public boolean isHolding(Predicate<ItemStack> predicate) {
-		return predicate.test(this.getMainHandStack()) || predicate.test(this.getOffhandStack());
+		return predicate.test(this.getMainHandStack()) || predicate.test(this.getOffHandStack());
 	}
 
 	public ItemStack getStackInHand(Hand hand) {
@@ -3013,7 +3013,7 @@ public abstract class LivingEntity extends Entity {
 			this.itemUseTimeLeft = itemStack.getMaxUseTime();
 			if (!this.world.isClient) {
 				this.setLivingFlag(USING_ITEM_FLAG, true);
-				this.setLivingFlag(2, hand == Hand.OFF_HAND);
+				this.setLivingFlag(OFF_HAND_ACTIVE_FLAG, hand == Hand.OFF_HAND);
 			}
 		}
 	}

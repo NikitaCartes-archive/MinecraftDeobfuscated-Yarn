@@ -11,7 +11,7 @@ public interface LightingView {
 
 	boolean hasUpdates();
 
-	int doLightUpdates(int i, boolean bl, boolean bl2);
+	int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation);
 
 	default void setSectionStatus(BlockPos pos, boolean notReady) {
 		this.setSectionStatus(ChunkSectionPos.from(pos), notReady);

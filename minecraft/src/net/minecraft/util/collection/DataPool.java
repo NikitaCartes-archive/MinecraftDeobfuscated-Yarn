@@ -24,7 +24,7 @@ public class DataPool<E> extends Pool<Weighted.Present<E>> {
 		return new DataPool.Builder<>();
 	}
 
-	public static <E> DataPool<E> method_38062() {
+	public static <E> DataPool<E> empty() {
 		return new DataPool<>(List.of());
 	}
 

@@ -31,9 +31,9 @@ public class EntityRenderers {
 
 	public static Map<EntityType<?>, EntityRenderer<?>> reloadEntityRenderers(EntityRendererFactory.Context ctx) {
 		Builder<EntityType<?>, EntityRenderer<?>> builder = ImmutableMap.builder();
-		RENDERER_FACTORIES.forEach((entityType, entityRendererFactory) -> {
+		RENDERER_FACTORIES.forEach((entityType, factory) -> {
 			try {
-				builder.put(entityType, entityRendererFactory.create(ctx));
+				builder.put(entityType, factory.create(ctx));
 			} catch (Exception var5) {
 				throw new IllegalArgumentException("Failed to create model for " + Registry.ENTITY_TYPE.getId(entityType), var5);
 			}
@@ -43,11 +43,11 @@ public class EntityRenderers {
 
 	public static Map<String, EntityRenderer<? extends PlayerEntity>> reloadPlayerRenderers(EntityRendererFactory.Context ctx) {
 		Builder<String, EntityRenderer<? extends PlayerEntity>> builder = ImmutableMap.builder();
-		PLAYER_RENDERER_FACTORIES.forEach((string, entityRendererFactory) -> {
+		PLAYER_RENDERER_FACTORIES.forEach((type, factory) -> {
 			try {
-				builder.put(string, entityRendererFactory.create(ctx));
+				builder.put(type, factory.create(ctx));
 			} catch (Exception var5) {
-				throw new IllegalArgumentException("Failed to create player model for " + string, var5);
+				throw new IllegalArgumentException("Failed to create player model for " + type, var5);
 			}
 		});
 		return builder.build();

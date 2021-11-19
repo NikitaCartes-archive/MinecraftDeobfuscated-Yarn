@@ -59,6 +59,8 @@ public final class ItemTags {
 	public static final Tag.Identified<Item> NON_FLAMMABLE_WOOD = register("non_flammable_wood");
 	public static final Tag.Identified<Item> SOUL_FIRE_BASE_BLOCKS = register("soul_fire_base_blocks");
 	public static final Tag.Identified<Item> CANDLES = register("candles");
+	public static final Tag.Identified<Item> DIRT = register("dirt");
+	public static final Tag.Identified<Item> TERRACOTTA = register("terracotta");
 	public static final Tag.Identified<Item> BOATS = register("boats");
 	public static final Tag.Identified<Item> FISHES = register("fishes");
 	public static final Tag.Identified<Item> SIGNS = register("signs");

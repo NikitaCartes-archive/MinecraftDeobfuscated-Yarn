@@ -316,7 +316,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 
 	@Override
 	protected void zombify(ServerWorld world) {
-		PiglinBrain.pickupItemWithOffhand(this);
+		PiglinBrain.pickupItemWithOffHand(this);
 		this.inventory.clearToList().forEach(this::dropStack);
 		super.zombify(world);
 	}
@@ -343,7 +343,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	public PiglinActivity getActivity() {
 		if (this.isDancing()) {
 			return PiglinActivity.DANCING;
-		} else if (PiglinBrain.isGoldenItem(this.getOffhandStack())) {
+		} else if (PiglinBrain.isGoldenItem(this.getOffHandStack())) {
 			return PiglinActivity.ADMIRING_ITEM;
 		} else if (this.isAttacking() && this.isHoldingTool()) {
 			return PiglinActivity.ATTACKING_WITH_MELEE_WEAPON;
@@ -395,7 +395,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 		this.equipLootStack(EquipmentSlot.MAINHAND, stack);
 	}
 
-	protected void equipToOffhand(ItemStack stack) {
+	protected void equipToOffHand(ItemStack stack) {
 		if (stack.isOf(PiglinBrain.BARTERING_ITEM)) {
 			this.equipStack(EquipmentSlot.OFFHAND, stack);
 			this.updateDropChances(EquipmentSlot.OFFHAND);

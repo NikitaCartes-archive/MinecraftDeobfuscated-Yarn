@@ -50,7 +50,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public int doLightUpdates(int i, boolean bl, boolean bl2) {
+	public int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation) {
 		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran automatically on a different thread!"));
 	}
 

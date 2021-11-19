@@ -46,10 +46,26 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
 		return this.config;
 	}
 
+	/**
+	 * Attaches placement modifiers to this configured feature. Attached
+	 * placement modifiers will be applied before this configured feature is
+	 * generated.
+	 * 
+	 * @see #withPlacement(PlacementModifier...)
+	 * @see PlacedFeature#generate(StructureWorldAccess, ChunkGenerator, Random, BlockPos)
+	 */
 	public PlacedFeature withPlacement(List<PlacementModifier> modifiers) {
 		return new PlacedFeature(() -> this, modifiers);
 	}
 
+	/**
+	 * Attaches placement modifiers to this configured feature. Attached
+	 * placement modifiers will be applied before this configured feature is
+	 * generated.
+	 * 
+	 * @see #withPlacement(List)
+	 * @see PlacedFeature#generate(StructureWorldAccess, ChunkGenerator, Random, BlockPos)
+	 */
 	public PlacedFeature withPlacement(PlacementModifier... modifiers) {
 		return this.withPlacement(List.of(modifiers));
 	}

@@ -57,6 +57,9 @@ public class WalkTask extends Task<PathAwareEntity> {
 	}
 
 	private Optional<BlockPos> findClosestWater(BlockView world, Entity entity) {
-		return BlockPos.findClosest(entity.getBlockPos(), 5, 4, pos -> world.getFluidState(pos).isIn(FluidTags.WATER));
+		BlockPos blockPos = entity.getBlockPos();
+		return !world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty()
+			? Optional.empty()
+			: BlockPos.findClosest(blockPos, 5, 1, pos -> world.getFluidState(pos).isIn(FluidTags.WATER));
 	}
 }

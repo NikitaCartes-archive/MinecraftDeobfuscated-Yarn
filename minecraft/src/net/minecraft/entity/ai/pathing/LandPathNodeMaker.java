@@ -132,7 +132,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			j = MathHelper.floor(Math.max(1.0F, this.entity.stepHeight));
 		}
 
-		double d = this.method_37003(new BlockPos(node.x, node.y, node.z));
+		double d = this.getFeetY(new BlockPos(node.x, node.y, node.z));
 		PathNode pathNode = this.getPathNode(node.x, node.y, node.z + 1, j, d, Direction.SOUTH, pathNodeType2);
 		if (this.isValidAdjacentSuccessor(pathNode, node)) {
 			successors[i++] = pathNode;
@@ -211,8 +211,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		return true;
 	}
 
-	protected double method_37003(BlockPos blockPos) {
-		return getFeetY(this.cachedWorld, blockPos);
+	protected double getFeetY(BlockPos pos) {
+		return getFeetY(this.cachedWorld, pos);
 	}
 
 	public static double getFeetY(BlockView world, BlockPos pos) {
@@ -229,7 +229,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	protected PathNode getPathNode(int x, int y, int z, int maxYStep, double prevFeetY, Direction direction, PathNodeType nodeType) {
 		PathNode pathNode = null;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		double d = this.method_37003(mutable.set(x, y, z));
+		double d = this.getFeetY(mutable.set(x, y, z));
 		if (d - prevFeetY > 1.125) {
 			return null;
 		} else {

@@ -17,8 +17,8 @@ public class ModelIdentifier extends Identifier {
 		this.variant = strings[2].toLowerCase(Locale.ROOT);
 	}
 
-	public ModelIdentifier(String string, String string2, String string3) {
-		this(new String[]{string, string2, string3});
+	public ModelIdentifier(String namespace, String path, String variant) {
+		this(new String[]{namespace, path, variant});
 	}
 
 	public ModelIdentifier(String string) {

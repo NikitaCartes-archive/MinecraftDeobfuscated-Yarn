@@ -568,7 +568,7 @@ public class TestContext {
 		BlockPos.Mutable.stream(box.offset(0.0, 1.0, 0.0)).forEach(posConsumer);
 	}
 
-	public void method_36040(Runnable runnable) {
-		LongStream.range(this.test.getTick(), (long)this.test.getTicksLeft()).forEach(l -> this.test.runAtTick(l, runnable::run));
+	public void forEachRemainingTick(Runnable runnable) {
+		LongStream.range(this.test.getTick(), (long)this.test.getTicksLeft()).forEach(tick -> this.test.runAtTick(tick, runnable::run));
 	}
 }

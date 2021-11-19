@@ -33,9 +33,9 @@ public class NetherFossilGenerator {
 		new Identifier("nether_fossils/fossil_14")
 	};
 
-	public static void addPieces(StructureManager manager, StructurePiecesHolder structurePiecesHolder, Random random, BlockPos pos) {
+	public static void addPieces(StructureManager manager, StructurePiecesHolder holder, Random random, BlockPos pos) {
 		BlockRotation blockRotation = BlockRotation.random(random);
-		structurePiecesHolder.addPiece(new NetherFossilGenerator.Piece(manager, Util.getRandom(FOSSILS, random), pos, blockRotation));
+		holder.addPiece(new NetherFossilGenerator.Piece(manager, Util.getRandom(FOSSILS, random), pos, blockRotation));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
@@ -43,8 +43,8 @@ public class NetherFossilGenerator {
 			super(StructurePieceType.NETHER_FOSSIL, 0, manager, template, template.toString(), createPlacementData(rotation), pos);
 		}
 
-		public Piece(StructureManager structureManager, NbtCompound nbt) {
-			super(StructurePieceType.NETHER_FOSSIL, nbt, structureManager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+		public Piece(StructureManager manager, NbtCompound nbt) {
+			super(StructurePieceType.NETHER_FOSSIL, nbt, manager, id -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 		}
 
 		private static StructurePlacementData createPlacementData(BlockRotation rotation) {

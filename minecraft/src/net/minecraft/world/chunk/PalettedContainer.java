@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
+import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
@@ -167,7 +167,8 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	private void set(int index, T value) {
-		this.data.set(index, value);
+		int i = this.data.palette.index(value);
+		this.data.storage.set(index, i);
 	}
 
 	public T get(int x, int y, int z) {
@@ -183,7 +184,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		Palette<T> palette = this.data.palette();
 		IntSet intSet = new IntArraySet();
 		this.data.storage.forEach(intSet::add);
-		intSet.forEach(i -> consumer.accept(palette.get(i)));
+		intSet.forEach(id -> consumer.accept(palette.get(id)));
 	}
 
 	/**
@@ -242,9 +243,11 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 			try {
 				if (dataProvider.factory() == PalettedContainer.PaletteProvider.ID_LIST) {
 					Palette<T> palette = new BiMapPalette<>(idList, j, (ix, object) -> 0, list);
-					PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, provider.getContainerSize(), ls);
-					IntStream intStream = IntStream.range(0, packedIntegerArray.getSize()).map(ix -> idList.getRawId(palette.get(packedIntegerArray.get(ix))));
-					paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, intStream);
+					PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i, ls);
+					int[] is = new int[i];
+					packedIntegerArray.method_39892(is);
+					method_39894(is, ix -> idList.getRawId(palette.get(ix)));
+					paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, is);
 				} else {
 					paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, ls);
 				}
@@ -259,45 +262,43 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	private PalettedContainer.Serialized<T> write(IndexedIterable<T> idList, PalettedContainer.PaletteProvider provider) {
 		this.lock();
 
-		PalettedContainer.Serialized var17;
+		PalettedContainer.Serialized var12;
 		try {
 			BiMapPalette<T> biMapPalette = new BiMapPalette<>(idList, this.data.storage.getElementBits(), this.dummyListener);
-			T object = null;
-			int i = -1;
-			int j = provider.getContainerSize();
-			int[] is = new int[j];
-
-			for(int k = 0; k < j; ++k) {
-				T object2 = this.get(k);
-				if (object2 != object) {
-					object = object2;
-					i = biMapPalette.index(object2);
-				}
-
-				is[k] = i;
-			}
-
-			int k = provider.getBits(idList, biMapPalette.getSize());
+			int i = provider.getContainerSize();
+			int[] is = new int[i];
+			this.data.storage.method_39892(is);
+			method_39894(is, ix -> biMapPalette.index(this.data.palette.get(ix)));
+			int j = provider.getBits(idList, biMapPalette.getSize());
 			Optional<LongStream> optional;
-			if (k == 0) {
-				optional = Optional.empty();
+			if (j != 0) {
+				PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i, is);
+				optional = Optional.of(Arrays.stream(packedIntegerArray.getData()));
 			} else {
-				PaletteStorage paletteStorage = new PackedIntegerArray(k, j);
-
-				for(int l = 0; l < is.length; ++l) {
-					paletteStorage.set(l, is[l]);
-				}
-
-				long[] ls = paletteStorage.getData();
-				optional = Optional.of(Arrays.stream(ls));
+				optional = Optional.empty();
 			}
 
-			var17 = new PalettedContainer.Serialized(biMapPalette.getElements(), optional);
+			var12 = new PalettedContainer.Serialized(biMapPalette.getElements(), optional);
 		} finally {
 			this.unlock();
 		}
 
-		return var17;
+		return var12;
+	}
+
+	private static <T> void method_39894(int[] is, IntUnaryOperator intUnaryOperator) {
+		int i = -1;
+		int j = -1;
+
+		for(int k = 0; k < is.length; ++k) {
+			int l = is[k];
+			if (l != i) {
+				i = l;
+				j = intUnaryOperator.applyAsInt(l);
+			}
+
+			is[k] = j;
+		}
 	}
 
 	public int getPacketSize() {
@@ -357,24 +358,12 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		/**
 		 * Imports the data from the other {@code storage} with the other
 		 * {@code palette}.
-		 * 
-		 * @param palette the other palette
-		 * @param storage the other storage
 		 */
 		public void importFrom(Palette<T> palette, PaletteStorage storage) {
 			for(int i = 0; i < storage.getSize(); ++i) {
-				this.set(i, palette.get(storage.get(i)));
+				T object = palette.get(storage.get(i));
+				this.storage.set(i, this.palette.index(object));
 			}
-		}
-
-		/**
-		 * Sets an entry to the storage's given index.
-		 * 
-		 * @param index the index in the storage
-		 * @param value the entry to set
-		 */
-		public void set(int index, T value) {
-			this.storage.set(index, this.palette.index(value));
 		}
 
 		/**

@@ -57,6 +57,7 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> NON_FLAMMABLE_WOOD = register("non_flammable_wood");
 	public static final Tag.Identified<Block> CANDLES = register("candles");
 	public static final Tag.Identified<Block> DIRT = register("dirt");
+	public static final Tag.Identified<Block> TERRACOTTA = register("terracotta");
 	public static final Tag.Identified<Block> FLOWER_POTS = register("flower_pots");
 	public static final Tag.Identified<Block> ENDERMAN_HOLDABLE = register("enderman_holdable");
 	public static final Tag.Identified<Block> ICE = register("ice");
@@ -111,6 +112,7 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> CAVE_VINES = register("cave_vines");
 	public static final Tag.Identified<Block> MOSS_REPLACEABLE = register("moss_replaceable");
 	public static final Tag.Identified<Block> LUSH_GROUND_REPLACEABLE = register("lush_ground_replaceable");
+	public static final Tag.Identified<Block> AZALEA_ROOT_REPLACEABLE = register("azalea_root_replaceable");
 	public static final Tag.Identified<Block> SMALL_DRIPLEAF_PLACEABLE = register("small_dripleaf_placeable");
 	public static final Tag.Identified<Block> BIG_DRIPLEAF_PLACEABLE = register("big_dripleaf_placeable");
 	public static final Tag.Identified<Block> SNOW = register("snow");
@@ -133,6 +135,8 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> RABBITS_SPAWNABLE_ON = register("rabbits_spawnable_on");
 	public static final Tag.Identified<Block> FOXES_SPAWNABLE_ON = register("foxes_spawnable_on");
 	public static final Tag.Identified<Block> WOLVES_SPAWNABLE_ON = register("wolves_spawnable_on");
+	public static final Tag.Identified<Block> AZALEA_GROWS_ON = register("azalea_grows_on");
+	public static final Tag.Identified<Block> REPLACEABLE_PLANTS = register("replaceable_plants");
 
 	private BlockTags() {
 	}

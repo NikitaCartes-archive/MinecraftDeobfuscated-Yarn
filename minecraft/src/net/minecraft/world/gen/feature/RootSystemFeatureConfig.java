@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.function.Supplier;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class RootSystemFeatureConfig implements FeatureConfig {
@@ -29,7 +30,8 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootPlacementAttempts),
 					Codec.intRange(1, 64)
 						.fieldOf("allowed_vertical_water_for_tree")
-						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.allowedVerticalWaterForTree)
+						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.allowedVerticalWaterForTree),
+					BlockPredicate.BASE_CODEC.fieldOf("allowed_tree_position").forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.predicate)
 				)
 				.apply(instance, RootSystemFeatureConfig::new)
 	);
@@ -45,6 +47,7 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 	public final BlockStateProvider hangingRootStateProvider;
 	public final int hangingRootPlacementAttempts;
 	public final int allowedVerticalWaterForTree;
+	public final BlockPredicate predicate;
 
 	public RootSystemFeatureConfig(
 		Supplier<PlacedFeature> feature,
@@ -58,7 +61,8 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 		int hangingRootVerticalSpan,
 		BlockStateProvider hangingRootStateProvider,
 		int hangingRootPlacementAttempts,
-		int allowedVerticalWaterForTree
+		int allowedVerticalWaterForTree,
+		BlockPredicate predicate
 	) {
 		this.feature = feature;
 		this.requiredVerticalSpaceForTree = requiredVerticalSpaceForTree;
@@ -72,5 +76,6 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 		this.hangingRootStateProvider = hangingRootStateProvider;
 		this.hangingRootPlacementAttempts = hangingRootPlacementAttempts;
 		this.allowedVerticalWaterForTree = allowedVerticalWaterForTree;
+		this.predicate = predicate;
 	}
 }
