@@ -113,7 +113,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
     }
 
     private static boolean isColdAt(BlockPos pos, Biome biome) {
-        return biome.getTemperature(pos) < 0.15f;
+        return biome.isCold(pos);
     }
 
     private static int getFloorHeight(Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean airPocket, int height, int blockCountY, BlockBox box, HeightLimitView world) {

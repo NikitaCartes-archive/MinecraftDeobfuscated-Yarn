@@ -734,7 +734,7 @@ AutoCloseable {
             return false;
         }
         Biome biome = this.getBiome(pos);
-        return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.getTemperature(pos) >= 0.15f;
+        return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.method_39927(pos);
     }
 
     public boolean hasHighHumidity(BlockPos pos) {

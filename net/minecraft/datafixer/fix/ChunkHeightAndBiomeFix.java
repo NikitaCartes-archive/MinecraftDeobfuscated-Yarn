@@ -218,7 +218,7 @@ extends DataFix {
             ProtoChunkTickListFix.class_6741 lv = supplier.get();
             if (lv != null) {
                 BitSet bitSet = new BitSet(256);
-                boolean bl4 = false;
+                boolean bl4 = string.equals("noise");
                 for (int i = 0; i < 16; ++i) {
                     for (int j = 0; j < 16; ++j) {
                         boolean bl6;

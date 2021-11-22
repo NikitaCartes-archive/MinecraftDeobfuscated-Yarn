@@ -304,8 +304,8 @@ AutoCloseable {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int o = k - l; o <= k + l; ++o) {
             for (int p = i - l; p <= i + l; ++p) {
-                float ad;
-                float z;
+                float ac;
+                float y;
                 int w;
                 int q = (o - k + 16) * 32 + p - i + 16;
                 double r = (double)this.field_20794[q] * 0.5;
@@ -328,8 +328,7 @@ AutoCloseable {
                 if (u == v) continue;
                 Random random = new Random(p * p * 3121 + p * 45238971 ^ o * o * 418711 + o * 13761);
                 mutable.set(p, u, o);
-                float x = biome.getTemperature(mutable);
-                if (x >= 0.15f) {
+                if (biome.method_39927(mutable)) {
                     if (m != 0) {
                         if (m >= 0) {
                             tessellator.draw();
@@ -338,18 +337,18 @@ AutoCloseable {
                         RenderSystem.setShaderTexture(0, RAIN);
                         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
                     }
-                    int y = this.ticks + p * p * 3121 + p * 45238971 + o * o * 418711 + o * 13761 & 0x1F;
-                    z = -((float)y + f) / 32.0f * (3.0f + random.nextFloat());
-                    double aa = (double)p + 0.5 - d;
-                    double ab = (double)o + 0.5 - g;
-                    float ac = (float)Math.sqrt(aa * aa + ab * ab) / (float)l;
-                    ad = ((1.0f - ac * ac) * 0.5f + 0.5f) * h;
+                    int x = this.ticks + p * p * 3121 + p * 45238971 + o * o * 418711 + o * 13761 & 0x1F;
+                    y = -((float)x + f) / 32.0f * (3.0f + random.nextFloat());
+                    double z = (double)p + 0.5 - d;
+                    double aa = (double)o + 0.5 - g;
+                    float ab = (float)Math.sqrt(z * z + aa * aa) / (float)l;
+                    ac = ((1.0f - ab * ab) * 0.5f + 0.5f) * h;
                     mutable.set(p, w, o);
-                    int ae = WorldRenderer.getLightmapCoordinates(world, mutable);
-                    bufferBuilder.vertex((double)p - d - r + 0.5, (double)v - e, (double)o - g - s + 0.5).texture(0.0f, (float)u * 0.25f + z).color(1.0f, 1.0f, 1.0f, ad).light(ae).next();
-                    bufferBuilder.vertex((double)p - d + r + 0.5, (double)v - e, (double)o - g + s + 0.5).texture(1.0f, (float)u * 0.25f + z).color(1.0f, 1.0f, 1.0f, ad).light(ae).next();
-                    bufferBuilder.vertex((double)p - d + r + 0.5, (double)u - e, (double)o - g + s + 0.5).texture(1.0f, (float)v * 0.25f + z).color(1.0f, 1.0f, 1.0f, ad).light(ae).next();
-                    bufferBuilder.vertex((double)p - d - r + 0.5, (double)u - e, (double)o - g - s + 0.5).texture(0.0f, (float)v * 0.25f + z).color(1.0f, 1.0f, 1.0f, ad).light(ae).next();
+                    int ad = WorldRenderer.getLightmapCoordinates(world, mutable);
+                    bufferBuilder.vertex((double)p - d - r + 0.5, (double)v - e, (double)o - g - s + 0.5).texture(0.0f, (float)u * 0.25f + y).color(1.0f, 1.0f, 1.0f, ac).light(ad).next();
+                    bufferBuilder.vertex((double)p - d + r + 0.5, (double)v - e, (double)o - g + s + 0.5).texture(1.0f, (float)u * 0.25f + y).color(1.0f, 1.0f, 1.0f, ac).light(ad).next();
+                    bufferBuilder.vertex((double)p - d + r + 0.5, (double)u - e, (double)o - g + s + 0.5).texture(1.0f, (float)v * 0.25f + y).color(1.0f, 1.0f, 1.0f, ac).light(ad).next();
+                    bufferBuilder.vertex((double)p - d - r + 0.5, (double)u - e, (double)o - g - s + 0.5).texture(0.0f, (float)v * 0.25f + y).color(1.0f, 1.0f, 1.0f, ac).light(ad).next();
                     continue;
                 }
                 if (m != 1) {
@@ -360,23 +359,23 @@ AutoCloseable {
                     RenderSystem.setShaderTexture(0, SNOW);
                     bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
                 }
-                float af = -((float)(this.ticks & 0x1FF) + f) / 512.0f;
-                z = (float)(random.nextDouble() + (double)n * 0.01 * (double)((float)random.nextGaussian()));
-                float ag = (float)(random.nextDouble() + (double)(n * (float)random.nextGaussian()) * 0.001);
-                double ah = (double)p + 0.5 - d;
-                double ai = (double)o + 0.5 - g;
-                ad = (float)Math.sqrt(ah * ah + ai * ai) / (float)l;
-                float aj = ((1.0f - ad * ad) * 0.3f + 0.5f) * h;
+                float ae = -((float)(this.ticks & 0x1FF) + f) / 512.0f;
+                y = (float)(random.nextDouble() + (double)n * 0.01 * (double)((float)random.nextGaussian()));
+                float af = (float)(random.nextDouble() + (double)(n * (float)random.nextGaussian()) * 0.001);
+                double ag = (double)p + 0.5 - d;
+                double ah = (double)o + 0.5 - g;
+                ac = (float)Math.sqrt(ag * ag + ah * ah) / (float)l;
+                float ai = ((1.0f - ac * ac) * 0.3f + 0.5f) * h;
                 mutable.set(p, w, o);
-                int ak = WorldRenderer.getLightmapCoordinates(world, mutable);
-                int al = ak >> 16 & 0xFFFF;
-                int am = ak & 0xFFFF;
+                int aj = WorldRenderer.getLightmapCoordinates(world, mutable);
+                int ak = aj >> 16 & 0xFFFF;
+                int al = aj & 0xFFFF;
+                int am = (ak * 3 + 240) / 4;
                 int an = (al * 3 + 240) / 4;
-                int ao = (am * 3 + 240) / 4;
-                bufferBuilder.vertex((double)p - d - r + 0.5, (double)v - e, (double)o - g - s + 0.5).texture(0.0f + z, (float)u * 0.25f + af + ag).color(1.0f, 1.0f, 1.0f, aj).light(ao, an).next();
-                bufferBuilder.vertex((double)p - d + r + 0.5, (double)v - e, (double)o - g + s + 0.5).texture(1.0f + z, (float)u * 0.25f + af + ag).color(1.0f, 1.0f, 1.0f, aj).light(ao, an).next();
-                bufferBuilder.vertex((double)p - d + r + 0.5, (double)u - e, (double)o - g + s + 0.5).texture(1.0f + z, (float)v * 0.25f + af + ag).color(1.0f, 1.0f, 1.0f, aj).light(ao, an).next();
-                bufferBuilder.vertex((double)p - d - r + 0.5, (double)u - e, (double)o - g - s + 0.5).texture(0.0f + z, (float)v * 0.25f + af + ag).color(1.0f, 1.0f, 1.0f, aj).light(ao, an).next();
+                bufferBuilder.vertex((double)p - d - r + 0.5, (double)v - e, (double)o - g - s + 0.5).texture(0.0f + y, (float)u * 0.25f + ae + af).color(1.0f, 1.0f, 1.0f, ai).light(an, am).next();
+                bufferBuilder.vertex((double)p - d + r + 0.5, (double)v - e, (double)o - g + s + 0.5).texture(1.0f + y, (float)u * 0.25f + ae + af).color(1.0f, 1.0f, 1.0f, ai).light(an, am).next();
+                bufferBuilder.vertex((double)p - d + r + 0.5, (double)u - e, (double)o - g + s + 0.5).texture(1.0f + y, (float)v * 0.25f + ae + af).color(1.0f, 1.0f, 1.0f, ai).light(an, am).next();
+                bufferBuilder.vertex((double)p - d - r + 0.5, (double)u - e, (double)o - g - s + 0.5).texture(0.0f + y, (float)v * 0.25f + ae + af).color(1.0f, 1.0f, 1.0f, ai).light(an, am).next();
             }
         }
         if (m >= 0) {
@@ -402,7 +401,7 @@ AutoCloseable {
             int l = random.nextInt(21) - 10;
             BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l));
             Biome biome = worldView.getBiome(blockPos3);
-            if (blockPos3.getY() <= worldView.getBottomY() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos3) >= 0.15f)) continue;
+            if (blockPos3.getY() <= worldView.getBottomY() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !biome.method_39927(blockPos3)) continue;
             blockPos2 = blockPos3.down();
             if (this.client.options.particles == ParticlesMode.MINIMAL) break;
             double d = random.nextDouble();

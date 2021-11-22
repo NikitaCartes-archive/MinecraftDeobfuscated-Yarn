@@ -108,7 +108,8 @@ public final class Biome {
         return f;
     }
 
-    public final float getTemperature(BlockPos blockPos) {
+    @Deprecated
+    private float getTemperature(BlockPos blockPos) {
         long l = blockPos.asLong();
         Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = this.temperatureCache.get();
         float f = long2FloatLinkedOpenHashMap.get(l);
@@ -128,7 +129,7 @@ public final class Biome {
     }
 
     public boolean canSetIce(WorldView world, BlockPos pos, boolean doWaterCheck) {
-        if (this.getTemperature(pos) >= 0.15f) {
+        if (this.method_39927(pos)) {
             return false;
         }
         if (pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
@@ -149,12 +150,24 @@ public final class Biome {
     }
 
     public boolean isCold(BlockPos pos) {
-        return this.getTemperature(pos) < 0.15f;
+        return !this.method_39927(pos);
+    }
+
+    public boolean method_39927(BlockPos blockPos) {
+        return this.getTemperature(blockPos) >= 0.15f;
+    }
+
+    public boolean method_39928(BlockPos blockPos) {
+        return this.getTemperature(blockPos) > 0.1f;
+    }
+
+    public boolean method_39929(BlockPos blockPos) {
+        return this.getTemperature(blockPos) > 1.0f;
     }
 
     public boolean canSetSnow(WorldView world, BlockPos blockPos) {
         BlockState blockState;
-        if (!this.isCold(blockPos)) {
+        if (this.method_39927(blockPos)) {
             return false;
         }
         return blockPos.getY() >= world.getBottomY() && blockPos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = world.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos);

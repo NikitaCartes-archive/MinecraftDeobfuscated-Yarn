@@ -6,7 +6,6 @@ package net.minecraft.block;
 import java.util.function.Predicate;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
@@ -20,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EntityShapeContext
 implements ShapeContext {
-    protected static final ShapeContext ABSENT = new EntityShapeContext(false, -1.7976931348623157E308, ItemStack.EMPTY, ItemStack.EMPTY, fluid -> false, null){
+    protected static final ShapeContext ABSENT = new EntityShapeContext(false, -1.7976931348623157E308, ItemStack.EMPTY, fluid -> false, null){
 
         @Override
         public boolean isAbove(VoxelShape shape, BlockPos pos, boolean defaultValue) {
@@ -30,28 +29,21 @@ implements ShapeContext {
     private final boolean descending;
     private final double minY;
     private final ItemStack heldItem;
-    private final ItemStack boots;
     private final Predicate<Fluid> walkOnFluidPredicate;
     @Nullable
     private final Entity entity;
 
-    protected EntityShapeContext(boolean descending, double minY, ItemStack boots, ItemStack heldItem, Predicate<Fluid> walkOnFluidPredicate, @Nullable Entity entity) {
+    protected EntityShapeContext(boolean descending, double minY, ItemStack boots, Predicate<Fluid> predicate, @Nullable Entity entity) {
         this.descending = descending;
         this.minY = minY;
-        this.boots = boots;
-        this.heldItem = heldItem;
-        this.walkOnFluidPredicate = walkOnFluidPredicate;
+        this.heldItem = boots;
+        this.walkOnFluidPredicate = predicate;
         this.entity = entity;
     }
 
     @Deprecated
     protected EntityShapeContext(Entity entity) {
-        this(entity.isDescending(), entity.getY(), entity instanceof LivingEntity ? ((LivingEntity)entity).getEquippedStack(EquipmentSlot.FEET) : ItemStack.EMPTY, entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY, entity instanceof LivingEntity ? ((LivingEntity)entity)::canWalkOnFluid : fluid -> false, entity);
-    }
-
-    @Override
-    public boolean isWearingOnFeet(Item item) {
-        return this.boots.isOf(item);
+        this(entity.isDescending(), entity.getY(), entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY, entity instanceof LivingEntity ? ((LivingEntity)entity)::canWalkOnFluid : fluid -> false, entity);
     }
 
     @Override

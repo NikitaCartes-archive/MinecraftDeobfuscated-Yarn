@@ -81,8 +81,8 @@ extends Screen {
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
     }
 
-    public static CyclingButtonWidget<Difficulty> createDifficultyButtonWidget(int i, int width, int height, String text, MinecraftClient client) {
-        return CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(client.world.getDifficulty()).build(width / 2 - 155 + i % 2 * 160, height / 6 - 12 + 24 * (i >> 1), 150, 20, new TranslatableText(text), (cyclingButtonWidget, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty))));
+    public static CyclingButtonWidget<Difficulty> createDifficultyButtonWidget(int buttonIndex, int width, int height, String translationKey, MinecraftClient client) {
+        return CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(client.world.getDifficulty()).build(width / 2 - 155 + buttonIndex % 2 * 160, height / 6 - 12 + 24 * (buttonIndex >> 1), 150, 20, new TranslatableText(translationKey), (cyclingButtonWidget, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty))));
     }
 
     private void refreshResourcePacks(ResourcePackManager resourcePackManager) {

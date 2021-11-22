@@ -317,8 +317,6 @@ public class MathHelper {
 
     /**
      * Steps from {@code from} degrees towards {@code to} degrees, changing the value by at most {@code step} degrees.
-     * 
-     * <p>This method does not wrap the resulting angle, so {@link #stepAngleTowards(float, float, float)} should be used in preference.
      */
     public static float stepUnwrappedAngleTowards(float from, float to, float step) {
         float f = MathHelper.subtractAngles(from, to);

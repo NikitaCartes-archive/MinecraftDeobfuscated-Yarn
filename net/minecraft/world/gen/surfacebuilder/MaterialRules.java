@@ -790,7 +790,7 @@ public class MaterialRules {
 
             @Override
             protected boolean test() {
-                return this.context.biomeSupplier.get().getTemperature(this.context.pos.set(this.context.x, this.context.y, this.context.z)) < 0.15f;
+                return this.context.biomeSupplier.get().isCold(this.context.pos.set(this.context.x, this.context.y, this.context.z));
             }
         }
 

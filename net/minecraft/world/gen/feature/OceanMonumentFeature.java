@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.Objects;
 import java.util.Set;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.OceanMonumentGenerator;
@@ -14,6 +15,7 @@ import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.collection.Weighted;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
@@ -66,9 +68,15 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
         ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
         chunkRandom.setCarverSeed(worldSeed, pos.x, pos.z);
-        StructurePiece structurePiece = OceanMonumentFeature.createBasePiece(pos, chunkRandom);
+        StructurePiece structurePiece = pieces.pieces().get(0);
+        BlockBox blockBox = structurePiece.getBoundingBox();
+        int i = blockBox.getMinX();
+        int j = blockBox.getMinZ();
+        Direction direction = Direction.Type.HORIZONTAL.random(chunkRandom);
+        Direction direction2 = Objects.requireNonNullElse(structurePiece.getFacing(), direction);
+        OceanMonumentGenerator.Base structurePiece2 = new OceanMonumentGenerator.Base(chunkRandom, i, j, direction2);
         StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
-        structurePiecesCollector.addPiece(structurePiece);
+        structurePiecesCollector.addPiece(structurePiece2);
         return structurePiecesCollector.toList();
     }
 }

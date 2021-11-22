@@ -154,7 +154,7 @@ public final class ChunkGeneratorSettings {
     }
 
     private static ChunkGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {
-        return new ChunkGeneratorSettings(new StructuresConfig(true), GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0), new SlideConfig(-0.078125, 2, amplified ? 0 : 8), new SlideConfig(0.1171875, 3, 0), 1, 2, false, amplified, largeBiomes, VanillaTerrainParametersCreator.createSurfaceParameters(amplified)), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createOverworldSurfaceRule(), 63, false, true, true, true, true, false);
+        return new ChunkGeneratorSettings(new StructuresConfig(true), GenerationShapeConfig.create(-64, 384, new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0), new SlideConfig(-0.078125, 2, amplified ? 0 : 8), new SlideConfig(0.4, 3, 0), 1, 2, false, amplified, largeBiomes, VanillaTerrainParametersCreator.createSurfaceParameters(amplified)), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createOverworldSurfaceRule(), 63, false, true, true, true, true, false);
     }
 
     private static ChunkGeneratorSettings createCavesSettings() {

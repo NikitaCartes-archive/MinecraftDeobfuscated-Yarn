@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
-public record GameJoinS2CPacket(int playerEntityId, boolean hardcore, GameMode gameMode, @Nullable GameMode previousGameMode, Set<RegistryKey<World>> dimensionIds, DynamicRegistryManager.Impl registryManager, DimensionType dimensionType, RegistryKey<World> dimensionId, long sha256Seed, int maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld) implements Packet
+public record GameJoinS2CPacket(int playerEntityId, boolean hardcore, GameMode gameMode, @Nullable GameMode previousGameMode, Set<RegistryKey<World>> dimensionIds, DynamicRegistryManager.Impl registryManager, DimensionType dimensionType, RegistryKey<World> dimensionId, long sha256Seed, int maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld) implements Packet<ClientPlayPacketListener>
 {
     public GameJoinS2CPacket(PacketByteBuf buf) {
         this(buf.readInt(), buf.readBoolean(), GameMode.byId(buf.readByte()), GameMode.getOrNull(buf.readByte()), buf.readCollection(Sets::newHashSetWithExpectedSize, b -> RegistryKey.of(Registry.WORLD_KEY, b.readIdentifier())), buf.decode(DynamicRegistryManager.Impl.CODEC), buf.decode(DimensionType.REGISTRY_CODEC).get(), RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier()), buf.readLong(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
@@ -42,6 +42,7 @@ public record GameJoinS2CPacket(int playerEntityId, boolean hardcore, GameMode g
         buf.writeBoolean(this.flatWorld);
     }
 
+    @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onGameJoin(this);
     }

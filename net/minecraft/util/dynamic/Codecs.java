@@ -341,7 +341,7 @@ public class Codecs {
         }
     }
 
-    record Lazy<A>(Supplier<Codec<A>> delegate) implements Codec
+    record Lazy<A>(Supplier<Codec<A>> delegate) implements Codec<A>
     {
         Lazy {
             supplier = Suppliers.memoize(supplier::get);

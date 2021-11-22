@@ -617,6 +617,8 @@ public class Schemas {
         builder.addFixer(new BiomeRenameFix(schema150, false, "Remove Deep Warm Ocean", Map.of("minecraft:deep_warm_ocean", "minecraft:warm_ocean")));
         Schema schema151 = builder.addSchema(2846, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new AdvancementRenameFix(schema151, false, "Rename some C&C part 2 advancements", Schemas.replacing(ImmutableMap.of("minecraft:husbandry/play_jukebox_in_meadows", "minecraft:adventure/play_jukebox_in_meadows", "minecraft:adventure/caves_and_cliff", "minecraft:adventure/fall_from_world_height", "minecraft:adventure/ride_strider_in_overworld_lava", "minecraft:nether/ride_strider_in_overworld_lava"))));
+        Schema schema152 = builder.addSchema(2852, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new WorldGenSettingsDisallowOldCustomWorldsFix(schema152));
     }
 
     private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -1250,7 +1250,7 @@ implements StructureWorldAccess {
     }
 
     public void method_39778(Chunk chunk) {
-        this.structureLocator.cache(chunk.getPos(), chunk.getStructureStarts());
+        this.server.execute(() -> this.structureLocator.cache(chunk.getPos(), chunk.getStructureStarts()));
     }
 
     @Override

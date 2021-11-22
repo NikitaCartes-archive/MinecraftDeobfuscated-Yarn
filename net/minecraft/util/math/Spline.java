@@ -29,11 +29,11 @@ extends ToFloatFunction<C> {
     public String getDebugString();
 
     public static <C> Codec<Spline<C>> method_39232(Codec<ToFloatFunction<C>> codec) {
-        record class_6737(float location, Spline<C> value, float derivative) {
+        record class_6737<C>(float location, Spline<C> value, float derivative) {
         }
         MutableObject<Codec<Spline>> mutableObject = new MutableObject<Codec<Spline>>();
         Codec codec2 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("location")).forGetter(class_6737::location), ((MapCodec)Codecs.createLazy(mutableObject::getValue).fieldOf("value")).forGetter(class_6737::value), ((MapCodec)Codec.FLOAT.fieldOf("derivative")).forGetter(class_6737::derivative)).apply((Applicative<class_6737, ?>)instance, (f, spline, g) -> new class_6737((float)f, spline, (float)g)));
-        Codec codec3 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf("coordinate")).forGetter(class_6738::coordinate), ((MapCodec)codec2.listOf().fieldOf("points")).forGetter(arg -> IntStream.range(0, arg.locations.length).mapToObj(i -> new class_6737(arg.locations()[i], arg.values().get(i), arg.derivatives()[i])).toList())).apply((Applicative<class_6738, ?>)instance, (toFloatFunction, list) -> {
+        Codec codec3 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf("coordinate")).forGetter(class_6738::coordinate), ((MapCodec)Codecs.nonEmptyList(codec2.listOf()).fieldOf("points")).forGetter(arg -> IntStream.range(0, arg.locations.length).mapToObj(i -> new class_6737(arg.locations()[i], arg.values().get(i), arg.derivatives()[i])).toList())).apply((Applicative<class_6738, ?>)instance, (toFloatFunction, list) -> {
             float[] fs = new float[list.size()];
             ImmutableList.Builder builder = ImmutableList.builder();
             float[] gs = new float[list.size()];
@@ -123,7 +123,7 @@ extends ToFloatFunction<C> {
     }
 
     @Debug
-    public record class_6738<C>(ToFloatFunction<C> coordinate, float[] locations, List<Spline<C>> values, float[] derivatives) implements Spline
+    public record class_6738<C>(ToFloatFunction<C> coordinate, float[] locations, List<Spline<C>> values, float[] derivatives) implements Spline<C>
     {
         public class_6738 {
             if (fs.length != list.size() || fs.length != gs.length) {

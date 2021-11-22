@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -111,6 +112,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private static final byte LEVEL_CHUNK = 1;
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int field_29674 = 200;
+    private static final int field_36291 = 20;
     private static final int field_29675 = 3;
     public static final int field_29669 = 33;
     /**
@@ -394,13 +396,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             this.unloadChunks(() -> true);
             this.completeAll();
         } else {
-            this.chunkHolders.values().stream().filter(ChunkHolder::isAccessible).forEach(chunkHolder -> {
-                Chunk chunk = chunkHolder.getSavingFuture().getNow(null);
-                if (chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk) {
-                    this.save(chunk);
-                    chunkHolder.updateAccessibleStatus();
-                }
-            });
+            this.chunkHolders.values().forEach(this::method_39925);
         }
     }
 
@@ -432,6 +428,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
         for (int j = Math.max(0, this.unloadTaskQueue.size() - 2000); (shouldKeepTicking.getAsBoolean() || j > 0) && (runnable = this.unloadTaskQueue.poll()) != null; --j) {
             runnable.run();
+        }
+        int k = 0;
+        Iterator objectIterator = this.chunkHolders.values().iterator();
+        while (k < 20 && shouldKeepTicking.getAsBoolean() && objectIterator.hasNext()) {
+            if (!this.method_39925((ChunkHolder)objectIterator.next())) continue;
+            ++k;
         }
     }
 
@@ -621,6 +623,19 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     public int getTotalChunksLoadedCount() {
         return this.totalChunksLoadedCount.get();
+    }
+
+    private boolean method_39925(ChunkHolder chunkHolder) {
+        if (!chunkHolder.isAccessible()) {
+            return false;
+        }
+        Chunk chunk = chunkHolder.getSavingFuture().getNow(null);
+        if (chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk) {
+            boolean bl = this.save(chunk);
+            chunkHolder.updateAccessibleStatus();
+            return bl;
+        }
+        return false;
     }
 
     private boolean save(Chunk chunk) {

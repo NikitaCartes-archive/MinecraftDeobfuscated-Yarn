@@ -120,7 +120,12 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addJungleGrass(builder);
         DefaultBiomeFeatures.addDefaultMushrooms(builder);
         DefaultBiomeFeatures.addDefaultVegetation(builder);
-        DefaultBiomeFeatures.addJungleVegetation(builder);
+        DefaultBiomeFeatures.method_39933(builder);
+        if (sparse) {
+            DefaultBiomeFeatures.method_39932(builder);
+        } else {
+            DefaultBiomeFeatures.method_39931(builder);
+        }
         return OverworldBiomeCreator.createBiome(Biome.Precipitation.RAIN, Biome.Category.JUNGLE, 0.95f, depth, spawnSettings, builder, DEFAULT_MUSIC);
     }
 
@@ -240,8 +245,7 @@ public class OverworldBiomeCreator {
         if (plateau) {
             builder2.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.LLAMA, 8, 4, 4));
         }
-        float f = windswept ? 1.1f : (plateau ? 1.0f : 1.2f);
-        return OverworldBiomeCreator.createBiome(Biome.Precipitation.NONE, Biome.Category.SAVANNA, f, 0.0f, builder2, builder, DEFAULT_MUSIC);
+        return OverworldBiomeCreator.createBiome(Biome.Precipitation.NONE, Biome.Category.SAVANNA, 2.0f, 0.0f, builder2, builder, DEFAULT_MUSIC);
     }
 
     public static Biome createBadlands(boolean plateau) {
