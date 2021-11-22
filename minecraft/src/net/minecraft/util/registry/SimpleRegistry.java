@@ -228,7 +228,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 			Builder<SimpleRegistry.RegistryManagerEntry<T>> builder = ImmutableList.builder();
 
 			for (T object : simpleRegistry) {
-				builder.add(new SimpleRegistry.RegistryManagerEntry((RegistryKey<T>)simpleRegistry.getKey(object).get(), simpleRegistry.getRawId(object), object));
+				builder.add(new SimpleRegistry.RegistryManagerEntry<>((RegistryKey<T>)simpleRegistry.getKey(object).get(), simpleRegistry.getRawId(object), object));
 			}
 
 			return builder.build();
@@ -247,15 +247,6 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		}, simpleRegistry -> ImmutableMap.copyOf(simpleRegistry.keyToEntry));
 	}
 
-	static record RegistryManagerEntry() {
-		private final RegistryKey<T> key;
-		private final int rawId;
-		private final T entry;
-
-		RegistryManagerEntry(RegistryKey<T> key, int rawId, T entry) {
-			this.key = key;
-			this.rawId = rawId;
-			this.entry = entry;
-		}
+	static record RegistryManagerEntry<T>(RegistryKey<T> key, int rawId, T entry) {
 	}
 }

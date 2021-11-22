@@ -7,17 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import jdk.jfr.consumer.RecordedEvent;
 
-public record GcHeapSummarySample() {
-	private final Instant time;
-	private final long heapUsed;
-	private final GcHeapSummarySample.SummaryType summaryType;
-
-	public GcHeapSummarySample(Instant instant, long l, GcHeapSummarySample.SummaryType summaryType) {
-		this.time = instant;
-		this.heapUsed = l;
-		this.summaryType = summaryType;
-	}
-
+public record GcHeapSummarySample(Instant time, long heapUsed, GcHeapSummarySample.SummaryType summaryType) {
 	public static GcHeapSummarySample fromEvent(RecordedEvent event) {
 		return new GcHeapSummarySample(
 			event.getStartTime(),
@@ -47,19 +37,7 @@ public record GcHeapSummarySample() {
 		return (double)l / (double)duration.getSeconds();
 	}
 
-	public static record Statistics() {
-		private final Duration duration;
-		private final Duration gcDuration;
-		private final int count;
-		private final double allocatedBytesPerSecond;
-
-		public Statistics(Duration duration, Duration duration2, int i, double d) {
-			this.duration = duration;
-			this.gcDuration = duration2;
-			this.count = i;
-			this.allocatedBytesPerSecond = d;
-		}
-
+	public static record Statistics(Duration duration, Duration gcDuration, int count, double allocatedBytesPerSecond) {
 		public float getGcDurationRatio() {
 			return (float)this.gcDuration.toMillis() / (float)this.duration.toMillis();
 		}

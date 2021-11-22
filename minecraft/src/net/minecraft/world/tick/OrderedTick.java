@@ -6,12 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.TickPriority;
 
-public record OrderedTick() {
-	private final T type;
-	private final BlockPos pos;
-	private final long triggerTick;
-	private final TickPriority priority;
-	private final long subTickOrder;
+public record OrderedTick<T>(T type, BlockPos pos, long triggerTick, TickPriority priority, long subTickOrder) {
 	public static final Comparator<OrderedTick<?>> TRIGGER_TICK_COMPARATOR = (first, second) -> {
 		int i = Long.compare(first.triggerTick, second.triggerTick);
 		if (i != 0) {
@@ -43,16 +38,16 @@ public record OrderedTick() {
 		this(type, pos, triggerTick, TickPriority.NORMAL, subTickOrder);
 	}
 
-	public OrderedTick(T object, BlockPos blockPos, long l, TickPriority tickPriority, long m) {
-		blockPos = blockPos.toImmutable();
-		this.type = object;
-		this.pos = blockPos;
-		this.triggerTick = l;
-		this.priority = tickPriority;
-		this.subTickOrder = m;
+	public OrderedTick(T type, BlockPos pos, long triggerTick, TickPriority priority, long subTickOrder) {
+		pos = pos.toImmutable();
+		this.type = type;
+		this.pos = pos;
+		this.triggerTick = triggerTick;
+		this.priority = priority;
+		this.subTickOrder = subTickOrder;
 	}
 
 	public static <T> OrderedTick<T> create(T type, BlockPos pos) {
-		return new OrderedTick(type, pos, 0L, TickPriority.NORMAL, 0L);
+		return new OrderedTick<>(type, pos, 0L, TickPriority.NORMAL, 0L);
 	}
 }

@@ -125,21 +125,13 @@ public interface EntryLoader {
 		};
 	}
 
-	public static record Entry() {
-		private final E value;
-		private final OptionalInt fixedId;
-
-		public Entry(E object, OptionalInt optionalInt) {
-			this.value = object;
-			this.fixedId = optionalInt;
-		}
-
+	public static record Entry<E>(E value, OptionalInt fixedId) {
 		public static <E> EntryLoader.Entry<E> of(E value) {
-			return new EntryLoader.Entry(value, OptionalInt.empty());
+			return new EntryLoader.Entry<>(value, OptionalInt.empty());
 		}
 
 		public static <E> EntryLoader.Entry<E> of(E value, int id) {
-			return new EntryLoader.Entry(value, OptionalInt.of(id));
+			return new EntryLoader.Entry<>(value, OptionalInt.of(id));
 		}
 	}
 
@@ -172,16 +164,7 @@ public interface EntryLoader {
 				: Optional.of(decoder.parse(json, element.data).setLifecycle(element.lifecycle).map(value -> EntryLoader.Entry.of(value, element.id)));
 		}
 
-		static record Element() {
-			final JsonElement data;
-			final int id;
-			final Lifecycle lifecycle;
-
-			Element(JsonElement jsonElement, int i, Lifecycle lifecycle) {
-				this.data = jsonElement;
-				this.id = i;
-				this.lifecycle = lifecycle;
-			}
+		static record Element(JsonElement data, int id, Lifecycle lifecycle) {
 		}
 	}
 }

@@ -105,7 +105,6 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.AreaHelper;
 import net.minecraft.world.dimension.DimensionType;
@@ -191,10 +190,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected boolean onGround;
 	public boolean horizontalCollision;
 	public boolean verticalCollision;
-	/**
-	 * Whether the collision velocity (speed at which the entity hit a given surface)
-	 * is lower than {@link Entity#MAX_SOFT_COLLISION_SPEED}.
-	 */
 	public boolean collidedSoftly;
 	public boolean velocityModified;
 	protected Vec3d movementMultiplier = Vec3d.ZERO;
@@ -459,6 +454,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void baseTick() {
 		this.world.getProfiler().push("entityBaseTick");
+		this.blockStateAtPos = null;
 		if (this.hasVehicle() && this.getVehicle().isRemoved()) {
 			this.stopRiding();
 		}
@@ -837,60 +833,44 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	private Vec3d adjustMovementForCollisions(Vec3d movement) {
 		Box box = this.getBoundingBox();
-		ShapeContext shapeContext = ShapeContext.of(this);
 		List<VoxelShape> list = this.world.getEntityCollisions(this, box.stretch(movement));
-		Vec3d vec3d = movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.world, shapeContext, list);
+		Vec3d vec3d = movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.world, list);
 		boolean bl = movement.x != vec3d.x;
 		boolean bl2 = movement.y != vec3d.y;
 		boolean bl3 = movement.z != vec3d.z;
 		boolean bl4 = this.onGround || bl2 && movement.y < 0.0;
 		if (this.stepHeight > 0.0F && bl4 && (bl || bl3)) {
-			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.stepHeight, movement.z), box, this.world, shapeContext, list);
-			Vec3d vec3d3 = adjustMovementForCollisions(
-				this, new Vec3d(0.0, (double)this.stepHeight, 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, shapeContext, list
-			);
+			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.stepHeight, movement.z), box, this.world, list);
+			Vec3d vec3d3 = adjustMovementForCollisions(this, new Vec3d(0.0, (double)this.stepHeight, 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, list);
 			if (vec3d3.y < (double)this.stepHeight) {
-				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, shapeContext, list).add(vec3d3);
+				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, list).add(vec3d3);
 				if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
 					vec3d2 = vec3d4;
 				}
 			}
 
 			if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
-				return vec3d2.add(adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.world, shapeContext, list));
+				return vec3d2.add(adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.world, list));
 			}
 		}
 
 		return vec3d;
 	}
 
-	public static Vec3d adjustMovementForCollisions(
-		@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, ShapeContext context, List<VoxelShape> collisions
-	) {
-		boolean bl = movement.x == 0.0;
-		boolean bl2 = movement.y == 0.0;
-		boolean bl3 = movement.z == 0.0;
-		WorldBorder worldBorder = world.getWorldBorder();
-		boolean bl4 = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(movement));
-		boolean bl5 = bl && bl2 || bl && bl3 || bl2 && bl3;
-		if (bl5) {
-			List<VoxelShape> list = (List<VoxelShape>)(bl4
-				? ImmutableList.<VoxelShape>builderWithExpectedSize(collisions.size() + 1).addAll(collisions).add(worldBorder.asVoxelShape()).build()
-				: collisions);
-			return adjustSingleAxisMovementForCollisions(movement, entityBoundingBox, world, context, list);
-		} else {
-			Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(collisions.size() + 1);
-			if (!collisions.isEmpty()) {
-				builder.addAll(collisions);
-			}
-
-			if (bl4) {
-				builder.add(worldBorder.asVoxelShape());
-			}
-
-			builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(movement)));
-			return adjustMovementForCollisions(movement, entityBoundingBox, builder.build());
+	public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d vec3d, Box entityBoundingBox, World world, List<VoxelShape> list) {
+		Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(list.size() + 1);
+		if (!list.isEmpty()) {
+			builder.addAll(list);
 		}
+
+		WorldBorder worldBorder = world.getWorldBorder();
+		boolean bl = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(vec3d));
+		if (bl) {
+			builder.add(worldBorder.asVoxelShape());
+		}
+
+		builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(vec3d)));
+		return adjustMovementForCollisions(vec3d, entityBoundingBox, builder.build());
 	}
 
 	private static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions) {
@@ -928,41 +908,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			return new Vec3d(d, e, f);
 		}
-	}
-
-	private static Vec3d adjustSingleAxisMovementForCollisions(
-		Vec3d movement, Box entityBoundingBox, WorldView world, ShapeContext context, List<VoxelShape> collisions
-	) {
-		double d = movement.x;
-		double e = movement.y;
-		double f = movement.z;
-		if (e != 0.0) {
-			e = VoxelShapes.calculatePushVelocity(Direction.Axis.Y, entityBoundingBox, world, e, context, collisions);
-			if (e != 0.0) {
-				entityBoundingBox = entityBoundingBox.offset(0.0, e, 0.0);
-			}
-		}
-
-		boolean bl = Math.abs(d) < Math.abs(f);
-		if (bl && f != 0.0) {
-			f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions);
-			if (f != 0.0) {
-				entityBoundingBox = entityBoundingBox.offset(0.0, 0.0, f);
-			}
-		}
-
-		if (d != 0.0) {
-			d = VoxelShapes.calculatePushVelocity(Direction.Axis.X, entityBoundingBox, world, d, context, collisions);
-			if (!bl && d != 0.0) {
-				entityBoundingBox = entityBoundingBox.offset(d, 0.0, 0.0);
-			}
-		}
-
-		if (!bl && f != 0.0) {
-			f = VoxelShapes.calculatePushVelocity(Direction.Axis.Z, entityBoundingBox, world, f, context, collisions);
-		}
-
-		return new Vec3d(d, e, f);
 	}
 
 	protected float calculateNextStepSoundDistance() {

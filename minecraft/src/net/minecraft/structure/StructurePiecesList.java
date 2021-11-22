@@ -19,8 +19,7 @@ import org.apache.logging.log4j.Logger;
  * An immutable list of structure pieces, usually belonging to a structure
  * start.
  */
-public record StructurePiecesList() {
-	private final List<StructurePiece> pieces;
+public record StructurePiecesList(List<StructurePiece> pieces) {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier JIGSAW = new Identifier("jigsaw");
 	private static final Map<Identifier, Identifier> ID_UPDATES = ImmutableMap.<Identifier, Identifier>builder()

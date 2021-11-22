@@ -10,11 +10,8 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
-public record BlockColumnFeatureConfig() implements FeatureConfig {
-	private final List<BlockColumnFeatureConfig.Layer> layers;
-	private final Direction direction;
-	private final BlockPredicate allowedPlacement;
-	private final boolean prioritizeTip;
+public record BlockColumnFeatureConfig(List<BlockColumnFeatureConfig.Layer> layers, Direction direction, BlockPredicate allowedPlacement, boolean prioritizeTip)
+	implements FeatureConfig {
 	public static final Codec<BlockColumnFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					BlockColumnFeatureConfig.Layer.CODEC.listOf().fieldOf("layers").forGetter(BlockColumnFeatureConfig::layers),
@@ -25,13 +22,6 @@ public record BlockColumnFeatureConfig() implements FeatureConfig {
 				.apply(instance, BlockColumnFeatureConfig::new)
 	);
 
-	public BlockColumnFeatureConfig(List<BlockColumnFeatureConfig.Layer> list, Direction direction, BlockPredicate blockPredicate, boolean bl) {
-		this.layers = list;
-		this.direction = direction;
-		this.allowedPlacement = blockPredicate;
-		this.prioritizeTip = bl;
-	}
-
 	public static BlockColumnFeatureConfig.Layer createLayer(IntProvider height, BlockStateProvider state) {
 		return new BlockColumnFeatureConfig.Layer(height, state);
 	}
@@ -40,9 +30,7 @@ public record BlockColumnFeatureConfig() implements FeatureConfig {
 		return new BlockColumnFeatureConfig(List.of(createLayer(height, state)), Direction.UP, BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN), false);
 	}
 
-	public static record Layer() {
-		private final IntProvider height;
-		private final BlockStateProvider state;
+	public static record Layer(IntProvider height, BlockStateProvider state) {
 		public static final Codec<BlockColumnFeatureConfig.Layer> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						IntProvider.NON_NEGATIVE_CODEC.fieldOf("height").forGetter(BlockColumnFeatureConfig.Layer::height),
@@ -50,10 +38,5 @@ public record BlockColumnFeatureConfig() implements FeatureConfig {
 					)
 					.apply(instance, BlockColumnFeatureConfig.Layer::new)
 		);
-
-		public Layer(IntProvider intProvider, BlockStateProvider blockStateProvider) {
-			this.height = intProvider;
-			this.state = blockStateProvider;
-		}
 	}
 }

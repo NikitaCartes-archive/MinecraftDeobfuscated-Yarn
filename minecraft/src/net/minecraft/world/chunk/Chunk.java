@@ -423,13 +423,6 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		return this;
 	}
 
-	public static record TickSchedulers() {
-		private final SerializableTickScheduler<Block> blocks;
-		private final SerializableTickScheduler<Fluid> fluids;
-
-		public TickSchedulers(SerializableTickScheduler<Block> serializableTickScheduler, SerializableTickScheduler<Fluid> serializableTickScheduler2) {
-			this.blocks = serializableTickScheduler;
-			this.fluids = serializableTickScheduler2;
-		}
+	public static record TickSchedulers(SerializableTickScheduler<Block> blocks, SerializableTickScheduler<Fluid> fluids) {
 	}
 }

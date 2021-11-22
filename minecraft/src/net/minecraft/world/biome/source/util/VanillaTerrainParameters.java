@@ -412,17 +412,6 @@ public final class VanillaTerrainParameters {
 		}
 	}
 
-	public static record NoisePoint() {
-		private final float continentalnessNoise;
-		private final float erosionNoise;
-		private final float normalizedWeirdness;
-		private final float weirdnessNoise;
-
-		public NoisePoint(float continentalnessNoise, float erosionNoise, float normalizedWeirdness, float weirdnessNoise) {
-			this.continentalnessNoise = continentalnessNoise;
-			this.erosionNoise = erosionNoise;
-			this.normalizedWeirdness = normalizedWeirdness;
-			this.weirdnessNoise = weirdnessNoise;
-		}
+	public static record NoisePoint(float continentalnessNoise, float erosionNoise, float normalizedWeirdness, float weirdnessNoise) {
 	}
 }

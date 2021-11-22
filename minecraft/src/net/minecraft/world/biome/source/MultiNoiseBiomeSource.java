@@ -150,9 +150,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		}
 	}
 
-	static record Instance() {
-		private final MultiNoiseBiomeSource.Preset preset;
-		private final Registry<Biome> biomeRegistry;
+	static record Instance(MultiNoiseBiomeSource.Preset preset, Registry<Biome> biomeRegistry) {
 		public static final MapCodec<MultiNoiseBiomeSource.Instance> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						Identifier.CODEC
@@ -169,11 +167,6 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 					)
 					.apply(instance, instance.stable(MultiNoiseBiomeSource.Instance::new))
 		);
-
-		Instance(MultiNoiseBiomeSource.Preset preset, Registry<Biome> biomeRegistry) {
-			this.preset = preset;
-			this.biomeRegistry = biomeRegistry;
-		}
 
 		public MultiNoiseBiomeSource getBiomeSource() {
 			return this.preset.getBiomeSource(this, true);

@@ -37,6 +37,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
 
 public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAttackMob {
@@ -93,7 +94,9 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 			int i = MathHelper.floor(this.getX());
 			int j = MathHelper.floor(this.getY());
 			int k = MathHelper.floor(this.getZ());
-			if (this.world.getBiome(new BlockPos(i, 0, k)).getTemperature(new BlockPos(i, j, k)) > 1.0F) {
+			BlockPos blockPos = new BlockPos(i, j, k);
+			Biome biome = this.world.getBiome(blockPos);
+			if (biome.method_39929(blockPos)) {
 				this.damage(DamageSource.ON_FIRE, 1.0F);
 			}
 
@@ -107,11 +110,9 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 				i = MathHelper.floor(this.getX() + (double)((float)(l % 2 * 2 - 1) * 0.25F));
 				j = MathHelper.floor(this.getY());
 				k = MathHelper.floor(this.getZ() + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
-				BlockPos blockPos = new BlockPos(i, j, k);
-				if (this.world.getBlockState(blockPos).isAir()
-					&& this.world.getBiome(blockPos).getTemperature(blockPos) < 0.8F
-					&& blockState.canPlaceAt(this.world, blockPos)) {
-					this.world.setBlockState(blockPos, blockState);
+				BlockPos blockPos2 = new BlockPos(i, j, k);
+				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
+					this.world.setBlockState(blockPos2, blockState);
 				}
 			}
 		}

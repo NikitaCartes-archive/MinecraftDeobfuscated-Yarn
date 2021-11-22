@@ -1341,7 +1341,9 @@ public abstract class PlayerEntity extends LivingEntity {
 	/**
 	 * Tries to start sleeping on a block.
 	 * 
-	 * @return an {@link Either.Right} if successful, otherwise an {@link Either.Left} containing the failure reason
+	 * @return an {@link com.mojang.datafixers.util.Either.Right Either.Right}
+	 * if successful, otherwise an {@link com.mojang.datafixers.util.Either.Left
+	 * Either.Left} containing the failure reason
 	 * 
 	 * @param pos the position of the bed block
 	 */

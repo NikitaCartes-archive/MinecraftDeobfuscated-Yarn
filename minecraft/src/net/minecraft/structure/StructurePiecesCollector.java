@@ -48,6 +48,7 @@ public class StructurePiecesCollector implements StructurePiecesHolder {
 		this.shift(k);
 	}
 
+	/** @deprecated */
 	/**
 	 * Shifts all pieces so they lie within {@code [baseY, topY]} vertically.
 	 */

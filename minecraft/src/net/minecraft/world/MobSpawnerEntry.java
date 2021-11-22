@@ -10,9 +10,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.dynamic.Range;
 
-public record MobSpawnerEntry() {
-	private final NbtCompound entity;
-	private final Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules;
+public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules) {
 	public static final Codec<MobSpawnerEntry> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					NbtCompound.CODEC.fieldOf("entity").forGetter(entry -> entry.entity),
@@ -27,11 +25,11 @@ public record MobSpawnerEntry() {
 		this(Util.make(new NbtCompound(), nbt -> nbt.putString("id", "minecraft:pig")), Optional.empty());
 	}
 
-	public MobSpawnerEntry(NbtCompound nbtCompound, Optional<MobSpawnerEntry.CustomSpawnRules> optional) {
-		Identifier identifier = Identifier.tryParse(nbtCompound.getString("id"));
-		nbtCompound.putString("id", identifier != null ? identifier.toString() : "minecraft:pig");
-		this.entity = nbtCompound;
-		this.customSpawnRules = optional;
+	public MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules) {
+		Identifier identifier = Identifier.tryParse(entity.getString("id"));
+		entity.putString("id", identifier != null ? identifier.toString() : "minecraft:pig");
+		this.entity = entity;
+		this.customSpawnRules = customSpawnRules;
 	}
 
 	public NbtCompound getNbt() {
@@ -42,9 +40,7 @@ public record MobSpawnerEntry() {
 		return this.customSpawnRules;
 	}
 
-	public static record CustomSpawnRules() {
-		private final Range<Integer> blockLightLimit;
-		private final Range<Integer> skyLightLimit;
+	public static record CustomSpawnRules(Range<Integer> blockLightLimit, Range<Integer> skyLightLimit) {
 		private static final Range<Integer> DEFAULT = new Range(0, 15);
 		public static final Codec<MobSpawnerEntry.CustomSpawnRules> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
@@ -59,11 +55,6 @@ public record MobSpawnerEntry() {
 					)
 					.apply(instance, MobSpawnerEntry.CustomSpawnRules::new)
 		);
-
-		public CustomSpawnRules(Range<Integer> range, Range<Integer> range2) {
-			this.blockLightLimit = range;
-			this.skyLightLimit = range2;
-		}
 
 		private static DataResult<Range<Integer>> validate(Range<Integer> provider) {
 			return !DEFAULT.contains(provider) ? DataResult.error("Light values must be withing range " + DEFAULT) : DataResult.success(provider);

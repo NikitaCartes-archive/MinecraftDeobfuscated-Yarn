@@ -39,11 +39,11 @@ public abstract class Property<T extends Comparable<T>> {
 	}
 
 	public Property.Value<T> createValue(T value) {
-		return new Property.Value(this, value);
+		return new Property.Value<>(this, value);
 	}
 
 	public Property.Value<T> createValue(State<?, ?> state) {
-		return new Property.Value(this, state.get(this));
+		return new Property.Value<>(this, state.get(this));
 	}
 
 	public Stream<Property.Value<T>> stream() {
@@ -113,10 +113,7 @@ public abstract class Property<T extends Comparable<T>> {
 		return dataResult.map(property -> state.with(this, property)).setPartial(state);
 	}
 
-	public static record Value() {
-		private final Property<T> property;
-		private final T value;
-
+	public static record Value<T extends Comparable<T>>(Property<T> property, T value) {
 		public Value(Property<T> property, T value) {
 			if (!property.getValues().contains(value)) {
 				throw new IllegalArgumentException("Value " + value + " does not belong to property " + property);

@@ -632,21 +632,6 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		}
 	}
 
-	public static record class_6747() {
-		private final double shiftedX;
-		private final double shiftedZ;
-		private final double continentalness;
-		private final double weirdness;
-		private final double erosion;
-		private final TerrainNoisePoint terrainInfo;
-
-		public class_6747(double d, double e, double f, double g, double h, TerrainNoisePoint terrainNoisePoint) {
-			this.shiftedX = d;
-			this.shiftedZ = e;
-			this.continentalness = f;
-			this.weirdness = g;
-			this.erosion = h;
-			this.terrainInfo = terrainNoisePoint;
-		}
+	public static record class_6747(double shiftedX, double shiftedZ, double continentalness, double weirdness, double erosion, TerrainNoisePoint terrainInfo) {
 	}
 }

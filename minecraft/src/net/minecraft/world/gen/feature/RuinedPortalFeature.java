@@ -60,7 +60,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 
 	private static Optional<StructurePiecesGenerator<RuinedPortalFeatureConfig>> addPieces(StructureGeneratorFactory.Context<RuinedPortalFeatureConfig> context) {
 		RuinedPortalStructurePiece.Properties properties = new RuinedPortalStructurePiece.Properties();
-		RuinedPortalFeatureConfig ruinedPortalFeatureConfig = (RuinedPortalFeatureConfig)context.config();
+		RuinedPortalFeatureConfig ruinedPortalFeatureConfig = context.config();
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
 		RuinedPortalStructurePiece.VerticalPlacement verticalPlacement;
@@ -147,7 +147,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 	}
 
 	private static boolean isColdAt(BlockPos pos, Biome biome) {
-		return biome.getTemperature(pos) < 0.15F;
+		return biome.isCold(pos);
 	}
 
 	private static int getFloorHeight(

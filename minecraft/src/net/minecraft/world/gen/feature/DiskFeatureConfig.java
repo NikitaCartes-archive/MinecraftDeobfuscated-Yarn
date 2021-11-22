@@ -6,11 +6,7 @@ import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.intprovider.IntProvider;
 
-public record DiskFeatureConfig() implements FeatureConfig {
-	private final BlockState state;
-	private final IntProvider radius;
-	private final int halfHeight;
-	private final List<BlockState> targets;
+public record DiskFeatureConfig(BlockState state, IntProvider radius, int halfHeight, List<BlockState> targets) implements FeatureConfig {
 	public static final Codec<DiskFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					BlockState.CODEC.fieldOf("state").forGetter(DiskFeatureConfig::state),
@@ -20,11 +16,4 @@ public record DiskFeatureConfig() implements FeatureConfig {
 				)
 				.apply(instance, DiskFeatureConfig::new)
 	);
-
-	public DiskFeatureConfig(BlockState blockState, IntProvider intProvider, int i, List<BlockState> list) {
-		this.state = blockState;
-		this.radius = intProvider;
-		this.halfHeight = i;
-		this.targets = list;
-	}
 }

@@ -22,7 +22,7 @@ public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<OceanRuinFeatureConfig> context) {
 		BlockPos blockPos = new BlockPos(context.chunkPos().getStartX(), 90, context.chunkPos().getStartZ());
 		BlockRotation blockRotation = BlockRotation.random(context.random());
-		OceanRuinGenerator.addPieces(context.structureManager(), blockPos, blockRotation, collector, context.random(), (OceanRuinFeatureConfig)context.config());
+		OceanRuinGenerator.addPieces(context.structureManager(), blockPos, blockRotation, collector, context.random(), context.config());
 	}
 
 	public static enum BiomeType implements StringIdentifiable {

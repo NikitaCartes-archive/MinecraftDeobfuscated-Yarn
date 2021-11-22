@@ -8,18 +8,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-public record FileIoSample() {
-	private final Duration duration;
-	@Nullable
-	private final String path;
-	private final long bytes;
-
-	public FileIoSample(Duration duration, @Nullable String string, long l) {
-		this.duration = duration;
-		this.path = string;
-		this.bytes = l;
-	}
-
+public record FileIoSample(Duration duration, @Nullable String path, long bytes) {
 	public static FileIoSample.Statistics toStatistics(Duration duration, List<FileIoSample> samples) {
 		long l = samples.stream().mapToLong(sample -> sample.bytes).sum();
 		return new FileIoSample.Statistics(
@@ -40,21 +29,8 @@ public record FileIoSample() {
 		);
 	}
 
-	public static record Statistics() {
-		private final long totalBytes;
-		private final double bytesPerSecond;
-		private final long count;
-		private final double countPerSecond;
-		private final Duration totalDuration;
-		private final List<Pair<String, Long>> topContributors;
-
-		public Statistics(long l, double d, long m, double e, Duration duration, List<Pair<String, Long>> list) {
-			this.totalBytes = l;
-			this.bytesPerSecond = d;
-			this.count = m;
-			this.countPerSecond = e;
-			this.totalDuration = duration;
-			this.topContributors = list;
-		}
+	public static record Statistics(
+		long totalBytes, double bytesPerSecond, long count, double countPerSecond, Duration totalDuration, List<Pair<String, Long>> topContributors
+	) {
 	}
 }

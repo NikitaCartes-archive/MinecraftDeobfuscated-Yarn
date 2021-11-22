@@ -4,10 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.function.Function;
 
-public record Range() {
-	private final T minInclusive;
-	private final T maxInclusive;
-	public static final Codec<Range<Integer>> CODEC = createCodec(Codec.INT);
+public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
+	public static final Codec<Range<Integer>> CODEC = createCodec((Codec<T>)Codec.INT);
 
 	public Range(T minInclusive, T maxInclusive) {
 		if (minInclusive.compareTo(maxInclusive) > 0) {
@@ -37,7 +35,7 @@ public record Range() {
 
 	public static <T extends Comparable<T>> DataResult<Range<T>> validate(T minInclusive, T maxInclusive) {
 		return minInclusive.compareTo(maxInclusive) <= 0
-			? DataResult.success(new Range(minInclusive, maxInclusive))
+			? DataResult.success(new Range<>(minInclusive, maxInclusive))
 			: DataResult.error("min_inclusive must be less than or equal to max_inclusive");
 	}
 

@@ -49,17 +49,8 @@ public final class NetworkIoStatistics {
 		return this.topContributors;
 	}
 
-	public static record Packet() {
-		private final NetworkSide side;
-		private final int protocolId;
-		private final int packetId;
+	public static record Packet(NetworkSide side, int protocolId, int packetId) {
 		private static final Map<NetworkIoStatistics.Packet, String> PACKET_TO_NAME;
-
-		public Packet(NetworkSide networkSide, int i, int j) {
-			this.side = networkSide;
-			this.protocolId = i;
-			this.packetId = j;
-		}
 
 		public String getName() {
 			return (String)PACKET_TO_NAME.getOrDefault(this, "unknown");
@@ -87,17 +78,10 @@ public final class NetworkIoStatistics {
 		}
 	}
 
-	public static record PacketStatistics() {
-		final long totalCount;
-		final long totalSize;
+	public static record PacketStatistics(long totalCount, long totalSize) {
 		static final Comparator<NetworkIoStatistics.PacketStatistics> COMPARATOR = Comparator.comparing(NetworkIoStatistics.PacketStatistics::totalSize)
 			.thenComparing(NetworkIoStatistics.PacketStatistics::totalCount)
 			.reversed();
-
-		public PacketStatistics(long l, long m) {
-			this.totalCount = l;
-			this.totalSize = m;
-		}
 
 		NetworkIoStatistics.PacketStatistics add(NetworkIoStatistics.PacketStatistics statistics) {
 			return new NetworkIoStatistics.PacketStatistics(this.totalCount + statistics.totalCount, this.totalSize + statistics.totalSize);

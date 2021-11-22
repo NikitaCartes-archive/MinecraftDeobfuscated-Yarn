@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ClampedNormalIntProvider;
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.YOffset;
@@ -110,7 +111,8 @@ public class UndergroundPlacedFeatures {
 			.withPlacement(
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(Direction.UP.getVector()), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(-1)),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -121,7 +123,8 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(157),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.hasSturdyFace(Direction.UP.getVector(), Direction.DOWN), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.method_39930(Direction.DOWN), BlockPredicate.IS_AIR, 12),
+				RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(-1)),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -132,7 +135,8 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(104),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(Direction.DOWN.getVector()), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(1)),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -143,7 +147,8 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(52),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(Direction.DOWN.getVector()), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(1)),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -154,7 +159,8 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(104),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(Direction.UP.getVector()), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(-1)),
 				BiomePlacementModifier.of()
 			)
 	);
@@ -165,7 +171,8 @@ public class UndergroundPlacedFeatures {
 				CountPlacementModifier.of(21),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(Direction.UP.getVector()), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(-1)),
 				BiomePlacementModifier.of()
 			)
 	);

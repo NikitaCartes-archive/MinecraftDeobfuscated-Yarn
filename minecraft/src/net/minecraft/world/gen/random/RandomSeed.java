@@ -28,13 +28,6 @@ public final class RandomSeed {
 		return SEED_UNIQUIFIER.updateAndGet(seedUniquifier -> seedUniquifier * 1181783497276652981L) ^ System.nanoTime();
 	}
 
-	public static record XoroshiroSeed() {
-		private final long seedLo;
-		private final long seedHi;
-
-		public XoroshiroSeed(long l, long m) {
-			this.seedLo = l;
-			this.seedHi = m;
-		}
+	public static record XoroshiroSeed(long seedLo, long seedHi) {
 	}
 }

@@ -86,10 +86,7 @@ public class SelectiveNbtCollector extends NbtCollector {
 		return this.queriesLeft;
 	}
 
-	public static record Query() {
-		final List<String> path;
-		final NbtType<?> type;
-		final String key;
+	public static record Query(List<String> path, NbtType<?> type, String key) {
 
 		public Query(NbtType<?> type, String key) {
 			this(List.of(), type, key);
@@ -102,27 +99,12 @@ public class SelectiveNbtCollector extends NbtCollector {
 		public Query(String path1, String path2, NbtType<?> type, String key) {
 			this(List.of(path1, path2), type, key);
 		}
-
-		public Query(List<String> list, NbtType<?> nbtType, String string) {
-			this.path = list;
-			this.type = nbtType;
-			this.key = string;
-		}
 	}
 
-	static record Tree() {
-		private final int depth;
-		final Map<String, NbtType<?>> fieldsToGet;
-		final Map<String, SelectiveNbtCollector.Tree> fieldsToRecurse;
+	static record Tree(int depth, Map<String, NbtType<?>> fieldsToGet, Map<String, SelectiveNbtCollector.Tree> fieldsToRecurse) {
 
 		public Tree(int depth) {
 			this(depth, new HashMap(), new HashMap());
-		}
-
-		private Tree(int i, Map<String, NbtType<?>> map, Map<String, SelectiveNbtCollector.Tree> map2) {
-			this.depth = i;
-			this.fieldsToGet = map;
-			this.fieldsToRecurse = map2;
 		}
 
 		public void add(SelectiveNbtCollector.Query query) {

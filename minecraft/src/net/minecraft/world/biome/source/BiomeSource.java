@@ -55,16 +55,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 		Object2IntMap<PlacedFeature> object2IntMap = new Object2IntOpenHashMap<>();
 		MutableInt mutableInt = new MutableInt(0);
 
-		record class_6543() {
-			private final int featureIndex;
-			private final int step;
-			private final PlacedFeature feature;
-
-			class_6543(int i, int j, PlacedFeature placedFeature) {
-				this.featureIndex = i;
-				this.step = j;
-				this.feature = placedFeature;
-			}
+		record class_6543(int featureIndex, int step, PlacedFeature feature) {
 		}
 
 		Comparator<class_6543> comparator = Comparator.comparingInt(class_6543::step).thenComparingInt(class_6543::featureIndex);
@@ -255,13 +246,6 @@ public abstract class BiomeSource implements BiomeSupplier {
 		Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
 	}
 
-	public static record class_6827() {
-		private final List<PlacedFeature> features;
-		private final ToIntFunction<PlacedFeature> indexMapping;
-
-		public class_6827(List<PlacedFeature> list, ToIntFunction<PlacedFeature> toIntFunction) {
-			this.features = list;
-			this.indexMapping = toIntFunction;
-		}
+	public static record class_6827(List<PlacedFeature> features, ToIntFunction<PlacedFeature> indexMapping) {
 	}
 }

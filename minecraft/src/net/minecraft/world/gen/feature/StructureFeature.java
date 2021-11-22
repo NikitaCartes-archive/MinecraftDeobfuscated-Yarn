@@ -321,7 +321,7 @@ public class StructureFeature<C extends FeatureConfig> {
 		if (pos.x == chunkPos.x && pos.z == chunkPos.z) {
 			Optional<StructurePiecesGenerator<C>> optional = this.piecesGenerator
 				.createGenerator(
-					new StructureGeneratorFactory.Context(chunkGenerator, biomeSource, worldSeed, pos, config, world, biomePredicate, structureManager, registryManager)
+					new StructureGeneratorFactory.Context<>(chunkGenerator, biomeSource, worldSeed, pos, config, world, biomePredicate, structureManager, registryManager)
 				);
 			if (optional.isPresent()) {
 				StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
@@ -329,7 +329,7 @@ public class StructureFeature<C extends FeatureConfig> {
 				chunkRandom.setCarverSeed(worldSeed, pos.x, pos.z);
 				((StructurePiecesGenerator)optional.get())
 					.generatePieces(
-						structurePiecesCollector, new StructurePiecesGenerator.Context(config, chunkGenerator, structureManager, pos, world, chunkRandom, worldSeed)
+						structurePiecesCollector, new StructurePiecesGenerator.Context<>(config, chunkGenerator, structureManager, pos, world, chunkRandom, worldSeed)
 					);
 				StructureStart<C> structureStart = new StructureStart<>(this, pos, structureReferences, structurePiecesCollector.toList());
 				if (structureStart.hasChildren()) {
@@ -354,7 +354,7 @@ public class StructureFeature<C extends FeatureConfig> {
 	) {
 		return this.piecesGenerator
 			.createGenerator(
-				new StructureGeneratorFactory.Context(chunkGenerator, biomeSource, worldSeed, pos, config, world, biomePredicate, structureManager, registryManager)
+				new StructureGeneratorFactory.Context<>(chunkGenerator, biomeSource, worldSeed, pos, config, world, biomePredicate, structureManager, registryManager)
 			)
 			.isPresent();
 	}

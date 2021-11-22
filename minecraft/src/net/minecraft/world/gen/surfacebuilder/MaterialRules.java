@@ -118,10 +118,7 @@ public class MaterialRules {
 		return MaterialRules.TerracottaBandsMaterialRule.INSTANCE;
 	}
 
-	static record AboveYMaterialCondition() implements MaterialRules.MaterialCondition {
-		final YOffset anchor;
-		final int surfaceDepthMultiplier;
-		final boolean addStoneDepth;
+	static record AboveYMaterialCondition(YOffset anchor, int surfaceDepthMultiplier, boolean addStoneDepth) implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.AboveYMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						YOffset.OFFSET_CODEC.fieldOf("anchor").forGetter(MaterialRules.AboveYMaterialCondition::anchor),
@@ -130,12 +127,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.AboveYMaterialCondition::new)
 		);
-
-		AboveYMaterialCondition(YOffset yOffset, int i, boolean bl) {
-			this.anchor = yOffset;
-			this.surfaceDepthMultiplier = i;
-			this.addStoneDepth = bl;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -159,17 +150,12 @@ public class MaterialRules {
 		}
 	}
 
-	static record BiomeMaterialCondition() implements MaterialRules.MaterialCondition {
-		private final List<RegistryKey<Biome>> biomes;
+	static record BiomeMaterialCondition(List<RegistryKey<Biome>> biomes) implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.BiomeMaterialCondition> CONDITION_CODEC = RegistryKey.createCodec(Registry.BIOME_KEY)
 			.listOf()
 			.fieldOf("biome_is")
 			.<MaterialRules.BiomeMaterialCondition>xmap(MaterialRules::biome, MaterialRules.BiomeMaterialCondition::biomes)
 			.codec();
-
-		BiomeMaterialCondition(List<RegistryKey<Biome>> list) {
-			this.biomes = list;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -194,9 +180,7 @@ public class MaterialRules {
 		}
 	}
 
-	static record BlockMaterialRule() implements MaterialRules.MaterialRule {
-		private final BlockState resultState;
-		private final MaterialRules.SimpleBlockStateRule rule;
+	static record BlockMaterialRule(BlockState resultState, MaterialRules.SimpleBlockStateRule rule) implements MaterialRules.MaterialRule {
 		static final Codec<MaterialRules.BlockMaterialRule> RULE_CODEC = BlockState.CODEC
 			.<MaterialRules.BlockMaterialRule>xmap(MaterialRules.BlockMaterialRule::new, MaterialRules.BlockMaterialRule::resultState)
 			.fieldOf("result_state")
@@ -204,11 +188,6 @@ public class MaterialRules {
 
 		BlockMaterialRule(BlockState resultState) {
 			this(resultState, new MaterialRules.SimpleBlockStateRule(resultState));
-		}
-
-		private BlockMaterialRule(BlockState blockState, MaterialRules.SimpleBlockStateRule simpleBlockStateRule) {
-			this.resultState = blockState;
-			this.rule = simpleBlockStateRule;
 		}
 
 		@Override
@@ -233,9 +212,7 @@ public class MaterialRules {
 		boolean get();
 	}
 
-	static record ConditionMaterialRule() implements MaterialRules.MaterialRule {
-		private final MaterialRules.MaterialCondition ifTrue;
-		private final MaterialRules.MaterialRule thenRun;
+	static record ConditionMaterialRule(MaterialRules.MaterialCondition ifTrue, MaterialRules.MaterialRule thenRun) implements MaterialRules.MaterialRule {
 		static final Codec<MaterialRules.ConditionMaterialRule> RULE_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						MaterialRules.MaterialCondition.CODEC.fieldOf("if_true").forGetter(MaterialRules.ConditionMaterialRule::ifTrue),
@@ -243,11 +220,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.ConditionMaterialRule::new)
 		);
-
-		ConditionMaterialRule(MaterialRules.MaterialCondition materialCondition, MaterialRules.MaterialRule materialRule) {
-			this.ifTrue = materialCondition;
-			this.thenRun = materialRule;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialRule> codec() {
@@ -265,15 +237,8 @@ public class MaterialRules {
 	 * Applies another block state rule if the given predicate matches, and returns
 	 * {@code null} otherwise.
 	 */
-	static record ConditionalBlockStateRule() implements MaterialRules.BlockStateRule {
-		private final MaterialRules.BooleanSupplier condition;
-		private final MaterialRules.BlockStateRule followup;
-
-		ConditionalBlockStateRule(MaterialRules.BooleanSupplier booleanSupplier, MaterialRules.BlockStateRule blockStateRule) {
-			this.condition = booleanSupplier;
-			this.followup = blockStateRule;
-		}
-
+	static record ConditionalBlockStateRule(MaterialRules.BooleanSupplier condition, MaterialRules.BlockStateRule followup)
+		implements MaterialRules.BlockStateRule {
 		@Nullable
 		@Override
 		public BlockState tryApply(int i, int j, int k) {
@@ -318,13 +283,7 @@ public class MaterialRules {
 		}
 	}
 
-	static record InvertedBooleanSupplier() implements MaterialRules.BooleanSupplier {
-		private final MaterialRules.BooleanSupplier target;
-
-		InvertedBooleanSupplier(MaterialRules.BooleanSupplier booleanSupplier) {
-			this.target = booleanSupplier;
-		}
-
+	static record InvertedBooleanSupplier(MaterialRules.BooleanSupplier target) implements MaterialRules.BooleanSupplier {
 		@Override
 		public boolean get() {
 			return !this.target.get();
@@ -530,7 +489,7 @@ public class MaterialRules {
 
 			@Override
 			protected boolean test() {
-				return ((Biome)this.context.biomeSupplier.get()).getTemperature(this.context.pos.set(this.context.x, this.context.y, this.context.z)) < 0.15F;
+				return ((Biome)this.context.biomeSupplier.get()).isCold(this.context.pos.set(this.context.x, this.context.y, this.context.z));
 			}
 		}
 
@@ -579,10 +538,8 @@ public class MaterialRules {
 		}
 	}
 
-	static record NoiseThresholdMaterialCondition() implements MaterialRules.MaterialCondition {
-		private final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise;
-		final double minThreshold;
-		final double maxThreshold;
+	static record NoiseThresholdMaterialCondition(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise, double minThreshold, double maxThreshold)
+		implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.NoiseThresholdMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						RegistryKey.createCodec(Registry.NOISE_WORLDGEN).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
@@ -591,12 +548,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.NoiseThresholdMaterialCondition::new)
 		);
-
-		NoiseThresholdMaterialCondition(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d, double e) {
-			this.noise = registryKey;
-			this.minThreshold = d;
-			this.maxThreshold = e;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -622,16 +573,11 @@ public class MaterialRules {
 		}
 	}
 
-	static record NotMaterialCondition() implements MaterialRules.MaterialCondition {
-		private final MaterialRules.MaterialCondition target;
+	static record NotMaterialCondition(MaterialRules.MaterialCondition target) implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.NotMaterialCondition> CONDITION_CODEC = MaterialRules.MaterialCondition.CODEC
 			.<MaterialRules.NotMaterialCondition>xmap(MaterialRules.NotMaterialCondition::new, MaterialRules.NotMaterialCondition::target)
 			.fieldOf("invert")
 			.codec();
-
-		NotMaterialCondition(MaterialRules.MaterialCondition materialCondition) {
-			this.target = materialCondition;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -647,13 +593,7 @@ public class MaterialRules {
 	 * Applies the given block state rules in sequence, and returns the first result that
 	 * isn't {@code null}. Returns {@code null} if none of the passed rules match.
 	 */
-	static record SequenceBlockStateRule() implements MaterialRules.BlockStateRule {
-		private final List<MaterialRules.BlockStateRule> rules;
-
-		SequenceBlockStateRule(List<MaterialRules.BlockStateRule> list) {
-			this.rules = list;
-		}
-
+	static record SequenceBlockStateRule(List<MaterialRules.BlockStateRule> rules) implements MaterialRules.BlockStateRule {
 		@Nullable
 		@Override
 		public BlockState tryApply(int i, int j, int k) {
@@ -668,17 +608,12 @@ public class MaterialRules {
 		}
 	}
 
-	static record SequenceMaterialRule() implements MaterialRules.MaterialRule {
-		private final List<MaterialRules.MaterialRule> sequence;
+	static record SequenceMaterialRule(List<MaterialRules.MaterialRule> sequence) implements MaterialRules.MaterialRule {
 		static final Codec<MaterialRules.SequenceMaterialRule> RULE_CODEC = MaterialRules.MaterialRule.CODEC
 			.listOf()
 			.<MaterialRules.SequenceMaterialRule>xmap(MaterialRules.SequenceMaterialRule::new, MaterialRules.SequenceMaterialRule::sequence)
 			.fieldOf("sequence")
 			.codec();
-
-		SequenceMaterialRule(List<MaterialRules.MaterialRule> list) {
-			this.sequence = list;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialRule> codec() {
@@ -703,13 +638,7 @@ public class MaterialRules {
 	/**
 	 * Always returns the given {@link BlockState}.
 	 */
-	static record SimpleBlockStateRule() implements MaterialRules.BlockStateRule {
-		private final BlockState state;
-
-		SimpleBlockStateRule(BlockState blockState) {
-			this.state = blockState;
-		}
-
+	static record SimpleBlockStateRule(BlockState state) implements MaterialRules.BlockStateRule {
 		@Override
 		public BlockState tryApply(int i, int j, int k) {
 			return this.state;
@@ -731,11 +660,8 @@ public class MaterialRules {
 		}
 	}
 
-	static record StoneDepthMaterialCondition() implements MaterialRules.MaterialCondition {
-		final int offset;
-		final boolean addSurfaceDepth;
-		final boolean addSurfaceSecondaryDepth;
-		private final VerticalSurfaceType surfaceType;
+	static record StoneDepthMaterialCondition(int offset, boolean addSurfaceDepth, boolean addSurfaceSecondaryDepth, VerticalSurfaceType surfaceType)
+		implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.StoneDepthMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.INT.fieldOf("offset").forGetter(MaterialRules.StoneDepthMaterialCondition::offset),
@@ -745,13 +671,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.StoneDepthMaterialCondition::new)
 		);
-
-		StoneDepthMaterialCondition(int i, boolean bl, boolean bl2, VerticalSurfaceType verticalSurfaceType) {
-			this.offset = i;
-			this.addSurfaceDepth = bl;
-			this.addSurfaceSecondaryDepth = bl2;
-			this.surfaceType = verticalSurfaceType;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -825,10 +744,8 @@ public class MaterialRules {
 		}
 	}
 
-	static record VerticalGradientMaterialCondition() implements MaterialRules.MaterialCondition {
-		private final Identifier randomName;
-		private final YOffset trueAtAndBelow;
-		private final YOffset falseAtAndAbove;
+	static record VerticalGradientMaterialCondition(Identifier randomName, YOffset trueAtAndBelow, YOffset falseAtAndAbove)
+		implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.VerticalGradientMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Identifier.CODEC.fieldOf("random_name").forGetter(MaterialRules.VerticalGradientMaterialCondition::randomName),
@@ -837,12 +754,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.VerticalGradientMaterialCondition::new)
 		);
-
-		VerticalGradientMaterialCondition(Identifier identifier, YOffset yOffset, YOffset yOffset2) {
-			this.randomName = identifier;
-			this.trueAtAndBelow = yOffset;
-			this.falseAtAndAbove = yOffset2;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -878,10 +789,7 @@ public class MaterialRules {
 		}
 	}
 
-	static record WaterMaterialCondition() implements MaterialRules.MaterialCondition {
-		final int offset;
-		final int surfaceDepthMultiplier;
-		final boolean addStoneDepth;
+	static record WaterMaterialCondition(int offset, int surfaceDepthMultiplier, boolean addStoneDepth) implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.WaterMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.INT.fieldOf("offset").forGetter(MaterialRules.WaterMaterialCondition::offset),
@@ -890,12 +798,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.WaterMaterialCondition::new)
 		);
-
-		WaterMaterialCondition(int i, int j, boolean bl) {
-			this.offset = i;
-			this.surfaceDepthMultiplier = j;
-			this.addStoneDepth = bl;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {

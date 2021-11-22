@@ -68,7 +68,6 @@ public class BlendingData {
 	protected static final double field_35513 = Double.MAX_VALUE;
 	private final boolean oldNoise;
 	private boolean field_35690;
-	private final boolean field_35691;
 	private final double[] heights;
 	private final transient double[][] field_35693;
 	private final transient double[] field_35694;
@@ -92,7 +91,6 @@ public class BlendingData {
 	private BlendingData(boolean oldNoise, Optional<double[]> optional) {
 		this.oldNoise = oldNoise;
 		this.heights = (double[])optional.orElse(Util.make(new double[field_35518], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
-		this.field_35691 = optional.isPresent();
 		this.field_35693 = new double[field_35518][];
 		this.field_35694 = new double[field_35688 * field_35688];
 	}
@@ -135,14 +133,7 @@ public class BlendingData {
 
 	private void method_39572(Chunk chunk, Set<EightWayDirection> set) {
 		if (!this.field_35690) {
-			BlockPos.Mutable mutable = new BlockPos.Mutable(0, OLD_HEIGHT_LIMIT.getBottomY(), 0);
-
-			for (int i = 0; i < this.field_35694.length; i++) {
-				mutable.setX(Math.max(BiomeCoords.toBlock(this.method_39568(i)), 15));
-				mutable.setZ(Math.max(BiomeCoords.toBlock(this.method_39577(i)), 15));
-				this.field_35694[i] = isCollidableAndNotTreeAt(chunk, mutable) ? 1.0 : -1.0;
-			}
-
+			Arrays.fill(this.field_35694, 1.0);
 			if (set.contains(EightWayDirection.NORTH) || set.contains(EightWayDirection.WEST) || set.contains(EightWayDirection.NORTH_WEST)) {
 				this.method_39347(method_39578(0, 0), chunk, 0, 0);
 			}
@@ -184,7 +175,7 @@ public class BlendingData {
 	}
 
 	private void method_39347(int index, Chunk chunk, int x, int z) {
-		if (!this.field_35691) {
+		if (this.heights[index] == Double.MAX_VALUE) {
 			this.heights[index] = (double)getSurfaceHeight(chunk, x, z);
 		}
 
@@ -240,7 +231,7 @@ public class BlendingData {
 		}
 
 		int j = MathHelper.floorDiv(i, 8);
-		if (j >= 1) {
+		if (j >= 1 && j < ds.length) {
 			double e = ((double)i + 0.5) % 8.0 / 8.0;
 			double f = (1.0 - e) / e;
 			double g = Math.max(f, 1.0) * 0.25;

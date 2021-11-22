@@ -23,6 +23,7 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.intprovider.WeightedListIntProvider;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.decorator.EnvironmentScanPlacementModifier;
+import net.minecraft.world.gen.decorator.RandomOffsetPlacementModifier;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.RandomizedIntBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
@@ -105,11 +106,15 @@ public class UndergroundConfiguredFeatures {
 						() -> Feature.POINTED_DRIPSTONE
 								.configure(new SmallDripstoneFeatureConfig(0.2F, 0.7F, 0.5F, 0.5F))
 								.withPlacement(
-									EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(Direction.DOWN.getVector()), BlockPredicate.IS_AIR_OR_WATER, 12)
+									EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR_OR_WATER, 12),
+									RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(1))
 								),
 						() -> Feature.POINTED_DRIPSTONE
 								.configure(new SmallDripstoneFeatureConfig(0.2F, 0.7F, 0.5F, 0.5F))
-								.withPlacement(EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(Direction.UP.getVector()), BlockPredicate.IS_AIR_OR_WATER, 12))
+								.withPlacement(
+									EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR_OR_WATER, 12),
+									RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(-1))
+								)
 					)
 				)
 			)

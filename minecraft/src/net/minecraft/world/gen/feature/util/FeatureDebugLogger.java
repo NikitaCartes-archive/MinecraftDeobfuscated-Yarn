@@ -80,23 +80,9 @@ public class FeatureDebugLogger {
 			);
 	}
 
-	static record FeatureData() {
-		private final ConfiguredFeature<?, ?> feature;
-		private final Optional<PlacedFeature> topFeature;
-
-		FeatureData(ConfiguredFeature<?, ?> configuredFeature, Optional<PlacedFeature> optional) {
-			this.feature = configuredFeature;
-			this.topFeature = optional;
-		}
+	static record FeatureData(ConfiguredFeature<?, ?> feature, Optional<PlacedFeature> topFeature) {
 	}
 
-	static record Features() {
-		private final Object2IntMap<FeatureDebugLogger.FeatureData> featureData;
-		private final MutableInt chunksWithFeatures;
-
-		Features(Object2IntMap<FeatureDebugLogger.FeatureData> object2IntMap, MutableInt mutableInt) {
-			this.featureData = object2IntMap;
-			this.chunksWithFeatures = mutableInt;
-		}
+	static record Features(Object2IntMap<FeatureDebugLogger.FeatureData> featureData, MutableInt chunksWithFeatures) {
 	}
 }

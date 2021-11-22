@@ -10,18 +10,19 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.dimension.DimensionType;
 
-public record GenerationShapeConfig() {
-	private final int minimumY;
-	private final int height;
-	private final NoiseSamplingConfig sampling;
-	private final SlideConfig topSlide;
-	private final SlideConfig bottomSlide;
-	private final int horizontalSize;
-	private final int verticalSize;
-	private final boolean islandNoiseOverride;
-	private final boolean amplified;
-	private final boolean largeBiomes;
-	private final VanillaTerrainParameters terrainParameters;
+public record GenerationShapeConfig(
+	int minimumY,
+	int height,
+	NoiseSamplingConfig sampling,
+	SlideConfig topSlide,
+	SlideConfig bottomSlide,
+	int horizontalSize,
+	int verticalSize,
+	@Deprecated boolean islandNoiseOverride,
+	@Deprecated boolean amplified,
+	@Deprecated boolean largeBiomes,
+	VanillaTerrainParameters terrainParameters
+) {
 	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(GenerationShapeConfig::minimumY),
@@ -41,32 +42,6 @@ public record GenerationShapeConfig() {
 					.apply(instance, GenerationShapeConfig::new)
 		)
 		.comapFlatMap(GenerationShapeConfig::checkHeight, Function.identity());
-
-	public GenerationShapeConfig(
-		int minimumY,
-		int height,
-		NoiseSamplingConfig sampling,
-		SlideConfig topSlide,
-		SlideConfig bottomSlide,
-		int horizontalSize,
-		int verticalSize,
-		boolean bl,
-		boolean bl2,
-		boolean bl3,
-		VanillaTerrainParameters vanillaTerrainParameters
-	) {
-		this.minimumY = minimumY;
-		this.height = height;
-		this.sampling = sampling;
-		this.topSlide = topSlide;
-		this.bottomSlide = bottomSlide;
-		this.horizontalSize = horizontalSize;
-		this.verticalSize = verticalSize;
-		this.islandNoiseOverride = bl;
-		this.amplified = bl2;
-		this.largeBiomes = bl3;
-		this.terrainParameters = vanillaTerrainParameters;
-	}
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
 		if (config.minimumY() + config.height() > DimensionType.MAX_COLUMN_HEIGHT + 1) {

@@ -95,7 +95,7 @@ public abstract class DynamicRegistryManager {
 	private static <E> void register(
 		Builder<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> infosBuilder, RegistryKey<? extends Registry<E>> registryRef, Codec<E> entryCodec
 	) {
-		infosBuilder.put(registryRef, new DynamicRegistryManager.Info(registryRef, entryCodec, null));
+		infosBuilder.put(registryRef, new DynamicRegistryManager.Info<>(registryRef, entryCodec, null));
 	}
 
 	private static <E> void register(
@@ -104,7 +104,7 @@ public abstract class DynamicRegistryManager {
 		Codec<E> entryCodec,
 		Codec<E> networkEntryCodec
 	) {
-		infosBuilder.put(registryRef, new DynamicRegistryManager.Info(registryRef, entryCodec, networkEntryCodec));
+		infosBuilder.put(registryRef, new DynamicRegistryManager.Info<>(registryRef, entryCodec, networkEntryCodec));
 	}
 
 	public static Iterable<DynamicRegistryManager.Info<?>> getInfos() {
@@ -274,18 +274,7 @@ public abstract class DynamicRegistryManager {
 	 * id of the registry, the codec for its elements, and whether the registry
 	 * should be sent to the client.
 	 */
-	public static record Info() {
-		private final RegistryKey<? extends Registry<E>> registry;
-		private final Codec<E> entryCodec;
-		@Nullable
-		private final Codec<E> networkEntryCodec;
-
-		public Info(RegistryKey<? extends Registry<E>> registry, Codec<E> entryCodec, @Nullable Codec<E> networkEntryCodec) {
-			this.registry = registry;
-			this.entryCodec = entryCodec;
-			this.networkEntryCodec = networkEntryCodec;
-		}
-
+	public static record Info<E>(RegistryKey<? extends Registry<E>> registry, Codec<E> entryCodec, @Nullable Codec<E> networkEntryCodec) {
 		public boolean isSynced() {
 			return this.networkEntryCodec != null;
 		}

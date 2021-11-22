@@ -4,15 +4,9 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
-public record SimulationDistanceS2CPacket() implements Packet<ClientPlayPacketListener> {
-	private final int simulationDistance;
-
+public record SimulationDistanceS2CPacket(int simulationDistance) implements Packet<ClientPlayPacketListener> {
 	public SimulationDistanceS2CPacket(PacketByteBuf buf) {
 		this(buf.readVarInt());
-	}
-
-	public SimulationDistanceS2CPacket(int i) {
-		this.simulationDistance = i;
 	}
 
 	@Override

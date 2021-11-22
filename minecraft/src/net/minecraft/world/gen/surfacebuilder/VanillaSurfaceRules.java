@@ -265,26 +265,28 @@ public class VanillaSurfaceRules {
 		MaterialRules.MaterialCondition materialCondition2 = MaterialRules.aboveY(YOffset.fixed(32), 0);
 		MaterialRules.MaterialCondition materialCondition3 = MaterialRules.aboveYWithStoneDepth(YOffset.fixed(30), 0);
 		MaterialRules.MaterialCondition materialCondition4 = MaterialRules.not(MaterialRules.aboveYWithStoneDepth(YOffset.fixed(35), 0));
-		MaterialRules.MaterialCondition materialCondition5 = MaterialRules.hole();
-		MaterialRules.MaterialCondition materialCondition6 = MaterialRules.noiseThreshold(NoiseParametersKeys.SOUL_SAND_LAYER, -0.012);
-		MaterialRules.MaterialCondition materialCondition7 = MaterialRules.noiseThreshold(NoiseParametersKeys.GRAVEL_LAYER, -0.012);
-		MaterialRules.MaterialCondition materialCondition8 = MaterialRules.noiseThreshold(NoiseParametersKeys.PATCH, -0.012);
-		MaterialRules.MaterialCondition materialCondition9 = MaterialRules.noiseThreshold(NoiseParametersKeys.NETHERRACK, 0.54);
-		MaterialRules.MaterialCondition materialCondition10 = MaterialRules.noiseThreshold(NoiseParametersKeys.NETHER_WART, 1.17);
-		MaterialRules.MaterialCondition materialCondition11 = MaterialRules.noiseThreshold(NoiseParametersKeys.NETHER_STATE_SELECTOR, 0.0);
+		MaterialRules.MaterialCondition materialCondition5 = MaterialRules.aboveY(YOffset.belowTop(5), 0);
+		MaterialRules.MaterialCondition materialCondition6 = MaterialRules.hole();
+		MaterialRules.MaterialCondition materialCondition7 = MaterialRules.noiseThreshold(NoiseParametersKeys.SOUL_SAND_LAYER, -0.012);
+		MaterialRules.MaterialCondition materialCondition8 = MaterialRules.noiseThreshold(NoiseParametersKeys.GRAVEL_LAYER, -0.012);
+		MaterialRules.MaterialCondition materialCondition9 = MaterialRules.noiseThreshold(NoiseParametersKeys.PATCH, -0.012);
+		MaterialRules.MaterialCondition materialCondition10 = MaterialRules.noiseThreshold(NoiseParametersKeys.NETHERRACK, 0.54);
+		MaterialRules.MaterialCondition materialCondition11 = MaterialRules.noiseThreshold(NoiseParametersKeys.NETHER_WART, 1.17);
+		MaterialRules.MaterialCondition materialCondition12 = MaterialRules.noiseThreshold(NoiseParametersKeys.NETHER_STATE_SELECTOR, 0.0);
 		MaterialRules.MaterialRule materialRule = MaterialRules.condition(
-			materialCondition8, MaterialRules.condition(materialCondition3, MaterialRules.condition(materialCondition4, GRAVEL))
+			materialCondition9, MaterialRules.condition(materialCondition3, MaterialRules.condition(materialCondition4, GRAVEL))
 		);
 		return MaterialRules.sequence(
 			MaterialRules.condition(MaterialRules.verticalGradient("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), BEDROCK),
 			MaterialRules.condition(MaterialRules.not(MaterialRules.verticalGradient("bedrock_roof", YOffset.belowTop(5), YOffset.getTop())), BEDROCK),
+			MaterialRules.condition(materialCondition5, NETHERRACK),
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.BASALT_DELTAS),
 				MaterialRules.sequence(
 					MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING_WITH_SURFACE_DEPTH, BASALT),
 					MaterialRules.condition(
 						MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH,
-						MaterialRules.sequence(materialRule, MaterialRules.condition(materialCondition11, BASALT), BLACKSTONE)
+						MaterialRules.sequence(materialRule, MaterialRules.condition(materialCondition12, BASALT), BLACKSTONE)
 					)
 				)
 			),
@@ -292,30 +294,30 @@ public class VanillaSurfaceRules {
 				MaterialRules.biome(BiomeKeys.SOUL_SAND_VALLEY),
 				MaterialRules.sequence(
 					MaterialRules.condition(
-						MaterialRules.STONE_DEPTH_CEILING_WITH_SURFACE_DEPTH, MaterialRules.sequence(MaterialRules.condition(materialCondition11, SOUL_SAND), SOUL_SOIL)
+						MaterialRules.STONE_DEPTH_CEILING_WITH_SURFACE_DEPTH, MaterialRules.sequence(MaterialRules.condition(materialCondition12, SOUL_SAND), SOUL_SOIL)
 					),
 					MaterialRules.condition(
 						MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH,
-						MaterialRules.sequence(materialRule, MaterialRules.condition(materialCondition11, SOUL_SAND), SOUL_SOIL)
+						MaterialRules.sequence(materialRule, MaterialRules.condition(materialCondition12, SOUL_SAND), SOUL_SOIL)
 					)
 				)
 			),
 			MaterialRules.condition(
 				MaterialRules.STONE_DEPTH_FLOOR,
 				MaterialRules.sequence(
-					MaterialRules.condition(MaterialRules.not(materialCondition2), MaterialRules.condition(materialCondition5, LAVA)),
+					MaterialRules.condition(MaterialRules.not(materialCondition2), MaterialRules.condition(materialCondition6, LAVA)),
 					MaterialRules.condition(
 						MaterialRules.biome(BiomeKeys.WARPED_FOREST),
 						MaterialRules.condition(
-							MaterialRules.not(materialCondition9),
-							MaterialRules.condition(materialCondition, MaterialRules.sequence(MaterialRules.condition(materialCondition10, WARPED_WART_BLOCK), WARPED_NYLIUM))
+							MaterialRules.not(materialCondition10),
+							MaterialRules.condition(materialCondition, MaterialRules.sequence(MaterialRules.condition(materialCondition11, WARPED_WART_BLOCK), WARPED_NYLIUM))
 						)
 					),
 					MaterialRules.condition(
 						MaterialRules.biome(BiomeKeys.CRIMSON_FOREST),
 						MaterialRules.condition(
-							MaterialRules.not(materialCondition9),
-							MaterialRules.condition(materialCondition, MaterialRules.sequence(MaterialRules.condition(materialCondition10, NETHER_WART_BLOCK), CRIMSON_NYLIUM))
+							MaterialRules.not(materialCondition10),
+							MaterialRules.condition(materialCondition, MaterialRules.sequence(MaterialRules.condition(materialCondition11, NETHER_WART_BLOCK), CRIMSON_NYLIUM))
 						)
 					)
 				)
@@ -326,10 +328,10 @@ public class VanillaSurfaceRules {
 					MaterialRules.condition(
 						MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH,
 						MaterialRules.condition(
-							materialCondition6,
+							materialCondition7,
 							MaterialRules.sequence(
 								MaterialRules.condition(
-									MaterialRules.not(materialCondition5), MaterialRules.condition(materialCondition3, MaterialRules.condition(materialCondition4, SOUL_SAND))
+									MaterialRules.not(materialCondition6), MaterialRules.condition(materialCondition3, MaterialRules.condition(materialCondition4, SOUL_SAND))
 								),
 								NETHERRACK
 							)
@@ -342,8 +344,8 @@ public class VanillaSurfaceRules {
 							MaterialRules.condition(
 								materialCondition4,
 								MaterialRules.condition(
-									materialCondition7,
-									MaterialRules.sequence(MaterialRules.condition(materialCondition2, GRAVEL), MaterialRules.condition(MaterialRules.not(materialCondition5), GRAVEL))
+									materialCondition8,
+									MaterialRules.sequence(MaterialRules.condition(materialCondition2, GRAVEL), MaterialRules.condition(MaterialRules.not(materialCondition6), GRAVEL))
 								)
 							)
 						)

@@ -183,15 +183,6 @@ public class ChaseClient {
 			);
 	}
 
-	static record TeleportPos() {
-		final RegistryKey<World> dimension;
-		final Vec3d pos;
-		final Vec2f rot;
-
-		TeleportPos(RegistryKey<World> dimension, Vec3d pos, Vec2f rot) {
-			this.dimension = dimension;
-			this.pos = pos;
-			this.rot = rot;
-		}
+	static record TeleportPos(RegistryKey<World> dimension, Vec3d pos, Vec2f rot) {
 	}
 }

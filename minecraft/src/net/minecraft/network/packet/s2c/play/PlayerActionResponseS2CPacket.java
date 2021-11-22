@@ -10,11 +10,8 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public record PlayerActionResponseS2CPacket() implements Packet<ClientPlayPacketListener> {
-	private final BlockPos pos;
-	private final BlockState state;
-	private final PlayerActionC2SPacket.Action action;
-	private final boolean approved;
+public record PlayerActionResponseS2CPacket(BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved)
+	implements Packet<ClientPlayPacketListener> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public PlayerActionResponseS2CPacket(BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved, String reason) {

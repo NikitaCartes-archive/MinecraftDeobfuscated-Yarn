@@ -7,17 +7,11 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import java.util.Arrays;
 import java.util.Objects;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.AxisCycleDirection;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.WorldView;
 
 public final class VoxelShapes {
 	public static final double field_31880 = 1.0E-7;
@@ -208,81 +202,6 @@ public final class VoxelShapes {
 		}
 
 		return maxDist;
-	}
-
-	public static double calculatePushVelocity(Direction.Axis axis, Box box, WorldView world, double initial, ShapeContext context, Iterable<VoxelShape> shapes) {
-		return calculatePushVelocity(box, world, initial, context, AxisCycleDirection.between(axis, Direction.Axis.Z), shapes);
-	}
-
-	private static double calculatePushVelocity(
-		Box box, WorldView world, double initial, ShapeContext context, AxisCycleDirection direction, Iterable<VoxelShape> shapes
-	) {
-		if (box.getXLength() < 1.0E-6 || box.getYLength() < 1.0E-6 || box.getZLength() < 1.0E-6) {
-			return initial;
-		} else if (Math.abs(initial) < 1.0E-7) {
-			return 0.0;
-		} else {
-			AxisCycleDirection axisCycleDirection = direction.opposite();
-			Direction.Axis axis = axisCycleDirection.cycle(Direction.Axis.X);
-			Direction.Axis axis2 = axisCycleDirection.cycle(Direction.Axis.Y);
-			Direction.Axis axis3 = axisCycleDirection.cycle(Direction.Axis.Z);
-			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			int i = MathHelper.floor(box.getMin(axis) - 1.0E-7) - 1;
-			int j = MathHelper.floor(box.getMax(axis) + 1.0E-7) + 1;
-			int k = MathHelper.floor(box.getMin(axis2) - 1.0E-7) - 1;
-			int l = MathHelper.floor(box.getMax(axis2) + 1.0E-7) + 1;
-			double d = box.getMin(axis3) - 1.0E-7;
-			double e = box.getMax(axis3) + 1.0E-7;
-			boolean bl = initial > 0.0;
-			int m = bl ? MathHelper.floor(box.getMax(axis3) - 1.0E-7) - 1 : MathHelper.floor(box.getMin(axis3) + 1.0E-7) + 1;
-			int n = clamp(initial, d, e);
-			int o = bl ? 1 : -1;
-
-			for (int p = m; bl ? p <= n : p >= n; p += o) {
-				for (int q = i; q <= j; q++) {
-					for (int r = k; r <= l; r++) {
-						int s = 0;
-						if (q == i || q == j) {
-							s++;
-						}
-
-						if (r == k || r == l) {
-							s++;
-						}
-
-						if (p == m || p == n) {
-							s++;
-						}
-
-						if (s < 3) {
-							mutable.set(axisCycleDirection, q, r, p);
-							BlockState blockState = world.getBlockState(mutable);
-							if ((s != 1 || blockState.exceedsCube()) && (s != 2 || blockState.isOf(Blocks.MOVING_PISTON))) {
-								initial = blockState.getCollisionShape(world, mutable, context)
-									.calculateMaxDistance(axis3, box.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), initial);
-								if (Math.abs(initial) < 1.0E-7) {
-									return 0.0;
-								}
-
-								n = clamp(initial, d, e);
-							}
-						}
-					}
-				}
-			}
-
-			double f = initial;
-
-			for (VoxelShape voxelShape : shapes) {
-				f = voxelShape.calculateMaxDistance(axis3, box, f);
-			}
-
-			return f;
-		}
-	}
-
-	private static int clamp(double value, double min, double max) {
-		return value > 0.0 ? MathHelper.floor(max + value) + 1 : MathHelper.floor(min + value) - 1;
 	}
 
 	public static boolean isSideCovered(VoxelShape shape, VoxelShape neighbor, Direction direction) {

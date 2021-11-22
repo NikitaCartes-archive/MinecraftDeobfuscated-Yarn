@@ -13,25 +13,24 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-public record GameJoinS2CPacket() implements Packet {
-	private final int playerEntityId;
-	private final boolean hardcore;
-	private final GameMode gameMode;
-	@Nullable
-	private final GameMode previousGameMode;
-	private final Set<RegistryKey<World>> dimensionIds;
-	private final DynamicRegistryManager.Impl registryManager;
-	private final DimensionType dimensionType;
-	private final RegistryKey<World> dimensionId;
-	private final long sha256Seed;
-	private final int maxPlayers;
-	private final int viewDistance;
-	private final int simulationDistance;
-	private final boolean reducedDebugInfo;
-	private final boolean showDeathScreen;
-	private final boolean debugWorld;
-	private final boolean flatWorld;
-
+public record GameJoinS2CPacket(
+	int playerEntityId,
+	boolean hardcore,
+	GameMode gameMode,
+	@Nullable GameMode previousGameMode,
+	Set<RegistryKey<World>> dimensionIds,
+	DynamicRegistryManager.Impl registryManager,
+	DimensionType dimensionType,
+	RegistryKey<World> dimensionId,
+	long sha256Seed,
+	int maxPlayers,
+	int viewDistance,
+	int simulationDistance,
+	boolean reducedDebugInfo,
+	boolean showDeathScreen,
+	boolean debugWorld,
+	boolean flatWorld
+) implements Packet<ClientPlayPacketListener> {
 	public GameJoinS2CPacket(PacketByteBuf buf) {
 		this(
 			buf.readInt(),
@@ -51,42 +50,6 @@ public record GameJoinS2CPacket() implements Packet {
 			buf.readBoolean(),
 			buf.readBoolean()
 		);
-	}
-
-	public GameJoinS2CPacket(
-		int playerEntityId,
-		boolean bl,
-		GameMode previousGameMode,
-		@Nullable GameMode gameMode,
-		Set<RegistryKey<World>> set,
-		DynamicRegistryManager.Impl impl,
-		DimensionType dimensionType,
-		RegistryKey<World> registryKey,
-		long l,
-		int maxPlayers,
-		int chunkLoadDistance,
-		int i,
-		boolean bl2,
-		boolean bl3,
-		boolean bl4,
-		boolean bl5
-	) {
-		this.playerEntityId = playerEntityId;
-		this.hardcore = bl;
-		this.gameMode = previousGameMode;
-		this.previousGameMode = gameMode;
-		this.dimensionIds = set;
-		this.registryManager = impl;
-		this.dimensionType = dimensionType;
-		this.dimensionId = registryKey;
-		this.sha256Seed = l;
-		this.maxPlayers = maxPlayers;
-		this.viewDistance = chunkLoadDistance;
-		this.simulationDistance = i;
-		this.reducedDebugInfo = bl2;
-		this.showDeathScreen = bl3;
-		this.debugWorld = bl4;
-		this.flatWorld = bl5;
 	}
 
 	@Override

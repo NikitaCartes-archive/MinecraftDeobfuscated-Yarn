@@ -27,39 +27,17 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
 		return context -> context.isBiomeValid(heightmapType);
 	}
 
-	public static record Context() {
-		private final ChunkGenerator chunkGenerator;
-		private final BiomeSource biomeSource;
-		private final long seed;
-		private final ChunkPos chunkPos;
-		private final C config;
-		private final HeightLimitView world;
-		private final Predicate<Biome> validBiome;
-		private final StructureManager structureManager;
-		private final DynamicRegistryManager registryManager;
-
-		public Context(
-			ChunkGenerator chunkGenerator,
-			BiomeSource biomeSource,
-			long l,
-			ChunkPos chunkPos,
-			C featureConfig,
-			HeightLimitView heightLimitView,
-			Predicate<Biome> predicate,
-			StructureManager structureManager,
-			DynamicRegistryManager dynamicRegistryManager
-		) {
-			this.chunkGenerator = chunkGenerator;
-			this.biomeSource = biomeSource;
-			this.seed = l;
-			this.chunkPos = chunkPos;
-			this.config = featureConfig;
-			this.world = heightLimitView;
-			this.validBiome = predicate;
-			this.structureManager = structureManager;
-			this.registryManager = dynamicRegistryManager;
-		}
-
+	public static record Context<C extends FeatureConfig>(
+		ChunkGenerator chunkGenerator,
+		BiomeSource biomeSource,
+		long seed,
+		ChunkPos chunkPos,
+		C config,
+		HeightLimitView world,
+		Predicate<Biome> validBiome,
+		StructureManager structureManager,
+		DynamicRegistryManager registryManager
+	) {
 		public boolean isBiomeValid(Heightmap.Type heightmapType) {
 			int i = this.chunkPos.getCenterX();
 			int j = this.chunkPos.getCenterZ();

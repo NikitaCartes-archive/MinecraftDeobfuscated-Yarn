@@ -91,12 +91,12 @@ public class JfrJsonReport {
 				jsonObjectx.addProperty("worldPosZ", sample.centerPos().z);
 				return jsonObjectx;
 			};
-			jsonObject2.add("fastest", (JsonElement)function.apply((ChunkGenerationSample)longRunningSampleStatistics.fastestSample()));
-			jsonObject2.add("slowest", (JsonElement)function.apply((ChunkGenerationSample)longRunningSampleStatistics.slowestSample()));
+			jsonObject2.add("fastest", (JsonElement)function.apply(longRunningSampleStatistics.fastestSample()));
+			jsonObject2.add("slowest", (JsonElement)function.apply(longRunningSampleStatistics.slowestSample()));
 			jsonObject2.add(
 				"secondSlowest",
 				(JsonElement)(longRunningSampleStatistics.secondSlowestSample() != null
-					? (JsonElement)function.apply((ChunkGenerationSample)longRunningSampleStatistics.secondSlowestSample())
+					? (JsonElement)function.apply(longRunningSampleStatistics.secondSlowestSample())
 					: JsonNull.INSTANCE)
 			);
 		}

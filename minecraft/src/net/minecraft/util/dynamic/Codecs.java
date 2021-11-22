@@ -230,7 +230,7 @@ public class Codecs {
 	}
 
 	public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
-		return new Codecs.Lazy(supplier);
+		return new Codecs.Lazy<>(supplier);
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {
@@ -281,11 +281,9 @@ public class Codecs {
 		}
 	}
 
-	static record Lazy() implements Codec {
-		private final Supplier<Codec<A>> delegate;
-
-		Lazy(Supplier<Codec<A>> supplier) {
-			Supplier<Codec<A>> var2 = Suppliers.memoize(supplier::get);
+	static record Lazy<A>(Supplier<Codec<A>> delegate) implements Codec<A> {
+		Lazy(Supplier<Codec<A>> delegate) {
+			Supplier<Codec<A>> var2 = Suppliers.memoize(delegate::get);
 			this.delegate = var2;
 		}
 

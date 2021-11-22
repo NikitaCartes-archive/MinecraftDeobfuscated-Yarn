@@ -15,31 +15,8 @@ import net.minecraft.world.gen.random.ChunkRandom;
 public interface StructurePiecesGenerator<C extends FeatureConfig> {
 	void generatePieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<C> context);
 
-	public static record Context() {
-		private final C config;
-		private final ChunkGenerator chunkGenerator;
-		private final StructureManager structureManager;
-		private final ChunkPos chunkPos;
-		private final HeightLimitView world;
-		private final ChunkRandom random;
-		private final long seed;
-
-		public Context(
-			C featureConfig,
-			ChunkGenerator chunkGenerator,
-			StructureManager structureManager,
-			ChunkPos chunkPos,
-			HeightLimitView heightLimitView,
-			ChunkRandom chunkRandom,
-			long l
-		) {
-			this.config = featureConfig;
-			this.chunkGenerator = chunkGenerator;
-			this.structureManager = structureManager;
-			this.chunkPos = chunkPos;
-			this.world = heightLimitView;
-			this.random = chunkRandom;
-			this.seed = l;
-		}
+	public static record Context<C extends FeatureConfig>(
+		C config, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, HeightLimitView world, ChunkRandom random, long seed
+	) {
 	}
 }

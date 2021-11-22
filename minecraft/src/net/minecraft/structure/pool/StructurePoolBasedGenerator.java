@@ -52,7 +52,7 @@ public class StructurePoolBasedGenerator {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
 		DynamicRegistryManager dynamicRegistryManager = context.registryManager();
-		StructurePoolFeatureConfig structurePoolFeatureConfig = (StructurePoolFeatureConfig)context.config();
+		StructurePoolFeatureConfig structurePoolFeatureConfig = context.config();
 		ChunkGenerator chunkGenerator = context.chunkGenerator();
 		StructureManager structureManager = context.structureManager();
 		HeightLimitView heightLimitView = context.world();

@@ -24,16 +24,7 @@ public interface Spline<C> extends ToFloatFunction<C> {
 	static <C> Codec<Spline<C>> method_39232(Codec<ToFloatFunction<C>> codec) {
 		MutableObject<Codec<Spline<C>>> mutableObject = new MutableObject<>();
 
-		record class_6737() {
-			private final float location;
-			private final Spline<C> value;
-			private final float derivative;
-
-			class_6737(float f, Spline<C> spline, float g) {
-				this.location = f;
-				this.value = spline;
-				this.derivative = g;
-			}
+		record class_6737<C>(float location, Spline<C> value, float derivative) {
 		}
 
 		Codec<class_6737<C>> codec2 = RecordCodecBuilder.create(
@@ -47,7 +38,7 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		Codec<Spline.class_6738<C>> codec3 = RecordCodecBuilder.create(
 			instance -> instance.group(
 						codec.fieldOf("coordinate").forGetter(Spline.class_6738::coordinate),
-						codec2.listOf()
+						Codecs.nonEmptyList(codec2.listOf())
 							.fieldOf("points")
 							.forGetter(
 								arg -> IntStream.range(0, arg.locations.length)
@@ -129,19 +120,13 @@ public interface Spline<C> extends ToFloatFunction<C> {
 			if (this.locations.isEmpty()) {
 				throw new IllegalStateException("No elements added");
 			} else {
-				return new Spline.class_6738(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
+				return new Spline.class_6738<>(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
 			}
 		}
 	}
 
 	@Debug
-	public static record FixedFloatFunction<C>() implements Spline<C> {
-		private final float value;
-
-		public FixedFloatFunction(float value) {
-			this.value = value;
-		}
-
+	public static record FixedFloatFunction<C>(float value) implements Spline<C> {
 		@Override
 		public float apply(C object) {
 			return this.value;
@@ -154,20 +139,16 @@ public interface Spline<C> extends ToFloatFunction<C> {
 	}
 
 	@Debug
-	public static record class_6738() implements Spline {
-		private final ToFloatFunction<C> coordinate;
-		final float[] locations;
-		private final List<Spline<C>> values;
-		private final float[] derivatives;
+	public static record class_6738<C>(ToFloatFunction<C> coordinate, float[] locations, List<Spline<C>> values, float[] derivatives) implements Spline<C> {
 
-		public class_6738(ToFloatFunction<C> toFloatFunction, float[] fs, List<Spline<C>> list, float[] gs) {
-			if (fs.length == list.size() && fs.length == gs.length) {
-				this.coordinate = toFloatFunction;
-				this.locations = fs;
-				this.values = list;
-				this.derivatives = gs;
+		public class_6738(ToFloatFunction<C> coordinate, float[] locations, List<Spline<C>> values, float[] derivatives) {
+			if (locations.length == values.size() && locations.length == derivatives.length) {
+				this.coordinate = coordinate;
+				this.locations = locations;
+				this.values = values;
+				this.derivatives = derivatives;
 			} else {
-				throw new IllegalArgumentException("All lengths must be equal, got: " + fs.length + " " + list.size() + " " + gs.length);
+				throw new IllegalArgumentException("All lengths must be equal, got: " + locations.length + " " + values.size() + " " + derivatives.length);
 			}
 		}
 

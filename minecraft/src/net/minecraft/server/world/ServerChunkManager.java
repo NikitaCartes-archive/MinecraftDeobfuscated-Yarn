@@ -528,14 +528,7 @@ public class ServerChunkManager extends ChunkManager {
 		return this.spawnInfo;
 	}
 
-	static record ChunkWithHolder() {
-		final WorldChunk chunk;
-		final ChunkHolder holder;
-
-		ChunkWithHolder(WorldChunk worldChunk, ChunkHolder chunkHolder) {
-			this.chunk = worldChunk;
-			this.holder = chunkHolder;
-		}
+	static record ChunkWithHolder(WorldChunk chunk, ChunkHolder holder) {
 	}
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {

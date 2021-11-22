@@ -29,7 +29,7 @@ public class NetherFossilFeature extends MarginedStructureFeature<RangeDecorator
 		int j = context.chunkPos().getStartZ() + chunkRandom.nextInt(16);
 		int k = context.chunkGenerator().getSeaLevel();
 		HeightContext heightContext = new HeightContext(context.chunkGenerator(), context.world());
-		int l = ((RangeDecoratorConfig)context.config()).heightProvider.get(chunkRandom, heightContext);
+		int l = context.config().heightProvider.get(chunkRandom, heightContext);
 		VerticalBlockSample verticalBlockSample = context.chunkGenerator().getColumnSample(i, j, context.world());
 		BlockPos.Mutable mutable = new BlockPos.Mutable(i, l, j);
 

@@ -17,7 +17,7 @@ public class SimpleTickScheduler<T> implements SerializableTickScheduler<T>, Bas
 
 	@Override
 	public void scheduleTick(OrderedTick<T> orderedTick) {
-		Tick<T> tick = new Tick((T)orderedTick.type(), orderedTick.pos(), 0, orderedTick.priority());
+		Tick<T> tick = new Tick<>(orderedTick.type(), orderedTick.pos(), 0, orderedTick.priority());
 		this.scheduleTick(tick);
 	}
 

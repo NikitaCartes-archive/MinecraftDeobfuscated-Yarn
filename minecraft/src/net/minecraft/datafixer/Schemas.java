@@ -818,6 +818,8 @@ public class Schemas {
 				)
 			)
 		);
+		Schema schema152 = builder.addSchema(2852, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new WorldGenSettingsDisallowOldCustomWorldsFix(schema152));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

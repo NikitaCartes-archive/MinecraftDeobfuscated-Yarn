@@ -124,28 +124,29 @@ public abstract class Carver<C extends CarverConfig> {
 			int n = Math.max(MathHelper.floor(d - g) - l - 1, 0);
 			int o = Math.min(MathHelper.floor(d + g) - l, 15);
 			int p = Math.max(MathHelper.floor(e - h) - 1, context.getMinY() + 1);
-			int q = Math.min(MathHelper.floor(e + h) + 1, context.getMinY() + context.getHeight() - 2);
-			int r = Math.max(MathHelper.floor(f - g) - m - 1, 0);
-			int s = Math.min(MathHelper.floor(f + g) - m, 15);
+			int q = chunk.hasBelowZeroRetrogen() ? 0 : 7;
+			int r = Math.min(MathHelper.floor(e + h) + 1, context.getMinY() + context.getHeight() - 1 - q);
+			int s = Math.max(MathHelper.floor(f - g) - m - 1, 0);
+			int t = Math.min(MathHelper.floor(f + g) - m, 15);
 			boolean bl = false;
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
-			for (int t = n; t <= o; t++) {
-				int u = chunkPos.getOffsetX(t);
-				double v = ((double)u + 0.5 - d) / g;
+			for (int u = n; u <= o; u++) {
+				int v = chunkPos.getOffsetX(u);
+				double w = ((double)v + 0.5 - d) / g;
 
-				for (int w = r; w <= s; w++) {
-					int x = chunkPos.getOffsetZ(w);
-					double y = ((double)x + 0.5 - f) / g;
-					if (!(v * v + y * y >= 1.0)) {
+				for (int x = s; x <= t; x++) {
+					int y = chunkPos.getOffsetZ(x);
+					double z = ((double)y + 0.5 - f) / g;
+					if (!(w * w + z * z >= 1.0)) {
 						MutableBoolean mutableBoolean = new MutableBoolean(false);
 
-						for (int z = q; z > p; z--) {
-							double aa = ((double)z - 0.5 - e) / h;
-							if (!skipPredicate.shouldSkip(context, v, aa, y, z) && (!mask.get(t, z, w) || isDebug(config))) {
-								mask.set(t, z, w);
-								mutable.set(u, z, x);
+						for (int aa = r; aa > p; aa--) {
+							double ab = ((double)aa - 0.5 - e) / h;
+							if (!skipPredicate.shouldSkip(context, w, ab, z, aa) && (!mask.get(u, aa, x) || isDebug(config))) {
+								mask.set(u, aa, x);
+								mutable.set(v, aa, y);
 								bl |= this.carveAtPoint(context, config, chunk, posToBiome, mask, mutable, mutable2, aquiferSampler, mutableBoolean);
 							}
 						}

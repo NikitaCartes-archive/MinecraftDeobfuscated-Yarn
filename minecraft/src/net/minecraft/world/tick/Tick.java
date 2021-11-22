@@ -11,11 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.TickPriority;
 
-record Tick() {
-	private final T type;
-	private final BlockPos pos;
-	private final int delay;
-	private final TickPriority priority;
+record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {
 	private static final String TYPE_NBT_KEY = "i";
 	private static final String X_NBT_KEY = "x";
 	private static final String Y_NBT_KEY = "y";
@@ -36,13 +32,6 @@ record Tick() {
 		}
 	};
 
-	Tick(T object, BlockPos blockPos, int i, TickPriority tickPriority) {
-		this.type = object;
-		this.pos = blockPos;
-		this.delay = i;
-		this.priority = tickPriority;
-	}
-
 	public static <T> void tick(NbtList tickList, Function<String, Optional<T>> nameToTypeFunction, ChunkPos pos, Consumer<Tick<T>> tickConsumer) {
 		long l = pos.toLong();
 
@@ -51,7 +40,7 @@ record Tick() {
 			((Optional)nameToTypeFunction.apply(nbtCompound.getString("i"))).ifPresent(type -> {
 				BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
 				if (ChunkPos.toLong(blockPos) == l) {
-					tickConsumer.accept(new Tick((T)type, blockPos, nbtCompound.getInt("t"), TickPriority.byIndex(nbtCompound.getInt("p"))));
+					tickConsumer.accept(new Tick<>(type, blockPos, nbtCompound.getInt("t"), TickPriority.byIndex(nbtCompound.getInt("p"))));
 				}
 			});
 		}
@@ -77,10 +66,10 @@ record Tick() {
 	}
 
 	public OrderedTick<T> createOrderedTick(long time, long subTickOrder) {
-		return new OrderedTick(this.type, this.pos, time + (long)this.delay, this.priority, subTickOrder);
+		return new OrderedTick<>(this.type, this.pos, time + (long)this.delay, this.priority, subTickOrder);
 	}
 
 	public static <T> Tick<T> create(T type, BlockPos pos) {
-		return new Tick(type, pos, 0, TickPriority.NORMAL);
+		return new Tick<>(type, pos, 0, TickPriority.NORMAL);
 	}
 }

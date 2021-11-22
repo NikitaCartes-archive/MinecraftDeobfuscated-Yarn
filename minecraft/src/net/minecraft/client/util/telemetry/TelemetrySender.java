@@ -107,15 +107,7 @@ public class TelemetrySender {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record PlayerGameMode() {
-		private final GameMode gameMode;
-		private final boolean hardcore;
-
-		PlayerGameMode(GameMode gameMode, boolean bl) {
-			this.gameMode = gameMode;
-			this.hardcore = bl;
-		}
-
+	static record PlayerGameMode(GameMode gameMode, boolean hardcore) {
 		public int getId() {
 			if (this.hardcore && this.gameMode == GameMode.SURVIVAL) {
 				return 99;

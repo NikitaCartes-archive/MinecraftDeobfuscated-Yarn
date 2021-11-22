@@ -94,7 +94,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		this.idList = idList;
 		this.paletteProvider = paletteProvider;
 		Palette<T> palette = dataProvider.factory().create(dataProvider.bits(), idList, this, list);
-		this.data = new PalettedContainer.Data(dataProvider, storage, palette);
+		this.data = new PalettedContainer.Data<>(dataProvider, storage, palette);
 	}
 
 	public PalettedContainer(IndexedIterable<T> idList, T object, PalettedContainer.PaletteProvider paletteProvider) {
@@ -330,25 +330,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	/**
 	 * Runtime representation of data in a paletted container.
 	 */
-	static record Data() {
-		/**
-		 * the data provider that derives the palette and storage of this data
-		 */
-		private final PalettedContainer.DataProvider<T> configuration;
-		/**
-		 * the data
-		 */
-		final PaletteStorage storage;
-		/**
-		 * the palette for the storage
-		 */
-		final Palette<T> palette;
-
-		Data(PalettedContainer.DataProvider<T> configuration, PaletteStorage storage, Palette<T> palette) {
-			this.configuration = configuration;
-			this.storage = storage;
-			this.palette = palette;
-		}
+	static record Data<T>(PalettedContainer.DataProvider<T> configuration, PaletteStorage storage, Palette<T> palette) {
 
 		/**
 		 * Imports the data from the other {@code storage} with the other
@@ -381,25 +363,11 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	 * A palette data provider constructs an empty data for a paletted
 	 * container given a palette provider and a desired entry size in bits.
 	 */
-	static record DataProvider<T>() {
-		/**
-		 * the palette factory
-		 */
-		private final Palette.Factory factory;
-		/**
-		 * the number of bits each element use
-		 */
-		private final int bits;
-
-		DataProvider(Palette.Factory factory, int i) {
-			this.factory = factory;
-			this.bits = i;
-		}
-
+	static record DataProvider<T>(Palette.Factory factory, int bits) {
 		public PalettedContainer.Data<T> createData(IndexedIterable<T> idList, PaletteResizeListener<T> listener, int size) {
 			PaletteStorage paletteStorage = (PaletteStorage)(this.bits == 0 ? new EmptyPaletteStorage(size) : new PackedIntegerArray(this.bits, size));
 			Palette<T> palette = this.factory.create(this.bits, idList, listener, List.of());
-			return new PalettedContainer.Data(this, paletteStorage, palette);
+			return new PalettedContainer.Data<>(this, paletteStorage, palette);
 		}
 	}
 
@@ -492,19 +460,6 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	 * 
 	 * @see PalettedContainer#createCodec
 	 */
-	static record Serialized() {
-		/**
-		 * the palette
-		 */
-		private final List<T> paletteEntries;
-		/**
-		 * the data of the container
-		 */
-		private final Optional<LongStream> storage;
-
-		Serialized(List<T> list, Optional<LongStream> optional) {
-			this.paletteEntries = list;
-			this.storage = optional;
-		}
+	static record Serialized<T>(List<T> paletteEntries, Optional<LongStream> storage) {
 	}
 }

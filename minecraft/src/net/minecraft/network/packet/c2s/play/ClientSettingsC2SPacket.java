@@ -6,15 +6,16 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.Arm;
 
-public record ClientSettingsC2SPacket() implements Packet<ServerPlayPacketListener> {
-	private final String language;
-	private final int viewDistance;
-	private final ChatVisibility chatVisibility;
-	private final boolean chatColors;
-	private final int playerModelBitMask;
-	private final Arm mainArm;
-	private final boolean filterText;
-	private final boolean allowsListing;
+public record ClientSettingsC2SPacket(
+	String language,
+	int viewDistance,
+	ChatVisibility chatVisibility,
+	boolean chatColors,
+	int playerModelBitMask,
+	Arm mainArm,
+	boolean filterText,
+	boolean allowsListing
+) implements Packet<ServerPlayPacketListener> {
 	public static final int MAX_LANGUAGE_LENGTH = 16;
 
 	public ClientSettingsC2SPacket(PacketByteBuf buf) {
@@ -28,19 +29,6 @@ public record ClientSettingsC2SPacket() implements Packet<ServerPlayPacketListen
 			buf.readBoolean(),
 			buf.readBoolean()
 		);
-	}
-
-	public ClientSettingsC2SPacket(
-		String language, int viewDistance, ChatVisibility chatVisibility, boolean chatColors, int modelBitMask, Arm mainArm, boolean filterText, boolean bl
-	) {
-		this.language = language;
-		this.viewDistance = viewDistance;
-		this.chatVisibility = chatVisibility;
-		this.chatColors = chatColors;
-		this.playerModelBitMask = modelBitMask;
-		this.mainArm = mainArm;
-		this.filterText = filterText;
-		this.allowsListing = bl;
 	}
 
 	@Override

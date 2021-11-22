@@ -257,43 +257,42 @@ public class SurfaceBuilder {
 	}
 
 	private void method_39104(int i, Biome biome, BlockColumn blockColumn, BlockPos.Mutable mutablePos, int x, int z, int surfaceY) {
-		float f = biome.getTemperature(mutablePos.set(x, 63, z));
 		double d = 1.28;
 		double e = Math.min(
 			Math.abs(this.icebergSurfaceNoise.sample((double)x, 0.0, (double)z) * 8.25), this.icebergPillarNoise.sample((double)x * 1.28, 0.0, (double)z * 1.28) * 15.0
 		);
 		if (!(e <= 1.8)) {
-			double g = 1.17;
-			double h = 1.5;
-			double j = Math.abs(this.icebergPillarRoofNoise.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
-			double k = Math.min(e * e * 1.2, Math.ceil(j * 40.0) + 14.0);
-			if (f > 0.1F) {
-				k -= 2.0;
+			double f = 1.17;
+			double g = 1.5;
+			double h = Math.abs(this.icebergPillarRoofNoise.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
+			double j = Math.min(e * e * 1.2, Math.ceil(h * 40.0) + 14.0);
+			if (biome.method_39928(mutablePos.set(x, 63, z))) {
+				j -= 2.0;
 			}
 
-			double l;
-			if (k > 2.0) {
-				l = (double)this.seaLevel - k - 7.0;
-				k += (double)this.seaLevel;
+			double k;
+			if (j > 2.0) {
+				k = (double)this.seaLevel - j - 7.0;
+				j += (double)this.seaLevel;
 			} else {
+				j = 0.0;
 				k = 0.0;
-				l = 0.0;
 			}
 
-			double m = k;
+			double l = j;
 			AbstractRandom abstractRandom = this.randomDeriver.createRandom(x, 0, z);
-			int n = 2 + abstractRandom.nextInt(4);
-			int o = this.seaLevel + 18 + abstractRandom.nextInt(10);
-			int p = 0;
+			int m = 2 + abstractRandom.nextInt(4);
+			int n = this.seaLevel + 18 + abstractRandom.nextInt(10);
+			int o = 0;
 
-			for (int q = Math.max(surfaceY, (int)k + 1); q >= i; q--) {
-				if (blockColumn.getState(q).isAir() && q < (int)m && abstractRandom.nextDouble() > 0.01
-					|| blockColumn.getState(q).getMaterial() == Material.WATER && q > (int)l && q < this.seaLevel && l != 0.0 && abstractRandom.nextDouble() > 0.15) {
-					if (p <= n && q > o) {
-						blockColumn.setState(q, SNOW_BLOCK);
-						p++;
+			for (int p = Math.max(surfaceY, (int)j + 1); p >= i; p--) {
+				if (blockColumn.getState(p).isAir() && p < (int)l && abstractRandom.nextDouble() > 0.01
+					|| blockColumn.getState(p).getMaterial() == Material.WATER && p > (int)k && p < this.seaLevel && k != 0.0 && abstractRandom.nextDouble() > 0.15) {
+					if (o <= m && p > n) {
+						blockColumn.setState(p, SNOW_BLOCK);
+						o++;
 					} else {
-						blockColumn.setState(q, PACKED_ICE);
+						blockColumn.setState(p, PACKED_ICE);
 					}
 				}
 			}

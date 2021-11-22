@@ -3,15 +3,7 @@ package net.minecraft.util;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.ObjectUtils;
 
-public record ModStatus() {
-	private final ModStatus.Confidence confidence;
-	private final String description;
-
-	public ModStatus(ModStatus.Confidence confidence, String string) {
-		this.confidence = confidence;
-		this.description = string;
-	}
-
+public record ModStatus(ModStatus.Confidence confidence, String description) {
 	/**
 	 * {@return the modification status determined by the brand and whether the
 	 * class is signed or not}

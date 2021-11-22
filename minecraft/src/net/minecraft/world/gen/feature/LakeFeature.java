@@ -157,9 +157,7 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 		return !state.isIn(BlockTags.FEATURES_CANNOT_REPLACE);
 	}
 
-	public static record Config() implements FeatureConfig {
-		private final BlockStateProvider fluid;
-		private final BlockStateProvider barrier;
+	public static record Config(BlockStateProvider fluid, BlockStateProvider barrier) implements FeatureConfig {
 		public static final Codec<LakeFeature.Config> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						BlockStateProvider.TYPE_CODEC.fieldOf("fluid").forGetter(LakeFeature.Config::fluid),
@@ -167,10 +165,5 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 					)
 					.apply(instance, LakeFeature.Config::new)
 		);
-
-		public Config(BlockStateProvider blockStateProvider, BlockStateProvider blockStateProvider2) {
-			this.fluid = blockStateProvider;
-			this.barrier = blockStateProvider2;
-		}
 	}
 }

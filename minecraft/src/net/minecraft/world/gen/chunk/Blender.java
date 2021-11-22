@@ -370,16 +370,7 @@ public class Blender {
 		return MathHelper.magnitude(Math.max(0.0, j), Math.max(0.0, k), Math.max(0.0, l));
 	}
 
-	static record ChunkBlendingData() {
-		final int chunkX;
-		final int chunkZ;
-		final BlendingData blendingData;
-
-		ChunkBlendingData(int i, int j, BlendingData blendingData) {
-			this.chunkX = i;
-			this.chunkZ = j;
-			this.blendingData = blendingData;
-		}
+	static record ChunkBlendingData(int chunkX, int chunkZ, BlendingData blendingData) {
 	}
 
 	interface class_6781 {

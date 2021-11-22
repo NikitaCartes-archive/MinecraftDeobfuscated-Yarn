@@ -22,7 +22,7 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 	private static boolean method_28619(StructureGeneratorFactory.Context<ProbabilityConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setRegionSeed(context.seed(), context.chunkPos().x, context.chunkPos().z, 10387320);
-		return chunkRandom.nextFloat() < ((ProbabilityConfig)context.config()).probability && context.isBiomeValid(Heightmap.Type.OCEAN_FLOOR_WG);
+		return chunkRandom.nextFloat() < context.config().probability && context.isBiomeValid(Heightmap.Type.OCEAN_FLOOR_WG);
 	}
 
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<ProbabilityConfig> context) {

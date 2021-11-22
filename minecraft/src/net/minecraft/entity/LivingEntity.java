@@ -3481,13 +3481,6 @@ public abstract class LivingEntity extends Entity {
 		);
 	}
 
-	public static record FallSounds() {
-		private final SoundEvent small;
-		private final SoundEvent big;
-
-		public FallSounds(SoundEvent soundEvent, SoundEvent soundEvent2) {
-			this.small = soundEvent;
-			this.big = soundEvent2;
-		}
+	public static record FallSounds(SoundEvent small, SoundEvent big) {
 	}
 }

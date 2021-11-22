@@ -27,7 +27,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	private static boolean method_28638(StructureGeneratorFactory.Context<MineshaftFeatureConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
-		double d = (double)((MineshaftFeatureConfig)context.config()).probability;
+		double d = (double)context.config().probability;
 		return chunkRandom.nextDouble() >= d
 			? false
 			: context.validBiome()
@@ -41,12 +41,12 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<MineshaftFeatureConfig> context) {
 		MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
-			0, context.random(), context.chunkPos().getOffsetX(2), context.chunkPos().getOffsetZ(2), ((MineshaftFeatureConfig)context.config()).type
+			0, context.random(), context.chunkPos().getOffsetX(2), context.chunkPos().getOffsetZ(2), context.config().type
 		);
 		collector.addPiece(mineshaftRoom);
 		mineshaftRoom.fillOpenings(mineshaftRoom, collector, context.random());
 		int i = context.chunkGenerator().getSeaLevel();
-		if (((MineshaftFeatureConfig)context.config()).type == MineshaftFeature.Type.MESA) {
+		if (context.config().type == MineshaftFeature.Type.MESA) {
 			BlockPos blockPos = collector.getBoundingBox().getCenter();
 			int j = context.chunkGenerator().getHeight(blockPos.getX(), blockPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, context.world());
 			int k = j <= i ? i : MathHelper.nextBetween(context.random(), i, j);
