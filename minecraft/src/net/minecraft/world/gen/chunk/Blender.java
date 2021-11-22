@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.chunk;
 
 import com.google.common.collect.Lists;
-import java.lang.runtime.ObjectMethods;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -373,46 +372,10 @@ public class Blender {
 		return MathHelper.magnitude(Math.max(0.0, j), Math.max(0.0, k), Math.max(0.0, l));
 	}
 
-	static final class ChunkBlendingData extends Record {
+	static record ChunkBlendingData(int chunkX, int chunkZ, BlendingData blendingData) {
 		final int chunkX;
 		final int chunkZ;
 		final BlendingData blendingData;
-
-		ChunkBlendingData(int i, int j, BlendingData blendingData) {
-			this.chunkX = i;
-			this.chunkZ = j;
-			this.blendingData = blendingData;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",Blender.ChunkBlendingData,"chunkX;chunkZ;blendingData",Blender.ChunkBlendingData::chunkX,Blender.ChunkBlendingData::chunkZ,Blender.ChunkBlendingData::blendingData>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",Blender.ChunkBlendingData,"chunkX;chunkZ;blendingData",Blender.ChunkBlendingData::chunkX,Blender.ChunkBlendingData::chunkZ,Blender.ChunkBlendingData::blendingData>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",Blender.ChunkBlendingData,"chunkX;chunkZ;blendingData",Blender.ChunkBlendingData::chunkX,Blender.ChunkBlendingData::chunkZ,Blender.ChunkBlendingData::blendingData>(
-				this, object
-			);
-		}
-
-		public int chunkX() {
-			return this.chunkX;
-		}
-
-		public int chunkZ() {
-			return this.chunkZ;
-		}
-
-		public BlendingData blendingData() {
-			return this.blendingData;
-		}
 	}
 
 	interface class_6781 {

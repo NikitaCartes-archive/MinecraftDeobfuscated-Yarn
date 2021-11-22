@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import it.unimi.dsi.fastutil.shorts.ShortList;
-import java.lang.runtime.ObjectMethods;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -424,33 +423,6 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		return this;
 	}
 
-	public static final class TickSchedulers extends Record {
-		private final SerializableTickScheduler<Block> blocks;
-		private final SerializableTickScheduler<Fluid> fluids;
-
-		public TickSchedulers(SerializableTickScheduler<Block> serializableTickScheduler, SerializableTickScheduler<Fluid> serializableTickScheduler2) {
-			this.blocks = serializableTickScheduler;
-			this.fluids = serializableTickScheduler2;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",Chunk.TickSchedulers,"blocks;fluids",Chunk.TickSchedulers::blocks,Chunk.TickSchedulers::fluids>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",Chunk.TickSchedulers,"blocks;fluids",Chunk.TickSchedulers::blocks,Chunk.TickSchedulers::fluids>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",Chunk.TickSchedulers,"blocks;fluids",Chunk.TickSchedulers::blocks,Chunk.TickSchedulers::fluids>(this, object);
-		}
-
-		public SerializableTickScheduler<Block> blocks() {
-			return this.blocks;
-		}
-
-		public SerializableTickScheduler<Fluid> fluids() {
-			return this.fluids;
-		}
+	public static record TickSchedulers(SerializableTickScheduler<Block> blocks, SerializableTickScheduler<Fluid> fluids) {
 	}
 }

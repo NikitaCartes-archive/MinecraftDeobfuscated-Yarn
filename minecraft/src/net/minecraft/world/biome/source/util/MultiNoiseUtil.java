@@ -8,7 +8,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.lang.runtime.ObjectMethods;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -174,40 +173,7 @@ public class MultiNoiseUtil {
 			return new MultiNoiseUtil.FittestPositionFinder.Result(new BlockPos(x, 0, z), l + m);
 		}
 
-		static final class Result extends Record {
-			private final BlockPos location;
-			private final long fitness;
-
-			Result(BlockPos blockPos, long l) {
-				this.location = blockPos;
-				this.fitness = l;
-			}
-
-			public final String toString() {
-				return ObjectMethods.bootstrap<"toString",MultiNoiseUtil.FittestPositionFinder.Result,"location;fitness",MultiNoiseUtil.FittestPositionFinder.Result::location,MultiNoiseUtil.FittestPositionFinder.Result::fitness>(
-					this
-				);
-			}
-
-			public final int hashCode() {
-				return ObjectMethods.bootstrap<"hashCode",MultiNoiseUtil.FittestPositionFinder.Result,"location;fitness",MultiNoiseUtil.FittestPositionFinder.Result::location,MultiNoiseUtil.FittestPositionFinder.Result::fitness>(
-					this
-				);
-			}
-
-			public final boolean equals(Object object) {
-				return ObjectMethods.bootstrap<"equals",MultiNoiseUtil.FittestPositionFinder.Result,"location;fitness",MultiNoiseUtil.FittestPositionFinder.Result::location,MultiNoiseUtil.FittestPositionFinder.Result::fitness>(
-					this, object
-				);
-			}
-
-			public BlockPos location() {
-				return this.location;
-			}
-
-			public long fitness() {
-				return this.fitness;
-			}
+		static record Result(BlockPos location, long fitness) {
 		}
 	}
 
@@ -228,21 +194,15 @@ public class MultiNoiseUtil {
 	 * biome source picks the closest noise hypercube from its selected point
 	 * and chooses the biome associated to it.
 	 */
-	public static final class NoiseHypercube extends Record {
-		private final MultiNoiseUtil.ParameterRange temperature;
-		private final MultiNoiseUtil.ParameterRange humidity;
-		private final MultiNoiseUtil.ParameterRange continentalness;
-		private final MultiNoiseUtil.ParameterRange erosion;
-		private final MultiNoiseUtil.ParameterRange depth;
-		private final MultiNoiseUtil.ParameterRange weirdness;
-		/**
-		 * This value works differently from the other parameters, in that it is
-		 * always {@code 0} during biome generation and does not use noise.
-		 * This means that setting it to a non-null number will make the biome smaller.
-		 * The farther {@code offset} is from {@code 0}, the smaller the biome will be.
-		 * For this, it does not matter whether {@code offset} is positive or negative.
-		 */
-		private final long offset;
+	public static record NoiseHypercube(
+		MultiNoiseUtil.ParameterRange temperature,
+		MultiNoiseUtil.ParameterRange humidity,
+		MultiNoiseUtil.ParameterRange continentalness,
+		MultiNoiseUtil.ParameterRange erosion,
+		MultiNoiseUtil.ParameterRange depth,
+		MultiNoiseUtil.ParameterRange weirdness,
+		long offset
+	) {
 		public static final Codec<MultiNoiseUtil.NoiseHypercube> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						MultiNoiseUtil.ParameterRange.CODEC.fieldOf("temperature").forGetter(noiseHypercube -> noiseHypercube.temperature),
@@ -258,24 +218,6 @@ public class MultiNoiseUtil {
 					)
 					.apply(instance, MultiNoiseUtil.NoiseHypercube::new)
 		);
-
-		public NoiseHypercube(
-			MultiNoiseUtil.ParameterRange temperature,
-			MultiNoiseUtil.ParameterRange humidity,
-			MultiNoiseUtil.ParameterRange continentalness,
-			MultiNoiseUtil.ParameterRange erosion,
-			MultiNoiseUtil.ParameterRange depth,
-			MultiNoiseUtil.ParameterRange weirdness,
-			long l
-		) {
-			this.temperature = temperature;
-			this.humidity = humidity;
-			this.continentalness = continentalness;
-			this.erosion = erosion;
-			this.depth = depth;
-			this.weirdness = weirdness;
-			this.offset = l;
-		}
 
 		/**
 		 * Calculates the distance from this noise point to another one. The
@@ -312,55 +254,9 @@ public class MultiNoiseUtil {
 				new MultiNoiseUtil.ParameterRange(this.offset, this.offset)
 			);
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MultiNoiseUtil.NoiseHypercube,"temperature;humidity;continentalness;erosion;depth;weirdness;offset",MultiNoiseUtil.NoiseHypercube::temperature,MultiNoiseUtil.NoiseHypercube::humidity,MultiNoiseUtil.NoiseHypercube::continentalness,MultiNoiseUtil.NoiseHypercube::erosion,MultiNoiseUtil.NoiseHypercube::depth,MultiNoiseUtil.NoiseHypercube::weirdness,MultiNoiseUtil.NoiseHypercube::offset>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MultiNoiseUtil.NoiseHypercube,"temperature;humidity;continentalness;erosion;depth;weirdness;offset",MultiNoiseUtil.NoiseHypercube::temperature,MultiNoiseUtil.NoiseHypercube::humidity,MultiNoiseUtil.NoiseHypercube::continentalness,MultiNoiseUtil.NoiseHypercube::erosion,MultiNoiseUtil.NoiseHypercube::depth,MultiNoiseUtil.NoiseHypercube::weirdness,MultiNoiseUtil.NoiseHypercube::offset>(
-				this
-			);
-		}
-
-		public final boolean equals(Object o) {
-			return ObjectMethods.bootstrap<"equals",MultiNoiseUtil.NoiseHypercube,"temperature;humidity;continentalness;erosion;depth;weirdness;offset",MultiNoiseUtil.NoiseHypercube::temperature,MultiNoiseUtil.NoiseHypercube::humidity,MultiNoiseUtil.NoiseHypercube::continentalness,MultiNoiseUtil.NoiseHypercube::erosion,MultiNoiseUtil.NoiseHypercube::depth,MultiNoiseUtil.NoiseHypercube::weirdness,MultiNoiseUtil.NoiseHypercube::offset>(
-				this, o
-			);
-		}
-
-		public MultiNoiseUtil.ParameterRange temperature() {
-			return this.temperature;
-		}
-
-		public MultiNoiseUtil.ParameterRange humidity() {
-			return this.humidity;
-		}
-
-		public MultiNoiseUtil.ParameterRange continentalness() {
-			return this.continentalness;
-		}
-
-		public MultiNoiseUtil.ParameterRange erosion() {
-			return this.erosion;
-		}
-
-		public MultiNoiseUtil.ParameterRange depth() {
-			return this.depth;
-		}
-
-		public MultiNoiseUtil.ParameterRange weirdness() {
-			return this.weirdness;
-		}
-
-		public long offset() {
-			return this.offset;
-		}
 	}
 
-	public static final class NoiseValuePoint extends Record {
+	public static record NoiseValuePoint(long temperatureNoise, long humidityNoise, long continentalnessNoise, long erosionNoise, long depth, long weirdnessNoise) {
 		final long temperatureNoise;
 		final long humidityNoise;
 		final long continentalnessNoise;
@@ -368,66 +264,13 @@ public class MultiNoiseUtil {
 		final long depth;
 		final long weirdnessNoise;
 
-		public NoiseValuePoint(long l, long m, long n, long o, long p, long q) {
-			this.temperatureNoise = l;
-			this.humidityNoise = m;
-			this.continentalnessNoise = n;
-			this.erosionNoise = o;
-			this.depth = p;
-			this.weirdnessNoise = q;
-		}
-
 		@VisibleForTesting
 		protected long[] getNoiseValueList() {
 			return new long[]{this.temperatureNoise, this.humidityNoise, this.continentalnessNoise, this.erosionNoise, this.depth, this.weirdnessNoise, 0L};
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MultiNoiseUtil.NoiseValuePoint,"temperature;humidity;continentalness;erosion;depth;weirdness",MultiNoiseUtil.NoiseValuePoint::temperatureNoise,MultiNoiseUtil.NoiseValuePoint::humidityNoise,MultiNoiseUtil.NoiseValuePoint::continentalnessNoise,MultiNoiseUtil.NoiseValuePoint::erosionNoise,MultiNoiseUtil.NoiseValuePoint::depth,MultiNoiseUtil.NoiseValuePoint::weirdnessNoise>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MultiNoiseUtil.NoiseValuePoint,"temperature;humidity;continentalness;erosion;depth;weirdness",MultiNoiseUtil.NoiseValuePoint::temperatureNoise,MultiNoiseUtil.NoiseValuePoint::humidityNoise,MultiNoiseUtil.NoiseValuePoint::continentalnessNoise,MultiNoiseUtil.NoiseValuePoint::erosionNoise,MultiNoiseUtil.NoiseValuePoint::depth,MultiNoiseUtil.NoiseValuePoint::weirdnessNoise>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MultiNoiseUtil.NoiseValuePoint,"temperature;humidity;continentalness;erosion;depth;weirdness",MultiNoiseUtil.NoiseValuePoint::temperatureNoise,MultiNoiseUtil.NoiseValuePoint::humidityNoise,MultiNoiseUtil.NoiseValuePoint::continentalnessNoise,MultiNoiseUtil.NoiseValuePoint::erosionNoise,MultiNoiseUtil.NoiseValuePoint::depth,MultiNoiseUtil.NoiseValuePoint::weirdnessNoise>(
-				this, object
-			);
-		}
-
-		public long temperatureNoise() {
-			return this.temperatureNoise;
-		}
-
-		public long humidityNoise() {
-			return this.humidityNoise;
-		}
-
-		public long continentalnessNoise() {
-			return this.continentalnessNoise;
-		}
-
-		public long erosionNoise() {
-			return this.erosionNoise;
-		}
-
-		public long depth() {
-			return this.depth;
-		}
-
-		public long weirdnessNoise() {
-			return this.weirdnessNoise;
-		}
 	}
 
-	public static final class ParameterRange extends Record {
-		private final long min;
-		private final long max;
+	public static record ParameterRange(long min, long max) {
 		public static final Codec<MultiNoiseUtil.ParameterRange> CODEC = Codecs.createCodecForPairObject(
 			Codec.floatRange(-2.0F, 2.0F),
 			"min",
@@ -438,11 +281,6 @@ public class MultiNoiseUtil {
 			parameterRange -> MultiNoiseUtil.method_38666(parameterRange.min()),
 			parameterRange -> MultiNoiseUtil.method_38666(parameterRange.max())
 		);
-
-		public ParameterRange(long l, long m) {
-			this.min = l;
-			this.max = m;
-		}
 
 		public static MultiNoiseUtil.ParameterRange of(float point) {
 			return of(point, point);
@@ -490,26 +328,6 @@ public class MultiNoiseUtil {
 
 		public MultiNoiseUtil.ParameterRange combine(@Nullable MultiNoiseUtil.ParameterRange other) {
 			return other == null ? this : new MultiNoiseUtil.ParameterRange(Math.min(this.min, other.min()), Math.max(this.max, other.max()));
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MultiNoiseUtil.ParameterRange,"min;max",MultiNoiseUtil.ParameterRange::min,MultiNoiseUtil.ParameterRange::max>(
-				this
-			);
-		}
-
-		public final boolean equals(Object o) {
-			return ObjectMethods.bootstrap<"equals",MultiNoiseUtil.ParameterRange,"min;max",MultiNoiseUtil.ParameterRange::min,MultiNoiseUtil.ParameterRange::max>(
-				this, o
-			);
-		}
-
-		public long min() {
-			return this.min;
-		}
-
-		public long max() {
-			return this.max;
 		}
 	}
 

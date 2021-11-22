@@ -6,7 +6,6 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
 import java.io.File;
 import java.io.IOException;
-import java.lang.runtime.ObjectMethods;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -529,40 +528,9 @@ public class ServerChunkManager extends ChunkManager {
 		return this.spawnInfo;
 	}
 
-	static final class ChunkWithHolder extends Record {
+	static record ChunkWithHolder(WorldChunk chunk, ChunkHolder holder) {
 		final WorldChunk chunk;
 		final ChunkHolder holder;
-
-		ChunkWithHolder(WorldChunk worldChunk, ChunkHolder chunkHolder) {
-			this.chunk = worldChunk;
-			this.holder = chunkHolder;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",ServerChunkManager.ChunkWithHolder,"chunk;holder",ServerChunkManager.ChunkWithHolder::chunk,ServerChunkManager.ChunkWithHolder::holder>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",ServerChunkManager.ChunkWithHolder,"chunk;holder",ServerChunkManager.ChunkWithHolder::chunk,ServerChunkManager.ChunkWithHolder::holder>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",ServerChunkManager.ChunkWithHolder,"chunk;holder",ServerChunkManager.ChunkWithHolder::chunk,ServerChunkManager.ChunkWithHolder::holder>(
-				this, object
-			);
-		}
-
-		public WorldChunk chunk() {
-			return this.chunk;
-		}
-
-		public ChunkHolder holder() {
-			return this.holder;
-		}
 	}
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {

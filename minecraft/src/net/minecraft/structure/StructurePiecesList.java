@@ -2,7 +2,6 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import java.lang.runtime.ObjectMethods;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,8 +19,7 @@ import org.apache.logging.log4j.Logger;
  * An immutable list of structure pieces, usually belonging to a structure
  * start.
  */
-public final class StructurePiecesList extends Record {
-	private final List<StructurePiece> pieces;
+public record StructurePiecesList(List<StructurePiece> pieces) {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier JIGSAW = new Identifier("jigsaw");
 	private static final Map<Identifier, Identifier> ID_UPDATES = ImmutableMap.<Identifier, Identifier>builder()
@@ -85,21 +83,5 @@ public final class StructurePiecesList extends Record {
 
 	public BlockBox getBoundingBox() {
 		return StructurePiece.boundingBox(this.pieces.stream());
-	}
-
-	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",StructurePiecesList,"pieces",StructurePiecesList::pieces>(this);
-	}
-
-	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",StructurePiecesList,"pieces",StructurePiecesList::pieces>(this);
-	}
-
-	public final boolean equals(Object object) {
-		return ObjectMethods.bootstrap<"equals",StructurePiecesList,"pieces",StructurePiecesList::pieces>(this, object);
-	}
-
-	public List<StructurePiece> pieces() {
-		return this.pieces;
 	}
 }

@@ -4,7 +4,6 @@ import com.google.common.base.MoreObjects;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import java.lang.runtime.ObjectMethods;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -40,11 +39,11 @@ public abstract class Property<T extends Comparable<T>> {
 	}
 
 	public Property.Value<T> createValue(T value) {
-		return new Property.Value(this, value);
+		return new Property.Value<>(this, value);
 	}
 
 	public Property.Value<T> createValue(State<?, ?> state) {
-		return new Property.Value(this, state.get(this));
+		return new Property.Value<>(this, state.get(this));
 	}
 
 	public Stream<Property.Value<T>> stream() {
@@ -117,10 +116,7 @@ public abstract class Property<T extends Comparable<T>> {
 		return dataResult.<S>map(property -> state.with(this, property)).setPartial(state);
 	}
 
-	public static final class Value extends Record {
-		private final Property<T> property;
-		private final T value;
-
+	public static record Value<T extends Comparable<T>>(Property<T> property, T value) {
 		public Value(Property<T> property, T value) {
 			if (!property.getValues().contains(value)) {
 				throw new IllegalArgumentException("Value " + value + " does not belong to property " + property);
@@ -132,22 +128,6 @@ public abstract class Property<T extends Comparable<T>> {
 
 		public String toString() {
 			return this.property.getName() + "=" + this.property.name(this.value);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",Property.Value,"property;value",Property.Value::property,Property.Value::value>(this);
-		}
-
-		public final boolean equals(Object o) {
-			return ObjectMethods.bootstrap<"equals",Property.Value,"property;value",Property.Value::property,Property.Value::value>(this, o);
-		}
-
-		public Property<T> property() {
-			return this.property;
-		}
-
-		public T value() {
-			return this.value;
 		}
 	}
 }

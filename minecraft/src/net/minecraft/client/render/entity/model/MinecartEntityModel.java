@@ -34,9 +34,6 @@ import net.minecraft.entity.Entity;
  * <tr>
  *   <td>{@code right}</td><td>{@linkplain #root Root part}</td><td></td>
  * </tr>
- * <tr>
- *   <td>{@value #CONTENTS}</td><td>{@linkplain #root Root part}</td><td>{@link #contents}</td>
- * </tr>
  * </table>
  * </div>
  */

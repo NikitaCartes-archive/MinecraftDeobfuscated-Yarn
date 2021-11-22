@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.random;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.lang.runtime.ObjectMethods;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class RandomSeed {
@@ -29,35 +28,6 @@ public final class RandomSeed {
 		return SEED_UNIQUIFIER.updateAndGet(seedUniquifier -> seedUniquifier * 1181783497276652981L) ^ System.nanoTime();
 	}
 
-	public static final class XoroshiroSeed extends Record {
-		private final long seedLo;
-		private final long seedHi;
-
-		public XoroshiroSeed(long l, long m) {
-			this.seedLo = l;
-			this.seedHi = m;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",RandomSeed.XoroshiroSeed,"seedLo;seedHi",RandomSeed.XoroshiroSeed::seedLo,RandomSeed.XoroshiroSeed::seedHi>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",RandomSeed.XoroshiroSeed,"seedLo;seedHi",RandomSeed.XoroshiroSeed::seedLo,RandomSeed.XoroshiroSeed::seedHi>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",RandomSeed.XoroshiroSeed,"seedLo;seedHi",RandomSeed.XoroshiroSeed::seedLo,RandomSeed.XoroshiroSeed::seedHi>(
-				this, object
-			);
-		}
-
-		public long seedLo() {
-			return this.seedLo;
-		}
-
-		public long seedHi() {
-			return this.seedHi;
-		}
+	public static record XoroshiroSeed(long seedLo, long seedHi) {
 	}
 }

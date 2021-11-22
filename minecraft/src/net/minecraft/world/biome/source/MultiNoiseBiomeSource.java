@@ -9,7 +9,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.lang.runtime.ObjectMethods;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
@@ -154,9 +153,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		}
 	}
 
-	static final class Instance extends Record {
-		private final MultiNoiseBiomeSource.Preset preset;
-		private final Registry<Biome> biomeRegistry;
+	static record Instance(MultiNoiseBiomeSource.Preset preset, Registry<Biome> biomeRegistry) {
 		public static final MapCodec<MultiNoiseBiomeSource.Instance> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						Identifier.CODEC
@@ -174,39 +171,8 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 					.apply(instance, instance.stable(MultiNoiseBiomeSource.Instance::new))
 		);
 
-		Instance(MultiNoiseBiomeSource.Preset preset, Registry<Biome> biomeRegistry) {
-			this.preset = preset;
-			this.biomeRegistry = biomeRegistry;
-		}
-
 		public MultiNoiseBiomeSource getBiomeSource() {
 			return this.preset.getBiomeSource(this, true);
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MultiNoiseBiomeSource.Instance,"preset;biomes",MultiNoiseBiomeSource.Instance::preset,MultiNoiseBiomeSource.Instance::biomeRegistry>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MultiNoiseBiomeSource.Instance,"preset;biomes",MultiNoiseBiomeSource.Instance::preset,MultiNoiseBiomeSource.Instance::biomeRegistry>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MultiNoiseBiomeSource.Instance,"preset;biomes",MultiNoiseBiomeSource.Instance::preset,MultiNoiseBiomeSource.Instance::biomeRegistry>(
-				this, object
-			);
-		}
-
-		public MultiNoiseBiomeSource.Preset preset() {
-			return this.preset;
-		}
-
-		public Registry<Biome> biomeRegistry() {
-			return this.biomeRegistry;
 		}
 	}
 

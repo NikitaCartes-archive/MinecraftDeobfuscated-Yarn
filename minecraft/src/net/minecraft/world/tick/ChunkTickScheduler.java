@@ -33,7 +33,7 @@ public class ChunkTickScheduler<T> implements SerializableTickScheduler<T>, Basi
 		this.ticks = ticks;
 
 		for(Tick<T> tick : ticks) {
-			this.queuedTicks.add(OrderedTick.<Object>create(tick.type(), tick.pos()));
+			this.queuedTicks.add(OrderedTick.create(tick.type(), tick.pos()));
 		}
 	}
 

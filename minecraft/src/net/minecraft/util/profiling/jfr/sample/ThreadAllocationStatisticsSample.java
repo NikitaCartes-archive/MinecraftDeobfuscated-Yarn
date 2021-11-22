@@ -1,7 +1,6 @@
 package net.minecraft.util.profiling.jfr.sample;
 
 import com.google.common.base.MoreObjects;
-import java.lang.runtime.ObjectMethods;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -11,17 +10,8 @@ import java.util.stream.Collectors;
 import jdk.jfr.consumer.RecordedEvent;
 import jdk.jfr.consumer.RecordedThread;
 
-public final class ThreadAllocationStatisticsSample extends Record {
-	private final Instant time;
-	private final String threadName;
-	private final long allocated;
+public record ThreadAllocationStatisticsSample(Instant time, String threadName, long allocated) {
 	private static final String UNKNOWN = "unknown";
-
-	public ThreadAllocationStatisticsSample(Instant instant, String string, long l) {
-		this.time = instant;
-		this.threadName = string;
-		this.allocated = l;
-	}
 
 	public static ThreadAllocationStatisticsSample fromEvent(RecordedEvent event) {
 		RecordedThread recordedThread = event.getThread("thread");
@@ -44,63 +34,6 @@ public final class ThreadAllocationStatisticsSample extends Record {
 		return new ThreadAllocationStatisticsSample.AllocationMap(map);
 	}
 
-	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",ThreadAllocationStatisticsSample,"timestamp;threadName;totalBytes",ThreadAllocationStatisticsSample::time,ThreadAllocationStatisticsSample::threadName,ThreadAllocationStatisticsSample::allocated>(
-			this
-		);
-	}
-
-	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",ThreadAllocationStatisticsSample,"timestamp;threadName;totalBytes",ThreadAllocationStatisticsSample::time,ThreadAllocationStatisticsSample::threadName,ThreadAllocationStatisticsSample::allocated>(
-			this
-		);
-	}
-
-	public final boolean equals(Object o) {
-		return ObjectMethods.bootstrap<"equals",ThreadAllocationStatisticsSample,"timestamp;threadName;totalBytes",ThreadAllocationStatisticsSample::time,ThreadAllocationStatisticsSample::threadName,ThreadAllocationStatisticsSample::allocated>(
-			this, o
-		);
-	}
-
-	public Instant time() {
-		return this.time;
-	}
-
-	public String threadName() {
-		return this.threadName;
-	}
-
-	public long allocated() {
-		return this.allocated;
-	}
-
-	public static final class AllocationMap extends Record {
-		private final Map<String, Double> allocations;
-
-		public AllocationMap(Map<String, Double> map) {
-			this.allocations = map;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",ThreadAllocationStatisticsSample.AllocationMap,"allocationsPerSecondByThread",ThreadAllocationStatisticsSample.AllocationMap::allocations>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",ThreadAllocationStatisticsSample.AllocationMap,"allocationsPerSecondByThread",ThreadAllocationStatisticsSample.AllocationMap::allocations>(
-				this
-			);
-		}
-
-		public final boolean equals(Object o) {
-			return ObjectMethods.bootstrap<"equals",ThreadAllocationStatisticsSample.AllocationMap,"allocationsPerSecondByThread",ThreadAllocationStatisticsSample.AllocationMap::allocations>(
-				this, o
-			);
-		}
-
-		public Map<String, Double> allocations() {
-			return this.allocations;
-		}
+	public static record AllocationMap(Map<String, Double> allocations) {
 	}
 }

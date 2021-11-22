@@ -12,17 +12,17 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2851;
+	public static final int WORLD_VERSION = 2853;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.18-pre5";
+	public static final String VERSION_NAME = "1.18-pre6";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.18";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 757;
 	@Deprecated
-	public static final int field_29736 = 53;
+	public static final int field_29736 = 54;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2830;
 	private static final int field_29708 = 30;
 	@Deprecated
@@ -104,7 +104,6 @@ public class SharedConstants {
 	public static final boolean field_29726 = false;
 	public static final boolean field_29727 = false;
 	public static final boolean field_35652 = false;
-	public static final float field_29728 = 0.15F;
 	public static final long field_22251 = Duration.ofMillis(300L).toNanos();
 	/**
 	 * Specifies whether Minecraft should use choice type registrations from the game's schema when entity types or block entity types are created.
@@ -163,7 +162,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741877;
+		return 1073741878;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {

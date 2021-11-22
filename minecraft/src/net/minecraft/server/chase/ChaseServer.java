@@ -2,7 +2,6 @@ package net.minecraft.server.chase;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.runtime.ObjectMethods;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -141,67 +140,9 @@ public class ChaseServer {
 		}
 	}
 
-	static final class TeleportPos extends Record {
-		private final String dimensionName;
-		private final double x;
-		private final double y;
-		private final double z;
-		private final float yaw;
-		private final float pitch;
-
-		TeleportPos(String string, double d, double e, double f, float g, float h) {
-			this.dimensionName = string;
-			this.x = d;
-			this.y = e;
-			this.z = f;
-			this.yaw = g;
-			this.pitch = h;
-		}
-
+	static record TeleportPos(String dimensionName, double x, double y, double z, float yaw, float pitch) {
 		String getTeleportCommand() {
 			return String.format(Locale.ROOT, "t %s %.2f %.2f %.2f %.2f %.2f\n", this.dimensionName, this.x, this.y, this.z, this.yaw, this.pitch);
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",ChaseServer.TeleportPos,"dimensionName;x;y;z;yRot;xRot",ChaseServer.TeleportPos::dimensionName,ChaseServer.TeleportPos::x,ChaseServer.TeleportPos::y,ChaseServer.TeleportPos::z,ChaseServer.TeleportPos::yaw,ChaseServer.TeleportPos::pitch>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",ChaseServer.TeleportPos,"dimensionName;x;y;z;yRot;xRot",ChaseServer.TeleportPos::dimensionName,ChaseServer.TeleportPos::x,ChaseServer.TeleportPos::y,ChaseServer.TeleportPos::z,ChaseServer.TeleportPos::yaw,ChaseServer.TeleportPos::pitch>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",ChaseServer.TeleportPos,"dimensionName;x;y;z;yRot;xRot",ChaseServer.TeleportPos::dimensionName,ChaseServer.TeleportPos::x,ChaseServer.TeleportPos::y,ChaseServer.TeleportPos::z,ChaseServer.TeleportPos::yaw,ChaseServer.TeleportPos::pitch>(
-				this, object
-			);
-		}
-
-		public String dimensionName() {
-			return this.dimensionName;
-		}
-
-		public double x() {
-			return this.x;
-		}
-
-		public double y() {
-			return this.y;
-		}
-
-		public double z() {
-			return this.z;
-		}
-
-		public float yaw() {
-			return this.yaw;
-		}
-
-		public float pitch() {
-			return this.pitch;
 		}
 	}
 }

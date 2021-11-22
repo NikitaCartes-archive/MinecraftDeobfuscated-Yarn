@@ -11,7 +11,6 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.Codec.ResultFunction;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.lang.runtime.ObjectMethods;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -233,7 +232,7 @@ public class Codecs {
 	}
 
 	public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
-		return new Codecs.Lazy(supplier);
+		return new Codecs.Lazy<>(supplier);
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {
@@ -284,9 +283,7 @@ public class Codecs {
 		}
 	}
 
-	static final class Lazy extends Record implements Codec {
-		private final Supplier<Codec<A>> delegate;
-
+	static record Lazy<A>(Supplier<Codec<A>> delegate) implements Codec<A> {
 		Lazy(Supplier<Codec<A>> supplier) {
 			Supplier<Codec<A>> var2 = Suppliers.memoize(supplier::get);
 			this.delegate = var2;
@@ -300,22 +297,6 @@ public class Codecs {
 		@Override
 		public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
 			return ((Codec)this.delegate.get()).encode(input, ops, prefix);
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",Codecs.Lazy,"delegate",Codecs.Lazy::delegate>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",Codecs.Lazy,"delegate",Codecs.Lazy::delegate>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",Codecs.Lazy,"delegate",Codecs.Lazy::delegate>(this, object);
-		}
-
-		public Supplier<Codec<A>> delegate() {
-			return this.delegate;
 		}
 	}
 

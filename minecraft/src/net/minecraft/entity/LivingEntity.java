@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
-import java.lang.runtime.ObjectMethods;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -3488,33 +3487,6 @@ public abstract class LivingEntity extends Entity {
 		);
 	}
 
-	public static final class FallSounds extends Record {
-		private final SoundEvent small;
-		private final SoundEvent big;
-
-		public FallSounds(SoundEvent soundEvent, SoundEvent soundEvent2) {
-			this.small = soundEvent;
-			this.big = soundEvent2;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",LivingEntity.FallSounds,"small;big",LivingEntity.FallSounds::small,LivingEntity.FallSounds::big>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",LivingEntity.FallSounds,"small;big",LivingEntity.FallSounds::small,LivingEntity.FallSounds::big>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",LivingEntity.FallSounds,"small;big",LivingEntity.FallSounds::small,LivingEntity.FallSounds::big>(this, object);
-		}
-
-		public SoundEvent small() {
-			return this.small;
-		}
-
-		public SoundEvent big() {
-			return this.big;
-		}
+	public static record FallSounds(SoundEvent small, SoundEvent big) {
 	}
 }

@@ -20,6 +20,7 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
@@ -97,6 +98,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private static final byte LEVEL_CHUNK = 1;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int field_29674 = 200;
+	private static final int field_36291 = 20;
 	private static final int field_29675 = 3;
 	public static final int field_29669 = 33;
 	/**
@@ -412,13 +414,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			this.unloadChunks(() -> true);
 			this.completeAll();
 		} else {
-			this.chunkHolders.values().stream().filter(ChunkHolder::isAccessible).forEach(chunkHolder -> {
-				Chunk chunk = (Chunk)chunkHolder.getSavingFuture().getNow(null);
-				if (chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk) {
-					this.save(chunk);
-					chunkHolder.updateAccessibleStatus();
-				}
-			});
+			this.chunkHolders.values().forEach(this::method_39925);
 		}
 	}
 
@@ -454,6 +450,15 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		while((shouldKeepTicking.getAsBoolean() || j > 0) && (l = (long)((Runnable)this.unloadTaskQueue.poll())) != null) {
 			--j;
 			l.run();
+		}
+
+		int k = 0;
+		ObjectIterator<ChunkHolder> objectIterator = this.chunkHolders.values().iterator();
+
+		while(k < 20 && shouldKeepTicking.getAsBoolean() && objectIterator.hasNext()) {
+			if (this.method_39925((ChunkHolder)objectIterator.next())) {
+				++k;
+			}
 		}
 	}
 
@@ -675,6 +680,21 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	public int getTotalChunksLoadedCount() {
 		return this.totalChunksLoadedCount.get();
+	}
+
+	private boolean method_39925(ChunkHolder chunkHolder) {
+		if (!chunkHolder.isAccessible()) {
+			return false;
+		} else {
+			Chunk chunk = (Chunk)chunkHolder.getSavingFuture().getNow(null);
+			if (!(chunk instanceof ReadOnlyChunk) && !(chunk instanceof WorldChunk)) {
+				return false;
+			} else {
+				boolean bl = this.save(chunk);
+				chunkHolder.updateAccessibleStatus();
+				return bl;
+			}
+		}
 	}
 
 	private boolean save(Chunk chunk) {

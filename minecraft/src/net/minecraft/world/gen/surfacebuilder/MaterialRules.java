@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.lang.runtime.ObjectMethods;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -120,7 +119,7 @@ public class MaterialRules {
 		return MaterialRules.TerracottaBandsMaterialRule.INSTANCE;
 	}
 
-	static final class AboveYMaterialCondition extends Record implements MaterialRules.MaterialCondition {
+	static record AboveYMaterialCondition(YOffset anchor, int surfaceDepthMultiplier, boolean addStoneDepth) implements MaterialRules.MaterialCondition {
 		final YOffset anchor;
 		final int surfaceDepthMultiplier;
 		final boolean addStoneDepth;
@@ -132,12 +131,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.AboveYMaterialCondition::new)
 		);
-
-		AboveYMaterialCondition(YOffset yOffset, int i, boolean bl) {
-			this.anchor = yOffset;
-			this.surfaceDepthMultiplier = i;
-			this.addStoneDepth = bl;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -159,49 +152,14 @@ public class MaterialRules {
 
 			return new AboveYPredicate();
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.AboveYMaterialCondition,"anchor;surfaceDepthMultiplier;addStoneDepth",MaterialRules.AboveYMaterialCondition::anchor,MaterialRules.AboveYMaterialCondition::surfaceDepthMultiplier,MaterialRules.AboveYMaterialCondition::addStoneDepth>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.AboveYMaterialCondition,"anchor;surfaceDepthMultiplier;addStoneDepth",MaterialRules.AboveYMaterialCondition::anchor,MaterialRules.AboveYMaterialCondition::surfaceDepthMultiplier,MaterialRules.AboveYMaterialCondition::addStoneDepth>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.AboveYMaterialCondition,"anchor;surfaceDepthMultiplier;addStoneDepth",MaterialRules.AboveYMaterialCondition::anchor,MaterialRules.AboveYMaterialCondition::surfaceDepthMultiplier,MaterialRules.AboveYMaterialCondition::addStoneDepth>(
-				this, object
-			);
-		}
-
-		public YOffset anchor() {
-			return this.anchor;
-		}
-
-		public int surfaceDepthMultiplier() {
-			return this.surfaceDepthMultiplier;
-		}
-
-		public boolean addStoneDepth() {
-			return this.addStoneDepth;
-		}
 	}
 
-	static final class BiomeMaterialCondition extends Record implements MaterialRules.MaterialCondition {
-		private final List<RegistryKey<Biome>> biomes;
+	static record BiomeMaterialCondition(List<RegistryKey<Biome>> biomes) implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.BiomeMaterialCondition> CONDITION_CODEC = RegistryKey.createCodec(Registry.BIOME_KEY)
 			.listOf()
 			.fieldOf("biome_is")
 			.<MaterialRules.BiomeMaterialCondition>xmap(MaterialRules::biome, MaterialRules.BiomeMaterialCondition::biomes)
 			.codec();
-
-		BiomeMaterialCondition(List<RegistryKey<Biome>> list) {
-			this.biomes = list;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -224,27 +182,9 @@ public class MaterialRules {
 
 			return new BiomePredicate();
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.BiomeMaterialCondition,"biomes",MaterialRules.BiomeMaterialCondition::biomes>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.BiomeMaterialCondition,"biomes",MaterialRules.BiomeMaterialCondition::biomes>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.BiomeMaterialCondition,"biomes",MaterialRules.BiomeMaterialCondition::biomes>(this, object);
-		}
-
-		public List<RegistryKey<Biome>> biomes() {
-			return this.biomes;
-		}
 	}
 
-	static final class BlockMaterialRule extends Record implements MaterialRules.MaterialRule {
-		private final BlockState resultState;
-		private final MaterialRules.SimpleBlockStateRule rule;
+	static record BlockMaterialRule(BlockState resultState, MaterialRules.SimpleBlockStateRule rule) implements MaterialRules.MaterialRule {
 		static final Codec<MaterialRules.BlockMaterialRule> RULE_CODEC = BlockState.CODEC
 			.<MaterialRules.BlockMaterialRule>xmap(MaterialRules.BlockMaterialRule::new, MaterialRules.BlockMaterialRule::resultState)
 			.fieldOf("result_state")
@@ -254,43 +194,12 @@ public class MaterialRules {
 			this(resultState, new MaterialRules.SimpleBlockStateRule(resultState));
 		}
 
-		private BlockMaterialRule(BlockState blockState, MaterialRules.SimpleBlockStateRule simpleBlockStateRule) {
-			this.resultState = blockState;
-			this.rule = simpleBlockStateRule;
-		}
-
 		@Override
 		public Codec<? extends MaterialRules.MaterialRule> codec() {
 			return RULE_CODEC;
 		}
 
 		public MaterialRules.BlockStateRule apply(MaterialRules.MaterialRuleContext materialRuleContext) {
-			return this.rule;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.BlockMaterialRule,"resultState;rule",MaterialRules.BlockMaterialRule::resultState,MaterialRules.BlockMaterialRule::rule>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.BlockMaterialRule,"resultState;rule",MaterialRules.BlockMaterialRule::resultState,MaterialRules.BlockMaterialRule::rule>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.BlockMaterialRule,"resultState;rule",MaterialRules.BlockMaterialRule::resultState,MaterialRules.BlockMaterialRule::rule>(
-				this, object
-			);
-		}
-
-		public BlockState resultState() {
-			return this.resultState;
-		}
-
-		public MaterialRules.SimpleBlockStateRule rule() {
 			return this.rule;
 		}
 	}
@@ -307,9 +216,7 @@ public class MaterialRules {
 		boolean get();
 	}
 
-	static final class ConditionMaterialRule extends Record implements MaterialRules.MaterialRule {
-		private final MaterialRules.MaterialCondition ifTrue;
-		private final MaterialRules.MaterialRule thenRun;
+	static record ConditionMaterialRule(MaterialRules.MaterialCondition ifTrue, MaterialRules.MaterialRule thenRun) implements MaterialRules.MaterialRule {
 		static final Codec<MaterialRules.ConditionMaterialRule> RULE_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						MaterialRules.MaterialCondition.CODEC.fieldOf("if_true").forGetter(MaterialRules.ConditionMaterialRule::ifTrue),
@@ -317,11 +224,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.ConditionMaterialRule::new)
 		);
-
-		ConditionMaterialRule(MaterialRules.MaterialCondition materialCondition, MaterialRules.MaterialRule materialRule) {
-			this.ifTrue = materialCondition;
-			this.thenRun = materialRule;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialRule> codec() {
@@ -333,77 +235,18 @@ public class MaterialRules {
 				(MaterialRules.BooleanSupplier)this.ifTrue.apply(materialRuleContext), (MaterialRules.BlockStateRule)this.thenRun.apply(materialRuleContext)
 			);
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.ConditionMaterialRule,"ifTrue;thenRun",MaterialRules.ConditionMaterialRule::ifTrue,MaterialRules.ConditionMaterialRule::thenRun>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.ConditionMaterialRule,"ifTrue;thenRun",MaterialRules.ConditionMaterialRule::ifTrue,MaterialRules.ConditionMaterialRule::thenRun>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.ConditionMaterialRule,"ifTrue;thenRun",MaterialRules.ConditionMaterialRule::ifTrue,MaterialRules.ConditionMaterialRule::thenRun>(
-				this, object
-			);
-		}
-
-		public MaterialRules.MaterialCondition ifTrue() {
-			return this.ifTrue;
-		}
-
-		public MaterialRules.MaterialRule thenRun() {
-			return this.thenRun;
-		}
 	}
 
 	/**
 	 * Applies another block state rule if the given predicate matches, and returns
 	 * {@code null} otherwise.
 	 */
-	static final class ConditionalBlockStateRule extends Record implements MaterialRules.BlockStateRule {
-		private final MaterialRules.BooleanSupplier condition;
-		private final MaterialRules.BlockStateRule followup;
-
-		ConditionalBlockStateRule(MaterialRules.BooleanSupplier booleanSupplier, MaterialRules.BlockStateRule blockStateRule) {
-			this.condition = booleanSupplier;
-			this.followup = blockStateRule;
-		}
-
+	static record ConditionalBlockStateRule(MaterialRules.BooleanSupplier condition, MaterialRules.BlockStateRule followup)
+		implements MaterialRules.BlockStateRule {
 		@Nullable
 		@Override
 		public BlockState tryApply(int i, int j, int k) {
 			return !this.condition.get() ? null : this.followup.tryApply(i, j, k);
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.ConditionalBlockStateRule,"condition;followup",MaterialRules.ConditionalBlockStateRule::condition,MaterialRules.ConditionalBlockStateRule::followup>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.ConditionalBlockStateRule,"condition;followup",MaterialRules.ConditionalBlockStateRule::condition,MaterialRules.ConditionalBlockStateRule::followup>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.ConditionalBlockStateRule,"condition;followup",MaterialRules.ConditionalBlockStateRule::condition,MaterialRules.ConditionalBlockStateRule::followup>(
-				this, object
-			);
-		}
-
-		public MaterialRules.BooleanSupplier condition() {
-			return this.condition;
-		}
-
-		public MaterialRules.BlockStateRule followup() {
-			return this.followup;
 		}
 	}
 
@@ -444,32 +287,10 @@ public class MaterialRules {
 		}
 	}
 
-	static final class InvertedBooleanSupplier extends Record implements MaterialRules.BooleanSupplier {
-		private final MaterialRules.BooleanSupplier target;
-
-		InvertedBooleanSupplier(MaterialRules.BooleanSupplier booleanSupplier) {
-			this.target = booleanSupplier;
-		}
-
+	static record InvertedBooleanSupplier(MaterialRules.BooleanSupplier target) implements MaterialRules.BooleanSupplier {
 		@Override
 		public boolean get() {
 			return !this.target.get();
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.InvertedBooleanSupplier,"target",MaterialRules.InvertedBooleanSupplier::target>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.InvertedBooleanSupplier,"target",MaterialRules.InvertedBooleanSupplier::target>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.InvertedBooleanSupplier,"target",MaterialRules.InvertedBooleanSupplier::target>(this, object);
-		}
-
-		public MaterialRules.BooleanSupplier target() {
-			return this.target;
 		}
 	}
 
@@ -672,7 +493,7 @@ public class MaterialRules {
 
 			@Override
 			protected boolean test() {
-				return ((Biome)this.context.biomeSupplier.get()).getTemperature(this.context.pos.set(this.context.x, this.context.y, this.context.z)) < 0.15F;
+				return ((Biome)this.context.biomeSupplier.get()).isCold(this.context.pos.set(this.context.x, this.context.y, this.context.z));
 			}
 		}
 
@@ -721,8 +542,8 @@ public class MaterialRules {
 		}
 	}
 
-	static final class NoiseThresholdMaterialCondition extends Record implements MaterialRules.MaterialCondition {
-		private final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise;
+	static record NoiseThresholdMaterialCondition(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise, double minThreshold, double maxThreshold)
+		implements MaterialRules.MaterialCondition {
 		final double minThreshold;
 		final double maxThreshold;
 		static final Codec<MaterialRules.NoiseThresholdMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
@@ -733,12 +554,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.NoiseThresholdMaterialCondition::new)
 		);
-
-		NoiseThresholdMaterialCondition(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey, double d, double e) {
-			this.noise = registryKey;
-			this.minThreshold = d;
-			this.maxThreshold = e;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -762,48 +577,13 @@ public class MaterialRules {
 
 			return new NoiseThresholdPredicate();
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.NoiseThresholdMaterialCondition,"noise;minThreshold;maxThreshold",MaterialRules.NoiseThresholdMaterialCondition::noise,MaterialRules.NoiseThresholdMaterialCondition::minThreshold,MaterialRules.NoiseThresholdMaterialCondition::maxThreshold>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.NoiseThresholdMaterialCondition,"noise;minThreshold;maxThreshold",MaterialRules.NoiseThresholdMaterialCondition::noise,MaterialRules.NoiseThresholdMaterialCondition::minThreshold,MaterialRules.NoiseThresholdMaterialCondition::maxThreshold>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.NoiseThresholdMaterialCondition,"noise;minThreshold;maxThreshold",MaterialRules.NoiseThresholdMaterialCondition::noise,MaterialRules.NoiseThresholdMaterialCondition::minThreshold,MaterialRules.NoiseThresholdMaterialCondition::maxThreshold>(
-				this, object
-			);
-		}
-
-		public RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise() {
-			return this.noise;
-		}
-
-		public double minThreshold() {
-			return this.minThreshold;
-		}
-
-		public double maxThreshold() {
-			return this.maxThreshold;
-		}
 	}
 
-	static final class NotMaterialCondition extends Record implements MaterialRules.MaterialCondition {
-		private final MaterialRules.MaterialCondition target;
+	static record NotMaterialCondition(MaterialRules.MaterialCondition target) implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.NotMaterialCondition> CONDITION_CODEC = MaterialRules.MaterialCondition.CODEC
 			.<MaterialRules.NotMaterialCondition>xmap(MaterialRules.NotMaterialCondition::new, MaterialRules.NotMaterialCondition::target)
 			.fieldOf("invert")
 			.codec();
-
-		NotMaterialCondition(MaterialRules.MaterialCondition materialCondition) {
-			this.target = materialCondition;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -813,35 +593,13 @@ public class MaterialRules {
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
 			return new MaterialRules.InvertedBooleanSupplier((MaterialRules.BooleanSupplier)this.target.apply(materialRuleContext));
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.NotMaterialCondition,"target",MaterialRules.NotMaterialCondition::target>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.NotMaterialCondition,"target",MaterialRules.NotMaterialCondition::target>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.NotMaterialCondition,"target",MaterialRules.NotMaterialCondition::target>(this, object);
-		}
-
-		public MaterialRules.MaterialCondition target() {
-			return this.target;
-		}
 	}
 
 	/**
 	 * Applies the given block state rules in sequence, and returns the first result that
 	 * isn't {@code null}. Returns {@code null} if none of the passed rules match.
 	 */
-	static final class SequenceBlockStateRule extends Record implements MaterialRules.BlockStateRule {
-		private final List<MaterialRules.BlockStateRule> rules;
-
-		SequenceBlockStateRule(List<MaterialRules.BlockStateRule> list) {
-			this.rules = list;
-		}
-
+	static record SequenceBlockStateRule(List<MaterialRules.BlockStateRule> rules) implements MaterialRules.BlockStateRule {
 		@Nullable
 		@Override
 		public BlockState tryApply(int i, int j, int k) {
@@ -854,35 +612,14 @@ public class MaterialRules {
 
 			return null;
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.SequenceBlockStateRule,"rules",MaterialRules.SequenceBlockStateRule::rules>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.SequenceBlockStateRule,"rules",MaterialRules.SequenceBlockStateRule::rules>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.SequenceBlockStateRule,"rules",MaterialRules.SequenceBlockStateRule::rules>(this, object);
-		}
-
-		public List<MaterialRules.BlockStateRule> rules() {
-			return this.rules;
-		}
 	}
 
-	static final class SequenceMaterialRule extends Record implements MaterialRules.MaterialRule {
-		private final List<MaterialRules.MaterialRule> sequence;
+	static record SequenceMaterialRule(List<MaterialRules.MaterialRule> sequence) implements MaterialRules.MaterialRule {
 		static final Codec<MaterialRules.SequenceMaterialRule> RULE_CODEC = MaterialRules.MaterialRule.CODEC
 			.listOf()
 			.<MaterialRules.SequenceMaterialRule>xmap(MaterialRules.SequenceMaterialRule::new, MaterialRules.SequenceMaterialRule::sequence)
 			.fieldOf("sequence")
 			.codec();
-
-		SequenceMaterialRule(List<MaterialRules.MaterialRule> list) {
-			this.sequence = list;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialRule> codec() {
@@ -902,52 +639,14 @@ public class MaterialRules {
 				return new MaterialRules.SequenceBlockStateRule(builder.build());
 			}
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.SequenceMaterialRule,"sequence",MaterialRules.SequenceMaterialRule::sequence>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.SequenceMaterialRule,"sequence",MaterialRules.SequenceMaterialRule::sequence>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.SequenceMaterialRule,"sequence",MaterialRules.SequenceMaterialRule::sequence>(this, object);
-		}
-
-		public List<MaterialRules.MaterialRule> sequence() {
-			return this.sequence;
-		}
 	}
 
 	/**
 	 * Always returns the given {@link BlockState}.
 	 */
-	static final class SimpleBlockStateRule extends Record implements MaterialRules.BlockStateRule {
-		private final BlockState state;
-
-		SimpleBlockStateRule(BlockState blockState) {
-			this.state = blockState;
-		}
-
+	static record SimpleBlockStateRule(BlockState state) implements MaterialRules.BlockStateRule {
 		@Override
 		public BlockState tryApply(int i, int j, int k) {
-			return this.state;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.SimpleBlockStateRule,"state",MaterialRules.SimpleBlockStateRule::state>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.SimpleBlockStateRule,"state",MaterialRules.SimpleBlockStateRule::state>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.SimpleBlockStateRule,"state",MaterialRules.SimpleBlockStateRule::state>(this, object);
-		}
-
-		public BlockState state() {
 			return this.state;
 		}
 	}
@@ -967,11 +666,11 @@ public class MaterialRules {
 		}
 	}
 
-	static final class StoneDepthMaterialCondition extends Record implements MaterialRules.MaterialCondition {
+	static record StoneDepthMaterialCondition(int offset, boolean addSurfaceDepth, boolean addSurfaceSecondaryDepth, VerticalSurfaceType surfaceType)
+		implements MaterialRules.MaterialCondition {
 		final int offset;
 		final boolean addSurfaceDepth;
 		final boolean addSurfaceSecondaryDepth;
-		private final VerticalSurfaceType surfaceType;
 		static final Codec<MaterialRules.StoneDepthMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.INT.fieldOf("offset").forGetter(MaterialRules.StoneDepthMaterialCondition::offset),
@@ -981,13 +680,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.StoneDepthMaterialCondition::new)
 		);
-
-		StoneDepthMaterialCondition(int i, boolean bl, boolean bl2, VerticalSurfaceType verticalSurfaceType) {
-			this.offset = i;
-			this.addSurfaceDepth = bl;
-			this.addSurfaceSecondaryDepth = bl2;
-			this.surfaceType = verticalSurfaceType;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -1013,40 +705,6 @@ public class MaterialRules {
 			}
 
 			return new StoneDepthPredicate();
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.StoneDepthMaterialCondition,"offset;addSurfaceDepth;addSurfaceSecondaryDepth;surfaceType",MaterialRules.StoneDepthMaterialCondition::offset,MaterialRules.StoneDepthMaterialCondition::addSurfaceDepth,MaterialRules.StoneDepthMaterialCondition::addSurfaceSecondaryDepth,MaterialRules.StoneDepthMaterialCondition::surfaceType>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.StoneDepthMaterialCondition,"offset;addSurfaceDepth;addSurfaceSecondaryDepth;surfaceType",MaterialRules.StoneDepthMaterialCondition::offset,MaterialRules.StoneDepthMaterialCondition::addSurfaceDepth,MaterialRules.StoneDepthMaterialCondition::addSurfaceSecondaryDepth,MaterialRules.StoneDepthMaterialCondition::surfaceType>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.StoneDepthMaterialCondition,"offset;addSurfaceDepth;addSurfaceSecondaryDepth;surfaceType",MaterialRules.StoneDepthMaterialCondition::offset,MaterialRules.StoneDepthMaterialCondition::addSurfaceDepth,MaterialRules.StoneDepthMaterialCondition::addSurfaceSecondaryDepth,MaterialRules.StoneDepthMaterialCondition::surfaceType>(
-				this, object
-			);
-		}
-
-		public int offset() {
-			return this.offset;
-		}
-
-		public boolean addSurfaceDepth() {
-			return this.addSurfaceDepth;
-		}
-
-		public boolean addSurfaceSecondaryDepth() {
-			return this.addSurfaceSecondaryDepth;
-		}
-
-		public VerticalSurfaceType surfaceType() {
-			return this.surfaceType;
 		}
 	}
 
@@ -1095,10 +753,8 @@ public class MaterialRules {
 		}
 	}
 
-	static final class VerticalGradientMaterialCondition extends Record implements MaterialRules.MaterialCondition {
-		private final Identifier randomName;
-		private final YOffset trueAtAndBelow;
-		private final YOffset falseAtAndAbove;
+	static record VerticalGradientMaterialCondition(Identifier randomName, YOffset trueAtAndBelow, YOffset falseAtAndAbove)
+		implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.VerticalGradientMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Identifier.CODEC.fieldOf("random_name").forGetter(MaterialRules.VerticalGradientMaterialCondition::randomName),
@@ -1107,12 +763,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.VerticalGradientMaterialCondition::new)
 		);
-
-		VerticalGradientMaterialCondition(Identifier identifier, YOffset yOffset, YOffset yOffset2) {
-			this.randomName = identifier;
-			this.trueAtAndBelow = yOffset;
-			this.falseAtAndAbove = yOffset2;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -1146,39 +796,9 @@ public class MaterialRules {
 
 			return new VerticalGradientPredicate();
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.VerticalGradientMaterialCondition,"randomName;trueAtAndBelow;falseAtAndAbove",MaterialRules.VerticalGradientMaterialCondition::randomName,MaterialRules.VerticalGradientMaterialCondition::trueAtAndBelow,MaterialRules.VerticalGradientMaterialCondition::falseAtAndAbove>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.VerticalGradientMaterialCondition,"randomName;trueAtAndBelow;falseAtAndAbove",MaterialRules.VerticalGradientMaterialCondition::randomName,MaterialRules.VerticalGradientMaterialCondition::trueAtAndBelow,MaterialRules.VerticalGradientMaterialCondition::falseAtAndAbove>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.VerticalGradientMaterialCondition,"randomName;trueAtAndBelow;falseAtAndAbove",MaterialRules.VerticalGradientMaterialCondition::randomName,MaterialRules.VerticalGradientMaterialCondition::trueAtAndBelow,MaterialRules.VerticalGradientMaterialCondition::falseAtAndAbove>(
-				this, object
-			);
-		}
-
-		public Identifier randomName() {
-			return this.randomName;
-		}
-
-		public YOffset trueAtAndBelow() {
-			return this.trueAtAndBelow;
-		}
-
-		public YOffset falseAtAndAbove() {
-			return this.falseAtAndAbove;
-		}
 	}
 
-	static final class WaterMaterialCondition extends Record implements MaterialRules.MaterialCondition {
+	static record WaterMaterialCondition(int offset, int surfaceDepthMultiplier, boolean addStoneDepth) implements MaterialRules.MaterialCondition {
 		final int offset;
 		final int surfaceDepthMultiplier;
 		final boolean addStoneDepth;
@@ -1190,12 +810,6 @@ public class MaterialRules {
 					)
 					.apply(instance, MaterialRules.WaterMaterialCondition::new)
 		);
-
-		WaterMaterialCondition(int i, int j, boolean bl) {
-			this.offset = i;
-			this.surfaceDepthMultiplier = j;
-			this.addStoneDepth = bl;
-		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -1217,36 +831,6 @@ public class MaterialRules {
 			}
 
 			return new WaterPredicate();
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",MaterialRules.WaterMaterialCondition,"offset;surfaceDepthMultiplier;addStoneDepth",MaterialRules.WaterMaterialCondition::offset,MaterialRules.WaterMaterialCondition::surfaceDepthMultiplier,MaterialRules.WaterMaterialCondition::addStoneDepth>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",MaterialRules.WaterMaterialCondition,"offset;surfaceDepthMultiplier;addStoneDepth",MaterialRules.WaterMaterialCondition::offset,MaterialRules.WaterMaterialCondition::surfaceDepthMultiplier,MaterialRules.WaterMaterialCondition::addStoneDepth>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",MaterialRules.WaterMaterialCondition,"offset;surfaceDepthMultiplier;addStoneDepth",MaterialRules.WaterMaterialCondition::offset,MaterialRules.WaterMaterialCondition::surfaceDepthMultiplier,MaterialRules.WaterMaterialCondition::addStoneDepth>(
-				this, object
-			);
-		}
-
-		public int offset() {
-			return this.offset;
-		}
-
-		public int surfaceDepthMultiplier() {
-			return this.surfaceDepthMultiplier;
-		}
-
-		public boolean addStoneDepth() {
-			return this.addStoneDepth;
 		}
 	}
 }

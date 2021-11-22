@@ -1,6 +1,5 @@
 package net.minecraft.structure;
 
-import java.lang.runtime.ObjectMethods;
 import java.util.Optional;
 import java.util.function.Predicate;
 import net.minecraft.util.math.ChunkPos;
@@ -28,39 +27,17 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
 		return context -> context.isBiomeValid(heightmapType);
 	}
 
-	public static final class Context extends Record {
-		private final ChunkGenerator chunkGenerator;
-		private final BiomeSource biomeSource;
-		private final long seed;
-		private final ChunkPos chunkPos;
-		private final C config;
-		private final HeightLimitView world;
-		private final Predicate<Biome> validBiome;
-		private final StructureManager structureManager;
-		private final DynamicRegistryManager registryManager;
-
-		public Context(
-			ChunkGenerator chunkGenerator,
-			BiomeSource biomeSource,
-			long l,
-			ChunkPos chunkPos,
-			C featureConfig,
-			HeightLimitView heightLimitView,
-			Predicate<Biome> predicate,
-			StructureManager structureManager,
-			DynamicRegistryManager dynamicRegistryManager
-		) {
-			this.chunkGenerator = chunkGenerator;
-			this.biomeSource = biomeSource;
-			this.seed = l;
-			this.chunkPos = chunkPos;
-			this.config = featureConfig;
-			this.world = heightLimitView;
-			this.validBiome = predicate;
-			this.structureManager = structureManager;
-			this.registryManager = dynamicRegistryManager;
-		}
-
+	public static record Context<C extends FeatureConfig>(
+		ChunkGenerator chunkGenerator,
+		BiomeSource biomeSource,
+		long seed,
+		ChunkPos chunkPos,
+		C config,
+		HeightLimitView world,
+		Predicate<Biome> validBiome,
+		StructureManager structureManager,
+		DynamicRegistryManager registryManager
+	) {
 		public boolean isBiomeValid(Heightmap.Type heightmapType) {
 			int i = this.chunkPos.getCenterX();
 			int j = this.chunkPos.getCenterZ();
@@ -83,60 +60,6 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
 			int j = this.chunkPos.getStartZ();
 			int[] is = this.getCornerHeights(i, width, j, height);
 			return Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",StructureGeneratorFactory.Context,"chunkGenerator;biomeSource;seed;chunkPos;config;heightAccessor;validBiome;structureManager;registryAccess",StructureGeneratorFactory.Context::chunkGenerator,StructureGeneratorFactory.Context::biomeSource,StructureGeneratorFactory.Context::seed,StructureGeneratorFactory.Context::chunkPos,StructureGeneratorFactory.Context::config,StructureGeneratorFactory.Context::world,StructureGeneratorFactory.Context::validBiome,StructureGeneratorFactory.Context::structureManager,StructureGeneratorFactory.Context::registryManager>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",StructureGeneratorFactory.Context,"chunkGenerator;biomeSource;seed;chunkPos;config;heightAccessor;validBiome;structureManager;registryAccess",StructureGeneratorFactory.Context::chunkGenerator,StructureGeneratorFactory.Context::biomeSource,StructureGeneratorFactory.Context::seed,StructureGeneratorFactory.Context::chunkPos,StructureGeneratorFactory.Context::config,StructureGeneratorFactory.Context::world,StructureGeneratorFactory.Context::validBiome,StructureGeneratorFactory.Context::structureManager,StructureGeneratorFactory.Context::registryManager>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",StructureGeneratorFactory.Context,"chunkGenerator;biomeSource;seed;chunkPos;config;heightAccessor;validBiome;structureManager;registryAccess",StructureGeneratorFactory.Context::chunkGenerator,StructureGeneratorFactory.Context::biomeSource,StructureGeneratorFactory.Context::seed,StructureGeneratorFactory.Context::chunkPos,StructureGeneratorFactory.Context::config,StructureGeneratorFactory.Context::world,StructureGeneratorFactory.Context::validBiome,StructureGeneratorFactory.Context::structureManager,StructureGeneratorFactory.Context::registryManager>(
-				this, object
-			);
-		}
-
-		public ChunkGenerator chunkGenerator() {
-			return this.chunkGenerator;
-		}
-
-		public BiomeSource biomeSource() {
-			return this.biomeSource;
-		}
-
-		public long seed() {
-			return this.seed;
-		}
-
-		public ChunkPos chunkPos() {
-			return this.chunkPos;
-		}
-
-		public C config() {
-			return this.config;
-		}
-
-		public HeightLimitView world() {
-			return this.world;
-		}
-
-		public Predicate<Biome> validBiome() {
-			return this.validBiome;
-		}
-
-		public StructureManager structureManager() {
-			return this.structureManager;
-		}
-
-		public DynamicRegistryManager registryManager() {
-			return this.registryManager;
 		}
 	}
 }

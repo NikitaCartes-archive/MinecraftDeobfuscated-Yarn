@@ -6,7 +6,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.lang.runtime.ObjectMethods;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -414,51 +413,6 @@ public final class VanillaTerrainParameters {
 		}
 	}
 
-	public static final class NoisePoint extends Record {
-		private final float continentalnessNoise;
-		private final float erosionNoise;
-		private final float normalizedWeirdness;
-		private final float weirdnessNoise;
-
-		public NoisePoint(float continentalnessNoise, float erosionNoise, float normalizedWeirdness, float weirdnessNoise) {
-			this.continentalnessNoise = continentalnessNoise;
-			this.erosionNoise = erosionNoise;
-			this.normalizedWeirdness = normalizedWeirdness;
-			this.weirdnessNoise = weirdnessNoise;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",VanillaTerrainParameters.NoisePoint,"continents;erosion;ridges;weirdness",VanillaTerrainParameters.NoisePoint::continentalnessNoise,VanillaTerrainParameters.NoisePoint::erosionNoise,VanillaTerrainParameters.NoisePoint::normalizedWeirdness,VanillaTerrainParameters.NoisePoint::weirdnessNoise>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",VanillaTerrainParameters.NoisePoint,"continents;erosion;ridges;weirdness",VanillaTerrainParameters.NoisePoint::continentalnessNoise,VanillaTerrainParameters.NoisePoint::erosionNoise,VanillaTerrainParameters.NoisePoint::normalizedWeirdness,VanillaTerrainParameters.NoisePoint::weirdnessNoise>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",VanillaTerrainParameters.NoisePoint,"continents;erosion;ridges;weirdness",VanillaTerrainParameters.NoisePoint::continentalnessNoise,VanillaTerrainParameters.NoisePoint::erosionNoise,VanillaTerrainParameters.NoisePoint::normalizedWeirdness,VanillaTerrainParameters.NoisePoint::weirdnessNoise>(
-				this, object
-			);
-		}
-
-		public float continentalnessNoise() {
-			return this.continentalnessNoise;
-		}
-
-		public float erosionNoise() {
-			return this.erosionNoise;
-		}
-
-		public float normalizedWeirdness() {
-			return this.normalizedWeirdness;
-		}
-
-		public float weirdnessNoise() {
-			return this.weirdnessNoise;
-		}
+	public static record NoisePoint(float continentalnessNoise, float erosionNoise, float normalizedWeirdness, float weirdnessNoise) {
 	}
 }

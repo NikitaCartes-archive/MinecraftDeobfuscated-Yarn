@@ -9,7 +9,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
-import java.lang.runtime.ObjectMethods;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -26,40 +25,7 @@ public interface Spline<C> extends ToFloatFunction<C> {
 	static <C> Codec<Spline<C>> method_39232(Codec<ToFloatFunction<C>> codec) {
 		MutableObject<Codec<Spline<C>>> mutableObject = new MutableObject<>();
 
-		final class class_6737 extends Record {
-			private final float location;
-			private final Spline<C> value;
-			private final float derivative;
-
-			class_6737(float f, Spline<C> spline, float g) {
-				this.location = f;
-				this.value = spline;
-				this.derivative = g;
-			}
-
-			public final String toString() {
-				return ObjectMethods.bootstrap<"toString",class_6737,"location;value;derivative",class_6737::location,class_6737::value,class_6737::derivative>(this);
-			}
-
-			public final int hashCode() {
-				return ObjectMethods.bootstrap<"hashCode",class_6737,"location;value;derivative",class_6737::location,class_6737::value,class_6737::derivative>(this);
-			}
-
-			public final boolean equals(Object object) {
-				return ObjectMethods.bootstrap<"equals",class_6737,"location;value;derivative",class_6737::location,class_6737::value,class_6737::derivative>(this, object);
-			}
-
-			public float location() {
-				return this.location;
-			}
-
-			public Spline<C> value() {
-				return this.value;
-			}
-
-			public float derivative() {
-				return this.derivative;
-			}
+		record class_6737<C>(float location, Spline<C> value, float derivative) {
 		}
 
 		Codec<class_6737<C>> codec2 = RecordCodecBuilder.create(
@@ -73,7 +39,7 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		Codec<Spline.class_6738<C>> codec3 = RecordCodecBuilder.create(
 			instance -> instance.group(
 						codec.fieldOf("coordinate").forGetter(Spline.class_6738::coordinate),
-						codec2.listOf()
+						Codecs.nonEmptyList(codec2.listOf())
 							.fieldOf("points")
 							.forGetter(
 								arg -> IntStream.range(0, arg.locations.length)
@@ -155,19 +121,13 @@ public interface Spline<C> extends ToFloatFunction<C> {
 			if (this.locations.isEmpty()) {
 				throw new IllegalStateException("No elements added");
 			} else {
-				return new Spline.class_6738(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
+				return new Spline.class_6738<>(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
 			}
 		}
 	}
 
 	@Debug
-	public static final class FixedFloatFunction<C> extends Record implements Spline<C> {
-		private final float value;
-
-		public FixedFloatFunction(float value) {
-			this.value = value;
-		}
-
+	public static record FixedFloatFunction<C>(float value) implements Spline<C> {
 		@Override
 		public float apply(C object) {
 			return this.value;
@@ -177,30 +137,11 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		public String getDebugString() {
 			return String.format("k=%.3f", this.value);
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",Spline.FixedFloatFunction,"value",Spline.FixedFloatFunction::value>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",Spline.FixedFloatFunction,"value",Spline.FixedFloatFunction::value>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",Spline.FixedFloatFunction,"value",Spline.FixedFloatFunction::value>(this, object);
-		}
-
-		public float value() {
-			return this.value;
-		}
 	}
 
 	@Debug
-	public static final class class_6738 extends Record implements Spline {
-		private final ToFloatFunction<C> coordinate;
+	public static record class_6738<C>(ToFloatFunction<C> coordinate, float[] locations, List<Spline<C>> values, float[] derivatives) implements Spline<C> {
 		final float[] locations;
-		private final List<Spline<C>> values;
-		private final float[] derivatives;
 
 		public class_6738(ToFloatFunction<C> toFloatFunction, float[] fs, List<Spline<C>> list, float[] gs) {
 			if (fs.length == list.size() && fs.length == gs.length) {
@@ -259,40 +200,6 @@ public interface Spline<C> extends ToFloatFunction<C> {
 					.mapToObj(d -> String.format(Locale.ROOT, "%.3f", d))
 					.collect(Collectors.joining(", "))
 				+ "]";
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",Spline.class_6738,"coordinate;locations;values;derivatives",Spline.class_6738::coordinate,Spline.class_6738::locations,Spline.class_6738::values,Spline.class_6738::derivatives>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",Spline.class_6738,"coordinate;locations;values;derivatives",Spline.class_6738::coordinate,Spline.class_6738::locations,Spline.class_6738::values,Spline.class_6738::derivatives>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",Spline.class_6738,"coordinate;locations;values;derivatives",Spline.class_6738::coordinate,Spline.class_6738::locations,Spline.class_6738::values,Spline.class_6738::derivatives>(
-				this, object
-			);
-		}
-
-		public ToFloatFunction<C> coordinate() {
-			return this.coordinate;
-		}
-
-		public float[] locations() {
-			return this.locations;
-		}
-
-		public List<Spline<C>> values() {
-			return this.values;
-		}
-
-		public float[] derivatives() {
-			return this.derivatives;
 		}
 	}
 }

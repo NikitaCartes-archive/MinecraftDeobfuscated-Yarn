@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import java.lang.runtime.ObjectMethods;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
@@ -50,17 +49,8 @@ public final class NetworkIoStatistics {
 		return this.topContributors;
 	}
 
-	public static final class Packet extends Record {
-		private final NetworkSide side;
-		private final int protocolId;
-		private final int packetId;
+	public static record Packet(NetworkSide side, int protocolId, int packetId) {
 		private static final Map<NetworkIoStatistics.Packet, String> PACKET_TO_NAME;
-
-		public Packet(NetworkSide networkSide, int i, int j) {
-			this.side = networkSide;
-			this.protocolId = i;
-			this.packetId = j;
-		}
 
 		public String getName() {
 			return (String)PACKET_TO_NAME.getOrDefault(this, "unknown");
@@ -72,36 +62,6 @@ public final class NetworkIoStatistics {
 				event.getInt("protocolId"),
 				event.getInt("packetId")
 			);
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",NetworkIoStatistics.Packet,"direction;protocolId;packetId",NetworkIoStatistics.Packet::side,NetworkIoStatistics.Packet::protocolId,NetworkIoStatistics.Packet::packetId>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",NetworkIoStatistics.Packet,"direction;protocolId;packetId",NetworkIoStatistics.Packet::side,NetworkIoStatistics.Packet::protocolId,NetworkIoStatistics.Packet::packetId>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",NetworkIoStatistics.Packet,"direction;protocolId;packetId",NetworkIoStatistics.Packet::side,NetworkIoStatistics.Packet::protocolId,NetworkIoStatistics.Packet::packetId>(
-				this, object
-			);
-		}
-
-		public NetworkSide side() {
-			return this.side;
-		}
-
-		public int protocolId() {
-			return this.protocolId;
-		}
-
-		public int packetId() {
-			return this.packetId;
 		}
 
 		static {
@@ -120,46 +80,15 @@ public final class NetworkIoStatistics {
 		}
 	}
 
-	public static final class PacketStatistics extends Record {
+	public static record PacketStatistics(long totalCount, long totalSize) {
 		final long totalCount;
 		final long totalSize;
 		static final Comparator<NetworkIoStatistics.PacketStatistics> COMPARATOR = Comparator.comparing(NetworkIoStatistics.PacketStatistics::totalSize)
 			.thenComparing(NetworkIoStatistics.PacketStatistics::totalCount)
 			.reversed();
 
-		public PacketStatistics(long l, long m) {
-			this.totalCount = l;
-			this.totalSize = m;
-		}
-
 		NetworkIoStatistics.PacketStatistics add(NetworkIoStatistics.PacketStatistics statistics) {
 			return new NetworkIoStatistics.PacketStatistics(this.totalCount + statistics.totalCount, this.totalSize + statistics.totalSize);
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",NetworkIoStatistics.PacketStatistics,"totalCount;totalSize",NetworkIoStatistics.PacketStatistics::totalCount,NetworkIoStatistics.PacketStatistics::totalSize>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",NetworkIoStatistics.PacketStatistics,"totalCount;totalSize",NetworkIoStatistics.PacketStatistics::totalCount,NetworkIoStatistics.PacketStatistics::totalSize>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",NetworkIoStatistics.PacketStatistics,"totalCount;totalSize",NetworkIoStatistics.PacketStatistics::totalCount,NetworkIoStatistics.PacketStatistics::totalSize>(
-				this, object
-			);
-		}
-
-		public long totalCount() {
-			return this.totalCount;
-		}
-
-		public long totalSize() {
-			return this.totalSize;
 		}
 	}
 }

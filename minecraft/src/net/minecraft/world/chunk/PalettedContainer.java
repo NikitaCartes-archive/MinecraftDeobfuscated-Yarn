@@ -10,7 +10,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntMap.Entry;
-import java.lang.runtime.ObjectMethods;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -99,7 +98,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		this.idList = idList;
 		this.paletteProvider = paletteProvider;
 		Palette<T> palette = dataProvider.factory().create(dataProvider.bits(), idList, this, list);
-		this.data = new PalettedContainer.Data(dataProvider, storage, palette);
+		this.data = new PalettedContainer.Data<>(dataProvider, storage, palette);
 	}
 
 	public PalettedContainer(IndexedIterable<T> idList, T object, PalettedContainer.PaletteProvider paletteProvider) {
@@ -335,11 +334,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	/**
 	 * Runtime representation of data in a paletted container.
 	 */
-	static final class Data extends Record {
-		/**
-		 * the data provider that derives the palette and storage of this data
-		 */
-		private final PalettedContainer.DataProvider<T> configuration;
+	static record Data<T>(PalettedContainer.DataProvider<T> configuration, PaletteStorage storage, Palette<T> palette) {
 		/**
 		 * the data
 		 */
@@ -348,12 +343,6 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		 * the palette for the storage
 		 */
 		final Palette<T> palette;
-
-		Data(PalettedContainer.DataProvider<T> configuration, PaletteStorage storage, Palette<T> palette) {
-			this.configuration = configuration;
-			this.storage = storage;
-			this.palette = palette;
-		}
 
 		/**
 		 * Imports the data from the other {@code storage} with the other
@@ -380,87 +369,17 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 			this.palette.writePacket(buf);
 			buf.writeLongArray(this.storage.getData());
 		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",PalettedContainer.Data,"configuration;storage;palette",PalettedContainer.Data::configuration,PalettedContainer.Data::storage,PalettedContainer.Data::palette>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",PalettedContainer.Data,"configuration;storage;palette",PalettedContainer.Data::configuration,PalettedContainer.Data::storage,PalettedContainer.Data::palette>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",PalettedContainer.Data,"configuration;storage;palette",PalettedContainer.Data::configuration,PalettedContainer.Data::storage,PalettedContainer.Data::palette>(
-				this, object
-			);
-		}
-
-		public PalettedContainer.DataProvider<T> configuration() {
-			return this.configuration;
-		}
-
-		public PaletteStorage storage() {
-			return this.storage;
-		}
-
-		public Palette<T> palette() {
-			return this.palette;
-		}
 	}
 
 	/**
 	 * A palette data provider constructs an empty data for a paletted
 	 * container given a palette provider and a desired entry size in bits.
 	 */
-	static final class DataProvider<T> extends Record {
-		/**
-		 * the palette factory
-		 */
-		private final Palette.Factory factory;
-		/**
-		 * the number of bits each element use
-		 */
-		private final int bits;
-
-		DataProvider(Palette.Factory factory, int i) {
-			this.factory = factory;
-			this.bits = i;
-		}
-
+	static record DataProvider<T>(Palette.Factory factory, int bits) {
 		public PalettedContainer.Data<T> createData(IndexedIterable<T> idList, PaletteResizeListener<T> listener, int size) {
 			PaletteStorage paletteStorage = (PaletteStorage)(this.bits == 0 ? new EmptyPaletteStorage(size) : new PackedIntegerArray(this.bits, size));
 			Palette<T> palette = this.factory.create(this.bits, idList, listener, List.of());
-			return new PalettedContainer.Data(this, paletteStorage, palette);
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",PalettedContainer.DataProvider,"factory;bits",PalettedContainer.DataProvider::factory,PalettedContainer.DataProvider::bits>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",PalettedContainer.DataProvider,"factory;bits",PalettedContainer.DataProvider::factory,PalettedContainer.DataProvider::bits>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",PalettedContainer.DataProvider,"factory;bits",PalettedContainer.DataProvider::factory,PalettedContainer.DataProvider::bits>(
-				this, object
-			);
-		}
-
-		public Palette.Factory factory() {
-			return this.factory;
-		}
-
-		public int bits() {
-			return this.bits;
+			return new PalettedContainer.Data<>(this, paletteStorage, palette);
 		}
 	}
 
@@ -553,45 +472,6 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	 * 
 	 * @see PalettedContainer#createCodec
 	 */
-	static final class Serialized extends Record {
-		/**
-		 * the palette
-		 */
-		private final List<T> paletteEntries;
-		/**
-		 * the data of the container
-		 */
-		private final Optional<LongStream> storage;
-
-		Serialized(List<T> list, Optional<LongStream> optional) {
-			this.paletteEntries = list;
-			this.storage = optional;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",PalettedContainer.Serialized,"paletteEntries;storage",PalettedContainer.Serialized::paletteEntries,PalettedContainer.Serialized::storage>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",PalettedContainer.Serialized,"paletteEntries;storage",PalettedContainer.Serialized::paletteEntries,PalettedContainer.Serialized::storage>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",PalettedContainer.Serialized,"paletteEntries;storage",PalettedContainer.Serialized::paletteEntries,PalettedContainer.Serialized::storage>(
-				this, object
-			);
-		}
-
-		public List<T> paletteEntries() {
-			return this.paletteEntries;
-		}
-
-		public Optional<LongStream> storage() {
-			return this.storage;
-		}
+	static record Serialized<T>(List<T> paletteEntries, Optional<LongStream> storage) {
 	}
 }

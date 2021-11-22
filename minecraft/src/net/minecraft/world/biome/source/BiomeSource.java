@@ -10,7 +10,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import java.lang.runtime.ObjectMethods;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,40 +55,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 		Object2IntMap<PlacedFeature> object2IntMap = new Object2IntOpenHashMap<>();
 		MutableInt mutableInt = new MutableInt(0);
 
-		final class class_6543 extends Record {
-			private final int featureIndex;
-			private final int step;
-			private final PlacedFeature feature;
-
-			class_6543(int i, int j, PlacedFeature placedFeature) {
-				this.featureIndex = i;
-				this.step = j;
-				this.feature = placedFeature;
-			}
-
-			public final String toString() {
-				return ObjectMethods.bootstrap<"toString",class_6543,"featureIndex;step;feature",class_6543::featureIndex,class_6543::step,class_6543::feature>(this);
-			}
-
-			public final int hashCode() {
-				return ObjectMethods.bootstrap<"hashCode",class_6543,"featureIndex;step;feature",class_6543::featureIndex,class_6543::step,class_6543::feature>(this);
-			}
-
-			public final boolean equals(Object object) {
-				return ObjectMethods.bootstrap<"equals",class_6543,"featureIndex;step;feature",class_6543::featureIndex,class_6543::step,class_6543::feature>(this, object);
-			}
-
-			public int featureIndex() {
-				return this.featureIndex;
-			}
-
-			public int step() {
-				return this.step;
-			}
-
-			public PlacedFeature feature() {
-				return this.feature;
-			}
+		record class_6543(int featureIndex, int step, PlacedFeature feature) {
 		}
 
 		Comparator<class_6543> comparator = Comparator.comparingInt(class_6543::step).thenComparingInt(class_6543::featureIndex);
@@ -277,39 +243,6 @@ public abstract class BiomeSource implements BiomeSupplier {
 		Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
 	}
 
-	public static final class class_6827 extends Record {
-		private final List<PlacedFeature> features;
-		private final ToIntFunction<PlacedFeature> indexMapping;
-
-		public class_6827(List<PlacedFeature> list, ToIntFunction<PlacedFeature> toIntFunction) {
-			this.features = list;
-			this.indexMapping = toIntFunction;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",BiomeSource.class_6827,"features;indexMapping",BiomeSource.class_6827::features,BiomeSource.class_6827::indexMapping>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",BiomeSource.class_6827,"features;indexMapping",BiomeSource.class_6827::features,BiomeSource.class_6827::indexMapping>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",BiomeSource.class_6827,"features;indexMapping",BiomeSource.class_6827::features,BiomeSource.class_6827::indexMapping>(
-				this, object
-			);
-		}
-
-		public List<PlacedFeature> features() {
-			return this.features;
-		}
-
-		public ToIntFunction<PlacedFeature> indexMapping() {
-			return this.indexMapping;
-		}
+	public static record class_6827(List<PlacedFeature> features, ToIntFunction<PlacedFeature> indexMapping) {
 	}
 }

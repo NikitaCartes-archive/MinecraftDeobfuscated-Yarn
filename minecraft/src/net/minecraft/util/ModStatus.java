@@ -1,18 +1,9 @@
 package net.minecraft.util;
 
-import java.lang.runtime.ObjectMethods;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.ObjectUtils;
 
-public final class ModStatus extends Record {
-	private final ModStatus.Confidence confidence;
-	private final String description;
-
-	public ModStatus(ModStatus.Confidence confidence, String string) {
-		this.confidence = confidence;
-		this.description = string;
-	}
-
+public record ModStatus(ModStatus.Confidence confidence, String description) {
 	/**
 	 * {@return the modification status determined by the brand and whether the
 	 * class is signed or not}
@@ -43,26 +34,6 @@ public final class ModStatus extends Record {
 
 	public String getMessage() {
 		return this.confidence.description + " " + this.description;
-	}
-
-	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",ModStatus,"confidence;description",ModStatus::confidence,ModStatus::description>(this);
-	}
-
-	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",ModStatus,"confidence;description",ModStatus::confidence,ModStatus::description>(this);
-	}
-
-	public final boolean equals(Object object) {
-		return ObjectMethods.bootstrap<"equals",ModStatus,"confidence;description",ModStatus::confidence,ModStatus::description>(this, object);
-	}
-
-	public ModStatus.Confidence confidence() {
-		return this.confidence;
-	}
-
-	public String description() {
-		return this.description;
 	}
 
 	public static enum Confidence {

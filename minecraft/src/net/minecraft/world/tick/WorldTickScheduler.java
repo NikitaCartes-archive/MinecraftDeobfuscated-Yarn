@@ -260,7 +260,7 @@ public class WorldTickScheduler<T> implements QueryableTickScheduler<T> {
 		long l = longSummaryStatistics.getMin();
 		long m = longSummaryStatistics.getMax();
 		list.forEach(
-			tick -> this.scheduleTick(new OrderedTick((T)tick.type(), tick.pos().add(offset), tick.triggerTick(), tick.priority(), tick.subTickOrder() - l + m + 1L))
+			tick -> this.scheduleTick(new OrderedTick<>((T)tick.type(), tick.pos().add(offset), tick.triggerTick(), tick.priority(), tick.subTickOrder() - l + m + 1L))
 		);
 	}
 

@@ -1,18 +1,12 @@
 package net.minecraft.world.tick;
 
 import it.unimi.dsi.fastutil.Hash.Strategy;
-import java.lang.runtime.ObjectMethods;
 import java.util.Comparator;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.TickPriority;
 
-public final class OrderedTick extends Record {
-	private final T type;
-	private final BlockPos pos;
-	private final long triggerTick;
-	private final TickPriority priority;
-	private final long subTickOrder;
+public record OrderedTick<T>(T type, BlockPos pos, long triggerTick, TickPriority priority, long subTickOrder) {
 	public static final Comparator<OrderedTick<?>> TRIGGER_TICK_COMPARATOR = (first, second) -> {
 		int i = Long.compare(first.triggerTick, second.triggerTick);
 		if (i != 0) {
@@ -56,44 +50,6 @@ public final class OrderedTick extends Record {
 	}
 
 	public static <T> OrderedTick<T> create(T type, BlockPos pos) {
-		return new OrderedTick(type, pos, 0L, TickPriority.NORMAL, 0L);
-	}
-
-	public final String toString() {
-		return ObjectMethods.bootstrap<"toString",OrderedTick,"type;pos;triggerTick;priority;subTickOrder",OrderedTick::type,OrderedTick::pos,OrderedTick::triggerTick,OrderedTick::priority,OrderedTick::subTickOrder>(
-			this
-		);
-	}
-
-	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",OrderedTick,"type;pos;triggerTick;priority;subTickOrder",OrderedTick::type,OrderedTick::pos,OrderedTick::triggerTick,OrderedTick::priority,OrderedTick::subTickOrder>(
-			this
-		);
-	}
-
-	public final boolean equals(Object object) {
-		return ObjectMethods.bootstrap<"equals",OrderedTick,"type;pos;triggerTick;priority;subTickOrder",OrderedTick::type,OrderedTick::pos,OrderedTick::triggerTick,OrderedTick::priority,OrderedTick::subTickOrder>(
-			this, object
-		);
-	}
-
-	public T type() {
-		return this.type;
-	}
-
-	public BlockPos pos() {
-		return this.pos;
-	}
-
-	public long triggerTick() {
-		return this.triggerTick;
-	}
-
-	public TickPriority priority() {
-		return this.priority;
-	}
-
-	public long subTickOrder() {
-		return this.subTickOrder;
+		return new OrderedTick<>(type, pos, 0L, TickPriority.NORMAL, 0L);
 	}
 }

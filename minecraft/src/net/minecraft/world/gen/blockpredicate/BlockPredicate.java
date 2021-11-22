@@ -93,6 +93,10 @@ public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockP
 		return new HasSturdyFacePredicate(offset, face);
 	}
 
+	static BlockPredicate method_39930(Direction direction) {
+		return hasSturdyFace(Vec3i.ZERO, direction);
+	}
+
 	static BlockPredicate solid(Vec3i offset) {
 		return new SolidBlockPredicate(offset);
 	}

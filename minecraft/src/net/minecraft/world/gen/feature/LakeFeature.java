@@ -3,7 +3,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.lang.runtime.ObjectMethods;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -159,9 +158,7 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 		return !state.isIn(BlockTags.FEATURES_CANNOT_REPLACE);
 	}
 
-	public static final class Config extends Record implements FeatureConfig {
-		private final BlockStateProvider fluid;
-		private final BlockStateProvider barrier;
+	public static record Config(BlockStateProvider fluid, BlockStateProvider barrier) implements FeatureConfig {
 		public static final Codec<LakeFeature.Config> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						BlockStateProvider.TYPE_CODEC.fieldOf("fluid").forGetter(LakeFeature.Config::fluid),
@@ -169,30 +166,5 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 					)
 					.apply(instance, LakeFeature.Config::new)
 		);
-
-		public Config(BlockStateProvider blockStateProvider, BlockStateProvider blockStateProvider2) {
-			this.fluid = blockStateProvider;
-			this.barrier = blockStateProvider2;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",LakeFeature.Config,"fluid;barrier",LakeFeature.Config::fluid,LakeFeature.Config::barrier>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",LakeFeature.Config,"fluid;barrier",LakeFeature.Config::fluid,LakeFeature.Config::barrier>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",LakeFeature.Config,"fluid;barrier",LakeFeature.Config::fluid,LakeFeature.Config::barrier>(this, object);
-		}
-
-		public BlockStateProvider fluid() {
-			return this.fluid;
-		}
-
-		public BlockStateProvider barrier() {
-			return this.barrier;
-		}
 	}
 }

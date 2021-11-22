@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.lang.runtime.ObjectMethods;
 import java.net.Socket;
 import java.util.List;
 import java.util.Locale;
@@ -184,45 +183,9 @@ public class ChaseClient {
 			);
 	}
 
-	static final class TeleportPos extends Record {
+	static record TeleportPos(RegistryKey<World> dimension, Vec3d pos, Vec2f rot) {
 		final RegistryKey<World> dimension;
 		final Vec3d pos;
 		final Vec2f rot;
-
-		TeleportPos(RegistryKey<World> dimension, Vec3d pos, Vec2f rot) {
-			this.dimension = dimension;
-			this.pos = pos;
-			this.rot = rot;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",ChaseClient.TeleportPos,"level;pos;rot",ChaseClient.TeleportPos::dimension,ChaseClient.TeleportPos::pos,ChaseClient.TeleportPos::rot>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",ChaseClient.TeleportPos,"level;pos;rot",ChaseClient.TeleportPos::dimension,ChaseClient.TeleportPos::pos,ChaseClient.TeleportPos::rot>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",ChaseClient.TeleportPos,"level;pos;rot",ChaseClient.TeleportPos::dimension,ChaseClient.TeleportPos::pos,ChaseClient.TeleportPos::rot>(
-				this, object
-			);
-		}
-
-		public RegistryKey<World> dimension() {
-			return this.dimension;
-		}
-
-		public Vec3d pos() {
-			return this.pos;
-		}
-
-		public Vec2f rot() {
-			return this.rot;
-		}
 	}
 }

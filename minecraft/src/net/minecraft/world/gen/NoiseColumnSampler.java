@@ -1,6 +1,5 @@
 package net.minecraft.world.gen;
 
-import java.lang.runtime.ObjectMethods;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -635,63 +634,6 @@ public class NoiseColumnSampler implements MultiNoiseUtil.MultiNoiseSampler {
 		}
 	}
 
-	public static final class class_6747 extends Record {
-		private final double shiftedX;
-		private final double shiftedZ;
-		private final double continentalness;
-		private final double weirdness;
-		private final double erosion;
-		private final TerrainNoisePoint terrainInfo;
-
-		public class_6747(double d, double e, double f, double g, double h, TerrainNoisePoint terrainNoisePoint) {
-			this.shiftedX = d;
-			this.shiftedZ = e;
-			this.continentalness = f;
-			this.weirdness = g;
-			this.erosion = h;
-			this.terrainInfo = terrainNoisePoint;
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",NoiseColumnSampler.class_6747,"shiftedX;shiftedZ;continentalness;weirdness;erosion;terrainInfo",NoiseColumnSampler.class_6747::shiftedX,NoiseColumnSampler.class_6747::shiftedZ,NoiseColumnSampler.class_6747::continentalness,NoiseColumnSampler.class_6747::weirdness,NoiseColumnSampler.class_6747::erosion,NoiseColumnSampler.class_6747::terrainInfo>(
-				this
-			);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",NoiseColumnSampler.class_6747,"shiftedX;shiftedZ;continentalness;weirdness;erosion;terrainInfo",NoiseColumnSampler.class_6747::shiftedX,NoiseColumnSampler.class_6747::shiftedZ,NoiseColumnSampler.class_6747::continentalness,NoiseColumnSampler.class_6747::weirdness,NoiseColumnSampler.class_6747::erosion,NoiseColumnSampler.class_6747::terrainInfo>(
-				this
-			);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",NoiseColumnSampler.class_6747,"shiftedX;shiftedZ;continentalness;weirdness;erosion;terrainInfo",NoiseColumnSampler.class_6747::shiftedX,NoiseColumnSampler.class_6747::shiftedZ,NoiseColumnSampler.class_6747::continentalness,NoiseColumnSampler.class_6747::weirdness,NoiseColumnSampler.class_6747::erosion,NoiseColumnSampler.class_6747::terrainInfo>(
-				this, object
-			);
-		}
-
-		public double shiftedX() {
-			return this.shiftedX;
-		}
-
-		public double shiftedZ() {
-			return this.shiftedZ;
-		}
-
-		public double continentalness() {
-			return this.continentalness;
-		}
-
-		public double weirdness() {
-			return this.weirdness;
-		}
-
-		public double erosion() {
-			return this.erosion;
-		}
-
-		public TerrainNoisePoint terrainInfo() {
-			return this.terrainInfo;
-		}
+	public static record class_6747(double shiftedX, double shiftedZ, double continentalness, double weirdness, double erosion, TerrainNoisePoint terrainInfo) {
 	}
 }

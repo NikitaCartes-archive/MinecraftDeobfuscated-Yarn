@@ -27,11 +27,11 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	QueryableTickScheduler<Block> getBlockTickScheduler();
 
 	private <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay, TickPriority priority) {
-		return new OrderedTick(type, pos, this.getLevelProperties().getTime() + (long)delay, priority, this.getTickOrder());
+		return new OrderedTick<>(type, pos, this.getLevelProperties().getTime() + (long)delay, priority, this.getTickOrder());
 	}
 
 	private <T> OrderedTick<T> createOrderedTick(BlockPos pos, T type, int delay) {
-		return new OrderedTick(type, pos, this.getLevelProperties().getTime() + (long)delay, this.getTickOrder());
+		return new OrderedTick<>(type, pos, this.getLevelProperties().getTime() + (long)delay, this.getTickOrder());
 	}
 
 	default void createAndScheduleBlockTick(BlockPos pos, Block block, int delay, TickPriority priority) {

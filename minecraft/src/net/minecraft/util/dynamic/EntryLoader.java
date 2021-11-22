@@ -15,7 +15,6 @@ import com.mojang.serialization.DataResult.PartialResult;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.runtime.ObjectMethods;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
@@ -126,41 +125,13 @@ public interface EntryLoader {
 		};
 	}
 
-	public static final class Entry extends Record {
-		private final E value;
-		private final OptionalInt fixedId;
-
-		public Entry(E object, OptionalInt optionalInt) {
-			this.value = object;
-			this.fixedId = optionalInt;
-		}
-
+	public static record Entry<E>(E value, OptionalInt fixedId) {
 		public static <E> EntryLoader.Entry<E> of(E value) {
-			return new EntryLoader.Entry(value, OptionalInt.empty());
+			return new EntryLoader.Entry<>(value, OptionalInt.empty());
 		}
 
 		public static <E> EntryLoader.Entry<E> of(E value, int id) {
-			return new EntryLoader.Entry(value, OptionalInt.of(id));
-		}
-
-		public final String toString() {
-			return ObjectMethods.bootstrap<"toString",EntryLoader.Entry,"value;fixedId",EntryLoader.Entry::value,EntryLoader.Entry::fixedId>(this);
-		}
-
-		public final int hashCode() {
-			return ObjectMethods.bootstrap<"hashCode",EntryLoader.Entry,"value;fixedId",EntryLoader.Entry::value,EntryLoader.Entry::fixedId>(this);
-		}
-
-		public final boolean equals(Object object) {
-			return ObjectMethods.bootstrap<"equals",EntryLoader.Entry,"value;fixedId",EntryLoader.Entry::value,EntryLoader.Entry::fixedId>(this, object);
-		}
-
-		public E value() {
-			return this.value;
-		}
-
-		public OptionalInt fixedId() {
-			return this.fixedId;
+			return new EntryLoader.Entry<>(value, OptionalInt.of(id));
 		}
 	}
 
@@ -197,46 +168,10 @@ public interface EntryLoader {
 				: Optional.of(decoder.parse(json, element.data).setLifecycle(element.lifecycle).map(value -> EntryLoader.Entry.of((int)value, element.id)));
 		}
 
-		static final class Element extends Record {
+		static record Element(JsonElement data, int id, Lifecycle lifecycle) {
 			final JsonElement data;
 			final int id;
 			final Lifecycle lifecycle;
-
-			Element(JsonElement jsonElement, int i, Lifecycle lifecycle) {
-				this.data = jsonElement;
-				this.id = i;
-				this.lifecycle = lifecycle;
-			}
-
-			public final String toString() {
-				return ObjectMethods.bootstrap<"toString",EntryLoader.Impl.Element,"data;id;lifecycle",EntryLoader.Impl.Element::data,EntryLoader.Impl.Element::id,EntryLoader.Impl.Element::lifecycle>(
-					this
-				);
-			}
-
-			public final int hashCode() {
-				return ObjectMethods.bootstrap<"hashCode",EntryLoader.Impl.Element,"data;id;lifecycle",EntryLoader.Impl.Element::data,EntryLoader.Impl.Element::id,EntryLoader.Impl.Element::lifecycle>(
-					this
-				);
-			}
-
-			public final boolean equals(Object object) {
-				return ObjectMethods.bootstrap<"equals",EntryLoader.Impl.Element,"data;id;lifecycle",EntryLoader.Impl.Element::data,EntryLoader.Impl.Element::id,EntryLoader.Impl.Element::lifecycle>(
-					this, object
-				);
-			}
-
-			public JsonElement data() {
-				return this.data;
-			}
-
-			public int id() {
-				return this.id;
-			}
-
-			public Lifecycle lifecycle() {
-				return this.lifecycle;
-			}
 		}
 	}
 }

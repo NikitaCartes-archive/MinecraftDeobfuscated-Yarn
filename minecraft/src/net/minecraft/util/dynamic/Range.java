@@ -2,12 +2,9 @@ package net.minecraft.util.dynamic;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import java.lang.runtime.ObjectMethods;
 import java.util.function.Function;
 
-public final class Range extends Record {
-	private final T minInclusive;
-	private final T maxInclusive;
+public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
 	public static final Codec<Range<Integer>> CODEC = createCodec(Codec.INT);
 
 	public Range(T minInclusive, T maxInclusive) {
@@ -52,21 +49,5 @@ public final class Range extends Record {
 
 	public String toString() {
 		return "[" + this.minInclusive + ", " + this.maxInclusive + "]";
-	}
-
-	public final int hashCode() {
-		return ObjectMethods.bootstrap<"hashCode",Range,"minInclusive;maxInclusive",Range::minInclusive,Range::maxInclusive>(this);
-	}
-
-	public final boolean equals(Object o) {
-		return ObjectMethods.bootstrap<"equals",Range,"minInclusive;maxInclusive",Range::minInclusive,Range::maxInclusive>(this, o);
-	}
-
-	public T minInclusive() {
-		return this.minInclusive;
-	}
-
-	public T maxInclusive() {
-		return this.maxInclusive;
 	}
 }

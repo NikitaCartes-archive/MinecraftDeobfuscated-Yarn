@@ -15,13 +15,13 @@ public class ShipwreckFeature extends StructureFeature<ShipwreckFeatureConfig> {
 	}
 
 	private static boolean method_39820(StructureGeneratorFactory.Context<ShipwreckFeatureConfig> context) {
-		Heightmap.Type type = ((ShipwreckFeatureConfig)context.config()).isBeached ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
+		Heightmap.Type type = context.config().isBeached ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
 		return context.isBiomeValid(type);
 	}
 
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<ShipwreckFeatureConfig> context) {
 		BlockRotation blockRotation = BlockRotation.random(context.random());
 		BlockPos blockPos = new BlockPos(context.chunkPos().getStartX(), 90, context.chunkPos().getStartZ());
-		ShipwreckGenerator.addParts(context.structureManager(), blockPos, blockRotation, collector, context.random(), (ShipwreckFeatureConfig)context.config());
+		ShipwreckGenerator.addParts(context.structureManager(), blockPos, blockRotation, collector, context.random(), context.config());
 	}
 }

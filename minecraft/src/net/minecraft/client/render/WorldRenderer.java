@@ -300,8 +300,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						if (u != v) {
 							Random random = new Random((long)(p * p * 3121 + p * 45238971 ^ o * o * 418711 + o * 13761));
 							mutable.set(p, u, o);
-							float x = biome.getTemperature(mutable);
-							if (x >= 0.15F) {
+							if (biome.method_39927(mutable)) {
 								if (m != 0) {
 									if (m >= 0) {
 										tessellator.draw();
@@ -312,33 +311,33 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 									bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 								}
 
-								int y = this.ticks + p * p * 3121 + p * 45238971 + o * o * 418711 + o * 13761 & 31;
-								float z = -((float)y + f) / 32.0F * (3.0F + random.nextFloat());
-								double aa = (double)p + 0.5 - d;
-								double ab = (double)o + 0.5 - g;
-								float ac = (float)Math.sqrt(aa * aa + ab * ab) / (float)l;
-								float ad = ((1.0F - ac * ac) * 0.5F + 0.5F) * h;
+								int x = this.ticks + p * p * 3121 + p * 45238971 + o * o * 418711 + o * 13761 & 31;
+								float y = -((float)x + f) / 32.0F * (3.0F + random.nextFloat());
+								double z = (double)p + 0.5 - d;
+								double aa = (double)o + 0.5 - g;
+								float ab = (float)Math.sqrt(z * z + aa * aa) / (float)l;
+								float ac = ((1.0F - ab * ab) * 0.5F + 0.5F) * h;
 								mutable.set(p, w, o);
-								int ae = getLightmapCoordinates(world, mutable);
+								int ad = getLightmapCoordinates(world, mutable);
 								bufferBuilder.vertex((double)p - d - r + 0.5, (double)v - e, (double)o - g - s + 0.5)
-									.texture(0.0F, (float)u * 0.25F + z)
-									.color(1.0F, 1.0F, 1.0F, ad)
-									.light(ae)
+									.texture(0.0F, (float)u * 0.25F + y)
+									.color(1.0F, 1.0F, 1.0F, ac)
+									.light(ad)
 									.next();
 								bufferBuilder.vertex((double)p - d + r + 0.5, (double)v - e, (double)o - g + s + 0.5)
-									.texture(1.0F, (float)u * 0.25F + z)
-									.color(1.0F, 1.0F, 1.0F, ad)
-									.light(ae)
+									.texture(1.0F, (float)u * 0.25F + y)
+									.color(1.0F, 1.0F, 1.0F, ac)
+									.light(ad)
 									.next();
 								bufferBuilder.vertex((double)p - d + r + 0.5, (double)u - e, (double)o - g + s + 0.5)
-									.texture(1.0F, (float)v * 0.25F + z)
-									.color(1.0F, 1.0F, 1.0F, ad)
-									.light(ae)
+									.texture(1.0F, (float)v * 0.25F + y)
+									.color(1.0F, 1.0F, 1.0F, ac)
+									.light(ad)
 									.next();
 								bufferBuilder.vertex((double)p - d - r + 0.5, (double)u - e, (double)o - g - s + 0.5)
-									.texture(0.0F, (float)v * 0.25F + z)
-									.color(1.0F, 1.0F, 1.0F, ad)
-									.light(ae)
+									.texture(0.0F, (float)v * 0.25F + y)
+									.color(1.0F, 1.0F, 1.0F, ac)
+									.light(ad)
 									.next();
 							} else {
 								if (m != 1) {
@@ -351,38 +350,38 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 									bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 								}
 
-								float af = -((float)(this.ticks & 511) + f) / 512.0F;
-								float z = (float)(random.nextDouble() + (double)n * 0.01 * (double)((float)random.nextGaussian()));
-								float ag = (float)(random.nextDouble() + (double)(n * (float)random.nextGaussian()) * 0.001);
-								double ah = (double)p + 0.5 - d;
-								double ai = (double)o + 0.5 - g;
-								float ad = (float)Math.sqrt(ah * ah + ai * ai) / (float)l;
-								float aj = ((1.0F - ad * ad) * 0.3F + 0.5F) * h;
+								float ae = -((float)(this.ticks & 511) + f) / 512.0F;
+								float y = (float)(random.nextDouble() + (double)n * 0.01 * (double)((float)random.nextGaussian()));
+								float af = (float)(random.nextDouble() + (double)(n * (float)random.nextGaussian()) * 0.001);
+								double ag = (double)p + 0.5 - d;
+								double ah = (double)o + 0.5 - g;
+								float ac = (float)Math.sqrt(ag * ag + ah * ah) / (float)l;
+								float ai = ((1.0F - ac * ac) * 0.3F + 0.5F) * h;
 								mutable.set(p, w, o);
-								int ak = getLightmapCoordinates(world, mutable);
-								int al = ak >> 16 & 65535;
-								int am = ak & 65535;
+								int aj = getLightmapCoordinates(world, mutable);
+								int ak = aj >> 16 & 65535;
+								int al = aj & 65535;
+								int am = (ak * 3 + 240) / 4;
 								int an = (al * 3 + 240) / 4;
-								int ao = (am * 3 + 240) / 4;
 								bufferBuilder.vertex((double)p - d - r + 0.5, (double)v - e, (double)o - g - s + 0.5)
-									.texture(0.0F + z, (float)u * 0.25F + af + ag)
-									.color(1.0F, 1.0F, 1.0F, aj)
-									.light(ao, an)
+									.texture(0.0F + y, (float)u * 0.25F + ae + af)
+									.color(1.0F, 1.0F, 1.0F, ai)
+									.light(an, am)
 									.next();
 								bufferBuilder.vertex((double)p - d + r + 0.5, (double)v - e, (double)o - g + s + 0.5)
-									.texture(1.0F + z, (float)u * 0.25F + af + ag)
-									.color(1.0F, 1.0F, 1.0F, aj)
-									.light(ao, an)
+									.texture(1.0F + y, (float)u * 0.25F + ae + af)
+									.color(1.0F, 1.0F, 1.0F, ai)
+									.light(an, am)
 									.next();
 								bufferBuilder.vertex((double)p - d + r + 0.5, (double)u - e, (double)o - g + s + 0.5)
-									.texture(1.0F + z, (float)v * 0.25F + af + ag)
-									.color(1.0F, 1.0F, 1.0F, aj)
-									.light(ao, an)
+									.texture(1.0F + y, (float)v * 0.25F + ae + af)
+									.color(1.0F, 1.0F, 1.0F, ai)
+									.light(an, am)
 									.next();
 								bufferBuilder.vertex((double)p - d - r + 0.5, (double)u - e, (double)o - g - s + 0.5)
-									.texture(0.0F + z, (float)v * 0.25F + af + ag)
-									.color(1.0F, 1.0F, 1.0F, aj)
-									.light(ao, an)
+									.texture(0.0F + y, (float)v * 0.25F + ae + af)
+									.color(1.0F, 1.0F, 1.0F, ai)
+									.light(an, am)
 									.next();
 							}
 						}
@@ -418,7 +417,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					&& blockPos3.getY() <= blockPos.getY() + 10
 					&& blockPos3.getY() >= blockPos.getY() - 10
 					&& biome.getPrecipitation() == Biome.Precipitation.RAIN
-					&& biome.getTemperature(blockPos3) >= 0.15F) {
+					&& biome.method_39927(blockPos3)) {
 					blockPos2 = blockPos3.down();
 					if (this.client.options.particles == ParticlesMode.MINIMAL) {
 						break;
