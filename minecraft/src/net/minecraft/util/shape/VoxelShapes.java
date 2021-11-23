@@ -62,7 +62,7 @@ public final class VoxelShapes {
 				int l = 1 << i;
 				int m = 1 << j;
 				int n = 1 << k;
-				BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.method_31939(
+				BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.create(
 					l,
 					m,
 					n,

@@ -179,7 +179,7 @@ public final class ChunkGeneratorSettings {
 				true,
 				false,
 				false,
-				VanillaTerrainParametersCreator.createIslandParameters()
+				VanillaTerrainParametersCreator.createEndParameters()
 			),
 			Blocks.END_STONE.getDefaultState(),
 			Blocks.AIR.getDefaultState(),
@@ -210,7 +210,7 @@ public final class ChunkGeneratorSettings {
 				false,
 				false,
 				false,
-				VanillaTerrainParametersCreator.createUndergroundParameters()
+				VanillaTerrainParametersCreator.createNetherParameters()
 			),
 			Blocks.NETHERRACK.getDefaultState(),
 			Blocks.LAVA.getDefaultState(),
@@ -268,7 +268,7 @@ public final class ChunkGeneratorSettings {
 				false,
 				false,
 				false,
-				VanillaTerrainParametersCreator.method_39923()
+				VanillaTerrainParametersCreator.createCavesParameters()
 			),
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),
@@ -297,7 +297,7 @@ public final class ChunkGeneratorSettings {
 				false,
 				false,
 				false,
-				VanillaTerrainParametersCreator.method_39924()
+				VanillaTerrainParametersCreator.createFloatingIslandsParameters()
 			),
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),

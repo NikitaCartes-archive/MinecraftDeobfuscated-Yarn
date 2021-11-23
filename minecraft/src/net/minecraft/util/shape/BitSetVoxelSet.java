@@ -21,7 +21,7 @@ public final class BitSetVoxelSet extends VoxelSet {
 		this.minZ = k;
 	}
 
-	public static BitSetVoxelSet method_31939(int sizeX, int sizeY, int sizeZ, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+	public static BitSetVoxelSet create(int sizeX, int sizeY, int sizeZ, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(sizeX, sizeY, sizeZ);
 		bitSetVoxelSet.minX = minX;
 		bitSetVoxelSet.minY = minY;

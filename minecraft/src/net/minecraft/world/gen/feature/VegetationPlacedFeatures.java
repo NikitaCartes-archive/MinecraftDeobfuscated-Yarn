@@ -105,7 +105,7 @@ public class VegetationPlacedFeatures {
 		VegetationConfiguredFeatures.PATCH_MELON
 			.withPlacement(RarityFilterPlacementModifier.of(6), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())
 	);
-	public static final PlacedFeature field_36292 = PlacedFeatures.register(
+	public static final PlacedFeature PATCH_MELON_SPARSE = PlacedFeatures.register(
 		"patch_melon_sparse",
 		VegetationConfiguredFeatures.PATCH_MELON
 			.withPlacement(RarityFilterPlacementModifier.of(64), SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of())

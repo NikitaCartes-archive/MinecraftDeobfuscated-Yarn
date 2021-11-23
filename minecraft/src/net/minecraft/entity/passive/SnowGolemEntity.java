@@ -96,7 +96,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 			int k = MathHelper.floor(this.getZ());
 			BlockPos blockPos = new BlockPos(i, j, k);
 			Biome biome = this.world.getBiome(blockPos);
-			if (biome.method_39929(blockPos)) {
+			if (biome.isHot(blockPos)) {
 				this.damage(DamageSource.ON_FIRE, 1.0F);
 			}
 

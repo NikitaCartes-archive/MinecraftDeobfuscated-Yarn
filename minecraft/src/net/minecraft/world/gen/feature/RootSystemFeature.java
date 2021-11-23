@@ -53,7 +53,12 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 	}
 
 	private static boolean isAirOrWater(BlockState state, int height, int allowedVerticalWaterForTree) {
-		return state.isAir() || height <= allowedVerticalWaterForTree && state.getFluidState().isIn(FluidTags.WATER);
+		if (state.isAir()) {
+			return true;
+		} else {
+			int i = height + 1;
+			return i <= allowedVerticalWaterForTree && state.getFluidState().isIn(FluidTags.WATER);
+		}
 	}
 
 	private static boolean generateTreeAndRoots(

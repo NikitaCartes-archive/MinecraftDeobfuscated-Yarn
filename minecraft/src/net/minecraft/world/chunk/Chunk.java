@@ -357,22 +357,22 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(
 		NoiseColumnSampler noiseColumnSampler,
-		Supplier<ChunkNoiseSampler.ColumnSampler> supplier,
+		Supplier<ChunkNoiseSampler.ColumnSampler> columnSampler,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
 		Blender blender
 	) {
 		if (this.chunkNoiseSampler == null) {
-			this.chunkNoiseSampler = ChunkNoiseSampler.create(this, noiseColumnSampler, supplier, chunkGeneratorSettings, fluidLevelSampler, blender);
+			this.chunkNoiseSampler = ChunkNoiseSampler.create(this, noiseColumnSampler, columnSampler, chunkGeneratorSettings, fluidLevelSampler, blender);
 		}
 
 		return this.chunkNoiseSampler;
 	}
 
 	@Deprecated
-	public Biome method_38258(Supplier<Biome> supplier) {
+	public Biome setBiomeIfAbsent(Supplier<Biome> biomeSupplier) {
 		if (this.biome == null) {
-			this.biome = (Biome)supplier.get();
+			this.biome = (Biome)biomeSupplier.get();
 		}
 
 		return this.biome;

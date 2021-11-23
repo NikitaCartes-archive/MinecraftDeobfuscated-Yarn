@@ -1,6 +1,5 @@
 package net.minecraft.world.chunk;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,7 +12,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap.Entry;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
@@ -26,7 +24,6 @@ import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.collection.PaletteStorage;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.thread.AtomicStack;
 import net.minecraft.util.thread.LockHelper;
 
 /**
@@ -41,28 +38,21 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	private final IndexedIterable<T> idList;
 	private volatile PalettedContainer.Data<T> data;
 	private final PalettedContainer.PaletteProvider paletteProvider;
-	private final Semaphore semaphore = new Semaphore(1);
-	@Nullable
-	private final AtomicStack<Pair<Thread, StackTraceElement[]>> lockStack = null;
+	private final LockHelper field_36300 = new LockHelper("PalettedContainer");
 
 	/**
 	 * Acquires the semaphore on this container, and crashes if it cannot be
 	 * acquired.
 	 */
 	public void lock() {
-		if (this.lockStack != null) {
-			Thread thread = Thread.currentThread();
-			this.lockStack.push(Pair.of(thread, thread.getStackTrace()));
-		}
-
-		LockHelper.checkLock(this.semaphore, this.lockStack, "PalettedContainer");
+		this.field_36300.method_39935();
 	}
 
 	/**
 	 * Releases the semaphore on this container.
 	 */
 	public void unlock() {
-		this.semaphore.release();
+		this.field_36300.method_39937();
 	}
 
 	/**

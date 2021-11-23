@@ -22,19 +22,19 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public class StructureAccessor {
 	private final WorldAccess world;
 	private final GeneratorOptions options;
-	private final StructureLocator field_36216;
+	private final StructureLocator locator;
 
-	public StructureAccessor(WorldAccess world, GeneratorOptions options, StructureLocator structureLocator) {
+	public StructureAccessor(WorldAccess world, GeneratorOptions options, StructureLocator locator) {
 		this.world = world;
 		this.options = options;
-		this.field_36216 = structureLocator;
+		this.locator = locator;
 	}
 
 	public StructureAccessor forRegion(ChunkRegion region) {
 		if (region.toServerWorld() != this.world) {
 			throw new IllegalStateException("Using invalid feature manager (source level: " + region.toServerWorld() + ", region: " + region);
 		} else {
-			return new StructureAccessor(region, this.options, this.field_36216);
+			return new StructureAccessor(region, this.options, this.locator);
 		}
 	}
 
@@ -111,12 +111,12 @@ public class StructureAccessor {
 		return this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).hasStructureReferences();
 	}
 
-	public StructurePresence method_39783(ChunkPos chunkPos, StructureFeature<?> structureFeature, boolean bl) {
-		return this.field_36216.getStructurePresence(chunkPos, structureFeature, bl);
+	public StructurePresence getStructurePresence(ChunkPos chunkPos, StructureFeature<?> structure, boolean skipExistingChunk) {
+		return this.locator.getStructurePresence(chunkPos, structure, skipExistingChunk);
 	}
 
-	public void method_39784(StructureStart<?> structureStart) {
+	public void incrementReferences(StructureStart<?> structureStart) {
 		structureStart.incrementReferences();
-		this.field_36216.incrementReferences(structureStart.getPos(), structureStart.getFeature());
+		this.locator.incrementReferences(structureStart.getPos(), structureStart.getFeature());
 	}
 }

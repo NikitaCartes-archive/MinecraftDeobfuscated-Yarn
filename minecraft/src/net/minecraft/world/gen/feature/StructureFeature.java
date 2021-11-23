@@ -223,7 +223,7 @@ public class StructureFeature<C extends FeatureConfig> {
 						int o = j + i * m;
 						int p = k + i * n;
 						ChunkPos chunkPos = this.getStartChunk(config, worldSeed, o, p);
-						StructurePresence structurePresence = structureAccessor.method_39783(chunkPos, this, skipExistingChunks);
+						StructurePresence structurePresence = structureAccessor.getStructurePresence(chunkPos, this, skipExistingChunks);
 						if (structurePresence != StructurePresence.START_NOT_PRESENT) {
 							if (!skipExistingChunks && structurePresence == StructurePresence.START_PRESENT) {
 								return this.getLocatedPos(chunkPos);
@@ -233,7 +233,7 @@ public class StructureFeature<C extends FeatureConfig> {
 							StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk), this, chunk);
 							if (structureStart != null && structureStart.hasChildren()) {
 								if (skipExistingChunks && structureStart.isInExistingChunk()) {
-									structureAccessor.method_39784(structureStart);
+									structureAccessor.incrementReferences(structureStart);
 									return this.getLocatedPos(structureStart.getPos());
 								}
 

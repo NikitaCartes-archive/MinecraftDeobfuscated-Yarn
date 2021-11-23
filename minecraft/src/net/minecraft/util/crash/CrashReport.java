@@ -187,10 +187,7 @@ public class CrashReport {
 			}
 
 			this.hasStackTrace = crashReportSection.shouldGenerateStackTrace(stackTraceElement, stackTraceElement2);
-			if (i > 0 && !this.otherSections.isEmpty()) {
-				CrashReportSection crashReportSection2 = (CrashReportSection)this.otherSections.get(this.otherSections.size() - 1);
-				crashReportSection2.trimStackTraceEnd(i);
-			} else if (stackTraceElements != null && stackTraceElements.length >= i && 0 <= j && j < stackTraceElements.length) {
+			if (stackTraceElements != null && stackTraceElements.length >= i && 0 <= j && j < stackTraceElements.length) {
 				this.stackTrace = new StackTraceElement[j];
 				System.arraycopy(stackTraceElements, 0, this.stackTrace, 0, this.stackTrace.length);
 			} else {
