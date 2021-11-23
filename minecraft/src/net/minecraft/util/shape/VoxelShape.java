@@ -81,29 +81,34 @@ public abstract class VoxelShape {
 		return voxelShapes[0];
 	}
 
-	public void forEachEdge(VoxelShapes.BoxConsumer boxConsumer) {
+	public void forEachEdge(VoxelShapes.BoxConsumer consumer) {
 		this.voxels
 			.forEachEdge(
-				(i, j, k, l, m, n) -> boxConsumer.consume(
-						this.getPointPosition(Direction.Axis.X, i),
-						this.getPointPosition(Direction.Axis.Y, j),
-						this.getPointPosition(Direction.Axis.Z, k),
-						this.getPointPosition(Direction.Axis.X, l),
-						this.getPointPosition(Direction.Axis.Y, m),
-						this.getPointPosition(Direction.Axis.Z, n)
+				(minX, minY, minZ, maxX, maxY, maxZ) -> consumer.consume(
+						this.getPointPosition(Direction.Axis.X, minX),
+						this.getPointPosition(Direction.Axis.Y, minY),
+						this.getPointPosition(Direction.Axis.Z, minZ),
+						this.getPointPosition(Direction.Axis.X, maxX),
+						this.getPointPosition(Direction.Axis.Y, maxY),
+						this.getPointPosition(Direction.Axis.Z, maxZ)
 					),
 				true
 			);
 	}
 
-	public void forEachBox(VoxelShapes.BoxConsumer boxConsumer) {
+	public void forEachBox(VoxelShapes.BoxConsumer consumer) {
 		DoubleList doubleList = this.getPointPositions(Direction.Axis.X);
 		DoubleList doubleList2 = this.getPointPositions(Direction.Axis.Y);
 		DoubleList doubleList3 = this.getPointPositions(Direction.Axis.Z);
 		this.voxels
 			.forEachBox(
-				(i, j, k, l, m, n) -> boxConsumer.consume(
-						doubleList.getDouble(i), doubleList2.getDouble(j), doubleList3.getDouble(k), doubleList.getDouble(l), doubleList2.getDouble(m), doubleList3.getDouble(n)
+				(minX, minY, minZ, maxX, maxY, maxZ) -> consumer.consume(
+						doubleList.getDouble(minX),
+						doubleList2.getDouble(minY),
+						doubleList3.getDouble(minZ),
+						doubleList.getDouble(maxX),
+						doubleList2.getDouble(maxY),
+						doubleList3.getDouble(maxZ)
 					),
 				true
 			);

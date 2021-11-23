@@ -857,20 +857,20 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return vec3d;
 	}
 
-	public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d vec3d, Box entityBoundingBox, World world, List<VoxelShape> list) {
-		Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(list.size() + 1);
-		if (!list.isEmpty()) {
-			builder.addAll(list);
+	public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, List<VoxelShape> collisions) {
+		Builder<VoxelShape> builder = ImmutableList.builderWithExpectedSize(collisions.size() + 1);
+		if (!collisions.isEmpty()) {
+			builder.addAll(collisions);
 		}
 
 		WorldBorder worldBorder = world.getWorldBorder();
-		boolean bl = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(vec3d));
+		boolean bl = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(movement));
 		if (bl) {
 			builder.add(worldBorder.asVoxelShape());
 		}
 
-		builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(vec3d)));
-		return adjustMovementForCollisions(vec3d, entityBoundingBox, builder.build());
+		builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(movement)));
+		return adjustMovementForCollisions(movement, entityBoundingBox, builder.build());
 	}
 
 	private static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions) {
@@ -1747,11 +1747,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				.getStatesInBox(box)
 				.filter(Predicate.not(AbstractBlock.AbstractBlockState::isAir))
 				.anyMatch(
-					blockState -> {
+					state -> {
 						BlockPos blockPos = new BlockPos(vec3d);
-						return blockState.shouldSuffocate(this.world, blockPos)
+						return state.shouldSuffocate(this.world, blockPos)
 							&& VoxelShapes.matchesAnywhere(
-								blockState.getCollisionShape(this.world, blockPos).offset(vec3d.x, vec3d.y, vec3d.z), VoxelShapes.cuboid(box), BooleanBiFunction.AND
+								state.getCollisionShape(this.world, blockPos).offset(vec3d.x, vec3d.y, vec3d.z), VoxelShapes.cuboid(box), BooleanBiFunction.AND
 							);
 					}
 				);
@@ -1833,8 +1833,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.vehicle = entity;
 				this.vehicle.addPassenger(this);
 				entity.streamIntoPassengers()
-					.filter(entityx -> entityx instanceof ServerPlayerEntity)
-					.forEach(entityx -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)entityx));
+					.filter(passenger -> passenger instanceof ServerPlayerEntity)
+					.forEach(player -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)player));
 				return true;
 			} else {
 				return false;

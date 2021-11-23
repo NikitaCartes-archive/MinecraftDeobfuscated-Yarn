@@ -72,15 +72,15 @@ public final class BelowZeroRetrogen {
 		});
 	}
 
-	public void method_39898(ProtoChunk protoChunk) {
-		HeightLimitView heightLimitView = protoChunk.getHeightLimitView();
+	public void fillColumnsWithAirIfMissingBedrock(ProtoChunk chunk) {
+		HeightLimitView heightLimitView = chunk.getHeightLimitView();
 		int i = heightLimitView.getBottomY();
 		int j = heightLimitView.getTopY() - 1;
 
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
-				if (this.method_39895(k, l)) {
-					BlockPos.iterate(k, i, l, k, j, l).forEach(blockPos -> protoChunk.setBlockState(blockPos, Blocks.AIR.getDefaultState(), false));
+				if (this.isColumnMissingBedrock(k, l)) {
+					BlockPos.iterate(k, i, l, k, j, l).forEach(pos -> chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false));
 				}
 			}
 		}
@@ -90,12 +90,12 @@ public final class BelowZeroRetrogen {
 		return this.targetStatus;
 	}
 
-	public boolean method_39897() {
+	public boolean hasMissingBedrock() {
 		return !this.missingBedrock.isEmpty();
 	}
 
-	public boolean method_39895(int i, int j) {
-		return this.missingBedrock.get((j & 15) * 16 + (i & 15));
+	public boolean isColumnMissingBedrock(int x, int z) {
+		return this.missingBedrock.get((z & 15) * 16 + (x & 15));
 	}
 
 	public static BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier, Registry<Biome> biomeRegistry, Chunk chunk) {

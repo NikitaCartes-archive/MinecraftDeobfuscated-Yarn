@@ -58,9 +58,9 @@ import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomSeed;
+import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
 /**
  * In charge of shaping, adding biome specific surface blocks, and carving chunks,
@@ -240,7 +240,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 				.stream()
 				.collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
 			List<BiomeSource.class_6827> list = this.populationSource.method_38115();
-			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
+			ChunkRandom chunkRandom = new ChunkRandom(new Xoroshiro128PlusPlusRandom(RandomSeed.getSeed()));
 			long l = chunkRandom.setPopulationSeed(world.getSeed(), blockPos.getX(), blockPos.getZ());
 			Set<Biome> set = new ObjectArraySet<>();
 			if (this instanceof FlatChunkGenerator) {
@@ -274,8 +274,8 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 								world.setCurrentlyGeneratingStructureName(supplier);
 								structureAccessor.getStructureStarts(chunkSectionPos, structureFeature)
 									.forEach(structureStart -> structureStart.place(world, structureAccessor, this, chunkRandom, getBlockBoxForChunk(chunk), chunkPos));
-							} catch (Exception var28) {
-								CrashReport crashReport = CrashReport.create(var28, "Feature placement");
+							} catch (Exception var29) {
+								CrashReport crashReport = CrashReport.create(var29, "Feature placement");
 								crashReport.addElement("Feature").add("Description", supplier::get);
 								throw new CrashException(crashReport);
 							}
@@ -302,27 +302,26 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 						BiomeSource.class_6827 lv2 = (BiomeSource.class_6827)list.get(k);
 
 						for (int o = 0; o < n; o++) {
-							PlacedFeature placedFeature = (PlacedFeature)lv2.features().get(is[o]);
+							int p = is[o];
+							PlacedFeature placedFeature = (PlacedFeature)lv2.features().get(p);
 							Supplier<String> supplier2 = () -> (String)registry.getKey(placedFeature).map(Object::toString).orElseGet(placedFeature::toString);
-							chunkRandom.setDecoratorSeed(l, m, k);
+							chunkRandom.setDecoratorSeed(l, p, k);
 
 							try {
 								world.setCurrentlyGeneratingStructureName(supplier2);
 								placedFeature.generate(world, this, chunkRandom, blockPos);
-							} catch (Exception var29) {
-								CrashReport crashReport2 = CrashReport.create(var29, "Feature placement");
+							} catch (Exception var30) {
+								CrashReport crashReport2 = CrashReport.create(var30, "Feature placement");
 								crashReport2.addElement("Feature").add("Description", supplier2::get);
 								throw new CrashException(crashReport2);
 							}
-
-							m++;
 						}
 					}
 				}
 
 				world.setCurrentlyGeneratingStructureName(null);
-			} catch (Exception var30) {
-				CrashReport crashReport3 = CrashReport.create(var30, "Biome decoration");
+			} catch (Exception var31) {
+				CrashReport crashReport3 = CrashReport.create(var31, "Biome decoration");
 				crashReport3.addElement("Generation").add("CenterX", chunkPos.x).add("CenterZ", chunkPos.z).add("Seed", l);
 				throw new CrashException(crashReport3);
 			}

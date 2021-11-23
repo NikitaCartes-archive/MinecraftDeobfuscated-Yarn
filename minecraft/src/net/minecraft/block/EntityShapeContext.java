@@ -27,11 +27,11 @@ public class EntityShapeContext implements ShapeContext {
 	@Nullable
 	private final Entity entity;
 
-	protected EntityShapeContext(boolean descending, double minY, ItemStack boots, Predicate<Fluid> predicate, @Nullable Entity entity) {
+	protected EntityShapeContext(boolean descending, double minY, ItemStack heldItem, Predicate<Fluid> walkOnFluidPrecicate, @Nullable Entity entity) {
 		this.descending = descending;
 		this.minY = minY;
-		this.heldItem = boots;
-		this.walkOnFluidPredicate = predicate;
+		this.heldItem = heldItem;
+		this.walkOnFluidPredicate = walkOnFluidPrecicate;
 		this.entity = entity;
 	}
 

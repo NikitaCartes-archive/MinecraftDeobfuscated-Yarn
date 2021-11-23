@@ -782,7 +782,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			return false;
 		} else {
 			Biome biome = this.getBiome(pos);
-			return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.method_39927(pos);
+			return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
 		}
 	}
 

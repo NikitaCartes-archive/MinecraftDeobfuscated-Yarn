@@ -58,10 +58,10 @@ public final class VanillaTerrainParameters {
 		return f * 2.0F;
 	}
 
-	public static VanillaTerrainParameters method_39457(boolean bl) {
-		ToFloatFunction<Float> toFloatFunction = bl ? VanillaTerrainParameters::method_39534 : field_35673;
-		ToFloatFunction<Float> toFloatFunction2 = bl ? VanillaTerrainParameters::method_39535 : field_35673;
-		ToFloatFunction<Float> toFloatFunction3 = bl ? VanillaTerrainParameters::method_39536 : field_35673;
+	public static VanillaTerrainParameters createSurfaceParameters(boolean amplified) {
+		ToFloatFunction<Float> toFloatFunction = amplified ? VanillaTerrainParameters::method_39534 : field_35673;
+		ToFloatFunction<Float> toFloatFunction2 = amplified ? VanillaTerrainParameters::method_39535 : field_35673;
+		ToFloatFunction<Float> toFloatFunction3 = amplified ? VanillaTerrainParameters::method_39536 : field_35673;
 		Spline<VanillaTerrainParameters.NoisePoint> spline = createLandSpline(-0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false, toFloatFunction);
 		Spline<VanillaTerrainParameters.NoisePoint> spline2 = createLandSpline(-0.1F, 0.03F, 0.1F, 0.1F, 0.01F, -0.03F, false, false, toFloatFunction);
 		Spline<VanillaTerrainParameters.NoisePoint> spline3 = createLandSpline(-0.1F, 0.03F, 0.1F, 0.7F, 0.01F, -0.03F, true, true, toFloatFunction);

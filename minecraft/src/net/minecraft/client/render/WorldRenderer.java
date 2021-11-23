@@ -300,7 +300,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						if (u != v) {
 							Random random = new Random((long)(p * p * 3121 + p * 45238971 ^ o * o * 418711 + o * 13761));
 							mutable.set(p, u, o);
-							if (biome.method_39927(mutable)) {
+							if (biome.doesNotSnow(mutable)) {
 								if (m != 0) {
 									if (m >= 0) {
 										tessellator.draw();
@@ -417,7 +417,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					&& blockPos3.getY() <= blockPos.getY() + 10
 					&& blockPos3.getY() >= blockPos.getY() - 10
 					&& biome.getPrecipitation() == Biome.Precipitation.RAIN
-					&& biome.method_39927(blockPos3)) {
+					&& biome.doesNotSnow(blockPos3)) {
 					blockPos2 = blockPos3.down();
 					if (this.client.options.particles == ParticlesMode.MINIMAL) {
 						break;

@@ -412,7 +412,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			this.unloadChunks(() -> true);
 			this.completeAll();
 		} else {
-			this.chunkHolders.values().forEach(this::method_39925);
+			this.chunkHolders.values().forEach(this::save);
 		}
 	}
 
@@ -454,7 +454,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		ObjectIterator<ChunkHolder> objectIterator = this.chunkHolders.values().iterator();
 
 		while (k < 20 && shouldKeepTicking.getAsBoolean() && objectIterator.hasNext()) {
-			if (this.method_39925((ChunkHolder)objectIterator.next())) {
+			if (this.save((ChunkHolder)objectIterator.next())) {
 				k++;
 			}
 		}
@@ -584,6 +584,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 							crashReportSection.add("Location", String.format("%d,%d", chunkPos.x, chunkPos.z));
 							crashReportSection.add("Position hash", ChunkPos.toLong(chunkPos.x, chunkPos.z));
 							crashReportSection.add("Generator", this.chunkGenerator);
+							this.mainThreadExecutor.execute(() -> {
+								throw new CrashException(crashReport);
+							});
 							throw new CrashException(crashReport);
 						}
 					},
@@ -680,7 +683,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return this.totalChunksLoadedCount.get();
 	}
 
-	private boolean method_39925(ChunkHolder chunkHolder) {
+	private boolean save(ChunkHolder chunkHolder) {
 		if (!chunkHolder.isAccessible()) {
 			return false;
 		} else {

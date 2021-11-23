@@ -61,21 +61,21 @@ public class UndergroundPlacedFeatures {
 		"dripstone_cluster",
 		UndergroundConfiguredFeatures.DRIPSTONE_CLUSTER
 			.withPlacement(
-				CountPlacementModifier.of(UniformIntProvider.create(35, 70)), SquarePlacementModifier.of(), PlacedFeatures.BOTTOM_TO_120_RANGE, BiomePlacementModifier.of()
+				CountPlacementModifier.of(UniformIntProvider.create(48, 96)), SquarePlacementModifier.of(), PlacedFeatures.BOTTOM_TO_120_RANGE, BiomePlacementModifier.of()
 			)
 	);
 	public static final PlacedFeature LARGE_DRIPSTONE = PlacedFeatures.register(
 		"large_dripstone",
 		UndergroundConfiguredFeatures.LARGE_DRIPSTONE
 			.withPlacement(
-				CountPlacementModifier.of(UniformIntProvider.create(7, 35)), SquarePlacementModifier.of(), PlacedFeatures.BOTTOM_TO_120_RANGE, BiomePlacementModifier.of()
+				CountPlacementModifier.of(UniformIntProvider.create(10, 48)), SquarePlacementModifier.of(), PlacedFeatures.BOTTOM_TO_120_RANGE, BiomePlacementModifier.of()
 			)
 	);
 	public static final PlacedFeature POINTED_DRIPSTONE = PlacedFeatures.register(
 		"pointed_dripstone",
 		UndergroundConfiguredFeatures.POINTED_DRIPSTONE
 			.withPlacement(
-				CountPlacementModifier.of(UniformIntProvider.create(140, 220)),
+				CountPlacementModifier.of(UniformIntProvider.create(192, 256)),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
 				CountPlacementModifier.of(UniformIntProvider.create(1, 5)),
@@ -109,6 +109,7 @@ public class UndergroundPlacedFeatures {
 		"rooted_azalea_tree",
 		UndergroundConfiguredFeatures.ROOTED_AZALEA_TREE
 			.withPlacement(
+				CountPlacementModifier.of(UniformIntProvider.create(1, 2)),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
 				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
@@ -120,10 +121,10 @@ public class UndergroundPlacedFeatures {
 		"cave_vines",
 		UndergroundConfiguredFeatures.CAVE_VINE
 			.withPlacement(
-				CountPlacementModifier.of(157),
+				CountPlacementModifier.of(188),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
-				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.method_39930(Direction.DOWN), BlockPredicate.IS_AIR, 12),
+				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.hasSturdyFace(Direction.DOWN), BlockPredicate.IS_AIR, 12),
 				RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(-1)),
 				BiomePlacementModifier.of()
 			)
@@ -132,7 +133,7 @@ public class UndergroundPlacedFeatures {
 		"lush_caves_vegetation",
 		UndergroundConfiguredFeatures.MOSS_PATCH
 			.withPlacement(
-				CountPlacementModifier.of(104),
+				CountPlacementModifier.of(125),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
 				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
@@ -144,7 +145,7 @@ public class UndergroundPlacedFeatures {
 		"lush_caves_clay",
 		UndergroundConfiguredFeatures.LUSH_CAVES_CLAY
 			.withPlacement(
-				CountPlacementModifier.of(52),
+				CountPlacementModifier.of(62),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
 				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
@@ -156,7 +157,7 @@ public class UndergroundPlacedFeatures {
 		"lush_caves_ceiling_vegetation",
 		UndergroundConfiguredFeatures.MOSS_PATCH_CEILING
 			.withPlacement(
-				CountPlacementModifier.of(104),
+				CountPlacementModifier.of(125),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
 				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
@@ -168,7 +169,7 @@ public class UndergroundPlacedFeatures {
 		"spore_blossom",
 		UndergroundConfiguredFeatures.SPORE_BLOSSOM
 			.withPlacement(
-				CountPlacementModifier.of(21),
+				CountPlacementModifier.of(25),
 				SquarePlacementModifier.of(),
 				PlacedFeatures.BOTTOM_TO_120_RANGE,
 				EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
@@ -179,7 +180,7 @@ public class UndergroundPlacedFeatures {
 	public static final PlacedFeature CLASSIC_VINES_CAVE_FEATURE = PlacedFeatures.register(
 		"classic_vines_cave_feature",
 		VegetationConfiguredFeatures.VINES
-			.withPlacement(CountPlacementModifier.of(216), SquarePlacementModifier.of(), PlacedFeatures.BOTTOM_TO_120_RANGE, BiomePlacementModifier.of())
+			.withPlacement(CountPlacementModifier.of(256), SquarePlacementModifier.of(), PlacedFeatures.BOTTOM_TO_120_RANGE, BiomePlacementModifier.of())
 	);
 	public static final PlacedFeature AMETHYST_GEODE = PlacedFeatures.register(
 		"amethyst_geode",

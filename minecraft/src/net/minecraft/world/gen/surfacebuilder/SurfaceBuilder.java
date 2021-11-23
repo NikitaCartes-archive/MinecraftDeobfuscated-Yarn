@@ -266,7 +266,7 @@ public class SurfaceBuilder {
 			double g = 1.5;
 			double h = Math.abs(this.icebergPillarRoofNoise.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
 			double j = Math.min(e * e * 1.2, Math.ceil(h * 40.0) + 14.0);
-			if (biome.method_39928(mutablePos.set(x, 63, z))) {
+			if (biome.shouldGenerateLowerFrozenOceanSurface(mutablePos.set(x, 63, z))) {
 				j -= 2.0;
 			}
 

@@ -696,9 +696,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return !this.server.isSpawnProtected(this, pos, player) && this.getWorldBorder().contains(pos);
 	}
 
-	public void save(@Nullable ProgressListener progressListener, boolean flush, boolean bl) {
+	public void save(@Nullable ProgressListener progressListener, boolean flush, boolean savingDisabled) {
 		ServerChunkManager serverChunkManager = this.getChunkManager();
-		if (!bl) {
+		if (!savingDisabled) {
 			if (progressListener != null) {
 				progressListener.setTitle(new TranslatableText("menu.savingLevel"));
 			}
@@ -1542,7 +1542,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		chunk.disableTickSchedulers(this.getLevelProperties().getTime());
 	}
 
-	public void method_39778(Chunk chunk) {
+	public void cacheStructures(Chunk chunk) {
 		this.server.execute(() -> this.structureLocator.cache(chunk.getPos(), chunk.getStructureStarts()));
 	}
 

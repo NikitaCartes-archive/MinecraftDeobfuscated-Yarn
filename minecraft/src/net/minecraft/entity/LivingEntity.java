@@ -161,8 +161,8 @@ public abstract class LivingEntity extends Entity {
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<StatusEffect, StatusEffectInstance> activeStatusEffects = Maps.<StatusEffect, StatusEffectInstance>newHashMap();
-	private final DefaultedList<ItemStack> equippedHand = DefaultedList.ofSize(2, ItemStack.EMPTY);
-	private final DefaultedList<ItemStack> equippedArmor = DefaultedList.ofSize(4, ItemStack.EMPTY);
+	private final DefaultedList<ItemStack> syncedHandStacks = DefaultedList.ofSize(2, ItemStack.EMPTY);
+	private final DefaultedList<ItemStack> syncedArmorStacks = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	public boolean handSwinging;
 	private boolean noDrag = false;
 	public Hand preferredHand;
@@ -2363,7 +2363,7 @@ public abstract class LivingEntity extends Entity {
 				}
 			}
 
-			this.method_30128();
+			this.sendEquipmentChanges();
 			if (this.age % 20 == 0) {
 				this.getDamageTracker().update();
 			}
@@ -2452,28 +2452,35 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	private void method_30128() {
-		Map<EquipmentSlot, ItemStack> map = this.getEquipment();
+	/**
+	 * Sends equipment changes to nearby players.
+	 */
+	private void sendEquipmentChanges() {
+		Map<EquipmentSlot, ItemStack> map = this.getEquipmentChanges();
 		if (map != null) {
-			this.swapHandStacks(map);
+			this.checkHandStackSwap(map);
 			if (!map.isEmpty()) {
-				this.setEquipment(map);
+				this.sendEquipmentChanges(map);
 			}
 		}
 	}
 
+	/**
+	 * {@return the difference between the last sent equipment set and the
+	 * current one}
+	 */
 	@Nullable
-	private Map<EquipmentSlot, ItemStack> getEquipment() {
+	private Map<EquipmentSlot, ItemStack> getEquipmentChanges() {
 		Map<EquipmentSlot, ItemStack> map = null;
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			ItemStack itemStack;
 			switch (equipmentSlot.getType()) {
 				case HAND:
-					itemStack = this.getStackInHandSlot(equipmentSlot);
+					itemStack = this.getSyncedHandStack(equipmentSlot);
 					break;
 				case ARMOR:
-					itemStack = this.getArmorInSlot(equipmentSlot);
+					itemStack = this.getSyncedArmorStack(equipmentSlot);
 					break;
 				default:
 					continue;
@@ -2499,51 +2506,59 @@ public abstract class LivingEntity extends Entity {
 		return map;
 	}
 
-	private void swapHandStacks(Map<EquipmentSlot, ItemStack> equipment) {
-		ItemStack itemStack = (ItemStack)equipment.get(EquipmentSlot.MAINHAND);
-		ItemStack itemStack2 = (ItemStack)equipment.get(EquipmentSlot.OFFHAND);
+	/**
+	 * Notifies nearby players if the stacks in the hands have been swapped.
+	 */
+	private void checkHandStackSwap(Map<EquipmentSlot, ItemStack> equipmentChanges) {
+		ItemStack itemStack = (ItemStack)equipmentChanges.get(EquipmentSlot.MAINHAND);
+		ItemStack itemStack2 = (ItemStack)equipmentChanges.get(EquipmentSlot.OFFHAND);
 		if (itemStack != null
 			&& itemStack2 != null
-			&& ItemStack.areEqual(itemStack, this.getStackInHandSlot(EquipmentSlot.OFFHAND))
-			&& ItemStack.areEqual(itemStack2, this.getStackInHandSlot(EquipmentSlot.MAINHAND))) {
+			&& ItemStack.areEqual(itemStack, this.getSyncedHandStack(EquipmentSlot.OFFHAND))
+			&& ItemStack.areEqual(itemStack2, this.getSyncedHandStack(EquipmentSlot.MAINHAND))) {
 			((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityStatusS2CPacket(this, EntityStatuses.SWAP_HANDS));
-			equipment.remove(EquipmentSlot.MAINHAND);
-			equipment.remove(EquipmentSlot.OFFHAND);
-			this.setStackInHandSlot(EquipmentSlot.MAINHAND, itemStack.copy());
-			this.setStackInHandSlot(EquipmentSlot.OFFHAND, itemStack2.copy());
+			equipmentChanges.remove(EquipmentSlot.MAINHAND);
+			equipmentChanges.remove(EquipmentSlot.OFFHAND);
+			this.setSyncedHandStack(EquipmentSlot.MAINHAND, itemStack.copy());
+			this.setSyncedHandStack(EquipmentSlot.OFFHAND, itemStack2.copy());
 		}
 	}
 
-	private void setEquipment(Map<EquipmentSlot, ItemStack> equipment) {
-		List<Pair<EquipmentSlot, ItemStack>> list = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayListWithCapacity(equipment.size());
-		equipment.forEach((slot, stack) -> {
+	/**
+	 * Sends equipment changes to nearby players.
+	 * 
+	 * @see #sendEquipmentChanges()
+	 */
+	private void sendEquipmentChanges(Map<EquipmentSlot, ItemStack> equipmentChanges) {
+		List<Pair<EquipmentSlot, ItemStack>> list = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayListWithCapacity(equipmentChanges.size());
+		equipmentChanges.forEach((slot, stack) -> {
 			ItemStack itemStack = stack.copy();
 			list.add(Pair.of(slot, itemStack));
 			switch (slot.getType()) {
 				case HAND:
-					this.setStackInHandSlot(slot, itemStack);
+					this.setSyncedHandStack(slot, itemStack);
 					break;
 				case ARMOR:
-					this.setArmorInSlot(slot, itemStack);
+					this.setSyncedArmorStack(slot, itemStack);
 			}
 		});
 		((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getId(), list));
 	}
 
-	private ItemStack getArmorInSlot(EquipmentSlot slot) {
-		return this.equippedArmor.get(slot.getEntitySlotId());
+	private ItemStack getSyncedArmorStack(EquipmentSlot slot) {
+		return this.syncedArmorStacks.get(slot.getEntitySlotId());
 	}
 
-	private void setArmorInSlot(EquipmentSlot slot, ItemStack armor) {
-		this.equippedArmor.set(slot.getEntitySlotId(), armor);
+	private void setSyncedArmorStack(EquipmentSlot slot, ItemStack armor) {
+		this.syncedArmorStacks.set(slot.getEntitySlotId(), armor);
 	}
 
-	private ItemStack getStackInHandSlot(EquipmentSlot slot) {
-		return this.equippedHand.get(slot.getEntitySlotId());
+	private ItemStack getSyncedHandStack(EquipmentSlot slot) {
+		return this.syncedHandStacks.get(slot.getEntitySlotId());
 	}
 
-	private void setStackInHandSlot(EquipmentSlot slot, ItemStack stack) {
-		this.equippedHand.set(slot.getEntitySlotId(), stack);
+	private void setSyncedHandStack(EquipmentSlot slot, ItemStack stack) {
+		this.syncedHandStacks.set(slot.getEntitySlotId(), stack);
 	}
 
 	protected float turnHead(float bodyRotation, float headRotation) {

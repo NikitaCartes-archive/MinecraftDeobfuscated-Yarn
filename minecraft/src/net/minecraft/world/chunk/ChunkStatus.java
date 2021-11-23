@@ -63,7 +63,7 @@ public class ChunkStatus {
 					protoChunk.setStatus(targetStatus);
 				}
 
-				world.method_39778(chunk);
+				world.cacheStructures(chunk);
 			}
 
 			return CompletableFuture.completedFuture(Either.left(chunk));
@@ -74,7 +74,7 @@ public class ChunkStatus {
 					protoChunk.setStatus(targetStatus);
 				}
 
-				world.method_39778(chunk);
+				world.cacheStructures(chunk);
 			}
 
 			return CompletableFuture.completedFuture(Either.left(chunk));
@@ -126,8 +126,8 @@ public class ChunkStatus {
 						BelowZeroRetrogen belowZeroRetrogen = protoChunk.getBelowZeroRetrogen();
 						if (belowZeroRetrogen != null) {
 							BelowZeroRetrogen.replaceOldBedrock(protoChunk);
-							if (belowZeroRetrogen.method_39897()) {
-								belowZeroRetrogen.method_39898(protoChunk);
+							if (belowZeroRetrogen.hasMissingBedrock()) {
+								belowZeroRetrogen.fillColumnsWithAirIfMissingBedrock(protoChunk);
 							}
 						}
 

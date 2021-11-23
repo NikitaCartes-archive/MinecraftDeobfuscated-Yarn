@@ -286,15 +286,15 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.PATCH_CACTUS_DECORATED);
 	}
 
-	public static void method_39931(GenerationSettings.Builder builder) {
+	public static void addMelons(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.PATCH_MELON);
 	}
 
-	public static void method_39932(GenerationSettings.Builder builder) {
-		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.field_36292);
+	public static void addSparseMelons(GenerationSettings.Builder builder) {
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.PATCH_MELON_SPARSE);
 	}
 
-	public static void method_39933(GenerationSettings.Builder builder) {
+	public static void addVines(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.VINES);
 	}
 

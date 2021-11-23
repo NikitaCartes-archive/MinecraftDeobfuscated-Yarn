@@ -279,6 +279,17 @@ public class GeneratorOptions {
 				);
 			case "debug_all_block_states":
 				return new GeneratorOptions(l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, new DebugChunkGenerator(registry2)));
+			case "amplified":
+				return new GeneratorOptions(
+					l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, createGenerator(registryManager, l, ChunkGeneratorSettings.AMPLIFIED))
+				);
+			case "largebiomes":
+				return new GeneratorOptions(
+					l,
+					bl,
+					false,
+					getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, createGenerator(registryManager, l, ChunkGeneratorSettings.LARGE_BIOMES))
+				);
 			default:
 				return new GeneratorOptions(l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, simpleRegistry, createOverworldGenerator(registryManager, l)));
 		}

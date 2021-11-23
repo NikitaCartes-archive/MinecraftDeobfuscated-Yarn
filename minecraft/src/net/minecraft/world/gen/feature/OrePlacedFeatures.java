@@ -166,7 +166,7 @@ public class OrePlacedFeatures {
 		OreConfiguredFeatures.ORE_COPPER_LARGE.withPlacement(modifiersWithCount(16, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-16), YOffset.fixed(112))))
 	);
 	public static final PlacedFeature ORE_CLAY = PlacedFeatures.register(
-		"ore_clay", OreConfiguredFeatures.ORE_CLAY.withPlacement(modifiersWithCount(38, PlacedFeatures.BOTTOM_TO_120_RANGE))
+		"ore_clay", OreConfiguredFeatures.ORE_CLAY.withPlacement(modifiersWithCount(46, PlacedFeatures.BOTTOM_TO_120_RANGE))
 	);
 
 	private static List<PlacementModifier> modifiers(PlacementModifier countModifier, PlacementModifier heightModifier) {
