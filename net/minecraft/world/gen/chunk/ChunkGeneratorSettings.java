@@ -144,13 +144,13 @@ public final class ChunkGeneratorSettings {
     }
 
     private static ChunkGeneratorSettings createEndSettings() {
-        return new ChunkGeneratorSettings(new StructuresConfig(false), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, true, false, false, VanillaTerrainParametersCreator.createIslandParameters()), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), VanillaSurfaceRules.getEndStoneRule(), 0, true, false, false, false, false, true);
+        return new ChunkGeneratorSettings(new StructuresConfig(false), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, true, false, false, VanillaTerrainParametersCreator.createEndParameters()), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), VanillaSurfaceRules.getEndStoneRule(), 0, true, false, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createNetherSettings() {
         HashMap<StructureFeature<?>, StructureConfig> map = Maps.newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
         map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
-        return new ChunkGeneratorSettings(new StructuresConfig(Optional.empty(), map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, false, false, false, VanillaTerrainParametersCreator.createUndergroundParameters()), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), VanillaSurfaceRules.createNetherSurfaceRule(), 32, false, false, false, false, false, true);
+        return new ChunkGeneratorSettings(new StructuresConfig(Optional.empty(), map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, false, false, false, VanillaTerrainParametersCreator.createNetherParameters()), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), VanillaSurfaceRules.createNetherSurfaceRule(), 32, false, false, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {
@@ -158,11 +158,11 @@ public final class ChunkGeneratorSettings {
     }
 
     private static ChunkGeneratorSettings createCavesSettings() {
-        return new ChunkGeneratorSettings(new StructuresConfig(false), GenerationShapeConfig.create(-64, 192, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, false, false, false, VanillaTerrainParametersCreator.method_39923()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.method_39922(false, true, true), 32, false, false, false, false, false, true);
+        return new ChunkGeneratorSettings(new StructuresConfig(false), GenerationShapeConfig.create(-64, 192, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, false, false, false, VanillaTerrainParametersCreator.createCavesParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.method_39922(false, true, true), 32, false, false, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createFloatingIslandsSettings() {
-        return new ChunkGeneratorSettings(new StructuresConfig(true), GenerationShapeConfig.create(0, 256, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, false, false, false, VanillaTerrainParametersCreator.method_39924()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.method_39922(false, false, false), -64, false, false, false, false, false, true);
+        return new ChunkGeneratorSettings(new StructuresConfig(true), GenerationShapeConfig.create(0, 256, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, false, false, false, VanillaTerrainParametersCreator.createFloatingIslandsParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.method_39922(false, false, false), -64, false, false, false, false, false, true);
     }
 
     static {

@@ -67,9 +67,9 @@ import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomSeed;
+import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -229,7 +229,7 @@ implements BiomeAccess.Storage {
         BlockPos blockPos = chunkSectionPos.getMinPos();
         Map<Integer, List<StructureFeature>> map = Registry.STRUCTURE_FEATURE.stream().collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
         List<BiomeSource.class_6827> list = this.populationSource.method_38115();
-        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
+        ChunkRandom chunkRandom = new ChunkRandom(new Xoroshiro128PlusPlusRandom(RandomSeed.getSeed()));
         long l = chunkRandom.setPopulationSeed(world.getSeed(), blockPos.getX(), blockPos.getZ());
         ObjectArraySet set = new ObjectArraySet();
         if (this instanceof FlatChunkGenerator) {
@@ -280,18 +280,19 @@ implements BiomeAccess.Storage {
                 Arrays.sort(is);
                 BiomeSource.class_6827 lv2 = list.get(k);
                 for (int o = 0; o < n; ++o) {
-                    PlacedFeature placedFeature2 = lv2.features().get(is[o]);
+                    int p = is[o];
+                    PlacedFeature placedFeature2 = lv2.features().get(p);
                     Supplier<String> supplier2 = () -> registry.getKey(placedFeature2).map(Object::toString).orElseGet(placedFeature2::toString);
-                    chunkRandom.setDecoratorSeed(l, m, k);
+                    chunkRandom.setDecoratorSeed(l, p, k);
                     try {
                         world.setCurrentlyGeneratingStructureName(supplier2);
                         placedFeature2.generate(world, this, chunkRandom, blockPos);
+                        continue;
                     } catch (Exception exception2) {
                         CrashReport crashReport2 = CrashReport.create(exception2, "Feature placement");
                         crashReport2.addElement("Feature").add("Description", supplier2::get);
                         throw new CrashException(crashReport2);
                     }
-                    ++m;
                 }
             }
             world.setCurrentlyGeneratingStructureName(null);

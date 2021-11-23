@@ -7,23 +7,23 @@ import net.minecraft.util.math.Spline;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 
 public class VanillaTerrainParametersCreator {
-    public static VanillaTerrainParameters createSurfaceParameters(boolean bl) {
-        return VanillaTerrainParameters.method_39457(bl);
+    public static VanillaTerrainParameters createSurfaceParameters(boolean amplified) {
+        return VanillaTerrainParameters.createSurfaceParameters(amplified);
     }
 
-    public static VanillaTerrainParameters method_39923() {
+    public static VanillaTerrainParameters createCavesParameters() {
         return new VanillaTerrainParameters(Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(0.0f));
     }
 
-    public static VanillaTerrainParameters method_39924() {
+    public static VanillaTerrainParameters createFloatingIslandsParameters() {
         return new VanillaTerrainParameters(Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(0.0f));
     }
 
-    public static VanillaTerrainParameters createUndergroundParameters() {
+    public static VanillaTerrainParameters createNetherParameters() {
         return new VanillaTerrainParameters(Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(0.0f));
     }
 
-    public static VanillaTerrainParameters createIslandParameters() {
+    public static VanillaTerrainParameters createEndParameters() {
         return new VanillaTerrainParameters(Spline.fixedFloatFunction(0.0f), Spline.fixedFloatFunction(1.0f), Spline.fixedFloatFunction(0.0f));
     }
 }

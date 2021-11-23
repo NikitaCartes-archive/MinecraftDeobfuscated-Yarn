@@ -104,7 +104,7 @@ RangedAttackMob {
             int i = MathHelper.floor(this.getX());
             BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.getY()), k = MathHelper.floor(this.getZ()));
             Biome biome = this.world.getBiome(blockPos);
-            if (biome.method_39929(blockPos)) {
+            if (biome.isHot(blockPos)) {
                 this.damage(DamageSource.ON_FIRE, 1.0f);
             }
             if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {

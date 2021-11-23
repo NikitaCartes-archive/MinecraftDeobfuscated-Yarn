@@ -110,8 +110,8 @@ extends BiPredicate<StructureWorldAccess, BlockPos> {
         return new HasSturdyFacePredicate(offset, face);
     }
 
-    public static BlockPredicate method_39930(Direction direction) {
-        return BlockPredicate.hasSturdyFace(Vec3i.ZERO, direction);
+    public static BlockPredicate hasSturdyFace(Direction face) {
+        return BlockPredicate.hasSturdyFace(Vec3i.ZERO, face);
     }
 
     public static BlockPredicate solid(Vec3i offset) {

@@ -328,7 +328,7 @@ AutoCloseable {
                 if (u == v) continue;
                 Random random = new Random(p * p * 3121 + p * 45238971 ^ o * o * 418711 + o * 13761);
                 mutable.set(p, u, o);
-                if (biome.method_39927(mutable)) {
+                if (biome.doesNotSnow(mutable)) {
                     if (m != 0) {
                         if (m >= 0) {
                             tessellator.draw();
@@ -401,7 +401,7 @@ AutoCloseable {
             int l = random.nextInt(21) - 10;
             BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l));
             Biome biome = worldView.getBiome(blockPos3);
-            if (blockPos3.getY() <= worldView.getBottomY() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !biome.method_39927(blockPos3)) continue;
+            if (blockPos3.getY() <= worldView.getBottomY() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !biome.doesNotSnow(blockPos3)) continue;
             blockPos2 = blockPos3.down();
             if (this.client.options.particles == ParticlesMode.MINIMAL) break;
             double d = random.nextDouble();

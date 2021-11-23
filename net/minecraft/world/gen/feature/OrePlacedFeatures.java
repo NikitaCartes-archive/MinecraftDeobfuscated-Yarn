@@ -55,7 +55,7 @@ public class OrePlacedFeatures {
     public static final PlacedFeature ORE_DEBRIS_SMALL = PlacedFeatures.register("ore_debris_small", OreConfiguredFeatures.ORE_ANCIENT_DEBRIS_SMALL.withPlacement(SquarePlacementModifier.of(), PlacedFeatures.EIGHT_ABOVE_AND_BELOW_RANGE, BiomePlacementModifier.of()));
     public static final PlacedFeature ORE_COPPER = PlacedFeatures.register("ore_copper", OreConfiguredFeatures.ORE_COPPER_SMALL.withPlacement(OrePlacedFeatures.modifiersWithCount(16, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-16), YOffset.fixed(112)))));
     public static final PlacedFeature ORE_COPPER_LARGE = PlacedFeatures.register("ore_copper_large", OreConfiguredFeatures.ORE_COPPER_LARGE.withPlacement(OrePlacedFeatures.modifiersWithCount(16, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-16), YOffset.fixed(112)))));
-    public static final PlacedFeature ORE_CLAY = PlacedFeatures.register("ore_clay", OreConfiguredFeatures.ORE_CLAY.withPlacement(OrePlacedFeatures.modifiersWithCount(38, PlacedFeatures.BOTTOM_TO_120_RANGE)));
+    public static final PlacedFeature ORE_CLAY = PlacedFeatures.register("ore_clay", OreConfiguredFeatures.ORE_CLAY.withPlacement(OrePlacedFeatures.modifiersWithCount(46, PlacedFeatures.BOTTOM_TO_120_RANGE)));
 
     private static List<PlacementModifier> modifiers(PlacementModifier countModifier, PlacementModifier heightModifier) {
         return List.of(countModifier, SquarePlacementModifier.of(), heightModifier, BiomePlacementModifier.of());

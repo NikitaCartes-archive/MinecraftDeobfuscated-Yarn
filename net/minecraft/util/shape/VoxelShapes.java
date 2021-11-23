@@ -70,7 +70,7 @@ public final class VoxelShapes {
         int l = 1 << i;
         int m = 1 << j;
         int n = 1 << k;
-        BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.method_31939(l, m, n, (int)Math.round(minX * (double)l), (int)Math.round(minY * (double)m), (int)Math.round(minZ * (double)n), (int)Math.round(maxX * (double)l), (int)Math.round(maxY * (double)m), (int)Math.round(maxZ * (double)n));
+        BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.create(l, m, n, (int)Math.round(minX * (double)l), (int)Math.round(minY * (double)m), (int)Math.round(minZ * (double)n), (int)Math.round(maxX * (double)l), (int)Math.round(maxY * (double)m), (int)Math.round(maxZ * (double)n));
         return new SimpleVoxelShape(bitSetVoxelSet);
     }
 

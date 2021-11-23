@@ -120,11 +120,11 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addJungleGrass(builder);
         DefaultBiomeFeatures.addDefaultMushrooms(builder);
         DefaultBiomeFeatures.addDefaultVegetation(builder);
-        DefaultBiomeFeatures.method_39933(builder);
+        DefaultBiomeFeatures.addVines(builder);
         if (sparse) {
-            DefaultBiomeFeatures.method_39932(builder);
+            DefaultBiomeFeatures.addSparseMelons(builder);
         } else {
-            DefaultBiomeFeatures.method_39931(builder);
+            DefaultBiomeFeatures.addMelons(builder);
         }
         return OverworldBiomeCreator.createBiome(Biome.Precipitation.RAIN, Biome.Category.JUNGLE, 0.95f, depth, spawnSettings, builder, DEFAULT_MUSIC);
     }

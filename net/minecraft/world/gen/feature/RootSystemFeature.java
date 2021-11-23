@@ -55,7 +55,11 @@ extends Feature<RootSystemFeatureConfig> {
     }
 
     private static boolean isAirOrWater(BlockState state, int height, int allowedVerticalWaterForTree) {
-        return state.isAir() || height <= allowedVerticalWaterForTree && state.getFluidState().isIn(FluidTags.WATER);
+        if (state.isAir()) {
+            return true;
+        }
+        int i = height + 1;
+        return i <= allowedVerticalWaterForTree && state.getFluidState().isIn(FluidTags.WATER);
     }
 
     private static boolean generateTreeAndRoots(StructureWorldAccess world, ChunkGenerator generator, RootSystemFeatureConfig config, Random random, BlockPos.Mutable mutablePos, BlockPos pos) {

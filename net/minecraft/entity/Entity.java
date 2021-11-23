@@ -840,19 +840,19 @@ CommandOutput {
         return vec3d;
     }
 
-    public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d vec3d, Box entityBoundingBox, World world, List<VoxelShape> list) {
+    public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d movement, Box entityBoundingBox, World world, List<VoxelShape> collisions) {
         boolean bl;
-        ImmutableList.Builder builder = ImmutableList.builderWithExpectedSize(list.size() + 1);
-        if (!list.isEmpty()) {
-            builder.addAll(list);
+        ImmutableList.Builder builder = ImmutableList.builderWithExpectedSize(collisions.size() + 1);
+        if (!collisions.isEmpty()) {
+            builder.addAll(collisions);
         }
         WorldBorder worldBorder = world.getWorldBorder();
-        boolean bl2 = bl = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(vec3d));
+        boolean bl2 = bl = entity != null && worldBorder.canCollide(entity, entityBoundingBox.stretch(movement));
         if (bl) {
             builder.add(worldBorder.asVoxelShape());
         }
-        builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(vec3d)));
-        return Entity.adjustMovementForCollisions(vec3d, entityBoundingBox, (List<VoxelShape>)((Object)builder.build()));
+        builder.addAll(world.getBlockCollisions(entity, entityBoundingBox.stretch(movement)));
+        return Entity.adjustMovementForCollisions(movement, entityBoundingBox, (List<VoxelShape>)((Object)builder.build()));
     }
 
     private static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions) {
@@ -1676,9 +1676,9 @@ CommandOutput {
         Vec3d vec3d = this.getEyePos();
         float f = this.dimensions.width * 0.8f;
         Box box = Box.of(vec3d, f, 1.0E-6, f);
-        return this.world.getStatesInBox(box).filter(Predicate.not(AbstractBlock.AbstractBlockState::isAir)).anyMatch(blockState -> {
+        return this.world.getStatesInBox(box).filter(Predicate.not(AbstractBlock.AbstractBlockState::isAir)).anyMatch(state -> {
             BlockPos blockPos = new BlockPos(vec3d);
-            return blockState.shouldSuffocate(this.world, blockPos) && VoxelShapes.matchesAnywhere(blockState.getCollisionShape(this.world, blockPos).offset(vec3d.x, vec3d.y, vec3d.z), VoxelShapes.cuboid(box), BooleanBiFunction.AND);
+            return state.shouldSuffocate(this.world, blockPos) && VoxelShapes.matchesAnywhere(state.getCollisionShape(this.world, blockPos).offset(vec3d.x, vec3d.y, vec3d.z), VoxelShapes.cuboid(box), BooleanBiFunction.AND);
         });
     }
 
@@ -1740,27 +1740,27 @@ CommandOutput {
         return this instanceof LivingEntity;
     }
 
-    public boolean startRiding(Entity entity2, boolean force) {
-        if (entity2 == this.vehicle) {
+    public boolean startRiding(Entity entity, boolean force) {
+        if (entity == this.vehicle) {
             return false;
         }
-        Entity entity22 = entity2;
-        while (entity22.vehicle != null) {
-            if (entity22.vehicle == this) {
+        Entity entity2 = entity;
+        while (entity2.vehicle != null) {
+            if (entity2.vehicle == this) {
                 return false;
             }
-            entity22 = entity22.vehicle;
+            entity2 = entity2.vehicle;
         }
-        if (!(force || this.canStartRiding(entity2) && entity2.canAddPassenger(this))) {
+        if (!(force || this.canStartRiding(entity) && entity.canAddPassenger(this))) {
             return false;
         }
         if (this.hasVehicle()) {
             this.stopRiding();
         }
         this.setPose(EntityPose.STANDING);
-        this.vehicle = entity2;
+        this.vehicle = entity;
         this.vehicle.addPassenger(this);
-        entity2.streamIntoPassengers().filter(entity -> entity instanceof ServerPlayerEntity).forEach(entity -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)entity));
+        entity.streamIntoPassengers().filter(passenger -> passenger instanceof ServerPlayerEntity).forEach(player -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)player));
         return true;
     }
 

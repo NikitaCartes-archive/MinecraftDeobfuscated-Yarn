@@ -101,7 +101,7 @@ implements BlockEntityProvider {
             return ActionResult.SUCCESS;
         }
         if (state.get(OCCUPIED).booleanValue()) {
-            if (!this.isFree(world, pos)) {
+            if (!this.wakeVillager(world, pos)) {
                 player.sendMessage(new TranslatableText("block.minecraft.bed.occupied"), true);
             }
             return ActionResult.SUCCESS;
@@ -124,7 +124,12 @@ implements BlockEntityProvider {
         return world.getDimension().isBedWorking();
     }
 
-    private boolean isFree(World world, BlockPos pos) {
+    /**
+     * Wakes up a sleeping villager at {@code pos}, if any.
+     * 
+     * @return whether a villager was found
+     */
+    private boolean wakeVillager(World world, BlockPos pos) {
         List<VillagerEntity> list = world.getEntitiesByClass(VillagerEntity.class, new Box(pos), LivingEntity::isSleeping);
         if (list.isEmpty()) {
             return false;

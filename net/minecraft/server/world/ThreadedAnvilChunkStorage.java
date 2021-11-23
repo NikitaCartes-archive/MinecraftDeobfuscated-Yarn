@@ -396,7 +396,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             this.unloadChunks(() -> true);
             this.completeAll();
         } else {
-            this.chunkHolders.values().forEach(this::method_39925);
+            this.chunkHolders.values().forEach(this::save);
         }
     }
 
@@ -432,7 +432,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         int k = 0;
         Iterator objectIterator = this.chunkHolders.values().iterator();
         while (k < 20 && shouldKeepTicking.getAsBoolean() && objectIterator.hasNext()) {
-            if (!this.method_39925((ChunkHolder)objectIterator.next())) continue;
+            if (!this.save((ChunkHolder)objectIterator.next())) continue;
             ++k;
         }
     }
@@ -545,6 +545,9 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 crashReportSection.add("Location", String.format("%d,%d", chunkPos.x, chunkPos.z));
                 crashReportSection.add("Position hash", ChunkPos.toLong(chunkPos.x, chunkPos.z));
                 crashReportSection.add("Generator", this.chunkGenerator);
+                this.mainThreadExecutor.execute(() -> {
+                    throw new CrashException(crashReport);
+                });
                 throw new CrashException(crashReport);
             }
         }, unloaded -> {
@@ -625,7 +628,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return this.totalChunksLoadedCount.get();
     }
 
-    private boolean method_39925(ChunkHolder chunkHolder) {
+    private boolean save(ChunkHolder chunkHolder) {
         if (!chunkHolder.isAccessible()) {
             return false;
         }
