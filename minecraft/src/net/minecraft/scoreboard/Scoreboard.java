@@ -14,8 +14,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Scoreboard {
+	private static final Logger field_36309 = LogManager.getLogger();
 	public static final int LIST_DISPLAY_SLOT_ID = 0;
 	public static final int SIDEBAR_DISPLAY_SLOT_ID = 1;
 	public static final int BELOW_NAME_DISPLAY_SLOT_ID = 2;
@@ -176,7 +179,8 @@ public class Scoreboard {
 	public Team addTeam(String name) {
 		Team team = this.getTeam(name);
 		if (team != null) {
-			throw new IllegalArgumentException("A team with the name '" + name + "' already exists!");
+			field_36309.warn("Requested creation of existing team '{}'", name);
+			return team;
 		} else {
 			team = new Team(this, name);
 			this.teams.put(name, team);

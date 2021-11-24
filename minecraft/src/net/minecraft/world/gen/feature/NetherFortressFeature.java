@@ -24,10 +24,10 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	);
 
 	public NetherFortressFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, StructureGeneratorFactory.simple(NetherFortressFeature::method_28640, NetherFortressFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(NetherFortressFeature::canGenerate, NetherFortressFeature::addPieces));
 	}
 
-	private static boolean method_28640(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
+	private static boolean canGenerate(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
 		return chunkRandom.nextInt(5) >= 2

@@ -91,9 +91,9 @@ public class Sound implements SoundContainer<Sound> {
 		}
 
 		@Nullable
-		public static Sound.RegistrationType getByName(String string) {
+		public static Sound.RegistrationType getByName(String name) {
 			for (Sound.RegistrationType registrationType : values()) {
-				if (registrationType.name.equals(string)) {
+				if (registrationType.name.equals(name)) {
 					return registrationType;
 				}
 			}

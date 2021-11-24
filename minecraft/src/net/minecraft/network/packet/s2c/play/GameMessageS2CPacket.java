@@ -7,6 +7,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
 
+/**
+ * A packet used to send a game message to the client.
+ * 
+ * @see net.minecraft.server.network.ServerPlayerEntity#sendMessage(Text, MessageType, UUID)
+ * @see net.minecraft.client.network.ClientPlayNetworkHandler#onGameMessage
+ */
 public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final Text message;
 	private final MessageType type;
@@ -43,6 +49,11 @@ public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 		return this.type;
 	}
 
+	/**
+	 * {@return {@linkplain net.minecraft.entity.Entity#getUuid the UUID of the
+	 * entity} that sends the message or {@link net.minecraft.util.Util#NIL_UUID}
+	 * if the message is not sent by an entity}
+	 */
 	public UUID getSender() {
 		return this.sender;
 	}

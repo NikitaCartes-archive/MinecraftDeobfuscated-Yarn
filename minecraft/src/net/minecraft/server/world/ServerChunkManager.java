@@ -45,8 +45,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.NbtScannable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServerChunkManager extends ChunkManager {
+	private static final Logger field_36301 = LogManager.getLogger();
 	private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
 	private final ChunkTicketManager ticketManager;
 	final ServerWorld world;
@@ -473,7 +476,11 @@ public class ServerChunkManager extends ChunkManager {
 	 * the player's position in its entity tracker.
 	 */
 	public void updatePosition(ServerPlayerEntity player) {
-		this.threadedAnvilChunkStorage.updatePosition(player);
+		if (player.isRemoved()) {
+			field_36301.info("Skipping update from removed player '{}'", player);
+		} else {
+			this.threadedAnvilChunkStorage.updatePosition(player);
+		}
 	}
 
 	public void unloadEntity(Entity entity) {

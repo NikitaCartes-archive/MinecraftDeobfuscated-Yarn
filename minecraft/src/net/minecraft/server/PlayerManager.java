@@ -762,6 +762,7 @@ public abstract class PlayerManager {
 	 * message or a join/leave message.
 	 * 
 	 * @see #broadcast(Text, Function, MessageType, UUID)
+	 * @see ServerPlayerEntity#sendMessage(Text, MessageType, UUID)
 	 * 
 	 * @param message the message to broadcast
 	 * @param type the message type
@@ -786,6 +787,7 @@ public abstract class PlayerManager {
 	 * screen}.
 	 * 
 	 * @see #broadcast(Text, MessageType, UUID)
+	 * @see ServerPlayerEntity#sendMessage(Text, MessageType, UUID)
 	 * 
 	 * @param serverMessage the message to send to the server console
 	 * @param playerMessageFactory the factory that provides a message for a player; if {@code null} is

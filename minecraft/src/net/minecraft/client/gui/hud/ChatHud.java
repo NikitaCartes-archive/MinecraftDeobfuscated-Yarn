@@ -22,6 +22,12 @@ import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Responsible for rendering various game messages such as chat messages or
+ * join/leave messages.
+ * 
+ * @see net.minecraft.client.gui.screen.ChatScreen
+ */
 @Environment(EnvType.CLIENT)
 public class ChatHud extends DrawableHelper {
 	private static final Logger LOGGER = LogManager.getLogger();

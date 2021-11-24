@@ -56,7 +56,7 @@ public class SoundSystem {
 	private final Channel channel = new Channel(this.soundEngine, this.taskQueue);
 	private int ticks;
 	private long lastSoundDeviceCheckTime;
-	private final AtomicReference<SoundSystem.class_6665> field_35083 = new AtomicReference(SoundSystem.class_6665.NO_CHANGE);
+	private final AtomicReference<SoundSystem.DeviceChangeStatus> deviceChangeStatus = new AtomicReference(SoundSystem.DeviceChangeStatus.NO_CHANGE);
 	private final Map<SoundInstance, Channel.SourceManager> sources = Maps.<SoundInstance, Channel.SourceManager>newHashMap();
 	private final Multimap<SoundCategory, SoundInstance> sounds = HashMultimap.create();
 	private final List<TickableSoundInstance> tickingSounds = Lists.<TickableSoundInstance>newArrayList();
@@ -174,25 +174,25 @@ public class SoundSystem {
 			boolean bl = l - this.lastSoundDeviceCheckTime >= 1000L;
 			if (bl) {
 				this.lastSoundDeviceCheckTime = l;
-				if (this.field_35083.compareAndSet(SoundSystem.class_6665.NO_CHANGE, SoundSystem.class_6665.ONGOING)) {
+				if (this.deviceChangeStatus.compareAndSet(SoundSystem.DeviceChangeStatus.NO_CHANGE, SoundSystem.DeviceChangeStatus.ONGOING)) {
 					String string = this.settings.soundDevice;
 					Util.getIoWorkerExecutor().execute(() -> {
 						if ("".equals(string)) {
 							if (this.soundEngine.updateDeviceSpecifier()) {
 								LOGGER.info("System default audio device has changed!");
-								this.field_35083.compareAndSet(SoundSystem.class_6665.ONGOING, SoundSystem.class_6665.CHANGE_DETECTED);
+								this.deviceChangeStatus.compareAndSet(SoundSystem.DeviceChangeStatus.ONGOING, SoundSystem.DeviceChangeStatus.CHANGE_DETECTED);
 							}
 						} else if (!this.soundEngine.getCurrentDeviceName().equals(string) && this.soundEngine.getSoundDevices().contains(string)) {
 							LOGGER.info("Preferred audio device has become available!");
-							this.field_35083.compareAndSet(SoundSystem.class_6665.ONGOING, SoundSystem.class_6665.CHANGE_DETECTED);
+							this.deviceChangeStatus.compareAndSet(SoundSystem.DeviceChangeStatus.ONGOING, SoundSystem.DeviceChangeStatus.CHANGE_DETECTED);
 						}
 
-						this.field_35083.compareAndSet(SoundSystem.class_6665.ONGOING, SoundSystem.class_6665.NO_CHANGE);
+						this.deviceChangeStatus.compareAndSet(SoundSystem.DeviceChangeStatus.ONGOING, SoundSystem.DeviceChangeStatus.NO_CHANGE);
 					});
 				}
 			}
 
-			return this.field_35083.compareAndSet(SoundSystem.class_6665.CHANGE_DETECTED, SoundSystem.class_6665.NO_CHANGE);
+			return this.deviceChangeStatus.compareAndSet(SoundSystem.DeviceChangeStatus.CHANGE_DETECTED, SoundSystem.DeviceChangeStatus.NO_CHANGE);
 		}
 	}
 
@@ -374,13 +374,13 @@ public class SoundSystem {
 										source.setRelative(bl);
 									});
 									if (!bl3) {
-										this.soundLoader.loadStatic(sound2.getLocation()).thenAccept(staticSound -> sourceManager.run(source -> {
-												source.setBuffer(staticSound);
+										this.soundLoader.loadStatic(sound2.getLocation()).thenAccept(soundx -> sourceManager.run(source -> {
+												source.setBuffer(soundx);
 												source.play();
 											}));
 									} else {
-										this.soundLoader.loadStreamed(sound2.getLocation(), bl2).thenAccept(audioStream -> sourceManager.run(source -> {
-												source.setStream(audioStream);
+										this.soundLoader.loadStreamed(sound2.getLocation(), bl2).thenAccept(stream -> sourceManager.run(source -> {
+												source.setStream(stream);
 												source.play();
 											}));
 									}
@@ -415,13 +415,13 @@ public class SoundSystem {
 
 	public void pauseAll() {
 		if (this.started) {
-			this.channel.execute(stream -> stream.forEach(Source::pause));
+			this.channel.execute(sources -> sources.forEach(Source::pause));
 		}
 	}
 
 	public void resumeAll() {
 		if (this.started) {
-			this.channel.execute(stream -> stream.forEach(Source::resume));
+			this.channel.execute(sources -> sources.forEach(Source::resume));
 		}
 	}
 
@@ -468,7 +468,7 @@ public class SoundSystem {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum class_6665 {
+	static enum DeviceChangeStatus {
 		ONGOING,
 		CHANGE_DETECTED,
 		NO_CHANGE;

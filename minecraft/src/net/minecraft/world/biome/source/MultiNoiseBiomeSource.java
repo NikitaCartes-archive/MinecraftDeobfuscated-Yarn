@@ -18,6 +18,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.Debug;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -37,13 +38,16 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	 */
 	public static final MapCodec<MultiNoiseBiomeSource> CUSTOM_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					RecordCodecBuilder.create(
-							instancex -> instancex.group(
-										MultiNoiseUtil.NoiseHypercube.CODEC.fieldOf("parameters").forGetter(Pair::getFirst), Biome.REGISTRY_CODEC.fieldOf("biome").forGetter(Pair::getSecond)
-									)
-									.apply(instancex, Pair::of)
+					Codecs.nonEmptyList(
+							RecordCodecBuilder.create(
+									instancex -> instancex.group(
+												MultiNoiseUtil.NoiseHypercube.CODEC.fieldOf("parameters").forGetter(Pair::getFirst),
+												Biome.REGISTRY_CODEC.fieldOf("biome").forGetter(Pair::getSecond)
+											)
+											.apply(instancex, Pair::of)
+								)
+								.listOf()
 						)
-						.listOf()
 						.xmap(MultiNoiseUtil.Entries::new, MultiNoiseUtil.Entries::getEntries)
 						.fieldOf("biomes")
 						.forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.biomeEntries)

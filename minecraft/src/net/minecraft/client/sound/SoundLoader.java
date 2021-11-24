@@ -101,7 +101,7 @@ public class SoundLoader {
 	}
 
 	public void close() {
-		this.loadedSounds.values().forEach(completableFuture -> completableFuture.thenAccept(StaticSound::close));
+		this.loadedSounds.values().forEach(soundFuture -> soundFuture.thenAccept(StaticSound::close));
 		this.loadedSounds.clear();
 	}
 

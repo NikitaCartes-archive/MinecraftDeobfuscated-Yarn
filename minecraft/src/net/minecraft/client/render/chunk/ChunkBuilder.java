@@ -47,7 +47,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -122,11 +121,11 @@ public class ChunkBuilder {
 				this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
 				this.bufferCount = this.threadBuffers.size();
 				CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferBuilderStorage)), this.executor)
-					.thenCompose(completableFuture -> completableFuture)
+					.thenCompose(future -> future)
 					.whenComplete((result, throwable) -> {
 						if (throwable != null) {
 							CrashReport crashReport = CrashReport.create(throwable, "Batching chunks");
-							MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
+							MinecraftClient.getInstance().setCrashReportSupplier(() -> MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
 						} else {
 							this.mailbox.send(() -> {
 								if (result == ChunkBuilder.Result.SUCCESSFUL) {
@@ -473,9 +472,10 @@ public class ChunkBuilder {
 						List<CompletableFuture<Void>> list = Lists.<CompletableFuture<Void>>newArrayList();
 						chunkData.initializedLayers
 							.forEach(renderLayer -> list.add(ChunkBuilder.this.scheduleUpload(buffers.get(renderLayer), BuiltChunk.this.getBuffer(renderLayer))));
-						return Util.combine(list).handle((listx, throwable) -> {
+						return Util.combine(list).handle((results, throwable) -> {
 							if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
-								MinecraftClient.getInstance().setCrashReport(CrashReport.create(throwable, "Rendering chunk"));
+								CrashReport crashReport = CrashReport.create(throwable, "Rendering chunk");
+								MinecraftClient.getInstance().setCrashReportSupplier(() -> crashReport);
 							}
 
 							if (this.cancelled.get()) {
@@ -511,7 +511,7 @@ public class ChunkBuilder {
 						}
 
 						if (blockState.hasBlockEntity()) {
-							BlockEntity blockEntity = chunkRendererRegion.getBlockEntity(blockPos3, WorldChunk.CreationType.CHECK);
+							BlockEntity blockEntity = chunkRendererRegion.getBlockEntity(blockPos3);
 							if (blockEntity != null) {
 								this.addBlockEntity(data, set, blockEntity);
 							}
@@ -629,7 +629,8 @@ public class ChunkBuilder {
 								.thenApply(void_ -> ChunkBuilder.Result.CANCELLED);
 							return completableFuture.handle((result, throwable) -> {
 								if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
-									MinecraftClient.getInstance().setCrashReport(CrashReport.create(throwable, "Rendering chunk"));
+									CrashReport crashReport = CrashReport.create(throwable, "Rendering chunk");
+									MinecraftClient.getInstance().setCrashReportSupplier(() -> crashReport);
 								}
 
 								return this.cancelled.get() ? ChunkBuilder.Result.CANCELLED : ChunkBuilder.Result.SUCCESSFUL;

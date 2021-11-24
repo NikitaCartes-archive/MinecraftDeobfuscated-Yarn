@@ -68,6 +68,8 @@ public interface Palette<T> {
 	 */
 	int getSize();
 
+	Palette<T> copy();
+
 	/**
 	 * An interface for easy creation of palettes.
 	 */

@@ -15,10 +15,10 @@ public class PillagerOutpostFeature extends JigsawFeature {
 	public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
 
 	public PillagerOutpostFeature(Codec<StructurePoolFeatureConfig> configCodec) {
-		super(configCodec, 0, true, true, PillagerOutpostFeature::method_28644);
+		super(configCodec, 0, true, true, PillagerOutpostFeature::canGenerate);
 	}
 
-	private static boolean method_28644(StructureGeneratorFactory.Context<StructurePoolFeatureConfig> context) {
+	private static boolean canGenerate(StructureGeneratorFactory.Context<StructurePoolFeatureConfig> context) {
 		int i = context.chunkPos().x >> 4;
 		int j = context.chunkPos().z >> 4;
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));

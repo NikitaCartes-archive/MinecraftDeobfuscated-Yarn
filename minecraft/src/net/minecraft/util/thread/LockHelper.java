@@ -15,58 +15,58 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LockHelper {
-	private static final Logger field_36293 = LogManager.getLogger();
-	private final String field_36294;
-	private final Semaphore field_36295 = new Semaphore(1);
-	private final Lock field_36296 = new ReentrantLock();
+	private static final Logger LOGGER = LogManager.getLogger();
+	private final String name;
+	private final Semaphore semaphore = new Semaphore(1);
+	private final Lock lock = new ReentrantLock();
 	@Nullable
-	private volatile Thread field_36297;
+	private volatile Thread thread;
 	@Nullable
-	private volatile CrashException field_36298;
+	private volatile CrashException crashException;
 
-	public LockHelper(String string) {
-		this.field_36294 = string;
+	public LockHelper(String name) {
+		this.name = name;
 	}
 
-	public void method_39935() {
+	public void lock() {
 		boolean bl = false;
 
 		try {
-			this.field_36296.lock();
-			if (!this.field_36295.tryAcquire()) {
-				this.field_36297 = Thread.currentThread();
+			this.lock.lock();
+			if (!this.semaphore.tryAcquire()) {
+				this.thread = Thread.currentThread();
 				bl = true;
-				this.field_36296.unlock();
+				this.lock.unlock();
 
 				try {
-					this.field_36295.acquire();
+					this.semaphore.acquire();
 				} catch (InterruptedException var6) {
 					Thread.currentThread().interrupt();
 				}
 
-				throw this.field_36298;
+				throw this.crashException;
 			}
 		} finally {
 			if (!bl) {
-				this.field_36296.unlock();
+				this.lock.unlock();
 			}
 		}
 	}
 
-	public void method_39937() {
+	public void unlock() {
 		try {
-			this.field_36296.lock();
-			Thread thread = this.field_36297;
+			this.lock.lock();
+			Thread thread = this.thread;
 			if (thread != null) {
-				CrashException crashException = crash(this.field_36294, thread);
-				this.field_36298 = crashException;
-				this.field_36295.release();
+				CrashException crashException = crash(this.name, thread);
+				this.crashException = crashException;
+				this.semaphore.release();
 				throw crashException;
 			}
 
-			this.field_36295.release();
+			this.semaphore.release();
 		} finally {
-			this.field_36296.unlock();
+			this.lock.unlock();
 		}
 	}
 
@@ -75,7 +75,7 @@ public class LockHelper {
 		CrashReport crashReport = new CrashReport("Accessing " + message + " from multiple threads", new IllegalStateException());
 		CrashReportSection crashReportSection = crashReport.addElement("Thread dumps");
 		crashReportSection.add("Thread dumps", string);
-		field_36293.error("Thread dumps: \n" + string);
+		LOGGER.error("Thread dumps: \n" + string);
 		return new CrashException(crashReport);
 	}
 

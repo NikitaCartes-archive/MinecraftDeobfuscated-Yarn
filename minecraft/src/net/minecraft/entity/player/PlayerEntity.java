@@ -1422,6 +1422,25 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.sleepTimer;
 	}
 
+	/**
+	 * Adds a message to this player's HUD.
+	 * 
+	 * <p>If it's called on {@link net.minecraft.server.network.ServerPlayerEntity
+	 * ServerPlayerEntity}, it sends a message to the client corresponding to
+	 * this player so that the client can add a message to their HUD. If it's
+	 * called on {@link net.minecraft.client.network.ClientPlayerEntity
+	 * ClientPlayerEntity}, it just adds a message to their HUD.
+	 * 
+	 * @see net.minecraft.server.network.ServerPlayerEntity#sendMessage(Text, boolean)
+	 * @see net.minecraft.client.network.ClientPlayerEntity#sendMessage(Text, boolean)
+	 * @see net.minecraft.client.gui.hud.ChatHud#addMessage(Text)
+	 * @see net.minecraft.client.gui.hud.InGameHud#setOverlayMessage
+	 * 
+	 * @param message the message to add
+	 * @param actionBar {@code true} to show the message as an overlay; {@code false} to add the
+	 * message to {@linkplain net.minecraft.client.gui.hud.ChatHud the chat
+	 * hud}
+	 */
 	public void sendMessage(Text message, boolean actionBar) {
 	}
 

@@ -36,21 +36,21 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	private final IndexedIterable<T> idList;
 	private volatile PalettedContainer.Data<T> data;
 	private final PalettedContainer.PaletteProvider paletteProvider;
-	private final LockHelper field_36300 = new LockHelper("PalettedContainer");
+	private final LockHelper lockHelper = new LockHelper("PalettedContainer");
 
 	/**
 	 * Acquires the semaphore on this container, and crashes if it cannot be
 	 * acquired.
 	 */
 	public void lock() {
-		this.field_36300.method_39935();
+		this.lockHelper.lock();
 	}
 
 	/**
 	 * Releases the semaphore on this container.
 	 */
 	public void unlock() {
-		this.field_36300.method_39937();
+		this.lockHelper.unlock();
 	}
 
 	/**
@@ -79,12 +79,17 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		PalettedContainer.PaletteProvider paletteProvider,
 		PalettedContainer.DataProvider<T> dataProvider,
 		PaletteStorage storage,
-		List<T> list
+		List<T> paletteEntries
 	) {
 		this.idList = idList;
 		this.paletteProvider = paletteProvider;
-		Palette<T> palette = dataProvider.factory().create(dataProvider.bits(), idList, this, list);
-		this.data = new PalettedContainer.Data<>(dataProvider, storage, palette);
+		this.data = new PalettedContainer.Data<>(dataProvider, storage, dataProvider.factory().create(dataProvider.bits(), idList, this, paletteEntries));
+	}
+
+	private PalettedContainer(IndexedIterable<T> idList, PalettedContainer.PaletteProvider paletteProvider, PalettedContainer.Data<T> data) {
+		this.idList = idList;
+		this.paletteProvider = paletteProvider;
+		this.data = data;
 	}
 
 	public PalettedContainer(IndexedIterable<T> idList, T object, PalettedContainer.PaletteProvider paletteProvider) {
@@ -296,6 +301,12 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	 */
 	public boolean hasAny(Predicate<T> predicate) {
 		return this.data.palette.hasAny(predicate);
+	}
+
+	public PalettedContainer<T> copy() {
+		return new PalettedContainer<>(
+			this.idList, this.paletteProvider, new PalettedContainer.Data<>(this.data.configuration(), this.data.storage().copy(), this.data.palette().copy())
+		);
 	}
 
 	public void count(PalettedContainer.Counter<T> counter) {

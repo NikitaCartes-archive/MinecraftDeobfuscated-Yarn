@@ -33,7 +33,7 @@ public class PistonBlockEntity extends BlockEntity {
 	private static final int field_31382 = 2;
 	private static final double field_31383 = 0.01;
 	public static final double field_31381 = 0.51;
-	private BlockState pushedBlock;
+	private BlockState pushedBlock = Blocks.AIR.getDefaultState();
 	private Direction facing;
 	private boolean extending;
 	private boolean source;
@@ -290,7 +290,7 @@ public class PistonBlockEntity extends BlockEntity {
 			} else {
 				world.removeBlockEntity(pos);
 				blockEntity.markRemoved();
-				if (blockEntity.pushedBlock != null && world.getBlockState(pos).isOf(Blocks.MOVING_PISTON)) {
+				if (world.getBlockState(pos).isOf(Blocks.MOVING_PISTON)) {
 					BlockState blockState = Block.postProcessState(blockEntity.pushedBlock, world, pos);
 					if (blockState.isAir()) {
 						world.setBlockState(pos, blockEntity.pushedBlock, Block.NO_REDRAW | Block.FORCE_STATE | Block.MOVED);
@@ -339,7 +339,7 @@ public class PistonBlockEntity extends BlockEntity {
 
 	public VoxelShape getCollisionShape(BlockView world, BlockPos pos) {
 		VoxelShape voxelShape;
-		if (!this.extending && this.source) {
+		if (!this.extending && this.source && this.pushedBlock.getBlock() instanceof PistonBlock) {
 			voxelShape = this.pushedBlock.with(PistonBlock.EXTENDED, Boolean.valueOf(true)).getCollisionShape(world, pos);
 		} else {
 			voxelShape = VoxelShapes.empty();

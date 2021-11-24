@@ -121,7 +121,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 	}
 
 	protected void apply(SoundManager.SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
-		soundList.addTo(this.sounds, this.soundSystem);
+		soundList.reload(this.sounds, this.soundSystem);
 		if (SharedConstants.isDevelopment) {
 			for (Identifier identifier : this.sounds.keySet()) {
 				WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
@@ -311,11 +311,11 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 			}
 		}
 
-		public void addTo(Map<Identifier, WeightedSoundSet> map, SoundSystem soundSystem) {
-			map.clear();
+		public void reload(Map<Identifier, WeightedSoundSet> sounds, SoundSystem soundSystem) {
+			sounds.clear();
 
 			for (Entry<Identifier, WeightedSoundSet> entry : this.loadedSounds.entrySet()) {
-				map.put((Identifier)entry.getKey(), (WeightedSoundSet)entry.getValue());
+				sounds.put((Identifier)entry.getKey(), (WeightedSoundSet)entry.getValue());
 				((WeightedSoundSet)entry.getValue()).preload(soundSystem);
 			}
 		}

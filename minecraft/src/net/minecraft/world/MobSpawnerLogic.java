@@ -137,7 +137,7 @@ public abstract class MobSpawnerLogic {
 							}
 						}
 
-						if (!world.shouldCreateNewEntityWithPassenger(entity)) {
+						if (!world.spawnNewEntityAndPassengers(entity)) {
 							this.updateSpawns(world, pos);
 							return;
 						}

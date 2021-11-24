@@ -467,6 +467,10 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	class SwoopMovementGoal extends PhantomEntity.MovementGoal {
+		private static final int field_36305 = 20;
+		private boolean field_36306;
+		private int field_36307;
+
 		@Override
 		public boolean canStart() {
 			return PhantomEntity.this.getTarget() != null && PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.SWOOP;
@@ -479,26 +483,28 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				return false;
 			} else if (!livingEntity.isAlive()) {
 				return false;
-			} else if (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator() && !((PlayerEntity)livingEntity).isCreative()) {
+			} else {
+				if (livingEntity instanceof PlayerEntity playerEntity && (livingEntity.isSpectator() || playerEntity.isCreative())) {
+					return false;
+				}
+
 				if (!this.canStart()) {
 					return false;
 				} else {
-					if (PhantomEntity.this.age % 20 == PhantomEntity.this.getId() % 2) {
+					if (PhantomEntity.this.age > this.field_36307) {
+						this.field_36307 = PhantomEntity.this.age + 20;
 						List<CatEntity> list = PhantomEntity.this.world
 							.getEntitiesByClass(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
-						if (!list.isEmpty()) {
-							for (CatEntity catEntity : list) {
-								catEntity.hiss();
-							}
 
-							return false;
+						for (CatEntity catEntity : list) {
+							catEntity.hiss();
 						}
+
+						this.field_36306 = !list.isEmpty();
 					}
 
-					return true;
+					return !this.field_36306;
 				}
-			} else {
-				return false;
 			}
 		}
 

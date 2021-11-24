@@ -9,10 +9,10 @@ import net.minecraft.world.Heightmap;
 
 public class DesertPyramidFeature extends StructureFeature<DefaultFeatureConfig> {
 	public DesertPyramidFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, StructureGeneratorFactory.simple(DesertPyramidFeature::method_39816, DesertPyramidFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(DesertPyramidFeature::canGenerate, DesertPyramidFeature::addPieces));
 	}
 
-	private static <C extends FeatureConfig> boolean method_39816(StructureGeneratorFactory.Context<C> context) {
+	private static <C extends FeatureConfig> boolean canGenerate(StructureGeneratorFactory.Context<C> context) {
 		return !context.isBiomeValid(Heightmap.Type.WORLD_SURFACE_WG) ? false : context.getMinCornerHeight(21, 21) >= context.chunkGenerator().getSeaLevel();
 	}
 

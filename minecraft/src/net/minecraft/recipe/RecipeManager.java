@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -42,6 +41,7 @@ public class RecipeManager extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private static final Logger LOGGER = LogManager.getLogger();
 	private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes = ImmutableMap.of();
+	private Map<Identifier, Recipe<?>> recipesById = ImmutableMap.of();
 	/**
 	 * This isn't quite indicating an errored state; its value is only set to
 	 * {@code false} and is never {@code true}, and isn't used anywhere.
@@ -55,6 +55,7 @@ public class RecipeManager extends JsonDataLoader {
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		this.errored = false;
 		Map<RecipeType<?>, Builder<Identifier, Recipe<?>>> map2 = Maps.<RecipeType<?>, Builder<Identifier, Recipe<?>>>newHashMap();
+		Builder<Identifier, Recipe<?>> builder = ImmutableMap.builder();
 
 		for (Entry<Identifier, JsonElement> entry : map.entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
@@ -62,14 +63,16 @@ public class RecipeManager extends JsonDataLoader {
 			try {
 				Recipe<?> recipe = deserialize(identifier, JsonHelper.asObject((JsonElement)entry.getValue(), "top element"));
 				((Builder)map2.computeIfAbsent(recipe.getType(), recipeType -> ImmutableMap.builder())).put(identifier, recipe);
-			} catch (IllegalArgumentException | JsonParseException var9) {
-				LOGGER.error("Parsing error loading recipe {}", identifier, var9);
+				builder.put(identifier, recipe);
+			} catch (IllegalArgumentException | JsonParseException var10) {
+				LOGGER.error("Parsing error loading recipe {}", identifier, var10);
 			}
 		}
 
 		this.recipes = (Map<RecipeType<?>, Map<Identifier, Recipe<?>>>)map2.entrySet()
 			.stream()
 			.collect(ImmutableMap.toImmutableMap(Entry::getKey, entryx -> ((Builder)entryx.getValue()).build()));
+		this.recipesById = builder.build();
 		LOGGER.info("Loaded {} recipes", map2.size());
 	}
 
@@ -175,7 +178,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param id the ID of the desired recipe
 	 */
 	public Optional<? extends Recipe<?>> get(Identifier id) {
-		return this.recipes.values().stream().map(map -> (Recipe)map.get(id)).filter(Objects::nonNull).findFirst();
+		return Optional.ofNullable((Recipe)this.recipesById.get(id));
 	}
 
 	/**
@@ -233,13 +236,17 @@ public class RecipeManager extends JsonDataLoader {
 	public void setRecipes(Iterable<Recipe<?>> recipes) {
 		this.errored = false;
 		Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map = Maps.<RecipeType<?>, Map<Identifier, Recipe<?>>>newHashMap();
+		Builder<Identifier, Recipe<?>> builder = ImmutableMap.builder();
 		recipes.forEach(recipe -> {
 			Map<Identifier, Recipe<?>> map2 = (Map<Identifier, Recipe<?>>)map.computeIfAbsent(recipe.getType(), t -> Maps.newHashMap());
-			Recipe<?> recipe2 = (Recipe<?>)map2.put(recipe.getId(), recipe);
+			Identifier identifier = recipe.getId();
+			Recipe<?> recipe2 = (Recipe<?>)map2.put(identifier, recipe);
+			builder.put(identifier, recipe);
 			if (recipe2 != null) {
-				throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.getId());
+				throw new IllegalStateException("Duplicate recipe ignored with ID " + identifier);
 			}
 		});
 		this.recipes = ImmutableMap.copyOf(map);
+		this.recipesById = builder.build();
 	}
 }

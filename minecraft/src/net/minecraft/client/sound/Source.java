@@ -128,20 +128,22 @@ public class Source {
 		this.stream = stream;
 		AudioFormat audioFormat = stream.getFormat();
 		this.bufferSize = getBufferSize(audioFormat, 1);
-		this.method_19640(4);
+		this.read(4);
 	}
 
 	private static int getBufferSize(AudioFormat format, int time) {
 		return (int)((float)(time * format.getSampleSizeInBits()) / 8.0F * (float)format.getChannels() * format.getSampleRate());
 	}
 
-	private void method_19640(int i) {
+	private void read(int count) {
 		if (this.stream != null) {
 			try {
-				for (int j = 0; j < i; j++) {
+				for (int i = 0; i < count; i++) {
 					ByteBuffer byteBuffer = this.stream.getBuffer(this.bufferSize);
 					if (byteBuffer != null) {
-						new StaticSound(byteBuffer, this.stream.getFormat()).takeStreamBufferPointer().ifPresent(ix -> AL10.alSourceQueueBuffers(this.pointer, new int[]{ix}));
+						new StaticSound(byteBuffer, this.stream.getFormat())
+							.takeStreamBufferPointer()
+							.ifPresent(pointer -> AL10.alSourceQueueBuffers(this.pointer, new int[]{pointer}));
 					}
 				}
 			} catch (IOException var4) {
@@ -153,7 +155,7 @@ public class Source {
 	public void tick() {
 		if (this.stream != null) {
 			int i = this.removeProcessedBuffers();
-			this.method_19640(i);
+			this.read(i);
 		}
 	}
 

@@ -688,12 +688,16 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			return false;
 		} else {
 			Chunk chunk = (Chunk)chunkHolder.getSavingFuture().getNow(null);
-			if (!(chunk instanceof ReadOnlyChunk) && !(chunk instanceof WorldChunk)) {
-				return false;
-			} else {
+			if (chunk instanceof ReadOnlyChunk readOnlyChunk) {
+				boolean bl = this.save(readOnlyChunk.getWrappedChunk());
+				chunkHolder.updateAccessibleStatus();
+				return bl;
+			} else if (chunk instanceof WorldChunk) {
 				boolean bl = this.save(chunk);
 				chunkHolder.updateAccessibleStatus();
 				return bl;
+			} else {
+				return false;
 			}
 		}
 	}

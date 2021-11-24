@@ -9,10 +9,10 @@ import net.minecraft.world.Heightmap;
 
 public class JungleTempleFeature extends StructureFeature<DefaultFeatureConfig> {
 	public JungleTempleFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, StructureGeneratorFactory.simple(JungleTempleFeature::method_39818, JungleTempleFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(JungleTempleFeature::canGenerate, JungleTempleFeature::addPieces));
 	}
 
-	private static <C extends FeatureConfig> boolean method_39818(StructureGeneratorFactory.Context<C> context) {
+	private static <C extends FeatureConfig> boolean canGenerate(StructureGeneratorFactory.Context<C> context) {
 		return !context.isBiomeValid(Heightmap.Type.WORLD_SURFACE_WG) ? false : context.getMinCornerHeight(12, 15) >= context.chunkGenerator().getSeaLevel();
 	}
 

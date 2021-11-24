@@ -17,7 +17,7 @@ public class ArrayPalette<T> implements Palette<T> {
 	private final int indexBits;
 	private int size;
 
-	public ArrayPalette(IndexedIterable<T> idList, int bits, PaletteResizeListener<T> listener, List<T> list) {
+	private ArrayPalette(IndexedIterable<T> idList, int bits, PaletteResizeListener<T> listener, List<T> list) {
 		this.idList = idList;
 		this.array = (T[])(new Object[1 << bits]);
 		this.indexBits = bits;
@@ -29,6 +29,14 @@ public class ArrayPalette<T> implements Palette<T> {
 		}
 
 		this.size = list.size();
+	}
+
+	private ArrayPalette(IndexedIterable<T> indexedIterable, T[] objects, PaletteResizeListener<T> paletteResizeListener, int i, int j) {
+		this.idList = indexedIterable;
+		this.array = objects;
+		this.listener = paletteResizeListener;
+		this.indexBits = i;
+		this.size = j;
 	}
 
 	public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list) {
@@ -105,5 +113,10 @@ public class ArrayPalette<T> implements Palette<T> {
 	@Override
 	public int getSize() {
 		return this.size;
+	}
+
+	@Override
+	public Palette<T> copy() {
+		return new ArrayPalette<>(this.idList, (T[])((Object[])this.array.clone()), this.listener, this.indexBits, this.size);
 	}
 }

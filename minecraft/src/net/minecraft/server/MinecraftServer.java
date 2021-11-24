@@ -1002,6 +1002,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public SystemDetails addSystemDetails(SystemDetails details) {
+		details.addSection("Server Running", (Supplier<String>)(() -> Boolean.toString(this.running)));
 		if (this.playerManager != null) {
 			details.addSection(
 				"Player Count",

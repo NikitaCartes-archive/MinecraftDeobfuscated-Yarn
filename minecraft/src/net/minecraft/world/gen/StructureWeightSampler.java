@@ -44,8 +44,8 @@ public class StructureWeightSampler implements ChunkNoiseSampler.ColumnSampler {
 		this.pieces = new ObjectArrayList<>(10);
 
 		for (StructureFeature<?> structureFeature : StructureFeature.LAND_MODIFYING_STRUCTURES) {
-			structureAccessor.getStructureStarts(ChunkSectionPos.from(chunk), structureFeature).forEach(structureStart -> {
-				for (StructurePiece structurePiece : structureStart.getChildren()) {
+			structureAccessor.getStructureStarts(ChunkSectionPos.from(chunk), structureFeature).forEach(start -> {
+				for (StructurePiece structurePiece : start.getChildren()) {
 					if (structurePiece.intersectsChunk(chunkPos, 12)) {
 						if (structurePiece instanceof PoolStructurePiece) {
 							PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;

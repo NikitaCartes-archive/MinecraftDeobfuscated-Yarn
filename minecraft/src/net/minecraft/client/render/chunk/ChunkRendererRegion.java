@@ -1,25 +1,38 @@
 package net.minecraft.client.render.chunk;
 
+import com.google.common.collect.ImmutableMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.util.crash.CrashCallable;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.EmptyChunk;
+import net.minecraft.world.chunk.PalettedContainer;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
+import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.level.ColorResolver;
 
 @Environment(EnvType.CLIENT)
 public class ChunkRendererRegion implements BlockRenderView {
-	protected final int chunkXOffset;
-	protected final int chunkZOffset;
-	protected final WorldChunk[][] chunks;
+	private final int chunkXOffset;
+	private final int chunkZOffset;
+	protected final ChunkRendererRegion.RenderedChunk[][] chunks;
 	protected final World world;
 
 	@Nullable
@@ -36,10 +49,23 @@ public class ChunkRendererRegion implements BlockRenderView {
 			}
 		}
 
-		return isEmptyBetween(startPos, endPos, i, j, worldChunks) ? null : new ChunkRendererRegion(world, i, j, worldChunks);
+		if (isEmptyBetween(startPos, endPos, i, j, worldChunks)) {
+			return null;
+		} else {
+			ChunkRendererRegion.RenderedChunk[][] renderedChunks = new ChunkRendererRegion.RenderedChunk[k - i + 1][l - j + 1];
+
+			for (int n = i; n <= k; n++) {
+				for (int o = j; o <= l; o++) {
+					WorldChunk worldChunk = worldChunks[n - i][o - j];
+					renderedChunks[n - i][o - j] = new ChunkRendererRegion.RenderedChunk(worldChunk);
+				}
+			}
+
+			return new ChunkRendererRegion(world, i, j, renderedChunks);
+		}
 	}
 
-	public static boolean isEmptyBetween(BlockPos from, BlockPos to, int i, int j, WorldChunk[][] chunks) {
+	private static boolean isEmptyBetween(BlockPos from, BlockPos to, int i, int j, WorldChunk[][] chunks) {
 		for (int k = ChunkSectionPos.getSectionCoord(from.getX()); k <= ChunkSectionPos.getSectionCoord(to.getX()); k++) {
 			for (int l = ChunkSectionPos.getSectionCoord(from.getZ()); l <= ChunkSectionPos.getSectionCoord(to.getZ()); l++) {
 				WorldChunk worldChunk = chunks[k - i][l - j];
@@ -52,7 +78,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 		return true;
 	}
 
-	public ChunkRendererRegion(World world, int chunkX, int chunkZ, WorldChunk[][] chunks) {
+	private ChunkRendererRegion(World world, int chunkX, int chunkZ, ChunkRendererRegion.RenderedChunk[][] chunks) {
 		this.world = world;
 		this.chunkXOffset = chunkX;
 		this.chunkZOffset = chunkZ;
@@ -86,14 +112,9 @@ public class ChunkRendererRegion implements BlockRenderView {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		return this.getBlockEntity(pos, WorldChunk.CreationType.IMMEDIATE);
-	}
-
-	@Nullable
-	public BlockEntity getBlockEntity(BlockPos pos, WorldChunk.CreationType creationType) {
 		int i = ChunkSectionPos.getSectionCoord(pos.getX()) - this.chunkXOffset;
 		int j = ChunkSectionPos.getSectionCoord(pos.getZ()) - this.chunkZOffset;
-		return this.chunks[i][j].getBlockEntity(pos, creationType);
+		return this.chunks[i][j].getBlockEntity(pos);
 	}
 
 	@Override
@@ -109,5 +130,72 @@ public class ChunkRendererRegion implements BlockRenderView {
 	@Override
 	public int getHeight() {
 		return this.world.getHeight();
+	}
+
+	@Environment(EnvType.CLIENT)
+	static final class RenderedChunk {
+		private final Map<BlockPos, BlockEntity> blockEntities;
+		@Nullable
+		private final List<PalettedContainer<BlockState>> blockStateContainers;
+		private final boolean debugWorld;
+		private final WorldChunk chunk;
+
+		RenderedChunk(WorldChunk chunk) {
+			this.chunk = chunk;
+			this.debugWorld = chunk.getWorld().isDebugWorld();
+			this.blockEntities = ImmutableMap.copyOf(chunk.getBlockEntities());
+			if (chunk instanceof EmptyChunk) {
+				this.blockStateContainers = null;
+			} else {
+				ChunkSection[] chunkSections = chunk.getSectionArray();
+				this.blockStateContainers = new ArrayList(chunkSections.length);
+
+				for (ChunkSection chunkSection : chunkSections) {
+					this.blockStateContainers.add(chunkSection.isEmpty() ? null : chunkSection.getBlockStateContainer().copy());
+				}
+			}
+		}
+
+		@Nullable
+		public BlockEntity getBlockEntity(BlockPos pos) {
+			return (BlockEntity)this.blockEntities.get(pos);
+		}
+
+		public BlockState getBlockState(BlockPos pos) {
+			int i = pos.getX();
+			int j = pos.getY();
+			int k = pos.getZ();
+			if (this.debugWorld) {
+				BlockState blockState = null;
+				if (j == 60) {
+					blockState = Blocks.BARRIER.getDefaultState();
+				}
+
+				if (j == 70) {
+					blockState = DebugChunkGenerator.getBlockState(i, k);
+				}
+
+				return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
+			} else if (this.blockStateContainers == null) {
+				return Blocks.AIR.getDefaultState();
+			} else {
+				try {
+					int l = this.chunk.getSectionIndex(j);
+					if (l >= 0 && l < this.blockStateContainers.size()) {
+						PalettedContainer<BlockState> palettedContainer = (PalettedContainer<BlockState>)this.blockStateContainers.get(l);
+						if (palettedContainer != null) {
+							return palettedContainer.get(i & 15, j & 15, k & 15);
+						}
+					}
+
+					return Blocks.AIR.getDefaultState();
+				} catch (Throwable var8) {
+					CrashReport crashReport = CrashReport.create(var8, "Getting block state");
+					CrashReportSection crashReportSection = crashReport.addElement("Block being got");
+					crashReportSection.add("Location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.chunk, i, j, k)));
+					throw new CrashException(crashReport);
+				}
+			}
+		}
 	}
 }

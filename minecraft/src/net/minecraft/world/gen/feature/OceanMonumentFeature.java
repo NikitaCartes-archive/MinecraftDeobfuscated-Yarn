@@ -24,7 +24,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(new SpawnSettings.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
 	public OceanMonumentFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, StructureGeneratorFactory.simple(OceanMonumentFeature::method_28642, OceanMonumentFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(OceanMonumentFeature::canGenerate, OceanMonumentFeature::addPieces));
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		return false;
 	}
 
-	private static boolean method_28642(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
+	private static boolean canGenerate(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
 		int i = context.chunkPos().getOffsetX(9);
 		int j = context.chunkPos().getOffsetZ(9);
 
