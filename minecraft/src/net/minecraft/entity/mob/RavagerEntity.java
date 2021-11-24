@@ -74,7 +74,7 @@ public class RavagerEntity extends RaiderEntity {
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 		this.targetSelector.add(2, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(3, new ActiveTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(4, new ActiveTargetGoal(this, MerchantEntity.class, true));
+		this.targetSelector.add(4, new ActiveTargetGoal(this, MerchantEntity.class, true, entity -> !entity.isBaby()));
 		this.targetSelector.add(4, new ActiveTargetGoal(this, IronGolemEntity.class, true));
 	}
 

@@ -38,8 +38,8 @@ public class Channel {
 		return completableFuture;
 	}
 
-	public void execute(Consumer<Stream<Source>> consumer) {
-		this.executor.execute(() -> consumer.accept(this.sources.stream().map(sourceManager -> sourceManager.source).filter(Objects::nonNull)));
+	public void execute(Consumer<Stream<Source>> sourcesConsumer) {
+		this.executor.execute(() -> sourcesConsumer.accept(this.sources.stream().map(source -> source.source).filter(Objects::nonNull)));
 	}
 
 	public void tick() {

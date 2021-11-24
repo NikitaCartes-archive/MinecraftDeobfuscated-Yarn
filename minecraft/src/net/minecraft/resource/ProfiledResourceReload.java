@@ -45,10 +45,10 @@ public class ProfiledResourceReload extends SimpleResourceReload<ProfiledResourc
 							atomicLong2.addAndGet(Util.getMeasuringTimeNano() - l);
 						})
 				);
-				return completableFuture.thenApplyAsync(
-					void_ -> new ProfiledResourceReload.Summary(reloader.getName(), profilerSystem.getResult(), profilerSystem2.getResult(), atomicLong, atomicLong2),
-					applyExecutor
-				);
+				return completableFuture.thenApplyAsync(void_ -> {
+					LOGGER.debug("Finished reloading " + reloader.getName());
+					return new ProfiledResourceReload.Summary(reloader.getName(), profilerSystem.getResult(), profilerSystem2.getResult(), atomicLong, atomicLong2);
+				}, applyExecutor);
 			},
 			initialStage
 		);

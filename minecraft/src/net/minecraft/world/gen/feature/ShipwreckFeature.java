@@ -11,10 +11,10 @@ import net.minecraft.world.Heightmap;
 
 public class ShipwreckFeature extends StructureFeature<ShipwreckFeatureConfig> {
 	public ShipwreckFeature(Codec<ShipwreckFeatureConfig> configCodec) {
-		super(configCodec, StructureGeneratorFactory.simple(ShipwreckFeature::method_39820, ShipwreckFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(ShipwreckFeature::canGenerate, ShipwreckFeature::addPieces));
 	}
 
-	private static boolean method_39820(StructureGeneratorFactory.Context<ShipwreckFeatureConfig> context) {
+	private static boolean canGenerate(StructureGeneratorFactory.Context<ShipwreckFeatureConfig> context) {
 		Heightmap.Type type = context.config().isBeached ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
 		return context.isBiomeValid(type);
 	}

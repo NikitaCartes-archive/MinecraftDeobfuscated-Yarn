@@ -3,6 +3,7 @@ package net.minecraft.client.network;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -123,6 +124,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public float nextNauseaStrength;
 	public float lastNauseaStrength;
 	private boolean usingItem;
+	@Nullable
 	private Hand activeHand;
 	private boolean riding;
 	private boolean autoJumpEnabled = true;
@@ -294,6 +296,22 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return !itemStack.isEmpty();
 	}
 
+	/**
+	 * Sends a chat message to the server.
+	 * 
+	 * <p>The message will be truncated to at most 256 characters before
+	 * sending to the server.
+	 * 
+	 * <p>If the message contains an invalid character (see {@link
+	 * net.minecraft.SharedConstants#isValidChar isValidChar}), the server will
+	 * reject the message and disconnect the client.
+	 * 
+	 * @apiNote This method is used to send a message typed in {@linkplain
+	 * net.minecraft.client.gui.screen the chat screen}. This includes a
+	 * command message (a message that starts with {@code /}).
+	 * 
+	 * @param message the message to send
+	 */
 	public void sendChatMessage(String message) {
 		this.networkHandler.sendPacket(new ChatMessageC2SPacket(message));
 	}
@@ -531,7 +549,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public Hand getActiveHand() {
-		return this.activeHand;
+		return (Hand)Objects.requireNonNullElse(this.activeHand, Hand.MAIN_HAND);
 	}
 
 	@Override

@@ -58,4 +58,9 @@ public class IdListPalette<T> implements Palette<T> {
 	public int getSize() {
 		return this.idList.size();
 	}
+
+	@Override
+	public Palette<T> copy() {
+		return this;
+	}
 }

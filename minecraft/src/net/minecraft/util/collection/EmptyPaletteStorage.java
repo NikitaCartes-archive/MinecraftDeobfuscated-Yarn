@@ -60,4 +60,9 @@ public class EmptyPaletteStorage implements PaletteStorage {
 	public void method_39892(int[] is) {
 		Arrays.fill(is, 0, this.size, 0);
 	}
+
+	@Override
+	public PaletteStorage copy() {
+		return this;
+	}
 }

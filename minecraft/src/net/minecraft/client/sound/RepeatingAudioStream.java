@@ -48,13 +48,13 @@ public class RepeatingAudioStream implements AudioStream {
 	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
 	public interface DelegateFactory {
-		AudioStream create(InputStream inputStream) throws IOException;
+		AudioStream create(InputStream stream) throws IOException;
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class ReusableInputStream extends FilterInputStream {
-		ReusableInputStream(InputStream inputStream) {
-			super(inputStream);
+		ReusableInputStream(InputStream stream) {
+			super(stream);
 		}
 
 		public void close() {

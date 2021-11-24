@@ -446,7 +446,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private Thread thread;
 	private volatile boolean running = true;
 	@Nullable
-	private CrashReport crashReport;
+	private Supplier<CrashReport> crashReportSupplier;
 	private static int currentFps;
 	public String fpsDebugString = "";
 	public boolean wireFrame;
@@ -736,8 +736,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			boolean bl = false;
 
 			while(this.running) {
-				if (this.crashReport != null) {
-					printCrashReport(this.crashReport);
+				if (this.crashReportSupplier != null) {
+					printCrashReport((CrashReport)this.crashReportSupplier.get());
 					return;
 				}
 
@@ -844,8 +844,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.versionType;
 	}
 
-	public void setCrashReport(CrashReport report) {
-		this.crashReport = report;
+	public void setCrashReportSupplier(Supplier<CrashReport> crashReportSupplier) {
+		this.crashReportSupplier = crashReportSupplier;
 	}
 
 	public static void printCrashReport(CrashReport report) {
@@ -1045,7 +1045,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.close();
 		} finally {
 			Util.nanoTimeSupplier = System::nanoTime;
-			if (this.crashReport == null) {
+			if (this.crashReportSupplier == null) {
 				System.exit(0);
 			}
 		}
@@ -2067,8 +2067,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				} catch (InterruptedException var18) {
 				}
 
-				if (this.crashReport != null) {
-					printCrashReport(this.crashReport);
+				if (this.crashReportSupplier != null) {
+					printCrashReport((CrashReport)this.crashReportSupplier.get());
 					return;
 				}
 			}

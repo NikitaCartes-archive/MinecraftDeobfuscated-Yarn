@@ -164,7 +164,7 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public void setCrashReport(CrashReport report) {
-		this.client.setCrashReport(report);
+		this.client.setCrashReportSupplier(() -> report);
 	}
 
 	@Override

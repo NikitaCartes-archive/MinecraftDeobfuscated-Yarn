@@ -10,10 +10,10 @@ import net.minecraft.structure.StructurePiecesGenerator;
 
 public class StrongholdFeature extends MarginedStructureFeature<DefaultFeatureConfig> {
 	public StrongholdFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, StructureGeneratorFactory.simple(StrongholdFeature::method_28654, StrongholdFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(StrongholdFeature::canGenerate, StrongholdFeature::addPieces));
 	}
 
-	private static boolean method_28654(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
+	private static boolean canGenerate(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
 		return context.chunkGenerator().isStrongholdStartingChunk(context.chunkPos());
 	}
 

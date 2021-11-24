@@ -21,10 +21,10 @@ import net.minecraft.world.gen.random.ChunkRandom;
 
 public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	public MineshaftFeature(Codec<MineshaftFeatureConfig> configCodec) {
-		super(configCodec, StructureGeneratorFactory.simple(MineshaftFeature::method_28638, MineshaftFeature::addPieces));
+		super(configCodec, StructureGeneratorFactory.simple(MineshaftFeature::canGenerate, MineshaftFeature::addPieces));
 	}
 
-	private static boolean method_28638(StructureGeneratorFactory.Context<MineshaftFeatureConfig> context) {
+	private static boolean canGenerate(StructureGeneratorFactory.Context<MineshaftFeatureConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
 		double d = (double)context.config().probability;
