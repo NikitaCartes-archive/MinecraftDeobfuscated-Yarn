@@ -2220,7 +2220,12 @@ CommandOutput {
     }
 
     public String toString() {
-        return String.format(Locale.ROOT, "%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]", this.getClass().getSimpleName(), this.getName().getString(), this.id, this.world == null ? "~NULL~" : this.world.toString(), this.getX(), this.getY(), this.getZ());
+        String string;
+        String string2 = string = this.world == null ? "~NULL~" : this.world.toString();
+        if (this.removalReason != null) {
+            return String.format(Locale.ROOT, "%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f, removed=%s]", new Object[]{this.getClass().getSimpleName(), this.getName().getString(), this.id, string, this.getX(), this.getY(), this.getZ(), this.removalReason});
+        }
+        return String.format(Locale.ROOT, "%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]", this.getClass().getSimpleName(), this.getName().getString(), this.id, string, this.getX(), this.getY(), this.getZ());
     }
 
     public boolean isInvulnerableTo(DamageSource damageSource) {

@@ -49,8 +49,8 @@ implements ChunkNoiseSampler.ColumnSampler {
         this.junctions = new ObjectArrayList<JigsawJunction>(32);
         this.pieces = new ObjectArrayList<StructurePiece>(10);
         for (StructureFeature<?> structureFeature : StructureFeature.LAND_MODIFYING_STRUCTURES) {
-            structureAccessor.getStructureStarts(ChunkSectionPos.from(chunk), structureFeature).forEach(structureStart -> {
-                for (StructurePiece structurePiece : structureStart.getChildren()) {
+            structureAccessor.getStructureStarts(ChunkSectionPos.from(chunk), structureFeature).forEach(start -> {
+                for (StructurePiece structurePiece : start.getChildren()) {
                     if (!structurePiece.intersectsChunk(chunkPos, 12)) continue;
                     if (structurePiece instanceof PoolStructurePiece) {
                         PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;

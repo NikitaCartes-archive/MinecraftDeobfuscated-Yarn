@@ -455,7 +455,7 @@ implements WindowEventHandler {
     private Thread thread;
     private volatile boolean running = true;
     @Nullable
-    private CrashReport crashReport;
+    private Supplier<CrashReport> crashReportSupplier;
     private static int currentFps;
     public String fpsDebugString = "";
     public boolean wireFrame;
@@ -701,8 +701,8 @@ implements WindowEventHandler {
         try {
             boolean bl = false;
             while (this.running) {
-                if (this.crashReport != null) {
-                    MinecraftClient.printCrashReport(this.crashReport);
+                if (this.crashReportSupplier != null) {
+                    MinecraftClient.printCrashReport(this.crashReportSupplier.get());
                     return;
                 }
                 try {
@@ -787,8 +787,8 @@ implements WindowEventHandler {
         return this.versionType;
     }
 
-    public void setCrashReport(CrashReport report) {
-        this.crashReport = report;
+    public void setCrashReportSupplier(Supplier<CrashReport> crashReportSupplier) {
+        this.crashReportSupplier = crashReportSupplier;
     }
 
     public static void printCrashReport(CrashReport report) {
@@ -958,7 +958,7 @@ implements WindowEventHandler {
             this.close();
         } finally {
             Util.nanoTimeSupplier = System::nanoTime;
-            if (this.crashReport == null) {
+            if (this.crashReportSupplier == null) {
                 System.exit(0);
             }
         }
@@ -1809,8 +1809,8 @@ implements WindowEventHandler {
             } catch (InterruptedException crashReport) {
                 // empty catch block
             }
-            if (this.crashReport == null) continue;
-            MinecraftClient.printCrashReport(this.crashReport);
+            if (this.crashReportSupplier == null) continue;
+            MinecraftClient.printCrashReport(this.crashReportSupplier.get());
             return;
         }
         this.profiler.pop();

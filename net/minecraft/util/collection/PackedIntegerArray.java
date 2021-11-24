@@ -170,6 +170,11 @@ implements PaletteStorage {
         }
     }
 
+    @Override
+    public PaletteStorage copy() {
+        return new PackedIntegerArray(this.elementBits, this.size, (long[])this.data.clone());
+    }
+
     public static class InvalidLengthException
     extends RuntimeException {
         InvalidLengthException(String message) {

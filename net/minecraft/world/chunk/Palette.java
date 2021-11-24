@@ -72,6 +72,8 @@ public interface Palette<T> {
      */
     public int getSize();
 
+    public Palette<T> copy();
+
     public static interface Factory {
         public <A> Palette<A> create(int var1, IndexedIterable<A> var2, PaletteResizeListener<A> var3, List<A> var4);
     }

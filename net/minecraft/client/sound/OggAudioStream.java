@@ -25,7 +25,7 @@ import org.lwjgl.system.MemoryUtil;
 @Environment(value=EnvType.CLIENT)
 public class OggAudioStream
 implements AudioStream {
-    private static final int field_31898 = 8192;
+    private static final int BUFFER_SIZE = 8192;
     private long pointer;
     private final AudioFormat format;
     private final InputStream inputStream;
@@ -139,16 +139,16 @@ implements AudioStream {
         }
     }
 
-    private void readChannels(FloatBuffer floatBuffer, ChannelList channelList) {
-        while (floatBuffer.hasRemaining()) {
-            channelList.addChannel(floatBuffer.get());
+    private void readChannels(FloatBuffer buf, ChannelList channelList) {
+        while (buf.hasRemaining()) {
+            channelList.addChannel(buf.get());
         }
     }
 
-    private void readChannels(FloatBuffer floatBuffer, FloatBuffer floatBuffer2, ChannelList channelList) {
-        while (floatBuffer.hasRemaining() && floatBuffer2.hasRemaining()) {
-            channelList.addChannel(floatBuffer.get());
-            channelList.addChannel(floatBuffer2.get());
+    private void readChannels(FloatBuffer buf, FloatBuffer buf2, ChannelList channelList) {
+        while (buf.hasRemaining() && buf2.hasRemaining()) {
+            channelList.addChannel(buf.get());
+            channelList.addChannel(buf2.get());
         }
     }
 
@@ -198,13 +198,13 @@ implements AudioStream {
             this.buffer = BufferUtils.createByteBuffer(this.size);
         }
 
-        public void addChannel(float f) {
+        public void addChannel(float data) {
             if (this.buffer.remaining() == 0) {
                 this.buffer.flip();
                 this.buffers.add(this.buffer);
                 this.init();
             }
-            int i = MathHelper.clamp((int)(f * 32767.5f - 0.5f), Short.MIN_VALUE, Short.MAX_VALUE);
+            int i = MathHelper.clamp((int)(data * 32767.5f - 0.5f), Short.MIN_VALUE, Short.MAX_VALUE);
             this.buffer.putShort((short)i);
             this.currentBufferSize += 2;
         }

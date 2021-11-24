@@ -17,7 +17,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,6 +46,7 @@ extends JsonDataLoader {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private static final Logger LOGGER = LogManager.getLogger();
     private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes = ImmutableMap.of();
+    private Map<Identifier, Recipe<?>> recipesById = ImmutableMap.of();
     /**
      * This isn't quite indicating an errored state; its value is only set to
      * {@code false} and is never {@code true}, and isn't used anywhere.
@@ -61,16 +61,19 @@ extends JsonDataLoader {
     protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
         this.errored = false;
         HashMap<RecipeType, ImmutableMap.Builder> map2 = Maps.newHashMap();
+        ImmutableMap.Builder<Identifier, Recipe<?>> builder = ImmutableMap.builder();
         for (Map.Entry<Identifier, JsonElement> entry2 : map.entrySet()) {
             Identifier identifier = entry2.getKey();
             try {
                 Recipe<?> recipe = RecipeManager.deserialize(identifier, JsonHelper.asObject(entry2.getValue(), "top element"));
                 map2.computeIfAbsent(recipe.getType(), recipeType -> ImmutableMap.builder()).put(identifier, recipe);
+                builder.put(identifier, recipe);
             } catch (JsonParseException | IllegalArgumentException runtimeException) {
                 LOGGER.error("Parsing error loading recipe {}", (Object)identifier, (Object)runtimeException);
             }
         }
         this.recipes = map2.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> ((ImmutableMap.Builder)entry.getValue()).build()));
+        this.recipesById = builder.build();
         LOGGER.info("Loaded {} recipes", (Object)map2.size());
     }
 
@@ -168,7 +171,7 @@ extends JsonDataLoader {
      * @param id the ID of the desired recipe
      */
     public Optional<? extends Recipe<?>> get(Identifier id) {
-        return this.recipes.values().stream().map(map -> (Recipe)map.get(id)).filter(Objects::nonNull).findFirst();
+        return Optional.ofNullable(this.recipesById.get(id));
     }
 
     /**
@@ -223,14 +226,18 @@ extends JsonDataLoader {
     public void setRecipes(Iterable<Recipe<?>> recipes) {
         this.errored = false;
         HashMap map = Maps.newHashMap();
+        ImmutableMap.Builder builder = ImmutableMap.builder();
         recipes.forEach(recipe -> {
             Map map2 = map.computeIfAbsent(recipe.getType(), t -> Maps.newHashMap());
-            Recipe recipe2 = map2.put(recipe.getId(), recipe);
+            Identifier identifier = recipe.getId();
+            Recipe recipe2 = map2.put(identifier, recipe);
+            builder.put(identifier, recipe);
             if (recipe2 != null) {
-                throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.getId());
+                throw new IllegalStateException("Duplicate recipe ignored with ID " + identifier);
             }
         });
         this.recipes = ImmutableMap.copyOf(map);
+        this.recipesById = builder.build();
     }
 }
 

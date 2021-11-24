@@ -3,11 +3,12 @@
  */
 package net.minecraft.text;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.entity.Entity;
@@ -33,7 +34,7 @@ implements ParsableText {
     private final Object[] args;
     @Nullable
     private Language languageCache;
-    private final List<StringVisitable> translations = Lists.newArrayList();
+    private List<StringVisitable> translations = ImmutableList.of();
     private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
     public TranslatableText(String key) {
@@ -52,17 +53,17 @@ implements ParsableText {
             return;
         }
         this.languageCache = language;
-        this.translations.clear();
         String string = language.get(this.key);
         try {
-            this.setTranslation(string);
+            ImmutableList.Builder builder = ImmutableList.builder();
+            this.forEachPart(string, builder::add);
+            this.translations = builder.build();
         } catch (TranslationException translationException) {
-            this.translations.clear();
-            this.translations.add(StringVisitable.plain(string));
+            this.translations = ImmutableList.of(StringVisitable.plain(string));
         }
     }
 
-    private void setTranslation(String translation) {
+    private void forEachPart(String translation, Consumer<StringVisitable> partsConsumer) {
         Matcher matcher = ARG_FORMAT.matcher(translation);
         try {
             int i = 0;
@@ -76,18 +77,18 @@ implements ParsableText {
                     if (string.indexOf(37) != -1) {
                         throw new IllegalArgumentException();
                     }
-                    this.translations.add(StringVisitable.plain(string));
+                    partsConsumer.accept(StringVisitable.plain(string));
                 }
                 string = matcher.group(2);
                 String string2 = translation.substring(k, l);
                 if ("%".equals(string) && "%%".equals(string2)) {
-                    this.translations.add(LITERAL_PERCENT_SIGN);
+                    partsConsumer.accept(LITERAL_PERCENT_SIGN);
                 } else if ("s".equals(string)) {
                     int m;
                     String string3 = matcher.group(1);
                     int n = m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
                     if (m < this.args.length) {
-                        this.translations.add(this.getArg(m));
+                        partsConsumer.accept(this.getArg(m));
                     }
                 } else {
                     throw new TranslationException(this, "Unsupported format: '" + string2 + "'");
@@ -99,7 +100,7 @@ implements ParsableText {
                 if (string4.indexOf(37) != -1) {
                     throw new IllegalArgumentException();
                 }
-                this.translations.add(StringVisitable.plain(string4));
+                partsConsumer.accept(StringVisitable.plain(string4));
             }
         } catch (IllegalArgumentException illegalArgumentException) {
             throw new TranslationException(this, (Throwable)illegalArgumentException);

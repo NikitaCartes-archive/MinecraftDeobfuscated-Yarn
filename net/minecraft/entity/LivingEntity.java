@@ -2780,6 +2780,9 @@ extends Entity {
     }
 
     protected void consumeItem() {
+        if (this.world.isClient && !this.isUsingItem()) {
+            return;
+        }
         Hand hand = this.getActiveHand();
         if (!this.activeItemStack.equals(this.getStackInHand(hand))) {
             this.stopUsingItem();

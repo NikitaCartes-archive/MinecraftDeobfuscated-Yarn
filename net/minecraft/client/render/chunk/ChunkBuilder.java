@@ -56,7 +56,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.WorldChunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -128,10 +127,10 @@ public class ChunkBuilder {
         BlockBufferBuilderStorage blockBufferBuilderStorage = this.threadBuffers.poll();
         this.queuedTaskCount = this.prioritizedTaskQueue.size() + this.taskQueue.size();
         this.bufferCount = this.threadBuffers.size();
-        ((CompletableFuture)CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferBuilderStorage)), this.executor).thenCompose(completableFuture -> completableFuture)).whenComplete((result, throwable) -> {
+        ((CompletableFuture)CompletableFuture.supplyAsync(Util.debugSupplier(task.getName(), () -> task.run(blockBufferBuilderStorage)), this.executor).thenCompose(future -> future)).whenComplete((result, throwable) -> {
             if (throwable != null) {
                 CrashReport crashReport = CrashReport.create(throwable, "Batching chunks");
-                MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
+                MinecraftClient.getInstance().setCrashReportSupplier(() -> MinecraftClient.getInstance().addDetailsToCrashReport(crashReport));
                 return;
             }
             this.mailbox.send(() -> {
@@ -465,7 +464,8 @@ public class ChunkBuilder {
                 CompletionStage completableFuture = ChunkBuilder.this.scheduleUpload(buffers.get(RenderLayer.getTranslucent()), BuiltChunk.this.getBuffer(RenderLayer.getTranslucent())).thenApply(void_ -> Result.CANCELLED);
                 return ((CompletableFuture)completableFuture).handle((result, throwable) -> {
                     if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
-                        MinecraftClient.getInstance().setCrashReport(CrashReport.create(throwable, "Rendering chunk"));
+                        CrashReport crashReport = CrashReport.create(throwable, "Rendering chunk");
+                        MinecraftClient.getInstance().setCrashReportSupplier(() -> crashReport);
                     }
                     return this.cancelled.get() ? Result.CANCELLED : Result.SUCCESSFUL;
                 });
@@ -546,11 +546,12 @@ public class ChunkBuilder {
                 if (this.cancelled.get()) {
                     return CompletableFuture.completedFuture(Result.CANCELLED);
                 }
-                ArrayList list2 = Lists.newArrayList();
-                chunkData.initializedLayers.forEach(renderLayer -> list2.add(ChunkBuilder.this.scheduleUpload(buffers.get((RenderLayer)renderLayer), BuiltChunk.this.getBuffer((RenderLayer)renderLayer))));
-                return Util.combine(list2).handle((list, throwable) -> {
+                ArrayList list = Lists.newArrayList();
+                chunkData.initializedLayers.forEach(renderLayer -> list.add(ChunkBuilder.this.scheduleUpload(buffers.get((RenderLayer)renderLayer), BuiltChunk.this.getBuffer((RenderLayer)renderLayer))));
+                return Util.combine(list).handle((results, throwable) -> {
                     if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
-                        MinecraftClient.getInstance().setCrashReport(CrashReport.create(throwable, "Rendering chunk"));
+                        CrashReport crashReport = CrashReport.create(throwable, "Rendering chunk");
+                        MinecraftClient.getInstance().setCrashReportSupplier(() -> crashReport);
                     }
                     if (this.cancelled.get()) {
                         return Result.CANCELLED;
@@ -583,7 +584,7 @@ public class ChunkBuilder {
                         if (blockState.isOpaqueFullCube(chunkRendererRegion, blockPos3)) {
                             chunkOcclusionDataBuilder.markClosed(blockPos3);
                         }
-                        if (blockState.hasBlockEntity() && (blockEntity = chunkRendererRegion.getBlockEntity(blockPos3, WorldChunk.CreationType.CHECK)) != null) {
+                        if (blockState.hasBlockEntity() && (blockEntity = chunkRendererRegion.getBlockEntity(blockPos3)) != null) {
                             this.addBlockEntity(data, set, blockEntity);
                         }
                         if (!(fluidState = chunkRendererRegion.getFluidState(blockPos3)).isEmpty()) {

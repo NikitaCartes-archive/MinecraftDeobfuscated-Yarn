@@ -138,20 +138,20 @@ public class Source {
         this.stream = stream;
         AudioFormat audioFormat = stream.getFormat();
         this.bufferSize = Source.getBufferSize(audioFormat, 1);
-        this.method_19640(4);
+        this.read(4);
     }
 
     private static int getBufferSize(AudioFormat format, int time) {
         return (int)((float)(time * format.getSampleSizeInBits()) / 8.0f * (float)format.getChannels() * format.getSampleRate());
     }
 
-    private void method_19640(int i2) {
+    private void read(int count) {
         if (this.stream != null) {
             try {
-                for (int j = 0; j < i2; ++j) {
+                for (int i = 0; i < count; ++i) {
                     ByteBuffer byteBuffer = this.stream.getBuffer(this.bufferSize);
                     if (byteBuffer == null) continue;
-                    new StaticSound(byteBuffer, this.stream.getFormat()).takeStreamBufferPointer().ifPresent(i -> AL10.alSourceQueueBuffers(this.pointer, new int[]{i}));
+                    new StaticSound(byteBuffer, this.stream.getFormat()).takeStreamBufferPointer().ifPresent(pointer -> AL10.alSourceQueueBuffers(this.pointer, new int[]{pointer}));
                 }
             } catch (IOException iOException) {
                 LOGGER.error("Failed to read from audio stream", (Throwable)iOException);
@@ -162,7 +162,7 @@ public class Source {
     public void tick() {
         if (this.stream != null) {
             int i = this.removeProcessedBuffers();
-            this.method_19640(i);
+            this.read(i);
         }
     }
 

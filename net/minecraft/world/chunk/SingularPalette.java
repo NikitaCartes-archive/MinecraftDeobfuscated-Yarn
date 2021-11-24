@@ -23,12 +23,12 @@ implements Palette<T> {
     private T entry;
     private final PaletteResizeListener<T> listener;
 
-    public SingularPalette(IndexedIterable<T> idList, PaletteResizeListener<T> listener, List<T> list) {
+    public SingularPalette(IndexedIterable<T> idList, PaletteResizeListener<T> listener, List<T> entries) {
         this.idList = idList;
         this.listener = listener;
-        if (list.size() > 0) {
-            Validate.isTrue(list.size() <= 1, "Can't initialize SingleValuePalette with %d values.", list.size());
-            this.entry = list.get(0);
+        if (entries.size() > 0) {
+            Validate.isTrue(entries.size() <= 1, "Can't initialize SingleValuePalette with %d values.", entries.size());
+            this.entry = entries.get(0);
         }
     }
 
@@ -37,8 +37,8 @@ implements Palette<T> {
      * 
      * @param bitSize {@code 0}, as this palette has only 2<sup>0</sup>=1 entry
      */
-    public static <A> Palette<A> create(int bitSize, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list) {
-        return new SingularPalette<A>(idList, listener, list);
+    public static <A> Palette<A> create(int bitSize, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> entries) {
+        return new SingularPalette<A>(idList, listener, entries);
     }
 
     @Override
@@ -90,6 +90,14 @@ implements Palette<T> {
     @Override
     public int getSize() {
         return 1;
+    }
+
+    @Override
+    public Palette<T> copy() {
+        if (this.entry == null) {
+            throw new IllegalStateException("Use of an uninitialized palette");
+        }
+        return this;
     }
 }
 

@@ -385,13 +385,13 @@ extends PlayerEntity {
         this.syncedExperience = -1;
     }
 
-    private void onSpawn(ScreenHandler screenHandler) {
+    private void onScreenHandlerOpened(ScreenHandler screenHandler) {
         screenHandler.addListener(this.screenHandlerListener);
         screenHandler.updateSyncHandler(this.screenHandlerSyncHandler);
     }
 
     public void onSpawn() {
-        this.onSpawn(this.playerScreenHandler);
+        this.onScreenHandlerOpened(this.playerScreenHandler);
     }
 
     @Override
@@ -928,7 +928,7 @@ extends PlayerEntity {
             return OptionalInt.empty();
         }
         this.networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandler.syncId, screenHandler.getType(), factory.getDisplayName()));
-        this.onSpawn(screenHandler);
+        this.onScreenHandlerOpened(screenHandler);
         this.currentScreenHandler = screenHandler;
         return OptionalInt.of(this.screenHandlerSyncId);
     }
@@ -946,7 +946,7 @@ extends PlayerEntity {
         this.incrementScreenHandlerSyncId();
         this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), horse.getId()));
         this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.getInventory(), inventory, horse);
-        this.onSpawn(this.currentScreenHandler);
+        this.onScreenHandlerOpened(this.currentScreenHandler);
     }
 
     @Override
@@ -1197,6 +1197,17 @@ extends PlayerEntity {
         this.sendMessage(message, MessageType.SYSTEM, sender);
     }
 
+    /**
+     * Sends a message to the client corresponding to this player.
+     * 
+     * @see net.minecraft.server.PlayerManager#broadcast(Text, MessageType, UUID)
+     * 
+     * @param message the message to send
+     * @param type the message type
+     * @param sender {@linkplain Entity#getUuid the UUID of the entity} that sends a message
+     * or {@link net.minecraft.util.Util#NIL_UUID} to indicate that the message
+     * is not sent by an entity
+     */
     public void sendMessage(Text message, MessageType type, UUID sender) {
         if (!this.acceptsMessage(type)) {
             return;

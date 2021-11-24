@@ -909,6 +909,7 @@ AutoCloseable {
     }
 
     public SystemDetails addSystemDetails(SystemDetails details) {
+        details.addSection("Server Running", () -> Boolean.toString(this.running));
         if (this.playerManager != null) {
             details.addSection("Player Count", () -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList());
         }

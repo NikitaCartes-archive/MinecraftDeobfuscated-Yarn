@@ -731,7 +731,15 @@ implements StructureWorldAccess {
         return this.entityManager.addEntity(entity);
     }
 
-    public boolean shouldCreateNewEntityWithPassenger(Entity entity) {
+    /**
+     * Checks whether any of the entity and its passengers already exist
+     * in the world, and if not, spawns the entity with its passengers.
+     * 
+     * @return {@code true} if the spawning was successful, otherwise {@code false}
+     * 
+     * @see net.minecraft.world.ServerWorldAccess#spawnEntityAndPassengers
+     */
+    public boolean spawnNewEntityAndPassengers(Entity entity) {
         if (entity.streamSelfAndPassengers().map(Entity::getUuid).anyMatch(this.entityManager::has)) {
             return false;
         }

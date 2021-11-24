@@ -53,7 +53,7 @@ public class SummonCommand {
         if (initialize && entity22 instanceof MobEntity) {
             ((MobEntity)entity22).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity22.getBlockPos()), SpawnReason.COMMAND, null, null);
         }
-        if (!serverWorld.shouldCreateNewEntityWithPassenger(entity22)) {
+        if (!serverWorld.spawnNewEntityAndPassengers(entity22)) {
             throw FAILED_UUID_EXCEPTION.create();
         }
         source.sendFeedback(new TranslatableText("commands.summon.success", entity22.getDisplayName()), true);

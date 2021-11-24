@@ -103,9 +103,9 @@ implements SoundContainer<Sound> {
         }
 
         @Nullable
-        public static RegistrationType getByName(String string) {
+        public static RegistrationType getByName(String name) {
             for (RegistrationType registrationType : RegistrationType.values()) {
-                if (!registrationType.name.equals(string)) continue;
+                if (!registrationType.name.equals(name)) continue;
                 return registrationType;
             }
             return null;

@@ -95,7 +95,7 @@ extends SinglePreparationResourceReloader<SoundList> {
 
     @Override
     protected void apply(SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
-        soundList.addTo(this.sounds, this.soundSystem);
+        soundList.reload(this.sounds, this.soundSystem);
         if (SharedConstants.isDevelopment) {
             for (Identifier identifier : this.sounds.keySet()) {
                 String string;
@@ -273,10 +273,10 @@ extends SinglePreparationResourceReloader<SoundList> {
             }
         }
 
-        public void addTo(Map<Identifier, WeightedSoundSet> map, SoundSystem soundSystem) {
-            map.clear();
+        public void reload(Map<Identifier, WeightedSoundSet> sounds, SoundSystem soundSystem) {
+            sounds.clear();
             for (Map.Entry<Identifier, WeightedSoundSet> entry : this.loadedSounds.entrySet()) {
-                map.put(entry.getKey(), entry.getValue());
+                sounds.put(entry.getKey(), entry.getValue());
                 entry.getValue().preload(soundSystem);
             }
         }

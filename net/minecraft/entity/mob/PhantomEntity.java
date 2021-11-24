@@ -350,6 +350,10 @@ implements Monster {
 
     class SwoopMovementGoal
     extends MovementGoal {
+        private static final int field_36305 = 20;
+        private boolean field_36306;
+        private int field_36307;
+
         SwoopMovementGoal() {
         }
 
@@ -360,7 +364,6 @@ implements Monster {
 
         @Override
         public boolean shouldContinue() {
-            List<Entity> list;
             LivingEntity livingEntity = PhantomEntity.this.getTarget();
             if (livingEntity == null) {
                 return false;
@@ -368,19 +371,24 @@ implements Monster {
             if (!livingEntity.isAlive()) {
                 return false;
             }
-            if (livingEntity instanceof PlayerEntity && (((PlayerEntity)livingEntity).isSpectator() || ((PlayerEntity)livingEntity).isCreative())) {
-                return false;
+            if (livingEntity instanceof PlayerEntity) {
+                PlayerEntity playerEntity = (PlayerEntity)livingEntity;
+                if (livingEntity.isSpectator() || playerEntity.isCreative()) {
+                    return false;
+                }
             }
             if (!this.canStart()) {
                 return false;
             }
-            if (PhantomEntity.this.age % 20 == PhantomEntity.this.getId() % 2 && !(list = PhantomEntity.this.world.getEntitiesByClass(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY)).isEmpty()) {
+            if (PhantomEntity.this.age > this.field_36307) {
+                this.field_36307 = PhantomEntity.this.age + 20;
+                List<Entity> list = PhantomEntity.this.world.getEntitiesByClass(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
                 for (CatEntity catEntity : list) {
                     catEntity.hiss();
                 }
-                return false;
+                this.field_36306 = !list.isEmpty();
             }
-            return true;
+            return !this.field_36306;
         }
 
         @Override

@@ -90,7 +90,7 @@ implements RangedAttackMob {
         this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::canDrownedAttackTarget));
         this.targetSelector.add(3, new ActiveTargetGoal<MerchantEntity>((MobEntity)this, MerchantEntity.class, false));
         this.targetSelector.add(3, new ActiveTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, true));
-        this.targetSelector.add(3, new ActiveTargetGoal<AxolotlEntity>(this, AxolotlEntity.class, true, false));
+        this.targetSelector.add(3, new ActiveTargetGoal<AxolotlEntity>((MobEntity)this, AxolotlEntity.class, true, false));
         this.targetSelector.add(5, new ActiveTargetGoal<TurtleEntity>(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
     }
 

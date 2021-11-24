@@ -46,21 +46,21 @@ implements PaletteResizeListener<T> {
     private final IndexedIterable<T> idList;
     private volatile Data<T> data;
     private final PaletteProvider paletteProvider;
-    private final LockHelper field_36300 = new LockHelper("PalettedContainer");
+    private final LockHelper lockHelper = new LockHelper("PalettedContainer");
 
     /**
      * Acquires the semaphore on this container, and crashes if it cannot be
      * acquired.
      */
     public void lock() {
-        this.field_36300.method_39935();
+        this.lockHelper.lock();
     }
 
     /**
      * Releases the semaphore on this container.
      */
     public void unlock() {
-        this.field_36300.method_39937();
+        this.lockHelper.unlock();
     }
 
     /**
@@ -77,11 +77,16 @@ implements PaletteResizeListener<T> {
         return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)entryCodec.mapResult(Codecs.method_39028(object)).listOf().fieldOf("palette")).forGetter(Serialized::paletteEntries), Codec.LONG_STREAM.optionalFieldOf("data").forGetter(Serialized::storage)).apply((Applicative<Serialized, ?>)instance, Serialized::new)).comapFlatMap(serialized -> PalettedContainer.read(idList, provider, serialized), container -> container.write(idList, provider));
     }
 
-    public PalettedContainer(IndexedIterable<T> idList, PaletteProvider paletteProvider, DataProvider<T> dataProvider, PaletteStorage storage, List<T> list) {
+    public PalettedContainer(IndexedIterable<T> idList, PaletteProvider paletteProvider, DataProvider<T> dataProvider, PaletteStorage storage, List<T> paletteEntries) {
         this.idList = idList;
         this.paletteProvider = paletteProvider;
-        Palette<T> palette = dataProvider.factory().create(dataProvider.bits(), idList, this, list);
-        this.data = new Data<T>(dataProvider, storage, palette);
+        this.data = new Data<T>(dataProvider, storage, dataProvider.factory().create(dataProvider.bits(), idList, this, paletteEntries));
+    }
+
+    private PalettedContainer(IndexedIterable<T> idList, PaletteProvider paletteProvider, Data<T> data) {
+        this.idList = idList;
+        this.paletteProvider = paletteProvider;
+        this.data = data;
     }
 
     public PalettedContainer(IndexedIterable<T> idList, T object, PaletteProvider paletteProvider) {
@@ -291,6 +296,10 @@ implements PaletteResizeListener<T> {
         return this.data.palette.hasAny(predicate);
     }
 
+    public PalettedContainer<T> copy() {
+        return new PalettedContainer<T>(this.idList, this.paletteProvider, new Data<T>(this.data.configuration(), this.data.storage().copy(), this.data.palette().copy()));
+    }
+
     public void count(Counter<T> counter) {
         Int2IntOpenHashMap int2IntMap = new Int2IntOpenHashMap();
         this.data.storage.forEach(key -> int2IntMap.put(key, int2IntMap.get(key) + 1));
@@ -348,14 +357,6 @@ implements PaletteResizeListener<T> {
         }
     }
 
-    record DataProvider<T>(Palette.Factory factory, int bits) {
-        public Data<T> createData(IndexedIterable<T> idList, PaletteResizeListener<T> listener, int size) {
-            PaletteStorage paletteStorage = this.bits == 0 ? new EmptyPaletteStorage(size) : new PackedIntegerArray(this.bits, size);
-            Palette<T> palette = this.factory.create(this.bits, idList, listener, List.of());
-            return new Data<T>(this, paletteStorage, palette);
-        }
-    }
-
     record Data<T>(DataProvider<T> configuration, PaletteStorage storage, Palette<T> palette) {
         public void importFrom(Palette<T> palette, PaletteStorage storage) {
             for (int i = 0; i < storage.getSize(); ++i) {
@@ -372,6 +373,14 @@ implements PaletteResizeListener<T> {
             buf.writeByte(this.storage.getElementBits());
             this.palette.writePacket(buf);
             buf.writeLongArray(this.storage.getData());
+        }
+    }
+
+    record DataProvider<T>(Palette.Factory factory, int bits) {
+        public Data<T> createData(IndexedIterable<T> idList, PaletteResizeListener<T> listener, int size) {
+            PaletteStorage paletteStorage = this.bits == 0 ? new EmptyPaletteStorage(size) : new PackedIntegerArray(this.bits, size);
+            Palette<T> palette = this.factory.create(this.bits, idList, listener, List.of());
+            return new Data<T>(this, paletteStorage, palette);
         }
     }
 

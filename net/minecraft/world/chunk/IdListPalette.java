@@ -64,5 +64,10 @@ implements Palette<T> {
     public int getSize() {
         return this.idList.size();
     }
+
+    @Override
+    public Palette<T> copy() {
+        return this;
+    }
 }
 

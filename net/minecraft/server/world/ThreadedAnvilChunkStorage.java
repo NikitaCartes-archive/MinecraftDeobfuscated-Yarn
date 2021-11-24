@@ -633,7 +633,13 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             return false;
         }
         Chunk chunk = chunkHolder.getSavingFuture().getNow(null);
-        if (chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk) {
+        if (chunk instanceof ReadOnlyChunk) {
+            ReadOnlyChunk readOnlyChunk = (ReadOnlyChunk)chunk;
+            boolean bl = this.save(readOnlyChunk.getWrappedChunk());
+            chunkHolder.updateAccessibleStatus();
+            return bl;
+        }
+        if (chunk instanceof WorldChunk) {
             boolean bl = this.save(chunk);
             chunkHolder.updateAccessibleStatus();
             return bl;

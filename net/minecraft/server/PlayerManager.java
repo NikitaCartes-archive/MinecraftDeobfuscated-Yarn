@@ -659,6 +659,7 @@ public abstract class PlayerManager {
      * message or a join/leave message.
      * 
      * @see #broadcast(Text, Function, MessageType, UUID)
+     * @see ServerPlayerEntity#sendMessage(Text, MessageType, UUID)
      * 
      * @param sender {@linkplain net.minecraft.entity.Entity#getUuid the UUID of the entity}
      * that sends a message or {@link net.minecraft.util.Util#NIL_UUID} to
@@ -682,6 +683,7 @@ public abstract class PlayerManager {
      * screen}.
      * 
      * @see #broadcast(Text, MessageType, UUID)
+     * @see ServerPlayerEntity#sendMessage(Text, MessageType, UUID)
      * 
      * @param serverMessage the message to send to the server console
      * @param playerMessageFactory the factory that provides a message for a player; if {@code null} is

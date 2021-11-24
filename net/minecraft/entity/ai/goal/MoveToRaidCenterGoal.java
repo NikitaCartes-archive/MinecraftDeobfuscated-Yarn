@@ -20,8 +20,10 @@ import net.minecraft.village.raid.RaidManager;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity>
 extends Goal {
+    private static final int field_36302 = 20;
     private static final float WALK_SPEED = 1.0f;
     private final T actor;
+    private int field_36303;
 
     public MoveToRaidCenterGoal(T actor) {
         this.actor = actor;
@@ -43,7 +45,8 @@ extends Goal {
         if (((RaiderEntity)this.actor).hasActiveRaid()) {
             Vec3d vec3d;
             Raid raid = ((RaiderEntity)this.actor).getRaid();
-            if (((RaiderEntity)this.actor).age % 20 == ((Entity)this.actor).getId() % 2) {
+            if (((RaiderEntity)this.actor).age > this.field_36303) {
+                this.field_36303 = ((RaiderEntity)this.actor).age + 20;
                 this.includeFreeRaiders(raid);
             }
             if (!((PathAwareEntity)this.actor).isNavigating() && (vec3d = NoPenaltyTargeting.findTo(this.actor, 15, 4, Vec3d.ofBottomCenter(raid.getCenter()), 1.5707963705062866)) != null) {
