@@ -301,9 +301,13 @@ implements PaletteResizeListener<T> {
     }
 
     public void count(Counter<T> counter) {
-        Int2IntOpenHashMap int2IntMap = new Int2IntOpenHashMap();
-        this.data.storage.forEach(key -> int2IntMap.put(key, int2IntMap.get(key) + 1));
-        int2IntMap.int2IntEntrySet().forEach(entry -> counter.accept(this.data.palette.get(entry.getIntKey()), entry.getIntValue()));
+        if (this.data.palette.getSize() == 1) {
+            counter.accept(this.data.palette.get(0), this.data.storage.getSize());
+            return;
+        }
+        Int2IntOpenHashMap int2IntOpenHashMap = new Int2IntOpenHashMap();
+        this.data.storage.forEach(key -> int2IntOpenHashMap.addTo(key, 1));
+        int2IntOpenHashMap.int2IntEntrySet().forEach(entry -> counter.accept(this.data.palette.get(entry.getIntKey()), entry.getIntValue()));
     }
 
     public static abstract class PaletteProvider {

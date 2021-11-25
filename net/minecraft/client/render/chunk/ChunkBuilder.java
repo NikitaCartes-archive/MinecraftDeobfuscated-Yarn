@@ -28,6 +28,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_6850;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BufferBuilder;
@@ -193,8 +194,8 @@ public class ChunkBuilder {
         }
     }
 
-    public void rebuild(BuiltChunk chunk) {
-        chunk.rebuild();
+    public void rebuild(BuiltChunk chunk, class_6850 arg) {
+        chunk.rebuild(arg);
     }
 
     public void reset() {
@@ -381,17 +382,17 @@ public class ChunkBuilder {
             return bl;
         }
 
-        public Task createRebuildTask() {
+        public Task createRebuildTask(class_6850 arg) {
             boolean bl = this.cancel();
             BlockPos blockPos = this.origin.toImmutable();
             boolean i = true;
-            ChunkRendererRegion chunkRendererRegion = ChunkRendererRegion.create(ChunkBuilder.this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
+            ChunkRendererRegion chunkRendererRegion = arg.method_39969(ChunkBuilder.this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
             this.rebuildTask = new RebuildTask(this.getSquaredCameraDistance(), chunkRendererRegion, bl || this.data.get() != ChunkData.EMPTY);
             return this.rebuildTask;
         }
 
-        public void scheduleRebuild(ChunkBuilder chunkRenderer) {
-            Task task = this.createRebuildTask();
+        public void scheduleRebuild(ChunkBuilder chunkRenderer, class_6850 arg) {
+            Task task = this.createRebuildTask(arg);
             chunkRenderer.send(task);
         }
 
@@ -412,8 +413,8 @@ public class ChunkBuilder {
             ChunkBuilder.this.worldRenderer.updateNoCullingBlockEntities(set2, set);
         }
 
-        public void rebuild() {
-            Task task = this.createRebuildTask();
+        public void rebuild(class_6850 arg) {
+            Task task = this.createRebuildTask(arg);
             task.run(ChunkBuilder.this.buffers);
         }
 

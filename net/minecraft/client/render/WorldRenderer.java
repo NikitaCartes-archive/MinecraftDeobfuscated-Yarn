@@ -45,6 +45,7 @@ import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_6850;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlUniform;
@@ -1867,6 +1868,7 @@ AutoCloseable {
 
     private void updateChunks(Camera camera) {
         this.client.getProfiler().push("populate_chunks_to_compile");
+        class_6850 lv = new class_6850();
         BlockPos blockPos = camera.getBlockPos();
         ArrayList<ChunkBuilder.BuiltChunk> list = Lists.newArrayList();
         for (ChunkInfo chunkInfo : this.field_34807) {
@@ -1882,7 +1884,7 @@ AutoCloseable {
             }
             if (bl) {
                 this.client.getProfiler().push("build_near_sync");
-                this.chunkBuilder.rebuild(builtChunk);
+                this.chunkBuilder.rebuild(builtChunk, lv);
                 builtChunk.cancelRebuild();
                 this.client.getProfiler().pop();
                 continue;
@@ -1893,7 +1895,7 @@ AutoCloseable {
         this.chunkBuilder.upload();
         this.client.getProfiler().swap("schedule_async_compile");
         for (ChunkBuilder.BuiltChunk builtChunk2 : list) {
-            builtChunk2.scheduleRebuild(this.chunkBuilder);
+            builtChunk2.scheduleRebuild(this.chunkBuilder, lv);
             builtChunk2.cancelRebuild();
         }
         this.client.getProfiler().pop();

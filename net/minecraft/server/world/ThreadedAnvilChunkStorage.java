@@ -292,7 +292,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> getRegion(ChunkPos centerChunk, final int margin, IntFunction<ChunkStatus> distanceToStatus) {
-        ArrayList<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> list2 = Lists.newArrayList();
+        ArrayList<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> list2 = new ArrayList<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>>();
+        ArrayList<ChunkHolder> list22 = new ArrayList<ChunkHolder>();
         final int i = centerChunk.x;
         final int j = centerChunk.z;
         for (int k = -margin; k <= margin; ++k) {
@@ -311,11 +312,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 }
                 ChunkStatus chunkStatus = distanceToStatus.apply(m);
                 CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getChunkAt(chunkStatus, this);
+                list22.add(chunkHolder);
                 list2.add(completableFuture);
             }
         }
         CompletableFuture completableFuture2 = Util.combineSafe(list2);
-        return completableFuture2.thenApply(list -> {
+        CompletionStage completableFuture3 = completableFuture2.thenApply(list -> {
             ArrayList<Chunk> list2 = Lists.newArrayList();
             int l = 0;
             for (final Either either : list) {
@@ -334,6 +336,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             }
             return Either.left(list2);
         });
+        for (ChunkHolder chunkHolder2 : list22) {
+            chunkHolder2.method_39967("getChunkRangeFuture " + centerChunk + " " + margin, (CompletableFuture<?>)completableFuture3);
+        }
+        return completableFuture3;
     }
 
     public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkPos pos) {

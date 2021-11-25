@@ -58,7 +58,7 @@ implements ResourcePackProvider {
     private static final PackResourceMetadata DEFAULT_PACK_METADATA = new PackResourceMetadata(new TranslatableText("resourcePack.vanilla.description"), ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion()));
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
-    private static final int MAX_FILE_SIZE = 0x6400000;
+    private static final int MAX_FILE_SIZE = 0xFA00000;
     private static final int MAX_SAVED_PACKS = 10;
     private static final String VANILLA = "vanilla";
     private static final String SERVER = "server";
@@ -129,7 +129,7 @@ implements ResourcePackProvider {
                 Map<String, String> map = ClientBuiltinResourcePackProvider.getDownloadHeaders();
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.submitAndJoin(() -> minecraftClient.setScreen(progressScreen));
-                completableFuture = NetworkUtils.downloadResourcePack(file, url, map, 0x6400000, progressScreen, minecraftClient.getNetworkProxy());
+                completableFuture = NetworkUtils.downloadResourcePack(file, url, map, 0xFA00000, progressScreen, minecraftClient.getNetworkProxy());
             }
             CompletableFuture<?> completableFuture2 = this.downloadTask = ((CompletableFuture)completableFuture.thenCompose(object -> {
                 if (!this.verifyFile(string2, file)) {
