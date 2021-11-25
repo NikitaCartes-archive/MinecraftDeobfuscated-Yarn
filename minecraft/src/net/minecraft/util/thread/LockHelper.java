@@ -72,7 +72,8 @@ public class LockHelper {
 
 	public static CrashException crash(String message, @Nullable Thread thread) {
 		String string = (String)Stream.of(Thread.currentThread(), thread).filter(Objects::nonNull).map(LockHelper::method_39936).collect(Collectors.joining("\n"));
-		CrashReport crashReport = new CrashReport("Accessing " + message + " from multiple threads", new IllegalStateException());
+		String string2 = "Accessing " + message + " from multiple threads";
+		CrashReport crashReport = new CrashReport(string2, new IllegalStateException(string2));
 		CrashReportSection crashReportSection = crashReport.addElement("Thread dumps");
 		crashReportSection.add("Thread dumps", string);
 		LOGGER.error("Thread dumps: \n" + string);

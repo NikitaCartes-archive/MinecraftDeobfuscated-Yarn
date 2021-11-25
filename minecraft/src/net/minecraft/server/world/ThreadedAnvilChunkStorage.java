@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -292,7 +293,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> getRegion(ChunkPos centerChunk, int margin, IntFunction<ChunkStatus> distanceToStatus) {
-		List<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> list = Lists.newArrayList();
+		List<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> list = new ArrayList();
+		List<ChunkHolder> list2 = new ArrayList();
 		int i = centerChunk.x;
 		int j = centerChunk.z;
 
@@ -312,19 +314,20 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 				ChunkStatus chunkStatus = (ChunkStatus)distanceToStatus.apply(m);
 				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getChunkAt(chunkStatus, this);
+				list2.add(chunkHolder);
 				list.add(completableFuture);
 			}
 		}
 
 		CompletableFuture<List<Either<Chunk, ChunkHolder.Unloaded>>> completableFuture2 = Util.combineSafe(list);
-		return completableFuture2.thenApply(listx -> {
-			List<Chunk> list2 = Lists.<Chunk>newArrayList();
-			int lxx = 0;
+		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture3 = completableFuture2.thenApply(listx -> {
+			List<Chunk> list2xx = Lists.<Chunk>newArrayList();
+			int l = 0;
 
 			for(final Either<Chunk, ChunkHolder.Unloaded> either : listx) {
 				Optional<Chunk> optional = either.left();
 				if (!optional.isPresent()) {
-					final int mxx = lxx;
+					final int mxx = l;
 					return Either.right(new ChunkHolder.Unloaded() {
 						public String toString() {
 							return "Unloaded " + new ChunkPos(i + mx % (margin * 2 + 1), j + mx / (margin * 2 + 1)) + " " + either.right().get();
@@ -332,12 +335,18 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					});
 				}
 
-				list2.add((Chunk)optional.get());
-				++lxx;
+				list2xx.add((Chunk)optional.get());
+				++l;
 			}
 
-			return Either.left(list2);
+			return Either.left(list2xx);
 		});
+
+		for(ChunkHolder chunkHolder2 : list2) {
+			chunkHolder2.method_39967("getChunkRangeFuture " + centerChunk + " " + margin, completableFuture3);
+		}
+
+		return completableFuture3;
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkPos pos) {

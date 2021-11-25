@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -314,9 +313,13 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	public void count(PalettedContainer.Counter<T> counter) {
-		Int2IntMap int2IntMap = new Int2IntOpenHashMap();
-		this.data.storage.forEach(key -> int2IntMap.put(key, int2IntMap.get(key) + 1));
-		int2IntMap.int2IntEntrySet().forEach(entry -> counter.accept(this.data.palette.get(entry.getIntKey()), entry.getIntValue()));
+		if (this.data.palette.getSize() == 1) {
+			counter.accept(this.data.palette.get(0), this.data.storage.getSize());
+		} else {
+			Int2IntOpenHashMap int2IntOpenHashMap = new Int2IntOpenHashMap();
+			this.data.storage.forEach(key -> int2IntOpenHashMap.addTo(key, 1));
+			int2IntOpenHashMap.int2IntEntrySet().forEach(entry -> counter.accept(this.data.palette.get(entry.getIntKey()), entry.getIntValue()));
+		}
 	}
 
 	/**
