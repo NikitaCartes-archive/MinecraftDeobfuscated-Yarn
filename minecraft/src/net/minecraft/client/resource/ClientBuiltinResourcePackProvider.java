@@ -53,7 +53,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
-	private static final int MAX_FILE_SIZE = 104857600;
+	private static final int MAX_FILE_SIZE = 262144000;
 	private static final int MAX_SAVED_PACKS = 10;
 	private static final String VANILLA = "vanilla";
 	private static final String SERVER = "server";
@@ -127,7 +127,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
 				minecraftClient.submitAndJoin(() -> minecraftClient.setScreen(progressScreen));
-				completableFuture = NetworkUtils.downloadResourcePack(file, url, map, 104857600, progressScreen, minecraftClient.getNetworkProxy());
+				completableFuture = NetworkUtils.downloadResourcePack(file, url, map, 262144000, progressScreen, minecraftClient.getNetworkProxy());
 			}
 
 			this.downloadTask = completableFuture.thenCompose(object -> {

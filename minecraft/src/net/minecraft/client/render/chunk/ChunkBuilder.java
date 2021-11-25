@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6850;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -195,8 +196,8 @@ public class ChunkBuilder {
 		}
 	}
 
-	public void rebuild(ChunkBuilder.BuiltChunk chunk) {
-		chunk.rebuild();
+	public void rebuild(ChunkBuilder.BuiltChunk chunk, class_6850 arg) {
+		chunk.rebuild(arg);
 	}
 
 	public void reset() {
@@ -397,19 +398,19 @@ public class ChunkBuilder {
 			return bl;
 		}
 
-		public ChunkBuilder.BuiltChunk.Task createRebuildTask() {
+		public ChunkBuilder.BuiltChunk.Task createRebuildTask(class_6850 arg) {
 			boolean bl = this.cancel();
 			BlockPos blockPos = this.origin.toImmutable();
 			int i = 1;
-			ChunkRendererRegion chunkRendererRegion = ChunkRendererRegion.create(ChunkBuilder.this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
+			ChunkRendererRegion chunkRendererRegion = arg.method_39969(ChunkBuilder.this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
 			this.rebuildTask = new ChunkBuilder.BuiltChunk.RebuildTask(
 				this.getSquaredCameraDistance(), chunkRendererRegion, bl || this.data.get() != ChunkBuilder.ChunkData.EMPTY
 			);
 			return this.rebuildTask;
 		}
 
-		public void scheduleRebuild(ChunkBuilder chunkRenderer) {
-			ChunkBuilder.BuiltChunk.Task task = this.createRebuildTask();
+		public void scheduleRebuild(ChunkBuilder chunkRenderer, class_6850 arg) {
+			ChunkBuilder.BuiltChunk.Task task = this.createRebuildTask(arg);
 			chunkRenderer.send(task);
 		}
 
@@ -427,8 +428,8 @@ public class ChunkBuilder {
 			ChunkBuilder.this.worldRenderer.updateNoCullingBlockEntities(set2, set);
 		}
 
-		public void rebuild() {
-			ChunkBuilder.BuiltChunk.Task task = this.createRebuildTask();
+		public void rebuild(class_6850 arg) {
+			ChunkBuilder.BuiltChunk.Task task = this.createRebuildTask(arg);
 			task.run(ChunkBuilder.this.buffers);
 		}
 

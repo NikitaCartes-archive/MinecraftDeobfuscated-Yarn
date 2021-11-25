@@ -36,6 +36,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6850;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -2245,6 +2246,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	private void updateChunks(Camera camera) {
 		this.client.getProfiler().push("populate_chunks_to_compile");
+		class_6850 lv = new class_6850();
 		BlockPos blockPos = camera.getBlockPos();
 		List<ChunkBuilder.BuiltChunk> list = Lists.<ChunkBuilder.BuiltChunk>newArrayList();
 
@@ -2262,7 +2264,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 				if (bl) {
 					this.client.getProfiler().push("build_near_sync");
-					this.chunkBuilder.rebuild(builtChunk);
+					this.chunkBuilder.rebuild(builtChunk, lv);
 					builtChunk.cancelRebuild();
 					this.client.getProfiler().pop();
 				} else {
@@ -2276,7 +2278,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.client.getProfiler().swap("schedule_async_compile");
 
 		for (ChunkBuilder.BuiltChunk builtChunk2 : list) {
-			builtChunk2.scheduleRebuild(this.chunkBuilder);
+			builtChunk2.scheduleRebuild(this.chunkBuilder, lv);
 			builtChunk2.cancelRebuild();
 		}
 
