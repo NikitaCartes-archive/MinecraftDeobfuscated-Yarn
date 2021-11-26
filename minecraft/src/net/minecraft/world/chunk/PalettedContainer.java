@@ -257,7 +257,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 			int i = provider.getContainerSize();
 			int[] is = new int[i];
 			this.data.storage.method_39892(is);
-			method_39894(is, ix -> biMapPalette.index(this.data.palette.get(ix)));
+			method_39894(is, id -> biMapPalette.index(this.data.palette.get(id)));
 			int j = provider.getBits(idList, biMapPalette.getSize());
 			Optional<LongStream> optional;
 			if (j != 0) {

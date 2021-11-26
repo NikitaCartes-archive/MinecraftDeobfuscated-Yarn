@@ -477,9 +477,9 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Deprecated
 	public Optional<BlockState> applyMaterialRule(
-		CarverContext context, Function<BlockPos, Biome> posToBiome, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, BlockPos pos, boolean bl
+		CarverContext context, Function<BlockPos, Biome> posToBiome, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, BlockPos pos, boolean hasFluid
 	) {
 		return this.surfaceBuilder
-			.applyMaterialRule(((ChunkGeneratorSettings)this.settings.get()).getSurfaceRule(), context, posToBiome, chunk, chunkNoiseSampler, pos, bl);
+			.applyMaterialRule(((ChunkGeneratorSettings)this.settings.get()).getSurfaceRule(), context, posToBiome, chunk, chunkNoiseSampler, pos, hasFluid);
 	}
 }

@@ -50,10 +50,10 @@ public class VanillaSurfaceRules {
 	}
 
 	public static MaterialRules.MaterialRule createOverworldSurfaceRule() {
-		return method_39922(true, false, true);
+		return createDefaultRule(true, false, true);
 	}
 
-	public static MaterialRules.MaterialRule method_39922(boolean bl, boolean bl2, boolean bl3) {
+	public static MaterialRules.MaterialRule createDefaultRule(boolean surface, boolean bedrockRoof, boolean bedrockFloor) {
 		MaterialRules.MaterialCondition materialCondition = MaterialRules.aboveY(YOffset.fixed(97), 2);
 		MaterialRules.MaterialCondition materialCondition2 = MaterialRules.aboveY(YOffset.fixed(256), 0);
 		MaterialRules.MaterialCondition materialCondition3 = MaterialRules.aboveYWithStoneDepth(YOffset.fixed(63), -1);
@@ -246,16 +246,16 @@ public class VanillaSurfaceRules {
 			)
 		);
 		Builder<MaterialRules.MaterialRule> builder = ImmutableList.builder();
-		if (bl2) {
+		if (bedrockRoof) {
 			builder.add(MaterialRules.condition(MaterialRules.not(MaterialRules.verticalGradient("bedrock_roof", YOffset.belowTop(5), YOffset.getTop())), BEDROCK));
 		}
 
-		if (bl3) {
+		if (bedrockFloor) {
 			builder.add(MaterialRules.condition(MaterialRules.verticalGradient("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), BEDROCK));
 		}
 
 		MaterialRules.MaterialRule materialRule10 = MaterialRules.condition(MaterialRules.surface(), materialRule9);
-		builder.add(bl ? materialRule10 : materialRule9);
+		builder.add(surface ? materialRule10 : materialRule9);
 		builder.add(MaterialRules.condition(MaterialRules.verticalGradient("deepslate", YOffset.fixed(0), YOffset.fixed(8)), DEEPSLATE));
 		return MaterialRules.sequence((MaterialRules.MaterialRule[])builder.build().toArray(MaterialRules.MaterialRule[]::new));
 	}

@@ -110,7 +110,7 @@ public class ScoreboardCriterion {
 				? Optional.empty()
 				: Registry.STAT_TYPE
 					.getOrEmpty(Identifier.splitOn(name.substring(0, i), '.'))
-					.flatMap(statType -> getOrCreateStatCriterion(statType, Identifier.splitOn(name.substring(i + 1), '.')));
+					.flatMap(type -> getOrCreateStatCriterion(type, Identifier.splitOn(name.substring(i + 1), '.')));
 		}
 	}
 

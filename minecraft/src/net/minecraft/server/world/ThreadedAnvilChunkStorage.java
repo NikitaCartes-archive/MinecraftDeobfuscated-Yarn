@@ -177,7 +177,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return this.chunkGenerator;
 	}
 
-	public void method_37904() {
+	public void verifyChunkGenerator() {
 		DataResult<JsonElement> dataResult = ChunkGenerator.CODEC.encodeStart(JsonOps.INSTANCE, this.chunkGenerator);
 		DataResult<ChunkGenerator> dataResult2 = dataResult.flatMap(jsonElement -> ChunkGenerator.CODEC.parse(JsonOps.INSTANCE, jsonElement));
 		dataResult2.result().ifPresent(chunkGenerator -> this.chunkGenerator = chunkGenerator);
@@ -341,7 +341,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		});
 
 		for (ChunkHolder chunkHolder2 : list2) {
-			chunkHolder2.method_39967("getChunkRangeFuture " + centerChunk + " " + margin, completableFuture3);
+			chunkHolder2.combineSavingFuture("getChunkRangeFuture " + centerChunk + " " + margin, completableFuture3);
 		}
 
 		return completableFuture3;
@@ -697,16 +697,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			return false;
 		} else {
 			Chunk chunk = (Chunk)chunkHolder.getSavingFuture().getNow(null);
-			if (chunk instanceof ReadOnlyChunk readOnlyChunk) {
-				boolean bl = this.save(readOnlyChunk.getWrappedChunk());
-				chunkHolder.updateAccessibleStatus();
-				return bl;
-			} else if (chunk instanceof WorldChunk) {
+			if (!(chunk instanceof ReadOnlyChunk) && !(chunk instanceof WorldChunk)) {
+				return false;
+			} else {
 				boolean bl = this.save(chunk);
 				chunkHolder.updateAccessibleStatus();
 				return bl;
-			} else {
-				return false;
 			}
 		}
 	}

@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6850;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -196,8 +195,8 @@ public class ChunkBuilder {
 		}
 	}
 
-	public void rebuild(ChunkBuilder.BuiltChunk chunk, class_6850 arg) {
-		chunk.rebuild(arg);
+	public void rebuild(ChunkBuilder.BuiltChunk chunk, ChunkRendererRegionBuilder builder) {
+		chunk.rebuild(builder);
 	}
 
 	public void reset() {
@@ -398,19 +397,19 @@ public class ChunkBuilder {
 			return bl;
 		}
 
-		public ChunkBuilder.BuiltChunk.Task createRebuildTask(class_6850 arg) {
+		public ChunkBuilder.BuiltChunk.Task createRebuildTask(ChunkRendererRegionBuilder builder) {
 			boolean bl = this.cancel();
 			BlockPos blockPos = this.origin.toImmutable();
 			int i = 1;
-			ChunkRendererRegion chunkRendererRegion = arg.method_39969(ChunkBuilder.this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
+			ChunkRendererRegion chunkRendererRegion = builder.build(ChunkBuilder.this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
 			this.rebuildTask = new ChunkBuilder.BuiltChunk.RebuildTask(
 				this.getSquaredCameraDistance(), chunkRendererRegion, bl || this.data.get() != ChunkBuilder.ChunkData.EMPTY
 			);
 			return this.rebuildTask;
 		}
 
-		public void scheduleRebuild(ChunkBuilder chunkRenderer, class_6850 arg) {
-			ChunkBuilder.BuiltChunk.Task task = this.createRebuildTask(arg);
+		public void scheduleRebuild(ChunkBuilder chunkRenderer, ChunkRendererRegionBuilder builder) {
+			ChunkBuilder.BuiltChunk.Task task = this.createRebuildTask(builder);
 			chunkRenderer.send(task);
 		}
 
@@ -428,8 +427,8 @@ public class ChunkBuilder {
 			ChunkBuilder.this.worldRenderer.updateNoCullingBlockEntities(set2, set);
 		}
 
-		public void rebuild(class_6850 arg) {
-			ChunkBuilder.BuiltChunk.Task task = this.createRebuildTask(arg);
+		public void rebuild(ChunkRendererRegionBuilder builder) {
+			ChunkBuilder.BuiltChunk.Task task = this.createRebuildTask(builder);
 			task.run(ChunkBuilder.this.buffers);
 		}
 
@@ -483,7 +482,7 @@ public class ChunkBuilder {
 								return ChunkBuilder.Result.CANCELLED;
 							} else {
 								BuiltChunk.this.data.set(chunkData);
-								ChunkBuilder.this.worldRenderer.method_38550(BuiltChunk.this);
+								ChunkBuilder.this.worldRenderer.addBuiltChunk(BuiltChunk.this);
 								return ChunkBuilder.Result.SUCCESSFUL;
 							}
 						});

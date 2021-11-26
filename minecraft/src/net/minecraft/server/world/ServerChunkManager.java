@@ -49,7 +49,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ServerChunkManager extends ChunkManager {
-	private static final Logger field_36301 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
 	private final ChunkTicketManager ticketManager;
 	final ServerWorld world;
@@ -477,7 +477,7 @@ public class ServerChunkManager extends ChunkManager {
 	 */
 	public void updatePosition(ServerPlayerEntity player) {
 		if (player.isRemoved()) {
-			field_36301.info("Skipping update from removed player '{}'", player);
+			LOGGER.info("Skipping update from removed player '{}'", player);
 		} else {
 			this.threadedAnvilChunkStorage.updatePosition(player);
 		}

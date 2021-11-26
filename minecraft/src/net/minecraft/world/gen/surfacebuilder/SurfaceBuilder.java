@@ -136,7 +136,7 @@ public class SurfaceBuilder {
 				RegistryKey<Biome> registryKey = (RegistryKey<Biome>)biomeRegistry.getKey(biome)
 					.orElseThrow(() -> new IllegalStateException("Unregistered biome: " + biome));
 				if (registryKey == BiomeKeys.ERODED_BADLANDS) {
-					this.method_39102(blockColumn, m, n, o, chunk);
+					this.placeBadlandsPillar(blockColumn, m, n, o, chunk);
 				}
 
 				int p = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, k, l) + 1;
@@ -181,7 +181,7 @@ public class SurfaceBuilder {
 				}
 
 				if (registryKey == BiomeKeys.FROZEN_OCEAN || registryKey == BiomeKeys.DEEP_FROZEN_OCEAN) {
-					this.method_39104(materialRuleContext.method_39551(), biome, blockColumn, mutable2, m, n, o);
+					this.placeIceberg(materialRuleContext.method_39551(), biome, blockColumn, mutable2, m, n, o);
 				}
 			}
 		}
@@ -211,7 +211,7 @@ public class SurfaceBuilder {
 		Chunk chunk,
 		ChunkNoiseSampler chunkNoiseSampler,
 		BlockPos pos,
-		boolean bl
+		boolean hasFluid
 	) {
 		MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(
 			this, chunk, chunkNoiseSampler, posToBiome, context.getRegistryManager().get(Registry.BIOME_KEY), context
@@ -221,12 +221,12 @@ public class SurfaceBuilder {
 		int j = pos.getY();
 		int k = pos.getZ();
 		materialRuleContext.initHorizontalContext(i, k);
-		materialRuleContext.initVerticalContext(1, 1, bl ? j + 1 : Integer.MIN_VALUE, i, j, k);
+		materialRuleContext.initVerticalContext(1, 1, hasFluid ? j + 1 : Integer.MIN_VALUE, i, j, k);
 		BlockState blockState = blockStateRule.tryApply(i, j, k);
 		return Optional.ofNullable(blockState);
 	}
 
-	private void method_39102(BlockColumn blockColumn, int x, int z, int surfaceY, HeightLimitView heightLimitView) {
+	private void placeBadlandsPillar(BlockColumn column, int x, int z, int surfaceY, HeightLimitView chunk) {
 		double d = 0.2;
 		double e = Math.min(
 			Math.abs(this.badlandsSurfaceNoise.sample((double)x, 0.0, (double)z) * 8.25), this.badlandsPillarNoise.sample((double)x * 0.2, 0.0, (double)z * 0.2) * 15.0
@@ -238,8 +238,8 @@ public class SurfaceBuilder {
 			double i = 64.0 + Math.min(e * e * 2.5, Math.ceil(h * 50.0) + 24.0);
 			int j = MathHelper.floor(i);
 			if (surfaceY <= j) {
-				for (int k = j; k >= heightLimitView.getBottomY(); k--) {
-					BlockState blockState = blockColumn.getState(k);
+				for (int k = j; k >= chunk.getBottomY(); k--) {
+					BlockState blockState = column.getState(k);
 					if (blockState.isOf(this.defaultState.getBlock())) {
 						break;
 					}
@@ -249,14 +249,14 @@ public class SurfaceBuilder {
 					}
 				}
 
-				for (int k = j; k >= heightLimitView.getBottomY() && blockColumn.getState(k).isAir(); k--) {
-					blockColumn.setState(k, this.defaultState);
+				for (int k = j; k >= chunk.getBottomY() && column.getState(k).isAir(); k--) {
+					column.setState(k, this.defaultState);
 				}
 			}
 		}
 	}
 
-	private void method_39104(int i, Biome biome, BlockColumn blockColumn, BlockPos.Mutable mutablePos, int x, int z, int surfaceY) {
+	private void placeIceberg(int minY, Biome biome, BlockColumn column, BlockPos.Mutable mutablePos, int x, int z, int surfaceY) {
 		double d = 1.28;
 		double e = Math.min(
 			Math.abs(this.icebergSurfaceNoise.sample((double)x, 0.0, (double)z) * 8.25), this.icebergPillarNoise.sample((double)x * 1.28, 0.0, (double)z * 1.28) * 15.0
@@ -265,34 +265,34 @@ public class SurfaceBuilder {
 			double f = 1.17;
 			double g = 1.5;
 			double h = Math.abs(this.icebergPillarRoofNoise.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
-			double j = Math.min(e * e * 1.2, Math.ceil(h * 40.0) + 14.0);
+			double i = Math.min(e * e * 1.2, Math.ceil(h * 40.0) + 14.0);
 			if (biome.shouldGenerateLowerFrozenOceanSurface(mutablePos.set(x, 63, z))) {
-				j -= 2.0;
+				i -= 2.0;
 			}
 
-			double k;
-			if (j > 2.0) {
-				k = (double)this.seaLevel - j - 7.0;
-				j += (double)this.seaLevel;
+			double j;
+			if (i > 2.0) {
+				j = (double)this.seaLevel - i - 7.0;
+				i += (double)this.seaLevel;
 			} else {
+				i = 0.0;
 				j = 0.0;
-				k = 0.0;
 			}
 
-			double l = j;
+			double k = i;
 			AbstractRandom abstractRandom = this.randomDeriver.createRandom(x, 0, z);
-			int m = 2 + abstractRandom.nextInt(4);
-			int n = this.seaLevel + 18 + abstractRandom.nextInt(10);
-			int o = 0;
+			int l = 2 + abstractRandom.nextInt(4);
+			int m = this.seaLevel + 18 + abstractRandom.nextInt(10);
+			int n = 0;
 
-			for (int p = Math.max(surfaceY, (int)j + 1); p >= i; p--) {
-				if (blockColumn.getState(p).isAir() && p < (int)l && abstractRandom.nextDouble() > 0.01
-					|| blockColumn.getState(p).getMaterial() == Material.WATER && p > (int)k && p < this.seaLevel && k != 0.0 && abstractRandom.nextDouble() > 0.15) {
-					if (o <= m && p > n) {
-						blockColumn.setState(p, SNOW_BLOCK);
-						o++;
+			for (int o = Math.max(surfaceY, (int)i + 1); o >= minY; o--) {
+				if (column.getState(o).isAir() && o < (int)k && abstractRandom.nextDouble() > 0.01
+					|| column.getState(o).getMaterial() == Material.WATER && o > (int)j && o < this.seaLevel && j != 0.0 && abstractRandom.nextDouble() > 0.15) {
+					if (n <= l && o > m) {
+						column.setState(o, SNOW_BLOCK);
+						n++;
 					} else {
-						blockColumn.setState(p, PACKED_ICE);
+						column.setState(o, PACKED_ICE);
 					}
 				}
 			}

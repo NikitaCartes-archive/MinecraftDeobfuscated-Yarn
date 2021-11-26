@@ -49,10 +49,10 @@ public class ResetChunksCommand {
 		);
 	}
 
-	private static int executeResetChunks(ServerCommandSource source, int radius, boolean bl) {
+	private static int executeResetChunks(ServerCommandSource source, int radius, boolean skipOldChunks) {
 		ServerWorld serverWorld = source.getWorld();
 		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
-		serverChunkManager.threadedAnvilChunkStorage.method_37904();
+		serverChunkManager.threadedAnvilChunkStorage.verifyChunkGenerator();
 		Vec3d vec3d = source.getPosition();
 		ChunkPos chunkPos = new ChunkPos(new BlockPos(vec3d));
 		int i = chunkPos.z - radius;
@@ -64,7 +64,7 @@ public class ResetChunksCommand {
 			for (int n = k; n <= l; n++) {
 				ChunkPos chunkPos2 = new ChunkPos(n, m);
 				WorldChunk worldChunk = serverChunkManager.getWorldChunk(n, m, false);
-				if (worldChunk != null && (!bl || !worldChunk.usesOldNoise())) {
+				if (worldChunk != null && (!skipOldChunks || !worldChunk.usesOldNoise())) {
 					for (BlockPos blockPos : BlockPos.iterate(
 						chunkPos2.getStartX(), serverWorld.getBottomY(), chunkPos2.getStartZ(), chunkPos2.getEndX(), serverWorld.getTopY() - 1, chunkPos2.getEndZ()
 					)) {
@@ -88,7 +88,7 @@ public class ResetChunksCommand {
 				for (int s = chunkPos.x - radius; s <= chunkPos.x + radius; s++) {
 					ChunkPos chunkPos3 = new ChunkPos(s, r);
 					WorldChunk worldChunk2 = serverChunkManager.getWorldChunk(s, r, false);
-					if (worldChunk2 != null && (!bl || !worldChunk2.usesOldNoise())) {
+					if (worldChunk2 != null && (!skipOldChunks || !worldChunk2.usesOldNoise())) {
 						List<Chunk> list = Lists.<Chunk>newArrayList();
 						int t = Math.max(1, chunkStatus.getTaskMargin());
 
@@ -144,7 +144,7 @@ public class ResetChunksCommand {
 			for (int y = chunkPos.x - radius; y <= chunkPos.x + radius; y++) {
 				ChunkPos chunkPos4 = new ChunkPos(y, x);
 				WorldChunk worldChunk3 = serverChunkManager.getWorldChunk(y, x, false);
-				if (worldChunk3 != null && (!bl || !worldChunk3.usesOldNoise())) {
+				if (worldChunk3 != null && (!skipOldChunks || !worldChunk3.usesOldNoise())) {
 					for (BlockPos blockPos2 : BlockPos.iterate(
 						chunkPos4.getStartX(), serverWorld.getBottomY(), chunkPos4.getStartZ(), chunkPos4.getEndX(), serverWorld.getTopY() - 1, chunkPos4.getEndZ()
 					)) {

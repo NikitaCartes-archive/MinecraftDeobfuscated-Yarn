@@ -807,11 +807,11 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		}
 	}
 
-	public void loadProjectionMatrix(Matrix4f matrix4f) {
-		RenderSystem.setProjectionMatrix(matrix4f);
+	public void loadProjectionMatrix(Matrix4f projectionMatrix) {
+		RenderSystem.setProjectionMatrix(projectionMatrix);
 	}
 
-	public Matrix4f getBasicProjectionMatrix(double d) {
+	public Matrix4f getBasicProjectionMatrix(double fov) {
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.peek().getPositionMatrix().loadIdentity();
 		if (this.zoom != 1.0F) {
@@ -823,7 +823,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			.getPositionMatrix()
 			.multiply(
 				Matrix4f.viewboxMatrix(
-					d, (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05F, this.method_32796()
+					fov, (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05F, this.method_32796()
 				)
 			);
 		return matrixStack.peek().getPositionMatrix();
@@ -833,9 +833,9 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		return this.viewDistance * 4.0F;
 	}
 
-	public static float getNightVisionStrength(LivingEntity entity, float f) {
+	public static float getNightVisionStrength(LivingEntity entity, float tickDelta) {
 		int i = entity.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration();
-		return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)i - f) * (float) Math.PI * 0.2F) * 0.3F;
+		return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)i - tickDelta) * (float) Math.PI * 0.2F) * 0.3F;
 	}
 
 	public void render(float tickDelta, long startTime, boolean tick) {
