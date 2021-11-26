@@ -41,10 +41,10 @@ public class ResetChunksCommand {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("resetchunks").requires(source -> source.hasPermissionLevel(2))).executes(context -> ResetChunksCommand.executeResetChunks((ServerCommandSource)context.getSource(), 0, true))).then(((RequiredArgumentBuilder)CommandManager.argument("range", IntegerArgumentType.integer(0, 5)).executes(context -> ResetChunksCommand.executeResetChunks((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "range"), true))).then(CommandManager.argument("skipOldChunks", BoolArgumentType.bool()).executes(commandContext -> ResetChunksCommand.executeResetChunks((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "range"), BoolArgumentType.getBool(commandContext, "skipOldChunks"))))));
     }
 
-    private static int executeResetChunks(ServerCommandSource source, int radius, boolean bl) {
+    private static int executeResetChunks(ServerCommandSource source, int radius, boolean skipOldChunks) {
         ServerWorld serverWorld = source.getWorld();
         ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
-        serverChunkManager.threadedAnvilChunkStorage.method_37904();
+        serverChunkManager.threadedAnvilChunkStorage.verifyChunkGenerator();
         Vec3d vec3d = source.getPosition();
         ChunkPos chunkPos = new ChunkPos(new BlockPos(vec3d));
         int i = chunkPos.z - radius;
@@ -55,7 +55,7 @@ public class ResetChunksCommand {
             for (int n = k; n <= l; ++n) {
                 ChunkPos chunkPos2 = new ChunkPos(n, m);
                 WorldChunk worldChunk = serverChunkManager.getWorldChunk(n, m, false);
-                if (worldChunk == null || bl && worldChunk.usesOldNoise()) continue;
+                if (worldChunk == null || skipOldChunks && worldChunk.usesOldNoise()) continue;
                 for (BlockPos blockPos : BlockPos.iterate(chunkPos2.getStartX(), serverWorld.getBottomY(), chunkPos2.getStartZ(), chunkPos2.getEndX(), serverWorld.getTopY() - 1, chunkPos2.getEndZ())) {
                     serverWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.FORCE_STATE);
                 }
@@ -71,7 +71,7 @@ public class ResetChunksCommand {
                 for (int s = chunkPos.x - radius; s <= chunkPos.x + radius; ++s) {
                     ChunkPos chunkPos3 = new ChunkPos(s, r);
                     WorldChunk worldChunk2 = serverChunkManager.getWorldChunk(s, r, false);
-                    if (worldChunk2 == null || bl && worldChunk2.usesOldNoise()) continue;
+                    if (worldChunk2 == null || skipOldChunks && worldChunk2.usesOldNoise()) continue;
                     ArrayList<Chunk> list = Lists.newArrayList();
                     int t = Math.max(1, chunkStatus.getTaskMargin());
                     for (int u = chunkPos3.z - t; u <= chunkPos3.z + t; ++u) {
@@ -99,7 +99,7 @@ public class ResetChunksCommand {
             for (int y = chunkPos.x - radius; y <= chunkPos.x + radius; ++y) {
                 ChunkPos chunkPos4 = new ChunkPos(y, x);
                 WorldChunk worldChunk3 = serverChunkManager.getWorldChunk(y, x, false);
-                if (worldChunk3 == null || bl && worldChunk3.usesOldNoise()) continue;
+                if (worldChunk3 == null || skipOldChunks && worldChunk3.usesOldNoise()) continue;
                 for (BlockPos blockPos2 : BlockPos.iterate(chunkPos4.getStartX(), serverWorld.getBottomY(), chunkPos4.getStartZ(), chunkPos4.getEndX(), serverWorld.getTopY() - 1, chunkPos4.getEndZ())) {
                     serverChunkManager.markForUpdate(blockPos2);
                 }

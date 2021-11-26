@@ -411,8 +411,8 @@ extends ChunkGenerator {
     }
 
     @Deprecated
-    public Optional<BlockState> applyMaterialRule(CarverContext context, Function<BlockPos, Biome> posToBiome, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, BlockPos pos, boolean bl) {
-        return this.surfaceBuilder.applyMaterialRule(this.settings.get().getSurfaceRule(), context, posToBiome, chunk, chunkNoiseSampler, pos, bl);
+    public Optional<BlockState> applyMaterialRule(CarverContext context, Function<BlockPos, Biome> posToBiome, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, BlockPos pos, boolean hasFluid) {
+        return this.surfaceBuilder.applyMaterialRule(this.settings.get().getSurfaceRule(), context, posToBiome, chunk, chunkNoiseSampler, pos, hasFluid);
     }
 }
 

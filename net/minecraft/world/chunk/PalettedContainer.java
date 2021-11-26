@@ -253,13 +253,13 @@ implements PaletteResizeListener<T> {
         try {
             Optional<LongStream> optional;
             BiMapPalette<T> biMapPalette = new BiMapPalette<T>(idList, this.data.storage.getElementBits(), this.dummyListener);
-            int i2 = provider.getContainerSize();
-            int[] is = new int[i2];
+            int i = provider.getContainerSize();
+            int[] is = new int[i];
             this.data.storage.method_39892(is);
-            PalettedContainer.method_39894(is, i -> biMapPalette.index(this.data.palette.get(i)));
+            PalettedContainer.method_39894(is, id -> biMapPalette.index(this.data.palette.get(id)));
             int j = provider.getBits(idList, biMapPalette.getSize());
             if (j != 0) {
-                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i2, is);
+                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i, is);
                 optional = Optional.of(Arrays.stream(packedIntegerArray.getData()));
             } else {
                 optional = Optional.empty();

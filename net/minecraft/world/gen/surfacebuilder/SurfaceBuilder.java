@@ -126,7 +126,7 @@ public class SurfaceBuilder {
                 Biome biome = biomeAccess.getBiome(mutable2.set(m, useLegacyRandom ? 0 : o, n));
                 RegistryKey<Biome> registryKey = biomeRegistry.getKey(biome).orElseThrow(() -> new IllegalStateException("Unregistered biome: " + biome));
                 if (registryKey == BiomeKeys.ERODED_BADLANDS) {
-                    this.method_39102(blockColumn, m, n, o, chunk);
+                    this.placeBadlandsPillar(blockColumn, m, n, o, chunk);
                 }
                 int p = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, k, l) + 1;
                 materialRuleContext.initHorizontalContext(m, n);
@@ -163,7 +163,7 @@ public class SurfaceBuilder {
                     blockColumn.setState(u, blockState2);
                 }
                 if (registryKey != BiomeKeys.FROZEN_OCEAN && registryKey != BiomeKeys.DEEP_FROZEN_OCEAN) continue;
-                this.method_39104(materialRuleContext.method_39551(), biome, blockColumn, mutable2, m, n, o);
+                this.placeIceberg(materialRuleContext.method_39551(), biome, blockColumn, mutable2, m, n, o);
             }
         }
     }
@@ -185,19 +185,19 @@ public class SurfaceBuilder {
     }
 
     @Deprecated
-    public Optional<BlockState> applyMaterialRule(MaterialRules.MaterialRule rule, CarverContext context, Function<BlockPos, Biome> posToBiome, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, BlockPos pos, boolean bl) {
+    public Optional<BlockState> applyMaterialRule(MaterialRules.MaterialRule rule, CarverContext context, Function<BlockPos, Biome> posToBiome, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, BlockPos pos, boolean hasFluid) {
         MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(this, chunk, chunkNoiseSampler, posToBiome, context.getRegistryManager().get(Registry.BIOME_KEY), context);
         MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)rule.apply(materialRuleContext);
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
         materialRuleContext.initHorizontalContext(i, k);
-        materialRuleContext.initVerticalContext(1, 1, bl ? j + 1 : Integer.MIN_VALUE, i, j, k);
+        materialRuleContext.initVerticalContext(1, 1, hasFluid ? j + 1 : Integer.MIN_VALUE, i, j, k);
         BlockState blockState = blockStateRule.tryApply(i, j, k);
         return Optional.ofNullable(blockState);
     }
 
-    private void method_39102(BlockColumn blockColumn, int x, int z, int surfaceY, HeightLimitView heightLimitView) {
+    private void placeBadlandsPillar(BlockColumn column, int x, int z, int surfaceY, HeightLimitView chunk) {
         BlockState blockState;
         int k;
         double d = 0.2;
@@ -213,17 +213,17 @@ public class SurfaceBuilder {
         if (surfaceY > j) {
             return;
         }
-        for (k = j; k >= heightLimitView.getBottomY() && !(blockState = blockColumn.getState(k)).isOf(this.defaultState.getBlock()); --k) {
+        for (k = j; k >= chunk.getBottomY() && !(blockState = column.getState(k)).isOf(this.defaultState.getBlock()); --k) {
             if (!blockState.isOf(Blocks.WATER)) continue;
             return;
         }
-        for (k = j; k >= heightLimitView.getBottomY() && blockColumn.getState(k).isAir(); --k) {
-            blockColumn.setState(k, this.defaultState);
+        for (k = j; k >= chunk.getBottomY() && column.getState(k).isAir(); --k) {
+            column.setState(k, this.defaultState);
         }
     }
 
-    private void method_39104(int i, Biome biome, BlockColumn blockColumn, BlockPos.Mutable mutablePos, int x, int z, int surfaceY) {
-        double k;
+    private void placeIceberg(int minY, Biome biome, BlockColumn column, BlockPos.Mutable mutablePos, int x, int z, int surfaceY) {
+        double j;
         double d = 1.28;
         double e = Math.min(Math.abs(this.icebergSurfaceNoise.sample(x, 0.0, z) * 8.25), this.icebergPillarNoise.sample((double)x * 1.28, 0.0, (double)z * 1.28) * 15.0);
         if (e <= 1.8) {
@@ -232,30 +232,30 @@ public class SurfaceBuilder {
         double f = 1.17;
         double g = 1.5;
         double h = Math.abs(this.icebergPillarRoofNoise.sample((double)x * 1.17, 0.0, (double)z * 1.17) * 1.5);
-        double j = Math.min(e * e * 1.2, Math.ceil(h * 40.0) + 14.0);
+        double i = Math.min(e * e * 1.2, Math.ceil(h * 40.0) + 14.0);
         if (biome.shouldGenerateLowerFrozenOceanSurface(mutablePos.set(x, 63, z))) {
-            j -= 2.0;
+            i -= 2.0;
         }
-        if (j > 2.0) {
-            k = (double)this.seaLevel - j - 7.0;
-            j += (double)this.seaLevel;
+        if (i > 2.0) {
+            j = (double)this.seaLevel - i - 7.0;
+            i += (double)this.seaLevel;
         } else {
+            i = 0.0;
             j = 0.0;
-            k = 0.0;
         }
-        double l = j;
+        double k = i;
         AbstractRandom abstractRandom = this.randomDeriver.createRandom(x, 0, z);
-        int m = 2 + abstractRandom.nextInt(4);
-        int n = this.seaLevel + 18 + abstractRandom.nextInt(10);
-        int o = 0;
-        for (int p = Math.max(surfaceY, (int)l + 1); p >= i; --p) {
-            if (!(blockColumn.getState(p).isAir() && p < (int)l && abstractRandom.nextDouble() > 0.01) && (blockColumn.getState(p).getMaterial() != Material.WATER || p <= (int)k || p >= this.seaLevel || k == 0.0 || !(abstractRandom.nextDouble() > 0.15))) continue;
-            if (o <= m && p > n) {
-                blockColumn.setState(p, SNOW_BLOCK);
-                ++o;
+        int l = 2 + abstractRandom.nextInt(4);
+        int m = this.seaLevel + 18 + abstractRandom.nextInt(10);
+        int n = 0;
+        for (int o = Math.max(surfaceY, (int)k + 1); o >= minY; --o) {
+            if (!(column.getState(o).isAir() && o < (int)k && abstractRandom.nextDouble() > 0.01) && (column.getState(o).getMaterial() != Material.WATER || o <= (int)j || o >= this.seaLevel || j == 0.0 || !(abstractRandom.nextDouble() > 0.15))) continue;
+            if (n <= l && o > m) {
+                column.setState(o, SNOW_BLOCK);
+                ++n;
                 continue;
             }
-            blockColumn.setState(p, PACKED_ICE);
+            column.setState(o, PACKED_ICE);
         }
     }
 

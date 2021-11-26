@@ -351,7 +351,7 @@ implements Monster {
     class SwoopMovementGoal
     extends MovementGoal {
         private static final int field_36305 = 20;
-        private boolean field_36306;
+        private boolean catsNearby;
         private int field_36307;
 
         SwoopMovementGoal() {
@@ -386,9 +386,9 @@ implements Monster {
                 for (CatEntity catEntity : list) {
                     catEntity.hiss();
                 }
-                this.field_36306 = !list.isEmpty();
+                this.catsNearby = !list.isEmpty();
             }
-            return !this.field_36306;
+            return !this.catsNearby;
         }
 
         @Override

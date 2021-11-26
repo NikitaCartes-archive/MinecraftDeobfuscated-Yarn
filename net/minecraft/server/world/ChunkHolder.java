@@ -264,11 +264,11 @@ public class ChunkHolder {
         return completableFuture == null ? UNLOADED_CHUNK_FUTURE : completableFuture;
     }
 
-    protected void method_39967(String string, CompletableFuture<?> completableFuture) {
+    protected void combineSavingFuture(String thenDesc, CompletableFuture<?> then) {
         if (this.actionStack != null) {
-            this.actionStack.push(new MultithreadAction(Thread.currentThread(), completableFuture, string));
+            this.actionStack.push(new MultithreadAction(Thread.currentThread(), then, thenDesc));
         }
-        this.savingFuture = this.savingFuture.thenCombine(completableFuture, (chunk, object) -> chunk);
+        this.savingFuture = this.savingFuture.thenCombine(then, (chunk, object) -> chunk);
     }
 
     private void combineSavingFuture(CompletableFuture<? extends Either<? extends Chunk, Unloaded>> then, String thenDesc) {

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ActiveTargetGoal<T extends LivingEntity>
 extends TrackTargetGoal {
-    private static final int field_36304 = 10;
+    private static final int DEFAULT_RECIPROCAL_CHANCE = 10;
     protected final Class<T> targetClass;
     /**
      * The reciprocal of chance to actually search for a target on every tick
@@ -36,8 +36,8 @@ extends TrackTargetGoal {
         this(mob, targetClass, 10, checkVisibility, false, null);
     }
 
-    public ActiveTargetGoal(MobEntity mobEntity, Class<T> class_, boolean bl, Predicate<LivingEntity> predicate) {
-        this(mobEntity, class_, 10, bl, false, predicate);
+    public ActiveTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, Predicate<LivingEntity> targetPredicate) {
+        this(mob, targetClass, 10, checkVisibility, false, targetPredicate);
     }
 
     public ActiveTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, boolean checkCanNavigate) {

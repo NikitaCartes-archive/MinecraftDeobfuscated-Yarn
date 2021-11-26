@@ -158,11 +158,11 @@ public final class ChunkGeneratorSettings {
     }
 
     private static ChunkGeneratorSettings createCavesSettings() {
-        return new ChunkGeneratorSettings(new StructuresConfig(false), GenerationShapeConfig.create(-64, 192, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, false, false, false, VanillaTerrainParametersCreator.createCavesParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.method_39922(false, true, true), 32, false, false, false, false, false, true);
+        return new ChunkGeneratorSettings(new StructuresConfig(false), GenerationShapeConfig.create(-64, 192, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, false, false, false, VanillaTerrainParametersCreator.createCavesParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createDefaultRule(false, true, true), 32, false, false, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createFloatingIslandsSettings() {
-        return new ChunkGeneratorSettings(new StructuresConfig(true), GenerationShapeConfig.create(0, 256, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, false, false, false, VanillaTerrainParametersCreator.createFloatingIslandsParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.method_39922(false, false, false), -64, false, false, false, false, false, true);
+        return new ChunkGeneratorSettings(new StructuresConfig(true), GenerationShapeConfig.create(0, 256, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-23.4375, 64, -46), new SlideConfig(-0.234375, 7, 1), 2, 1, false, false, false, VanillaTerrainParametersCreator.createFloatingIslandsParameters()), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), VanillaSurfaceRules.createDefaultRule(false, false, false), -64, false, false, false, false, false, true);
     }
 
     static {

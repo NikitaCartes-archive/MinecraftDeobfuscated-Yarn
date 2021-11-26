@@ -53,10 +53,10 @@ public class VanillaSurfaceRules {
     }
 
     public static MaterialRules.MaterialRule createOverworldSurfaceRule() {
-        return VanillaSurfaceRules.method_39922(true, false, true);
+        return VanillaSurfaceRules.createDefaultRule(true, false, true);
     }
 
-    public static MaterialRules.MaterialRule method_39922(boolean bl, boolean bl2, boolean bl3) {
+    public static MaterialRules.MaterialRule createDefaultRule(boolean surface, boolean bedrockRoof, boolean bedrockFloor) {
         MaterialRules.MaterialCondition materialCondition = MaterialRules.aboveY(YOffset.fixed(97), 2);
         MaterialRules.MaterialCondition materialCondition2 = MaterialRules.aboveY(YOffset.fixed(256), 0);
         MaterialRules.MaterialCondition materialCondition3 = MaterialRules.aboveYWithStoneDepth(YOffset.fixed(63), -1);
@@ -83,14 +83,14 @@ public class VanillaSurfaceRules {
         MaterialRules.MaterialCondition materialCondition16 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, 0.5454, 0.909);
         MaterialRules.MaterialRule materialRule9 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.sequence(MaterialRules.condition(MaterialRules.biome(BiomeKeys.WOODED_BADLANDS), MaterialRules.condition(materialCondition, MaterialRules.sequence(MaterialRules.condition(materialCondition14, COARSE_DIRT), MaterialRules.condition(materialCondition15, COARSE_DIRT), MaterialRules.condition(materialCondition16, COARSE_DIRT), materialRule))), MaterialRules.condition(MaterialRules.biome(BiomeKeys.SWAMP), MaterialRules.condition(materialCondition5, MaterialRules.condition(MaterialRules.not(materialCondition6), MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE_SWAMP, 0.0), WATER)))))), MaterialRules.condition(MaterialRules.biome(BiomeKeys.BADLANDS, BiomeKeys.ERODED_BADLANDS, BiomeKeys.WOODED_BADLANDS), MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.sequence(MaterialRules.condition(materialCondition2, ORANGE_TERRACOTTA), MaterialRules.condition(materialCondition4, MaterialRules.sequence(MaterialRules.condition(materialCondition14, TERRACOTTA), MaterialRules.condition(materialCondition15, TERRACOTTA), MaterialRules.condition(materialCondition16, TERRACOTTA), MaterialRules.terracottaBands())), MaterialRules.condition(materialCondition7, MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, RED_SANDSTONE), RED_SAND)), MaterialRules.condition(MaterialRules.not(materialCondition10), ORANGE_TERRACOTTA), MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA), materialRule3)), MaterialRules.condition(materialCondition3, MaterialRules.sequence(MaterialRules.condition(materialCondition6, MaterialRules.condition(MaterialRules.not(materialCondition4), ORANGE_TERRACOTTA)), MaterialRules.terracottaBands())), MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA)))), MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.condition(materialCondition7, MaterialRules.sequence(MaterialRules.condition(materialCondition11, MaterialRules.condition(materialCondition10, MaterialRules.sequence(MaterialRules.condition(materialCondition8, AIR), MaterialRules.condition(MaterialRules.temperature(), ICE), WATER))), materialRule8))), MaterialRules.condition(materialCondition9, MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.condition(materialCondition11, MaterialRules.condition(materialCondition10, WATER))), MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, materialRule7), MaterialRules.condition(materialCondition13, MaterialRules.condition(MaterialRules.stoneDepth(0, true, true, VerticalSurfaceType.FLOOR), SANDSTONE)))), MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.sequence(MaterialRules.condition(MaterialRules.biome(BiomeKeys.FROZEN_PEAKS, BiomeKeys.JAGGED_PEAKS), STONE), MaterialRules.condition(MaterialRules.biome(BiomeKeys.WARM_OCEAN, BiomeKeys.LUKEWARM_OCEAN, BiomeKeys.DEEP_LUKEWARM_OCEAN), materialRule2), materialRule3)));
         ImmutableList.Builder builder = ImmutableList.builder();
-        if (bl2) {
+        if (bedrockRoof) {
             builder.add(MaterialRules.condition(MaterialRules.not(MaterialRules.verticalGradient("bedrock_roof", YOffset.belowTop(5), YOffset.getTop())), BEDROCK));
         }
-        if (bl3) {
+        if (bedrockFloor) {
             builder.add(MaterialRules.condition(MaterialRules.verticalGradient("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), BEDROCK));
         }
         MaterialRules.MaterialRule materialRule10 = MaterialRules.condition(MaterialRules.surface(), materialRule9);
-        builder.add(bl ? materialRule10 : materialRule9);
+        builder.add(surface ? materialRule10 : materialRule9);
         builder.add(MaterialRules.condition(MaterialRules.verticalGradient("deepslate", YOffset.fixed(0), YOffset.fixed(8)), DEEPSLATE));
         return MaterialRules.sequence((MaterialRules.MaterialRule[])builder.build().toArray(MaterialRules.MaterialRule[]::new));
     }

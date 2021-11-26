@@ -77,7 +77,7 @@ public class ScoreboardCriterion {
         if (i < 0) {
             return Optional.empty();
         }
-        return Registry.STAT_TYPE.getOrEmpty(Identifier.splitOn(name.substring(0, i), '.')).flatMap(statType -> ScoreboardCriterion.getOrCreateStatCriterion(statType, Identifier.splitOn(name.substring(i + 1), '.')));
+        return Registry.STAT_TYPE.getOrEmpty(Identifier.splitOn(name.substring(0, i), '.')).flatMap(type -> ScoreboardCriterion.getOrCreateStatCriterion(type, Identifier.splitOn(name.substring(i + 1), '.')));
     }
 
     private static <T> Optional<ScoreboardCriterion> getOrCreateStatCriterion(StatType<T> statType, Identifier id) {

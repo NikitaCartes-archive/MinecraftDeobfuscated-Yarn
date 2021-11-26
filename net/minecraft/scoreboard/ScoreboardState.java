@@ -96,11 +96,11 @@ extends PersistentState {
     private void readObjectivesNbt(NbtList nbt) {
         for (int i = 0; i < nbt.size(); ++i) {
             NbtCompound nbtCompound = nbt.getCompound(i);
-            ScoreboardCriterion.getOrCreateStatCriterion(nbtCompound.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
+            ScoreboardCriterion.getOrCreateStatCriterion(nbtCompound.getString("CriteriaName")).ifPresent(criterion -> {
                 String string = nbtCompound.getString("Name");
                 MutableText text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
                 ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(nbtCompound.getString("RenderType"));
-                this.scoreboard.addObjective(string, (ScoreboardCriterion)scoreboardCriterion, text, renderType);
+                this.scoreboard.addObjective(string, (ScoreboardCriterion)criterion, text, renderType);
             });
         }
     }

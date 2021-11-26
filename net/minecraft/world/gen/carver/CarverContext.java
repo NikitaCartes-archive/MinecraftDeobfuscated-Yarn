@@ -29,8 +29,8 @@ extends HeightContext {
     }
 
     @Deprecated
-    public Optional<BlockState> applyMaterialRule(Function<BlockPos, Biome> posToBiome, Chunk chunk, BlockPos pos, boolean bl) {
-        return this.chunkGenerator.applyMaterialRule(this, posToBiome, chunk, this.chunkNoiseSampler, pos, bl);
+    public Optional<BlockState> applyMaterialRule(Function<BlockPos, Biome> posToBiome, Chunk chunk, BlockPos pos, boolean hasFluid) {
+        return this.chunkGenerator.applyMaterialRule(this, posToBiome, chunk, this.chunkNoiseSampler, pos, hasFluid);
     }
 
     @Deprecated

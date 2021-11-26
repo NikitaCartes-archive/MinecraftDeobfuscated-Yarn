@@ -62,7 +62,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ServerChunkManager
 extends ChunkManager {
-    private static final Logger field_36301 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
     private final ChunkTicketManager ticketManager;
     final ServerWorld world;
@@ -436,7 +436,7 @@ extends ChunkManager {
      */
     public void updatePosition(ServerPlayerEntity player) {
         if (player.isRemoved()) {
-            field_36301.info("Skipping update from removed player '{}'", (Object)player);
+            LOGGER.info("Skipping update from removed player '{}'", (Object)player);
         } else {
             this.threadedAnvilChunkStorage.updatePosition(player);
         }

@@ -174,7 +174,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return this.chunkGenerator;
     }
 
-    public void method_37904() {
+    public void verifyChunkGenerator() {
         DataResult<JsonElement> dataResult = ChunkGenerator.CODEC.encodeStart(JsonOps.INSTANCE, this.chunkGenerator);
         DataResult dataResult2 = dataResult.flatMap(jsonElement -> ChunkGenerator.CODEC.parse(JsonOps.INSTANCE, jsonElement));
         dataResult2.result().ifPresent(chunkGenerator -> {
@@ -337,7 +337,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             return Either.left(list2);
         });
         for (ChunkHolder chunkHolder2 : list22) {
-            chunkHolder2.method_39967("getChunkRangeFuture " + centerChunk + " " + margin, (CompletableFuture<?>)completableFuture3);
+            chunkHolder2.combineSavingFuture("getChunkRangeFuture " + centerChunk + " " + margin, (CompletableFuture<?>)completableFuture3);
         }
         return completableFuture3;
     }
@@ -639,13 +639,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             return false;
         }
         Chunk chunk = chunkHolder.getSavingFuture().getNow(null);
-        if (chunk instanceof ReadOnlyChunk) {
-            ReadOnlyChunk readOnlyChunk = (ReadOnlyChunk)chunk;
-            boolean bl = this.save(readOnlyChunk.getWrappedChunk());
-            chunkHolder.updateAccessibleStatus();
-            return bl;
-        }
-        if (chunk instanceof WorldChunk) {
+        if (chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk) {
             boolean bl = this.save(chunk);
             chunkHolder.updateAccessibleStatus();
             return bl;
