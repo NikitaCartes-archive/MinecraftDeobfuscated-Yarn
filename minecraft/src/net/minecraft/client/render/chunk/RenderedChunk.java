@@ -22,14 +22,14 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 
 @Environment(EnvType.CLIENT)
-public class RenderedChunk {
+class RenderedChunk {
 	private final Map<BlockPos, BlockEntity> blockEntities;
 	@Nullable
 	private final List<PalettedContainer<BlockState>> blockStateContainers;
 	private final boolean debugWorld;
 	private final WorldChunk chunk;
 
-	public RenderedChunk(WorldChunk chunk) {
+	RenderedChunk(WorldChunk chunk) {
 		this.chunk = chunk;
 		this.debugWorld = chunk.getWorld().isDebugWorld();
 		this.blockEntities = ImmutableMap.copyOf(chunk.getBlockEntities());

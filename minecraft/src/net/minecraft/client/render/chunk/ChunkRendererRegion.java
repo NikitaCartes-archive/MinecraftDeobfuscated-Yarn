@@ -21,7 +21,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 	protected final RenderedChunk[][] chunks;
 	protected final World world;
 
-	public ChunkRendererRegion(World world, int chunkX, int chunkZ, RenderedChunk[][] chunks) {
+	ChunkRendererRegion(World world, int chunkX, int chunkZ, RenderedChunk[][] chunks) {
 		this.world = world;
 		this.chunkXOffset = chunkX;
 		this.chunkZOffset = chunkZ;
