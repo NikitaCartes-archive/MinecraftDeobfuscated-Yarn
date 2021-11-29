@@ -78,7 +78,7 @@ public class OrePlacedFeatures {
 	);
 	public static final PlacedFeature ORE_COAL_LOWER = PlacedFeatures.register(
 		"ore_coal_lower",
-		OreConfiguredFeatures.ORE_COAL_BURIED.withPlacement(modifiersWithCount(20, HeightRangePlacementModifier.uniform(YOffset.fixed(0), YOffset.fixed(192))))
+		OreConfiguredFeatures.ORE_COAL_BURIED.withPlacement(modifiersWithCount(20, HeightRangePlacementModifier.trapezoid(YOffset.fixed(0), YOffset.fixed(192))))
 	);
 	public static final PlacedFeature ORE_IRON_UPPER = PlacedFeatures.register(
 		"ore_iron_upper",
