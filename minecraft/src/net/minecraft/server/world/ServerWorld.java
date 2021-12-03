@@ -86,6 +86,7 @@ import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockBox;
@@ -173,6 +174,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final WorldTickScheduler<Block> blockTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady, this.getProfilerSupplier());
 	private final WorldTickScheduler<Fluid> fluidTickScheduler = new WorldTickScheduler<>(this::isTickingFutureReady, this.getProfilerSupplier());
 	final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<>();
+	volatile boolean duringListenerUpdate;
 	protected final RaidManager raidManager;
 	private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet();
 	private final List<BlockEvent> blockEventQueue = new ArrayList(64);
@@ -405,7 +407,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Profiler profiler = this.getProfiler();
 		profiler.push("thunder");
 		if (bl && this.isThundering() && this.random.nextInt(100000) == 0) {
-			BlockPos blockPos = this.getSurface(this.getRandomPosInChunk(i, 0, j, 15));
+			BlockPos blockPos = this.getLightningPos(this.getRandomPosInChunk(i, 0, j, 15));
 			if (this.hasRain(blockPos)) {
 				LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
 				boolean bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)
@@ -490,7 +492,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return optional.map(posx -> posx.up(1));
 	}
 
-	protected BlockPos getSurface(BlockPos pos) {
+	protected BlockPos getLightningPos(BlockPos pos) {
 		BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
 		Optional<BlockPos> optional = this.getLightningRodPos(blockPos);
 		if (optional.isPresent()) {
@@ -909,14 +911,25 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
-		this.getChunkManager().markForUpdate(pos);
-		VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
-		VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
-		if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
-			for(MobEntity mobEntity : this.loadedMobs) {
-				EntityNavigation entityNavigation = mobEntity.getNavigation();
-				if (!entityNavigation.shouldRecalculatePath()) {
-					entityNavigation.onBlockChanged(pos);
+		if (this.duringListenerUpdate) {
+			String string = "recursive call to sendBlockUpdated";
+			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("recursive call to sendBlockUpdated"));
+		} else {
+			this.getChunkManager().markForUpdate(pos);
+			VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
+			VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
+			if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
+				this.duringListenerUpdate = true;
+
+				try {
+					for(MobEntity mobEntity : this.loadedMobs) {
+						EntityNavigation entityNavigation = mobEntity.getNavigation();
+						if (!entityNavigation.shouldRecalculatePath()) {
+							entityNavigation.onBlockChanged(pos);
+						}
+					}
+				} finally {
+					this.duringListenerUpdate = false;
 				}
 			}
 		}
@@ -1089,7 +1102,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Nullable
-	public BlockPos locateBiome(Biome biome, BlockPos pos, int radius, int i) {
+	public BlockPos locateBiome(Biome biome, BlockPos pos, int radius, int blockCheckInterval) {
 		return this.getChunkManager()
 			.getChunkGenerator()
 			.getBiomeSource()
@@ -1098,7 +1111,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				pos.getY(),
 				pos.getZ(),
 				radius,
-				i,
+				blockCheckInterval,
 				biome2 -> biome2 == biome,
 				this.random,
 				true,
@@ -1209,7 +1222,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Optional<PointOfInterestType> optional2 = PointOfInterestType.from(newBlock);
 		if (!Objects.equals(optional, optional2)) {
 			BlockPos blockPos = pos.toImmutable();
-			optional.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
+			optional.ifPresent(poiType -> this.getServer().execute(() -> {
 					this.getPointOfInterestStorage().remove(blockPos);
 					DebugInfoSender.sendPoiRemoval(this, blockPos);
 				}));
@@ -1606,17 +1619,22 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		public void startTracking(Entity entity) {
 			ServerWorld.this.getChunkManager().loadEntity(entity);
-			if (entity instanceof ServerPlayerEntity) {
-				ServerWorld.this.players.add((ServerPlayerEntity)entity);
+			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+				ServerWorld.this.players.add(serverPlayerEntity);
 				ServerWorld.this.updateSleepingPlayers();
 			}
 
-			if (entity instanceof MobEntity) {
-				ServerWorld.this.loadedMobs.add((MobEntity)entity);
+			if (entity instanceof MobEntity mobEntity) {
+				if (ServerWorld.this.duringListenerUpdate) {
+					String string = "onTrackingStart called during navigation iteration";
+					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("onTrackingStart called during navigation iteration"));
+				}
+
+				ServerWorld.this.loadedMobs.add(mobEntity);
 			}
 
-			if (entity instanceof EnderDragonEntity) {
-				for(EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
+			if (entity instanceof EnderDragonEntity enderDragonEntity) {
+				for(EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
 					ServerWorld.this.dragonParts.put(enderDragonPart.getId(), enderDragonPart);
 				}
 			}
@@ -1629,12 +1647,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				ServerWorld.this.updateSleepingPlayers();
 			}
 
-			if (entity instanceof MobEntity) {
-				ServerWorld.this.loadedMobs.remove(entity);
+			if (entity instanceof MobEntity mobEntity) {
+				if (ServerWorld.this.duringListenerUpdate) {
+					String string = "onTrackingStart called during navigation iteration";
+					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("onTrackingStart called during navigation iteration"));
+				}
+
+				ServerWorld.this.loadedMobs.remove(mobEntity);
 			}
 
-			if (entity instanceof EnderDragonEntity) {
-				for(EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
+			if (entity instanceof EnderDragonEntity enderDragonEntity) {
+				for(EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
 					ServerWorld.this.dragonParts.remove(enderDragonPart.getId());
 				}
 			}

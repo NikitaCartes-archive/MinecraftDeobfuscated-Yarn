@@ -46,6 +46,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
@@ -406,8 +407,12 @@ public class GameOptions {
 		this.distortionEffectScale = visitor.visitFloat("screenEffectScale", this.distortionEffectScale);
 		this.fovEffectScale = visitor.visitFloat("fovEffectScale", this.fovEffectScale);
 		this.gamma = visitor.visitDouble("gamma", this.gamma);
-		this.viewDistance = visitor.visitInt("renderDistance", this.viewDistance);
-		this.simulationDistance = visitor.visitInt("simulationDistance", this.simulationDistance);
+		this.viewDistance = (int)MathHelper.clamp(
+			(double)visitor.visitInt("renderDistance", this.viewDistance), Option.RENDER_DISTANCE.getMin(), Option.RENDER_DISTANCE.getMax()
+		);
+		this.simulationDistance = (int)MathHelper.clamp(
+			(double)visitor.visitInt("simulationDistance", this.simulationDistance), Option.SIMULATION_DISTANCE.getMin(), Option.SIMULATION_DISTANCE.getMax()
+		);
 		this.entityDistanceScaling = visitor.visitFloat("entityDistanceScaling", this.entityDistanceScaling);
 		this.guiScale = visitor.visitInt("guiScale", this.guiScale);
 		this.particles = visitor.visitObject("particles", this.particles, ParticlesMode::byId, ParticlesMode::getId);

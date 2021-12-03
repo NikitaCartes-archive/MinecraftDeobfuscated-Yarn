@@ -1165,7 +1165,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		RenderSystem.setShader(GameRenderer::getPositionShader);
 		this.renderSky(matrices, positionMatrix, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl3));
 		profiler.swap("fog");
-		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0F, 32.0F), bl3);
+		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g, 32.0F), bl3);
 		profiler.swap("terrain_setup");
 		this.setupTerrain(camera, frustum, bl2, this.client.player.isSpectator());
 		profiler.swap("compilechunks");

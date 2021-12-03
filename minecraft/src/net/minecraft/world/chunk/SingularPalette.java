@@ -65,7 +65,7 @@ public class SingularPalette<T> implements Palette<T> {
 
 	@Override
 	public void readPacket(PacketByteBuf buf) {
-		this.entry = this.idList.get(buf.readVarInt());
+		this.entry = this.idList.getOrThrow(buf.readVarInt());
 	}
 
 	@Override
