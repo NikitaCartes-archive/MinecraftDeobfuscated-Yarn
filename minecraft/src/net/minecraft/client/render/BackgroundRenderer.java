@@ -235,7 +235,8 @@ public class BackgroundRenderer {
 				f = 0.0F;
 				g = viewDistance;
 			} else {
-				f = viewDistance * 0.75F;
+				float j = MathHelper.clamp(viewDistance / 10.0F, 4.0F, 64.0F);
+				f = viewDistance - j;
 				g = viewDistance;
 			}
 

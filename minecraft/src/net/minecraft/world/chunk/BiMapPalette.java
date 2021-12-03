@@ -76,7 +76,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		int i = buf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			this.map.add(this.idList.get(buf.readVarInt()));
+			this.map.add(this.idList.getOrThrow(buf.readVarInt()));
 		}
 	}
 

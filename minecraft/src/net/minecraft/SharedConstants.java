@@ -10,19 +10,19 @@ import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean IS_DEVELOPMENT_VERSION = false;
+	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2860;
+	public static final int WORLD_VERSION = 2861;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.18";
+	public static final String VERSION_NAME = "1.18.1-pre1";
 	@Deprecated
-	public static final String RELEASE_TARGET = "1.18";
+	public static final String RELEASE_TARGET = "1.18.1";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 757;
 	@Deprecated
-	public static final int field_29736 = 60;
+	public static final int field_29736 = 61;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2830;
 	private static final int field_29708 = 30;
 	@Deprecated
@@ -173,7 +173,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 757;
+		return 1073741885;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {

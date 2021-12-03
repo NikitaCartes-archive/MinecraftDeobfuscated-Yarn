@@ -86,7 +86,7 @@ public class ArrayPalette<T> implements Palette<T> {
 		this.size = buf.readVarInt();
 
 		for (int i = 0; i < this.size; i++) {
-			this.array[i] = this.idList.get(buf.readVarInt());
+			this.array[i] = this.idList.getOrThrow(buf.readVarInt());
 		}
 	}
 

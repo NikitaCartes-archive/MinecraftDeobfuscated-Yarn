@@ -185,45 +185,45 @@ public abstract class BiomeSource implements BiomeSupplier {
 
 	@Nullable
 	public BlockPos locateBiome(
-		int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler
+		int x, int y, int z, int radius, int blockCheckInterval, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler
 	) {
-		int j = BiomeCoords.fromBlock(x);
-		int k = BiomeCoords.fromBlock(z);
-		int l = BiomeCoords.fromBlock(radius);
-		int m = BiomeCoords.fromBlock(y);
+		int i = BiomeCoords.fromBlock(x);
+		int j = BiomeCoords.fromBlock(z);
+		int k = BiomeCoords.fromBlock(radius);
+		int l = BiomeCoords.fromBlock(y);
 		BlockPos blockPos = null;
-		int n = 0;
-		int o = bl ? 0 : l;
-		int p = o;
+		int m = 0;
+		int n = bl ? 0 : k;
+		int o = n;
 
-		while (p <= l) {
-			for (int q = SharedConstants.DEBUG_BIOME_SOURCE ? 0 : -p; q <= p; q += i) {
-				boolean bl2 = Math.abs(q) == p;
+		while (o <= k) {
+			for (int p = SharedConstants.DEBUG_BIOME_SOURCE ? 0 : -o; p <= o; p += blockCheckInterval) {
+				boolean bl2 = Math.abs(p) == o;
 
-				for (int r = -p; r <= p; r += i) {
+				for (int q = -o; q <= o; q += blockCheckInterval) {
 					if (bl) {
-						boolean bl3 = Math.abs(r) == p;
+						boolean bl3 = Math.abs(q) == o;
 						if (!bl3 && !bl2) {
 							continue;
 						}
 					}
 
-					int s = j + r;
-					int t = k + q;
-					if (predicate.test(this.getBiome(s, m, t, noiseSampler))) {
-						if (blockPos == null || random.nextInt(n + 1) == 0) {
-							blockPos = new BlockPos(BiomeCoords.toBlock(s), y, BiomeCoords.toBlock(t));
+					int r = i + q;
+					int s = j + p;
+					if (predicate.test(this.getBiome(r, l, s, noiseSampler))) {
+						if (blockPos == null || random.nextInt(m + 1) == 0) {
+							blockPos = new BlockPos(BiomeCoords.toBlock(r), y, BiomeCoords.toBlock(s));
 							if (bl) {
 								return blockPos;
 							}
 						}
 
-						n++;
+						m++;
 					}
 				}
 			}
 
-			p += i;
+			o += blockCheckInterval;
 		}
 
 		return blockPos;

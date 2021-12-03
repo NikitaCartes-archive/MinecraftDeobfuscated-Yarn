@@ -9,6 +9,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.world.World;
 
 public class BeaconScreenHandler extends ScreenHandler {
 	private static final int field_30756 = 0;
@@ -145,6 +146,7 @@ public class BeaconScreenHandler extends ScreenHandler {
 			this.propertyDelegate.set(1, primaryEffectId);
 			this.propertyDelegate.set(2, secondaryEffectId);
 			this.paymentSlot.takeStack(1);
+			this.context.run(World::markDirty);
 		}
 	}
 
