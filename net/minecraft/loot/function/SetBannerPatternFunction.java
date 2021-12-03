@@ -31,8 +31,8 @@ extends ConditionalLootFunction {
     final List<Pair<BannerPattern, DyeColor>> patterns;
     final boolean append;
 
-    SetBannerPatternFunction(LootCondition[] condiitons, List<Pair<BannerPattern, DyeColor>> patterns, boolean append) {
-        super(condiitons);
+    SetBannerPatternFunction(LootCondition[] conditions, List<Pair<BannerPattern, DyeColor>> patterns, boolean append) {
+        super(conditions);
         this.patterns = patterns;
         this.append = append;
     }

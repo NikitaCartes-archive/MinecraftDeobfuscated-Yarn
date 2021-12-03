@@ -251,9 +251,10 @@ implements QueryableTickScheduler<T> {
 
     public void scheduleTicks(BlockBox box, Vec3i offset) {
         ArrayList list = new ArrayList();
-        list.addAll(this.tickedTicks);
-        list.addAll(this.tickableTicks);
-        this.visitChunks(box, (chunkPos, chunkTickScheduler) -> chunkTickScheduler.getQueueAsStream().forEach(list::add));
+        Predicate<OrderedTick> predicate = tick -> box.contains(tick.pos());
+        this.tickedTicks.stream().filter(predicate).forEach(list::add);
+        this.tickableTicks.stream().filter(predicate).forEach(list::add);
+        this.visitChunks(box, (chunkPos, chunkTickScheduler) -> chunkTickScheduler.getQueueAsStream().filter(predicate).forEach(list::add));
         LongSummaryStatistics longSummaryStatistics = list.stream().mapToLong(OrderedTick::subTickOrder).summaryStatistics();
         long l = longSummaryStatistics.getMin();
         long m = longSummaryStatistics.getMax();

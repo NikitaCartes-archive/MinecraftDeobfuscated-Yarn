@@ -1032,7 +1032,7 @@ AutoCloseable {
         RenderSystem.setShader(GameRenderer::getPositionShader);
         this.renderSky(matrices, positionMatrix, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl32));
         profiler.swap("fog");
-        BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g - 16.0f, 32.0f), bl32);
+        BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g, 32.0f), bl32);
         profiler.swap("terrain_setup");
         this.setupTerrain(camera, frustum, bl2, this.client.player.isSpectator());
         profiler.swap("compilechunks");

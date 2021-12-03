@@ -212,7 +212,8 @@ public class BackgroundRenderer {
                 f = 0.0f;
                 g = viewDistance;
             } else {
-                f = viewDistance * 0.75f;
+                float j = MathHelper.clamp(viewDistance / 10.0f, 4.0f, 64.0f);
+                f = viewDistance - j;
                 g = viewDistance;
             }
             RenderSystem.setShaderFogStart(f);

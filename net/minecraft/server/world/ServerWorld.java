@@ -95,6 +95,7 @@ import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockBox;
@@ -187,6 +188,7 @@ implements StructureWorldAccess {
     private final WorldTickScheduler<Block> blockTickScheduler = new WorldTickScheduler(this::isTickingFutureReady, this.getProfilerSupplier());
     private final WorldTickScheduler<Fluid> fluidTickScheduler = new WorldTickScheduler(this::isTickingFutureReady, this.getProfilerSupplier());
     final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<MobEntity>();
+    volatile boolean duringListenerUpdate;
     protected final RaidManager raidManager;
     private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet();
     private final List<BlockEvent> blockEventQueue = new ArrayList<BlockEvent>(64);
@@ -373,7 +375,7 @@ implements StructureWorldAccess {
         int j = chunkPos.getStartZ();
         Profiler profiler = this.getProfiler();
         profiler.push("thunder");
-        if (bl && this.isThundering() && this.random.nextInt(100000) == 0 && this.hasRain(blockPos = this.getSurface(this.getRandomPosInChunk(i, 0, j, 15)))) {
+        if (bl && this.isThundering() && this.random.nextInt(100000) == 0 && this.hasRain(blockPos = this.getLightningPos(this.getRandomPosInChunk(i, 0, j, 15)))) {
             boolean bl2;
             LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
             boolean bl3 = bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01 && !this.getBlockState(blockPos.down()).isOf(Blocks.LIGHTNING_ROD);
@@ -437,7 +439,7 @@ implements StructureWorldAccess {
         return optional.map(pos -> pos.up(1));
     }
 
-    protected BlockPos getSurface(BlockPos pos) {
+    protected BlockPos getLightningPos(BlockPos pos) {
         BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
         Optional<BlockPos> optional = this.getLightningRodPos(blockPos);
         if (optional.isPresent()) {
@@ -796,18 +798,30 @@ implements StructureWorldAccess {
         this.emitGameEvent(entity, event, pos, event.getRange());
     }
 
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
     @Override
     public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
+        if (this.duringListenerUpdate) {
+            String string = "recursive call to sendBlockUpdated";
+            throw Util.throwOrPause(new IllegalStateException("recursive call to sendBlockUpdated"));
+        }
         this.getChunkManager().markForUpdate(pos);
         VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
         VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
         if (!VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
             return;
         }
-        for (MobEntity mobEntity : this.loadedMobs) {
-            EntityNavigation entityNavigation = mobEntity.getNavigation();
-            if (entityNavigation.shouldRecalculatePath()) continue;
-            entityNavigation.onBlockChanged(pos);
+        this.duringListenerUpdate = true;
+        try {
+            for (MobEntity mobEntity : this.loadedMobs) {
+                EntityNavigation entityNavigation = mobEntity.getNavigation();
+                if (entityNavigation.shouldRecalculatePath()) continue;
+                entityNavigation.onBlockChanged(pos);
+            }
+        } finally {
+            this.duringListenerUpdate = false;
         }
     }
 
@@ -949,8 +963,8 @@ implements StructureWorldAccess {
     }
 
     @Nullable
-    public BlockPos locateBiome(Biome biome, BlockPos pos, int radius, int i) {
-        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, i, biome2 -> biome2 == biome, this.random, true, this.getChunkManager().getChunkGenerator().getMultiNoiseSampler());
+    public BlockPos locateBiome(Biome biome, BlockPos pos, int radius, int blockCheckInterval) {
+        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, blockCheckInterval, biome2 -> biome2 == biome, this.random, true, this.getChunkManager().getChunkGenerator().getMultiNoiseSampler());
     }
 
     @Override
@@ -1050,7 +1064,7 @@ implements StructureWorldAccess {
             return;
         }
         BlockPos blockPos = pos.toImmutable();
-        optional.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
+        optional.ifPresent(poiType -> this.getServer().execute(() -> {
             this.getPointOfInterestStorage().remove(blockPos);
             DebugInfoSender.sendPoiRemoval(this, blockPos);
         }));
@@ -1334,14 +1348,21 @@ implements StructureWorldAccess {
         public void startTracking(Entity entity) {
             ServerWorld.this.getChunkManager().loadEntity(entity);
             if (entity instanceof ServerPlayerEntity) {
-                ServerWorld.this.players.add((ServerPlayerEntity)entity);
+                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+                ServerWorld.this.players.add(serverPlayerEntity);
                 ServerWorld.this.updateSleepingPlayers();
             }
             if (entity instanceof MobEntity) {
-                ServerWorld.this.loadedMobs.add((MobEntity)entity);
+                MobEntity mobEntity = (MobEntity)entity;
+                if (ServerWorld.this.duringListenerUpdate) {
+                    String string = "onTrackingStart called during navigation iteration";
+                    throw Util.throwOrPause(new IllegalStateException("onTrackingStart called during navigation iteration"));
+                }
+                ServerWorld.this.loadedMobs.add(mobEntity);
             }
             if (entity instanceof EnderDragonEntity) {
-                for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
+                EnderDragonEntity enderDragonEntity = (EnderDragonEntity)entity;
+                for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
                     ServerWorld.this.dragonParts.put(enderDragonPart.getId(), enderDragonPart);
                 }
             }
@@ -1352,15 +1373,21 @@ implements StructureWorldAccess {
             EntityGameEventHandler entityGameEventHandler;
             ServerWorld.this.getChunkManager().unloadEntity(entity);
             if (entity instanceof ServerPlayerEntity) {
-                EnderDragonPart[] serverPlayerEntity = (EnderDragonPart[])entity;
+                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
                 ServerWorld.this.players.remove(serverPlayerEntity);
                 ServerWorld.this.updateSleepingPlayers();
             }
             if (entity instanceof MobEntity) {
-                ServerWorld.this.loadedMobs.remove(entity);
+                MobEntity mobEntity = (MobEntity)entity;
+                if (ServerWorld.this.duringListenerUpdate) {
+                    String string = "onTrackingStart called during navigation iteration";
+                    throw Util.throwOrPause(new IllegalStateException("onTrackingStart called during navigation iteration"));
+                }
+                ServerWorld.this.loadedMobs.remove(mobEntity);
             }
             if (entity instanceof EnderDragonEntity) {
-                for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
+                EnderDragonEntity enderDragonEntity = (EnderDragonEntity)entity;
+                for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
                     ServerWorld.this.dragonParts.remove(enderDragonPart.getId());
                 }
             }

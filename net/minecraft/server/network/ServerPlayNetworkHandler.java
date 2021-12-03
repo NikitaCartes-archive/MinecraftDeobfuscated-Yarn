@@ -206,6 +206,7 @@ ServerPlayPacketListener {
         connection.setPacketListener(this);
         this.player = player;
         player.networkHandler = this;
+        this.lastKeepAliveTime = Util.getMeasuringTimeMs();
         player.getTextStream().onConnect();
     }
 

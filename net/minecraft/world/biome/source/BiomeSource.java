@@ -166,37 +166,37 @@ implements BiomeSupplier {
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
-        int o;
-        int j = BiomeCoords.fromBlock(x);
-        int k = BiomeCoords.fromBlock(z);
-        int l = BiomeCoords.fromBlock(radius);
-        int m = BiomeCoords.fromBlock(y);
+    public BlockPos locateBiome(int x, int y, int z, int radius, int blockCheckInterval, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+        int n;
+        int i = BiomeCoords.fromBlock(x);
+        int j = BiomeCoords.fromBlock(z);
+        int k = BiomeCoords.fromBlock(radius);
+        int l = BiomeCoords.fromBlock(y);
         BlockPos blockPos = null;
-        int n = 0;
-        for (int p = o = bl ? 0 : l; p <= l; p += i) {
-            int q;
-            int n2 = q = SharedConstants.DEBUG_BIOME_SOURCE ? 0 : -p;
-            while (q <= p) {
-                boolean bl2 = Math.abs(q) == p;
-                for (int r = -p; r <= p; r += i) {
-                    int t;
+        int m = 0;
+        for (int o = n = bl ? 0 : k; o <= k; o += blockCheckInterval) {
+            int p;
+            int n2 = p = SharedConstants.DEBUG_BIOME_SOURCE ? 0 : -o;
+            while (p <= o) {
+                boolean bl2 = Math.abs(p) == o;
+                for (int q = -o; q <= o; q += blockCheckInterval) {
                     int s;
+                    int r;
                     if (bl) {
                         boolean bl3;
-                        boolean bl4 = bl3 = Math.abs(r) == p;
+                        boolean bl4 = bl3 = Math.abs(q) == o;
                         if (!bl3 && !bl2) continue;
                     }
-                    if (!predicate.test(this.getBiome(s = j + r, m, t = k + q, noiseSampler))) continue;
-                    if (blockPos == null || random.nextInt(n + 1) == 0) {
-                        blockPos = new BlockPos(BiomeCoords.toBlock(s), y, BiomeCoords.toBlock(t));
+                    if (!predicate.test(this.getBiome(r = i + q, l, s = j + p, noiseSampler))) continue;
+                    if (blockPos == null || random.nextInt(m + 1) == 0) {
+                        blockPos = new BlockPos(BiomeCoords.toBlock(r), y, BiomeCoords.toBlock(s));
                         if (bl) {
                             return blockPos;
                         }
                     }
-                    ++n;
+                    ++m;
                 }
-                q += i;
+                p += blockCheckInterval;
             }
         }
         return blockPos;

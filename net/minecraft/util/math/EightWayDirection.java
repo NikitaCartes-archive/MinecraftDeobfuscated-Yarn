@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.util;
+package net.minecraft.util.math;
 
 import com.google.common.collect.Sets;
 import java.util.Arrays;
