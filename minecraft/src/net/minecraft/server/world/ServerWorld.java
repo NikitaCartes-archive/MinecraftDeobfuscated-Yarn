@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
@@ -910,24 +911,30 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
 		if (this.duringListenerUpdate) {
 			String string = "recursive call to sendBlockUpdated";
-			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("recursive call to sendBlockUpdated"));
-		} else {
-			this.getChunkManager().markForUpdate(pos);
-			VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
-			VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
-			if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
+			Util.method_39977("recursive call to sendBlockUpdated", new IllegalStateException("recursive call to sendBlockUpdated"));
+		}
+
+		this.getChunkManager().markForUpdate(pos);
+		VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
+		VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
+		if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
+			List<EntityNavigation> list = new ObjectArrayList<>();
+
+			for (MobEntity mobEntity : this.loadedMobs) {
+				EntityNavigation entityNavigation = mobEntity.getNavigation();
+				if (entityNavigation.onBlockChanged(pos)) {
+					list.add(entityNavigation);
+				}
+			}
+
+			try {
 				this.duringListenerUpdate = true;
 
-				try {
-					for (MobEntity mobEntity : this.loadedMobs) {
-						EntityNavigation entityNavigation = mobEntity.getNavigation();
-						if (!entityNavigation.shouldRecalculatePath()) {
-							entityNavigation.onBlockChanged(pos);
-						}
-					}
-				} finally {
-					this.duringListenerUpdate = false;
+				for (EntityNavigation entityNavigation2 : list) {
+					entityNavigation2.recalculatePath();
 				}
+			} finally {
+				this.duringListenerUpdate = false;
 			}
 		}
 	}
@@ -1620,7 +1627,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			if (entity instanceof MobEntity mobEntity) {
 				if (ServerWorld.this.duringListenerUpdate) {
 					String string = "onTrackingStart called during navigation iteration";
-					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("onTrackingStart called during navigation iteration"));
+					Util.method_39977("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
 				}
 
 				ServerWorld.this.loadedMobs.add(mobEntity);
@@ -1643,7 +1650,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			if (entity instanceof MobEntity mobEntity) {
 				if (ServerWorld.this.duringListenerUpdate) {
 					String string = "onTrackingStart called during navigation iteration";
-					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("onTrackingStart called during navigation iteration"));
+					Util.method_39977("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
 				}
 
 				ServerWorld.this.loadedMobs.remove(mobEntity);

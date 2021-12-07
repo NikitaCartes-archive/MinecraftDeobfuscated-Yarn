@@ -433,6 +433,13 @@ public class Util {
 		}
 	}
 
+	public static void method_39977(String string, Throwable throwable) {
+		LOGGER.error(string, throwable);
+		if (SharedConstants.isDevelopment) {
+			pause(string);
+		}
+	}
+
 	public static <T extends Throwable> T throwOrPause(T t) {
 		if (SharedConstants.isDevelopment) {
 			LOGGER.error("Trying to throw a fatal exception, pausing in IDE", t);

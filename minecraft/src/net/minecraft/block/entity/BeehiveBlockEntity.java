@@ -127,6 +127,10 @@ public class BeehiveBlockEntity extends BlockEntity {
 	private List<Entity> tryReleaseBee(BlockState state, BeehiveBlockEntity.BeeState beeState) {
 		List<Entity> list = Lists.<Entity>newArrayList();
 		this.bees.removeIf(bee -> releaseBee(this.world, this.pos, state, bee, list, beeState, this.flowerPos));
+		if (!list.isEmpty()) {
+			super.markDirty();
+		}
+
 		return list;
 	}
 
@@ -168,6 +172,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 			}
 
 			entity.discard();
+			super.markDirty();
 		}
 	}
 
@@ -187,7 +192,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 		if ((world.isNight() || world.isRaining()) && beeState != BeehiveBlockEntity.BeeState.EMERGENCY) {
 			return false;
 		} else {
-			NbtCompound nbtCompound = bee.entityData;
+			NbtCompound nbtCompound = bee.entityData.copy();
 			removeIrrelevantNbtKeys(nbtCompound);
 			nbtCompound.put("HivePos", NbtHelper.fromBlockPos(pos));
 			nbtCompound.putBoolean("NoGravity", true);
@@ -267,6 +272,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	private static void tickBees(World world, BlockPos pos, BlockState state, List<BeehiveBlockEntity.Bee> bees, @Nullable BlockPos flowerPos) {
+		boolean bl = false;
 		Iterator<BeehiveBlockEntity.Bee> iterator = bees.iterator();
 
 		while (iterator.hasNext()) {
@@ -276,11 +282,16 @@ public class BeehiveBlockEntity extends BlockEntity {
 					? BeehiveBlockEntity.BeeState.HONEY_DELIVERED
 					: BeehiveBlockEntity.BeeState.BEE_RELEASED;
 				if (releaseBee(world, pos, state, bee, null, beeState, flowerPos)) {
+					bl = true;
 					iterator.remove();
 				}
 			}
 
 			bee.ticksInHive++;
+		}
+
+		if (bl) {
+			markDirty(world, pos, state);
 		}
 	}
 
@@ -329,12 +340,13 @@ public class BeehiveBlockEntity extends BlockEntity {
 		NbtList nbtList = new NbtList();
 
 		for (BeehiveBlockEntity.Bee bee : this.bees) {
-			bee.entityData.remove("UUID");
-			NbtCompound nbtCompound = new NbtCompound();
-			nbtCompound.put("EntityData", bee.entityData);
-			nbtCompound.putInt("TicksInHive", bee.ticksInHive);
-			nbtCompound.putInt("MinOccupationTicks", bee.minOccupationTicks);
-			nbtList.add(nbtCompound);
+			NbtCompound nbtCompound = bee.entityData.copy();
+			nbtCompound.remove("UUID");
+			NbtCompound nbtCompound2 = new NbtCompound();
+			nbtCompound2.put("EntityData", nbtCompound);
+			nbtCompound2.putInt("TicksInHive", bee.ticksInHive);
+			nbtCompound2.putInt("MinOccupationTicks", bee.minOccupationTicks);
+			nbtList.add(nbtCompound2);
 		}
 
 		return nbtList;

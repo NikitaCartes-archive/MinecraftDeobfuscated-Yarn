@@ -46,18 +46,20 @@ public class TextFilterer implements AutoCloseable {
 	private final String apiKey;
 	private final int ruleId;
 	private final String serverId;
+	private final String field_36318;
 	final TextFilterer.HashIgnorer ignorer;
 	final ExecutorService executor;
 
-	private TextFilterer(URI apiUrl, String apiKey, int ruleId, String serverId, TextFilterer.HashIgnorer ignorer, int threadsNumber) throws MalformedURLException {
+	private TextFilterer(URI apiUrl, String apiKey, int ruleId, String serverId, String string, TextFilterer.HashIgnorer hashIgnorer, int i) throws MalformedURLException {
 		this.apiKey = apiKey;
 		this.ruleId = ruleId;
 		this.serverId = serverId;
-		this.ignorer = ignorer;
+		this.field_36318 = string;
+		this.ignorer = hashIgnorer;
 		this.chatEndpoint = apiUrl.resolve("/v1/chat").toURL();
 		this.joinEndpoint = apiUrl.resolve("/v1/join").toURL();
 		this.leaveEndpoint = apiUrl.resolve("/v1/leave").toURL();
-		this.executor = Executors.newFixedThreadPool(threadsNumber, THREAD_FACTORY);
+		this.executor = Executors.newFixedThreadPool(i, THREAD_FACTORY);
 	}
 
 	@Nullable
@@ -74,13 +76,14 @@ public class TextFilterer implements AutoCloseable {
 				} else {
 					int i = JsonHelper.getInt(jsonObject, "ruleId", 1);
 					String string2 = JsonHelper.getString(jsonObject, "serverId", "");
+					String string3 = JsonHelper.getString(jsonObject, "roomId", "Java:Chat");
 					int j = JsonHelper.getInt(jsonObject, "hashesToDrop", -1);
 					int k = JsonHelper.getInt(jsonObject, "maxConcurrentRequests", 7);
 					TextFilterer.HashIgnorer hashIgnorer = TextFilterer.HashIgnorer.dropHashes(j);
-					return new TextFilterer(uRI, Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.US_ASCII)), i, string2, hashIgnorer, k);
+					return new TextFilterer(uRI, Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.US_ASCII)), i, string2, string3, hashIgnorer, k);
 				}
-			} catch (Exception var9) {
-				LOGGER.warn("Failed to parse chat filter config {}", config, var9);
+			} catch (Exception var10) {
+				LOGGER.warn("Failed to parse chat filter config {}", config, var10);
 				return null;
 			}
 		}
@@ -89,7 +92,7 @@ public class TextFilterer implements AutoCloseable {
 	void sendJoinOrLeaveRequest(GameProfile gameProfile, URL endpoint, Executor executor) {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("server", this.serverId);
-		jsonObject.addProperty("room", "Chat");
+		jsonObject.addProperty("room", this.field_36318);
 		jsonObject.addProperty("user_id", gameProfile.getId().toString());
 		jsonObject.addProperty("user_display_name", gameProfile.getName());
 		executor.execute(() -> {
@@ -108,7 +111,7 @@ public class TextFilterer implements AutoCloseable {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("rule", this.ruleId);
 			jsonObject.addProperty("server", this.serverId);
-			jsonObject.addProperty("room", "Chat");
+			jsonObject.addProperty("room", this.field_36318);
 			jsonObject.addProperty("player", gameProfile.getId().toString());
 			jsonObject.addProperty("player_display_name", gameProfile.getName());
 			jsonObject.addProperty("text", message);

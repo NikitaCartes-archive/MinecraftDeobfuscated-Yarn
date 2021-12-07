@@ -74,10 +74,6 @@ public abstract class EntityNavigation {
 		this.speed = speed;
 	}
 
-	public boolean shouldRecalculatePath() {
-		return this.shouldRecalculate;
-	}
-
 	public void recalculatePath() {
 		if (this.world.getTime() - this.lastRecalculateTime > 20L) {
 			if (this.currentTarget != null) {
@@ -365,15 +361,17 @@ public abstract class EntityNavigation {
 		return this.nodeMaker.canSwim();
 	}
 
-	public void onBlockChanged(BlockPos pos) {
-		if (this.currentPath != null && !this.currentPath.isFinished() && this.currentPath.getLength() != 0) {
+	public boolean onBlockChanged(BlockPos pos) {
+		if (this.shouldRecalculate) {
+			return false;
+		} else if (this.currentPath != null && !this.currentPath.isFinished() && this.currentPath.getLength() != 0) {
 			PathNode pathNode = this.currentPath.getEnd();
 			Vec3d vec3d = new Vec3d(
 				((double)pathNode.x + this.entity.getX()) / 2.0, ((double)pathNode.y + this.entity.getY()) / 2.0, ((double)pathNode.z + this.entity.getZ()) / 2.0
 			);
-			if (pos.isWithinDistance(vec3d, (double)(this.currentPath.getLength() - this.currentPath.getCurrentNodeIndex()))) {
-				this.recalculatePath();
-			}
+			return pos.isWithinDistance(vec3d, (double)(this.currentPath.getLength() - this.currentPath.getCurrentNodeIndex()));
+		} else {
+			return false;
 		}
 	}
 

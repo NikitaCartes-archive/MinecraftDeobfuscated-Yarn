@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,6 +67,8 @@ public class Shader implements GlShader, AutoCloseable {
 	public final GlUniform modelViewMat;
 	@Nullable
 	public final GlUniform projectionMat;
+	@Nullable
+	public final GlUniform field_36323;
 	@Nullable
 	public final GlUniform textureMat;
 	@Nullable
@@ -183,6 +186,7 @@ public class Shader implements GlShader, AutoCloseable {
 		this.markUniformsDirty();
 		this.modelViewMat = this.getUniform("ModelViewMat");
 		this.projectionMat = this.getUniform("ProjMat");
+		this.field_36323 = this.getUniform("IViewRotMat");
 		this.textureMat = this.getUniform("TextureMat");
 		this.screenSize = this.getUniform("ScreenSize");
 		this.colorModulator = this.getUniform("ColorModulator");
@@ -487,7 +491,7 @@ public class Shader implements GlShader, AutoCloseable {
 			} else if (i <= 7) {
 				glUniform.setForDataType(fs[0], fs[1], fs[2], fs[3]);
 			} else {
-				glUniform.set(fs);
+				glUniform.set(Arrays.copyOfRange(fs, 0, j));
 			}
 
 			this.uniforms.add(glUniform);

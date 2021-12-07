@@ -48,7 +48,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 			LOGGER.info("User aborted connecting to realms");
 			return;
 		} catch (RealmsServiceException var5) {
-			switch (var5.errorCode) {
+			switch (var5.method_39980(-1)) {
 				case 6002:
 					setScreen(new RealmsTermsScreen(this.lastScreen, this.mainScreen, this.server));
 					return;

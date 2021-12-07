@@ -1,7 +1,9 @@
 package net.minecraft.client.realms.gui.screen;
 
+import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.exception.RealmsServiceException;
@@ -15,63 +17,63 @@ import net.minecraft.text.TranslatableText;
 @Environment(EnvType.CLIENT)
 public class RealmsGenericErrorScreen extends RealmsScreen {
 	private final Screen parent;
-	private Text line1;
-	private Text line2;
+	private final Pair<Text, Text> field_36321;
+	private MultilineText field_36322 = MultilineText.EMPTY;
 
-	public RealmsGenericErrorScreen(RealmsServiceException realmsServiceException, Screen parent) {
+	public RealmsGenericErrorScreen(RealmsServiceException realmsServiceException, Screen screen) {
 		super(NarratorManager.EMPTY);
-		this.parent = parent;
-		this.errorMessage(realmsServiceException);
+		this.parent = screen;
+		this.field_36321 = method_39981(realmsServiceException);
 	}
 
-	public RealmsGenericErrorScreen(Text line2, Screen parent) {
+	public RealmsGenericErrorScreen(Text line2, Screen screen) {
 		super(NarratorManager.EMPTY);
-		this.parent = parent;
-		this.errorMessage(line2);
+		this.parent = screen;
+		this.field_36321 = errorMessage(line2);
 	}
 
-	public RealmsGenericErrorScreen(Text line1, Text line2, Screen parent) {
+	public RealmsGenericErrorScreen(Text line1, Text line2, Screen screen) {
 		super(NarratorManager.EMPTY);
-		this.parent = parent;
-		this.errorMessage(line1, line2);
+		this.parent = screen;
+		this.field_36321 = errorMessage(line1, line2);
 	}
 
-	private void errorMessage(RealmsServiceException realmsServiceException) {
-		if (realmsServiceException.errorCode == -1) {
-			this.line1 = new LiteralText("An error occurred (" + realmsServiceException.httpResultCode + "):");
-			this.line2 = new LiteralText(realmsServiceException.httpResponseContent);
+	private static Pair<Text, Text> method_39981(RealmsServiceException realmsServiceException) {
+		if (realmsServiceException.field_36320 == null) {
+			return Pair.of(new LiteralText("An error occurred (" + realmsServiceException.httpResultCode + "):"), new LiteralText(realmsServiceException.field_36319));
 		} else {
-			this.line1 = new LiteralText("Realms (" + realmsServiceException.errorCode + "):");
-			String string = "mco.errorMessage." + realmsServiceException.errorCode;
-			this.line2 = (Text)(I18n.hasTranslation(string) ? new TranslatableText(string) : Text.of(realmsServiceException.errorMsg));
+			String string = "mco.errorMessage." + realmsServiceException.field_36320.getErrorCode();
+			return Pair.of(
+				new LiteralText("Realms (" + realmsServiceException.field_36320 + "):"),
+				(Text)(I18n.hasTranslation(string) ? new TranslatableText(string) : Text.of(realmsServiceException.field_36320.getErrorMessage()))
+			);
 		}
 	}
 
-	private void errorMessage(Text line2) {
-		this.line1 = new LiteralText("An error occurred: ");
-		this.line2 = line2;
+	private static Pair<Text, Text> errorMessage(Text text) {
+		return Pair.of(new LiteralText("An error occurred: "), text);
 	}
 
-	private void errorMessage(Text line1, Text line2) {
-		this.line1 = line1;
-		this.line2 = line2;
+	private static Pair<Text, Text> errorMessage(Text text, Text text2) {
+		return Pair.of(text, text2);
 	}
 
 	@Override
 	public void init() {
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), button -> this.client.setScreen(this.parent)));
+		this.field_36322 = MultilineText.create(this.textRenderer, this.field_36321.getSecond(), this.width * 3 / 4);
 	}
 
 	@Override
 	public Text getNarratedTitle() {
-		return new LiteralText("").append(this.line1).append(": ").append(this.line2);
+		return new LiteralText("").append(this.field_36321.getFirst()).append(": ").append(this.field_36321.getSecond());
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.line1, this.width / 2, 80, 16777215);
-		drawCenteredText(matrices, this.textRenderer, this.line2, this.width / 2, 100, 16711680);
+		drawCenteredText(matrices, this.textRenderer, this.field_36321.getFirst(), this.width / 2, 80, 16777215);
+		this.field_36322.drawCenterWithShadow(matrices, this.width / 2, 100, 9, 16711680);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

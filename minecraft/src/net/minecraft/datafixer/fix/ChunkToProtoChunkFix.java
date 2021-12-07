@@ -1,7 +1,5 @@
 package net.minecraft.datafixer.fix;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.TypeRewriteRule;
@@ -38,16 +36,20 @@ public class ChunkToProtoChunkFix extends DataFix {
 	}
 
 	private static <T> Dynamic<T> fixLevel(Dynamic<T> dynamic) {
-		boolean bl = dynamic.get("TerrainPopulated").asBoolean(false)
-			&& (dynamic.get("LightPopulated").asNumber().result().isEmpty() || dynamic.get("LightPopulated").asBoolean(false));
-		Dynamic<T> dynamic2;
+		boolean bl = dynamic.get("TerrainPopulated").asBoolean(false);
+		boolean bl2 = dynamic.get("LightPopulated").asNumber().result().isEmpty() || dynamic.get("LightPopulated").asBoolean(false);
+		String string;
 		if (bl) {
-			dynamic2 = fixTileTicks(fixBiomes(dynamic));
+			if (bl2) {
+				string = "mobs_spawned";
+			} else {
+				string = "decorated";
+			}
 		} else {
-			dynamic2 = fixPos(dynamic);
+			string = "carved";
 		}
 
-		return dynamic2.set("Status", dynamic.createString(bl ? "mobs_spawned" : "empty")).set("hasLegacyStructureData", dynamic.createBoolean(true));
+		return fixTileTicks(fixBiomes(dynamic)).set("Status", dynamic.createString(string)).set("hasLegacyStructureData", dynamic.createBoolean(true));
 	}
 
 	private static <T> Dynamic<T> fixBiomes(Dynamic<T> dynamic) {
@@ -88,13 +90,6 @@ public class ChunkToProtoChunkFix extends DataFix {
 				),
 			dynamic
 		);
-	}
-
-	private static <T> Dynamic<T> fixPos(Dynamic<T> dynamic) {
-		Builder<Dynamic<T>, Dynamic<T>> builder = ImmutableMap.builder();
-		dynamic.get("xPos").result().ifPresent(dynamic2 -> builder.put(dynamic.createString("xPos"), dynamic2));
-		dynamic.get("zPos").result().ifPresent(dynamic2 -> builder.put(dynamic.createString("zPos"), dynamic2));
-		return dynamic.createMap(builder.build());
 	}
 
 	private static short packChunkSectionPos(int x, int y, int z) {

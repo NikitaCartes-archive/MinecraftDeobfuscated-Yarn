@@ -28,6 +28,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
@@ -67,6 +68,7 @@ public class RenderSystem {
 		intConsumer.accept(i + 2);
 		intConsumer.accept(i + 1);
 	});
+	private static Matrix3f inverseViewRotationMatrix = new Matrix3f();
 	private static Matrix4f projectionMatrix = new Matrix4f();
 	private static Matrix4f savedProjectionMatrix = new Matrix4f();
 	private static MatrixStack modelViewStack = new MatrixStack();
@@ -794,6 +796,15 @@ public class RenderSystem {
 		}
 	}
 
+	public static void setInverseViewRotationMatrix(Matrix3f matrix3f) {
+		Matrix3f matrix3f2 = matrix3f.copy();
+		if (!isOnRenderThread()) {
+			recordRenderCall(() -> inverseViewRotationMatrix = matrix3f2);
+		} else {
+			inverseViewRotationMatrix = matrix3f2;
+		}
+	}
+
 	public static void setTextureMatrix(Matrix4f matrix4f) {
 		Matrix4f matrix4f2 = matrix4f.copy();
 		if (!isOnRenderThread()) {
@@ -847,6 +858,11 @@ public class RenderSystem {
 	public static Matrix4f getProjectionMatrix() {
 		assertOnRenderThread();
 		return projectionMatrix;
+	}
+
+	public static Matrix3f getInverseViewRotationMatrix() {
+		assertOnRenderThread();
+		return inverseViewRotationMatrix;
 	}
 
 	public static Matrix4f getModelViewMatrix() {
