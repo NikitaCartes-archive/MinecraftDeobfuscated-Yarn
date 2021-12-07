@@ -58,20 +58,20 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 					if (text == null) {
 						text = LiteralText.EMPTY;
 					}
-				} catch (JsonParseException var8) {
+				} catch (Exception var8) {
 				}
 
 				if (text == null) {
 					try {
 						text = Text.Serializer.fromJson(string);
-					} catch (JsonParseException var7) {
+					} catch (Exception var7) {
 					}
 				}
 
 				if (text == null) {
 					try {
 						text = Text.Serializer.fromLenientJson(string);
-					} catch (JsonParseException var6) {
+					} catch (Exception var6) {
 					}
 				}
 
