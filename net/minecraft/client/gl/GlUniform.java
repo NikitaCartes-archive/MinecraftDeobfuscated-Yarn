@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.Uniform;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vector4f;
@@ -400,6 +401,13 @@ implements AutoCloseable {
     public final void set(Matrix4f values) {
         this.floatData.position(0);
         values.writeColumnMajor(this.floatData);
+        this.markStateDirty();
+    }
+
+    @Override
+    public final void method_39978(Matrix3f matrix3f) {
+        this.floatData.position(0);
+        matrix3f.writeColumnMajor(this.floatData);
         this.markStateDirty();
     }
 

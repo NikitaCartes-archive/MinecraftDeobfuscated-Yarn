@@ -954,7 +954,7 @@ AutoCloseable {
         int j = ChunkSectionPos.getSectionCoord(pos.getZ());
         BlockPos blockPos = builtChunk.getOrigin();
         int k = ChunkSectionPos.getSectionCoord(blockPos.getX());
-        return !ThreadedAnvilChunkStorage.isWithinDistance(k, l = ChunkSectionPos.getSectionCoord(blockPos.getZ()), i, j, this.viewDistance - 2);
+        return !ThreadedAnvilChunkStorage.method_39975(k, l = ChunkSectionPos.getSectionCoord(blockPos.getZ()), i, j, this.viewDistance - 2);
     }
 
     private void captureFrustum(Matrix4f positionMatrix, Matrix4f matrix4f, double x, double y, double z, Frustum frustum) {

@@ -3,7 +3,6 @@
  */
 package net.minecraft.command.argument;
 
-import com.google.gson.JsonParseException;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -40,8 +39,8 @@ implements ArgumentType<Text> {
                 throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, "empty");
             }
             return text;
-        } catch (JsonParseException jsonParseException) {
-            String string = jsonParseException.getCause() != null ? jsonParseException.getCause().getMessage() : jsonParseException.getMessage();
+        } catch (Exception exception) {
+            String string = exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
             throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, string);
         }
     }

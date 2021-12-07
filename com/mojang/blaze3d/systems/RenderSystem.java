@@ -31,6 +31,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
@@ -57,6 +58,7 @@ public class RenderSystem {
     private static final IndexBuffer sharedSequential;
     private static final IndexBuffer sharedSequentialQuad;
     private static final IndexBuffer sharedSequentialLines;
+    private static Matrix3f inverseViewRotationMatrix;
     private static Matrix4f projectionMatrix;
     private static Matrix4f savedProjectionMatrix;
     private static MatrixStack modelViewStack;
@@ -781,6 +783,17 @@ public class RenderSystem {
         }
     }
 
+    public static void setInverseViewRotationMatrix(Matrix3f matrix3f) {
+        Matrix3f matrix3f2 = matrix3f.copy();
+        if (!RenderSystem.isOnRenderThread()) {
+            RenderSystem.recordRenderCall(() -> {
+                inverseViewRotationMatrix = matrix3f2;
+            });
+        } else {
+            inverseViewRotationMatrix = matrix3f2;
+        }
+    }
+
     public static void setTextureMatrix(Matrix4f matrix4f) {
         Matrix4f matrix4f2 = matrix4f.copy();
         if (!RenderSystem.isOnRenderThread()) {
@@ -838,6 +851,11 @@ public class RenderSystem {
     public static Matrix4f getProjectionMatrix() {
         RenderSystem.assertOnRenderThread();
         return projectionMatrix;
+    }
+
+    public static Matrix3f getInverseViewRotationMatrix() {
+        RenderSystem.assertOnRenderThread();
+        return inverseViewRotationMatrix;
     }
 
     public static Matrix4f getModelViewMatrix() {
@@ -1116,6 +1134,7 @@ public class RenderSystem {
             intConsumer.accept(i + 2);
             intConsumer.accept(i + 1);
         });
+        inverseViewRotationMatrix = new Matrix3f();
         projectionMatrix = new Matrix4f();
         savedProjectionMatrix = new Matrix4f();
         modelViewStack = new MatrixStack();
