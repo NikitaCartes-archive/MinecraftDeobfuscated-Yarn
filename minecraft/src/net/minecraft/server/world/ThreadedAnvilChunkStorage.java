@@ -922,8 +922,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
-		for (int k = i - this.watchDistance; k <= i + this.watchDistance; k++) {
-			for (int l = j - this.watchDistance; l <= j + this.watchDistance; l++) {
+		for (int k = i - this.watchDistance - 1; k <= i + this.watchDistance + 1; k++) {
+			for (int l = j - this.watchDistance - 1; l <= j + this.watchDistance + 1; l++) {
 				if (method_39975(k, l, i, j, this.watchDistance)) {
 					ChunkPos chunkPos = new ChunkPos(k, l);
 					this.sendWatchPackets(player, chunkPos, new MutableObject<>(), !added, added);
@@ -993,10 +993,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		int k = chunkSectionPos.getSectionX();
 		int n = chunkSectionPos.getSectionZ();
 		if (Math.abs(k - i) <= this.watchDistance * 2 && Math.abs(n - j) <= this.watchDistance * 2) {
-			int o = Math.min(i, k) - this.watchDistance;
-			int p = Math.min(j, n) - this.watchDistance;
-			int q = Math.max(i, k) + this.watchDistance;
-			int r = Math.max(j, n) + this.watchDistance;
+			int o = Math.min(i, k) - this.watchDistance - 1;
+			int p = Math.min(j, n) - this.watchDistance - 1;
+			int q = Math.max(i, k) + this.watchDistance + 1;
+			int r = Math.max(j, n) + this.watchDistance + 1;
 
 			for (int s = o; s <= q; s++) {
 				for (int t = p; t <= r; t++) {
@@ -1006,8 +1006,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				}
 			}
 		} else {
-			for (int o = k - this.watchDistance; o <= k + this.watchDistance; o++) {
-				for (int p = n - this.watchDistance; p <= n + this.watchDistance; p++) {
+			for (int o = k - this.watchDistance - 1; o <= k + this.watchDistance + 1; o++) {
+				for (int p = n - this.watchDistance - 1; p <= n + this.watchDistance + 1; p++) {
 					if (method_39975(o, p, k, n, this.watchDistance)) {
 						boolean bl6 = true;
 						boolean bl7 = false;
@@ -1016,8 +1016,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				}
 			}
 
-			for (int o = i - this.watchDistance; o <= i + this.watchDistance; o++) {
-				for (int px = j - this.watchDistance; px <= j + this.watchDistance; px++) {
+			for (int o = i - this.watchDistance - 1; o <= i + this.watchDistance + 1; o++) {
+				for (int px = j - this.watchDistance - 1; px <= j + this.watchDistance + 1; px++) {
 					if (method_39975(o, px, i, j, this.watchDistance)) {
 						boolean bl6 = false;
 						boolean bl7 = true;
