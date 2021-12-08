@@ -812,8 +812,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.ticketManager.handleChunkLeave(chunkSectionPos, player);
             }
         }
-        for (int k = i - this.watchDistance; k <= i + this.watchDistance; ++k) {
-            for (int l = j - this.watchDistance; l <= j + this.watchDistance; ++l) {
+        for (int k = i - this.watchDistance - 1; k <= i + this.watchDistance + 1; ++k) {
+            for (int l = j - this.watchDistance - 1; l <= j + this.watchDistance + 1; ++l) {
                 if (!ThreadedAnvilChunkStorage.method_39975(k, l, i, j, this.watchDistance)) continue;
                 ChunkPos chunkPos = new ChunkPos(k, l);
                 this.sendWatchPackets(player, chunkPos, new MutableObject<ChunkDataS2CPacket>(), !added, added);
@@ -877,10 +877,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         int k = chunkSectionPos.getSectionX();
         int n = chunkSectionPos.getSectionZ();
         if (Math.abs(k - i) <= this.watchDistance * 2 && Math.abs(n - j) <= this.watchDistance * 2) {
-            int o = Math.min(i, k) - this.watchDistance;
-            int p = Math.min(j, n) - this.watchDistance;
-            int q = Math.max(i, k) + this.watchDistance;
-            int r = Math.max(j, n) + this.watchDistance;
+            int o = Math.min(i, k) - this.watchDistance - 1;
+            int p = Math.min(j, n) - this.watchDistance - 1;
+            int q = Math.max(i, k) + this.watchDistance + 1;
+            int r = Math.max(j, n) + this.watchDistance + 1;
             for (int s = o; s <= q; ++s) {
                 for (int t = p; t <= r; ++t) {
                     boolean bl42 = ThreadedAnvilChunkStorage.method_39975(s, t, k, n, this.watchDistance);
@@ -893,16 +893,16 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             boolean bl6;
             int p;
             int o;
-            for (o = k - this.watchDistance; o <= k + this.watchDistance; ++o) {
-                for (p = n - this.watchDistance; p <= n + this.watchDistance; ++p) {
+            for (o = k - this.watchDistance - 1; o <= k + this.watchDistance + 1; ++o) {
+                for (p = n - this.watchDistance - 1; p <= n + this.watchDistance + 1; ++p) {
                     if (!ThreadedAnvilChunkStorage.method_39975(o, p, k, n, this.watchDistance)) continue;
                     bl6 = true;
                     bl7 = false;
                     this.sendWatchPackets(player, new ChunkPos(o, p), new MutableObject<ChunkDataS2CPacket>(), true, false);
                 }
             }
-            for (o = i - this.watchDistance; o <= i + this.watchDistance; ++o) {
-                for (p = j - this.watchDistance; p <= j + this.watchDistance; ++p) {
+            for (o = i - this.watchDistance - 1; o <= i + this.watchDistance + 1; ++o) {
+                for (p = j - this.watchDistance - 1; p <= j + this.watchDistance + 1; ++p) {
                     if (!ThreadedAnvilChunkStorage.method_39975(o, p, i, j, this.watchDistance)) continue;
                     bl6 = false;
                     bl7 = true;
