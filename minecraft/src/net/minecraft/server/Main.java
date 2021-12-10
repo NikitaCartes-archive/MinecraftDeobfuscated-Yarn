@@ -270,4 +270,8 @@ public class Main {
 			}
 		}
 	}
+
+	static {
+		Util.method_39982();
+	}
 }

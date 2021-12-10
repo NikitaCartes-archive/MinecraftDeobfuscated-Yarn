@@ -255,6 +255,7 @@ public class Main {
 	}
 
 	static {
+		Util.method_39982();
 		System.setProperty("java.awt.headless", "true");
 	}
 }
